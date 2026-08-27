@@ -25,10 +25,14 @@ implementation status, supporting evidence and retained history.
    and residual-risk statement.
 7. [`contracts/owner-open-forbidden-default-graph-v1.json`](contracts/owner-open-forbidden-default-graph-v1.json)
    — negative Cargo/Android product-graph contract.
-8. [`TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`](TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
+8. [`architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md`](architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md)
+   — accepted P0 raw-ADB topology: an ordinary independent-host adb
+   client/server behind a mechanism-only transparent relay, with no injected
+   serial, host, port, approval or privilege downgrade.
+9. [`TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`](TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
    — r3 semantic architecture baseline. Its sequencing/status sections are
    superseded by r4, but its owner-open product decisions remain normative.
-9. [`CURRENT_STATE.md`](CURRENT_STATE.md)
+10. [`CURRENT_STATE.md`](CURRENT_STATE.md)
    — long-form implementation/release observations, including pre-r3 history.
    Product or release claim changes must update it; routine r4 task progress is
    represented first in the machine status.
@@ -67,9 +71,12 @@ Generated codec output must remain policy-free.
 - [`../tools/verify-owner-open-foundation.py`](../tools/verify-owner-open-foundation.py)
   — default graph, generated output, status and known Android hold verifier.
 
-The foundation provides L0/L1 source/unit coverage and a spawned Host-process
-JSONL test for L2 evidence once CI passes. It does not claim a live Codex turn,
-direct shell runtime, raw ADB transport, Android image or device effect.
+The foundation has L0 source/contract checks and Rust unit/integration test
+sources. Seven Python verifier tests passed during preparation, but the current
+GitHub Actions environment assigned no runner; Rust 1.93 compilation, rustfmt,
+spawned Host execution and the refreshed `Cargo.lock` remain explicit PR merge
+gates. No live Codex turn, direct shell runtime, raw ADB transport, Android
+image or device effect is claimed.
 
 ## Supporting implementation contracts and checkpoint evidence
 
