@@ -6,14 +6,13 @@
 //! substitution, command rewriting or a typed ADB subcommand table.
 
 use std::collections::BTreeMap;
-use std::ffi::OsStr;
 use std::io::{BufRead, BufReader, Read, Write};
 use std::os::unix::ffi::OsStrExt;
 use std::os::unix::process::CommandExt;
 use std::path::PathBuf;
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::{Receiver, SyncSender, sync_channel};
+use std::sync::mpsc::{Sender, channel};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
@@ -32,7 +31,8 @@ use trillionnium_owner_open_runtime::{
 };
 use trillionnium_owner_open_tool_bridge::{BoundToolCall, DirectToolRequest};
 use trillionnium_owner_open_turn_loop::{
-    ProviderEvent, ProviderHost, ProviderTerminal, SameTurnProvider, ToolOutcome, TurnRequest,
+    ProviderEvent, ProviderHost, ProviderTerminal, ProviderTerminalStatus, SameTurnProvider,
+    ToolOutcome, TurnRequest,
 };
 use trillionnium_owner_open_types::{MechanicalLimits as CodecLimits, ToolCall};
 
@@ -70,9 +70,9 @@ pub struct JsonlProviderConfig {
     pub poll_interval: Duration,
     pub terminate_grace: Duration,
     pub max_line_bytes: usize,
+    pub max_stdout_bytes: usize,
     pub max_event_count: usize,
     pub max_stderr_bytes: usize,
-    pub output_queue_depth: usize,
 }
 
 impl JsonlProviderConfig {
@@ -103,12 +103,12 @@ impl JsonlProviderConfig {
         if self.timeout.is_zero()
             || self.poll_interval.is_zero()
             || self.max_line_bytes == 0
+            || self.max_stdout_bytes < self.max_line_bytes
             || self.max_event_count == 0
             || self.max_stderr_bytes == 0
-            || self.output_queue_depth == 0
         {
             return Err(invalid_config(
-                "provider duration/count/byte limits must be non-zero",
+                "provider duration/count/byte limits are invalid",
             ));
         }
         validate_environment(&self.env)?;
@@ -128,10 +128,13 @@ impl Default for JsonlProviderConfig {
             timeout: Duration::from_secs(300),
             poll_interval: Duration::from_millis(20),
             terminate_grace: Duration::from_millis(250),
-            max_line_bytes: 1024 * 1024,
+            // One tool.result may contain the bounded 16 MiB runtime output in
+            // base64 plus lifecycle metadata. Keep one finite line above that
+            // closed envelope until incremental provider result frames land.
+            max_line_bytes: 32 * 1024 * 1024,
+            max_stdout_bytes: 64 * 1024 * 1024,
             max_event_count: 4096,
             max_stderr_bytes: 1024 * 1024,
-            output_queue_depth: 64,
         }
     }
 }
@@ -204,13 +207,14 @@ impl JsonlProvider {
             .take()
             .ok_or_else(|| JsonlProviderError::Io("provider stderr was not piped".to_string()))?;
 
-        let (sender, receiver) = sync_channel(self.config.output_queue_depth);
+        let (sender, receiver) = channel();
         let stdout_thread = spawn_stdout_reader(
             provider_stdout,
             self.config.max_line_bytes,
+            self.config.max_stdout_bytes,
             sender,
         );
-        let stderr_capture = Arc::new(Mutex::new(StderrCapture::default()));
+        let stderr_capture = Arc::new(Mutex::new(Vec::new()));
         let stderr_overflow = Arc::new(AtomicBool::new(false));
         let stderr_thread = spawn_stderr_reader(
             provider_stderr,
@@ -229,12 +233,12 @@ impl JsonlProvider {
                     "kind": "turn.start",
                     "seq": outbound_seq,
                     "turn": {
-                        "session_id": request.session_id,
-                        "profile_id": request.profile_id,
-                        "task_id": request.task_id,
-                        "turn_id": request.turn_id,
-                        "turn_stream_id": request.turn_stream_id,
-                        "user_input": request.user_input
+                        "session_id": &request.session_id,
+                        "profile_id": &request.profile_id,
+                        "task_id": &request.task_id,
+                        "turn_id": &request.turn_id,
+                        "turn_stream_id": &request.turn_stream_id,
+                        "user_input": &request.user_input
                     }
                 }),
                 self.config.max_line_bytes,
@@ -274,11 +278,9 @@ impl JsonlProvider {
                                     &self.config,
                                 ) {
                                     Ok(call) => match host.invoke_tool(call) {
-                                        Ok(outcome) => encode_tool_outcome(
-                                            outbound_seq,
-                                            &call_id,
-                                            outcome,
-                                        ),
+                                        Ok(outcome) => {
+                                            encode_tool_outcome(outbound_seq, &call_id, outcome)
+                                        }
                                         Err(error) => encode_tool_error(
                                             outbound_seq,
                                             &call_id,
@@ -302,14 +304,14 @@ impl JsonlProvider {
                             }
                             "turn.complete" => {
                                 terminal = Some(ProviderTerminal {
-                                    status: trillionnium_owner_open_turn_loop::ProviderTerminalStatus::Completed,
+                                    status: ProviderTerminalStatus::Completed,
                                     summary: optional_string(&value, "summary")?.map(str::to_string),
                                     error: None,
                                 });
                             }
                             "turn.cancelled" => {
                                 terminal = Some(ProviderTerminal {
-                                    status: trillionnium_owner_open_turn_loop::ProviderTerminalStatus::Cancelled,
+                                    status: ProviderTerminalStatus::Cancelled,
                                     summary: optional_string(&value, "summary")?.map(str::to_string),
                                     error: None,
                                 });
@@ -366,8 +368,8 @@ impl JsonlProvider {
         })();
 
         drop(provider_stdin);
-        drop(receiver);
         let cleanup = finish_child(&mut child, pid, self.config.terminate_grace);
+        drop(receiver);
         let stdout_join = stdout_thread.join();
         let stderr_join = stderr_thread.join();
         let stderr = stderr_capture
@@ -380,17 +382,20 @@ impl JsonlProvider {
                 "provider reader thread panicked".to_string(),
             ));
         }
+        let status = cleanup?;
+        if let Err(error) = result {
+            return Err(error);
+        }
         if stderr_overflow.load(Ordering::SeqCst) {
             return Err(JsonlProviderError::Protocol(format!(
                 "provider stderr exceeded its bound; prefix={}",
-                String::from_utf8_lossy(&stderr.bytes)
+                String::from_utf8_lossy(&stderr)
             )));
         }
-        let status = cleanup?;
         if !status.success() {
             return Err(JsonlProviderError::Interrupted(format!(
                 "provider exited unsuccessfully: {status}; stderr={}",
-                String::from_utf8_lossy(&stderr.bytes)
+                String::from_utf8_lossy(&stderr)
             )));
         }
         result
@@ -403,7 +408,8 @@ impl SameTurnProvider for JsonlProvider {
         request: &TurnRequest,
         host: &mut ProviderHost<'_>,
     ) -> std::result::Result<ProviderTerminal, String> {
-        self.run_session(request, host).map_err(|error| error.to_string())
+        self.run_session(request, host)
+            .map_err(|error| error.to_string())
     }
 }
 
@@ -414,22 +420,27 @@ enum ProviderOutput {
     Error(String),
 }
 
-#[derive(Debug, Default, Clone)]
-struct StderrCapture {
-    bytes: Vec<u8>,
-    total_bytes: u64,
-}
-
 fn spawn_stdout_reader(
     stdout: impl Read + Send + 'static,
     max_line_bytes: usize,
-    sender: SyncSender<ProviderOutput>,
+    max_stdout_bytes: usize,
+    sender: Sender<ProviderOutput>,
 ) -> JoinHandle<()> {
     thread::spawn(move || {
         let mut reader = BufReader::new(stdout);
+        let mut total = 0usize;
         loop {
             match read_bounded_line(&mut reader, max_line_bytes) {
                 Ok(Some(line)) => {
+                    total = match total.checked_add(line.len().saturating_add(1)) {
+                        Some(total) if total <= max_stdout_bytes => total,
+                        _ => {
+                            let _ = sender.send(ProviderOutput::Error(
+                                "provider aggregate stdout exceeds its bound".to_string(),
+                            ));
+                            return;
+                        }
+                    };
                     if sender.send(ProviderOutput::Line(line)).is_err() {
                         return;
                     }
@@ -450,7 +461,7 @@ fn spawn_stdout_reader(
 fn spawn_stderr_reader(
     mut stderr: impl Read + Send + 'static,
     maximum: usize,
-    capture: Arc<Mutex<StderrCapture>>,
+    capture: Arc<Mutex<Vec<u8>>>,
     overflow: Arc<AtomicBool>,
 ) -> JoinHandle<()> {
     thread::spawn(move || {
@@ -459,14 +470,11 @@ fn spawn_stderr_reader(
             match stderr.read(&mut buffer) {
                 Ok(0) => return,
                 Ok(count) => {
-                    let Ok(mut state) = capture.lock() else {
+                    let Ok(mut bytes) = capture.lock() else {
                         return;
                     };
-                    state.total_bytes = state
-                        .total_bytes
-                        .saturating_add(u64::try_from(count).unwrap_or(u64::MAX));
-                    let remaining = maximum.saturating_sub(state.bytes.len());
-                    state.bytes.extend_from_slice(&buffer[..count.min(remaining)]);
+                    let remaining = maximum.saturating_sub(bytes.len());
+                    bytes.extend_from_slice(&buffer[..count.min(remaining)]);
                     if count > remaining {
                         overflow.store(true, Ordering::SeqCst);
                     }
@@ -478,7 +486,10 @@ fn spawn_stderr_reader(
     })
 }
 
-fn read_bounded_line(reader: &mut impl BufRead, maximum: usize) -> std::result::Result<Option<Vec<u8>>, String> {
+fn read_bounded_line(
+    reader: &mut impl BufRead,
+    maximum: usize,
+) -> std::result::Result<Option<Vec<u8>>, String> {
     let mut line = Vec::new();
     let read = reader
         .take(maximum as u64 + 2)
@@ -843,8 +854,8 @@ fn encode_execution_event(event: &ExecutionEvent) -> Value {
         }),
     };
     json!({
-        "call_id": event.call_id,
-        "target_id": event.target_id,
+        "call_id": &event.call_id,
+        "target_id": &event.target_id,
         "tool": event.tool.as_str(),
         "seq": event.seq,
         "elapsed_ms": event.elapsed_ms,
@@ -861,17 +872,17 @@ fn encode_terminal(terminal: &ExecutionTerminal) -> Value {
         "stderr_bytes": terminal.stderr_bytes,
         "output_truncated": terminal.output_truncated,
         "elapsed_ms": terminal.elapsed_ms,
-        "error": terminal.error
+        "error": &terminal.error
     })
 }
 
 fn encode_snapshot(snapshot: &CallSnapshot) -> Value {
     json!({
-        "call_id": snapshot.key.call_id,
-        "request_sha256": snapshot.request.request_sha256,
-        "binding_fingerprint": snapshot.request.binding_fingerprint,
-        "tool": snapshot.request.tool,
-        "target_id": snapshot.request.target_id,
+        "call_id": &snapshot.key.call_id,
+        "request_sha256": &snapshot.request.request_sha256,
+        "binding_fingerprint": &snapshot.request.binding_fingerprint,
+        "tool": &snapshot.request.tool,
+        "target_id": &snapshot.request.target_id,
         "state": format!("{:?}", snapshot.state),
         "cancellation_requested": snapshot.cancellation_requested,
         "connection_lost": snapshot.connection_lost,
