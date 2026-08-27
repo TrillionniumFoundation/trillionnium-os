@@ -49,9 +49,16 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
         specs = []
         for path, internal in packages.items():
             deps = "\n".join(f'{name} = "1"' for name in internal)
+            package_extra = "autobins = false\n" if path == "apps/host" else ""
+            bins = (
+                "\n[[bin]]\nname = \"foundation-host\"\npath = \"src/main.rs\"\n"
+                "\n[[bin]]\nname = \"r5-host\"\npath = \"src/bin/r5_streaming_host.rs\"\n"
+                if path == "apps/host"
+                else ""
+            )
             self.write(
                 f"{path}/Cargo.toml",
-                f"[package]\nname = \"{path.replace('/', '-')}\"\nversion = \"0.1.0\"\nedition = \"2024\"\n\n[dependencies]\n{deps}\n",
+                f"[package]\nname = \"{path.replace('/', '-')}\"\nversion = \"0.1.0\"\nedition = \"2024\"\n{package_extra}\n[dependencies]\n{deps}\n{bins}",
             )
             self.write(f"{path}/src/lib.rs", "pub const OWNER_OPEN: bool = true;\n")
             specs.append(
@@ -70,6 +77,18 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
                 "forbidden_default_members": ["apps/legacy"],
                 "forbidden_internal_dependencies": ["legacy-crate"],
                 "forbidden_source_markers": ["AgentPlanSubmission"],
+                "host_binary_contract": {
+                    "manifest": "apps/host/Cargo.toml",
+                    "autobins": False,
+                    "required_bins": [
+                        {"name": "foundation-host", "path": "src/main.rs"},
+                        {
+                            "name": "r5-host",
+                            "path": "src/bin/r5_streaming_host.rs",
+                        },
+                    ],
+                    "forbidden_selected_paths": ["src/bin/r5_host.rs"],
+                },
                 "owner_open_packages": specs,
             },
             "android": {
@@ -103,6 +122,13 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
     def test_clean_fixture_passes(self) -> None:
         report = module.verify(self.root)
         self.assertEqual(report.errors, [])
+        self.assertEqual(
+            report.facts["host_binaries"],
+            [
+                {"name": "foundation-host", "path": "src/main.rs"},
+                {"name": "r5-host", "path": "src/bin/r5_streaming_host.rs"},
+            ],
+        )
 
     def test_default_graph_drift_fails(self) -> None:
         cargo = (self.root / "Cargo.toml").read_text(encoding="utf-8")
@@ -127,6 +153,27 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
         self.write("crates/runtime/src/lib.rs", "struct AgentPlanSubmission;\n")
         report = module.verify(self.root)
         self.assertTrue(any("forbidden legacy markers" in value for value in report.errors))
+
+    def test_host_autobins_drift_fails(self) -> None:
+        manifest = (self.root / "apps/host/Cargo.toml").read_text(encoding="utf-8")
+        self.write("apps/host/Cargo.toml", manifest.replace("autobins = false", "autobins = true"))
+        report = module.verify(self.root)
+        self.assertTrue(any("autobins setting drifted" in value for value in report.errors))
+
+    def test_superseded_host_path_cannot_be_selected(self) -> None:
+        manifest = (self.root / "apps/host/Cargo.toml").read_text(encoding="utf-8")
+        manifest = manifest.replace(
+            "src/bin/r5_streaming_host.rs", "src/bin/r5_host.rs"
+        )
+        self.write("apps/host/Cargo.toml", manifest)
+        report = module.verify(self.root)
+        self.assertTrue(
+            any(
+                "superseded Host entrypoint" in value
+                or "explicit binaries drifted" in value
+                for value in report.errors
+            )
+        )
 
     def test_android_hold_is_warning_then_strict_error(self) -> None:
         self.write("android.mk", "PRODUCT_PACKAGES += ForbiddenAndroid\n")
