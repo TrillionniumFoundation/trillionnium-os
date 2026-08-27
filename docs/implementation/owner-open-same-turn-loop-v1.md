@@ -11,8 +11,9 @@ The provider owns semantics. The loop gives it one callback surface that can:
 - emit provider/model observations;
 - invoke a `BoundToolCall` through the reviewed call registry and direct process
   bridge;
-- inspect raw runtime events and the terminal observation;
-- continue the same semantic turn; and
+- observe raw runtime events and the terminal result;
+- continue the same semantic turn;
+- receive a turn cancellation token; and
 - return exactly one provider terminal.
 
 The loop does not parse user intent, classify risk, require approval, rewrite a
@@ -20,7 +21,7 @@ command, inject an ADB target, choose a provider or retry an uncertain effect.
 
 ## Correlation
 
-Every tool call must carry a `CallKey` whose `TurnScope` exactly matches:
+Every tool call carries a `CallKey` whose `TurnScope` exactly matches:
 
 ```text
 session_id
@@ -30,13 +31,15 @@ turn_id
 turn_stream_id
 ```
 
-A mismatched scope is rejected before bridge dispatch. The call registry then
-binds the scoped call ID to request digest, binding fingerprint, tool and target
+A mismatched scope is rejected before bridge dispatch. The call registry binds
+the scoped call ID to request digest, binding fingerprint, tool and target
 metadata.
 
-## Same-turn ordering
+## Streaming ordering
 
-The collecting source implementation emits monotonically ordered events:
+`TurnRunner::run_with_sink` and
+`TurnRunner::run_with_sink_and_cancellation` synchronously invoke a
+`TurnEventSink` as each event is produced:
 
 ```text
 turn.accepted
@@ -46,9 +49,23 @@ provider/model event*
 turn.terminal
 ```
 
-The initial implementation collects events in memory. Host streaming,
-backpressure, durable event IDs, resume and cross-connection control are later
-W1/W5 gates and must not be inferred from this source slice.
+The event is retained in the returned `TurnRun` for source compatibility, but
+Host observability and durable persistence no longer wait for turn completion.
+A sink failure cancels an active local process through the bridge and returns a
+mechanical Host error; it does not reinterpret the command.
+
+## Cancellation
+
+`TurnCancellation` is an `Arc<AtomicBool>` mechanism token. Before a new tool
+call, a cancelled turn rejects the call. During an active tool call, a bounded
+monitor requests cancellation through the exact scoped call registry; the
+bridge then terminates the owned process group and records the terminal.
+
+The selected Host supplies the token from its independent control loop:
+
+- `turn.cancel` sets the turn token and is also translated to provider JSONL;
+- `tool.cancel` requests cancellation only for the named scoped call;
+- client EOF or output failure does not set either cancellation path.
 
 ## Duplicate behavior
 
@@ -57,24 +74,28 @@ W1/W5 gates and must not be inferred from this source slice.
 - inhibited call: return `ToolOutcome::Inhibited`; do not spawn;
 - newly granted call: execute through the mechanism-only process runtime.
 
-The in-memory registry terminal does not contain raw output bytes, so an
-`Existing` outcome is not yet a complete durable replay response. W5 must add a
-bound event store before reconnect/restart replay is claimed.
+Durable replay of raw Host frames is owned by the Host/event-store layer, not by
+the in-memory call registry.
 
 ## Failure behavior
 
 - non-zero shell/ADB exit is a tool observation; provider may continue;
+- targeted cancellation is a cancelled tool observation; provider may continue;
+- turn cancellation may end the provider turn as cancelled;
 - bridge failure is returned to provider code;
 - provider-returned error becomes one `provider_failed` terminal;
 - provider panic becomes one `provider_panicked` terminal;
 - provider terminal text is mechanically bounded and NUL-free.
 
-## Current tests authored
+## Tests authored
 
-- deliberate shell exit 7 with stdout/stderr, followed by provider continuation;
+- deliberate shell exit with stdout/stderr followed by provider continuation;
 - duplicate call produces one process-side file mutation;
 - ordinary ADB unknown argv remains exact and target metadata is not injected;
-- provider panic produces one terminal.
+- provider panic produces one terminal;
+- provider events reach the sink before `emit` returns;
+- runtime `started` reaches the sink before the process can complete;
+- turn cancellation reaches an active tool process group.
 
 Claim ceiling remains **SOURCE_IMPLEMENTED / L0** until the exact commit passes
-Rust formatting, tests and clippy on a real runner.
+Rust formatting, tests and clippy on an executing runner.
