@@ -7,14 +7,21 @@
 //! typed-ADB, or sealed shell-broker graph.
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::thread;
+use std::time::Duration;
 
 use thiserror::Error;
-use trillionnium_owner_open_call_registry::{CallRegistry, CallSnapshot, TurnScope};
+use trillionnium_owner_open_call_registry::{
+    CallRegistry, CallSnapshot, RegistryError, TurnScope,
+};
 use trillionnium_owner_open_runtime::{ExecutionEvent, ExecutionTerminal};
 use trillionnium_owner_open_tool_bridge::{
     BoundToolCall, BridgeError, BridgeLimits, DirectToolBridge, DispatchResult,
 };
+
+const CANCELLATION_POLL: Duration = Duration::from_millis(5);
 
 #[derive(Debug, Error, Clone, PartialEq, Eq)]
 pub enum TurnLoopError {
@@ -24,6 +31,33 @@ pub enum TurnLoopError {
     ToolScopeMismatch,
     #[error("owner-open direct tool bridge failed: {0}")]
     ToolBridge(String),
+    #[error("owner-open turn event sink failed: {0}")]
+    EventSink(String),
+    #[error("owner-open turn was cancelled before the tool call could start")]
+    TurnCancelled,
+    #[error("owner-open turn cancellation monitor failed: {0}")]
+    CancellationMonitor(String),
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct TurnCancellation {
+    cancelled: Arc<AtomicBool>,
+}
+
+impl TurnCancellation {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn cancel(&self) -> bool {
+        !self.cancelled.swap(true, Ordering::SeqCst)
+    }
+
+    #[must_use]
+    pub fn is_cancelled(&self) -> bool {
+        self.cancelled.load(Ordering::SeqCst)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -117,6 +151,15 @@ impl ProviderTerminal {
             error: None,
         }
     }
+
+    #[must_use]
+    pub fn cancelled(summary: impl Into<String>) -> Self {
+        Self {
+            status: ProviderTerminalStatus::Cancelled,
+            summary: Some(summary.into()),
+            error: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -155,6 +198,27 @@ pub struct TurnRun {
     pub terminal: ProviderTerminal,
 }
 
+pub trait TurnEventSink {
+    fn on_event(&mut self, event: &TurnEvent) -> std::result::Result<(), String>;
+}
+
+impl<F> TurnEventSink for F
+where
+    F: FnMut(&TurnEvent) -> std::result::Result<(), String>,
+{
+    fn on_event(&mut self, event: &TurnEvent) -> std::result::Result<(), String> {
+        self(event)
+    }
+}
+
+struct IgnoreEvents;
+
+impl TurnEventSink for IgnoreEvents {
+    fn on_event(&mut self, _event: &TurnEvent) -> std::result::Result<(), String> {
+        Ok(())
+    }
+}
+
 /// Provider-facing callback surface. Calls return raw process observations;
 /// the provider remains responsible for interpreting them and deciding whether
 /// to continue, retry with a new call ID, compensate, or finish the turn.
@@ -164,37 +228,81 @@ pub struct ProviderHost<'a> {
     limits: &'a BridgeLimits,
     events: &'a mut Vec<TurnEvent>,
     next_seq: &'a mut u64,
+    sink: &'a mut dyn TurnEventSink,
+    cancellation: TurnCancellation,
 }
 
 impl ProviderHost<'_> {
     pub fn emit(&mut self, event: ProviderEvent) -> Result<(), TurnLoopError> {
         validate_provider_event(&event)?;
-        push_event(self.events, self.next_seq, TurnEventKind::Provider(event));
-        Ok(())
+        push_event(
+            self.events,
+            self.next_seq,
+            self.sink,
+            TurnEventKind::Provider(event),
+        )
     }
 
     pub fn invoke_tool(&mut self, call: BoundToolCall) -> Result<ToolOutcome, TurnLoopError> {
         if call.key.scope != self.scope {
             return Err(TurnLoopError::ToolScopeMismatch);
         }
-        let bridge = DirectToolBridge::new(Arc::clone(&self.registry));
-        let mut runtime_events = Vec::new();
-        let result = bridge
-            .execute_fallible(call, self.limits, |event| {
-                runtime_events.push(event);
-                Ok::<(), &'static str>(())
-            })
-            .map_err(map_bridge_error)?;
-
-        for event in &runtime_events {
-            push_event(
-                self.events,
-                self.next_seq,
-                TurnEventKind::ToolRuntime(event.clone()),
-            );
+        if self.cancellation.is_cancelled() {
+            return Err(TurnLoopError::TurnCancelled);
         }
 
-        match result {
+        let key = call.key.clone();
+        let monitor_registry = Arc::clone(&self.registry);
+        let monitor_cancellation = self.cancellation.clone();
+        let monitor_finished = Arc::new(AtomicBool::new(false));
+        let monitor_finished_child = Arc::clone(&monitor_finished);
+        let monitor = thread::Builder::new()
+            .name(format!("owner-open-turn-cancel-{}", key.call_id))
+            .spawn(move || -> std::result::Result<(), String> {
+                while !monitor_finished_child.load(Ordering::SeqCst) {
+                    if monitor_cancellation.is_cancelled() {
+                        match monitor_registry.request_cancel(&key) {
+                            Ok(_) => return Ok(()),
+                            Err(RegistryError::NotFound) => {}
+                            Err(error) => return Err(error.to_string()),
+                        }
+                    }
+                    thread::sleep(CANCELLATION_POLL);
+                }
+                Ok(())
+            })
+            .map_err(|error| TurnLoopError::CancellationMonitor(error.to_string()))?;
+
+        let bridge = DirectToolBridge::new(Arc::clone(&self.registry));
+        let mut runtime_events = Vec::new();
+        let result = {
+            let events = &mut *self.events;
+            let next_seq = &mut *self.next_seq;
+            let sink = &mut *self.sink;
+            bridge.execute_fallible(call, self.limits, |event| {
+                runtime_events.push(event.clone());
+                push_event(
+                    events,
+                    next_seq,
+                    sink,
+                    TurnEventKind::ToolRuntime(event),
+                )
+                .map_err(|error| error.to_string())
+            })
+        };
+
+        monitor_finished.store(true, Ordering::SeqCst);
+        match monitor.join() {
+            Ok(Ok(())) => {}
+            Ok(Err(error)) => return Err(TurnLoopError::CancellationMonitor(error)),
+            Err(_) => {
+                return Err(TurnLoopError::CancellationMonitor(
+                    "cancellation monitor panicked".to_string(),
+                ));
+            }
+        }
+
+        match result.map_err(map_bridge_error)? {
             DispatchResult::Executed {
                 generation,
                 terminal,
@@ -211,16 +319,18 @@ impl ProviderHost<'_> {
                 push_event(
                     self.events,
                     self.next_seq,
+                    self.sink,
                     TurnEventKind::ToolExisting(snapshot.clone()),
-                );
+                )?;
                 Ok(ToolOutcome::Existing(snapshot))
             }
             DispatchResult::Inhibited(snapshot) => {
                 push_event(
                     self.events,
                     self.next_seq,
+                    self.sink,
                     TurnEventKind::ToolInhibited(snapshot.clone()),
-                );
+                )?;
                 Ok(ToolOutcome::Inhibited(snapshot))
             }
         }
@@ -229,6 +339,16 @@ impl ProviderHost<'_> {
     #[must_use]
     pub fn registry(&self) -> &Arc<CallRegistry> {
         &self.registry
+    }
+
+    #[must_use]
+    pub fn cancellation(&self) -> TurnCancellation {
+        self.cancellation.clone()
+    }
+
+    #[must_use]
+    pub fn is_cancelled(&self) -> bool {
+        self.cancellation.is_cancelled()
     }
 }
 
@@ -273,6 +393,36 @@ impl TurnRunner {
         request: TurnRequest,
         provider: &mut P,
     ) -> Result<TurnRun, TurnLoopError> {
+        let mut sink = IgnoreEvents;
+        self.run_with_sink_and_cancellation(
+            request,
+            provider,
+            &TurnCancellation::new(),
+            &mut sink,
+        )
+    }
+
+    pub fn run_with_sink<P: SameTurnProvider>(
+        &self,
+        request: TurnRequest,
+        provider: &mut P,
+        sink: &mut dyn TurnEventSink,
+    ) -> Result<TurnRun, TurnLoopError> {
+        self.run_with_sink_and_cancellation(
+            request,
+            provider,
+            &TurnCancellation::new(),
+            sink,
+        )
+    }
+
+    pub fn run_with_sink_and_cancellation<P: SameTurnProvider>(
+        &self,
+        request: TurnRequest,
+        provider: &mut P,
+        cancellation: &TurnCancellation,
+        sink: &mut dyn TurnEventSink,
+    ) -> Result<TurnRun, TurnLoopError> {
         request.validate()?;
         self.bridge_limits
             .validate()
@@ -280,42 +430,53 @@ impl TurnRunner {
 
         let mut events = Vec::new();
         let mut next_seq = 0_u64;
-        push_event(&mut events, &mut next_seq, TurnEventKind::TurnAccepted);
+        push_event(
+            &mut events,
+            &mut next_seq,
+            sink,
+            TurnEventKind::TurnAccepted,
+        )?;
 
-        let scope = request.scope();
-        let mut host = ProviderHost {
-            scope,
-            registry: Arc::clone(&self.registry),
-            limits: &self.bridge_limits,
-            events: &mut events,
-            next_seq: &mut next_seq,
+        let terminal = if cancellation.is_cancelled() {
+            ProviderTerminal::cancelled("turn was cancelled before provider start")
+        } else {
+            let scope = request.scope();
+            let mut host = ProviderHost {
+                scope,
+                registry: Arc::clone(&self.registry),
+                limits: &self.bridge_limits,
+                events: &mut events,
+                next_seq: &mut next_seq,
+                sink,
+                cancellation: cancellation.clone(),
+            };
+
+            let provider_result = catch_unwind(AssertUnwindSafe(|| {
+                provider.run_turn(&request, &mut host)
+            }));
+            drop(host);
+            match provider_result {
+                Ok(Ok(terminal)) => terminal,
+                Ok(Err(error)) => ProviderTerminal {
+                    status: ProviderTerminalStatus::Failed,
+                    summary: None,
+                    error: Some(error),
+                },
+                Err(_) => ProviderTerminal {
+                    status: ProviderTerminalStatus::Panicked,
+                    summary: None,
+                    error: Some("provider panicked inside the same-turn callback".to_string()),
+                },
+            }
         };
 
-        let provider_result = catch_unwind(AssertUnwindSafe(|| {
-            provider.run_turn(&request, &mut host)
-        }));
-        // Release the event/sequence borrows before appending the single turn
-        // terminal. This keeps the lifetime boundary explicit across compilers.
-        drop(host);
-        let terminal = match provider_result {
-            Ok(Ok(terminal)) => terminal,
-            Ok(Err(error)) => ProviderTerminal {
-                status: ProviderTerminalStatus::Failed,
-                summary: None,
-                error: Some(error),
-            },
-            Err(_) => ProviderTerminal {
-                status: ProviderTerminalStatus::Panicked,
-                summary: None,
-                error: Some("provider panicked inside the same-turn callback".to_string()),
-            },
-        };
         validate_terminal(&terminal)?;
         push_event(
             &mut events,
             &mut next_seq,
+            sink,
             TurnEventKind::TurnTerminal(terminal.clone()),
-        );
+        )?;
         Ok(TurnRun {
             request,
             events,
@@ -324,10 +485,23 @@ impl TurnRunner {
     }
 }
 
-fn push_event(events: &mut Vec<TurnEvent>, next_seq: &mut u64, kind: TurnEventKind) {
+fn push_event(
+    events: &mut Vec<TurnEvent>,
+    next_seq: &mut u64,
+    sink: &mut dyn TurnEventSink,
+    kind: TurnEventKind,
+) -> Result<(), TurnLoopError> {
     let seq = *next_seq;
     *next_seq = (*next_seq).saturating_add(1);
-    events.push(TurnEvent { seq, kind });
+    let event = TurnEvent { seq, kind };
+    events.push(event.clone());
+    match catch_unwind(AssertUnwindSafe(|| sink.on_event(&event))) {
+        Ok(Ok(())) => Ok(()),
+        Ok(Err(error)) => Err(TurnLoopError::EventSink(error)),
+        Err(_) => Err(TurnLoopError::EventSink(
+            "turn event sink panicked".to_string(),
+        )),
+    }
 }
 
 fn validate_id(label: &str, value: &str) -> Result<(), TurnLoopError> {
