@@ -1,0 +1,115 @@
+name: owner-open foundation
+
+on:
+  pull_request:
+    paths:
+      - "Cargo.toml"
+      - "apps/trillionnium-owner-open-host/**"
+      - "Cargo.lock"
+      - "crates/trillionnium-owner-open-types/**"
+      - "docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md"
+      - "docs/status/owner-open-r4-*"
+      - "docs/security/owner-open-threat-model.md"
+      - "docs/protocols/owner-open-direct-agent-host-v1.md"
+      - "docs/contracts/owner-open-forbidden-default-graph-v1.json"
+      - "docs/contracts/codex-sovereign-direct-tools-v1.json"
+      - "schemas/codex-sovereign-direct-tools.schema.json"
+      - "tools/generate-owner-open-types.py"
+      - "tools/verify-owner-open-foundation.py"
+      - "tools/tests/**"
+      - ".github/workflows/owner-open-foundation.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "Cargo.toml"
+      - "apps/trillionnium-owner-open-host/**"
+      - "Cargo.lock"
+      - "crates/trillionnium-owner-open-types/**"
+      - "docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md"
+      - "docs/status/owner-open-r4-*"
+      - "docs/security/owner-open-threat-model.md"
+      - "docs/protocols/owner-open-direct-agent-host-v1.md"
+      - "docs/contracts/owner-open-forbidden-default-graph-v1.json"
+      - "docs/contracts/codex-sovereign-direct-tools-v1.json"
+      - "schemas/codex-sovereign-direct-tools.schema.json"
+      - "tools/generate-owner-open-types.py"
+      - "tools/verify-owner-open-foundation.py"
+      - "tools/tests/**"
+      - ".github/workflows/owner-open-foundation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  foundation:
+    name: L0-L2 owner-open foundation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@1.93.0
+        with:
+          components: rustfmt
+
+      - name: Validate JSON and Python syntax
+        run: |
+          python3 -m json.tool docs/status/owner-open-r4-status.json >/dev/null
+          python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v1.json >/dev/null
+          python3 -m json.tool schemas/codex-sovereign-direct-tools.schema.json >/dev/null
+          python3 -m py_compile \
+            tools/generate-owner-open-types.py \
+            tools/verify-owner-open-foundation.py \
+            tools/tests/test_verify_owner_open_foundation.py
+
+      - name: Verify generated codec constants
+        run: python3 tools/generate-owner-open-types.py --check
+
+      - name: Verify owner-open default graph and status
+        run: python3 tools/verify-owner-open-foundation.py --json | tee owner-open-foundation-report.json
+
+      - name: Run verifier negative tests
+        run: python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+
+      - name: Test isolated owner-open Host and codec packages
+        run: |
+          cargo test --package trillionnium-owner-open-types
+          cargo test --package trillionnium-owner-open-host
+
+      - name: Capture Cargo graph and generated lock
+        run: |
+          cargo metadata --format-version 1 > owner-open-cargo-metadata.json
+          cargo tree -e features -p trillionnium-owner-open-types > owner-open-cargo-tree.txt
+          cargo tree -e features -p trillionnium-owner-open-host >> owner-open-cargo-tree.txt
+          git diff -- Cargo.lock > owner-open-cargo-lock.patch || true
+
+      - name: Upload L0-L2 foundation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-foundation-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            Cargo.lock
+            owner-open-foundation-report.json
+            owner-open-cargo-metadata.json
+            owner-open-cargo-tree.txt
+            owner-open-cargo-lock.patch
