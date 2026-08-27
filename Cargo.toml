@@ -1,9 +1,10 @@
 [workspace]
 members = [
-  "apps/trillionniumd",
   "apps/trillionnium-owner-open-host",
-  "crates/trillionnium-os-types",
+  "apps/trillionniumd",
   "crates/trillionnium-owner-open-types",
+  "crates/trillionnium-owner-open-runtime",
+  "crates/trillionnium-os-types",
   "crates/trillionnium-agent-api-uds",
   "crates/trillionnium-task-registry",
   "crates/trillionnium-policy-system",
@@ -17,11 +18,12 @@ members = [
   "apps/trillionnium-agent-stdio-proxy",
 ]
 # Keep an unqualified `cargo build`/`cargo test` on the isolated owner-open
-# foundation only. Sealed/history binaries remain workspace members so they can
-# be compiled explicitly, but they are not default product roots.
+# foundation. Legacy plan/Authority/broker packages remain explicit workspace
+# targets and must never enter this closure through feature unification.
 default-members = [
   "apps/trillionnium-owner-open-host",
   "crates/trillionnium-owner-open-types",
+  "crates/trillionnium-owner-open-runtime",
 ]
 resolver = "3"
 
@@ -33,8 +35,9 @@ authors = ["Qianqi + Trillionnium OS contributors"]
 rust-version = "1.93"
 
 [workspace.dependencies]
-trillionnium-os-types = { path = "crates/trillionnium-os-types" }
 trillionnium-owner-open-types = { path = "crates/trillionnium-owner-open-types" }
+trillionnium-owner-open-runtime = { path = "crates/trillionnium-owner-open-runtime" }
+trillionnium-os-types = { path = "crates/trillionnium-os-types" }
 trillionnium-agent-api-uds = { path = "crates/trillionnium-agent-api-uds" }
 trillionnium-task-registry = { path = "crates/trillionnium-task-registry" }
 trillionnium-policy-system = { path = "crates/trillionnium-policy-system" }
