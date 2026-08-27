@@ -4,6 +4,7 @@ members = [
   "apps/trillionniumd",
   "crates/trillionnium-owner-open-call-registry",
   "crates/trillionnium-owner-open-tool-bridge",
+  "crates/trillionnium-owner-open-turn-loop",
   "crates/trillionnium-owner-open-types",
   "crates/trillionnium-owner-open-runtime",
   "crates/trillionnium-os-types",
@@ -26,6 +27,7 @@ default-members = [
   "apps/trillionnium-owner-open-host",
   "crates/trillionnium-owner-open-call-registry",
   "crates/trillionnium-owner-open-tool-bridge",
+  "crates/trillionnium-owner-open-turn-loop",
   "crates/trillionnium-owner-open-types",
   "crates/trillionnium-owner-open-runtime",
 ]
@@ -41,6 +43,7 @@ rust-version = "1.93"
 [workspace.dependencies]
 trillionnium-owner-open-call-registry = { path = "crates/trillionnium-owner-open-call-registry" }
 trillionnium-owner-open-tool-bridge = { path = "crates/trillionnium-owner-open-tool-bridge" }
+trillionnium-owner-open-turn-loop = { path = "crates/trillionnium-owner-open-turn-loop" }
 trillionnium-owner-open-types = { path = "crates/trillionnium-owner-open-types" }
 trillionnium-owner-open-runtime = { path = "crates/trillionnium-owner-open-runtime" }
 trillionnium-os-types = { path = "crates/trillionnium-os-types" }
