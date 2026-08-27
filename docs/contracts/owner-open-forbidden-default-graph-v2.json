@@ -8,6 +8,7 @@
       "crates/trillionnium-owner-open-types",
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
@@ -17,6 +18,7 @@
       "crates/trillionnium-owner-open-types",
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
@@ -26,6 +28,7 @@
       "crates/trillionnium-owner-open-types",
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
@@ -93,6 +96,10 @@
       },
       {
         "path": "crates/trillionnium-owner-open-call-registry",
+        "allowed_internal_dependencies": []
+      },
+      {
+        "path": "crates/trillionnium-owner-open-event-store",
         "allowed_internal_dependencies": []
       },
       {
