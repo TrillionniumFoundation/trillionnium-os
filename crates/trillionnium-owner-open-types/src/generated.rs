@@ -6,3 +6,6 @@ pub const DEFAULT_ANDROID_ABSTRACT_SOCKET: &str = "@trillionnium_direct_agent_ho
 pub const DEFAULT_ROOT_LINUX_SOCKET_ALIAS: &str = "/run/trillionnium/direct-agent-host-v1.sock";
 pub const DEFAULT_PROFILE_ID: &str = "owner-open";
 pub const OWNER_OPEN_REQUEST_TYPE: &str = "RunTurnRequest";
+pub const FRAME_PROVIDER_STATUS: &str = "provider.status";
+pub const FRAME_MODEL_DELTA: &str = "model.delta";
+pub const FRAME_MODEL_MESSAGE: &str = "model.message";
