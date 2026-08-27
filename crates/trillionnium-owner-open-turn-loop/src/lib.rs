@@ -294,6 +294,9 @@ impl TurnRunner {
         let provider_result = catch_unwind(AssertUnwindSafe(|| {
             provider.run_turn(&request, &mut host)
         }));
+        // Release the event/sequence borrows before appending the single turn
+        // terminal. This keeps the lifetime boundary explicit across compilers.
+        drop(host);
         let terminal = match provider_result {
             Ok(Ok(terminal)) => terminal,
             Ok(Err(error)) => ProviderTerminal {
