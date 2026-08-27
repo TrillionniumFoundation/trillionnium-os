@@ -1,13 +1,13 @@
 use std::env;
 use std::io::{self, BufRead, BufReader, Read, Write};
-use std::os::unix::net::{UnixListener, UnixStream};
 use std::os::unix::ffi::OsStrExt;
-use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
+use std::os::unix::fs::{FileTypeExt, MetadataExt, PermissionsExt};
+use std::os::unix::net::{UnixListener, UnixStream};
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use trillionnium_owner_open_host::{ConnectionEngine, HostError, UnavailableProvider};
+use trillionnium_owner_open_host::{ConnectionEngine, UnavailableProvider};
 use trillionnium_owner_open_types::MechanicalLimits;
 
 static CONNECTION_ORDINAL: AtomicU64 = AtomicU64::new(1);
@@ -44,7 +44,7 @@ fn serve_stdio() -> Result<(), String> {
 
 fn serve_unix(path: &Path) -> Result<(), String> {
     validate_socket_path(path)?;
-    if path.exists() {
+    if std::fs::symlink_metadata(path).is_ok() {
         return Err(format!(
             "refusing to replace existing socket path {}; remove a proven stale entry explicitly",
             path.display()
@@ -53,15 +53,30 @@ fn serve_unix(path: &Path) -> Result<(), String> {
     let parent = path
         .parent()
         .ok_or_else(|| "Unix socket path has no parent".to_string())?;
-    let parent_metadata = std::fs::symlink_metadata(parent)
-        .map_err(|error| format!("cannot inspect socket parent {}: {error}", parent.display()))?;
-    if parent_metadata.file_type().is_symlink() || !parent_metadata.is_dir() {
-        return Err("Unix socket parent must be a real directory".to_string());
-    }
+    validate_socket_parent(parent)?;
+
     let listener = UnixListener::bind(path)
         .map_err(|error| format!("cannot bind Unix socket {}: {error}", path.display()))?;
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
         .map_err(|error| format!("cannot set Unix socket mode on {}: {error}", path.display()))?;
+    let socket_metadata = std::fs::symlink_metadata(path)
+        .map_err(|error| format!("cannot inspect bound Unix socket {}: {error}", path.display()))?;
+    let effective_uid = unsafe { libc::geteuid() };
+    if !socket_metadata.file_type().is_socket()
+        || socket_metadata.uid() != effective_uid
+        || socket_metadata.mode() & 0o7777 != 0o600
+        || socket_metadata.nlink() != 1
+    {
+        return Err(
+            "bound Unix socket does not have the expected owner-controlled identity".to_string(),
+        );
+    }
+    let _cleanup = SocketCleanup {
+        path: path.to_path_buf(),
+        device: socket_metadata.dev(),
+        inode: socket_metadata.ino(),
+    };
+
     for accepted in listener.incoming() {
         match accepted {
             Ok(stream) => {
@@ -73,6 +88,47 @@ fn serve_unix(path: &Path) -> Result<(), String> {
         }
     }
     Ok(())
+}
+
+fn validate_socket_parent(parent: &Path) -> Result<(), String> {
+    let metadata = std::fs::symlink_metadata(parent)
+        .map_err(|error| format!("cannot inspect socket parent {}: {error}", parent.display()))?;
+    if metadata.file_type().is_symlink() || !metadata.is_dir() || metadata.nlink() == 0 {
+        return Err("Unix socket parent must be a stable real directory".to_string());
+    }
+    let mode = metadata.mode() & 0o7777;
+    let effective_uid = unsafe { libc::geteuid() };
+    let trusted_owner = metadata.uid() == 0 || metadata.uid() == effective_uid;
+    let root_sticky_directory = metadata.uid() == 0 && mode & libc::S_ISVTX != 0;
+    if !trusted_owner || (mode & 0o022 != 0 && !root_sticky_directory) {
+        return Err(format!(
+            "Unix socket parent must be root/service-owned and not group/world writable: {} (uid {}, mode {:04o})",
+            parent.display(),
+            metadata.uid(),
+            mode
+        ));
+    }
+    Ok(())
+}
+
+struct SocketCleanup {
+    path: PathBuf,
+    device: u64,
+    inode: u64,
+}
+
+impl Drop for SocketCleanup {
+    fn drop(&mut self) {
+        let Ok(metadata) = std::fs::symlink_metadata(&self.path) else {
+            return;
+        };
+        if metadata.file_type().is_socket()
+            && metadata.dev() == self.device
+            && metadata.ino() == self.inode
+        {
+            let _ = std::fs::remove_file(&self.path);
+        }
+    }
 }
 
 fn serve_stream(stream: UnixStream) -> Result<(), String> {
@@ -149,14 +205,14 @@ fn write_frame<W: Write>(
 }
 
 fn validate_socket_path(path: &Path) -> Result<(), String> {
-    if !path.is_absolute() {
-        return Err("Unix socket path must be absolute".to_string());
-    }
     if path.as_os_str().as_bytes().first() == Some(&b'@') {
         return Err(
             "Android abstract sockets require the W6 Android carrier; use --stdio or a filesystem UDS in the foundation build"
                 .to_string(),
         );
+    }
+    if !path.is_absolute() {
+        return Err("Unix socket path must be absolute".to_string());
     }
     if path.as_os_str().as_bytes().len() > 100 {
         return Err("Unix socket path exceeds the portable byte bound".to_string());
@@ -223,5 +279,19 @@ mod tests {
         assert!(validate_socket_path(Path::new("@abstract")).is_err());
         assert!(validate_socket_path(Path::new("relative.sock")).is_err());
         assert!(validate_socket_path(Path::new("/tmp/owner-open.sock")).is_ok());
+    }
+
+    #[test]
+    fn writable_service_owned_socket_parent_is_rejected() {
+        let path = std::env::temp_dir().join(format!(
+            "trillionnium-owner-open-parent-{}-{}",
+            std::process::id(),
+            CONNECTION_ORDINAL.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir(&path).unwrap();
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o777)).unwrap();
+        let error = validate_socket_parent(&path).unwrap_err();
+        assert!(error.contains("not group/world writable"));
+        std::fs::remove_dir(&path).unwrap();
     }
 }
