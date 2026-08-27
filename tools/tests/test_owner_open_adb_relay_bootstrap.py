@@ -76,16 +76,33 @@ class OwnerOpenAdbRelayBootstrapTest(unittest.TestCase):
                 b'{"protocol":"a","protocol":"b","request_id":"r","argv":[]}'
             )
 
+    def test_nonfinite_numbers_and_surrogate_argv_are_rejected(self) -> None:
+        with self.assertRaises(relay.RelayError):
+            relay.decode_request_line(
+                b'{"protocol":"trillionnium.owner-open.adb-relay.v1",'
+                b'"protocol_version":1,"request_id":"r","argv":[],"x":NaN}'
+            )
+        request = relay.decode_request_line(
+            b'{"protocol":"trillionnium.owner-open.adb-relay.v1",'
+            b'"protocol_version":1,"request_id":"r","argv":["\\ud800"]}'
+        )
+        with self.assertRaises(relay.RelayError):
+            relay.RelayRequest.from_object(request, 1000)
+
     def test_exact_unknown_argv_is_executed_without_injection(self) -> None:
         argv = ["future-subcommand", "--future-flag", "a b"]
-        result = relay.process_line(self.request(argv, opaque={"kept": True}), self.config())
+        result = relay.process_line(
+            self.request(argv, opaque={"kept": True}), self.config()
+        )
         self.assertEqual(result["status"], "exited")
         self.assertEqual(result["exit_code"], 0)
         self.assertFalse(result["serial_host_port_or_privilege_injected"])
         self.assertEqual(result["argv"], argv)
         observed = json.loads(base64.b64decode(result["stdout_base64"]))
         self.assertEqual(observed, argv)
-        self.assertEqual(base64.b64decode(result["stderr_base64"]), b"stderr\x00bytes")
+        self.assertEqual(
+            base64.b64decode(result["stderr_base64"]), b"stderr\x00bytes"
+        )
         self.assertEqual(result["request_extensions"], {"opaque": {"kept": True}})
 
     def test_empty_argv_preserves_ordinary_client_behavior(self) -> None:
@@ -96,7 +113,13 @@ class OwnerOpenAdbRelayBootstrapTest(unittest.TestCase):
     def test_spawned_jsonl_process_preserves_exact_argv(self) -> None:
         argv = ["devices", "-l"]
         completed = subprocess.run(
-            [sys.executable, os.fspath(SCRIPT), "--adb", os.fspath(self.executable), "--once"],
+            [
+                sys.executable,
+                os.fspath(SCRIPT),
+                "--adb",
+                os.fspath(self.executable),
+                "--once",
+            ],
             input=self.request(argv) + b"\n",
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -111,7 +134,9 @@ class OwnerOpenAdbRelayBootstrapTest(unittest.TestCase):
 
     def test_timeout_terminates_the_process_group(self) -> None:
         started = time.monotonic()
-        result = relay.process_line(self.request(["sleep"], timeout_ms=30), self.config())
+        result = relay.process_line(
+            self.request(["sleep"], timeout_ms=30), self.config()
+        )
         self.assertEqual(result["status"], "timed_out")
         self.assertTrue(result["timed_out"])
         self.assertLess(time.monotonic() - started, 2)
@@ -127,7 +152,9 @@ class OwnerOpenAdbRelayBootstrapTest(unittest.TestCase):
         result = relay.process_line(
             self.request(["large"]), self.config(output_limit_bytes=16)
         )
-        self.assertEqual(result["stdout_bytes"], 128)
+        self.assertEqual(result["status"], "resource_exhausted")
+        self.assertTrue(result["resource_exhausted"])
+        self.assertGreater(result["stdout_bytes"], 16)
         self.assertTrue(result["stdout_truncated"])
         self.assertEqual(len(base64.b64decode(result["stdout_base64"])), 16)
 
