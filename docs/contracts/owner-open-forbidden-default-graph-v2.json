@@ -80,6 +80,7 @@
         "path": "apps/trillionnium-owner-open-host",
         "allowed_internal_dependencies": [
           "trillionnium-owner-open-call-registry",
+          "trillionnium-owner-open-event-store",
           "trillionnium-owner-open-provider-jsonl",
           "trillionnium-owner-open-runtime",
           "trillionnium-owner-open-turn-loop",
