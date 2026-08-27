@@ -1,7 +1,7 @@
 use std::io::{BufRead, BufReader, Read};
 use std::process::{Child, ExitStatus};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::Sender;
+use std::sync::mpsc::SyncSender;
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
@@ -17,7 +17,7 @@ pub(crate) fn spawn_stdout_reader(
     stdout: impl Read + Send + 'static,
     max_line_bytes: usize,
     max_stdout_bytes: usize,
-    sender: Sender<ProviderOutput>,
+    sender: SyncSender<ProviderOutput>,
 ) -> JoinHandle<()> {
     thread::spawn(move || {
         let mut reader = BufReader::new(stdout);
