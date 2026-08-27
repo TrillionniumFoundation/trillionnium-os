@@ -1,0 +1,19 @@
+arm64-mobian-fogos-candidate16-http-stable-partition-proof-plan-smoke
+status: arm64-mobian-fogos-candidate16-http-stable-partition-proof-plan-smoke-pass-plan-locked
+development_position: arm64-mobian-fogos-candidate16-http-stable-partition-proof-plan-locked
+known_blocker_id: candidate16-http-stable-partition-proof-artifact-not-built
+next_gate: arm64-mobian-fogos-candidate16-http-stable-partition-proof-build-smoke
+
+plan:
+- base candidate16 on candidate9 HTTP diagnostic init
+- preserve candidate9 USB gadget, product ID, network addressing, and HTTP server until HTTP is visible
+- keep initial /www/index.txt free of selected partition uevents
+- write delayed partition proof to /www/partition-proof.txt only after HTTP server start
+- implement delayed proof with shell builtins only; no grep/sed/awk/find/cat/blkid/losetup/mount
+- no ADB/Fastboot, flash, wipe, repartition, sideload, reboot, relock, install, or release push in this gate
+
+hashes:
+- forensics JSON: e43cb63f31ea53540fd8c196b1c799217619f7ae79e44b8ec53407b905ce93ef
+- candidate9 init: 59412a8ae344fdc7f233344a30834f5647dbfba422349297a6baa14da0607e45
+- candidate15 failed init: a8c88c23b9c4f755a597bcf7d761b83dfe93656a9623018c441c6d239fa7c4ad
+- script: 8f28ef7141c956c16402e5101f6fd4fba417dcf31c5143b5b3accbec1012bc9e

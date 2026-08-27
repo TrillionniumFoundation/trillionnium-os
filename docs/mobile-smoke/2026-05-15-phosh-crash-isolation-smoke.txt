@@ -1,0 +1,13 @@
+phosh crash-isolation smoke start: 2026-05-15T01:04:55+08:00
+weston_before: 2612405
+command: timeout 8 env PATH=/usr/libexec:/home/qian-qi/.cargo/bin:/home/qian-qi/.local/bin:/usr/bin:/bin:/home/qian-qi/.npm-global/bin:/home/qian-qi/bin:/home/qian-qi/.nix-profile/bin:/usr/local/bin:/home/linuxbrew/.linuxbrew/opt/node/bin:/home/qian-qi/.linuxbrew/bin:/home/qian-qi/.linuxbrew/sbin:/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/snap/bin XDG_CURRENT_DESKTOP=phosh DESKTOP_SESSION=phosh XDG_SESSION_TYPE=wayland WAYLAND_DISPLAY=trillionnium-wayland-1 phosh -U
+
+(phosh:2733896): Gdk-CRITICAL **: 01:04:55.480: gdk_seat_get_keyboard: assertion 'GDK_IS_SEAT (seat)' failed
+
+(phosh:2733896): phosh-wayland-ERROR **: 01:04:55.567: Wayland compositor lacks needed globals
+outputs: 1, layer_shell: (nil), idle_manager: (nil), xdg_wm: 0x57e759edd270, xdg_output: 0x57e759eed910, wlr_output_manager: (nil), wlr_foreign_toplevel_manager: (nil), zwlr_output_power_manager_v1: (nil), zphoc_layer_shell_effects_v1: (nil)
+
+timeout: 被监视的命令已核心转储
+rc: 133
+weston_after: 2612405
+end: 2026-05-15T01:05:01+08:00

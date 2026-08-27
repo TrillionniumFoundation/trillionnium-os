@@ -1,0 +1,297 @@
+{
+  "schema": "org.trillionnium.agent-direct-permission-model.v1",
+  "policy_id": "trillionnium-agent-direct-permission-model-v1",
+  "revision": 3,
+  "status": "superseded_typed_candidate_model_hold",
+  "superseded_by": "org.trillionnium.agent-exec-adb-windows-product-boundary.v2",
+  "scope": {
+    "contract_role": "implemented_direct_system_api_accessibility_and_typed_candidate_only",
+    "current_product_boundary": false,
+    "direct_shell_status": "not_modeled_here_superseded_by_product_boundary_v2",
+    "direct_adb_status": "planned_not_implemented_hold",
+    "direct_shell_and_adb_effect_authority": false
+  },
+  "effect_authority": false,
+  "current_product_effects_enabled": false,
+  "bindings": {
+    "agent_stable_principal_projection_sha256": "a9c224116123deb49908beda3ab047fc98d6917cfeb62d60364033858cc57153",
+    "direct_agent_host_abi_sha256": "d538ef22f6ff1fcc5cf2ff15a158a8227631991bf83c3676ab19a66fce162c11",
+    "typed_operation_catalog_sha256": "c4efd224e75bc21ab95753eac4f183732c447e315ac89d4369bc5185a4997453",
+    "risk_guard_policy_version": "org.trillionnium.agent-risk-guard.v1"
+  },
+  "principal_profile": {
+    "profile_id": "builtin-direct-stable-principal-v1",
+    "wildcard_principals": false,
+    "unknown_principal": "deny",
+    "principal_declared_identity_is_authoritative": false,
+    "executable_identity_is_preliminary_permission_input": false,
+    "active_launcher_identity_authority": {
+      "required": "daemon_broker_authenticated_runtime_custody",
+      "current_available": false
+    },
+    "registration_authenticated_identity_factors": [
+      "agent_id",
+      "runtime_adapter",
+      "uid",
+      "gid",
+      "selinux_domain",
+      "enabled_ready_registration"
+    ],
+    "closed_registry_derived_identity_factors": [
+      "provider_id",
+      "replay_namespace"
+    ],
+    "principals": [
+      {
+        "provider_id": "openai-codex",
+        "agent_id": "agent-codex-direct-v1",
+        "replay_namespace": "agent-codex-v1",
+        "uid": 5901,
+        "gid": 5901,
+        "selinux_domain": "u:r:trillionnium_codex_agent:s0",
+        "runtime_adapter": "supervised-codex-cli"
+      }
+    ],
+    "principal_permission_sets_are_identical": true
+  },
+  "variant_tool_sets": {
+    "user": {
+      "direct_mcp_tools": [
+        "trillionnium_system_api",
+        "trillionnium_accessibility"
+      ],
+      "typed_source_candidates": [
+        "exec.launch_package.settings.v1",
+        "adb.launch_package.settings.user.v1"
+      ]
+    },
+    "userdebug": {
+      "direct_mcp_tools": [
+        "trillionnium_system_api",
+        "trillionnium_accessibility"
+      ],
+      "typed_source_candidates": [
+        "exec.launch_package.settings.v1",
+        "adb.launch_package.settings.engineering-recovery.v1"
+      ]
+    },
+    "eng": {
+      "direct_mcp_tools": [
+        "trillionnium_system_api",
+        "trillionnium_accessibility"
+      ],
+      "typed_source_candidates": [
+        "exec.launch_package.settings.v1",
+        "adb.launch_package.settings.engineering-recovery.v1"
+      ]
+    },
+    "recovery": {
+      "direct_mcp_tools": [
+        "trillionnium_system_api",
+        "trillionnium_accessibility"
+      ],
+      "typed_source_candidates": [
+        "exec.launch_package.settings.v1",
+        "adb.launch_package.settings.engineering-recovery.v1"
+      ]
+    }
+  },
+  "dispositions": {
+    "policy_allow_requires_effect_custody": "preliminary policy allow only; every common product custody gate remains mandatory",
+    "os_session_lease_required": "deny while the authenticated single-use OS session lease issuer or consume path is unavailable",
+    "conditional_every_batch_member": "allow only when every child independently resolves to a current allow and the canonical batch bounds pass",
+    "source_candidate_hold": "principal may materialize the exact non-authorizing candidate but no product effect authority exists",
+    "deny": "no permission and no fallback"
+  },
+  "permissions": [
+    {
+      "surface": "direct_system_api",
+      "action": "launch_package",
+      "risk_tier": "low_navigation",
+      "disposition": "policy_allow_requires_effect_custody"
+    },
+    {
+      "surface": "direct_system_api",
+      "action": "open_uri",
+      "risk_tier": "critical_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "snapshot_metadata_only",
+      "risk_tier": "observe",
+      "disposition": "policy_allow_requires_effect_custody"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "snapshot_full_text",
+      "risk_tier": "sensitive_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "scroll",
+      "risk_tier": "low_navigation",
+      "disposition": "policy_allow_requires_effect_custody"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_back",
+      "risk_tier": "low_navigation",
+      "disposition": "policy_allow_requires_effect_custody"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_home",
+      "risk_tier": "low_navigation",
+      "disposition": "policy_allow_requires_effect_custody"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "click",
+      "risk_tier": "sensitive_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "set_text",
+      "risk_tier": "sensitive_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "gesture",
+      "risk_tier": "sensitive_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_recents",
+      "risk_tier": "sensitive_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_notifications",
+      "risk_tier": "sensitive_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_quick_settings",
+      "risk_tier": "sensitive_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_power_dialog",
+      "risk_tier": "critical_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_lock_screen",
+      "risk_tier": "critical_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "global_take_screenshot",
+      "risk_tier": "critical_effect",
+      "disposition": "os_session_lease_required"
+    },
+    {
+      "surface": "direct_accessibility",
+      "action": "batch",
+      "risk_tier": "derived_max_child",
+      "disposition": "conditional_every_batch_member"
+    },
+    {
+      "surface": "typed_exec",
+      "action": "exec.launch_package.settings.v1",
+      "risk_tier": "low_navigation",
+      "disposition": "source_candidate_hold"
+    },
+    {
+      "surface": "typed_adb",
+      "action": "adb.launch_package.settings.user.v1",
+      "risk_tier": "low_navigation",
+      "disposition": "source_candidate_hold"
+    },
+    {
+      "surface": "typed_adb",
+      "action": "adb.launch_package.settings.engineering-recovery.v1",
+      "risk_tier": "low_navigation",
+      "disposition": "source_candidate_hold"
+    }
+  ],
+  "launch_package_adapter_selection": {
+    "selection_owner": "os_policy_before_prepared",
+    "model_or_agent_selects_adapter": false,
+    "ordered_pre_effect_candidates": [
+      "direct_system_api.launch_package",
+      "typed_exec.exec.launch_package.settings.v1",
+      "typed_adb.adb.launch_package.settings.user.v1_or_engineering-recovery.v1"
+    ],
+    "typed_exec_requires": [
+      "exact_settings_operation",
+      "direct_system_api_proven_unavailable_before_effect",
+      "typed_exec_product_promotion_complete"
+    ],
+    "typed_adb_requires": [
+      "exact_settings_operation",
+      "direct_system_api_proven_unavailable_before_effect",
+      "os_owned_self_device_transport_and_key_custody",
+      "os_selected_variant_specific_user_or_engineering_recovery_descriptor",
+      "typed_adb_product_promotion_complete",
+      "explicit_product_fallback_or_engineering_recovery_policy"
+    ],
+    "selected_adapter_bound_in_prepared_record": true,
+    "cross_adapter_retry_after_prepared": false,
+    "indeterminate_or_unknown_outcome": "permanent_hold_without_blind_retry"
+  },
+  "common_product_effect_custody": {
+    "required": [
+      "kernel_and_stable_principal_authentication",
+      "active_launcher_executable_authenticated_by_daemon_broker_custody",
+      "product_signed_permission_model_and_operation_catalog",
+      "avb_bound_runtime_tool_and_backend_measurements",
+      "canonical_request_action_and_adapter_binding",
+      "risk_policy_and_single_use_lease_when_required",
+      "rollback_resistant_epoch_and_allocation",
+      "durable_prepared_before_effect",
+      "single_delivery_attempt",
+      "durable_terminal_result_before_return",
+      "exact_terminal_response_replay",
+      "durable_outer_ack_before_reclamation",
+      "restart_replay_and_zero_survivor_evidence"
+    ],
+    "all_currently_satisfied_in_product": false,
+    "missing_or_ambiguous_gate": "deny_before_backend"
+  },
+  "default_rules": {
+    "unknown_surface": "deny",
+    "unknown_action": "deny",
+    "unknown_field": "reject",
+    "caller_selected_executable_argv_transport_identity_or_limits": "deny",
+    "ambient_root_shell_adb_or_unrestricted_binder": "deny",
+    "unimplemented_direct_shell_or_adb_request": "deny_current_v1_surface_pending_v2_implementation",
+    "caller_selected_serial_host_port_or_service": "deny",
+    "third_party_or_unregistered_agent": "deny"
+  },
+  "promotion_gates": {
+    "permission_model_product_signed_and_avb_bound": false,
+    "direct_product_custody_complete": false,
+    "typed_exec_product_backend_complete": false,
+    "typed_adb_product_backend_complete": false,
+    "direct_shell_product_backend_complete": false,
+    "direct_adb_product_backend_complete": false,
+    "durable_restart_replay_and_outer_ack_complete": false,
+    "physical_codex_launch_effect_evidence_complete": false,
+    "locked_user_device_evidence_complete": false
+  },
+  "windows_productization": {
+    "paused_until_android_main_loop_complete": true,
+    "current_permission": "deny"
+  }
+}

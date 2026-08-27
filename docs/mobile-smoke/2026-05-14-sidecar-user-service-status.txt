@@ -1,0 +1,15 @@
+○ trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary
+     Loaded: loaded (/home/qian-qi/.config/systemd/user/trillionnium-hepta-sidecar-noop.service; static)
+     Active: inactive (dead)
+       Docs: file:/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/HEPTA_EMBEDDING_AUDIT.md
+
+5月 13 01:17:24 qian-qi systemd[1901]: Stopped trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary.
+5月 13 02:11:16 qian-qi systemd[1901]: Started trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary.
+5月 13 02:11:27 qian-qi systemd[1901]: Stopping trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary...
+5月 13 02:11:27 qian-qi systemd[1901]: Stopped trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary.
+5月 13 02:14:23 qian-qi systemd[1901]: Started trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary.
+5月 13 02:14:33 qian-qi systemd[1901]: Stopping trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary...
+5月 13 02:14:33 qian-qi systemd[1901]: Stopped trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary.
+5月 13 05:38:38 qian-qi systemd[1901]: Started trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary.
+5月 13 05:38:38 qian-qi systemd[1901]: Stopping trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary...
+5月 13 05:38:38 qian-qi systemd[1901]: Stopped trillionnium-hepta-sidecar-noop.service - Trillionnium OS no-op Hepta sidecar boundary.

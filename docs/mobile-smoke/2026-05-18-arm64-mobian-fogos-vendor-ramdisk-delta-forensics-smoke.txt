@@ -1,0 +1,14 @@
+arm64-mobian-fogos-vendor-ramdisk-delta-forensics-smoke
+status=arm64-mobian-fogos-vendor-ramdisk-delta-forensics-smoke-pass-init-only-delta-locked
+development_position=arm64-mobian-fogos-vendor-ramdisk-init-only-regression-delta-locked
+known_blocker_id=candidate9-to-candidate10-13-init-logic-regression-not-rootfs-payload-or-dtb
+next_gate=arm64-mobian-fogos-candidate14-init-delta-plan-smoke
+evidence_json_sha256=1c8adadb8746eb00cd7c0ffa39cdfd52bd3a305b3ae61ac093628e6535016433
+
+Candidate9, 10, 11, 12, and 13 vendor_ramdisk file lists are identical: 35 entries each.
+The only content path differing from candidate9 in candidates 10, 11, 12, and 13 is ./init.
+The DTB hash is identical across all five vendor_boot unpackings: b54948422662c0c1ed9c736bda621bcdbbdad07a6b198c74a5f85fb8c97f6eb4.
+The vendor_boot container size is identical across all five candidates: 1466368 bytes.
+Candidate13 is smaller than candidate9 at vendor_ramdisk/init level but still regressed, so size alone is not supported as the root cause.
+
+Conclusion: block blind candidate14 flashing. The next gate is a local candidate14 init-delta plan based on candidate9 stable HTTP init with one minimal gated diagnostic addition.

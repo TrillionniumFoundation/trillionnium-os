@@ -1,0 +1,30 @@
+# Bridge APK local outbox unsigned build smoke
+
+Command:
+
+```sh
+packaging/android/bridge-apk/scripts/build-unsigned.sh
+```
+
+Result:
+
+```text
+built target/bridge-apk/trillionnium-bridge-unsigned.apk
+sha256 ef4def639c84db63c4c52adc1ee62a05bc55558f5e77588e30b8b6ca097d0abd
+bytes 10046
+```
+
+Scope:
+
+- Local Android SDK build only (`aapt2`, `javac`, `d8`, `zipalign`).
+- No Gradle dependency resolution.
+- No signing.
+- No install or launch.
+- No Waydroid/ADB execution.
+- No Android ingestion, live broker writes, audit writes, or tool invocation.
+
+Source change verified by this build:
+
+- `BridgeEnvelopeWriter` signs Bridge Protocol v1 envelopes into an app-private JSONL outbox only when operator-provisioned pairing preferences enable ingestion.
+- Notification/share/package/app-profile paths stay disabled by default and redact payloads to hashes/counts.
+- App launch/tool invocation remains disabled.

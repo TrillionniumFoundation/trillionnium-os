@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trillionnium.local/schemas/audit-event.schema.json",
+  "title": "Trillionnium OS Audit Event",
+  "type": "object",
+  "required": [
+    "id",
+    "kind",
+    "summary",
+    "payload",
+    "created_at_unix_ms"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "enum": [
+        "agent_registered",
+        "agent_plan_submitted",
+        "agent_memory_saved",
+        "agent_memory_revoked",
+        "agent_memory_deleted",
+        "task_created",
+        "task_cancelled",
+        "tool_requested",
+        "policy_evaluated",
+        "approval_requested",
+        "approval_decided",
+        "approval_grant_revoked",
+        "tool_validated",
+        "tool_started",
+        "tool_finished",
+        "tool_failed",
+        "dbus_ping"
+      ]
+    },
+    "task_id": {
+      "type": ["string", "null"]
+    },
+    "tool_call_id": {
+      "type": ["string", "null"]
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "payload": {},
+    "created_at_unix_ms": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false
+}

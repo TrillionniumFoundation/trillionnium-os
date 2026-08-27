@@ -1,0 +1,66 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-authenticator.contract.v1",
+  "source_status": "source_only_no_live_authority_no_product_constructor_v1",
+  "dependencies": {
+    "root_publication_contract_sha256": "2a23182e8778f51086ab66f93dd39a51b0fc56f5b5a62947e7fd340e736e1a74",
+    "root_publisher_launch_contract_sha256": "1469b2f75f681b7224408e78e64ba6d2e7b7985e9c0d81a92e156147db89c9c2"
+  },
+  "authentication": {
+    "schema": "org.trillionnium.capabilitylease.root-publisher-authentication.v1",
+    "binding_domain": "trillionnium.capability-lease-root-publisher-authentication.v1",
+    "ordered_fields": [
+      "authentication_schema",
+      "root_authenticator_contract_sha256",
+      "root_publication_contract_sha256",
+      "root_publisher_launch_contract_sha256",
+      "provider_id",
+      "agent_id",
+      "replay_namespace",
+      "boot_id_sha256",
+      "publisher_pid",
+      "publisher_start_time_ticks",
+      "publisher_uid",
+      "publisher_gid",
+      "publisher_selinux_domain",
+      "publisher_executable_identity",
+      "publisher_executable_sha256",
+      "pidfd_identity_sha256",
+      "publication_binding_sha256",
+      "registration_binding_sha256",
+      "publisher_epoch",
+      "publisher_sequence",
+      "root_journal_genesis_sha256",
+      "epoch_proof_sha256",
+      "root_record_sha256",
+      "root_record_proof_sha256"
+    ],
+    "result_field": "authentication_binding_sha256"
+  },
+  "kernel_custody": {
+    "publisher_pid": "positive_clone3_child_pid",
+    "publisher_start_time_ticks": "positive_proc_stat_starttime_observed_before_and_after_exec",
+    "pidfd": "returned_atomically_by_clone3_CLONE_PIDFD_and_retained_until_reap",
+    "exec_stop": "ptrace_event_exec_before_resume",
+    "executable": "same_open_fd_measured_and_consumed_by_execveat_AT_EMPTY_PATH",
+    "credentials": "exact_generated_agent_uid_gid_and_fixed_selinux_domain",
+    "stdio": "one_parent_written_request_pipe_and_one_parent_read_ack_pipe",
+    "other_file_descriptors": "closed",
+    "descendants": "forbidden"
+  },
+  "verification": {
+    "listener_kernel_snapshot": "SO_PEERCRED_pid_uid_gid_plus_SO_PEERSEC_before_and_after_frame",
+    "publication": "all_authentication_fields_must_match_exact_valid_publication",
+    "root_journal": "epoch_registration_and_root_record_proofs_must_match_authenticated_snapshot",
+    "retry": "exact_snapshot_is_reusable_only_for_the_same_immutable_publication",
+    "backend_ack": "not_authorized_by_this_task_registration_contract",
+    "failure": "close_without_ack_and_without_registry_mutation"
+  },
+  "authority": {
+    "linux_kernel_backend_available": false,
+    "broker_route_available": false,
+    "product_constructor_available": false,
+    "listener_wired": false,
+    "runtime_consumer_available": false,
+    "confers_effect_authority": false
+  }
+}

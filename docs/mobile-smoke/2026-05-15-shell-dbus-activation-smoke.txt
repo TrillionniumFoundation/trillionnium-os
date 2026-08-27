@@ -1,0 +1,62 @@
+# Trillionnium Shell D-Bus Activation Smoke
+
+- status: trillionnium-shell-dbus-activation-pass-object-contract-promoted-api-blocked
+- ok: true
+- service_name: org.trillionnium.Shell
+- template_present: true
+- installed_service_present: true
+- activatable_name_seen: true
+- start_service_reply: Some(1)
+- name_owned_after_start: true
+- name_released_after_exit: true
+- can_promote_dbus_activation: true
+
+## Safety flags
+
+- operator_invoked: true
+- template_present: true
+- installed_service_present: true
+- template_exec_uses_activation_service: true
+- installed_exec_uses_activation_service: true
+- template_avoids_systemd_service: true
+- installed_avoids_systemd_service: true
+- session_bus_connected: true
+- activatable_name_seen: true
+- name_owned_before_start: false
+- start_service_ok: true
+- name_owned_after_start: true
+- name_released_after_exit: true
+- no_residual_activation_process: true
+- dbus_service_file_written: true
+- dbus_activation_registered: true
+- claims_dbus_name: true
+- releases_dbus_name: true
+- opens_window: false
+- registers_autostart: false
+- mutates_phosh_session: false
+- mutates_compositor: false
+- uses_layer_shell: false
+- launches_apps: false
+- reads_notifications: false
+- invokes_model: false
+- invokes_tool: false
+- writes_files: false
+- can_promote_dbus_activation: true
+- mobile_mvp_ready: false
+
+## Blockers
+
+- D-Bus activation and bounded object contract are promoted, but no long-lived Shell API surface is exposed yet
+- mobile_mvp_ready=false
+
+## Command hints
+
+- trillionnium-shell dbus-activation-smoke --summary-only --json
+- trillionnium-shell dbus-activation-smoke --check --json
+- trillionnium-shell session-dbus-smoke --summary-only --json
+- trillionnium-shell readiness-report --summary-only --json
+
+## Safety notes
+
+- dbus-activation-smoke uses the installed user D-Bus activation file to start a bounded trillionnium-shell process by name
+- the activated process only claims org.trillionnium.Shell briefly, releases it, exits, and does not open windows, launch apps, read notifications, invoke tools/models, or write files

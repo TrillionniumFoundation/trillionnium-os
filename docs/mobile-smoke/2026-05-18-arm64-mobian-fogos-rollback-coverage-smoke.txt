@@ -1,0 +1,18 @@
+arm64-mobian-fogos-rollback-coverage-smoke
+status: arm64-mobian-fogos-rollback-coverage-smoke-pass
+development_position: arm64-mobian-fogos-rollback-coverage-locked-non-executable
+known_blocker_id: target-hardware-post-boot-identity-plan-not-locked
+next_gate: arm64-mobian-target-hardware-post-boot-identity-plan-smoke
+rollback_coverage_locked: true
+rollback_coverage_executable_now: false
+fogos_lineage_ota_rollback_reference_available: true
+fogos_boot_chain_reference_images_available: true
+fogos_super_empty_wipe_super_reference_available: true
+raw_block_backup_hashes_available: false
+dynamic_partition_payload_produced: false
+target_hardware_install_executed: false
+can_claim_trillionnium_os_installed_on_phone: false
+ready_for_release_push: false
+json: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-rollback-coverage-smoke/arm64-mobian-fogos-rollback-coverage-smoke.json
+coverage: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-rollback-coverage-smoke/fogos-rollback-coverage.json
+coverage_md: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-rollback-coverage-smoke/FOGOS_ROLLBACK_COVERAGE.md

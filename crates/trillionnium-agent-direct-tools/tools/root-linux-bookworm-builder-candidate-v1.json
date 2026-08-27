@@ -1,0 +1,50 @@
+{
+  "schema": "trillionnium.root-linux.bookworm-builder-candidate.v1",
+  "platform": "linux/amd64",
+  "dockerfile_frontend_digest": "sha256:87999aa3d42bdc6bea60565083ee17e86d1f3339802f543c0d03998580f9cb89",
+  "base_image_manifest_digest": "sha256:63a496b5d3b99214b39f5ed70eb71a61e590a77979c79cbee4faf991f8c0783e",
+  "local_builder_image_index_digest": "sha256:a736afffbcc4bb1c8350cc5c6f9dbaba5b973aa2c1f7e152731af8602916a8ed",
+  "local_builder_linux_amd64_manifest_digest": "sha256:f45df717ed9d4926691b7906ed5beef6823d308cc1bc093c879ea8a314042130",
+  "local_builder_config_digest": "sha256:20b9970bd3914c6304b499b6e4651a8711d5f41eda600b0e2e2b1a628c737449",
+  "local_builder_attestation_manifest_digest": "sha256:87ba35d05b47e42191c5caf5772d7c1919ad6c4cdcc59c400245f59771053985",
+  "local_builder_compressed_layer_digests": [
+    "sha256:597c6c618d36213af657a6a8444a5d87801f9a219682b206ad21ccb8f3e57bbd",
+    "sha256:7a4b5a153fda322631182137d3071cd184df08194f802ddec09b7cd7e816fa7c"
+  ],
+  "local_builder_rootfs_diff_ids": [
+    "sha256:81f823b9617547261c907396f63f770deaa554748ff739bedfa650e3bb74595a",
+    "sha256:c373845fb0d3ae2123a06ec521d7a8c095f8461a94b7907ec1f0833dd11ec004"
+  ],
+  "source_fixed_cargo_home_manifest_sha256": "711d39583b0004485a9e226442f1476a203a32601fac061198c9d6f933520b63",
+  "source_fixed_private_toolchain_manifest_sha256": "8ee268e616feb4d5d9cb07ba363d4966c88bfb915d2d0147014cbed6d45a05d2",
+  "source_fixed_host_tool_manifest_sha256": "1970dd9c3fe3e970ebbdb49cb761a6fbc7c5aeedc4faf269d27484c507f9e051",
+  "source_fixed_build_script_sha256": "d5f55e87152806afaeb65ee489804b4726ea5c3fb295c7014a3995de58f395ff",
+  "source_fixed_private_toolchain_leaf_sha256": {
+    "linker": "eb7dfc1dcdf23188d8ff8d82a8ab630b0842c0a2ecc8256fc677830e2217b074",
+    "archiver": "19dd4f149741f577657fa54ffe0673b5cd71493fa016b5a19ede31c7a0b73009",
+    "rustc": "df13f58759c0662831983e3a6501c63c1fc12ea60ec4e1d1ac35e5fe43c500c0",
+    "cargo": "eff12bab37b9d9e01324db4583eaf55b2cd82ac3008a7e59876e4cd2e9a028f5",
+    "sysroot_libc": "e4ac8ae1d81e4865e3aadedb962879cf9415903b3f2ba81ec75e9962b86ab8b0",
+    "sysroot_loader": "17538b8f9889a470c061f69a8fea8124da89627311cd16546c133a89f09056df",
+    "sysroot_libgcc_s": "c39939ec474dd03d9a8aa657d85fa71a8f879a3159bf1a5d19dff3b4788dfba2",
+    "sysroot_libm": "3c4cb3be0b974edf05f023f85ab15107fb5afc2687163593d0d4cf8e80c17b39"
+  },
+  "private_toolchain_full_regular_file_content_pinned": true,
+  "private_toolchain_symlink_targets_and_stable_posix_lstat_pinned": true,
+  "private_toolchain_readonly_bind_required": true,
+  "runtime_uid": 1000,
+  "host_userspace_rootfs_content_addressed": true,
+  "host_kernel_pinned": false,
+  "host_cpu_pinned": false,
+  "host_filesystem_semantics_pinned": false,
+  "registry_and_image_provenance_independently_approved": false,
+  "dependency_cache_origin_independently_approved": false,
+  "private_toolchain_origin_independently_approved": false,
+  "production_builder_approvals_observed": 0,
+  "production_builder_approvals_required": 2,
+  "rollback_resistant_epoch_high_water_present": false,
+  "production_builder_approved": false,
+  "rootfs_refresh_authorized": false,
+  "vendor_pin_refresh_authorized": false,
+  "production_payload_refresh_performed": false
+}

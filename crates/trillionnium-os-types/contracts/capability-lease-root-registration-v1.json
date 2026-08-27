@@ -1,0 +1,91 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-registration.contract.v1",
+  "task_registration_schema": "org.trillionnium.capabilitylease.root-task-registration.v1",
+  "source_status": "source_only_no_transport_no_runtime_no_effect_authority_v1",
+  "fixed": {
+    "registration_binding_domain": "trillionnium.capability-lease-root-registration.v1",
+    "kind": "TASK_CONTEXT",
+    "adapter_id": "system_api",
+    "action_id": "open_uri",
+    "subject_user_id": 0,
+    "opaque_task_context_token_prefix": "task-context-"
+  },
+  "authority": {
+    "transport_available": false,
+    "runtime_consumer_available": false,
+    "confers_effect_authority": false
+  },
+  "encoding": {
+    "digest": "sha256",
+    "field_frame": "u32be(name_byte_length) || name_ascii || u32be(value_byte_length) || value",
+    "string_values": "utf8",
+    "integer_values": "i64be",
+    "binding_fields": [
+      "domain",
+      "kind",
+      "peer",
+      "boot_id_sha256",
+      "publisher_epoch",
+      "root_journal_genesis_sha256",
+      "epoch_proof_sha256",
+      "publisher_sequence",
+      "adapter",
+      "action",
+      "subject_user",
+      "opaque_token_sha256",
+      "request_id",
+      "canonical_request_sha256",
+      "workflow_id",
+      "task_id",
+      "authenticated_task_binding_sha256",
+      "root_direct_binding_sha256"
+    ],
+    "payload_fields": [
+      "schema",
+      "provider_id",
+      "agent_id",
+      "replay_namespace",
+      "boot_id_sha256",
+      "publisher_epoch",
+      "publisher_sequence",
+      "root_journal_genesis_sha256",
+      "epoch_proof_sha256",
+      "opaque_task_context_token",
+      "prepare_request_id",
+      "prepare_canonical_request_sha256",
+      "workflow_id",
+      "task_id",
+      "authenticated_task_binding_sha256",
+      "root_direct_binding_sha256",
+      "registration_binding_sha256"
+    ]
+  },
+  "validation": {
+    "digest": "lower_hex_64_nonzero",
+    "publisher_epoch": "lower_hex_32_nonzero",
+    "publisher_sequence": "1..9223372036854775807",
+    "request_id": "ascii_[A-Za-z0-9._:-]+_max_128_bytes",
+    "workflow_id": "req-[0-9a-f]{32}",
+    "task_id": "ascii_[A-Za-z0-9][A-Za-z0-9._:-]{0,127}",
+    "opaque_task_context_token": "task-context-[0-9a-f]{64}_nonzero_suffix"
+  },
+  "golden": {
+    "provider_id": "openai-codex",
+    "agent_id": "agent-codex-direct-v1",
+    "replay_namespace": "agent-codex-v1",
+    "boot_id_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "publisher_epoch": "88888888888888888888888888888888",
+    "publisher_sequence": 10,
+    "root_journal_genesis_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "epoch_proof_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "opaque_task_context_token": "task-context-2222222222222222222222222222222222222222222222222222222222222222",
+    "prepare_request_id": "prepare-token-registry",
+    "prepare_canonical_request_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "workflow_id": "req-44444444444444444444444444444444",
+    "task_id": "task.token-registry",
+    "authenticated_task_binding_sha256": "5555555555555555555555555555555555555555555555555555555555555555",
+    "root_direct_binding_sha256": "6666666666666666666666666666666666666666666666666666666666666666",
+    "opaque_token_sha256": "31839495296e57aac36136f5ac3a8265b2661352e7502f01d20743331ab86a89",
+    "registration_binding_sha256": "5c67053c1e83212a6ab7fb189789c421c7544353da4787d5cf459d35ec43b956"
+  }
+}

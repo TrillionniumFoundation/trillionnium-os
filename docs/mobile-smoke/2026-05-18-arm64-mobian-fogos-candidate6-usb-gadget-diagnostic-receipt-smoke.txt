@@ -1,0 +1,13 @@
+status=arm64-mobian-fogos-candidate6-usb-gadget-diagnostic-receipt-smoke-pass-usb-acm-visible
+development_position=arm64-mobian-fogos-initramfs-usb-acm-visible-rootfs-shell-next
+known_blocker_id=candidate6-usb-acm-visible-but-no-interactive-shell
+candidate6_usb_gadget_initramfs_written=true
+candidate6_initramfs_booted_enough_for_usb_acm=true
+candidate6_usb_acm_visible_on_host=true
+candidate6_tty_acm_visible_on_host=true
+candidate6_interactive_shell_available=false
+candidate7_usb_shell_candidate_prepared=true
+post_boot_identity_proof_promoted=false
+target_hardware_graphical_phosh_booted=false
+ready_for_release_push=false
+next_gate=arm64-mobian-fogos-candidate7-usb-shell-diagnostic-execution

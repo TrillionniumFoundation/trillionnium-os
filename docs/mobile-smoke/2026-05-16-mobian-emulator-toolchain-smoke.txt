@@ -1,0 +1,32 @@
+Mobian emulator toolchain smoke
+Date: 2026-05-16
+
+Command:
+  timeout 1800 packaging/mobian/scripts/emulator-toolchain-smoke.sh > docs/mobile-smoke/2026-05-16-mobian-emulator-toolchain-smoke.json
+
+Result:
+  status: mobian-emulator-toolchain-smoke-pass
+  private_qemu_system_x86_64_available: true
+  qemu_system_x86_64_version_ok: true
+  qemu_version: QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.16)
+  qemu_binary_sha256: 8d2c592a87347b64383f01c531c6a1a13775e85396373d9377593cec1b748a99
+  qemu_binary_size_bytes: 26415624
+  package_count: 7
+  package_payload_size_bytes: 16105472
+
+Boundary:
+  host_package_install_executed: false
+  apt_download_only: true
+  dpkg_extract_only: true
+  emulator_boot_executed: false
+  phone_flash_executed: false
+  repartition_executed: false
+  reboot_executed: false
+  systemd_enable_or_start_executed: false
+  android_lineage_paths_touched: false
+  modem_network_power_mutation: false
+
+Notes:
+  The smoke downloads the QEMU userspace packages into target/, extracts them
+  under a private root, verifies qemu-system-x86_64 --version, and records the
+  resolved shared-library boundary. It does not install packages onto the host.

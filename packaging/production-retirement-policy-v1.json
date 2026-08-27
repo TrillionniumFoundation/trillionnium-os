@@ -1,0 +1,148 @@
+{
+  "schema": "org.trillionnium.production-retirement-policy.v1",
+  "android_app_source": {
+    "roots": [
+      "packages/apps/TrillionniumAiShell",
+      "packages/apps/TrillionniumAiAuthority"
+    ],
+    "class_identifiers": [
+      "AiModelService",
+      "ExecuTorchPlanningProvider",
+      "ExecuTorchBridge",
+      "ModelPackageVerifier",
+      "SmolLm2Tokenizer"
+    ],
+    "manifest_identifiers": [
+      "android:name=\".AiModelService\"",
+      "android:process=\":model\""
+    ],
+    "module_identifiers": [
+      "libtrillionnium_model_jni"
+    ],
+    "protocol_identifiers": [
+      "MODEL_PLAN",
+      "MODEL_RESULT"
+    ],
+    "messenger_constructs": [
+      "import android.os.Messenger",
+      "new Messenger("
+    ],
+    "relative_paths": [
+      "jni/trillionnium_model_jni.cpp",
+      "jni/arm64-v8a/libtrillionnium_model_jni.so",
+      "res/raw/ai_model_candidate_v1.json"
+    ]
+  },
+  "android_vendor": {
+    "roots": [
+      "vendor/trillionnium"
+    ],
+    "product_graph_files": [
+      "config/common.mk",
+      "prebuilt/common/Android.bp"
+    ],
+    "source_marker_files": [
+      "config/common.mk",
+      "prebuilt/common/Android.bp",
+      "prebuilt/common/bin/trillionnium-root-linux-run.sh",
+      "prebuilt/common/bin/trillionniumd.sh",
+      "prebuilt/common/etc/init/init.trillionnium-system_ext.rc",
+      "prebuilt/common/linux/manifest.txt"
+    ],
+    "negative_cleanup_files": [
+      "prebuilt/common/bin/trillionnium-root-linux-bootstrap.sh"
+    ],
+    "retired_source_paths": [
+      "prebuilt/common/bin/trillionnium-root-linux-display-bridge.sh",
+      "prebuilt/common/bin/trillionnium-bridge-android-runtime-evidence.sh",
+      "prebuilt/common/bin/trillionnium-root-linux-service-run.sh",
+      "prebuilt/common/bin/trillionnium-root-linux-profile.sh",
+      "prebuilt/common/bin/trillionnium-bridge.sh",
+      "prebuilt/common/bin/trillionnium-command-center.sh",
+      "prebuilt/common/bin/trillionnium-shell.sh",
+      "prebuilt/common/etc/rootlinux/public-governance-attestation.json"
+    ],
+    "retired_modules": [
+      "TrillionniumCommandCenterBridge",
+      "TrillionniumShellDisplay",
+      "trillionnium-root-linux-public-governance-attestation",
+      "trillionnium-root-linux-mobian-package-image-arm64",
+      "trillionnium-root-linux-mobian-package-image-arm64-gui-baseline",
+      "trillionnium-root-linux-display-bridge",
+      "trillionnium-root-linux-profile",
+      "trillionnium-root-linux-service-run",
+      "trillionnium-command-center",
+      "trillionnium-shell",
+      "trillionnium-bridge",
+      "trillionnium-bridge-android-runtime-evidence"
+    ],
+    "retired_partition_paths": [
+      "SYSTEM_EXT/priv-app/TrillionniumCommandCenterBridge/TrillionniumCommandCenterBridge.apk",
+      "SYSTEM_EXT/app/TrillionniumShellDisplay/TrillionniumShellDisplay.apk",
+      "SYSTEM_EXT/etc/trillionnium/rootlinux/public-governance-attestation.json",
+      "SYSTEM_EXT/etc/trillionnium/linux/trillionnium-mobian-package-image-arm64.tar.zst",
+      "SYSTEM_EXT/etc/trillionnium/linux/trillionnium-mobian-package-image-arm64-gui-baseline.tar.zst",
+      "SYSTEM_EXT/bin/trillionnium-root-linux-display-bridge",
+      "SYSTEM_EXT/bin/trillionnium-root-linux-profile",
+      "SYSTEM_EXT/bin/trillionnium-root-linux-service-run",
+      "SYSTEM_EXT/bin/trillionnium-command-center",
+      "SYSTEM_EXT/bin/trillionnium-shell",
+      "SYSTEM_EXT/bin/trillionnium-bridge",
+      "SYSTEM_EXT/bin/trillionnium-bridge-android-runtime-evidence"
+    ],
+    "retired_content_markers": [
+      "org.trillionnium.commandcenterbridge",
+      "org.trillionnium.permission.ROOT_LINUX_BRIDGE",
+      "TRILLIONNIUM_ANDROID_BRIDGE_RUNTIME_EVIDENCE",
+      "android-bridge-runtime-evidence",
+      "/usr/bin/trillionnium-command-center",
+      "/usr/bin/trillionnium-shell",
+      "org.trillionnium.Agent1",
+      "org.trillionnium.Shell"
+    ]
+  },
+  "openclaw_android": {
+    "provider_tokens": [
+      "ollama",
+      "lmstudio",
+      "vllm",
+      "sglang",
+      "litellm"
+    ],
+    "explicitly_non_denied_tokens": [
+      "tts-local-cli",
+      "comfy"
+    ]
+  },
+  "model_artifacts": {
+    "weight_extensions": [
+      ".gguf",
+      ".pte",
+      ".onnx",
+      ".safetensors",
+      ".tflite"
+    ],
+    "native_module_basenames": [
+      "libtrillionnium_model_jni.so"
+    ]
+  },
+  "mobian": {
+    "retired_binary_packages": [
+      "trillionnium-command-center",
+      "trillionnium-command-center-ui"
+    ],
+    "retired_paths": [
+      "usr/bin/trillionnium-dbus-dev",
+      "usr/bin/trillionnium-command-center",
+      "usr/share/applications/trillionnium-command-center.desktop",
+      "usr/share/dbus-1/interfaces/org.trillionnium.Agent1.xml",
+      "usr/share/dbus-1/services/org.trillionnium.Agent1.service",
+      "usr/lib/systemd/user/trillionnium-hepta-sidecar-noop.service"
+    ],
+    "retired_content_markers": [
+      "org.trillionnium.agent1",
+      "trillionnium-command-center",
+      "trillionnium-hepta-sidecar-noop.service"
+    ]
+  }
+}

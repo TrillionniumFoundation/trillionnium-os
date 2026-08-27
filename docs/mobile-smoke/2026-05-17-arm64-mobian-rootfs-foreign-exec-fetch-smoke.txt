@@ -1,0 +1,48 @@
+Trillionnium arm64 Mobian rootfs foreign-exec fetch smoke - 2026-05-17
+
+status: arm64-mobian-rootfs-foreign-exec-fetch-smoke-pass
+development_position: arm64-mobian-rootfs-ready-for-chrootless-smoke
+target: Mobian bookworm arm64
+preflight passed: true
+preflight blocker carried: missing-arm64-foreign-execution
+arm64 Mobian rootfs ABI-compatible: true
+package inputs ready: true
+downloaded_deb_count: 3
+downloaded_deb_total_bytes: 14731028
+extracted_deb_count: 3
+private_qemu_aarch64_static_ready: true
+private_proot_ready: true
+private_proot_runtime_library_ready: true
+private_arm64_direct_execution_ready: true
+private_proot_qemu_sysroot_execution_ready: true
+mmdebstrap_available: true
+mmdebstrap_chrootless_mode_available: true
+host_binfmt_qemu_aarch64_enabled: false
+mmdebstrap_unshare_foreign_arch_ready: false
+can_attempt_arm64_mobian_rootfs_chrootless_smoke_now: true
+can_run_unshare_foreign_arch_rootfs_smoke_now: false
+rootfs_build_executed: false
+image_build_executed: false
+next_gate: run arm64 Mobian rootfs smoke in chrootless/private-foreign-exec mode, still without device action
+
+policy:
+  network_download_executed: true
+  apt_get_download_executed: true
+  dpkg_deb_extract_executed: true
+  qemu_user_static_executed: true
+  proot_executed: true
+  apt_install_executed: false
+  dpkg_install_executed: false
+  host_package_install_executed: false
+  package_install_executed: false
+  mmdebstrap_executed: false
+  rootfs_build_executed: false
+  image_build_executed: false
+  binfmt_registration_executed: false
+  adb_executed: false
+  fastboot_executed: false
+  flash_executed: false
+  reboot_executed: false
+  remote_push_executed: false
+  invokes_model: false
+  invokes_tool: false

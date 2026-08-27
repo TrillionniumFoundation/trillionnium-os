@@ -1,0 +1,24 @@
+status: arm64-trillionnium-package-build-smoke-blocked
+development_position: arm64-package-build-blocked-ui-sysroot
+target_architecture: arm64
+rust_target: aarch64-unknown-linux-gnu
+package_install_smoke_exit_code: 101
+cargo_build_executed: true
+trillionniumd_arm64_built: true
+trillionnium_command_center_arm64_built: false
+trillionnium_shell_arm64_built: false
+missing_arm64_ui_sysroot_libraries: true
+missing_library_count: 13
+arm64_trillionnium_binaries_built: false
+arm64_trillionnium_debs_built: false
+arm64_mobian_rootfs_with_trillionnium_packages_built: false
+can_build_arm64_trillionnium_packages_now: false
+ready_for_release_push: false
+apt_install_executed: false
+dpkg_install_executed: false
+package_install_executed: false
+adb_executed: false
+fastboot_executed: false
+flash_executed: false
+reboot_executed: false
+boundary: package smoke reached a real arm64 cargo build and produced an aarch64 trillionniumd binary, then failed closed at missing arm64 UI sysroot libraries before .deb/rootfs/package install promotion.

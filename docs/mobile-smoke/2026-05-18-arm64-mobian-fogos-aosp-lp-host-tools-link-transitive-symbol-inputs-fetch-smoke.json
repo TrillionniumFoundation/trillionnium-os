@@ -1,0 +1,203 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke-pass",
+  "development_position": "arm64-mobian-fogos-aosp-lp-host-tools-materialized-not-executed-local",
+  "known_blocker_id": "aosp-lp-host-tools-materialized-nonexecution-boundary-not-locked",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "result": {
+    "arm64_mobian_fogos_aosp_lp_host_tools_link_transitive_symbol_inputs_fetch_smoke_passed": true,
+    "link_transitive_symbol_inputs_plan_consumed": true,
+    "link_missing_symbol_inputs_fetch_consumed": true,
+    "source_fetch_executed": true,
+    "fetched_source_file_count": 2,
+    "planned_source_input_count": 2,
+    "parsebool_cpp_fetched": true,
+    "ext4_sb_cpp_fetched": true,
+    "host_tool_compile_probe_executed": true,
+    "compiled_object_count": 2,
+    "failed_compile_count": 0,
+    "link_invocation_executed": true,
+    "host_tool_build_executed": true,
+    "attempted_link_count": 2,
+    "linked_binary_count": 2,
+    "failed_link_count": 0,
+    "host_tool_binary_produced": true,
+    "lpmake_materialized": true,
+    "lpdump_materialized": true,
+    "all_required_tools_materialized": true,
+    "first_undefined_symbol": "",
+    "new_missing_symbol_lines": [],
+    "android_image_tool_execution_deferred": true,
+    "android_image_tool_execution_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": false,
+    "dynamic_partition_payload_produced": false,
+    "super_img_produced": false,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_executed": false,
+    "post_boot_identity_proof_promoted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "aosp-lp-host-tools-materialized-nonexecution-boundary-not-locked",
+    "next_gate": "arm64-mobian-fogos-aosp-lp-host-tools-materialized-nonexecution-plan-smoke"
+  },
+  "aosp_lp_host_tools_link_transitive_symbol_inputs_fetch": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch.v1",
+    "status": "arm64-mobian-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke-pass",
+    "development_position": "arm64-mobian-fogos-aosp-lp-host-tools-materialized-not-executed-local",
+    "known_blocker_id": "aosp-lp-host-tools-materialized-nonexecution-boundary-not-locked",
+    "source_manifest": {
+      "sources": [
+        {
+          "repo": "system/libbase",
+          "commit": "6d19b5c690fa4220c10e42c2326150bbd4d4b7bb",
+          "source_path": "parsebool.cpp",
+          "path": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/aosp-source/system/libbase/parsebool.cpp",
+          "sha256": "c67cbf09b096a9c759298782211c71ac5991adabd2ea75b4b2b15f541a38cab8"
+        },
+        {
+          "repo": "system/extras",
+          "commit": "fc2494a2abd7ab21774d03deb09c1362bbb0bba8",
+          "source_path": "ext4_utils/ext4_sb.cpp",
+          "path": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/aosp-source/system/extras/ext4_utils/ext4_sb.cpp",
+          "sha256": "fabdf16c2dd0be17f1498a9850b498cd8b3b47b2752d6e51a1904180b6f4d896"
+        }
+      ],
+      "source_file_count": 2
+    },
+    "object_manifest": {
+      "objects": [
+        {
+          "id": "parsebool",
+          "source": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/aosp-source/system/libbase/parsebool.cpp",
+          "source_sha256": "c67cbf09b096a9c759298782211c71ac5991adabd2ea75b4b2b15f541a38cab8",
+          "compile_status": 0,
+          "object": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/obj/parsebool.o",
+          "object_sha256": "4b7b22f4ca1ba5ed936f946a660ee20c7b0088ae7afe05916859dbc0e48771aa",
+          "log": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/log/parsebool.compile.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "ext4_sb",
+          "source": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/aosp-source/system/extras/ext4_utils/ext4_sb.cpp",
+          "source_sha256": "fabdf16c2dd0be17f1498a9850b498cd8b3b47b2752d6e51a1904180b6f4d896",
+          "compile_status": 0,
+          "object": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/obj/ext4_sb.o",
+          "object_sha256": "fb349705e625c90c6a90738b71ff3346fe05ac54a2ef92b31048312cf346384f",
+          "log": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/log/ext4_sb.compile.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "object_file_count": 2
+    },
+    "link_attempts": {
+      "attempts": [
+        {
+          "id": "lpmake",
+          "output": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/bin/lpmake",
+          "output_sha256": "4748e9cfeaf1790ee4ce3fc4b957190c1adde034f9c7be9acb7372b72550fc8b",
+          "command": "c++ -o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/bin/lpmake /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/partition_tools_lpmake.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/generated_dynamic_partitions_device_info.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libjsonpb_jsonpb.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_builder.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_images.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_partition_opener.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_property_fetcher.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_reader.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_super_layout_builder.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_utility.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_writer.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_file.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_logging.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_mapped_file.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_stringprintf.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_strings.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_threads.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblog_logger_name.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblog_logger_write.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblog_properties.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_backed_block.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_output_file.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse_crc32.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse_err.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse_read.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-missing-symbol-inputs-fetch-smoke/obj/properties.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-missing-symbol-inputs-fetch-smoke/obj/posix_strerror_r.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-missing-symbol-inputs-fetch-smoke/obj/ext4_utils.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/obj/parsebool.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/obj/ext4_sb.o -lprotobuf  -lz -lcrypto -lpthread",
+          "link_status": 0,
+          "materialized": true,
+          "log": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/log/lpmake.link.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "first_undefined_symbol": ""
+        },
+        {
+          "id": "lpdump",
+          "output": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/bin/lpdump",
+          "output_sha256": "4fc4943a4b3bb36981a535134c1e6354d3911747e9b455feaa63619a4b77ac20",
+          "command": "c++ -o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/bin/lpdump /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/partition_tools_lpdump_host.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/partition_tools_lpdump.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/generated_dynamic_partitions_device_info.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libjsonpb_jsonpb.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_builder.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_images.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_partition_opener.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_property_fetcher.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_reader.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_super_layout_builder.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_utility.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblp_writer.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_file.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_logging.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_mapped_file.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_stringprintf.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_strings.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libbase_threads.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblog_logger_name.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblog_logger_write.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/liblog_properties.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_backed_block.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_output_file.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse_crc32.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse_err.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke/obj/libsparse_sparse_read.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-missing-symbol-inputs-fetch-smoke/obj/properties.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-missing-symbol-inputs-fetch-smoke/obj/posix_strerror_r.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-missing-symbol-inputs-fetch-smoke/obj/ext4_utils.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/obj/parsebool.o /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/obj/ext4_sb.o -lprotobuf  -lz -lcrypto -lpthread",
+          "link_status": 0,
+          "materialized": true,
+          "log": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/log/lpdump.link.log",
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "first_undefined_symbol": ""
+        }
+      ]
+    },
+    "link_boundary": {
+      "all_required_tools_materialized": true,
+      "host_tool_binary_produced": true,
+      "first_undefined_symbol": "",
+      "new_missing_symbol_lines": []
+    },
+    "next_gate": "arm64-mobian-fogos-aosp-lp-host-tools-materialized-nonexecution-plan-smoke"
+  },
+  "input_evidence": {
+    "arm64_mobian_fogos_aosp_lp_host_tools_link_transitive_symbol_inputs_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-plan-smoke.json",
+    "arm64_mobian_fogos_aosp_lp_host_tools_link_transitive_symbol_inputs_plan_smoke_sha256": "a7340f187cc3d083643429dc95f4eb8faf5a26d5ea736624a9839ca45baa790c",
+    "arm64_mobian_fogos_aosp_lp_host_tools_link_missing_symbol_inputs_fetch_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-aosp-lp-host-tools-link-missing-symbol-inputs-fetch-smoke.json",
+    "arm64_mobian_fogos_aosp_lp_host_tools_link_missing_symbol_inputs_fetch_smoke_sha256": "c4f7087377b65000a35fcea6d1cac6a83ce06ea6b498636af7029f099e7ed98b"
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "4ec569c596889ebe222c9b1d6368ebc1b1185c7ff325fbc781d31b2ea53e07a2",
+    "script_sha256": "3ee7094ac464b3254ff3032f8d3504ea18e1d1014b1e13e726dd85503822cf43",
+    "source_manifest": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/aosp-lp-host-tools-link-transitive-symbol-inputs-source-manifest.json",
+    "source_manifest_sha256": "d9f67f30789fe1e7881ecdcd216ca69f5470613975fb5c218ce820095481879c",
+    "object_manifest": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/aosp-lp-host-tools-link-transitive-symbol-inputs-object-manifest.json",
+    "object_manifest_sha256": "c26c9ff8ffcb50306290e7b41b1b3fbe95e16eaf8aedf4aabb6b4001158078a5",
+    "link_attempts_json": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/aosp-lp-host-tools-link-transitive-symbol-inputs-link-attempts.json",
+    "link_attempts_json_sha256": "5f922506c80c7d5a2270faf7ab31c190dc1a337e8d018711661db3c56bf30bad",
+    "fetch_report_json": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch.json",
+    "fetch_report_json_sha256": "38ec36bf05ec3a3c69666765cd490f5a37105fd5d0ceb780955dc026992c7a5f",
+    "fetch_report_md": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/FOGOS_AOSP_LP_HOST_TOOLS_LINK_TRANSITIVE_SYMBOL_INPUTS_FETCH.md",
+    "fetch_report_md_sha256": "b1f1b9e3f80d267b2f62e20270f47d38ab21bf87374d74454db48d8973249184"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": false,
+    "writes_only_under_target": true,
+    "network_download_executed": true,
+    "source_fetch_executed": true,
+    "git_ls_remote_executed": false,
+    "curl_download_executed": true,
+    "repo_sync_executed": false,
+    "protobuf_generation_executed": false,
+    "host_tool_compile_probe_executed": true,
+    "host_tool_build_executed": true,
+    "link_invocation_executed": true,
+    "host_tool_binary_produced": true,
+    "android_image_tool_execution_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "package_install_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "dpkg_i_executed": false,
+    "bootimage_build_executed": false,
+    "bootimage_repack_executed": false,
+    "vendor_boot_repack_executed": false,
+    "avbtool_executed": false,
+    "avb_signing_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": false,
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "super_payload_build_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-candidate5-handoff-execution-receipt-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-candidate5-handoff-execution-receipt-smoke-pass-host-invisible",
+  "development_position": "arm64-mobian-fogos-candidate5-handoff-written-host-invisible",
+  "known_blocker_id": "candidate5-post-reboot-host-identity-not-visible",
+  "next_gate": "blocked-requires-physical-screen-or-manual-bootloader-recovery-intake",
+  "target": {
+    "target_device_serial": "ZY32JLVHGN",
+    "product": "fogos",
+    "expected_device": "moto g34 5G"
+  },
+  "candidate5_artifacts": {
+    "boot_img": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff/boot.img",
+    "boot_img_sha256": "410709d20f6396fd90f64127ab0b9af3807e586be4253ee3741e5c35cf1825e7",
+    "boot_img_size_bytes": 39268352,
+    "vendor_boot_img": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff/vendor_boot.img",
+    "vendor_boot_img_sha256": "a5ebb658f9d1a8b5b6eb5abddd302cc5597b7c514a181093ff37908cbf7c633a",
+    "vendor_boot_img_size_bytes": 1466368,
+    "handoff_initramfs_cpio": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff/fogos-mobian-handoff-initramfs.cpio",
+    "handoff_initramfs_cpio_sha256": "6d1372766f854e2495cb56e808b9f9bb11a195aff9596d25e02af40ec3cbf08c",
+    "handoff_initramfs_cpio_size_bytes": 1859072,
+    "handoff_initramfs_lz4": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff/fogos-mobian-handoff-initramfs.cpio.lz4",
+    "handoff_initramfs_lz4_sha256": "1af2e3eea926822af1c3d19b4ece0824b283e4c3a903474840fa3df28788965b",
+    "handoff_initramfs_lz4_size_bytes": 1131726,
+    "init_script": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff/initramfs-tree/init",
+    "init_script_sha256": "b50bf9ad49d94bd6764f425ab7afc8d22ff995660b8bd41fb19f66df1ead0d9a",
+    "root_device_discovery_strategy": [
+      "scan /sys/class/block/*/uevent for PARTNAME=userdata",
+      "fallback to blkid LABEL=trillionniumfs or UUID=979d4f6b-40f7-400a-b726-5763cb12c2a8",
+      "mount userdata ext4 at /newroot and switch_root to /sbin/init"
+    ]
+  },
+  "execution_receipts": {
+    "boot_a_flashed": true,
+    "boot_b_flashed": true,
+    "vendor_boot_a_flashed": true,
+    "vendor_boot_b_flashed": true,
+    "set_active_b_executed": true,
+    "slot_b_bootable_after_set_active": true,
+    "slot_b_retry_count_after_set_active": 7,
+    "fastboot_reboot_executed": true,
+    "observation_fastboot_visible": false,
+    "observation_adb_visible": false,
+    "observation_usb_target_visible": false,
+    "observation_usb_network_visible": false,
+    "late_fastboot_visible": false,
+    "late_adb_visible": false,
+    "late_usb_target_visible": false,
+    "late_usb_network_visible": false
+  },
+  "result": {
+    "arm64_mobian_fogos_candidate5_handoff_execution_receipt_smoke_passed": true,
+    "target_hardware_install_executed": true,
+    "candidate5_handoff_initramfs_written": true,
+    "candidate5_handoff_initramfs_armed": true,
+    "userdata_rootfs_already_flashed_from_candidate3": true,
+    "post_boot_identity_proof_promoted": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "rollback_executed": false,
+    "known_blocker_id": "candidate5-post-reboot-host-identity-not-visible",
+    "next_gate": "blocked-requires-physical-screen-or-manual-bootloader-recovery-intake"
+  },
+  "evidence": {
+    "candidate5_install_log": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff-install-20260518T104515Z/candidate5-fastboot-install.log",
+    "candidate5_install_log_sha256": "1cc2ba3cf3c19433f7032edcf470111680bdc9eac60bf69656dacbc96e74a3ac",
+    "candidate5_observation_log": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff-install-20260518T104515Z/candidate5-post-reboot-observation.log",
+    "candidate5_observation_log_sha256": "d5298ead1a29c5ddb5f818824be1161a9cd94846e651a6009a4867f9195fb8e5",
+    "candidate5_late_host_check": "target/mobian-arm64-fogos-userdata-rootfs-candidate5-handoff-install-20260518T104515Z/candidate5-late-host-check.txt",
+    "candidate5_late_host_check_sha256": "dc94a31152193eb1c51c438ddeb294e061e8c95dcea2f68225dc657ae5141c22",
+    "script_sha256": "83924ee2f3bc5688761c86caa9d16007d5229e4cfca2307772717a7d3d8a529a"
+  },
+  "policy": {
+    "receipt_importer_only": true,
+    "adb_executed_now": false,
+    "fastboot_executed_now": false,
+    "phone_mutation_executed_now": false,
+    "flash_executed_now": false,
+    "wipe_executed_now": false,
+    "repartition_executed_now": false,
+    "sideload_executed_now": false,
+    "reboot_executed_now": false,
+    "relock_executed_now": false,
+    "rollback_executed_now": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

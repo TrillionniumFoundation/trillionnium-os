@@ -1,0 +1,380 @@
+{
+  "schema": "org.trillionnium.direct-effect.contract.v1",
+  "contract_id": "trillionnium-direct-effect-v1",
+  "revision": 3,
+  "status": "source_listener_and_root_linux_backend_wired_device_authority_pending",
+  "effect_authority": false,
+  "product_listener_wired": true,
+  "product_backend_wired": true,
+  "scope": {
+    "agent": "codex_only",
+    "phone_local_llm": false,
+    "codex_invokes_tools_directly": true,
+    "os_owns_transport_credentials_policy_and_receipts": true,
+    "first_real_backend_order": [
+      "root_linux_shell_exec_standard",
+      "android_local_adb_shell_equivalent"
+    ]
+  },
+  "tools": {
+    "shell_exec_v1": {
+      "wire_name": "shell.exec.v1",
+      "target": "root_linux",
+      "primary_mode": "exact_argv",
+      "command_string_mode": "not_in_v1",
+      "source_policy_floor": {
+        "authority": "defense_in_depth_only",
+        "denied_interpreter_basenames": [
+          "sh",
+          "ash",
+          "bash",
+          "dash",
+          "ksh",
+          "mksh",
+          "zsh"
+        ],
+        "denied_command_flags": [
+          "-c",
+          "combined_short_option_containing_c",
+          "--command"
+        ],
+        "env_and_busybox_launchers_denied": true,
+        "absolute_normalized_argv0_required": true,
+        "renamed_or_symlinked_interpreter_closure": false
+      },
+      "first_slice_limits": {
+        "timeout_maximum_ms": 60000,
+        "stdout_maximum_bytes": 65536,
+        "stderr_maximum_bytes": 65536,
+        "combined_output_maximum_bytes": 65536,
+        "transport_request_packet_maximum_bytes": 131072,
+        "transport_response_packet_maximum_bytes": 262144,
+        "single_seqpacket_record_each_direction": true,
+        "exact_coupled_response_budget_before_dispatch": true,
+        "worst_case_terminal_capacity_admission_before_dispatch": true
+      },
+      "product_promotion_requires_measured_executable_policy": {
+        "required": true,
+        "resolution": "openat_component_walk_retained_dirfd_nofollow_same_device_v1",
+        "decision": "opened_executable_digest_must_be_in_v1_allowlist",
+        "shell_and_inline_interpreter_digests_allowed": false
+      }
+    },
+    "adb_shell_local_v1": {
+      "wire_name": "adb.shell.local.v1",
+      "target": "self_device_only",
+      "primary_mode": "exact_argv",
+      "caller_target_selection": false,
+      "equivalent_local_backend_allowed": true
+    }
+  },
+  "model_arguments": {
+    "closed_fields": [
+      "argv",
+      "cwd",
+      "timeout_ms",
+      "stdout_limit_bytes",
+      "stderr_limit_bytes",
+      "total_output_limit_bytes",
+      "requested_profile"
+    ],
+    "argv": {
+      "encoding": "utf8",
+      "arbitrary_linux_byte_argv_supported": false,
+      "minimum_count": 1,
+      "maximum_count": 256,
+      "maximum_argument_bytes": 16384,
+      "maximum_total_bytes": 65536,
+      "nul_allowed": false,
+      "empty_argv0_allowed": false,
+      "empty_nonzero_arguments_preserved": true,
+      "shell_parsing": false
+    },
+    "cwd": {
+      "optional": true,
+      "closed_fields": [
+        "scope",
+        "relative"
+      ],
+      "scopes": [
+        "workspace"
+      ],
+      "normalized_relative_path_only": true,
+      "maximum_bytes": 4096
+    },
+    "timeout_ms": {
+      "minimum": 1,
+      "maximum": 120000,
+      "meaning": "caller_may_only_request_a_bound_os_computes_absolute_deadline"
+    },
+    "output_limits": {
+      "minimum_each": 1,
+      "maximum_each": 1048576,
+      "maximum_total": 1048576
+    },
+    "requested_profiles": [
+      "standard",
+      "elevated",
+      "developer_recovery"
+    ],
+    "forbidden_os_owned_fields": [
+      "provider_id",
+      "agent_id",
+      "direct_binding_sha256",
+      "invocation_id",
+      "delivery_provider_attempt_id",
+      "os_tool_call_id",
+      "adapter_effect_ordinal",
+      "effect_id",
+      "allocation_record_sha256",
+      "kernel_launch_custody_sha256",
+      "boot_id_sha256",
+      "absolute_deadline_boottime_ms",
+      "effective_profile",
+      "risk_class",
+      "confirmation_lease_receipt_sha256",
+      "policy_sha256",
+      "backend_identity_sha256",
+      "request_sha256",
+      "serial",
+      "host",
+      "port",
+      "build_type",
+      "enable_token"
+    ]
+  },
+  "os_owned_envelope": {
+    "schema": "org.trillionnium.direct-effect.request.v1",
+    "closed_fields": [
+      "schema",
+      "contract_sha256",
+      "provider_id",
+      "agent_id",
+      "direct_binding_sha256",
+      "invocation_id",
+      "delivery_provider_attempt_id",
+      "os_tool_call_id",
+      "adapter_effect_ordinal",
+      "effect_id",
+      "allocation_record_sha256",
+      "kernel_launch_custody_sha256",
+      "boot_id_sha256",
+      "tool",
+      "arguments",
+      "absolute_deadline_boottime_ms",
+      "effective_profile",
+      "risk_class",
+      "confirmation_lease_receipt_sha256",
+      "policy_sha256",
+      "backend_identity_sha256",
+      "request_sha256"
+    ],
+    "principal": {
+      "provider_id": "openai-codex",
+      "agent_id": "agent-codex-direct-v1",
+      "caller_declared_identity_authoritative": false,
+      "kernel_observation_required_later": [
+        "so_peercred",
+        "so_peersec",
+        "pidfd_start_time",
+        "cgroup_leaf",
+        "executable_measurement"
+      ]
+    },
+    "identifier_prefixes": {
+      "invocation_id": "inv:",
+      "delivery_provider_attempt_id": "attempt:",
+      "os_tool_call_id": "tool-call:",
+      "effect_id": "effect:"
+    },
+    "deadline_clock": "clock_boottime",
+    "effective_profile_must_equal_requested_profile": true,
+    "risk_classes": [
+      "standard",
+      "elevated",
+      "destructive"
+    ],
+    "confirmation_lease": {
+      "standard_profile_and_standard_risk": "must_be_absent",
+      "otherwise": "nonzero_os_receipt_sha256_required",
+      "model_may_supply": false
+    }
+  },
+  "canonical_hash": {
+    "digest": "sha256",
+    "string_encoding": "utf8",
+    "integer_encoding": "unsigned_u64_big_endian",
+    "field_encoding": "u64be_name_length_then_name_then_u64be_value_length_then_value",
+    "optional_encoding": "one_byte_presence_then_value_when_present",
+    "model_arguments_domain": "trillionnium.direct-effect-model-arguments.v1",
+    "effect_id_domain": "trillionnium.direct-effect-id.v1",
+    "request_domain": "trillionnium.direct-effect-request.v1",
+    "state_domain": "trillionnium.direct-effect-state.v1",
+    "terminal_observation_domain": "trillionnium.direct-effect-terminal-observation.v1",
+    "model_argument_field_order": [
+      "argv_count",
+      "argv_repeated_in_order",
+      "cwd_present",
+      "cwd_scope_if_present",
+      "cwd_relative_if_present",
+      "timeout_ms",
+      "stdout_limit_bytes",
+      "stderr_limit_bytes",
+      "total_output_limit_bytes",
+      "requested_profile"
+    ],
+    "request_field_order": [
+      "schema",
+      "contract_sha256",
+      "provider_id",
+      "agent_id",
+      "direct_binding_sha256",
+      "invocation_id",
+      "delivery_provider_attempt_id",
+      "os_tool_call_id",
+      "adapter_effect_ordinal",
+      "effect_id",
+      "allocation_record_sha256",
+      "kernel_launch_custody_sha256",
+      "boot_id_sha256",
+      "tool",
+      "model_arguments_sha256",
+      "absolute_deadline_boottime_ms",
+      "effective_profile",
+      "risk_class",
+      "confirmation_lease_receipt_sha256",
+      "policy_sha256",
+      "backend_identity_sha256"
+    ]
+  },
+  "durable_state_machine": {
+    "schema": "org.trillionnium.direct-effect.state.v1",
+    "initial_state": "not_dispatched",
+    "dispatch_occurred_is_explicit": true,
+    "transitions": {
+      "not_dispatched": [
+        "dispatched",
+        "terminal"
+      ],
+      "dispatched": [
+        "terminal",
+        "indeterminate"
+      ],
+      "terminal": [],
+      "indeterminate": []
+    },
+    "generations": {
+      "not_dispatched": 1,
+      "dispatched": 2,
+      "terminal_before_dispatch": 2,
+      "terminal_after_dispatch": 3,
+      "indeterminate": 3
+    },
+    "recovery": {
+      "not_dispatched": "await_same_authenticated_effect_retry_never_automatic_dispatch",
+      "dispatched": "persist_indeterminate_without_retry",
+      "terminal": "replay_exact_terminal_response",
+      "indeterminate": "hold_without_retry"
+    },
+    "dispatch_marker_rule": "dispatched_must_be_durable_before_worker_ipc_fork_clone_or_backend_contact",
+    "restart_rule": "broker_restart_never_auto_dispatches_not_dispatched_or_any_other_state",
+    "boot_epoch_rule": {
+      "ledger_records_request_boot_id_sha256": true,
+      "not_dispatched_from_prior_boot_must_not_dispatch": true,
+      "dispatched_from_prior_boot_becomes_restart_indeterminate": true,
+      "new_clock_boottime_may_be_lower_than_old_dispatch_start": true
+    },
+    "post_dispatch_persistence_failure_public_outcome": "indeterminate",
+    "terminal_before_dispatch": [
+      "cancelled_before_dispatch",
+      "deadline_before_dispatch",
+      "policy_rejected_before_dispatch"
+    ],
+    "blind_retry_after_dispatch": false,
+    "terminal_response_rederived_on_replay": false
+  },
+  "binary_output": {
+    "closed_fields": [
+      "encoding",
+      "bytes",
+      "sha256",
+      "data",
+      "complete"
+    ],
+    "encoding": "base64_standard_rfc4648",
+    "byte_count_and_sha256_bind_decoded_bytes": true,
+    "complete_required_for_terminal": true,
+    "nul_and_non_utf8_preserved": true,
+    "lossy_utf8_forbidden": true
+  },
+  "terminal_response": {
+    "schema": "org.trillionnium.direct-effect.terminal-response.v1",
+    "canonical_encoding": "compact_json_serde_json_to_vec",
+    "closed_fields": [
+      "schema",
+      "effect_id",
+      "request_sha256",
+      "dispatch_occurred",
+      "kind",
+      "exit_code",
+      "signal",
+      "backend_error_code",
+      "stdout",
+      "stderr",
+      "started_boottime_ms",
+      "finished_boottime_ms"
+    ],
+    "exact_serialized_bytes_sha256_is_terminal_observation_response_sha256": true,
+    "replay_requires_exact_serialized_bytes": true
+  },
+  "terminal_observation": {
+    "schema": "org.trillionnium.direct-effect.terminal-observation.v1",
+    "closed_fields": [
+      "schema",
+      "kind",
+      "exit_code",
+      "signal",
+      "backend_error_code",
+      "stdout_bytes",
+      "stderr_bytes",
+      "stdout_sha256",
+      "stderr_sha256",
+      "started_boottime_ms",
+      "finished_boottime_ms",
+      "response_sha256"
+    ],
+    "kinds": [
+      "exited",
+      "signaled",
+      "launch_rejected",
+      "cancelled_before_dispatch",
+      "deadline_before_dispatch",
+      "policy_rejected_before_dispatch"
+    ],
+    "binary_safe_output_required": true,
+    "lossy_utf8_output_forbidden": true,
+    "exact_response_bytes_retained_outside_pure_state": true
+  },
+  "indeterminate_reasons": [
+    "deadline_after_dispatch",
+    "cancelled_after_dispatch",
+    "output_limit_after_dispatch",
+    "broker_restart_after_dispatch",
+    "backend_lost_after_dispatch"
+  ],
+  "promotion_holds": [
+    "source_wired_listener_and_accept_loop_not_current_bom_artifact_or_device_proven",
+    "source_wired_root_linux_exec_backend_not_current_bom_artifact_or_device_proven",
+    "no_adb_transport_or_equivalent_backend",
+    "no_os_key_custody",
+    "source_wired_os_owned_active_invocation_registration_and_replay_token_not_current_bom_artifact_or_device_proven",
+    "source_wired_broker_peercred_peersec_and_client_peer_authentication_not_current_bom_artifact_or_device_proven",
+    "source_wired_peer_disconnect_cancellation_binding_not_current_bom_device_proven",
+    "source_wired_measured_root_linux_chroot_worker_not_current_bom_artifact_or_device_proven",
+    "source_wired_daemon_and_android_soong_init_selinux_not_current_bom_target_files_or_device_proven",
+    "current_bom_aarch64_shell_artifact_set_v9_rootfs_and_receipt_stage_not_issued",
+    "current_bom_userdebug_target_files_not_built",
+    "current_bom_physical_shell_exec_effect_and_receipt_evidence_not_collected",
+    "no_product_effect_authority"
+  ]
+}

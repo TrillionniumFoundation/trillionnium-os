@@ -1,0 +1,156 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-lp-host-tools-controlled-help-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-aosp-lp-host-tools-controlled-help-smoke-pass",
+  "development_position": "arm64-mobian-fogos-aosp-lp-host-tools-controlled-help-executed-local",
+  "known_blocker_id": "aosp-lp-host-tools-super-payload-build-plan-not-locked",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "result": {
+    "arm64_mobian_fogos_aosp_lp_host_tools_controlled_help_smoke_passed": true,
+    "materialized_nonexecution_plan_consumed": true,
+    "controlled_help_execution_completed": true,
+    "help_probe_count": 2,
+    "passed_help_probe_count": 2,
+    "lpmake_help_exit_status": 64,
+    "lpdump_help_exit_status": 0,
+    "lpmake_executed": true,
+    "lpdump_executed": true,
+    "android_image_tool_execution_executed": true,
+    "android_image_tool_execution_scope": "help-only",
+    "image_inputs_provided": false,
+    "output_image_requested": false,
+    "dynamic_partition_payload_build_executed": false,
+    "dynamic_partition_payload_produced": false,
+    "super_img_produced": false,
+    "target_hardware_artifact_build_allowed_now": false,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_allowed_now": false,
+    "target_hardware_install_executed": false,
+    "post_boot_identity_proof_promoted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "aosp-lp-host-tools-super-payload-build-plan-not-locked",
+    "next_gate": "arm64-mobian-fogos-aosp-lp-host-tools-super-payload-build-plan-smoke"
+  },
+  "aosp_lp_host_tools_controlled_help": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-lp-host-tools-controlled-help.v1",
+    "status": "arm64-mobian-fogos-aosp-lp-host-tools-controlled-help-smoke-pass",
+    "development_position": "arm64-mobian-fogos-aosp-lp-host-tools-controlled-help-executed-local",
+    "known_blocker_id": "aosp-lp-host-tools-super-payload-build-plan-not-locked",
+    "help_probes": {
+      "probes": [
+        {
+          "id": "lpmake",
+          "binary": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/bin/lpmake",
+          "binary_sha256": "4748e9cfeaf1790ee4ce3fc4b957190c1adde034f9c7be9acb7372b72550fc8b",
+          "invoked_args": [
+            "--help"
+          ],
+          "timeout_seconds": 10,
+          "exit_status": 64,
+          "passed": true,
+          "help_mentions_usage": true,
+          "log": "target/mobian-arm64-fogos-aosp-lp-host-tools-controlled-help-smoke/lpmake.help.log",
+          "log_sha256": "2e9a223bff78c4faaaff6ab0c74c2d16abb0647e006081b7a9c3a0ea04e45cfd"
+        },
+        {
+          "id": "lpdump",
+          "binary": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/bin/lpdump",
+          "binary_sha256": "4fc4943a4b3bb36981a535134c1e6354d3911747e9b455feaa63619a4b77ac20",
+          "invoked_args": [
+            "--help"
+          ],
+          "timeout_seconds": 10,
+          "exit_status": 0,
+          "passed": true,
+          "help_mentions_usage": true,
+          "log": "target/mobian-arm64-fogos-aosp-lp-host-tools-controlled-help-smoke/lpdump.help.log",
+          "log_sha256": "18ecab13a49a5d127b7c2abbe5d868ed256af1675c7f5c23c4ac41ebc94c7481"
+        }
+      ],
+      "probe_count": 2,
+      "passed_probe_count": 2
+    },
+    "execution_boundary": {
+      "controlled_help_execution_completed": true,
+      "invoked_args_only": [
+        "--help"
+      ],
+      "image_inputs_provided": false,
+      "output_image_requested": false,
+      "dynamic_partition_payload_produced": false,
+      "target_hardware_artifact_produced": false
+    },
+    "next_gate": "arm64-mobian-fogos-aosp-lp-host-tools-super-payload-build-plan-smoke"
+  },
+  "input_evidence": {
+    "arm64_mobian_fogos_aosp_lp_host_tools_materialized_nonexecution_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-aosp-lp-host-tools-materialized-nonexecution-plan-smoke.json",
+    "arm64_mobian_fogos_aosp_lp_host_tools_materialized_nonexecution_plan_smoke_sha256": "5ced06ddaa89228dc2d8f214b450b2b26d9a688c9737ec3d83f4a268328691cc"
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "68b1f1544dc59be8e7394ac6e638f0df7c02fc2f9bbabf5e7884a0b521f32a97",
+    "script_sha256": "a4f9b2f43595cc2ff2d2ad48e511448908ecbd27683423370e7a5fceedba169e",
+    "help_probes_json": "target/mobian-arm64-fogos-aosp-lp-host-tools-controlled-help-smoke/aosp-lp-host-tools-controlled-help-probes.json",
+    "help_probes_json_sha256": "2d836d32167af715b0900c2610e6edab003005e2e19f2134ce5e3d3c8276ce8d",
+    "help_report_json": "target/mobian-arm64-fogos-aosp-lp-host-tools-controlled-help-smoke/fogos-aosp-lp-host-tools-controlled-help.json",
+    "help_report_json_sha256": "555342e7bac2a444307d2c6d0272c98df86a57113449abcb09edbbd922cf9a53",
+    "help_report_md": "target/mobian-arm64-fogos-aosp-lp-host-tools-controlled-help-smoke/FOGOS_AOSP_LP_HOST_TOOLS_CONTROLLED_HELP.md",
+    "help_report_md_sha256": "cb9165fbe7d2bc8a23004803a2f26d437a922e3affb18dc11adb3eac1735c65b"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "network_download_executed": false,
+    "source_fetch_executed": false,
+    "git_ls_remote_executed": false,
+    "curl_download_executed": false,
+    "repo_sync_executed": false,
+    "protobuf_generation_executed": false,
+    "host_tool_compile_probe_executed": false,
+    "host_tool_build_executed": false,
+    "link_invocation_executed": false,
+    "host_tool_binary_produced": false,
+    "android_image_tool_execution_executed": true,
+    "android_image_tool_execution_scope": "help-only",
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "package_install_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "dpkg_i_executed": false,
+    "bootimage_build_executed": false,
+    "bootimage_repack_executed": false,
+    "vendor_boot_repack_executed": false,
+    "avbtool_executed": false,
+    "avb_signing_executed": false,
+    "lpmake_executed": true,
+    "lpdump_executed": true,
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "super_payload_build_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

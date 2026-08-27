@@ -1,0 +1,60 @@
+# Trillionnium Shell Companion Unit Smoke
+
+- status: trillionnium-shell-companion-unit-installed-autostart-blocked
+- ok: true
+- service_name: trillionnium-shell-companion.service
+- template_present: true
+- installed_service_present: true
+- installed_sets_repo_context: true
+- exec_uses_layer_surface_map_smoke: true
+- service_enabled_status: disabled
+- service_active_status: inactive
+- can_promote_companion_unit: true
+
+## Safety flags
+
+- operator_invoked: true
+- read_only: true
+- template_present: true
+- installed_service_present: true
+- exec_points_to_shell: true
+- template_sets_repo_context: true
+- installed_sets_repo_context: true
+- exec_uses_layer_surface_map_smoke: true
+- wanted_by_graphical_session: true
+- service_enabled: false
+- service_disabled_or_static: true
+- service_active: false
+- service_inactive: true
+- starts_service: false
+- opens_window: false
+- claims_dbus_name: false
+- registers_autostart: false
+- mutates_phosh_session: false
+- mutates_compositor: false
+- uses_layer_shell: false
+- launches_apps: false
+- reads_notifications: false
+- invokes_model: false
+- invokes_tool: false
+- writes_files: false
+- can_promote_companion_unit: true
+- mobile_mvp_ready: false
+
+## Blockers
+
+- Shell companion user unit is installed, but autostart enablement remains disabled
+- service start/lifecycle smoke is not promoted yet
+- mobile_mvp_ready=false
+
+## Command hints
+
+- trillionnium-shell companion-unit-smoke --summary-only --json
+- trillionnium-shell companion-unit-smoke --check --json
+- systemctl --user is-enabled trillionnium-shell-companion.service
+- systemctl --user is-active trillionnium-shell-companion.service
+
+## Safety notes
+
+- companion-unit-smoke is read-only: it checks the source template, installed user unit, and systemd enabled/active state without starting the service
+- the installed unit points at the already promoted live layer-shell surface smoke, but remains disabled until an explicit autostart gate is promoted

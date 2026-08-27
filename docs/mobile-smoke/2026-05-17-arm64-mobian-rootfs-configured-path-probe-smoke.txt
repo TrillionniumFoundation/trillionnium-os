@@ -1,0 +1,43 @@
+Trillionnium OS arm64 Mobian configured-rootfs path probe smoke
+Date: 2026-05-17
+Status: arm64-mobian-rootfs-configured-path-probe-blocked
+
+Development position:
+- arm64-mobian-rootfs-configured-path-requires-new-execution-strategy
+
+Input evidence:
+- ABI gate: passed and Mobian bookworm GLIBC threshold compatible.
+- Rootfs preflight: package inputs ready.
+- Foreign-exec fetch: private qemu-aarch64-static and proot are available under target/.
+- Chrootless smoke: configured mmdebstrap apt-mode remains blocked by maintainer-script root operations.
+
+Probe result:
+- Essential/required arm64 extract payload prepared with retained apt cache.
+- Extract tarball size: 431505905 bytes.
+- Apt cache .deb count: 328.
+- Extract dpkg status database size: 0 bytes.
+- Extract tree contains /bin/sh, /usr/bin/env, /usr/bin/dpkg, /usr/bin/apt-get, and /usr/bin/trillionniumd.
+- Private proot+qemu filesystem probe ran as aarch64 and could see the probe root marker.
+- Private proot+qemu filesystem probe did not see /usr/bin/trillionniumd and did not have writable /var/lib/dpkg.
+- Private proot+qemu dpkg configure probe exited 2 with: dpkg: error: required read/write access to the dpkg database directory /var/lib/dpkg
+
+Blocker:
+- private-proot-qemu-filesystem-redirection-mismatch
+- Private proot+qemu can execute the first arm64 program and see the probe marker, but it is not a sufficient configured-rootfs filesystem configuration layer because the Trillionnium payload is not visible through the guest filesystem view and the dpkg database is not writable.
+
+Evidence hashes:
+- JSON: 643f7a4f252435838f86b872c8159293f8996f1dbce86fc83537476d413f39bc
+- Script: ad77ddbb960a6e53fef25c7b23514cc39e1206e742cdaa6702b8120ffe9ebea1
+- Extract tarball: 60a47589ea0b910ba28b305784b7a8fcc031e367e45c6b6c88a8fa437901e85d
+- Extract log: d2da16893ddf52a79d4076ddc0a02e951a8a92462abe8cbef387e8023d08d73b
+- Extract manifest: 433dd4f1f1eeccb4691e4c1c215e8e3c4dcd251ebd9c912c424e1614d7f4188c
+- Extract key paths: f045b952cda2a37a98731488414aa8383a34f6c361c437d7631be357d318f81c
+- Private filesystem probe: 66f679790b382f8289401c2de7c1c6f75f3979dec842f31d6a234e782851d0f8
+- Private dpkg configure stderr: c739766de988aeec56d9dfc672536305f645c2afe390338d281fcb4fe6d16e04
+
+Policy boundary:
+- Ran network download, apt-get download through mmdebstrap, mmdebstrap extract, private proot, private qemu-user-static, and a bounded private dpkg configure probe under target/.
+- Did not run apt install, host dpkg install, rustup, cargo build, package install, binfmt registration, host package install, image build, ADB, Fastboot, flash, wipe, repartition, sideload, reboot, bootloader relock, remote push, model invocation, or tool invocation.
+
+Next gate:
+- Prove a configured arm64 Mobian rootfs path with real rootfs path redirection, such as a host-dpkg/fakeroot/proot mapping that passes filesystem probes or a safe binfmt/userns execution path, before any image/rootfs partition smoke.

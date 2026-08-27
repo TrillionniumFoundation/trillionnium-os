@@ -1,0 +1,20 @@
+[package]
+name = "trillionnium-agent-api-uds"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+
+[features]
+default = []
+# Historical plan submission/execution methods are retained only so old
+# protocol vectors can be exercised explicitly. Android production does not
+# enable this feature.
+legacy-plan-methods = []
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+trillionnium-os-types.workspace = true

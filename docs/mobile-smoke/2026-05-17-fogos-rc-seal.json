@@ -1,0 +1,122 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-fogos-rc-seal.v1",
+  "status": "fogos-rc-seal-pass",
+  "generated_at": "2026-05-17T00:18:36+08:00",
+  "generated_at_unix": 1778948316,
+  "target": "mobile",
+  "platform": "physical-android-fogos",
+  "profile": "lineage-fogos",
+  "release_track": "dogfood-alpha-rc",
+  "target_device_serial": "ZY32JLVHGN",
+  "product_device": "fogos",
+  "product_model": "moto g34 5G",
+  "lineage_version": "23.2-20260429-UNOFFICIAL-fogos",
+  "android_version_release": "16",
+  "android_version_sdk": "36",
+  "boot_slot_suffix": "_b",
+  "boot_verified_state": "orange",
+  "release_candidate_commit": "b9240a043288d053594e46b051e3a126d23d5475",
+  "release_candidate_tree": "2db73acb1296bac8b9fb706ebda9b050d001adef",
+  "release_candidate_subject": "Promote post-flash FOGOS acceptance evidence",
+  "physical_final_execution_promoted": true,
+  "post_flash_device_acceptance_promoted": true,
+  "bridge_install_acceptance_promoted": true,
+  "notification_body_action_smoke_promoted": true,
+  "source_packaging_promotion_ok": true,
+  "source_shell_readiness_ok": true,
+  "source_notification_smoke_ok": true,
+  "installed_daemon_active": true,
+  "installed_daemon_enabled": true,
+  "installed_doctor_ok": true,
+  "installed_selftest_ok": true,
+  "installed_packaging_promotion_ok": true,
+  "installed_packaging_gate_count": 5,
+  "installed_packaging_gate_satisfied_count": 5,
+  "installed_shell_readiness_ok": true,
+  "installed_shell_mobile_mvp_ready": true,
+  "installed_shell_blocker_count": 0,
+  "installed_runtime_smoke_ok": true,
+  "installed_runtime_fixture_count": 21,
+  "installed_runtime_passed_count": 21,
+  "installed_signal_center_ok": true,
+  "installed_live_notification_body_action_smoke_ok": true,
+  "adb_visible": true,
+  "adb_state": "device",
+  "bridge_package_installed": true,
+  "bridge_pairing_activity_resolved": true,
+  "notification_listener_default_empty": true,
+  "post_notifications_permission_granted_final": false,
+  "bridge_signed_apk_sha256": "5f02557d2238ad1487a69e6c37509c58ffac1bd83e6e10a78d8180ee3889edcb",
+  "bridge_unsigned_apk_sha256": "ec95cae4de21b9120ac93fcc00a7b0b1d7517101a8d6c08326de0a3bb56d3479",
+  "installed_command_center_sha256": "46dc879f8dce0c4f71719fb28e3642f840de7c11e7b3f0edb4d2d740152be204",
+  "installed_shell_sha256": "d5e6ab2a92702c8c1971b87c0b1e251d35dd62c4c01ca53175c034001f8d3a13",
+  "installed_daemon_sha256": "f204e7ae1abbd45ce15a743dd0498596555327d8b02f1cfa2817b5537f9887cd",
+  "future_destructive_execution_authorized": false,
+  "bootloader_relock_authorized": false,
+  "bootloader_relock_executed": false,
+  "fresh_flash_executed": false,
+  "wipe_executed": false,
+  "repartition_executed": false,
+  "sideload_executed": false,
+  "reboot_executed": false,
+  "signal_broker_write_enabled": false,
+  "audit_write_enabled": false,
+  "invokes_model": false,
+  "invokes_tool": false,
+  "rc_seal_complete": true,
+  "hash_manifest": [
+    {
+      "path": "docs/mobile-smoke/2026-05-16-fogos-physical-final-execution-smoke.json",
+      "sha256": "d535ad4a5cc0be1e978fc03f7e10150a3035c6264e05e9abf9356b7609a76504"
+    },
+    {
+      "path": "docs/mobile-smoke/2026-05-16-fogos-post-flash-device-acceptance-smoke.json",
+      "sha256": "181e230bbf589622651595b24af410b44ebe327cec3cd58cd264b9f3ed021e3f"
+    },
+    {
+      "path": "docs/mobile-smoke/2026-05-16-fogos-bridge-install-acceptance-smoke.json",
+      "sha256": "0254715ea1d7d17974666630ff0b79879bbf3eecc6545ae6e3ac0ca4999df7a5"
+    },
+    {
+      "path": "docs/mobile-smoke/2026-05-16-fogos-live-notification-body-action-smoke.json",
+      "sha256": "9e4f183c136d17e43b412d595889819fd9f605a6ad74984a8bdc895c18a2961b"
+    },
+    {
+      "path": "packaging/mobian/promotion/fogos-physical-final-execution-smoke.toml",
+      "sha256": "4538926e532579ab796fb54ddededccf219088fa15cbe3ef19b97c5e9ebb2e76"
+    },
+    {
+      "path": "packaging/mobian/promotion/fogos-post-flash-device-acceptance-smoke.toml",
+      "sha256": "db5929310efb2f59383511fdf4bf776a52178c35ef1f75eb554540de6546037a"
+    },
+    {
+      "path": "packaging/mobian/promotion/fogos-bridge-install-acceptance-smoke.toml",
+      "sha256": "5bc3affa5604a09aad1dde7519675bea8f7523144567115e701e6bf00f929569"
+    },
+    {
+      "path": "packaging/mobian/promotion/fogos-live-notification-body-action-smoke.toml",
+      "sha256": "bdc89197e3ed83229631b5e8c9ff9bf7d9a64519189efb91165a899578a5e2da"
+    },
+    {
+      "path": "target/bridge-apk/trillionnium-bridge-debug-signed.apk",
+      "sha256": "5f02557d2238ad1487a69e6c37509c58ffac1bd83e6e10a78d8180ee3889edcb"
+    },
+    {
+      "path": "/home/qian-qi/.local/bin/trillionnium-command-center",
+      "sha256": "46dc879f8dce0c4f71719fb28e3642f840de7c11e7b3f0edb4d2d740152be204"
+    },
+    {
+      "path": "/home/qian-qi/.local/bin/trillionnium-shell",
+      "sha256": "d5e6ab2a92702c8c1971b87c0b1e251d35dd62c4c01ca53175c034001f8d3a13"
+    },
+    {
+      "path": "/home/qian-qi/.local/bin/trillionniumd",
+      "sha256": "f204e7ae1abbd45ce15a743dd0498596555327d8b02f1cfa2817b5537f9887cd"
+    }
+  ],
+  "safety_notes": [
+    "RC seal is evidence-only and non-authorizing.",
+    "No fresh flash, wipe, repartition, sideload, reboot, or bootloader relock was executed by the seal.",
+    "Do not relock this custom Lineage/orange verified-boot device without a separate safety review."
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-publication.contract.v1",
+  "task_publication_schema": "org.trillionnium.capabilitylease.root-task-publication.v1",
+  "task_publication_ack_schema": "org.trillionnium.capabilitylease.root-task-publication-ack.v1",
+  "source_status": "source_only_no_listener_no_runtime_no_effect_authority_v1",
+  "fixed": {
+    "publication_binding_domain": "trillionnium.capability-lease-root-publication.v1",
+    "ack_binding_domain": "trillionnium.capability-lease-root-publication-ack.v1",
+    "protocol": "trillionnium.capability-lease-root-publication.uds.v1",
+    "operation": "register_task",
+    "transport_role": "system_api_replay_sync",
+    "transport_selinux_domain": "u:r:trillionnium_agent_system_api_replay_sync:s0",
+    "transport_executable_identity": "system_ext/bin/trillionnium-system-api-replay-sync",
+    "root_registration_contract_sha256": "7e71b2fd71b6dbd87ec83b5b649dba743d63846cdf1da51c42b5977959e6815a"
+  },
+  "authority": {
+    "listener_available": false,
+    "runtime_consumer_available": false,
+    "confers_effect_authority": false
+  },
+  "framing": {
+    "wire": "u32be(payload_byte_length) || canonical_compact_utf8_json",
+    "maximum_payload_bytes": 8192,
+    "requires_exact_eof": true
+  },
+  "encoding": {
+    "digest": "sha256",
+    "field_frame": "u32be(name_byte_length) || name_ascii || u32be(value_byte_length) || value",
+    "string_values": "utf8",
+    "integer_values": "i64be",
+    "publication_binding_fields": [
+      "domain",
+      "publication_schema",
+      "publication_contract_sha256",
+      "root_registration_contract_sha256",
+      "protocol",
+      "operation",
+      "provider_id",
+      "agent_id",
+      "replay_namespace",
+      "transport_peer_uid",
+      "transport_peer_gid",
+      "transport_peer_selinux_domain",
+      "transport_executable_sha256",
+      "boot_id_sha256",
+      "publisher_epoch",
+      "publisher_sequence",
+      "root_journal_genesis_sha256",
+      "epoch_proof_sha256",
+      "root_record_sha256",
+      "root_record_proof_sha256",
+      "registration_binding_sha256"
+    ],
+    "publication_payload_fields": [
+      "schema",
+      "publication_contract_sha256",
+      "root_registration_contract_sha256",
+      "protocol",
+      "operation",
+      "transport_peer",
+      "registration",
+      "root_record_sha256",
+      "root_record_proof_sha256",
+      "publication_binding_sha256"
+    ],
+    "transport_peer_fields": [
+      "role",
+      "uid",
+      "gid",
+      "selinux_domain",
+      "executable_identity",
+      "executable_sha256"
+    ],
+    "ack_binding_fields": [
+      "domain",
+      "publication_binding_sha256",
+      "registration_binding_sha256",
+      "token_record_sha256",
+      "publisher_epoch",
+      "publisher_sequence",
+      "root_record_sha256",
+      "root_record_proof_sha256"
+    ],
+    "ack_payload_fields": [
+      "schema",
+      "publication_binding_sha256",
+      "registration_binding_sha256",
+      "token_record_sha256",
+      "publisher_epoch",
+      "publisher_sequence",
+      "root_record_sha256",
+      "root_record_proof_sha256",
+      "ack_binding_sha256"
+    ]
+  },
+  "validation": {
+    "digest": "lower_hex_64_nonzero",
+    "publisher_epoch": "lower_hex_32_nonzero",
+    "publisher_sequence": "1..9223372036854775807",
+    "transport_peer_uid_gid": "must_equal_registered_agent_uid_gid",
+    "transport_peer_domain_and_identity": "must_equal_fixed_values",
+    "registration": "must_validate_capability_lease_root_registration_v1",
+    "json": "closed_fields_canonical_compact_utf8_no_duplicate_keys",
+    "response": "contains_commitments_only_never_raw_token"
+  }
+}

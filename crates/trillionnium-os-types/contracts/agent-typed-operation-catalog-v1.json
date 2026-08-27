@@ -1,0 +1,208 @@
+{
+  "schema": "org.trillionnium.agent-typed-operation-catalog.v1",
+  "catalog_id": "trillionnium-agent-typed-operation-catalog-v1",
+  "revision": 2,
+  "status": "frozen_source_candidate_hold",
+  "effect_authority": false,
+  "product_signature": {
+    "status": "absent_hold",
+    "algorithm": "ed25519",
+    "catalog_sha256_required": true,
+    "detached_signature_required": true,
+    "key_owner": "os_release_signing_pipeline",
+    "agent_key_access": false
+  },
+  "principals": [
+    {
+      "provider_id": "openai-codex",
+      "agent_id": "agent-codex-direct-v1",
+      "uid": 5901,
+      "gid": 5901,
+      "selinux_domain": "u:r:trillionnium_codex_agent:s0"
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "exec.launch_package.settings.v1",
+      "adapter": "typed_exec",
+      "agent_arguments": {
+        "shape": "closed_empty_object",
+        "unknown_fields": "reject"
+      },
+      "execution_descriptor": {
+        "executable": "/system/bin/cmd",
+        "argv0": "cmd",
+        "argv": [
+          "activity",
+          "start-activity",
+          "--user",
+          "current",
+          "-a",
+          "android.intent.action.MAIN",
+          "-c",
+          "android.intent.category.LAUNCHER",
+          "-p",
+          "com.android.settings"
+        ],
+        "uid": 2000,
+        "gid": 2000,
+        "selinux_domain": "u:r:trillionnium_typed_exec:s0",
+        "cgroup_profile": "typed-exec-launch-package-v1",
+        "seccomp_profile": "typed-exec-launch-package-v1",
+        "capabilities": [],
+        "environment": {
+          "ANDROID_DATA": "/data",
+          "ANDROID_ROOT": "/system",
+          "PATH": "/system/bin"
+        },
+        "stdin": "closed",
+        "filesystem_scope": "fixed_android_framework_only",
+        "network_scope": "none",
+        "deadline_ms": 15000,
+        "stdout_limit_bytes": 65536,
+        "stderr_limit_bytes": 65536,
+        "total_output_limit_bytes": 65536,
+        "descendant_process_policy": "no_background_descendants_kill_cgroup_at_deadline",
+        "opaque_fd_passing": false
+      },
+      "admission": {
+        "product_variants": [
+          "user",
+          "userdebug",
+          "eng",
+          "recovery"
+        ],
+        "risk_class": "foreground_app_launch",
+        "one_shot_lease_required": true,
+        "user_consent": "os_policy_decides_before_prepared",
+        "single_delivery_attempt_required": true
+      }
+    },
+    {
+      "operation_id": "adb.launch_package.settings.user.v1",
+      "adapter": "typed_adb",
+      "agent_arguments": {
+        "shape": "closed_empty_object",
+        "unknown_fields": "reject"
+      },
+      "execution_descriptor": {
+        "target": "self_device_only",
+        "transport": "os_owned_local_user_product_adbd",
+        "service": "abb_exec",
+        "service_arguments": [
+          "activity",
+          "start-activity",
+          "--user",
+          "current",
+          "-a",
+          "android.intent.action.MAIN",
+          "-c",
+          "android.intent.category.LAUNCHER",
+          "-p",
+          "com.android.settings"
+        ],
+        "serial": null,
+        "host": null,
+        "port": null,
+        "adbd_key_custody": "os_owned_user_product_not_agent_addressable",
+        "product_identity": "os_selected_local_user_device_avb_identity",
+        "cgroup_profile": "typed-adb-launch-package-user-v1",
+        "seccomp_profile": "typed-adb-launch-package-user-v1",
+        "capabilities": [],
+        "environment": {},
+        "stdin": "closed",
+        "filesystem_scope": "none",
+        "network_scope": "fixed_local_adbd_only",
+        "deadline_ms": 15000,
+        "stdout_limit_bytes": 65536,
+        "stderr_limit_bytes": 65536,
+        "total_output_limit_bytes": 65536,
+        "descendant_process_policy": "no_background_descendants_kill_cgroup_at_deadline",
+        "opaque_fd_passing": false
+      },
+      "admission": {
+        "product_variants": [
+          "user"
+        ],
+        "risk_class": "foreground_app_launch_product_fallback",
+        "one_shot_lease_required": true,
+        "user_consent": "os_policy_decides_before_prepared",
+        "single_delivery_attempt_required": true,
+        "direct_system_api_unavailable_proof_required": true
+      }
+    },
+    {
+      "operation_id": "adb.launch_package.settings.engineering-recovery.v1",
+      "adapter": "typed_adb",
+      "agent_arguments": {
+        "shape": "closed_empty_object",
+        "unknown_fields": "reject"
+      },
+      "execution_descriptor": {
+        "target": "self_device_only",
+        "transport": "os_owned_local_engineering_recovery_adbd",
+        "service": "abb_exec",
+        "service_arguments": [
+          "activity",
+          "start-activity",
+          "--user",
+          "current",
+          "-a",
+          "android.intent.action.MAIN",
+          "-c",
+          "android.intent.category.LAUNCHER",
+          "-p",
+          "com.android.settings"
+        ],
+        "serial": null,
+        "host": null,
+        "port": null,
+        "adbd_key_custody": "os_owned_engineering_recovery_not_agent_addressable",
+        "product_identity": "os_selected_local_engineering_recovery_avb_identity",
+        "cgroup_profile": "typed-adb-launch-package-engineering-recovery-v1",
+        "seccomp_profile": "typed-adb-launch-package-engineering-recovery-v1",
+        "capabilities": [],
+        "environment": {},
+        "stdin": "closed",
+        "filesystem_scope": "none",
+        "network_scope": "fixed_local_adbd_only",
+        "deadline_ms": 15000,
+        "stdout_limit_bytes": 65536,
+        "stderr_limit_bytes": 65536,
+        "total_output_limit_bytes": 65536,
+        "descendant_process_policy": "no_background_descendants_kill_cgroup_at_deadline",
+        "opaque_fd_passing": false
+      },
+      "admission": {
+        "product_variants": [
+          "userdebug",
+          "eng",
+          "recovery"
+        ],
+        "risk_class": "foreground_app_launch_engineering_recovery",
+        "one_shot_lease_required": true,
+        "user_consent": "os_policy_decides_before_prepared",
+        "single_delivery_attempt_required": true,
+        "direct_system_api_unavailable_proof_required": true
+      }
+    }
+  ],
+  "durability": {
+    "prepared_before_effect": true,
+    "terminal_result_before_return": true,
+    "exact_response_replay": true,
+    "outer_ack_before_reclamation": true,
+    "operation_epoch_or_high_water_required": true,
+    "indeterminate_outcome_policy": "hold_without_blind_retry"
+  },
+  "promotion_gates": {
+    "catalog_detached_signature_verified": false,
+    "catalog_bound_to_avb_product_identity": false,
+    "typed_exec_backend_installed": false,
+    "typed_adb_backend_installed": false,
+    "broker_durability_wired": false,
+    "selinux_cgroup_seccomp_installed": false,
+    "physical_restart_replay_evidence": false,
+    "locked_user_device_evidence": false
+  }
+}

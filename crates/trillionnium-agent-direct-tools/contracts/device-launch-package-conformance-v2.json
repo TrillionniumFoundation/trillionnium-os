@@ -1,0 +1,42 @@
+{
+  "schema": "org.trillionnium.p0-1.launch-package-device-conformance.v2",
+  "lane": "non_product_userdebug_only",
+  "tool": "trillionnium_system_api",
+  "action": "launch_package",
+  "package": "com.android.settings",
+  "android_user": 0,
+  "fixed_epoch_for_golden_only": "00112233445566778899aabbccddeeff",
+  "operation_sequence": 1,
+  "providers": {
+    "codex": {
+      "provider_id": "openai-codex",
+      "agent_id": "agent-codex-direct-v1",
+      "operation_id": "op:00112233445566778899aabbccddeeff:1:680c0e43be0ab099a6384eb8c5de4b0460022a0961de78d8da4de7efd440d14b"
+    }
+  },
+  "requires": {
+    "durable_result": true,
+    "restart_replay": true,
+    "result_delivery_before_outer_ack": true,
+    "explicit_ack_reconcile_stage": true,
+    "effect_mode_consumes_outer_ack": false,
+    "outer_ack_v2": false,
+    "outer_ack_v3": true,
+    "android_replay_ack": true,
+    "fixed_measured_fd_handoff": true,
+    "independent_root_binding_inbox_crosscheck": true,
+    "p0_userdebug_daemon_sealed_ack_closure_source": true,
+    "p0_daemon_custody_confirmation_lane": true,
+    "durable_local_compaction_readback": true,
+    "daemon_ack_inbox_retirement": true,
+    "product_external_rollback_authority": false,
+    "product_hardware_rollback_anchor": false,
+    "product_mutation_cas_authority": false,
+    "physical_device_closure_evidence": false,
+    "product_available": false
+  },
+  "runtime_wiring": {
+    "status": "source_wired_system_api_only_device_evidence_hold",
+    "codex_userdebug_system_api_hotpath": true
+  }
+}

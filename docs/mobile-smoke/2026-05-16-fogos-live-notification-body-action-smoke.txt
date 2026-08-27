@@ -1,0 +1,62 @@
+Trillionnium Bridge live notification body/action smoke
+2026-05-16T23:52:26+08:00
+serial=ZY32JLVHGN
+== adb devices -l ==
+List of devices attached
+ZY32JLVHGN             device usb:1-8 product:fogos_g model:moto_g34_5G device:fogos transport_id:11
+
+5f02557d2238ad1487a69e6c37509c58ffac1bd83e6e10a78d8180ee3889edcb  /home/qian-qi/.openclaw/workspace/trillionnium-os/target/bridge-apk/trillionnium-bridge-debug-signed.apk
+20907
+== adb -s ZY32JLVHGN shell pm grant ai.trillionnium.bridge android.permission.POST_NOTIFICATIONS ==
+== adb -s ZY32JLVHGN shell cmd notification allow_listener ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService ==
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 73
+Complete
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 97
+Complete
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 55
+Complete
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 52
+Complete
+Row: 0 configured=0, outbox_path=/data/user/0/ai.trillionnium.bridge/files/bridge-outbox.jsonl, line_count=0, latest_line=, contents=
+Row: 0 configured=1, outbox_path=/data/user/0/ai.trillionnium.bridge/files/bridge-outbox.jsonl, line_count=0, latest_line=, contents=
+Row: 0 configured=1, outbox_path=/data/user/0/ai.trillionnium.bridge/files/bridge-outbox.jsonl, line_count=2, latest_line={"protocol":"trillionnium.bridge.v1","pairing_id":"smoke-pairing","device_id":"smoke-device","event_id":"android-deb3814a-8fc0-4508-ae1a-b570df26eef2","sequence":2,"nonce":"nonce-d807d6d8-5326-4cd3-908b-7a3e4e3823f7","timestamp_unix_ms":1778946747514,"ttl_ms":300000,"kind":"android.notification.action_invocation","payload":{"source":"android-notification-action","app_id":"ai.trillionnium.bridge","notification_tag":"trillionnium-bridge-smoke","notification_id":4242,"action_title":"ACTSMOKE_ACTION","action_invoked":true,"redacted":true,"policy_tainted":true},"signature_hex":"cc389c3cde4c91a612338207f926b77792682601eae2f5e51384bca183fc73ac"}, contents={"protocol":"trillionnium.bridge.v1","pairing_id":"smoke-pairing","device_id":"smoke-device","event_id":"android-e670485a-017f-4f13-9bb3-3306bb408f53","sequence":1,"nonce":"nonce-aad77767-b22a-4a7b-b758-8405da1968ac","timestamp_unix_ms":1778946747509,"ttl_ms":300000,"kind":"android.notification.body","payload":{"source":"android-notification-listener","app_id":"ai.trillionnium.bridge","post_time_unix_ms":1778946747266,"title_hash":"f38ecfdeaf73d2847103358f733d5d6d179e59778a3a25e6d076995098d71db4","body_hash":"619168b1c3c3234b22e221c3159619a16ea51843016009b2517b2dbc66b2cb12","redacted":false,"title":"ACTSMOKE_TITLE","body":"ACTSMOKE_BODY_20260516_POSTFLASH_RERUN","raw_body_operator_authorized":true,"action_count":1,"action_invocation_enabled":true,"action_titles":["ACTSMOKE_ACTION"],"action_metadata_operator_authorized":true,"action_invocation_attempted":true,"action_invocation_succeeded":true,"policy_tainted":true},"signature_hex":"0e717dc3419f1a319594ac197676e7fbff0eabd9bdac5a1a0f800292e2210c4a"}
+{"protocol":"trillionnium.bridge.v1","pairing_id":"smoke-pairing","device_id":"smoke-device","event_id":"android-deb3814a-8fc0-4508-ae1a-b570df26eef2","sequence":2,"nonce":"nonce-d807d6d8-5326-4cd3-908b-7a3e4e3823f7","timestamp_unix_ms":1778946747514,"ttl_ms":300000,"kind":"android.notification.action_invocation","payload":{"source":"android-notification-action","app_id":"ai.trillionnium.bridge","notification_tag":"trillionnium-bridge-smoke","notification_id":4242,"action_title":"ACTSMOKE_ACTION","action_invoked":true,"redacted":true,"policy_tainted":true},"signature_hex":"cc389c3cde4c91a612338207f926b77792682601eae2f5e51384bca183fc73ac"}
+
+    NotificationRecord(0x0ec5f68c: pkg=ai.trillionnium.bridge user=UserHandle{0} id=4242 tag=trillionnium-bridge-smoke importance=3 key=0|ai.trillionnium.bridge|4242|trillionnium-bridge-smoke|10170: Notification(channel=trillionnium_bridge_smoke shortcut=null contentView=null vibrate=null sound=null defaults=0 flags=0 color=0x00000000 actions=1 vis=PRIVATE))
+      opPkg=ai.trillionnium.bridge
+      icon=Icon(typ=RESOURCE pkg=ai.trillionnium.bridge id=0x0108009b)
+      key=0|ai.trillionnium.bridge|4242|trillionnium-bridge-smoke|10170
+      groupKey=0|ai.trillionnium.bridge|4242|trillionnium-bridge-smoke|10170
+            contentIntent=PendingIntent{7b0d1d5: PendingIntentRecord{a841c0d ai.trillionnium.bridge startActivity (allowlist: 1636c09:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+                [0] "ACTSMOKE_ACTION" -> PendingIntent{5f66dea: PendingIntentRecord{9da17c2 ai.trillionnium.bridge broadcastIntent (allowlist: 1636c09:+30s0ms/0/NOTIFICATION_SERVICE/NotificationManagerService)}}
+                android.appInfo=ApplicationInfo (ApplicationInfo{c6648db ai.trillionnium.bridge})
+      mSoundNotificationKey=0|ai.trillionnium.bridge|4242|trillionnium-bridge-smoke|10170
+      AppSettings: ai.trillionnium.bridge (10170) importance=DEFAULT userSet=false
+      ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService (user: 0 isPrimary: true)
+      userId=0 value={ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService}
+      ComponentInfo{ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService}
+      ComponentInfo{ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService} (user 0): android.service.notification.INotificationListener$Stub$Proxy@c8fa7a0
+      android.ext.services:ai.trillionnium.bridge (user: 0 isPrimary: false)
+      userId=0 value={ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService, com.android.camera2, android.ext.services}
+      key='ai.trillionnium.bridge',
+    mKeys [Pair{259220255 -1|android|32|null|1000}, Pair{259220286 0|android|2345|ChRBbmRyb2lkSWRlbnRpdHlDaGVjaxIbSWRlbnRpdHlDaGVja1Byb21vQ2FyZElzc3VlGAA=|1000}, Pair{259225541 -1|android|26|null|1000}, Pair{259225591 0|android|89|null|1000}, Pair{262348815 0|ai.trillionnium.bridge|4242|trillionnium-bridge-smoke|10170}]
+        0|ai.trillionnium.bridge|g:Aggregate_AlertingSection
+            0|ai.trillionnium.bridge|4242|trillionnium-bridge-smoke|10170
+
+

@@ -1,0 +1,54 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.activation-gate.contract.v1",
+  "source_status": "source_only_no_product_authority_v1",
+  "decision": "hold",
+  "gates": {
+    "issuer_consume": {
+      "status": "unavailable",
+      "required_evidence": [
+        "root_trust_manifest_sha256",
+        "issuer_identity_binding_sha256",
+        "consumer_receipt_binding_sha256",
+        "lease_epoch_high_water_proof_sha256"
+      ],
+      "issuer_must_be_root_authenticated": true,
+      "consumer_receipt_must_be_root_bound": true,
+      "runtime_consumer_available": false
+    },
+    "hardware_rollback": {
+      "status": "unavailable",
+      "required_evidence": [
+        "keymint_attestation_chain_sha256",
+        "keymint_verified_boot_state",
+        "avb_rollback_index_high_water",
+        "rollback_index_persistence_proof_sha256"
+      ],
+      "hardware_evidence_present": false,
+      "device_write_performed": false
+    },
+    "accessibility_closure": {
+      "status": "unavailable",
+      "required_evidence": [
+        "accessibility_service_ownership_proof_sha256",
+        "accessibility_mcp_schema_sha256",
+        "accessibility_operation_epoch_replay_proof_sha256",
+        "accessibility_receipt_ack_closure_sha256"
+      ],
+      "service_ownership_verified": false,
+      "runtime_consumer_available": false,
+      "receipt_ack_closure_verified": false
+    }
+  },
+  "product_authority": {
+    "constructor_available": false,
+    "enablement_token_available": false,
+    "confers_effect_authority": false
+  },
+  "fail_closed": {
+    "missing_gate_decision": "hold",
+    "missing_evidence_decision": "hold",
+    "unverified_hardware_decision": "hold",
+    "synthetic_test_proof": "test_only_not_hardware_evidence",
+    "device_write_performed": false
+  }
+}

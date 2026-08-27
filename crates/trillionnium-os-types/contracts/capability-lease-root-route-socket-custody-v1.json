@@ -1,0 +1,52 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-route-socket-custody.contract.v1",
+  "source_status": "source_only_concrete_private_route_listener_connector_no_product_wiring_v1",
+  "dependencies": {
+    "root_route_transport_contract_sha256": "176fc01d3a666fe98e2d9209a411a10fae030b69c480c7ef520dc7ca233a68ac"
+  },
+  "socket": {
+    "protocol": "trillionnium.capability-lease-root-route.uds.v1",
+    "address": "abstract_trillionnium_capability_lease_root_route",
+    "type": "af_unix_sock_stream_cloexec",
+    "backlog": 1,
+    "filesystem_entry": "none"
+  },
+  "listener_custody": {
+    "owner": "agentd_uid_0_gid_0_selinux_u_r_trillionnium_agentd_s0",
+    "startup": "create_nonblocking_then_bind_exact_abstract_name_then_listen_backlog_one_then_revalidate_same_fd",
+    "accept": "one_monotonic_5000ms_deadline_then_accept_one_cloexec_stream",
+    "peer": "positive_pid_uid_1000_gid_1000_selinux_u_r_system_server_s0_rechecked_four_times",
+    "shutdown": "close_listener_immediately_after_accept_or_any_failure_never_rebind",
+    "failure": "close_listener_and_accepted_stream_without_response_or_retry"
+  },
+  "connector_custody": {
+    "owner": "system_server_uid_1000_gid_1000_selinux_u_r_system_server_s0",
+    "startup": "create_nonblocking_cloexec_then_one_connect_to_exact_abstract_name_with_monotonic_5000ms_deadline",
+    "peer": "positive_pid_uid_0_gid_0_selinux_u_r_trillionnium_agentd_s0_rechecked_four_times",
+    "shutdown": "shutdown_write_after_request_require_exact_response_eof_then_close",
+    "failure": "close_fd_without_reconnect_retry_or_alternate_carrier"
+  },
+  "exchange": {
+    "order": "listener_bound_before_connector_start_then_request_then_response_then_both_terminal",
+    "request": "one_u32be_canonical_commitment_only_request_plus_exact_eof",
+    "response": "one_u32be_canonical_commitment_only_response_plus_exact_eof",
+    "timeouts": "single_monotonic_5000ms_budget_per_accept_connect_read_or_write_phase",
+    "retry": "none",
+    "queue": "none",
+    "background_thread": "none"
+  },
+  "authority": {
+    "source_listener_implemented": true,
+    "source_connector_implemented": true,
+    "public_broker_protocol_extended": false,
+    "listener_product_wired": false,
+    "connector_product_wired": false,
+    "broker_main_route_wired": false,
+    "coordinator_route_adapter_wired": false,
+    "runtime_constructor_available": false,
+    "token_mutation_available": false,
+    "confers_ack_authority": false,
+    "confers_lease_trust": false,
+    "confers_effect_authority": false
+  }
+}

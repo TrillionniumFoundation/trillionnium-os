@@ -1,0 +1,19 @@
+# Trillionnium OS Mobile Integration Report
+
+- status: mobile-os-integration-ready
+- ok: true
+- passive_only: true
+- summary_only: true
+- blockers_only: false
+- draft_blueprints_valid: 2/2
+- promoted_manifests: 2/2
+- promoted_gates: 3/3
+- source_package_path_ready: true
+- source_image_path_ready: true
+- source_promotion_gates_ready: true
+- source_integration_ready: true
+- can_package_now: true
+- can_build_image_now: true
+- promotion_can_promote_now: 3/3
+- capability_overall_ready: true
+- can_integrate_now: true

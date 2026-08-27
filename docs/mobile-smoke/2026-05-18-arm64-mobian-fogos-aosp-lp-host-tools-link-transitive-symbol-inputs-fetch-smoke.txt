@@ -1,0 +1,20 @@
+arm64 Mobian fogos AOSP LP host-tools link transitive symbol inputs fetch smoke
+status=arm64-mobian-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke-pass
+development_position=arm64-mobian-fogos-aosp-lp-host-tools-materialized-not-executed-local
+known_blocker_id=aosp-lp-host-tools-materialized-nonexecution-boundary-not-locked
+next_gate=arm64-mobian-fogos-aosp-lp-host-tools-materialized-nonexecution-plan-smoke
+fetched_source_file_count=2
+compiled_object_count=2
+failed_compile_count=0
+attempted_link_count=2
+linked_binary_count=2
+failed_link_count=0
+host_tool_binary_produced=true
+lpmake_materialized=true
+lpdump_materialized=true
+all_required_tools_materialized=true
+first_undefined_symbol=
+ready_for_release_push=false
+fetch_report_json_sha256=38ec36bf05ec3a3c69666765cd490f5a37105fd5d0ceb780955dc026992c7a5f
+fetch_report_md_sha256=b1f1b9e3f80d267b2f62e20270f47d38ab21bf87374d74454db48d8973249184
+json_sha256=a4089f5aabf1a55d8413830c5bfc58ff2ee696c5722368c6d6d232e941bd8942

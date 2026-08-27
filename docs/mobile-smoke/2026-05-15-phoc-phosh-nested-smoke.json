@@ -1,0 +1,28 @@
+{
+  "schema": "org.trillionnium.shell.nested-phoc-phosh-smoke-log.v1",
+  "status": "pass",
+  "exit_code": 124,
+  "timeout_exit_is_acceptable": true,
+  "weston_before": [
+    "2612405"
+  ],
+  "weston_after": [
+    "2612405"
+  ],
+  "weston_survived": true,
+  "phoc_after": [],
+  "phosh_after": [
+    "2734350",
+    "2734435"
+  ],
+  "nested_compositor_started": true,
+  "mutated_system_session": false,
+  "enabled_autostart": false,
+  "flashed_or_rebooted": false,
+  "notes": [
+    "nested phoc/phosh smoke inside existing headless Weston; timeout is expected cleanup",
+    "no services/autostart/system package state changed",
+    "phosh_after records PIDs observed immediately after timeout before cleanup"
+  ],
+  "log_tail": "nested phoc+phosh smoke start: 2026-05-15T01:06:17+08:00\nweston_before: 2612405 \ncommand: timeout 12 env PATH=/usr/libexec:$PATH XDG_CURRENT_DESKTOP=phosh DESKTOP_SESSION=phosh XDG_SESSION_TYPE=wayland WAYLAND_DISPLAY=trillionnium-wayland-1 WLR_BACKENDS=wayland WLR_LIBINPUT_NO_DEVICES=1 phoc -S -E \"phosh -U\"\nphoc-server-Message: 01:06:17.982: Linux dmabuf support unavailable\nRunning compositor on wayland display 'wayland-0'\nrc: 124\nweston_after: 2612405 \nphoc_after: \nphosh_after: 2734350 2734435 \nend: 2026-05-15T01:06:30+08:00\n"
+}

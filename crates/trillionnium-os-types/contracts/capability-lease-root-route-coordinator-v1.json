@@ -1,0 +1,36 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-route-coordinator.contract.v1",
+  "source_status": "source_only_single_internal_broker_route_dual_listener_terminal_coordinator_v1",
+  "dependencies": {
+    "root_kernel_custody_contract_sha256": "4d1fef7a3bc0ab7e66ef51d6cfb6ad478fffcf3b5484530fc379ced413ce0009",
+    "root_socket_result_custody_contract_sha256": "534563d64718520417eb22f22c17a45961e6706c8d498f6720c7e30bd444fcec",
+    "root_listener_correlation_contract_sha256": "d63e931b87db5ff0927620659e9fd4d48e725e6ec8e6a23fd2d6dc773092c65b"
+  },
+  "broker_route": {
+    "visibility": "crate_internal_source_disabled_not_in_public_broker_protocol",
+    "input": "one_validated_root_task_publication_only",
+    "execution": "derive_launch_spec_then_concrete_kernel_custody_then_fixed_proof_socket_then_exact_completion",
+    "result": "commitments_only_publication_registration_token_root_record_root_proof_ack_and_authentication",
+    "failure": "kill_and_reap_no_retry_no_alternate_route_no_partial_result"
+  },
+  "dual_listener_coordinator": {
+    "binding_order": "publication_socket_then_proof_socket_before_route_start",
+    "accept_order": "one_proof_then_close_proof_connection_then_one_publication",
+    "correlation": "same_single_use_object_for_publication_peer_and_backend_root_journal_authentication",
+    "completion": "exact_equality_between_proof_publication_ack_and_broker_completion_commitments",
+    "lifecycle": "new_to_running_once_then_terminal_with_owned_route_and_listeners_closed",
+    "failure": "terminal_abort_route_close_both_listeners_drop_proof_no_retry"
+  },
+  "authority": {
+    "public_broker_protocol_extended": false,
+    "broker_main_route_wired": false,
+    "listener_coordinator_wired": false,
+    "product_constructor_available": false,
+    "publisher_packaged": false,
+    "live_socket_available": false,
+    "token_mutation_available": false,
+    "confers_ack_authority": false,
+    "confers_lease_trust": false,
+    "confers_effect_authority": false
+  }
+}

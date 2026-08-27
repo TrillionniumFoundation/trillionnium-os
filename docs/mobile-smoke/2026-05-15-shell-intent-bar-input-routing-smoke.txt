@@ -1,0 +1,74 @@
+# Trillionnium Shell Intent Bar Runtime Fixture
+
+- status: trillionnium-shell-intent-bar-runtime-live-layer-shell-pass
+- ok: true
+- surface_id: intent-bar
+- rows: 3/3 passed
+- capture/route/degraded: 1/1/1
+- draft_only_rows: 3
+- explicit_execute_boundary_count: 3
+- min_touch_target_dp: 48
+- live_intent_source_enabled: true
+- input_widget_enabled: true
+- focus_safety_validated: true
+- route_preview_enabled: true
+- policy_tool_bridge_enabled: true
+- bounded_tool_invocation_enabled: true
+- model_route_selection_enabled: true
+- runtime_surface_enabled: true
+- can_promote_intent_bar_surface: true
+
+## Safety flags
+
+- passive_only: true
+- no_window_only: false
+- runtime_fixture_only: false
+- opens_window: true
+- claims_dbus_name: false
+- registers_autostart: false
+- mutates_phosh_session: false
+- mutates_compositor: false
+- uses_layer_shell: true
+- launches_apps: false
+- reads_notifications: false
+- input_widget_enabled: true
+- focus_safety_validated: true
+- route_preview_enabled: true
+- policy_tool_bridge_enabled: true
+- bounded_tool_invocation_enabled: true
+- tool_side_effect_enabled: false
+- model_route_selection_enabled: true
+- model_invocation_enabled: false
+- no_model_fallback_enabled: true
+- invokes_model: false
+- invokes_tool: true
+- writes_files: false
+- can_promote_intent_bar_surface: true
+- mobile_mvp_ready: false
+
+## Rows
+
+- `intent-bar-row-capture-draft` [capture] Draft intent input — source:shell-local-intent-fixture (runtime fixture row passes draft-only/no-window/no-model/source-label/focus/touch-target contract)
+- `intent-bar-row-route-preview` [route-preview] Route preview — source:trillionnium-routing-fixture (runtime fixture row passes draft-only/no-window/no-model/source-label/focus/touch-target contract)
+- `intent-bar-row-runtime-degraded` [degraded-banner] Runtime unavailable banner — source:shell-local-fixture (runtime fixture row passes draft-only/no-window/no-model/source-label/focus/touch-target contract)
+
+## Blockers
+
+- Intent Bar live layer-shell lane, runtime input widget, focus-safety validation, and route preview are promoted
+- policy tool bridge is enabled only for bounded no-side-effect route preview; app launch and system mutations remain separated
+- model route selection boundary is promoted with no-model fallback; external model invocation is not required for core actions
+- live layer-shell Intent Bar surface lane is opened in the bounded nested smoke
+- runtime_surface_enabled=true
+- mobile_mvp_ready=false
+
+## Command hints
+
+- `trillionnium-shell intent-bar-runtime --json`
+- `trillionnium-shell intent-bar-runtime --check --json`
+- `trillionnium-shell readiness-report --blockers-only --json`
+- `trillionnium-command-center status --json`
+
+## Safety notes
+
+- intent-bar-runtime uses promoted smoke evidence for a bounded runtime input/focus route and never captures arbitrary background keystrokes
+- the policy tool bridge is limited to no-side-effect route preview; D-Bus registration, autostart, Phosh/compositor mutation, app launch, notification read, external model invocation, and file writes remain disabled

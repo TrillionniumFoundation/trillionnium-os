@@ -1,0 +1,51 @@
+# Trillionnium arm64 Mobian graphical DRM session-dependency rootfs smoke
+
+- status: arm64-mobian-graphical-drm-session-dependency-rootfs-smoke-pass
+- development_position: arm64-mobian-graphical-drm-session-dependency-rootfs-built-local
+- known_blocker_id: needs-graphical-drm-phosh-session-retry-with-dependencies
+- rootfs_dir: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-graphical-drm-session-dependency-rootfs-smoke/rootfs
+- source_rootfs_dir: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-phosh-session-dependency-rootfs-smoke/rootfs
+- installed_package_count: 362
+- installed_graphical_session_dependency_package_count: 2
+- dbus_launch_present: true
+- gnome_settings_daemon_touchscreen_schema_present: true
+- compiled_touchscreen_schema_visible: true
+- can_retry_arm64_mobian_graphical_drm_phosh_session_now: true
+- arm64_mobian_phosh_booted: false
+- can_claim_trillionnium_os_installed_on_phone: false
+- ready_for_release_push: false
+- next_gate: arm64-mobian-graphical-drm-session-with-dependencies-smoke
+
+## Installed Packages
+dbus-x11
+gnome-settings-daemon-common
+
+## Schema Matches
+/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-graphical-drm-session-dependency-rootfs-smoke/rootfs/usr/share/glib-2.0/schemas/org.gnome.settings-daemon.peripherals.gschema.xml:    <child name="touchscreen" schema="org.gnome.settings-daemon.peripherals.touchscreen"/>
+/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-graphical-drm-session-dependency-rootfs-smoke/rootfs/usr/share/glib-2.0/schemas/org.gnome.settings-daemon.peripherals.gschema.xml:  <schema gettext-domain="gnome-settings-daemon" id="org.gnome.settings-daemon.peripherals.touchscreen" path="/org/gnome/settings-daemon/peripherals/touchscreen/">
+
+## Apt Log Tail
+Hit:1 http://deb.debian.org/debian bookworm InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following NEW packages will be installed:
+  dbus-x11 gnome-settings-daemon-common
+0 upgraded, 2 newly installed, 0 to remove and 0 not upgraded.
+Need to get 705 kB of archives.
+After this operation, 5238 kB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian bookworm/main arm64 dbus-x11 arm64 1.14.10-1~deb12u1 [90.6 kB]
+Get:2 http://deb.debian.org/debian bookworm/main arm64 gnome-settings-daemon-common all 43.0-4 [615 kB]
+debconf: delaying package configuration, since apt-utils is not installed
+Fetched 705 kB in 3s (245 kB/s)
+Selecting previously unselected package dbus-x11.
+(Reading database ... 22827 files and directories currently installed.)
+Preparing to unpack .../dbus-x11_1.14.10-1~deb12u1_arm64.deb ...
+Unpacking dbus-x11 (1.14.10-1~deb12u1) ...
+Selecting previously unselected package gnome-settings-daemon-common.
+Preparing to unpack .../gnome-settings-daemon-common_43.0-4_all.deb ...
+Unpacking gnome-settings-daemon-common (43.0-4) ...
+Setting up gnome-settings-daemon-common (43.0-4) ...
+Setting up dbus-x11 (1.14.10-1~deb12u1) ...
+Processing triggers for libglib2.0-0:arm64 (2.74.6-2+deb12u9) ...

@@ -1,0 +1,13 @@
+arm64 Mobian fogos AOSP LP host-tools build smoke
+status=arm64-mobian-fogos-aosp-lp-host-tools-build-smoke-pass-boundary-recorded
+development_position=arm64-mobian-fogos-aosp-lp-host-tools-build-blocked-transitive-headers
+known_blocker_id=aosp-lp-host-tools-transitive-libbase-headers-missing
+next_gate=arm64-mobian-fogos-aosp-lp-host-tools-transitive-headers-fetch-smoke
+lpmake_syntax_status=1
+lpdump_syntax_status=1
+host_tool_build_executed=false
+host_tool_binary_produced=false
+lpmake_materialized=false
+lpdump_materialized=false
+target_hardware_artifact_produced=false
+ready_for_release_push=false

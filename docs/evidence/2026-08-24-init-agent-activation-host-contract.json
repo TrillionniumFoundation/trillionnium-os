@@ -1,0 +1,87 @@
+{
+  "decision": "PASS_SOURCE_GRAPH_DEVICE_HOLD",
+  "evidence_sha256": "29ea764b9c50767d6b502d5cd55668ff82b8f0daf815075f780e5607c4e9f810",
+  "safety": {
+    "adb_invoked": false,
+    "authority_enabled": false,
+    "codex_turn_started": false,
+    "device_write_performed": false,
+    "effect_sent": false,
+    "flash_performed": false,
+    "init_service_started": false,
+    "reboot_performed": false
+  },
+  "schema": "org.trillionnium.init-agent-activation-host-contract.v1",
+  "scope": "host_only_source_contract",
+  "source": {
+    "authenticated_peer": "HOLD_NOT_OBSERVED",
+    "checks": [
+      {
+        "id": "init_bootstrap_service",
+        "status": "PASS"
+      },
+      {
+        "id": "init_daemon_service",
+        "status": "PASS"
+      },
+      {
+        "id": "init_readiness_edges",
+        "status": "PASS"
+      },
+      {
+        "id": "daemon_socket_contract",
+        "status": "PASS"
+      },
+      {
+        "id": "manifest_service_contract",
+        "status": "PASS"
+      },
+      {
+        "id": "agent_api_peer_auth_source",
+        "status": "PASS"
+      },
+      {
+        "id": "agent_api_replay_source",
+        "status": "PASS"
+      }
+    ],
+    "codex_turn": "HOLD_NOT_RUN",
+    "device_mutation": false,
+    "effect_authority": "DISABLED",
+    "live_activation": "HOLD_NOT_OBSERVED",
+    "measurements": {
+      "agent_abi": {
+        "relative": "crates/trillionnium-os-types/contracts/direct-agent-host-abi-v1.json",
+        "sha256": "d538ef22f6ff1fcc5cf2ff15a158a8227631991bf83c3676ab19a66fce162c11",
+        "size": 4143
+      },
+      "daemon_main": {
+        "relative": "apps/trillionniumd/src/main.rs",
+        "sha256": "c6ab6227587a76cdc922b648b609b922d2aadbbbdd78d7d25ebe5d68572c7b48",
+        "size": 167843
+      },
+      "daemon_wrapper": {
+        "relative": "vendor/trillionnium/prebuilt/common/bin/trillionniumd.sh",
+        "sha256": "8950583136f9e50330975ef6c4cf0613b0264c1e1e96c6550280beb2fb1b1576",
+        "size": 36457
+      },
+      "init_rc": {
+        "relative": "vendor/trillionnium/prebuilt/common/etc/init/init.trillionnium-system_ext.rc",
+        "sha256": "23e5d0a6daffcb0ecd88527dc030f2dbaa321fcf361d1dd2192a0688a4912173",
+        "size": 21620
+      },
+      "linux_manifest": {
+        "relative": "vendor/trillionnium/prebuilt/common/linux/manifest.txt",
+        "sha256": "edacc59d4ae30d1ca312dca1d832673ec76976d5b11943d237fc070a4fd2c375",
+        "size": 13273
+      }
+    },
+    "rust_root": "/data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/trillionnium-release-sources/p0-agent-native-integration-20260731/trillionnium-os",
+    "source_graph": "PASS",
+    "source_root": "/data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/android/lineage-fogos",
+    "target_artifacts": {
+      "reason": "target_files_not_supplied",
+      "status": "HOLD"
+    }
+  }
+}

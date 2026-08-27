@@ -1,0 +1,6 @@
+[dry-run] systemctl --user disable --now trillionniumd.service || true
+[dry-run] systemctl --user disable --now trillionnium-hepta-sidecar-noop.service || true
+[dry-run] rm -f /home/qian-qi/.config/systemd/user/trillionniumd.service /home/qian-qi/.config/systemd/user/trillionnium-hepta-sidecar-noop.service /home/qian-qi/.local/share/dbus-1/services/org.trillionnium.Agent1.service /home/qian-qi/.local/share/applications/trillionnium-command-center.desktop /home/qian-qi/.local/bin/trillionniumd /home/qian-qi/.local/bin/trillionnium-command-center /home/qian-qi/.local/bin/trillionnium-shell
+[dry-run] systemctl --user daemon-reload
+[dry-run] keep state: /home/qian-qi/.local/state/trillionnium-os
+dry-run complete

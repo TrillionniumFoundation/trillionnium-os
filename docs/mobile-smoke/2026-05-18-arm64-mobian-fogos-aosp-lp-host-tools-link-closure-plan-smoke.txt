@@ -1,0 +1,17 @@
+arm64 Mobian fogos AOSP LP host-tools link closure plan smoke
+status=arm64-mobian-fogos-aosp-lp-host-tools-link-closure-plan-smoke-pass
+development_position=arm64-mobian-fogos-aosp-lp-host-tools-link-closure-plan-locked-non-executable
+known_blocker_id=aosp-lp-host-tools-link-closure-not-executed
+next_gate=arm64-mobian-fogos-aosp-lp-host-tools-link-closure-smoke
+object_closure_complete=true
+object_file_count=28
+failed_object_count=0
+link_closure_plan_locked=true
+link_closure_plan_executable_now=false
+host_tool_build_executed=false
+host_tool_binary_produced=false
+target_hardware_artifact_produced=false
+ready_for_release_push=false
+aosp_lp_host_tools_link_closure_plan_json_sha256=9d940cb7825a0cce07240e9165b67bff7fad8bf7c9d89ee586412cd13dcc68b0
+aosp_lp_host_tools_link_closure_plan_md_sha256=10149ab15a275227d8640bbe7e5fc0fab5d3af60aabae937512ba0a4b1aeeaf7
+json_sha256=b2e439af2b088b36c54987e459a429ec41d2647ed11efd69d83dce1cb6730b38

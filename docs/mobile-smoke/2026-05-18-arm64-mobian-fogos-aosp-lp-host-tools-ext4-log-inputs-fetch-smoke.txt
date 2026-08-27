@@ -1,0 +1,21 @@
+arm64 Mobian fogos AOSP LP host-tools ext4/log inputs fetch smoke
+status=arm64-mobian-fogos-aosp-lp-host-tools-ext4-log-inputs-fetch-smoke-pass-boundary-recorded
+development_position=arm64-mobian-fogos-aosp-lp-host-tools-ext4-log-inputs-fetched-object-closure-partial-target-local
+known_blocker_id=aosp-lp-host-tools-android-private-log-and-compiler-compat-not-locked
+next_gate=arm64-mobian-fogos-aosp-lp-host-tools-android-private-log-compiler-compat-plan-smoke
+source_file_count=22
+source_unit_count=28
+object_file_count=25
+failed_object_count=3
+partial_object_files_produced=true
+object_closure_complete=false
+first_blocker=compiler-compat:__builtin_available
+first_missing_header=compiler-compat:__builtin_available
+host_tool_link_invocation_executed=false
+host_tool_build_executed=false
+host_tool_binary_produced=false
+lpmake_materialized=false
+lpdump_materialized=false
+target_hardware_artifact_produced=false
+ready_for_release_push=false
+json_sha256=2052a7284826fb1c6609195c2a2665b6c0a608bd35aa23bf6a41fac260f0090f

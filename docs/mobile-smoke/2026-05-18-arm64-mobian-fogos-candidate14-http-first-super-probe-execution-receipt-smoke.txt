@@ -1,0 +1,23 @@
+# arm64 Mobian fogos candidate14 HTTP-first super-probe execution receipt
+
+- status: arm64-mobian-fogos-candidate14-http-first-super-probe-execution-receipt-smoke-pass-no-transport-after-flash
+- development_position: arm64-mobian-fogos-candidate14-regressed-no-transport-after-flash
+- known_blocker_id: candidate14-post-reboot-no-usb-http-fastboot-transport
+- next_gate: arm64-mobian-fogos-physical-fastboot-recovery-or-candidate9-restore-smoke
+- boot/vendor_boot flash executed: true
+- candidate14 HTTP visible: false
+- candidate14 fastboot returned: false
+- candidate14 USB visible: false
+- can claim Trillionnium OS installed on phone: false
+- ready for release push: false
+
+## Evidence
+- install log: target/mobian-arm64-fogos-candidate14-http-first-super-probe-execution-20260518T142457Z/candidate14-fastboot-install-20260518T143411Z.log
+- post-reboot observation log: target/mobian-arm64-fogos-candidate14-http-first-super-probe-execution-20260518T142457Z/candidate14-post-reboot-observation.log
+- install status JSON: target/mobian-arm64-fogos-candidate14-http-first-super-probe-execution-20260518T142457Z/candidate14-install-status.json
+
+## Conclusion
+- Candidate14 boot/vendor_boot artifacts were flashed to both A/B slots on ZY32JLVHGN and slot b was kept active.
+- The post-reboot observation window did not recover candidate14 USB 18d1:4eea, HTTP status, ADB, or fastboot transport.
+- Candidate14 therefore regressed against the restored candidate9 HTTP diagnostic and does not prove a Trillionnium OS boot, Phosh boot, post-boot identity, or release readiness.
+- The next step is physical recovery to fastboot and either candidate9 restore or a smaller candidate15 recovery-oriented artifact.

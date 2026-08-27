@@ -1,0 +1,23 @@
+status: arm64-private-toolchain-fetch-smoke-pass
+target_architecture: arm64
+rust_target: aarch64-unknown-linux-gnu
+private_toolchain_root: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain
+expected_package_count: 22
+downloaded_deb_count: 22
+extracted_deb_count: 22
+private_aarch64_rust_std_present: true
+private_aarch64_linker_present: true
+private_aarch64_sysroot_present: true
+linker_dumpmachine: aarch64-linux-gnu
+binutils_as_version: GNU assembler (GNU Binutils for Ubuntu) 2.42
+binutils_ld_version: GNU ld (GNU Binutils for Ubuntu) 2.42
+network_download_executed: true
+rustup_executed: true
+apt_get_download_executed: true
+dpkg_deb_executed: true
+apt_install_executed: false
+dpkg_install_executed: false
+cargo_build_executed: false
+package_install_executed: false
+ready_for_release_push: false
+boundary: private aarch64 Rust target, Debian cross .debs, sysroot, and linker wrapper are fetched/extracted under target/; no cargo/package build, system install, device action, or release push was executed.

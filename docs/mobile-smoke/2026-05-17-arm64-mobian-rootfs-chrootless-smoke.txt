@@ -1,0 +1,21 @@
+arm64 Mobian rootfs chrootless smoke
+
+status: arm64-mobian-rootfs-chrootless-smoke-partial-pass-configured-rootfs-blocked
+development_position: arm64-mobian-rootfs-extract-payload-ready-configured-rootfs-blocked
+configured_rootfs_attempt: blocked
+configured_blocker_id: chrootless-maintainer-script-root-ops
+configured_exit_code: 25
+extract_payload_tarball_created: true
+extract_payload_tarball_size_bytes: 289728128
+raw_extract_rootfs_contains_file_mirror_deb_cache: true
+extract_variant_has_empty_dpkg_status_database: true
+private_proot_qemu_payload_execution_ready: true
+arm64_mobian_rootfs_with_trillionnium_packages_built: false
+image_build_executed: false
+
+boundary:
+- configured install-state rootfs is not promoted; chrootless maintainer scripts still require root-owned operations.
+- extract-mode payload assembly is promoted only as payload/tree execution evidence, not as a configured Mobian install rootfs.
+- no host package install, binfmt registration, ADB/Fastboot, flash, wipe, repartition, sideload, reboot, relock, release push, model invocation, or tool invocation occurred.
+
+next_gate: replace extract-payload smoke with a configured rootfs path by using private proot-backed dpkg/apt or a safe namespace-local foreign-arch execution path

@@ -1,0 +1,23 @@
+{
+  "schema": "org.trillionnium.mobile.physical-phone-install-smoke.v1",
+  "status": "physical-phone-bridge-debug-install-pass",
+  "serial": "ZY32JLVHGN",
+  "adb_state": "device",
+  "device": {
+    "ro.product.model": "moto g34 5G",
+    "ro.product.manufacturer": "motorola",
+    "ro.build.version.release": "16",
+    "ro.build.version.sdk": "36",
+    "ro.product.cpu.abi": "arm64-v8a"
+  },
+  "package_name": "ai.trillionnium.bridge",
+  "package_path_present": true,
+  "package_path": "package:/data/app/~~QFWkobMulKGuKoBnzutoQw==/ai.trillionnium.bridge--bq__vgZDCi8ovaXHKVIDQ==/base.apk",
+  "debug_apk_path": "target/bridge-apk/trillionnium-bridge-debug.apk",
+  "debug_apk_sha256": "438843de84f3c94b2586a0cf39d97cef846f9de90b39f0e92e5864dff87be626",
+  "transcript": "docs/mobile-smoke/2026-05-15-physical-phone-install-smoke.txt",
+  "mutated_phone_by_installing_debug_apk": true,
+  "notification_listener_touched": false,
+  "ingestion_enabled": false,
+  "tool_invoke_enabled": false
+}

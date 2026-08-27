@@ -1,0 +1,77 @@
+# Trillionnium Shell Live Layer-Shell Surface Smoke
+
+- status: trillionnium-shell-live-layer-shell-surface-pass-production-blocked
+- ok: true
+- map_probe_exit_code: Some(0)
+- layer_shell_global_visible: true
+- wl_shm_bound: true
+- shm_buffer_created: true
+- buffer_attached: true
+- mapped_commit_roundtrip_ok: true
+- shell_surface_model_rendered: true
+- rendered_surface_count: 5
+- source_label_band_count: 5
+- no_model_fallback_band_count: 5
+- touch_target_lane_count: 5
+- render_checksum: 6034807773111642329
+- focus_safe: true
+- critical_surface_nonreplacement: true
+- can_promote_layer_surface_map: true
+- can_promote_live_layer_shell_surface: true
+
+## Safety flags
+
+- operator_invoked: true
+- post_start_session_ready: true
+- wayland_connect_ok: true
+- layer_surface_created: true
+- shm_buffer_created: true
+- buffer_attached: true
+- mapped_commit_sent: true
+- mapped_commit_roundtrip_ok: true
+- buffer_destroyed: true
+- shm_pool_destroyed: true
+- layer_surface_destroyed: true
+- wl_surface_destroyed: true
+- shell_surface_model_rendered: true
+- rendered_surface_count_ok: true
+- source_label_band_count_ok: true
+- no_model_fallback_band_count_ok: true
+- touch_target_lane_count_ok: true
+- render_checksum_ok: true
+- focus_safe: true
+- critical_surface_nonreplacement: true
+- maps_layer_surface: true
+- uses_layer_shell: true
+- opens_window: true
+- writes_runtime_temp_buffer: true
+- writes_persistent_files: false
+- claims_dbus_name: false
+- registers_autostart: false
+- mutates_host_phosh_session: false
+- mutates_compositor: false
+- launches_apps: false
+- reads_notifications: false
+- invokes_model: false
+- writes_files: false
+- can_promote_layer_surface_map: true
+- can_promote_live_layer_shell_surface: true
+- mobile_mvp_ready: false
+
+## Blockers
+
+- live Phosh layer-shell Shell surface is proven; production companion autostart remains disabled
+- Android app launch and live notification body ingestion/actions remain disabled
+- mobile_mvp_ready=false
+
+## Command hints
+
+- trillionnium-shell layer-surface-map-smoke --summary-only --json
+- trillionnium-shell layer-surface-map-smoke --check --json
+- packaging/mobian/scripts/headless-mobile-session.sh status
+- trillionnium-shell readiness-report --blockers-only --json
+
+## Safety notes
+
+- layer-surface-map-smoke starts a temporary nested Phoc+Phosh session only when needed and stops only the session it started
+- the probe maps a deterministic ARGB wl_shm buffer with five Shell surface lanes, source-label bands, no-model fallback bands, and 48dp touch-target lanes, then destroys Wayland objects and leaves persistent files, autostart, D-Bus names, app launch, notification reads, tools, and models disabled

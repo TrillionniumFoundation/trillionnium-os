@@ -1,0 +1,424 @@
+{
+  "base_rootfs": {
+    "bytes": 476895577,
+    "sha256": "e9e937451c20f1035455c62372f9b9ba4df5e6600777377962e8667d9ca6f2a5"
+  },
+  "legacy_duplicate_directory_migrations": [
+    {
+      "observed_modes": [
+        "0755",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "."
+    },
+    {
+      "observed_modes": [
+        "0755",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/bin"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/lib"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/lib/trillionnium"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/lib/trillionnium/agents"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/lib/trillionnium/agents/codex"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/lib/trillionnium/agents/codex/0.144.1"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/lib/trillionnium/agents/codex/0.144.1/aarch64-unknown-linux-musl"
+    },
+    {
+      "observed_modes": [
+        "0775",
+        "0775"
+      ],
+      "output_mode": "0755",
+      "path": "usr/lib/trillionnium/agents/codex/0.144.1/aarch64-unknown-linux-musl/bin"
+    }
+  ],
+  "legacy_prune_members": [
+    {
+      "bytes": 165,
+      "mode": "0664",
+      "path": ".wget-hsts",
+      "sha256": "300b3698c2c04f311f34349c6e3061349b5bf14f3fc817cbee69341cceb0bb2c",
+      "type": "file"
+    },
+    {
+      "bytes": 47,
+      "mode": "0644",
+      "path": "etc/apt/sources.list.trillionnium-backup-original",
+      "sha256": "ab43e445b33157f4314231e0ef9727e2f8d27f40313f9bcef2699a2a99d922bb",
+      "type": "file"
+    },
+    {
+      "bytes": 13,
+      "mode": "0644",
+      "path": "etc/group.trillionnium-backup-20260528T031124Z",
+      "sha256": "a3ad83c7d6afcee6d2c714c8a28999f08db8fde6664cc44ae34ea5026ad9b6b7",
+      "type": "file"
+    },
+    {
+      "bytes": 11,
+      "mode": "0640",
+      "path": "etc/gshadow.trillionnium-backup-20260528T031124Z",
+      "sha256": "0802da98629cf53c65ad0e890a0825c84f5ca7e27caa05c98a697a8deb3ebf2d",
+      "type": "file"
+    },
+    {
+      "bytes": 920,
+      "mode": "0644",
+      "path": "etc/resolv.conf.trillionnium-backup-original",
+      "sha256": "ebdf560272a77357195c39e98340b77e18c8a8ce2025ee950e9e0c7b01467ab8",
+      "type": "file"
+    },
+    {
+      "bytes": 0,
+      "mode": "0755",
+      "path": "home/qian-qi",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0755",
+      "path": "home/qian-qi/.openclaw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0755",
+      "path": "home/qian-qi/.openclaw/workspace",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0755",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0755",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os/target",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0755",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0755",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 914,
+      "mode": "0644",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-command-center-ui_0.1.0_arm64.deb",
+      "sha256": "e233d86c436953e7c2335f229f690774ecdc2b6c5afbd1d5ec1b1cf1a7736d11",
+      "type": "file"
+    },
+    {
+      "bytes": 26098608,
+      "mode": "0644",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-command-center_0.1.0_arm64.deb",
+      "sha256": "90a87da5982daa20add056b660de64dd11a98940069b29e472d1bdcedf9a3d23",
+      "type": "file"
+    },
+    {
+      "bytes": 21320838,
+      "mode": "0644",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-os-daemon_0.1.0_arm64.deb",
+      "sha256": "244cf1288a021223a43456b0ab1107dea21dc317d2b8b9db0f422e64f0d3f5d2",
+      "type": "file"
+    },
+    {
+      "bytes": 13115978,
+      "mode": "0644",
+      "path": "home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-shell_0.1.0_arm64.deb",
+      "sha256": "b027b47ef1886d3762e6b73b6de00636a2599feca5f10c864b6cf76675963299",
+      "type": "file"
+    },
+    {
+      "bytes": 0,
+      "mode": "0700",
+      "path": "root/.ssh",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0775",
+      "path": "run/trillionnium",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 158468560,
+      "mode": "0755",
+      "path": "usr/bin/trillionnium-command-center",
+      "sha256": "2cf7dc5d7941b34f2987b84d8467c404344dc0c190ba053f8ac1f9af5c97f320",
+      "type": "file"
+    },
+    {
+      "bytes": 79813072,
+      "mode": "0755",
+      "path": "usr/bin/trillionnium-shell",
+      "sha256": "378a6e1f78725b0f88edcc04cdd336514c25f5d49a147eafc5a5edff29d617e3",
+      "type": "file"
+    },
+    {
+      "bytes": 910,
+      "mode": "0664",
+      "path": "usr/lib/systemd/user/trillionnium-hepta-sidecar-noop.service",
+      "sha256": "aa17cf82297bd88be5705e1bff02c47f3e9ad7373b1d4adec7e1e75d55419d5e",
+      "type": "file"
+    },
+    {
+      "bytes": 440,
+      "mode": "0664",
+      "path": "usr/lib/systemd/user/trillionnium-shell-companion.service",
+      "sha256": "96b3228e4c83c7c945ff13f99302a811c8584b9828adcdb40186cd4d8b4b2a7f",
+      "type": "file"
+    },
+    {
+      "bytes": 540,
+      "mode": "0664",
+      "path": "usr/lib/systemd/user/trillionniumd.service",
+      "sha256": "c30fdf783de61515bfff27dea3cbb2c75c92db9e19f0d2aa78915e36a91c5cdd",
+      "type": "file"
+    },
+    {
+      "bytes": 368,
+      "mode": "0664",
+      "path": "usr/share/applications/trillionnium-command-center.desktop",
+      "sha256": "d7e8d0e203d086aa1d38eea539763875399d1c969e22dd44907f9abcb7559738",
+      "type": "file"
+    },
+    {
+      "bytes": 336,
+      "mode": "0664",
+      "path": "usr/share/dbus-1/services/org.trillionnium.Agent1.service",
+      "sha256": "11faedd7cc5a758569a2f31cfacbe079b0cb5b8ffc790571a414fc6a06663094",
+      "type": "file"
+    },
+    {
+      "bytes": 359,
+      "mode": "0664",
+      "path": "usr/share/dbus-1/services/org.trillionnium.Shell.service",
+      "sha256": "5e76f95d156a3fb0f2f88ea1185ed28dac1119c6bf678477191a3fbb7354696d",
+      "type": "file"
+    },
+    {
+      "bytes": 0,
+      "mode": "0775",
+      "path": "usr/share/trillionnium-os",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0775",
+      "path": "usr/share/trillionnium-os/packaging",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 0,
+      "mode": "0775",
+      "path": "usr/share/trillionnium-os/packaging/mobian",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 893,
+      "mode": "0644",
+      "path": "usr/share/trillionnium-os/packaging/mobian/mobile-dev-env.sh",
+      "sha256": "ee925f1113fe5772df21282c7787f8f7b8e8263809a599cfe9442d24ee45a85b",
+      "type": "file"
+    },
+    {
+      "bytes": 0,
+      "mode": "0775",
+      "path": "usr/share/trillionnium-os/packaging/mobian/scripts",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "directory"
+    },
+    {
+      "bytes": 8262,
+      "mode": "0755",
+      "path": "usr/share/trillionnium-os/packaging/mobian/scripts/headless-mobile-session.sh",
+      "sha256": "1793bfb07b9f76e337e6b81b067f4cb3c9c38ffa37c866f2c97e0551dbe0a0f5",
+      "type": "file"
+    },
+    {
+      "bytes": 195,
+      "mode": "0755",
+      "path": "usr/share/trillionnium-os/packaging/mobian/start-headless-waydroid.sh",
+      "sha256": "f4a0955276d6b1630cc47c658fc48df82ed64cefcfbba7a55d05ac2a0d92ffdf",
+      "type": "file"
+    },
+    {
+      "bytes": 103,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-command-center-ui.list",
+      "sha256": "91ddc4cfb959b6795e224c4f3a124e2a7040b1bbcd36a8a93a8709912ba09ed0",
+      "type": "file"
+    },
+    {
+      "bytes": 93,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-command-center-ui.md5sums",
+      "sha256": "57d4a9caf98166e1b3a6ce01910065c809f936f7d080051d7a47f25035813ab5",
+      "type": "file"
+    },
+    {
+      "bytes": 54,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-command-center.list",
+      "sha256": "2c6fecb1de81bbe71dde169c6ee40eb99efe0fca2013e1da145f9876c318db49",
+      "type": "file"
+    },
+    {
+      "bytes": 70,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-command-center.md5sums",
+      "sha256": "df772a81fcbb97439c56a904666ba96f0353e266890dd06b851442af1b453dcb",
+      "type": "file"
+    },
+    {
+      "bytes": 309,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-os-daemon.list",
+      "sha256": "3cb22984100643483b1e30575ec30e612da5d141d33f86ab60dfc9e6e16d844f",
+      "type": "file"
+    },
+    {
+      "bytes": 320,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-os-daemon.md5sums",
+      "sha256": "dcba08578db59e574bba5fd1754f3d7665122c1b413cd9aa8ea802cb01b371bd",
+      "type": "file"
+    },
+    {
+      "bytes": 638,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-shell.list",
+      "sha256": "5d1adb48a9bd386053ff1fcc86b83ada5842a3468bbfe89f33cb2fa93cfd5841",
+      "type": "file"
+    },
+    {
+      "bytes": 555,
+      "mode": "0644",
+      "path": "var/lib/dpkg/info/trillionnium-shell.md5sums",
+      "sha256": "dc6b5eeb05f62e88334a19a67e1fdd78da3006d6c813418a94a09e83f60fa20d",
+      "type": "file"
+    }
+  ],
+  "legacy_raw_name_prune_members": [
+    {
+      "bytes": 454,
+      "mode": "0644",
+      "raw_name": "./usr/lib/systemd/system/system-systemd\\x2dcryptsetup.slice",
+      "sha256": "2136146f9e0019eb33c68c84b7db3160f9a430fd9b497b58a5396e24226a2417",
+      "type": "file"
+    }
+  ],
+  "legacy_absolute_symlink_migration": {
+    "expected_count": 500,
+    "inventory_sha256": "325165996c15378da72e7c46347b1932aceed833fc773f80869779716bb628a9",
+    "rewrite": "root-absolute-to-relative-v1"
+  },
+  "rationale": "Exact, hash-bound removal of forbidden host state, obsolete Mobian Trillionnium executables/services/package debris, backup files, duplicate directory metadata, one malformed raw tar name, and deterministic conversion of the exact 500-link root-absolute symlink inventory to equivalent non-escaping relative targets. No glob or recursive acceptance is permitted.",
+  "schema": "org.trillionnium.rootfs-legacy-migration.v2"
+}

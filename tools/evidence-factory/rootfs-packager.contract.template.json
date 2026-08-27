@@ -1,0 +1,164 @@
+{
+  "admission": {
+    "decision": "HOLD_IDENTITY_INDEPENDENCE_EVIDENCE_UNVERIFIED",
+    "identity_independence_gate": null,
+    "release_allowed": false,
+    "status": "hold_identity_independence_evidence_unverified"
+  },
+  "common_build_evidence": {
+    "compiler": null,
+    "elf_inspector": null,
+    "launcher_ab": null,
+    "source_bom_claim_authority": null,
+    "stable_principal_launcher_measurement": null,
+    "toolchain_claim_authority": null,
+    "upstream_receipt_target_compiler_closure_claim": null,
+    "upstream_receipt_toolchain_snapshot_claim": null,
+    "upstream_source_bom_receipt_claim": null
+  },
+  "compression": {
+    "algorithm": "zstd",
+    "level": 19,
+    "long_distance_matcher_log": 27,
+    "threads": 1
+  },
+  "inputs": {
+    "accessibility_tool": {
+      "bytes": 0,
+      "install": {
+        "mode": "0755",
+        "path": "usr/local/bin/trillionnium-agent-accessibility"
+      },
+      "require_static": false,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "agent_manifest": {
+      "allowed_fields": [
+        "adapter",
+        "adapter_version",
+        "agent_id",
+        "api_version",
+        "enabled",
+        "health",
+        "identity_key_sha256",
+        "network_policy",
+        "peer_gid",
+        "peer_uid",
+        "registered_at_unix_ms",
+        "selinux_domain",
+        "updated_at_unix_ms"
+      ],
+      "bytes": 0,
+      "install": {
+        "mode": "0644",
+        "path": "etc/trillionnium/agents/agent-codex-direct-v1.json"
+      },
+      "required_fields": {
+        "adapter": "supervised-codex-cli",
+        "adapter_version": "REPLACE_WITH_CUSTODIED_VERSION",
+        "agent_id": "agent-codex-direct-v1",
+        "api_version": "trillionnium.agent-api.v1",
+        "enabled": false,
+        "health": "disabled",
+        "identity_key_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+        "network_policy": "per_request",
+        "peer_gid": 5901,
+        "peer_uid": 5901,
+        "selinux_domain": "u:r:trillionnium_codex_agent:s0"
+      },
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "base_rootfs": {
+      "bytes": 0,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "common_artifact_set_receipt": {
+      "bytes": 0,
+      "file": "common-codex-rootfs-artifact-set.v5.json",
+      "schema": "org.trillionnium.common-codex-rootfs-artifact-set.v5",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "host_built_device_evidence_hold"
+    },
+    "common_launcher_ab_receipt": {
+      "bytes": 0,
+      "decision": "PASS_HOST_ONLY_DETERMINISTIC_CODEX_LAUNCHER_ARTIFACT_SET_AB",
+      "file": "codex-launcher-artifact-set-ab.v4.json",
+      "schema": "org.trillionnium.codex-launcher-artifact-set-ab.v4",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "status": "HOLD_IDENTITY_INDEPENDENCE_PRODUCT_DEVICE_AND_COMPLETE_TOOLCHAIN_ADMISSION"
+    },
+    "codex": {
+      "bytes": 0,
+      "install": {
+        "mode": "0755",
+        "path": "usr/lib/trillionnium/agents/codex/REPLACE_WITH_VERSION/aarch64-unknown-linux-musl/bin/codex"
+      },
+      "require_static": true,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "daemon": {
+      "bytes": 0,
+      "install": {
+        "mode": "0755",
+        "path": "usr/bin/trillionniumd"
+      },
+      "require_static": false,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "system_api_replay_sync": {
+      "bytes": 0,
+      "install": {
+        "mode": "0755",
+        "path": "usr/local/bin/trillionnium-system-api-replay-sync"
+      },
+      "require_static": false,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "system_api_tool": {
+      "bytes": 0,
+      "install": {
+        "mode": "0755",
+        "path": "usr/local/bin/trillionnium-agent-system-api"
+      },
+      "require_static": false,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "limits": {
+    "max_decompressed_tar_bytes": 68719476736,
+    "max_member_bytes": 8589934592,
+    "max_members": 200000,
+    "max_path_bytes": 4096,
+    "max_total_regular_bytes": 34359738368
+  },
+  "runtime": {
+    "elf_machine": "AArch64",
+    "max_glibc": "2.36"
+  },
+  "schema": "org.trillionnium.rootfs-package.contract.v9",
+  "security": {
+    "forbidden_content_markers": [
+      "TRILLIONNIUM_DO_NOT_PACKAGE_SECRET",
+      "TRILLIONNIUM_DEVELOPMENT_RESPONSE_LOSS_FAULT_HOOK_V1",
+      "/run/trillionnium/dev-conformance/fault-hook.json",
+      "org.trillionnium.dev-conformance.gateway-response-loss.v1",
+      "org.trillionnium.dev-conformance.gateway-response-loss-audit.v1"
+    ],
+    "forbidden_path_patterns": [
+      "(^|/)(?:\\.npmrc|\\.pypirc|netrc)$",
+      "(^|/)var/lib/trillionnium/agents/[^/]+/home/state(?:/|$)"
+    ],
+    "legacy_duplicate_directory_migrations": [],
+    "legacy_prune_members": [],
+    "legacy_raw_name_prune_members": [],
+    "legacy_absolute_symlink_migration": null,
+    "replacement_hardlink_allowlist": []
+  },
+  "source_date_epoch": 0,
+  "tools": {
+    "zstd": {
+      "bytes": 0,
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  }
+}

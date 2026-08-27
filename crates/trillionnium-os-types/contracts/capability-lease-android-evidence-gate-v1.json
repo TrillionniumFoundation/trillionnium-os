@@ -1,0 +1,63 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.android-evidence-gate.contract.v1",
+  "source_status": "source_only_shape_validator_no_product_authority_v1",
+  "decision": "hold",
+  "product_authority": {
+    "constructor_available": false,
+    "confers_effect_authority": false,
+    "detached_evidence_is_authorizing": false
+  },
+  "target_release_requirements": {
+    "build_type": "user",
+    "build_tags": ["release-keys"],
+    "target_files_sha256": "required_nonzero_lower_sha256",
+    "ota_keys_nonempty": true
+  },
+  "issuer_consume_requirements": {
+    "required_evidence": [
+      "root_trust_manifest_sha256",
+      "issuer_identity_binding_sha256",
+      "consumer_receipt_binding_sha256",
+      "lease_epoch_high_water_proof_sha256"
+    ],
+    "runtime_consumer_available": true
+  },
+  "hardware_rollback_requirements": {
+    "required_evidence": [
+      "keymint_attestation_chain_sha256",
+      "keymint_security_level",
+      "verified_boot_state",
+      "avb_rollback_index_high_water",
+      "avb_rollback_index_location",
+      "rollback_index_persistence_proof_sha256"
+    ],
+    "keymint_security_levels": ["STRONGBOX", "TRUSTED_ENVIRONMENT"],
+    "verified_boot_state": "VERIFIED",
+    "rollback_index_high_water": "required_nonzero",
+    "rollback_index_location": "0..31",
+    "device_write_performed": false
+  },
+  "accessibility_closure_requirements": {
+    "required_evidence": [
+      "service_ownership_proof_sha256",
+      "mcp_schema_sha256",
+      "protocol",
+      "tool_selinux_domain",
+      "operation_replay_sync_selinux_domain",
+      "operation_epoch_replay_proof_sha256",
+      "receipt_ack_closure_sha256"
+    ],
+    "protocol": "org.trillionnium.agent-accessibility.v2",
+    "tool_selinux_domain": "u:r:trillionnium_agent_accessibility_tool:s0",
+    "operation_replay_sync_selinux_domain": "u:r:trillionnium_agent_accessibility_operation_replay_sync:s0",
+    "runtime_consumer_available": true
+  },
+  "fail_closed": {
+    "missing_evidence_decision": "hold",
+    "invalid_target_or_test_keys_decision": "hold",
+    "unverified_keymint_or_verified_boot_decision": "hold",
+    "unclosed_accessibility_ack_decision": "hold",
+    "private_key_material_in_schema": false,
+    "device_write_performed": false
+  }
+}

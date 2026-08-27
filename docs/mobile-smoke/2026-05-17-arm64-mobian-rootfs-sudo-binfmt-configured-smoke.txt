@@ -1,0 +1,61 @@
+Trillionnium OS arm64 Mobian sudo-binfmt configured rootfs smoke
+==================================================================
+
+Status: arm64-mobian-rootfs-sudo-binfmt-configured-smoke-pass
+
+Development position:
+- arm64-mobian-configured-rootfs-built-local-sudo-binfmt
+
+What this gate proves:
+- Passwordless sudo is available for the operator-invoked rootfs build.
+- A temporary qemu-user binfmt_misc entry is registered from the private
+  target-local qemu-aarch64-static binary, and arch-test arm64 reports ok.
+- mmdebstrap --mode=sudo --variant=apt --format=directory builds a configured
+  arm64 Debian bookworm/Mobian-compatible rootfs with the four arm64
+  Trillionnium packages plus Phosh/Phoc/Squeekboard payloads.
+- The rootfs has a populated dpkg status database and installed package
+  records for:
+  - trillionnium-command-center
+  - trillionnium-command-center-ui
+  - trillionnium-os-daemon
+  - trillionnium-shell
+- The configured rootfs also has installed phosh, phoc, and squeekboard.
+- sudo chroot <rootfs> /usr/bin/trillionniumd --print-manifest executes
+  through the temporary qemu-user binfmt entry and emits the expected
+  trillionnium.tool.v1 system.status manifest.
+- File-mirror placeholder paths from local .deb injection are removed after
+  mmdebstrap: 6 placeholder refs before cleanup, 0 after cleanup.
+- The temporary binfmt entry is unregistered before JSON evidence is emitted.
+
+Key numbers:
+- Rootfs size: 952949381 bytes.
+- dpkg status size: 287553 bytes.
+- Installed package records: 328.
+- Installed Trillionnium package records: 4.
+- Installed Phosh runtime package records: 3.
+
+Evidence hashes:
+- JSON: 2516268d31889f33c0c10e457c361a9ede8896685fa1455b7a47c0bdec82f933
+- Script: dd65a0472c30489101854bc010eff3482aed5889b163babead084422ab7bf1eb
+- mmdebstrap log: c95a7243013f25a7fbc132dc62c21d0835bca5e58a91d4961be52569e24ef265
+- binfmt register conf: d86e78688b14c6da6d3a332a45ad1c106754e89ed4244b5d35107d020cc909be
+- binfmt registered state: 619d4e92e1ec02a12b7141df5bf4e726bfe68618a593018ca3e03c0925cadaaf
+- binfmt after-unregister state: 7925d3e9a9613a093e5eb4054b32aa39de910d2b03ba7e8046c3b4550b8de1e4
+- arch-test stdout: 436ac26a8006e87eaae41c362e3d8c7e45ff0f0578d80eb598cae01b76de5815
+- rootfs key paths: 845bbc136c13a451fce5246fa52263bbd3f709bbaa81544dd0f044117b7b3cb9
+- Trillionnium package list: 372b7b564a6da84d0ac2e52c3630744d8802905850e8a3dd16459a188b7eeab5
+- Phosh package list: cf3b09ea992fa5a79d5acb72f9dc4306a9090628283dc76bc9b26aeb8a0fe26e
+- chroot manifest: d231f99ed7804a60aec9b54077ccd243123b50272c2bd25f8347dceaa717776c
+- rootfs proof: 770dd064279718ae8ba348da7006b409b0e9343bee09591d1aecb00daba4a146
+
+Safety boundary:
+- This gate does use sudo, network download through mmdebstrap, temporary
+  binfmt_misc registration, qemu-user execution, and rootfs package
+  configuration inside the target rootfs.
+- It does not run host apt install, host dpkg install, rustup, cargo build, host
+  package install, persistent binfmt registration, image build, ADB, Fastboot,
+  flash, wipe, repartition, sideload, reboot, bootloader relock, remote push,
+  model invocation, or tool invocation.
+- This is still not proof that Trillionnium OS is installed on a phone. The next
+  gate is a local arm64 rootfs partition/image smoke consuming this configured
+  rootfs, before any target-device or release boundary.

@@ -1,0 +1,292 @@
+{
+  "architecture": "arm64",
+  "compression": {
+    "algorithm": "zstd",
+    "level": 19,
+    "threads": 1
+  },
+  "forbidden_package_names": [
+    "adb",
+    "apt",
+    "apt-utils",
+    "bash",
+    "cron",
+    "curl",
+    "dbus",
+    "git",
+    "login",
+    "network-manager",
+    "openssh-client",
+    "openssh-server",
+    "perl",
+    "polkitd",
+    "python3",
+    "sudo",
+    "systemd",
+    "systemd-sysv",
+    "udev",
+    "wget",
+    "wine"
+  ],
+  "forbidden_package_prefixes": [
+    "android-tools-",
+    "gnome-",
+    "kde-",
+    "libwayland",
+    "libx11",
+    "phosh",
+    "qemu-",
+    "wine",
+    "xserver-"
+  ],
+  "normalization": {
+    "absolute_symlink_rewrite": "root_absolute_to_relative_v1",
+    "all_gid": 0,
+    "all_uid": 0,
+    "directory_mode": "0555",
+    "executable_mode": "0555",
+    "filesystem_write_bits_allowed": false,
+    "regular_mode": "0444",
+    "special_files_allowed": false
+  },
+  "production": {
+    "contract_confers_effect_authority": false,
+    "device_write_authorized": false,
+    "ota_signing_authorized": false,
+    "product_pin_refresh_authorized": false,
+    "release_promotion_authorized": false
+  },
+  "requested_packages": [
+    "base-files",
+    "base-passwd",
+    "ca-certificates",
+    "coreutils",
+    "dash",
+    "diffutils",
+    "findutils",
+    "grep",
+    "gzip",
+    "libc-bin",
+    "libc6",
+    "libgcc-s1",
+    "libssl3",
+    "libstdc++6",
+    "perl-base",
+    "sed",
+    "zlib1g"
+  ],
+  "resolved_packages": [
+    {
+      "architecture": "arm64",
+      "name": "base-files:arm64",
+      "version": "12.4+deb12u15"
+    },
+    {
+      "architecture": "arm64",
+      "name": "base-passwd:arm64",
+      "version": "3.6.1"
+    },
+    {
+      "architecture": "all",
+      "name": "ca-certificates",
+      "version": "20230311+deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "coreutils:arm64",
+      "version": "9.1-1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "dash:arm64",
+      "version": "0.5.12-2"
+    },
+    {
+      "architecture": "all",
+      "name": "debconf",
+      "version": "1.5.82"
+    },
+    {
+      "architecture": "arm64",
+      "name": "debianutils:arm64",
+      "version": "5.7-0.5~deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "diffutils:arm64",
+      "version": "1:3.8-4"
+    },
+    {
+      "architecture": "arm64",
+      "name": "dpkg:arm64",
+      "version": "1.21.23"
+    },
+    {
+      "architecture": "arm64",
+      "name": "findutils:arm64",
+      "version": "4.9.0-4"
+    },
+    {
+      "architecture": "arm64",
+      "name": "gcc-12-base:arm64",
+      "version": "12.2.0-14+deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "grep:arm64",
+      "version": "3.8-5"
+    },
+    {
+      "architecture": "arm64",
+      "name": "gzip:arm64",
+      "version": "1.12-1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libacl1:arm64",
+      "version": "2.3.1-3"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libattr1:arm64",
+      "version": "1:2.5.1-4"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libbz2-1.0:arm64",
+      "version": "1.0.8-5+b1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libc-bin:arm64",
+      "version": "2.36-9+deb12u14"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libc6:arm64",
+      "version": "2.36-9+deb12u14"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libcrypt1:arm64",
+      "version": "1:4.4.33-2"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libdebconfclient0:arm64",
+      "version": "0.270"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libgcc-s1:arm64",
+      "version": "12.2.0-14+deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libgmp10:arm64",
+      "version": "2:6.2.1+dfsg1-1.1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "liblzma5:arm64",
+      "version": "5.4.1-1+deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libmd0:arm64",
+      "version": "1.0.4-2"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libpcre2-8-0:arm64",
+      "version": "10.42-1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libselinux1:arm64",
+      "version": "3.4-1+b6"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libssl3:arm64",
+      "version": "3.0.20-1~deb12u2"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libstdc++6:arm64",
+      "version": "12.2.0-14+deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "libzstd1:arm64",
+      "version": "1.5.4+dfsg2-5"
+    },
+    {
+      "architecture": "arm64",
+      "name": "mawk:arm64",
+      "version": "1.3.4.20200120-3.1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "openssl:arm64",
+      "version": "3.0.20-1~deb12u2"
+    },
+    {
+      "architecture": "arm64",
+      "name": "perl-base:arm64",
+      "version": "5.36.0-7+deb12u3"
+    },
+    {
+      "architecture": "arm64",
+      "name": "sed:arm64",
+      "version": "4.9-1+deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "tar:arm64",
+      "version": "1.34+dfsg-1.2+deb12u1"
+    },
+    {
+      "architecture": "arm64",
+      "name": "zlib1g:arm64",
+      "version": "1:1.2.13.dfsg-1"
+    }
+  ],
+  "schema": "org.trillionnium.root-linux.minimal-bookworm-build.v1",
+  "snapshot": {
+    "archive_signatures_required": true,
+    "debian_inrelease_bytes": 151075,
+    "debian_inrelease_sha256": "77737fa4b34f2693e982cc9ee35736816c35a7778fc2d326cc1bbf5b301fe1aa",
+    "debian_inrelease_url": "https://snapshot.debian.org/archive/debian/20260727T000000Z/dists/bookworm/InRelease",
+    "debian_source": "deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/20260727T000000Z bookworm main",
+    "keyring_deb_bytes": 179244,
+    "keyring_deb_sha256": "9ea7778e443144ca490668737a8ab22dd3e748bb99e805e22ec055abeb3c7fac",
+    "keyring_origin_independently_approved": false,
+    "keyring_payload_sha256": "506b815cbb32d9b6066b4a2aa524071e071761e7e7f68c3ac74f3061ba852017",
+    "keyring_version": "2025.1",
+    "security_inrelease_bytes": 34770,
+    "security_inrelease_sha256": "4d096d30c821d44f346e407b1fc2773ea90b66035c0b221192754b9f79aa39d1",
+    "security_inrelease_url": "https://snapshot.debian.org/archive/debian-security/20260727T000000Z/dists/bookworm-security/InRelease",
+    "security_source": "deb [check-valid-until=no] https://snapshot.debian.org/archive/debian-security/20260727T000000Z bookworm-security main",
+    "timestamp": "20260727T000000Z"
+  },
+  "source_date_epoch": 1785110400,
+  "suite": "bookworm",
+  "tools": {
+    "dpkg_deb": {
+      "sha256": "fc9dde782ca8309b65ab92e61d13318bf463cd1aa71daa8967b87b81b48b63d2"
+    },
+    "dpkg_query": {
+      "sha256": "cc2a19017c37132e4ad46c1fbddea6472262d0a62a0b8585c383706c20005ea1"
+    },
+    "gpgv": {
+      "sha256": "097b577cdf8b51dcc1fb42417d5ef3ca2e22b36a8ad16c9df4bd083a38fe476c"
+    },
+    "mmdebstrap": {
+      "sha256": "2cc83220f25e155c1be515f154c7c7af828028ff17ad826c65d343236a99eaf1"
+    },
+    "zstd": {
+      "sha256": "7c5468b370f7c47eda07281e3437fafc568f95d10420051e3aa522709f9342c5"
+    }
+  }
+}

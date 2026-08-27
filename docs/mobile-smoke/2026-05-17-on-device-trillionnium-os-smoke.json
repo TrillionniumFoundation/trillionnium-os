@@ -1,0 +1,89 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-on-device-trillionnium-os-smoke.v1",
+  "status": "on-device-trillionnium-os-smoke-pass",
+  "generated_at": "2026-05-17T03:54:34+08:00",
+  "generated_at_unix": 1778961274,
+  "target": "mobile",
+  "development_position": "dogfood-control-plane-rc",
+  "target_device_serial": "ZY32JLVHGN",
+  "observed_device": {
+    "platform": "physical-android-fogos",
+    "profile": "lineage-fogos",
+    "product_device": "fogos",
+    "product_model": "moto g34 5G",
+    "android_release": "16",
+    "android_sdk": "36",
+    "lineage_version": "23.2-20260429-UNOFFICIAL-fogos",
+    "boot_verified_state": "orange",
+    "boot_slot_suffix": "_b",
+    "bridge_package_installed": true,
+    "bridge_pairing_activity_resolved": true
+  },
+  "mobian_trillionnium_image_state": {
+    "platform": "mobian",
+    "profile": "mobile-phosh",
+    "ready_for_build": true,
+    "ready_for_flash": false,
+    "ready_for_install": false,
+    "system_ui_replacement": false,
+    "profile_is_phone_image_profile": false
+  },
+  "os_identity_boundary": {
+    "installed_os_is_trillionnium_os": false,
+    "installed_os_identity": "FOGOS/Lineage Android 16 with ai.trillionnium.bridge dogfood package",
+    "bridge_hosted_on_android": true,
+    "full_trillionnium_os_flash_executed": false,
+    "full_trillionnium_os_install_executed": false,
+    "on_device_trillionnium_os_ready": false,
+    "ready_for_release_push": false,
+    "release_push_authorized": false,
+    "must_not_report_as_full_trillionnium_os": true
+  },
+  "next_required_gates": [
+    "choose installation mode: Android/FOGOS-hosted Bridge dogfood versus Mobian/Phosh Trillionnium OS image",
+    "produce a target-hardware Trillionnium OS boot artifact or explicitly scope the milestone to hosted Bridge dogfood",
+    "lock partition/install plan and rollback for the selected installation mode",
+    "execute a fresh explicit operator run for any flash/install/reboot path",
+    "capture post-boot proof whose OS identity is Trillionnium OS, not only Lineage/FOGOS plus Bridge"
+  ],
+  "policy": {
+    "operator_invoked": true,
+    "read_only_adb_executed": true,
+    "adb_write_executed": false,
+    "fastboot_write_executed": false,
+    "package_install_executed": false,
+    "notification_listener_enabled": false,
+    "notification_body_read_executed": false,
+    "fresh_flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "bootloader_relock_executed": false,
+    "signal_broker_write_enabled": false,
+    "audit_write_enabled": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "9e99959b346dab3be58e341b39e96f44bb2a62065feaa8b19fb1f9ea8b239f1d",
+    "mobile_profile_readme": "/home/qian-qi/.openclaw/workspace/trillionnium-os/profile/mobile-phosh/README.md",
+    "mobile_profile_readme_sha256": "2c26d55cc0d477bc86a79f12054f6c0513ad178a07887492b4ad01b8a2b573a9",
+    "rc_release_import_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-fogos-rc-release-import-smoke.json",
+    "rc_release_import_json_sha256": "acc2bb9e53b13d49adad36f94ab6db4212b66df7bf988535061433dbf9cf4103",
+    "release_soak_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-fogos-release-soak-smoke.json",
+    "release_soak_json_sha256": "ccc3e442ce363978f54c0476fbfb0c05c1fcd1550ac2876c497ec8d155cd59d3",
+    "post_flash_device_acceptance_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-16-fogos-post-flash-device-acceptance-smoke.json",
+    "post_flash_device_acceptance_json_sha256": "181e230bbf589622651595b24af410b44ebe327cec3cd58cd264b9f3ed021e3f",
+    "physical_final_execution_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-16-fogos-physical-final-execution-smoke.json",
+    "physical_final_execution_json_sha256": "d535ad4a5cc0be1e978fc03f7e10150a3035c6264e05e9abf9356b7609a76504",
+    "live_device_props_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-on-device-trillionnium-os-smoke/live-device-props.json",
+    "live_device_props_json_sha256": "8bf74cb2a882e970a2451c16932cbe2c992c2503ef124abde1ffd9b2721ee164"
+  },
+  "safety_notes": [
+    "This smoke is an identity boundary: it passes only by proving the current on-device state is FOGOS/Lineage-hosted Bridge dogfood, not full Trillionnium OS.",
+    "It runs read-only ADB property/package queries and fastboot enumeration only; it performs no package install, notification listener enablement, flash, wipe, repartition, sideload, reboot, or bootloader relock.",
+    "The Mobian/Phosh Trillionnium OS artifacts remain ready_for_build=true but ready_for_flash=false and ready_for_install=false until a separate target-hardware install/flash gate is promoted."
+  ]
+}

@@ -1,0 +1,14 @@
+status=arm64-mobian-fogos-candidate8-usb-network-diagnostic-receipt-smoke-pass-usb-network-ping-visible-no-status-service
+development_position=arm64-mobian-fogos-candidate8-usb-network-visible-candidate9-http-status-next
+known_blocker_id=candidate8-usb-network-ping-visible-but-no-tcp-or-acm-status-output
+candidate8_usb_network_initramfs_written=true
+candidate8_initramfs_booted_enough_for_usb_network=true
+candidate8_usb_network_visible_on_host=true
+candidate8_usb_network_ping_reachable=true
+candidate8_tcp_status_service_available=false
+candidate8_acm_status_output_captured=false
+candidate9_http_status_candidate_prepared=true
+post_boot_identity_proof_promoted=false
+target_hardware_graphical_phosh_booted=false
+ready_for_release_push=false
+next_gate=arm64-mobian-fogos-candidate9-http-status-diagnostic-execution

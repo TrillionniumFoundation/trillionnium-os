@@ -1,0 +1,163 @@
+{
+  "admission": {
+    "android_package_wiring_allowed": false,
+    "decision": "HOLD_IDENTITY_INDEPENDENCE_AND_SOURCE_PREFLIGHT_ONLY",
+    "device_write_allowed": false,
+    "fsverity_enable_allowed": false,
+    "missing_gates": [
+      "counterfactual same-source rebuild proving executable identity independence",
+      "verified stable-principal admission split evidence receipt",
+      "independent Debian keyring-origin approval",
+      "Android product-wiring receipt binding the exact final v7 archive, AgentManifest and SELinux policy",
+      "reviewed static EROFS materializer that applies compiled file_contexts to tar input",
+      "pinned fsck.erofs and dump.erofs verification of every critical security.selinux xattr",
+      "Android fs-verity enable and re-measure before first read-only mount"
+    ],
+    "ota_or_release_allowed": false,
+    "product_pin_refresh_allowed": false,
+    "status": "hold_identity_independence_evidence_unverified"
+  },
+  "archive_contract": {
+    "contract_schema": "org.trillionnium.rootfs-package.contract.v7",
+    "decision": "HOLD_IDENTITY_INDEPENDENCE_EVIDENCE_UNVERIFIED",
+    "fresh_base_allowlist": {
+      "path": "packaging/root-linux/rootfs-fresh-minimal-bookworm-arm64.allowlist.v1.json",
+      "sha256": "90ae07cf6d731726f9afc6912eac713aaa71ddebf5d3d60bdf9aede2c651aab5"
+    },
+    "receipt_schema": "org.trillionnium.rootfs-package.receipt.v7",
+    "release_allowed": false,
+    "required_agent_manifest": {
+      "agent_id": "agent-codex-direct-v1",
+      "enabled": false,
+      "health": "disabled",
+      "peer_gid": 5901,
+      "peer_uid": 5901,
+      "selinux_domain": "u:r:trillionnium_codex_agent:s0"
+    },
+    "required_identity_independence_gate": {
+      "counterfactual_same_source_rebuild": {
+        "evidence_receipt": null,
+        "required": true,
+        "verified": false
+      },
+      "digests": {
+        "canonical digest": "bc6c64abbb893e6e75ed708f87cf864e6c8f7503381371dc394409bddc4009c2",
+        "contract digest": "5ecd89d3c9fedbbeb0ac1de32fba2b5e5e5d248048ddc9a9e0359a0a01903119",
+        "launcher identity": "edcf9d31da8b48d29575115a7242691c1337174edf42573b7274b652a4cd571c"
+      },
+      "literal_digest_absence_verified": true,
+      "stable_principal_admission_split": {
+        "evidence_receipt": null,
+        "required": true,
+        "verified": false
+      },
+      "status": "hold_identity_independence_evidence_unverified"
+    },
+    "single_agent": "codex",
+    "status": "hold_identity_independence_evidence_unverified"
+  },
+  "layout": {
+    "android_effect_tool_paths": [
+      "usr/local/bin/trillionnium-agent-accessibility",
+      "usr/local/bin/trillionnium-agent-system-api"
+    ],
+    "codex_launcher_path_source": "receipt.inputs.codex_launcher.install_path",
+    "codex_runtime_bind_placeholder_suffix": ".real",
+    "daemon_path": "usr/bin/trillionniumd",
+    "mount_point": "/data/trillionnium/root-linux/rootfs",
+    "runtime_mount_directories": [
+      "run/trillionnium",
+      "tmp",
+      "var/lib/trillionnium"
+    ],
+    "system_api_replay_sync_path": "usr/local/bin/trillionnium-system-api-replay-sync"
+  },
+  "required_absence": {
+    "forbidden_package_names": [
+      "network-manager",
+      "phoc",
+      "phosh",
+      "pipewire",
+      "squeekboard",
+      "trillionnium-command-center",
+      "trillionnium-command-center-ui",
+      "trillionnium-shell",
+      "wireplumber",
+      "xwayland"
+    ],
+    "forbidden_path_prefixes": [
+      "home/",
+      "root/.",
+      "usr/bin/Xwayland",
+      "usr/bin/phoc",
+      "usr/bin/phosh",
+      "usr/bin/squeekboard",
+      "usr/share/applications/",
+      "usr/share/gnome",
+      "usr/share/wayland-sessions/",
+      "usr/share/X11/"
+    ],
+    "local_llm_payloads": true,
+    "node_runtime": true,
+    "second_agent_principal_or_runtime": true
+  },
+  "schema": "org.trillionnium.root-linux.codex-erofs-admission.v2",
+  "selinux": {
+    "compiled_file_contexts_format": {
+      "magic": "0xf97cff8a",
+      "version": 5
+    },
+    "critical_labels": [
+      {
+        "kind": "directory",
+        "label": "u:object_r:trillionnium_proc_mountpoint_dir:s0",
+        "path": "proc"
+      },
+      {
+        "kind": "file",
+        "label": "u:object_r:trillionnium_agentd_mountpoint_file:s0",
+        "path": "usr/bin/trillionniumd"
+      },
+      {
+        "kind": "file",
+        "label": "u:object_r:trillionnium_codex_payload_file:s0",
+        "path_source": "receipt.inputs.codex_launcher.install_path"
+      },
+      {
+        "kind": "file",
+        "label": "u:object_r:trillionnium_codex_runtime_exec:s0",
+        "path_source": "receipt.runtime_layout.codex_runtime_bind_placeholder"
+      },
+      {
+        "kind": "file",
+        "label": "u:object_r:trillionnium_agent_accessibility_mountpoint_file:s0",
+        "path": "usr/local/bin/trillionnium-agent-accessibility"
+      },
+      {
+        "kind": "file",
+        "label": "u:object_r:trillionnium_agent_system_api_mountpoint_file:s0",
+        "path": "usr/local/bin/trillionnium-agent-system-api"
+      },
+      {
+        "kind": "file",
+        "label": "u:object_r:trillionnium_agent_system_api_replay_sync_mountpoint_file:s0",
+        "path": "usr/local/bin/trillionnium-system-api-replay-sync"
+      },
+      {
+        "kind": "file",
+        "label": "u:object_r:trillionnium_rootfs_loader_exec:s0",
+        "path": "lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"
+      }
+    ],
+    "current_tar_materializer_applies_labels": false,
+    "unlabelled_image_admission_allowed": false
+  },
+  "size_targets": {
+    "base_installed_package_count": 35,
+    "base_rootfs_tar_zst_bytes": 10959228,
+    "final_erofs_max_bytes": 134217728,
+    "final_member_count_max": 4096,
+    "final_regular_bytes_max": 100663296,
+    "final_rootfs_tar_zst_max_bytes": 67108864
+  }
+}

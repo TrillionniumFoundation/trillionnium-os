@@ -1,0 +1,35 @@
+# Trillionnium Shell Session D-Bus Smoke
+
+- status: trillionnium-shell-session-dbus-temporary-name-pass-persistent-blocked
+- ok: true
+- operator_invoked: true
+- temporary_only: true
+- requested_name: org.trillionnium.ShellSmoke.P2957609
+- unique_name: :1.1390
+- session_bus_connected: true
+- temporary_name_owned: true
+- temporary_name_released: true
+- persistent_name_enabled: false
+- can_promote_session_dbus_name: true
+
+## Safety flags
+
+- operator_invoked: true
+- temporary_only: true
+- temporary_name_owned: true
+- temporary_name_released: true
+- persistent_name_enabled: false
+- dbus_service_file_written: false
+- autostart_registered: false
+- opens_window: false
+- registers_autostart: false
+- mutates_phosh_session: false
+- mutates_compositor: false
+- uses_layer_shell: false
+- launches_apps: false
+- reads_notifications: false
+- invokes_model: false
+- invokes_tool: false
+- writes_files: false
+- can_promote_session_dbus_name: true
+- mobile_mvp_ready: false

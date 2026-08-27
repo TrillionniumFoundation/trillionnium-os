@@ -1,0 +1,231 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-lp-host-tools-super-empty-geometry-inspection-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-aosp-lp-host-tools-super-empty-geometry-inspection-smoke-pass",
+  "development_position": "arm64-mobian-fogos-aosp-lp-host-tools-super-empty-geometry-inspected-local",
+  "known_blocker_id": "aosp-lp-host-tools-logical-partition-mapping-not-locked",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "result": {
+    "arm64_mobian_fogos_aosp_lp_host_tools_super_empty_geometry_inspection_smoke_passed": true,
+    "super_payload_build_plan_consumed": true,
+    "super_empty_geometry_inspection_completed": true,
+    "lpdump_geometry_inspection_executed": true,
+    "lpdump_exit_status": 0,
+    "partition_count": 8,
+    "group_count": 3,
+    "block_device_count": 1,
+    "super_total_size": "5905580032",
+    "super_block_size": "4096",
+    "super_alignment": "1048576",
+    "group_a_name": "mot_dp_group_a",
+    "group_b_name": "mot_dp_group_b",
+    "group_a_maximum_size": "5901385728",
+    "group_b_maximum_size": "5901385728",
+    "rootfs_partition_size_bytes": 2398773248,
+    "rootfs_fits_in_single_slot_group": true,
+    "logical_partition_mapping_locked": false,
+    "lpmake_super_build_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "dynamic_partition_payload_produced": false,
+    "super_img_produced": false,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_executed": false,
+    "post_boot_identity_proof_promoted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "aosp-lp-host-tools-logical-partition-mapping-not-locked",
+    "next_gate": "arm64-mobian-fogos-aosp-lp-host-tools-logical-partition-mapping-plan-smoke"
+  },
+  "aosp_lp_host_tools_super_empty_geometry": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-lp-host-tools-super-empty-geometry.v1",
+    "status": "arm64-mobian-fogos-aosp-lp-host-tools-super-empty-geometry-inspection-smoke-pass",
+    "known_blocker_id": "aosp-lp-host-tools-logical-partition-mapping-not-locked",
+    "lpdump_probe": {
+      "binary": "target/mobian-arm64-fogos-aosp-lp-host-tools-link-transitive-symbol-inputs-fetch-smoke/bin/lpdump",
+      "binary_sha256": "4fc4943a4b3bb36981a535134c1e6354d3911747e9b455feaa63619a4b77ac20",
+      "args": [
+        "-j",
+        "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/super_empty.img"
+      ],
+      "exit_status": 0,
+      "read_only": true
+    },
+    "geometry_source": {
+      "super_empty_img": {
+        "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/super_empty.img",
+        "sha256": "570d502dbc70b79f489120fa510a09483faed3d4ef89a3480878103530475a08",
+        "retained_for_geometry_inspection_only": true,
+        "reusable_as_mobian_payload": false
+      }
+    },
+    "lpdump_json": {
+      "partitions": [
+        {
+          "name": "product_a",
+          "group_name": "mot_dp_group_a",
+          "is_dynamic": true
+        },
+        {
+          "name": "system_a",
+          "group_name": "mot_dp_group_a",
+          "is_dynamic": true
+        },
+        {
+          "name": "system_ext_a",
+          "group_name": "mot_dp_group_a",
+          "is_dynamic": true
+        },
+        {
+          "name": "vendor_a",
+          "group_name": "mot_dp_group_a",
+          "is_dynamic": true
+        },
+        {
+          "name": "product_b",
+          "group_name": "mot_dp_group_b",
+          "is_dynamic": true
+        },
+        {
+          "name": "system_b",
+          "group_name": "mot_dp_group_b",
+          "is_dynamic": true
+        },
+        {
+          "name": "system_ext_b",
+          "group_name": "mot_dp_group_b",
+          "is_dynamic": true
+        },
+        {
+          "name": "vendor_b",
+          "group_name": "mot_dp_group_b",
+          "is_dynamic": true
+        }
+      ],
+      "groups": [
+        {
+          "name": "default"
+        },
+        {
+          "name": "mot_dp_group_a",
+          "maximum_size": "5901385728"
+        },
+        {
+          "name": "mot_dp_group_b",
+          "maximum_size": "5901385728"
+        }
+      ],
+      "block_devices": [
+        {
+          "name": "super",
+          "size": "5905580032",
+          "block_size": "4096",
+          "alignment": "1048576"
+        }
+      ],
+      "super_device": {
+        "name": "super",
+        "total_size": "5905580032"
+      }
+    },
+    "locked_geometry": {
+      "geometry_inspection_completed": true,
+      "partition_count": 8,
+      "partition_names": [
+        "product_a",
+        "system_a",
+        "system_ext_a",
+        "vendor_a",
+        "product_b",
+        "system_b",
+        "system_ext_b",
+        "vendor_b"
+      ],
+      "group_names": [
+        "default",
+        "mot_dp_group_a",
+        "mot_dp_group_b"
+      ],
+      "super_device_name": "super",
+      "super_total_size": "5905580032",
+      "super_block_size": "4096",
+      "super_alignment": "1048576",
+      "group_a_name": "mot_dp_group_a",
+      "group_b_name": "mot_dp_group_b",
+      "group_a_maximum_size": "5901385728",
+      "group_b_maximum_size": "5901385728",
+      "rootfs_partition_sha256": "152718666be59972ba2675f3daef60ede35cea9fba299f03111c00c87db26580",
+      "rootfs_partition_size_bytes": 2398773248,
+      "rootfs_fits_in_single_slot_group": true,
+      "logical_partition_mapping_locked": false,
+      "lpmake_super_build_executed": false,
+      "dynamic_partition_payload_produced": false,
+      "super_img_produced": false,
+      "target_hardware_artifact_produced": false
+    },
+    "next_gate": "arm64-mobian-fogos-aosp-lp-host-tools-logical-partition-mapping-plan-smoke"
+  },
+  "input_evidence": {
+    "arm64_mobian_fogos_aosp_lp_host_tools_super_payload_build_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-aosp-lp-host-tools-super-payload-build-plan-smoke.json",
+    "arm64_mobian_fogos_aosp_lp_host_tools_super_payload_build_plan_smoke_sha256": "cb7e71c602c595dcd41d956d5c633824f3a47696b199fe9b73e06c3d655b55a4"
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "b4c2af5356613862128756d3dcc0e184248ec13efd92f4b727edf4d52321bd80",
+    "script_sha256": "3e742c9aac71dee01718b41ee0ce6ab1c1cc8482a8d15ddbfd0fcdc8282213ed",
+    "lpdump_json": "target/mobian-arm64-fogos-aosp-lp-host-tools-super-empty-geometry-inspection-smoke/fogos-super-empty-lpdump.json",
+    "lpdump_json_sha256": "fd54ad0806e05e7950173327d8d8ff77e9ebd9a443f2bacea1fd2e3531258e41",
+    "lpdump_stderr": "target/mobian-arm64-fogos-aosp-lp-host-tools-super-empty-geometry-inspection-smoke/fogos-super-empty-lpdump.stderr.txt",
+    "lpdump_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "super_empty_geometry_json": "target/mobian-arm64-fogos-aosp-lp-host-tools-super-empty-geometry-inspection-smoke/fogos-super-empty-geometry.json",
+    "super_empty_geometry_json_sha256": "0d9cdb347fcb562c81773601988d2cf62e498322b2e7e29f2083e85c6d73d387",
+    "super_empty_geometry_md": "target/mobian-arm64-fogos-aosp-lp-host-tools-super-empty-geometry-inspection-smoke/FOGOS_SUPER_EMPTY_GEOMETRY.md",
+    "super_empty_geometry_md_sha256": "ce519267e20c01666977376155d579f799c0490572e4bd77fd79253796637c87"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "network_download_executed": false,
+    "source_fetch_executed": false,
+    "android_image_tool_execution_executed": true,
+    "android_image_tool_execution_scope": "lpdump-super-empty-read-only",
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "package_install_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "dpkg_i_executed": false,
+    "bootimage_build_executed": false,
+    "vendor_boot_repack_executed": false,
+    "avbtool_executed": false,
+    "avb_signing_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": true,
+    "lpdump_scope": "read-only super_empty geometry inspection",
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "super_payload_build_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-private-toolchain-plan-smoke.v1",
+  "status": "arm64-private-toolchain-plan-smoke-pass",
+  "generated_at": "2026-05-17T05:04:32+08:00",
+  "generated_at_unix": 1778965472,
+  "target": "mobile",
+  "platform": "mobian",
+  "profile": "mobile-phosh",
+  "development_position": "arm64-private-toolchain-plan",
+  "requested_target": {
+    "deb_architecture": "arm64",
+    "rust_target": "aarch64-unknown-linux-gnu"
+  },
+  "private_paths": {
+    "private_toolchain_root": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain",
+    "rustup_home": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/rustup",
+    "cargo_home": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/cargo",
+    "deb_cache": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/debs",
+    "sysroot": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/sysroot",
+    "linker": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/sysroot/usr/bin/aarch64-linux-gnu-gcc",
+    "private_toolchain_root_under_target": true,
+    "rustup_home_under_target": true,
+    "cargo_home_under_target": true,
+    "deb_cache_under_target": true,
+    "sysroot_under_target": true
+  },
+  "host_tool_availability": {
+    "rustup_available": true,
+    "apt_get_available": true,
+    "apt_cache_available": true,
+    "dpkg_deb_available": true
+  },
+  "apt_seed_packages": {
+    "required_package_count": 6,
+    "candidate_count": 6,
+    "all_required_candidates_available": true,
+    "packages": [
+      {
+        "name": "binutils-aarch64-linux-gnu",
+        "candidate": "2.42-4ubuntu2.10",
+        "candidate_available": true
+      },
+      {
+        "name": "gcc-aarch64-linux-gnu",
+        "candidate": "4:13.2.0-7ubuntu1",
+        "candidate_available": true
+      },
+      {
+        "name": "gcc-12-aarch64-linux-gnu",
+        "candidate": "12.4.0-2ubuntu1~24.04.1cross1",
+        "candidate_available": true
+      },
+      {
+        "name": "libc6-arm64-cross",
+        "candidate": "2.39-0ubuntu8cross1",
+        "candidate_available": true
+      },
+      {
+        "name": "libc6-dev-arm64-cross",
+        "candidate": "2.39-0ubuntu8cross1",
+        "candidate_available": true
+      },
+      {
+        "name": "libgcc-12-dev-arm64-cross",
+        "candidate": "12.4.0-2ubuntu1~24.04.1cross1",
+        "candidate_available": true
+      }
+    ]
+  },
+  "command_templates": [
+    {
+      "name": "private-rustup-toolchain",
+      "command": "RUSTUP_HOME=/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/rustup CARGO_HOME=/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/cargo rustup toolchain install stable --profile minimal --target aarch64-unknown-linux-gnu",
+      "executes_network_fetch": true,
+      "mutates_host_toolchain": false
+    },
+    {
+      "name": "download-cross-debs-to-target",
+      "command": "mkdir -p /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/debs && cd /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/debs && apt-get download binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu gcc-12-aarch64-linux-gnu libc6-arm64-cross libc6-dev-arm64-cross libgcc-12-dev-arm64-cross",
+      "executes_network_fetch": true,
+      "mutates_host_packages": false
+    },
+    {
+      "name": "extract-cross-debs-to-private-sysroot",
+      "command": "mkdir -p /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/sysroot && find /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/debs -name '*.deb' -print0 | xargs -0 -I{} dpkg-deb -x {} /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/sysroot",
+      "executes_network_fetch": false,
+      "mutates_host_packages": false
+    },
+    {
+      "name": "arm64-package-smoke-with-private-linker",
+      "env": "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain/sysroot/usr/bin/aarch64-linux-gnu-gcc",
+      "command": "ARCH=arm64 RUST_TARGET=aarch64-unknown-linux-gnu OUT_DIR_OVERRIDE=/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke packaging/mobian/scripts/package-install-smoke.sh",
+      "executes_network_fetch": false,
+      "mutates_host_packages": false
+    }
+  ],
+  "plan_state": {
+    "private_toolchain_plan_generated": true,
+    "private_toolchain_plan_ready": true,
+    "private_toolchain_root_under_target": true,
+    "private_rustup_home_declared": true,
+    "private_cargo_home_declared": true,
+    "private_deb_cache_declared": true,
+    "private_sysroot_declared": true,
+    "linker_env_declared": true,
+    "package_install_smoke_cross_invocation_declared": true,
+    "external_fetch_required": true,
+    "external_fetch_authorized": false,
+    "can_attempt_arm64_cross_build_now": false
+  },
+  "artifact_state": {
+    "private_aarch64_toolchain_prepared": false,
+    "private_aarch64_rust_std_present": false,
+    "private_aarch64_linker_present": false,
+    "private_aarch64_sysroot_present": false,
+    "arm64_cross_build_executed": false,
+    "arm64_trillionnium_binaries_built": false,
+    "arm64_trillionnium_debs_built": false,
+    "arm64_mobian_rootfs_with_trillionnium_packages_built": false,
+    "can_promote_arm64_target_hardware_artifact": false,
+    "ready_for_release_push": false
+  },
+  "next_required_gates": [
+    "explicitly authorize the private network fetch gate for Rust target and Debian cross packages",
+    "materialize RUSTUP_HOME and CARGO_HOME under target/mobian-arm64-private-toolchain only",
+    "download cross .deb packages into target/mobian-arm64-private-toolchain/debs without installing them",
+    "extract .deb payloads into target/mobian-arm64-private-toolchain/sysroot",
+    "run an arm64 package smoke with CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER pointing at the private linker"
+  ],
+  "policy": {
+    "operator_invoked": true,
+    "static_evidence_only": true,
+    "network_download_executed": false,
+    "rustup_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "dpkg_deb_executed": false,
+    "package_install_executed": false,
+    "cargo_build_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "bootloader_relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "arm64_trillionnium_cross_build_path_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-arm64-trillionnium-cross-build-path-smoke.json",
+    "arm64_trillionnium_cross_build_path_json_sha256": "33789f01b294823194eea153a948225ea23273497b2c8e09950183d6cf3aec43"
+  },
+  "safety_notes": [
+    "This smoke reads local files, host command availability, and local apt package metadata only.",
+    "The generated rustup and apt-get commands are templates; this smoke does not execute them.",
+    "Any later network fetch or cross build must run as a separate explicit operator-invoked gate."
+  ]
+}

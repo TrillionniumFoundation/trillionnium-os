@@ -1,0 +1,55 @@
+# Trillionnium Shell Android App Launch Routing Smoke
+
+- status: trillionnium-shell-android-app-launch-route-pass-notification-actions-blocked
+- ok: true
+- target_package: ai.trillionnium.bridge
+- target_activity: ai.trillionnium.bridge/.PairingActivity
+- authorized_device_count: 1
+- bridge_package/activity: true/true
+- launch_status_ok/process_observed: true/true
+- force_stop_succeeded/no_residual: true/true
+- can_promote_android_app_launch_routing: true
+
+## Safety flags
+
+- operator_invoked: true
+- device_serial_redacted: true
+- adb_command_available: true
+- bridge_signal_source_smoke_promoted: true
+- app_launch_policy_smoke_promoted: true
+- android_launch_policy_enabled: true
+- launch_command_started_activity: true
+- launch_status_ok: true
+- launched_process_observed: true
+- force_stop_requested: true
+- force_stop_succeeded: true
+- no_residual_launched_process: true
+- app_launch_enabled: true
+- android_app_launch_enabled: true
+- launches_apps: true
+- launches_android_apps: true
+- reads_notifications: false
+- reads_notification_body: false
+- invokes_model: false
+- invokes_tool: false
+- writes_persistent_files: false
+- can_promote_android_app_launch_routing: true
+- mobile_mvp_ready: false
+
+## Blockers
+
+- bounded Android Bridge activity launch route is promoted; notification body/action runtime remains blocked
+- mobile_mvp_ready=false
+
+## Command hints
+
+- trillionnium-shell android-app-launch-routing-smoke --summary-only --json
+- trillionnium-shell android-app-launch-routing-smoke --check --json
+- trillionnium-shell app-shelf-runtime --summary-only --json
+- trillionnium-shell readiness-report --blockers-only --json
+
+## Safety notes
+
+- android-app-launch-routing-smoke uses exactly one authorized ADB device and launches only the Trillionnium Bridge PairingActivity
+- the smoke force-stops only ai.trillionnium.bridge after the bounded launch window and verifies no residual launched Bridge process
+- the smoke does not read notifications, expose notification bodies, invoke tools/models, launch third-party Android apps, or write persistent Shell files

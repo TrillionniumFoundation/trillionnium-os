@@ -1,0 +1,20 @@
+[package]
+name = "trillionnium-agent-stdio-proxy"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+description = "Source-only byte-exact Codex System API MCP stdio proxy"
+
+[[bin]]
+name = "trillionnium-codex-system-api-stdio-proxy"
+path = "src/main.rs"
+
+[features]
+default = []
+
+[dependencies]
+anyhow.workspace = true
+libc.workspace = true
+trillionnium-os-types.workspace = true

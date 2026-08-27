@@ -1,0 +1,22 @@
+status: arm64-bookworm-ui-sysroot-plan-smoke-pass
+development_position: arm64-bookworm-ui-sysroot-plan
+target_distribution: Mobian
+target_suite: bookworm
+target_architecture: arm64
+target_glibc_max_version: 2.36
+current_max_required_glibc_version: 2.39
+package_dependency_metadata_complete: true
+blocker_is_glibc_only: true
+bookworm_ui_sysroot_plan_ready: true
+bookworm_private_toolchain_root: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain
+apt_source_count: 2
+planned_package_count: 16
+external_fetch_required: true
+external_fetch_authorized: false
+network_download_executed: false
+apt_get_download_executed: false
+dpkg_deb_executed: false
+cargo_build_executed: false
+rootfs_build_executed: false
+ready_for_release_push: false
+boundary: bookworm-compatible arm64 UI/sysroot rebuild path is planned only; no fetch, extraction, build, rootfs, device, or release action was executed.

@@ -1,0 +1,34 @@
+Trillionnium OS FOGOS RC seal smoke
+
+Status: fogos-rc-seal-pass
+Generated: 2026-05-17T00:18:36+08:00
+Target: ZY32JLVHGN / fogos / moto g34 5G
+Release candidate commit: b9240a043288d053594e46b051e3a126d23d5475
+Release candidate tree: 2db73acb1296bac8b9fb706ebda9b050d001adef
+
+Evidence sealed:
+- Physical final execution evidence: promoted
+- Post-flash Android userspace acceptance: promoted
+- Bridge APK install acceptance: promoted
+- Synthetic notification body/action live smoke: promoted
+
+Installed live checks:
+- trillionniumd.service: active and enabled
+- Command Center doctor: ok
+- Command Center selftest: ok
+- Mobile packaging promotion report: 5/5 gates, ok
+- Shell readiness: ok, mobile_mvp_ready=true, blocker_count=0
+- Shell runtime smoke: 21/21 fixtures, ok
+- Signal Center runtime: ok
+- Live notification body/action smoke: ok
+
+Device live checks:
+- ADB device ZY32JLVHGN visible as fogos / moto_g34_5G
+- Bridge package installed and PairingActivity resolves
+- Notification listener default state is empty
+- POST_NOTIFICATIONS is granted=false after cleanup
+
+Safety boundary:
+- This seal did not run flash, wipe, repartition, sideload, reboot, relock, model invocation, tool invocation, Signal Broker writes, or audit writes.
+- Future destructive device execution remains unauthorized.
+- Do not relock bootloader on this custom Lineage/orange verified-boot state without a separate safety review.

@@ -1,0 +1,15 @@
+arm64-mobian-fogos-candidate15-partition-uevent-status-build-smoke
+status=arm64-mobian-fogos-candidate15-partition-uevent-status-build-smoke-pass-artifact-built-no-flash
+development_position=arm64-mobian-fogos-candidate15-partition-uevent-status-artifact-built-local
+known_blocker_id=candidate15-partition-uevent-status-not-yet-flashed
+next_gate=arm64-mobian-fogos-candidate15-partition-uevent-status-execution-receipt-smoke
+evidence_json_sha256=4ac94b1818f61a99179d6f810f8bea3442adf86a56933671caec915d9317487a
+boot_img_sha256=410709d20f6396fd90f64127ab0b9af3807e586be4253ee3741e5c35cf1825e7
+vendor_boot_img_sha256=b79367a7afed9317c5c7b758e5d97816d19364c87320d45cca9f23fd25c6183b
+initramfs_lz4_sha256=f02ef46a82e53edaa818150b9aaf20cf434a3342659c2422994384912dcee01a
+
+Candidate15 was built locally from the candidate9 stable HTTP diagnostic initramfs.
+The runtime USB/HTTP identity intentionally remains candidate9; setup_usb_gadget, HTTP status startup, telnet startup, USB product 18d1:4eea, and 192.168.76.2/192.168.76.1 networking are preserved.
+The boot image is unchanged, DTB is unchanged, the initramfs file list is unchanged, non-init file hashes are unchanged, and only ./init content changed.
+The only behavior added is a read-only selected PARTNAME uevent block in the HTTP status body for super, system_a, system_b, and userdata.
+This gate did not run ADB, Fastboot, flash, wipe, repartition, sideload, reboot, relock, install, or release push.

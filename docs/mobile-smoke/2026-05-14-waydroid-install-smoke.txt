@@ -1,0 +1,36 @@
+# waydroid install smoke
+2026-05-14T22:49:20+08:00
+$ waydroid status
+Session:	RUNNING
+Container:	FROZEN
+Vendor type:	MAINLINE
+IP address:	192.168.240.112
+Session user:	qian-qi(1000)
+Wayland display:	trillionnium-wayland-1
+$ sha256sum target/bridge-apk/trillionnium-bridge-debug.apk
+438843de84f3c94b2586a0cf39d97cef846f9de90b39f0e92e5864dff87be626  target/bridge-apk/trillionnium-bridge-debug.apk
+$ apksigner verify --verbose
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): false
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+$ sudo waydroid shell pm path ai.trillionnium.bridge
+package:/data/app/~~czT6voSjkONdOUK3UAEExw==/ai.trillionnium.bridge-LohvG1aaHficzU9RWn7ttQ==/base.apk
+$ sudo waydroid shell dumpsys package ai.trillionnium.bridge | summary
+  Package [ai.trillionnium.bridge] (b056cbe):
+    userId=10125
+    codePath=/data/app/~~czT6voSjkONdOUK3UAEExw==/ai.trillionnium.bridge-LohvG1aaHficzU9RWn7ttQ==
+    versionCode=0 minSdk=29 targetSdk=35
+      android.permission.POST_NOTIFICATIONS
+    User 0: ceDataInode=55841384 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+        android.permission.POST_NOTIFICATIONS: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+$ waydroid app list | bridge grep
+	android.intent.category.LAUNCHER
+Name: Trillionnium Bridge
+packageName: ai.trillionnium.bridge
+categories:
+	android.intent.category.LAUNCHER

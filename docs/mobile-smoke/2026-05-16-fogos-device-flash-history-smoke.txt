@@ -1,0 +1,29 @@
+# fogos device flash history smoke - 2026-05-16
+
+status: fogos-device-flash-history-smoke-pass
+target_device_serial: ZY32JLVHGN
+product: moto g34 5G (fogos)
+product_cpu_abi: arm64-v8a
+lineage_version: 23.2-20260429-UNOFFICIAL-fogos
+android_release: 16 / SDK 36
+boot_slot_suffix: _a
+boot_verified_state: orange
+hardware_sku: XT2363-4
+historical_sideload_zip_sha256: 83328070d80eeae28ae0a49c0a62b26a76f85c9ee321b21254353854a4458359
+archived_zip_sha256: aebd25a6ab3eecb0cb7a4ca4e3eb67bb808e2c7df5e56ddd37819b4489d2f70c
+archived_zip_matches_historical_sideload: false
+historical_fastboot_flash_dtbo_executed: true
+historical_fastboot_flash_vendor_boot_executed: true
+historical_fastboot_flash_boot_executed: true
+historical_fastboot_wipe_userdata_metadata_executed: true
+historical_fastboot_reboot_recovery_executed: true
+historical_adb_sideload_executed: true
+historical_phone_flash_executed: true
+historical_phone_reboot_executed: true
+historical_repartition_executed: false
+current_adb_readonly_executed: true
+current_device_matches_historical_postflash: true
+current_phone_flash_executed: false
+current_repartition_executed: false
+current_reboot_executed: false
+can_promote_fogos_device_flash_history_smoke: true

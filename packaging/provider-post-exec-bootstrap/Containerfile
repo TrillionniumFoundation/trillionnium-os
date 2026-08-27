@@ -1,0 +1,81 @@
+ARG BASE_IMAGE=public.ecr.aws/docker/library/rust@sha256:6258907abe69656e41cd992e0b705cdcfabcbbe3db374f92ed2d47121282d4a1
+FROM ${BASE_IMAGE}
+
+ARG TARGETARCH
+ARG DEBIAN_SNAPSHOT=20260713T000000Z
+ARG ZIG_AMD64_URL
+ARG ZIG_AMD64_SHA256
+ARG ZIG_ARM64_URL
+ARG ZIG_ARM64_SHA256
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+RUN printf '%s\n' \
+      "deb [check-valid-until=no] https://snapshot.debian.org/archive/debian/${DEBIAN_SNAPSHOT}/ bookworm main" \
+      > /etc/apt/sources.list \
+    && rm -f /etc/apt/sources.list.d/debian.sources \
+    && apt-get -o Acquire::Check-Valid-Until=false update \
+    && packages=( \
+      binutils \
+      build-essential \
+      ca-certificates \
+      cmake \
+      curl \
+      file \
+      git \
+      make \
+      ninja-build \
+      perl \
+      pkg-config \
+      python3 \
+      xz-utils \
+    ) \
+    && if [[ "${TARGETARCH}" == "amd64" ]]; then \
+      packages+=( \
+        binutils-aarch64-linux-gnu \
+      ); \
+    elif [[ "${TARGETARCH}" != "arm64" ]]; then \
+      echo "unsupported frozen builder architecture: ${TARGETARCH}" >&2; \
+      exit 1; \
+    fi \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${packages[@]}" \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN case "${TARGETARCH}" in \
+      amd64) zig_url="${ZIG_AMD64_URL}"; zig_sha256="${ZIG_AMD64_SHA256}" ;; \
+      arm64) zig_url="${ZIG_ARM64_URL}"; zig_sha256="${ZIG_ARM64_SHA256}" ;; \
+      *) exit 1 ;; \
+    esac \
+    && test -n "${zig_url}" \
+    && test -n "${zig_sha256}" \
+    && curl --fail --location --proto '=https' --tlsv1.2 "${zig_url}" -o /tmp/zig.tar.xz \
+    && printf '%s  %s\n' "${zig_sha256}" /tmp/zig.tar.xz | sha256sum --check --strict \
+    && mkdir -p /opt/zig \
+    && tar --extract --xz --file /tmp/zig.tar.xz --directory /opt/zig --strip-components=1 \
+    && rm /tmp/zig.tar.xz
+
+RUN rustup set auto-self-update disable \
+    && rustup component add --toolchain 1.95.0 clippy rustfmt rust-src \
+    && rustup target add --toolchain 1.95.0 aarch64-unknown-linux-musl \
+    && rustc --version --verbose \
+    && cargo --version \
+    && /opt/zig/zig version \
+    && /opt/zig/zig ar --version
+
+RUN mkdir -p /recipe/include /recipe/src
+COPY --chmod=0555 build_provider_payload.py /recipe/build_provider_payload.py
+COPY --chmod=0444 Containerfile /recipe/Containerfile
+COPY --chmod=0444 provider-payload-recipe-v1.json /recipe/provider-payload-recipe-v1.json
+COPY --chmod=0444 include/trillionnium_provider_post_exec_bootstrap.h /recipe/include/trillionnium_provider_post_exec_bootstrap.h
+COPY --chmod=0444 src/provider_post_exec_bootstrap.c /recipe/src/provider_post_exec_bootstrap.c
+COPY --chmod=0444 src/provider_post_exec_entry.S /recipe/src/provider_post_exec_entry.S
+
+ENV LANG=C \
+    LC_ALL=C \
+    RUSTUP_TOOLCHAIN=1.95.0 \
+    TZ=UTC \
+    SOURCE_DATE_EPOCH=1783900800 \
+    PATH=/opt/zig:/usr/local/bin:/usr/bin:/bin
+
+WORKDIR /work
+ENTRYPOINT ["python3", "/recipe/build_provider_payload.py", "_container-build"]

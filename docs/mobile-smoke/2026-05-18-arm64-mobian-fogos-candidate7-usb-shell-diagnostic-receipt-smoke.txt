@@ -1,0 +1,14 @@
+status=arm64-mobian-fogos-candidate7-usb-shell-diagnostic-receipt-smoke-pass-tty-visible-no-command-output
+development_position=arm64-mobian-fogos-candidate7-usb-acm-visible-candidate8-usb-network-next
+known_blocker_id=candidate7-acm-tty-visible-but-no-command-output
+candidate7_usb_shell_initramfs_written=true
+candidate7_initramfs_booted_enough_for_usb_acm=true
+candidate7_usb_acm_visible_on_host=true
+candidate7_tty_acm_visible_on_host=true
+candidate7_serial_command_output_captured=false
+candidate7_serial_reboot_bootloader_succeeded=false
+candidate8_usb_network_candidate_prepared=true
+post_boot_identity_proof_promoted=false
+target_hardware_graphical_phosh_booted=false
+ready_for_release_push=false
+next_gate=arm64-mobian-fogos-candidate8-usb-network-diagnostic-execution

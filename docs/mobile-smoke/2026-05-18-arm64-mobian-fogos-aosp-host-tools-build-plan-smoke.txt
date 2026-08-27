@@ -1,0 +1,15 @@
+status: arm64-mobian-fogos-aosp-host-tools-build-plan-smoke-pass
+development_position: arm64-mobian-fogos-aosp-host-tools-build-plan-locked-non-executable
+known_blocker_id: aosp-lp-host-tools-build-inputs-not-materialized
+aosp_host_tools_build_plan_locked: true
+aosp_host_tools_build_plan_executable_now: false
+build_inputs_fetch_executed: false
+host_tool_build_executed: false
+lpmake_materialized: false
+lpdump_materialized: false
+target_hardware_artifact_produced: false
+ready_for_release_push: false
+next_gate: arm64-mobian-fogos-aosp-lp-host-tools-build-inputs-fetch-smoke
+aosp_host_tools_build_plan_json_sha256: 4744dbb4aad6831960caf1e48b16e98da6bb7a3db17d0cd3567be61307d4359f
+aosp_host_tools_build_plan_md_sha256: 920dafd057b11934470c28e23747222d790aa492ed5d9b7b382bed9018f20480
+json_sha256: d9aeed3d1a67aaf5e34a239c07c69410deb34478c68f39764b61ed7c7a0a59f2

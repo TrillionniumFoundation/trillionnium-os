@@ -1,0 +1,115 @@
+{
+  "schema": "trillionnium.operation-replay-sync-static-recipe.v1",
+  "candidate_scope": "source_only_unwired",
+  "source_date_epoch": 1785542400,
+  "target": "aarch64-unknown-linux-musl",
+  "profiles": {
+    "amd64-cross": {
+      "host_arch": "x86_64",
+      "builder_image_receipt_required": true,
+      "toolchain_receipt_required": true
+    },
+    "arm64-native": {
+      "host_arch": "aarch64",
+      "builder_image_receipt_required": true,
+      "toolchain_receipt_required": true
+    }
+  },
+  "cargo": {
+    "package": "trillionnium-agent-direct-tools",
+    "feature": "production-durable-hotpath",
+    "release": true,
+    "locked": true,
+    "offline": true,
+    "no_default_features": true,
+    "bins": [
+      "trillionnium-system-api-operation-replay-sync",
+      "trillionnium-accessibility-operation-replay-sync"
+    ]
+  },
+  "source_contract": {
+    "cargo_lock_sha256": "72677fe9a157519c5c89e4fd368f6069ab0277d3c970ada2ac62bd3af2420d7e",
+    "fixed_files": {
+      "Cargo.toml": "7c57eb71e7eb01c0530a7c211e63f517ea6c7f7e537d0a293fd81c537efb2f22",
+      "crates/trillionnium-agent-direct-tools/Cargo.toml": "a7e3390b5f74f106d98fd3b0ff8cc4dc5f2f4b426f8c7a3df8b9168cacb445f0",
+      "crates/trillionnium-agent-direct-tools/src/operation_replay_sync.rs": "f8701dbdd816d0b35f640ac0bc42ee820b1ccf48ad9d4d8f8209aa801c3fa50e",
+      "crates/trillionnium-agent-direct-tools/src/bin/system_api_operation_replay_sync.rs": "d8f88361a8c93fa853d320980292f36a18a608bca83c594bd66c35c90756829b",
+      "crates/trillionnium-agent-direct-tools/src/bin/accessibility_operation_replay_sync.rs": "100f92d54e2c9aa2d974e20363c6a717e623288aee5b6fcce8e4b84367fcc139"
+    },
+    "full_tree_receipt_required": true,
+    "cargo_vendor_receipt_required": true,
+    "compiler_read_set_bound": false,
+    "hostile_same_uid_source_custody_proven": false
+  },
+  "build_contract": {
+    "base_environment": "empty",
+    "candidate_execution_enabled": false,
+    "locale": "C",
+    "timezone": "UTC",
+    "path_remap_root": "/usr/src/trillionnium-os",
+    "cargo_net_offline": true,
+    "network_namespace_verified_by_builder": false,
+    "outer_cgroup_v2_zero_survivor_required": true,
+    "durable_publication_journal_required": true,
+    "fresh_target_directory_required": true,
+    "toolchain_and_crt_receipt_required": true,
+    "builder_image_receipt_required": true
+  },
+  "elf_contract": {
+    "class": "ELF64",
+    "endianness": "little",
+    "machine": "AArch64",
+    "type": "ET_EXEC",
+    "pt_interp_forbidden": true,
+    "pt_dynamic_forbidden": true,
+    "sht_dynamic_forbidden": true,
+    "entry_in_executable_load": true,
+    "gnu_stack_count": 1,
+    "gnu_stack_executable": false,
+    "combined_wx_page_sizes": [4096, 16384, 65536],
+    "load_congruence_page_sizes": [4096, 16384, 65536],
+    "program_and_section_bounds_required": true,
+    "load_alignment_and_congruence_required": true
+  },
+  "roles": {
+    "system-api": {
+      "cargo_bin": "trillionnium-system-api-operation-replay-sync",
+      "filename": "trillionnium-system-api-operation-replay-sync",
+      "entry_source": "crates/trillionnium-agent-direct-tools/src/bin/system_api_operation_replay_sync.rs"
+    },
+    "accessibility": {
+      "cargo_bin": "trillionnium-accessibility-operation-replay-sync",
+      "filename": "trillionnium-accessibility-operation-replay-sync",
+      "entry_source": "crates/trillionnium-agent-direct-tools/src/bin/accessibility_operation_replay_sync.rs"
+    }
+  },
+  "reconcile_contract": {
+    "profiles": [
+      "amd64-cross",
+      "arm64-native"
+    ],
+    "same_role_byte_identical": true,
+    "cross_role_byte_distinct": true,
+    "role_exchange_forbidden": true,
+    "source_cargo_lock_vendor_and_crt_equal": true,
+    "durable_publication_enabled": false,
+    "fixed_custody_journal_required": true
+  },
+  "source_checkpoint": {
+    "formal_lane_started": false,
+    "two_by_two_build_completed": false,
+    "independent_builder_custody_verified": false,
+    "signed_product_contract_verified": false,
+    "fsverity_enable_performed": false,
+    "avb_provenance_verified": false,
+    "product_packaging_wired": false,
+    "launcher_authority_constructible": false,
+    "main_effect_route_wired": false
+  },
+  "authority": {
+    "installable": false,
+    "product_authority": false,
+    "effect_authority": false,
+    "release_authority": false
+  }
+}

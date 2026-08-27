@@ -1,0 +1,41 @@
+[package]
+name = "trillionnium-tool-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+description = "Trillionnium OS tool transport and execution boundary"
+
+[features]
+default = []
+dev-conformance-fault-hook = ["legacy-authority-effects"]
+# Non-product userdebug-only admission for a fixed built-in provider in the
+# P0 System API -> launch_package(Settings) device slice. The admission remains
+# bound to the exact Codex provider enum and built-in UID/GID. The build script
+# requires an embedded build-variant identity. Product builds leave this
+# disabled and retain the uninhabited production effect admission.
+p0-launch-package-provider-conformance = []
+# Retired approval/Authority effect execution is not part of the Android
+# production graph. Keep it opt-in for historical conformance vectors only.
+legacy-authority-effects = ["dep:p256"]
+
+[dependencies]
+trillionnium-agent-direct-tools.workspace = true
+trillionnium-os-types.workspace = true
+trillionnium-shell-exec = { workspace = true, features = ["root-linux-mcp-adapter"] }
+base64.workspace = true
+jsonschema.workspace = true
+libc.workspace = true
+p256 = { workspace = true, optional = true }
+schemars.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+hmac.workspace = true
+sha2.workspace = true
+tempfile.workspace = true
+thiserror.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+p256.workspace = true

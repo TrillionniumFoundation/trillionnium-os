@@ -1,0 +1,10 @@
+arm64-mobian-fogos-candidate14-init-delta-plan-smoke
+status=arm64-mobian-fogos-candidate14-init-delta-plan-smoke-pass-http-first-plan-locked
+development_position=arm64-mobian-fogos-candidate14-http-first-init-delta-plan-locked
+known_blocker_id=candidate14-http-first-super-probe-artifact-not-built
+next_gate=arm64-mobian-fogos-candidate14-http-first-super-probe-build-smoke
+evidence_json_sha256=93374aacd4da6fe3ac35c06941a3426fe4743063f57c61d5ffbba02c5d73a847
+
+Plan locked: candidate14 must start from candidate9 stable HTTP init, preserve USB product 18d1:4eea, preserve USB networking and HTTP status first, then add only a delayed read-only fail-open super partition probe.
+Forbidden before first HTTP proof: losetup, mount, full block uevent sweep, USB PID change, DTB change, boot kernel change, or rootfs payload change.
+This gate authorizes a local candidate14 artifact build next, not a flash.

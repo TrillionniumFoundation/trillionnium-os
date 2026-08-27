@@ -1,0 +1,134 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-target-hardware-artifact-port-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-target-hardware-artifact-port-smoke-pass-boundary-recorded",
+  "generated_at": "2026-05-18T02:32:25+08:00",
+  "generated_at_unix": 1779042745,
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "development_position": "arm64-mobian-target-hardware-artifact-port-blocked-local",
+  "known_blocker_id": "mobian-target-hardware-boot-and-dynamic-partition-artifacts-missing",
+  "input_evidence": {
+    "arm64_mobian_graphical_drm_session_with_dependencies_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-graphical-drm-session-with-dependencies-smoke.json",
+    "arm64_mobian_graphical_drm_session_with_dependencies_smoke_sha256": "b16fdf97b2334192fc2960376c9788237a8c0e19d7836a76d64459764157e933",
+    "arm64_mobian_target_hardware_graphical_phosh_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-target-hardware-graphical-phosh-smoke.json",
+    "arm64_mobian_target_hardware_graphical_phosh_smoke_sha256": "7b91666b4b841eecb3e36b44dfd95dbce38fd3c553a19fb59807c0c688d4d15c",
+    "arm64_mobian_target_hardware_install_plan_and_rollback_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-target-hardware-install-plan-and-rollback-smoke.json",
+    "arm64_mobian_target_hardware_install_plan_and_rollback_smoke_sha256": "4d217bb9225ab5635d40ea9fd8e4573c2970c26cf8b13b325bdcc37ffc4529bf",
+    "fogos_fresh_flash_lock_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-16-fogos-fresh-flash-lock-smoke.json",
+    "fogos_fresh_flash_lock_smoke_sha256": "e0c455480cac29c3d0a2bef40652c282a74a1934e079a8ed2bf3246d7bdeb2c5"
+  },
+  "qemu_artifact_assessment": {
+    "local_qemu_raw_disk": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-graphical-drm-session-with-dependencies-smoke/trillionnium-mobian-bookworm-arm64-graphical-drm-session-deps.raw.img",
+    "local_qemu_raw_disk_sha256": "8029eb534365ab1ff788a0a8bb952fbf6c6e4de6acedc879568c12fbfd5838f4",
+    "local_qemu_raw_disk_exists": true,
+    "local_qemu_raw_disk_is_android_boot_image": false,
+    "local_qemu_raw_disk_is_fastboot_update_payload": false,
+    "local_qemu_raw_disk_is_flashable_target_hardware_artifact": false
+  },
+  "lineage_rollback_artifacts": {
+    "available": true,
+    "boot_img": {
+      "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/boot.img",
+      "sha256": "f8190a83a19e39153e706d81f054ca2f0ff320f2f7ef576f0e49b14ad23a21db"
+    },
+    "dtbo_img": {
+      "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/dtbo.img",
+      "sha256": "00daacbf405aa69e4cb41af3aba6edab440ccfb0660ce25baa80a3fd04909172"
+    },
+    "vendor_boot_img": {
+      "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vendor_boot.img",
+      "sha256": "0f1430aed5664d240c76e4f0082efb70f1ed2ff607a77b37bec8d118ae2adaef"
+    },
+    "vbmeta_img": {
+      "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vbmeta.img",
+      "sha256": "d713cab51c3ec8b68ec454b39336900a45d8d10e2ce37ef4d1eae25470cb573e"
+    },
+    "vbmeta_system_img": {
+      "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vbmeta_system.img",
+      "sha256": "1dcf6fbf1ae637d6f90e70b76b4bf1d5052d372767f483353d2570c0673ababa"
+    },
+    "super_empty_img": {
+      "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/super_empty.img",
+      "sha256": "570d502dbc70b79f489120fa510a09483faed3d4ef89a3480878103530475a08"
+    },
+    "artifact_family_is_lineage_rollback_not_mobian": true
+  },
+  "artifact_port_matrix": {
+    "qemu_raw_disk_verified": true,
+    "lineage_rollback_artifacts_available": true,
+    "lineage_rollback_artifacts_are_not_mobian_trillionnium_os": true,
+    "mobian_boot_img_produced": false,
+    "mobian_vendor_boot_img_produced": false,
+    "mobian_dtbo_img_produced": false,
+    "mobian_vbmeta_strategy_locked": false,
+    "mobian_dynamic_partition_payload_produced": false,
+    "mobian_ota_zip_produced": false,
+    "post_boot_identity_gate_promoted": false
+  },
+  "result": {
+    "arm64_mobian_target_hardware_artifact_port_smoke_passed": true,
+    "target_hardware_artifact_port_boundary_recorded": true,
+    "target_hardware_artifact_ported": false,
+    "target_hardware_artifact_produced": false,
+    "can_build_target_hardware_artifact_now": false,
+    "target_hardware_install_plan_executable_now": false,
+    "target_hardware_install_executed": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "mobian-target-hardware-boot-and-dynamic-partition-artifacts-missing",
+    "next_gate": "arm64-mobian-target-hardware-bootimage-port-plan-smoke"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "adb_write_executed": false,
+    "fastboot_write_executed": false,
+    "package_install_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "network_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "ac7a506b4ea9364dee1d0ba4c71719e6c43d5e51c226bc953f0831fe9dbb6286",
+    "artifact_port_matrix_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-target-hardware-artifact-port-smoke/artifact-port-matrix.json",
+    "artifact_port_matrix_json_sha256": "082ef8622b9f36ce89c9b554353f22446cdea293b67c2c5443de644e147afb69",
+    "artifact_port_blockers_md": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-target-hardware-artifact-port-smoke/ARTIFACT_PORT_BLOCKERS.md",
+    "artifact_port_blockers_md_sha256": "25b3d2bb1e08561eb93a309dee7916350691a986b4f87bdfd7f7338b3cf189a8"
+  },
+  "next_required_gates": [
+    "define a fogos Mobian boot image or kernel/initramfs strategy",
+    "define vendor_boot, dtbo, vbmeta, and vbmeta_system handling",
+    "define dynamic-partition or super payload generation for Mobian/Trillionnium OS",
+    "bind rollback requirements to every Android partition that would be touched",
+    "promote post-boot Trillionnium OS identity proof from target hardware"
+  ],
+  "safety_notes": [
+    "This gate distinguishes existing Lineage/fogos rollback material from Mobian/Trillionnium OS artifacts.",
+    "It reads local evidence and artifact hashes only and does not execute ADB, Fastboot, package installs, flashing, repartitioning, sideloading, rebooting, or relocking.",
+    "Release readiness remains false until a device-specific Mobian/Trillionnium OS artifact and post-boot identity proof are promoted."
+  ]
+}

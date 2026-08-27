@@ -1,0 +1,30 @@
+arm64-mobian-fogos-candidate9-restore-after-candidate15-no-transport-receipt-smoke
+status: arm64-mobian-fogos-candidate9-restore-after-candidate15-no-transport-receipt-smoke-pass-http-restored
+development_position: arm64-mobian-fogos-candidate9-restored-after-candidate15-no-transport-regression
+known_blocker_id: candidate9-http-status-visible-but-super-rootfs-not-mounted
+next_gate: arm64-mobian-fogos-candidate14-15-regression-forensics-smoke
+
+candidate15 execution evidence: docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate15-partition-uevent-status-flash-execution-receipt-smoke.json
+candidate15 execution evidence sha256: 449f6bbeb889f5ba1f2269510845e13ad3258e5219cf9b469fe158ab9c19e23e
+candidate9 boot.img: target/mobian-arm64-fogos-candidate9-http-status-diagnostic/boot.img
+candidate9 boot.img sha256: 410709d20f6396fd90f64127ab0b9af3807e586be4253ee3741e5c35cf1825e7
+candidate9 vendor_boot.img: target/mobian-arm64-fogos-candidate9-http-status-diagnostic/vendor_boot.img
+candidate9 vendor_boot.img sha256: 2e06be1bed7a32d742c63c9e584ab2cda06f546d9f01894cb3a5183fd44df8ae
+install log: target/mobian-arm64-fogos-candidate9-restore-after-candidate15-no-transport-20260518T161915Z/candidate9-restore-fastboot-install.log
+install log sha256: 2ae78a7df3260dbab26eed69dcbae4214b8105aebf7c5128f17a833450b997fd
+observation log: target/mobian-arm64-fogos-candidate9-restore-after-candidate15-no-transport-20260518T161915Z/candidate9-restore-post-reboot-observation.log
+observation log sha256: d0489214f9dd2ef8104be5d31ec68dfa6ed3e5ccca06c2b768f36bab5ddf794a
+status json: target/mobian-arm64-fogos-candidate9-restore-after-candidate15-no-transport-20260518T161915Z/candidate9-restore-status.json
+status json sha256: 27ffaab74a9489add0fa69fe80ee8d7c3933c5d07fa55bc798bd4fdf6d952e7b
+
+result:
+- candidate9 restored after candidate15 no-transport regression: true
+- candidate9 USB 18d1:4eea visible: true
+- candidate9 USB network ping reachable: true
+- candidate9 HTTP status body captured: true
+- candidate9 super rootfs mounted: false
+- post-boot Trillionnium OS identity proof promoted: false
+- target hardware graphical Phosh booted: false
+- ready for release push: false
+
+policy: this importer did not run adb, fastboot, flash, wipe, repartition, sideload, reboot, relock, rollback, install, release push, model invocation, or tool invocation.

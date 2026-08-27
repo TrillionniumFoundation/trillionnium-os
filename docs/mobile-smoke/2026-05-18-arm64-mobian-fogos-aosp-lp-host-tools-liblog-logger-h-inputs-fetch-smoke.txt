@@ -1,0 +1,20 @@
+arm64 Mobian fogos AOSP LP host-tools liblog logger.h inputs fetch smoke
+status=arm64-mobian-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetch-smoke-pass-boundary-recorded
+development_position=arm64-mobian-fogos-aosp-lp-host-tools-liblog-logger-h-inputs-fetched-object-closure-complete-target-local
+known_blocker_id=aosp-lp-host-tools-link-closure-not-locked
+next_gate=arm64-mobian-fogos-aosp-lp-host-tools-link-closure-plan-smoke
+logger_input_count=2
+compat_shim_count=1
+source_unit_count=28
+object_file_count=28
+failed_object_count=0
+object_closure_complete=true
+first_missing_header=none
+host_tool_link_invocation_executed=false
+host_tool_build_executed=false
+host_tool_binary_produced=false
+lpmake_materialized=false
+lpdump_materialized=false
+target_hardware_artifact_produced=false
+ready_for_release_push=false
+json_sha256=eca28508af01c7b02b9f792c15f2ee25b9cfc43a346be2d2247daf8f9f7422be

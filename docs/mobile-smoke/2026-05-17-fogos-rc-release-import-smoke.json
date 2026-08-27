@@ -1,0 +1,106 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-fogos-rc-release-import-smoke.v1",
+  "status": "fogos-rc-release-import-smoke-pass",
+  "generated_at": "2026-05-17T03:22:31+08:00",
+  "generated_at_unix": 1778959351,
+  "target": "mobile",
+  "platform": "physical-android-fogos",
+  "profile": "lineage-fogos",
+  "release_track": "dogfood-alpha-rc",
+  "target_device_serial": "ZY32JLVHGN",
+  "product_device": "fogos",
+  "product_model": "moto g34 5G",
+  "tag_name": "fogos-rc-20260517",
+  "tag_object": "8ca71d2980beca7fe59c8b55c33cd061492faf1c",
+  "tag_commit": "21c042890a779d575f66e6516581f3d8733ff0f3",
+  "tag_tree": "f84f1d85183fb6ee4ab2a6d14ea46798579dbf4d",
+  "export_archive": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-export-smoke/fogos-rc-20260517-release-export.tar.gz",
+  "export_archive_sha256": "4da3efcf73738682fe41cc493e6674f9940ad4b46d27369b6d94ffd5b0aad025",
+  "export_archive_size_bytes": 1250954,
+  "export_archive_list_sha256": "2871d5d6dc8522d958347498ab3732755f0d8febb9fe38f187743090bb0cc169",
+  "export_archive_extracted": true,
+  "git_bundle": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/extracted/fogos-rc-20260517-release-export/fogos-rc-20260517.git.bundle",
+  "git_bundle_sha256": "528d645439e445e9d4c7ea771936b93a77f47d94d2f64eb63736405b5d145e1e",
+  "release_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/extracted/fogos-rc-20260517-release-export/RELEASE-MANIFEST.json",
+  "release_manifest_sha256": "6564d7e2a976caaab32baebc5178b1719d86345c3f0e6a9e2dad3cea5ce8b274",
+  "sha256sums": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/extracted/fogos-rc-20260517-release-export/SHA256SUMS",
+  "sha256sums_sha256": "f9892889c3ed64645f5065f366bf6ae7fadfa8631f25ba3e85b376a799091397",
+  "sha256sums_check": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/sha256sums-check.txt",
+  "sha256sums_check_sha256": "c387de598fe89b45feb0b7c62c7b356324dfc882c199597244dc75cc292dfd95",
+  "sha256sums_verified": true,
+  "manifest_policy_check": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/manifest-policy-check.txt",
+  "manifest_policy_check_sha256": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+  "manifest_policy_checked": true,
+  "git_bundle_verify": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/git-bundle-verify.txt",
+  "git_bundle_verify_sha256": "220e4d7b502e430686068a8f4d27db154abd247804296a7dd6fc67d4a3c913cd",
+  "git_bundle_verified": true,
+  "restore_repo": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/restored-repo",
+  "restored_tag_object": "8ca71d2980beca7fe59c8b55c33cd061492faf1c",
+  "restored_commit": "21c042890a779d575f66e6516581f3d8733ff0f3",
+  "restored_tree": "f84f1d85183fb6ee4ab2a6d14ea46798579dbf4d",
+  "restored_head_subject": "Promote FOGOS RC release handoff evidence",
+  "restored_file_count": 406,
+  "offline_restore_completed": true,
+  "offline_restore_tag_verified": true,
+  "offline_restore_commit_verified": true,
+  "offline_restore_tree_verified": true,
+  "restored_handoff_json_sha256": "25ef471564159c798c7ae123b74a0d489fe3913d008ef6bdb2b5fe7d95488358",
+  "restored_handoff_toml_sha256": "38fdf8f02ba020efc842929fb25d07ad3b90b80c8aef0e972a85ac3557c438d9",
+  "restored_rc_seal_json_sha256": "acc034022d45baadef34a53c36ffc917c8013492c3bc1b08312d71285fef2a03",
+  "restored_release_soak_json_sha256": "ccc3e442ce363978f54c0476fbfb0c05c1fcd1550ac2876c497ec8d155cd59d3",
+  "restored_evidence_hashes_verified": true,
+  "non_authorizing_release_import": true,
+  "can_execute_fresh_destructive_flash": false,
+  "future_destructive_execution_authorized": false,
+  "bootloader_relock_authorized": false,
+  "bootloader_relock_executed": false,
+  "fresh_flash_executed": false,
+  "wipe_executed": false,
+  "repartition_executed": false,
+  "sideload_executed": false,
+  "reboot_executed": false,
+  "signal_broker_write_enabled": false,
+  "audit_write_enabled": false,
+  "invokes_model": false,
+  "invokes_tool": false,
+  "rc_release_import_complete": true,
+  "hash_manifest": [
+    {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-export-smoke/fogos-rc-20260517-release-export.tar.gz",
+      "sha256": "4da3efcf73738682fe41cc493e6674f9940ad4b46d27369b6d94ffd5b0aad025"
+    },
+    {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/extracted/fogos-rc-20260517-release-export/fogos-rc-20260517.git.bundle",
+      "sha256": "528d645439e445e9d4c7ea771936b93a77f47d94d2f64eb63736405b5d145e1e"
+    },
+    {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/extracted/fogos-rc-20260517-release-export/RELEASE-MANIFEST.json",
+      "sha256": "6564d7e2a976caaab32baebc5178b1719d86345c3f0e6a9e2dad3cea5ce8b274"
+    },
+    {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-rc-release-import-smoke/extracted/fogos-rc-20260517-release-export/SHA256SUMS",
+      "sha256": "f9892889c3ed64645f5065f366bf6ae7fadfa8631f25ba3e85b376a799091397"
+    },
+    {
+      "path": "restored/trillionnium-os/docs/mobile-smoke/2026-05-17-fogos-rc-release-handoff-smoke.json",
+      "sha256": "25ef471564159c798c7ae123b74a0d489fe3913d008ef6bdb2b5fe7d95488358"
+    },
+    {
+      "path": "restored/trillionnium-os/packaging/mobian/promotion/fogos-rc-release-handoff-smoke.toml",
+      "sha256": "38fdf8f02ba020efc842929fb25d07ad3b90b80c8aef0e972a85ac3557c438d9"
+    },
+    {
+      "path": "restored/trillionnium-os/docs/mobile-smoke/2026-05-17-fogos-rc-seal.json",
+      "sha256": "acc034022d45baadef34a53c36ffc917c8013492c3bc1b08312d71285fef2a03"
+    },
+    {
+      "path": "restored/trillionnium-os/docs/mobile-smoke/2026-05-17-fogos-release-soak-smoke.json",
+      "sha256": "ccc3e442ce363978f54c0476fbfb0c05c1fcd1550ac2876c497ec8d155cd59d3"
+    }
+  ],
+  "safety_notes": [
+    "Release import smoke is local and non-authorizing.",
+    "The export archive was extracted, SHA256SUMS was checked, the git bundle was verified, and the RC tag was restored into a temporary local repository.",
+    "No network push, remote release creation, ADB, fastboot, package install, notification listener enablement, flash, wipe, repartition, sideload, reboot, or bootloader relock was executed by this smoke."
+  ]
+}

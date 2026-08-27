@@ -1,0 +1,13 @@
+status: arm64-mobian-fogos-aosp-host-tools-plan-smoke-pass
+development_position: arm64-mobian-fogos-aosp-host-tools-plan-locked-non-executable
+known_blocker_id: aosp-host-tool-source-or-prebuilt-fetch-not-executed
+aosp_host_tools_plan_locked: true
+aosp_host_tools_plan_executable_now: false
+source_fetch_executed: false
+host_tool_build_executed: false
+target_hardware_artifact_produced: false
+ready_for_release_push: false
+next_gate: arm64-mobian-fogos-aosp-host-tools-fetch-smoke
+aosp_host_tools_plan_json_sha256: 22b9a1aba1a6ac251d8cac5a177e952e1db150f2fd908fa64141bf67b8037a8c
+aosp_host_tools_plan_md_sha256: 6af89b476c3e135403c66a8ecb05232f3b9f6392f1a4636ba0510d8c8a4a364e
+json_sha256: 2059cf1247ce33b016ccd3b32b097b984ca7ce7d214a14e6c2fd36245b432df9

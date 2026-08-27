@@ -1,0 +1,30 @@
+{
+  "contract_schema": "org.trillionnium.agent-descriptor-registry.contract.v1",
+  "registry_schema": "org.trillionnium.agent-descriptor-registry.v1",
+  "descriptor_schema": "org.trillionnium.agent-descriptor.v1",
+  "endpoints": [
+    {
+      "symbol": "SYSTEM_API",
+      "tool_selinux_domain": "u:r:trillionnium_agent_system_api_tool:s0",
+      "operation_replay_sync_selinux_domain": "u:r:trillionnium_agent_system_api_operation_replay_sync:s0"
+    },
+    {
+      "symbol": "ACCESSIBILITY",
+      "tool_selinux_domain": "u:r:trillionnium_agent_accessibility_tool:s0",
+      "operation_replay_sync_selinux_domain": "u:r:trillionnium_agent_accessibility_operation_replay_sync:s0"
+    }
+  ],
+  "descriptors": [
+    {
+      "symbol": "CODEX",
+      "provider_id": "openai-codex",
+      "agent_id": "agent-codex-direct-v1",
+      "identity_key_sha256": "edcf9d31da8b48d29575115a7242691c1337174edf42573b7274b652a4cd571c",
+      "replay_namespace": "agent-codex-v1",
+      "uid": 5901,
+      "gid": 5901,
+      "agent_selinux_domain": "u:r:trillionnium_codex_agent:s0",
+      "runtime_adapter": "supervised-codex-cli"
+    }
+  ]
+}

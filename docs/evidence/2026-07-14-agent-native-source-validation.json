@@ -1,0 +1,243 @@
+{
+  "android_integration": {
+    "aosp_source_binding": {
+      "content_manifest": {
+        "algorithm": "sha256(sha256sum-lines-sorted-by-relative-path)",
+        "bytes": 361779373,
+        "file_count": 255,
+        "sha256": "3ce0f92ede4eb565865bb10f4194ba792127ad34d17ff94a83f967ed5b3a5a3c",
+        "symlink_count": 3,
+        "symlink_manifest_sha256": "2ec889484480ddd86bc0e6c28b0815e43ce09da8fcf384e4f73fac969045373f",
+        "roots": [
+          "packages/apps/TrillionniumAiAuthority",
+          "packages/apps/TrillionniumAiShell",
+          "device/trillionnium",
+          "vendor/trillionnium/config/common.mk",
+          "vendor/trillionnium/prebuilt/common/Android.bp",
+          "vendor/trillionnium/prebuilt/common/bin/trillionniumd.sh",
+          "vendor/trillionnium/prebuilt/common/bin/trillionnium-agent-egress-guard.sh",
+          "vendor/trillionnium/prebuilt/common/etc/init/init.trillionnium-system_ext.rc",
+          "vendor/trillionnium/prebuilt/common/etc/trillionnium",
+          "vendor/trillionnium/prebuilt/common/tests",
+          "vendor/trillionnium/prebuilt/common/linux/agents"
+        ]
+      },
+      "git_commit_bound": false,
+      "scope": "dirty/non-monorepo Android working-tree snapshot"
+    },
+    "build": {
+      "decision": "PASS_ANDROID_MODULE_COMPILE_AND_PACKAGE_ONLY",
+      "elapsed": "16:21",
+      "log": {
+        "bytes": 791168,
+        "ephemeral_path": "/tmp/aosp-final-validation-20260714-iOgbi3/build.log",
+        "sha256": "7036cae02da512145dde69e7f7af74108d6d28f25184cb0fcaba670b6d6dc909"
+      },
+      "requested_target_count": 23,
+      "requested_target_list_custody": "HOLD_NOT_PERSISTED_IN_LOG",
+      "rust_daemon_compiled_by_soong": false,
+      "sandboxing_enabled": false,
+      "trillionniumd_wrapper_sha256": "22757e829706df75819162374c3f1bd8f8f72c9115725718ebab94532e724d90"
+    },
+    "lunch": {
+      "log": {
+        "bytes": 1668,
+        "ephemeral_path": "/tmp/aosp-final-validation-20260714-iOgbi3/lunch.log",
+        "sha256": "9de5332f94d9f0e6aa1f270886986039f31fddf5d62c50f6a09b5530ddb20d4e"
+      },
+      "status": "PASS",
+      "target": "trillionnium_fogos-bp4a-user"
+    },
+    "static_contracts": {
+      "command_count": 7,
+      "logs": [
+        {
+          "bytes": 0,
+          "id": "no_legacy_authority_paths",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASS_RECORDED_BY_EXECUTOR"
+        },
+        {
+          "bytes": 0,
+          "id": "authority_security_contracts",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "PASS_RECORDED_BY_EXECUTOR"
+        },
+        {
+          "bytes": 58,
+          "id": "memory_key_custody_contracts",
+          "sha256": "6f597d36fa3c21c799e3a8523280bf3329c41e505e475df33c27dab48e5a94ef",
+          "status": "PASS"
+        },
+        {
+          "bytes": 70,
+          "id": "agent_provider_security_contract",
+          "sha256": "2a673564b28e8c8829f223082d2bf570419b1e75f62e6b6de9d2e63286efe0c1",
+          "status": "PASS"
+        },
+        {
+          "bytes": 104,
+          "id": "openclaw_product_contract_test",
+          "sha256": "e4bd5419636999463cbc6e084fdcca3cf2dbc1f3003bba76772d6413a4baf65f",
+          "status": "PASS"
+        },
+        {
+          "bytes": 80,
+          "id": "agentd_production_tcb_test",
+          "sha256": "d7ec8710691a0a563fce58688d9d5fbb917ab91541010c5b8b0fcdc33226ec27",
+          "status": "PASS"
+        },
+        {
+          "bytes": 220,
+          "expected_negative_diagnostics": 2,
+          "id": "agent_same_abi_conformance_contract",
+          "python_test_count": 9,
+          "sha256": "9bf930957cb782b567cb87f3efd3d91da49d524c4d1ca9e1e3f8ef9cf20da9a2",
+          "status": "PASS"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "claims_allowed": [
+    "exact Git source commit host-validated with disclosed exclusions",
+    "Android integration modules compiled and packaged for a content-bound working-tree snapshot",
+    "exact-commit AArch64 daemon cross-built and content-addressed"
+  ],
+  "claims_forbidden": [
+    "release-ready",
+    "device-verified",
+    "OTA-verified",
+    "signed-release",
+    "live-conformance-complete",
+    "public-release-authorized"
+  ],
+  "cross_build": {
+    "artifact": {
+      "architecture": "AArch64",
+      "bytes": 9433864,
+      "elf_type": "PIE",
+      "max_glibc_symbol_version": "GLIBC_2.34",
+      "sha256": "886f329e30ad7a447fea6271e10597080b1faff63cde32a9d7895baaf8ba1b71"
+    },
+    "source_checkout": "git archive 7bfd99d7fa2c125af07e32b220d72ef845b6ac38:trillionnium-os",
+    "status": "PASS_ARTIFACT_ONLY_NOT_ROOTFS_OR_LIVE"
+  },
+  "decision": "PASS_HOST_SOURCE_VALIDATION_ONLY",
+  "evidence_strength": "self_reported_unsigned",
+  "excluded_tests": [
+    {
+      "coverage_impact": "legacy generated Bridge APK artifact gate is not source-only hermetic",
+      "name": "tests::bridge_apk_artifact_gates_filter_and_export_without_execution",
+      "reason": "requires omitted target/bridge-apk generated artifact",
+      "status": "HOLD_NON_HERMETIC_GENERATED_ARTIFACT_DEPENDENCY"
+    },
+    {
+      "coverage_impact": "legacy generated Bridge APK readiness aggregation is not source-only hermetic",
+      "name": "tests::bridge_apk_readiness_aggregates_passive_blockers_without_execution",
+      "reason": "requires omitted target/bridge-apk generated artifact",
+      "status": "HOLD_NON_HERMETIC_GENERATED_ARTIFACT_DEPENDENCY"
+    }
+  ],
+  "generated_at_utc": "2026-07-14T06:36:31Z",
+  "holds": [
+    "two legacy generated Bridge APK tests are excluded from source-only validation",
+    "root-only dedicated UID cleanup test is ignored in two binary targets",
+    "AArch64 rootfs and target-files custody are not complete",
+    "full KeyMint X.509 and attestationApplicationId validation is not complete",
+    "raw CONNECT does not prove HTTP path or approved-byte provenance",
+    "Memory custody remains user-0 internal-alpha scope",
+    "real-device same-ABI action, undo, rollback and live receipts are missing",
+    "public release, upload, signing and live install are not authorized"
+  ],
+  "host_validation": {
+    "runs": [
+      {
+        "argv": "cargo fmt --all -- --check",
+        "exit_code": 0,
+        "id": "rustfmt",
+        "log": {
+          "bytes": 0,
+          "ephemeral_path": "/tmp/trillionnium-g1-exact-validation-7bfd99d/cargo-fmt.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "status": "PASS_RECORDED_BY_EXECUTOR"
+      },
+      {
+        "argv": "cargo clippy --workspace --all-targets --locked --offline --ignore-rust-version -- -D warnings",
+        "exit_code": 0,
+        "id": "clippy",
+        "log": {
+          "bytes": 1489,
+          "ephemeral_path": "/tmp/trillionnium-g1-exact-validation-7bfd99d/cargo-clippy.log",
+          "sha256": "d75e9b7332e0723dd3a5221b1f5e90a9ab680e3fb6f68c7601163d783bac18a7"
+        },
+        "status": "PASS"
+      },
+      {
+        "argv": "cargo test --workspace --all-targets --locked --offline --ignore-rust-version --no-fail-fast -- --skip tests::bridge_apk_artifact_gates_filter_and_export_without_execution --skip tests::bridge_apk_readiness_aggregates_passive_blockers_without_execution",
+        "exit_code": 0,
+        "id": "workspace_tests",
+        "ignored_test_occurrences": 2,
+        "log": {
+          "bytes": 48417,
+          "ephemeral_path": "/tmp/trillionnium-g1-exact-validation-7bfd99d/cargo-workspace-tests.log",
+          "sha256": "e2968bb5f650a13e7095bab3eaee554d2028d8fe6b9191f949f1c447140af54f"
+        },
+        "status": "PASS_WITH_DISCLOSED_EXCLUSIONS"
+      }
+    ],
+    "source_checkout": "/tmp/trillionnium-source-7bfd99d7fa2c125af07e32b220d72ef845b6ac38",
+    "source_checkout_custody": "ephemeral_git_archive_checkout",
+    "status": "PASS_WITH_DISCLOSED_EXCLUSIONS"
+  },
+  "ignored_tests": [
+    {
+      "name": "openclaw_adapter::tests::dedicated_uid_cleanup_removes_nested_mode_0700_and_symlink_safely",
+      "occurrences": 2,
+      "reason": "requires root CAP_SETUID/CAP_SETGID to emulate Android dedicated UID",
+      "status": "HOLD_ROOT_PRIVILEGED_HOST_SIMULATION"
+    }
+  ],
+  "log_custody": "HASH_BOUND_EPHEMERAL_FILES_NOT_A_SIGNED_CUSTODY_BUNDLE",
+  "non_actions": {
+    "adb": false,
+    "complete_release_signing": false,
+    "device_write": false,
+    "independent_release_signing": false,
+    "live_install": false,
+    "ota": false,
+    "public_release": false,
+    "public_upload": false,
+    "target_files": false
+  },
+  "overall_release_status": "HOLD",
+  "receipt_kind": "unsigned_validation_record",
+  "schema": "trillionnium.agent-native.source-validation.v1",
+  "subject": {
+    "cargo_lock_sha256": "1e7ae66dde645ec7ef25fbfcc1934a6374e292b292948fcb3cc3a83d41c10f8d",
+    "commit": "7bfd99d7fa2c125af07e32b220d72ef845b6ac38",
+    "commit_subject": "feat(agent): establish OS-owned Agent API baseline",
+    "commit_time_rfc3339": "2026-07-14T14:16:41+08:00",
+    "git_object_format": "sha1",
+    "parent": "0f1e40dd740642304dfd4852fe43ad807c9690c5",
+    "repository_root_relative": "trillionnium-os",
+    "tree": "bcb8f204546091a60d8dc40daa9393831d27386d"
+  },
+  "toolchain": {
+    "cargo": "1.94.1",
+    "cargo_zigbuild": "0.23.0",
+    "clippy": "0.1.94",
+    "java": "21.0.11",
+    "python": "3.12.3",
+    "rustc": "1.94.1",
+    "rustfmt": "1.8.0-stable",
+    "zig": "0.14.1"
+  },
+  "validated_snapshot": {
+    "checkout_method": "git archive 7bfd99d7fa2c125af07e32b220d72ef845b6ac38:trillionnium-os",
+    "dirty": false,
+    "tree_comparison": "archive content is the Git commit tree under trillionnium-os",
+    "validated_tree_exact": true
+  }
+}

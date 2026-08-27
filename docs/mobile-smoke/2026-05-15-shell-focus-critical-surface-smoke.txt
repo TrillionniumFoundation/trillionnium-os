@@ -1,0 +1,18 @@
+schema: org.trillionnium.shell.focus-critical-surface-smoke-log.v1
+status: pass
+renderer_status: trillionnium-shell-renderer-smoke-promotable
+contract_status: trillionnium-shell-contract-smoke-promotable
+render_tree_count: 5
+node_count: 15
+focus_guard_count: 15
+contract_focus_fixture_count: 5
+opens_window: True
+runtime_renderer_enabled: True
+mutates_phosh_session: False
+mutates_compositor: False
+touches_phosh: True
+touches_compositor: False
+steals_focus: False
+covers_critical_surface: False
+mutated_system_session: False
+notes: live focus/critical-surface smoke: all renderer nodes carry focus guards and the bounded layer-shell surface avoids critical system UI replacement; production autostart and mobile MVP readiness remain separate blockers

@@ -1,0 +1,231 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-target-hardware-post-boot-identity-plan-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-target-hardware-post-boot-identity-plan-smoke-pass",
+  "development_position": "arm64-mobian-target-hardware-post-boot-identity-plan-locked-non-executable",
+  "known_blocker_id": "target-hardware-artifact-build-toolchain-not-locked",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "result": {
+    "arm64_mobian_target_hardware_post_boot_identity_plan_smoke_passed": true,
+    "rollback_coverage_consumed": true,
+    "bootimage_port_plan_consumed": true,
+    "install_plan_consumed": true,
+    "current_target_identity_boundary_consumed": true,
+    "super_payload_plan_locked": true,
+    "rollback_coverage_locked": true,
+    "post_boot_identity_plan_locked": true,
+    "post_boot_identity_capture_channels_locked": true,
+    "post_boot_identity_probe_groups_locked": true,
+    "post_boot_identity_rejection_rules_locked": true,
+    "post_boot_identity_plan_executable_now": false,
+    "post_boot_identity_proof_promoted": false,
+    "android_getprop_only_identity_accepted": false,
+    "bridge_package_identity_accepted_as_full_os": false,
+    "local_qemu_identity_accepted_as_target_hardware": false,
+    "identity_claim_without_final_execution_receipt_accepted": false,
+    "boot_img_repacked": false,
+    "vendor_boot_repacked": false,
+    "dtbo_img_produced": false,
+    "vbmeta_img_produced": false,
+    "vbmeta_system_img_produced": false,
+    "dynamic_partition_payload_produced": false,
+    "super_img_produced": false,
+    "fastboot_update_payload_produced": false,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_executed": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "target-hardware-artifact-build-toolchain-not-locked",
+    "next_gate": "arm64-mobian-fogos-target-hardware-artifact-toolchain-plan-smoke"
+  },
+  "post_boot_identity_plan": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-target-hardware-post-boot-identity-plan.v1",
+    "target": {
+      "target_device_serial": "ZY32JLVHGN",
+      "target_device_model": "moto g34 5G",
+      "architecture": "arm64",
+      "suite": "bookworm",
+      "profile": "Mobian/Phosh"
+    },
+    "consumed_locked_boundaries": {
+      "bootimage_port_plan_locked": true,
+      "super_payload_plan_locked": true,
+      "rollback_coverage_locked": true,
+      "install_plan_is_non_executable_until_target_artifact": true,
+      "current_target_identity_boundary_consumed": true
+    },
+    "current_pre_install_identity_baseline": {
+      "product_device": "fogos",
+      "boot_slot_suffix": "_b",
+      "android_version": "",
+      "lineage_version": "23.2-20260429-UNOFFICIAL-fogos",
+      "identity_is_fogos_lineage_bridge_dogfood": true,
+      "target_hardware_graphical_phosh_booted": false,
+      "can_claim_trillionnium_os_installed_on_phone": false
+    },
+    "accepted_post_boot_capture_channels": [
+      {
+        "id": "booted-mobian-console-or-ssh-shell",
+        "required": true,
+        "accepted_for_identity_proof": true,
+        "note": "A shell captured from the booted target-hardware Mobian/Trillionnium OS is the preferred proof channel."
+      },
+      {
+        "id": "target-hardware-serial-console",
+        "required": false,
+        "accepted_for_identity_proof": true,
+        "note": "Serial console is acceptable when it captures the booted Mobian userspace transcript and command output."
+      },
+      {
+        "id": "android-adb-getprop",
+        "required": false,
+        "accepted_for_identity_proof": false,
+        "note": "Android getprop only proves the pre-install FOGOS/Lineage state and cannot satisfy the Trillionnium OS post-boot identity proof."
+      }
+    ],
+    "required_post_boot_probe_groups": [
+      {
+        "id": "os-release",
+        "commands": [
+          "cat /etc/os-release",
+          "cat /etc/debian_version || true"
+        ],
+        "acceptance": "Capture Mobian/Debian bookworm identity from the booted target rootfs; exact ID/PRETTY_NAME is evaluated in the later executable proof."
+      },
+      {
+        "id": "kernel-and-target-hardware",
+        "commands": [
+          "uname -a",
+          "uname -m",
+          "cat /proc/cmdline",
+          "cat /proc/device-tree/model 2>/dev/null || cat /sys/firmware/devicetree/base/model 2>/dev/null || true"
+        ],
+        "acceptance": "Must show aarch64/arm64 target-hardware boot context, not local QEMU-only evidence."
+      },
+      {
+        "id": "rootfs-and-partition-binding",
+        "commands": [
+          "findmnt /",
+          "cat /proc/mounts",
+          "lsblk -o NAME,PATH,SIZE,FSTYPE,PARTLABEL,PARTUUID,MOUNTPOINTS || true"
+        ],
+        "acceptance": "Must bind the booted root filesystem to the separately promoted target-hardware artifact/install receipt."
+      },
+      {
+        "id": "trillionnium-userspace-manifest",
+        "commands": [
+          "/usr/bin/trillionniumd --print-manifest",
+          "dpkg-query -W trillionnium* 2>/dev/null || true"
+        ],
+        "acceptance": "Must execute the Trillionnium userspace manifest from the booted target OS."
+      },
+      {
+        "id": "graphical-session",
+        "commands": [
+          "pgrep -a phoc || true",
+          "pgrep -a phosh || true",
+          "loginctl list-sessions || true",
+          "systemctl --user status phosh 2>/dev/null || true"
+        ],
+        "acceptance": "Graphical Phosh proof remains required for a full target-hardware graphical claim, but absence keeps release readiness false."
+      },
+      {
+        "id": "receipt-and-hash-binding",
+        "commands": [
+          "sha256sum <captured transcript files>",
+          "sha256sum <artifact manifest and final execution receipt>"
+        ],
+        "acceptance": "The later proof must hash-bind transcripts, artifact manifest, partition writes, final execution receipt, and booted-OS identity outputs."
+      }
+    ],
+    "explicit_rejection_rules": {
+      "local_qemu_phosh_proof_accepted_as_target_hardware_identity": false,
+      "fogos_lineage_android_identity_accepted_as_trillionnium_os": false,
+      "bridge_package_presence_accepted_as_full_os_identity": false,
+      "lineage_ota_reused_as_mobian_payload": false,
+      "super_empty_reused_as_mobian_payload": false,
+      "identity_claim_without_final_execution_receipt": false
+    },
+    "locked_boundary": {
+      "post_boot_identity_plan_locked": true,
+      "post_boot_identity_plan_executable_now": false,
+      "post_boot_identity_proof_promoted": false,
+      "target_hardware_artifact_produced": false,
+      "target_hardware_install_executed": false,
+      "target_hardware_graphical_phosh_booted": false,
+      "can_claim_trillionnium_os_installed_on_phone": false,
+      "ready_for_release_push": false
+    },
+    "blocked_until": [
+      "device-specific target-hardware boot/vendor_boot/dtbo/vbmeta/super artifact is produced",
+      "fresh raw-block backup hashes are captured and bound to the receipt",
+      "separately authorized target-hardware install is executed",
+      "booted target hardware produces the required identity transcript and hashes"
+    ]
+  },
+  "input_evidence": {
+    "arm64_mobian_fogos_rollback_coverage_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-rollback-coverage-smoke.json",
+    "arm64_mobian_fogos_rollback_coverage_smoke_sha256": "438c3429b39a5fb2428630e81846653cbc9601ee22b5a4ace69862855a05fafe",
+    "arm64_mobian_target_hardware_bootimage_port_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-target-hardware-bootimage-port-plan-smoke.json",
+    "arm64_mobian_target_hardware_bootimage_port_plan_smoke_sha256": "bd0d34dd494c0321fd0cec43161860b2bdb08b55b67967335bf20b2d3d71d217",
+    "arm64_mobian_target_hardware_install_plan_and_rollback_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-target-hardware-install-plan-and-rollback-smoke.json",
+    "arm64_mobian_target_hardware_install_plan_and_rollback_smoke_sha256": "4d217bb9225ab5635d40ea9fd8e4573c2970c26cf8b13b325bdcc37ffc4529bf",
+    "arm64_mobian_target_hardware_graphical_phosh_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-target-hardware-graphical-phosh-smoke.json",
+    "arm64_mobian_target_hardware_graphical_phosh_smoke_sha256": "7b91666b4b841eecb3e36b44dfd95dbce38fd3c553a19fb59807c0c688d4d15c"
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "ade492700ee7d78b41f138a302f27d74997249515dcdc2661fdc763dd35baa25",
+    "script_sha256": "8192cc54050199763a91d08d8ed0102662d6ab82ba43ec9e427faf0099005125",
+    "post_boot_identity_plan_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-target-hardware-post-boot-identity-plan-smoke/target-hardware-post-boot-identity-plan.json",
+    "post_boot_identity_plan_json_sha256": "2fb8e7bf00da5f1dfbe044cf63960bfd54b9d66ad1ab8ee34243ec24f1f22b0a",
+    "post_boot_identity_plan_md": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-target-hardware-post-boot-identity-plan-smoke/TARGET_HARDWARE_POST_BOOT_IDENTITY_PLAN.md",
+    "post_boot_identity_plan_md_sha256": "81efb947ba807acacc3e43a1df578ed840cd488e1a9e6812103c8585969a1a49"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "adb_write_executed": false,
+    "fastboot_write_executed": false,
+    "package_install_executed": false,
+    "bootimage_build_executed": false,
+    "bootimage_repack_executed": false,
+    "vendor_boot_repack_executed": false,
+    "dtbo_build_executed": false,
+    "avbtool_executed": false,
+    "avb_signing_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": false,
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "super_payload_build_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "network_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

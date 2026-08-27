@@ -1,0 +1,68 @@
+[package]
+name = "trillionnium-shell-exec"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+publish = false
+
+[features]
+default = []
+# Root-Linux MCP adapter and fixed Android broker transport client. This is a
+# real client surface but does not confer backend/listener/effect authority.
+root-linux-mcp-adapter = ["dep:trillionnium-agent-direct-tools"]
+# One explicit product closure for all three AArch64 musl ELF artifacts.  It
+# intentionally does not include the host-conformance process launcher.
+android-product = ["root-linux-mcp-adapter"]
+# Host-only executable conformance. Product builds must not select this lane;
+# Android/rootfs namespace, cgroup, seccomp, SELinux, and ready-gate custody are
+# intentionally unavailable here.
+host-conformance = ["root-linux-mcp-adapter"]
+
+[dependencies]
+base64.workspace = true
+libc.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+trillionnium-agent-direct-tools = { workspace = true, optional = true }
+trillionnium-os-types.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+# These integration targets exercise the host-only process launcher and
+# host-conformance seqpacket listener. Keep Cargo from compiling them into the
+# independent Android product feature matrix merely because --all-targets was
+# requested; product-specific tests remain in the android-product-gated target.
+[[test]]
+name = "broker_core"
+path = "tests/broker_core.rs"
+required-features = ["host-conformance"]
+
+[[test]]
+name = "mcp_adapter"
+path = "tests/mcp_adapter.rs"
+required-features = ["host-conformance"]
+
+[[bin]]
+name = "shell-exec-host-fixture"
+path = "src/bin/shell_exec_host_fixture.rs"
+required-features = ["host-conformance"]
+
+[[bin]]
+name = "trillionnium-agent-shell"
+path = "src/bin/trillionnium_agent_shell.rs"
+required-features = ["android-product"]
+
+[[bin]]
+name = "trillionnium-shell-exec-broker-userdebug"
+path = "src/bin/trillionnium_shell_exec_broker.rs"
+required-features = ["android-product"]
+
+[[bin]]
+name = "trillionnium-shell-exec-worker-userdebug"
+path = "src/bin/trillionnium_shell_exec_worker.rs"
+required-features = ["android-product"]

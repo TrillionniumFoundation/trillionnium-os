@@ -1,0 +1,66 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-route-transport.contract.v1",
+  "source_status": "source_only_commitment_only_private_route_transport_no_listener_no_product_adapter_v1",
+  "dependencies": {
+    "root_route_coordinator_contract_sha256": "260b90d2677b742843abcecd7bf1ed1f5ad949629175bb07318d96eef8f805c4"
+  },
+  "transport": {
+    "protocol": "trillionnium.capability-lease-root-route.uds.v1",
+    "socket": "abstract_trillionnium_capability_lease_root_route",
+    "client": "system_server_uid_1000_gid_1000_selinux_u_r_system_server_s0",
+    "server": "agentd_uid_0_gid_0_selinux_u_r_trillionnium_agentd_s0",
+    "peer_authentication": "SO_PEERCRED_plus_SO_PEERSEC_before_and_after_each_exact_frame",
+    "framing": "one_u32be_canonical_request_then_shutdown_write_then_one_u32be_canonical_response_plus_exact_eof",
+    "timeouts": "fixed_5000ms_connect_read_write",
+    "retry": "none"
+  },
+  "request": {
+    "schema": "org.trillionnium.capabilitylease.root-route-request.v1",
+    "operation": "run_root_publisher_once",
+    "fields": [
+      "agent_id",
+      "boot_id_sha256",
+      "contract_sha256",
+      "operation",
+      "protocol",
+      "provider_id",
+      "registration_binding_sha256",
+      "replay_namespace",
+      "request_binding_sha256",
+      "schema"
+    ],
+    "selector": "exact_agent_boot_and_registration_commitment_only",
+    "forbidden": "raw_publication_raw_token_task_payload_root_record_or_effect_material"
+  },
+  "response": {
+    "schema": "org.trillionnium.capabilitylease.root-route-response.v1",
+    "fields": [
+      "ack_binding_sha256",
+      "authentication_binding_sha256",
+      "contract_sha256",
+      "operation",
+      "protocol",
+      "publication_binding_sha256",
+      "registration_binding_sha256",
+      "request_binding_sha256",
+      "response_binding_sha256",
+      "root_record_proof_sha256",
+      "root_record_sha256",
+      "schema",
+      "token_record_sha256"
+    ],
+    "failure": "close_without_response_retry_or_diagnostic_payload"
+  },
+  "authority": {
+    "public_broker_protocol_extended": false,
+    "private_listener_available": false,
+    "private_connector_available": false,
+    "broker_main_route_wired": false,
+    "coordinator_route_adapter_wired": false,
+    "runtime_constructor_available": false,
+    "token_mutation_available": false,
+    "confers_ack_authority": false,
+    "confers_lease_trust": false,
+    "confers_effect_authority": false
+  }
+}

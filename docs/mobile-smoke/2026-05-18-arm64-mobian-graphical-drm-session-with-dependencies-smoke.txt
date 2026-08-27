@@ -1,0 +1,48 @@
+# Trillionnium arm64 Mobian graphical DRM session-with-dependencies smoke
+
+- status: arm64-mobian-graphical-drm-session-with-dependencies-smoke-pass
+- development_position: arm64-mobian-graphical-drm-phosh-session-stable-local
+- known_blocker_id: none
+- derived_disk: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-graphical-drm-session-with-dependencies-smoke/trillionnium-mobian-bookworm-arm64-graphical-drm-session-deps.raw.img
+- source_rootfs_dir: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-graphical-drm-session-dependency-rootfs-smoke/rootfs
+- dbus_launch_present: true
+- touchscreen_schema_present: true
+- compiled_touchscreen_schema_present: true
+- old_dbus_launch_missing_blocker_cleared: true
+- old_touchscreen_schema_blocker_cleared: true
+- drm_card0_present: true
+- drm_connector_present: true
+- graphical_drm_backend_started: true
+- graphical_drm_phosh_session_initialized: true
+- graphical_drm_phosh_session_stable: true
+- arm64_mobian_phosh_booted: true
+- can_claim_trillionnium_os_installed_on_phone: false
+- ready_for_release_push: false
+- next_gate: arm64-mobian-target-hardware-graphical-phosh-smoke
+
+## Graphical DRM Phosh Log Excerpt
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG dbus[229]: Unable to set up transient service directory: XDG_RUNTIME_DIR "/run/user/1000" is owned by uid 1000, not our uid 0
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phoc:221): phoc-wlroots-CRITICAL **: 17:32:13.593: [libseat] [libseat/backend/logind.c:660] Could not get primary session for user: No data available
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG Running compositor on wayland display 'wayland-0'
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG phoc-output-Message: 17:32:16.942: Output 'VGA-1' added ('<Unknown>'/'<Unknown>'/''), 0mm x 0mm
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG phoc-output-Message: 17:32:16.944: Output 'VGA-1' has invalid physical size, using default scale
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG phoc-server-Message: 17:32:17.953: Enabling shell mode
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG phosh-polkit-auth-agent-Message: 17:32:22.573: PolKit failed to properly get our session: No session for pid 274
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): phosh-feedback-manager-WARNING **: 17:32:22.584: Failed to init libfeedback: Could not connect: Connection refused
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): phosh-system-prompter-WARNING **: 17:32:22.591: couldn't connect to session bus
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): phosh-session-manager-WARNING **: 17:32:22.611: Failed to get session proxy Could not connect: Connection refused
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): dconf-WARNING **: 17:32:22.992: failed to commit changes to dconf: Could not connect: Connection refused
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): dconf-WARNING **: 17:32:22.999: failed to commit changes to dconf: Could not connect: Connection refused
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): dconf-WARNING **: 17:32:23.008: failed to commit changes to dconf: Could not connect: Connection refused
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): dconf-WARNING **: 17:32:23.029: failed to commit changes to dconf: Could not connect: Connection refused
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG (phosh:274): phosh-settings-brightness-WARNING **: 17:32:24.773: Can not connect to session bus: Could not connect: Connection refused
+TRILLIONNIUM_MOBIAN_GRAPHICAL_DRM_SESSION_WITH_DEPS_LOG XDG_RUNTIME_DIR (/run/user/1000) is not owned by us (uid 0), but by uid 1000! (This could e.g. happen if you try to connect to a non-root PulseAudio as a root user, over the native protocol. Don't do that.)

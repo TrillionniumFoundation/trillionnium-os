@@ -1,0 +1,39 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-listener-correlation.contract.v1",
+  "source_status": "source_only_single_proof_single_publication_no_broker_route_no_product_constructor_v1",
+  "dependencies": {
+    "root_publication_contract_sha256": "2a23182e8778f51086ab66f93dd39a51b0fc56f5b5a62947e7fd340e736e1a74",
+    "root_authenticator_contract_sha256": "eadb86b31c7927c5b16cda4d94553db8cc534584fa30b05c76338e69e26630c3",
+    "root_proof_carrier_contract_sha256": "30dd53fc52e139dee108d6eb51ea5958e8c43a7fb45f496b47f145b0f68d2a35",
+    "root_socket_result_custody_contract_sha256": "534563d64718520417eb22f22c17a45961e6706c8d498f6720c7e30bd444fcec"
+  },
+  "publication_socket": {
+    "address": "abstract_trillionnium_capability_lease_root_publication",
+    "server": "system_server_single_bind_single_accept_source_disabled_constructor",
+    "peer_identity": "kernel_pid_starttime_uid_gid_plus_SO_PEERSEC_before_and_after_exact_frame",
+    "framing": "one_u32be_canonical_publication_plus_exact_eof_then_one_exact_ack",
+    "timeout": "fixed_15000ms_read_deadline",
+    "failure": "close_without_ack_retry_or_alternate_carrier"
+  },
+  "proof_to_publication_correlation": {
+    "admission": "one_already_kernel_authenticated_root_proof_delivery_only",
+    "storage": "single_in_memory_non_persistent_non_replaceable_slot",
+    "proof_material": "copied_into_closed_immutable_scalar_snapshot_then_raw_json_dropped",
+    "ordering": "proof_must_precede_publication_authentication",
+    "binding": "exact_agent_boot_pid_starttime_uid_gid_selinux_executable_pidfd_publication_registration_epoch_sequence_and_root_record",
+    "activation": "same_object_is_listener_peer_authenticator_and_backend_root_journal_authenticator",
+    "success": "pending_to_active_once_then_terminal_after_registration_authentication",
+    "failure": "terminal_no_retry_no_second_proof_no_second_publication"
+  },
+  "authority": {
+    "broker_route_available": false,
+    "product_constructor_available": false,
+    "proof_socket_listener_wired": false,
+    "publication_socket_listener_wired": false,
+    "runtime_consumer_available": false,
+    "token_mutation_available": false,
+    "confers_ack_authority": false,
+    "confers_lease_trust": false,
+    "confers_effect_authority": false
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-rollback-coverage-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-rollback-coverage-smoke-pass",
+  "development_position": "arm64-mobian-fogos-rollback-coverage-locked-non-executable",
+  "known_blocker_id": "target-hardware-post-boot-identity-plan-not-locked",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "input_evidence": {
+    "arm64_mobian_fogos_super_payload_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-super-payload-plan-smoke.json",
+    "arm64_mobian_fogos_super_payload_plan_smoke_sha256": "0d5c68589a4febef6cc14cbceb0110f2c50b49c6158ad67295491e310deef49e",
+    "fogos_fresh_flash_lock_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-16-fogos-fresh-flash-lock-smoke.json",
+    "fogos_fresh_flash_lock_smoke_sha256": "e0c455480cac29c3d0a2bef40652c282a74a1934e079a8ed2bf3246d7bdeb2c5",
+    "fogos_bootloader_backup_handoff_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-16-fogos-bootloader-backup-handoff-smoke.json",
+    "fogos_bootloader_backup_handoff_smoke_sha256": "bc4207e3f0a040506593ed1d0359ea3acca349b4106cf271f528de966123bc92",
+    "fogos_flash_transaction_lock_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-16-fogos-flash-transaction-lock-smoke.json",
+    "fogos_flash_transaction_lock_smoke_sha256": "984d1ab6bac8378ec053f979079471b39a6d2a8fcbd80d43e97de9ef70ed0c29",
+    "arm64_mobian_target_hardware_graphical_phosh_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-target-hardware-graphical-phosh-smoke.json",
+    "arm64_mobian_target_hardware_graphical_phosh_smoke_sha256": "7b91666b4b841eecb3e36b44dfd95dbce38fd3c553a19fb59807c0c688d4d15c"
+  },
+  "selected_payload_hashes": {
+    "fogos_ota_zip_sha256": "aebd25a6ab3eecb0cb7a4ca4e3eb67bb808e2c7df5e56ddd37819b4489d2f70c",
+    "fogos_rollback_zip_sha256": "aebd25a6ab3eecb0cb7a4ca4e3eb67bb808e2c7df5e56ddd37819b4489d2f70c",
+    "fogos_boot_img_sha256": "f8190a83a19e39153e706d81f054ca2f0ff320f2f7ef576f0e49b14ad23a21db",
+    "fogos_vendor_boot_img_sha256": "0f1430aed5664d240c76e4f0082efb70f1ed2ff607a77b37bec8d118ae2adaef",
+    "fogos_dtbo_img_sha256": "00daacbf405aa69e4cb41af3aba6edab440ccfb0660ce25baa80a3fd04909172",
+    "fogos_vbmeta_img_sha256": "d713cab51c3ec8b68ec454b39336900a45d8d10e2ce37ef4d1eae25470cb573e",
+    "fogos_vbmeta_system_img_sha256": "1dcf6fbf1ae637d6f90e70b76b4bf1d5052d372767f483353d2570c0673ababa",
+    "fogos_super_empty_img_sha256": "570d502dbc70b79f489120fa510a09483faed3d4ef89a3480878103530475a08",
+    "fogos_partition_names_report_sha256": "4439a8c510c73bd6f3341a732e80b7120938a852cde90466e5f1648faadc63fa",
+    "fogos_raw_block_backup_manifest_sha256": "a991a0449b469487c31e379e92513decc0b4d570fea82c0685acd52f325fe030",
+    "fogos_transaction_manifest_sha256": "1825c6dcf19bef7b639aa869115184a596a78f5ea70e0ec8904e5d4cb669335f",
+    "fogos_transaction_templates_sha256": "3e94ac6cf13e30f3ab3e0eca534b2da23f051998ce4c031738149bb9ccb5b192",
+    "fogos_abort_matrix_sha256": "c24458fe40fe217d9a27ae48c9e1c31a1f435ed0b1eeb99fcb854bcf7692cd76",
+    "fogos_receipt_template_sha256": "4c50bad0f34312aac4dd0a4a60b93bfcf9e172c92708a720980d66f13c25d059"
+  },
+  "slot_context": {
+    "latest_live_target_observed_slot_suffix": "_b",
+    "older_fresh_flash_lock_slot_suffix": "_a",
+    "both_a_b_boot_chain_partition_names_present": true,
+    "slot_specific_execution_selection_locked_now": false
+  },
+  "rollback_coverage": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-rollback-coverage.v1",
+    "target": {
+      "target_device_serial": "ZY32JLVHGN",
+      "target_device_model": "moto g34 5G",
+      "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos",
+      "architecture": "arm64",
+      "suite": "bookworm"
+    },
+    "slot_context": {
+      "latest_live_target_observed_slot_suffix": "_b",
+      "older_fresh_flash_lock_slot_suffix": "_a",
+      "bootloader_handoff_slot_suffix": "_a",
+      "transaction_lock_slot_suffix": "_a",
+      "both_a_b_boot_chain_partition_names_present": true,
+      "slot_specific_execution_selection_locked_now": false,
+      "reason": "rollback coverage is locked by A/B partition-family references and current partition-map presence; the later executable gate must still choose the live slot at execution time"
+    },
+    "boot_chain_rollback_coverage": {
+      "boot_chain_reference_images_available": true,
+      "partition_map_captured": true,
+      "partition_names_report": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-fresh-flash-lock-smoke/partition-names.txt",
+        "sha256": "4439a8c510c73bd6f3341a732e80b7120938a852cde90466e5f1648faadc63fa",
+        "partition_name_count": 80,
+        "required_partitions_present": [
+          "boot_a",
+          "boot_b",
+          "dtbo_a",
+          "dtbo_b",
+          "vendor_boot_a",
+          "vendor_boot_b",
+          "vbmeta_a",
+          "vbmeta_b",
+          "vbmeta_system_a",
+          "vbmeta_system_b",
+          "super"
+        ]
+      },
+      "raw_block_backup_manifest": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-bootloader-backup-handoff-smoke/raw-block-backup-manifest.json",
+        "sha256": "a991a0449b469487c31e379e92513decc0b4d570fea82c0685acd52f325fe030",
+        "required_partition_count": 10,
+        "backup_hashes_required_before_execution": true,
+        "backup_hashes_available_now": false
+      },
+      "reference_images": {
+        "boot_img": {
+          "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/boot.img",
+          "sha256": "f8190a83a19e39153e706d81f054ca2f0ff320f2f7ef576f0e49b14ad23a21db",
+          "size_bytes": 100663296,
+          "covers_partition_family": "boot",
+          "retained_for_fogos_lineage_rollback": true
+        },
+        "vendor_boot_img": {
+          "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vendor_boot.img",
+          "sha256": "0f1430aed5664d240c76e4f0082efb70f1ed2ff607a77b37bec8d118ae2adaef",
+          "size_bytes": 100663296,
+          "covers_partition_family": "vendor_boot",
+          "retained_for_fogos_lineage_rollback": true
+        },
+        "dtbo_img": {
+          "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/dtbo.img",
+          "sha256": "00daacbf405aa69e4cb41af3aba6edab440ccfb0660ce25baa80a3fd04909172",
+          "size_bytes": 25165824,
+          "covers_partition_family": "dtbo",
+          "retained_for_fogos_lineage_rollback": true
+        },
+        "vbmeta_img": {
+          "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vbmeta.img",
+          "sha256": "d713cab51c3ec8b68ec454b39336900a45d8d10e2ce37ef4d1eae25470cb573e",
+          "size_bytes": 65536,
+          "covers_partition_family": "vbmeta",
+          "retained_for_fogos_lineage_rollback_only": true,
+          "reusable_for_modified_mobian_payloads": false
+        },
+        "vbmeta_system_img": {
+          "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vbmeta_system.img",
+          "sha256": "1dcf6fbf1ae637d6f90e70b76b4bf1d5052d372767f483353d2570c0673ababa",
+          "size_bytes": 65536,
+          "covers_partition_family": "vbmeta_system",
+          "retained_for_fogos_lineage_rollback_only": true,
+          "reusable_for_modified_mobian_payloads": false
+        }
+      }
+    },
+    "dynamic_partition_rollback_coverage": {
+      "dynamic_partition_rollback_route_locked": true,
+      "lineage_ota_rollback_reference_available": true,
+      "lineage_dynamic_partition_payload_reused_as_mobian": false,
+      "extracted_dynamic_logical_partition_images_available_now": false,
+      "logical_partition_templates_from_transaction_lock": [
+        "product",
+        "system",
+        "system_ext",
+        "vendor"
+      ],
+      "ota_zip": {
+        "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/lineage-23.2-20260429-UNOFFICIAL-fogos.zip",
+        "sha256": "aebd25a6ab3eecb0cb7a4ca4e3eb67bb808e2c7df5e56ddd37819b4489d2f70c",
+        "size_bytes": 1221055495,
+        "retained_for_fogos_lineage_rollback": true
+      },
+      "rollback_zip": {
+        "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/lineage_fogos-ota.zip",
+        "sha256": "aebd25a6ab3eecb0cb7a4ca4e3eb67bb808e2c7df5e56ddd37819b4489d2f70c",
+        "size_bytes": 1221055495,
+        "retained_for_fogos_lineage_rollback": true
+      },
+      "super_empty_img": {
+        "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/super_empty.img",
+        "sha256": "570d502dbc70b79f489120fa510a09483faed3d4ef89a3480878103530475a08",
+        "size_bytes": 4976,
+        "retained_for_wipe_super_reference": true,
+        "usable_as_mobian_super_payload": false
+      }
+    },
+    "execution_lock_material": {
+      "flash_plan_json": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-fresh-flash-lock-smoke/fresh-flash-plan.json",
+        "sha256": "308fb761b9d224dea88a7bbeb183e09b81dda8ece03c7eb621114de122d1eb32"
+      },
+      "raw_block_hash_report": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-fresh-flash-lock-smoke/raw-block-hash-attempts.txt",
+        "sha256": "ab64f56dd503fba1e45ad10a5344ecae8af290f99241cb67a0861f46fccb7c2b",
+        "raw_block_backup_hashes_available_now": false
+      },
+      "transaction_manifest": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-flash-transaction-lock-smoke/fresh-destructive-flash-transaction-manifest.json",
+        "sha256": "1825c6dcf19bef7b639aa869115184a596a78f5ea70e0ec8904e5d4cb669335f"
+      },
+      "transaction_templates": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-flash-transaction-lock-smoke/fresh-destructive-flash-transaction-templates.txt",
+        "sha256": "3e94ac6cf13e30f3ab3e0eca534b2da23f051998ce4c031738149bb9ccb5b192"
+      },
+      "abort_matrix": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-flash-transaction-lock-smoke/fresh-destructive-flash-abort-matrix.md",
+        "sha256": "c24458fe40fe217d9a27ae48c9e1c31a1f435ed0b1eeb99fcb854bcf7692cd76"
+      },
+      "execution_receipt_template": {
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-fogos-flash-transaction-lock-smoke/final-execution-receipt-template.json",
+        "sha256": "4c50bad0f34312aac4dd0a4a60b93bfcf9e172c92708a720980d66f13c25d059"
+      },
+      "transaction_execution_ready": false,
+      "fastboot_target_visible_now": false,
+      "final_operator_flash_lock_available_now": false
+    },
+    "required_before_any_phone_write": [
+      "select and re-confirm the live boot slot immediately before execution",
+      "capture raw-block backup hashes for boot_a, boot_b, dtbo_a, dtbo_b, vendor_boot_a, vendor_boot_b, vbmeta_a, vbmeta_b, vbmeta_system_a, and vbmeta_system_b",
+      "bind backup hashes to the raw-block backup manifest and final execution receipt",
+      "prove fastboot target visibility for the selected serial",
+      "bind a final operator lock to the existing authorization challenge",
+      "produce a fresh final execution receipt and post-boot identity proof"
+    ],
+    "locked_boundary": {
+      "super_payload_strategy_locked": true,
+      "rootfs_handoff_strategy_locked": true,
+      "super_payload_plan_locked": true,
+      "rollback_coverage_locked": true,
+      "rollback_coverage_executable_now": false,
+      "post_boot_identity_plan_locked": false,
+      "boot_img_repacked": false,
+      "vendor_boot_repacked": false,
+      "dtbo_img_produced": false,
+      "vbmeta_img_produced": false,
+      "vbmeta_system_img_produced": false,
+      "dynamic_partition_payload_produced": false,
+      "super_img_produced": false,
+      "target_hardware_artifact_produced": false,
+      "target_hardware_install_executed": false,
+      "target_hardware_graphical_phosh_booted": false,
+      "can_claim_trillionnium_os_installed_on_phone": false,
+      "ready_for_release_push": false
+    }
+  },
+  "result": {
+    "arm64_mobian_fogos_rollback_coverage_smoke_passed": true,
+    "super_payload_plan_consumed": true,
+    "super_payload_strategy_locked": true,
+    "rootfs_handoff_strategy_locked": true,
+    "super_payload_plan_locked": true,
+    "rollback_reference_artifacts_consumed": true,
+    "fogos_lineage_ota_rollback_reference_available": true,
+    "fogos_boot_chain_reference_images_available": true,
+    "fogos_super_empty_wipe_super_reference_available": true,
+    "partition_names_coverage_locked": true,
+    "partition_name_count_locked": 80,
+    "raw_block_backup_manifest_consumed": true,
+    "raw_block_backup_partition_count_locked": true,
+    "raw_block_backup_hashes_available": false,
+    "dynamic_logical_partition_rollback_route_locked": true,
+    "extracted_dynamic_logical_partition_images_available_now": false,
+    "lineage_dynamic_partition_payload_reused_as_mobian": false,
+    "lineage_ota_reused_as_mobian_payload": false,
+    "super_empty_reused_as_mobian_payload": false,
+    "rollback_coverage_locked": true,
+    "rollback_coverage_executable_now": false,
+    "post_boot_identity_plan_locked": false,
+    "boot_img_repacked": false,
+    "vendor_boot_repacked": false,
+    "dtbo_img_produced": false,
+    "vbmeta_img_produced": false,
+    "vbmeta_system_img_produced": false,
+    "dynamic_partition_payload_produced": false,
+    "super_img_produced": false,
+    "fastboot_update_payload_produced": false,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_executed": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "target-hardware-post-boot-identity-plan-not-locked",
+    "next_gate": "arm64-mobian-target-hardware-post-boot-identity-plan-smoke"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "adb_write_executed": false,
+    "fastboot_write_executed": false,
+    "package_install_executed": false,
+    "bootimage_build_executed": false,
+    "bootimage_repack_executed": false,
+    "vendor_boot_repack_executed": false,
+    "dtbo_build_executed": false,
+    "avbtool_executed": false,
+    "avb_signing_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": false,
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "super_payload_build_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "network_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "0308afbb1c13519dfbb18f32160ae0c1c89c2510dd6602974de68e021230c359",
+    "script_sha256": "60ce5e0049213cc9021211a81ddf9ff406b653ca84338710c703ccd29267693f",
+    "rollback_coverage_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-rollback-coverage-smoke/fogos-rollback-coverage.json",
+    "rollback_coverage_json_sha256": "90415ffbb58b0aebeaaeccb9d5d8dc98286d352d1d6240bee137dd2ca44f6f05",
+    "rollback_coverage_md": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-rollback-coverage-smoke/FOGOS_ROLLBACK_COVERAGE.md",
+    "rollback_coverage_md_sha256": "a7c59e8656da4ef2454112e2708cf994e899d8ac54aeb89d8c18a8f20578a2b5"
+  }
+}

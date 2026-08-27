@@ -1,0 +1,149 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-trillionnium-package-build-smoke.v1",
+  "status": "arm64-trillionnium-package-build-smoke-blocked",
+  "generated_at": "2026-05-17T05:51:09+08:00",
+  "generated_at_unix": 1778968269,
+  "target": "mobile",
+  "platform": "mobian",
+  "profile": "mobile-phosh",
+  "development_position": "arm64-package-build-blocked-ui-sysroot",
+  "requested_target": {
+    "deb_architecture": "arm64",
+    "rust_target": "aarch64-unknown-linux-gnu",
+    "hardware_family": "arm64 fogos target hardware"
+  },
+  "private_toolchain": {
+    "private_toolchain_root": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-private-toolchain",
+    "private_toolchain_fetch_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-arm64-private-toolchain-fetch-smoke.json",
+    "private_toolchain_fetch_json_sha256": "81e861644b79549bb5b7532cf5cbf58cad21bab9358dd93719a147eeaeac3b30",
+    "private_binutils_shared_library_path_configured": true,
+    "can_attempt_arm64_cross_build_now": true
+  },
+  "build_attempt": {
+    "package_install_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/scripts/package-install-smoke.sh",
+    "package_install_smoke_sha256": "5702bb245c6cc91ded607d77153c1fe739666d5eaf1d733bc25c51a18ee4d804",
+    "package_out_dir": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke",
+    "package_install_smoke_invoked": true,
+    "package_install_smoke_exit_code": 101,
+    "package_install_smoke_json_produced": false,
+    "cargo_build_executed": true,
+    "cargo_net_offline": true,
+    "private_toolchain_env_configured": true,
+    "arm64_cross_build_attempted": true
+  },
+  "build_result": {
+    "known_blocker": true,
+    "missing_arm64_ui_sysroot_libraries": true,
+    "missing_library_count": 13,
+    "missing_libraries": [
+      "adwaita-1",
+      "cairo",
+      "cairo-gobject",
+      "gdk_pixbuf-2.0",
+      "gio-2.0",
+      "glib-2.0",
+      "gobject-2.0",
+      "graphene-1.0",
+      "gtk-4",
+      "harfbuzz",
+      "pango-1.0",
+      "pangocairo-1.0",
+      "vulkan"
+    ],
+    "trillionniumd_arm64_built": true,
+    "trillionnium_command_center_arm64_built": false,
+    "trillionnium_shell_arm64_built": false,
+    "arm64_trillionnium_binaries_built": false,
+    "arm64_trillionnium_debs_built": false,
+    "arm64_mobian_rootfs_with_trillionnium_packages_built": false,
+    "dpkg_root_install_executed": false,
+    "can_build_arm64_trillionnium_packages_now": false,
+    "can_promote_arm64_target_hardware_artifact": false,
+    "ready_for_release_push": false
+  },
+  "binaries": {
+    "trillionniumd": {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionniumd",
+      "file": "ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=a74ea035b5f5a92391bef1ab0b36304003e012a8, for GNU/Linux 3.7.0, with debug_info, not stripped",
+      "is_arm64": true
+    },
+    "trillionnium_command_center": {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionnium-command-center",
+      "file": "missing",
+      "is_arm64": false
+    },
+    "trillionnium_shell": {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionnium-shell",
+      "file": "missing",
+      "is_arm64": false
+    }
+  },
+  "artifact_state": {
+    "trillionniumd_arm64_built": true,
+    "trillionnium_command_center_arm64_built": false,
+    "trillionnium_shell_arm64_built": false,
+    "arm64_cross_build_executed": true,
+    "arm64_trillionnium_binaries_built": false,
+    "arm64_trillionnium_debs_built": false,
+    "arm64_mobian_rootfs_with_trillionnium_packages_built": false,
+    "can_build_arm64_trillionnium_packages_now": false,
+    "can_promote_arm64_target_hardware_artifact": false,
+    "ready_for_release_push": false
+  },
+  "policy": {
+    "operator_invoked": true,
+    "static_evidence_only": false,
+    "network_download_executed": false,
+    "rustup_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "dpkg_deb_executed": false,
+    "dpkg_install_executed": false,
+    "cargo_build_executed": true,
+    "package_install_smoke_invoked": true,
+    "package_install_executed": false,
+    "dpkg_root_install_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "bootloader_relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "script_sha256": "10aed1ec15426034d64ef396d9830a24f3ecae4ff5d30b1d006ca7fe19558b2c",
+    "arm64_private_toolchain_fetch_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-arm64-private-toolchain-fetch-smoke.json",
+    "arm64_private_toolchain_fetch_json_sha256": "81e861644b79549bb5b7532cf5cbf58cad21bab9358dd93719a147eeaeac3b30",
+    "package_install_smoke_sha256": "5702bb245c6cc91ded607d77153c1fe739666d5eaf1d733bc25c51a18ee4d804",
+    "package_install_stdout": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-trillionnium-package-build-smoke/package-install-smoke.stdout",
+    "package_install_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "package_install_stdout_size_bytes": 0,
+    "package_install_stderr": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-trillionnium-package-build-smoke/package-install-smoke.stderr",
+    "package_install_stderr_sha256": "4a0aee5ade50c12dd5f4f3fdfc0e2ddedb08967125451e4806ad788d0b8318e1",
+    "package_install_stderr_size_bytes": 11332,
+    "package_install_combined_log": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-trillionnium-package-build-smoke/package-install-smoke.combined.log",
+    "package_install_combined_log_sha256": "34fd50304ecfba50c8760d8b6f5207a4aa6710ce8c51227263cbc5b059aad5bb",
+    "package_install_combined_log_size_bytes": 11359,
+    "missing_arm64_ui_sysroot_libraries_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-trillionnium-package-build-smoke/missing-arm64-ui-sysroot-libraries.json",
+    "missing_arm64_ui_sysroot_libraries_json_sha256": "b690e599accb72bd8ceba26ee9c688967b16b4107e0fc51160f9b384763c5174",
+    "missing_arm64_ui_sysroot_libraries_json_size_bytes": 202
+  },
+  "next_required_gates": [
+    "fetch and extract arm64 GTK4/libadwaita/Pango/Cairo/Graphene/GIO native development/runtime libraries into the private sysroot",
+    "rerun package-install-smoke with the same private Rust/linker/binutils environment",
+    "verify all three Trillionnium target binaries are ELF aarch64 before .deb staging",
+    "build arm64 Trillionnium Debian packages only after binary architecture verification",
+    "rebuild a Mobian rootfs with verified arm64 Trillionnium packages",
+    "keep target-hardware install, flash, reboot, and release push behind separate explicit operator gates"
+  ],
+  "safety_notes": [
+    "This gate invokes the package smoke only under target/ with the private aarch64 toolchain environment.",
+    "The current result is a structured blocker, not a successful arm64 package or rootfs promotion.",
+    "No apt install, dpkg -i on the host, ADB, Fastboot, flash, repartition, sideload, reboot, bootloader relock, remote push, model invocation, or tool invocation is performed."
+  ]
+}

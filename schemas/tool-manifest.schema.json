@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trillionnium.local/schemas/tool-manifest.schema.json",
+  "title": "Trillionnium OS Tool Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "name",
+    "description",
+    "input_schema",
+    "output_schema",
+    "capabilities",
+    "risk",
+    "executor"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "trillionnium.tool.v1"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(\\.[a-z0-9_-]+)+$"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_schema": {
+      "type": "object"
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "risk": {
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "executor": {
+      "type": "object",
+      "required": ["kind", "command"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "local_shim",
+            "android_gateway",
+            "native",
+            "process",
+            "systemd_scope",
+            "waydroid"
+          ]
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "agent_plan_contract": {
+      "type": "object",
+      "required": [
+        "requires_approval",
+        "network_scope",
+        "undo_contract"
+      ],
+      "properties": {
+        "requires_approval": {
+          "type": "boolean"
+        },
+        "network_scope": {
+          "enum": [
+            "none",
+            "per_request",
+            "allowlisted"
+          ]
+        },
+        "undo_contract": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

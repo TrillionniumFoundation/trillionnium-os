@@ -1,0 +1,22 @@
+arm64 Mobian fogos AOSP LP host-tools libsparse inputs fetch smoke
+status=arm64-mobian-fogos-aosp-lp-host-tools-libsparse-inputs-fetch-smoke-pass
+development_position=arm64-mobian-fogos-aosp-lp-host-tools-libsparse-inputs-fetched-images-object-closed-target-local
+known_blocker_id=aosp-lp-host-tools-object-closure-not-executed
+next_gate=arm64-mobian-fogos-aosp-lp-host-tools-object-closure-smoke
+system_core_main_commit=a3b721a32242006b59cb12bd62c9133632af3a2d
+libsparse_inputs_fetch_executed=true
+system_core_libsparse_source_file_count=15
+libsparse_inputs_materialized=true
+sparse_header_blocker_cleared=true
+first_object_probe=liblp/images.cpp
+images_compile_status=0
+first_missing_header=none
+object_file_produced=true
+host_tool_link_invocation_executed=false
+host_tool_build_executed=false
+host_tool_binary_produced=false
+lpmake_materialized=false
+lpdump_materialized=false
+target_hardware_artifact_produced=false
+ready_for_release_push=false
+json_sha256=ee818a78e0cce3c125ca5e4322906ffbaba46d6763a04349ac25fb8a7c164b12

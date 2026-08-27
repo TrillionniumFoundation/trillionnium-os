@@ -1,0 +1,15 @@
+status: arm64-mobian-target-hardware-post-boot-identity-plan-smoke-pass
+development_position: arm64-mobian-target-hardware-post-boot-identity-plan-locked-non-executable
+known_blocker_id: target-hardware-artifact-build-toolchain-not-locked
+post_boot_identity_plan_locked: true
+post_boot_identity_plan_executable_now: false
+post_boot_identity_proof_promoted: false
+target_hardware_artifact_produced: false
+target_hardware_install_executed: false
+target_hardware_graphical_phosh_booted: false
+can_claim_trillionnium_os_installed_on_phone: false
+ready_for_release_push: false
+next_gate: arm64-mobian-fogos-target-hardware-artifact-toolchain-plan-smoke
+post_boot_identity_plan_json_sha256: 2fb8e7bf00da5f1dfbe044cf63960bfd54b9d66ad1ab8ee34243ec24f1f22b0a
+post_boot_identity_plan_md_sha256: 81efb947ba807acacc3e43a1df578ed840cd488e1a9e6812103c8585969a1a49
+json_sha256: f40c0b43a2c5c9c87055f9d28159ee2c5ae3b0d35aeea7f9ca37575e07fff5be

@@ -1,0 +1,219 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-rootfs-abi-smoke.v1",
+  "status": "arm64-mobian-rootfs-abi-smoke-pass",
+  "development_position": "arm64-mobian-rootfs-abi-ready",
+  "generated_at": "2026-05-17T04:56:40Z",
+  "generated_at_unix": 1778993800.537458,
+  "target": "mobile",
+  "platform": "mobian",
+  "profile": "mobile-phosh",
+  "target_rootfs": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "max_glibc_version": "2.36"
+  },
+  "inputs": {
+    "package_build_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-arm64-trillionnium-package-build-smoke.json",
+    "package_build_json_sha256": "8de571c1130a26d764f1a851173d893cda01d2544f14251d872ca9935ae958ee",
+    "package_install_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-trillionnium-package-build-smoke/package-install-smoke.stdout",
+    "package_install_json_sha256": "2ed744298faf11583ed8e947437fad101402572061aa0c7f581b70a244631cc0",
+    "deb_dir": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs"
+  },
+  "binary_abi": {
+    "report_jsonl": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-rootfs-abi-smoke/binary-abi-report.jsonl",
+    "report_jsonl_sha256": "e6e8ee39fdfcf8b7a1df646e9d7f853c845bc3e20bbc715fc9b4a63e7d74027d",
+    "report_jsonl_size_bytes": 2406,
+    "max_required_glibc_version": "2.34",
+    "incompatible_binary_count": 0,
+    "rootfs_abi_compatible": true,
+    "binaries": [
+      {
+        "binary": "trillionniumd",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionniumd",
+        "file": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionniumd: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=943542d3db73c959d3b8c6a354282c854ac82c82, for GNU/Linux 3.7.0, with debug_info, not stripped",
+        "needed_libraries": [
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ],
+        "glibc_versions_required": [
+          "2.17",
+          "2.18",
+          "2.25",
+          "2.28",
+          "2.30",
+          "2.32",
+          "2.33",
+          "2.34"
+        ],
+        "max_required_glibc_version": "2.34",
+        "target_glibc_max_version": "2.36",
+        "target_glibc_compatible": true
+      },
+      {
+        "binary": "trillionnium_command_center",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionnium-command-center",
+        "file": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionnium-command-center: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=a8fa2902901cd7e342851d229cc5532ba60077b3, for GNU/Linux 3.7.0, with debug_info, not stripped",
+        "needed_libraries": [
+          "libadwaita-1.so.0",
+          "libc.so.6",
+          "libgcc_s.so.1",
+          "libgio-2.0.so.0",
+          "libglib-2.0.so.0",
+          "libgobject-2.0.so.0",
+          "libgtk-4.so.1"
+        ],
+        "glibc_versions_required": [
+          "2.17",
+          "2.18",
+          "2.25",
+          "2.28",
+          "2.29",
+          "2.30",
+          "2.32",
+          "2.33",
+          "2.34"
+        ],
+        "max_required_glibc_version": "2.34",
+        "target_glibc_max_version": "2.36",
+        "target_glibc_compatible": true
+      },
+      {
+        "binary": "trillionnium_shell",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionnium-shell",
+        "file": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/aarch64-unknown-linux-gnu/debug/trillionnium-shell: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=67de85851b7f73c74e91341c66a7110fda9931c4, for GNU/Linux 3.7.0, with debug_info, not stripped",
+        "needed_libraries": [
+          "libadwaita-1.so.0",
+          "libc.so.6",
+          "libgcc_s.so.1",
+          "libgio-2.0.so.0",
+          "libglib-2.0.so.0",
+          "libgobject-2.0.so.0",
+          "libgtk-4.so.1"
+        ],
+        "glibc_versions_required": [
+          "2.17",
+          "2.18",
+          "2.25",
+          "2.28",
+          "2.29",
+          "2.30",
+          "2.32",
+          "2.33",
+          "2.34"
+        ],
+        "max_required_glibc_version": "2.34",
+        "target_glibc_max_version": "2.36",
+        "target_glibc_compatible": true
+      }
+    ]
+  },
+  "deb_control": {
+    "report_jsonl": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-rootfs-abi-smoke/deb-control-report.jsonl",
+    "report_jsonl_sha256": "aeedad75a5c10cce3a00735d05612ae1ed86c2426b822dfdbda4c75908e844b7",
+    "report_jsonl_size_bytes": 1732,
+    "deb_count": 4,
+    "packages_with_depends": 4,
+    "package_dependency_metadata_complete": true,
+    "packages": [
+      {
+        "package": "trillionnium-command-center-ui",
+        "version": "0.1.0",
+        "architecture": "arm64",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-command-center-ui_0.1.0_arm64.deb",
+        "sha256": "0d9bb6e7cf5ef663a9ded94168dc7e5261d3f463e5a01314b33e0484b81d323c",
+        "size_bytes": 916,
+        "depends": "trillionnium-command-center (= 0.1.0), phosh, phoc, squeekboard",
+        "has_depends": true
+      },
+      {
+        "package": "trillionnium-command-center",
+        "version": "0.1.0",
+        "architecture": "arm64",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-command-center_0.1.0_arm64.deb",
+        "sha256": "7ca0528503b51a1ec4df7a696c3abdbd51de8c45d44bc24603bd5c710fb7a7d2",
+        "size_bytes": 25673276,
+        "depends": "trillionnium-os-daemon (= 0.1.0), libgtk-4-1, libadwaita-1-0, libsqlite3-0, libc6, libgcc-s1",
+        "has_depends": true
+      },
+      {
+        "package": "trillionnium-os-daemon",
+        "version": "0.1.0",
+        "architecture": "arm64",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-os-daemon_0.1.0_arm64.deb",
+        "sha256": "c0ffc54f4c71e73be2f8f16576c0bc977bc03e830067a4693f6afa694aa4e6c0",
+        "size_bytes": 21320752,
+        "depends": "dbus-user-session, systemd, xdg-desktop-portal, sqlite3",
+        "has_depends": true
+      },
+      {
+        "package": "trillionnium-shell",
+        "version": "0.1.0",
+        "architecture": "arm64",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-package-install-arm64-smoke/debs/trillionnium-shell_0.1.0_arm64.deb",
+        "sha256": "def1a5422d6103b21b64a6c8808bbed0a80d0127c9a92064c092e13e836f227d",
+        "size_bytes": 13113570,
+        "depends": "trillionnium-command-center (= 0.1.0), libgtk-4-1, libadwaita-1-0, libsqlite3-0, libc6, libgcc-s1",
+        "has_depends": true
+      }
+    ]
+  },
+  "result": {
+    "arm64_trillionnium_packages_built": true,
+    "arm64_mobian_rootfs_abi_compatible": true,
+    "package_dependency_metadata_complete": true,
+    "can_build_arm64_mobian_rootfs_now": true,
+    "arm64_mobian_rootfs_with_trillionnium_packages_built": false,
+    "rootfs_build_executed": false,
+    "image_build_executed": false,
+    "known_blocker": false,
+    "blocker_summary": "none"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "static_evidence_only": true,
+    "reads_local_package_artifacts": true,
+    "readelf_executed": true,
+    "dpkg_deb_field_read_executed": true,
+    "network_download_executed": false,
+    "rustup_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "dpkg_deb_extract_executed": false,
+    "dpkg_install_executed": false,
+    "cargo_build_executed": false,
+    "package_install_executed": false,
+    "mmdebstrap_executed": false,
+    "rootfs_build_executed": false,
+    "image_build_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "bootloader_relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "script_sha256": "90b4c8697cfd1783c42585093c2869962926f9fd6a3cc7f1258db580f43fa21d",
+    "package_build_json_sha256": "8de571c1130a26d764f1a851173d893cda01d2544f14251d872ca9935ae958ee",
+    "package_install_json_sha256": "2ed744298faf11583ed8e947437fad101402572061aa0c7f581b70a244631cc0",
+    "binary_abi_report_jsonl_sha256": "e6e8ee39fdfcf8b7a1df646e9d7f853c845bc3e20bbc715fc9b4a63e7d74027d",
+    "deb_control_report_jsonl_sha256": "aeedad75a5c10cce3a00735d05612ae1ed86c2426b822dfdbda4c75908e844b7"
+  },
+  "next_required_gates": [
+    "rebuild arm64 packages against a Mobian/bookworm-compatible arm64 sysroot or raise the target suite",
+    "add Debian package Depends metadata for runtime libraries before rootfs integration",
+    "rerun this ABI/rootfs compatibility gate",
+    "only then run a local rootfs/image smoke"
+  ],
+  "safety_notes": [
+    "This smoke only reads local ELF and .deb metadata.",
+    "It intentionally blocks rootfs/image promotion when package ABI or dependency metadata cannot be proven compatible with the target Mobian suite.",
+    "It does not run mmdebstrap, apt, package install, ADB, Fastboot, flash, repartition, reboot, or release push."
+  ]
+}

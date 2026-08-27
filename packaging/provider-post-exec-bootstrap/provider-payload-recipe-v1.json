@@ -1,0 +1,210 @@
+{
+  "admission_wired": false,
+  "bootstrap": {
+    "codex_compiler_arguments": [
+      "-target",
+      "aarch64-linux-musl",
+      "-std=c11",
+      "-O2",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-lto",
+      "-fno-plt",
+      "-fvisibility=hidden",
+      "-fno-ident",
+      "-fdebug-prefix-map=/work=/usr/src/trillionnium-provider",
+      "-fmacro-prefix-map=/work=/usr/src/trillionnium-provider",
+      "-Wall",
+      "-Wextra",
+      "-Werror"
+    ],
+    "codex_entry": {
+      "path": "src/provider_post_exec_entry.S",
+      "sha256": "39f435dc9d19e0d61497996e7037472e8c143666a2bd608e87164fe5e19bee43"
+    },
+    "expected_filter_instruction_count": 37,
+    "externally_supplied_definitions": [
+      "TRILLIONNIUM_EXPECTED_UID",
+      "TRILLIONNIUM_EXPECTED_GID"
+    ],
+    "freestanding_core": {
+      "path": "src/provider_post_exec_bootstrap.c",
+      "sha256": "d02a11d0150ba4ca65a280b2429dfaa38824be786770ca0ce42e21fee6c3f3ff"
+    },
+    "public_header": {
+      "path": "include/trillionnium_provider_post_exec_bootstrap.h",
+      "sha256": "86fd36a210002968e0794c6a6f074366500e4cf5f5a35e047709b456817d062f"
+    }
+  },
+  "builder": {
+    "amd64_manifest_sha256": "4c2fd73ef19c5ef9d54bee03b06b2839a392604fbfcd578ed948b71b37c1d7fb",
+    "arm64_manifest_sha256": "8e45ae5b178fa788bbbd818b42a1f93a6e2c03e7144badd5e0a37087537177e1",
+    "base_image": "public.ecr.aws/docker/library/rust@sha256:6258907abe69656e41cd992e0b705cdcfabcbbe3db374f92ed2d47121282d4a1",
+    "canonical_base_image": "docker.io/library/rust@sha256:6258907abe69656e41cd992e0b705cdcfabcbbe3db374f92ed2d47121282d4a1",
+    "debian_snapshot": "20260713T000000Z",
+    "image_build_network": "default",
+    "profiles": {
+      "amd64-cross": {
+        "manifest_sha256": "4c2fd73ef19c5ef9d54bee03b06b2839a392604fbfcd578ed948b71b37c1d7fb",
+        "platform": "linux/amd64"
+      },
+      "arm64-native": {
+        "manifest_sha256": "8e45ae5b178fa788bbbd818b42a1f93a6e2c03e7144badd5e0a37087537177e1",
+        "platform": "linux/arm64"
+      }
+    },
+    "rust_version": "1.95.0",
+    "zig_archives": {
+      "amd64": {
+        "sha256": "473ec26806133cf4d1918caf1a410f8403a13d979726a9045b421b685031a982",
+        "url": "https://ziglang.org/download/0.14.0/zig-linux-x86_64-0.14.0.tar.xz"
+      },
+      "arm64": {
+        "sha256": "ab64e3ea277f6fc5f3d723dcd95d9ce1ab282c8ed0f431b4de880d30df891e4f",
+        "url": "https://ziglang.org/download/0.14.0/zig-linux-aarch64-0.14.0.tar.xz"
+      }
+    },
+    "zig_version": "0.14.0"
+  },
+  "confers_effect_authority": false,
+  "listener_backend_wired": false,
+  "product_active": false,
+  "providers": {
+    "codex": {
+      "annotated_tag": "rust-v0.144.1",
+      "annotated_tag_object_sha1": "db75c19352d29ef29c17dbcf73a7244f1b1a8d10",
+      "cargo_binary": "codex",
+      "build_jobs": 2,
+      "cargo_package": "codex-cli",
+      "cargo_profile": {
+        "codegen_units": 4,
+        "debug": "none",
+        "incremental": false,
+        "lto": false,
+        "name": "release",
+        "strip": false
+      },
+      "cargo_source_config": {
+        "byte_length": 1801,
+        "filename": "cargo-source-replacement.container.toml",
+        "sha256": "4c4629e6d19d8ffbdf7f893ae449958c1941c776fe1421a5c4e4250ce60d93e9"
+      },
+      "cargo_target": "aarch64-unknown-linux-musl",
+      "cargo_vendor": {
+        "archive": {
+          "byte_length": 1609226240,
+          "filename": "cargo-vendor.tar",
+          "sha256": "345ff38a8c0a81ae5ab9b63401f71765983d93d487bf9ab31b15cba4774d69ee"
+        },
+        "entry_count": 86464,
+        "inventory_sha256": "c27ba4545cb62119dadfb5cb44b85b15c5b4ae020581ff99cf2555aca828aa17",
+        "member_manifest": {
+          "byte_length": 14874578,
+          "filename": "cargo-vendor-member-manifest.json",
+          "sha256": "907be38cf0b2c20953f9f084b48e8bbd0ea3b2745a824887dc4555c51536ce01"
+        },
+        "root_name": "cargo-vendor"
+      },
+      "dereferenced_commit_sha1": "44918ea10c0f99151c6710411b4322c2f5c96bea",
+      "derived_lock": {
+        "derived_sha256": "3e1588323284356881cc454122e1e4fd256226ae112351b0303d1ef115626e24",
+        "patch_sha256": "9adcbff90fa1b60eaa38902612550f7df482442f2645043b21f611220ca2d06c",
+        "transformation": "source_less_workspace_package_version_0.0.0_to_0.144.1_only",
+        "upstream_relative_path": "codex-rs/Cargo.lock",
+        "workspace_package_count": 132,
+        "workspace_package_names_sha256": "509b6546a5bef3fd496dd33f130a2edf5a489a5bef25966abe034de3826ae177",
+        "workspace_version": "0.144.1"
+      },
+      "expected_gid": 5901,
+      "expected_uid": 5901,
+      "link_entry_symbol": "trillionnium_provider_post_final_exec_entry",
+      "linker_threads": 1,
+      "lockfiles": {
+        "codex-rs/Cargo.lock": "175793a40a3147db1fee08fd9db0acc59312c344b3513dd7ee316f5446d8119e",
+        "codex-rs/rust-toolchain.toml": "570656042681cfd8795403a455baf9a33035331a07db0645e866bbcea89a3d64"
+      },
+      "original_entry_symbol": "_start",
+      "provider_wire_name": "codex",
+      "repository_url": "https://github.com/openai/codex",
+      "required_dynamic_segment": false,
+      "required_final_elf_type": "ET_EXEC",
+      "required_symbol_table": true,
+      "rusty_v8": {
+        "archive": {
+          "byte_length": 28184570,
+          "filename": "librusty_v8_release_aarch64-unknown-linux-musl.a.gz",
+          "sha256": "889155b099a2eac05a13175994257ef3a6140201bb411b74b50333f42b608717",
+          "url": "https://github.com/openai/codex/releases/download/rusty-v8-v149.2.0/librusty_v8_release_aarch64-unknown-linux-musl.a.gz"
+        },
+        "archive_uncompressed_byte_length": 151804540,
+        "archive_uncompressed_sha256": "3295c376bd7b3e88de238cd5cbc7fabc22342c18479c28b45ad84112ce1b8616",
+        "binding": {
+          "byte_length": 39884,
+          "filename": "src_binding_release_aarch64-unknown-linux-musl.rs",
+          "sha256": "5db3ec0783531d12862a3f38dd5a679273550e67962260b81f07e612a68a0c24",
+          "url": "https://github.com/openai/codex/releases/download/rusty-v8-v149.2.0/src_binding_release_aarch64-unknown-linux-musl.rs"
+        },
+        "checksums": {
+          "byte_length": 234,
+          "filename": "rusty_v8_release_aarch64-unknown-linux-musl.sha256",
+          "sha256": "f6a6b2b9838b4c6259a6362ce235d4ff9ef74f389460da0c67d01f4ea3f5dff2",
+          "url": "https://github.com/openai/codex/releases/download/rusty-v8-v149.2.0/rusty_v8_release_aarch64-unknown-linux-musl.sha256"
+        },
+        "crate_checksum_sha256": "46dccf61a364b61bbaac70a8ba64a1a1006e87123b7d62eaeec999a3ba31ecdb",
+        "crate_version": "149.2.0",
+        "github_attestation_proven": false,
+        "release_immutable": false,
+        "release_prerelease": true,
+        "resolved_features": {
+          "codex-cli": [],
+          "codex-code-mode": [],
+          "codex-core": [],
+          "v8": [
+            "default",
+            "use_custom_libcxx"
+          ]
+        },
+        "target": "aarch64-unknown-linux-musl",
+        "upstream_signature_proven": false,
+        "variant": "release"
+      },
+      "source_archive": {
+        "byte_length": 6244528,
+        "filename": "codex-rust-v0.144.1-exact-tree.tar.xz",
+        "sha256": "11827d951ec0397fa125f7d50c222fa0f02e020c7caad3c48056301e9ff5acda"
+      },
+      "source_identity": {
+        "commit_object": {
+          "byte_length": 740,
+          "filename": "commit-44918ea.raw-payload",
+          "sha256": "5ce7ad4511063310dcb37481fc27fe4b7a3f561a80d123076de8e927a25389bc"
+        },
+        "logical_symlinks": {
+          "byte_length": 412,
+          "filename": "source-logical-symlinks.json",
+          "sha256": "e7dfecb6ac7637878e34618d292a369c499b69060b3b8f945af82cf749374567"
+        },
+        "source_entry_count": 6164,
+        "source_inventory_sha256": "14740f0fabf57f7828f7e1c82bcc9039b3d4af129d3261a66a6fabc8d0d3240c",
+        "source_member_manifest": {
+          "byte_length": 1499192,
+          "filename": "codex-source-member-manifest.json",
+          "sha256": "0e3787c62363520f90f87c55d360f312b123060107ff481c49b5c9f26f43c221"
+        },
+        "source_root_name": "codex-rust-v0.144.1",
+        "tag_object": {
+          "byte_length": 154,
+          "filename": "tag-db75c193.raw-payload",
+          "sha256": "e1c352ee9b8b2caf5867ccef7cf4098fe73585cb4d8285f34036d3bb4ff49846"
+        }
+      },
+      "source_subdirectory": "codex-rs",
+      "source_tree_sha1": "6c4d9c247f20ef879c8572eec76798edf9e96425",
+      "version": "0.144.1"
+    }
+  },
+  "schema": "trillionnium.provider-exact-source-payload-recipe.v2",
+  "source_date_epoch": 1783900800,
+  "target_architecture": "aarch64-unknown-linux"
+}

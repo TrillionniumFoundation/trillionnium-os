@@ -1,0 +1,47 @@
+# Trillionnium Shell Task Canvas Mutation/Approval Smoke
+
+- status: trillionnium-shell-task-canvas-mutation-approval-scoped-pass
+- ok: true
+- sqlite_read_write_opened: true
+- task_inserted/status_mutated/read_back: true/true/true
+- approval_inserted/decided/read_back: true/true/true
+- cleanup_completed/scoped_task_removed/scoped_approval_removed: true/true/true
+- task_write_enabled: true
+- approval_decision_enabled: true
+- can_promote_task_canvas_mutation_approval: true
+
+## Safety flags
+
+- scoped_smoke_only: true
+- redacted_only: true
+- cleanup_completed: true
+- scoped_task_removed: true
+- scoped_approval_removed: true
+- exposes_task_titles: false
+- exposes_task_descriptions: false
+- exposes_approval_reasons: false
+- task_write_enabled: true
+- approval_decision_enabled: true
+- opens_window: false
+- claims_dbus_name: false
+- registers_autostart: false
+- mutates_phosh_session: false
+- mutates_compositor: false
+- uses_layer_shell: false
+- launches_apps: false
+- reads_notifications: false
+- invokes_model: false
+- invokes_tool: false
+- writes_files: true
+- can_promote_task_canvas_mutation_approval: true
+- mobile_mvp_ready: false
+
+## Blockers
+
+- Task Canvas mutation/approval smoke is scoped and redacted; no real task title, description, approval reason, app launch, model/tool call, or notification body is exposed
+- mobile_mvp_ready=false
+
+## Safety notes
+
+- the smoke writes only deterministic scoped task/approval ids, verifies mutation/decision, then deletes those scoped rows before returning
+- the report exposes only booleans and counts; task titles, descriptions, approval reasons, tool/model invocations, app launches, and notification reads remain out of scope

@@ -1,0 +1,88 @@
+{
+  "product": {
+    "allowed_build_types": [
+      "user",
+      "userdebug"
+    ],
+    "device": "fogos",
+    "require_ab_update": true
+  },
+  "schema": "org.trillionnium.android-release-signing-config.v1",
+  "signing": {
+    "apex_payload_keys": {
+      "com.android.adbd.apex": "apex_com.android.adbd.pem",
+      "com.android.adservices.apex": "apex_com.android.adservices.pem",
+      "com.android.appsearch.apex": "apex_com.android.appsearch.pem",
+      "com.android.art.apex": "apex_com.android.art.pem",
+      "com.android.bt.apex": "apex_com.android.bt.pem",
+      "com.android.cellbroadcast.apex": "apex_com.android.cellbroadcast.pem",
+      "com.android.configinfrastructure.apex": "apex_com.android.configinfrastructure.pem",
+      "com.android.conscrypt.apex": "apex_com.android.conscrypt.pem",
+      "com.android.crashrecovery.apex": "apex_com.android.crashrecovery.pem",
+      "com.android.devicelock.apex": "apex_com.android.devicelock.pem",
+      "com.android.extservices.apex": "apex_com.android.extservices.pem",
+      "com.android.hardware.cas.apex": "apex_com.android.hardware.cas.pem",
+      "com.android.healthfitness.apex": "apex_com.android.healthfitness.pem",
+      "com.android.i18n.apex": "apex_com.android.i18n.pem",
+      "com.android.ipsec.apex": "apex_com.android.ipsec.pem",
+      "com.android.media.apex": "apex_com.android.media.pem",
+      "com.android.media.swcodec.apex": "apex_com.android.media.swcodec.pem",
+      "com.android.mediaprovider.apex": "apex_com.android.mediaprovider.pem",
+      "com.android.neuralnetworks.apex": "apex_com.android.neuralnetworks.pem",
+      "com.android.nfcservices.apex": "apex_com.android.nfcservices.pem",
+      "com.android.ondevicepersonalization.apex": "apex_com.android.ondevicepersonalization.pem",
+      "com.android.os.statsd.apex": "apex_com.android.os.statsd.pem",
+      "com.android.permission.apex": "apex_com.android.permission.pem",
+      "com.android.profiling.apex": "apex_com.android.profiling.pem",
+      "com.android.resolv.apex": "apex_com.android.resolv.pem",
+      "com.android.rkpd.apex": "apex_com.android.rkpd.pem",
+      "com.android.runtime.apex": "apex_com.android.runtime.pem",
+      "com.android.scheduling.apex": "apex_com.android.scheduling.pem",
+      "com.android.sdkext.apex": "apex_com.android.sdkext.pem",
+      "com.android.telephonycore.apex": "apex_com.android.telephonycore.pem",
+      "com.android.tethering.apex": "apex_com.android.tethering.pem",
+      "com.android.tzdata.apex": "apex_com.android.tzdata.pem",
+      "com.android.uprobestats.apex": "apex_com.android.uprobestats.pem",
+      "com.android.uwb.apex": "apex_com.android.uwb.pem",
+      "com.android.virt.apex": "apex_com.android.virt.pem",
+      "com.android.wifi.apex": "apex_com.android.wifi.pem"
+    },
+    "apk_key_mappings": {
+      "build/make/target/product/security/media": "media",
+      "build/make/target/product/security/networkstack": "networkstack",
+      "build/make/target/product/security/platform": "platform",
+      "build/make/target/product/security/sdk_sandbox": "sdk_sandbox",
+      "build/make/target/product/security/shared": "shared",
+      "build/make/target/product/security/testkey": "releasekey"
+    },
+    "avb": {
+      "vbmeta": {
+        "algorithm": "SHA256_RSA4096",
+        "expected_flags": 0,
+        "key": "trillionnium_vbmeta_rsa4096.pem",
+        "rollback_index": 28,
+        "rollback_index_location": 0
+      },
+      "vbmeta_system": {
+        "algorithm": "SHA256_RSA2048",
+        "expected_flags": 0,
+        "key": "trillionnium_vbmeta_system_rsa2048.pem",
+        "rollback_index": 28,
+        "rollback_index_location": 2
+      }
+    },
+    "rollback_policy": {
+      "hardware_high_water_proven": false,
+      "hardware_programming_authorized": false,
+      "scope": "source_and_target_files_expected_values_only"
+    },
+    "ota_key_alias": "releasekey"
+  },
+  "tools": {
+    "apksigner": "out/host/linux-x86/bin/apksigner",
+    "avbtool": "out/host/linux-x86/bin/avbtool",
+    "check_ota_package_signature": "out/host/linux-x86/bin/check_ota_package_signature",
+    "ota_from_target_files": "out/host/linux-x86/bin/ota_from_target_files",
+    "sign_target_files_apks": "out/host/linux-x86/bin/sign_target_files_apks"
+  }
+}

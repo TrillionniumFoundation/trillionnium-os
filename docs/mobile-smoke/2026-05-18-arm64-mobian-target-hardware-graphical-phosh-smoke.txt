@@ -1,0 +1,15 @@
+status: arm64-mobian-target-hardware-graphical-phosh-smoke-pass-boundary-recorded
+development_position: arm64-mobian-target-hardware-graphical-phosh-blocked-by-current-device-os
+known_blocker_id: target-hardware-currently-fogos-lineage-not-mobian-trillionnium-os
+target_device_serial: ZY32JLVHGN
+observed_device: moto g34 5G / fogos / Android 16 SDK 36 / 23.2-20260429-UNOFFICIAL-fogos / slot _b / verified_boot orange
+local_qemu_graphical_drm_phosh_session_stable: true
+target_hardware_graphical_phosh_booted: false
+arm64_mobian_phosh_booted_on_target_hardware: false
+bridge_package_installed: true
+bridge_pairing_activity_resolved: true
+phoc_process_visible_on_target: false
+phosh_process_visible_on_target: false
+can_claim_trillionnium_os_installed_on_phone: false
+ready_for_release_push: false
+next_gate: arm64-mobian-target-hardware-install-plan-and-rollback-smoke

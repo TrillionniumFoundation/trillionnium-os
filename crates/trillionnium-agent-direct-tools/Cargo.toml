@@ -1,0 +1,85 @@
+[package]
+name = "trillionnium-agent-direct-tools"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+
+[features]
+default = []
+# Development workstations may redirect sockets or the adb executable. Product
+# builds deliberately omit this feature so those endpoints stay compile-time
+# constants.
+dev-overrides = []
+# Explicit non-product compatibility lane for the pre-journal ephemeral
+# request identity and direct backend calls. The empty/default feature set keeps the
+# binaries buildable for workspace checks but cannot read a request or contact
+# a backend. Product builds must never select this feature.
+development-compatibility-lane = ["dev-overrides"]
+# Inert integration proof only. Product builds deliberately omit this feature
+# until kernel-owned cgroup/PID-namespace custody can prove that a daemon crash
+# left no provider or adapter descendant able to consume a stale fixed inbox.
+trusted-context-hotpath = []
+# Root-Linux product artifacts select this feature explicitly while retaining
+# `--no-default-features`.  It compiles only the durable trusted-context lane;
+# missing kernel launch custody, binding inbox, journal provisioning, or outer
+# ACK custody remains a pre-effect runtime HOLD.
+production-durable-hotpath = ["trusted-context-hotpath"]
+# Separately built, non-product P0-1 device-conformance lane. This feature
+# produces a distinct binary whose only effect is
+# launch_package(com.android.settings). It consumes the root-authored binding,
+# uses a separate local durable journal, and requires exact outer/Android ACKs,
+# without claiming the unavailable product rollback or mutation-CAS authority.
+# It is incompatible with every product/development effect lane and is never a
+# default feature.
+device-launch-package-conformance = [
+  "trillionnium-os-types/p0-launch-package-device-conformance",
+]
+
+[dependencies]
+base64.workspace = true
+libc.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+trillionnium-os-types.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[[bin]]
+name = "trillionnium-agent-system-api"
+path = "src/bin/system_api.rs"
+
+[[bin]]
+name = "trillionnium-agent-accessibility"
+path = "src/bin/accessibility.rs"
+
+[[bin]]
+name = "trillionnium-agent-adb"
+path = "src/bin/adb.rs"
+
+[[bin]]
+name = "trillionnium-system-api-replay-sync"
+path = "src/bin/system_api_replay_sync.rs"
+
+[[bin]]
+name = "trillionnium-system-api-operation-replay-sync"
+path = "src/bin/system_api_operation_replay_sync.rs"
+
+[[bin]]
+name = "trillionnium-accessibility-operation-replay-sync"
+path = "src/bin/accessibility_operation_replay_sync.rs"
+
+[[bin]]
+name = "trillionnium-agent-system-api-device-conformance"
+path = "src/bin/system_api_device_conformance.rs"
+required-features = ["device-launch-package-conformance"]
+
+[[bin]]
+name = "trillionnium-system-api-device-conformance-replay-sync"
+path = "src/bin/system_api_device_conformance_replay_sync.rs"
+required-features = ["device-launch-package-conformance"]

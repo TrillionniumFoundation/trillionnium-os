@@ -1,0 +1,24 @@
+# Trillionnium arm64 Mobian Phosh preflight with session dependencies smoke
+
+- status: arm64-mobian-phosh-preflight-with-session-dependencies-smoke-pass
+- development_position: arm64-mobian-phosh-preflight-with-session-dependencies-drm-blocked-local
+- known_blocker_id: missing-drm-card0-for-phosh-graphical-session
+- input_session_dependency_rootfs_json_sha256: da9267e3a8de033fbfcc9e1549e78cf1dddf57ef0013255d6193c90f76b1dffc
+- rootfs_partition_image: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-phosh-preflight-with-session-dependencies-smoke/trillionnium-mobian-rootfs-bookworm-arm64-phosh-session-deps.ext4.img
+- rootfs_partition_image_size_bytes: 2390618112
+- rootfs_partition_image_sha256: 2d0971691445641e068c55187c5e57c4bb272aeb3b3bc06054abe34ca17f097e
+- derived_disk_image: /home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-phosh-preflight-with-session-dependencies-smoke/trillionnium-mobian-bookworm-arm64-phosh-session-deps-preflight.raw.img
+- derived_disk_image_size_bytes: 2459824128
+- derived_disk_image_sha256: c7c5f064b229779aa0e025c4b8b4322f143ebfd4efd977fc920c41145734a589
+- gnome_session_present: true
+- mobile_user_1000_present: true
+- phosh_runtime_files_present: true
+- tty0_present: true
+- drm_card0_present: false
+- phosh_preflight_blocked_only_by_drm: true
+- phosh_booted: false
+- graphical_boot_attempted: false
+- headless_phosh_attempted: false
+- can_claim_trillionnium_os_installed_on_phone: false
+- ready_for_release_push: false
+- next_gate: arm64-mobian-headless-phosh-session-boundary-smoke

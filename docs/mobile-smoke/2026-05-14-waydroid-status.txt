@@ -1,0 +1,6 @@
+Session:	RUNNING
+Container:	FROZEN
+Vendor type:	MAINLINE
+IP address:	192.168.240.112
+Session user:	qian-qi(1000)
+Wayland display:	trillionnium-wayland-1

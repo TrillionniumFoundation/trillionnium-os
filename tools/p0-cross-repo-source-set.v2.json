@@ -1,0 +1,256 @@
+{
+  "artifacts": [],
+  "projects": [
+    {
+      "checkout_path": ".repo/manifests",
+      "checkout_root": "android",
+      "expected_manifest_name": null,
+      "id": "android_manifest_repository",
+      "manifest_path": null,
+      "manifest_required": false,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": ".",
+      "checkout_root": "control",
+      "expected_manifest_name": null,
+      "id": "control_plane",
+      "manifest_path": null,
+      "manifest_required": false,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "build/make",
+      "checkout_root": "android",
+      "expected_manifest_name": "LineageOS/android_build",
+      "id": "android_build_make",
+      "manifest_path": "build/make",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "build/release",
+      "checkout_root": "android",
+      "expected_manifest_name": "platform/build/release",
+      "id": "android_build_release",
+      "manifest_path": "build/release",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "device/motorola/fogos",
+      "checkout_root": "android",
+      "expected_manifest_name": "LineageOS/android_device_motorola_fogos",
+      "id": "device_motorola_fogos",
+      "manifest_path": "device/motorola/fogos",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "device/motorola/sm6375-common",
+      "checkout_root": "android",
+      "expected_manifest_name": "LineageOS/android_device_motorola_sm6375-common",
+      "id": "device_motorola_sm6375_common",
+      "manifest_path": "device/motorola/sm6375-common",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "packages/apps/TrillionniumAiShell",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/TrillionniumAiShell",
+      "id": "ai_shell",
+      "manifest_path": "packages/apps/TrillionniumAiShell",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "packages/apps/TrillionniumAiAuthority",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/TrillionniumAiAuthority",
+      "id": "ai_authority",
+      "manifest_path": "packages/apps/TrillionniumAiAuthority",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "packages/apps/Dialer",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-packages-apps-Dialer",
+      "id": "dialer_integration",
+      "manifest_path": "packages/apps/Dialer",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "trillionnium-sdk",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-trillionnium-sdk",
+      "id": "trillionnium_sdk",
+      "manifest_path": "trillionnium-sdk",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "vendor/trillionnium",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-vendor-trillionnium",
+      "id": "vendor_trillionnium",
+      "manifest_path": "vendor/trillionnium",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "external/zstd",
+      "checkout_root": "android",
+      "expected_manifest_name": "LineageOS/android_external_zstd",
+      "id": "zstd_host_tool",
+      "manifest_path": "external/zstd",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "external/erofs-utils",
+      "checkout_root": "android",
+      "expected_manifest_name": "platform/external/erofs-utils",
+      "id": "erofs_host_tool",
+      "manifest_path": "external/erofs-utils",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "external/fsverity-utils",
+      "checkout_root": "android",
+      "expected_manifest_name": "platform/external/fsverity-utils",
+      "id": "fsverity_host_tool",
+      "manifest_path": "external/fsverity-utils",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "external/XMP-Toolkit-SDK",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-external-xmp-toolkit-sdk",
+      "id": "xmp_toolkit_sdk",
+      "manifest_path": "external/XMP-Toolkit-SDK",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "external/google-highway",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-external-google-highway",
+      "id": "google_highway",
+      "manifest_path": "external/google-highway",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "external/skia",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-external-skia",
+      "id": "skia",
+      "manifest_path": "external/skia",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "external/android-key-attestation",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-external-android-key-attestation",
+      "id": "android_key_attestation",
+      "manifest_path": "external/android-key-attestation",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "device/trillionnium/sepolicy",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-device-trillionnium-sepolicy",
+      "id": "device_sepolicy",
+      "manifest_path": "device/trillionnium/sepolicy",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "system/sepolicy",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/android-system-sepolicy",
+      "id": "platform_sepolicy",
+      "manifest_path": "system/sepolicy",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "trillionnium-os/tools",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/trillionnium-os-tools",
+      "id": "release_tools",
+      "manifest_path": "trillionnium-os/tools",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "trillionnium-os/contracts",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/trillionnium-os-contracts",
+      "id": "release_contracts",
+      "manifest_path": "trillionnium-os/contracts",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    },
+    {
+      "checkout_path": "trillionnium-os/schemas",
+      "checkout_root": "android",
+      "expected_manifest_name": "TrillionniumFoundation/trillionnium-os-schemas",
+      "id": "release_schemas",
+      "manifest_path": "trillionnium-os/schemas",
+      "manifest_required": true,
+      "require_clean": true,
+      "require_no_ignored": true
+    }
+  ],
+  "schema": "org.trillionnium.p0-cross-repo-source-set.v2",
+  "trees": [
+    {
+      "byte_limit": 17179869184,
+      "checkout_root": "android",
+      "entry_limit": 250000,
+      "id": "vendor_motorola_fogos_blobs",
+      "mode_policy": "owner-readable-no-special-or-group-other-write-v1",
+      "path": "vendor/motorola/fogos",
+      "required": true
+    },
+    {
+      "byte_limit": 17179869184,
+      "checkout_root": "android",
+      "entry_limit": 250000,
+      "id": "vendor_motorola_sm6375_common_blobs",
+      "mode_policy": "owner-readable-no-special-or-group-other-write-v1",
+      "path": "vendor/motorola/sm6375-common",
+      "required": true
+    }
+  ]
+}

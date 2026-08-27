@@ -1,0 +1,17 @@
+status: arm64-mobian-fogos-target-hardware-artifact-toolchain-fetch-smoke-pass-boundary-recorded
+development_position: arm64-mobian-fogos-target-hardware-artifact-toolchain-partial-target-local
+known_blocker_id: aosp-avb-lp-host-tools-not-materialized
+package_count: 5
+required_tool_count: 7
+materialized_tool_count: 4
+missing_tool_count: 3
+partial_toolchain_materialized: true
+artifact_toolchain_fetch_completed: false
+target_hardware_artifact_produced: false
+ready_for_release_push: false
+next_gate: arm64-mobian-fogos-aosp-host-tools-plan-smoke
+package_manifest_sha256: d5c3a82823343f82cf2bb9b3cf09d508047d7f1ae70a1f216b47c82905182b14
+tool_manifest_sha256: 72b9b0d703106d45e9f225f5f56cd30d6bb71a7c25a60a5f077c8aa2179e31b7
+artifact_toolchain_fetch_json_sha256: 6ca2b08c023539355af19033a1b4bd2c21aa6a5bf450b0899d01dd64974de1ec
+artifact_toolchain_fetch_md_sha256: 87c0fc70bfaaf3f6366fbdcae987d853c7d1d56324cdf87a666a2ad601b9b927
+json_sha256: 44fea1651a7e9342a5a6cddaab778c24aa29ccf8082676fc00235d63e83a3291

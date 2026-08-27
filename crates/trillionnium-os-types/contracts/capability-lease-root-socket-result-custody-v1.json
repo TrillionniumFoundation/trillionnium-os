@@ -1,0 +1,44 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-socket-result-custody.contract.v1",
+  "source_status": "source_only_concrete_socket_and_result_custody_no_broker_route_no_product_constructor_v1",
+  "dependencies": {
+    "root_publication_contract_sha256": "2a23182e8778f51086ab66f93dd39a51b0fc56f5b5a62947e7fd340e736e1a74",
+    "root_proof_carrier_contract_sha256": "30dd53fc52e139dee108d6eb51ea5958e8c43a7fb45f496b47f145b0f68d2a35",
+    "root_kernel_custody_contract_sha256": "4d1fef7a3bc0ab7e66ef51d6cfb6ad478fffcf3b5484530fc379ced413ce0009"
+  },
+  "proof_socket": {
+    "address": "abstract_trillionnium_capability_lease_root_proof",
+    "client": "agentd_single_connect_no_retry_cloexec_stream",
+    "server": "system_server_single_accept_source_disabled_constructor",
+    "timeouts": "fixed_read_write_deadlines",
+    "peer_authentication": "SO_PEERCRED_and_SO_PEERSEC_before_and_after_exact_frame",
+    "framing": "u32be_canonical_json_exactly_one_delivery_then_shutdown_write_and_exact_eof",
+    "failure": "close_without_retry_or_alternate_carrier"
+  },
+  "publisher_result_custody": {
+    "owner": "agentd_parent_only",
+    "source": "retained_stdout_pipe_from_exact_clone3_child",
+    "ack": "one_canonical_root_publication_ack_matching_every_exact_publication_commitment",
+    "eof": "required_immediately_after_ack_frame",
+    "process_result": "pidfd_observed_normal_exit_zero_then_exact_waitpid_reap",
+    "success": "ack_commitments_and_authenticated_publisher_commitment_only",
+    "failure": "pidfd_SIGKILL_then_exact_waitpid_reap_no_result"
+  },
+  "ordering": {
+    "proof": "must_complete_before_child_resume",
+    "publication": "child_performs_exactly_one_publication_exchange_after_resume",
+    "completion": "parent_validates_ack_eof_exit_and_reap_before_returning_success"
+  },
+  "authority": {
+    "broker_route_available": false,
+    "product_constructor_available": false,
+    "proof_socket_listener_wired": false,
+    "publication_socket_listener_wired": false,
+    "publisher_packaged": false,
+    "runtime_consumer_available": false,
+    "token_mutation_available": false,
+    "confers_ack_authority": false,
+    "confers_lease_trust": false,
+    "confers_effect_authority": false
+  }
+}

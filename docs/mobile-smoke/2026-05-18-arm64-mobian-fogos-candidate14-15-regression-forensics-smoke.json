@@ -1,0 +1,66 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-candidate14-15-regression-forensics-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-candidate14-15-regression-forensics-smoke-pass-next-candidate-constrained",
+  "development_position": "arm64-mobian-fogos-candidate14-15-regression-cluster-isolated-local",
+  "known_blocker_id": "selected-partition-uevent-early-status-path-regression-not-root-caused",
+  "next_gate": "arm64-mobian-fogos-candidate16-http-stable-partition-proof-plan-smoke",
+  "consumed_evidence": {
+    "candidate10_13_regression_receipt": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate10-13-regression-receipt-smoke.json",
+    "candidate10_13_regression_receipt_sha256": "5516d3a5fa1b4a004a492bb38976e4bd6c3c8bda4cb29a97b284e066f4f127ef",
+    "candidate9_to_13_vendor_ramdisk_forensics": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-vendor-ramdisk-delta-forensics-smoke.json",
+    "candidate9_to_13_vendor_ramdisk_forensics_sha256": "1c8adadb8746eb00cd7c0ffa39cdfd52bd3a305b3ae61ac093628e6535016433",
+    "candidate14_execution_receipt": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate14-http-first-super-probe-execution-receipt-smoke.json",
+    "candidate14_execution_receipt_sha256": "34ea88e085a734f7faa3259e50c5ca306520eb2fcd6f7a0244dd8d3b5a427395",
+    "candidate15_execution_receipt": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate15-partition-uevent-status-flash-execution-receipt-smoke.json",
+    "candidate15_execution_receipt_sha256": "449f6bbeb889f5ba1f2269510845e13ad3258e5219cf9b469fe158ab9c19e23e",
+    "candidate9_restore_after_candidate15_receipt": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate9-restore-after-candidate15-no-transport-receipt-smoke.json",
+    "candidate9_restore_after_candidate15_receipt_sha256": "1752b9a5b99e4f06a2f05fbabdb29a296ee34569c3bdcb893d55c853879ded7d"
+  },
+  "report": {
+    "json": "target/mobian-arm64-fogos-candidate14-15-regression-forensics-smoke/candidate14-15-regression-forensics-report.json",
+    "json_sha256": "6bf2fe6607cbc4e857ee5209a3bdf3ee09c1beab7d57d1768b275aad109ad5f8",
+    "markdown": "target/mobian-arm64-fogos-candidate14-15-regression-forensics-smoke/candidate14-15-regression-forensics-report.md",
+    "markdown_sha256": "6cede1f3021daf93e87bb1669aaa004fe1b9ba454ac2bb7165baf0fa8f5ba84b"
+  },
+  "conclusions": {
+    "candidate9_baseline_restored_after_candidate15": true,
+    "candidate13_14_15_regressed_before_usb_http": true,
+    "boot_image_identical_candidate9_to_15": true,
+    "dtb_identical_candidate9_to_15": true,
+    "vendor_boot_container_size_identical_candidate9_to_15": true,
+    "candidate15_non_init_payload_identical_to_candidate9": true,
+    "candidate13_smaller_than_candidate9_but_regressed": true,
+    "selected_partition_uevent_logic_common_to_candidate13_14_15": true,
+    "candidate15_preserved_candidate9_usb_identity_but_regressed": true,
+    "grep_binary_materialized_in_initramfs": false,
+    "unmaterialized_grep_invoked_by_failing_status_path": true,
+    "root_cause_proven": false,
+    "next_candidate_must_preserve_candidate9_startup_until_http_visible": true,
+    "next_candidate_must_avoid_grep_in_init": true,
+    "next_candidate_must_avoid_initial_selected_partition_uevent_status": true,
+    "candidate16_plan_allowed_next": true,
+    "candidate16_flash_allowed_by_this_gate": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false
+  },
+  "policy": {
+    "local_forensics_only": true,
+    "adb_executed_now": false,
+    "fastboot_executed_now": false,
+    "flash_executed_now": false,
+    "wipe_executed_now": false,
+    "repartition_executed_now": false,
+    "sideload_executed_now": false,
+    "reboot_executed_now": false,
+    "relock_executed_now": false,
+    "install_executed_now": false,
+    "release_push_executed_now": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "script_sha256": "e81d3b0571d085b4c28cd41599fb625a5cd0a2fc802f8a46c0eac90fcbead61a"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-candidate16-http-stable-partition-proof-plan-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-candidate16-http-stable-partition-proof-plan-smoke-pass-plan-locked",
+  "development_position": "arm64-mobian-fogos-candidate16-http-stable-partition-proof-plan-locked",
+  "known_blocker_id": "candidate16-http-stable-partition-proof-artifact-not-built",
+  "next_gate": "arm64-mobian-fogos-candidate16-http-stable-partition-proof-build-smoke",
+  "inputs": {
+    "candidate14_15_regression_forensics_json": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate14-15-regression-forensics-smoke.json",
+    "candidate14_15_regression_forensics_json_sha256": "e43cb63f31ea53540fd8c196b1c799217619f7ae79e44b8ec53407b905ce93ef",
+    "candidate9_baseline_init": "target/mobian-arm64-fogos-candidate9-http-status-diagnostic/initramfs-tree/init",
+    "candidate9_baseline_init_sha256": "59412a8ae344fdc7f233344a30834f5647dbfba422349297a6baa14da0607e45",
+    "candidate9_baseline_init_size_bytes": 9624,
+    "candidate15_failed_init": "target/mobian-arm64-fogos-candidate15-partition-uevent-status-build-smoke/initramfs-tree/init",
+    "candidate15_failed_init_sha256": "a8c88c23b9c4f755a597bcf7d761b83dfe93656a9623018c441c6d239fa7c4ad",
+    "candidate15_failed_init_size_bytes": 10322
+  },
+  "plan": {
+    "candidate16_plan_locked": true,
+    "candidate16_base_init": "candidate9-http-status-diagnostic",
+    "preserve_candidate9_setup_usb_gadget_until_http_visible": true,
+    "preserve_candidate9_usb_product_id": "18d1:4eea",
+    "preserve_candidate9_usb_network_addressing": "192.168.76.2/24",
+    "preserve_candidate9_http_status_server_start": true,
+    "preserve_candidate9_initial_index_until_http_visible": true,
+    "do_not_emit_selected_partition_uevents_in_initial_index": true,
+    "do_not_invoke_grep_sed_awk_or_find_in_init_delta": true,
+    "partition_proof_path": "/www/partition-proof.txt",
+    "partition_proof_generation": "delayed after HTTP server start, shell builtins only, bounded and fail-open",
+    "partition_proof_allowed_shell_builtins": [
+      "case",
+      "read",
+      "printf",
+      "echo",
+      "test"
+    ],
+    "partition_proof_forbidden_commands": [
+      "grep",
+      "sed",
+      "awk",
+      "find",
+      "ls",
+      "cat",
+      "blkid",
+      "losetup",
+      "mount"
+    ],
+    "selected_partitions_to_report": [
+      "super",
+      "system_a",
+      "system_b",
+      "userdata"
+    ],
+    "candidate16_build_allowed_next": true,
+    "candidate16_flash_allowed_by_this_gate": false
+  },
+  "forbidden_candidate16_changes": [
+    "change candidate9 USB gadget identity before HTTP proof",
+    "change candidate9 product ID or USB network addressing before HTTP proof",
+    "write selected partition uevent lines into the initial status page",
+    "invoke grep or any unmaterialized external command in init",
+    "probe super/system/userdata before HTTP is observable",
+    "mount, losetup, wipe, repartition, or mutate block devices"
+  ],
+  "conclusions": {
+    "candidate16_http_stable_partition_proof_plan_smoke_passed": true,
+    "candidate16_plan_locked": true,
+    "candidate16_build_allowed_next": true,
+    "candidate16_flash_allowed_by_this_gate": false,
+    "target_hardware_install_executed": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false
+  },
+  "policy": {
+    "planner_only": true,
+    "artifact_built_now": false,
+    "adb_executed_now": false,
+    "fastboot_executed_now": false,
+    "phone_mutation_executed_now": false,
+    "flash_executed_now": false,
+    "wipe_executed_now": false,
+    "repartition_executed_now": false,
+    "sideload_executed_now": false,
+    "reboot_executed_now": false,
+    "relock_executed_now": false,
+    "install_executed_now": false,
+    "release_push_executed_now": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "script_sha256": "8f28ef7141c956c16402e5101f6fd4fba417dcf31c5143b5b3accbec1012bc9e"
+  }
+}

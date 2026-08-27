@@ -1,0 +1,52 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-kernel-custody.contract.v1",
+  "source_status": "source_only_concrete_linux_backend_no_broker_route_no_product_constructor_v1",
+  "dependencies": {
+    "root_authenticator_contract_sha256": "eadb86b31c7927c5b16cda4d94553db8cc534584fa30b05c76338e69e26630c3",
+    "root_proof_carrier_contract_sha256": "30dd53fc52e139dee108d6eb51ea5958e8c43a7fb45f496b47f145b0f68d2a35"
+  },
+  "executable_custody": {
+    "open": "fixed_absolute_openat2_no_magiclinks_no_symlinks_read_only",
+    "metadata": "regular_single_link_read_only_mount_elf",
+    "measurement": "sha256_on_exact_retained_fd_then_lseek_zero",
+    "execution": "same_fd_execveat_AT_EMPTY_PATH"
+  },
+  "clone_custody": {
+    "spawn": "clone3_CLONE_PIDFD_SIGCHLD",
+    "pidfd": "kernel_returned_atomically_and_retained_until_reap",
+    "pre_exec_stop": "PTRACE_TRACEME_SIGSTOP",
+    "exec_stop": "PTRACE_O_TRACEEXEC_exact_event_before_post_exec_hardening_stop",
+    "post_exec_hardening_stop": "measured_binary_reasserts_pdeathsig_no_new_privs_dumpable_zero_then_self_SIGSTOP_before_proof_or_resume",
+    "start_time": "same_positive_proc_stat_value_before_and_twice_after_exec"
+  },
+  "child_custody": {
+    "credentials": "generated_agent_uid_gid_all_kernel_slots_equal",
+    "selinux": "fixed_exec_transition_and_exact_post_exec_domain",
+    "stdio": "stdin_publication_pipe_stdout_ack_pipe_stderr_closed",
+    "file_descriptors": "zero_and_one_only_after_exec",
+    "arguments": "argv0_only_no_additional_arguments",
+    "environment": "empty",
+    "pdeathsig": "SIGKILL",
+    "no_new_privs": true,
+    "dumpable": false,
+    "capabilities": "inheritable_permitted_effective_ambient_sets_empty_no_new_privs_blocks_acquisition",
+    "descendants": "seccomp_errno_denies_clone_clone3_fork_vfork"
+  },
+  "publication_order": {
+    "request_pipe": "exact_canonical_publication_frame_written_and_closed_while_exec_stopped",
+    "authentication": "derived_only_after_all_kernel_custody_checks",
+    "proof": "single_authenticated_root_proof_delivery_before_resume",
+    "resume": "ptrace_detach_only_after_proof_delivery",
+    "failure": "pidfd_SIGKILL_then_exact_waitpid_reap"
+  },
+  "authority": {
+    "broker_route_available": false,
+    "product_constructor_available": false,
+    "live_proof_socket_available": false,
+    "publisher_packaged": false,
+    "listener_wired": false,
+    "runtime_consumer_available": false,
+    "confers_ack_authority": false,
+    "confers_effect_authority": false
+  }
+}

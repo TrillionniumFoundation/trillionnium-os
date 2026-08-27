@@ -1,0 +1,28 @@
+arm64-mobian-fogos-candidate10-13-regression-receipt-smoke
+status=arm64-mobian-fogos-candidate10-13-regression-receipt-smoke-pass-regressions-recorded-candidate9-restored
+development_position=arm64-mobian-fogos-candidate9-http-diagnostic-stable-candidate10-13-regression-forensics-locked
+known_blocker_id=candidate10-13-super-diagnostic-vendor-ramdisk-regressions
+next_gate=arm64-mobian-fogos-vendor-ramdisk-delta-forensics-smoke
+evidence_json_sha256=5516d3a5fa1b4a004a492bb38976e4bd6c3c8bda4cb29a97b284e066f4f127ef
+
+Candidate 10 flashed boot/vendor_boot on both slots and activated slot b, but no USB or HTTP diagnostic endpoint appeared; HTTP attempts timed out.
+Candidate 11 reduced the super-rootfs mount diagnostic and reused candidate9 USB product 18d1:4eea, but fell back to fastboot at poll 29 before USB/HTTP status appeared.
+Candidate 12 attempted only super partition discovery with no mount attempt, yet no USB/ADB/Fastboot transport appeared through the full poll 0..100 window.
+Candidate 13 compacted the selected-partition uevent diagnostic and is smaller than candidate9 by init script and LZ4 size, but still fell back to fastboot at poll 72 before USB/HTTP status appeared.
+
+Candidate9 was restored after candidate12 and again after candidate13; the current restore evidence shows USB 18d1:4eea, ping to 192.168.76.2, and HTTP status body capture.
+Conclusion: stop blind super/uevent vendor_ramdisk flashes. The next gate is local vendor_boot/vendor_ramdisk delta forensics before any candidate14 flash.
+
+Importer-time safety:
+adb_executed_now=false
+fastboot_executed_now=false
+flash_executed_now=false
+wipe_executed_now=false
+repartition_executed_now=false
+sideload_executed_now=false
+reboot_executed_now=false
+rollback_executed_now=false
+release_push_executed_now=false
+target_hardware_graphical_phosh_booted=false
+can_claim_trillionnium_os_installed_on_phone=false
+ready_for_release_push=false

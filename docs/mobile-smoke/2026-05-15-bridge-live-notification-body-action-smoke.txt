@@ -1,0 +1,58 @@
+Trillionnium Bridge notification action invocation smoke
+2026-05-15T17:58:39+08:00
+serial=ZY32JLVHGN
+== adb devices ==
+List of devices attached
+ZY32JLVHGN             device usb:1-8 product:fogos_g model:moto_g34_5G device:fogos transport_id:1
+
+== debug apk ==
+eecfefc273c1ebb22a84f9c2908c9d236fceba77b202ecc5343cde93fa64d3c1  target/bridge-apk/trillionnium-bridge-debug.apk
+target/bridge-apk/trillionnium-bridge-debug.apk 20907
+== install ==
+Serving...
+Performing Incremental Install
+Success
+Install command complete in 335 ms
+== grant post notifications ==
+== allow notification listener ==
+
+== cleanup before configure ==
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 66
+Complete
+== configure ==
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 46
+Complete
+Row: 0 configured=1, outbox_path=/data/user/0/ai.trillionnium.bridge/files/bridge-outbox.jsonl, line_count=0, latest_line=, contents=
+== post synthetic notification ==
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 49
+Complete
+Row: 0 configured=1, outbox_path=/data/user/0/ai.trillionnium.bridge/files/bridge-outbox.jsonl, line_count=2, latest_line={"protocol":"trillionnium.bridge.v1","pairing_id":"smoke-pairing","device_id":"smoke-device","event_id":"android-c255b357-9152-4a2b-9286-07f373586b2d","sequence":2,"nonce":"nonce-52f6a4a7-bdd7-4c69-b1be-25a93faaac62","timestamp_unix_ms":1778839122385,"ttl_ms":300000,"kind":"android.notification.action_invocation","payload":{"source":"android-notification-action","app_id":"ai.trillionnium.bridge","notification_tag":"trillionnium-bridge-smoke","notification_id":4242,"action_title":"ACTSMOKE_ACTION","action_invoked":true,"redacted":true,"policy_tainted":true},"signature_hex":"80e4051271fb77a0d971fbb93f3d5bce201ca08a84003050469737ffc42224e8"}, contents={"protocol":"trillionnium.bridge.v1","pairing_id":"smoke-pairing","device_id":"smoke-device","event_id":"android-940fcc72-1b3d-494b-9ffe-11857d17dd89","sequence":1,"nonce":"nonce-e0e90406-a9ee-4a04-9181-42cbac892ebf","timestamp_unix_ms":1778839122381,"ttl_ms":300000,"kind":"android.notification.body","payload":{"source":"android-notification-listener","app_id":"ai.trillionnium.bridge","post_time_unix_ms":1778839122118,"title_hash":"f38ecfdeaf73d2847103358f733d5d6d179e59778a3a25e6d076995098d71db4","body_hash":"405a4b40ae698e84d6863d26aa2fcee743d971e8535140946f2532290ce00de8","redacted":false,"title":"ACTSMOKE_TITLE","body":"ACTSMOKE_BODY_20260515","raw_body_operator_authorized":true,"action_count":1,"action_invocation_enabled":true,"action_titles":["ACTSMOKE_ACTION"],"action_metadata_operator_authorized":true,"action_invocation_attempted":true,"action_invocation_succeeded":true,"policy_tainted":true},"signature_hex":"e4e32b3f3bff31b3edd9221af28eaff47b50122cc0045f15ea4b6f36bed0f8bd"}
+{"protocol":"trillionnium.bridge.v1","pairing_id":"smoke-pairing","device_id":"smoke-device","event_id":"android-c255b357-9152-4a2b-9286-07f373586b2d","sequence":2,"nonce":"nonce-52f6a4a7-bdd7-4c69-b1be-25a93faaac62","timestamp_unix_ms":1778839122385,"ttl_ms":300000,"kind":"android.notification.action_invocation","payload":{"source":"android-notification-action","app_id":"ai.trillionnium.bridge","notification_tag":"trillionnium-bridge-smoke","notification_id":4242,"action_title":"ACTSMOKE_ACTION","action_invoked":true,"redacted":true,"policy_tainted":true},"signature_hex":"80e4051271fb77a0d971fbb93f3d5bce201ca08a84003050469737ffc42224e8"}
+
+== active notification subset ==
+0|ai.trillionnium.bridge|4242|trillionnium-bridge-smoke|10171
+== cleanup ==
+Starting: Intent { cmp=ai.trillionnium.bridge/.SmokeHarnessActivity (has extras) }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: ai.trillionnium.bridge/.SmokeHarnessActivity
+WaitTime: 74
+Complete
+Row: 0 configured=0, outbox_path=/data/user/0/ai.trillionnium.bridge/files/bridge-outbox.jsonl, line_count=0, latest_line=, contents=
+== final enabled notification listeners ==
+ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService
+== final revoke retry ==
+cmd notification disallow_listener ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService
+final secure enabled_notification_listeners=

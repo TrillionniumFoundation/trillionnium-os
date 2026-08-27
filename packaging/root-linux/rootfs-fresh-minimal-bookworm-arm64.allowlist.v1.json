@@ -1,0 +1,111 @@
+{
+  "artifacts": {
+    "receipt": {
+      "bytes": 4003,
+      "receipt_id": "c4a013d39b2b203d9f42dc56209970f2e6a25ee6c3416bfc8e92235ff9e9e815",
+      "schema": "org.trillionnium.root-linux.minimal-bookworm-receipt.v1",
+      "sha256": "a1777fbc37ca7bf83333e67f0ec8042726c1c5d7933998f1fda56e68124edaa5"
+    },
+    "rootfs": {
+      "bytes": 10959228,
+      "members": 2221,
+      "regular_bytes": 61122933,
+      "sha256": "aca0b46b938db2eacc8095f9f265308cb87656c993126cb9fab603b9092e5ba1"
+    },
+    "sbom": {
+      "bytes": 22757,
+      "schema": "SPDX-2.3",
+      "sha256": "93662fa0447fa1ddfd192f3bae79db05d21eb09c34a07deb9acecc984070fe36"
+    }
+  },
+  "build_contract": {
+    "bytes": 7115,
+    "path": "tools/evidence-factory/minimal-bookworm-rootfs.contract.v1.json",
+    "schema": "org.trillionnium.root-linux.minimal-bookworm-build.v1",
+    "sha256": "7a07c25b0a605417989118cd934171b4ca2720f8eee3c7a6e58fa2fd19117d36"
+  },
+  "builder": {
+    "bytes": 37658,
+    "path": "tools/build_minimal_bookworm_rootfs.py",
+    "sha256": "a18504fc5b9d49a95f04ea8fd335e535bc8756b0dfb06c2a22eee4ccb7454cce"
+  },
+  "forbidden_input_archives": [
+    {
+      "bytes": 378118207,
+      "installed_package_count": 512,
+      "reason": "mutable historical Mobian GUI archive; never a fresh-base input",
+      "sha256": "7a3e8f14dedd6e58acdb87b2d9dfee333af625149a99540db2201d86ddb9de9f"
+    }
+  ],
+  "package_allowlist": {
+    "count": 35,
+    "names": [
+      "base-files:arm64",
+      "base-passwd:arm64",
+      "ca-certificates",
+      "coreutils:arm64",
+      "dash:arm64",
+      "debconf",
+      "debianutils:arm64",
+      "diffutils:arm64",
+      "dpkg:arm64",
+      "findutils:arm64",
+      "gcc-12-base:arm64",
+      "grep:arm64",
+      "gzip:arm64",
+      "libacl1:arm64",
+      "libattr1:arm64",
+      "libbz2-1.0:arm64",
+      "libc-bin:arm64",
+      "libc6:arm64",
+      "libcrypt1:arm64",
+      "libdebconfclient0:arm64",
+      "libgcc-s1:arm64",
+      "libgmp10:arm64",
+      "liblzma5:arm64",
+      "libmd0:arm64",
+      "libpcre2-8-0:arm64",
+      "libselinux1:arm64",
+      "libssl3:arm64",
+      "libstdc++6:arm64",
+      "libzstd1:arm64",
+      "mawk:arm64",
+      "openssl:arm64",
+      "perl-base:arm64",
+      "sed:arm64",
+      "tar:arm64",
+      "zlib1g:arm64"
+    ],
+    "resolved_inventory_canonical_json_sha256": "84d01364cd3a12032dcdfb4ac720510791b861739043490319a890b26b4afbdc"
+  },
+  "policy": {
+    "archive_subtraction_or_hot_replacement_allowed": false,
+    "base_receipt_and_sbom_required": true,
+    "fresh_mmdebstrap_build_required": true,
+    "independent_keyring_origin_approved": false,
+    "product_admission_allowed": false,
+    "reason_product_hold": "base is reproducible, but keyring-origin approval, current Codex-only ELF inputs and SELinux-labelled EROFS materialization remain separate mandatory gates"
+  },
+  "schema": "org.trillionnium.root-linux.fresh-base-allowlist.v1",
+  "snapshot": {
+    "architecture": "arm64",
+    "archive_signatures_required": true,
+    "debian_inrelease": {
+      "bytes": 151075,
+      "sha256": "77737fa4b34f2693e982cc9ee35736816c35a7778fc2d326cc1bbf5b301fe1aa"
+    },
+    "keyring_deb": {
+      "bytes": 179244,
+      "payload_sha256": "506b815cbb32d9b6066b4a2aa524071e071761e7e7f68c3ac74f3061ba852017",
+      "sha256": "9ea7778e443144ca490668737a8ab22dd3e748bb99e805e22ec055abeb3c7fac",
+      "version": "2025.1"
+    },
+    "security_inrelease": {
+      "bytes": 34770,
+      "sha256": "4d096d30c821d44f346e407b1fc2773ea90b66035c0b221192754b9f79aa39d1"
+    },
+    "source_date_epoch": 1785110400,
+    "suite": "bookworm",
+    "timestamp": "20260727T000000Z"
+  }
+}

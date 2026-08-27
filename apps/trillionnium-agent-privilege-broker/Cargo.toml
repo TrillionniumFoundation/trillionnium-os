@@ -1,0 +1,33 @@
+[package]
+name = "trillionnium-agent-privilege-broker"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+description = "Fail-closed draft-v2 foundation for Android provider privilege isolation"
+
+[features]
+default = []
+p0-launch-package-device-conformance = [
+  "trillionnium-os-types/p0-launch-package-device-conformance",
+  "trillionnium-privilege-broker-protocol/p0-launch-package-device-conformance",
+]
+
+[[bin]]
+name = "trillionnium-direct-operation-custody-high-water"
+path = "src/bin/direct_operation_custody_high_water.rs"
+required-features = ["p0-launch-package-device-conformance"]
+
+[dependencies]
+anyhow.workspace = true
+libc.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+trillionnium-privilege-broker-protocol.workspace = true
+trillionnium-os-types.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

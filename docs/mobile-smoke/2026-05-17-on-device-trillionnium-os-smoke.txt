@@ -1,0 +1,13 @@
+status: on-device-trillionnium-os-smoke-pass
+development_position: dogfood-control-plane-rc
+target_device_serial: ZY32JLVHGN
+observed_device: FOGOS/Lineage Android 16 SDK 36 (23.2-20260429-UNOFFICIAL-fogos), moto g34 5G
+bridge_package_installed: true
+bridge_pairing_activity_resolved: true
+mobian_trillionnium_ready_for_build: true
+mobian_trillionnium_ready_for_flash: false
+mobian_trillionnium_ready_for_install: false
+installed_os_is_trillionnium_os: false
+on_device_trillionnium_os_ready: false
+ready_for_release_push: false
+boundary: current hardware evidence is Android/FOGOS-hosted Bridge dogfood, not a full Trillionnium OS phone boot.

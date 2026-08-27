@@ -1,0 +1,48 @@
+{
+  "erofs": {
+    "all_root": true,
+    "bytes": 26816512,
+    "compression": "lz4hc,level=9",
+    "label": "TRILLIONNIUM",
+    "read_only_filesystem_format": true,
+    "sha256": "058ad3a0d2eb2507ecffb5a7478d60cd73d66141460db47ce7c36583d2436ca4",
+    "source_date_epoch": 1785110400,
+    "uuid": "18cae7ea-ceff-5449-b77e-248e0e27690c"
+  },
+  "fsverity": {
+    "algorithm": "sha256",
+    "digest": "28bd52342571cbb6d538a3f6f44d64b2656992ec3677ac1b31c84ef1ac0847b3",
+    "host_digest_computed": true,
+    "host_enable_performed": false,
+    "mount_before_enable_forbidden": true,
+    "product_enable_and_measure_required": true
+  },
+  "product": {
+    "android_package_wiring_performed": false,
+    "device_write_performed": false,
+    "ota_signing_performed": false,
+    "product_pin_refresh_performed": false,
+    "release_promotion_performed": false
+  },
+  "schema": "org.trillionnium.root-linux.immutable-erofs.v1",
+  "source_rootfs": {
+    "bytes": 10959228,
+    "members": 2221,
+    "regular_bytes": 61122933,
+    "sha256": "aca0b46b938db2eacc8095f9f265308cb87656c993126cb9fab603b9092e5ba1"
+  },
+  "tools": {
+    "fsverity": {
+      "path_basename": "fsverity",
+      "sha256": "68461fcca411a14d4e15802f5335bf5b635e2bde7d49c9e5d4a7fc541a6d97ec"
+    },
+    "mkfs_erofs": {
+      "path_basename": "mkfs.erofs",
+      "sha256": "71fdd9268c7bb831ffa36c757d376af07646c57cb16d08f5b783e83804ea2fb8"
+    },
+    "zstd": {
+      "path_basename": "zstd",
+      "sha256": "7c5468b370f7c47eda07281e3437fafc568f95d10420051e3aa522709f9342c5"
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-host-tools-plan-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-aosp-host-tools-plan-smoke-pass",
+  "development_position": "arm64-mobian-fogos-aosp-host-tools-plan-locked-non-executable",
+  "known_blocker_id": "aosp-host-tool-source-or-prebuilt-fetch-not-executed",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "result": {
+    "arm64_mobian_fogos_aosp_host_tools_plan_smoke_passed": true,
+    "artifact_toolchain_fetch_consumed": true,
+    "partial_toolchain_materialized": true,
+    "aosp_host_tools_plan_locked": true,
+    "aosp_host_tools_plan_executable_now": false,
+    "source_fetch_executed": false,
+    "repo_sync_executed": false,
+    "host_tool_build_executed": false,
+    "avbtool_materialized": false,
+    "lpmake_materialized": false,
+    "lpdump_materialized": false,
+    "all_required_tools_materialized": false,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_executed": false,
+    "post_boot_identity_proof_promoted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "aosp-host-tool-source-or-prebuilt-fetch-not-executed",
+    "next_gate": "arm64-mobian-fogos-aosp-host-tools-fetch-smoke"
+  },
+  "aosp_host_tools_plan": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-aosp-host-tools-plan.v1",
+    "missing_tools": [
+      {
+        "name": "avbtool",
+        "required_for": "vbmeta/vbmeta_system signing or explicit verification-disabled artifact policy",
+        "preferred_source": "AOSP external/avb avbtool.py or signed platform-tools/build-tools provenance",
+        "fetch_executed": false,
+        "build_executed": false
+      },
+      {
+        "name": "lpmake",
+        "required_for": "super/dynamic-partition image construction",
+        "preferred_source": "AOSP system/extras partition_tools host build output or pinned prebuilt provenance",
+        "fetch_executed": false,
+        "build_executed": false
+      },
+      {
+        "name": "lpdump",
+        "required_for": "logical partition metadata inspection",
+        "preferred_source": "AOSP system/extras partition_tools host build output or pinned prebuilt provenance",
+        "fetch_executed": false,
+        "build_executed": false
+      }
+    ],
+    "accepted_fetch_strategies": [
+      "target-local pinned source snapshot or small provenance-bound prebuilt archive",
+      "target-local repo/git partial checkout only after URL/ref/hash ledger is locked",
+      "target-local build output under target/ with absolute invocation paths"
+    ],
+    "rejected_shortcuts": [
+      "host apt install or dpkg -i",
+      "unversioned PATH tool reuse",
+      "unhashed random binaries",
+      "phone-side tool installation",
+      "full artifact build before all required host tools are hash-bound"
+    ],
+    "locked_boundary": {
+      "aosp_host_tools_plan_locked": true,
+      "aosp_host_tools_plan_executable_now": false,
+      "source_fetch_executed": false,
+      "repo_sync_executed": false,
+      "host_tool_build_executed": false,
+      "avbtool_materialized": false,
+      "lpmake_materialized": false,
+      "lpdump_materialized": false,
+      "all_required_tools_materialized": false,
+      "target_hardware_artifact_produced": false,
+      "target_hardware_install_executed": false,
+      "ready_for_release_push": false
+    },
+    "known_blocker_id": "aosp-host-tool-source-or-prebuilt-fetch-not-executed",
+    "next_gate": "arm64-mobian-fogos-aosp-host-tools-fetch-smoke"
+  },
+  "input_evidence": {
+    "arm64_mobian_fogos_target_hardware_artifact_toolchain_fetch_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-target-hardware-artifact-toolchain-fetch-smoke.json",
+    "arm64_mobian_fogos_target_hardware_artifact_toolchain_fetch_smoke_sha256": "44fea1651a7e9342a5a6cddaab778c24aa29ccf8082676fc00235d63e83a3291",
+    "tool_manifest_sha256": "72b9b0d703106d45e9f225f5f56cd30d6bb71a7c25a60a5f077c8aa2179e31b7"
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "c77c3109eba240662a167661ef27c4e2ce15809a65d1e01946c2e5f1e5b2386a",
+    "script_sha256": "b440d348f1ddf35753ba821fc90c0e7615d9cafd5102989caef9bf64debe12a2",
+    "aosp_host_tools_plan_json": "target/mobian-arm64-fogos-aosp-host-tools-plan-smoke/fogos-aosp-host-tools-plan.json",
+    "aosp_host_tools_plan_json_sha256": "22b9a1aba1a6ac251d8cac5a177e952e1db150f2fd908fa64141bf67b8037a8c",
+    "aosp_host_tools_plan_md": "target/mobian-arm64-fogos-aosp-host-tools-plan-smoke/FOGOS_AOSP_HOST_TOOLS_PLAN.md",
+    "aosp_host_tools_plan_md_sha256": "6af89b476c3e135403c66a8ecb05232f3b9f6392f1a4636ba0510d8c8a4a364e"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "network_download_executed": false,
+    "apt_get_download_executed": false,
+    "source_fetch_executed": false,
+    "repo_sync_executed": false,
+    "host_tool_build_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "package_install_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "dpkg_i_executed": false,
+    "bootimage_build_executed": false,
+    "bootimage_repack_executed": false,
+    "vendor_boot_repack_executed": false,
+    "avbtool_executed": false,
+    "avb_signing_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": false,
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "super_payload_build_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

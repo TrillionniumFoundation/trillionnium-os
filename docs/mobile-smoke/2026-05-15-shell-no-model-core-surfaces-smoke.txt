@@ -1,0 +1,18 @@
+schema: org.trillionnium.shell.no-model-core-surfaces-smoke-log.v1
+status: pass
+action_status: trillionnium-shell-action-model-runtime-partial-promoted
+contract_status: trillionnium-shell-contract-smoke-promotable
+action_count: 10
+no_model_action_count: 10
+implemented_runtime_action_count: 10
+enabled_runtime_action_count: 7
+side_effect_enabled_count: 2
+model_required_for_core_actions: False
+tool_invoke_enabled: False
+app_launch_enabled: True
+notification_read_enabled: False
+contract_no_model_fixture_count: 5
+invokes_model: False
+launches_apps: True
+reads_notifications: False
+notes: no-model core smoke verifies Shell surfaces/actions require no model; bounded user app launch and scoped Trust Log write are covered by promoted no-model runtime evidence, while raw notification bodies/actions, tool invoke, Android launch, and production autostart remain disabled until separate runtime/privacy gates

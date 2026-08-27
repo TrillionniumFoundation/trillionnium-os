@@ -1,0 +1,44 @@
+Mobian rootfs partition image smoke
+===================================
+
+Command:
+
+timeout 1800 packaging/mobian/scripts/rootfs-partition-image-smoke.sh > docs/mobile-smoke/2026-05-16-mobian-rootfs-partition-image-smoke.json
+
+Result:
+
+- status: mobian-rootfs-partition-image-smoke-pass
+- source rootfs tarball: target/mobian-image-rootfs-smoke/trillionnium-mobian-rootfs-bookworm-amd64.tar.zst
+- source rootfs sha256: 2110bd77c977215e7053466de50f29b1942a3638377f5d3fc60608bcf7eca5a1
+- source rootfs size bytes: 259945129
+- rootfs unpacked bytes: 974696448
+- rootfs partition image: target/mobian-rootfs-partition-image-smoke/trillionnium-mobian-rootfs-bookworm-amd64.ext4.img
+- rootfs partition image sha256: b52103ef4dd9fca8d541ce1a81d70834fb487ec4b7b54eee943110c2ac19a0fe
+- rootfs partition image size bytes: 2147483648
+- rootfs partition image block size: 4096
+- rootfs partition image blocks: 524288
+- rootfs partition image label: trillionniumfs
+- mke2fs: /opt/android-sdk/platform-tools/mke2fs
+- Trillionnium packages installed in source rootfs: 4
+- mke2fs tarball population supported: false
+- mke2fs directory population used: true
+- rootless device nodes skipped: true
+- boot-time devtmpfs required: true
+- flashable rootfs partition image produced: true
+- full flashable disk image produced: false
+- boot smoke executed: false
+- emulator boot executed: false
+- phone flash executed: false
+- repartition executed: false
+- reboot executed: false
+- host package install executed: false
+- systemd enable/start executed: false
+- Android/Lineage paths touched: false
+- modem/network/power mutation: false
+
+Notes:
+
+- The first implementation attempt surfaced a real tool boundary: Android SDK mke2fs was built without libarchive, so it cannot populate an ext4 image directly from a tarball.
+- The promoted path therefore extracts the already verified rootfs tarball into a temporary rootfs directory and uses mke2fs directory population.
+- Rootless extraction cannot create device nodes such as /dev/null. The smoke explicitly skips rootfs /dev device nodes, keeps /dev as a mount point, and records that boot-time devtmpfs is required.
+- This is a real ext4 rootfs partition image artifact. It is still not a full bootable disk image, emulator boot, phone flash, OTA, recovery, repartition, or reboot proof.

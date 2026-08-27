@@ -1,0 +1,107 @@
+arm64 Mobian rootfs direct boot smoke
+Generated: 2026-05-17
+Command: packaging/mobian/scripts/arm64-mobian-rootfs-direct-boot-smoke.sh
+
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-rootfs-direct-boot-smoke.v1",
+  "status": "arm64-mobian-rootfs-direct-boot-smoke-pass",
+  "development_position": "arm64-mobian-rootfs-direct-booted-local",
+  "disk_image": {
+    "full_disk_image": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-disk-layout-image-smoke/trillionnium-mobian-disk-layout-bookworm-arm64.raw.img",
+    "full_disk_image_size_bytes": 2149580800,
+    "full_disk_image_sha256_before": "5f4f242255554e621ecb8f88ed1cc170192fdaf14288a5f4ad2d7b870dad100b",
+    "full_disk_image_sha256_after": "5f4f242255554e621ecb8f88ed1cc170192fdaf14288a5f4ad2d7b870dad100b",
+    "disk_image_unchanged": true,
+    "attached_to_qemu_snapshot": true,
+    "visible_as_vda": true,
+    "visible_partition_vda1": true,
+    "ephemeral_snapshot_rootfs_write_executed": true
+  },
+  "rootfs_direct_boot": {
+    "initrd_image": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-rootfs-direct-boot-smoke/rootfs-direct-initrd.img",
+    "initrd_image_sha256": "b7bdbfe855c01f76c4781f0ef9f6f09f1f2ecca995303cbf8de074a448361b07",
+    "initrd_image_size_bytes": 1560051,
+    "serial_log": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-rootfs-direct-boot-smoke/serial.log",
+    "serial_log_sha256": "cb5118f713fd7726ff3ef7e2616a34bb38ed770f38b244bf374c58b8a2b9cb2f",
+    "serial_log_size_bytes": 17128,
+    "qemu_exit_status": 0,
+    "arm64_kernel_booted": true,
+    "rootfs_vda1_seen": true,
+    "rootfs_ext4_mounted": true,
+    "switch_root_executed": true,
+    "rootfs_os_release_bookworm_seen": true,
+    "rootfs_trillionniumd_manifest_executed": true,
+    "mobian_rootfs_mounted": true,
+    "mobian_userspace_booted": true,
+    "systemd_booted": false,
+    "phosh_booted": false,
+    "uefi_boot_executed": false,
+    "installed_bootloader_executed": false
+  },
+  "result": {
+    "arm64_mobian_rootfs_direct_boot_smoke_passed": true,
+    "private_qemu_system_aarch64_ready": true,
+    "private_arm64_kernel_fetched": true,
+    "arm64_mobian_rootfs_direct_booted": true,
+    "arm64_mobian_rootfs_mounted": true,
+    "arm64_mobian_userspace_proof_executed": true,
+    "arm64_mobian_systemd_booted": false,
+    "arm64_mobian_phosh_booted": false,
+    "arm64_mobian_uefi_booted": false,
+    "ready_for_release_push": false,
+    "next_gate": "arm64-mobian-systemd-or-uefi-boot-smoke"
+  },
+  "policy": {
+    "network_download_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "host_dpkg_install_executed": false,
+    "dpkg_deb_executed": false,
+    "mmdebstrap_executed": false,
+    "binfmt_registration_executed": false,
+    "qemu_system_aarch64_executed": true,
+    "emulator_boot_executed": true,
+    "rootfs_mount_executed": true,
+    "switch_root_executed": true,
+    "mobian_userspace_boot_executed": true,
+    "systemd_boot_executed": false,
+    "phosh_boot_executed": false,
+    "uefi_boot_executed": false,
+    "bootloader_install_executed": false,
+    "disk_image_mutation_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}
+
+Serial markers:
+TRILLIONNIUM_ARM64_ROOTFS_DIRECT_BOOT_INITRD_OK
+TRILLIONNIUM_INSMOD_OK /lib/modules/lib/crc16.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/crypto/crc32_generic.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/crypto/crc32c_generic.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/lib/libcrc32c.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/fs/mbcache.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/fs/jbd2/jbd2.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/fs/ext4/ext4.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/drivers/virtio/virtio_pci_legacy_dev.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/drivers/virtio/virtio_pci_modern_dev.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/drivers/virtio/virtio_pci.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/drivers/virtio/virtio_mmio.ko
+TRILLIONNIUM_INSMOD_OK /lib/modules/drivers/block/virtio_blk.ko
+TRILLIONNIUM_MOBIAN_ROOTFS_MOUNTED
+TRILLIONNIUM_MOBIAN_ROOTFS_SWITCH_ROOT_OK
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+  "schema_version": "trillionnium.tool.v1",
+TRILLIONNIUM_TRILLIONNIUMD_MANIFEST_EXIT=0
+TRILLIONNIUM_MOBIAN_ROOTFS_USERSPACE_PROOF_OK
+[    3.287565] reboot: Power down

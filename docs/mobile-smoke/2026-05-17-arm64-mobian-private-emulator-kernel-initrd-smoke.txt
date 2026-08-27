@@ -1,0 +1,16 @@
+status=arm64-mobian-private-emulator-kernel-initrd-smoke-pass
+development_position=arm64-mobian-private-emulator-minimal-initrd-booted-local
+disk_sha_before=5f4f242255554e621ecb8f88ed1cc170192fdaf14288a5f4ad2d7b870dad100b
+disk_sha_after=5f4f242255554e621ecb8f88ed1cc170192fdaf14288a5f4ad2d7b870dad100b
+qemu_version=QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.16)
+kernel_package=linux-image-6.1.0-48-arm64:arm64
+grub_module_count=217
+initrd_sha256=42ecfde9936842316668f0af17371a5e369fd22f7639114d82a6d958a7462eb4
+serial_log_sha256=85452c3013e99473bbe4d4aba296b829892d20eb50aad82a33cdf6f8f96423d2
+promoted_disk_visible_as_vda=true
+promoted_disk_partition_vda1_visible=true
+mobian_rootfs_mounted=false
+mobian_userspace_booted=false
+network_download_executed=false
+seed_cache_used=qemu:true,arm64:true
+next_gate=arm64-mobian-rootfs-direct-boot-or-uefi-boot-smoke

@@ -1,0 +1,71 @@
+[workspace]
+members = [
+  "apps/trillionniumd",
+  "crates/trillionnium-os-types",
+  "crates/trillionnium-agent-api-uds",
+  "crates/trillionnium-task-registry",
+  "crates/trillionnium-policy-system",
+  "crates/trillionnium-audit-sqlite",
+  "crates/trillionnium-privilege-broker-protocol",
+  "crates/trillionnium-tool-runtime",
+  "crates/trillionnium-agent-direct-tools",
+  "crates/trillionnium-shell-exec",
+  "crates/trillionnium-dbus",
+  "apps/trillionnium-agent-privilege-broker",
+  "apps/trillionnium-agent-stdio-proxy",
+]
+# Keep an unqualified `cargo build`/`cargo test` on the current runtime
+# closure. Remaining libraries are pulled in through these product roots.
+default-members = [
+  "apps/trillionniumd",
+  "apps/trillionnium-agent-privilege-broker",
+  "apps/trillionnium-agent-stdio-proxy",
+  "crates/trillionnium-agent-direct-tools",
+]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Qianqi + Trillionnium OS contributors"]
+rust-version = "1.93"
+
+[workspace.dependencies]
+trillionnium-os-types = { path = "crates/trillionnium-os-types" }
+trillionnium-agent-api-uds = { path = "crates/trillionnium-agent-api-uds" }
+trillionnium-task-registry = { path = "crates/trillionnium-task-registry" }
+trillionnium-policy-system = { path = "crates/trillionnium-policy-system" }
+trillionnium-audit-sqlite = { path = "crates/trillionnium-audit-sqlite" }
+trillionnium-privilege-broker-protocol = { path = "crates/trillionnium-privilege-broker-protocol" }
+trillionnium-tool-runtime = { path = "crates/trillionnium-tool-runtime" }
+trillionnium-agent-direct-tools = { path = "crates/trillionnium-agent-direct-tools" }
+trillionnium-shell-exec = { path = "crates/trillionnium-shell-exec" }
+trillionnium-dbus = { path = "crates/trillionnium-dbus" }
+anyhow = "1"
+base64 = "0.22"
+chacha20poly1305 = "0.10"
+hmac = "0.12"
+jsonschema = "0.17"
+p256 = { version = "0.13", features = ["ecdsa", "pkcs8"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+rustix = { version = "1", features = ["thread"] }
+schemars = { version = "0.8", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+thiserror = "2"
+tempfile = "3"
+toml = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "time"] }
+zeroize = "1.8"
+libc = "0.2"
+uuid = { version = "1", features = ["v4", "serde"] }
+url = "2"
+
+[profile.release]
+opt-level = 3
+debug = 0
+debug-assertions = false
+incremental = false
+strip = "symbols"

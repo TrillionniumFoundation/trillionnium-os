@@ -1,0 +1,244 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-target-hardware-artifact-toolchain-plan-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-target-hardware-artifact-toolchain-plan-smoke-pass",
+  "development_position": "arm64-mobian-fogos-target-hardware-artifact-toolchain-plan-locked-non-executable",
+  "known_blocker_id": "target-hardware-artifact-toolchain-not-fetched",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "result": {
+    "arm64_mobian_fogos_target_hardware_artifact_toolchain_plan_smoke_passed": true,
+    "post_boot_identity_plan_consumed": true,
+    "boot_vendor_boot_repack_plan_consumed": true,
+    "dtbo_vbmeta_policy_consumed": true,
+    "super_payload_plan_consumed": true,
+    "rollback_coverage_consumed": true,
+    "post_boot_identity_plan_locked": true,
+    "boot_vendor_boot_repack_plan_locked": true,
+    "dtbo_vbmeta_policy_locked": true,
+    "super_payload_plan_locked": true,
+    "rollback_coverage_locked": true,
+    "artifact_toolchain_plan_locked": true,
+    "required_android_image_tool_families_locked": true,
+    "tool_required_count": 7,
+    "tool_available_count": 0,
+    "tool_missing_count": 7,
+    "all_required_tools_available_now": false,
+    "mkbootimg_available_now": false,
+    "unpack_bootimg_available_now": false,
+    "avbtool_available_now": false,
+    "lpmake_available_now": false,
+    "lpdump_available_now": false,
+    "simg2img_available_now": false,
+    "img2simg_available_now": false,
+    "artifact_toolchain_ready": false,
+    "artifact_toolchain_fetch_executed": false,
+    "network_fetch_executed": false,
+    "host_package_install_executed": false,
+    "boot_img_repacked": false,
+    "vendor_boot_repacked": false,
+    "dtbo_img_produced": false,
+    "vbmeta_img_produced": false,
+    "vbmeta_system_img_produced": false,
+    "dynamic_partition_payload_produced": false,
+    "super_img_produced": false,
+    "fastboot_update_payload_produced": false,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_executed": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "post_boot_identity_proof_promoted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "target-hardware-artifact-toolchain-not-fetched",
+    "next_gate": "arm64-mobian-fogos-target-hardware-artifact-toolchain-fetch-smoke"
+  },
+  "artifact_toolchain_plan": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-target-hardware-artifact-toolchain-plan.v1",
+    "target": {
+      "target_device_serial": "ZY32JLVHGN",
+      "target_device_model": "moto g34 5G",
+      "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos",
+      "architecture": "arm64",
+      "suite": "bookworm"
+    },
+    "required_tool_families": {
+      "boot_image_packaging": {
+        "required_commands": [
+          {
+            "name": "mkbootimg",
+            "path": "",
+            "available_now": false
+          },
+          {
+            "name": "unpack_bootimg",
+            "path": "",
+            "available_now": false
+          }
+        ],
+        "required_for": [
+          "boot.img repack plan execution",
+          "vendor_boot.img parameter inspection"
+        ]
+      },
+      "avb_policy": {
+        "required_commands": [
+          {
+            "name": "avbtool",
+            "path": "",
+            "available_now": false
+          }
+        ],
+        "required_for": [
+          "vbmeta/vbmeta_system signing or explicit verification-disabled artifact policy"
+        ]
+      },
+      "dynamic_partitions": {
+        "required_commands": [
+          {
+            "name": "lpmake",
+            "path": "",
+            "available_now": false
+          },
+          {
+            "name": "lpdump",
+            "path": "",
+            "available_now": false
+          }
+        ],
+        "required_for": [
+          "super/dynamic-partition image construction",
+          "logical partition metadata inspection"
+        ]
+      },
+      "sparse_images": {
+        "required_commands": [
+          {
+            "name": "simg2img",
+            "path": "",
+            "available_now": false
+          },
+          {
+            "name": "img2simg",
+            "path": "",
+            "available_now": false
+          }
+        ],
+        "required_for": [
+          "sparse/raw Android image conversion"
+        ]
+      }
+    },
+    "current_host_tool_state": {
+      "tool_required_count": 7,
+      "tool_available_count": 0,
+      "tool_missing_count": 7,
+      "all_required_tools_available_now": false
+    },
+    "target_local_fetch_plan": {
+      "toolchain_root": "target/mobian-arm64-fogos-target-hardware-artifact-toolchain-fetch-smoke/toolchain",
+      "allowed_methods": [
+        "target-local package download plus extraction",
+        "target-local source/script mirror with pinned hashes"
+      ],
+      "disallowed_methods": [
+        "host apt install",
+        "dpkg -i on host",
+        "unversioned PATH shadowing",
+        "phone-side tool installation"
+      ],
+      "network_fetch_executable_in_this_gate": false,
+      "host_install_executable_in_this_gate": false,
+      "artifact_build_executable_in_this_gate": false
+    },
+    "locked_boundary": {
+      "artifact_toolchain_plan_locked": true,
+      "artifact_toolchain_ready": false,
+      "artifact_toolchain_fetch_executed": false,
+      "bootimage_build_executed": false,
+      "bootimage_repack_executed": false,
+      "vendor_boot_repack_executed": false,
+      "avbtool_executed": false,
+      "avb_signing_executed": false,
+      "lpmake_executed": false,
+      "lpdump_executed": false,
+      "sparse_image_conversion_executed": false,
+      "dynamic_partition_payload_build_executed": false,
+      "super_payload_build_executed": false,
+      "target_hardware_artifact_produced": false,
+      "target_hardware_install_executed": false,
+      "post_boot_identity_proof_promoted": false,
+      "ready_for_release_push": false
+    },
+    "next_gate_inputs_required": [
+      "target-local hashes for every materialized Android image tool",
+      "tool versions or script commit identifiers",
+      "proof that tools live under target/ and are invoked by absolute path",
+      "proof that no host package install or phone action occurred"
+    ]
+  },
+  "input_evidence": {
+    "arm64_mobian_target_hardware_post_boot_identity_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-target-hardware-post-boot-identity-plan-smoke.json",
+    "arm64_mobian_target_hardware_post_boot_identity_plan_smoke_sha256": "f40c0b43a2c5c9c87055f9d28159ee2c5ae3b0d35aeea7f9ca37575e07fff5be",
+    "arm64_mobian_fogos_boot_vendor_boot_repack_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-boot-vendor-boot-repack-plan-smoke.json",
+    "arm64_mobian_fogos_boot_vendor_boot_repack_plan_smoke_sha256": "a3c5fceb7001d533907ea8f940582f97f138de864be06655b89be20c72843d65",
+    "arm64_mobian_fogos_dtbo_vbmeta_policy_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-dtbo-vbmeta-policy-smoke.json",
+    "arm64_mobian_fogos_dtbo_vbmeta_policy_smoke_sha256": "5e0e8ac2dd1e3e2b4b8ea29db338bc581e9ef2d7c2f1474d60f61cd6adc23eac",
+    "arm64_mobian_fogos_super_payload_plan_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-super-payload-plan-smoke.json",
+    "arm64_mobian_fogos_super_payload_plan_smoke_sha256": "0d5c68589a4febef6cc14cbceb0110f2c50b49c6158ad67295491e310deef49e",
+    "arm64_mobian_fogos_rollback_coverage_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-rollback-coverage-smoke.json",
+    "arm64_mobian_fogos_rollback_coverage_smoke_sha256": "438c3429b39a5fb2428630e81846653cbc9601ee22b5a4ace69862855a05fafe"
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "e113ff95da89f7df898cfbb9f098c028045b2ba5b9f5d5fbc0fd908bee310269",
+    "script_sha256": "c2de3561c4a4f1c3c92a8c29982efa210d47679d33067f6cdba2ec641ca6e4cd",
+    "artifact_toolchain_plan_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-target-hardware-artifact-toolchain-plan-smoke/fogos-target-hardware-artifact-toolchain-plan.json",
+    "artifact_toolchain_plan_json_sha256": "08d8aa025c0b81bb4b2ee4317f82b286aee4e860c7415677fa89085f18141567",
+    "artifact_toolchain_plan_md": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-fogos-target-hardware-artifact-toolchain-plan-smoke/FOGOS_TARGET_HARDWARE_ARTIFACT_TOOLCHAIN_PLAN.md",
+    "artifact_toolchain_plan_md_sha256": "b9296526dcbb320fe4781408da5e1ce60b8d3ab6296e6bf10221eb3568be76a2"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "adb_write_executed": false,
+    "fastboot_write_executed": false,
+    "package_install_executed": false,
+    "bootimage_build_executed": false,
+    "bootimage_repack_executed": false,
+    "vendor_boot_repack_executed": false,
+    "dtbo_build_executed": false,
+    "avbtool_executed": false,
+    "avb_signing_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": false,
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "dynamic_partition_payload_build_executed": false,
+    "super_payload_build_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "network_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

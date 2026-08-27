@@ -1,0 +1,54 @@
+{
+  "schema": "org.trillionnium.canonical-operation-binding.contract.v1",
+  "fixed_epoch": "00112233445566778899aabbccddeeff",
+  "operation_id": {
+    "format": "op:<32-lowerhex-epoch>:<canonical-positive-i64-sequence>:<64-lowerhex-sha256>",
+    "digest": "sha256(canonical_bytes)",
+    "model_wire_fields": []
+  },
+  "agents": {
+    "codex": "agent-codex-v1"
+  },
+  "system_api": {
+    "protocol": "org.trillionnium.agent-system-api.v1",
+    "identity_version": "peer-bound-v2",
+    "encoding": "utf8 fields separated by one NUL in order: identity_version, replay_namespace, protocol, action, base10_user, target"
+  },
+  "accessibility": {
+    "protocol": "org.trillionnium.agent-accessibility.v2",
+    "identity_version": "org.trillionnium.agent-accessibility.request-identity.v3",
+    "encoding": "Java DataOutputStream-compatible big-endian primitives; strings are u32be UTF-8 byte length followed by bytes; actions are recursively typed"
+  },
+  "vectors": [
+    {
+      "name": "system_codex_launch",
+      "adapter": "system_api",
+      "agent": "codex",
+      "sequence": 1,
+      "request": {"protocol":"org.trillionnium.agent-system-api.v1","request_id":"golden","action":"launch_package","package":"org.example.calendar","user":0},
+      "canonical_hex": "706565722d626f756e642d7632006167656e742d636f6465782d7631006f72672e7472696c6c696f6e6e69756d2e6167656e742d73797374656d2d6170692e7631006c61756e63685f7061636b6167650030006f72672e6578616d706c652e63616c656e646172",
+      "canonical_sha256": "fc6c6c25edf685c00b6433a95947cf1b7e963f64778e2a94e4d85f78a24e19c5",
+      "operation_id": "op:00112233445566778899aabbccddeeff:1:fc6c6c25edf685c00b6433a95947cf1b7e963f64778e2a94e4d85f78a24e19c5"
+    },
+    {
+      "name": "accessibility_codex_snapshot_null",
+      "adapter": "accessibility",
+      "agent": "codex",
+      "sequence": 3,
+      "request": {"protocol":"org.trillionnium.agent-accessibility.v2","request_id":"golden","action":"snapshot","window_id":null,"snapshot_mode":"metadata_only"},
+      "canonical_hex": "000000386f72672e7472696c6c696f6e6e69756d2e6167656e742d6163636573736962696c6974792e726571756573742d6964656e746974792e76330000000e6167656e742d636f6465782d7631000000276f72672e7472696c6c696f6e6e69756d2e6167656e742d6163636573736962696c6974792e763200000008736e617073686f740000000d6d657461646174615f6f6e6c7900",
+      "canonical_sha256": "ed1aa80f16770fbbb141a589ee74db1d65e3b61a6d4d31e93b9096fa724a4481",
+      "operation_id": "op:00112233445566778899aabbccddeeff:3:ed1aa80f16770fbbb141a589ee74db1d65e3b61a6d4d31e93b9096fa724a4481"
+    },
+    {
+      "name": "accessibility_codex_gesture",
+      "adapter": "accessibility",
+      "agent": "codex",
+      "sequence": 5,
+      "request": {"protocol":"org.trillionnium.agent-accessibility.v2","request_id":"golden","action":"gesture","points":[{"x":0.0,"y":1.5,"at_ms":0},{"x":100000.0,"y":42.25,"at_ms":250}],"duration_ms":300},
+      "canonical_hex": "000000386f72672e7472696c6c696f6e6e69756d2e6167656e742d6163636573736962696c6974792e726571756573742d6964656e746974792e76330000000e6167656e742d636f6465782d7631000000276f72672e7472696c6c696f6e6e69756d2e6167656e742d6163636573736962696c6974792e76320000000767657374757265000000000000012c00000002000000003fc00000000000000000000047c350004229000000000000000000fa",
+      "canonical_sha256": "5cc64c64aa458f312b2110c39b913a21fa87f354e333fc74cbe7126f79094325",
+      "operation_id": "op:00112233445566778899aabbccddeeff:5:5cc64c64aa458f312b2110c39b913a21fa87f354e333fc74cbe7126f79094325"
+    }
+  ]
+}

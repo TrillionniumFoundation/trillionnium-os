@@ -1,0 +1,54 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-proof-carrier.contract.v1",
+  "source_status": "source_only_no_bound_socket_no_runtime_consumer_no_effect_authority_v1",
+  "dependencies": {
+    "root_authenticator_contract_sha256": "eadb86b31c7927c5b16cda4d94553db8cc534584fa30b05c76338e69e26630c3"
+  },
+  "fixed": {
+    "schema": "org.trillionnium.capabilitylease.root-proof-delivery.v1",
+    "protocol": "trillionnium.capability-lease-root-proof.uds.v1",
+    "operation": "deliver_root_publisher_authentication",
+    "binding_domain": "trillionnium.capability-lease-root-proof-delivery.v1",
+    "socket_namespace": "linux_abstract",
+    "socket_name": "trillionnium_capability_lease_root_proof",
+    "broker_uid": 0,
+    "broker_gid": 0,
+    "broker_selinux_domain": "u:r:trillionnium_agentd:s0",
+    "server_uid": 1000,
+    "server_gid": 1000,
+    "server_selinux_domain": "u:r:system_server:s0"
+  },
+  "frame": {
+    "encoding": "u32be_length_plus_canonical_json_plus_exact_eof",
+    "maximum_payload_bytes": 8192,
+    "exact_frames": 1,
+    "ack_frames": 0,
+    "retry": "exact_immutable_delivery_only"
+  },
+  "authentication": {
+    "server_checks": "SO_PEERCRED_pid_uid_gid_plus_SO_PEERSEC_before_and_after_frame",
+    "broker_checks": "SO_PEERCRED_uid_gid_plus_SO_PEERSEC_exact_system_server",
+    "payload": "closed_root_publisher_authentication_v1",
+    "delivery_binding_fields": [
+      "schema",
+      "contract_sha256",
+      "protocol",
+      "operation",
+      "broker_uid",
+      "broker_gid",
+      "broker_selinux_domain",
+      "server_uid",
+      "server_gid",
+      "server_selinux_domain",
+      "authentication_binding_sha256"
+    ],
+    "failure": "close_without_snapshot_without_registry_mutation"
+  },
+  "authority": {
+    "broker_publisher_wired": false,
+    "listener_wired": false,
+    "runtime_consumer_available": false,
+    "confers_ack_authority": false,
+    "confers_effect_authority": false
+  }
+}

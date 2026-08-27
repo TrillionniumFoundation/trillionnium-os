@@ -1,0 +1,26 @@
+arm64 Mobian boot-chain preflight smoke transcript
+generated_at=2026-05-17T10:24:19Z
+command=packaging/mobian/scripts/arm64-mobian-boot-chain-preflight-smoke.sh > docs/mobile-smoke/2026-05-17-arm64-mobian-boot-chain-preflight-smoke.json
+
+status=arm64-mobian-boot-chain-preflight-smoke-pass
+development_position=arm64-mobian-boot-chain-preflight-blocked-local
+disk_image=/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-disk-layout-image-smoke/trillionnium-mobian-disk-layout-bookworm-arm64.raw.img
+disk_image_sha256=5f4f242255554e621ecb8f88ed1cc170192fdaf14288a5f4ad2d7b870dad100b
+disk_image_unchanged_by_preflight=true
+qemu_system_aarch64_available=false
+aavmf_code_present=false
+aavmf_vars_present=false
+grub_mkstandalone_available=true
+grub_arm64_efi_build_available=false
+source_kernel_present=false
+source_initrd_present=false
+mbr_bootloader_code_present=false
+can_attempt_arm64_direct_kernel_boot_now=false
+can_attempt_arm64_uefi_boot_now=false
+known_blocker_id=missing-arm64-local-boot-execution-chain
+next_gate=private-arm64-emulator-kernel-initrd-fetch-or-boot-smoke
+network_download_executed=false
+host_package_install_executed=false
+emulator_boot_executed=false
+flash_executed=false
+reboot_executed=false

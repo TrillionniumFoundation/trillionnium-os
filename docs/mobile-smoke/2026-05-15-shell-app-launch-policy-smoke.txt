@@ -1,0 +1,62 @@
+# Trillionnium Shell App Launch Policy Smoke
+
+- status: trillionnium-shell-app-launch-policy-fixture-pass-user-launch-blocked
+- ok: true
+- operator_invoked: true
+- controlled_fixture_only: true
+- native_app_inventory_smoke_promoted: true
+- desktop_entry_parsed: true
+- exec_preview: /bin/sh runtime-temp:trillionnium-shell-launch-smoke.sh runtime-temp:launch-marker.txt
+- policy_allows_fixture: true
+- exec_sanitized: true
+- fixture_process_spawned: true
+- fixture_exit_success: true
+- marker_content_valid: true
+- temp_dir_removed: true
+- user_app_launch_enabled: false
+- can_promote_app_launch_policy: true
+
+## Safety flags
+
+- operator_invoked: true
+- controlled_fixture_only: true
+- app_launch_policy_enabled: true
+- controlled_fixture_launch_enabled: true
+- user_app_launch_enabled: false
+- opens_window: false
+- claims_dbus_name: false
+- registers_autostart: false
+- mutates_phosh_session: false
+- mutates_compositor: false
+- uses_layer_shell: false
+- launches_fixture_process: true
+- launches_apps: false
+- launches_user_apps: false
+- reads_notifications: false
+- invokes_model: false
+- invokes_tool: false
+- writes_runtime_temp_files: true
+- writes_persistent_files: false
+- writes_files: true
+- can_promote_app_launch_policy: true
+- mobile_mvp_ready: false
+
+## Blockers
+
+- controlled app-launch policy smoke is promoted; real user app launch remains disabled until the live App Shelf surface and explicit launch routing are promoted
+- Android/Bridge app launch profiles remain disabled
+- no live GTK/layer-shell App Shelf launch surface is promoted
+- mobile_mvp_ready=false
+
+## Command hints
+
+- trillionnium-shell app-launch-policy-smoke --summary-only --json
+- trillionnium-shell app-launch-policy-smoke --check --json
+- trillionnium-shell app-shelf-runtime --summary-only --json
+- trillionnium-shell readiness-report --summary-only --json
+
+## Safety notes
+
+- app-launch-policy-smoke creates a temporary .desktop entry and launches only its temporary fixture script
+- the fixture writes a marker under a runtime temp directory, removes that directory before returning, and never launches user/system desktop entries
+- the smoke does not open windows, claim D-Bus names, register autostart, mutate Phosh/compositor state, read notifications, or invoke tools/models

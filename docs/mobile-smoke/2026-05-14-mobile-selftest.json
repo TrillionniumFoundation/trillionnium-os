@@ -1,0 +1,152 @@
+{
+  "ok": true,
+  "summary": "live D-Bus self-test passed for task task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33 including approval loop",
+  "task": {
+    "ok": true,
+    "action": "create",
+    "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+    "task": {
+      "id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+      "title": "Trillionnium dogfood self-test",
+      "description": "live D-Bus smoke: create task, run system.status, verify audit",
+      "status": "created",
+      "created_at_unix_ms": 1778772517426,
+      "updated_at_unix_ms": 1778772517426,
+      "metadata": {
+        "created_at_unix_ms": 1778772517422,
+        "kind": "dogfood_alpha_live_smoke",
+        "source": "trillionnium-command-center selftest"
+      }
+    },
+    "error": null
+  },
+  "tool_run": {
+    "ok": true,
+    "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+    "tool_name": "system.status",
+    "tool_run": {
+      "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+      "tool_call_id": "toolcall-28e81b12-dad6-4c9a-a0a0-e622e6757489",
+      "tool_name": "system.status",
+      "arguments": {},
+      "status": "succeeded",
+      "requested_at_unix_ms": 1778772517440,
+      "started_at_unix_ms": 1778772517451,
+      "finished_at_unix_ms": 1778772517458,
+      "output": {
+        "daemon": "trillionniumd",
+        "ok": true,
+        "platform": "linux"
+      },
+      "error": null,
+      "approval_id": null,
+      "policy_decision": {
+        "kind": "allow",
+        "requirement": "none",
+        "reason": "low-risk tool allowed by baseline policy",
+        "matched_rule_id": null
+      }
+    },
+    "approval": null,
+    "output": {
+      "daemon": "trillionniumd",
+      "ok": true,
+      "platform": "linux"
+    },
+    "error": null
+  },
+  "approval_tool_run": {
+    "ok": true,
+    "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+    "tool_name": "demo.approval_echo",
+    "tool_run": {
+      "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+      "tool_call_id": "toolcall-b79defbb-3f2e-47be-8ba1-5775faa91222",
+      "tool_name": "demo.approval_echo",
+      "arguments": {
+        "message": "dogfood approval loop"
+      },
+      "status": "waiting_for_approval",
+      "requested_at_unix_ms": 1778772517474,
+      "started_at_unix_ms": null,
+      "finished_at_unix_ms": null,
+      "output": null,
+      "error": null,
+      "approval_id": "approval-e50c4b38-5a2d-4698-92e2-554d5b7e918a",
+      "policy_decision": {
+        "kind": "ask",
+        "requirement": "ask",
+        "reason": "medium-risk tool requires user approval before execution",
+        "matched_rule_id": null
+      }
+    },
+    "approval": {
+      "id": "approval-e50c4b38-5a2d-4698-92e2-554d5b7e918a",
+      "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+      "tool_call_id": "toolcall-b79defbb-3f2e-47be-8ba1-5775faa91222",
+      "tool_name": "demo.approval_echo",
+      "reason": "medium-risk tool requires user approval before execution",
+      "status": "pending",
+      "created_at_unix_ms": 1778772517483,
+      "decided_at_unix_ms": null,
+      "decision_reason": null
+    },
+    "output": null,
+    "error": null
+  },
+  "approval_decision": {
+    "ok": true,
+    "action": "approve",
+    "approval_id": "approval-e50c4b38-5a2d-4698-92e2-554d5b7e918a",
+    "approval": {
+      "id": "approval-e50c4b38-5a2d-4698-92e2-554d5b7e918a",
+      "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+      "tool_call_id": "toolcall-b79defbb-3f2e-47be-8ba1-5775faa91222",
+      "tool_name": "demo.approval_echo",
+      "reason": "medium-risk tool requires user approval before execution",
+      "status": "approved",
+      "created_at_unix_ms": 1778772517483,
+      "decided_at_unix_ms": 1778772517498,
+      "decision_reason": "approved through Agent1 (OneCall)"
+    },
+    "grant": {
+      "id": "approval-8926a02a-caa6-44a6-b3b3-f5f0d8fa0b39",
+      "tool_name": "demo.approval_echo",
+      "tool_call_id": "toolcall-b79defbb-3f2e-47be-8ba1-5775faa91222",
+      "lifetime": "one_call",
+      "created_at_unix_ms": 1778772517498
+    },
+    "resumed_tool_run": {
+      "task_id": "task-06aee3a9-b21c-4d24-bca6-aeaf3c302a33",
+      "tool_call_id": "toolcall-b79defbb-3f2e-47be-8ba1-5775faa91222",
+      "tool_name": "demo.approval_echo",
+      "arguments": {
+        "message": "dogfood approval loop"
+      },
+      "status": "succeeded",
+      "requested_at_unix_ms": 1778772517474,
+      "started_at_unix_ms": 1778772517512,
+      "finished_at_unix_ms": 1778772517521,
+      "output": {
+        "approved": true,
+        "message": "dogfood approval loop",
+        "ok": true
+      },
+      "error": null,
+      "approval_id": "approval-e50c4b38-5a2d-4698-92e2-554d5b7e918a",
+      "policy_decision": {
+        "kind": "allow",
+        "requirement": "none",
+        "reason": "one-call approval grant matched this tool call",
+        "matched_rule_id": null
+      }
+    },
+    "error": null
+  },
+  "audit_verified": true,
+  "approval_loop_verified": true,
+  "snapshot_source": "session-dbus",
+  "hints": [
+    "self-test exercises the live D-Bus control plane, LocalShim system.status, and the medium-risk approval/resume loop for demo.approval_echo; wire the Hepta direct tool-call adapter for full runtime execution later"
+  ]
+}

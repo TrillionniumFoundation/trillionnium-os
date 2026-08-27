@@ -1,0 +1,19 @@
+arm64-mobian-fogos-candidate15-regression-fix-plan-smoke
+status: arm64-mobian-fogos-candidate15-regression-fix-plan-smoke-pass-plan-locked
+development_position: arm64-mobian-fogos-candidate15-usb-identity-preserving-plan-locked
+known_blocker_id: candidate9-http-status-visible-but-super-rootfs-not-mounted
+next_gate: arm64-mobian-fogos-candidate15-partition-uevent-status-build-smoke
+
+plan:
+- base candidate15 on candidate9 init, not candidate14 init
+- preserve candidate9 USB gadget identity, product ID 18d1:4eea, network path, HTTP path, and telnet path
+- reject candidate14 gadget rename and background deferred super probe
+- permit only read-only selected PARTNAME uevent lines in the HTTP status body
+- no losetup, mount, flash, reboot, ADB/Fastboot, release push, model, or tool invocation in this gate
+
+hashes:
+- candidate14 execution evidence JSON: 34ea88e085a734f7faa3259e50c5ca306520eb2fcd6f7a0244dd8d3b5a427395
+- candidate9 restore evidence JSON: b4e588d291919dbe5ae07b25dce56c78ce2055bec18cae8adfb6e0d6354bf08d
+- candidate9 baseline init: 59412a8ae344fdc7f233344a30834f5647dbfba422349297a6baa14da0607e45
+- candidate14 failed init: 51a72effb5695e7d06abebe62b8c44a2b8827e61140517b85ef752842fcfe5e8
+- script: b360f2af0e1afd10c60cf0c20da3b74a15f209a4d94e5cbf412d0222273f6e30

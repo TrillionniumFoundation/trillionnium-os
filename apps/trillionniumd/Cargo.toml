@@ -1,0 +1,72 @@
+[package]
+name = "trillionniumd"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+default-run = "trillionniumd"
+
+[features]
+default = []
+dev-conformance-fault-hook = ["trillionnium-tool-runtime/dev-conformance-fault-hook"]
+# Non-product, userdebug-only lane for the exact P0 built-in Agent ->
+# System API -> launch_package(Settings) device slice plus its daemon custody
+# checks. It embeds the build variant and uses the Codex conformance
+# constructor; ordinary production construction remains fail-closed.
+# Accessibility requires its later independent allocator/listener/custody/ACK
+# lane. The P0 userdebug
+# daemon-custody ACK, compact, inbox-retirement, and restart source path is
+# wired. Physical-device evidence plus product external/hardware rollback and
+# mutation authority remain HOLD; none of this is product post-exec authority.
+p0-launch-package-device-conformance = [
+  "trillionnium-os-types/p0-launch-package-device-conformance",
+  "trillionnium-tool-runtime/p0-launch-package-provider-conformance",
+]
+# Explicit non-production compatibility gate for historical plan/Authority
+# conformance tests. Product builds leave this disabled.
+legacy-plan-conformance = [
+  "trillionnium-agent-api-uds/legacy-plan-methods",
+  "trillionnium-dbus/legacy-plan-execution",
+  "trillionnium-tool-runtime/legacy-authority-effects",
+]
+
+[[bin]]
+name = "trillionniumd"
+path = "src/main.rs"
+
+[[bin]]
+name = "trillionnium-smoke"
+path = "src/bin/trillionnium-smoke.rs"
+required-features = ["legacy-plan-conformance"]
+
+[dependencies]
+anyhow.workspace = true
+base64.workspace = true
+chacha20poly1305.workspace = true
+trillionnium-audit-sqlite.workspace = true
+trillionnium-agent-api-uds.workspace = true
+trillionnium-dbus.workspace = true
+trillionnium-os-types.workspace = true
+trillionnium-shell-exec = { workspace = true, features = ["root-linux-mcp-adapter"] }
+trillionnium-tool-runtime.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+libc.workspace = true
+p256.workspace = true
+rusqlite.workspace = true
+rustix.workspace = true
+sha2.workspace = true
+zeroize.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+trillionnium-agent-api-uds = { workspace = true, features = ["legacy-plan-methods"] }
+trillionnium-dbus = { workspace = true, features = ["legacy-plan-execution"] }
+trillionnium-tool-runtime = { workspace = true, features = ["legacy-authority-effects"] }
+
+[build-dependencies]
+libc.workspace = true
+serde_json.workspace = true
+sha2.workspace = true

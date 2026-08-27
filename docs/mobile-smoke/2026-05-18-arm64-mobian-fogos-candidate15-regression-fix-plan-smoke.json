@@ -1,0 +1,64 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-candidate15-regression-fix-plan-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-candidate15-regression-fix-plan-smoke-pass-plan-locked",
+  "development_position": "arm64-mobian-fogos-candidate15-usb-identity-preserving-plan-locked",
+  "known_blocker_id": "candidate9-http-status-visible-but-super-rootfs-not-mounted",
+  "next_gate": "arm64-mobian-fogos-candidate15-partition-uevent-status-build-smoke",
+  "inputs": {
+    "candidate14_execution_evidence_json": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate14-http-first-super-probe-execution-receipt-smoke.json",
+    "candidate14_execution_evidence_json_sha256": "34ea88e085a734f7faa3259e50c5ca306520eb2fcd6f7a0244dd8d3b5a427395",
+    "candidate9_restore_evidence_json": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate9-restore-after-candidate14-no-transport-receipt-smoke.json",
+    "candidate9_restore_evidence_json_sha256": "b4e588d291919dbe5ae07b25dce56c78ce2055bec18cae8adfb6e0d6354bf08d",
+    "candidate9_baseline_init": "target/mobian-arm64-fogos-candidate9-http-status-diagnostic/initramfs-tree/init",
+    "candidate9_baseline_init_sha256": "59412a8ae344fdc7f233344a30834f5647dbfba422349297a6baa14da0607e45",
+    "candidate14_failed_init": "target/mobian-arm64-fogos-candidate14-http-first-super-probe-build-smoke/initramfs-tree/init",
+    "candidate14_failed_init_sha256": "51a72effb5695e7d06abebe62b8c44a2b8827e61140517b85ef752842fcfe5e8"
+  },
+  "plan": {
+    "candidate15_plan_locked": true,
+    "candidate15_base_init": "candidate9",
+    "preserve_candidate9_usb_gadget_identity_byte_for_byte": true,
+    "preserve_usb_product_id": "18d1:4eea",
+    "preserve_usb_network_addressing": "192.168.76.2/24",
+    "reject_candidate14_gadget_rename": true,
+    "reject_candidate14_background_deferred_super_probe": true,
+    "reject_automatic_super_mount_or_losetup": true,
+    "candidate15_allowed_delta": "add read-only selected PARTNAME uevent lines to the HTTP status body only",
+    "candidate15_must_not_change_setup_usb_gadget": true,
+    "candidate15_must_not_change_httpd_or_telnet_start_path": true,
+    "candidate15_must_not_change_boot_img": true,
+    "candidate15_build_allowed_next": true,
+    "candidate15_flash_allowed_by_this_gate": false
+  },
+  "conclusions": {
+    "candidate15_regression_fix_plan_smoke_passed": true,
+    "candidate14_no_transport_recovered_to_candidate9": true,
+    "candidate9_baseline_selected_for_candidate15": true,
+    "candidate15_build_allowed_next": true,
+    "target_hardware_install_executed": false,
+    "post_boot_identity_proof_promoted": false,
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false
+  },
+  "policy": {
+    "planner_only": true,
+    "adb_executed_now": false,
+    "fastboot_executed_now": false,
+    "phone_mutation_executed_now": false,
+    "flash_executed_now": false,
+    "wipe_executed_now": false,
+    "repartition_executed_now": false,
+    "sideload_executed_now": false,
+    "reboot_executed_now": false,
+    "relock_executed_now": false,
+    "build_executed_now": false,
+    "release_push_executed_now": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "script_sha256": "b360f2af0e1afd10c60cf0c20da3b74a15f209a4d94e5cbf412d0222273f6e30"
+  }
+}

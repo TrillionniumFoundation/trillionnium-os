@@ -1,0 +1,194 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-vbmeta-local-policy-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-vbmeta-local-policy-smoke-pass",
+  "development_position": "arm64-mobian-fogos-vbmeta-disable-verification-policy-built-local",
+  "known_blocker_id": "target-hardware-artifact-manifest-not-assembled",
+  "target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "architecture": "arm64",
+    "profile": "Mobian/Phosh",
+    "target_device_serial": "ZY32JLVHGN",
+    "target_device_model": "moto g34 5G",
+    "current_lineage_version": "23.2-20260429-UNOFFICIAL-fogos"
+  },
+  "result": {
+    "arm64_mobian_fogos_vbmeta_local_policy_smoke_passed": true,
+    "boot_vendor_boot_local_repack_consumed": true,
+    "dtbo_vbmeta_policy_consumed": true,
+    "aosp_avbtool_fetch_consumed": true,
+    "target_hardware_artifact_assembly_plan_consumed": true,
+    "avbtool_executed": true,
+    "avbtool_make_vbmeta_executed": true,
+    "avbtool_info_image_executed": true,
+    "avb_signing_executed": false,
+    "avb_algorithm": "NONE",
+    "vbmeta_flags": 3,
+    "verification_disable_policy_locked": true,
+    "hashtree_disable_policy_locked": true,
+    "rollback_vbmeta_reused_for_modified_payloads": false,
+    "rollback_vbmeta_system_reused_for_modified_payloads": false,
+    "boot_img_repacked": true,
+    "vendor_boot_repacked": true,
+    "dynamic_partition_payload_produced": true,
+    "super_img_produced": true,
+    "dtbo_reference_selected": true,
+    "dtbo_img_produced": false,
+    "vbmeta_img_produced": true,
+    "vbmeta_img_path": "target/mobian-arm64-fogos-vbmeta-local-policy-smoke/vbmeta.img",
+    "vbmeta_img_sha256": "11373af57ff4ffb368c79aa5b7f0d1ab2c92091d65987a308978201ad6de8bf9",
+    "vbmeta_img_size_bytes": 65536,
+    "vbmeta_system_img_produced": true,
+    "vbmeta_system_img_path": "target/mobian-arm64-fogos-vbmeta-local-policy-smoke/vbmeta_system.img",
+    "vbmeta_system_img_sha256": "631d4852744b9868110456549942c69217def5f128ec1d76c468ee317e74bfc5",
+    "vbmeta_system_img_size_bytes": 65536,
+    "target_hardware_artifact_produced": false,
+    "target_hardware_install_executed": false,
+    "post_boot_identity_proof_promoted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false,
+    "known_blocker_id": "target-hardware-artifact-manifest-not-assembled",
+    "next_gate": "arm64-mobian-fogos-target-hardware-artifact-manifest-smoke"
+  },
+  "vbmeta_local_policy": {
+    "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-vbmeta-local-policy.v1",
+    "status": "arm64-mobian-fogos-vbmeta-local-policy-smoke-pass",
+    "avbtool": {
+      "path": "target/mobian-arm64-fogos-aosp-host-tools-fetch-smoke/aosp-source/external-avb/avbtool.py",
+      "sha256": "e5a664a38db623da00f080219bc0ee60a640a9dc4a872803616fae4938ac749b",
+      "executed_now": true
+    },
+    "produced_vbmeta": {
+      "vbmeta_img": {
+        "path": "target/mobian-arm64-fogos-vbmeta-local-policy-smoke/vbmeta.img",
+        "sha256": "11373af57ff4ffb368c79aa5b7f0d1ab2c92091d65987a308978201ad6de8bf9",
+        "size_bytes": 65536,
+        "produced_now": true,
+        "algorithm": "NONE",
+        "flags": 3,
+        "rollback_index": 0,
+        "rollback_index_location": 0,
+        "descriptors": []
+      },
+      "vbmeta_system_img": {
+        "path": "target/mobian-arm64-fogos-vbmeta-local-policy-smoke/vbmeta_system.img",
+        "sha256": "631d4852744b9868110456549942c69217def5f128ec1d76c468ee317e74bfc5",
+        "size_bytes": 65536,
+        "produced_now": true,
+        "algorithm": "NONE",
+        "flags": 3,
+        "rollback_index": 0,
+        "rollback_index_location": 2,
+        "descriptors": []
+      }
+    },
+    "selected_payloads": {
+      "boot_img": {
+        "path": "target/mobian-arm64-fogos-boot-vendor-boot-local-repack-smoke/boot.img",
+        "sha256": "410709d20f6396fd90f64127ab0b9af3807e586be4253ee3741e5c35cf1825e7"
+      },
+      "vendor_boot_img": {
+        "path": "target/mobian-arm64-fogos-boot-vendor-boot-local-repack-smoke/vendor_boot.img",
+        "sha256": "2dd1afe2e91107447f96988a4af8c82684c197e9b93190df699a55093a8d9db1"
+      },
+      "dtbo_reference": {
+        "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/dtbo.img",
+        "sha256": "00daacbf405aa69e4cb41af3aba6edab440ccfb0660ce25baa80a3fd04909172",
+        "produced_now": false
+      },
+      "sparse_super_img": {
+        "path": "target/mobian-arm64-fogos-aosp-lp-host-tools-super-payload-local-build-smoke/super.img",
+        "sha256": "bc2b494a07fa2487853ffaed32377c366a75b1e530a9913ce65412f2a884f703",
+        "produced_now": false
+      }
+    },
+    "rollback_reference_only": {
+      "rollback_vbmeta_img": {
+        "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vbmeta.img",
+        "sha256": "d713cab51c3ec8b68ec454b39336900a45d8d10e2ce37ef4d1eae25470cb573e",
+        "reused_for_modified_payloads": false
+      },
+      "rollback_vbmeta_system_img": {
+        "path": "/home/qian-qi/.openclaw/workspace/fogos-os-lab/artifacts/20260429/vbmeta_system.img",
+        "sha256": "1dcf6fbf1ae637d6f90e70b76b4bf1d5052d372767f483353d2570c0673ababa",
+        "reused_for_modified_payloads": false
+      }
+    },
+    "command_result": {
+      "avbtool_make_vbmeta_exit_status": 0,
+      "avbtool_make_vbmeta_system_exit_status": 0,
+      "avbtool_info_image_executed": true,
+      "avb_signing_executed": false,
+      "verification_disable_policy_locked": true,
+      "hashtree_disable_policy_locked": true,
+      "target_hardware_artifact_produced": false,
+      "target_hardware_install_executed": false
+    },
+    "next_gate": "arm64-mobian-fogos-target-hardware-artifact-manifest-smoke"
+  },
+  "input_evidence": {
+    "boot_vendor_boot_local_repack_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-boot-vendor-boot-local-repack-smoke.json",
+    "boot_vendor_boot_local_repack_sha256": "03420127c0a19d67d962b9739b6de1ab33b85c4491a58e7f94fb77e6dffd8db8",
+    "dtbo_vbmeta_policy_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-dtbo-vbmeta-policy-smoke.json",
+    "dtbo_vbmeta_policy_sha256": "5e0e8ac2dd1e3e2b4b8ea29db338bc581e9ef2d7c2f1474d60f61cd6adc23eac",
+    "aosp_host_tools_fetch_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-aosp-host-tools-fetch-smoke.json",
+    "aosp_host_tools_fetch_sha256": "29b31b211e24eab938be641031fb888d87b1d18da567c5ef5a64dde74caa65c7",
+    "target_hardware_artifact_assembly_plan_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-target-hardware-artifact-assembly-plan-smoke.json",
+    "target_hardware_artifact_assembly_plan_sha256": "50ff11cb559964b1848fd803415bc399e884393b959941ce264601b71fa655dd"
+  },
+  "evidence": {
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "cf577797710706313682eea3a338996192407afa8fadd5b04f9e91dd5047a5f1",
+    "script_sha256": "4ab7a6deb7d880e21fdfd7c70c3327828df413dea183f069de09a2df6df2ac6a",
+    "policy_report_json": "target/mobian-arm64-fogos-vbmeta-local-policy-smoke/fogos-vbmeta-local-policy.json",
+    "policy_report_json_sha256": "62391ccef6855575026df47eab88bf0e162bba667b30728944f6877e90e07790",
+    "policy_report_md": "target/mobian-arm64-fogos-vbmeta-local-policy-smoke/FOGOS_VBMETA_LOCAL_POLICY.md",
+    "policy_report_md_sha256": "d3c6d20e539e827d0b25575354f805f667b51dbbd29f36fb7d2cf0251180f7d2",
+    "vbmeta_img_sha256": "11373af57ff4ffb368c79aa5b7f0d1ab2c92091d65987a308978201ad6de8bf9",
+    "vbmeta_system_img_sha256": "631d4852744b9868110456549942c69217def5f128ec1d76c468ee317e74bfc5",
+    "vbmeta_info_sha256": "a1589f4ab03e9ef09d21a3ea727fa0226ebff3f344038ca034f2c039efa4ff0c",
+    "vbmeta_system_info_sha256": "5e11db9dd41ca4e2415688bc5da8c251ff482d4558ebddbbe53370f2ba1749f7",
+    "make_vbmeta_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "make_vbmeta_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "make_vbmeta_system_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "make_vbmeta_system_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "policy": {
+    "operator_invoked": true,
+    "reads_local_evidence_only": true,
+    "writes_only_under_target": true,
+    "network_download_executed": false,
+    "source_fetch_executed": false,
+    "android_image_tool_execution_executed": true,
+    "android_image_tool_execution_scope": "avbtool make_vbmeta_image and info_image local policy artifacts",
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "package_install_executed": false,
+    "apt_get_download_executed": false,
+    "apt_install_executed": false,
+    "host_package_install_executed": false,
+    "dpkg_i_executed": false,
+    "bootimage_build_executed": false,
+    "bootimage_repack_executed": false,
+    "vendor_boot_repack_executed": false,
+    "avbtool_executed": true,
+    "avb_signing_executed": false,
+    "lpmake_executed": false,
+    "lpdump_executed": false,
+    "simg2img_executed": false,
+    "img2simg_executed": false,
+    "phone_install_executed": false,
+    "target_hardware_install_executed": false,
+    "qemu_boot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  }
+}

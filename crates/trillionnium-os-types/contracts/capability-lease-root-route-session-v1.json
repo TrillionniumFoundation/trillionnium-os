@@ -1,0 +1,43 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-route-session.contract.v1",
+  "source_status": "source_only_private_root_route_session_constructors_no_product_wiring_v1",
+  "dependencies": {
+    "root_route_coordinator_contract_sha256": "260b90d2677b742843abcecd7bf1ed1f5ad949629175bb07318d96eef8f805c4",
+    "root_route_transport_contract_sha256": "176fc01d3a666fe98e2d9209a411a10fae030b69c480c7ef520dc7ca233a68ac",
+    "root_route_socket_custody_contract_sha256": "1b275c7956a325f767d037ec0ce578a6dbb078ec42f71ef25a1097b8cf957930"
+  },
+  "startup": {
+    "external_order": "system_server_bind_publication_then_proof_then_agentd_bind_private_route_then_system_server_run_once",
+    "agentd": "bind_one_private_route_listener_into_one_terminal_server_session_before_accept",
+    "system_server": "construct_connector_backed_route_without_io_then_bind_publication_then_proof_into_one_terminal_session",
+    "route_start": "only_system_server_session_run_once_may_connect_after_all_three_listeners_are_bound",
+    "retry": "none",
+    "queue": "none",
+    "background_thread": "none"
+  },
+  "teardown": {
+    "agentd_before_serve": "close_bound_route_listener_and_clear_session",
+    "agentd_during_or_after_serve": "consume_listener_then_close_accepted_stream_on_success_or_failure_and_become_terminal",
+    "system_server_before_run": "close_publication_then_proof_listener_clear_connector_route_and_become_terminal",
+    "system_server_during_or_after_run": "close_pending_route_then_publication_then_proof_clear_correlation_and_become_terminal",
+    "replay": "deny_second_serve_run_or_close_to_restart",
+    "alternate_carrier": "none"
+  },
+  "result": {
+    "success": "return_only_existing_p0_11_served_publication_commitments",
+    "failure": "no_diagnostic_frame_no_token_mutation_no_ack_authority"
+  },
+  "authority": {
+    "source_agentd_session_constructor_implemented": true,
+    "source_system_server_session_constructor_implemented": true,
+    "cross_process_startup_orchestrator_available": false,
+    "public_broker_protocol_extended": false,
+    "broker_main_route_wired": false,
+    "system_server_runtime_factory_wired": false,
+    "product_startup_wired": false,
+    "token_mutation_available": false,
+    "confers_ack_authority": false,
+    "confers_lease_trust": false,
+    "confers_effect_authority": false
+  }
+}

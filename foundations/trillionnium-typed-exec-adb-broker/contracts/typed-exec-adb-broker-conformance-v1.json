@@ -1,0 +1,179 @@
+{
+  "schema": "org.trillionnium.typed-exec-adb-broker-conformance-catalog.v1",
+  "catalog_id": "trillionnium-typed-exec-adb-broker-conformance-v1",
+  "revision": 1,
+  "status": "standalone_host_runnable_core_userdebug_conformance_only",
+  "product_workspace_member": false,
+  "android_product_graph_member": false,
+  "direct_agent_mcp_exposed": false,
+  "product_effect_authority": false,
+  "host_runnable_durable_ledger_core": true,
+  "host_authenticated_local_uds_framing_core": true,
+  "host_getprop_execution_backend": false,
+  "system_api_preference": "required_first",
+  "principals": [
+    {
+      "provider_id": "openai-codex",
+      "agent_id": "agent-codex-direct-v1",
+      "uid": 5901,
+      "gid": 5901,
+      "selinux_domain": "u:r:trillionnium_codex_agent:s0",
+      "cgroup_leaf": "/trillionnium/agents/codex/runtime"
+    }
+  ],
+  "operations": [
+    {
+      "operation_id": "exec.inspect_build_fingerprint.userdebug.v1",
+      "adapter": "typed_exec",
+      "backend_status": "standalone_source_fixture_only_not_packaged",
+      "agent_arguments": {
+        "shape": "closed_empty_object",
+        "unknown_fields": "reject"
+      },
+      "execution_descriptor": {
+        "executable": "/system/bin/getprop",
+        "argv0": "getprop",
+        "argv": [
+          "ro.build.fingerprint"
+        ],
+        "uid": 2000,
+        "gid": 2000,
+        "selinux_domain": "u:r:trillionnium_typed_broker_userdebug:s0",
+        "cgroup_profile": "typed-exec-inspect-build-fingerprint-userdebug-v1",
+        "seccomp_profile": "typed-exec-inspect-build-fingerprint-userdebug-v1",
+        "capabilities": [],
+        "environment": {},
+        "stdin": "closed",
+        "filesystem_scope": "android_property_read_only",
+        "network_scope": "none",
+        "deadline_ms": 5000,
+        "stdout_limit_bytes": 8192,
+        "stderr_limit_bytes": 8192,
+        "total_output_limit_bytes": 8192,
+        "descendant_process_policy": "no_descendants_kill_dedicated_cgroup_at_deadline",
+        "opaque_fd_passing": false
+      },
+      "admission": {
+        "product_variants": [
+          "userdebug"
+        ],
+        "risk_class": "read_only_transport_conformance",
+        "userdebug_conformance_only": true,
+        "direct_system_api_unavailable_proof_required": true,
+        "single_delivery_attempt_required": true
+      }
+    },
+    {
+      "operation_id": "adb.inspect_package.settings.userdebug.v1",
+      "adapter": "typed_adb",
+      "backend_status": "descriptor_and_protocol_only_hold",
+      "agent_arguments": {
+        "shape": "closed_empty_object",
+        "unknown_fields": "reject"
+      },
+      "execution_descriptor": {
+        "target": "self_device_only",
+        "transport": "os_owned_local_userdebug_adbd",
+        "service": "abb_exec",
+        "service_arguments": [
+          "package",
+          "path",
+          "com.android.settings"
+        ],
+        "serial": null,
+        "host": null,
+        "port": null,
+        "adbd_key_custody": "absent_hold_not_agent_addressable",
+        "product_identity": "os_selected_local_userdebug_device_avb_identity",
+        "cgroup_profile": "typed-adb-inspect-package-settings-userdebug-v1",
+        "seccomp_profile": "typed-adb-inspect-package-settings-userdebug-v1",
+        "capabilities": [],
+        "environment": {},
+        "stdin": "closed",
+        "filesystem_scope": "none",
+        "network_scope": "fixed_local_adbd_only",
+        "deadline_ms": 5000,
+        "stdout_limit_bytes": 16384,
+        "stderr_limit_bytes": 16384,
+        "total_output_limit_bytes": 16384,
+        "descendant_process_policy": "no_descendants_kill_dedicated_cgroup_at_deadline",
+        "opaque_fd_passing": false
+      },
+      "admission": {
+        "product_variants": [
+          "userdebug"
+        ],
+        "risk_class": "read_only_transport_conformance",
+        "userdebug_conformance_only": true,
+        "direct_system_api_unavailable_proof_required": true,
+        "single_delivery_attempt_required": true
+      }
+    }
+  ],
+  "request_identity": [
+    "provider_id",
+    "agent_id",
+    "direct_binding_sha256",
+    "invocation_id",
+    "delivery_provider_attempt_id",
+    "operation_ordinal",
+    "operation_id",
+    "catalog_sha256",
+    "absolute_deadline_boot_ms",
+    "request_sha256"
+  ],
+  "kernel_admission_observations": [
+    "SO_PEERCRED_uid_gid_pid",
+    "SO_PEERSEC_exact_domain",
+    "pidfd_bound_proc_cgroup_leaf",
+    "unix_seqpacket_listener_cloexec_no_scm_rights",
+    "openat2_nofollow_regular_readonly_artifact_fds",
+    "exact_catalog_broker_and_executor_sha256",
+    "closed_stdin_and_cloexec_output_pipes",
+    "installed_exact_cgroup_and_seccomp_profiles"
+  ],
+  "replay": {
+    "prepared_before_backend": true,
+    "terminal_before_return": true,
+    "same_operation_identity_different_request": "deny_conflict",
+    "prepared_without_terminal": "indeterminate_hold_without_retry",
+    "exact_terminal_wire_response_replay": true,
+    "standalone_snapshot_format": true,
+    "host_durable_append_or_cas_ledger_core": true,
+    "host_durable_file_boundary": "openat_nofollow_regular_single_link_0600",
+    "host_durable_publication": "temp_write_file_fsync_rename_directory_fsync_readback",
+    "fsync_backed_product_ledger": false
+  },
+  "host_local_uds_core": {
+    "socket_type": "unix_seqpacket_cloexec",
+    "peer_authentication": "SO_PEERCRED_fixed_pid_uid_gid_allowlist",
+    "request_encoding": "single_canonical_length_prefixed_json_packet",
+    "length_and_deadline_bounds": true,
+    "only_admitted_operation": "exec.inspect_build_fingerprint.userdebug.v1",
+    "listener_bound_or_product_wired": false
+  },
+  "forbidden_operation_families": [
+    "arbitrary_shell",
+    "shell_command_string",
+    "caller_selected_argv",
+    "caller_selected_executable",
+    "adb_shell",
+    "adb_push",
+    "adb_pull",
+    "adb_install",
+    "adb_reboot",
+    "adb_remount",
+    "mutation",
+    "windows"
+  ],
+  "promotion_gates": {
+    "catalog_signed_and_avb_bound": false,
+    "daemon_listener_authenticated_and_wired": false,
+    "typed_exec_artifact_packaged": false,
+    "typed_adb_transport_and_key_custody_wired": false,
+    "durable_fsync_ledger_wired": false,
+    "selinux_cgroup_seccomp_installed": false,
+    "physical_restart_replay_evidence": false,
+    "locked_user_device_evidence": false
+  }
+}

@@ -1,0 +1,20 @@
+arm64 Mobian fogos AOSP LP host-tools Android private log compiler-compat plan smoke
+status=arm64-mobian-fogos-aosp-lp-host-tools-android-private-log-compiler-compat-plan-smoke-pass
+development_position=arm64-mobian-fogos-aosp-lp-host-tools-android-private-log-compiler-compat-plan-locked-non-executable
+known_blocker_id=aosp-lp-host-tools-android-private-log-and-compiler-compat-inputs-not-materialized
+next_gate=arm64-mobian-fogos-aosp-lp-host-tools-android-private-log-compiler-compat-fetch-smoke
+private_header_count=2
+failed_object_count=3
+first_blocker=compiler-compat:__builtin_available
+android_private_log_compiler_compat_plan_locked=true
+plan_executable_now=false
+source_fetch_executed=false
+host_tool_compile_probe_executed=false
+host_tool_link_invocation_executed=false
+host_tool_build_executed=false
+host_tool_binary_produced=false
+lpmake_materialized=false
+lpdump_materialized=false
+target_hardware_artifact_produced=false
+ready_for_release_push=false
+json_sha256=0d6b560336805b90da319de2c91083d0b561c0f559e55944f8098c6763f3b23d

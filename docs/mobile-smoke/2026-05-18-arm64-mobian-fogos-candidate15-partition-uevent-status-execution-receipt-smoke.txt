@@ -1,0 +1,35 @@
+arm64-mobian-fogos-candidate15-partition-uevent-status-execution-receipt-smoke
+status: arm64-mobian-fogos-candidate15-partition-uevent-status-execution-receipt-smoke-blocked-fastboot-entry-not-visible
+development_position: arm64-mobian-fogos-candidate15-artifact-built-fastboot-entry-blocked
+known_blocker_id: candidate9-diagnostic-reboot-to-fastboot-not-consumed
+next_gate: arm64-mobian-fogos-manual-fastboot-entry-for-candidate15-execution-smoke
+
+Candidate15 artifact was ready, but no candidate15 flash executed.
+The host still saw candidate9 USB/HTTP diagnostic mode at 18d1:4eea and 192.168.76.2.
+Telnet port 23 refused connection, ACM reboot-fastboot writes produced no target response, and repeated fastboot polls stayed empty.
+
+candidate15 boot image: target/mobian-arm64-fogos-candidate15-partition-uevent-status-build-smoke/boot.img
+candidate15 boot image sha256: 410709d20f6396fd90f64127ab0b9af3807e586be4253ee3741e5c35cf1825e7
+candidate15 vendor_boot image: target/mobian-arm64-fogos-candidate15-partition-uevent-status-build-smoke/vendor_boot.img
+candidate15 vendor_boot image sha256: b79367a7afed9317c5c7b758e5d97816d19364c87320d45cca9f23fd25c6183b
+fastboot entry attempt log: target/mobian-arm64-fogos-candidate15-partition-uevent-status-execution-blocked-20260518T155000Z/candidate15-fastboot-entry-blocked.log
+fastboot entry attempt log sha256: 96cf172bf0743f041c829b92f2c40ed2f726bfb24cfe1f8629089a26b7d31971
+fastboot entry attempt status: target/mobian-arm64-fogos-candidate15-partition-uevent-status-execution-blocked-20260518T155000Z/candidate15-fastboot-entry-blocked-status.json
+fastboot entry attempt status sha256: c6787e9614de9be4136d0c83971b0b9794015b4356cff29c08c61dbc7483953a
+
+Result flags:
+- destructive install authorized by operator: true
+- candidate9 USB/HTTP still visible before attempt: true
+- candidate9 telnet port 23 open: false
+- ACM reboot-fastboot command written: true
+- ACM reboot-fastboot consumed by target: false
+- fastboot visible before attempt: false
+- fastboot visible after attempts: false
+- candidate15 flash executed: false
+- manual fastboot required: true
+- target hardware install executed: false
+- target hardware graphical Phosh booted: false
+- can claim Trillionnium OS installed on phone: false
+- ready for release push: false
+
+Policy: receipt importer only; did not execute ADB/Fastboot, flash, wipe, repartition, sideload, reboot, relock, rollback, install, release push, model invocation, or tool invocation.

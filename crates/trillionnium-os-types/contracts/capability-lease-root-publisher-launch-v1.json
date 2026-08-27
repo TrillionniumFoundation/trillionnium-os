@@ -1,0 +1,61 @@
+{
+  "contract_schema": "org.trillionnium.capabilitylease.root-publisher-launch.contract.v1",
+  "source_status": "source_only_no_product_package_no_live_listener_no_effect_authority_v1",
+  "fixed": {
+    "launcher_domain": "u:r:trillionnium_agentd:s0",
+    "publisher_role": "system_api_replay_sync",
+    "publisher_executable_identity": "system_ext/bin/trillionnium-system-api-replay-sync",
+    "publisher_selinux_domain": "u:r:trillionnium_agent_system_api_replay_sync:s0",
+    "server_socket_name": "trillionnium_capability_lease_root_publication",
+    "server_uid": 1000,
+    "server_gid": 1000,
+    "server_selinux_domain": "u:r:system_server:s0",
+    "protocol": "trillionnium.capability-lease-root-publication.uds.v1",
+    "publication_contract_sha256": "2a23182e8778f51086ab66f93dd39a51b0fc56f5b5a62947e7fd340e736e1a74"
+  },
+  "launch_custody": {
+    "executable_open": "fixed_absolute_read_only_regular_single_link_no_symlink",
+    "executable_measurement": "sha256_same_fd_consumed_by_execveat_at_empty_path",
+    "uid_gid": "exact_generated_agent_descriptor_before_exec",
+    "selinux_transition": "agentd_to_system_api_replay_sync_only",
+    "stdin": "single_root_publication_frame_from_agentd_pipe",
+    "stdout": "single_root_publication_ack_frame_to_agentd_pipe",
+    "stderr": "closed",
+    "other_file_descriptors": "closed_except_execveat_loader_requirements",
+    "arguments": "none",
+    "environment": "empty",
+    "pdeathsig": "SIGKILL",
+    "no_new_privs": true,
+    "dumpable": false,
+    "capabilities": "empty",
+    "descendants": "forbidden",
+    "single_exchange": true
+  },
+  "socket_custody": {
+    "namespace": "linux_abstract",
+    "client_connects_after_selinux_transition": true,
+    "server_authentication": "SO_PEERCRED_twice_plus_SO_PEERSEC_plus_root_authenticator",
+    "client_authentication": "SO_PEERCRED_plus_SO_PEERSEC_exact_system_server",
+    "connect_behavior": "single_kernel_local_connect_no_retry",
+    "read_timeout_ms": 15000,
+    "write_timeout_ms": 5000,
+    "exact_request_frames": 1,
+    "exact_response_frames": 1,
+    "requires_peer_eof": true
+  },
+  "authority": {
+    "product_package_available": false,
+    "launcher_wired": false,
+    "listener_wired": false,
+    "runtime_consumer_available": false,
+    "confers_effect_authority": false
+  },
+  "validation": {
+    "agent_uid_gid": "must_equal_publication_descriptor_and_kernel_peer",
+    "publisher_selinux_domain": "must_equal_fixed_domain",
+    "publisher_executable_sha256": "must_equal_parent_measured_digest_and_publication",
+    "server_identity": "must_equal_fixed_uid_gid_selinux_domain",
+    "response": "must_validate_publication_ack_and_match_request_commitments",
+    "failure": "close_connection_return_no_ack_and_never_register"
+  }
+}

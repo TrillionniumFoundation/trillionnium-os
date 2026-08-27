@@ -1,0 +1,99 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-mobian-fogos-vendor-ramdisk-delta-forensics-smoke.v1",
+  "ok": true,
+  "status": "arm64-mobian-fogos-vendor-ramdisk-delta-forensics-smoke-pass-init-only-delta-locked",
+  "development_position": "arm64-mobian-fogos-vendor-ramdisk-init-only-regression-delta-locked",
+  "known_blocker_id": "candidate9-to-candidate10-13-init-logic-regression-not-rootfs-payload-or-dtb",
+  "next_gate": "arm64-mobian-fogos-candidate14-init-delta-plan-smoke",
+  "source_receipt": {
+    "path": "docs/mobile-smoke/2026-05-18-arm64-mobian-fogos-candidate10-13-regression-receipt-smoke.json",
+    "sha256": "5516d3a5fa1b4a004a492bb38976e4bd6c3c8bda4cb29a97b284e066f4f127ef"
+  },
+  "receipt_importer": {
+    "script": "packaging/mobian/scripts/arm64-mobian-fogos-vendor-ramdisk-delta-forensics-smoke.sh",
+    "script_sha256": "1ba20f99111d788a4e56e0a0bff3348966d85b319bbb37d8a0c1ab51037741e2",
+    "local_extraction_only": true,
+    "adb_executed_now": false,
+    "fastboot_executed_now": false,
+    "flash_executed_now": false,
+    "reboot_executed_now": false,
+    "release_push_executed_now": false
+  },
+  "forensics": {
+    "candidate_count": 5,
+    "file_list_identical_across_candidate9_to_candidate13": true,
+    "file_count_each": 35,
+    "only_init_content_differs_against_candidate9": true,
+    "dtb_identical_across_candidate9_to_candidate13": true,
+    "vendor_boot_size_identical_across_candidate9_to_candidate13": true,
+    "vendor_boot_size_bytes": 1466368,
+    "candidate13_smaller_than_candidate9_vendor_ramdisk_but_regressed": true,
+    "candidate14_flash_recommended_now": false
+  },
+  "candidate9_baseline": {
+    "vendor_boot_sha256": "2e06be1bed7a32d742c63c9e584ab2cda06f546d9f01894cb3a5183fd44df8ae",
+    "vendor_ramdisk_sha256": "bfce3741bbbff553e1f8fbd7868b9c26b7e60f4f9ef199e20221d131fc1b8b01",
+    "dtb_sha256": "b54948422662c0c1ed9c736bda621bcdbbdad07a6b198c74a5f85fb8c97f6eb4",
+    "init_sha256": "59412a8ae344fdc7f233344a30834f5647dbfba422349297a6baa14da0607e45",
+    "init_size_bytes": 9624,
+    "file_list": "target/mobian-arm64-fogos-vendor-ramdisk-delta-forensics-smoke/candidate9-file-list.txt",
+    "file_sha256_manifest": "target/mobian-arm64-fogos-vendor-ramdisk-delta-forensics-smoke/candidate9-file-sha256.txt"
+  },
+  "regression_candidates": [
+    {
+      "candidate": 10,
+      "vendor_boot_sha256": "76b8329e7e130a06bde151bc3874d0a595bfd26f8950adb4c0da4c80f2a614eb",
+      "vendor_ramdisk_sha256": "1f2e366e91032a0cd5ced7039f78361f1dfce8105caf5c2a79f59092ba9d1359",
+      "dtb_sha256": "b54948422662c0c1ed9c736bda621bcdbbdad07a6b198c74a5f85fb8c97f6eb4",
+      "init_sha256": "a3be50d87eab4e18e44f260b3587edb19755247388eb3dfcc42c336699b2af2e",
+      "init_size_bytes": 11123,
+      "changed_paths_vs_candidate9": ["./init"],
+      "content_diff": "target/mobian-arm64-fogos-vendor-ramdisk-delta-forensics-smoke/candidate10-file-content-vs-candidate9.diff",
+      "content_diff_sha256": "5f6126d0ccd2ae05593f711d71f7d7ae4c10427c29226230505d359ca7a0863a"
+    },
+    {
+      "candidate": 11,
+      "vendor_boot_sha256": "1df39546e93eae7258e1e995465d0a1e6ebda8d289555d6098d0d756f91cf1b7",
+      "vendor_ramdisk_sha256": "6d6ab39bdcfb8b11f28c39c1c06e2d692ed9b59712e52b76dd08dfcd912a0739",
+      "dtb_sha256": "b54948422662c0c1ed9c736bda621bcdbbdad07a6b198c74a5f85fb8c97f6eb4",
+      "init_sha256": "a7ea21842acd28d2ca45445951b3c6990a176577bdeed9ddcd0790ae24f0b315",
+      "init_size_bytes": 10095,
+      "changed_paths_vs_candidate9": ["./init"],
+      "content_diff": "target/mobian-arm64-fogos-vendor-ramdisk-delta-forensics-smoke/candidate11-file-content-vs-candidate9.diff",
+      "content_diff_sha256": "007aeef73d0d773225e806802b2816a4dadc5429b3aef94b70b368829b0f3cb1"
+    },
+    {
+      "candidate": 12,
+      "vendor_boot_sha256": "ffa6044ef3170038e827c25e16762873284492b140730b86dec92d77d1639d27",
+      "vendor_ramdisk_sha256": "64c768b87073dee4b63e152b5378bdadb22a8433758b2393220d6992f35e74d3",
+      "dtb_sha256": "b54948422662c0c1ed9c736bda621bcdbbdad07a6b198c74a5f85fb8c97f6eb4",
+      "init_sha256": "de6de83accffc5aa415abc604ffa6a7129c2c360c189c05454fc08d657f22f68",
+      "init_size_bytes": 10337,
+      "changed_paths_vs_candidate9": ["./init"],
+      "content_diff": "target/mobian-arm64-fogos-vendor-ramdisk-delta-forensics-smoke/candidate12-file-content-vs-candidate9.diff",
+      "content_diff_sha256": "9fd775ae5e7ffbb3d61199ee0915303ca3305087fee6c1fdcc74baaaca5ba198"
+    },
+    {
+      "candidate": 13,
+      "vendor_boot_sha256": "8c68aae45cb3b102318877c126154833aac9dc6c3f26858cd21f84cf04ec9989",
+      "vendor_ramdisk_sha256": "3a1dd822fcaf50bace83a7b99b129184cf6c998afadaa796a1f3d7e6363f77b8",
+      "dtb_sha256": "b54948422662c0c1ed9c736bda621bcdbbdad07a6b198c74a5f85fb8c97f6eb4",
+      "init_sha256": "905de63e173c590832d7560fccee6b48e157573777edc572f51337cd91b7cbf2",
+      "init_size_bytes": 6877,
+      "changed_paths_vs_candidate9": ["./init"],
+      "content_diff": "target/mobian-arm64-fogos-vendor-ramdisk-delta-forensics-smoke/candidate13-file-content-vs-candidate9.diff",
+      "content_diff_sha256": "c5154cdc11dfdff2eecd0b1ed1dc587c829de92d3c713ebe37077a3865a09d7e"
+    }
+  ],
+  "conclusions": {
+    "vendor_ramdisk_delta_forensics_smoke_passed": true,
+    "rootfs_payload_files_not_implicated_by_vendor_ramdisk_file_set": true,
+    "dtb_not_implicated": true,
+    "vendor_boot_container_size_not_implicated": true,
+    "init_logic_is_only_locked_delta": true,
+    "safe_next_step": "candidate14 init-delta plan built from candidate9 stable HTTP init with a minimal gated diagnostic addition",
+    "target_hardware_graphical_phosh_booted": false,
+    "can_claim_trillionnium_os_installed_on_phone": false,
+    "ready_for_release_push": false
+  }
+}

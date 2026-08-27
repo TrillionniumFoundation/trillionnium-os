@@ -1,0 +1,16 @@
+Trillionnium Bridge pairing/revocation smoke, 2026-05-14.
+
+This smoke is verifier-only: it exercises the Bridge HMAC verifier, replay store,
+revocation handling, and policy-taint invariants without connecting Android/Waydroid
+to broker ingestion and without writing persistent Bridge state.
+
+Evidence files:
+- docs/mobile-smoke/2026-05-14-bridge-replay-report.json
+- docs/mobile-smoke/2026-05-14-bridge-sqlite-replay-smoke.json
+
+Expected pass criteria:
+- accepted signed envelopes update only fixture replay state;
+- duplicate event id, stale sequence, nonce replay, revoked pairing, and unknown pairing dead-letter;
+- future timestamp requests retry and does not advance replay cursor;
+- accepted output remains policy-tainted;
+- persistent product storage, D-Bus, audit writes, broker ingestion, and tool invocation stay disabled.

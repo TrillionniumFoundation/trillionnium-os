@@ -1,0 +1,260 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-bookworm-ui-sysroot-fetch-smoke.v1",
+  "status": "arm64-bookworm-ui-sysroot-fetch-smoke-pass",
+  "generated_at": "2026-05-17T11:00:18+08:00",
+  "generated_at_unix": 1778986818,
+  "target": "mobile",
+  "platform": "mobian",
+  "profile": "mobile-phosh",
+  "development_position": "arm64-bookworm-ui-sysroot-fetched",
+  "requested_target": {
+    "distribution": "Mobian",
+    "suite": "bookworm",
+    "deb_architecture": "arm64",
+    "host_toolchain_architecture": "amd64",
+    "rust_target": "aarch64-unknown-linux-gnu",
+    "target_glibc_max_version": "2.36"
+  },
+  "private_paths": {
+    "bookworm_private_toolchain_root": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain",
+    "sysroot": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot",
+    "linker_wrapper": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/bin/aarch64-linux-gnu-gcc",
+    "bookworm_private_toolchain_root_under_target": true,
+    "sysroot_under_target": true
+  },
+  "apt_source": {
+    "distribution": "Debian",
+    "suites": [
+      "bookworm",
+      "bookworm-updates",
+      "bookworm-security"
+    ],
+    "components": [
+      "main"
+    ],
+    "architectures": [
+      "amd64",
+      "arm64"
+    ],
+    "keyring_bootstrapped_from_target_local_deb": true,
+    "isolated_target_local_state": true
+  },
+  "input_evidence": {
+    "arm64_bookworm_ui_sysroot_plan_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-arm64-bookworm-ui-sysroot-plan-smoke.json",
+    "arm64_bookworm_ui_sysroot_plan_json_sha256": "3e22e07beb7a20e681bc124d9b086e2b7d8e1a5f89fb8edda28c32e0403f91f6",
+    "plan_verified": true
+  },
+  "fetch_state": {
+    "external_fetch_authorized": true,
+    "debian_keyring_download_executed": true,
+    "rustup_executed": true,
+    "apt_index_update_executed": true,
+    "apt_get_download_executed": true,
+    "apt_install_executed": false,
+    "dpkg_deb_executed": true,
+    "dpkg_install_executed": false,
+    "package_install_smoke_not_executed": true,
+    "cargo_fetch_executed": false,
+    "cargo_build_executed": false,
+    "bookworm_ui_sysroot_root_package_set_downloaded": true,
+    "bookworm_toolchain_packages_downloaded": true,
+    "bookworm_ui_packages_downloaded": true,
+    "bookworm_runtime_packages_downloaded": true,
+    "direct_missing_libraries_resolved": true,
+    "bookworm_glibc_threshold_satisfied": true
+  },
+  "downloaded_packages": {
+    "requested_root_package_count": 28,
+    "downloaded_deb_count": 76,
+    "downloaded_deb_total_bytes": 73387800,
+    "all_requested_roots_downloaded": true
+  },
+  "extracted_packages": {
+    "extracted_deb_count": 76,
+    "all_downloaded_debs_extracted": true,
+    "sysroot_file_count": 3910
+  },
+  "toolchain_validation": {
+    "private_aarch64_rust_std_present": true,
+    "linker_dumpmachine": "aarch64-linux-gnu",
+    "linker_version": "aarch64-linux-gnu-gcc (Debian 12.2.0-14) 12.2.0",
+    "linker_wrapper_present": true,
+    "linker_wrapper_sha256": "c5487fe431d7f86fa98d0a1c721cc09b0c2e42afd7e12fe1f6e69f2a01293ff2",
+    "can_attempt_bookworm_arm64_rebuild_now": true
+  },
+  "library_proof": {
+    "direct_library_count": 13,
+    "direct_missing_libraries_resolved": true,
+    "unresolved_direct_library_count": 0,
+    "direct_libraries": [
+      {
+        "library": "adwaita-1",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libadwaita-1.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libadwaita-1.so",
+        "present": true,
+        "file": "symbolic link to libadwaita-1.so.0"
+      },
+      {
+        "library": "gtk-4",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libgtk-4.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libgtk-4.so",
+        "present": true,
+        "file": "symbolic link to libgtk-4.so.1"
+      },
+      {
+        "library": "pangocairo-1.0",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libpangocairo-1.0.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libpangocairo-1.0.so",
+        "present": true,
+        "file": "symbolic link to libpangocairo-1.0.so.0"
+      },
+      {
+        "library": "pango-1.0",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libpango-1.0.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libpango-1.0.so",
+        "present": true,
+        "file": "symbolic link to libpango-1.0.so.0"
+      },
+      {
+        "library": "harfbuzz",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libharfbuzz.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libharfbuzz.so",
+        "present": true,
+        "file": "symbolic link to libharfbuzz.so.0"
+      },
+      {
+        "library": "gdk_pixbuf-2.0",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libgdk_pixbuf-2.0.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libgdk_pixbuf-2.0.so",
+        "present": true,
+        "file": "symbolic link to libgdk_pixbuf-2.0.so.0"
+      },
+      {
+        "library": "cairo-gobject",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libcairo-gobject.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libcairo-gobject.so",
+        "present": true,
+        "file": "symbolic link to libcairo-gobject.so.2.11600.0"
+      },
+      {
+        "library": "cairo",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libcairo.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libcairo.so",
+        "present": true,
+        "file": "symbolic link to libcairo.so.2.11600.0"
+      },
+      {
+        "library": "vulkan",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libvulkan.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libvulkan.so",
+        "present": true,
+        "file": "symbolic link to libvulkan.so.1"
+      },
+      {
+        "library": "graphene-1.0",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libgraphene-1.0.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libgraphene-1.0.so",
+        "present": true,
+        "file": "symbolic link to libgraphene-1.0.so.0"
+      },
+      {
+        "library": "gio-2.0",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libgio-2.0.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libgio-2.0.so",
+        "present": true,
+        "file": "symbolic link to libgio-2.0.so.0"
+      },
+      {
+        "library": "gobject-2.0",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libgobject-2.0.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libgobject-2.0.so",
+        "present": true,
+        "file": "symbolic link to libgobject-2.0.so.0"
+      },
+      {
+        "library": "glib-2.0",
+        "relative_path": "usr/lib/aarch64-linux-gnu/libglib-2.0.so",
+        "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/usr/lib/aarch64-linux-gnu/libglib-2.0.so",
+        "present": true,
+        "file": "symbolic link to libglib-2.0.so.0"
+      }
+    ]
+  },
+  "glibc_proof": {
+    "libc_path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/mobian-arm64-bookworm-private-toolchain/sysroot/lib/aarch64-linux-gnu/libc.so.6",
+    "libc_file": "ELF 64-bit LSB shared object, ARM aarch64, version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=6f268ff546c56d7f14e9501a55698cc2d0ab4732, for GNU/Linux 3.7.0, stripped",
+    "libc6_arm64_package_version": "2.36-9+deb12u14",
+    "max_exported_glibc_symbol": "2.36",
+    "target_max_glibc_symbol": "2.36",
+    "exports_target_max_glibc_symbol": true,
+    "exports_glibc_2_39": false,
+    "bookworm_glibc_threshold_satisfied": true
+  },
+  "artifact_state": {
+    "bookworm_ui_sysroot_prepared": true,
+    "bookworm_private_toolchain_prepared": true,
+    "bookworm_private_rust_std_present": true,
+    "bookworm_private_linker_present": true,
+    "bookworm_glibc_threshold_satisfied": true,
+    "direct_arm64_ui_libraries_present": true,
+    "bookworm_arm64_rebuild_executed": false,
+    "bookworm_arm64_package_build_executed": false,
+    "bookworm_abi_gate_executed": false,
+    "arm64_mobian_rootfs_with_trillionnium_packages_built": false,
+    "can_build_arm64_mobian_rootfs_now": false,
+    "can_promote_arm64_target_hardware_artifact": false,
+    "ready_for_release_push": false
+  },
+  "policy": {
+    "operator_invoked": true,
+    "static_evidence_only": false,
+    "network_download_executed": true,
+    "rustup_executed": true,
+    "apt_index_update_executed": true,
+    "apt_get_download_executed": true,
+    "apt_install_executed": false,
+    "dpkg_deb_executed": true,
+    "dpkg_install_executed": false,
+    "package_install_executed": false,
+    "cargo_fetch_executed": false,
+    "cargo_build_executed": false,
+    "rootfs_build_executed": false,
+    "image_build_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "bootloader_relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "script_sha256": "cd4f448949ad783f3af27c6fa7359a91b906e28ca0b4465f87943d02a424561d",
+    "rustup_log_sha256": "efddc2fb973d5f9078b128863fbbbc33c525783027f194bd6cb775a0af02f01b",
+    "debian_keyring_download_log_sha256": "52c6b5f3bf2915eecf6e2adb3fe93e8e949b6dc48b9f1e514ff13d4d382644b8",
+    "downloaded_keyring_debs_jsonl_sha256": "50af76bb00a9d64195e8e51ad43d5d6988e14f80f76ae10e48b7653f9d51cbe8",
+    "apt_get_update_log_sha256": "5968a08a1501210e155d76baccc616b15cd38dbde459cb5f47df84a04c72c0a7",
+    "apt_get_download_log_sha256": "56019e9605030b62dbd1bb9a031f0195e470aba7831cc4f13988d98782f33fd9",
+    "downloaded_bookworm_debs_jsonl_sha256": "0118a426e0b0242e15022184579330fb9d39a30c5f2200c3540e3b7fdfe190ef",
+    "extracted_bookworm_debs_jsonl_sha256": "58ab76ef5251b132dd79443f3ac71bad19f72b4d2e88e5fe4f332ada3901a259",
+    "usrmerge_compat_symlinks_jsonl_sha256": "a714487a123faeafaa8ae3e84244f312ca5350ed4468472f3cc8efa2de8006e3",
+    "direct_arm64_ui_library_proof_json_sha256": "a518c4100073c544729106b7e8e29f1ad31451f378c51fd56bbbbc9f8325c345",
+    "bookworm_glibc_proof_json_sha256": "b07e8cbd2e30794f7023c7829eb7f4ce27455c7d7851703074287f6db6f4324b"
+  },
+  "next_required_gates": [
+    "fetch private Cargo registry dependencies for the bookworm rebuild if needed",
+    "rebuild arm64 packages against the bookworm private sysroot",
+    "rerun arm64 Mobian rootfs ABI smoke",
+    "only after ABI pass attempt Mobian bookworm rootfs"
+  ],
+  "safety_notes": [
+    "All mutable paths stay under target/.",
+    "The Debian archive keyring is downloaded and extracted locally instead of installed on the host.",
+    "Bookworm root packages are downloaded directly and unpacked with dpkg-deb -x; apt install and dpkg -i are not used.",
+    "No cargo build, package install, rootfs/image build, device action, or release push is performed."
+  ]
+}

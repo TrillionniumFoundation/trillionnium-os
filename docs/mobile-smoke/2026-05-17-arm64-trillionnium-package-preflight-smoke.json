@@ -1,0 +1,98 @@
+{
+  "schema": "org.trillionnium.packaging.mobile-arm64-trillionnium-package-preflight-smoke.v1",
+  "status": "arm64-trillionnium-package-preflight-smoke-pass",
+  "generated_at": "2026-05-17T04:31:38+08:00",
+  "generated_at_unix": 1778963498,
+  "target": "mobile",
+  "platform": "mobian",
+  "profile": "mobile-phosh",
+  "development_position": "arm64-target-package-preflight",
+  "host": {
+    "machine": "x86_64",
+    "architecture": "amd64"
+  },
+  "requested_target": {
+    "deb_architecture": "arm64",
+    "rust_target": "aarch64-unknown-linux-gnu",
+    "hardware_family": "arm64 fogos target hardware"
+  },
+  "toolchain_readiness": {
+    "rustup_available": true,
+    "rust_target_installed": false,
+    "cross_gcc_available": false,
+    "cross_ld_available": false,
+    "cross_compile_toolchain_ready": false
+  },
+  "current_debug_binaries": {
+    "trillionniumd": {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/debug/trillionniumd",
+      "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=17347f017e0466d2e877cf096559ad67f50aafc8, with debug_info, not stripped",
+      "is_arm64": false
+    },
+    "trillionnium_command_center": {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/debug/trillionnium-command-center",
+      "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=f12230a82209e480d53bbda8cc8bb9466ad54fce, with debug_info, not stripped",
+      "is_arm64": false
+    },
+    "trillionnium_shell": {
+      "path": "/home/qian-qi/.openclaw/workspace/trillionnium-os/target/debug/trillionnium-shell",
+      "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=20cbba5088e216f6d8305fe2abc96ba32bd10c46, with debug_info, not stripped",
+      "is_arm64": false
+    },
+    "all_required_binaries_arm64": false
+  },
+  "package_guard": {
+    "package_install_smoke_has_arch_guard": true,
+    "package_install_smoke_reports_binary_architecture": true,
+    "bogus_arch_relabeling_blocked": true
+  },
+  "arm64_package_artifact_state": {
+    "arm64_trillionnium_binaries_built": false,
+    "arm64_trillionnium_debs_built": false,
+    "arm64_mobian_rootfs_with_trillionnium_packages_built": false,
+    "can_build_arm64_trillionnium_packages_now": false,
+    "can_promote_arm64_target_hardware_artifact": false,
+    "ready_for_release_push": false
+  },
+  "next_required_gates": [
+    "install or provide a local, non-host-mutating aarch64 Rust target and linker toolchain",
+    "cross-build trillionniumd, trillionnium-command-center, and trillionnium-shell for aarch64-unknown-linux-gnu",
+    "prove package-install-smoke rejects host-architecture binaries when ARCH=arm64",
+    "build arm64 Trillionnium .deb packages from verified arm64 binaries",
+    "build an arm64 Mobian/Phosh rootfs or install image containing those verified arm64 packages"
+  ],
+  "policy": {
+    "operator_invoked": true,
+    "static_evidence_only": true,
+    "cargo_build_executed": false,
+    "rustup_executed": false,
+    "apt_executed": false,
+    "dpkg_deb_executed": false,
+    "package_install_executed": false,
+    "host_package_install_executed": false,
+    "adb_executed": false,
+    "fastboot_executed": false,
+    "flash_executed": false,
+    "wipe_executed": false,
+    "repartition_executed": false,
+    "sideload_executed": false,
+    "reboot_executed": false,
+    "bootloader_relock_executed": false,
+    "remote_push_executed": false,
+    "invokes_model": false,
+    "invokes_tool": false
+  },
+  "evidence": {
+    "package_install_smoke": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/scripts/package-install-smoke.sh",
+    "package_install_smoke_sha256": "37386614982241b5c9ce5619f84aaf70b023f22619c207e385cb68a2297a3ba2",
+    "image_manifest": "/home/qian-qi/.openclaw/workspace/trillionnium-os/packaging/mobian/image.toml",
+    "image_manifest_sha256": "b0b9d5067030c9e637497e5eb44a0c4cde6fc16ecc5ecb1cb219daed7febcc92",
+    "target_trillionnium_os_readiness_json": "/home/qian-qi/.openclaw/workspace/trillionnium-os/docs/mobile-smoke/2026-05-17-target-trillionnium-os-readiness-smoke.json",
+    "target_trillionnium_os_readiness_json_sha256": "26563d4f7324b41c8e8965ce50682177b0c520c5a129fb9e4d32a1e3d09dd531"
+  },
+  "safety_notes": [
+    "This preflight reads local files and host tool availability only; it does not run cargo build, rustup target add, apt, dpkg-deb, ADB, or Fastboot.",
+    "The package smoke now verifies staged binary architecture before producing .deb files, preventing host amd64 binaries from being relabeled as arm64 packages.",
+    "The current host does not yet have a complete arm64 Rust/linker path or verified arm64 Trillionnium binaries, so target-hardware Trillionnium OS artifacts remain blocked."
+  ]
+}
