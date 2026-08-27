@@ -4,9 +4,9 @@
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
   "source_lineage_base": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
-  "updated_through_commit": "69e4a1d74d20a21787a99ffaf82e0ca55f7c99af",
+  "updated_through_commit": "f95f9201d0cec9114359f86edfd18b2d2b21008d",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source implementation with same-turn callback, streaming persistence, detached delivery, bounded active-turn control input, correlated turn.cancel and targeted tool.cancel; no executed Rust, Android, physical-device or release claim",
+  "product_claim": "owner-open source implementation with same-turn callback, streaming persistence, detached delivery, bounded active-turn controls and read-only inclusive turn inspection; no executed Rust, Android, physical-device or release claim",
   "public_release": false,
   "status_levels": [
     "NOT_STARTED",
@@ -50,12 +50,14 @@
         "exact owner-open Cargo default closure includes Host, types, runtime, registry, event store, provider JSONL, tool bridge and turn loop",
         "R5 graph contract records reviewed owner-open internal dependency edges",
         "Host package disables Cargo autobin discovery",
-        "only the foundation Host and src/bin/r5_control_host_v2.rs are selected binary targets",
-        "graph verifier rejects a superseded Host entrypoint and legacy internal dependency",
+        "only the foundation Host and src/bin/r5_control_host_v3.rs are selected binary targets",
+        "the selected R5 wrapper documents the intentionally detached process-lifetime input reader while the implementation remains in r5_control_host_v2.rs",
+        "graph verifier rejects superseded Host entrypoints and legacy internal dependencies",
         "Android legacy graph remains an explicit source hold"
       ],
       "open": [
         "execute verifier and Rust graph commands on a real runner",
+        "replace the temporary selected wrapper with a module-level explicit reader lifecycle after compilation feedback",
         "split the Android owner-open product profile",
         "remove Authority, lease, egress, P01 and old shell-broker nodes from owner-open target files",
         "collect Soong, init, SELinux and target-files negative evidence"
@@ -82,7 +84,7 @@
       "open": [
         "Rust 1.93 format, compile, tests and clippy",
         "prove active turn.cancel and tool.cancel process tests on an executing runner",
-        "add flow control, pause/resume and multiple concurrent connections",
+        "add bounded flow control, pause/resume and multiple concurrent connections",
         "add job-level control distinct from one-shot tool calls"
       ]
     },
@@ -163,12 +165,14 @@
         "completed durable turn replay occurs without provider or tool redispatch",
         "incomplete durable turn reconciles to unknown_after_disconnect before replay and never automatically redispatches",
         "client output disconnect detaches delivery but does not cancel an already accepted turn",
-        "source tests cover durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch, no-respawn replay, in-flight persistence, detached delivery and active cancellation records"
+        "Persistence::inspect provides read-only inclusive cursor slices with next_cursor, total_events, complete and has_more metadata",
+        "inspection validates the complete stored turn before slicing and never appends or dispatches",
+        "source tests cover durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch, no-respawn replay, in-flight persistence, detached delivery, active cancellation records and read-only cursor inspection"
       ],
       "open": [
-        "execute event-store, streaming, active-control and replay tests on a real runner",
-        "inclusive replay cursors",
-        "cross-process inspect and attach API",
+        "execute event-store, streaming, active-control, inspect and replay tests on a real runner",
+        "expose turn.inspect and call.inspect through the Host wire protocol",
+        "cross-process attach API",
         "durable long-running job records",
         "ENOSPC, partial write, Host crash and power-loss qualification"
       ]
@@ -211,8 +215,9 @@
   ],
   "critical_path_next": [
     "obtain an actual Rust runner and fix every fmt, compile, test and clippy failure",
-    "add inclusive replay cursors plus inspect and attach APIs",
+    "expose inclusive turn.inspect and call.inspect through the selected Host carrier",
     "add bounded stream window, pause and resume mechanics",
+    "add durable job attach and control",
     "bind the installed Codex provider",
     "implement the real ADB topology",
     "cut the Android owner-open product graph and collect clean target-files evidence"
@@ -220,9 +225,10 @@
   "not_claimed": [
     "successful Rust formatting, compilation, tests or clippy for the current head",
     "reviewed Cargo.lock generated by the current source closure",
-    "executed proof that active turn.cancel or tool.cancel passes",
+    "executed proof that active turn.cancel, tool.cancel or inclusive inspection passes",
+    "Host wire-level turn.inspect or call.inspect",
     "live installed Codex turn",
-    "flow control, resume cursor or cross-process attach",
+    "flow control or cross-process attach",
     "real ARM64 adb or transparent relay",
     "Android image inclusion",
     "physical shell or ADB effect",
