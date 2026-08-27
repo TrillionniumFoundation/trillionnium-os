@@ -4,9 +4,9 @@
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
   "source_lineage_base": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
-  "updated_through_commit": "92c2de1997032efb7e26b8dd3ce181748949cdc5",
+  "updated_through_commit": "dee1d980e434819d197c4a252cea205eb5cd9b76",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source implementation with same-turn callback and best-effort durable Host replay; no executed Rust, Android, physical-device or release claim",
+  "product_claim": "owner-open source implementation with same-turn callback, streaming Host events, per-event best-effort durable persistence and cancellation-token propagation; no executed Rust, Android, physical-device or release claim",
   "public_release": false,
   "status_levels": [
     "NOT_STARTED",
@@ -28,7 +28,7 @@
     "L6": "signed public release qualification"
   },
   "ci_observation": {
-    "observed_head": "982a3bc30796f96684bbd4b8e052cd7a181a2a35",
+    "observed_head": "23995b0c2f10b2439a8602f3217de647602de0fb",
     "workflow_conclusions": [
       "owner-open foundation: failure",
       "owner-open R5 tool loop: failure",
@@ -49,6 +49,7 @@
       "implemented": [
         "exact owner-open Cargo default closure includes Host, types, runtime, registry, event store, provider JSONL, tool bridge and turn loop",
         "R5 graph contract records reviewed owner-open internal dependency edges",
+        "Host package disables Cargo autobin discovery and explicitly selects only the foundation Host plus the R5 streaming Host",
         "source verifier rejects legacy internal dependencies and reports the Android legacy graph as an explicit hold"
       ],
       "open": [
@@ -67,13 +68,16 @@
       "implemented": [
         "provider emits model/status events and invokes direct tool callbacks inside one turn",
         "raw runtime observations return before provider continuation",
+        "TurnRunner exposes a streaming event sink called synchronously for accepted, provider, runtime and terminal events",
+        "runtime accepted, started, output and terminal events reach the sink while the process is still active",
         "exact duplicate local calls attach instead of spawning twice",
-        "executable R5 Host maps provider/runtime events to owner-open Host frames"
+        "a cross-thread turn cancellation token requests cancellation through the scoped call registry and reaches the active process group",
+        "the selected R5 Host maps and flushes provider/runtime events as they are produced"
       ],
       "open": [
         "Rust 1.93 format, compile, tests and clippy",
-        "stream events while the provider remains active instead of collecting the complete turn",
-        "service turn.cancel and tool.cancel asynchronously",
+        "service turn.cancel from the carrier while the provider thread is active",
+        "add targeted tool.cancel and active-call inspection",
         "flow control, pause/resume and multi-connection carrier"
       ]
     },
@@ -86,10 +90,13 @@
       "implemented": [
         "bounded external provider JSONL protocol and process adapter",
         "provider event, tool call, tool result, completion and failure mapping",
-        "spawned fake-provider source tests and executable Host callback test"
+        "turn cancellation is sent to the provider as a correlated turn.cancel JSONL frame",
+        "provider turn.cancelled acknowledgement maps to a cancelled terminal",
+        "a provider that ignores cancellation is closed after a finite mechanical grace without rewriting cancellation as semantic denial",
+        "spawned fake-provider source tests cover callback continuation and cancellation acknowledgement"
       ],
       "open": [
-        "execute provider/Host tests on a real runner",
+        "execute provider and Host tests on a real runner",
         "probe the installed Codex executable and observed capabilities",
         "bind real Codex JSON/app-server/MCP callbacks",
         "capture a live provider same-turn L2 result"
@@ -106,10 +113,11 @@
         "cwd, environment delta and binary stdin",
         "raw stdout/stderr events",
         "process group, timeout, cancellation, output exhaustion and descendant cleanup",
-        "registry-to-runtime failure closure"
+        "registry-to-runtime failure closure",
+        "turn cancellation monitor requests registry cancellation for an active shell or ADB process"
       ],
       "open": [
-        "execute all runtime and bridge tests on exact source",
+        "execute all runtime, turn-loop and bridge tests on exact source",
         "PTY and interactive job controls",
         "Root Linux UID/GID/namespace/cgroup placement",
         "physical Root Linux observation"
@@ -125,7 +133,8 @@
         "ordinary configured adb executable receives exact argv",
         "unknown and future subcommands remain valid",
         "target labels are correlation only and no serial, host or port is injected",
-        "same-turn fake-adb and bootstrap source tests"
+        "same-turn fake-adb and bootstrap source tests",
+        "turn-level cancellation reaches the ordinary ADB process group through the same registry mechanism"
       ],
       "open": [
         "select and implement the physical ARM64 client/server or transparent relay topology",
@@ -143,14 +152,15 @@
         "append-only durable event store with writer lock, record hash chain, scoped event identity and strict reopen",
         "stable semantic turn request digest excluding transport-only correlation and recursive digest fields",
         "stable turn-stream identity bound to session, profile, task and turn",
-        "Host --event-store option with best-effort/unavailable fallback that does not become semantic denial",
-        "completed durable turn replay without provider or tool redispatch",
+        "Host --event-store option with best-effort or unavailable fallback that does not become semantic denial",
+        "provider and tool events are persisted individually from the streaming turn sink before turn completion",
+        "completed durable turn replay occurs without provider or tool redispatch",
         "incomplete durable turn reconciles to unknown_after_disconnect before replay and never automatically redispatches",
-        "source tests for durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch and no-respawn completed replay"
+        "client output disconnect detaches delivery but does not cancel an already accepted turn; remaining events and terminal are still persisted",
+        "source tests cover durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch, no-respawn replay, in-flight persistence and detached delivery"
       ],
       "open": [
-        "execute event-store and Host replay tests on a real runner",
-        "persist tool chunks while the provider is running rather than after complete in-memory collection",
+        "execute event-store, streaming and Host replay tests on a real runner",
         "durable long-running jobs and inclusive cursors",
         "cross-process attach and inspect API",
         "ENOSPC, partial write, Host crash and power-loss qualification"
@@ -186,7 +196,7 @@
         "runner-backed L1 and L2 evidence",
         "clean Android L3 evidence",
         "physical L4 same-turn shell and ADB",
-        "L5 provider, Host, USB, reboot, ENOSPC and power-loss matrix",
+        "L5 provider, Host, client disconnect, USB, reboot, ENOSPC and power-loss matrix",
         "Codex self-build, install and recovery loop",
         "separate signed L6 release profile"
       ]
@@ -194,7 +204,8 @@
   ],
   "critical_path_next": [
     "obtain an actual Rust runner and fix every fmt, compile, test and clippy failure",
-    "replace complete-turn event collection with streaming persistence and serviceable asynchronous cancellation",
+    "replace the blocking stdio carrier with an active-turn control loop that services turn.cancel and tool.cancel",
+    "add inclusive replay cursors plus inspect and attach APIs",
     "bind the installed Codex provider",
     "implement the real ADB topology",
     "cut the Android owner-open product graph and collect clean target-files evidence"
@@ -203,7 +214,8 @@
     "successful Rust formatting, compilation, tests or clippy for the current head",
     "reviewed Cargo.lock generated by the current source closure",
     "live installed Codex turn",
-    "interactive asynchronous cancellation or flow control",
+    "carrier-serviceable asynchronous turn.cancel or tool.cancel",
+    "flow control, resume cursor or cross-process attach",
     "real ARM64 adb or transparent relay",
     "Android image inclusion",
     "physical shell or ADB effect",
