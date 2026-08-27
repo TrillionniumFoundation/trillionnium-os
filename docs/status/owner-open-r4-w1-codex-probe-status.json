@@ -1,0 +1,83 @@
+{
+  "schema": "org.trillionnium.owner-open.r4.codex-probe-status.v1",
+  "revision": "2026-08-27-w1-codex-probe-1",
+  "date": "2026-08-27",
+  "branch": "codex/owner-open-r4-foundation-20260827",
+  "implementation": "tools/owner-open/probe_codex_cli.py",
+  "tests": "tools/tests/test_probe_codex_cli.py",
+  "specification": "docs/implementation/owner-open-codex-provider-v1.md",
+  "evidence": "docs/evidence/2026-08-27-owner-open-codex-cli-probe-source.md",
+  "status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+  "claim_ceiling": "L1_HELP_PROBE_SOURCE_ONLY",
+  "probe_commands": [
+    "<codex> --version",
+    "<codex> --help",
+    "<codex> exec --help"
+  ],
+  "observed_capability_fields": [
+    "exec_subcommand_observed",
+    "json_event_flag_observed",
+    "sandbox_long_flag_observed",
+    "sandbox_short_flag_observed",
+    "danger_full_access_value_observed",
+    "bypass_approvals_and_sandbox_flag_observed",
+    "model_flag_observed",
+    "config_override_flag_observed"
+  ],
+  "mechanical_properties": {
+    "real_regular_executable_required": true,
+    "symlink_rejected": true,
+    "group_world_writable_rejected": true,
+    "executable_sha256_recorded": true,
+    "inode_and_owner_recorded": true,
+    "per_command_timeout_seconds": 10,
+    "combined_output_limit_bytes": 1048576,
+    "raw_help_output_and_digests_recorded": true,
+    "atomic_private_report": true,
+    "report_mode": "0600"
+  },
+  "negative_claims": {
+    "python_tests_passed": false,
+    "installed_codex_probed": false,
+    "credentials_opened": false,
+    "provider_contacted": false,
+    "model_invoked": false,
+    "exec_turn_started": false,
+    "json_event_transport_executed": false,
+    "owner_open_access_mode_executed": false,
+    "launch_prefix_generated": false,
+    "host_provider_adapter_integrated": false,
+    "same_turn_shell_effect": false,
+    "same_turn_adb_effect": false,
+    "android_image_inclusion": false,
+    "physical_device_evidence": false,
+    "release_qualified": false
+  },
+  "promotion_commands": [
+    "python3 -m unittest tools.tests.test_probe_codex_cli -v",
+    "python3 -m py_compile tools/owner-open/probe_codex_cli.py tools/tests/test_probe_codex_cli.py",
+    "python3 tools/owner-open/probe_codex_cli.py --codex <exact-installed-path> --output <private-report> --json"
+  ],
+  "next_gates": [
+    {
+      "id": "W1.1",
+      "status": "NOT_STARTED",
+      "acceptance": "build a non-executed launch prefix using only observed options and an exact probe digest"
+    },
+    {
+      "id": "W1.2",
+      "status": "NOT_STARTED",
+      "acceptance": "fake JSONL provider completes success, tool, failure, continuation and cancellation through the Host"
+    },
+    {
+      "id": "W1.3",
+      "status": "NOT_STARTED",
+      "acceptance": "measured installed Codex performs a live bootstrap turn with machine-readable events"
+    },
+    {
+      "id": "W1.4",
+      "status": "NOT_STARTED",
+      "acceptance": "one live Codex turn invokes owner-open shell and raw ADB and receives all observations"
+    }
+  ]
+}
