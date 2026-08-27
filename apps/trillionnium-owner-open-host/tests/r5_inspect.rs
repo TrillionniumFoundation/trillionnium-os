@@ -88,7 +88,7 @@ fn inclusive_cursor_returns_a_bounded_read_only_slice() {
 
     match persistence.inspect(&scope, &digest, 1, 2) {
         StoredInspection::Found(inspection) => {
-            assert_eq!(inspection.frames, frames[1..3]);
+            assert_eq!(inspection.frames, frames[1..3].to_vec());
             assert_eq!(inspection.inclusive_cursor, 1);
             assert_eq!(inspection.next_cursor, 3);
             assert_eq!(inspection.total_events, 4);
@@ -99,7 +99,7 @@ fn inclusive_cursor_returns_a_bounded_read_only_slice() {
     }
     match persistence.inspect(&scope, &digest, 3, 8) {
         StoredInspection::Found(inspection) => {
-            assert_eq!(inspection.frames, frames[3..4]);
+            assert_eq!(inspection.frames, frames[3..4].to_vec());
             assert_eq!(inspection.next_cursor, 4);
             assert!(!inspection.has_more);
         }
