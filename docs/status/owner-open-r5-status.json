@@ -4,9 +4,9 @@
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
   "source_lineage_base": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
-  "updated_through_commit": "dee1d980e434819d197c4a252cea205eb5cd9b76",
+  "updated_through_commit": "69e4a1d74d20a21787a99ffaf82e0ca55f7c99af",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source implementation with same-turn callback, streaming Host events, per-event best-effort durable persistence and cancellation-token propagation; no executed Rust, Android, physical-device or release claim",
+  "product_claim": "owner-open source implementation with same-turn callback, streaming persistence, detached delivery, bounded active-turn control input, correlated turn.cancel and targeted tool.cancel; no executed Rust, Android, physical-device or release claim",
   "public_release": false,
   "status_levels": [
     "NOT_STARTED",
@@ -49,8 +49,10 @@
       "implemented": [
         "exact owner-open Cargo default closure includes Host, types, runtime, registry, event store, provider JSONL, tool bridge and turn loop",
         "R5 graph contract records reviewed owner-open internal dependency edges",
-        "Host package disables Cargo autobin discovery and explicitly selects only the foundation Host plus the R5 streaming Host",
-        "source verifier rejects legacy internal dependencies and reports the Android legacy graph as an explicit hold"
+        "Host package disables Cargo autobin discovery",
+        "only the foundation Host and src/bin/r5_control_host_v2.rs are selected binary targets",
+        "graph verifier rejects a superseded Host entrypoint and legacy internal dependency",
+        "Android legacy graph remains an explicit source hold"
       ],
       "open": [
         "execute verifier and Rust graph commands on a real runner",
@@ -68,17 +70,20 @@
       "implemented": [
         "provider emits model/status events and invokes direct tool callbacks inside one turn",
         "raw runtime observations return before provider continuation",
-        "TurnRunner exposes a streaming event sink called synchronously for accepted, provider, runtime and terminal events",
-        "runtime accepted, started, output and terminal events reach the sink while the process is still active",
+        "TurnRunner exposes a synchronous streaming event sink",
+        "runtime accepted, started, output and terminal events reach the sink while the process is active",
         "exact duplicate local calls attach instead of spawning twice",
-        "a cross-thread turn cancellation token requests cancellation through the scoped call registry and reaches the active process group",
-        "the selected R5 Host maps and flushes provider/runtime events as they are produced"
+        "a cross-thread turn cancellation token reaches the active scoped call and process group",
+        "the selected Host has a bounded input reader and independent turn worker",
+        "correlated turn.cancel is serviceable while provider or tools are active",
+        "targeted tool.cancel requests cancellation through the active turn call registry",
+        "client EOF is not interpreted as cancellation"
       ],
       "open": [
         "Rust 1.93 format, compile, tests and clippy",
-        "service turn.cancel from the carrier while the provider thread is active",
-        "add targeted tool.cancel and active-call inspection",
-        "flow control, pause/resume and multi-connection carrier"
+        "prove active turn.cancel and tool.cancel process tests on an executing runner",
+        "add flow control, pause/resume and multiple concurrent connections",
+        "add job-level control distinct from one-shot tool calls"
       ]
     },
     {
@@ -92,13 +97,14 @@
         "provider event, tool call, tool result, completion and failure mapping",
         "turn cancellation is sent to the provider as a correlated turn.cancel JSONL frame",
         "provider turn.cancelled acknowledgement maps to a cancelled terminal",
-        "a provider that ignores cancellation is closed after a finite mechanical grace without rewriting cancellation as semantic denial",
-        "spawned fake-provider source tests cover callback continuation and cancellation acknowledgement"
+        "a provider that ignores cancellation is closed after a finite mechanical grace",
+        "targeted tool cancellation returns a cancelled tool observation while leaving the provider turn free to continue",
+        "source tests cover callback continuation, cancellation acknowledgement and active Host control"
       ],
       "open": [
         "execute provider and Host tests on a real runner",
         "probe the installed Codex executable and observed capabilities",
-        "bind real Codex JSON/app-server/MCP callbacks",
+        "bind real Codex JSON, app-server or native tool callbacks",
         "capture a live provider same-turn L2 result"
       ]
     },
@@ -114,10 +120,10 @@
         "raw stdout/stderr events",
         "process group, timeout, cancellation, output exhaustion and descendant cleanup",
         "registry-to-runtime failure closure",
-        "turn cancellation monitor requests registry cancellation for an active shell or ADB process"
+        "turn.cancel and tool.cancel both reach an active shell process group through scoped registry state"
       ],
       "open": [
-        "execute all runtime, turn-loop and bridge tests on exact source",
+        "execute all runtime, turn-loop, provider and Host tests on exact source",
         "PTY and interactive job controls",
         "Root Linux UID/GID/namespace/cgroup placement",
         "physical Root Linux observation"
@@ -134,7 +140,7 @@
         "unknown and future subcommands remain valid",
         "target labels are correlation only and no serial, host or port is injected",
         "same-turn fake-adb and bootstrap source tests",
-        "turn-level cancellation reaches the ordinary ADB process group through the same registry mechanism"
+        "turn-level and targeted call cancellation share the same process-group mechanism"
       ],
       "open": [
         "select and implement the physical ARM64 client/server or transparent relay topology",
@@ -153,16 +159,17 @@
         "stable semantic turn request digest excluding transport-only correlation and recursive digest fields",
         "stable turn-stream identity bound to session, profile, task and turn",
         "Host --event-store option with best-effort or unavailable fallback that does not become semantic denial",
-        "provider and tool events are persisted individually from the streaming turn sink before turn completion",
+        "provider, tool and active-control acknowledgement events are persisted individually before delivery",
         "completed durable turn replay occurs without provider or tool redispatch",
         "incomplete durable turn reconciles to unknown_after_disconnect before replay and never automatically redispatches",
-        "client output disconnect detaches delivery but does not cancel an already accepted turn; remaining events and terminal are still persisted",
-        "source tests cover durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch, no-respawn replay, in-flight persistence and detached delivery"
+        "client output disconnect detaches delivery but does not cancel an already accepted turn",
+        "source tests cover durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch, no-respawn replay, in-flight persistence, detached delivery and active cancellation records"
       ],
       "open": [
-        "execute event-store, streaming and Host replay tests on a real runner",
-        "durable long-running jobs and inclusive cursors",
-        "cross-process attach and inspect API",
+        "execute event-store, streaming, active-control and replay tests on a real runner",
+        "inclusive replay cursors",
+        "cross-process inspect and attach API",
+        "durable long-running job records",
         "ENOSPC, partial write, Host crash and power-loss qualification"
       ]
     },
@@ -204,8 +211,8 @@
   ],
   "critical_path_next": [
     "obtain an actual Rust runner and fix every fmt, compile, test and clippy failure",
-    "replace the blocking stdio carrier with an active-turn control loop that services turn.cancel and tool.cancel",
     "add inclusive replay cursors plus inspect and attach APIs",
+    "add bounded stream window, pause and resume mechanics",
     "bind the installed Codex provider",
     "implement the real ADB topology",
     "cut the Android owner-open product graph and collect clean target-files evidence"
@@ -213,8 +220,8 @@
   "not_claimed": [
     "successful Rust formatting, compilation, tests or clippy for the current head",
     "reviewed Cargo.lock generated by the current source closure",
+    "executed proof that active turn.cancel or tool.cancel passes",
     "live installed Codex turn",
-    "carrier-serviceable asynchronous turn.cancel or tool.cancel",
     "flow control, resume cursor or cross-process attach",
     "real ARM64 adb or transparent relay",
     "Android image inclusion",
