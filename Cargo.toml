@@ -1,7 +1,9 @@
 [workspace]
 members = [
   "apps/trillionniumd",
+  "apps/trillionnium-owner-open-host",
   "crates/trillionnium-os-types",
+  "crates/trillionnium-owner-open-types",
   "crates/trillionnium-agent-api-uds",
   "crates/trillionnium-task-registry",
   "crates/trillionnium-policy-system",
@@ -14,13 +16,12 @@ members = [
   "apps/trillionnium-agent-privilege-broker",
   "apps/trillionnium-agent-stdio-proxy",
 ]
-# Keep an unqualified `cargo build`/`cargo test` on the current runtime
-# closure. Remaining libraries are pulled in through these product roots.
+# Keep an unqualified `cargo build`/`cargo test` on the isolated owner-open
+# foundation only. Sealed/history binaries remain workspace members so they can
+# be compiled explicitly, but they are not default product roots.
 default-members = [
-  "apps/trillionniumd",
-  "apps/trillionnium-agent-privilege-broker",
-  "apps/trillionnium-agent-stdio-proxy",
-  "crates/trillionnium-agent-direct-tools",
+  "apps/trillionnium-owner-open-host",
+  "crates/trillionnium-owner-open-types",
 ]
 resolver = "3"
 
@@ -33,6 +34,7 @@ rust-version = "1.93"
 
 [workspace.dependencies]
 trillionnium-os-types = { path = "crates/trillionnium-os-types" }
+trillionnium-owner-open-types = { path = "crates/trillionnium-owner-open-types" }
 trillionnium-agent-api-uds = { path = "crates/trillionnium-agent-api-uds" }
 trillionnium-task-registry = { path = "crates/trillionnium-task-registry" }
 trillionnium-policy-system = { path = "crates/trillionnium-policy-system" }
