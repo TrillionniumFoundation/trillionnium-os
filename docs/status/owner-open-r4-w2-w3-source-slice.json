@@ -1,0 +1,125 @@
+{
+  "schema": "org.trillionnium.owner-open.r4.source-slice-status.v1",
+  "revision": "2026-08-27-w2-w3-process-substrate-1",
+  "date": "2026-08-27",
+  "branch": "codex/owner-open-r4-foundation-20260827",
+  "base_plan": "docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md",
+  "semantic_contract": "docs/contracts/codex-sovereign-direct-tools-v1.json",
+  "implementation_document": "docs/implementation/owner-open-process-substrate-v1.md",
+  "evidence_document": "docs/evidence/2026-08-27-owner-open-process-substrate-source.md",
+  "overall_status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+  "claim_ceiling": "L1_SOURCE_REVIEW_PENDING_L2_HOST_EXECUTION",
+  "capabilities": [
+    {
+      "id": "W2-SHELL-COMMAND",
+      "status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+      "source": [
+        "crates/trillionnium-owner-open-runtime/src/lib.rs"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#command_string_streams_raw_stdout_stderr_and_preserves_failure"
+      ],
+      "claim": "command strings map to configured shell -c without semantic parsing"
+    },
+    {
+      "id": "W2-SHELL-ARGV",
+      "status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+      "source": [
+        "crates/trillionnium-owner-open-runtime/src/lib.rs"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#argv_is_element_preserving_and_does_not_expand_shell_text"
+      ],
+      "claim": "argv elements are passed without shell expansion"
+    },
+    {
+      "id": "W2-PROCESS-LIFECYCLE",
+      "status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+      "source": [
+        "crates/trillionnium-owner-open-runtime/src/lib.rs"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#timeout_terminates_the_process_group_and_emits_one_terminal_event",
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#cancellation_terminates_the_process_group_without_redispatch"
+      ],
+      "claim": "new process group, TERM/KILL grace and direct-child reap are implemented"
+    },
+    {
+      "id": "W2-RAW-STREAMS",
+      "status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+      "source": [
+        "crates/trillionnium-owner-open-runtime/src/lib.rs"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#command_string_streams_raw_stdout_stderr_and_preserves_failure",
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#cwd_environment_delta_and_stdin_are_mechanical_inputs"
+      ],
+      "claim": "binary stdin/stdout/stderr are retained as bytes"
+    },
+    {
+      "id": "W2-RESOURCE-LIVENESS",
+      "status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+      "source": [
+        "crates/trillionnium-owner-open-runtime/src/lib.rs"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#output_exhaustion_is_mechanical_and_returns_truncated_observation"
+      ],
+      "claim": "bounded output exhaustion is a mechanical resource terminal, not authorization"
+    },
+    {
+      "id": "W3-RAW-ADB-PROCESS",
+      "status": "SOURCE_AUTHORED_VALIDATION_PENDING",
+      "source": [
+        "crates/trillionnium-owner-open-runtime/src/lib.rs"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs#adb_exec_passes_unknown_future_argv_without_target_or_serial_injection"
+      ],
+      "claim": "configured adb receives exact argv with no wrapper injection or subcommand allowlist"
+    }
+  ],
+  "negative_claims": {
+    "rust_1_93_compile_passed": false,
+    "host_tests_passed": false,
+    "live_codex_provider": false,
+    "same_turn_tool_result_continuation": false,
+    "owner_open_host_integration": false,
+    "rootlinux_namespace_integration": false,
+    "android_image_inclusion": false,
+    "real_arm64_adb_or_transparent_relay": false,
+    "durable_event_store": false,
+    "resume_reconciliation": false,
+    "physical_device_effect": false,
+    "reboot_power_loss_evidence": false,
+    "public_release": false
+  },
+  "validation": {
+    "required_commands": [
+      "cargo fmt --all -- --check",
+      "cargo test --package trillionnium-owner-open-runtime",
+      "cargo tree -e features -p trillionnium-owner-open-runtime",
+      "python3 tools/verify-owner-open-foundation.py"
+    ],
+    "github_actions_runner_observed": false,
+    "reason": "the observed Actions job had runner_id=0 and no executed steps",
+    "promotion_rule": "do not promote to HOST_TESTED until command output and exact source SHA are captured"
+  },
+  "next_gates": [
+    {
+      "id": "W1-W2-HOST-BRIDGE",
+      "status": "NOT_STARTED",
+      "acceptance": "same correlated owner-open turn forwards shell process events and returns terminal observation to one provider turn"
+    },
+    {
+      "id": "W2-ROOTLINUX",
+      "status": "NOT_STARTED",
+      "acceptance": "runtime executes inside configured Root Linux identity/namespace and descendants are closed on Host failure"
+    },
+    {
+      "id": "W3-ADB-TOPOLOGY",
+      "status": "NOT_STARTED",
+      "acceptance": "ordinary ARM64 adb or transparent relay runs devices -l and shell id with raw offline/unauthorized/error observations"
+    }
+  ]
+}
