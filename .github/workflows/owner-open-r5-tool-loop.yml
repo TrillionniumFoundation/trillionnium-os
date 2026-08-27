@@ -10,6 +10,7 @@ on:
       - "crates/trillionnium-owner-open-types/**"
       - "crates/trillionnium-owner-open-runtime/**"
       - "crates/trillionnium-owner-open-call-registry/**"
+      - "crates/trillionnium-owner-open-provider-jsonl/**"
       - "crates/trillionnium-owner-open-tool-bridge/**"
       - "crates/trillionnium-owner-open-turn-loop/**"
       - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
@@ -17,7 +18,10 @@ on:
       - "docs/status/owner-open-r5-*"
       - "docs/contracts/owner-open-forbidden-default-graph-v*.json"
       - "docs/implementation/owner-open-same-turn-loop-v1.md"
+      - "docs/implementation/owner-open-provider-jsonl-v1.md"
+      - "docs/protocols/owner-open-provider-jsonl-v1.md"
       - "docs/evidence/2026-08-28-owner-open-turn-loop-source.md"
+      - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/tests/test_verify_owner_open_r5.py"
       - ".github/workflows/owner-open-r5-tool-loop.yml"
@@ -33,6 +37,7 @@ on:
       - "crates/trillionnium-owner-open-types/**"
       - "crates/trillionnium-owner-open-runtime/**"
       - "crates/trillionnium-owner-open-call-registry/**"
+      - "crates/trillionnium-owner-open-provider-jsonl/**"
       - "crates/trillionnium-owner-open-tool-bridge/**"
       - "crates/trillionnium-owner-open-turn-loop/**"
       - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
@@ -40,7 +45,10 @@ on:
       - "docs/status/owner-open-r5-*"
       - "docs/contracts/owner-open-forbidden-default-graph-v*.json"
       - "docs/implementation/owner-open-same-turn-loop-v1.md"
+      - "docs/implementation/owner-open-provider-jsonl-v1.md"
+      - "docs/protocols/owner-open-provider-jsonl-v1.md"
       - "docs/evidence/2026-08-28-owner-open-turn-loop-source.md"
+      - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/tests/test_verify_owner_open_r5.py"
       - ".github/workflows/owner-open-r5-tool-loop.yml"
@@ -68,7 +76,9 @@ jobs:
           python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v1.json >/dev/null
           python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v2.json >/dev/null
           python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
-          python3 -m py_compile tools/verify-owner-open-r5.py tools/tests/test_verify_owner_open_r5.py
+          python3 -m py_compile tools/generate-owner-open-types.py tools/verify-owner-open-r5.py tools/tests/test_verify_owner_open_r5.py
+      - name: Verify generated codec constants
+        run: python3 tools/generate-owner-open-types.py --check
       - name: Verify exact R5 source graph
         run: python3 tools/verify-owner-open-r5.py --json | tee owner-open-r5-graph.json
       - name: Run R5 verifier regression tests
@@ -83,7 +93,7 @@ jobs:
   rust-tool-loop:
     name: Rust 1.93 same-turn source closure
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.93.0
@@ -95,12 +105,13 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Test owner-open source packages
         run: |
-          cargo test --locked --package trillionnium-owner-open-types
-          cargo test --locked --package trillionnium-owner-open-runtime
-          cargo test --locked --package trillionnium-owner-open-call-registry
-          cargo test --locked --package trillionnium-owner-open-tool-bridge
-          cargo test --locked --package trillionnium-owner-open-turn-loop
-          cargo test --locked --package trillionnium-owner-open-host
+          cargo test --locked --all-targets --package trillionnium-owner-open-types
+          cargo test --locked --all-targets --package trillionnium-owner-open-runtime
+          cargo test --locked --all-targets --package trillionnium-owner-open-call-registry
+          cargo test --locked --all-targets --package trillionnium-owner-open-tool-bridge
+          cargo test --locked --all-targets --package trillionnium-owner-open-turn-loop
+          cargo test --locked --all-targets --package trillionnium-owner-open-provider-jsonl
+          cargo test --locked --all-targets --package trillionnium-owner-open-host
       - name: Deny clippy warnings in the R5 closure
         run: |
           cargo clippy --locked --all-targets --package trillionnium-owner-open-types -- -D warnings
@@ -108,6 +119,7 @@ jobs:
           cargo clippy --locked --all-targets --package trillionnium-owner-open-call-registry -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-tool-bridge -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-turn-loop -- -D warnings
+          cargo clippy --locked --all-targets --package trillionnium-owner-open-provider-jsonl -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-host -- -D warnings
       - name: Capture exact candidate graph
         run: |
@@ -119,6 +131,7 @@ jobs:
             trillionnium-owner-open-call-registry \
             trillionnium-owner-open-tool-bridge \
             trillionnium-owner-open-turn-loop \
+            trillionnium-owner-open-provider-jsonl \
             trillionnium-owner-open-host
           do
             cargo tree --locked -e features -p "$package" >> owner-open-r5-cargo-tree.txt
