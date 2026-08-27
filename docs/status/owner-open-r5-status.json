@@ -4,7 +4,7 @@
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
   "source_lineage_base": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
-  "updated_through_commit": "f95f9201d0cec9114359f86edfd18b2d2b21008d",
+  "status_cut_parent": "d114e108dc7901aa8e3602d0f70b5f426550ff11",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
   "product_claim": "owner-open source implementation with same-turn callback, streaming persistence, detached delivery, bounded active-turn controls and read-only inclusive turn inspection; no executed Rust, Android, physical-device or release claim",
   "public_release": false,
@@ -27,6 +27,20 @@
     "L5": "fault, restart, reboot and power-loss",
     "L6": "signed public release qualification"
   },
+  "local_l0_execution": {
+    "status": "PASS_ISOLATED_VERIFIER_REGRESSION_ONLY",
+    "date": "2026-08-28",
+    "environment": "Python 3.13.5 on Linux 6.18.35 x86_64",
+    "commands": [
+      "python3 -m py_compile tools/verify-owner-open-r5.py tools/tests/test_verify_owner_open_r5.py",
+      "python3 -m unittest tools.tests.test_verify_owner_open_r5 -v"
+    ],
+    "tests_run": 8,
+    "tests_passed": 8,
+    "evidence": "docs/evidence/2026-08-28-owner-open-r5-verifier-isolated-run.md",
+    "exact_checkout": false,
+    "claim_ceiling": "L0 isolated verifier logic only"
+  },
   "ci_observation": {
     "observed_head": "23995b0c2f10b2439a8602f3217de647602de0fb",
     "workflow_conclusions": [
@@ -48,19 +62,16 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "exact owner-open Cargo default closure includes Host, types, runtime, registry, event store, provider JSONL, tool bridge and turn loop",
-        "R5 graph contract records reviewed owner-open internal dependency edges",
         "Host package disables Cargo autobin discovery",
         "only the foundation Host and src/bin/r5_control_host_v3.rs are selected binary targets",
-        "the selected R5 wrapper documents the intentionally detached process-lifetime input reader while the implementation remains in r5_control_host_v2.rs",
-        "graph verifier rejects superseded Host entrypoints and legacy internal dependencies",
-        "Android legacy graph remains an explicit source hold"
+        "graph verifier rejects legacy dependencies, source markers, autobin drift and superseded Host entrypoints",
+        "isolated verifier regression suite executed 8/8 successfully"
       ],
       "open": [
-        "execute verifier and Rust graph commands on a real runner",
-        "replace the temporary selected wrapper with a module-level explicit reader lifecycle after compilation feedback",
-        "split the Android owner-open product profile",
-        "remove Authority, lease, egress, P01 and old shell-broker nodes from owner-open target files",
-        "collect Soong, init, SELinux and target-files negative evidence"
+        "execute the verifier against an exact full Git checkout",
+        "execute Rust 1.93 graph, format, test and clippy commands",
+        "replace the temporary v3 wrapper with a module-level explicit reader lifecycle after compilation feedback",
+        "split the Android owner-open product profile and collect strict Soong/init/SELinux/target-files evidence"
       ]
     },
     {
@@ -70,22 +81,18 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "provider emits model/status events and invokes direct tool callbacks inside one turn",
-        "raw runtime observations return before provider continuation",
-        "TurnRunner exposes a synchronous streaming event sink",
-        "runtime accepted, started, output and terminal events reach the sink while the process is active",
-        "exact duplicate local calls attach instead of spawning twice",
-        "a cross-thread turn cancellation token reaches the active scoped call and process group",
-        "the selected Host has a bounded input reader and independent turn worker",
-        "correlated turn.cancel is serviceable while provider or tools are active",
-        "targeted tool.cancel requests cancellation through the active turn call registry",
+        "provider and runtime events reach a synchronous Host sink while work is active",
+        "exact duplicate local calls attach rather than spawning twice",
+        "bounded input/control reader and independent turn worker",
+        "active correlated turn.cancel",
+        "active targeted tool.cancel",
         "client EOF is not interpreted as cancellation"
       ],
       "open": [
-        "Rust 1.93 format, compile, tests and clippy",
-        "prove active turn.cancel and tool.cancel process tests on an executing runner",
-        "add bounded flow control, pause/resume and multiple concurrent connections",
-        "add job-level control distinct from one-shot tool calls"
+        "execute streaming and active-control tests on Rust 1.93",
+        "add bounded stream window, pause and resume",
+        "add multiple concurrent connection ownership",
+        "add job-level controls distinct from one-shot calls"
       ]
     },
     {
@@ -95,19 +102,16 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "bounded external provider JSONL protocol and process adapter",
-        "provider event, tool call, tool result, completion and failure mapping",
-        "turn cancellation is sent to the provider as a correlated turn.cancel JSONL frame",
-        "provider turn.cancelled acknowledgement maps to a cancelled terminal",
-        "a provider that ignores cancellation is closed after a finite mechanical grace",
-        "targeted tool cancellation returns a cancelled tool observation while leaving the provider turn free to continue",
-        "source tests cover callback continuation, cancellation acknowledgement and active Host control"
+        "bounded provider JSONL process and duplex tool-result transport",
+        "provider turn.cancel and turn.cancelled mapping",
+        "finite provider cancellation grace and process-group cleanup",
+        "targeted tool cancellation returns a cancelled observation while the provider may continue"
       ],
       "open": [
-        "execute provider and Host tests on a real runner",
-        "probe the installed Codex executable and observed capabilities",
-        "bind real Codex JSON, app-server or native tool callbacks",
-        "capture a live provider same-turn L2 result"
+        "execute provider tests on a real runner",
+        "probe and bind the installed Codex executable",
+        "translate real Codex JSON or app-server events",
+        "capture a live same-turn L2 result"
       ]
     },
     {
@@ -119,16 +123,14 @@
       "implemented": [
         "command-string and exact argv execution",
         "cwd, environment delta and binary stdin",
-        "raw stdout/stderr events",
-        "process group, timeout, cancellation, output exhaustion and descendant cleanup",
-        "registry-to-runtime failure closure",
-        "turn.cancel and tool.cancel both reach an active shell process group through scoped registry state"
+        "raw stdout and stderr events",
+        "process group, timeout, output exhaustion, cancellation and descendant cleanup"
       ],
       "open": [
-        "execute all runtime, turn-loop, provider and Host tests on exact source",
-        "PTY and interactive job controls",
-        "Root Linux UID/GID/namespace/cgroup placement",
-        "physical Root Linux observation"
+        "execute runtime and bridge tests",
+        "add PTY and interactive job controls",
+        "place execution in the configured Root Linux identity and namespaces",
+        "collect physical Root Linux evidence"
       ]
     },
     {
@@ -139,15 +141,14 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "ordinary configured adb executable receives exact argv",
-        "unknown and future subcommands remain valid",
-        "target labels are correlation only and no serial, host or port is injected",
-        "same-turn fake-adb and bootstrap source tests",
-        "turn-level and targeted call cancellation share the same process-group mechanism"
+        "unknown subcommands remain valid",
+        "target metadata does not inject serial, host or port",
+        "turn-level and targeted cancellation share the process-group mechanism"
       ],
       "open": [
-        "select and implement the physical ARM64 client/server or transparent relay topology",
-        "USB, unauthorized, offline, recovery and reboot behavior",
-        "same-turn physical ADB effect"
+        "implement the physical ARM64 client/server or transparent relay topology",
+        "test USB, unauthorized, offline, recovery and reboot behavior",
+        "collect same-turn physical ADB evidence"
       ]
     },
     {
@@ -157,24 +158,19 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "append-only durable event store with writer lock, record hash chain, scoped event identity and strict reopen",
-        "stable semantic turn request digest excluding transport-only correlation and recursive digest fields",
-        "stable turn-stream identity bound to session, profile, task and turn",
-        "Host --event-store option with best-effort or unavailable fallback that does not become semantic denial",
-        "provider, tool and active-control acknowledgement events are persisted individually before delivery",
-        "completed durable turn replay occurs without provider or tool redispatch",
-        "incomplete durable turn reconciles to unknown_after_disconnect before replay and never automatically redispatches",
-        "client output disconnect detaches delivery but does not cancel an already accepted turn",
-        "Persistence::inspect provides read-only inclusive cursor slices with next_cursor, total_events, complete and has_more metadata",
-        "inspection validates the complete stored turn before slicing and never appends or dispatches",
-        "source tests cover durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch, no-respawn replay, in-flight persistence, detached delivery, active cancellation records and read-only cursor inspection"
+        "append-only durable event store with strict reopen and scoped event identity",
+        "per-event provider, tool and control acknowledgement persistence before delivery",
+        "completed replay without redispatch",
+        "incomplete reconciliation to unknown_after_disconnect without automatic redispatch",
+        "client delivery detach without effect cancellation",
+        "read-only inclusive Persistence::inspect slices with next cursor, total count, completion and has-more metadata"
       ],
       "open": [
-        "execute event-store, streaming, active-control, inspect and replay tests on a real runner",
-        "expose turn.inspect and call.inspect through the Host wire protocol",
-        "cross-process attach API",
-        "durable long-running job records",
-        "ENOSPC, partial write, Host crash and power-loss qualification"
+        "execute persistence, replay, inspect and active-control tests",
+        "expose turn.inspect and call.inspect on the Host wire",
+        "add cross-process attach",
+        "add durable long-running jobs",
+        "qualify ENOSPC, partial write, Host crash and power loss"
       ]
     },
     {
@@ -201,13 +197,13 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "R5 evidence/status vocabulary and promotion boundaries are defined"
+        "R5 evidence vocabulary, promotion boundaries and an isolated L0 verifier record"
       ],
       "open": [
         "runner-backed L1 and L2 evidence",
         "clean Android L3 evidence",
         "physical L4 same-turn shell and ADB",
-        "L5 provider, Host, client disconnect, USB, reboot, ENOSPC and power-loss matrix",
+        "L5 provider, Host, client, USB, reboot, ENOSPC and power-loss matrix",
         "Codex self-build, install and recovery loop",
         "separate signed L6 release profile"
       ]
@@ -225,6 +221,7 @@
   "not_claimed": [
     "successful Rust formatting, compilation, tests or clippy for the current head",
     "reviewed Cargo.lock generated by the current source closure",
+    "exact-checkout full verifier pass",
     "executed proof that active turn.cancel, tool.cancel or inclusive inspection passes",
     "Host wire-level turn.inspect or call.inspect",
     "live installed Codex turn",
