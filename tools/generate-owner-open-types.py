@@ -58,6 +58,11 @@ def render(contract: dict[str, object]) -> str:
         "DEFAULT_ROOT_LINUX_SOCKET_ALIAS": ingress["rootlinux_alias"],
         "DEFAULT_PROFILE_ID": "owner-open",
         "OWNER_OPEN_REQUEST_TYPE": ingress["owner_open_request_type"],
+        # Shared provider/model event labels are transport constants only. They
+        # carry no tool policy, admission rule or runtime identity.
+        "FRAME_PROVIDER_STATUS": "provider.status",
+        "FRAME_MODEL_DELTA": "model.delta",
+        "FRAME_MODEL_MESSAGE": "model.message",
     }
     for name, value in values.items():
         if not isinstance(value, str):
