@@ -1,15 +1,24 @@
 {
   "schema": "org.trillionnium.owner-open-forbidden-default-graph.v1",
   "revision": "2026-08-27-r4",
-  "description": "Negative graph contract for the owner-open default product. Presence in the repository is permitted for explicit sealed/history targets; presence in owner-open default roots, Android packages, startup services or broad classpaths is forbidden.",
+  "amended_by": "2026-08-28-r5",
+  "description": "Negative graph contract for the owner-open default product. R5 expands the isolated source closure with runtime, call registry, tool bridge and same-turn loop while retaining the r4 semantic boundary.",
   "cargo": {
     "required_workspace_members": [
       "apps/trillionnium-owner-open-host",
-      "crates/trillionnium-owner-open-types"
+      "crates/trillionnium-owner-open-types",
+      "crates/trillionnium-owner-open-runtime",
+      "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-tool-bridge",
+      "crates/trillionnium-owner-open-turn-loop"
     ],
     "required_default_members": [
       "apps/trillionnium-owner-open-host",
-      "crates/trillionnium-owner-open-types"
+      "crates/trillionnium-owner-open-types",
+      "crates/trillionnium-owner-open-runtime",
+      "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-tool-bridge",
+      "crates/trillionnium-owner-open-turn-loop"
     ],
     "forbidden_default_members": [
       "apps/trillionniumd",
@@ -34,7 +43,11 @@
     ],
     "allowed_default_members": [
       "apps/trillionnium-owner-open-host",
-      "crates/trillionnium-owner-open-types"
+      "crates/trillionnium-owner-open-types",
+      "crates/trillionnium-owner-open-runtime",
+      "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-tool-bridge",
+      "crates/trillionnium-owner-open-turn-loop"
     ],
     "owner_open_host_manifest": "apps/trillionnium-owner-open-host/Cargo.toml",
     "owner_open_host_forbidden_dependencies": [
@@ -51,7 +64,11 @@
     ],
     "isolated_source_roots": [
       "apps/trillionnium-owner-open-host",
-      "crates/trillionnium-owner-open-types"
+      "crates/trillionnium-owner-open-types",
+      "crates/trillionnium-owner-open-runtime",
+      "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-tool-bridge",
+      "crates/trillionnium-owner-open-turn-loop"
     ],
     "forbidden_source_markers": [
       "trillionnium_os_types",
@@ -97,13 +114,15 @@
       "trillionnium_shell_exec_broker",
       "trillionnium_direct_operation_custody_high_water"
     ],
-    "strict_mode": "must pass after W0 Android profile split",
+    "strict_mode": "must pass after W6 Android profile split",
     "foundation_mode": "report current overlay violations without claiming Android convergence"
   },
   "required_documents": [
     "docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md",
+    "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md",
     "docs/status/owner-open-r4-status.json",
-    "docs/status/owner-open-r4-traceability.tsv",
+    "docs/status/owner-open-r5-status.json",
+    "docs/status/owner-open-r5-traceability.tsv",
     "docs/security/owner-open-threat-model.md",
     "docs/protocols/owner-open-direct-agent-host-v1.md",
     "schemas/codex-sovereign-direct-tools.schema.json"
