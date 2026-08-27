@@ -10,6 +10,7 @@ on:
       - "crates/trillionnium-owner-open-types/**"
       - "crates/trillionnium-owner-open-runtime/**"
       - "crates/trillionnium-owner-open-call-registry/**"
+      - "crates/trillionnium-owner-open-event-store/**"
       - "crates/trillionnium-owner-open-provider-jsonl/**"
       - "crates/trillionnium-owner-open-tool-bridge/**"
       - "crates/trillionnium-owner-open-turn-loop/**"
@@ -37,6 +38,7 @@ on:
       - "crates/trillionnium-owner-open-types/**"
       - "crates/trillionnium-owner-open-runtime/**"
       - "crates/trillionnium-owner-open-call-registry/**"
+      - "crates/trillionnium-owner-open-event-store/**"
       - "crates/trillionnium-owner-open-provider-jsonl/**"
       - "crates/trillionnium-owner-open-tool-bridge/**"
       - "crates/trillionnium-owner-open-turn-loop/**"
@@ -91,9 +93,9 @@ jobs:
           path: owner-open-r5-graph.json
 
   rust-tool-loop:
-    name: Rust 1.93 same-turn source closure
+    name: Rust 1.93 same-turn and durable recovery closure
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.93.0
@@ -108,6 +110,7 @@ jobs:
           cargo test --locked --all-targets --package trillionnium-owner-open-types
           cargo test --locked --all-targets --package trillionnium-owner-open-runtime
           cargo test --locked --all-targets --package trillionnium-owner-open-call-registry
+          cargo test --locked --all-targets --package trillionnium-owner-open-event-store
           cargo test --locked --all-targets --package trillionnium-owner-open-tool-bridge
           cargo test --locked --all-targets --package trillionnium-owner-open-turn-loop
           cargo test --locked --all-targets --package trillionnium-owner-open-provider-jsonl
@@ -117,6 +120,7 @@ jobs:
           cargo clippy --locked --all-targets --package trillionnium-owner-open-types -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-runtime -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-call-registry -- -D warnings
+          cargo clippy --locked --all-targets --package trillionnium-owner-open-event-store -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-tool-bridge -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-turn-loop -- -D warnings
           cargo clippy --locked --all-targets --package trillionnium-owner-open-provider-jsonl -- -D warnings
@@ -129,6 +133,7 @@ jobs:
             trillionnium-owner-open-types \
             trillionnium-owner-open-runtime \
             trillionnium-owner-open-call-registry \
+            trillionnium-owner-open-event-store \
             trillionnium-owner-open-tool-bridge \
             trillionnium-owner-open-turn-loop \
             trillionnium-owner-open-provider-jsonl \
