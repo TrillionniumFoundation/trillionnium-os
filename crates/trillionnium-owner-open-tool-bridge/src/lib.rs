@@ -1,16 +1,18 @@
 //! Owner-open call-registry to direct process-runtime bridge.
 //!
-//! This crate performs the smallest reviewed W1/W2 handoff: one codec-authored
-//! canonical request is bound to one scoped call ID, exactly one caller may
-//! spawn it, registry cancellation is bridged to the process runtime, PID and
-//! terminal observations are recorded, and all runtime events remain available
-//! to the embedding Host. It never adds plan, risk, approval, Authority, typed
-//! ADB or command allowlist semantics.
+//! One strict codec-authored request is bound to one scoped call ID. Exactly
+//! one caller may spawn it, cancellation reaches the owned process group, PID
+//! and terminal observations are recorded, and runtime events remain available
+//! to the embedding Host. The bridge adds no plan, risk, approval, Authority,
+//! typed ADB or command-allowlist semantics.
 
 use std::error::Error;
 use std::fmt::{Display, Formatter};
+use std::os::unix::ffi::OsStrExt;
+use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
@@ -20,8 +22,8 @@ use trillionnium_owner_open_call_registry::{
 };
 use trillionnium_owner_open_runtime::{
     AdbExecRequest, CancellationToken as RuntimeCancellationToken, ExecutionEvent,
-    ExecutionEventKind, ExecutionTerminal, MechanicalLimits, ShellExecRequest, StreamKind,
-    execute_adb, execute_shell,
+    ExecutionEventKind, ExecutionTerminal, MechanicalLimits, ShellExecRequest, ShellInvocation,
+    StreamKind, TerminalKind, ToolKind, execute_adb, execute_shell,
 };
 
 #[derive(Debug)]
@@ -33,8 +35,11 @@ pub enum BridgeError {
     },
     Registry(RegistryError),
     RegistryObservation(RegistryError),
+    EventSinkFailed(String),
+    EventSinkPanicked,
+    CancellationMonitorSpawnFailed(String),
     CancellationMonitorPanicked,
-    ObservationStatePoisoned,
+    RuntimeRejected(String),
 }
 
 impl Display for BridgeError {
@@ -52,12 +57,23 @@ impl Display for BridgeError {
                 formatter,
                 "owner-open runtime completed with a registry observation failure: {error}",
             ),
-            Self::CancellationMonitorPanicked => {
-                formatter.write_str("owner-open cancellation monitor panicked")
+            Self::EventSinkFailed(message) => {
+                write!(formatter, "owner-open tool event sink failed: {message}")
             }
-            Self::ObservationStatePoisoned => {
-                formatter.write_str("owner-open bridge observation state is poisoned")
-            }
+            Self::EventSinkPanicked => formatter.write_str(
+                "owner-open tool event sink panicked; the process group was cancelled and the registry was closed",
+            ),
+            Self::CancellationMonitorSpawnFailed(message) => write!(
+                formatter,
+                "owner-open cancellation monitor could not start: {message}",
+            ),
+            Self::CancellationMonitorPanicked => formatter.write_str(
+                "owner-open cancellation monitor panicked after the runtime terminal was recorded",
+            ),
+            Self::RuntimeRejected(message) => write!(
+                formatter,
+                "owner-open process runtime rejected a preflighted request: {message}",
+            ),
         }
     }
 }
@@ -93,14 +109,18 @@ impl DirectToolRequest {
             Self::Adb(_) => "adb.exec",
         }
     }
+
+    #[must_use]
+    const fn tool_kind(&self) -> ToolKind {
+        match self {
+            Self::Shell(_) => ToolKind::ShellExec,
+            Self::Adb(_) => ToolKind::AdbExec,
+        }
+    }
 }
 
 /// A call bound to exact canonical request bytes authored by the owner-open
-/// codec layer.
-///
-/// The bridge hashes these bytes itself. The embedding codec is responsible for
-/// producing the same canonical bytes that were validated into `request`; this
-/// separation keeps process code independent from wire/JSON canonicalization.
+/// codec layer. The bridge recomputes the digest before registry admission.
 #[derive(Debug, Clone)]
 pub struct BoundToolCall {
     pub key: CallKey,
@@ -204,6 +224,9 @@ impl Default for BridgeLimits {
 
 impl BridgeLimits {
     pub fn validate(&self) -> Result<()> {
+        self.runtime
+            .validate()
+            .map_err(|error| invalid(error.to_string()))?;
         if self.cancellation_poll.is_zero() || self.cancellation_poll > Duration::from_secs(1) {
             return Err(invalid(
                 "cancellation poll must be non-zero and at most one second",
@@ -247,8 +270,26 @@ impl DirectToolBridge {
         limits: &BridgeLimits,
         mut event_sink: impl FnMut(ExecutionEvent),
     ) -> Result<DispatchResult> {
+        self.execute_fallible(call, limits, move |event| {
+            event_sink(event);
+            Ok::<(), String>(())
+        })
+    }
+
+    /// Execute one direct call while guaranteeing registry terminal closure for
+    /// every locally observed bridge/runtime/sink failure after spawn claim.
+    pub fn execute_fallible<E>(
+        &self,
+        call: BoundToolCall,
+        limits: &BridgeLimits,
+        mut event_sink: impl FnMut(ExecutionEvent) -> std::result::Result<(), E>,
+    ) -> Result<DispatchResult>
+    where
+        E: Display,
+    {
         limits.validate()?;
         call.validate()?;
+        validate_runtime_request(&call.request, &limits.runtime)?;
         self.registry
             .begin(call.key.clone(), call.registry_request())?;
         let (generation, cancellation) = match self
@@ -269,7 +310,42 @@ impl DirectToolBridge {
         let monitor_finished = Arc::new(AtomicBool::new(false));
         let monitor_finished_child = Arc::clone(&monitor_finished);
         let poll = limits.cancellation_poll;
-        let monitor = thread::Builder::new()
+
+        let mut digest = ObservationDigest::new(
+            &call.key.call_id,
+            call.request.tool_name(),
+            call.target_id.as_deref(),
+            generation,
+        );
+        let mut registry_observation_error = None::<RegistryError>;
+        let mut sink_failure = None::<SinkFailure>;
+        let sink_cancellation = runtime_cancellation.clone();
+        let key = call.key.clone();
+        let registry = Arc::clone(&self.registry);
+        let mut observe = |event: ExecutionEvent| {
+            digest.update(&event);
+            if let ExecutionEventKind::Started { pid } = &event.kind
+                && let Err(error) = registry.record_pid(&key, generation, *pid)
+                && registry_observation_error.is_none()
+            {
+                registry_observation_error = Some(error);
+            }
+            if sink_failure.is_none() {
+                match catch_unwind(AssertUnwindSafe(|| event_sink(event.clone()))) {
+                    Ok(Ok(())) => {}
+                    Ok(Err(error)) => {
+                        sink_failure = Some(SinkFailure::Failed(error.to_string()));
+                        sink_cancellation.cancel();
+                    }
+                    Err(_) => {
+                        sink_failure = Some(SinkFailure::Panicked);
+                        sink_cancellation.cancel();
+                    }
+                }
+            }
+        };
+
+        let monitor = match thread::Builder::new()
             .name(format!("owner-open-cancel-{generation}"))
             .spawn(move || {
                 while !monitor_finished_child.load(Ordering::SeqCst) {
@@ -280,70 +356,80 @@ impl DirectToolBridge {
                     thread::sleep(poll);
                 }
             })
-            .map_err(|error| invalid(format!("failed to spawn cancellation monitor: {error}")))?;
-
-        let digest = Arc::new(Mutex::new(ObservationDigest::new(
-            &call.key.call_id,
-            call.request.tool_name(),
-            call.target_id.as_deref(),
-            generation,
-        )));
-        let registry_observation_error = Arc::new(Mutex::new(None::<RegistryError>));
-        let digest_sink = Arc::clone(&digest);
-        let registry_error_sink = Arc::clone(&registry_observation_error);
-        let registry = Arc::clone(&self.registry);
-        let key = call.key.clone();
-
-        let mut sink = move |event: ExecutionEvent| {
-            if let Ok(mut state) = digest_sink.lock() {
-                state.update(&event);
+        {
+            Ok(monitor) => monitor,
+            Err(error) => {
+                let terminal = synthetic_terminal(
+                    TerminalKind::IoError,
+                    format!("cancellation_monitor_spawn_failed: {error}"),
+                );
+                emit_synthetic_terminal(&call, &terminal, &mut observe);
+                drop(observe);
+                let observation_sha256 = digest.finish();
+                self.registry.complete(
+                    &call.key,
+                    generation,
+                    terminal_record(&terminal, observation_sha256)?,
+                )?;
+                return Err(BridgeError::CancellationMonitorSpawnFailed(
+                    error.to_string(),
+                ));
             }
-            if let ExecutionEventKind::Started { pid } = &event.kind
-                && let Err(error) = registry.record_pid(&key, generation, *pid)
-                && let Ok(mut slot) = registry_error_sink.lock()
-                && slot.is_none()
-            {
-                *slot = Some(error);
-            }
-            event_sink(event);
         };
 
-        let terminal = match call.request {
+        let runtime_result = match call.request.clone() {
             DirectToolRequest::Shell(request) => execute_shell(
                 request,
                 &limits.runtime,
                 &runtime_cancellation,
-                &mut sink,
+                &mut observe,
             ),
             DirectToolRequest::Adb(request) => execute_adb(
                 request,
                 &limits.runtime,
                 &runtime_cancellation,
-                &mut sink,
+                &mut observe,
             ),
-        }
-        .map_err(|error| invalid(format!("direct process runtime rejected the call: {error}")))?;
-
+        };
         monitor_finished.store(true, Ordering::SeqCst);
-        if monitor.join().is_err() {
-            return Err(BridgeError::CancellationMonitorPanicked);
-        }
+        let monitor_panicked = monitor.join().is_err();
 
-        let observation_sha256 = digest
-            .lock()
-            .map_err(|_| BridgeError::ObservationStatePoisoned)?
-            .finish();
-        let terminal_record = terminal_record(&terminal, observation_sha256.clone())?;
-        self.registry
-            .complete(&call.key, generation, terminal_record)?;
+        let (terminal, runtime_rejection) = match runtime_result {
+            Ok(terminal) => (terminal, None),
+            Err(error) => {
+                let message = error.to_string();
+                let terminal = synthetic_terminal(
+                    TerminalKind::IoError,
+                    format!("preflight_runtime_drift: {message}"),
+                );
+                emit_synthetic_terminal(&call, &terminal, &mut observe);
+                (terminal, Some(message))
+            }
+        };
+
+        drop(observe);
+        let observation_sha256 = digest.finish();
+        self.registry.complete(
+            &call.key,
+            generation,
+            terminal_record(&terminal, observation_sha256.clone())?,
+        )?;
         let snapshot = self.registry.snapshot(&call.key)?;
 
-        let observation_error = registry_observation_error
-            .lock()
-            .map_err(|_| BridgeError::ObservationStatePoisoned)?
-            .take();
-        if let Some(error) = observation_error {
+        if let Some(error) = registry_observation_error {
             return Err(BridgeError::RegistryObservation(error));
+        }
+        if let Some(failure) = sink_failure {
+            return Err(match failure {
+                SinkFailure::Failed(message) => BridgeError::EventSinkFailed(message),
+                SinkFailure::Panicked => BridgeError::EventSinkPanicked,
+            });
+        }
+        if monitor_panicked {
+            return Err(BridgeError::CancellationMonitorPanicked);
+        }
+        if let Some(message) = runtime_rejection {
+            return Err(BridgeError::RuntimeRejected(message));
         }
 
         Ok(DispatchResult::Executed {
@@ -353,6 +439,12 @@ impl DirectToolBridge {
             snapshot,
         })
     }
+}
+
+#[derive(Debug)]
+enum SinkFailure {
+    Failed(String),
+    Panicked,
 }
 
 #[derive(Debug)]
@@ -405,11 +497,7 @@ impl ObservationDigest {
             }
             ExecutionEventKind::Terminal(terminal) => {
                 field(hasher, b"kind", b"terminal");
-                field(
-                    hasher,
-                    b"terminal_debug",
-                    format!("{:?}", terminal.kind).as_bytes(),
-                );
+                field(hasher, b"terminal_kind", terminal.kind.as_str().as_bytes());
                 field(
                     hasher,
                     b"exit_code",
@@ -446,16 +534,199 @@ impl ObservationDigest {
     }
 }
 
+fn emit_synthetic_terminal(
+    call: &BoundToolCall,
+    terminal: &ExecutionTerminal,
+    observe: &mut dyn FnMut(ExecutionEvent),
+) {
+    observe(ExecutionEvent {
+        call_id: call.key.call_id.clone(),
+        target_id: call.target_id.clone(),
+        tool: call.request.tool_kind(),
+        seq: 0,
+        elapsed_ms: 0,
+        kind: ExecutionEventKind::Accepted,
+    });
+    observe(ExecutionEvent {
+        call_id: call.key.call_id.clone(),
+        target_id: call.target_id.clone(),
+        tool: call.request.tool_kind(),
+        seq: 1,
+        elapsed_ms: terminal.elapsed_ms,
+        kind: ExecutionEventKind::Terminal(terminal.clone()),
+    });
+}
+
+fn synthetic_terminal(kind: TerminalKind, error: String) -> ExecutionTerminal {
+    ExecutionTerminal {
+        kind,
+        exit_code: None,
+        signal: None,
+        stdout_bytes: 0,
+        stderr_bytes: 0,
+        output_truncated: false,
+        elapsed_ms: 0,
+        error: Some(error),
+    }
+}
+
 fn terminal_record(terminal: &ExecutionTerminal, observation_sha256: String) -> Result<TerminalRecord> {
     require_sha256(&observation_sha256, "observation_sha256")?;
     Ok(TerminalRecord::new(
-        format!("{:?}", terminal.kind).to_ascii_lowercase(),
+        terminal.kind.as_str(),
         terminal.exit_code,
         terminal.signal,
         observation_sha256,
         terminal.stdout_bytes,
         terminal.stderr_bytes,
     ))
+}
+
+fn validate_runtime_request(request: &DirectToolRequest, limits: &MechanicalLimits) -> Result<()> {
+    limits
+        .validate()
+        .map_err(|error| invalid(error.to_string()))?;
+    match request {
+        DirectToolRequest::Shell(request) => {
+            validate_common(
+                &request.call_id,
+                request.target_id.as_deref(),
+                request.cwd.as_deref(),
+                &request.env,
+                &request.stdin,
+                limits,
+            )?;
+            match &request.invocation {
+                ShellInvocation::Command(command) => {
+                    validate_text(
+                        command,
+                        "shell command",
+                        limits.max_total_argument_bytes,
+                        false,
+                    )?;
+                    validate_path(
+                        &request.shell_executable,
+                        "shell executable",
+                        limits.max_cwd_bytes,
+                    )?;
+                }
+                ShellInvocation::Argv(argv) => validate_argv(argv, "shell argv", limits)?,
+            }
+        }
+        DirectToolRequest::Adb(request) => {
+            validate_common(
+                &request.call_id,
+                request.target_id.as_deref(),
+                request.cwd.as_deref(),
+                &request.env,
+                &request.stdin,
+                limits,
+            )?;
+            validate_argv(&request.argv, "adb argv", limits)?;
+            validate_path(
+                &request.adb_executable,
+                "adb executable",
+                limits.max_cwd_bytes,
+            )?;
+        }
+    }
+    Ok(())
+}
+
+fn validate_common(
+    call_id: &str,
+    target_id: Option<&str>,
+    cwd: Option<&Path>,
+    environment: &std::collections::BTreeMap<String, Option<String>>,
+    stdin: &[u8],
+    limits: &MechanicalLimits,
+) -> Result<()> {
+    if call_id.is_empty()
+        || call_id.len() > limits.max_call_id_bytes
+        || !call_id
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_' | b'.' | b':'))
+    {
+        return Err(invalid("call_id is empty, oversized, or malformed"));
+    }
+    if let Some(target_id) = target_id {
+        validate_text(
+            target_id,
+            "target_id",
+            limits.max_target_id_bytes,
+            false,
+        )?;
+    }
+    if let Some(cwd) = cwd {
+        validate_path(cwd, "cwd", limits.max_cwd_bytes)?;
+    }
+    if stdin.len() > limits.max_stdin_bytes {
+        return Err(invalid("stdin exceeds the configured byte bound"));
+    }
+    if environment.len() > limits.max_environment_items {
+        return Err(invalid("environment delta has too many entries"));
+    }
+    let mut total = 0usize;
+    for (key, value) in environment {
+        if key.is_empty() || key.contains('=') || key.as_bytes().contains(&0) {
+            return Err(invalid("environment key is empty or malformed"));
+        }
+        total = total
+            .checked_add(key.len())
+            .ok_or_else(|| invalid("environment byte count overflow"))?;
+        if let Some(value) = value {
+            if value.as_bytes().contains(&0) {
+                return Err(invalid("environment value contains NUL"));
+            }
+            total = total
+                .checked_add(value.len())
+                .ok_or_else(|| invalid("environment byte count overflow"))?;
+        }
+    }
+    if total > limits.max_environment_bytes {
+        return Err(invalid("environment delta exceeds the configured byte bound"));
+    }
+    Ok(())
+}
+
+fn validate_argv(argv: &[String], label: &str, limits: &MechanicalLimits) -> Result<()> {
+    if argv.is_empty() {
+        return Err(invalid(format!("{label} must not be empty")));
+    }
+    if argv.len() > limits.max_argv_items {
+        return Err(invalid(format!("{label} has too many elements")));
+    }
+    let mut total = 0usize;
+    for argument in argv {
+        validate_text(argument, label, limits.max_argument_bytes, true)?;
+        total = total
+            .checked_add(argument.len())
+            .ok_or_else(|| invalid(format!("{label} byte count overflow")))?;
+    }
+    if total > limits.max_total_argument_bytes {
+        return Err(invalid(format!("{label} exceeds the total byte bound")));
+    }
+    Ok(())
+}
+
+fn validate_text(value: &str, label: &str, maximum: usize, allow_empty: bool) -> Result<()> {
+    if (!allow_empty && value.is_empty()) || value.len() > maximum || value.as_bytes().contains(&0)
+    {
+        return Err(invalid(format!(
+            "{label} is empty, oversized, or contains NUL"
+        )));
+    }
+    Ok(())
+}
+
+fn validate_path(path: &Path, label: &str, maximum: usize) -> Result<()> {
+    let bytes = path.as_os_str().as_bytes();
+    if bytes.is_empty() || bytes.len() > maximum || bytes.contains(&0) {
+        return Err(invalid(format!(
+            "{label} is empty, oversized, or contains NUL"
+        )));
+    }
+    Ok(())
 }
 
 fn sha256_hex(value: &[u8]) -> String {

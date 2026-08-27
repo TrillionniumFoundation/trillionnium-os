@@ -1,17 +1,13 @@
 [package]
 name = "trillionnium-owner-open-call-registry"
-version = "0.1.0"
-edition = "2024"
-license = "MIT"
-authors = ["Qianqi + Trillionnium OS contributors"]
-rust-version = "1.93"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
 publish = false
 
 [features]
 default = []
 
 [dependencies]
-
-# This source slice is intentionally an isolated nested workspace until its
-# tests pass and the owner-open Host imports it in a reviewed graph change.
-[workspace]
