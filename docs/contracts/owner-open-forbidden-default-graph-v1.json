@@ -2,13 +2,14 @@
   "schema": "org.trillionnium.owner-open-forbidden-default-graph.v1",
   "revision": "2026-08-27-r4",
   "amended_by": "2026-08-28-r5",
-  "description": "Negative graph contract for the owner-open default product. R5 expands the isolated source closure with runtime, call registry, tool bridge and same-turn loop while retaining the r4 semantic boundary.",
+  "description": "Negative graph contract for the owner-open default product. R5 expands the isolated source closure with runtime, call registry, duplex provider adapter, tool bridge and same-turn loop while retaining the r4 semantic boundary.",
   "cargo": {
     "required_workspace_members": [
       "apps/trillionnium-owner-open-host",
       "crates/trillionnium-owner-open-types",
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -17,6 +18,7 @@
       "crates/trillionnium-owner-open-types",
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -46,6 +48,7 @@
       "crates/trillionnium-owner-open-types",
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -67,6 +70,7 @@
       "crates/trillionnium-owner-open-types",
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
+      "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
