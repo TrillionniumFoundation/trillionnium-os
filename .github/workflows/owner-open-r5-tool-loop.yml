@@ -21,6 +21,7 @@ on:
       - "docs/implementation/owner-open-same-turn-loop-v1.md"
       - "docs/implementation/owner-open-provider-jsonl-v1.md"
       - "docs/protocols/owner-open-provider-jsonl-v1.md"
+      - "docs/protocols/owner-open-event-store-v1.md"
       - "docs/evidence/2026-08-28-owner-open-turn-loop-source.md"
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
@@ -49,6 +50,7 @@ on:
       - "docs/implementation/owner-open-same-turn-loop-v1.md"
       - "docs/implementation/owner-open-provider-jsonl-v1.md"
       - "docs/protocols/owner-open-provider-jsonl-v1.md"
+      - "docs/protocols/owner-open-event-store-v1.md"
       - "docs/evidence/2026-08-28-owner-open-turn-loop-source.md"
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
@@ -65,7 +67,7 @@ concurrency:
 
 jobs:
   graph-and-python:
-    name: R5 graph and machine contracts
+    name: R5 graph, Host binary and machine contracts
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -81,7 +83,7 @@ jobs:
           python3 -m py_compile tools/generate-owner-open-types.py tools/verify-owner-open-r5.py tools/tests/test_verify_owner_open_r5.py
       - name: Verify generated codec constants
         run: python3 tools/generate-owner-open-types.py --check
-      - name: Verify exact R5 source graph
+      - name: Verify exact R5 source and Host binary graph
         run: python3 tools/verify-owner-open-r5.py --json | tee owner-open-r5-graph.json
       - name: Run R5 verifier regression tests
         run: python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
@@ -93,9 +95,9 @@ jobs:
           path: owner-open-r5-graph.json
 
   rust-tool-loop:
-    name: Rust 1.93 same-turn and durable recovery closure
+    name: Rust 1.93 same-turn, active-control and durable recovery closure
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.93.0
@@ -144,7 +146,7 @@ jobs:
           git diff -- Cargo.lock > owner-open-r5-cargo-lock.patch || true
       - uses: actions/upload-artifact@v4
         with:
-          name: owner-open-r5-rust-${{ github.sha }}
+          name: owner-open-r5-active-control-${{ github.sha }}
           if-no-files-found: error
           retention-days: 14
           path: |
