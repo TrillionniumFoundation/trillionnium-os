@@ -1,0 +1,180 @@
+{
+  "schema": "org.trillionnium.owner-open-r5-status.v1",
+  "plan_revision": "2026-08-28-r5",
+  "semantic_contract_revision": "2026-08-27-r3",
+  "updated_at": "2026-08-28",
+  "source_baseline": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
+  "development_branch": "codex/owner-open-r5-tool-loop-20260827",
+  "product_claim": "owner-open source development; integrated Codex-to-shell/ADB Android turn is not yet claimed",
+  "public_release": false,
+  "work_packages": [
+    {
+      "id": "W0",
+      "name": "source and product graph isolation",
+      "status": "SOURCE_IMPLEMENTED",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [
+        "registry, direct process runtime and tool bridge are explicit members of the owner-open Cargo default closure",
+        "R5 exact graph contract defines all reviewed package edges",
+        "R5 verifier checks exact defaults, forbidden legacy dependencies, source markers, status and Android holds",
+        "six verifier regression tests executed locally before publication"
+      ],
+      "open": [
+        "execute verifier and full Rust graph checks on the exact Git commit",
+        "split the Android owner-open product profile",
+        "remove Authority, lease, egress, P01 and old shell broker nodes from owner-open target files",
+        "collect Soong, init, SELinux and target-files negative evidence"
+      ]
+    },
+    {
+      "id": "W1",
+      "name": "same-turn provider and tool callback loop",
+      "status": "SOURCE_IMPLEMENTED",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [
+        "provider emits model/status events and invokes direct tool callbacks inside one turn",
+        "raw runtime events and terminal observations return to the provider before it continues",
+        "exact duplicate local call attaches instead of spawning twice",
+        "provider failure and panic close exactly one turn terminal",
+        "source tests cover failed-shell continuation, duplicate process suppression, transparent ordinary ADB and provider panic"
+      ],
+      "open": [
+        "Rust 1.93 format, compile, unit tests and clippy",
+        "import the loop behind the executable Host provider boundary",
+        "service turn.cancel and tool.cancel while the provider is running",
+        "fake external provider process integration",
+        "live Codex provider integration"
+      ]
+    },
+    {
+      "id": "W2",
+      "name": "installed Codex provider adapter",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [
+        "existing R4 probe, launch-prefix and provider JSONL source slices remain available as inputs"
+      ],
+      "open": [
+        "probe the installed provider executable on the target runtime",
+        "normalize real provider events",
+        "map provider-native tool calls into W1",
+        "return tool results to the same native turn",
+        "capture live L2 and physical L4 evidence"
+      ]
+    },
+    {
+      "id": "W3",
+      "name": "direct shell substrate",
+      "status": "SOURCE_IMPLEMENTED",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [
+        "command-string and exact argv execution",
+        "cwd, environment delta and binary stdin",
+        "raw stdout/stderr events",
+        "process group, timeout, cancellation and output exhaustion",
+        "registry-to-runtime failure closure"
+      ],
+      "open": [
+        "execute all runtime and bridge tests on exact source",
+        "PTY and interactive job controls",
+        "Root Linux UID/GID/namespace/cgroup placement",
+        "physical Root Linux observation"
+      ]
+    },
+    {
+      "id": "W4",
+      "name": "ordinary raw ADB substrate",
+      "status": "SOURCE_IMPLEMENTED",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [
+        "ordinary configured adb executable receives exact argv",
+        "unknown/future subcommands remain valid",
+        "target labels are correlation only and no serial/host/port is injected",
+        "same-turn source test uses an opaque fake adb executable"
+      ],
+      "open": [
+        "select and implement the physical ARM64 client/server or transparent relay topology",
+        "USB, unauthorized, offline, recovery and reboot behavior",
+        "same-turn physical ADB effect"
+      ]
+    },
+    {
+      "id": "W5",
+      "name": "event store, replay and recovery",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [
+        "in-memory call registry distinguishes accepted, started, terminal and unknown-after-disconnect states"
+      ],
+      "open": [
+        "durable append-only event store",
+        "completed replay without re-execution",
+        "incomplete restart reconciliation",
+        "inclusive cursors and long-running jobs",
+        "ENOSPC and power-loss qualification"
+      ]
+    },
+    {
+      "id": "W6",
+      "name": "Android, Root Linux and AiShell integration",
+      "status": "NOT_STARTED",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [],
+      "open": [
+        "clean Android owner-open product profile",
+        "init, abstract socket and SELinux carrier",
+        "Root Linux lifecycle and writable overlay",
+        "thin AiShell streaming/cancel/reconnect client",
+        "out-of-band emergency stop",
+        "clean target-files and physical normal-path evidence"
+      ],
+      "hold": "the checked-in Android audit overlay still selects the pre-r3 Authority/lease/P01/old shell-broker graph"
+    },
+    {
+      "id": "W7",
+      "name": "qualification, self-development and optional release",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "latest_evidence_level": "L0",
+      "implemented": [
+        "R5 evidence/status vocabulary and promotion boundaries are defined"
+      ],
+      "open": [
+        "runner-backed L1/L2 evidence",
+        "clean Android L3 evidence",
+        "physical L4 same-turn shell and ADB",
+        "L5 crash, USB, reboot, ENOSPC and power-loss matrix",
+        "Codex self-build/install/recovery loop",
+        "separate signed L6 release profile"
+      ]
+    }
+  ],
+  "critical_path_next": [
+    "execute Rust 1.93 fmt/test/clippy for the exact R5 source closure",
+    "bind the same-turn loop behind the owner-open Host provider interface",
+    "add a fake external provider JSONL process integration test",
+    "bind the installed Codex provider",
+    "add durable replay/reconciliation",
+    "implement the real ADB topology",
+    "cut the Android owner-open product graph"
+  ],
+  "not_claimed": [
+    "Rust compilation, tests or clippy for the newly added same-turn loop",
+    "updated and reviewed Cargo.lock",
+    "executable Host import of the same-turn loop",
+    "live Codex provider turn",
+    "real ARM64 adb or transparent relay",
+    "Android image inclusion",
+    "physical shell or ADB effect",
+    "durable restart/replay guarantee",
+    "reboot or power-loss conformance",
+    "public release"
+  ]
+}
