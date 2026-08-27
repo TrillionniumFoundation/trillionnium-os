@@ -1,0 +1,24 @@
+[package]
+name = "trillionnium-owner-open-tool-bridge"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Qianqi + Trillionnium OS contributors"]
+rust-version = "1.93"
+publish = false
+
+[features]
+default = []
+
+[dependencies]
+sha2 = "0.10"
+trillionnium-owner-open-call-registry = { path = "../trillionnium-owner-open-call-registry" }
+trillionnium-owner-open-runtime = { path = "../trillionnium-owner-open-runtime" }
+
+[dev-dependencies]
+tempfile = "3"
+
+# Keep this graph isolated until standalone tests pass. A later reviewed change
+# will import one package into the owner-open Host rather than feature-unifying
+# the pre-r3 workspace.
+[workspace]
