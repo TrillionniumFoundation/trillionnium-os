@@ -13,8 +13,7 @@ use trillionnium_owner_open_call_registry::{CallRegistry, CallSnapshot};
 use trillionnium_owner_open_provider_jsonl::{JsonlProvider, JsonlProviderConfig};
 use trillionnium_owner_open_runtime::{ExecutionEvent, ExecutionEventKind, StreamKind};
 use trillionnium_owner_open_turn_loop::{
-    ProviderEvent, ProviderTerminal, ToolOutcome, TurnEvent, TurnEventKind,
-    TurnRequest as LoopTurnRequest, TurnRunner,
+    ProviderEvent, TurnEvent, TurnEventKind, TurnRequest as LoopTurnRequest, TurnRunner,
 };
 use trillionnium_owner_open_types::{
     FRAME_HELLO, FRAME_HELLO_ACK, FRAME_MODEL_DELTA, FRAME_MODEL_MESSAGE,
@@ -94,35 +93,35 @@ impl Options {
         while index < args.len() {
             let option = args[index]
                 .to_str()
-                .ok_or_else(|| "command-line options must be UTF-8".to_string())?;
+                .ok_or_else(|| "command-line options must be UTF-8".to_string())?
+                .to_string();
             index = index.saturating_add(1);
-            let value = |index: &mut usize| -> Result<&OsString, String> {
-                let value = args
-                    .get(*index)
-                    .ok_or_else(|| format!("{option} requires a value"))?;
-                *index = index.saturating_add(1);
-                Ok(value)
-            };
-            match option {
+            match option.as_str() {
                 "--provider" => {
                     if provider.is_some() {
                         return Err("--provider may be supplied only once".to_string());
                     }
-                    provider = Some(PathBuf::from(value(&mut index)?));
+                    provider = Some(PathBuf::from(take_value(&args, &mut index, &option)?));
                 }
                 "--provider-arg" => {
                     provider_args.push(
-                        value(&mut index)?
+                        take_value(&args, &mut index, &option)?
                             .to_str()
                             .ok_or_else(|| "--provider-arg must be UTF-8".to_string())?
                             .to_string(),
                     );
                 }
-                "--shell" => shell = PathBuf::from(value(&mut index)?),
-                "--adb" => adb = PathBuf::from(value(&mut index)?),
-                "--provider-cwd" => provider_cwd = Some(PathBuf::from(value(&mut index)?)),
+                "--shell" => {
+                    shell = PathBuf::from(take_value(&args, &mut index, &option)?);
+                }
+                "--adb" => {
+                    adb = PathBuf::from(take_value(&args, &mut index, &option)?);
+                }
+                "--provider-cwd" => {
+                    provider_cwd = Some(PathBuf::from(take_value(&args, &mut index, &option)?));
+                }
                 "--provider-timeout-ms" => {
-                    let milliseconds = value(&mut index)?
+                    let milliseconds = take_value(&args, &mut index, &option)?
                         .to_str()
                         .ok_or_else(|| "--provider-timeout-ms must be UTF-8".to_string())?
                         .parse::<u64>()
@@ -151,9 +150,20 @@ impl Options {
     }
 }
 
+fn take_value<'a>(
+    args: &'a [OsString],
+    index: &mut usize,
+    option: &str,
+) -> Result<&'a OsString, String> {
+    let value = args
+        .get(*index)
+        .ok_or_else(|| format!("{option} requires a value"))?;
+    *index = index.saturating_add(1);
+    Ok(value)
+}
+
 #[derive(Debug, Clone)]
 struct TurnContext {
-    connection_id: String,
     turn_stream_id: String,
     session_id: String,
     profile_id: String,
@@ -192,7 +202,6 @@ impl OutputState {
             .checked_add(1)
             .ok_or_else(|| "turn stream ordinal overflow".to_string())?;
         Ok(TurnContext {
-            connection_id: self.connection_id.clone(),
             turn_stream_id: format!(
                 "{}-turn-stream-{}",
                 self.connection_id, self.next_stream_ordinal
@@ -270,6 +279,7 @@ fn process_connection<R: BufRead, W: Write>(
         };
         match frame.kind.as_str() {
             FRAME_HELLO => {
+                let connection_id = output.connection_id.clone();
                 write_frame(
                     &mut writer,
                     &output.frame(
@@ -277,7 +287,7 @@ fn process_connection<R: BufRead, W: Write>(
                         json!({
                             "protocol": PROTOCOL,
                             "protocol_version": PROTOCOL_VERSION,
-                            "connection_id": output.connection_id,
+                            "connection_id": connection_id,
                             "host_implementation": HOST_IMPLEMENTATION,
                             "provider_status": "configured_external_jsonl",
                             "runtime_ready": true,
@@ -346,8 +356,8 @@ fn process_connection<R: BufRead, W: Write>(
                         FRAME_TURN_END,
                         json!({
                             "status": run.terminal.status.as_str(),
-                            "summary": run.terminal.summary,
-                            "error": run.terminal.error,
+                            "summary": &run.terminal.summary,
+                            "error": &run.terminal.error,
                             "runtime_ready": true,
                             "event_log_status": "best_effort_memory_only"
                         }),
@@ -507,7 +517,7 @@ fn terminal_payload(
         "stderr_bytes": terminal.stderr_bytes,
         "output_truncated": terminal.output_truncated,
         "elapsed_ms": terminal.elapsed_ms,
-        "error": terminal.error,
+        "error": &terminal.error,
         "runtime_seq": runtime_seq,
         "turn_event_seq": turn_event_seq
     })
@@ -525,8 +535,8 @@ fn map_snapshot(
         json!({
             "status": status,
             "state": format!("{:?}", snapshot.state),
-            "request_sha256": snapshot.request.request_sha256,
-            "binding_fingerprint": snapshot.request.binding_fingerprint,
+            "request_sha256": &snapshot.request.request_sha256,
+            "binding_fingerprint": &snapshot.request.binding_fingerprint,
             "cancellation_requested": snapshot.cancellation_requested,
             "connection_lost": snapshot.connection_lost,
             "turn_event_seq": turn_event_seq
