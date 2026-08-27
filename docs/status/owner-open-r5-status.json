@@ -3,10 +3,42 @@
   "plan_revision": "2026-08-28-r5",
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
-  "source_baseline": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
+  "source_lineage_base": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
+  "updated_through_commit": "92c2de1997032efb7e26b8dd3ce181748949cdc5",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source development with an authored external-provider-to-shell/ADB same-turn Host path; live Codex and Android device integration are not yet claimed",
+  "product_claim": "owner-open source implementation with same-turn callback and best-effort durable Host replay; no executed Rust, Android, physical-device or release claim",
   "public_release": false,
+  "status_levels": [
+    "NOT_STARTED",
+    "SPEC_ONLY",
+    "SOURCE_IMPLEMENTED",
+    "HOST_TESTED",
+    "IMAGE_INCLUDED",
+    "DEVICE_OBSERVED",
+    "FAULT_TESTED",
+    "RELEASE_QUALIFIED"
+  ],
+  "evidence_levels": {
+    "L0": "contract, source shape and graph",
+    "L1": "unit, property and fuzz",
+    "L2": "host process integration",
+    "L3": "Android image and static product graph",
+    "L4": "physical live effect",
+    "L5": "fault, restart, reboot and power-loss",
+    "L6": "signed public release qualification"
+  },
+  "ci_observation": {
+    "observed_head": "982a3bc30796f96684bbd4b8e052cd7a181a2a35",
+    "workflow_conclusions": [
+      "owner-open foundation: failure",
+      "owner-open R5 tool loop: failure",
+      "owner-open source slices: failure"
+    ],
+    "runner_id": 0,
+    "steps_observed": 0,
+    "logs_available": false,
+    "interpretation": "workflow infrastructure did not execute source commands; this is neither a Rust pass nor a Rust failure"
+  },
   "work_packages": [
     {
       "id": "W0",
@@ -15,16 +47,14 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "runtime, call registry, tool bridge, same-turn loop and duplex provider adapter are explicit members of the owner-open Cargo default closure",
-        "the Host package has only reviewed owner-open internal dependencies",
-        "R5 exact graph contract defines every package edge",
-        "R5 verifier checks exact defaults, forbidden legacy dependencies, source markers, status and Android holds",
-        "six verifier regression tests executed locally before publication"
+        "exact owner-open Cargo default closure includes Host, types, runtime, registry, event store, provider JSONL, tool bridge and turn loop",
+        "R5 graph contract records reviewed owner-open internal dependency edges",
+        "source verifier rejects legacy internal dependencies and reports the Android legacy graph as an explicit hold"
       ],
       "open": [
-        "execute verifier and full Rust graph checks on the exact Git commit",
+        "execute verifier and Rust graph commands on a real runner",
         "split the Android owner-open product profile",
-        "remove Authority, lease, egress, P01 and old shell broker nodes from owner-open target files",
+        "remove Authority, lease, egress, P01 and old shell-broker nodes from owner-open target files",
         "collect Soong, init, SELinux and target-files negative evidence"
       ]
     },
@@ -36,18 +66,15 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "provider emits model/status events and invokes direct tool callbacks inside one turn",
-        "raw runtime events and terminal observations return to the provider before it continues",
-        "exact duplicate local call attaches instead of spawning twice",
-        "provider failure and panic close exactly one turn terminal",
-        "the loop is bound into an executable R5 stdio Host source target",
-        "source tests cover failed-shell continuation, duplicate process suppression, transparent ordinary ADB, provider panic and a spawned Host/provider/shell chain"
+        "raw runtime observations return before provider continuation",
+        "exact duplicate local calls attach instead of spawning twice",
+        "executable R5 Host maps provider/runtime events to owner-open Host frames"
       ],
       "open": [
-        "Rust 1.93 format, compile, all-target tests and clippy",
-        "stream Host output while the provider/tool is still running rather than after collection",
-        "service turn.cancel and tool.cancel while the provider is running",
-        "durable event IDs and replay",
-        "live Codex provider integration"
+        "Rust 1.93 format, compile, tests and clippy",
+        "stream events while the provider remains active instead of collecting the complete turn",
+        "service turn.cancel and tool.cancel asynchronously",
+        "flow control, pause/resume and multi-connection carrier"
       ]
     },
     {
@@ -57,21 +84,15 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "bounded duplex provider JSONL protocol with recursive duplicate-member rejection",
-        "one provider process group per turn with timeout and TERM/KILL cleanup",
-        "provider model/status event normalization",
-        "provider tool.call conversion through the owner-open codec and call registry",
-        "tool.result delivery back to provider stdin before provider continuation",
-        "unknown tool observation without killing the semantic turn",
-        "source tests cover failed shell continuation, duplicate JSON, early EOF and unknown tool",
-        "R5 Host reports configured external JSONL provider and current memory-only/asynchronous-control limitations truthfully"
+        "bounded external provider JSONL protocol and process adapter",
+        "provider event, tool call, tool result, completion and failure mapping",
+        "spawned fake-provider source tests and executable Host callback test"
       ],
       "open": [
-        "execute provider and spawned Host tests on Rust 1.93",
-        "probe the installed Codex executable and observed JSON/full-access capabilities",
-        "write the Codex-native event translation into the provider JSONL protocol",
-        "prove live Codex shell success, deliberate failure, ADB observation and continuation",
-        "capture exact provider executable/config evidence at L2 and L4"
+        "execute provider/Host tests on a real runner",
+        "probe the installed Codex executable and observed capabilities",
+        "bind real Codex JSON/app-server/MCP callbacks",
+        "capture a live provider same-turn L2 result"
       ]
     },
     {
@@ -84,12 +105,11 @@
         "command-string and exact argv execution",
         "cwd, environment delta and binary stdin",
         "raw stdout/stderr events",
-        "process group, timeout, cancellation and output exhaustion",
-        "registry-to-runtime failure closure",
-        "external provider callback returns non-zero shell output and allows provider continuation"
+        "process group, timeout, cancellation, output exhaustion and descendant cleanup",
+        "registry-to-runtime failure closure"
       ],
       "open": [
-        "execute all runtime, bridge, provider and Host tests on exact source",
+        "execute all runtime and bridge tests on exact source",
         "PTY and interactive job controls",
         "Root Linux UID/GID/namespace/cgroup placement",
         "physical Root Linux observation"
@@ -103,10 +123,9 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "ordinary configured adb executable receives exact argv",
-        "unknown/future subcommands remain valid",
-        "target labels are correlation only and no serial/host/port is injected",
-        "same-turn source test uses an opaque fake adb executable",
-        "external provider tool.call can select adb.exec through the same codec and bridge"
+        "unknown and future subcommands remain valid",
+        "target labels are correlation only and no serial, host or port is injected",
+        "same-turn fake-adb and bootstrap source tests"
       ],
       "open": [
         "select and implement the physical ARM64 client/server or transparent relay topology",
@@ -117,19 +136,24 @@
     {
       "id": "W5",
       "name": "event store, replay and recovery",
-      "status": "SPEC_ONLY",
+      "status": "SOURCE_IMPLEMENTED",
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "in-memory call registry distinguishes accepted, started, terminal and unknown-after-disconnect states",
-        "R5 Host labels event logging as best_effort_memory_only rather than claiming durability"
+        "append-only durable event store with writer lock, record hash chain, scoped event identity and strict reopen",
+        "stable semantic turn request digest excluding transport-only correlation and recursive digest fields",
+        "stable turn-stream identity bound to session, profile, task and turn",
+        "Host --event-store option with best-effort/unavailable fallback that does not become semantic denial",
+        "completed durable turn replay without provider or tool redispatch",
+        "incomplete durable turn reconciles to unknown_after_disconnect before replay and never automatically redispatches",
+        "source tests for durable reopen, incomplete classification, request conflict, terminal ordering, scope mismatch and no-respawn completed replay"
       ],
       "open": [
-        "durable append-only event store",
-        "completed replay without re-execution",
-        "incomplete restart reconciliation",
-        "inclusive cursors and long-running jobs",
-        "ENOSPC and power-loss qualification"
+        "execute event-store and Host replay tests on a real runner",
+        "persist tool chunks while the provider is running rather than after complete in-memory collection",
+        "durable long-running jobs and inclusive cursors",
+        "cross-process attach and inspect API",
+        "ENOSPC, partial write, Host crash and power-loss qualification"
       ]
     },
     {
@@ -141,13 +165,13 @@
       "implemented": [],
       "open": [
         "clean Android owner-open product profile",
-        "init, abstract socket and SELinux carrier",
+        "init, Android abstract socket and SELinux peer admission",
         "Root Linux lifecycle and writable overlay",
-        "thin AiShell streaming/cancel/reconnect client",
+        "thin AiShell streaming, cancel, reconnect and inspect client",
         "out-of-band emergency stop",
         "clean target-files and physical normal-path evidence"
       ],
-      "hold": "the checked-in Android audit overlay still selects the pre-r3 Authority/lease/P01/old shell-broker graph"
+      "hold": "the checked-in Android audit overlay still selects the pre-r3 Authority, lease, P01 and old shell-broker graph"
     },
     {
       "id": "W7",
@@ -156,38 +180,34 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "R5 evidence/status vocabulary and promotion boundaries are defined",
-        "CI source includes graph, generated-code, Rust all-target, clippy and spawned Host gates"
+        "R5 evidence/status vocabulary and promotion boundaries are defined"
       ],
       "open": [
-        "a GitHub/self-hosted runner that actually executes the configured steps",
-        "runner-backed L1/L2 evidence",
+        "runner-backed L1 and L2 evidence",
         "clean Android L3 evidence",
         "physical L4 same-turn shell and ADB",
-        "L5 crash, USB, reboot, ENOSPC and power-loss matrix",
-        "Codex self-build/install/recovery loop",
+        "L5 provider, Host, USB, reboot, ENOSPC and power-loss matrix",
+        "Codex self-build, install and recovery loop",
         "separate signed L6 release profile"
       ]
     }
   ],
   "critical_path_next": [
-    "execute Rust 1.93 fmt/test/clippy for the exact R5 source closure and fix every finding",
-    "translate the installed Codex native JSON/app-server events into owner-open provider JSONL",
-    "stream Host events and service cancellation while a provider turn is active",
-    "add durable replay/reconciliation",
+    "obtain an actual Rust runner and fix every fmt, compile, test and clippy failure",
+    "replace complete-turn event collection with streaming persistence and serviceable asynchronous cancellation",
+    "bind the installed Codex provider",
     "implement the real ADB topology",
-    "cut the Android owner-open product graph"
+    "cut the Android owner-open product graph and collect clean target-files evidence"
   ],
   "not_claimed": [
-    "Rust compilation, tests or clippy for the newly added same-turn/provider/Host source",
-    "updated and reviewed Cargo.lock",
-    "live Codex provider turn",
+    "successful Rust formatting, compilation, tests or clippy for the current head",
+    "reviewed Cargo.lock generated by the current source closure",
+    "live installed Codex turn",
+    "interactive asynchronous cancellation or flow control",
     "real ARM64 adb or transparent relay",
     "Android image inclusion",
     "physical shell or ADB effect",
-    "durable restart/replay guarantee",
-    "serviceable asynchronous cancellation",
-    "reboot or power-loss conformance",
+    "Host crash, ENOSPC, reboot or power-loss conformance",
     "public release"
   ]
 }
