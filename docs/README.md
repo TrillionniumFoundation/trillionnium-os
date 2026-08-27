@@ -1,39 +1,80 @@
-# Trillionnium OS Documentation
+# Trillionnium OS documentation
 
-This index separates current product truth from retained development history.
+This index separates current product truth, active implementation sequencing,
+implementation status, supporting evidence and retained history.
 
-## Canonical current documents
+## Active owner-open documents
 
-1. [`TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`](TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
-   — the only active implementation plan: Codex-only, Android-managed Root
-   Linux, owner-open direct shell/ADB, mechanism substrate and practical
-   validation.
-2. [`CURRENT_STATE.md`](CURRENT_STATE.md) — implemented boundaries, capability
-   matrix, Root Linux and WindowsCompat status, release evidence matrix, and
-   next development priorities.
-3. [`architecture/2026-08-06-codex-native-direct-shell-adb.md`](architecture/2026-08-06-codex-native-direct-shell-adb.md)
-   — historical ADR amended by the canonical owner-open plan: inference stays
-   off-device while Codex directly invokes shell and ADB.
-4. [`contracts/agent-exec-adb-windows-product-boundary-v2.json`](contracts/agent-exec-adb-windows-product-boundary-v2.json)
-   — transition machine contract; the owner-open contract in the plan
-   supersedes its semantic approval/allowlist fields.
-5. [`contracts/codex-sovereign-direct-tools-v1.json`](contracts/codex-sovereign-direct-tools-v1.json)
-   — current owner-open Codex/shell/ADB contract (implementation in progress).
-6. [`audits/2026-08-06-ai-agent-native-os-full-audit.md`](audits/2026-08-06-ai-agent-native-os-full-audit.md)
-   — repository/history/device audit, architecture grading, cleanup inventory
-   and release remediation order.
+1. [`TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md`](TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md)
+   — the only active implementation sequencing and closeout plan. It defines
+   W0-W9, status/evidence levels, file ownership, acceptance gates, immediate
+   batches and the owner-open definition of done.
+2. [`contracts/codex-sovereign-direct-tools-v1.json`](contracts/codex-sovereign-direct-tools-v1.json)
+   — the normative r3 product/protocol semantics: one Codex semantic control
+   plane, direct shell/ADB, mechanism-only substrate and honest uncertainty.
+3. [`status/owner-open-r4-status.json`](status/owner-open-r4-status.json)
+   — machine-readable implementation status. This is authoritative for r4
+   progress and claims; a source test may not promote a capability to device or
+   release status.
+4. [`status/owner-open-r4-traceability.tsv`](status/owner-open-r4-traceability.tsv)
+   — requirement-to-plan/source/test/evidence mapping.
+5. [`protocols/owner-open-direct-agent-host-v1.md`](protocols/owner-open-direct-agent-host-v1.md)
+   — first implementable connection/frame/turn/tool/shell/ADB protocol subset.
+6. [`security/owner-open-threat-model.md`](security/owner-open-threat-model.md)
+   — trust boundaries, accepted dogfood risk, required mechanical mitigations
+   and residual-risk statement.
+7. [`contracts/owner-open-forbidden-default-graph-v1.json`](contracts/owner-open-forbidden-default-graph-v1.json)
+   — negative Cargo/Android product-graph contract.
+8. [`TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`](TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
+   — r3 semantic architecture baseline. Its sequencing/status sections are
+   superseded by r4, but its owner-open product decisions remain normative.
+9. [`CURRENT_STATE.md`](CURRENT_STATE.md)
+   — long-form implementation/release observations, including pre-r3 history.
+   Product or release claim changes must update it; routine r4 task progress is
+   represented first in the machine status.
 
-These are the current architecture and planning entry points. The owner-open
-amendment in the canonical plan is the active implementation decision. A later
-ADR or explicit amendment must name what it supersedes and update
-`CURRENT_STATE.md` and the machine-readable contract in the same change.
+A change that alters protocol semantics must update the r3 machine contract or
+an explicit ADR. A change that alters implementation order, status or evidence
+must update the r4 plan/status/traceability package in the same pull request.
+Generated codec output must remain policy-free.
+
+## Architecture and audit entry points
+
+- [`architecture/2026-08-06-codex-native-direct-shell-adb.md`](architecture/2026-08-06-codex-native-direct-shell-adb.md)
+  — historical ADR amended by the r3 owner-open decision.
+- [`audits/2026-08-06-ai-agent-native-os-full-audit.md`](audits/2026-08-06-ai-agent-native-os-full-audit.md)
+  — repository/history/device audit, architecture grading, cleanup inventory
+  and remediation order.
+- [`contracts/agent-exec-adb-windows-product-boundary-v2.json`](contracts/agent-exec-adb-windows-product-boundary-v2.json)
+  — transition record. Its semantic approval/allowlist fields do not govern the
+  owner-open path.
+
+## r4 foundation implementation
+
+- [`../apps/trillionnium-owner-open-host/`](../apps/trillionnium-owner-open-host/)
+  — isolated default executable root with strict stdio/file-UDS framing, one
+  synchronous turn lineage per connection, provider-event normalization and an
+  honest unavailable-provider default. It is not yet the Android integrated
+  Host and does not keep control frames serviceable during a live provider.
+- [`../crates/trillionnium-owner-open-types/`](../crates/trillionnium-owner-open-types/)
+  — isolated codec/mechanical-validation crate. It deliberately has no
+  dependency on broad legacy OS types, policy, privilege, shell broker or
+  direct-tools crates.
+- [`../schemas/codex-sovereign-direct-tools.schema.json`](../schemas/codex-sovereign-direct-tools.schema.json)
+  — extensible JSON codec schema; not an allow/deny validator.
+- [`../tools/generate-owner-open-types.py`](../tools/generate-owner-open-types.py)
+  — codec-only constant generator from the semantic contract.
+- [`../tools/verify-owner-open-foundation.py`](../tools/verify-owner-open-foundation.py)
+  — default graph, generated output, status and known Android hold verifier.
+
+The foundation provides L0/L1 source/unit coverage and a spawned Host-process
+JSONL test for L2 evidence once CI passes. It does not claim a live Codex turn,
+direct shell runtime, raw ADB transport, Android image or device effect.
 
 ## Supporting implementation contracts and checkpoint evidence
 
-The entries below are the current source/checkpoint evidence set. They are
-bounded records, not a substitute for a live Codex turn or the release
-evidence described in the canonical plan. The plan is normative for current
-owner-open behavior; older ADR/contract fields are migration context.
+The entries below are bounded source/checkpoint records. They are not a
+substitute for the live same-turn and fault evidence required by r4.
 
 ### Current source and dogfood checkpoints
 
@@ -66,10 +107,10 @@ Current component contracts and implementation notes:
 
 - [`../crates/trillionnium-agent-direct-tools/README.md`](../crates/trillionnium-agent-direct-tools/README.md)
   — pre-r2 System API/Accessibility and sealed-broker implementation notes;
-  the owner-open plan supersedes its typed/HOLD sections.
+  r3/r4 supersede its typed/HOLD sequencing for owner-open.
 - [`../apps/trillionnium-agent-privilege-broker/README.md`](../apps/trillionnium-agent-privilege-broker/README.md)
-  — pre-r2 sealed/history Authority foundation; it is not linked or started
-  by the owner-open product and is not a raw shell/ADB fallback.
+  — sealed/history Authority foundation. It is not an owner-open product root
+  or raw shell/ADB fallback.
 
 The 25 July 14–28 evidence records were removed from the active source index
 after hash-verified custody. They remain recoverable in
@@ -81,24 +122,16 @@ and must not be treated as current release evidence.
 
 - The former dual-Agent, typed-only shell/ADB ADR, v1 boundary contract and
   plan/approval/Authority execute/undo design were removed from the active tree
-  on 2026-08-26 after hash-verified custody. Their recovery archives are listed
-  in `docs/evidence/2026-08-26-development-tree-inventory.md`.
-- The May 2026 Mobian/Phosh/Waydroid/Hepta/local-model line was removed from
-  the Android aggregation checkout and is likewise custody-only. The three
-  manifest-managed Android projects `trillionnium-os/{contracts,schemas,tools}`
-  remain because the current AOSP build consumes them.
-- The pre-Direct long-form root README remains recoverable from Git as
-  `e163970a2d46b6ce1cb722fd7a24f414ddf1108c:trillionnium-os/README.md`; it is
-  not duplicated into the active tree.
+  after hash-verified custody. They are not owner-open implementation inputs.
+- The May 2026 Mobian/Phosh/Waydroid/Hepta/local-model line was removed from the
+  Android aggregation checkout and remains custody-only.
 - Old v20–v26 release snapshots, calibration outputs, retired host/source
-  quarantines and the detached Direct source copy are recoverable only under
-  `trillionnium-retired-artifacts/2026-08-26/host-estate/`. That directory is
-  custody, not a second source tree, and must be excluded from source
-  discovery.
+  quarantines and detached Direct copies are recovery records, not a second
+  source tree.
+- The current Android `working-tree/` is an audit overlay over a repo-manifest
+  checkout. It is evidence of uncommitted integration state, not a clean build
+  or product claim.
 
-No superseded document is a current implementation or release claim. The
-canonical plan revision 2026-08-27-r3 is the normative implementation
-direction; the 2026-08-06 ADR remains useful historical context.
-
-Do not cite a superseded document, old smoke artifact, package hash, or prior
-device observation as proof for the current Android Direct product.
+No superseded document, package hash, static source receipt or prior device
+observation proves the current owner-open product. r3 defines the semantics; r4
+defines what must now be implemented and evidenced.
