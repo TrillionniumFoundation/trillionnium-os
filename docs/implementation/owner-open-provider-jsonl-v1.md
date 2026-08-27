@@ -2,7 +2,7 @@
 
 Status: **R5 source implementation; Rust/real-provider validation pending**  
 Source: `crates/trillionnium-owner-open-provider-jsonl`  
-Executable source Host: `apps/trillionnium-owner-open-host/src/bin/r5_host.rs`
+Selected source Host: `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs`
 
 ## Implemented source path
 
@@ -17,7 +17,7 @@ client turn.start
   -> direct process runtime
   -> provider tool.result
   -> provider continues
-  -> provider turn.complete
+  -> provider turn.complete / turn.cancelled
   -> Host turn.end
 ```
 
@@ -35,8 +35,8 @@ or access mode.
 - provider line and aggregate stdout ceilings;
 - continuously drained bounded stderr;
 - absolute monotonic turn timeout;
-- graceful wait followed by TERM/KILL and leader reap;
-- original protocol/tool failure retained after cleanup.
+- explicit cancellation grace followed by TERM/KILL and leader reap;
+- original protocol/tool/provider failure retained after cleanup.
 
 ## Tool conversion
 
@@ -57,20 +57,51 @@ Command meaning is never classified. PTY is currently reported unsupported
 rather than silently downgraded. Unknown tools receive `invalid_request` and the
 provider may continue.
 
+## Cancellation
+
+The adapter observes the active `ProviderHost` turn token.
+
+When cancelled it writes:
+
+```json
+{
+  "protocol": "trillionnium.owner-open.provider-jsonl.v1",
+  "kind": "turn.cancel",
+  "seq": 2,
+  "turn": {
+    "session_id": "...",
+    "profile_id": "owner-open",
+    "task_id": "...",
+    "turn_id": "...",
+    "turn_stream_id": "..."
+  }
+}
+```
+
+A provider may reply with `turn.cancelled`. If it does not reply within the
+configured mechanical grace, the provider process group is closed and the Host
+reports a cancelled turn. This is process lifecycle, not a semantic denial.
+
+A targeted `tool.cancel` does not set the provider turn token. It cancels the
+scoped call through the call registry; the adapter returns a `tool.result` whose
+terminal has `kind=client_cancelled`, and the provider may continue the same
+turn.
+
 ## Host carrier source
 
-`trillionnium-owner-open-r5-host` is an explicit stdio qualification binary. It
-truthfully reports:
+The selected `trillionnium-owner-open-r5-host` has:
 
-- external JSONL provider configured;
-- same-turn callback source available;
-- runtime ready for the configured source path;
-- event storage is memory-only/best-effort;
-- asynchronous control is not implemented.
+- a bounded input/control reader;
+- an independent provider turn worker;
+- per-event durable append and immediate delivery attempt;
+- active correlated `turn.cancel`;
+- active targeted `tool.cancel`;
+- client EOF/output loss detached from cancellation;
+- completed replay without provider restart;
+- incomplete recovery without automatic redispatch.
 
-It maps runtime chunks to compact base64 `tool.stdout`/`tool.stderr` frames and
-preserves process terminal fields. It does not claim the Android abstract
-socket, peer credentials, durable store or reconnect.
+The current source carrier is stdio qualification infrastructure. Android
+abstract socket and kernel peer admission remain W6.
 
 ## Authored tests
 
@@ -79,16 +110,18 @@ Provider package:
 - external provider receives failed shell observation and continues;
 - recursive duplicate provider member fails before spawn;
 - EOF before terminal is a truthful provider failure;
-- unknown tool is returned without killing the semantic turn.
+- unknown tool is returned without killing the semantic turn;
+- correlated `turn.cancel` is delivered and `turn.cancelled` is accepted.
 
 Host package:
 
-- spawns the R5 Host binary;
-- writes client hello and turn.start;
-- spawns an external provider fixture;
-- executes a real shell child with exit 9 and stdout/stderr;
-- returns tool events to the provider;
-- observes provider continuation and completed Host turn.
+- spawned provider/shell callback with non-zero exit and continuation;
+- in-flight event persistence before provider terminal;
+- client output disconnect with continued terminal persistence;
+- active `turn.cancel` while a shell call runs;
+- targeted `tool.cancel` followed by provider continuation;
+- completed replay and incomplete conservative recovery without provider
+  redispatch.
 
 These are authored tests, not executed Rust evidence until a real runner binds
 results to the exact commit.
