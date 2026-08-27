@@ -1,11 +1,16 @@
 requirement_id	work_package	source	test	evidence	status
 R5-GRAPH-001	W0	Cargo.toml;docs/contracts/owner-open-forbidden-default-graph-v2.json	tools/tests/test_verify_owner_open_r5.py	docs/evidence/2026-08-28-owner-open-turn-loop-source.md	SOURCE_IMPLEMENTED
-R5-GRAPH-002	W0	tools/verify-owner-open-r5.py	tools/tests/test_verify_owner_open_r5.py	local Python unittest output; CI pending	SOURCE_IMPLEMENTED
+R5-GRAPH-002	W0	tools/verify-owner-open-r5.py	tools/tests/test_verify_owner_open_r5.py	local Python unittest output; runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-TURN-001	W1	crates/trillionnium-owner-open-turn-loop/src/lib.rs	crates/trillionnium-owner-open-turn-loop/tests/same_turn.rs	docs/evidence/2026-08-28-owner-open-turn-loop-source.md	SOURCE_IMPLEMENTED
-R5-TURN-002	W1	crates/trillionnium-owner-open-turn-loop/src/lib.rs	provider_observes_a_failed_shell_call_and_continues_in_the_same_turn	CI pending	SOURCE_IMPLEMENTED
-R5-CALL-001	W1	crates/trillionnium-owner-open-call-registry/src/lib.rs;crates/trillionnium-owner-open-tool-bridge/src/lib.rs	an_exact_duplicate_call_produces_one_real_process_effect	CI pending	SOURCE_IMPLEMENTED
-R5-SHELL-001	W3	crates/trillionnium-owner-open-runtime/src/lib.rs;crates/trillionnium-owner-open-tool-bridge/src/lib.rs	provider_observes_a_failed_shell_call_and_continues_in_the_same_turn	CI pending	SOURCE_IMPLEMENTED
-R5-ADB-001	W4	crates/trillionnium-owner-open-runtime/src/lib.rs;crates/trillionnium-owner-open-turn-loop/src/lib.rs	ordinary_adb_argv_is_transparent_inside_the_same_turn	CI pending	SOURCE_IMPLEMENTED
-R5-RECOVERY-001	W5	crates/trillionnium-owner-open-call-registry/src/lib.rs	pre-r5 registry tests; durable tests not yet authored	None	SPEC_ONLY
+R5-TURN-002	W1	apps/trillionnium-owner-open-host/src/bin/r5_host.rs	apps/trillionnium-owner-open-host/tests/r5_stdio_provider.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-CALL-001	W1	crates/trillionnium-owner-open-call-registry/src/lib.rs;crates/trillionnium-owner-open-tool-bridge/src/lib.rs	an_exact_duplicate_call_produces_one_real_process_effect	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-PROVIDER-001	W2	crates/trillionnium-owner-open-provider-jsonl/src/lib.rs	crates/trillionnium-owner-open-provider-jsonl/tests/jsonl_provider.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-PROVIDER-002	W2	apps/trillionnium-owner-open-host/src/bin/r5_host.rs	apps/trillionnium-owner-open-host/tests/r5_stdio_provider.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-SHELL-001	W3	crates/trillionnium-owner-open-runtime/src/lib.rs;crates/trillionnium-owner-open-tool-bridge/src/lib.rs	provider_observes_a_failed_shell_call_and_continues_in_the_same_turn	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-ADB-001	W4	crates/trillionnium-owner-open-runtime/src/lib.rs;crates/trillionnium-owner-open-turn-loop/src/lib.rs	ordinary_adb_argv_is_transparent_inside_the_same_turn	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-STORE-001	W5	crates/trillionnium-owner-open-event-store/src/lib.rs	crates/trillionnium-owner-open-event-store/tests/durable_store.rs;crates/trillionnium-owner-open-event-store/tests/scoped_event_identity.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-RECOVERY-001	W5	apps/trillionnium-owner-open-host/src/r5_persistence.rs	apps/trillionnium-owner-open-host/tests/r5_persistence.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-RECOVERY-002	W5	apps/trillionnium-owner-open-host/src/bin/r5_host.rs	apps/trillionnium-owner-open-host/tests/r5_durable_replay.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-RECOVERY-003	W5	apps/trillionnium-owner-open-host/src/bin/r5_host.rs	incomplete turn source path emits unknown_after_disconnect before replay; fault execution pending	L5 pending	SOURCE_IMPLEMENTED
 R5-ANDROID-001	W6	android-integration/working-tree/vendor/trillionnium/config/common.mk	strict Android graph verifier after profile cutover	None	NOT_STARTED
 R5-QUAL-001	W7	docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md;docs/status/owner-open-r5-status.json	tools/verify-owner-open-r5.py	L0-L6 promotion rules	SPEC_ONLY
