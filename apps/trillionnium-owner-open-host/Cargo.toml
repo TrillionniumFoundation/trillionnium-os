@@ -30,4 +30,4 @@ tempfile.workspace = true
 
 [[bin]]
 name = "trillionnium-owner-open-r5-host"
-path = "src/bin/r5_host.rs"
+path = "src/bin/r5_streaming_host.rs"
