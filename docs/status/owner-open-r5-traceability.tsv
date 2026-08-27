@@ -2,9 +2,10 @@ requirement_id	work_package	source	test	evidence	status
 R5-GRAPH-001	W0	Cargo.toml;docs/contracts/owner-open-forbidden-default-graph-v2.json	tools/tests/test_verify_owner_open_r5.py	docs/evidence/2026-08-28-owner-open-turn-loop-source.md	SOURCE_IMPLEMENTED
 R5-GRAPH-002	W0	tools/verify-owner-open-r5.py	tools/tests/test_verify_owner_open_r5.py	local Python unittest output; runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-HOST-BIN-001	W0	apps/trillionnium-owner-open-host/Cargo.toml;docs/contracts/owner-open-forbidden-default-graph-v2.json	test_host_autobins_drift_fails;test_superseded_host_path_cannot_be_selected	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-HOST-LIFECYCLE-001	W0	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v3.rs	cargo clippy --all-targets --package trillionnium-owner-open-host -- -D warnings	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-TURN-001	W1	crates/trillionnium-owner-open-turn-loop/src/lib.rs	crates/trillionnium-owner-open-turn-loop/tests/same_turn.rs	docs/evidence/2026-08-28-owner-open-turn-loop-source.md	SOURCE_IMPLEMENTED
 R5-STREAM-001	W1	crates/trillionnium-owner-open-turn-loop/src/lib.rs	crates/trillionnium-owner-open-turn-loop/tests/streaming_and_cancel.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
-R5-TURN-002	W1	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs	apps/trillionnium-owner-open-host/tests/r5_stdio_provider.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-TURN-002	W1	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v3.rs;apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs	apps/trillionnium-owner-open-host/tests/r5_stdio_provider.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-CANCEL-001	W1	crates/trillionnium-owner-open-turn-loop/src/lib.rs	turn_cancellation_reaches_an_active_tool_process_group	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-CARRIER-CONTROL-001	W1	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs	turn_cancel_is_serviceable_while_a_tool_is_running	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-TOOL-CANCEL-001	W1	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs	tool_cancel_terminates_only_the_target_call_and_the_turn_continues	runner-backed CI pending	SOURCE_IMPLEMENTED
@@ -21,5 +22,6 @@ R5-RECOVERY-003	W5	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.
 R5-STREAM-STORE-001	W5	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs	apps/trillionnium-owner-open-host/tests/r5_streaming_persistence.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-DELIVERY-001	W5	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs	apps/trillionnium-owner-open-host/tests/r5_client_disconnect.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-CONTROL-STORE-001	W5	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs	apps/trillionnium-owner-open-host/tests/r5_active_controls.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-INSPECT-001	W5	apps/trillionnium-owner-open-host/src/r5_persistence.rs	apps/trillionnium-owner-open-host/tests/r5_inspect.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-ANDROID-001	W6	android-integration/working-tree/vendor/trillionnium/config/common.mk	strict Android graph verifier after profile cutover	None	NOT_STARTED
 R5-QUAL-001	W7	docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md;docs/status/owner-open-r5-status.json	tools/verify-owner-open-r5.py	L0-L6 promotion rules	SPEC_ONLY
