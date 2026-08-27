@@ -46,22 +46,28 @@ Implemented at source level:
 - direct command-string shell and element-preserving argv runtime;
 - ordinary configured ADB argv without injected serial/host/port;
 - process groups, cancellation, timeout and output bounds;
-- concurrent scoped call registry;
-- registry-to-runtime tool bridge with failure closure;
+- concurrent scoped call registry and registry-to-runtime failure closure;
 - R5 same-turn callback loop in which a provider receives a tool observation
   and may continue before producing one turn terminal;
+- bounded external provider JSONL process adapter;
+- executable stdio R5 Host mapping provider/tool observations to Host frames;
+- append-only event store with strict reopen and scoped event identity;
+- optional Host `--event-store` path, stable turn identity, completed-turn
+  replay without provider/tool respawn, and incomplete-turn reconciliation to
+  `unknown_after_disconnect` without automatic redispatch;
 - exact negative source-graph contracts and Python verifier tests.
 
 Not yet claimed:
 
-- Rust compile/test/clippy results for the latest R5 commit;
-- reviewed Cargo lock refresh;
-- executable Host import of the same-turn loop;
-- live Codex provider events;
+- successful Rust formatting, compilation, tests or clippy for the latest R5
+  commit—the observed Actions runs had no runner steps or logs;
+- reviewed Cargo lock refresh from the current source closure;
+- live installed Codex provider events;
+- streaming persistence while a provider/tool is still active;
+- asynchronous turn/tool cancellation, flow control or resume;
 - real ARM64 ADB or transparent relay;
-- durable replay/restart guarantees;
 - Android owner-open product graph, image or physical effect;
-- reboot/power-loss qualification;
+- Host-crash, ENOSPC, reboot or power-loss qualification;
 - signed public release.
 
 The checked-in Android audit overlay still contains the pre-R3
@@ -78,12 +84,14 @@ python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
 
 cargo generate-lockfile
 cargo fmt --all -- --check
-cargo test --package trillionnium-owner-open-types
-cargo test --package trillionnium-owner-open-runtime
-cargo test --package trillionnium-owner-open-call-registry
-cargo test --package trillionnium-owner-open-tool-bridge
-cargo test --package trillionnium-owner-open-turn-loop
-cargo test --package trillionnium-owner-open-host
+cargo test --all-targets --package trillionnium-owner-open-types
+cargo test --all-targets --package trillionnium-owner-open-runtime
+cargo test --all-targets --package trillionnium-owner-open-call-registry
+cargo test --all-targets --package trillionnium-owner-open-event-store
+cargo test --all-targets --package trillionnium-owner-open-tool-bridge
+cargo test --all-targets --package trillionnium-owner-open-turn-loop
+cargo test --all-targets --package trillionnium-owner-open-provider-jsonl
+cargo test --all-targets --package trillionnium-owner-open-host
 cargo clippy --all-targets -- -D warnings
 ```
 
