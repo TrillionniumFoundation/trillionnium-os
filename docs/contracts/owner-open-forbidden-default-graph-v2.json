@@ -85,13 +85,14 @@
         },
         {
           "name": "trillionnium-owner-open-r5-host",
-          "path": "src/bin/r5_control_host_v2.rs"
+          "path": "src/bin/r5_control_host_v3.rs"
         }
       ],
       "forbidden_selected_paths": [
         "src/bin/r5_host.rs",
         "src/bin/r5_streaming_host.rs",
-        "src/bin/r5_control_host.rs"
+        "src/bin/r5_control_host.rs",
+        "src/bin/r5_control_host_v2.rs"
       ]
     },
     "owner_open_packages": [
