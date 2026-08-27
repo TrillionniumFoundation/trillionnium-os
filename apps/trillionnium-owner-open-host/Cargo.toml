@@ -11,11 +11,21 @@ publish = false
 default = []
 
 [dependencies]
+base64.workspace = true
 libc.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
+trillionnium-owner-open-call-registry.workspace = true
+trillionnium-owner-open-provider-jsonl.workspace = true
+trillionnium-owner-open-runtime.workspace = true
+trillionnium-owner-open-turn-loop.workspace = true
 trillionnium-owner-open-types.workspace = true
 
 [dev-dependencies]
 serde_json.workspace = true
+tempfile.workspace = true
+
+[[bin]]
+name = "trillionnium-owner-open-r5-host"
+path = "src/bin/r5_host.rs"
