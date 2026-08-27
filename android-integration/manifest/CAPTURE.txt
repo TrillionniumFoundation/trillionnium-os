@@ -1,0 +1,5 @@
+checkout_root	/data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/android/lineage-fogos
+manifest_file	.repo/manifests/trillionnium-fogos.xml
+manifest_sha256	03ea1c84f61a3240af984781813c44ac95b81e0f75ca16024faeeb0ff187c872
+project_count	1172
+captured_at	2026-08-27T17:00:00+08:00

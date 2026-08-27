@@ -1,0 +1,2122 @@
+diff --git a/Android.bp b/Android.bp
+index 2627b6c8..9753a900 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -149,6 +149,7 @@ filegroup {
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java",
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlProtocol.java",
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.java",
++        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java",
+         "packages/TrillionniumAgentAccessibility/tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayAckTest.java",
+     ],
+@@ -178,6 +179,31 @@ filegroup {
+     ],
+ }
+ 
++// Process-separated capability-lease transport shared by system_server and the
++// independent consent APK.  The interface carries only broker-authored bytes;
++// callers cannot submit a challenge or destination through this service.
++java_library_static {
++    name: "trillionnium-capability-lease-binder-api",
++    srcs: ["capabilityleaseapi/src/**/*"],
++    aidl: {
++        local_include_dirs: ["capabilityleaseapi/src"],
++    },
++    installable: false,
++    sdk_version: "core_platform",
++    libs: [
++        "framework",
++    ],
++    visibility: ["//visibility:public"],
++}
++
++filegroup {
++    name: "trillionnium-capability-lease-ui-protocol-source",
++    srcs: [
++        "capabilityleaseapi/src/org/trillionnium/capabilitylease/CapabilityLeaseUiProtocol.java",
++    ],
++    visibility: ["//visibility:public"],
++}
++
+ filegroup {
+     name: "trillionnium-library-sources",
+     srcs: [
+@@ -273,7 +299,10 @@ java_library {
+         ":trillionnium-platform-library-sources",
+     ],
+ 
+-    static_libs: ["trillionnium-agent-identity-product"],
++    static_libs: [
++        "trillionnium-agent-identity-product",
++        "trillionnium-capability-lease-binder-api",
++    ],
+ 
+     // These implementations are explicitly source-only. The abstract-socket connector is
+     // PRODUCT_WIRED=false and its hidden UnixSocketAddress factory must move behind a separately
+@@ -316,6 +345,26 @@ python_test_host {
+     },
+ }
+ 
++// Read-only source/device-surface audit.  The guard intentionally reports HOLD
++// when a source tree cannot prove hardware-backed KeyMint, an OS-owned rollback
++// producer, or a live Accessibility grant; it never treats missing evidence as
++// activation-ready and never performs a device operation.
++python_test_host {
++    name: "TrillionniumAndroidSecuritySurfaceContractTest",
++    main: "tests/android_security_surface_contract_test.py",
++    srcs: [
++        "tests/android_security_surface_contract_test.py",
++        "tools/verify_android_security_surfaces.py",
++    ],
++    data: [
++        "contracts/android-security-surface-v1.json",
++    ],
++    test_suites: ["general-tests"],
++    test_options: {
++        unit_test: true,
++    },
++}
++
+ // Build-only, source-disabled loader prerequisite. This module is neither installable nor wired
+ // into org.trillionnium.platform. Its fixed production paths do not exist in the product image.
+ // The provider SPI classes below are only build/test artifacts.
+@@ -646,6 +695,7 @@ sh_test_host {
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java",
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlProtocol.java",
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.java",
++        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java",
+         "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/DirectPeerPolicy.java",
+     ],
+@@ -674,6 +724,9 @@ sh_test_host {
+     src: "tests/capability_lease_broker_source_contract.sh",
+     data: [
+         "Android.bp",
++        "capabilityleaseapi/src/org/trillionnium/capabilitylease/CapabilityLeaseUiProtocol.java",
++        "capabilityleaseapi/src/org/trillionnium/capabilitylease/ICapabilityLeaseUiBroker.aidl",
++        "sdk/src/java/trillionnium/app/TrillionniumContextConstants.java",
+         "contracts/capability-lease-root-registration-v1.json",
+         "contracts/capability-lease-root-publication-v1.json",
+         "contracts/capability-lease-root-publisher-launch-v1.json",
+@@ -689,6 +742,7 @@ sh_test_host {
+         "trillionnium/res/AndroidManifest.xml",
+         "trillionnium/res/res/values/config.xml",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBinderCallerVerifier.java",
++        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallExecutor.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseChallengeEncoderV1.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendAckPublisher.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationBindingV1.java",
+@@ -722,6 +776,9 @@ sh_test_host {
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiService.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java",
++        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerService.java",
++        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerProductEnrollment.java",
++        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseUiBrokerBinder.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingFileStore.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java",
+@@ -737,6 +794,8 @@ sh_test_host {
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistryRecordCodec.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTrustConfigLoader.java",
+         "tests/CapabilityLeaseOsFileStoreFaultMatrixTest.java",
++        "tests/CapabilityLeaseBrokerCallExecutorTest.java",
++        "tests/CapabilityLeasePendingBrokerTest.java",
+         "tests/device/CapabilityLeaseOsFileStoreFaultMatrixAndroidManifest.xml",
+     ],
+     test_suites: ["general-tests"],
+@@ -835,6 +894,7 @@ java_test_host {
+     name: "TrillionniumCapabilityLeasePendingBrokerTest",
+     srcs: [
+         ":trillionnium-agent-descriptor-registry-sources",
++        ":trillionnium-capability-lease-ui-protocol-source",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiCapabilityLeaseProtocolV1.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayLedger.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendAckPublisher.java",
+@@ -875,6 +935,7 @@ java_test_host {
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTrustConfigLoader.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java",
++        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallExecutor.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRetirementCodec.java",
+@@ -897,6 +958,7 @@ java_test_host {
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+         "tests/CapabilityLeasePendingBrokerTest.java",
++        "tests/CapabilityLeaseBrokerCallExecutorTest.java",
+         "tests/CapabilityLeaseChallengeEncoderV1Test.java",
+         "tests/CapabilityLeaseChallengeV1Golden.java",
+         "tests/CapabilityLeaseBrokerCallerPolicyTest.java",
+@@ -942,6 +1004,7 @@ android_test {
+     manifest: "tests/device/CapabilityLeaseOsFileStoreFaultMatrixAndroidManifest.xml",
+     srcs: [
+         ":trillionnium-agent-descriptor-registry-sources",
++        ":trillionnium-capability-lease-ui-protocol-source",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayFileStore.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayLedger.java",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendAckPublisher.java",
+@@ -1034,6 +1097,7 @@ java_test_host {
+     name: "TrillionniumAgentSystemApiCapabilityLeaseSourceTest",
+     srcs: [
+         ":trillionnium-agent-descriptor-registry-sources",
++        ":trillionnium-capability-lease-ui-protocol-source",
+         ":trillionnium-capability-lease-destination-construction-sources",
+         ":trillionnium-capability-lease-receipt-construction-sources",
+         "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiCapabilityLeaseProtocolV1.java",
+diff --git a/TEST_MAPPING b/TEST_MAPPING
+index b7187c4e..50f35729 100644
+--- a/TEST_MAPPING
++++ b/TEST_MAPPING
+@@ -3,6 +3,9 @@
+     {
+       "name": "TrillionniumAgentAccessibilityProductOwnershipContractTest"
+     },
++    {
++      "name": "TrillionniumAndroidSecuritySurfaceContractTest"
++    },
+     {
+       "name": "TrillionniumAgentDescriptorRegistryContractTest"
+     },
+diff --git a/packages/TrillionniumAgentAccessibility/Android.bp b/packages/TrillionniumAgentAccessibility/Android.bp
+index 58301995..4a7b11ad 100644
+--- a/packages/TrillionniumAgentAccessibility/Android.bp
++++ b/packages/TrillionniumAgentAccessibility/Android.bp
+@@ -21,6 +21,8 @@ java_test_host {
+         ":trillionnium-agent-descriptor-registry-sources",
+         ":trillionnium-canonical-operation-binding-golden-vector-sources",
+         "src/org/trillionnium/agentaccessibility/AccessibilityGestureOutcome.java",
++        "src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSession.java",
++        "src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilityOperationId.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilityProtocol.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilityRequestId.java",
+@@ -38,6 +40,8 @@ java_test_host {
+         "tests/src/org/trillionnium/agentaccessibility/AccessibilitySafetySemanticsTest.java",
+         "tests/src/org/trillionnium/agentaccessibility/AccessibilitySnapshotProtocolTest.java",
+         "tests/src/org/trillionnium/agentaccessibility/AccessibilityCanonicalOperationBindingTest.java",
++        "tests/src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSessionTest.java",
++        "tests/src/org/trillionnium/agentaccessibility/AccessibilityDeferredCloseTest.java",
+     ],
+     static_libs: [
+         "gson",
+@@ -60,6 +64,8 @@ sh_test_host {
+         "README.md",
+         "res/xml/agent_accessibility_service.xml",
+         "src/org/trillionnium/agentaccessibility/AccessibilityGestureOutcome.java",
++        "src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSession.java",
++        "src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilityOperationId.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilityProtocol.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilityRequestId.java",
+@@ -71,6 +77,7 @@ sh_test_host {
+         "src/org/trillionnium/agentaccessibility/AccessibilityReplayJournal.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.java",
+         "src/org/trillionnium/agentaccessibility/AccessibilitySnapshotRedaction.java",
++        "src/org/trillionnium/agentaccessibility/AccessibilityUserAuthorizationGate.java",
+         "src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java",
+         "src/org/trillionnium/agentaccessibility/DirectPeerPolicy.java",
+         "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedgerTest.java",
+@@ -78,6 +85,8 @@ sh_test_host {
+         "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandlerTest.java",
+         "tests/src/org/trillionnium/agentaccessibility/AgentDescriptorEndpointTest.java",
+         "tests/src/org/trillionnium/agentaccessibility/AccessibilitySafetySemanticsTest.java",
++        "tests/src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSessionTest.java",
++        "tests/src/org/trillionnium/agentaccessibility/AccessibilityDeferredCloseTest.java",
+         "tests/src/org/trillionnium/agentaccessibility/AccessibilitySnapshotProtocolTest.java",
+     ],
+     test_suites: ["general-tests"],
+diff --git a/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java b/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java
+index 7e1143d0..6d9ed211 100644
+--- a/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java
++++ b/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java
+@@ -26,6 +26,11 @@ final class AccessibilityReplayControlHandler {
+         REPLAY_SYNC
+     }
+ 
++    /** Live authorization recheck invoked after the full frame is read, before ledger mutation. */
++    interface BeforeMutationGate {
++        void requireCurrent();
++    }
++
+     AccessibilityReplayControlHandler(
+             AgentDescriptor boundAgent, AccessibilityReplayLedger replayLedger) {
+         if (!AgentDescriptorRegistry.productAllowlist().contains(boundAgent)
+@@ -40,9 +45,11 @@ final class AccessibilityReplayControlHandler {
+     byte[] handleSingleFrame(
+             AgentDescriptor authenticatedAgent,
+             AuthenticatedRole authenticatedRole,
+-            InputStream connectionInput)
++            InputStream connectionInput,
++            BeforeMutationGate beforeMutation)
+             throws ControlException {
+-        if (authenticatedAgent != mBoundAgent
++        if (beforeMutation == null
++                || authenticatedAgent != mBoundAgent
+                 || !AgentDescriptorRegistry.productAllowlist().contains(authenticatedAgent)) {
+             throw new ControlException(ERROR_PEER_DENIED);
+         }
+@@ -60,6 +67,7 @@ final class AccessibilityReplayControlHandler {
+                 if (authenticatedRole != AuthenticatedRole.ADAPTER) {
+                     throw new ControlException(ERROR_ROLE_DENIED);
+                 }
++                beforeMutation.requireCurrent();
+                 AccessibilityReplayLedger.EpochActivation result =
+                         mReplayLedger.activateEpochFromTrustedAdapter(
+                                 authenticatedAgent, request.epoch);
+@@ -69,6 +77,7 @@ final class AccessibilityReplayControlHandler {
+                 if (authenticatedRole != AuthenticatedRole.REPLAY_SYNC) {
+                     throw new ControlException(ERROR_ROLE_DENIED);
+                 }
++                beforeMutation.requireCurrent();
+                 mReplayLedger.acknowledgeCommittedFromTrustedAdapter(
+                         authenticatedAgent,
+                         request.epoch,
+diff --git a/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java b/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java
+index e68c34fc..2ce95996 100644
+--- a/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java
++++ b/packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java
+@@ -3,6 +3,7 @@ package org.trillionnium.agentaccessibility;
+ 
+ import android.accessibilityservice.AccessibilityService;
+ import android.accessibilityservice.GestureDescription;
++import android.content.ComponentName;
+ import android.content.Intent;
+ import android.graphics.Path;
+ import android.graphics.Rect;
+@@ -11,6 +12,7 @@ import android.net.LocalSocket;
+ import android.os.Bundle;
+ import android.os.Handler;
+ import android.os.Looper;
++import android.os.UserHandle;
+ import android.util.Slog;
+ import android.view.accessibility.AccessibilityEvent;
+ import android.view.accessibility.AccessibilityNodeInfo;
+@@ -29,6 +31,7 @@ import java.util.HashSet;
+ import java.util.List;
+ import java.util.Set;
+ import java.util.concurrent.ArrayBlockingQueue;
++import java.util.concurrent.ExecutorService;
+ import java.util.concurrent.RejectedExecutionException;
+ import java.util.concurrent.ThreadPoolExecutor;
+ import java.util.concurrent.TimeUnit;
+@@ -52,7 +55,10 @@ public final class AgentAccessibilityService extends AccessibilityService {
+     private static final long MAX_REPLAY_WAIT_MS = 70_000;
+ 
+     private final Object mLifecycleLock = new Object();
++    private final AccessibilityAuthorizationSession mAuthorization =
++            new AccessibilityAuthorizationSession(this::isSystemUserExplicitlyAuthorized);
+     private final Set<LocalSocket> mOwnedSockets = new HashSet<>();
++    private final Set<ExecutorService> mWorkerExecutors = new HashSet<>();
+     private final AtomicLong mUiEpoch = new AtomicLong(1);
+     private final AtomicLong mGeneration = new AtomicLong();
+     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
+@@ -93,7 +99,13 @@ public final class AgentAccessibilityService extends AccessibilityService {
+     protected void onServiceConnected() {
+         super.onServiceConnected();
+         invalidateTree();
+-        startDirectBackend();
++        stopDirectBackend();
++        long authorizationGeneration = mAuthorization.activateIfAuthorized();
++        if (authorizationGeneration == 0) {
++            Slog.e(TAG, "explicit per-user Accessibility authorization unavailable; held closed");
++            return;
++        }
++        startDirectBackend(authorizationGeneration);
+     }
+ 
+     @Override
+@@ -114,25 +126,36 @@ public final class AgentAccessibilityService extends AccessibilityService {
+ 
+     @Override
+     public void onDestroy() {
+-        stopDirectBackend();
+-        AccessibilityReplayLedger ledger = mReplayLedger;
+-        mReplayLedger = null;
++        final AccessibilityReplayLedger ledger;
++        final ExecutorService[] workers;
++        synchronized (mLifecycleLock) {
++            stopDirectBackendLocked();
++            ledger = mReplayLedger;
++            mReplayLedger = null;
++            workers = mWorkerExecutors.toArray(new ExecutorService[0]);
++            mWorkerExecutors.clear();
++        }
+         if (ledger != null) {
+-            try {
+-                ledger.close();
+-            } catch (IOException e) {
+-                Slog.w(TAG, "persistent replay journal close failed", e);
+-            }
++            AccessibilityDeferredClose.closeAfterTermination(
++                    workers,
++                    ledger::close,
++                    failure -> Slog.w(TAG, "persistent replay journal close failed", failure));
+         }
+         super.onDestroy();
+     }
+ 
+-    private void startDirectBackend() {
++    private void startDirectBackend(long authorizationGeneration) {
+         synchronized (mLifecycleLock) {
+             if (mRunning) {
+                 return;
+             }
++            if (!mAuthorization.isCurrentAndAuthorized(authorizationGeneration)) {
++                mAuthorization.deactivate();
++                Slog.e(TAG, "Accessibility authorization changed before backend start");
++                return;
++            }
+             if (mReplayLedger == null) {
++                mAuthorization.deactivate();
+                 Slog.wtf(TAG, "persistent replay journal unavailable; socket not started");
+                 return;
+             }
+@@ -161,16 +184,21 @@ public final class AgentAccessibilityService extends AccessibilityService {
+                         thread.setDaemon(true);
+                         return thread;
+                     });
++            mWorkerExecutors.removeIf(ExecutorService::isTerminated);
++            mWorkerExecutors.add(requests);
++            mWorkerExecutors.add(replayControlRequests);
+             mRequests = requests;
+             mReplayControlRequests = replayControlRequests;
+             mRunning = true;
+             Thread acceptThread = new Thread(
+-                    () -> serveDirect(requests, replayControlRequests),
++                    () -> serveDirect(
++                            requests, replayControlRequests, authorizationGeneration),
+                     "trillionnium-accessibility-accept");
+             acceptThread.setDaemon(true);
+             acceptThread.start();
+             Thread replayControlThread = new Thread(
+-                    () -> serveReplayControl(requests, replayControlRequests),
++                    () -> serveReplayControl(
++                            requests, replayControlRequests, authorizationGeneration),
+                     "trillionnium-accessibility-replay-control-accept");
+             replayControlThread.setDaemon(true);
+             replayControlThread.start();
+@@ -185,6 +213,7 @@ public final class AgentAccessibilityService extends AccessibilityService {
+ 
+     private void stopDirectBackendLocked() {
+         mRunning = false;
++        mAuthorization.deactivate();
+         LocalServerSocket server = mServer;
+         mServer = null;
+         LocalServerSocket replayControlServer = mReplayControlServer;
+@@ -214,13 +243,32 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         }
+     }
+ 
++    private boolean isSystemUserExplicitlyAuthorized() {
++        if (UserHandle.myUserId() != UserHandle.USER_SYSTEM) return false;
++        return AccessibilityUserAuthorizationGate.isExplicitlyEnabled(
++                this, new ComponentName(this, AgentAccessibilityService.class));
++    }
++
++    /** Re-checks the live Android grant and tears down only the matching bind generation. */
++    private boolean authorizationUsableOrStop(long authorizationGeneration) {
++        if (mAuthorization.isCurrentAndAuthorized(authorizationGeneration)) return true;
++        synchronized (mLifecycleLock) {
++            if (mAuthorization.isCurrent(authorizationGeneration)) {
++                stopDirectBackendLocked();
++            }
++        }
++        return false;
++    }
++
+     private void serveDirect(
+-            ThreadPoolExecutor requests, ThreadPoolExecutor replayControlRequests) {
++            ThreadPoolExecutor requests, ThreadPoolExecutor replayControlRequests,
++            long authorizationGeneration) {
+         LocalServerSocket publishedServer = null;
+         try (LocalServerSocket server = new LocalServerSocket(
+                 AccessibilityProtocol.SOCKET_NAME)) {
+             if (!publishServerIfCurrent(
+-                    server, false, requests, replayControlRequests)) {
++                    server, false, requests, replayControlRequests,
++                    authorizationGeneration)) {
+                 return;
+             }
+             publishedServer = server;
+@@ -229,14 +277,19 @@ public final class AgentAccessibilityService extends AccessibilityService {
+                     && mReplayControlRequests == replayControlRequests) {
+                 LocalSocket socket = server.accept();
+                 try {
++                    if (!authorizationUsableOrStop(authorizationGeneration)) {
++                        throw new SecurityException("accessibility_authorization_revoked");
++                    }
+                     AgentDescriptor peerIdentity = DirectPeerPolicy.verify(socket);
+                     socket.setSoTimeout(SOCKET_READ_TIMEOUT_MS);
+                     if (!trackSocketIfCurrent(
+-                            socket, requests, replayControlRequests)) {
++                            socket, requests, replayControlRequests,
++                            authorizationGeneration)) {
+                         closeQuietly(socket);
+                         continue;
+                     }
+-                    requests.execute(() -> handleOwnedSocket(socket, peerIdentity));
++                    requests.execute(() -> handleOwnedSocket(
++                            socket, peerIdentity, authorizationGeneration));
+                 } catch (RejectedExecutionException e) {
+                     untrackOwnedSocket(socket);
+                     closeQuietly(socket);
+@@ -258,11 +311,13 @@ public final class AgentAccessibilityService extends AccessibilityService {
+     }
+ 
+     private void serveReplayControl(
+-            ThreadPoolExecutor requests, ThreadPoolExecutor replayControlRequests) {
++            ThreadPoolExecutor requests, ThreadPoolExecutor replayControlRequests,
++            long authorizationGeneration) {
+         LocalServerSocket publishedServer = null;
+         try (LocalServerSocket server = new LocalServerSocket(REPLAY_CONTROL_SOCKET_NAME)) {
+             if (!publishServerIfCurrent(
+-                    server, true, requests, replayControlRequests)) {
++                    server, true, requests, replayControlRequests,
++                    authorizationGeneration)) {
+                 return;
+             }
+             publishedServer = server;
+@@ -271,16 +326,21 @@ public final class AgentAccessibilityService extends AccessibilityService {
+                     && mReplayControlRequests == replayControlRequests) {
+                 LocalSocket socket = server.accept();
+                 try {
++                    if (!authorizationUsableOrStop(authorizationGeneration)) {
++                        throw new SecurityException("accessibility_authorization_revoked");
++                    }
+                     AgentDescriptorRegistry.ReplayControlPeer peerIdentity =
+                             DirectPeerPolicy.verifyReplayControl(socket);
+                     socket.setSoTimeout(SOCKET_READ_TIMEOUT_MS);
+                     if (!trackSocketIfCurrent(
+-                            socket, requests, replayControlRequests)) {
++                            socket, requests, replayControlRequests,
++                            authorizationGeneration)) {
+                         closeQuietly(socket);
+                         continue;
+                     }
+                     replayControlRequests.execute(
+-                            () -> handleOwnedReplayControlSocket(socket, peerIdentity));
++                            () -> handleOwnedReplayControlSocket(
++                                    socket, peerIdentity, authorizationGeneration));
+                 } catch (RejectedExecutionException e) {
+                     untrackOwnedSocket(socket);
+                     closeQuietly(socket);
+@@ -313,11 +373,13 @@ public final class AgentAccessibilityService extends AccessibilityService {
+             LocalServerSocket server,
+             boolean replayControl,
+             ThreadPoolExecutor requests,
+-            ThreadPoolExecutor replayControlRequests) {
++            ThreadPoolExecutor replayControlRequests,
++            long authorizationGeneration) {
+         synchronized (mLifecycleLock) {
+             if (!mRunning
+                     || mRequests != requests
+-                    || mReplayControlRequests != replayControlRequests) {
++                    || mReplayControlRequests != replayControlRequests
++                    || !mAuthorization.isCurrent(authorizationGeneration)) {
+                 return false;
+             }
+             if (replayControl) {
+@@ -343,8 +405,12 @@ public final class AgentAccessibilityService extends AccessibilityService {
+     }
+ 
+     private void handleOwnedReplayControlSocket(
+-            LocalSocket socket, AgentDescriptorRegistry.ReplayControlPeer peerIdentity) {
++            LocalSocket socket, AgentDescriptorRegistry.ReplayControlPeer peerIdentity,
++            long authorizationGeneration) {
+         try (LocalSocket owned = socket) {
++            if (!authorizationUsableOrStop(authorizationGeneration)) {
++                throw new SecurityException("accessibility_authorization_revoked");
++            }
+             AccessibilityReplayControlHandler.AuthenticatedRole role =
+                     replayControlRole(peerIdentity);
+             AccessibilityReplayLedger ledger = mReplayLedger;
+@@ -356,7 +422,12 @@ public final class AgentAccessibilityService extends AccessibilityService {
+                             peerIdentity.descriptor(), ledger);
+             byte[] response =
+                     handler.handleSingleFrame(
+-                            peerIdentity.descriptor(), role, owned.getInputStream());
++                            peerIdentity.descriptor(), role, owned.getInputStream(), () -> {
++                                if (!authorizationUsableOrStop(authorizationGeneration)) {
++                                    throw new SecurityException(
++                                            "accessibility_authorization_revoked");
++                                }
++                            });
+             OutputStream output = owned.getOutputStream();
+             output.write(response);
+             output.flush();
+@@ -388,17 +459,21 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         throw new SecurityException("replay_control_role_denied");
+     }
+ 
+-    private void handleOwnedSocket(LocalSocket socket, AgentDescriptor peerIdentity) {
++    private void handleOwnedSocket(LocalSocket socket, AgentDescriptor peerIdentity,
++            long authorizationGeneration) {
+         try (LocalSocket owned = socket) {
+             String requestId = "invalid";
+             AccessibilityProtocol.Request request = null;
+             byte[] response;
+             try {
++                if (!authorizationUsableOrStop(authorizationGeneration)) {
++                    throw new SecurityException("accessibility_authorization_revoked");
++                }
+                 request = AccessibilityProtocol.parseRequest(
+                         peerIdentity,
+                         AccessibilityProtocol.readFrame(owned.getInputStream()));
+                 requestId = request.requestId;
+-                response = executeWithReplay(request);
++                response = executeWithReplay(request, authorizationGeneration);
+             } catch (AccessibilityProtocol.ProtocolException e) {
+                 response = encodeResponse(errorResponse(requestId, e.code), requestId);
+             } catch (IOException e) {
+@@ -430,11 +505,13 @@ public final class AgentAccessibilityService extends AccessibilityService {
+     private boolean trackSocketIfCurrent(
+             LocalSocket socket,
+             ThreadPoolExecutor requests,
+-            ThreadPoolExecutor replayControlRequests) {
++            ThreadPoolExecutor replayControlRequests,
++            long authorizationGeneration) {
+         synchronized (mLifecycleLock) {
+             return mRunning
+                     && mRequests == requests
+                     && mReplayControlRequests == replayControlRequests
++                    && mAuthorization.isCurrent(authorizationGeneration)
+                     && socket != null
+                     && mOwnedSockets.add(socket);
+         }
+@@ -453,11 +530,12 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         mOwnedSockets.clear();
+     }
+ 
+-    private byte[] executeWithReplay(AccessibilityProtocol.Request request) {
++    private byte[] executeWithReplay(
++            AccessibilityProtocol.Request request, long authorizationGeneration) {
+         if (!AccessibilityReplayPolicy.requiresDurableReplay(request.action.type)) {
+             // Snapshot is a read-only observation. A retry intentionally samples current UI
+             // state again, so it must not consume the finite lifetime effect ledger.
+-            return executeReadOnly(request);
++            return executeReadOnly(request, authorizationGeneration);
+         }
+         try {
+             if (AccessibilityOperationId.parse(request.requestId) == null) {
+@@ -486,7 +564,7 @@ public final class AgentAccessibilityService extends AccessibilityService {
+                     () -> {
+                         JSONObject response;
+                         try {
+-                            response = execute(request);
++                            response = execute(request, authorizationGeneration);
+                         } catch (RuntimeException e) {
+                             Slog.e(TAG, "direct Accessibility effect failed", e);
+                             response = errorResponse(request.requestId, "internal_error");
+@@ -505,10 +583,11 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         }
+     }
+ 
+-    private byte[] executeReadOnly(AccessibilityProtocol.Request request) {
++    private byte[] executeReadOnly(
++            AccessibilityProtocol.Request request, long authorizationGeneration) {
+         JSONObject response;
+         try {
+-            response = execute(request);
++            response = execute(request, authorizationGeneration);
+         } catch (RuntimeException e) {
+             Slog.e(TAG, "direct Accessibility read-only observation failed", e);
+             response = "snapshot".equals(request.action.type)
+@@ -520,21 +599,33 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         return encodeResponse(response, request.requestId);
+     }
+ 
+-    private JSONObject execute(AccessibilityProtocol.Request request) {
++    private JSONObject execute(
++            AccessibilityProtocol.Request request, long authorizationGeneration) {
+         AccessibilityProtocol.Action action = request.action;
++        if (!authorizationUsableOrStop(authorizationGeneration)) {
++            return "snapshot".equals(action.type)
++                    ? snapshotErrorResponse(request.requestId, action.snapshotMode,
++                            "accessibility_authorization_revoked")
++                    : errorResponse(request.requestId, "accessibility_authorization_revoked");
++        }
+         if ("snapshot".equals(action.type)) {
+-            return executeSnapshot(request.requestId, action.windowId, action.snapshotMode);
++            return executeSnapshot(request.requestId, action.windowId, action.snapshotMode,
++                    authorizationGeneration);
+         }
+         if ("batch".equals(action.type)) {
+-            return executeBatch(request.requestId, action.actions);
++            return executeBatch(request.requestId, action.actions, authorizationGeneration);
+         }
+-        OperationResult result = executePrimitive(action);
++        OperationResult result = executePrimitive(action, authorizationGeneration);
+         return operationResponse(request.requestId, action.type, result);
+     }
+ 
+     private JSONObject executeSnapshot(String requestId, Integer requestedWindowId,
+-            String snapshotMode) {
++            String snapshotMode, long authorizationGeneration) {
+         for (int attempt = 0; attempt < 2; attempt++) {
++            if (!authorizationUsableOrStop(authorizationGeneration)) {
++                return snapshotErrorResponse(requestId, snapshotMode,
++                        "accessibility_authorization_revoked");
++            }
+             long startEpoch = mUiEpoch.get();
+             long generation = mGeneration.incrementAndGet();
+             AccessibilityNodeInfo root = null;
+@@ -554,6 +645,10 @@ public final class AgentAccessibilityService extends AccessibilityService {
+                 if (startEpoch != endEpoch) {
+                     continue;
+                 }
++                if (!authorizationUsableOrStop(authorizationGeneration)) {
++                    return snapshotErrorResponse(requestId, snapshotMode,
++                            "accessibility_authorization_revoked");
++                }
+                 mPublishedGeneration = generation;
+                 mPublishedEpoch = startEpoch;
+ 
+@@ -578,12 +673,13 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         return snapshotErrorResponse(requestId, snapshotMode, "ui_changed");
+     }
+ 
+-    private JSONObject executeBatch(String requestId, List<AccessibilityProtocol.Action> actions) {
++    private JSONObject executeBatch(String requestId, List<AccessibilityProtocol.Action> actions,
++            long authorizationGeneration) {
+         JSONArray results = new JSONArray();
+         int completed = 0;
+         for (int i = 0; i < actions.size(); i++) {
+             AccessibilityProtocol.Action action = actions.get(i);
+-            OperationResult result = executePrimitive(action);
++            OperationResult result = executePrimitive(action, authorizationGeneration);
+             JSONObject item = new JSONObject();
+             put(item, "index", i);
+             put(item, "action", action.type);
+@@ -615,26 +711,34 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         return response;
+     }
+ 
+-    private OperationResult executePrimitive(AccessibilityProtocol.Action action) {
++    private OperationResult executePrimitive(
++            AccessibilityProtocol.Action action, long authorizationGeneration) {
+         try {
+             switch (action.type) {
+                 case "click":
+-                    return performNodeAction(action.nodeId, AccessibilityNodeInfo.ACTION_CLICK, null);
++                    return performNodeAction(action.nodeId, AccessibilityNodeInfo.ACTION_CLICK,
++                            null, authorizationGeneration);
+                 case "set_text": {
+                     Bundle arguments = new Bundle();
+                     arguments.putCharSequence(
+                             AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                             action.text);
+                     return performNodeAction(
+-                            action.nodeId, AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
++                            action.nodeId, AccessibilityNodeInfo.ACTION_SET_TEXT, arguments,
++                            authorizationGeneration);
+                 }
+                 case "scroll":
+-                    return performNodeAction(action.nodeId, scrollAction(action.direction), null);
++                    return performNodeAction(action.nodeId, scrollAction(action.direction), null,
++                            authorizationGeneration);
+                 case "global_action":
++                    if (!authorizationUsableOrStop(authorizationGeneration)) {
++                        return OperationResult.error("accessibility_authorization_revoked");
++                    }
+                     return OperationResult.of(performGlobalAction(globalAction(action.globalAction)),
+                             "global_action_failed");
+                 case "gesture":
+-                    return performGesture(action.points, action.durationMs);
++                    return performGesture(
++                            action.points, action.durationMs, authorizationGeneration);
+                 default:
+                     return OperationResult.error("unsupported_action");
+             }
+@@ -648,12 +752,16 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         }
+     }
+ 
+-    private OperationResult performNodeAction(String id, int action, Bundle arguments)
++    private OperationResult performNodeAction(String id, int action, Bundle arguments,
++            long authorizationGeneration)
+             throws BackendException {
+         long expectedEpoch = mPublishedEpoch;
+         AccessibilityNodeInfo node = resolveNode(id, expectedEpoch);
+         try {
+             assertFresh(expectedEpoch);
++            if (!authorizationUsableOrStop(authorizationGeneration)) {
++                return OperationResult.error("accessibility_authorization_revoked");
++            }
+             boolean succeeded = arguments == null
+                     ? node.performAction(action)
+                     : node.performAction(action, arguments);
+@@ -664,7 +772,7 @@ public final class AgentAccessibilityService extends AccessibilityService {
+     }
+ 
+     private OperationResult performGesture(List<AccessibilityProtocol.Point> points,
+-            long durationMs) {
++            long durationMs, long authorizationGeneration) {
+         Path path = new Path();
+         AccessibilityProtocol.Point first = points.get(0);
+         path.moveTo(first.x, first.y);
+@@ -687,6 +795,9 @@ public final class AgentAccessibilityService extends AccessibilityService {
+         }
+ 
+         AccessibilityGestureOutcome outcome = new AccessibilityGestureOutcome();
++        if (!authorizationUsableOrStop(authorizationGeneration)) {
++            return OperationResult.error("accessibility_authorization_revoked");
++        }
+         boolean dispatched = dispatchGesture(description, new GestureResultCallback() {
+             @Override
+             public void onCompleted(GestureDescription gestureDescription) {
+diff --git a/packages/TrillionniumAgentAccessibility/tests/agent_accessibility_contract.sh b/packages/TrillionniumAgentAccessibility/tests/agent_accessibility_contract.sh
+index 8b19de6c..d01d614a 100644
+--- a/packages/TrillionniumAgentAccessibility/tests/agent_accessibility_contract.sh
++++ b/packages/TrillionniumAgentAccessibility/tests/agent_accessibility_contract.sh
+@@ -19,6 +19,9 @@ REPLAY="$BASE/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.
+ GESTURE_OUTCOME="$BASE/src/org/trillionnium/agentaccessibility/AccessibilityGestureOutcome.java"
+ SNAPSHOT_REDACTION="$BASE/src/org/trillionnium/agentaccessibility/AccessibilitySnapshotRedaction.java"
+ SERVICE="$BASE/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java"
++AUTHORIZATION_GATE="$BASE/src/org/trillionnium/agentaccessibility/AccessibilityUserAuthorizationGate.java"
++AUTHORIZATION_SESSION="$BASE/src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSession.java"
++DEFERRED_CLOSE="$BASE/src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java"
+ PEER="$BASE/src/org/trillionnium/agentaccessibility/DirectPeerPolicy.java"
+ DESCRIPTOR="$ROOT/trillionnium-sdk/agentidentity/src/org/trillionnium/agentidentity/AgentDescriptor.java"
+ DESCRIPTOR_REGISTRY="$ROOT/trillionnium-sdk/agentidentity/src/org/trillionnium/agentidentity/AgentDescriptorRegistry.java"
+@@ -28,6 +31,8 @@ CONTROL_TEST="$BASE/tests/src/org/trillionnium/agentaccessibility/AccessibilityR
+ PEER_TEST="$BASE/tests/src/org/trillionnium/agentaccessibility/AgentDescriptorEndpointTest.java"
+ SAFETY_TEST="$BASE/tests/src/org/trillionnium/agentaccessibility/AccessibilitySafetySemanticsTest.java"
+ SNAPSHOT_TEST="$BASE/tests/src/org/trillionnium/agentaccessibility/AccessibilitySnapshotProtocolTest.java"
++AUTHORIZATION_TEST="$BASE/tests/src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSessionTest.java"
++DEFERRED_CLOSE_TEST="$BASE/tests/src/org/trillionnium/agentaccessibility/AccessibilityDeferredCloseTest.java"
+ 
+ if [[ ! -f "$SERVICE" ]]; then
+     TEST_DIR=$(cd "$(dirname "$0")" && pwd)
+@@ -47,6 +52,9 @@ if [[ ! -f "$SERVICE" ]]; then
+     GESTURE_OUTCOME=$(find "$TEST_DIR" -name AccessibilityGestureOutcome.java -print -quit)
+     SNAPSHOT_REDACTION=$(find "$TEST_DIR" -name AccessibilitySnapshotRedaction.java -print -quit)
+     SERVICE=$(find "$TEST_DIR" -name AgentAccessibilityService.java -print -quit)
++    AUTHORIZATION_GATE=$(find "$TEST_DIR" -name AccessibilityUserAuthorizationGate.java -print -quit)
++    AUTHORIZATION_SESSION=$(find "$TEST_DIR" -name AccessibilityAuthorizationSession.java -print -quit)
++    DEFERRED_CLOSE=$(find "$TEST_DIR" -name AccessibilityDeferredClose.java -print -quit)
+     PEER=$(find "$TEST_DIR" -name DirectPeerPolicy.java -print -quit)
+     DESCRIPTOR=$(find "$TEST_DIR" -name AgentDescriptor.java -print -quit)
+     DESCRIPTOR_REGISTRY=$(find "$TEST_DIR" -name AgentDescriptorRegistry.java -print -quit)
+@@ -56,15 +64,19 @@ if [[ ! -f "$SERVICE" ]]; then
+     PEER_TEST=$(find "$TEST_DIR" -name AgentDescriptorEndpointTest.java -print -quit)
+     SAFETY_TEST=$(find "$TEST_DIR" -name AccessibilitySafetySemanticsTest.java -print -quit)
+     SNAPSHOT_TEST=$(find "$TEST_DIR" -name AccessibilitySnapshotProtocolTest.java -print -quit)
++    AUTHORIZATION_TEST=$(find "$TEST_DIR" -name AccessibilityAuthorizationSessionTest.java -print -quit)
++    DEFERRED_CLOSE_TEST=$(find "$TEST_DIR" -name AccessibilityDeferredCloseTest.java -print -quit)
+ fi
+ 
+ for source in \
+     "$MANIFEST" "$README" "$CONFIG" "$PROTOCOL" "$REQUEST_ID" "$OPERATION_ID" \
+     "$ACK_CHAIN" "$CONTROL_PROTOCOL" "$CONTROL_HANDLER" "$JOURNAL" "$REPLAY_FILE" \
+-    "$REPLAY_POLICY" "$REPLAY" "$SERVICE" "$PEER" "$DESCRIPTOR" \
++    "$REPLAY_POLICY" "$REPLAY" "$SERVICE" "$AUTHORIZATION_GATE" "$AUTHORIZATION_SESSION" \
++    "$DEFERRED_CLOSE" \
++    "$PEER" "$DESCRIPTOR" \
+     "$DESCRIPTOR_REGISTRY" \
+     "$GESTURE_OUTCOME" "$SNAPSHOT_REDACTION" "$REPLAY_TEST" "$ACK_TEST" "$CONTROL_TEST" "$PEER_TEST" \
+-    "$SAFETY_TEST" "$SNAPSHOT_TEST"; do
++    "$SAFETY_TEST" "$SNAPSHOT_TEST" "$AUTHORIZATION_TEST" "$DEFERRED_CLOSE_TEST"; do
+     [[ -f "$source" ]] || { echo "missing contract input: $source" >&2; exit 1; }
+ done
+ 
+@@ -77,6 +89,71 @@ require() {
+     }
+ }
+ 
++for marker in \
++    'AccessibilityManager' \
++    'isEnabled\(\)' \
++    'getEnabledAccessibilityServiceList' \
++    'expectedComponent\.equals'; do
++    require "$marker" "$AUTHORIZATION_GATE"
++done
++for marker in \
++    'closeAfterTermination' \
++    'while \(!worker\.isTerminated\(\)\)' \
++    'worker\.awaitTermination' \
++    'closeAction\.close\(\)'; do
++    require "$marker" "$DEFERRED_CLOSE"
++done
++for marker in \
++    'closeWaitsUntilInterruptedWorkerActuallyTerminates' \
++    'shutdownFromWorkerDoesNotSelfJoinBeforeDeferredClose'; do
++    require "$marker" "$DEFERRED_CLOSE_TEST"
++done
++require 'AccessibilityDeferredCloseTest\.java' "$BASE/Android.bp"
++for marker in \
++    'new ComponentName\(this, AgentAccessibilityService\.class\)' \
++    'UserHandle\.myUserId\(\) != UserHandle\.USER_SYSTEM' \
++    'mAuthorization\.activateIfAuthorized' \
++    'authorizationUsableOrStop\(authorizationGeneration\)' \
++    'explicit per-user Accessibility authorization unavailable; held closed'; do
++    require "$marker" "$SERVICE"
++done
++for marker in \
++    'interface AuthorizationSource' \
++    'activateIfAuthorized' \
++    'isCurrentAndAuthorized' \
++    'mActiveGeneration = 0' \
++    'catch \(RuntimeException unavailable\)'; do
++    require "$marker" "$AUTHORIZATION_SESSION"
++done
++for marker in \
++    'disabledSourceNeverActivates' \
++    'revokeInvalidatesCurrentGenerationAndReconnectDoesNotReviveOldWork' \
++    'authorizationSourceFailureIsClosed'; do
++    require "$marker" "$AUTHORIZATION_TEST"
++done
++authorization_line=$(grep -n 'mAuthorization\.activateIfAuthorized' "$SERVICE" | head -n1 | cut -d: -f1)
++backend_start_line=$(grep -n '^[[:space:]]*startDirectBackend(authorizationGeneration);' \
++    "$SERVICE" | head -n1 | cut -d: -f1)
++[[ -n "$authorization_line" && -n "$backend_start_line" \
++        && "$authorization_line" -lt "$backend_start_line" ]] || {
++    echo "Accessibility backend must remain closed until the exact component is user-enabled" >&2
++    exit 1
++}
++
++for dispatch in \
++        'node\.performAction' \
++        'performGlobalAction' \
++        'dispatchGesture'; do
++    dispatch_line=$(grep -n "$dispatch" "$SERVICE" | head -n1 | cut -d: -f1)
++    prior_recheck=$(head -n "$dispatch_line" "$SERVICE" \
++        | grep -n 'authorizationUsableOrStop(authorizationGeneration)' \
++        | tail -n1 | cut -d: -f1)
++    [[ -n "$dispatch_line" && -n "$prior_recheck" && "$prior_recheck" -lt "$dispatch_line" ]] || {
++        echo "Accessibility authorization must be rechecked immediately before $dispatch" >&2
++        exit 1
++    }
++done
++
+ for marker in \
+     'MAGIC = "TRACSC01"' \
+     'VERSION = 1' \
+@@ -94,6 +171,8 @@ done
+ for marker in \
+     '^final class AccessibilityReplayControlHandler' \
+     'enum AuthenticatedRole' \
++    'interface BeforeMutationGate' \
++    'beforeMutation\.requireCurrent\(\)' \
+     'mReplayLedger\.activateEpochFromTrustedAdapter' \
+     'mReplayLedger\.acknowledgeCommittedFromTrustedAdapter' \
+     'closedReplayError'; do
+@@ -109,6 +188,16 @@ for marker in \
+     'ioAndStoreFailuresExposeOnlyClosedCodesWithoutInternalMessages'; do
+     require "$marker" "$CONTROL_TEST"
+ done
++require 'authorizationGateRunsAfterFullFrameAndBeforeLedgerMutation' "$CONTROL_TEST"
++for marker in \
++    'mWorkerExecutors' \
++    'AccessibilityDeferredClose\.closeAfterTermination' \
++    'ledger::close' \
++    'workers = mWorkerExecutors\.toArray' \
++    'handler\.handleSingleFrame' \
++    'authorizationUsableOrStop\(authorizationGeneration\)'; do
++    require "$marker" "$SERVICE"
++done
+ 
+ for marker in \
+     'AtomicReference<State>' \
+@@ -325,7 +414,8 @@ require 'operation_ack_retry_conflict' "$REPLAY"
+ for marker in \
+     'DirectPeerPolicy\.verify' \
+     'AgentDescriptor peerIdentity = DirectPeerPolicy\.verify\(socket\)' \
+-    'handleOwnedSocket\(socket, peerIdentity\)' \
++    'handleOwnedSocket\(' \
++    'socket, peerIdentity, authorizationGeneration' \
+     'MAX_REPLAY_ENTRIES_PER_PEER = 128' \
+     'MAX_REPLAY_RESERVED_BYTES_PER_PEER = 48L \* 1024 \* 1024' \
+     'mPublishedGeneration' \
+@@ -337,7 +427,7 @@ for marker in \
+     'NodeRef\.parse' \
+     'executeBatch' \
+     '!AccessibilityReplayPolicy\.requiresDurableReplay\(request\.action\.type\)' \
+-    'executeReadOnly\(request\)' \
++    'executeReadOnly\(request, authorizationGeneration\)' \
+     'AccessibilityReplayPolicy\.READ_ONLY_REPLAY_SCOPE' \
+     'AccessibilityOperationId\.parse\(request\.requestId\)' \
+     'operation_epoch_required' \
+diff --git a/packages/TrillionniumAgentAccessibility/tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandlerTest.java b/packages/TrillionniumAgentAccessibility/tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandlerTest.java
+index 13ff7fc8..8a23ee2b 100644
+--- a/packages/TrillionniumAgentAccessibility/tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandlerTest.java
++++ b/packages/TrillionniumAgentAccessibility/tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandlerTest.java
+@@ -17,6 +17,7 @@ import java.io.InputStream;
+ import java.nio.ByteBuffer;
+ import java.nio.charset.StandardCharsets;
+ import java.util.Arrays;
++import java.util.concurrent.atomic.AtomicBoolean;
+ 
+ public final class AccessibilityReplayControlHandlerTest {
+     private static final String EPOCH = "00112233445566778899aabbccddeeff";
+@@ -344,7 +345,8 @@ public final class AccessibilityReplayControlHandlerTest {
+                                 harness.handler.handleSingleFrame(
+                                         AgentDescriptor.CODEX,
+                                         AccessibilityReplayControlHandler.AuthenticatedRole.ADAPTER,
+-                                        failedInput));
++                                        failedInput,
++                                        () -> {}));
+         assertEquals(AccessibilityReplayControlProtocol.ERROR_IO, ioFailure.code);
+         assertEquals(ioFailure.code, ioFailure.getMessage());
+         assertNull(ioFailure.getCause());
+@@ -360,7 +362,8 @@ public final class AccessibilityReplayControlHandlerTest {
+                         () -> harness.handler.handleSingleFrame(
+                                 AgentDescriptor.CODEX,
+                                 AccessibilityReplayControlHandler.AuthenticatedRole.ADAPTER,
+-                                failedUncheckedInput));
++                                failedUncheckedInput,
++                                () -> {}));
+         assertEquals(AccessibilityReplayControlHandler.ERROR_INTERNAL, internalFailure.code);
+         assertEquals(internalFailure.code, internalFailure.getMessage());
+         assertNull(internalFailure.getCause());
+@@ -373,6 +376,36 @@ public final class AccessibilityReplayControlHandlerTest {
+         assertNull(storeFailure.getCause());
+     }
+ 
++    @Test
++    public void authorizationGateRunsAfterFullFrameAndBeforeLedgerMutation() throws Exception {
++        Harness harness = new Harness();
++        AtomicBoolean fullFrameRead = new AtomicBoolean();
++        AtomicBoolean gateCalled = new AtomicBoolean();
++        InputStream input = new ByteArrayInputStream(activateFrame(EPOCH)) {
++            @Override
++            public synchronized int read() {
++                int value = super.read();
++                if (value == -1) fullFrameRead.set(true);
++                return value;
++            }
++        };
++        AccessibilityReplayControlHandler.ControlException revoked = captureControlError(
++                () -> harness.handler.handleSingleFrame(
++                        AgentDescriptor.CODEX,
++                        AccessibilityReplayControlHandler.AuthenticatedRole.ADAPTER,
++                        input,
++                        () -> {
++                            assertTrue(fullFrameRead.get());
++                            gateCalled.set(true);
++                            throw new SecurityException("authorization_revoked");
++                        }));
++        assertEquals(AccessibilityReplayControlHandler.ERROR_INTERNAL, revoked.code);
++        assertTrue(gateCalled.get());
++
++        AccessibilityReplayControlProtocol.ActivationResponse created = activate(harness, EPOCH);
++        assertTrue(created.created);
++    }
++
+     private static AccessibilityReplayControlProtocol.ActivationResponse activate(
+             Harness harness, String epoch) throws Exception {
+         return AccessibilityReplayControlProtocol.decodeActivationResponse(
+@@ -445,7 +478,8 @@ public final class AccessibilityReplayControlHandlerTest {
+                 AccessibilityReplayControlHandler.AuthenticatedRole role,
+                 byte[] frame)
+                 throws Exception {
+-            return handler.handleSingleFrame(agent, role, new ByteArrayInputStream(frame));
++            return handler.handleSingleFrame(
++                    agent, role, new ByteArrayInputStream(frame), () -> {});
+         }
+ 
+         byte[] handleAdapter(byte[] frame) throws Exception {
+diff --git a/sdk/src/java/trillionnium/app/TrillionniumContextConstants.java b/sdk/src/java/trillionnium/app/TrillionniumContextConstants.java
+index 3d208e4e..33fbb94f 100644
+--- a/sdk/src/java/trillionnium/app/TrillionniumContextConstants.java
++++ b/sdk/src/java/trillionnium/app/TrillionniumContextConstants.java
+@@ -93,6 +93,18 @@ public final class TrillionniumContextConstants {
+         @SdkConstant(SdkConstant.SdkConstantType.FEATURE)
+         public static final String AGENT_SYSTEM_API = "org.trillionnium.agent.system_api";
+ 
++        /**
++         * Feature gate for the production-enrolled capability-lease broker.
++         *
++         * <p>The current product intentionally does not declare this feature until hardware
++         * rollback state and all signer/provider pins are enrolled.</p>
++         *
++         * @hide
++         */
++        @SdkConstant(SdkConstant.SdkConstantType.FEATURE)
++        public static final String CAPABILITY_LEASE =
++                "org.trillionnium.agent.capability_lease";
++
+         /**
+          * Feature for {@link PackageManager#getSystemAvailableFeatures} and
+          * {@link PackageManager#hasSystemFeature}: The device includes the hardware abstraction
+diff --git a/tests/CapabilityLeasePendingBrokerTest.java b/tests/CapabilityLeasePendingBrokerTest.java
+index c3f5c5d3..8eae2e00 100644
+--- a/tests/CapabilityLeasePendingBrokerTest.java
++++ b/tests/CapabilityLeasePendingBrokerTest.java
+@@ -16,10 +16,13 @@ import java.util.LinkedHashMap;
+ import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Map;
++import java.util.concurrent.CountDownLatch;
++import java.util.concurrent.TimeUnit;
+ import java.util.concurrent.atomic.AtomicInteger;
+ 
+ import org.junit.Test;
+ import org.trillionnium.agentidentity.AgentDescriptor;
++import org.trillionnium.capabilitylease.CapabilityLeaseUiProtocol;
+ 
+ public final class CapabilityLeasePendingBrokerTest {
+     private static final String BOOT = "b".repeat(64);
+@@ -90,12 +93,19 @@ public final class CapabilityLeasePendingBrokerTest {
+     public void receiptDeliveryReplaysUntilBackendPreparedAck() throws Exception {
+         Fixture fixture = new Fixture();
+         String handle = fixture.broker.createOpenUri(request("https://example.com/"));
++        String submissionOperationId = submissionOperationId(handle, "exact-receipt");
+         CapabilityLeasePendingBroker.Submission first =
+-                fixture.broker.submitFromIssuer(handle, "exact-receipt");
++                fixture.broker.submitFromIssuer(
++                        handle, submissionOperationId, "exact-receipt");
+         CapabilityLeasePendingBroker.Submission retry =
+-                fixture.broker.submitFromIssuer(handle, "exact-receipt");
++                fixture.broker.submitFromIssuer(
++                        handle, submissionOperationId, "exact-receipt");
+         assertEquals(RECEIPT_ID, first.receiptId);
+         assertEquals(RECEIPT_ID, retry.receiptId);
++        assertEquals("indeterminate", first.status);
++        assertSecurityException(() -> fixture.broker.fetchReceiptForBackend(handle));
++        fixture.broker.acknowledgeSubmissionDelivery(handle, submissionOperationId,
++                RECEIPT_ID, first.statusTupleSha256);
+ 
+         CapabilityLeasePendingBroker.ReceiptDelivery delivery =
+                 fixture.broker.fetchReceiptForBackend(handle);
+@@ -110,6 +120,85 @@ public final class CapabilityLeasePendingBrokerTest {
+         assertEquals(null, fixture.store.records.get(handle).exactReceipt);
+     }
+ 
++    @Test
++    public void startedSubmitTimeoutLateCommitRestartAndOuterAckGateBackend()
++            throws Exception {
++        CountDownLatch validatorStarted = new CountDownLatch(1);
++        CountDownLatch allowLateCommit = new CountDownLatch(1);
++        Fixture fixture = new Fixture((challenge, receipt, request, semantics) -> {
++            validatorStarted.countDown();
++            boolean released = false;
++            while (!released) {
++                try {
++                    allowLateCommit.await();
++                    released = true;
++                } catch (InterruptedException ignored) {
++                    // Model storage/verification past its last safely cancellable boundary.
++                }
++            }
++            return RECEIPT_ID;
++        });
++        String handle = fixture.broker.createOpenUri(
++                request("https://timeout-quarantine.example.com/"));
++        String operationId = submissionOperationId(handle, "exact-receipt");
++        CapabilityLeaseBrokerCallExecutor calls = new CapabilityLeaseBrokerCallExecutor(
++                2, 1, 8, TimeUnit.SECONDS.toNanos(10), 50L, System::nanoTime);
++        try {
++            try {
++                calls.call(10_123, () -> fixture.broker.submitFromIssuer(
++                        handle, operationId, "exact-receipt"));
++                throw new AssertionError("expected started submit uncertainty");
++            } catch (CapabilityLeaseBrokerCallExecutor.CallException expected) {
++                assertEquals(CapabilityLeaseBrokerCallExecutor.ERROR_INDETERMINATE,
++                        expected.code);
++            }
++            assertTrue(validatorStarted.await(1, TimeUnit.SECONDS));
++            allowLateCommit.countDown();
++
++            // This synchronized read joins the late worker. Its durable result is quarantined,
++            // not delivery-eligible, even though the original caller no longer has a reply.
++            assertEquals("indeterminate", fixture.broker.pollForUi(handle).status);
++            assertEquals(CapabilityLeasePendingStore.State.INDETERMINATE,
++                    fixture.store.records.get(handle).state);
++        } finally {
++            allowLateCommit.countDown();
++            calls.close();
++        }
++
++        CapabilityLeasePendingBroker firstRestart = fixture.restart(BOOT);
++        assertEquals("indeterminate", firstRestart.pollForUi(handle).status);
++        assertSecurityException(() -> firstRestart.fetchReceiptForBackend(handle));
++        assertSecurityException(() ->
++                firstRestart.acknowledgeBackendPrepared(handle, RECEIPT_ID));
++
++        CapabilityLeaseBrokerServiceFacades beforeDelivery = newFacades(firstRestart);
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall queryAuthorization =
++                beforeDelivery.ui.authorizeIssuerQuerySubmission();
++        CapabilityLeasePendingBroker.SubmissionStatus queried =
++                beforeDelivery.ui.querySubmissionFromIssuer(
++                        queryAuthorization, handle, operationId);
++        assertEquals("indeterminate", queried.status);
++        assertEquals(RECEIPT_ID, queried.receiptId);
++
++        // Simulate system_server dying after replying to the issuer but before AiShell receives
++        // and confirms the Activity result. Query alone must never release the receipt.
++        CapabilityLeasePendingBroker secondRestart = fixture.restart(BOOT);
++        assertEquals("indeterminate", secondRestart.pollForUi(handle).status);
++        assertSecurityException(() -> secondRestart.fetchReceiptForBackend(handle));
++
++        CapabilityLeaseBrokerServiceFacades afterDelivery = newFacades(secondRestart);
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall deliveryAuthorization =
++                afterDelivery.ui.authorizeUiAcknowledgeSubmission();
++        CapabilityLeasePendingBroker.SubmissionStatus released =
++                afterDelivery.ui.acknowledgeSubmissionDelivery(deliveryAuthorization,
++                        handle, operationId, RECEIPT_ID, queried.statusTupleSha256);
++        assertEquals("submitted", released.status);
++        assertEquals("exact-receipt",
++                afterDelivery.localSystemApi.fetchReceipt(handle).exactReceipt);
++        afterDelivery.localSystemApi.acknowledgePrepared(handle, RECEIPT_ID);
++        assertEquals("consumed", secondRestart.pollForUi(handle).status);
++    }
++
+     @Test
+     public void expiryCancelAndPriorBootAreDurablyTerminal() throws Exception {
+         Fixture fixture = new Fixture();
+@@ -121,7 +210,8 @@ public final class CapabilityLeasePendingBrokerTest {
+ 
+         fixture.clock.elapsed += 1L;
+         String submitted = fixture.broker.createOpenUri(request("https://openai.com/"));
+-        fixture.broker.submitFromIssuer(submitted, "exact-receipt");
++        fixture.broker.submitFromIssuer(submitted,
++                submissionOperationId(submitted, "exact-receipt"), "exact-receipt");
+         fixture.clock.elapsed += 30_000L;
+         assertEquals("expired", fixture.broker.pollForUi(submitted).status);
+         assertEquals(null, fixture.store.records.get(submitted).exactReceipt);
+@@ -148,7 +238,8 @@ public final class CapabilityLeasePendingBrokerTest {
+ 
+         String handle = fixture.broker.createOpenUri(request("https://example.com/"));
+         fixture.store.failNext = true;
+-        assertIOException(() -> fixture.broker.submitFromIssuer(handle, "exact-receipt"));
++        assertIOException(() -> fixture.broker.submitFromIssuer(handle,
++                submissionOperationId(handle, "exact-receipt"), "exact-receipt"));
+         assertEquals("pending", fixture.broker.pollForUi(handle).status);
+     }
+ 
+@@ -159,16 +250,17 @@ public final class CapabilityLeasePendingBrokerTest {
+         String handle = fixture.broker.createOpenUri(request("https://replace.example.org/"));
+         fixture.store.replaceCommitThenFailNext = true;
+ 
+-        assertIOException(() -> fixture.broker.submitFromIssuer(handle, "exact-receipt"));
++        assertIOException(() -> fixture.broker.submitFromIssuer(handle,
++                submissionOperationId(handle, "exact-receipt"), "exact-receipt"));
+         assertTrue(fixture.broker.poisonedForTest());
+-        assertEquals(CapabilityLeasePendingStore.State.SUBMITTED,
++        assertEquals(CapabilityLeasePendingStore.State.INDETERMINATE,
+                 fixture.store.records.get(handle).state);
+         assertIOException(() -> fixture.broker.pollForUi(handle));
+ 
+         CapabilityLeasePendingBroker restarted = fixture.restart(BOOT);
+         assertFalse(restarted.poisonedForTest());
+-        assertEquals("submitted", restarted.pollForUi(handle).status);
+-        assertEquals("exact-receipt", restarted.fetchReceiptForBackend(handle).exactReceipt);
++        assertEquals("indeterminate", restarted.pollForUi(handle).status);
++        assertSecurityException(() -> restarted.fetchReceiptForBackend(handle));
+     }
+ 
+     @Test
+@@ -201,7 +293,11 @@ public final class CapabilityLeasePendingBrokerTest {
+                 () -> collision.broker.createOpenUri(request("http://example.com/")));
+         assertSecurityException(
+                 () -> collision.broker.createOpenUri(request("https://localhost/")));
+-        collision.broker.submitFromIssuer(handle, "exact-receipt");
++        CapabilityLeasePendingBroker.Submission submitted =
++                collision.broker.submitFromIssuer(handle,
++                        submissionOperationId(handle, "exact-receipt"), "exact-receipt");
++        collision.broker.acknowledgeSubmissionDelivery(handle,
++                submitted.submissionOperationId, RECEIPT_ID, submitted.statusTupleSha256);
+         collision.broker.fetchReceiptForBackend(handle);
+         assertSecurityException(() -> collision.broker.acknowledgeBackendPrepared(
+                 handle, "e".repeat(64)));
+@@ -346,8 +442,24 @@ public final class CapabilityLeasePendingBrokerTest {
+ 
+         String external = facades.backend.createOpenUri(request("https://example.com/"));
+         facades.ui.poll(external);
+-        facades.ui.fetchForIssuer(external);
+-        facades.ui.submitFromIssuer(external, "exact-receipt");
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall fetchAuthorization =
++                facades.ui.authorizeIssuerFetch();
++        facades.ui.fetchForIssuer(fetchAuthorization, external);
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall submitAuthorization =
++                facades.ui.authorizeIssuerSubmit();
++        String externalOperationId = submissionOperationId(external, "exact-receipt");
++        CapabilityLeasePendingBroker.Submission externalSubmission =
++                facades.ui.submitFromIssuer(submitAuthorization, external,
++                        externalOperationId, "exact-receipt");
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall queryAuthorization =
++                facades.ui.authorizeIssuerQuerySubmission();
++        facades.ui.querySubmissionFromIssuer(
++                queryAuthorization, external, externalOperationId);
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall deliveryAuthorization =
++                facades.ui.authorizeUiAcknowledgeSubmission();
++        facades.ui.acknowledgeSubmissionDelivery(deliveryAuthorization, external,
++                externalOperationId, RECEIPT_ID,
++                externalSubmission.statusTupleSha256);
+         facades.backend.fetchReceipt(external);
+         facades.backend.acknowledgePrepared(external, RECEIPT_ID);
+         int verifiedBeforeLocal = verified.size();
+@@ -367,10 +479,39 @@ public final class CapabilityLeasePendingBrokerTest {
+                 CapabilityLeaseBrokerCallerPolicy.Operation.UI_POLL,
+                 CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_FETCH,
+                 CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_SUBMIT,
++                CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_QUERY_SUBMISSION,
++                CapabilityLeaseBrokerCallerPolicy.Operation.UI_ACK_SUBMISSION,
+                 CapabilityLeaseBrokerCallerPolicy.Operation.BACKEND_FETCH_RECEIPT,
+                 CapabilityLeaseBrokerCallerPolicy.Operation.BACKEND_ACK_PREPARED), verified);
+     }
+ 
++    @Test
++    public void issuerAuthorizationIsOperationBoundAndSingleUse() throws Exception {
++        Fixture fixture = new Fixture();
++        CapabilityLeaseBrokerServiceFacades facades =
++                new CapabilityLeaseBrokerServiceFacades(fixture.broker, operation -> {
++                    CapabilityLeaseBrokerCallerPolicy.CallerPin pin =
++                            new CapabilityLeaseBrokerCallerPolicy.CallerPin(
++                                    operation.requiredRole,
++                                    "org.trillionnium.capabilitylease",
++                                    "a".repeat(64),
++                                    "u:r:trillionnium_capability_lease_issuer:s0");
++                    return CapabilityLeaseBrokerCallerPolicy.verify(operation, pin,
++                            new CapabilityLeaseBrokerCallerPolicy.ObservedCaller(
++                                    10_123, 123, 0, true, pin.packageName, 1,
++                                    pin.signerSha256, pin.selinuxContext));
++                });
++        String handle = fixture.broker.createOpenUri(request("https://example.com/"));
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall fetch =
++                facades.ui.authorizeIssuerFetch();
++        facades.ui.fetchForIssuer(fetch, handle);
++        assertSecurityException(() -> facades.ui.fetchForIssuer(fetch, handle));
++
++        CapabilityLeaseBrokerServiceFacades.AuthorizedCall submit =
++                facades.ui.authorizeIssuerSubmit();
++        assertSecurityException(() -> facades.ui.cancelFromIssuer(submit, handle));
++    }
++
+     @Test
+     public void terminalAndExpiredRecordsRemainReplayBoundAcrossRestartWithoutCompaction()
+             throws Exception {
+@@ -557,6 +698,42 @@ public final class CapabilityLeasePendingBrokerTest {
+         }
+     }
+ 
++    private static String submissionOperationId(String handle, String receipt) {
++        return CapabilityLeaseUiProtocol.deriveSubmissionOperationId(handle, receipt);
++    }
++
++    private static CapabilityLeaseBrokerServiceFacades newFacades(
++            CapabilityLeasePendingBroker broker) {
++        return new CapabilityLeaseBrokerServiceFacades(broker, operation -> {
++            CapabilityLeaseBrokerCallerPolicy.Role role = operation.requiredRole;
++            String packageName;
++            String context;
++            switch (role) {
++                case AI_SHELL:
++                    packageName = "org.trillionnium.aishell";
++                    context = "u:r:trillionnium_aishell:s0";
++                    break;
++                case ISSUER:
++                    packageName = "org.trillionnium.capabilitylease";
++                    context = "u:r:trillionnium_capability_lease_issuer:s0";
++                    break;
++                case ACCESSIBILITY:
++                    packageName = "org.trillionnium.agentaccessibility";
++                    context = "u:r:trillionnium_agent_accessibility:s0";
++                    break;
++                default:
++                    throw new AssertionError(role);
++            }
++            CapabilityLeaseBrokerCallerPolicy.CallerPin pin =
++                    new CapabilityLeaseBrokerCallerPolicy.CallerPin(
++                            role, packageName, "a".repeat(64), context);
++            return CapabilityLeaseBrokerCallerPolicy.verify(operation, pin,
++                    new CapabilityLeaseBrokerCallerPolicy.ObservedCaller(
++                            10_123, 123, 0, true, packageName, 1,
++                            "a".repeat(64), context));
++        });
++    }
++
+     private static CapabilityLeasePendingStore.Record retiredCapacityRecord(int index) {
+         return new CapabilityLeasePendingStore.Record(
+                 "lease-pending-" + hex(index, 64), AgentDescriptor.CODEX,
+@@ -600,9 +777,15 @@ public final class CapabilityLeasePendingBrokerTest {
+         final TestClock clock = new TestClock();
+         final TestEntropy entropy = new TestEntropy();
+         final MemoryStore store = new MemoryStore();
++        final CapabilityLeasePendingBroker.ReceiptValidator receiptValidator;
+         CapabilityLeasePendingBroker broker;
+ 
+         Fixture() {
++            this((challenge, receipt, request, semantics) -> RECEIPT_ID);
++        }
++
++        Fixture(CapabilityLeasePendingBroker.ReceiptValidator receiptValidator) {
++            this.receiptValidator = receiptValidator;
+             try {
+                 broker = newBroker(BOOT);
+             } catch (IOException error) {
+@@ -630,7 +813,7 @@ public final class CapabilityLeasePendingBrokerTest {
+                                         + "\",\"operation_id\":\"" + semantics.operationId
+                                         + "\",\"risk_class\":\"" + semantics.riskClass
+                                         + "\",\"summary\":\"Open exact HTTPS URI once\"}",
+-                        (challenge, receipt, request, semantics) -> RECEIPT_ID,
++                        receiptValidator,
+                         store,
+                         boot);
+         }
+diff --git a/tests/CapabilityLeasePendingRecordCodecTest.java b/tests/CapabilityLeasePendingRecordCodecTest.java
+index 0a183859..a71695e3 100644
+--- a/tests/CapabilityLeasePendingRecordCodecTest.java
++++ b/tests/CapabilityLeasePendingRecordCodecTest.java
+@@ -86,6 +86,8 @@ public final class CapabilityLeasePendingRecordCodecTest {
+     public void invalidStateShapesCannotBeConstructed() throws Exception {
+         assertIllegalArgument(() -> base(CapabilityLeasePendingStore.State.PENDING,
+                 "c".repeat(64), RECEIPT_SHA256, "receipt"));
++        assertIllegalArgument(() -> base(CapabilityLeasePendingStore.State.INDETERMINATE,
++                null, null, null));
+         assertIllegalArgument(() -> base(CapabilityLeasePendingStore.State.SUBMITTED,
+                 null, null, null));
+         assertIllegalArgument(() -> base(CapabilityLeasePendingStore.State.SUBMITTED,
+@@ -98,10 +100,17 @@ public final class CapabilityLeasePendingRecordCodecTest {
+     public void immutableDriftAndIllegalTransitionsAreRejected() throws Exception {
+         CapabilityLeasePendingStore.Record pending =
+                 record(CapabilityLeasePendingStore.State.PENDING);
+-        CapabilityLeasePendingStore.Record submitted = pending.transition(
++        CapabilityLeasePendingStore.Record indeterminate = pending.transition(
++                CapabilityLeasePendingStore.State.INDETERMINATE,
++                "c".repeat(64), RECEIPT_SHA256, "receipt");
++        indeterminate.requireValidTransitionFrom(pending);
++        CapabilityLeasePendingStore.Record submitted = indeterminate.transition(
+                 CapabilityLeasePendingStore.State.SUBMITTED,
+                 "c".repeat(64), RECEIPT_SHA256, "receipt");
+-        submitted.requireValidTransitionFrom(pending);
++        submitted.requireValidTransitionFrom(indeterminate);
++        assertIOException(() -> pending.transition(CapabilityLeasePendingStore.State.SUBMITTED,
++                "c".repeat(64), RECEIPT_SHA256, "receipt")
++                .requireValidTransitionFrom(pending));
+         assertIOException(() -> pending.transition(CapabilityLeasePendingStore.State.CONSUMED,
+                 "c".repeat(64), RECEIPT_SHA256, null)
+                 .requireValidTransitionFrom(pending));
+@@ -121,10 +130,14 @@ public final class CapabilityLeasePendingRecordCodecTest {
+     public void submittedToDeliveryReadyPreservesExactReceiptBinding() throws Exception {
+         CapabilityLeasePendingStore.Record pending =
+                 record(CapabilityLeasePendingStore.State.PENDING);
+-        CapabilityLeasePendingStore.Record submitted = pending.transition(
++        CapabilityLeasePendingStore.Record indeterminate = pending.transition(
++                CapabilityLeasePendingStore.State.INDETERMINATE,
++                "c".repeat(64), RECEIPT_SHA256, "receipt");
++        indeterminate.requireValidTransitionFrom(pending);
++        CapabilityLeasePendingStore.Record submitted = indeterminate.transition(
+                 CapabilityLeasePendingStore.State.SUBMITTED,
+                 "c".repeat(64), RECEIPT_SHA256, "receipt");
+-        submitted.requireValidTransitionFrom(pending);
++        submitted.requireValidTransitionFrom(indeterminate);
+         submitted.transition(CapabilityLeasePendingStore.State.DELIVERY_READY,
+                 "c".repeat(64), RECEIPT_SHA256, "receipt")
+                 .requireValidTransitionFrom(submitted);
+@@ -187,6 +200,7 @@ public final class CapabilityLeasePendingRecordCodecTest {
+     private static CapabilityLeasePendingStore.Record record(
+             CapabilityLeasePendingStore.State state) {
+         switch (state) {
++            case INDETERMINATE:
+             case SUBMITTED:
+             case DELIVERY_READY:
+                 return base(state, "c".repeat(64), RECEIPT_SHA256, "receipt");
+diff --git a/tests/capability_lease_broker_source_contract.sh b/tests/capability_lease_broker_source_contract.sh
+index 135dcb16..359fb2a7 100755
+--- a/tests/capability_lease_broker_source_contract.sh
++++ b/tests/capability_lease_broker_source_contract.sh
+@@ -57,12 +57,22 @@ FILE_STORE="$SRC/CapabilityLeasePendingFileStore.java"
+ CODEC="$SRC/CapabilityLeasePendingRecordCodec.java"
+ POLICY="$SRC/CapabilityLeaseBrokerCallerPolicy.java"
+ VERIFIER="$SRC/CapabilityLeaseBinderCallerVerifier.java"
++CALL_EXECUTOR="$SRC/CapabilityLeaseBrokerCallExecutor.java"
+ FACADES="$SRC/CapabilityLeaseBrokerServiceFacades.java"
++SERVICE="$SRC/CapabilityLeaseBrokerService.java"
++PRODUCT_ENROLLMENT="$SRC/CapabilityLeaseBrokerProductEnrollment.java"
++UI_BINDER="$SRC/CapabilityLeaseUiBrokerBinder.java"
++UI_PROTOCOL="$BASE/capabilityleaseapi/src/org/trillionnium/capabilitylease/CapabilityLeaseUiProtocol.java"
++UI_AIDL="$BASE/capabilityleaseapi/src/org/trillionnium/capabilitylease/ICapabilityLeaseUiBroker.aidl"
++CONTEXT_CONSTANTS="$BASE/sdk/src/java/trillionnium/app/TrillionniumContextConstants.java"
++CURRENT_FEATURE_XML="$BASE/trillionnium/permissions/org.trillionnium.agent.system_api.xml"
+ CONFIG="$BASE/trillionnium/res/res/values/config.xml"
+ MANIFEST="$BASE/trillionnium/res/AndroidManifest.xml"
+ BUILD="$BASE/Android.bp"
+ SYSTEM_API_SERVICE="$SRC/AgentSystemApiService.java"
+ OS_FAULT_TEST="$BASE/tests/CapabilityLeaseOsFileStoreFaultMatrixTest.java"
++CALL_EXECUTOR_TEST="$BASE/tests/CapabilityLeaseBrokerCallExecutorTest.java"
++PENDING_BROKER_TEST="$BASE/tests/CapabilityLeasePendingBrokerTest.java"
+ OS_FAULT_MANIFEST="$BASE/tests/device/CapabilityLeaseOsFileStoreFaultMatrixAndroidManifest.xml"
+ 
+ if [[ ! -f "$BROKER" ]]; then
+@@ -120,12 +130,22 @@ if [[ ! -f "$BROKER" ]]; then
+     CODEC=$(locate CapabilityLeasePendingRecordCodec.java)
+     POLICY=$(locate CapabilityLeaseBrokerCallerPolicy.java)
+     VERIFIER=$(locate CapabilityLeaseBinderCallerVerifier.java)
++    CALL_EXECUTOR=$(locate CapabilityLeaseBrokerCallExecutor.java)
+     FACADES=$(locate CapabilityLeaseBrokerServiceFacades.java)
++    SERVICE=$(locate CapabilityLeaseBrokerService.java)
++    PRODUCT_ENROLLMENT=$(locate CapabilityLeaseBrokerProductEnrollment.java)
++    UI_BINDER=$(locate CapabilityLeaseUiBrokerBinder.java)
++    UI_PROTOCOL=$(locate CapabilityLeaseUiProtocol.java)
++    UI_AIDL=$(locate ICapabilityLeaseUiBroker.aidl)
++    CONTEXT_CONSTANTS=$(locate TrillionniumContextConstants.java)
++    CURRENT_FEATURE_XML=$(locate org.trillionnium.agent.system_api.xml)
+     CONFIG=$(locate config.xml)
+     MANIFEST=$(locate AndroidManifest.xml)
+     BUILD=$(locate Android.bp)
+     SYSTEM_API_SERVICE=$(locate AgentSystemApiService.java)
+     OS_FAULT_TEST=$(locate CapabilityLeaseOsFileStoreFaultMatrixTest.java)
++    CALL_EXECUTOR_TEST=$(locate CapabilityLeaseBrokerCallExecutorTest.java)
++    PENDING_BROKER_TEST=$(locate CapabilityLeasePendingBrokerTest.java)
+     OS_FAULT_MANIFEST=$(locate CapabilityLeaseOsFileStoreFaultMatrixAndroidManifest.xml)
+ fi
+ 
+@@ -160,9 +180,12 @@ for input in "$ROOT_REGISTRATION_CONTRACT" "$ROOT_PUBLICATION_CONTRACT" \
+         "$TASK_RESOLVER" "$EXECUTION_RESOLVER" "$TOKEN_BINDING" \
+         "$TOKEN_REGISTRY" "$TOKEN_REGISTRY_CODEC" "$TOKEN_REGISTRY_FILE_STORE" \
+         "$RUNTIME_FACTORY" \
+-        "$STORE" "$FILE_STORE" "$CODEC" "$POLICY" "$VERIFIER" \
+-        "$FACADES" "$CONFIG" "$MANIFEST" "$BUILD" "$SYSTEM_API_SERVICE" \
+-        "$OS_FAULT_TEST" "$OS_FAULT_MANIFEST"; do
++        "$STORE" "$FILE_STORE" "$CODEC" "$POLICY" "$VERIFIER" "$CALL_EXECUTOR" \
++        "$FACADES" "$SERVICE" "$PRODUCT_ENROLLMENT" "$UI_BINDER" "$UI_PROTOCOL" "$UI_AIDL" \
++        "$CONTEXT_CONSTANTS" "$CURRENT_FEATURE_XML" \
++        "$CONFIG" "$MANIFEST" "$BUILD" "$SYSTEM_API_SERVICE" \
++        "$OS_FAULT_TEST" "$CALL_EXECUTOR_TEST" "$PENDING_BROKER_TEST" \
++        "$OS_FAULT_MANIFEST"; do
+     [[ -f "$input" ]] || { echo "missing broker source contract input: $input" >&2; exit 1; }
+ done
+ 
+@@ -200,6 +223,23 @@ for marker in \
+         'capability_lease_trust_disabled'; do
+     require "$marker" "$RECEIPT_VERIFIER"
+ done
++for marker in \
++        'perUidOutstandingLimitRejectsBeforeUnboundedQueueing' \
++        'timedOutRunningCallRetainsUidOccupancyUntilWorkActuallyStops' \
++        'uncertainTimeoutCancelsAdmittedQueueAndPermanentlyPoisonsTransport' \
++        'fixedWindowRateLimitFailsClosedAndResetsOnlyAfterWindow'; do
++    require "$marker" "$CALL_EXECUTOR_TEST"
++done
++for marker in \
++        'startedSubmitTimeoutLateCommitRestartAndOuterAckGateBackend' \
++        'ERROR_INDETERMINATE' \
++        'State\.INDETERMINATE' \
++        'querySubmissionFromIssuer' \
++        'authorizeUiAcknowledgeSubmission' \
++        'fetchReceiptForBackend' \
++        'acknowledgeBackendPrepared'; do
++    require "$marker" "$PENDING_BROKER_TEST"
++done
+ 
+ for marker in \
+         '1\.3\.6\.1\.4\.1\.11129\.2\.1\.17' \
+@@ -258,6 +298,11 @@ for marker in \
+         'capability_lease_broker_prepare_binding_conflict' \
+         'mStore\.replace\(record\.stored, replacement\)' \
+         'State\.DELIVERY_READY' \
++        'State\.INDETERMINATE' \
++        'querySubmissionFromIssuer' \
++        'acknowledgeSubmissionDelivery' \
++        'deriveSubmissionOperationIdFromReceiptSha256' \
++        'STATUS_INDETERMINATE' \
+         'fetchReceiptForBackend' \
+         'acknowledgeBackendPrepared' \
+         'receiptSha256\.equals' \
+@@ -1064,11 +1109,88 @@ done
+ for marker in \
+         'final class UiFacade' 'final class BackendFacade' \
+         'final class LocalSystemApiFacade' \
++        'authorizeIssuerFetch' 'authorizeIssuerSubmit' 'authorizeIssuerCancel' \
++        'final class AuthorizedCall' 'mConsumed\.compareAndSet\(false, true\)' \
+         'mCallerVerifier\.verify' \
+         'caller\.role != operation\.requiredRole'; do
+     require "$marker" "$FACADES"
+ done
+ 
++for marker in \
++        'new ThreadPoolExecutor' 'new ArrayBlockingQueue' \
++        'DEFAULT_MAX_OUTSTANDING_PER_UID = 2' \
++        'DEFAULT_MAX_CALLS_PER_WINDOW = 16' \
++        'task\.get\(mTimeoutMillis, TimeUnit\.MILLISECONDS\)' \
++        'mExecutor\.remove\(task\)' \
++        'mPoisoned' 'ERROR_INDETERMINATE' \
++        'state\.outstanding >= mMaxOutstandingPerUid' \
++        'state\.callsInWindow >= mMaxCallsPerWindow'; do
++    require "$marker" "$CALL_EXECUTOR"
++done
++
++for marker in \
++        'extends ICapabilityLeaseUiBroker\.Stub' \
++        'CapabilityLeaseUiProtocol\.requireTransportSchema' \
++        'CapabilityLeaseUiProtocol\.requirePendingHandle' \
++        'CapabilityLeaseUiProtocol\.requireReceipt' \
++        'CapabilityLeaseUiProtocol\.VIEW_SCHEMA' \
++        '!handle\.equals\(view\.handle\)' \
++        'mUi\.authorizeIssuerFetch' \
++        'mUi\.authorizeIssuerSubmit' \
++        'mUi\.authorizeIssuerCancel' \
++        'mCalls\.call' \
++        'mUi\.fetchForIssuer' \
++        'mUi\.submitFromIssuer' \
++        'mUi\.cancelFromIssuer'; do
++    require "$marker" "$UI_BINDER"
++done
++deny 'clearCallingIdentity|withCleanCallingIdentity' "$UI_BINDER"
++submit_authorize_line=$(grep -n 'mUi\.authorizeIssuerSubmit' "$UI_BINDER" \
++        | head -n1 | cut -d: -f1)
++receipt_parse_line=$(grep -n 'CapabilityLeaseUiProtocol\.requireReceipt(exactReceipt)' \
++        "$UI_BINDER" | head -n1 | cut -d: -f1)
++[[ -n "$submit_authorize_line" && -n "$receipt_parse_line" \
++        && "$submit_authorize_line" -lt "$receipt_parse_line" ]] || {
++    echo "issuer caller must be verified before receipt parsing" >&2
++    exit 1
++}
++for marker in \
++        'TRANSPORT_SCHEMA' \
++        'VIEW_SCHEMA' \
++        'VIEW_FIELDS = 8' \
++        'MAX_CHALLENGE_BYTES = 64 \* 1024' \
++        'MAX_RECEIPT_BYTES = 256 \* 1024' \
++        'value\.length\(\) > maxBytes' \
++        'value\.getBytes\(StandardCharsets\.UTF_8\)\.length > maxBytes'; do
++    require "$marker" "$UI_PROTOCOL"
++done
++for marker in \
++        'fetchExactChallenge\(String transportSchema, String pendingHandle\)' \
++        'String transportSchema, String pendingHandle,' \
++        'String submissionOperationId, String exactReceipt' \
++        'cancelPending\(String transportSchema, String pendingHandle\)'; do
++    require "$marker" "$UI_AIDL"
++done
++for marker in \
++        'CapabilityLeaseBrokerProductEnrollment::load' \
++        'TrillionniumContextConstants\.Features\.CAPABILITY_LEASE' \
++        'publishBinderService' \
++        'CapabilityLeaseBrokerNames\.UI' \
++        'enrollment == null' \
++        'broker held closed'; do
++    require "$marker" "$SERVICE"
++done
++deny 'TrillionniumContextConstants\.Features\.AGENT_SYSTEM_API' "$SERVICE"
++require 'CAPABILITY_LEASE' "$CONTEXT_CONSTANTS"
++require 'org\.trillionnium\.agent\.capability_lease' "$CONTEXT_CONSTANTS"
++deny 'org\.trillionnium\.agent\.capability_lease' "$CURRENT_FEATURE_XML"
++for marker in \
++        'CapabilityLeaseTrustConfigLoader\.load' \
++        'CapabilityLeaseTrustConfigLoader\.Enabled' \
++        'CapabilityLeaseRollbackEpochStateProof\.STATUS'; do
++    require "$marker" "$PRODUCT_ENROLLMENT"
++done
++
+ deny 'publishBinderService|ServiceManager|addService|registerService|onStart\(' \
+     "$BROKER" "$CHALLENGE_ENCODER" "$RECEIPT_VERIFIER" "$KEYMINT_VERIFIER" \
+     "$BACKEND_LEDGER" "$BACKEND_FILE_STORE" "$SYSTEM_API_COORDINATOR" \
+@@ -1076,8 +1198,9 @@ deny 'publishBinderService|ServiceManager|addService|registerService|onStart\('
+     "$TOKEN_REGISTRY_FILE_STORE"
+ deny 'Intent\.ACTION_VIEW|startActivity|sendBroadcast' \
+     "$BACKEND_ACK_PUBLISHER" "$TOKEN_REGISTRY" "$TOKEN_REGISTRY_FILE_STORE"
++require 'org\.trillionnium\.platform\.internal\.CapabilityLeaseBrokerService' "$CONFIG"
+ deny 'CapabilityLeaseBrokerServiceFacades|CapabilityLeasePendingBroker|capability_lease_(ui|backend)' \
+-    "$CONFIG" "$MANIFEST"
++    "$MANIFEST"
+ 
+ for marker in \
+         'pendingBrokerCreateOrReplayUsesSameOsBackedHandleAfterObjectReinstantiation' \
+@@ -1105,7 +1228,8 @@ deny 'new CapabilityLease(Pending|BackendReplay)FileStore\([^)]*,[^)]*,[^)]*,[^)
+     "${SOURCE_FILES[@]}"
+ 
+ require 'name: "TrillionniumCapabilityLeasePendingBrokerTest"' "$BUILD"
++require 'CapabilityLeaseBrokerCallExecutorTest\.java' "$BUILD"
+ require 'name: "TrillionniumCapabilityLeaseBrokerSourceContractTest"' "$BUILD"
+ require 'name: "TrillionniumCapabilityLeaseOsFileStoreFaultMatrixTest"' "$BUILD"
+ 
+-echo "PASS: durable capability-lease broker and role façades remain source-only"
++echo "PASS: durable capability-lease broker has a fail-closed issuer Binder lifecycle"
+diff --git a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBinderCallerVerifier.java b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBinderCallerVerifier.java
+index fcb50a50..6aab49f4 100644
+--- a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBinderCallerVerifier.java
++++ b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBinderCallerVerifier.java
+@@ -48,6 +48,8 @@ final class CapabilityLeaseBinderCallerVerifier {
+         if (operation == null) {
+             throw new SecurityException("capability_lease_broker_operation_denied");
+         }
++        // Capture the remote Binder identity before temporarily adopting system_server identity
++        // for package-manager reads. The verified result is immutable evidence for off-thread work.
+         int uid = Binder.getCallingUid();
+         int pid = Binder.getCallingPid();
+         CapabilityLeaseBrokerCallerPolicy.CallerPin pin = mPins.get(operation.requiredRole);
+diff --git a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java
+index 33527e51..39894300 100644
+--- a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java
++++ b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java
+@@ -4,14 +4,16 @@
+ 
+ package org.trillionnium.platform.internal;
+ 
+-/** Closed role/operation and identity-pin policy for future broker Binder façades. */
++/** Closed role/operation and identity-pin policy for enrolled broker Binder façades. */
+ final class CapabilityLeaseBrokerCallerPolicy {
+     enum Role { AI_SHELL, ISSUER, ACCESSIBILITY }
+ 
+     enum Operation {
+         UI_POLL(Role.AI_SHELL),
++        UI_ACK_SUBMISSION(Role.AI_SHELL),
+         ISSUER_FETCH(Role.ISSUER),
+         ISSUER_SUBMIT(Role.ISSUER),
++        ISSUER_QUERY_SUBMISSION(Role.ISSUER),
+         ISSUER_CANCEL(Role.ISSUER),
+         BACKEND_CREATE(Role.ACCESSIBILITY),
+         BACKEND_FETCH_RECEIPT(Role.ACCESSIBILITY),
+diff --git a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java
+index 9c975fdf..7bb43692 100644
+--- a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java
++++ b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java
+@@ -4,11 +4,14 @@
+ 
+ package org.trillionnium.platform.internal;
+ 
++import java.util.concurrent.atomic.AtomicBoolean;
++
+ /**
+  * Role-separated broker façades with per-call verification.
+  *
+- * <p>No façade is registered or referenced by system_server in this checkpoint. The System API
+- * backend will use the local façade; only future Binder stubs may use the external façades.
++ * <p>The issuer Binder transport synchronously obtains an operation-bound authorization before
++ * dispatching storage or receipt work. The System API backend uses the local façade; the backend
++ * external façade remains unregistered while its measured caller transport is on HOLD.
+  */
+ final class CapabilityLeaseBrokerServiceFacades {
+     interface CallerVerifier {
+@@ -22,19 +25,60 @@ final class CapabilityLeaseBrokerServiceFacades {
+             return mBroker.pollForUi(handle);
+         }
+ 
+-        CapabilityLeasePendingBroker.PendingView fetchForIssuer(String handle) throws Exception {
+-            verify(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_FETCH);
++        AuthorizedCall authorizeIssuerFetch() {
++            return authorize(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_FETCH);
++        }
++
++        AuthorizedCall authorizeIssuerSubmit() {
++            return authorize(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_SUBMIT);
++        }
++
++        AuthorizedCall authorizeIssuerQuerySubmission() {
++            return authorize(
++                    CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_QUERY_SUBMISSION);
++        }
++
++        AuthorizedCall authorizeUiAcknowledgeSubmission() {
++            return authorize(CapabilityLeaseBrokerCallerPolicy.Operation.UI_ACK_SUBMISSION);
++        }
++
++        AuthorizedCall authorizeIssuerCancel() {
++            return authorize(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_CANCEL);
++        }
++
++        CapabilityLeasePendingBroker.PendingView fetchForIssuer(
++                AuthorizedCall authorization, String handle) throws Exception {
++            authorization.consume(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_FETCH);
+             return mBroker.fetchForIssuer(handle);
+         }
+ 
+         CapabilityLeasePendingBroker.Submission submitFromIssuer(
+-                String handle, String exactReceipt) throws Exception {
+-            verify(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_SUBMIT);
+-            return mBroker.submitFromIssuer(handle, exactReceipt);
++                AuthorizedCall authorization, String handle, String submissionOperationId,
++                String exactReceipt)
++                throws Exception {
++            authorization.consume(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_SUBMIT);
++            return mBroker.submitFromIssuer(handle, submissionOperationId, exactReceipt);
++        }
++
++        CapabilityLeasePendingBroker.SubmissionStatus querySubmissionFromIssuer(
++                AuthorizedCall authorization, String handle, String submissionOperationId)
++                throws Exception {
++            authorization.consume(
++                    CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_QUERY_SUBMISSION);
++            return mBroker.querySubmissionFromIssuer(handle, submissionOperationId);
++        }
++
++        CapabilityLeasePendingBroker.SubmissionStatus acknowledgeSubmissionDelivery(
++                AuthorizedCall authorization, String handle, String submissionOperationId,
++                String receiptId, String statusTupleSha256) throws Exception {
++            authorization.consume(
++                    CapabilityLeaseBrokerCallerPolicy.Operation.UI_ACK_SUBMISSION);
++            return mBroker.acknowledgeSubmissionDelivery(handle, submissionOperationId,
++                    receiptId, statusTupleSha256);
+         }
+ 
+-        void cancelFromIssuer(String handle) throws Exception {
+-            verify(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_CANCEL);
++        void cancelFromIssuer(AuthorizedCall authorization, String handle) throws Exception {
++            authorization.consume(CapabilityLeaseBrokerCallerPolicy.Operation.ISSUER_CANCEL);
+             mBroker.cancelFromIssuer(handle);
+         }
+     }
+@@ -95,11 +139,45 @@ final class CapabilityLeaseBrokerServiceFacades {
+         mCallerVerifier = callerVerifier;
+     }
+ 
+-    private void verify(CapabilityLeaseBrokerCallerPolicy.Operation operation) {
++    private AuthorizedCall authorize(CapabilityLeaseBrokerCallerPolicy.Operation operation) {
++        return new AuthorizedCall(operation, verify(operation));
++    }
++
++    private CapabilityLeaseBrokerCallerPolicy.VerifiedCaller verify(
++            CapabilityLeaseBrokerCallerPolicy.Operation operation) {
+         CapabilityLeaseBrokerCallerPolicy.VerifiedCaller caller =
+                 mCallerVerifier.verify(operation);
+         if (caller == null || caller.role != operation.requiredRole) {
+             throw new SecurityException("capability_lease_broker_caller_denied");
+         }
++        return caller;
++    }
++
++    /** Single-use evidence that the original Binder caller was verified for one exact operation. */
++    static final class AuthorizedCall {
++        private final CapabilityLeaseBrokerCallerPolicy.Operation mOperation;
++        private final CapabilityLeaseBrokerCallerPolicy.VerifiedCaller mCaller;
++        private final AtomicBoolean mConsumed = new AtomicBoolean();
++
++        private AuthorizedCall(
++                CapabilityLeaseBrokerCallerPolicy.Operation operation,
++                CapabilityLeaseBrokerCallerPolicy.VerifiedCaller caller) {
++            mOperation = operation;
++            mCaller = caller;
++        }
++
++        int uid() {
++            return mCaller.uid;
++        }
++
++        private CapabilityLeaseBrokerCallerPolicy.VerifiedCaller consume(
++                CapabilityLeaseBrokerCallerPolicy.Operation expected) {
++            if (expected == null || mOperation != expected
++                    || mCaller.role != expected.requiredRole
++                    || !mConsumed.compareAndSet(false, true)) {
++                throw new SecurityException("capability_lease_broker_caller_denied");
++            }
++            return mCaller;
++        }
+     }
+ }
+diff --git a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java
+index b71c5a8b..e18c4ba4 100644
+--- a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java
++++ b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java
+@@ -6,6 +6,7 @@ package org.trillionnium.platform.internal;
+ 
+ import org.trillionnium.agentidentity.AgentDescriptor;
+ import org.trillionnium.agentidentity.AgentDescriptorRegistry;
++import org.trillionnium.capabilitylease.CapabilityLeaseUiProtocol;
+ 
+ import java.io.IOException;
+ import java.nio.charset.StandardCharsets;
+@@ -179,7 +180,7 @@ final class CapabilityLeasePendingBroker {
+ 
+     synchronized PendingView fetchForIssuer(String handle) throws IOException {
+         requireAvailable();
+-        RuntimeRecord record = requirePending(handle);
++        RuntimeRecord record = requireIssuerVisible(handle);
+         return pendingView(record);
+     }
+ 
+@@ -190,7 +191,8 @@ final class CapabilityLeasePendingBroker {
+                 record.stored.expiresAtMs, record.stored.expiresElapsedMs);
+     }
+ 
+-    synchronized Submission submitFromIssuer(String handle, String exactReceipt)
++    synchronized Submission submitFromIssuer(
++            String handle, String submissionOperationId, String exactReceipt)
+             throws Exception {
+         requireAvailable();
+         RuntimeRecord record = requireRecord(handle);
+@@ -198,19 +200,81 @@ final class CapabilityLeasePendingBroker {
+         requireBoundedText(exactReceipt, 256 * 1024,
+                 "capability_lease_broker_receipt_denied");
+         String receiptSha256 = sha256(exactReceipt.getBytes(StandardCharsets.UTF_8));
++        String expectedSubmissionOperationId =
++                CapabilityLeaseUiProtocol.deriveSubmissionOperationIdFromReceiptSha256(
++                        record.stored.handle, receiptSha256);
++        if (!constantTimeTextEquals(expectedSubmissionOperationId,
++                CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                        submissionOperationId))) {
++            throw denied("capability_lease_broker_submission_operation_denied");
++        }
+         if (record.stored.state != CapabilityLeasePendingStore.State.PENDING) {
+             if (hasReceipt(record.stored)
+                     && receiptSha256.equals(record.stored.receiptSha256)) {
+-                return new Submission("submitted", record.stored.receiptId);
++                return submission(record, expectedSubmissionOperationId);
+             }
+             throw denied("capability_lease_broker_not_pending");
+         }
+         String receiptId = mReceiptValidator.validateAndReturnReceiptId(
+                 record.stored.exactChallenge, exactReceipt, record.request, record.semantics);
+         requireDigest(receiptId, "capability_lease_broker_receipt_id_denied");
+-        transition(record, record.stored.transition(CapabilityLeasePendingStore.State.SUBMITTED,
++        // A verified receipt is intentionally not delivery-eligible yet. The caller may lose the
++        // synchronous Binder reply after this durable transition, so all broker consumers must
++        // observe the same quarantined state until AiShell acknowledges receiving the exact tuple.
++        transition(record, record.stored.transition(
++                CapabilityLeasePendingStore.State.INDETERMINATE,
+                 receiptId, receiptSha256, exactReceipt));
+-        return new Submission("submitted", receiptId);
++        return submission(record, expectedSubmissionOperationId);
++    }
++
++    synchronized SubmissionStatus querySubmissionFromIssuer(
++            String handle, String submissionOperationId) throws IOException {
++        requireAvailable();
++        String operationId = CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                submissionOperationId);
++        RuntimeRecord record = requireRecord(handle);
++        expireIfNecessary(record, mClock.elapsedRealtimeMillis());
++        if (hasReceipt(record.stored)) {
++            requireExactSubmissionOperation(record.stored, operationId);
++        }
++        return submissionStatus(record, operationId);
++    }
++
++    synchronized SubmissionStatus acknowledgeSubmissionDelivery(
++            String handle, String submissionOperationId, String receiptId,
++            String statusTupleSha256) throws IOException {
++        requireAvailable();
++        RuntimeRecord record = requireRecord(handle);
++        expireIfNecessary(record, mClock.elapsedRealtimeMillis());
++        String operationId = CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                submissionOperationId);
++        String exactReceiptId = CapabilityLeaseUiProtocol.requireReceiptId(receiptId);
++        String exactTupleSha256 =
++                CapabilityLeaseUiProtocol.requireSubmissionStatusTupleSha256(
++                        statusTupleSha256);
++        requireExactSubmissionOperation(record.stored, operationId);
++        if (!constantTimeDigestEquals(exactReceiptId, record.stored.receiptId)) {
++            throw denied("capability_lease_broker_submission_delivery_ack_denied");
++        }
++        String expectedTupleSha256 =
++                CapabilityLeaseUiProtocol.deriveSubmissionStatusTupleSha256(
++                        record.stored.handle, operationId,
++                        CapabilityLeaseUiProtocol.STATUS_INDETERMINATE,
++                        record.stored.receiptId);
++        if (!constantTimeDigestEquals(exactTupleSha256, expectedTupleSha256)) {
++            throw denied("capability_lease_broker_submission_delivery_ack_denied");
++        }
++        if (record.stored.state == CapabilityLeasePendingStore.State.INDETERMINATE) {
++            transition(record, record.stored.transition(
++                    CapabilityLeasePendingStore.State.SUBMITTED,
++                    record.stored.receiptId, record.stored.receiptSha256,
++                    record.stored.exactReceipt));
++        } else if (record.stored.state != CapabilityLeasePendingStore.State.SUBMITTED
++                && record.stored.state != CapabilityLeasePendingStore.State.DELIVERY_READY
++                && record.stored.state != CapabilityLeasePendingStore.State.CONSUMED) {
++            throw denied("capability_lease_broker_submission_delivery_ack_denied");
++        }
++        return submissionStatus(record, operationId);
+     }
+ 
+     synchronized void cancelFromIssuer(String handle) throws IOException {
+@@ -451,10 +515,11 @@ final class CapabilityLeasePendingBroker {
+         }
+     }
+ 
+-    private RuntimeRecord requirePending(String handle) throws IOException {
++    private RuntimeRecord requireIssuerVisible(String handle) throws IOException {
+         RuntimeRecord record = requireRecord(handle);
+         expireIfNecessary(record, mClock.elapsedRealtimeMillis());
+-        if (record.stored.state != CapabilityLeasePendingStore.State.PENDING) {
++        if (record.stored.state == CapabilityLeasePendingStore.State.CANCELED
++                || record.stored.state == CapabilityLeasePendingStore.State.EXPIRED) {
+             throw denied("capability_lease_broker_not_pending");
+         }
+         return record;
+@@ -528,8 +593,66 @@ final class CapabilityLeasePendingBroker {
+         return record.receiptId != null && record.receiptSha256 != null;
+     }
+ 
++    private static Submission submission(RuntimeRecord record, String operationId) {
++        SubmissionStatus status = submissionStatus(record, operationId);
++        if (status.receiptId.isEmpty()) {
++            throw denied("capability_lease_broker_submission_denied");
++        }
++        return new Submission(status.status, status.receiptId,
++                status.submissionOperationId, status.statusTupleSha256);
++    }
++
++    private static SubmissionStatus submissionStatus(
++            RuntimeRecord record, String operationId) {
++        if (record == null || record.stored == null) {
++            throw denied("capability_lease_broker_submission_status_denied");
++        }
++        String status;
++        switch (record.stored.state) {
++            case PENDING:
++                status = CapabilityLeaseUiProtocol.STATUS_NOT_STARTED;
++                break;
++            case INDETERMINATE:
++                status = CapabilityLeaseUiProtocol.STATUS_INDETERMINATE;
++                break;
++            case SUBMITTED:
++                status = CapabilityLeaseUiProtocol.STATUS_SUBMITTED;
++                break;
++            case DELIVERY_READY:
++                status = CapabilityLeaseUiProtocol.STATUS_DELIVERY_READY;
++                break;
++            case CONSUMED:
++                status = CapabilityLeaseUiProtocol.STATUS_CONSUMED;
++                break;
++            case CANCELED:
++                status = CapabilityLeaseUiProtocol.STATUS_CANCELED;
++                break;
++            case EXPIRED:
++                status = CapabilityLeaseUiProtocol.STATUS_EXPIRED;
++                break;
++            default:
++                throw denied("capability_lease_broker_submission_status_denied");
++        }
++        String receiptId = record.stored.receiptId == null ? "" : record.stored.receiptId;
++        return new SubmissionStatus(status, operationId, receiptId,
++                CapabilityLeaseUiProtocol.deriveSubmissionStatusTupleSha256(
++                        record.stored.handle, operationId, status, receiptId));
++    }
++
++    private static void requireExactSubmissionOperation(
++            CapabilityLeasePendingStore.Record record, String operationId) {
++        if (record == null || !hasReceipt(record)
++                || !constantTimeTextEquals(operationId,
++                        CapabilityLeaseUiProtocol
++                                .deriveSubmissionOperationIdFromReceiptSha256(
++                                        record.handle, record.receiptSha256))) {
++            throw denied("capability_lease_broker_submission_operation_denied");
++        }
++    }
++
+     private static boolean isLive(CapabilityLeasePendingStore.State state) {
+         return state == CapabilityLeasePendingStore.State.PENDING
++                || state == CapabilityLeasePendingStore.State.INDETERMINATE
+                 || state == CapabilityLeasePendingStore.State.SUBMITTED
+                 || state == CapabilityLeasePendingStore.State.DELIVERY_READY;
+     }
+@@ -582,6 +705,12 @@ final class CapabilityLeasePendingBroker {
+                 right.getBytes(StandardCharsets.US_ASCII));
+     }
+ 
++    private static boolean constantTimeTextEquals(String left, String right) {
++        return left != null && right != null && MessageDigest.isEqual(
++                left.getBytes(StandardCharsets.UTF_8),
++                right.getBytes(StandardCharsets.UTF_8));
++    }
++
+     private static String requirePrefixedDigest(String value, String prefix, String reason) {
+         if (value == null || !value.matches(java.util.regex.Pattern.quote(prefix)
+                 + "[0-9a-f]{64}")) {
+@@ -750,10 +879,34 @@ final class CapabilityLeasePendingBroker {
+     static final class Submission {
+         final String status;
+         final String receiptId;
++        final String submissionOperationId;
++        final String statusTupleSha256;
+ 
+-        private Submission(String status, String receiptId) {
++        private Submission(String status, String receiptId,
++                String submissionOperationId, String statusTupleSha256) {
+             this.status = status;
+             this.receiptId = receiptId;
++            this.submissionOperationId = submissionOperationId;
++            this.statusTupleSha256 = statusTupleSha256;
++        }
++    }
++
++    static final class SubmissionStatus {
++        final String status;
++        final String submissionOperationId;
++        final String receiptId;
++        final String statusTupleSha256;
++
++        private SubmissionStatus(String status, String submissionOperationId,
++                String receiptId, String statusTupleSha256) {
++            this.status = CapabilityLeaseUiProtocol.requireSubmissionStatus(status);
++            this.submissionOperationId =
++                    CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                            submissionOperationId);
++            this.receiptId = receiptId == null ? "" : receiptId;
++            this.statusTupleSha256 =
++                    CapabilityLeaseUiProtocol.requireSubmissionStatusTupleSha256(
++                            statusTupleSha256);
+         }
+     }
+ 
+diff --git a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java
+index 3a765fb9..ed413e39 100644
+--- a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java
++++ b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java
+@@ -130,6 +130,7 @@ final class CapabilityLeasePendingRecordCodec {
+             case CONSUMED: return 4;
+             case CANCELED: return 5;
+             case EXPIRED: return 6;
++            case INDETERMINATE: return 7;
+             default: throw new IOException("invalid pending record state");
+         }
+     }
+@@ -142,6 +143,7 @@ final class CapabilityLeasePendingRecordCodec {
+             case 4: return CapabilityLeasePendingStore.State.CONSUMED;
+             case 5: return CapabilityLeasePendingStore.State.CANCELED;
+             case 6: return CapabilityLeasePendingStore.State.EXPIRED;
++            case 7: return CapabilityLeasePendingStore.State.INDETERMINATE;
+             default: throw new IOException("invalid pending record state");
+         }
+     }
+diff --git a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java
+index 7ce61675..b2b3b5b1 100644
+--- a/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java
++++ b/trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java
+@@ -19,6 +19,8 @@ import java.util.Map;
+ interface CapabilityLeasePendingStore {
+     enum State {
+         PENDING,
++        /** Validated receipt held until AiShell acknowledges delivery of the exact result tuple. */
++        INDETERMINATE,
+         SUBMITTED,
+         DELIVERY_READY,
+         CONSUMED,
+@@ -145,6 +147,7 @@ interface CapabilityLeasePendingStore {
+                 case EXPIRED:
+                     requireNoReceipt();
+                     return;
++                case INDETERMINATE:
+                 case SUBMITTED:
+                 case DELIVERY_READY:
+                     requireReceiptMetadata();
+@@ -167,7 +170,10 @@ interface CapabilityLeasePendingStore {
+         private static boolean validStateTransition(State from, State to) {
+             switch (from) {
+                 case PENDING:
+-                    return to == State.SUBMITTED || to == State.CANCELED || to == State.EXPIRED;
++                    return to == State.INDETERMINATE
++                            || to == State.CANCELED || to == State.EXPIRED;
++                case INDETERMINATE:
++                    return to == State.SUBMITTED || to == State.EXPIRED;
+                 case SUBMITTED:
+                     return to == State.DELIVERY_READY || to == State.EXPIRED;
+                 case DELIVERY_READY:
+@@ -182,7 +188,9 @@ interface CapabilityLeasePendingStore {
+         }
+ 
+         private void requireValidReceiptTransitionFrom(Record expected) throws IOException {
+-            if (expected.state == State.SUBMITTED && state == State.DELIVERY_READY) {
++            if ((expected.state == State.INDETERMINATE && state == State.SUBMITTED)
++                    || (expected.state == State.SUBMITTED
++                            && state == State.DELIVERY_READY)) {
+                 if (!constantTimeEquals(receiptId, expected.receiptId)
+                         || !constantTimeEquals(receiptSha256, expected.receiptSha256)
+                         || !constantTimeTextEquals(exactReceipt, expected.exactReceipt)) {
+diff --git a/trillionnium/res/res/values/config.xml b/trillionnium/res/res/values/config.xml
+index 21fc8489..11bf6ef2 100644
+--- a/trillionnium/res/res/values/config.xml
++++ b/trillionnium/res/res/values/config.xml
+@@ -96,6 +96,7 @@
+     <!-- Defines external services to be started by the TrillionniumSystemServer at boot. The service itself
+          should publish as a binder services in its onStart -->
+     <string-array name="config_externalTrillionniumServices">
++        <item>org.trillionnium.platform.internal.CapabilityLeaseBrokerService</item>
+         <item>org.trillionnium.platform.internal.AgentSystemApiService</item>
+         <item>org.trillionnium.platform.internal.ProfileManagerService</item>
+         <item>org.trillionnium.platform.internal.TrillionniumHardwareService</item>

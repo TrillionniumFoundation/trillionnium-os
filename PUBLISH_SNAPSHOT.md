@@ -1,7 +1,8 @@
 # Trillionnium OS GitHub audit snapshot
 
-This repository is the complete source snapshot prepared from the canonical
-Trillionnium control-plane tree for an external full-tree audit.
+This repository is the complete source snapshot of the canonical Trillionnium
+control-plane tree, with the current Android integration overlay and manifest
+pins attached for an external full-tree audit.
 
 - Source root: `/data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/trillionnium-release-sources/p0-agent-native-integration-20260731/trillionnium-os`
 - Baseline Git revision: `7cba499c46fb8f28cb94aea5b5e41c28420995e5`
@@ -17,11 +18,20 @@ all `target/`, `__pycache__/`, nested `.git/`, and host `.repo/`/build
 output directories are excluded. No source file over 100 MiB is present.
 
 The Android integration checkout is a separate repo-manifest tree, not a
-single Git repository. Its manifest declaration and pinned project revisions
-remain documented in `docs/evidence/2026-08-26-development-tree-inventory.md`;
-the AOSP checkout and its `out/`/object stores are not flattened into this
-repository. This boundary keeps the snapshot cloneable while preserving the
-inputs needed to audit the control-plane integration plan.
+single Git repository. The exact manifest inputs are copied under
+`android-integration/manifest/`, and the current modified/untracked files from
+the Trillionnium Android projects are copied under
+`android-integration/working-tree/`. `android-integration/PROJECT_STATUS.tsv`
+binds each overlay file to its project HEAD and SHA-256; the corresponding
+unified diffs are in `android-integration/patches/`. The AOSP checkout and its
+`out/`/object stores are not flattened into this repository. This boundary
+keeps the snapshot cloneable while preserving the inputs needed to audit the
+latest Android integration changes and the control-plane plan.
+
+The manifest contains 1,172 independent projects. Reconstructing the complete
+Android baseline requires a repo-aware checkout of those pinned projects;
+this repository must not be described as a literal mirror of the multi-GB
+Android object store.
 
 The normative current plan is
 `docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md` (revision

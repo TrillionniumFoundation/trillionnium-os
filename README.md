@@ -66,6 +66,8 @@ to proceed on the authorised test device while the direct path is completed.
 - [2026-08-06 full Agent-native audit](docs/audits/2026-08-06-ai-agent-native-os-full-audit.md)
 - [Canonical Codex-only direct shell/ADB ADR](docs/architecture/2026-08-06-codex-native-direct-shell-adb.md)
 - [Owner-open direct-tools contract](docs/contracts/codex-sovereign-direct-tools-v1.json)
+- [Publication scope and audit snapshot](PUBLISH_SNAPSHOT.md)
+- [Android manifest and latest dirty integration overlay](android-integration/README.md)
 - [Transition v2 product boundary](docs/contracts/agent-exec-adb-windows-product-boundary-v2.json)
 - [Direct System API and Accessibility contracts (pre-r2 implementation notes)](crates/trillionnium-agent-direct-tools/README.md)
 

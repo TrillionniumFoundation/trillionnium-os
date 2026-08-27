@@ -1,0 +1,24 @@
+# AndroidMediaShell (mediashell_app) access to Widevine
+user=_app isPrivApp=true seinfo=mediashell domain=mediashell_app name=com.google.android.apps.mediashell type=privapp_data_file levelFrom=all
+user=_app isPrivApp=true seinfo=mediashell domain=mediashell_app name=com.google.android.apps.mediashell:* type=privapp_data_file levelFrom=all
+
+# Updater
+user=_app isPrivApp=true seinfo=platform name=org.trillionnium.updater domain=updater_app type=app_data_file levelFrom=user
+
+# AI Authority remains a non-privileged app UID but gets an exact execution
+# domain for the Root-Linux Agent Gateway socket boundary.
+user=_app isPrivApp=false seinfo=trillionnium_aiauthority name=org.trillionnium.aiauthority domain=trillionnium_aiauthority type=app_data_file levelFrom=all
+user=_app isPrivApp=false seinfo=trillionnium_aiauthority name=org.trillionnium.aiauthority:executor domain=trillionnium_aiauthority type=app_data_file levelFrom=all
+
+# AI Shell is the sole Android UI peer for the Root-Linux Agent API. It remains
+# a non-privileged app UID and receives no direct executor authority.
+user=_app isPrivApp=false seinfo=trillionnium_aishell name=org.trillionnium.aishell domain=trillionnium_aishell type=app_data_file levelFrom=user
+
+# The short-lived action-lease issuer is a separate APK and Linux UID.  Its
+# package-refined seinfo selects a lease-only domain and a distinct app-data /
+# AndroidKeyStore namespace; it is not a process inside AI Authority.
+user=_app isPrivApp=false seinfo=trillionnium_capability_lease_issuer name=org.trillionnium.capabilitylease domain=trillionnium_capability_lease_issuer type=app_data_file levelFrom=user
+
+# Dedicated AccessibilityService backend.  Its exact platform-signed package
+# receives a distinct domain; it is never folded into AI Shell or Authority.
+user=_app isPrivApp=false seinfo=trillionnium_agent_accessibility name=org.trillionnium.agentaccessibility domain=trillionnium_agent_accessibility type=trillionnium_agent_accessibility_data_file levelFrom=user

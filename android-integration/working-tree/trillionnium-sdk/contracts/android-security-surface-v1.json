@@ -1,0 +1,32 @@
+{
+  "contract_schema": "org.trillionnium.android-security-surface.contract.v1",
+  "activation_policy": "fail_closed",
+  "keymint": {
+    "hal_name": "android.hardware.security.keymint",
+    "service_instance": "IKeyMintDevice/default",
+    "minimum_aidl_version": 4,
+    "required_security_level": "TRUSTED_ENVIRONMENT",
+    "software_default_is_not_hardware_evidence": true
+  },
+  "rollback": {
+    "proof_status": "capability_lease_rollback_epoch_proof_unavailable",
+    "requires_os_owned_monotonic_producer": true,
+    "avb_index_is_not_enrollment_proof": true
+  },
+  "accessibility": {
+    "module": "TrillionniumAgentAccessibility",
+    "package": "org.trillionnium.agentaccessibility",
+    "service": ".AgentAccessibilityService",
+    "bind_permission": "android.permission.BIND_ACCESSIBILITY_SERVICE",
+    "requires_explicit_user_authorization": true
+  },
+  "forbidden_runtime_actions": [
+    "adb",
+    "flash",
+    "fastboot",
+    "install",
+    "reboot",
+    "sideload",
+    "wipe"
+  ]
+}

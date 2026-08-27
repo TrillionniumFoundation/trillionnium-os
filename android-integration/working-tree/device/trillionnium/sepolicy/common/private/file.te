@@ -1,0 +1,104 @@
+type sdcard_posix, sdcard_type, sdcard_posix_contextmount_type, fs_type, mlstrustedobject;
+type trillionnium_rootlinux_exec, exec_type, file_type, system_file_type;
+type trillionnium_rootlinux_receipt_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agent_egress_evidence_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_rootlinux_data_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agentd_exec, exec_type, file_type, system_file_type;
+type trillionnium_direct_operation_custody_high_water_exec, exec_type, file_type, system_file_type;
+type trillionnium_direct_operation_custody_high_water_ready_gate_exec, exec_type, file_type, system_file_type;
+type trillionnium_agent_egress_guard_exec, exec_type, file_type, system_file_type;
+type trillionnium_agent_egress_probe_exec, exec_type, file_type, system_file_type;
+# 8a installs the exact production daemon bytes on verified system_ext and
+# init bind-mounts that immutable inode at the chroot target.  The underlying
+# archive member remains ordinary rootlinux data and is never an entrypoint.
+type trillionnium_agentd_payload_exec, exec_type, file_type, system_file_type, verified_data_exec_type;
+type trillionnium_agentd_runtime_file, file_type, data_file_type, core_data_file_type, verified_data_exec_type;
+type trillionnium_agentd_state_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agentd_run_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_direct_operation_custody_root_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_direct_operation_custody_high_water_state_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_direct_operation_custody_high_water_socket, file_type, data_file_type, core_data_file_type;
+type trillionnium_shell_exec_root_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_shell_exec_ledger_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_shell_exec_receipt_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_shell_exec_workspace_file, file_type, data_file_type, core_data_file_type;
+# Every ordinary regular file in the release-measured Root Linux tree is
+# relabelled only after atomic publication and before any bind mount or worker
+# starts. Writable/state and dedicated direct-tool files retain their more
+# specific labels. This verified-data type is the sole general Root Linux
+# execute surface admitted to the isolated shell worker.
+type trillionnium_shell_exec_payload_file, file_type, data_file_type, core_data_file_type, verified_data_exec_type;
+# Bind mounts are authorized against their underlying target inode.  Keep each
+# target on a dedicated non-executable label so init never needs mounton over
+# the generic, replaceable Root-Linux tree.
+type trillionnium_proc_mountpoint_dir, file_type, data_file_type, core_data_file_type;
+type trillionnium_agentd_mountpoint_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agent_system_api_mountpoint_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agent_accessibility_mountpoint_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agent_adb_mountpoint_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agent_shell_mountpoint_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agent_system_api_replay_sync_mountpoint_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_agent_tool_state_mountpoint_dir, file_type, data_file_type, core_data_file_type;
+# The immutable source is part of system_ext. A single read-only bind mount
+# exposes this same inode at the legacy chroot path, preserving this label as
+# the only long-lived broker entrypoint. The underlying rootfs file is never an
+# entrypoint and remains ordinary core data.
+type trillionnium_codex_agent_exec, exec_type, file_type, system_file_type;
+# The real Codex ELF is not an Agent entrypoint. Only the measured integrity
+# launcher transitions from the daemon; once inside the Codex domain, that
+# launcher may execute this separately labelled runtime without transition.
+type trillionnium_codex_runtime_exec, exec_type, file_type, system_file_type;
+type trillionnium_codex_payload_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_codex_data_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_codex_tmp_file, file_type, data_file_type, core_data_file_type;
+# The three Agent-owned adapters are independent immutable transition
+# entrypoints. The caller's fixed UID/GID survives exec, while the process
+# enters a tool-only SELinux domain before any Android backend connection.
+type trillionnium_agent_system_api_exec, exec_type, file_type, system_file_type;
+type trillionnium_agent_accessibility_exec, exec_type, file_type, system_file_type;
+type trillionnium_agent_adb_exec, exec_type, file_type, system_file_type;
+type trillionnium_agent_shell_exec, exec_type, file_type, system_file_type;
+type trillionnium_shell_exec_broker_exec, exec_type, file_type, system_file_type;
+type trillionnium_shell_exec_worker_exec, exec_type, file_type, system_file_type;
+# Future source-only capability publication and operation replay
+# synchronization helpers.  These fixed system_ext labels are mutually
+# distinct from each other and from model-invoked adapter entrypoints; no
+# binary, package, or init service is present in this checkpoint.
+type trillionnium_agent_system_api_replay_sync_exec, exec_type, file_type, system_file_type;
+type trillionnium_agent_system_api_operation_replay_sync_exec, exec_type, file_type, system_file_type;
+type trillionnium_agent_accessibility_operation_replay_sync_exec, exec_type, file_type, system_file_type;
+# Exact non-executable dynamic-loader input used by the two production direct
+# adapters. Generic rootfs data remains unreadable to tool
+# domains even though directory traversal is required inside the chroot.
+type trillionnium_rootfs_loader_config_file, file_type, data_file_type, core_data_file_type;
+# Direct-operation journal and daemon-authored binding-inbox custody.  The
+# replaceable Root-Linux tree sees one persistent noexec bind mount from
+# /data/trillionnium/agent-tools.  Root ancestors are traversable, state leaves
+# are UID-owned mode 0700, and inbox leaves are root-owned/group-readable.
+type trillionnium_agent_tool_state_root_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_direct_tool_call_allocator_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_codex_system_api_tool_state_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_codex_accessibility_tool_state_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_codex_system_api_tool_inbox_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_codex_accessibility_tool_inbox_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_system_api_replay_file, file_type, data_file_type, core_data_file_type;
+# The Accessibility service is deliberately an MLS-trusted app domain.  Its
+# replay journal therefore cannot use the generic app_data_file label (AOSP
+# forbids trusted subjects from opening that label).  Keep the package's
+# device-protected data on a dedicated app-data type so only this service gets
+# the narrowly scoped create/open/rename/unlink rules below.
+type trillionnium_agent_accessibility_data_file, file_type, data_file_type, core_data_file_type, app_data_file_type;
+# Future system_server capability-lease broker state.  This is deliberately
+# separate from issuer app-data and every adapter replay journal.
+type trillionnium_capability_lease_data_file, file_type, data_file_type, core_data_file_type;
+# The backend's lease-id replay ledger has an independent lifetime and strict
+# directory-member contract.  Keep it on a distinct label and state root so a
+# replay tombstone can never be mistaken for pending-consent state.
+type trillionnium_capability_lease_backend_replay_file, file_type, data_file_type, core_data_file_type;
+# Authenticated task/execution-token records have their own strict membership
+# and replay lifetime.  They must never alias pending or backend replay state.
+type trillionnium_capability_lease_token_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_rootfs_loader_exec, file_type, data_file_type, core_data_file_type, verified_data_exec_type;
+type trillionnium_rootfs_loader_symlink, file_type, data_file_type, core_data_file_type, verified_data_exec_type;
+type trillionnium_codex_proxy_port, port_type;
+type sysfs_perdev_minors, fs_type, sysfs_type;

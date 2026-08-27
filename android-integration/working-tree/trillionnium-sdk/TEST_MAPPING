@@ -1,0 +1,54 @@
+{
+  "presubmit": [
+    {
+      "name": "TrillionniumAgentAccessibilityProductOwnershipContractTest"
+    },
+    {
+      "name": "TrillionniumAndroidSecuritySurfaceContractTest"
+    },
+    {
+      "name": "TrillionniumAgentDescriptorRegistryContractTest"
+    },
+    {
+      "name": "TrillionniumAgentSystemApiCapabilityLeaseSourceContractTest"
+    },
+    {
+      "name": "TrillionniumAgentSystemApiCapabilityLeaseSourceTest"
+    },
+    {
+      "name": "TrillionniumAgentSystemApiContractTest"
+    },
+    {
+      "name": "TrillionniumCanonicalOperationBindingContractTest"
+    },
+    {
+      "name": "TrillionniumCapabilityLeaseBrokerSourceContractTest"
+    },
+    {
+      "name": "TrillionniumCapabilityLeaseDestinationConsumerProviderSourceDisabledTest"
+    },
+    {
+      "name": "TrillionniumCapabilityLeasePendingBrokerTest"
+    },
+    {
+      "name": "TrillionniumCapabilityLeaseReceiptVerifierProviderSourceDisabledTest"
+    },
+    {
+      "name": "TrillionniumOpenUriLeaseSemanticsContractTest"
+    },
+    {
+      "name": "TrillionniumOpenUriLeaseSemanticsTest"
+    },
+    {
+      "name": "TrillionniumReplayControlSourceContractTest"
+    }
+  ],
+  "postsubmit": [
+    {
+      "name": "TrillionniumCapabilityLeaseAndroidOpenUriDeviceGateTest"
+    },
+    {
+      "name": "TrillionniumCapabilityLeaseOsFileStoreFaultMatrixTest"
+    }
+  ]
+}

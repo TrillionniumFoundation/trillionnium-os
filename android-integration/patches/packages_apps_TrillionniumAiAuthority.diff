@@ -1,0 +1,647 @@
+diff --git a/Android.bp b/Android.bp
+index 2a2be2c..b278cbc 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -49,7 +49,10 @@ android_app {
+     privileged: false,
+     platform_apis: true,
+     min_sdk_version: "36",
+-    static_libs: ["trillionnium-agent-identity-product"],
++    static_libs: [
++        "trillionnium-agent-identity-product",
++        "trillionnium-capability-lease-binder-api",
++    ],
+ }
+ 
+ // Test-only exporter for a real device KeyMint attestation chain. It has no
+@@ -107,6 +110,7 @@ filegroup {
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseContract.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java",
++        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerWire.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeasePresentation.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseIssuanceLedger.java",
+@@ -186,9 +190,10 @@ java_test_host {
+     name: "TrillionniumCapabilityLeaseIssuerContractTest",
+     srcs: [
+         ":trillionnium-agent-descriptor-registry-sources",
++        ":trillionnium-capability-lease-ui-protocol-source",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CanonicalJson.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java",
+-        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java",
++        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerWire.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseContract.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeasePresentation.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseIssuanceLedger.java",
+@@ -200,6 +205,7 @@ java_test_host {
+         "leaseissuer/tests/CapabilityLeaseContractTest.java",
+         "leaseissuer/tests/CapabilityLeaseChallengeV1Golden.java",
+         "leaseissuer/tests/CapabilityLeaseBrokerContractTest.java",
++        "leaseissuer/tests/CapabilityLeaseUiProtocolTest.java",
+         "leaseissuer/tests/CapabilityLeaseIssuanceLedgerTest.java",
+         "leaseissuer/tests/EcdsaP256Test.java",
+         "leaseissuer/tests/ReceiptSignatureVerifierTest.java",
+@@ -219,6 +225,7 @@ sh_test_host {
+         "Android.bp",
+         "AndroidManifest.xml",
+         "res/values/strings.xml",
++        ":trillionnium-capability-lease-ui-protocol-source",
+         ":TrillionniumCapabilityLeaseIssuerManifestContract",
+         ":TrillionniumCapabilityLeaseIssuerSigningResourcesContract",
+         "leaseissuer/src/org/trillionnium/capabilitylease/AndroidDurableFileOps.java",
+@@ -226,6 +233,7 @@ sh_test_host {
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseContract.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java",
++        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerWire.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeasePresentation.java",
+         "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseIssuanceLedger.java",
+diff --git a/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java b/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java
+index 1fd70df..6b111b8 100644
+--- a/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java
++++ b/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java
+@@ -30,7 +30,12 @@ public final class CapabilityLeaseActivity extends Activity {
+     public static final String EXTRA_PENDING_HANDLE = "capability_lease_pending_handle";
+     public static final String EXTRA_STATUS = "capability_lease_status";
+     public static final String EXTRA_RECEIPT_ID = "capability_lease_receipt_id";
++    public static final String EXTRA_SUBMISSION_OPERATION_ID =
++            "capability_lease_submission_operation_id";
++    public static final String EXTRA_SUBMISSION_STATUS_TUPLE_SHA256 =
++            "capability_lease_submission_status_tuple_sha256";
+     static final String STATUS_SUBMITTED = "submitted";
++    static final String STATUS_INDETERMINATE = "indeterminate";
+     static final String STATUS_DENIED = "denied";
+     static final String STATUS_EXPIRED = "expired";
+     static final String STATUS_UNAVAILABLE = "unavailable";
+@@ -70,8 +75,11 @@ public final class CapabilityLeaseActivity extends Activity {
+                     || request.getData() != null || request.getClipData() != null
+                     || request.getType() != null || request.getCategories() != null
+                     || request.getSelector() != null
+-                    || request.getExtras() == null || request.getExtras().size() != 1
+-                    || !request.hasExtra(EXTRA_PENDING_HANDLE)) {
++                    || request.getExtras() == null
++                    || (request.getExtras().size() != 1 && request.getExtras().size() != 2)
++                    || !request.hasExtra(EXTRA_PENDING_HANDLE)
++                    || (request.getExtras().size() == 2
++                            && !request.hasExtra(EXTRA_SUBMISSION_OPERATION_ID))) {
+                 throw new SecurityException("capability_lease_intent_surface_denied");
+             }
+             Object rawHandle = request.getExtras().get(EXTRA_PENDING_HANDLE);
+@@ -80,9 +88,24 @@ public final class CapabilityLeaseActivity extends Activity {
+             }
+             mPendingHandle = LeasePendingHandle.requireExact((String) rawHandle);
+ 
+-            // This is intentionally unavailable in production until the SDK provides a linkable,
+-            // issuer-role-authenticated broker API. No fallback parses caller-authored content.
++            // The broker API is issuer-role authenticated. Product enrollment remains HOLD, and
++            // there is no fallback that parses caller-authored challenge or destination content.
+             mBroker = CapabilityLeaseBrokerClients.connect();
++            if (request.hasExtra(EXTRA_SUBMISSION_OPERATION_ID)) {
++                Object rawOperationId = request.getExtras().get(
++                        EXTRA_SUBMISSION_OPERATION_ID);
++                if (!(rawOperationId instanceof String)) {
++                    throw new SecurityException(
++                            "capability_lease_submission_operation_type_denied");
++                }
++                CapabilityLeaseBrokerClient.Submission recovered =
++                        mBroker.querySubmissionStatus(mPendingHandle,
++                                CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                                        (String) rawOperationId));
++                finishWithStatus(recovered.status(), recovered.receiptId(),
++                        recovered.submissionOperationId(), recovered.statusTupleSha256());
++                return;
++            }
+             mBrokerView = mBroker.fetchExactChallenge(mPendingHandle);
+             mBrokerChallengeJson = mBrokerView.exactChallenge();
+             long nowElapsedMs = SystemClock.elapsedRealtime();
+@@ -218,6 +241,8 @@ public final class CapabilityLeaseActivity extends Activity {
+ 
+     private void allowOnce() {
+         if (!mCompleted.compareAndSet(false, true)) return;
++        String receiptId = "";
++        String submissionOperationId = "";
+         try {
+             SystemUserBoundary.requireProcessAndCaller(android.os.Process.myUid(),
+                     mLaunchedFromUid, "capability_lease_unsupported_android_user");
+@@ -248,11 +273,19 @@ public final class CapabilityLeaseActivity extends Activity {
+                     verified.getString("receipt_signature"));
+             CapabilityLeaseBrokerClient.Submission submitted =
+                     mBroker.submitExactReceipt(mPendingHandle, exactReceipt);
+-            String receiptId = verified.getString("receipt_id");
++            receiptId = verified.getString("receipt_id");
+             if (!receiptId.equals(submitted.receiptId())) {
+                 throw new SecurityException("capability_lease_broker_receipt_id_denied");
+             }
+-            finishWithStatus(submitted.status(), receiptId);
++            submissionOperationId = submitted.submissionOperationId();
++            finishWithStatus(submitted.status(), receiptId, submissionOperationId,
++                    submitted.statusTupleSha256());
++        } catch (CapabilityLeaseBrokerClient.SubmissionIndeterminateException uncertain) {
++            // The submit worker started, so an ordinary unavailable result would invite an unsafe
++            // retry. AiShell receives the stable operation id and must relaunch/query after the
++            // broker restarts; no delivery ACK or backend release occurs on this path.
++            finishWithStatus(STATUS_INDETERMINATE, receiptId,
++                    uncertain.submissionOperationId(), "");
+         } catch (Exception denied) {
+             finishWithStatus(STATUS_UNAVAILABLE, "");
+         }
+@@ -302,11 +335,22 @@ public final class CapabilityLeaseActivity extends Activity {
+     }
+ 
+     private void finishWithStatus(String status, String receiptId) {
++        finishWithStatus(status, receiptId, "", "");
++    }
++
++    private void finishWithStatus(String status, String receiptId,
++            String submissionOperationId, String statusTupleSha256) {
+         mCompleted.set(true);
+         Intent result = new Intent();
++        result.putExtra(EXTRA_PENDING_HANDLE, mPendingHandle);
+         result.putExtra(EXTRA_STATUS, status);
+         result.putExtra(EXTRA_RECEIPT_ID, receiptId);
+-        setResult(STATUS_SUBMITTED.equals(status) ? RESULT_OK : RESULT_CANCELED, result);
++        result.putExtra(EXTRA_SUBMISSION_OPERATION_ID, submissionOperationId);
++        result.putExtra(EXTRA_SUBMISSION_STATUS_TUPLE_SHA256, statusTupleSha256);
++        setResult(STATUS_SUBMITTED.equals(status) || STATUS_INDETERMINATE.equals(status)
++                        || CapabilityLeaseUiProtocol.STATUS_DELIVERY_READY.equals(status)
++                        || CapabilityLeaseUiProtocol.STATUS_CONSUMED.equals(status)
++                ? RESULT_OK : RESULT_CANCELED, result);
+         finish();
+     }
+ 
+diff --git a/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java b/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java
+index bdabdc4..7ab5475 100644
+--- a/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java
++++ b/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java
+@@ -1,15 +1,13 @@
+ /* SPDX-License-Identifier: Apache-2.0 */
+ package org.trillionnium.capabilitylease;
+ 
+-import java.nio.charset.StandardCharsets;
+-
+ /**
+  * Issuer-role-only seam to the OS capability-lease broker.
+  *
+  * <p>The broker must authenticate the calling UID/package/signing certificate/SELinux domain on
+  * every call. A fetched view is one immutable broker record: its exact challenge bytes and its
+- * presentation fields are not independently caller-selectable. No implementation is connected in
+- * the product until the SDK exposes the corresponding system API and the trust config is enabled.
++ * presentation fields are not independently caller-selectable. The transport is product-wired but
++ * the service remains feature/enrollment HOLD until the trust config is enabled.
+  * </p>
+  */
+ interface CapabilityLeaseBrokerClient {
+@@ -17,14 +15,14 @@ interface CapabilityLeaseBrokerClient {
+ 
+     Submission submitExactReceipt(String pendingHandle, String exactReceipt) throws Exception;
+ 
++    Submission querySubmissionStatus(String pendingHandle, String submissionOperationId)
++            throws Exception;
++
+     void cancelPending(String pendingHandle) throws Exception;
+ 
+     /** Atomic broker-authored view of one pending open-URI challenge. */
+     final class PendingChallenge {
+-        static final String VIEW_SCHEMA =
+-                "org.trillionnium.capabilitylease.pending-issuer-view.v1";
+-        private static final int MAX_CHALLENGE_BYTES = 64 * 1024;
+-        private static final int MAX_URI_BYTES = 4 * 1024;
++        static final String VIEW_SCHEMA = CapabilityLeaseUiProtocol.VIEW_SCHEMA;
+         private final String mExactChallenge;
+         private final String mExactHttpsUri;
+         private final String mDestinationHost;
+@@ -39,12 +37,9 @@ interface CapabilityLeaseBrokerClient {
+             if (!VIEW_SCHEMA.equals(viewSchema)) {
+                 throw new SecurityException("capability_lease_broker_view_schema_denied");
+             }
+-            mExactChallenge = boundedText(exactChallenge, MAX_CHALLENGE_BYTES,
+-                    "capability_lease_broker_challenge_denied");
+-            mExactHttpsUri = boundedSingleLine(exactHttpsUri, MAX_URI_BYTES,
+-                    "capability_lease_broker_uri_denied");
+-            mDestinationHost = boundedSingleLine(destinationHost, 253,
+-                    "capability_lease_broker_host_denied");
++            mExactChallenge = CapabilityLeaseUiProtocol.requireChallenge(exactChallenge);
++            mExactHttpsUri = CapabilityLeaseUiProtocol.requireUri(exactHttpsUri);
++            mDestinationHost = CapabilityLeaseUiProtocol.requireHost(destinationHost);
+             if (subjectUserId != 0 || expiresAtMs <= 0 || expiresElapsedRealtimeMs < 0
+                     || !CapabilityLeaseContract.CODEX_PROVIDER_ID.equals(providerId)) {
+                 throw new SecurityException("capability_lease_broker_view_denied");
+@@ -75,43 +70,70 @@ interface CapabilityLeaseBrokerClient {
+             }
+         }
+ 
+-        private static String boundedText(String value, int maxBytes, String reason) {
+-            if (value == null || value.isEmpty()
+-                    || value.getBytes(StandardCharsets.UTF_8).length > maxBytes) {
+-                throw new SecurityException(reason);
+-            }
+-            return value;
+-        }
+-
+-        private static String boundedSingleLine(String value, int maxBytes, String reason) {
+-            String item = boundedText(value, maxBytes, reason);
+-            for (int index = 0; index < item.length(); index++) {
+-                char ch = item.charAt(index);
+-                if (Character.isISOControl(ch) || Character.isWhitespace(ch)
+-                        || Character.getType(ch) == Character.FORMAT) {
+-                    throw new SecurityException(reason);
+-                }
+-            }
+-            return item;
+-        }
+     }
+ 
+     /** Minimal broker acknowledgement; exact receipt bytes never return to AiShell. */
+     final class Submission {
+         static final String STATUS_SUBMITTED = "submitted";
++        static final String STATUS_INDETERMINATE = "indeterminate";
+         private final String mStatus;
+         private final String mReceiptId;
++        private final String mSubmissionOperationId;
++        private final String mStatusTupleSha256;
+ 
+-        Submission(String status, String receiptId) {
+-            if (!STATUS_SUBMITTED.equals(status) || receiptId == null
+-                    || !receiptId.matches("[0-9a-f]{64}")) {
++        Submission(String handle, String status, String submissionOperationId,
++                String receiptId, String statusTupleSha256) {
++            String exactHandle = LeasePendingHandle.requireExact(handle);
++            String exactStatus = CapabilityLeaseUiProtocol.requireSubmissionStatus(status);
++            String exactOperationId = CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                    submissionOperationId);
++            String exactReceiptId = receiptId == null ? "" : receiptId;
++            boolean receiptRequired = STATUS_SUBMITTED.equals(exactStatus)
++                    || STATUS_INDETERMINATE.equals(exactStatus)
++                    || CapabilityLeaseUiProtocol.STATUS_DELIVERY_READY.equals(exactStatus)
++                    || CapabilityLeaseUiProtocol.STATUS_CONSUMED.equals(exactStatus);
++            if (receiptRequired) {
++                exactReceiptId = CapabilityLeaseUiProtocol.requireReceiptId(exactReceiptId);
++            } else if (!exactReceiptId.isEmpty()) {
+                 throw new SecurityException("capability_lease_broker_submission_denied");
+             }
+-            mStatus = status;
+-            mReceiptId = receiptId;
++            String exactTupleSha256 =
++                    CapabilityLeaseUiProtocol.requireSubmissionStatusTupleSha256(
++                            statusTupleSha256);
++            String expectedTupleSha256 =
++                    CapabilityLeaseUiProtocol.deriveSubmissionStatusTupleSha256(
++                            exactHandle, exactOperationId, exactStatus, exactReceiptId);
++            if (!expectedTupleSha256.equals(exactTupleSha256)) {
++                throw new SecurityException("capability_lease_broker_submission_denied");
++            }
++            mStatus = exactStatus;
++            mReceiptId = exactReceiptId;
++            mSubmissionOperationId = exactOperationId;
++            mStatusTupleSha256 = exactTupleSha256;
+         }
+ 
+         String status() { return mStatus; }
+         String receiptId() { return mReceiptId; }
++        String submissionOperationId() { return mSubmissionOperationId; }
++        String statusTupleSha256() { return mStatusTupleSha256; }
++        boolean deliveryAcknowledged() {
++            return STATUS_SUBMITTED.equals(mStatus)
++                    || CapabilityLeaseUiProtocol.STATUS_DELIVERY_READY.equals(mStatus)
++                    || CapabilityLeaseUiProtocol.STATUS_CONSUMED.equals(mStatus);
++        }
++    }
++
++    /** The submit ran, so only durable status recovery may determine its outcome. */
++    final class SubmissionIndeterminateException extends Exception {
++        private static final long serialVersionUID = 1L;
++        private final String mSubmissionOperationId;
++
++        SubmissionIndeterminateException(String submissionOperationId, Throwable cause) {
++            super("capability_lease_broker_submission_indeterminate", cause);
++            mSubmissionOperationId = CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                    submissionOperationId);
++        }
++
++        String submissionOperationId() { return mSubmissionOperationId; }
+     }
+ }
+diff --git a/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java b/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java
+index f4c8cd1..377b688 100644
+--- a/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java
++++ b/leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java
+@@ -1,14 +1,88 @@
+ /* SPDX-License-Identifier: Apache-2.0 */
+ package org.trillionnium.capabilitylease;
+ 
+-/** Product connection point; deliberately unavailable until the SDK broker API is linkable. */
+-final class CapabilityLeaseBrokerClients {
+-    static final boolean LIVE_BROKER_CLIENT_ENABLED = false;
++import android.os.IBinder;
++import android.os.ServiceSpecificException;
++import android.os.ServiceManager;
+ 
++/** Product connection point to the role-separated system_server broker UI facade. */
++final class CapabilityLeaseBrokerClients {
+     private CapabilityLeaseBrokerClients() {}
+ 
+     static CapabilityLeaseBrokerClient connect() {
+-        return UnavailableClient.INSTANCE;
++        IBinder binder = ServiceManager.getService(CapabilityLeaseBrokerNames.UI);
++        ICapabilityLeaseUiBroker broker =
++                ICapabilityLeaseUiBroker.Stub.asInterface(binder);
++        if (binder == null || broker == null || !binder.isBinderAlive()) {
++            return UnavailableClient.INSTANCE;
++        }
++        return new BinderClient(broker);
++    }
++
++    private static final class BinderClient implements CapabilityLeaseBrokerClient {
++        private final ICapabilityLeaseUiBroker mBroker;
++
++        BinderClient(ICapabilityLeaseUiBroker broker) {
++            if (broker == null) throw new IllegalArgumentException("missing broker");
++            mBroker = broker;
++        }
++
++        @Override
++        public PendingChallenge fetchExactChallenge(String pendingHandle) throws Exception {
++            String handle = LeasePendingHandle.requireExact(pendingHandle);
++            String[] view = mBroker.fetchExactChallenge(
++                    CapabilityLeaseUiProtocol.TRANSPORT_SCHEMA, handle);
++            return CapabilityLeaseBrokerWire.decodePendingView(view);
++        }
++
++        @Override
++        public Submission submitExactReceipt(String pendingHandle, String exactReceipt)
++                throws Exception {
++            String handle = LeasePendingHandle.requireExact(pendingHandle);
++            String receipt = CapabilityLeaseUiProtocol.requireReceipt(exactReceipt);
++            String operationId = CapabilityLeaseUiProtocol.deriveSubmissionOperationId(
++                    handle, receipt);
++            try {
++                String[] status = mBroker.submitExactReceipt(
++                        CapabilityLeaseUiProtocol.TRANSPORT_SCHEMA, handle,
++                        operationId, receipt);
++                CapabilityLeaseBrokerClient.Submission decoded =
++                        CapabilityLeaseBrokerWire.decodeSubmissionStatus(
++                                handle, operationId, status);
++                if (CapabilityLeaseUiProtocol.STATUS_NOT_STARTED.equals(decoded.status())
++                        || CapabilityLeaseUiProtocol.STATUS_CANCELED.equals(decoded.status())
++                        || CapabilityLeaseUiProtocol.STATUS_EXPIRED.equals(decoded.status())) {
++                    throw new SecurityException(
++                            "capability_lease_broker_submission_denied");
++                }
++                return decoded;
++            } catch (ServiceSpecificException failure) {
++                throw mapFailure(failure, operationId);
++            }
++        }
++
++        @Override
++        public Submission querySubmissionStatus(
++                String pendingHandle, String submissionOperationId) throws Exception {
++            String handle = LeasePendingHandle.requireExact(pendingHandle);
++            String operationId = CapabilityLeaseUiProtocol.requireSubmissionOperationId(
++                    submissionOperationId);
++            try {
++                return CapabilityLeaseBrokerWire.decodeSubmissionStatus(
++                        handle, operationId, mBroker.querySubmissionStatus(
++                                CapabilityLeaseUiProtocol.TRANSPORT_SCHEMA,
++                                handle, operationId));
++            } catch (ServiceSpecificException failure) {
++                throw mapFailure(failure, operationId);
++            }
++        }
++
++        @Override
++        public void cancelPending(String pendingHandle) throws Exception {
++            mBroker.cancelPending(CapabilityLeaseUiProtocol.TRANSPORT_SCHEMA,
++                    LeasePendingHandle.requireExact(pendingHandle));
++        }
++
+     }
+ 
+     private enum UnavailableClient implements CapabilityLeaseBrokerClient {
+@@ -24,6 +98,13 @@ final class CapabilityLeaseBrokerClients {
+             throw unavailable();
+         }
+ 
++        @Override public Submission querySubmissionStatus(
++                String pendingHandle, String submissionOperationId) {
++            LeasePendingHandle.requireExact(pendingHandle);
++            CapabilityLeaseUiProtocol.requireSubmissionOperationId(submissionOperationId);
++            throw unavailable();
++        }
++
+         @Override public void cancelPending(String pendingHandle) {
+             LeasePendingHandle.requireExact(pendingHandle);
+             throw unavailable();
+@@ -33,4 +114,14 @@ final class CapabilityLeaseBrokerClients {
+             return new SecurityException("capability_lease_broker_client_unavailable");
+         }
+     }
++
++    private static Exception mapFailure(
++            ServiceSpecificException failure, String operationId) {
++        if (failure != null
++                && failure.errorCode == CapabilityLeaseUiProtocol.ERROR_INDETERMINATE) {
++            return new CapabilityLeaseBrokerClient.SubmissionIndeterminateException(
++                    operationId, failure);
++        }
++        return new SecurityException("capability_lease_broker_client_unavailable", failure);
++    }
+ }
+diff --git a/leaseissuer/tests/CapabilityLeaseBrokerContractTest.java b/leaseissuer/tests/CapabilityLeaseBrokerContractTest.java
+index fb223a7..23c83fc 100644
+--- a/leaseissuer/tests/CapabilityLeaseBrokerContractTest.java
++++ b/leaseissuer/tests/CapabilityLeaseBrokerContractTest.java
+@@ -2,13 +2,10 @@
+ package org.trillionnium.capabilitylease;
+ 
+ import static org.junit.Assert.assertEquals;
+-import static org.junit.Assert.assertFalse;
+ 
+ import org.json.JSONObject;
+ import org.junit.Test;
+ 
+-import java.lang.reflect.Modifier;
+-
+ public final class CapabilityLeaseBrokerContractTest {
+     private static final String HANDLE = "lease-pending-" + "a".repeat(64);
+ 
+@@ -57,14 +54,78 @@ public final class CapabilityLeaseBrokerContractTest {
+     }
+ 
+     @Test
+-    public void unavailableProductConnectionNeverAcceptsCallerContent() {
+-        assertFalse(CapabilityLeaseBrokerClients.LIVE_BROKER_CLIENT_ENABLED);
+-        CapabilityLeaseBrokerClient client = CapabilityLeaseBrokerClients.connect();
+-        assertSecurityException(() -> client.fetchExactChallenge(HANDLE));
+-        assertSecurityException(() -> client.submitExactReceipt(HANDLE, "receipt"));
+-        assertSecurityException(() -> client.cancelPending(HANDLE));
+-        assertFalse(Modifier.isPublic(CapabilityLeaseBrokerClient.class.getModifiers()));
+-        assertFalse(Modifier.isPublic(CapabilityLeaseBrokerClients.class.getModifiers()));
++    public void binderPendingViewRejectsShapeAndNumericDrift() {
++        String[] exact = {
++                CapabilityLeaseBrokerClient.PendingChallenge.VIEW_SCHEMA,
++                "{}", "https://example.com/", "example.com", "0", "openai-codex",
++                "1030000", "40000"
++        };
++        CapabilityLeaseBrokerClient.PendingChallenge decoded =
++                CapabilityLeaseBrokerWire.decodePendingView(exact);
++        decoded.requireSameImmutableView(view("https://example.com/"));
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodePendingView(null));
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodePendingView(
++                new String[] {"too", "short"}));
++        String[] leadingZero = exact.clone();
++        leadingZero[6] = "01030000";
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodePendingView(leadingZero));
++        String[] overflow = exact.clone();
++        overflow[7] = "9999999999999999999";
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodePendingView(overflow));
++        String[] wrongSchema = exact.clone();
++        wrongSchema[0] = "org.trillionnium.capabilitylease.pending-issuer-view.v0";
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodePendingView(wrongSchema));
++    }
++
++    @Test
++    public void binderSubmissionStatusIsExactOperationAndTupleBound() {
++        String operationId = CapabilityLeaseUiProtocol.deriveSubmissionOperationId(
++                HANDLE, "exact-receipt");
++        String receiptId = "b".repeat(64);
++        String tupleSha256 = CapabilityLeaseUiProtocol.deriveSubmissionStatusTupleSha256(
++                HANDLE, operationId, CapabilityLeaseUiProtocol.STATUS_INDETERMINATE,
++                receiptId);
++        String[] exact = {
++                CapabilityLeaseUiProtocol.SUBMISSION_STATUS_SCHEMA,
++                CapabilityLeaseUiProtocol.STATUS_INDETERMINATE,
++                operationId,
++                receiptId,
++                tupleSha256,
++        };
++        CapabilityLeaseBrokerClient.Submission decoded =
++                CapabilityLeaseBrokerWire.decodeSubmissionStatus(
++                        HANDLE, operationId, exact);
++        assertEquals(CapabilityLeaseUiProtocol.STATUS_INDETERMINATE, decoded.status());
++        assertEquals(operationId, decoded.submissionOperationId());
++        assertEquals(receiptId, decoded.receiptId());
++        assertEquals(tupleSha256, decoded.statusTupleSha256());
++
++        String[] wrongOperation = exact.clone();
++        wrongOperation[2] = "lease-submit-" + "c".repeat(64);
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodeSubmissionStatus(
++                HANDLE, operationId, wrongOperation));
++        String[] wrongDigest = exact.clone();
++        wrongDigest[4] = "d".repeat(64);
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodeSubmissionStatus(
++                HANDLE, operationId, wrongDigest));
++        String[] missingReceipt = exact.clone();
++        missingReceipt[3] = "";
++        assertSecurityException(() -> CapabilityLeaseBrokerWire.decodeSubmissionStatus(
++                HANDLE, operationId, missingReceipt));
++
++        String notStartedDigest = CapabilityLeaseUiProtocol.deriveSubmissionStatusTupleSha256(
++                HANDLE, operationId, CapabilityLeaseUiProtocol.STATUS_NOT_STARTED, "");
++        CapabilityLeaseBrokerClient.Submission notStarted =
++                CapabilityLeaseBrokerWire.decodeSubmissionStatus(HANDLE, operationId,
++                        new String[] {
++                                CapabilityLeaseUiProtocol.SUBMISSION_STATUS_SCHEMA,
++                                CapabilityLeaseUiProtocol.STATUS_NOT_STARTED,
++                                operationId,
++                                "",
++                                notStartedDigest,
++                        });
++        assertEquals(CapabilityLeaseUiProtocol.STATUS_NOT_STARTED, notStarted.status());
++        assertEquals("", notStarted.receiptId());
+     }
+ 
+     private static CapabilityLeaseBrokerClient.PendingChallenge view(String uri) {
+diff --git a/leaseissuer/tests/issuer_security_contract.sh b/leaseissuer/tests/issuer_security_contract.sh
+index e78b99e..fb94e69 100755
+--- a/leaseissuer/tests/issuer_security_contract.sh
++++ b/leaseissuer/tests/issuer_security_contract.sh
+@@ -35,17 +35,24 @@ VERIFIER=$(locate leaseissuer/src/org/trillionnium/capabilitylease/ReceiptSignat
+ SYSTEM_USER=$(locate leaseissuer/src/org/trillionnium/capabilitylease/SystemUserBoundary.java)
+ BROKER_CLIENT=$(locate leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java)
+ BROKER_CLIENTS=$(locate leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java)
++BROKER_WIRE=$(locate leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerWire.java)
++UI_PROTOCOL="$ROOT/../../../trillionnium-sdk/capabilityleaseapi/src/org/trillionnium/capabilitylease/CapabilityLeaseUiProtocol.java"
++if [[ ! -f "$UI_PROTOCOL" ]]; then
++    UI_PROTOCOL=$(locate CapabilityLeaseUiProtocol.java CapabilityLeaseUiProtocol.java)
++fi
+ PRESENTATION=$(locate leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeasePresentation.java)
+ PENDING_HANDLE=$(locate leaseissuer/src/org/trillionnium/capabilitylease/LeasePendingHandle.java)
+ CHALLENGE_GOLDEN=$(locate leaseissuer/tests/CapabilityLeaseChallengeV1Golden.java)
+ ISSUER_SOURCES=("$ACTIVITY" "$CONTRACT" "$LEDGER" "$DURABLE_FILES" "$TRUST" "$SIGNER"
+     "$CANONICAL" "$STRICT" "$ECDSA" "$VERIFIER" "$SYSTEM_USER" "$BROKER_CLIENT"
+-    "$BROKER_CLIENTS" "$PRESENTATION" "$PENDING_HANDLE")
++    "$BROKER_CLIENTS" "$BROKER_WIRE" "$UI_PROTOCOL" "$PRESENTATION" "$PENDING_HANDLE")
+ 
+ for source in "$BLUEPRINT" "$AUTHORITY_MANIFEST" "$AUTHORITY_RESOURCES" \
+         "$ISSUER_MANIFEST" "$ISSUER_RESOURCES" "$ACTIVITY" "$CONTRACT" "$LEDGER" \
+         "$DURABLE_FILES" "$TRUST" "$SIGNER" "$CANONICAL" "$STRICT" "$ECDSA" \
+-        "$VERIFIER" "$SYSTEM_USER" "$BROKER_CLIENT" "$BROKER_CLIENTS" "$PRESENTATION" \
++        "$VERIFIER" "$SYSTEM_USER" "$BROKER_CLIENT" "$BROKER_CLIENTS" "$BROKER_WIRE" \
++        "$UI_PROTOCOL" \
++        "$PRESENTATION" \
+         "$PENDING_HANDLE" "$CHALLENGE_GOLDEN"; do
+     [[ -f "$source" ]] || { echo "missing issuer security input: $source" >&2; exit 1; }
+ done
+@@ -83,7 +90,8 @@ for marker in \
+         'srcs: \["leaseissuer/src/\*\*/\*\.java"\]' \
+         'resource_dirs: \["leaseissuer/res"\]' \
+         'certificate: "testkey"' \
+-        'static_libs: \["trillionnium-agent-identity-product"\]' \
++        '"trillionnium-agent-identity-product"' \
++        '"trillionnium-capability-lease-binder-api"' \
+         'system_ext_specific: true' \
+         'privileged: false'; do
+     require "$marker" <(printf '%s\n' "$issuer_module")
+@@ -101,10 +109,37 @@ for marker in \
+         'CountDownTimer'; do
+     require "$marker" "$ACTIVITY" "$BROKER_CLIENT" "$PRESENTATION" "$PENDING_HANDLE"
+ done
+-require 'LIVE_BROKER_CLIENT_ENABLED = false' "$BROKER_CLIENTS"
+-require 'capability_lease_broker_client_unavailable' "$BROKER_CLIENTS"
++for marker in \
++        'ServiceManager\.getService\(CapabilityLeaseBrokerNames\.UI\)' \
++        'ICapabilityLeaseUiBroker\.Stub\.asInterface' \
++        'binder\.isBinderAlive\(\)' \
++        'CapabilityLeaseBrokerWire\.decodePendingView' \
++        'mBroker\.submitExactReceipt' \
++        'capability_lease_broker_client_unavailable'; do
++    require "$marker" "$BROKER_CLIENTS"
++done
++for marker in \
++        'new CapabilityLeaseBrokerClient\.PendingChallenge\(' \
++        'CapabilityLeaseUiProtocol\.VIEW_FIELDS' \
++        'CapabilityLeaseUiProtocol\.VIEW_SCHEMA\.equals' \
++        'capability_lease_broker_response_denied'; do
++    require "$marker" "$BROKER_WIRE"
++done
++for marker in \
++        'TRANSPORT_SCHEMA' \
++        'VIEW_SCHEMA' \
++        'VIEW_FIELDS = 8' \
++        'MAX_RECEIPT_BYTES = 256 \* 1024' \
++        'value\.length\(\) > maxBytes' \
++        'value\.getBytes\(StandardCharsets\.UTF_8\)\.length > maxBytes' \
++        'requirePendingHandle' \
++        'requireReceiptId'; do
++    require "$marker" "$UI_PROTOCOL"
++done
+ deny 'EXTRA_CHALLENGE([[:space:]]|=)|EXTRA_RECEIPT([[:space:]]|=)|capability_lease_challenge_json|capability_lease_receipt_json' \
+-    "$ACTIVITY" "$BROKER_CLIENT" "$BROKER_CLIENTS" "$PRESENTATION" "$PENDING_HANDLE"
++    "$ACTIVITY" "$BROKER_CLIENT" "$BROKER_CLIENTS" "$BROKER_WIRE" "$UI_PROTOCOL" \
++    "$PRESENTATION" \
++    "$PENDING_HANDLE"
+ require 'name: "TrillionniumCapabilityLeaseIssuerPolicyContractSources"' "$BLUEPRINT"
+ 
+ for marker in \
+@@ -247,7 +282,7 @@ done
+ # metadata protocol, or any dispatch/effect vocabulary.
+ deny 'org\.trillionnium\.aiauthority|trillionnium-ai-authority-receipt-v2|egress_consent|AgentGatewayServer|trillionnium\.android-agent-gateway|receipt_signing_key_metadata_(protocol|method)' \
+     "${ISSUER_SOURCES[@]}" "$ISSUER_MANIFEST" "$ISSUER_RESOURCES"
+-deny 'LocalSocket|LocalServerSocket|IBinder|Binder|NotificationManager|startActivity\(|startService\(|bindService\(|sendBroadcast\(|case "(execute|undo)"|"(execute|undo)"\.equals' \
++deny 'LocalSocket|LocalServerSocket|NotificationManager|startActivity\(|startService\(|bindService\(|sendBroadcast\(|case "(execute|undo)"|"(execute|undo)"\.equals' \
+     "${ISSUER_SOURCES[@]}"
+ 
+ echo "PASS: independent capability lease issuer durable issuance/key/trust/effect boundary"

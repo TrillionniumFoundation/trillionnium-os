@@ -1,0 +1,356 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+soong_config_module_type_import {
+    from: "vendor/trillionnium/prebuilt/common/Android.bp",
+    module_types: ["trillionnium_p01_android_app"],
+}
+
+genrule {
+    name: "TrillionniumAiAuthorityGatewayPeerPolicyP01Userdebug",
+    srcs: ["src/org/trillionnium/aiauthority/GatewayPeerPolicy.java"],
+    tools: ["toybox"],
+    out: ["GatewayPeerPolicy.java"],
+    cmd: "$(location toybox) sed" +
+        " -e 's|c6065d4be5dc4815f37cb9064dc846ca7d58b65f0fceaca1641459b7b120937f|f3e4cf70cccf6c9ef975f2f3b0010fbef6b8bc00fa2529a24981a916ac8d0488|'" +
+        " -e 's|ENTRYPOINT_OWNER_GID = 0;|ENTRYPOINT_OWNER_GID = 2000;|'" +
+        " $(in) > $(out)" +
+        " && $(location toybox) grep -F -q 'f3e4cf70cccf6c9ef975f2f3b0010fbef6b8bc00fa2529a24981a916ac8d0488' $(out)" +
+        " && $(location toybox) grep -F -q 'ENTRYPOINT_OWNER_GID = 2000;' $(out)",
+}
+
+trillionnium_p01_android_app {
+    name: "TrillionniumAiAuthority",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    certificate: "testkey",
+    system_ext_specific: true,
+    privileged: false,
+    platform_apis: true,
+    min_sdk_version: "36",
+    static_libs: ["trillionnium-agent-identity-product"],
+    soong_config_variables: {
+        trillionnium_p01_build_variant: {
+            userdebug: {
+                exclude_srcs: [
+                    "src/org/trillionnium/aiauthority/GatewayPeerPolicy.java",
+                ],
+                srcs: [":TrillionniumAiAuthorityGatewayPeerPolicyP01Userdebug"],
+            },
+        },
+    },
+}
+
+android_app {
+    name: "TrillionniumCapabilityLeaseIssuer",
+    manifest: "leaseissuer/AndroidManifest.xml",
+    srcs: ["leaseissuer/src/**/*.java"],
+    resource_dirs: ["leaseissuer/res"],
+    certificate: "testkey",
+    system_ext_specific: true,
+    privileged: false,
+    platform_apis: true,
+    min_sdk_version: "36",
+    static_libs: [
+        "trillionnium-agent-identity-product",
+        "trillionnium-capability-lease-binder-api",
+    ],
+}
+
+// Test-only exporter for a real device KeyMint attestation chain. It has no
+// INTERNET permission, deletes only its dedicated ephemeral alias, and never
+// participates in the production capability-lease flow.
+android_test {
+    name: "TrillionniumCapabilityLeaseKeyMintEvidenceProbe",
+    manifest: "leaseissuer/device-tests/AndroidManifest.xml",
+    srcs: ["leaseissuer/device-tests/**/*.java"],
+    resource_dirs: [],
+    instrumentation_for: "TrillionniumCapabilityLeaseIssuer",
+    certificate: "testkey",
+    sdk_version: "current",
+    min_sdk_version: "36",
+    static_libs: [
+        "androidx.test.ext.junit",
+        "androidx.test.runner",
+        "junit",
+    ],
+    test_suites: ["general-tests"],
+}
+
+genrule {
+    name: "TrillionniumCapabilityLeaseIssuerBlueprintContract",
+    srcs: ["Android.bp"],
+    out: ["TrillionniumCapabilityLeaseIssuer.Android.bp"],
+    cmd: "cp $(in) $(out)",
+    visibility: ["//visibility:public"],
+}
+
+genrule {
+    name: "TrillionniumCapabilityLeaseIssuerManifestContract",
+    srcs: ["leaseissuer/AndroidManifest.xml"],
+    out: ["TrillionniumCapabilityLeaseIssuer.AndroidManifest.xml"],
+    cmd: "cp $(in) $(out)",
+    visibility: ["//visibility:public"],
+}
+
+genrule {
+    name: "TrillionniumCapabilityLeaseIssuerSigningResourcesContract",
+    srcs: ["leaseissuer/res/values/strings.xml"],
+    out: ["TrillionniumCapabilityLeaseIssuer.signing-resources.xml"],
+    cmd: "cp $(in) $(out)",
+    visibility: ["//visibility:public"],
+}
+
+filegroup {
+    name: "TrillionniumCapabilityLeaseIssuerPolicyContractSources",
+    srcs: [
+        ":TrillionniumCapabilityLeaseIssuerBlueprintContract",
+        ":TrillionniumCapabilityLeaseIssuerManifestContract",
+        ":TrillionniumCapabilityLeaseIssuerSigningResourcesContract",
+        "leaseissuer/src/org/trillionnium/capabilitylease/AndroidDurableFileOps.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CanonicalJson.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseContract.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerWire.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeasePresentation.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseIssuanceLedger.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/EcdsaP256.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/LeaseIssuerTrust.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/LeasePendingHandle.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/ReceiptSignatureVerifier.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/ReceiptSigner.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/StrictJson.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/SystemUserBoundary.java",
+        "leaseissuer/tests/CapabilityLeaseChallengeV1Golden.java",
+        ":TrillionniumAiShellCapabilityLeasePolicyContractSources",
+    ],
+    visibility: ["//visibility:public"],
+}
+
+filegroup {
+    name: "TrillionniumAiAuthorityPeerIdentityContractSources",
+    srcs: [
+        "src/org/trillionnium/aiauthority/AgentGatewayServer.java",
+        "src/org/trillionnium/aiauthority/GatewayPeerIdentity.java",
+        "src/org/trillionnium/aiauthority/GatewayPeerPolicy.java",
+    ],
+}
+
+sh_test_host {
+    name: "TrillionniumAiAuthorityNoLegacyPathsTest",
+    src: "tests/no_legacy_authority_paths.sh",
+    data: [
+        "Android.bp",
+        "AndroidManifest.xml",
+        "src/org/trillionnium/aiauthority/AiAuthorityService.java",
+        "src/org/trillionnium/aiauthority/AgentGatewayServer.java",
+        "src/org/trillionnium/aiauthority/GatewayFrameTypes.java",
+        "src/org/trillionnium/aiauthority/GatewayReplayPolicy.java",
+        "src/org/trillionnium/aiauthority/GatewayIdentifiers.java",
+        "src/org/trillionnium/aiauthority/ContextCaptureActivity.java",
+        "src/org/trillionnium/aiauthority/ContextCaptureStore.java",
+        "src/org/trillionnium/aiauthority/ExactHttpsUrl.java",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumAiAuthoritySecurityContractsTest",
+    src: "tests/authority_security_contracts.sh",
+    data: [
+        "Android.bp",
+        "AndroidManifest.xml",
+        "src/org/trillionnium/aiauthority/AiAuthorityService.java",
+        "src/org/trillionnium/aiauthority/AgentGatewayServer.java",
+        "src/org/trillionnium/aiauthority/GatewayPeerIdentity.java",
+        "src/org/trillionnium/aiauthority/GatewayPeerPolicy.java",
+        "src/org/trillionnium/aiauthority/SystemUserBoundary.java",
+        "src/org/trillionnium/aiauthority/GatewayFrameTypes.java",
+        "src/org/trillionnium/aiauthority/GatewayReplayPolicy.java",
+        "src/org/trillionnium/aiauthority/StrictJson.java",
+        "src/org/trillionnium/aiauthority/EgressConsentActivity.java",
+        "src/org/trillionnium/aiauthority/EgressChallengeNumbers.java",
+        "src/org/trillionnium/aiauthority/ContextCaptureActivity.java",
+        "src/org/trillionnium/aiauthority/ContextCaptureStore.java",
+        "src/org/trillionnium/aiauthority/ContextCaptureKeyCustody.java",
+        "src/org/trillionnium/aiauthority/ExactHttpsUrl.java",
+        "src/org/trillionnium/aiauthority/MemoryKeyCustody.java",
+        "src/org/trillionnium/aiauthority/GatewayIdentifiers.java",
+        "src/org/trillionnium/aiauthority/PersistentReplayStore.java",
+        "src/org/trillionnium/aiauthority/ReceiptSigner.java",
+        "src/org/trillionnium/aiauthority/ReceiptSignatureVerifier.java",
+        "src/org/trillionnium/aiauthority/EcdsaP256.java",
+        "src/org/trillionnium/aiauthority/CanonicalJson.java",
+        "res/values/strings.xml",
+    ],
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumCapabilityLeaseIssuerContractTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        ":trillionnium-capability-lease-ui-protocol-source",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CanonicalJson.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerWire.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseContract.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeasePresentation.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseIssuanceLedger.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/EcdsaP256.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/LeaseIssuerTrust.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/LeasePendingHandle.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/ReceiptSignatureVerifier.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/StrictJson.java",
+        "leaseissuer/tests/CapabilityLeaseContractTest.java",
+        "leaseissuer/tests/CapabilityLeaseChallengeV1Golden.java",
+        "leaseissuer/tests/CapabilityLeaseBrokerContractTest.java",
+        "leaseissuer/tests/CapabilityLeaseUiProtocolTest.java",
+        "leaseissuer/tests/CapabilityLeaseIssuanceLedgerTest.java",
+        "leaseissuer/tests/EcdsaP256Test.java",
+        "leaseissuer/tests/ReceiptSignatureVerifierTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumCapabilityLeaseIssuerSecurityContractTest",
+    src: "leaseissuer/tests/issuer_security_contract.sh",
+    data: [
+        "Android.bp",
+        "AndroidManifest.xml",
+        "res/values/strings.xml",
+        ":trillionnium-capability-lease-ui-protocol-source",
+        ":TrillionniumCapabilityLeaseIssuerManifestContract",
+        ":TrillionniumCapabilityLeaseIssuerSigningResourcesContract",
+        "leaseissuer/src/org/trillionnium/capabilitylease/AndroidDurableFileOps.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CanonicalJson.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseActivity.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseContract.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClient.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerWire.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseBrokerClients.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeasePresentation.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/CapabilityLeaseIssuanceLedger.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/EcdsaP256.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/LeaseIssuerTrust.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/LeasePendingHandle.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/ReceiptSignatureVerifier.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/ReceiptSigner.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/StrictJson.java",
+        "leaseissuer/src/org/trillionnium/capabilitylease/SystemUserBoundary.java",
+    ],
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiAuthorityEgressChallengeNumbersTest",
+    srcs: [
+        "src/org/trillionnium/aiauthority/EgressChallengeNumbers.java",
+        "tests/EgressChallengeNumbersTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiAuthoritySystemUserBoundaryTest",
+    srcs: [
+        "src/org/trillionnium/aiauthority/SystemUserBoundary.java",
+        "tests/SystemUserBoundaryTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiAuthorityEcdsaP256Test",
+    srcs: [
+        "src/org/trillionnium/aiauthority/EcdsaP256.java",
+        "src/org/trillionnium/aiauthority/ReceiptSignatureVerifier.java",
+        "tests/EcdsaP256Test.java",
+        "tests/ReceiptSignatureVerifierTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumAiAuthorityMemoryKeyCustodyContractsTest",
+    src: "tests/memory_key_custody_contracts.sh",
+    data: [
+        "src/org/trillionnium/aiauthority/MemoryKeyCustody.java",
+        "src/org/trillionnium/aiauthority/AiAuthorityService.java",
+        "src/org/trillionnium/aiauthority/AgentGatewayServer.java",
+        "src/org/trillionnium/aiauthority/SystemUserBoundary.java",
+    ],
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiAuthorityGatewayIdentifiersTest",
+    srcs: [
+        "src/org/trillionnium/aiauthority/GatewayIdentifiers.java",
+        "tests/GatewayIdentifiersTest.java",
+    ],
+    static_libs: ["junit"],
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiAuthorityContextCaptureStoreTest",
+    srcs: [
+        "src/org/trillionnium/aiauthority/StrictJson.java",
+        "src/org/trillionnium/aiauthority/GatewayPeerPolicy.java",
+        "src/org/trillionnium/aiauthority/ContextCaptureStore.java",
+        "tests/ContextCaptureStoreTest.java",
+    ],
+    static_libs: [
+        "junit",
+        "json-prebuilt",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiAuthorityExactHttpsUrlTest",
+    srcs: [
+        "src/org/trillionnium/aiauthority/ExactHttpsUrl.java",
+        "tests/ExactHttpsUrlTest.java",
+    ],
+    static_libs: ["junit"],
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiAuthorityDurableStoresTest",
+    srcs: [
+        "src/org/trillionnium/aiauthority/GatewayIdentifiers.java",
+        "src/org/trillionnium/aiauthority/CanonicalJson.java",
+        "src/org/trillionnium/aiauthority/ExactHttpsUrl.java",
+        "src/org/trillionnium/aiauthority/GatewayFrameTypes.java",
+        "src/org/trillionnium/aiauthority/PersistentReplayStore.java",
+        "src/org/trillionnium/aiauthority/GatewayReplayPolicy.java",
+        "src/org/trillionnium/aiauthority/StrictJson.java",
+        "tests/GatewayBoundaryTest.java",
+        "tests/PersistentReplayStoreTest.java",
+    ],
+    static_libs: [
+        "junit",
+        "json-prebuilt",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}

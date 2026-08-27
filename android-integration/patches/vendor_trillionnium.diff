@@ -1,0 +1,645 @@
+diff --git a/build/soong/receiptstage/receipt_stage.go b/build/soong/receiptstage/receipt_stage.go
+index b2ca024b..cb2efda2 100644
+--- a/build/soong/receiptstage/receipt_stage.go
++++ b/build/soong/receiptstage/receipt_stage.go
+@@ -6,18 +6,23 @@
+ package receiptstage
+ 
+ import (
++	"path/filepath"
++	"strings"
++
+ 	"github.com/google/blueprint"
+ 
+ 	"android/soong/android"
+ )
+ 
+ const (
+-	stageRoot       = "trillionnium/receipt-stage-v1"
+-	stageReceipt    = "receipt-stage.v1.json"
+-	contractPath    = "contracts/trillionnium-receipt-stage-v1.contract.json"
+-	verifierTool    = "trillionnium-receipt-stage-verify"
+-	stageReceiptTag = ".stage_receipt"
+-	custodyTag      = ".custody_attestation"
++	stageRoot                = "trillionnium/receipt-stage-v1"
++	stageReceipt             = "receipt-stage.v1.json"
++	contractPath             = "contracts/trillionnium-receipt-stage-v1.contract.json"
++	verifierTool             = "trillionnium-receipt-stage-verify"
++	materializerTool         = "trillionnium-receipt-stage-materialize"
++	materializerInputRootEnv = "TRILLINNIUM_RECEIPT_STAGE_INPUT_ROOT"
++	stageReceiptTag          = ".stage_receipt"
++	custodyTag               = ".custody_attestation"
+ )
+ 
+ type roleSpec struct {
+@@ -65,6 +70,16 @@ type verifierDependencyTag struct {
+ 
+ var verifierTag verifierDependencyTag
+ 
++// The materializer is a separate host tool because it must read the original
++// OUT_DIR inputs before the verifier's sbox copy can erase hard-link custody
++// metadata.  Keep its dependency tag distinct from verifierTag so the two
++// host tools cannot be confused when resolving providers.
++type materializerDependencyTag struct {
++	blueprint.BaseDependencyTag
++}
++
++var materializerTag materializerDependencyTag
++
+ type ReceiptStage struct {
+ 	android.ModuleBase
+ }
+@@ -75,6 +90,13 @@ func (module *ReceiptStage) DepsMutator(ctx android.BottomUpMutatorContext) {
+ 		verifierTag,
+ 		verifierTool,
+ 	)
++	if ctx.Config().Getenv(materializerInputRootEnv) != "" {
++		ctx.AddFarVariationDependencies(
++			ctx.Config().BuildOSTarget.Variations(),
++			materializerTag,
++			materializerTool,
++		)
++	}
+ }
+ 
+ func receiptStageVerifier(ctx android.ModuleContext) android.Path {
+@@ -109,13 +131,115 @@ func receiptStageVerifier(ctx android.ModuleContext) android.Path {
+ 	return result
+ }
+ 
++func receiptStageMaterializer(ctx android.ModuleContext) android.Path {
++	var result android.Path
++	ctx.VisitDirectDepsProxyAllowDisabled(func(proxy android.ModuleProxy) {
++		dependency := android.PrebuiltGetPreferred(ctx, proxy)
++		if ctx.OtherModuleDependencyTag(dependency) != materializerTag {
++			return
++		}
++		provider, ok := android.OtherModuleProvider(
++			ctx,
++			dependency,
++			android.HostToolProviderInfoProvider,
++		)
++		if !ok {
++			ctx.ModuleErrorf("%q is not a host tool provider", materializerTool)
++			return
++		}
++		if !provider.HostToolPath.Valid() {
++			ctx.ModuleErrorf("%q has no host tool output", materializerTool)
++			return
++		}
++		if result != nil {
++			ctx.ModuleErrorf("multiple %q host tools selected", materializerTool)
++			return
++		}
++		result = provider.HostToolPath.Path()
++	})
++	if result == nil && !ctx.Failed() {
++		ctx.ModuleErrorf("missing %q host materializer dependency", materializerTool)
++	}
++	return result
++}
++
++// addReceiptStageMaterializer wires the external stage into Ninja when the
++// caller supplies a role-keyed input directory.  Previously the stage paths
++// were only PathForArbitraryOutput references, so Ninja had no rule capable of
++// producing them and stopped with "missing and no known rule to make it".
++//
++// The hook is opt-in through an absolute input-root environment variable.  A
++// caller must place one regular file named exactly after each of the 24
++// physical role names in that directory.  The materializer itself performs
++// all mode, link-count, schema, cross-binding, and atomic-publication checks;
++// this rule only supplies the dependency edges.  No default build receives an
++// implicit external input source.
++func addReceiptStageMaterializer(
++	ctx android.ModuleContext,
++	materializer android.Path,
++	contract android.Path,
++	baseManifest android.Path,
++	stageStamp android.WritablePath,
++	allowUserdebugDogfood bool,
++) bool {
++	inputRoot := ctx.Config().Getenv(materializerInputRootEnv)
++	if inputRoot == "" {
++		return false
++	}
++	if !filepath.IsAbs(inputRoot) {
++		ctx.ModuleErrorf("%s must be an absolute directory", materializerInputRootEnv)
++		return false
++	}
++	inputRoot = filepath.Clean(inputRoot)
++	outDir := filepath.Clean(ctx.Config().OutDir())
++	if inputRoot == outDir || strings.HasPrefix(inputRoot, outDir+string(filepath.Separator)) {
++		ctx.ModuleErrorf("%s must be outside the Android OUT_DIR", materializerInputRootEnv)
++		return false
++	}
++	stageRoot := filepath.Join(filepath.Dir(stageStamp.String()), "receipt-stage-v1")
++	rule := android.NewRuleBuilder(pctx, ctx)
++	command := rule.Command().
++		Tool(materializer).
++		FlagWithInput("--contract=", contract).
++		FlagWithInput("--base-root-linux-manifest=", baseManifest).
++		FlagWithArg("--stage-root=", stageRoot)
++	// The materializer accepts only the physical source set.  The final three
++	// roleSpecs are derived runtime files that it creates after validating the
++	// physical inputs; passing them as --input arguments makes the CLI reject a
++	// valid role directory before it can derive them.
++	physicalRoleSpecs := roleSpecs[:len(roleSpecs)-3]
++	for _, spec := range physicalRoleSpecs {
++		input := android.PathForSourceRelaxed(ctx, inputRoot, spec.role)
++		command.FlagWithInput("--input="+spec.role+"=", input)
++	}
++	if allowUserdebugDogfood {
++		command.Flag("--allow-userdebug-dogfood")
++	}
++	// Do not declare files below stageRoot as Ninja outputs: Ninja creates
++	// output parent directories before running a command, which would make the
++	// materializer's intentionally-absent stage root exist prematurely.  A
++	// sibling stamp is the graph edge; custody consumes the stage paths only
++	// after this stamp is complete.
++	command.Text("&& : > ").Output(stageStamp)
++	rule.Build(
++		"trillionnium_receipt_stage_materialize",
++		"materialize Trillionnium external receipt stage",
++	)
++	return true
++}
++
+ func addRoleArguments(
+ 	command *android.RuleBuilderCommand,
+ 	inputs map[string]android.Path,
+ 	outputs map[string]android.WritablePath,
++	externalStage bool,
+ ) {
+ 	for _, spec := range roleSpecs {
+-		command.FlagWithInput("--artifact-in="+spec.role+"=", inputs[spec.role])
++		if externalStage {
++			command.FlagWithArg("--artifact-in="+spec.role+"=", inputs[spec.role].String())
++		} else {
++			command.FlagWithInput("--artifact-in="+spec.role+"=", inputs[spec.role])
++		}
+ 		command.FlagWithOutput("--artifact-out="+spec.role+"=", outputs[spec.role])
+ 	}
+ }
+@@ -125,16 +249,38 @@ func (module *ReceiptStage) GenerateAndroidBuildActions(ctx android.ModuleContex
+ 	if ctx.Failed() {
+ 		return
+ 	}
++	allowUserdebugDogfood := ctx.Config().Getenv("TRILLINNIUM_ALLOW_USERDEBUG_DOGFOOD") == "true"
++	var materializer android.Path
++	if ctx.Config().Getenv(materializerInputRootEnv) != "" {
++		materializer = receiptStageMaterializer(ctx)
++		if ctx.Failed() {
++			return
++		}
++	}
+ 
+ 	contract := android.PathForModuleSrc(ctx, contractPath)
++	baseManifest := android.PathForModuleSrc(ctx, "linux/manifest.txt")
+ 	externalReceipt := android.PathForArbitraryOutput(ctx, stageRoot, stageReceipt)
++	materializerStamp := android.PathForArbitraryOutput(ctx, stageRoot+".materialized")
+ 	externalInputs := make(map[string]android.Path, len(roleSpecs))
+ 	for _, spec := range roleSpecs {
+-		externalInputs[spec.role] = android.PathForArbitraryOutput(
++		path := android.PathForArbitraryOutput(
+ 			ctx,
+ 			stageRoot,
+ 			spec.stagePath,
+ 		)
++		externalInputs[spec.role] = path
++	}
++	materializerEnabled := false
++	if materializer != nil {
++		materializerEnabled = addReceiptStageMaterializer(
++			ctx,
++			materializer,
++			contract,
++			baseManifest,
++			materializerStamp,
++			allowUserdebugDogfood,
++		)
+ 	}
+ 
+ 	custodyReceipt := android.PathForModuleOut(ctx, "custody", stageReceipt)
+@@ -156,10 +302,18 @@ func (module *ReceiptStage) GenerateAndroidBuildActions(ctx android.ModuleContex
+ 		Tool(tool).
+ 		FlagWithArg("--phase=", "custody").
+ 		FlagWithInput("--contract=", contract).
+-		FlagWithInput("--receipt=", externalReceipt).
+ 		FlagWithOutput("--receipt-output=", custodyReceipt).
+ 		FlagWithOutput("--custody-output=", custodyAttestation)
+-	addRoleArguments(custodyCommand, externalInputs, custodyOutputs)
++	if materializerEnabled {
++		custodyCommand.FlagWithArg("--receipt=", externalReceipt.String())
++		custodyCommand.OrderOnly(materializerStamp)
++	} else {
++		custodyCommand.FlagWithInput("--receipt=", externalReceipt)
++	}
++	if allowUserdebugDogfood {
++		custodyCommand.Flag("--allow-userdebug-dogfood")
++	}
++	addRoleArguments(custodyCommand, externalInputs, custodyOutputs, materializerEnabled)
+ 	custodyRule.Build(
+ 		"trillionnium_receipt_stage_custody",
+ 		"custody Trillionnium external receipt stage",
+@@ -188,11 +342,14 @@ func (module *ReceiptStage) GenerateAndroidBuildActions(ctx android.ModuleContex
+ 		FlagWithInput("--custody-input=", custodyAttestation).
+ 		FlagWithOutput("--receipt-output=", publishedReceipt).
+ 		FlagWithOutput("--custody-output=", publishedAttestation)
++	if allowUserdebugDogfood {
++		publishCommand.Flag("--allow-userdebug-dogfood")
++	}
+ 	custodyInputs := make(map[string]android.Path, len(roleSpecs))
+ 	for role, path := range custodyOutputs {
+ 		custodyInputs[role] = path
+ 	}
+-	addRoleArguments(publishCommand, custodyInputs, publishedOutputs)
++	addRoleArguments(publishCommand, custodyInputs, publishedOutputs, false)
+ 	publishRule.Build(
+ 		"trillionnium_receipt_stage_publish",
+ 		"verify and publish Trillionnium receipt stage",
+diff --git a/config/common.mk b/config/common.mk
+index 4c0aa2f2..c8fc8d1b 100644
+--- a/config/common.mk
++++ b/config/common.mk
+@@ -35,9 +35,14 @@ else
+ # Enable ADB authentication
+ PRODUCT_SYSTEM_EXT_PROPERTIES += ro.adb.secure=1
+ 
+-# Set ro.debuggable=0 for userdebug
++# Keep adb root disabled for every normal userdebug product by default.  The
++# fogos test handset may opt into a deliberately labelled dogfood lane from
++# its product makefile; this must never be inferred from TARGET_BUILD_VARIANT
++# alone and has no effect on user/release builds.
++ifneq ($(TRILLINNIUM_DOGFOOD_USERDEBUG_ADB_ROOT),true)
+ PRODUCT_NOT_DEBUGGABLE_IN_USERDEBUG := true
+ endif
++endif
+ 
+ # Disable extra StrictMode features on all non-engineering builds
+ PRODUCT_PRODUCT_PROPERTIES += persist.sys.strictmode.disable=true
+diff --git a/prebuilt/common/bin/trillionnium-root-linux-bootstrap.sh b/prebuilt/common/bin/trillionnium-root-linux-bootstrap.sh
+index 379523bd..e1d279b0 100644
+--- a/prebuilt/common/bin/trillionnium-root-linux-bootstrap.sh
++++ b/prebuilt/common/bin/trillionnium-root-linux-bootstrap.sh
+@@ -95,6 +95,12 @@ USERDEBUG_RECEIPT_STAGE_PATH=/system_ext/etc/trillionnium/p01-userdebug/receipt-
+ USERDEBUG_RECEIPT_STAGE_CUSTODY_PATH=/system_ext/etc/trillionnium/p01-userdebug/receipt-stage-custody.v1.json
+ 
+ TOYBOX="${TRILLIONNIUM_ROOT_LINUX_TOYBOX:-/system/bin/toybox}"
++# Android's toybox build intentionally does not carry the awk applet on this
++# product.  Keep the parser pinned to the standalone system binary instead of
++# invoking `toybox awk` (which silently turned a valid manifest into the
++# generic "malformed" error during early boot).  The override is used only by
++# host-side contract tests; the init service uses the immutable /system path.
++AWK="${TRILLIONNIUM_ROOT_LINUX_AWK:-/system/bin/awk}"
+ ZSTD="${TRILLIONNIUM_ROOT_LINUX_ZSTD:-/system_ext/bin/zstd}"
+ TAR_STAGING_FILTER="${TRILLIONNIUM_ROOT_LINUX_TAR_STAGING_FILTER:-/system_ext/bin/trillionnium_rootfs_tar_staging_filter}"
+ TAR_STAGING_FILTER_IDENTITY="${TRILLIONNIUM_ROOT_LINUX_TAR_STAGING_FILTER_IDENTITY:-${ARCHIVE_DIR}/rootfs-tar-staging-filter.identity.v1}"
+@@ -677,7 +683,8 @@ manifest_value_file() {
+ verify_payload_manifest_file_syntax() {
+     local file="$1"
+     [ -f "$file" ] && [ ! -L "$file" ] || return 1
+-    "$TOYBOX" awk -F= '
++    [ -x "$AWK" ] || return 1
++    "$AWK" -F= '
+         NF < 2 || $1 == "" || length(substr($0, length($1) + 2)) == 0 || seen[$1]++ {
+             exit 1
+         }
+diff --git a/prebuilt/common/tests/agentd_peer_identity_contract_test.sh b/prebuilt/common/tests/agentd_peer_identity_contract_test.sh
+index b5e4ad75..c815d764 100755
+--- a/prebuilt/common/tests/agentd_peer_identity_contract_test.sh
++++ b/prebuilt/common/tests/agentd_peer_identity_contract_test.sh
+@@ -351,6 +351,7 @@ require(re.search(
+     r"trillionnium_agent_system_api_exec\s+"
+     r"trillionnium_agent_accessibility_exec\s+"
+     r"trillionnium_agent_adb_exec\s+"
++    r"trillionnium_agent_shell_exec\s+"
+     r"trillionnium_agent_system_api_operation_replay_sync_exec\s*\}"
+     r":file\s+r_file_perms;", agentd_te),
+     "launcher cannot read the exact signed provider/tool entrypoint closure")
+@@ -360,6 +361,7 @@ require(re.search(
+     r"trillionnium_agent_system_api_exec\s+"
+     r"trillionnium_agent_accessibility_exec\s+"
+     r"trillionnium_agent_adb_exec\s+"
++    r"trillionnium_agent_shell_exec\s+"
+     r"trillionnium_agent_system_api_operation_replay_sync_exec\s*\}"
+     r":file\s+\{\s*entrypoint\s+execute\s+execute_no_trans\s*\};",
+     agentd_te),
+diff --git a/prebuilt/common/tests/rootfs_tar_staging_filter_target_files_contract_test.py b/prebuilt/common/tests/rootfs_tar_staging_filter_target_files_contract_test.py
+index 745a1d9c..e1d7cbc8 100644
+--- a/prebuilt/common/tests/rootfs_tar_staging_filter_target_files_contract_test.py
++++ b/prebuilt/common/tests/rootfs_tar_staging_filter_target_files_contract_test.py
+@@ -467,10 +467,22 @@ def parse_filesystem_config(data: bytes) -> dict[str, tuple[int, int, int, dict[
+         fields = line.split()
+         if len(fields) < 4:
+             raise ContractError(f"filesystem_config line {line_number} is malformed")
+-        path, uid_token, gid_token, mode_token, *attribute_tokens = fields
+-        if path in entries:
++        # Android's fs_config emits the partition root with an empty path,
++        # represented by leading whitespace (for example
++        # `` 0 0 755 capabilities=0x0``).  It is a real, canonical record but
++        # has no path key to retain.  Validate it with the same strict field
++        # rules as every other record, then omit it from the path map.
++        root_record = line[:1].isspace()
++        if root_record:
++            path = ""
++            uid_token, gid_token, mode_token, *attribute_tokens = fields
++        else:
++            path, uid_token, gid_token, mode_token, *attribute_tokens = fields
++        if path and path in entries:
+             raise ContractError(f"filesystem_config path is duplicated: {path}")
+-        if not re.fullmatch(r"[A-Za-z0-9._+/@=-]+(?:/[A-Za-z0-9._+@=-]+)*", path):
++        if path and not re.fullmatch(
++            r"[A-Za-z0-9._+/@=-]+(?:/[A-Za-z0-9._+@=-]+)*", path
++        ):
+             raise ContractError(f"filesystem_config path is non-canonical: {path!r}")
+         if not re.fullmatch(r"[0-9]+", uid_token) or not re.fullmatch(
+             r"[0-9]+", gid_token
+@@ -484,12 +496,14 @@ def parse_filesystem_config(data: bytes) -> dict[str, tuple[int, int, int, dict[
+             if not key or not value or key in attributes:
+                 raise ContractError(f"filesystem_config attribute is duplicated: {token}")
+             attributes[key] = value
+-        entries[path] = (
++        metadata = (
+             int(uid_token, 10),
+             int(gid_token, 10),
+-            _parse_octal_mode(mode_token, path),
++            _parse_octal_mode(mode_token, path or "<partition-root>"),
+             attributes,
+         )
++        if path:
++            entries[path] = metadata
+     if not entries:
+         raise ContractError("system_ext filesystem_config is empty")
+     return entries
+@@ -791,6 +805,7 @@ def _fixture_identity(helper: bytes, **overrides: str) -> bytes:
+ 
+ def _fixture_fs_config(*, helper_gid: int = 2000, helper_mode: str = "755") -> bytes:
+     return (
++        " 0 0 755 capabilities=0x0\n"
+         "system_ext 0 0 755 capabilities=0x0\n"
+         f"{HELPER_FS_PATH} 0 {helper_gid} {helper_mode} capabilities=0x0\n"
+         f"{IDENTITY_FS_PATH} 0 0 644 capabilities=0x0\n"
+diff --git a/prebuilt/common/tests/shell_exec_v1_android_product_wiring_test.py b/prebuilt/common/tests/shell_exec_v1_android_product_wiring_test.py
+index d73ce2ae..2c673ab8 100644
+--- a/prebuilt/common/tests/shell_exec_v1_android_product_wiring_test.py
++++ b/prebuilt/common/tests/shell_exec_v1_android_product_wiring_test.py
+@@ -50,9 +50,6 @@ else:
+     PRODUCT_CONFIG = VENDOR / "config/common.mk"
+     SEPOLICY = ANDROID_TOP / "device/trillionnium/sepolicy"
+     DEVICE_CONFIG = ANDROID_TOP / "device/motorola/sm6375-common/config.fs"
+-DEFAULT_V20_ROOT = Path("/home/qian-qi/trillionnium-release-20260809.9neZf4")
+-
+-
+ def read(path: Path) -> str:
+     return path.read_text(encoding="utf-8")
+ 
+@@ -397,7 +394,10 @@ class ShellExecAndroidProductWiringTest(unittest.TestCase):
+         )
+ 
+     def test_real_v20_projection_proves_new_inputs_and_rootfs_target_absent(self) -> None:
+-        root = Path(os.environ.get("TRILLIONNIUM_V20_RELEASE_ROOT", DEFAULT_V20_ROOT))
++        configured_root = os.environ.get("TRILLIONNIUM_V20_RELEASE_ROOT")
++        if not configured_root:
++            self.skipTest("release projection root is not configured")
++        root = Path(configured_root)
+         if not root.is_dir():
+             self.skipTest("canonical v20 release root is not available")
+         source_boms = list((root / "source-bom").glob(
+diff --git a/prebuilt/common/tools/trillionnium_receipt_stage_materialize.py b/prebuilt/common/tools/trillionnium_receipt_stage_materialize.py
+index 311f9cbb..ebcbec54 100644
+--- a/prebuilt/common/tools/trillionnium_receipt_stage_materialize.py
++++ b/prebuilt/common/tools/trillionnium_receipt_stage_materialize.py
+@@ -707,11 +707,16 @@ def parse_inputs(values: Sequence[str]) -> dict[str, str]:
+ 
+ 
+ def role_entry(
+-    spec: Mapping[str, object], raw: bytes
++    spec: Mapping[str, object],
++    raw: bytes,
++    *,
++    document_schema: str | None = None,
+ ) -> dict[str, object]:
+     result = {
+         "bytes": len(raw),
+-        "document_schema": spec["document_schema"],
++        "document_schema": (
++            spec["document_schema"] if document_schema is None else document_schema
++        ),
+         "install_path": spec["install_path"],
+         "kind": spec["kind"],
+         "mode": spec["mode"],
+@@ -834,6 +839,8 @@ def verifier_arguments(
+     output_root: Path,
+     specs: Mapping[str, Mapping[str, object]],
+     custody_input: Path | None = None,
++    *,
++    allow_userdebug_dogfood: bool = False,
+ ) -> list[str]:
+     arguments = [
+         "--phase",
+@@ -849,6 +856,8 @@ def verifier_arguments(
+     ]
+     if custody_input is not None:
+         arguments += ["--custody-input", str(custody_input)]
++    if allow_userdebug_dogfood:
++        arguments.append("--allow-userdebug-dogfood")
+     for role in VERIFY.EXPECTED_ROLES:
+         spec = specs[role]
+         if phase == "custody":
+@@ -887,6 +896,7 @@ def materialize(
+     base_manifest_path: str,
+     stage_root: str,
+     input_paths: Mapping[str, str],
++    allow_userdebug_dogfood: bool = False,
+ ) -> None:
+     target = Path(stage_root)
+     if target.parts[-2:] != ("trillionnium", "receipt-stage-v1"):
+@@ -932,7 +942,20 @@ def materialize(
+             physical[role] = item
+             validate_source_mode(item, specs[role]["kind"])
+             raw_by_role[role] = item.data
+-            entries[role] = role_entry(specs[role], item.data)
++            document_schema = None
++            if role == "source_bom" and allow_userdebug_dogfood:
++                source_document = VERIFY.parse_json(item.data, role)
++                if (
++                    source_document.get("schema")
++                    != VERIFY.USERDEBUG_DOGFOOD_SOURCE_BOM_SCHEMA
++                ):
++                    raise VERIFY.StageError(
++                        "dogfood receipt-stage input has the wrong source BOM schema"
++                    )
++                document_schema = VERIFY.USERDEBUG_DOGFOOD_SOURCE_BOM_SCHEMA
++            entries[role] = role_entry(
++                specs[role], item.data, document_schema=document_schema
++            )
+ 
+         documents: dict[str, Mapping[str, object]] = {}
+         for role in (
+@@ -1026,6 +1049,7 @@ def materialize(
+             Path(candidate_path),
+             Path(custody_path),
+             specs,
++            allow_userdebug_dogfood=allow_userdebug_dogfood,
+         )
+         VERIFY.run(custody_args)
+         publish_args = verifier_arguments(
+@@ -1035,6 +1059,7 @@ def materialize(
+             Path(publish_path),
+             specs,
+             Path(custody_path) / "custody.v1.json",
++            allow_userdebug_dogfood=allow_userdebug_dogfood,
+         )
+         VERIFY.run(publish_args)
+         validate_verifier_round_trip(
+@@ -1188,6 +1213,11 @@ def parser() -> argparse.ArgumentParser:
+     value.add_argument("--base-root-linux-manifest", required=True)
+     value.add_argument("--stage-root", required=True)
+     value.add_argument("--input", action="append", default=[])
++    value.add_argument(
++        "--allow-userdebug-dogfood",
++        action="store_true",
++        help="accept the explicit non-authorizing userdebug dogfood source BOM",
++    )
+     return value
+ 
+ 
+@@ -1204,6 +1234,7 @@ def run(argv: Sequence[str] | None = None) -> int:
+         base_manifest_path=base_manifest_path,
+         stage_root=stage_root,
+         input_paths=input_paths,
++        allow_userdebug_dogfood=args.allow_userdebug_dogfood,
+     )
+     return 0
+ 
+diff --git a/prebuilt/common/tools/trillionnium_receipt_stage_verify.py b/prebuilt/common/tools/trillionnium_receipt_stage_verify.py
+index ea0feed1..6a8366c9 100644
+--- a/prebuilt/common/tools/trillionnium_receipt_stage_verify.py
++++ b/prebuilt/common/tools/trillionnium_receipt_stage_verify.py
+@@ -59,6 +59,15 @@ EXPECTED_ROLES = (
+ )
+ 
+ SHELL_ARTIFACT_SET_SCHEMA = "org.trillionnium.shell-exec-artifact-set.v1"
++# A local userdebug handset may opt into a dirty-source dogfood receipt.  This
++# schema is deliberately distinct from the clean source BOM and is accepted
++# only when the caller passes the explicit verifier switch below.
++USERDEBUG_DOGFOOD_SOURCE_BOM_SCHEMA = (
++    "org.trillionnium.userdebug-dogfood-source-bom.v1"
++)
++USERDEBUG_DOGFOOD_SOURCE_BOM_DECISION = (
++    "PASS_USERDEBUG_DIRTY_DOGFOOD_SNAPSHOT"
++)
+ # The control builder publishes only this closed product feature set.  Android
+ # admission owns the same exact ordered closure rather than trusting a receipt
+ # to select Cargo features.
+@@ -2356,9 +2365,46 @@ def validate_source_bom(
+     document: Mapping[str, object],
+     source_descriptor: Mapping[str, object],
+     manifest_descriptor: Mapping[str, object],
++    *,
++    allow_userdebug_dogfood: bool = False,
+ ) -> None:
+-    if (
+-        document.get("schema") != "org.trillionnium.local-cross-repo-source-bom.v2"
++    schema = document.get("schema")
++    if schema == USERDEBUG_DOGFOOD_SOURCE_BOM_SCHEMA:
++        if not allow_userdebug_dogfood:
++            raise StageError("userdebug dogfood source BOM requires explicit opt-in")
++        if document.get("decision") != USERDEBUG_DOGFOOD_SOURCE_BOM_DECISION:
++            raise StageError("userdebug dogfood source BOM decision is invalid")
++        posture = document.get("posture")
++        if type(posture) is not dict or any(
++            posture.get(key) is not False
++            for key in (
++                "signed",
++                "release_pin_published",
++                "build_authorized",
++                "ota_authorized",
++                "device_write_authorized",
++                "public_release_allowed",
++                "release_allowed",
++                "effect_authority",
++            )
++        ):
++            raise StageError("userdebug dogfood source BOM posture is authorizing")
++        inventory = document.get("project_inventory")
++        if type(inventory) is not dict or not inventory.get("blockers"):
++            raise StageError("userdebug dogfood source BOM lacks project blockers")
++        for inventory_name in ("artifacts", "trees"):
++            inventory = document.get(inventory_name)
++            if type(inventory) is not list:
++                raise StageError(
++                    f"userdebug dogfood source BOM {inventory_name} inventory is malformed"
++                )
++            for item in inventory:
++                if type(item) is not dict or item.get("failures", []) not in ([], None):
++                    raise StageError(
++                        f"userdebug dogfood source BOM {inventory_name} has a failed input"
++                    )
++    elif (
++        schema != "org.trillionnium.local-cross-repo-source-bom.v2"
+         or document.get("decision") != "PASS_LOCAL_EXACT_CLEAN_GRAPH"
+         or document.get("blockers") != []
+         or document.get("artifacts") != []
+@@ -2390,6 +2436,8 @@ def validate_stage(
+     contract: Mapping[str, object],
+     receipt_input: RetainedInput,
+     artifacts: Mapping[str, RetainedInput],
++    *,
++    allow_userdebug_dogfood: bool = False,
+ ) -> tuple[dict[str, object], dict[str, dict[str, object]], dict[str, dict[str, object]]]:
+     receipt = parse_json(receipt_input.data, "external receipt-stage receipt")
+     exact_keys(
+@@ -2471,7 +2519,13 @@ def validate_stage(
+         if "install_paths" in spec:
+             contract_fields.append("install_paths")
+         for field in contract_fields:
+-            if entry[field] != spec[field]:
++            dogfood_schema_override = (
++                field == "document_schema"
++                and role == "source_bom"
++                and allow_userdebug_dogfood
++                and entry[field] == USERDEBUG_DOGFOOD_SOURCE_BOM_SCHEMA
++            )
++            if entry[field] != spec[field] and not dogfood_schema_override:
+                 raise StageError(f"{label}.{field} differs from the tracked contract")
+         expected_bytes = positive_bytes(entry["bytes"], f"{label}.bytes")
+         expected_sha = lower_sha256(entry["sha256"], f"{label}.sha256")
+@@ -2554,7 +2608,10 @@ def validate_stage(
+     ):
+         raise StageError("stage source BOM receipt_id is malformed")
+     validate_source_bom(
+-        documents["source_bom"], source_descriptor, manifest_descriptor
++        documents["source_bom"],
++        source_descriptor,
++        manifest_descriptor,
++        allow_userdebug_dogfood=allow_userdebug_dogfood,
+     )
+     validate_shell_artifact_set(
+         documents["shell_artifact_set"], entries, artifacts
+@@ -2801,6 +2858,11 @@ def atomic_write(path: str, raw: bytes, mode: int) -> None:
+ def parser() -> argparse.ArgumentParser:
+     value = argparse.ArgumentParser(description=__doc__)
+     value.add_argument("--phase", choices=("custody", "publish"), required=True)
++    value.add_argument(
++        "--allow-userdebug-dogfood",
++        action="store_true",
++        help="accept the explicit non-authorizing userdebug dogfood source BOM",
++    )
+     value.add_argument("--contract", required=True)
+     value.add_argument("--receipt", required=True)
+     value.add_argument("--receipt-output", required=True)
+@@ -2864,7 +2926,12 @@ def run(argv: Sequence[str] | None = None) -> int:
+             item = RetainedInput.acquire(input_paths[role], f"stage artifact {role}")
+             retained.append(item)
+             artifact_inputs[role] = item
+-        receipt, entries, _ = validate_stage(contract, receipt_input, artifact_inputs)
++        receipt, entries, _ = validate_stage(
++            contract,
++            receipt_input,
++            artifact_inputs,
++            allow_userdebug_dogfood=args.allow_userdebug_dogfood,
++        )
+ 
+         custody_raw: bytes
+         if args.phase == "custody":

@@ -1,0 +1,61 @@
+type trillionnium_agent_accessibility, domain, coredomain;
+
+app_domain(trillionnium_agent_accessibility)
+
+# The app process carries per-user MCS categories while the fixed Codex Agent
+# process runs at s0. Trust the dedicated socket-owning backend, not the Agent,
+# so the Android MLS connect constraint permits only the policy edges
+# below without making model processes cross-category subjects.  The dormant
+# operation replay-sync source foundation has only the separate connectto edge
+# declared in trillionnium_agent_replay_sync.te; a future hidden handler must
+# still authenticate that role because SELinux cannot distinguish abstract
+# names.
+typeattribute trillionnium_agent_accessibility mlstrustedsubject;
+
+# This domain intentionally remains MLS-trusted for its fixed backend socket,
+# so the generic app_data_file rules are excluded by AOSP.  The package data
+# directory is assigned the dedicated type in seapp_contexts; grant only the
+# file lifecycle needed by AccessibilityReplayFile (mkdir/open/fstat,
+# fsync, pwrite/ftruncate, atomic rename and stale-temp unlink).
+allow trillionnium_agent_accessibility trillionnium_agent_accessibility_data_file:dir create_dir_perms;
+allow trillionnium_agent_accessibility trillionnium_agent_accessibility_data_file:file create_file_perms;
+
+# Android's AccessibilityService framework performs one activity-manager
+# service-manager lookup while completing the bind handshake.  Keep this edge
+# narrowly scoped to discovery: the service receives no activity Binder call,
+# settings write, input, or generic service-manager access from this rule.
+# Without it a user-authorized bind remains permanently in Binding services and
+# the framework emits an enforcing denial before onServiceConnected can expose
+# the already fail-closed, replay-gated backend.
+allow trillionnium_agent_accessibility activity_service:service_manager find;
+
+allow trillionnium_agent_accessibility_tool trillionnium_agent_accessibility:unix_stream_socket {
+    connectto getattr getopt read write setopt shutdown
+};
+allow trillionnium_agent_accessibility trillionnium_agent_accessibility_tool:unix_stream_socket {
+    getattr getopt read write shutdown
+};
+allow trillionnium_agent_accessibility trillionnium_agent_accessibility_tool:fd use;
+neverallow {
+    trillionnium_codex_agent
+    trillionnium_agent_system_api_tool
+    trillionnium_agent_adb_tool
+    trillionnium_agent_system_api_replay_sync
+    trillionnium_agent_system_api_operation_replay_sync
+} trillionnium_agent_accessibility:unix_stream_socket connectto;
+
+# Close the retired OS routing peers structurally.  Platform diagnostics retain
+# their standard domain-wide sockets; none of those sockets dispatch Android
+# actions.  The only action backends allowed here are system_server and this
+# dedicated Accessibility service.
+neverallow {
+    trillionnium_codex_agent
+    trillionnium_agent_system_api_tool
+    userdebug_or_eng(`-trillionnium_agent_system_api_tool')
+    trillionnium_agent_accessibility_tool
+    trillionnium_agent_adb_tool
+} {
+    trillionnium_agentd
+    trillionnium_aiauthority
+    trillionnium_aishell
+}:unix_stream_socket connectto;

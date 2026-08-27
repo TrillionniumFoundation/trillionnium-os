@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+
+android_app {
+    name: "TrillionniumAgentAccessibility",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        "src/**/*.java",
+    ],
+    static_libs: ["gson"],
+    resource_dirs: ["res"],
+    certificate: "platform",
+    system_ext_specific: true,
+    privileged: false,
+    platform_apis: true,
+    min_sdk_version: "36",
+}
+
+java_test_host {
+    name: "TrillionniumAgentAccessibilityReplayTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        ":trillionnium-canonical-operation-binding-golden-vector-sources",
+        "src/org/trillionnium/agentaccessibility/AccessibilityGestureOutcome.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSession.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityOperationId.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityProtocol.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityRequestId.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayPolicy.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayAckChain.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayControlProtocol.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayJournal.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilitySnapshotRedaction.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedgerTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayAckTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandlerTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AgentDescriptorEndpointTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilitySafetySemanticsTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilitySnapshotProtocolTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityCanonicalOperationBindingTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSessionTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityDeferredCloseTest.java",
+    ],
+    static_libs: [
+        "gson",
+        "junit",
+    ],
+    test_options: {
+        unit_test: true,
+    },
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumAgentAccessibilityContractTest",
+    src: "tests/agent_accessibility_contract.sh",
+    // Copy the Android-only secure store so the host contract can enforce its no-follow/fsync
+    // boundary without compiling platform APIs into the pure-Java replay test.
+    data: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        "AndroidManifest.xml",
+        "README.md",
+        "res/xml/agent_accessibility_service.xml",
+        "src/org/trillionnium/agentaccessibility/AccessibilityGestureOutcome.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSession.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityOperationId.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityProtocol.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityRequestId.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayPolicy.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayAckChain.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayControlProtocol.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayFile.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayJournal.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilitySnapshotRedaction.java",
+        "src/org/trillionnium/agentaccessibility/AccessibilityUserAuthorizationGate.java",
+        "src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java",
+        "src/org/trillionnium/agentaccessibility/DirectPeerPolicy.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedgerTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayAckTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandlerTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AgentDescriptorEndpointTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilitySafetySemanticsTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityAuthorizationSessionTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilityDeferredCloseTest.java",
+        "tests/src/org/trillionnium/agentaccessibility/AccessibilitySnapshotProtocolTest.java",
+    ],
+    test_suites: ["general-tests"],
+}

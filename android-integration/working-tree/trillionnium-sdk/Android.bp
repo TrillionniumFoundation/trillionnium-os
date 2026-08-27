@@ -1,0 +1,1176 @@
+//
+// SPDX-FileCopyrightText: The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+android_app {
+    name: "org.trillionnium.platform-res",
+    use_resource_processor: false,
+    sdk_version: "core_platform",
+    certificate: "platform",
+
+    manifest: "trillionnium/res/AndroidManifest.xml",
+
+    // Disable dexpreopt and verify_uses_libraries check as the app
+    // contains no Java code to be dexpreopted.
+    enforce_uses_libs: false,
+    dex_preopt: {
+        enabled: false,
+    },
+
+    // Soong special-cases org.trillionnium.platform-res to install this alongside
+    // the libraries at /system_ext/framework/org.trillionnium.platform-res.apk.
+
+    aaptflags: [
+        "--private-symbols",
+        "org.trillionnium.platform.internal",
+
+        // Framework doesn't need versioning since it IS the platform.
+        "--no-auto-version",
+
+        // Allow overlay to add resource
+        "--auto-add-overlay",
+
+        // Tell aapt to create "extending (non-application)" resource IDs,
+        // since these resources will be used by many apps.
+        "--allow-reserved-package-id",
+        // Use id 0x3f (one less than app id).
+        "--package-id",
+        "63",
+    ],
+
+    resource_dirs: [
+        "trillionnium/res/res",
+    ],
+
+    // Create package-export.apk, which other packages can use to get
+    // PRODUCT-agnostic resource data like IDs and type definitions.
+    export_package_resources: true,
+}
+
+// The Trillionnium OS Platform Framework Library
+// ============================================================
+
+// Compile-time product binding for the sole Codex launcher identity. The common contract is the
+// authoritative production descriptor. The P01 userdebug variant replaces only the two generated
+// descriptor sources with a srcjar derived from the exact verified launcher ELF selected by the
+// same product graph. No runtime property, challenge field, or caller can select this value.
+soong_config_module_type_import {
+    from: "vendor/trillionnium/prebuilt/common/Android.bp",
+    module_types: ["trillionnium_p01_java_library"],
+}
+
+python_binary_host {
+    name: "trillionnium-agent-descriptor-registry-generator",
+    main: "tools/generate-agent-descriptor-registry.py",
+    srcs: ["tools/generate-agent-descriptor-registry.py"],
+    visibility: ["//visibility:private"],
+}
+
+genrule {
+    name: "trillionnium-agent-descriptor-registry-p01-userdebug-generated",
+    srcs: [
+        "contracts/agent-descriptor-registry-v1.json",
+        "contracts/canonical-operation-binding-v1.json",
+        ":trillionnium-codex-agent-0.144.1-p01-userdebug-verified",
+    ],
+    tools: ["trillionnium-agent-descriptor-registry-generator"],
+    out: ["trillionnium-agent-descriptor-registry-p01-userdebug.srcjar"],
+    cmd: "$(location trillionnium-agent-descriptor-registry-generator)" +
+        " --contract $(location contracts/agent-descriptor-registry-v1.json)" +
+        " --canonical-operation-contract $(location contracts/canonical-operation-binding-v1.json)" +
+        " --identity-artifact $(location :trillionnium-codex-agent-0.144.1-p01-userdebug-verified)" +
+        " --srcjar-output $(out)",
+    visibility: ["//visibility:private"],
+}
+
+genrule {
+    name: "trillionnium-agent-descriptor-registry-p01-userdebug-contract",
+    srcs: [
+        "contracts/agent-descriptor-registry-v1.json",
+        "contracts/canonical-operation-binding-v1.json",
+        ":trillionnium-codex-agent-0.144.1-p01-userdebug-verified",
+    ],
+    tools: ["trillionnium-agent-descriptor-registry-generator"],
+    out: ["agent-descriptor-registry-p01-userdebug-materialized.json"],
+    cmd: "$(location trillionnium-agent-descriptor-registry-generator)" +
+        " --contract $(location contracts/agent-descriptor-registry-v1.json)" +
+        " --canonical-operation-contract $(location contracts/canonical-operation-binding-v1.json)" +
+        " --identity-artifact $(location :trillionnium-codex-agent-0.144.1-p01-userdebug-verified)" +
+        " --materialized-contract-output $(out)",
+    visibility: ["//visibility:private"],
+}
+
+trillionnium_p01_java_library {
+    name: "trillionnium-agent-identity-product",
+    srcs: [
+        "agentidentity/src/org/trillionnium/agentidentity/AgentDescriptor.java",
+        "agentidentity/src/org/trillionnium/agentidentity/AgentDescriptorRegistry.java",
+        "agentidentity/src/org/trillionnium/agentidentity/CanonicalOperationBinding.java",
+        "agentidentity/src/org/trillionnium/agentidentity/CanonicalOperationBindingContract.java",
+    ],
+    soong_config_variables: {
+        trillionnium_p01_build_variant: {
+            userdebug: {
+                exclude_srcs: [
+                    "agentidentity/src/org/trillionnium/agentidentity/AgentDescriptor.java",
+                    "agentidentity/src/org/trillionnium/agentidentity/AgentDescriptorRegistry.java",
+                ],
+                srcs: [":trillionnium-agent-descriptor-registry-p01-userdebug-generated"],
+            },
+        },
+    },
+    installable: false,
+    sdk_version: "current",
+    java_version: "11",
+    visibility: ["//visibility:public"],
+}
+
+// Single source of truth for the OS-compiled Agent descriptor product allowlist. The framework
+// library and platform-signed Accessibility APK compile these exact same closed-schema sources.
+filegroup {
+    name: "trillionnium-agent-descriptor-registry-sources",
+    srcs: ["agentidentity/src/**/*.java"],
+}
+
+// Exact source inputs for the vendor product-HOLD gate that prevents the
+// capability-lease root-publication helper from being mistaken for the
+// independent Direct operation epoch/replay-control protocols. Exporting
+// source text to a host test does not create a socket, service, authority, or
+// effect route.
+filegroup {
+    name: "trillionnium-agent-operation-epoch-replay-product-hold-contract-sources",
+    srcs: [
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayCache.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlHandler.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlProtocol.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiService.java",
+        "tests/AgentSystemApiReplayAckTest.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlProtocol.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java",
+        "packages/TrillionniumAgentAccessibility/tests/src/org/trillionnium/agentaccessibility/AccessibilityReplayAckTest.java",
+    ],
+    visibility: ["//vendor:__subpackages__"],
+}
+
+filegroup {
+    name: "trillionnium-canonical-operation-binding-golden-vector-sources",
+    srcs: [
+        "agentidentity/tests/src/org/trillionnium/agentidentity/CanonicalOperationBindingGoldenVectors.java",
+    ],
+}
+
+filegroup {
+    name: "trillionnium-sdk-sources",
+    srcs: [
+        "sdk/src/java/trillionnium/**/*.java",
+        "sdk/src/java/trillionnium/**/I*.aidl",
+    ],
+}
+
+filegroup {
+    name: "trillionnium-sdk-internal-sources",
+    srcs: [
+        "sdk/src/java/org/trillionnium/internal/**/*.java",
+        "sdk/src/java/org/trillionnium/internal/**/I*.aidl",
+    ],
+}
+
+// Process-separated capability-lease transport shared by system_server and the
+// independent consent APK.  The interface carries only broker-authored bytes;
+// callers cannot submit a challenge or destination through this service.
+java_library_static {
+    name: "trillionnium-capability-lease-binder-api",
+    srcs: ["capabilityleaseapi/src/**/*"],
+    aidl: {
+        local_include_dirs: ["capabilityleaseapi/src"],
+    },
+    installable: false,
+    sdk_version: "core_platform",
+    libs: [
+        "framework",
+    ],
+    visibility: ["//visibility:public"],
+}
+
+filegroup {
+    name: "trillionnium-capability-lease-ui-protocol-source",
+    srcs: [
+        "capabilityleaseapi/src/org/trillionnium/capabilitylease/CapabilityLeaseUiProtocol.java",
+    ],
+    visibility: ["//visibility:public"],
+}
+
+filegroup {
+    name: "trillionnium-library-sources",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        "trillionnium/lib/main/java/**/*.java",
+    ],
+}
+
+// Product framework sources exclude the descriptor package because the selected, compile-time
+// identity library above is its sole owner. The broader source filegroup remains for common host
+// contract tests, which intentionally verify the authoritative production descriptor.
+filegroup {
+    name: "trillionnium-platform-library-sources",
+    srcs: [
+        "trillionnium/lib/main/java/**/*.java",
+    ],
+}
+
+// Exact source-only inputs for the vendor enrollment/loader identity boundary test. Exporting
+// these four files as host-test data does not compile, install, package, or activate the loader.
+filegroup {
+    name: "trillionnium-capability-lease-provider-loader-contract-sources",
+    srcs: [
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseConsumerArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginAndroidBackendV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginLoaderV1.java",
+    ],
+    // Soong permits non-vendor packages to grant vendor access only at this boundary.
+    visibility: ["//vendor:__subpackages__"],
+}
+
+// Source-disabled destination-provider construction ABI shared by host tests.
+// This filegroup neither installs the provider nor makes the runtime reachable.
+filegroup {
+    name: "trillionnium-capability-lease-destination-construction-sources",
+    srcs: [
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationExecutionPlanV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ApprovedDestinationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginV1.java",
+    ],
+}
+
+// Source-disabled receipt-provider construction ABI shared by host tests. This
+// filegroup neither installs the provider nor makes the runtime reachable.
+filegroup {
+    name: "trillionnium-capability-lease-receipt-construction-sources",
+    srcs: [
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerificationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginV1.java",
+    ],
+}
+
+java_defaults {
+    name: "trillionnium-sdk-defaults",
+
+    // Include aidl files from trillionnium.app namespace as well as internal src aidl files
+    aidl: {
+        local_include_dirs: ["sdk/src/java"],
+    },
+
+    srcs: [
+        ":trillionnium-sdk-internal-sources",
+        ":trillionnium-sdk-sources",
+        // For the generated R.java and Manifest.java
+        ":org.trillionnium.platform-res{.aapt.srcjar}",
+    ],
+
+    static_libs: [
+        "vendor.trillionnium.health-V2-java",
+        "vendor.trillionnium.livedisplay-V1-java",
+        "vendor.trillionnium.touch-V1-java",
+    ],
+}
+
+java_library {
+    name: "org.trillionnium.platform",
+    defaults: ["trillionnium-sdk-defaults"],
+    installable: true,
+    sdk_version: "core_platform",
+
+    libs: [
+        "framework",
+        "framework-connectivity.stubs.module_lib",
+        "services",
+    ],
+
+    srcs: [
+        ":trillionnium-platform-library-sources",
+    ],
+
+    static_libs: [
+        "trillionnium-agent-identity-product",
+        "trillionnium-capability-lease-binder-api",
+    ],
+
+    // These implementations are explicitly source-only. The abstract-socket connector is
+    // PRODUCT_WIRED=false and its hidden UnixSocketAddress factory must move behind a separately
+    // measured platform artifact. The plugin adapter must remain absent until a fixed loader can
+    // atomically bind verified bytes, measurement and the loaded instance. The parent-loaded
+    // public @hide SPI/DTO types remain in this library as ABI prerequisites only.
+    exclude_srcs: [
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootRouteSocketConnectorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootRouteSessionConstructorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginAdapterV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginDexStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginJarStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginAndroidBackendV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginLoaderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseOsNetworkTlsEffectV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSelectedNetworkTlsProducerV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseAndroidSelectedNetworkTlsProducerV1.java",
+    ],
+
+    // PRODUCT_PACKAGES is the sole partition owner of the system_ext
+    // Accessibility APK. A cross-partition required edge from this system
+    // framework library makes CF's system_other graph receive the same
+    // odex/vdex from both system and system_ext.
+    required: ["org.trillionnium.agent.system_api.xml"],
+}
+
+python_test_host {
+    name: "TrillionniumAgentAccessibilityProductOwnershipContractTest",
+    main: "tests/agent_accessibility_product_ownership_contract_test.py",
+    srcs: [
+        "tests/agent_accessibility_product_ownership_contract_test.py",
+    ],
+    data: [
+        "Android.bp",
+        "packages/TrillionniumAgentAccessibility/Android.bp",
+    ],
+    test_suites: ["general-tests"],
+    test_options: {
+        unit_test: true,
+    },
+}
+
+// Read-only source/device-surface audit.  The guard intentionally reports HOLD
+// when a source tree cannot prove hardware-backed KeyMint, an OS-owned rollback
+// producer, or a live Accessibility grant; it never treats missing evidence as
+// activation-ready and never performs a device operation.
+python_test_host {
+    name: "TrillionniumAndroidSecuritySurfaceContractTest",
+    main: "tests/android_security_surface_contract_test.py",
+    srcs: [
+        "tests/android_security_surface_contract_test.py",
+        "tools/verify_android_security_surfaces.py",
+    ],
+    data: [
+        "contracts/android-security-surface-v1.json",
+    ],
+    test_suites: ["general-tests"],
+    test_options: {
+        unit_test: true,
+    },
+}
+
+// Build-only, source-disabled loader prerequisite. This module is neither installable nor wired
+// into org.trillionnium.platform. Its fixed production paths do not exist in the product image.
+// The provider SPI classes below are only build/test artifacts.
+java_library {
+    name: "TrillionniumCapabilityLeaseVerifiedPluginLoaderSourceDisabled",
+    srcs: [
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseConsumerArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationExecutionPlanV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExactHttpsUriV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseOsNetworkTlsEffectV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSelectedNetworkTlsProducerV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseAndroidSelectedNetworkTlsProducerV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginDexStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginJarStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginAndroidBackendV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginLoaderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ApprovedDestinationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerificationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginV1.java",
+    ],
+    installable: false,
+    sdk_version: "core_platform",
+    libs: [
+        "framework",
+        "framework-connectivity.stubs.module_lib",
+    ],
+    java_version: "11",
+    visibility: ["//visibility:private"],
+}
+
+// Production-identity receipt provider source slice. json-prebuilt is a compile-time-only lib:
+// it must never be statically merged into this DEX because the closed artifact has exactly two
+// provider class definitions. The raw and exact-envelope modules are non-installable and are not
+// referenced by PRODUCT_PACKAGES, a required edge, or an install path.
+java_library {
+    name: "TrillionniumCapabilityLeaseReceiptVerifierProviderSourceDisabledRaw",
+    srcs: [
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierPluginV1.java",
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierProviderV1.java",
+    ],
+    libs: [
+        "org.trillionnium.platform",
+        "json-prebuilt",
+    ],
+    installable: false,
+    compile_dex: true,
+    sdk_version: "core_platform",
+    java_version: "11",
+    visibility: ["//visibility:private"],
+}
+
+java_genrule {
+    name: "TrillionniumCapabilityLeaseReceiptVerifierProviderSourceDisabled",
+    tools: [
+        "zip2zip",
+        "zipalign",
+    ],
+    srcs: [":TrillionniumCapabilityLeaseReceiptVerifierProviderSourceDisabledRaw"],
+    out: ["trillionnium-capability-lease-receipt-verifier.jar"],
+    cmd: "$(location zip2zip) -i $(in) " +
+        "-o $(genDir)/receipt-provider-unaligned.jar -0 classes.dex " +
+        "classes.dex META-INF/MANIFEST.MF && " +
+        "$(location zipalign) -f 4 " +
+        "$(genDir)/receipt-provider-unaligned.jar $(out)",
+    visibility: ["//visibility:private"],
+}
+
+java_library {
+    name: "trillionnium-capability-lease-receipt-verifier",
+    srcs: [
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierPluginV1.java",
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierProviderV1.java",
+    ],
+    libs: [
+        "org.trillionnium.platform",
+        "json-prebuilt",
+    ],
+    installable: true,
+    compile_dex: true,
+    sdk_version: "core_platform",
+    system_ext_specific: true,
+    java_version: "11",
+    visibility: ["//visibility:private"],
+}
+
+java_test_host {
+    name: "TrillionniumCapabilityLeaseReceiptVerifierProviderSourceDisabledTest",
+    srcs: [
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierPluginV1.java",
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierProviderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseJson.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ApprovedDestinationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerificationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginV1.java",
+        "tests/CapabilityLeaseChallengeV1Golden.java",
+        "tests/CapabilityLeaseReceiptVerifierProviderV1Test.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+// Production-identity destination provider source slice. Both modules are deliberately
+// source-disabled: the raw module is non-installable and the exact-envelope genrule is only a
+// build/test artifact. Neither module is in PRODUCT_PACKAGES, a required edge, or an install path.
+java_library {
+    name: "TrillionniumCapabilityLeaseDestinationConsumerProviderSourceDisabledRaw",
+    srcs: [
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerPluginV1.java",
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerProviderV1.java",
+    ],
+    libs: ["org.trillionnium.platform"],
+    installable: false,
+    compile_dex: true,
+    sdk_version: "core_platform",
+    java_version: "11",
+    visibility: ["//visibility:private"],
+}
+
+java_genrule {
+    name: "TrillionniumCapabilityLeaseDestinationConsumerProviderSourceDisabled",
+    tools: [
+        "zip2zip",
+        "zipalign",
+    ],
+    srcs: [":TrillionniumCapabilityLeaseDestinationConsumerProviderSourceDisabledRaw"],
+    out: ["trillionnium-capability-lease-destination-consumer.jar"],
+    cmd: "$(location zip2zip) -i $(in) " +
+        "-o $(genDir)/destination-provider-unaligned.jar -0 classes.dex " +
+        "classes.dex META-INF/MANIFEST.MF && " +
+        "$(location zipalign) -f 4 " +
+        "$(genDir)/destination-provider-unaligned.jar $(out)",
+    visibility: ["//visibility:private"],
+}
+
+java_library {
+    name: "trillionnium-capability-lease-destination-consumer",
+    srcs: [
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerPluginV1.java",
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerProviderV1.java",
+    ],
+    libs: ["org.trillionnium.platform"],
+    installable: true,
+    compile_dex: true,
+    sdk_version: "core_platform",
+    system_ext_specific: true,
+    java_version: "11",
+    visibility: ["//visibility:private"],
+}
+
+java_test_host {
+    name: "TrillionniumCapabilityLeaseDestinationConsumerProviderSourceDisabledTest",
+    srcs: [
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerPluginV1.java",
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerProviderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationExecutionPlanV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseConsumerArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginDexStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginJarStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginLoaderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ApprovedDestinationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerificationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginV1.java",
+        "tests/CapabilityLeaseDestinationConsumerProviderV1Test.java",
+        "tests/CapabilityLeasePluginDexStructureV1Test.java",
+        "tests/CapabilityLeasePluginJarStructureV1Test.java",
+        "tests/host/CapabilityLeaseVerifiedPluginAndroidBackendV1.java",
+    ],
+    device_common_data: [
+        ":TrillionniumCapabilityLeaseDestinationConsumerProviderSourceDisabled",
+        ":TrillionniumCapabilityLeaseReceiptVerifierProviderSourceDisabled",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+// These two modules are intentionally fake, non-installable DEX fixtures. Their package and
+// module names cannot satisfy either fixed production provider identity.
+java_library {
+    name: "TrillionniumCapabilityLeaseReceiptVerifierTestProviderRaw",
+    srcs: [
+        "tests/provider/org/trillionnium/platform/internal/testplugin/ReceiptVerifierTestPluginV1.java",
+    ],
+    libs: ["org.trillionnium.platform"],
+    installable: false,
+    compile_dex: true,
+    sdk_version: "core_platform",
+    java_version: "11",
+    visibility: ["//visibility:private"],
+}
+
+java_library {
+    name: "TrillionniumCapabilityLeaseDestinationConsumerTestProviderRaw",
+    srcs: [
+        "tests/provider/org/trillionnium/platform/internal/testplugin/DestinationConsumerTestPluginV1.java",
+    ],
+    libs: ["org.trillionnium.platform"],
+    installable: false,
+    compile_dex: true,
+    sdk_version: "core_platform",
+    java_version: "11",
+    visibility: ["//visibility:private"],
+}
+
+java_genrule {
+    name: "TrillionniumCapabilityLeaseReceiptVerifierTestProvider",
+    tools: [
+        "zip2zip",
+        "zipalign",
+    ],
+    srcs: [":TrillionniumCapabilityLeaseReceiptVerifierTestProviderRaw"],
+    out: ["TrillionniumCapabilityLeaseReceiptVerifierTestProvider.jar"],
+    cmd: "$(location zip2zip) -i $(in) " +
+        "-o $(genDir)/receipt-test-provider-unaligned.jar -0 classes.dex " +
+        "classes.dex META-INF/MANIFEST.MF && " +
+        "$(location zipalign) -f 4 " +
+        "$(genDir)/receipt-test-provider-unaligned.jar $(out)",
+    visibility: ["//visibility:private"],
+}
+
+java_genrule {
+    name: "TrillionniumCapabilityLeaseDestinationConsumerTestProvider",
+    tools: [
+        "zip2zip",
+        "zipalign",
+    ],
+    srcs: [":TrillionniumCapabilityLeaseDestinationConsumerTestProviderRaw"],
+    out: ["TrillionniumCapabilityLeaseDestinationConsumerTestProvider.jar"],
+    cmd: "$(location zip2zip) -i $(in) " +
+        "-o $(genDir)/destination-test-provider-unaligned.jar -0 classes.dex " +
+        "classes.dex META-INF/MANIFEST.MF && " +
+        "$(location zipalign) -f 4 " +
+        "$(genDir)/destination-test-provider-unaligned.jar $(out)",
+    visibility: ["//visibility:private"],
+}
+
+prebuilt_etc {
+    name: "org.trillionnium.agent.system_api.xml",
+    src: "trillionnium/permissions/org.trillionnium.agent.system_api.xml",
+    filename_from_src: true,
+    sub_dir: "permissions",
+    system_ext_specific: true,
+}
+
+sh_test_host {
+    name: "TrillionniumAgentSystemApiContractTest",
+    src: "tests/agent_system_api_contract.sh",
+    data: [
+        "Android.bp",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AGENT_SYSTEM_API_REPLAY.md",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiActionPolicy.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiOperationId.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayAckChain.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayAckStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayCache.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlHandler.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlProtocol.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayFileStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayWatermarkCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiService.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSystemApiOpenUriCoordinator.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSystemApiRuntime.java",
+        ":trillionnium-agent-descriptor-registry-sources",
+        "agentidentity/tests/src/org/trillionnium/agentidentity/AgentDescriptorRegistryTest.java",
+        "tests/AgentDescriptorEndpointTest.java",
+        "tests/AgentSystemApiPersistentReplayTest.java",
+        "tests/AgentSystemApiReplayAckTest.java",
+        "tests/AgentSystemApiReplayControlHandlerTest.java",
+        "tests/AgentSystemApiActionPolicyTest.java",
+        "tests/AgentSystemApiReplayCacheTest.java",
+        "tests/AgentSystemApiReplayRecordCodecTest.java",
+        "tests/AgentSystemApiReplayWatermarkCodecTest.java",
+        "trillionnium/res/res/values/config.xml",
+        "sdk/src/java/trillionnium/app/TrillionniumContextConstants.java",
+        "trillionnium/permissions/org.trillionnium.agent.system_api.xml",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumSettingsSecurityContractTest",
+    src: "tests/trillionnium_settings_security_contract.sh",
+    data: [
+        "packages/TrillionniumSettingsProvider/AndroidManifest.xml",
+        "trillionnium/res/AndroidManifest.xml",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumReplayControlSourceContractTest",
+    src: "tests/replay_control_source_contract.sh",
+    data: [
+        "Android.bp",
+        "agentidentity/src/org/trillionnium/agentidentity/AgentDescriptorRegistry.java",
+        "trillionnium/res/AndroidManifest.xml",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayCache.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlHandler.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlProtocol.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiService.java",
+        "packages/TrillionniumAgentAccessibility/Android.bp",
+        "packages/TrillionniumAgentAccessibility/AndroidManifest.xml",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityProtocol.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlHandler.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayControlProtocol.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityReplayLedger.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AccessibilityDeferredClose.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/AgentAccessibilityService.java",
+        "packages/TrillionniumAgentAccessibility/src/org/trillionnium/agentaccessibility/DirectPeerPolicy.java",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumOpenUriLeaseSemanticsContractTest",
+    src: "tests/open_uri_lease_semantics_contract.sh",
+    data: [
+        "Android.bp",
+        "contracts/open-uri-lease-semantics-v1.json",
+        "tools/generate-open-uri-lease-semantics.py",
+        ":trillionnium-library-sources",
+        "trillionnium/res/AndroidManifest.xml",
+        "packages/TrillionniumAgentAccessibility/AndroidManifest.xml",
+        "tests/OpenUriLeaseSemanticsV1Golden.java",
+        "tests/OpenUriLeaseSemanticsV1Test.java",
+        "tests/CapabilityLeasePublicDestinationPolicyV1Test.java",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumCapabilityLeaseBrokerSourceContractTest",
+    src: "tests/capability_lease_broker_source_contract.sh",
+    data: [
+        "Android.bp",
+        "capabilityleaseapi/src/org/trillionnium/capabilitylease/CapabilityLeaseUiProtocol.java",
+        "capabilityleaseapi/src/org/trillionnium/capabilitylease/ICapabilityLeaseUiBroker.aidl",
+        "sdk/src/java/trillionnium/app/TrillionniumContextConstants.java",
+        "contracts/capability-lease-root-registration-v1.json",
+        "contracts/capability-lease-root-publication-v1.json",
+        "contracts/capability-lease-root-publisher-launch-v1.json",
+        "contracts/capability-lease-root-authenticator-v1.json",
+        "contracts/capability-lease-root-proof-carrier-v1.json",
+        "contracts/capability-lease-root-kernel-custody-v1.json",
+        "contracts/capability-lease-root-socket-result-custody-v1.json",
+        "contracts/capability-lease-root-listener-correlation-v1.json",
+        "contracts/capability-lease-root-route-coordinator-v1.json",
+        "contracts/capability-lease-root-route-transport-v1.json",
+        "contracts/capability-lease-root-route-socket-custody-v1.json",
+        "contracts/capability-lease-root-route-session-v1.json",
+        "trillionnium/res/AndroidManifest.xml",
+        "trillionnium/res/res/values/config.xml",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBinderCallerVerifier.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallExecutor.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseChallengeEncoderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendAckPublisher.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationBindingV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationProtocolV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationIngressV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationSocketListenerV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationSocketConstructorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseMeasuredRootJournalAuthenticatorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootProofSocketListenerV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootProofCarrierV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootProofPublicationCorrelationV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootListenerCoordinatorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootRouteTransportV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootCoordinatorRouteAdapterV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootRouteSocketConnectorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootRouteSessionConstructorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootBoundListenersV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayLedger.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayFileStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseCompactionWatermarkCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseJson.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseEcdsaP256.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePinnedKeyMintVerifier.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSystemApiOpenUriCoordinator.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExactHttpsUriV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationPolicyV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRuntimeFactory.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseResolvedSetBindingConsumer.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiService.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerService.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerProductEnrollment.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseUiBrokerBinder.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingFileStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRetirementCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiCapabilityLeaseProtocolV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePlatformBuildIdentitySource.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTaskContextResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExecutionTokenResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenBindingV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistry.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistryFileStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistryRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTrustConfigLoader.java",
+        "tests/CapabilityLeaseOsFileStoreFaultMatrixTest.java",
+        "tests/CapabilityLeaseBrokerCallExecutorTest.java",
+        "tests/CapabilityLeasePendingBrokerTest.java",
+        "tests/device/CapabilityLeaseOsFileStoreFaultMatrixAndroidManifest.xml",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumAgentSystemApiCapabilityLeaseSourceContractTest",
+    src: "tests/agent_system_api_capability_lease_source_contract.sh",
+    data: [
+        "Android.bp",
+        "trillionnium/res/AndroidManifest.xml",
+        "trillionnium/res/res/values/config.xml",
+        ":trillionnium-library-sources",
+        "tests/AgentSystemApiCapabilityLeaseProtocolV1Test.java",
+        "tests/AgentSystemApiCapabilityLeaseHandlerTest.java",
+        "tests/CapabilityLeaseAndroidDeadlineResolverTest.java",
+        "tests/CapabilityLeaseAndroidOpenUriDeviceGateTest.java",
+        "tests/CapabilityLeasePluginAdapterV1Test.java",
+        "tests/CapabilityLeasePluginConstructionV1Test.java",
+        "tests/CapabilityLeasePluginDexStructureV1Test.java",
+        "tests/CapabilityLeasePluginJarStructureV1Test.java",
+        "tests/CapabilityLeaseVerifiedPluginLoaderV1Test.java",
+        "tests/CapabilityLeaseOsNetworkTlsEffectV1Test.java",
+        "tests/CapabilityLeaseSelectedNetworkTlsProducerV1Test.java",
+        "tests/CapabilityLeaseDestinationConsumerProviderV1Test.java",
+        "tests/CapabilityLeaseReceiptVerifierProviderV1Test.java",
+        "tests/host/CapabilityLeaseVerifiedPluginAndroidBackendV1.java",
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerPluginV1.java",
+        "providers/destination/src/org/trillionnium/platform/provider/destination/CapabilityLeaseDestinationConsumerProviderV1.java",
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierPluginV1.java",
+        "providers/receipt/src/org/trillionnium/platform/provider/receipt/CapabilityLeaseReceiptVerifierProviderV1.java",
+        "tests/provider/org/trillionnium/platform/internal/testplugin/DestinationConsumerTestPluginV1.java",
+        "tests/provider/org/trillionnium/platform/internal/testplugin/ReceiptVerifierTestPluginV1.java",
+        "tests/device/CapabilityLeaseAndroidOpenUriDispatchSmoke.java",
+        "tests/device/CapabilityLeaseOpenUriDeviceGateActivity.java",
+        "tests/device/CapabilityLeaseAndroidOpenUriDeviceGateAndroidManifest.xml",
+        "tests/device/run_capability_lease_open_uri_consumer_device_smoke.sh",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumCanonicalOperationBindingContractTest",
+    src: "tests/canonical_operation_binding_contract.sh",
+    data: [
+        "contracts/canonical-operation-binding-v1.json",
+        "tools/generate-canonical-operation-binding.py",
+        "agentidentity/src/org/trillionnium/agentidentity/CanonicalOperationBindingContract.java",
+        "agentidentity/tests/src/org/trillionnium/agentidentity/CanonicalOperationBindingGoldenVectors.java",
+    ],
+    test_suites: ["general-tests"],
+}
+
+sh_test_host {
+    name: "TrillionniumAgentDescriptorRegistryContractTest",
+    src: "tests/agent_descriptor_registry_contract.sh",
+    data: [
+        "Android.bp",
+        "contracts/agent-descriptor-registry-v1.json",
+        "contracts/canonical-operation-binding-v1.json",
+        "tools/generate-agent-descriptor-registry.py",
+        "tools/verify-agent-identity-artifacts.py",
+        ":trillionnium-library-sources",
+    ],
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumOpenUriLeaseSemanticsTest",
+    srcs: [
+        ":trillionnium-capability-lease-destination-construction-sources",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseConsumerArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseEcdsaP256.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExactHttpsUriV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseJson.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationPolicyV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationProductPins.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSignedPublicDestinationPolicyVerifier.java",
+        "tests/OpenUriLeaseSemanticsV1Golden.java",
+        "tests/OpenUriLeaseSemanticsV1Test.java",
+        "tests/CapabilityLeasePublicDestinationPolicyV1Test.java",
+        "tests/CapabilityLeaseSignedPublicDestinationPolicyFixtures.java",
+        "tests/CapabilityLeaseSignedPublicDestinationPolicyVerifierTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumCapabilityLeasePendingBrokerTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        ":trillionnium-capability-lease-ui-protocol-source",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiCapabilityLeaseProtocolV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayLedger.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendAckPublisher.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationBindingV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationProtocolV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationIngressV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationSocketListenerV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseMeasuredRootJournalAuthenticatorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootProofCarrierV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootProofPublicationCorrelationV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootListenerCoordinatorV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootRouteTransportV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootCoordinatorRouteAdapterV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseChallengeEncoderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseConsumerArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseCompactionWatermarkCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseEcdsaP256.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExactHttpsUriV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseJson.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePlatformBuildIdentitySource.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePinnedKeyMintVerifier.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationPolicyV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationProductPins.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRollbackEpochStateProof.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRuntimeFactory.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseResolvedSetBindingConsumer.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSignedPublicDestinationPolicyVerifier.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSystemApiOpenUriCoordinator.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSystemApiRuntime.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTaskContextResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExecutionTokenResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenBindingV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistry.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistryRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTrustConfigLoader.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallExecutor.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerServiceFacades.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRetirementCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginAdapterV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationExecutionPlanV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseDestinationPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseOsNetworkTlsEffectV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSelectedNetworkTlsProducerV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginDexStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePluginJarStructureV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptPluginConstructionV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseVerifiedPluginLoaderV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ApprovedDestinationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/DestinationConsumerPluginV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerificationInputV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginFactoryV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/plugin/ReceiptVerifierPluginV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+        "tests/CapabilityLeasePendingBrokerTest.java",
+        "tests/CapabilityLeaseBrokerCallExecutorTest.java",
+        "tests/CapabilityLeaseChallengeEncoderV1Test.java",
+        "tests/CapabilityLeaseChallengeV1Golden.java",
+        "tests/CapabilityLeaseBrokerCallerPolicyTest.java",
+        "tests/CapabilityLeasePendingRecordCodecTest.java",
+        "tests/CapabilityLeaseReceiptVerifierV1Test.java",
+        "tests/CapabilityLeasePinnedKeyMintVerifierTest.java",
+        "tests/CapabilityLeaseBackendReplayLedgerTest.java",
+        "tests/CapabilityLeaseBackendReplayRecordCodecTest.java",
+        "tests/CapabilityLeaseTokenRegistryTest.java",
+        "tests/CapabilityLeaseRootPublicationProtocolV1Test.java",
+        "tests/CapabilityLeaseRootPublicationSocketListenerV1Test.java",
+        "tests/CapabilityLeaseMeasuredRootJournalAuthenticatorV1Test.java",
+        "tests/CapabilityLeaseRootProofCarrierV1Test.java",
+        "tests/CapabilityLeaseRootProofPublicationCorrelationV1Test.java",
+        "tests/CapabilityLeaseRootListenerCoordinatorV1Test.java",
+        "tests/CapabilityLeaseRootRouteTransportV1Test.java",
+        "tests/CapabilityLeaseRootCoordinatorRouteAdapterV1Test.java",
+        "tests/CapabilityLeaseSystemApiOpenUriCoordinatorTest.java",
+        "tests/CapabilityLeasePluginAdapterV1Test.java",
+        "tests/CapabilityLeasePluginConstructionV1Test.java",
+        "tests/CapabilityLeasePluginDexStructureV1Test.java",
+        "tests/CapabilityLeasePluginJarStructureV1Test.java",
+        "tests/CapabilityLeaseVerifiedPluginLoaderV1Test.java",
+        "tests/CapabilityLeaseOsNetworkTlsEffectV1Test.java",
+        "tests/CapabilityLeaseSelectedNetworkTlsProducerV1Test.java",
+        "tests/CapabilityLeaseSignedPublicDestinationPolicyFixtures.java",
+        "tests/host/CapabilityLeaseVerifiedPluginAndroidBackendV1.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+// Device-only: executes the two production file stores' android.system.Os calls in an
+// app-private directory with deterministic faults. The injected identity/label matches the test
+// APK only; system_server uid/label, physical power-cut, and real ENOSPC remain device evidence
+// gates and are not claimed by this matrix.
+android_test {
+    name: "TrillionniumCapabilityLeaseOsFileStoreFaultMatrixTest",
+    manifest: "tests/device/CapabilityLeaseOsFileStoreFaultMatrixAndroidManifest.xml",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        ":trillionnium-capability-lease-ui-protocol-source",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayFileStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayLedger.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendAckPublisher.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRootPublicationBindingV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBackendReplayRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiCapabilityLeaseProtocolV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExactHttpsUriV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExecutionTokenResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTaskContextResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenBindingV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistry.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistryFileStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenRegistryRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseCompactionWatermarkCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseJson.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingFileStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRetirementCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+        "tests/CapabilityLeaseOsFileStoreFaultMatrixTest.java",
+    ],
+    static_libs: [
+        "androidx.test.ext.junit",
+        "androidx.test.runner",
+        "junit",
+    ],
+    platform_apis: true,
+    optimize: {
+        enabled: false,
+    },
+    dex_preopt: {
+        enabled: false,
+    },
+    java_version: "11",
+    test_suites: [
+        "device-tests",
+        "general-tests",
+    ],
+}
+
+android_test {
+    name: "TrillionniumCapabilityLeaseAndroidOpenUriDeviceGateTest",
+    manifest: "tests/device/CapabilityLeaseAndroidOpenUriDeviceGateAndroidManifest.xml",
+    // This is a consumer-only engineering smoke. Instrumentation adopts exactly the shell
+    // cross-user permission; the APK must not inherit or impersonate the product platform key.
+    srcs: [
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseAndroidDeadlineResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseAndroidOpenUriConsumer.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseEcdsaP256.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExactHttpsUriV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseJson.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationPolicyV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationProductPins.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseResolvedSetBindingConsumer.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSignedPublicDestinationPolicyVerifier.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+        "tests/CapabilityLeaseAndroidDeadlineResolverTest.java",
+        "tests/CapabilityLeaseAndroidOpenUriDeviceGateTest.java",
+        "tests/device/CapabilityLeaseAndroidOpenUriDispatchSmoke.java",
+        "tests/device/CapabilityLeaseOpenUriDeviceGateActivity.java",
+    ],
+    libs: [
+        "framework-connectivity.stubs.module_lib",
+    ],
+    static_libs: [
+        "androidx.test.ext.junit",
+        "androidx.test.runner",
+        "json-prebuilt",
+        "junit",
+    ],
+    platform_apis: true,
+    optimize: {
+        enabled: false,
+    },
+    dex_preopt: {
+        enabled: false,
+    },
+    java_version: "11",
+    test_suites: [
+        "device-tests",
+        "general-tests",
+    ],
+}
+
+java_test_host {
+    name: "TrillionniumAgentSystemApiCapabilityLeaseSourceTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        ":trillionnium-capability-lease-ui-protocol-source",
+        ":trillionnium-capability-lease-destination-construction-sources",
+        ":trillionnium-capability-lease-receipt-construction-sources",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiCapabilityLeaseProtocolV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiCapabilityLeaseHandler.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseBrokerCallerPolicy.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseConsumerArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseEcdsaP256.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExactHttpsUriV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseJson.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePlatformBuildIdentitySource.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingBroker.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePendingStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationPolicyV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeasePublicDestinationProductPins.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRuntimeFactory.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseResolvedSetBindingConsumer.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseReceiptVerifierArtifactMeasurement.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseRollbackEpochStateProof.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseSignedPublicDestinationPolicyVerifier.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTaskContextResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseExecutionTokenResolver.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTokenBindingV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/CapabilityLeaseTrustConfigLoader.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/OpenUriLeaseSemanticsV1Contract.java",
+        "tests/AgentSystemApiCapabilityLeaseProtocolV1Test.java",
+        "tests/AgentSystemApiCapabilityLeaseHandlerTest.java",
+        "tests/CapabilityLeaseSignedPublicDestinationPolicyFixtures.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAgentSystemApiReplayCacheTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        "agentidentity/tests/src/org/trillionnium/agentidentity/AgentDescriptorRegistryTest.java",
+        "agentidentity/tests/src/org/trillionnium/agentidentity/CanonicalOperationBindingGoldenVectors.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiActionPolicy.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiOperationId.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayAckChain.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayAckStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayCache.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlHandler.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayControlProtocol.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayRecordCodec.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayStore.java",
+        "trillionnium/lib/main/java/org/trillionnium/platform/internal/AgentSystemApiReplayWatermarkCodec.java",
+        "tests/AgentSystemApiPersistentReplayTest.java",
+        "tests/AgentSystemApiReplayAckTest.java",
+        "tests/AgentSystemApiReplayControlHandlerTest.java",
+        "tests/AgentDescriptorEndpointTest.java",
+        "tests/AgentSystemApiActionPolicyTest.java",
+        "tests/AgentSystemApiReplayCacheTest.java",
+        "tests/AgentSystemApiReplayRecordCodecTest.java",
+        "tests/AgentSystemApiReplayWatermarkCodecTest.java",
+        "tests/CanonicalOperationBindingSystemTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+// Full target for use by platform apps
+// ============================================================
+
+java_library {
+    name: "org.trillionnium.platform.internal",
+    defaults: ["trillionnium-sdk-defaults"],
+}

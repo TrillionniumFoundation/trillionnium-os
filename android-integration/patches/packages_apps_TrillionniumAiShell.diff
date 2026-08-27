@@ -1,0 +1,93 @@
+diff --git a/Android.bp b/Android.bp
+index 2baa1df..2cd8892 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -9,9 +9,12 @@ android_app {
+     certificate: "shared",
+     system_ext_specific: true,
+     privileged: false,
+-    sdk_version: "current",
++    platform_apis: true,
+     min_sdk_version: "36",
+-    static_libs: ["trillionnium-agent-identity-product"],
++    static_libs: [
++        "trillionnium-agent-identity-product",
++        "trillionnium-capability-lease-binder-api",
++    ],
+ }
+ 
+ genrule {
+@@ -27,6 +30,7 @@ filegroup {
+     srcs: [
+         ":TrillionniumAiShellCapabilityLeaseManifestContract",
+         "src/org/trillionnium/aishell/CapabilityLeaseReceipt.java",
++        "src/org/trillionnium/aishell/CapabilityLeaseSubmissionDeliveryAcknowledger.java",
+     ],
+     visibility: ["//visibility:public"],
+ }
+@@ -41,6 +45,7 @@ sh_test_host {
+         "src/org/trillionnium/aishell/BuiltInAgentClient.java",
+         "src/org/trillionnium/aishell/CanonicalJson.java",
+         "src/org/trillionnium/aishell/CapabilityLeaseReceipt.java",
++        "src/org/trillionnium/aishell/CapabilityLeaseSubmissionDeliveryAcknowledger.java",
+         "src/org/trillionnium/aishell/ContextMemoryAbi.java",
+         "src/org/trillionnium/aishell/DirectAgentHostAbi.java",
+         "src/org/trillionnium/aishell/DirectAgentResult.java",
+diff --git a/tests/agent_provider_security_contract.sh b/tests/agent_provider_security_contract.sh
+index 924b60a..970a233 100755
+--- a/tests/agent_provider_security_contract.sh
++++ b/tests/agent_provider_security_contract.sh
+@@ -35,6 +35,7 @@ RECEIPT_STORE=$(locate src/org/trillionnium/aishell/ReceiptCustodyStore.java)
+ RECEIPT_PROTOCOL=$(locate src/org/trillionnium/aishell/ReceiptStoreProtocol.java)
+ REQUEST_IDENTITY=$(locate src/org/trillionnium/aishell/RequestIdentity.java)
+ CAPABILITY_LEASE_RECEIPT=$(locate src/org/trillionnium/aishell/CapabilityLeaseReceipt.java)
++CAPABILITY_LEASE_DELIVERY_ACK=$(locate src/org/trillionnium/aishell/CapabilityLeaseSubmissionDeliveryAcknowledger.java)
+ CAPABILITY_LEASE_GOLDEN=$(locate tests/CapabilityLeaseChallengeV1Golden.java)
+ BLUEPRINT=$(locate Android.bp)
+ 
+@@ -44,7 +45,8 @@ for source in "$CLIENT" "$HOST_ABI" "$STRICT_FRAME" "$STRICT_JSON" "$ACTIVITY" "
+         "$SYSTEM_USER_BOUNDARY" "$WORKFLOW_RECOVERY" "$WORKFLOW_STORE" \
+         "$WORKFLOW_PROTOCOL" "$WORKFLOW_CRYPTO" "$MEMORY_ADAPTER" \
+         "$CONTEXT_MEMORY_ABI" "$RECEIPT_STORE" "$RECEIPT_PROTOCOL" \
+-        "$REQUEST_IDENTITY" "$CAPABILITY_LEASE_RECEIPT" "$CAPABILITY_LEASE_GOLDEN" \
++        "$REQUEST_IDENTITY" "$CAPABILITY_LEASE_RECEIPT" "$CAPABILITY_LEASE_DELIVERY_ACK" \
++        "$CAPABILITY_LEASE_GOLDEN" \
+         "$BLUEPRINT"; do
+     [[ -f "$source" ]] || { echo "missing static-check input: $source" >&2; exit 1; }
+ done
+@@ -254,6 +256,22 @@ for marker in \
+ done
+ deny 'LocalSocket|LocalServerSocket|startActivity|startService|bindService|sendBroadcast|NotificationManager|case "(execute|undo)"' \
+     "$CAPABILITY_LEASE_RECEIPT"
++
++# AiShell may acknowledge only an issuer-produced indeterminate submission
++# after the Activity result crosses the exact five-field UI boundary. The
++# broker, not the model or issuer, owns the release call; recovery is a
++# separate issuer-package request and carries no receipt/status claim.
++for marker in \
++        'extras.size\(\) != 5' \
++        'STATUS_INDETERMINATE' \
++        'deriveSubmissionStatusTupleSha256' \
++        'acknowledgeSubmissionDelivery' \
++        'SUBMISSION_STATUS_FIELDS' \
++        'STATUS_SUBMITTED' \
++        'setPackage\(ISSUER_PACKAGE\)' \
++        'binder.isBinderAlive\(\)'; do
++    require "$marker" "$CAPABILITY_LEASE_DELIVERY_ACK"
++done
+ for marker in \
+         'AgentDescriptor descriptor = AgentDescriptor.CODEX' \
+         'descriptor.identityKeySha256\(\).equals\(identityKey\)' \
+@@ -265,7 +283,11 @@ for marker in \
+         'CODEX.identityKeySha256\(\).equals\(agentExecutableSha\)'; do
+     require "$marker" "$DIRECT_RESULT"
+ done
+-require 'static_libs: \["trillionnium-agent-identity-product"\]' "$BLUEPRINT"
++# The capability-lease binder API is an additional UI-only dependency; keep
++# the original agent identity library mandatory without requiring a
++# single-entry static_libs list.
++require 'static_libs: \[' "$BLUEPRINT"
++require '"trillionnium-agent-identity-product"' "$BLUEPRINT"
+ deny '483eb9e97d3ee81bae8656f25749f6cc2c310575898b77e5a364b727a798c8c3' \
+     "$CAPABILITY_LEASE_RECEIPT" "$DIRECT_RESULT"
+ 

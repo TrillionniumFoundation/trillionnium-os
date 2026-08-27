@@ -1,0 +1,111 @@
+typeattribute trillionnium_agent_egress_guard bpfdomain;
+
+init_daemon_domain(trillionnium_agent_egress_guard)
+
+# Android init alone creates the verified executable, direct-tool, state, and
+# canonical-proc binds.  Every underlying target has an exact non-executable
+# type; the guard can verify but cannot create or alter mounts.
+allow init {
+    trillionnium_codex_payload_file
+    trillionnium_agentd_mountpoint_file
+    trillionnium_agent_system_api_mountpoint_file
+    trillionnium_agent_system_api_replay_sync_mountpoint_file
+    trillionnium_agent_accessibility_mountpoint_file
+    trillionnium_agent_adb_mountpoint_file
+    trillionnium_agent_shell_mountpoint_file
+}:file mounton;
+allow init {
+    trillionnium_agentd_payload_exec
+    trillionnium_codex_agent_exec
+    trillionnium_codex_runtime_exec
+    trillionnium_agent_system_api_exec
+    trillionnium_agent_system_api_operation_replay_sync_exec
+    trillionnium_agent_accessibility_exec
+    trillionnium_agent_adb_exec
+    trillionnium_agent_shell_exec
+}:file getattr;
+allow init {
+    trillionnium_proc_mountpoint_dir
+    trillionnium_agent_tool_state_mountpoint_dir
+}:dir mounton;
+
+# A new bind edge must first receive a reviewed exact target type.  Never make
+# the replaceable Root-Linux fallback itself a mount surface.
+neverallow init trillionnium_rootlinux_data_file:{ dir file } mounton;
+
+allow trillionnium_agent_egress_guard self:global_capability_class_set {
+    net_admin net_raw setpcap
+};
+neverallow trillionnium_agent_egress_guard self:global_capability_class_set {
+    setgid setuid
+};
+allow trillionnium_agent_egress_guard self:rawip_socket create_socket_perms;
+allow trillionnium_agent_egress_guard self:netlink_netfilter_socket create_socket_perms_no_ioctl;
+
+# Android's iptables binary reloads existing xt_bpf rules through
+# libnetd_client.  The one-shot guard needs the same read-only pinned-program
+# access as netutils_wrapper, but cannot create, alter, or load BPF objects.
+allow trillionnium_agent_egress_guard {
+    fs_bpf
+    fs_bpf_netd_shared
+}:dir { getattr search };
+allow trillionnium_agent_egress_guard {
+    fs_bpf
+    fs_bpf_netd_shared
+}:file { getattr read };
+allow trillionnium_agent_egress_guard bpfloader:bpf prog_run;
+neverallow trillionnium_agent_egress_guard {
+    fs_bpf
+    fs_bpf_netd_shared
+}:dir ~{ getattr search };
+neverallow trillionnium_agent_egress_guard {
+    fs_bpf
+    fs_bpf_netd_shared
+}:file ~{ getattr read };
+neverallow trillionnium_agent_egress_guard *:bpf ~prog_run;
+
+allow trillionnium_agent_egress_guard shell_exec:file rx_file_perms;
+allow trillionnium_agent_egress_guard toolbox_exec:file rx_file_perms;
+allow trillionnium_agent_egress_guard trillionnium_agent_egress_guard_exec:file r_file_perms;
+allow trillionnium_agent_egress_guard rootfs:dir r_dir_perms;
+allow trillionnium_agent_egress_guard system_file:dir r_dir_perms;
+allow trillionnium_agent_egress_guard system_file:file {
+    r_file_perms execute execute_no_trans lock
+};
+allow trillionnium_agent_egress_guard proc_mounts:file r_file_perms;
+# Android's iptables frontend probes the loaded table names before updating
+# OUTPUT.  Match the platform netutils_wrapper read-only proc_net boundary.
+allow trillionnium_agent_egress_guard proc_net_type:file { getattr open read };
+neverallow trillionnium_agent_egress_guard proc_net_type:file ~{ getattr open read };
+# /proc/sys/kernel/random/boot_id is labelled proc_random by the platform
+# genfs policy; no broader /proc/sys/kernel access is needed.
+allow trillionnium_agent_egress_guard proc_random:file r_file_perms;
+allow trillionnium_agent_egress_guard trillionnium_proc_mountpoint_dir:dir {
+    getattr open read search
+};
+allow trillionnium_agent_egress_guard {
+    trillionnium_codex_agent_exec
+    trillionnium_codex_runtime_exec
+}:file r_file_perms;
+domain_auto_trans(
+    trillionnium_agent_egress_guard,
+    trillionnium_agent_egress_probe_exec,
+    trillionnium_agent_egress_probe
+)
+
+allow trillionnium_agent_egress_guard system_data_root_file:dir { getattr search };
+allow trillionnium_agent_egress_guard trillionnium_rootlinux_data_file:dir { getattr search };
+allow trillionnium_agent_egress_guard trillionnium_rootlinux_receipt_file:dir create_dir_perms;
+allow trillionnium_agent_egress_guard trillionnium_rootlinux_receipt_file:file create_file_perms;
+allow trillionnium_agent_egress_guard trillionnium_agent_egress_evidence_file:file create_file_perms;
+type_transition trillionnium_agent_egress_guard trillionnium_rootlinux_receipt_file:file trillionnium_agent_egress_evidence_file "agent-egress-boot-evidence-v2.json";
+type_transition trillionnium_agent_egress_guard trillionnium_rootlinux_receipt_file:file trillionnium_agent_egress_evidence_file "agent-egress-boot-evidence-v2.json.tmp";
+
+# Only the one-shot guard can create or replace this bounded, non-secret
+# evidence.  Long-lived root services cannot rewrite what the host observes.
+neverallow {
+    trillionnium_agentd
+    trillionnium_rootlinux
+} trillionnium_agent_egress_evidence_file:file *;
+
+set_prop(trillionnium_agent_egress_guard, trillionnium_agent_egress_guard_prop)

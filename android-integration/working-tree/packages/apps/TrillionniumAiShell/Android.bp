@@ -1,0 +1,265 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+android_app {
+    name: "TrillionniumAiShell",
+    srcs: ["src/**/*.java"],
+    resource_dirs: ["res"],
+    // Keep the unprivileged UI outside the platform-signature trust domain
+    // and distinct from the Authority signing identity.  The internal-alpha
+    // release pipeline maps this development identity to its release peer.
+    certificate: "shared",
+    system_ext_specific: true,
+    privileged: false,
+    platform_apis: true,
+    min_sdk_version: "36",
+    static_libs: [
+        "trillionnium-agent-identity-product",
+        "trillionnium-capability-lease-binder-api",
+    ],
+}
+
+genrule {
+    name: "TrillionniumAiShellCapabilityLeaseManifestContract",
+    srcs: ["AndroidManifest.xml"],
+    out: ["TrillionniumAiShell.CapabilityLease.AndroidManifest.xml"],
+    cmd: "cp $(in) $(out)",
+    visibility: ["//visibility:public"],
+}
+
+filegroup {
+    name: "TrillionniumAiShellCapabilityLeasePolicyContractSources",
+    srcs: [
+        ":TrillionniumAiShellCapabilityLeaseManifestContract",
+        "src/org/trillionnium/aishell/CapabilityLeaseReceipt.java",
+        "src/org/trillionnium/aishell/CapabilityLeaseSubmissionDeliveryAcknowledger.java",
+    ],
+    visibility: ["//visibility:public"],
+}
+
+sh_test_host {
+    name: "TrillionniumAiShellAgentProviderSecurityContractTest",
+    src: "tests/agent_provider_security_contract.sh",
+    data: [
+        "Android.bp",
+        "AndroidManifest.xml",
+        "src/org/trillionnium/aishell/AiShellActivity.java",
+        "src/org/trillionnium/aishell/BuiltInAgentClient.java",
+        "src/org/trillionnium/aishell/CanonicalJson.java",
+        "src/org/trillionnium/aishell/CapabilityLeaseReceipt.java",
+        "src/org/trillionnium/aishell/CapabilityLeaseSubmissionDeliveryAcknowledger.java",
+        "src/org/trillionnium/aishell/ContextMemoryAbi.java",
+        "src/org/trillionnium/aishell/DirectAgentHostAbi.java",
+        "src/org/trillionnium/aishell/DirectAgentResult.java",
+        "src/org/trillionnium/aishell/DirectResultDisplay.java",
+        "src/org/trillionnium/aishell/DirectResultRecoveryPolicy.java",
+        "src/org/trillionnium/aishell/AiProtocol.java",
+        "src/org/trillionnium/aishell/StrictJson.java",
+        "src/org/trillionnium/aishell/StrictAgentApiFrame.java",
+        "src/org/trillionnium/aishell/SystemUserBoundary.java",
+        "src/org/trillionnium/aishell/WorkflowRecoveryState.java",
+        "src/org/trillionnium/aishell/MemoryMetadataAdapter.java",
+        "src/org/trillionnium/aishell/WorkflowRecoveryStore.java",
+        "src/org/trillionnium/aishell/WorkflowStoreProtocol.java",
+        "src/org/trillionnium/aishell/ReceiptCustodyStore.java",
+        "src/org/trillionnium/aishell/ReceiptStoreProtocol.java",
+        "src/org/trillionnium/aishell/RequestIdentity.java",
+        "src/org/trillionnium/aishell/WorkflowStateCrypto.java",
+        "tests/CapabilityLeaseChallengeV1Golden.java",
+    ],
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellCapabilityLeaseReceiptTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        "src/org/trillionnium/aishell/CanonicalJson.java",
+        "src/org/trillionnium/aishell/CapabilityLeaseReceipt.java",
+        "src/org/trillionnium/aishell/StrictJson.java",
+        "tests/CapabilityLeaseReceiptTest.java",
+        "tests/CapabilityLeaseChallengeV1Golden.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellDirectResultRecoveryPolicyTest",
+    srcs: [
+        "src/org/trillionnium/aishell/DirectResultRecoveryPolicy.java",
+        "tests/DirectResultRecoveryPolicyTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellDirectAgentResultTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        "src/org/trillionnium/aishell/CanonicalJson.java",
+        "src/org/trillionnium/aishell/DirectAgentHostAbi.java",
+        "src/org/trillionnium/aishell/DirectAgentResult.java",
+        "src/org/trillionnium/aishell/DirectResultDisplay.java",
+        "src/org/trillionnium/aishell/StrictJson.java",
+        "src/org/trillionnium/aishell/AiProtocol.java",
+        "src/org/trillionnium/aishell/WorkflowRecoveryState.java",
+        "tests/DirectAgentResultTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellDirectResultDisplayTest",
+    srcs: [
+        "src/org/trillionnium/aishell/DirectResultDisplay.java",
+        "tests/DirectResultDisplayTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellContextMemoryAbiTest",
+    srcs: [
+        "src/org/trillionnium/aishell/ContextMemoryAbi.java",
+        "tests/ContextMemoryAbiTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellReceiptStoreProtocolTest",
+    srcs: [
+        "src/org/trillionnium/aishell/ReceiptStoreProtocol.java",
+        "tests/ReceiptStoreProtocolTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellRequestIdentityTest",
+    srcs: [
+        "src/org/trillionnium/aishell/RequestIdentity.java",
+        "tests/RequestIdentityTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellWorkflowStoreProtocolTest",
+    srcs: [
+        "src/org/trillionnium/aishell/WorkflowStoreProtocol.java",
+        "tests/WorkflowStoreProtocolTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellMemoryMetadataAdapterTest",
+    srcs: [
+        "src/org/trillionnium/aishell/MemoryMetadataAdapter.java",
+        "tests/MemoryMetadataAdapterTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellWorkflowStateCryptoTest",
+    srcs: [
+        "src/org/trillionnium/aishell/WorkflowStateCrypto.java",
+        "tests/WorkflowStateCryptoTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellSystemUserBoundaryTest",
+    srcs: [
+        "src/org/trillionnium/aishell/SystemUserBoundary.java",
+        "tests/SystemUserBoundaryTest.java",
+    ],
+    static_libs: ["junit"],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellStrictJsonTest",
+    srcs: [
+        "src/org/trillionnium/aishell/StrictJson.java",
+        "tests/StrictJsonTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellWorkflowRecoveryStateTest",
+    srcs: [
+        ":trillionnium-agent-descriptor-registry-sources",
+        "src/org/trillionnium/aishell/AiProtocol.java",
+        "src/org/trillionnium/aishell/CanonicalJson.java",
+        "src/org/trillionnium/aishell/DirectAgentHostAbi.java",
+        "src/org/trillionnium/aishell/DirectAgentResult.java",
+        "src/org/trillionnium/aishell/DirectResultDisplay.java",
+        "src/org/trillionnium/aishell/StrictJson.java",
+        "src/org/trillionnium/aishell/WorkflowRecoveryState.java",
+        "tests/WorkflowRecoveryStateTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
+
+java_test_host {
+    name: "TrillionniumAiShellStrictAgentApiFrameTest",
+    srcs: [
+        "src/org/trillionnium/aishell/AiProtocol.java",
+        "src/org/trillionnium/aishell/DirectAgentHostAbi.java",
+        "src/org/trillionnium/aishell/StrictJson.java",
+        "src/org/trillionnium/aishell/StrictAgentApiFrame.java",
+        "tests/StrictAgentApiFrameTest.java",
+    ],
+    static_libs: [
+        "json-prebuilt",
+        "junit",
+    ],
+    java_version: "11",
+    test_suites: ["general-tests"],
+}
