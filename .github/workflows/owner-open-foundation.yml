@@ -11,10 +11,12 @@ on:
       - "docs/status/owner-open-r4-*"
       - "docs/security/owner-open-threat-model.md"
       - "docs/protocols/owner-open-direct-agent-host-v1.md"
+      - "docs/architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md"
       - "docs/contracts/owner-open-forbidden-default-graph-v1.json"
       - "docs/contracts/codex-sovereign-direct-tools-v1.json"
       - "schemas/codex-sovereign-direct-tools.schema.json"
       - "tools/generate-owner-open-types.py"
+      - "tools/owner-open-adb-relay-bootstrap.py"
       - "tools/verify-owner-open-foundation.py"
       - "tools/tests/**"
       - ".github/workflows/owner-open-foundation.yml"
@@ -31,10 +33,12 @@ on:
       - "docs/status/owner-open-r4-*"
       - "docs/security/owner-open-threat-model.md"
       - "docs/protocols/owner-open-direct-agent-host-v1.md"
+      - "docs/architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md"
       - "docs/contracts/owner-open-forbidden-default-graph-v1.json"
       - "docs/contracts/codex-sovereign-direct-tools-v1.json"
       - "schemas/codex-sovereign-direct-tools.schema.json"
       - "tools/generate-owner-open-types.py"
+      - "tools/owner-open-adb-relay-bootstrap.py"
       - "tools/verify-owner-open-foundation.py"
       - "tools/tests/**"
       - ".github/workflows/owner-open-foundation.yml"
@@ -75,7 +79,9 @@ jobs:
           python3 -m json.tool schemas/codex-sovereign-direct-tools.schema.json >/dev/null
           python3 -m py_compile \
             tools/generate-owner-open-types.py \
+            tools/owner-open-adb-relay-bootstrap.py \
             tools/verify-owner-open-foundation.py \
+            tools/tests/test_owner_open_adb_relay_bootstrap.py \
             tools/tests/test_verify_owner_open_foundation.py
 
       - name: Verify generated codec constants
@@ -84,7 +90,7 @@ jobs:
       - name: Verify owner-open default graph and status
         run: python3 tools/verify-owner-open-foundation.py --json | tee owner-open-foundation-report.json
 
-      - name: Run verifier negative tests
+      - name: Run Python foundation and ADB relay tests
         run: python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
 
       - name: Check isolated Rust formatting
