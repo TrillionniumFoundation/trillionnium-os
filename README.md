@@ -45,26 +45,33 @@ Implemented at source level:
 - strict owner-open frame and tool codecs;
 - direct command-string shell and element-preserving argv runtime;
 - ordinary configured ADB argv without injected serial/host/port;
-- process groups, cancellation, timeout and output bounds;
+- process groups, cancellation, timeout, output bounds and descendant cleanup;
 - concurrent scoped call registry and registry-to-runtime failure closure;
-- R5 same-turn callback loop in which a provider receives a tool observation
-  and may continue before producing one turn terminal;
+- same-turn callback loop in which a provider receives a tool observation and
+  may continue before producing one turn terminal;
 - bounded external provider JSONL process adapter;
-- executable stdio R5 Host mapping provider/tool observations to Host frames;
+- selected R5 Host with an independent bounded input/control reader and turn
+  worker;
+- streaming provider/tool event delivery and per-event durable append while a
+  turn is active;
+- correlated active `turn.cancel` reaching the provider and active call;
+- targeted active `tool.cancel` reaching only the scoped call registry;
+- client EOF/output loss detached from effect cancellation;
 - append-only event store with strict reopen and scoped event identity;
-- optional Host `--event-store` path, stable turn identity, completed-turn
-  replay without provider/tool respawn, and incomplete-turn reconciliation to
-  `unknown_after_disconnect` without automatic redispatch;
+- stable turn identity, completed-turn replay without provider/tool respawn and
+  incomplete-turn reconciliation to `unknown_after_disconnect` without
+  automatic redispatch;
+- explicit Host binary graph with Cargo autobin discovery disabled;
 - exact negative source-graph contracts and Python verifier tests.
 
 Not yet claimed:
 
 - successful Rust formatting, compilation, tests or clippy for the latest R5
-  commit—the observed Actions runs had no runner steps or logs;
+  commit—the observed Actions runs had no executed runner steps or logs;
 - reviewed Cargo lock refresh from the current source closure;
+- executed proof that active `turn.cancel`/`tool.cancel` passes;
 - live installed Codex provider events;
-- streaming persistence while a provider/tool is still active;
-- asynchronous turn/tool cancellation, flow control or resume;
+- inclusive replay cursors, inspect/attach APIs or stream flow control;
 - real ARM64 ADB or transparent relay;
 - Android owner-open product graph, image or physical effect;
 - Host-crash, ENOSPC, reboot or power-loss qualification;
