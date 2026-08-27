@@ -1,3 +1,6 @@
+#[path = "../r5_persistence.rs"]
+mod r5_persistence;
+
 use std::env;
 use std::ffi::OsString;
 use std::io::{self, BufRead, BufReader, Read, Write};
@@ -8,8 +11,12 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
+use r5_persistence::{
+    Persistence, StoredTurn, event_scope, request_sha256, stable_turn_stream_id,
+};
 use serde_json::{Value, json};
 use trillionnium_owner_open_call_registry::{CallRegistry, CallSnapshot};
+use trillionnium_owner_open_event_store::TurnScope as DurableTurnScope;
 use trillionnium_owner_open_provider_jsonl::{JsonlProvider, JsonlProviderConfig};
 use trillionnium_owner_open_runtime::{ExecutionEvent, ExecutionEventKind, StreamKind};
 use trillionnium_owner_open_turn_loop::{
@@ -49,6 +56,7 @@ fn run() -> Result<(), String> {
         ..JsonlProviderConfig::default()
     })
     .map_err(|error| error.to_string())?;
+    let mut persistence = Persistence::open_best_effort(options.event_store.as_deref());
     let stdin = io::stdin();
     let stdout = io::stdout();
     process_connection(
@@ -56,6 +64,7 @@ fn run() -> Result<(), String> {
         stdout.lock(),
         new_connection_id(),
         &mut provider,
+        &mut persistence,
     )
 }
 
@@ -67,6 +76,7 @@ struct Options {
     adb: PathBuf,
     provider_cwd: Option<PathBuf>,
     provider_timeout: Duration,
+    event_store: Option<PathBuf>,
     help: bool,
 }
 
@@ -80,6 +90,7 @@ impl Options {
                 adb: PathBuf::from("adb"),
                 provider_cwd: None,
                 provider_timeout: Duration::from_secs(300),
+                event_store: None,
                 help: true,
             });
         }
@@ -89,6 +100,7 @@ impl Options {
         let mut adb = PathBuf::from("adb");
         let mut provider_cwd = None;
         let mut provider_timeout = Duration::from_secs(300);
+        let mut event_store = None;
         let mut index = 0usize;
         while index < args.len() {
             let option = args[index]
@@ -131,6 +143,12 @@ impl Options {
                     }
                     provider_timeout = Duration::from_millis(milliseconds);
                 }
+                "--event-store" => {
+                    if event_store.is_some() {
+                        return Err("--event-store may be supplied only once".to_string());
+                    }
+                    event_store = Some(PathBuf::from(take_value(&args, &mut index, &option)?));
+                }
                 other => return Err(format!("unknown option {other}\n{}", Self::usage())),
             }
         }
@@ -141,12 +159,13 @@ impl Options {
             adb,
             provider_cwd,
             provider_timeout,
+            event_store,
             help: false,
         })
     }
 
     fn usage() -> &'static str {
-        "usage: trillionnium-owner-open-r5-host --provider PATH [--provider-arg ARG]... [--shell PATH] [--adb PATH] [--provider-cwd DIR] [--provider-timeout-ms MS]\n\nThe R5 source host uses newline-delimited owner-open frames on stdin/stdout."
+        "usage: trillionnium-owner-open-r5-host --provider PATH [--provider-arg ARG]... [--shell PATH] [--adb PATH] [--provider-cwd DIR] [--provider-timeout-ms MS] [--event-store /absolute/path/events.jsonl]\n\nThe R5 source host uses newline-delimited owner-open frames on stdin/stdout. Event-store failure is reported as unavailable and does not become semantic denial."
     }
 }
 
@@ -181,7 +200,7 @@ struct EventCorrelation {
 struct OutputState {
     connection_id: String,
     next_host_seq: u64,
-    next_stream_ordinal: u64,
+    next_turn_event_ordinal: u64,
 }
 
 impl OutputState {
@@ -189,28 +208,34 @@ impl OutputState {
         Self {
             connection_id,
             next_host_seq: 0,
-            next_stream_ordinal: 0,
+            next_turn_event_ordinal: 0,
         }
     }
 
-    fn allocate_context(
+    fn context(
         &mut self,
         request: &trillionnium_owner_open_types::RunTurnRequest,
     ) -> Result<TurnContext, String> {
-        self.next_stream_ordinal = self
-            .next_stream_ordinal
-            .checked_add(1)
-            .ok_or_else(|| "turn stream ordinal overflow".to_string())?;
+        self.next_turn_event_ordinal = 0;
         Ok(TurnContext {
-            turn_stream_id: format!(
-                "{}-turn-stream-{}",
-                self.connection_id, self.next_stream_ordinal
-            ),
+            turn_stream_id: stable_turn_stream_id(request)?,
             session_id: request.session_id.clone(),
             profile_id: request.effective_profile_id().to_string(),
             task_id: request.task_id.clone(),
             turn_id: request.turn_id.clone(),
         })
+    }
+
+    fn observe_replay(&mut self, frames: &[RunTurnFrame]) {
+        if let Some(next) = frames
+            .iter()
+            .map(|frame| frame.host_seq.unwrap_or(frame.seq))
+            .max()
+            .and_then(|value| value.checked_add(1))
+        {
+            self.next_host_seq = self.next_host_seq.max(next);
+        }
+        self.next_turn_event_ordinal = u64::try_from(frames.len()).unwrap_or(u64::MAX);
     }
 
     fn frame(
@@ -222,6 +247,13 @@ impl OutputState {
     ) -> RunTurnFrame {
         let seq = self.next_host_seq;
         self.next_host_seq = self.next_host_seq.saturating_add(1);
+        let event_id = if let Some(context) = context {
+            let ordinal = self.next_turn_event_ordinal;
+            self.next_turn_event_ordinal = self.next_turn_event_ordinal.saturating_add(1);
+            format!("{}-event-{ordinal}", context.turn_stream_id)
+        } else {
+            format!("{}-event-{seq}", self.connection_id)
+        };
         RunTurnFrame {
             kind: kind.into(),
             seq,
@@ -230,7 +262,7 @@ impl OutputState {
             client_seq: None,
             host_seq: Some(seq),
             frame_sha256: None,
-            event_id: Some(format!("{}-event-{seq}", self.connection_id)),
+            event_id: Some(event_id),
             connection_id: Some(self.connection_id.clone()),
             stream_id: context.map(|value| value.turn_stream_id.clone()),
             turn_stream_id: context.map(|value| value.turn_stream_id.clone()),
@@ -253,6 +285,7 @@ fn process_connection<R: BufRead, W: Write>(
     mut writer: W,
     connection_id: String,
     provider: &mut JsonlProvider,
+    persistence: &mut Persistence,
 ) -> Result<(), String> {
     let limits = MechanicalLimits::default();
     let runner = TurnRunner::new(Arc::new(CallRegistry::default()));
@@ -279,28 +312,7 @@ fn process_connection<R: BufRead, W: Write>(
         };
         match frame.kind.as_str() {
             FRAME_HELLO => {
-                let connection_id = output.connection_id.clone();
-                write_frame(
-                    &mut writer,
-                    &output.frame(
-                        FRAME_HELLO_ACK,
-                        json!({
-                            "protocol": PROTOCOL,
-                            "protocol_version": PROTOCOL_VERSION,
-                            "connection_id": connection_id,
-                            "host_implementation": HOST_IMPLEMENTATION,
-                            "provider_status": "configured_external_jsonl",
-                            "runtime_ready": true,
-                            "same_turn_tool_callback": true,
-                            "durable_event_store": false,
-                            "asynchronous_control": false,
-                            "one_active_turn_per_connection": true
-                        }),
-                        None,
-                        EventCorrelation::default(),
-                    ),
-                    limits.max_frame_bytes,
-                )?;
+                write_hello(&mut writer, &mut output, persistence, limits.max_frame_bytes)?;
             }
             FRAME_TURN_START => {
                 let request = match frame.turn_request(&limits) {
@@ -319,21 +331,72 @@ fn process_connection<R: BufRead, W: Write>(
                         continue;
                     }
                 };
-                let context = output.allocate_context(&request)?;
-                write_frame(
-                    &mut writer,
-                    &output.frame(
-                        FRAME_TURN_ACCEPTED,
-                        json!({
-                            "status": "accepted",
-                            "provider_status": "starting",
-                            "event_log_status": "best_effort_memory_only"
-                        }),
-                        Some(&context),
-                        EventCorrelation::default(),
-                    ),
-                    limits.max_frame_bytes,
-                )?;
+                let context = output.context(&request)?;
+                let digest = request_sha256(&request)?;
+                let scope = event_scope(&request, &context.turn_stream_id);
+                match persistence.load(&scope, &digest) {
+                    StoredTurn::Complete(frames) => {
+                        output.observe_replay(&frames);
+                        write_replay(&mut writer, &frames, limits.max_frame_bytes)?;
+                        continue;
+                    }
+                    StoredTurn::Incomplete(mut frames) => {
+                        output.observe_replay(&frames);
+                        let terminal = output.frame(
+                            FRAME_TURN_END,
+                            json!({
+                                "status": "unknown_after_disconnect",
+                                "summary": Value::Null,
+                                "error": "a prior durable turn has no terminal observation; automatic redispatch is denied",
+                                "runtime_ready": true,
+                                "reconciliation": true,
+                                "automatic_redispatch": false,
+                                "event_log_status": persistence.status(),
+                                "event_log_error": persistence.error()
+                            }),
+                            Some(&context),
+                            EventCorrelation::default(),
+                        );
+                        let terminal =
+                            persist_for_delivery(persistence, &scope, &digest, terminal);
+                        frames.push(terminal);
+                        write_replay(&mut writer, &frames, limits.max_frame_bytes)?;
+                        continue;
+                    }
+                    StoredTurn::Conflict(error) => {
+                        write_frame(
+                            &mut writer,
+                            &output.frame(
+                                FRAME_HOST_ERROR,
+                                json!({
+                                    "code": "turn_replay_conflict",
+                                    "message": error,
+                                    "automatic_redispatch": false
+                                }),
+                                Some(&context),
+                                EventCorrelation::default(),
+                            ),
+                            limits.max_frame_bytes,
+                        )?;
+                        continue;
+                    }
+                    StoredTurn::Empty => {}
+                }
+
+                let accepted = output.frame(
+                    FRAME_TURN_ACCEPTED,
+                    json!({
+                        "status": "accepted",
+                        "provider_status": "starting",
+                        "event_log_status": persistence.status(),
+                        "event_log_error": persistence.error()
+                    }),
+                    Some(&context),
+                    EventCorrelation::default(),
+                );
+                let accepted = persist_for_delivery(persistence, &scope, &digest, accepted);
+                write_frame(&mut writer, &accepted, limits.max_frame_bytes)?;
+
                 let loop_request = LoopTurnRequest {
                     session_id: context.session_id.clone(),
                     profile_id: context.profile_id.clone(),
@@ -347,25 +410,25 @@ fn process_connection<R: BufRead, W: Write>(
                     .map_err(|error| error.to_string())?;
                 for event in &run.events {
                     if let Some(frame) = map_turn_event(&mut output, &context, event) {
+                        let frame = persist_for_delivery(persistence, &scope, &digest, frame);
                         write_frame(&mut writer, &frame, limits.max_frame_bytes)?;
                     }
                 }
-                write_frame(
-                    &mut writer,
-                    &output.frame(
-                        FRAME_TURN_END,
-                        json!({
-                            "status": run.terminal.status.as_str(),
-                            "summary": &run.terminal.summary,
-                            "error": &run.terminal.error,
-                            "runtime_ready": true,
-                            "event_log_status": "best_effort_memory_only"
-                        }),
-                        Some(&context),
-                        EventCorrelation::default(),
-                    ),
-                    limits.max_frame_bytes,
-                )?;
+                let terminal = output.frame(
+                    FRAME_TURN_END,
+                    json!({
+                        "status": run.terminal.status.as_str(),
+                        "summary": &run.terminal.summary,
+                        "error": &run.terminal.error,
+                        "runtime_ready": true,
+                        "event_log_status": persistence.status(),
+                        "event_log_error": persistence.error()
+                    }),
+                    Some(&context),
+                    EventCorrelation::default(),
+                );
+                let terminal = persist_for_delivery(persistence, &scope, &digest, terminal);
+                write_frame(&mut writer, &terminal, limits.max_frame_bytes)?;
             }
             other => {
                 write_frame(
@@ -385,6 +448,84 @@ fn process_connection<R: BufRead, W: Write>(
             }
         }
     }
+}
+
+fn write_hello<W: Write>(
+    writer: &mut W,
+    output: &mut OutputState,
+    persistence: &Persistence,
+    max_frame_bytes: usize,
+) -> Result<(), String> {
+    let connection_id = output.connection_id.clone();
+    let frame = output.frame(
+        FRAME_HELLO_ACK,
+        json!({
+            "protocol": PROTOCOL,
+            "protocol_version": PROTOCOL_VERSION,
+            "connection_id": connection_id,
+            "host_implementation": HOST_IMPLEMENTATION,
+            "provider_status": "configured_external_jsonl",
+            "runtime_ready": true,
+            "same_turn_tool_callback": true,
+            "durable_event_store": persistence.is_durable(),
+            "event_log_status": persistence.status(),
+            "event_log_error": persistence.error(),
+            "completed_turn_replay": persistence.is_durable(),
+            "incomplete_turn_redispatch": false,
+            "asynchronous_control": false,
+            "one_active_turn_per_connection": true
+        }),
+        None,
+        EventCorrelation::default(),
+    );
+    write_frame(writer, &frame, max_frame_bytes)
+}
+
+fn persist_for_delivery(
+    persistence: &mut Persistence,
+    scope: &DurableTurnScope,
+    request_digest: &str,
+    mut frame: RunTurnFrame,
+) -> RunTurnFrame {
+    decorate_log_status(&mut frame.payload, persistence);
+    if !persistence.append_frame(scope, request_digest, &frame) {
+        decorate_log_status(&mut frame.payload, persistence);
+    }
+    frame
+}
+
+fn decorate_log_status(payload: &mut Value, persistence: &Persistence) {
+    let Some(object) = payload.as_object_mut() else {
+        return;
+    };
+    if object.contains_key("event_log_status") {
+        object.insert(
+            "event_log_status".to_string(),
+            Value::String(persistence.status().to_string()),
+        );
+        match persistence.error() {
+            Some(error) => {
+                object.insert(
+                    "event_log_error".to_string(),
+                    Value::String(error.to_string()),
+                );
+            }
+            None => {
+                object.insert("event_log_error".to_string(), Value::Null);
+            }
+        }
+    }
+}
+
+fn write_replay<W: Write>(
+    writer: &mut W,
+    frames: &[RunTurnFrame],
+    max_frame_bytes: usize,
+) -> Result<(), String> {
+    for frame in frames {
+        write_frame(writer, frame, max_frame_bytes)?;
+    }
+    Ok(())
 }
 
 fn map_turn_event(
@@ -612,5 +753,30 @@ mod tests {
     fn provider_is_required_for_runtime_start() {
         let error = Options::parse(Vec::new()).unwrap_err();
         assert!(error.contains("--provider is required"));
+    }
+
+    #[test]
+    fn event_store_is_optional_and_unique() {
+        let options = Options::parse(vec![
+            OsString::from("--provider"),
+            OsString::from("/tmp/provider"),
+            OsString::from("--event-store"),
+            OsString::from("/tmp/events.jsonl"),
+        ])
+        .unwrap();
+        assert_eq!(
+            options.event_store,
+            Some(PathBuf::from("/tmp/events.jsonl"))
+        );
+        let error = Options::parse(vec![
+            OsString::from("--provider"),
+            OsString::from("/tmp/provider"),
+            OsString::from("--event-store"),
+            OsString::from("/tmp/a"),
+            OsString::from("--event-store"),
+            OsString::from("/tmp/b"),
+        ])
+        .unwrap_err();
+        assert!(error.contains("only once"));
     }
 }
