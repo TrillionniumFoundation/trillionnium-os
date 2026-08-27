@@ -48,6 +48,12 @@ known local call; a changed request under the same scoped call ID conflicts; an
 uncertain remote effect is not automatically repeated; a missing terminal after
 restart becomes inspectable or `unknown_after_disconnect`.
 
+Provider and tool events are not allowed to wait in a complete-turn vector
+before becoming observable. The Host must persist and attempt delivery as each
+event is produced. Loss of the client output path detaches delivery; it does
+not retroactively cancel an accepted effect. Cancellation is a distinct control
+operation with its own correlation and terminal observation.
+
 ## 2. Non-negotiable engineering invariants
 
 ### 2.1 One semantic principal
@@ -67,7 +73,8 @@ The source closure must still provide:
 - finite argv, environment, stdin, output, process and spool ceilings;
 - process groups, cancellation, timeout and child reaping;
 - byte-preserving stdout/stderr and later PTY transport;
-- stable accepted/started/terminal observations;
+- stable accepted/started/chunk/terminal observations;
+- per-event best-effort persistence and honest delivery status;
 - conservative disconnect and restart reconciliation;
 - explicit local peer/socket admission on Android;
 - an out-of-band emergency stop.
@@ -84,9 +91,16 @@ apps/trillionnium-owner-open-host
 crates/trillionnium-owner-open-types
 crates/trillionnium-owner-open-runtime
 crates/trillionnium-owner-open-call-registry
+crates/trillionnium-owner-open-event-store
+crates/trillionnium-owner-open-provider-jsonl
 crates/trillionnium-owner-open-tool-bridge
 crates/trillionnium-owner-open-turn-loop
 ```
+
+The Host package must disable automatic binary discovery. Only the foundation
+Host and the selected R5 streaming Host may be product candidates; superseded
+`src/bin` experiments may remain as history but must not enter `--all-targets`
+implicitly.
 
 Legacy `trillionniumd`, plan/Authority, privilege broker, broad OS types, typed
 direct tools, sealed shell broker, egress and journal packages remain explicit
@@ -127,9 +141,10 @@ Deliverables:
 
 1. exact R5 Cargo default closure;
 2. package-by-package reviewed internal dependency edges;
-3. negative source-marker checks;
-4. Android owner-open product profile with Authority/lease/P01/old broker nodes absent;
-5. Soong, init, SELinux and target-files negative evidence.
+3. explicit binary targets with Cargo autobin discovery disabled;
+4. negative source-marker checks;
+5. Android owner-open product profile with Authority/lease/P01/old broker nodes absent;
+6. Soong, init, SELinux and target-files negative evidence.
 
 Exit: source closure is `HOST_TESTED`; Android closure is `IMAGE_INCLUDED`.
 
@@ -141,9 +156,11 @@ Deliverables:
 2. provider invokes a bound tool callback;
 3. direct bridge executes one shell/ADB process at most once;
 4. raw runtime events return to the provider;
-5. provider may continue after a non-zero tool exit;
-6. exactly one turn terminal is emitted;
-7. provider panic/failure becomes one truthful terminal.
+5. every turn/runtime event reaches a synchronous Host sink when produced;
+6. provider may continue after a non-zero tool exit;
+7. a cross-thread cancellation token reaches an active process group;
+8. exactly one turn terminal is emitted;
+9. provider panic/failure becomes one truthful terminal.
 
 Current source root:
 `crates/trillionnium-owner-open-turn-loop`.
@@ -151,24 +168,31 @@ Current source root:
 Immediate acceptance tests:
 
 - failed shell observation followed by provider continuation;
+- provider event sink runs before `ProviderHost::emit` returns;
+- runtime `started` reaches the sink before the process can complete;
 - exact duplicate call causes one process effect and one existing-call event;
 - ordinary ADB unknown argv remains exact and receives no target injection;
+- turn cancellation terminates an active tool process group;
 - provider panic closes one terminal;
 - conflicting canonical request under the same scoped call ID does not spawn.
 
-Exit: fake provider through a real Host process reaches `HOST_TESTED`.
+Exit: fake provider through a real Host process reaches `HOST_TESTED`, including
+streaming and cancellation tests.
 
-### W2 — installed Codex provider adapter
+### W2 — external and installed Codex provider adapter
 
 Deliverables:
 
-1. probe the installed CLI/app-server instead of using a source version label;
-2. record executable path/hash/version/help capabilities;
-3. build an auditable full-access launch argv;
-4. normalize provider JSON events without parsing terminal prose;
-5. map native provider tool calls into W1;
-6. return tool observations to the same native provider turn;
-7. cancel provider and active local process groups.
+1. bounded external provider JSONL process protocol;
+2. provider event/tool-call/tool-result duplex transport;
+3. explicit correlated `turn.cancel` and `turn.cancelled` exchange;
+4. finite cancellation grace and provider process-group cleanup;
+5. probe the installed CLI/app-server instead of using a source version label;
+6. record executable path/hash/version/help capabilities;
+7. build an auditable full-access launch argv;
+8. normalize native provider JSON events without parsing terminal prose;
+9. map native provider tool calls into W1;
+10. return tool observations to the same native provider turn.
 
 Exit: a live Codex turn performs shell success, deliberate shell failure, raw
 ADB observation and final model continuation at L2; later the same sequence is
@@ -197,7 +221,8 @@ Deliverables:
 - no serial/host/port/privilege injection;
 - unknown/future subcommands remain transport-valid;
 - USB/offline/unauthorized/recovery/reboot observations remain raw;
-- conservative disconnect/reconnect state.
+- conservative disconnect/reconnect state;
+- the same cancellation and lifecycle mechanics as shell execution.
 
 Exit: physical `adb devices -l`, `adb shell id`, deliberate failure and one
 visible device mutation in the same Codex turn.
@@ -209,12 +234,24 @@ Deliverables:
 - append-only accepted/started/chunk/terminal records;
 - explicit `best_effort`/`unreplayable` storage state;
 - stable event IDs and inclusive cursors;
+- event-by-event persistence while provider/tools are active;
 - completed-call replay without re-execution;
 - incomplete-call reconciliation to `unknown_after_disconnect` where needed;
+- client-delivery detach without cancellation of accepted effects;
 - long-running job inspect/attach/write/resize/close/kill;
 - bounded retention and explicit cleanup.
 
-Exit: L2 replay/restart tests and L5 fault matrix.
+Immediate acceptance tests:
+
+- a provider event is visible in the durable file while the provider remains
+  blocked before terminal;
+- a closed client output pipe does not stop provider execution or terminal
+  persistence;
+- completed replay does not start a second provider process;
+- incomplete replay persists `unknown_after_disconnect` before delivery and
+  never automatically redispatches.
+
+Exit: L2 streaming/replay/restart tests and L5 fault matrix.
 
 ### W6 — Android/Root Linux integration and AiShell
 
@@ -245,31 +282,58 @@ not block owner-open development.
 
 ## 5. Immediate implementation batches
 
-### Batch A — current change
+### Batch A — graph and direct-process foundation
 
-- repair graph/status drift introduced when registry and tool bridge entered
-  Cargo defaults;
-- add exact R5 graph contract and verifier;
-- add W1 same-turn callback loop and source tests;
-- add CI commands for format/test/clippy and graph capture;
-- keep status at L0 until a runner returns exact command output.
+Source-authored:
 
-### Batch B — next
+- exact R5 graph contract and verifier;
+- direct shell and ordinary ADB process runtime;
+- scoped call registry and registry-to-runtime bridge;
+- same-turn callback loop and external provider JSONL adapter.
 
-- execute Rust 1.93 format/test/clippy on the exact commit;
-- fix every compiler, race and failure-closure defect;
-- import W1 behind the Host provider boundary;
-- replace vector-return provider events with serviceable streaming controls;
-- add fake external provider JSONL process integration.
+Promotion hold: exact Rust runner output is still absent.
 
-### Batch C
+### Batch B — durable replay foundation
 
+Source-authored:
+
+- append-only durable event store;
+- stable semantic request digest and turn-stream identity;
+- completed replay without redispatch;
+- incomplete reconciliation to `unknown_after_disconnect`.
+
+Promotion hold: replay and fault tests have not executed on a real runner.
+
+### Batch C — current streaming and cancellation slice
+
+Source-authored:
+
+- synchronous turn-event sink;
+- runtime event forwarding while the process is active;
+- per-event Host persistence and flush;
+- detached client delivery without effect cancellation;
+- turn cancellation token to active registry/process group;
+- provider JSONL `turn.cancel` acknowledgement and finite cleanup grace;
+- explicit Host binary selection with autobin discovery disabled.
+
+Current acceptance gate:
+
+1. obtain a runner that executes Rust 1.93;
+2. fix every format, compile, test and clippy finding;
+3. bind exact command output and generated lock to the commit;
+4. do not promote beyond L0 until those records exist.
+
+### Batch D — next source development
+
+- replace the blocking stdio reader with an active-turn control carrier;
+- service correlated `turn.cancel` and targeted `tool.cancel` while provider and
+  tools remain active;
+- add inclusive replay cursor, inspect and attach operations;
+- define bounded backpressure/window/pause/resume behavior;
 - bind the installed Codex provider;
-- add durable event store/reconciliation;
-- implement the selected real ADB topology;
-- collect a complete host L2 same-turn evidence package.
+- implement the selected real ADB topology.
 
-### Batch D
+### Batch E — Android and physical qualification
 
 - cut the Android owner-open product graph;
 - wire init/SELinux/abstract socket/AiShell;
