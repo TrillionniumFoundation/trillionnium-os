@@ -117,23 +117,31 @@
     {
       "id": "W4",
       "name": "raw ADB substrate",
-      "status": "SPEC_ONLY",
+      "status": "SOURCE_IMPLEMENTED",
       "complete": false,
       "target_status": "DEVICE_OBSERVED",
       "implemented": [
         "P0 topology ADR selects an ordinary independent-host adb client/server behind a mechanism-only transparent relay",
-        "same-phone local control remains direct shell/System API rather than a fake self-ADB privilege path"
+        "same-phone local control remains direct shell/System API rather than a fake self-ADB privilege path",
+        "owner-open developer bootstrap executes an owner-configured ordinary adb executable with exact argv and no shell interpolation",
+        "bootstrap rejects duplicate and non-finite JSON, invalid UTF-8 text, NUL/unbounded argv and unsafe executable files",
+        "bootstrap validates owner configuration and uses a separate process group with configurable timeout and TERM/KILL escalation",
+        "stdout/stderr use bounded pipe capture; output overflow terminates the exact process group and returns resource_exhausted while preserving a bounded byte prefix and total counts",
+        "nine ADB relay tests passed locally, including a spawned JSONL relay process, unknown and empty argv, timeout, binary output, overflow termination and unsafe executable rejection"
       ],
       "open": [
-        "isolated relay protocol and independent-host supervisor",
-        "Host adb backend and conservative reconciliation",
-        "raw argv without target or privilege injection",
+        "isolated Rust relay protocol and independent-host supervisor",
+        "Direct Agent Host adb backend and conservative reconciliation",
+        "streaming stdout/stderr and asynchronous cancel through the integrated Host",
         "USB, unauthorized, offline, recovery and reconnect behavior",
         "same-turn physical Android effect"
       ],
-      "latest_evidence_level": "L0",
+      "latest_evidence_level": "L2",
+      "legacy_note": "current typed production adapter returns BackendUnavailable and is migration material",
       "architecture_decision": "docs/architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md",
-      "legacy_note": "current typed production adapter returns BackendUnavailable and is migration material"
+      "bootstrap_tool": "tools/owner-open-adb-relay-bootstrap.py",
+      "bootstrap_test": "tools/tests/test_owner_open_adb_relay_bootstrap.py",
+      "bootstrap_scope": "developer_bootstrap_only_not_integrated_product"
     },
     {
       "id": "W5",
@@ -191,16 +199,17 @@
       "complete": false,
       "target_status": "FAULT_TESTED",
       "implemented": [
-        "evidence-level vocabulary and required binding fields defined in r4 plan"
+        "evidence-level vocabulary and required binding fields defined in r4 plan",
+        "sixteen local Python tests passed for graph/generator and ADB relay bootstrap mechanics"
       ],
       "open": [
         "runner-backed L0/L1 automated evidence publication",
-        "L2 host integration suite",
+        "L2 Rust Host integration suite",
         "L3 clean Android build package",
         "L4 physical same-turn effect package",
         "L5 crash, USB, reboot, ENOSPC and power-loss package"
       ],
-      "latest_evidence_level": "L0"
+      "latest_evidence_level": "L2"
     },
     {
       "id": "W9",
@@ -224,7 +233,7 @@
     "harden W1 Android/async connection carrier, deadlines, resume and flow control",
     "integrate W2 installed Codex same-turn event bridge",
     "replace pre-r3 shell broker path with W3 direct process substrate",
-    "implement the accepted W4 transparent independent-host ADB relay"
+    "replace the tested W4 Python bootstrap with the integrated Rust transparent host relay and bind it to the same turn"
   ],
   "not_claimed": [
     "Rust 1.93 compilation and refreshed Cargo.lock for the new packages",
@@ -245,7 +254,7 @@
     "android_abstract_socket": "not_implemented",
     "provider": "unavailable_provider_stub",
     "shell_backend": "not_implemented",
-    "adb_backend": "accepted_transparent_host_relay_not_implemented",
+    "adb_backend": "tested_python_independent_host_bootstrap_not_integrated_with_direct_agent_host",
     "event_store": "best_effort_in_memory_output_only"
   }
 }
