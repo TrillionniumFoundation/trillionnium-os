@@ -63,8 +63,9 @@ jobs:
           python-version: "3.12"
 
       - name: Set up Rust 1.93
-        uses: dtolnay/rust-toolchain@1.93.0
+        uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: "1.93.0"
           components: rustfmt
 
       - name: Validate JSON and Python syntax
@@ -86,19 +87,22 @@ jobs:
       - name: Run verifier negative tests
         run: python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
 
-      - name: Check Rust formatting
-        run: cargo fmt --all -- --check
-
-      - name: Test isolated owner-open Host and codec packages
+      - name: Check isolated Rust formatting
         run: |
-          cargo test --package trillionnium-owner-open-types
-          cargo test --package trillionnium-owner-open-host
+          cargo fmt --package trillionnium-owner-open-types -- --check
+          cargo fmt --package trillionnium-owner-open-host -- --check
+
+      - name: Refresh lock and test isolated owner-open packages
+        run: |
+          cargo generate-lockfile
+          cargo test --locked --package trillionnium-owner-open-types
+          cargo test --locked --package trillionnium-owner-open-host
 
       - name: Capture Cargo graph and generated lock
         run: |
-          cargo metadata --format-version 1 > owner-open-cargo-metadata.json
-          cargo tree -e features -p trillionnium-owner-open-types > owner-open-cargo-tree.txt
-          cargo tree -e features -p trillionnium-owner-open-host >> owner-open-cargo-tree.txt
+          cargo metadata --locked --format-version 1 > owner-open-cargo-metadata.json
+          cargo tree --locked -e features -p trillionnium-owner-open-types > owner-open-cargo-tree.txt
+          cargo tree --locked -e features -p trillionnium-owner-open-host >> owner-open-cargo-tree.txt
           git diff -- Cargo.lock > owner-open-cargo-lock.patch || true
 
       - name: Upload L0-L2 foundation evidence
