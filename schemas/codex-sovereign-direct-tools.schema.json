@@ -1,0 +1,496 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trillionnium.org/schemas/codex-sovereign-direct-tools.schema.json",
+  "title": "Trillionnium owner-open Direct Agent Host codec schema",
+  "description": "Codec and interoperability shape only. This schema does not grant, classify, approve, deny, rewrite, or downgrade an operation.",
+  "type": "object",
+  "required": [
+    "kind",
+    "seq",
+    "payload"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "direction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "client_to_host",
+        "host_to_client",
+        null
+      ]
+    },
+    "client_seq": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "host_seq": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "frame_sha256": {
+      "$ref": "#/$defs/optionalSha256"
+    },
+    "event_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "connection_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "stream_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "turn_stream_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "session_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "profile_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "task_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "turn_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "call_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "job_id": {
+      "$ref": "#/$defs/optionalId"
+    },
+    "tool": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "target": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "target_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "optionalId": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/id"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "optionalSha256": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/sha256"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runTurnRequest": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "protocol_version",
+        "session_id",
+        "task_id",
+        "turn_id",
+        "user_input"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "protocol": {
+          "const": "trillionnium.agent.turn.v1"
+        },
+        "protocol_version": {
+          "oneOf": [
+            {
+              "const": 1
+            },
+            {
+              "const": "1"
+            }
+          ]
+        },
+        "session_id": {
+          "$ref": "#/$defs/id"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "task_id": {
+          "$ref": "#/$defs/id"
+        },
+        "turn_id": {
+          "$ref": "#/$defs/id"
+        },
+        "user_input": {
+          "type": "string",
+          "maxLength": 1048576
+        },
+        "context_ref": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "config_generation": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "client_request_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "server_request_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "turn_request_sha256": {
+          "$ref": "#/$defs/optionalSha256"
+        },
+        "resume_cursor": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "resume_token": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "prior_connection_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "parent_turn_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "continuation_of": {
+          "$ref": "#/$defs/optionalId"
+        }
+      }
+    },
+    "toolCall": {
+      "type": "object",
+      "required": [
+        "call_id",
+        "tool"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "call_id": {
+          "$ref": "#/$defs/id"
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "session_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "task_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "turn_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "turn_stream_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "request_sha256": {
+          "$ref": "#/$defs/optionalSha256"
+        },
+        "binding_fingerprint": {
+          "$ref": "#/$defs/optionalSha256"
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "target_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "mode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "config_generation": {
+          "type": [
+            "integer",
+            "string",
+            "null"
+          ]
+        },
+        "command": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 262144
+        },
+        "argv": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "maxItems": 4096,
+          "items": {
+            "type": "string",
+            "maxLength": 65536
+          }
+        },
+        "cwd": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "env": {
+          "type": "object",
+          "maxProperties": 4096,
+          "additionalProperties": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "stdin": {
+          "type": [
+            "string",
+            "object",
+            "null"
+          ]
+        },
+        "timeout_ms": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "pty": {
+          "type": [
+            "boolean",
+            "object",
+            "null"
+          ]
+        },
+        "stream": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    },
+    "shellExec": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/toolCall"
+        },
+        {
+          "oneOf": [
+            {
+              "required": [
+                "command"
+              ],
+              "not": {
+                "required": [
+                  "argv"
+                ]
+              },
+              "properties": {
+                "tool": {
+                  "const": "shell.exec"
+                },
+                "command": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "required": [
+                "argv"
+              ],
+              "not": {
+                "required": [
+                  "command"
+                ]
+              },
+              "properties": {
+                "tool": {
+                  "const": "shell.exec"
+                },
+                "argv": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "tool": {
+              "const": "shell.exec"
+            }
+          }
+        }
+      ]
+    },
+    "adbExec": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/toolCall"
+        },
+        {
+          "required": [
+            "argv"
+          ],
+          "not": {
+            "required": [
+              "command"
+            ]
+          },
+          "properties": {
+            "tool": {
+              "const": "adb.exec"
+            },
+            "argv": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "turnCancelRequest": {
+      "type": "object",
+      "required": [
+        "session_id",
+        "turn_id"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "session_id": {
+          "$ref": "#/$defs/id"
+        },
+        "turn_id": {
+          "$ref": "#/$defs/id"
+        },
+        "profile_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "task_id": {
+          "$ref": "#/$defs/optionalId"
+        },
+        "turn_stream_id": {
+          "$ref": "#/$defs/optionalId"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "kind": "turn.start",
+      "seq": 1,
+      "direction": "client_to_host",
+      "payload": {
+        "protocol": "trillionnium.agent.turn.v1",
+        "protocol_version": 1,
+        "session_id": "session-example",
+        "task_id": "task-example",
+        "turn_id": "turn-example",
+        "profile_id": "owner-open",
+        "user_input": "Inspect the current workspace and run the necessary tools."
+      }
+    },
+    {
+      "kind": "tool.call",
+      "seq": 2,
+      "direction": "host_to_client",
+      "payload": {
+        "call_id": "call-example",
+        "tool": "adb.exec",
+        "argv": [
+          "shell",
+          "id"
+        ],
+        "stream": true
+      }
+    }
+  ]
+}
