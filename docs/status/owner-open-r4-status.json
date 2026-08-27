@@ -62,16 +62,17 @@
         "isolated Host stdio and filesystem-UDS carrier",
         "hello, turn.start, turn.cancel and host.error handling",
         "stable connection/turn-stream correlation for one synchronous turn",
-        "spawned Host-process JSONL integration tests"
+        "spawned Host-process JSONL integration test source"
       ],
       "open": [
+        "Rust 1.93 compile, formatting and package test execution",
         "Android abstract socket and kernel peer admission",
         "asynchronous one-active-turn state machine with serviceable controls",
         "hello resume and reconnect",
         "flow control and stable event replay",
         "absolute read/write deadlines, multi-connection concurrency and fuzz/property corpus"
       ],
-      "latest_evidence_level": "L1"
+      "latest_evidence_level": "L0"
     },
     {
       "id": "W2",
@@ -86,13 +87,14 @@
         "UnavailableProvider returns a truthful provider_unavailable terminal result"
       ],
       "open": [
+        "Rust 1.93 compile and Host test execution",
         "installed Codex capability probe",
         "full-access flag observation and launch configuration",
         "native Codex JSON event adapter",
         "same-turn tool-call and observation delivery",
         "asynchronous provider cancellation and descendant cleanup"
       ],
-      "latest_evidence_level": "L1"
+      "latest_evidence_level": "L0"
     },
     {
       "id": "W3",
@@ -118,15 +120,19 @@
       "status": "SPEC_ONLY",
       "complete": false,
       "target_status": "DEVICE_OBSERVED",
-      "implemented": [],
+      "implemented": [
+        "P0 topology ADR selects an ordinary independent-host adb client/server behind a mechanism-only transparent relay",
+        "same-phone local control remains direct shell/System API rather than a fake self-ADB privilege path"
+      ],
       "open": [
-        "ADB topology ADR",
-        "real ARM64 adb client/server or transparent relay",
+        "isolated relay protocol and independent-host supervisor",
+        "Host adb backend and conservative reconciliation",
         "raw argv without target or privilege injection",
-        "USB, unauthorized, offline and reconnect behavior",
+        "USB, unauthorized, offline, recovery and reconnect behavior",
         "same-turn physical Android effect"
       ],
       "latest_evidence_level": "L0",
+      "architecture_decision": "docs/architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md",
       "legacy_note": "current typed production adapter returns BackendUnavailable and is migration material"
     },
     {
@@ -188,7 +194,7 @@
         "evidence-level vocabulary and required binding fields defined in r4 plan"
       ],
       "open": [
-        "L0/L1 automated evidence publication",
+        "runner-backed L0/L1 automated evidence publication",
         "L2 host integration suite",
         "L3 clean Android build package",
         "L4 physical same-turn effect package",
@@ -218,9 +224,10 @@
     "harden W1 Android/async connection carrier, deadlines, resume and flow control",
     "integrate W2 installed Codex same-turn event bridge",
     "replace pre-r3 shell broker path with W3 direct process substrate",
-    "select and implement W4 transparent ADB topology"
+    "implement the accepted W4 transparent independent-host ADB relay"
   ],
   "not_claimed": [
+    "Rust 1.93 compilation and refreshed Cargo.lock for the new packages",
     "integrated Android owner-open Host",
     "live same-turn Codex shell effect",
     "live same-turn raw ADB effect",
@@ -238,7 +245,7 @@
     "android_abstract_socket": "not_implemented",
     "provider": "unavailable_provider_stub",
     "shell_backend": "not_implemented",
-    "adb_backend": "not_implemented",
+    "adb_backend": "accepted_transparent_host_relay_not_implemented",
     "event_store": "best_effort_in_memory_output_only"
   }
 }
