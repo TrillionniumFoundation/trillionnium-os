@@ -52,7 +52,7 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
             package_extra = "autobins = false\n" if path == "apps/host" else ""
             bins = (
                 "\n[[bin]]\nname = \"foundation-host\"\npath = \"src/main.rs\"\n"
-                "\n[[bin]]\nname = \"r5-host\"\npath = \"src/bin/r5_streaming_host.rs\"\n"
+                "\n[[bin]]\nname = \"r5-host\"\npath = \"src/bin/r5_control_host_v2.rs\"\n"
                 if path == "apps/host"
                 else ""
             )
@@ -84,10 +84,14 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
                         {"name": "foundation-host", "path": "src/main.rs"},
                         {
                             "name": "r5-host",
-                            "path": "src/bin/r5_streaming_host.rs",
+                            "path": "src/bin/r5_control_host_v2.rs",
                         },
                     ],
-                    "forbidden_selected_paths": ["src/bin/r5_host.rs"],
+                    "forbidden_selected_paths": [
+                        "src/bin/r5_host.rs",
+                        "src/bin/r5_streaming_host.rs",
+                        "src/bin/r5_control_host.rs",
+                    ],
                 },
                 "owner_open_packages": specs,
             },
@@ -126,7 +130,7 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
             report.facts["host_binaries"],
             [
                 {"name": "foundation-host", "path": "src/main.rs"},
-                {"name": "r5-host", "path": "src/bin/r5_streaming_host.rs"},
+                {"name": "r5-host", "path": "src/bin/r5_control_host_v2.rs"},
             ],
         )
 
@@ -173,7 +177,7 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
     def test_superseded_host_path_cannot_be_selected(self) -> None:
         manifest = (self.root / "apps/host/Cargo.toml").read_text(encoding="utf-8")
         manifest = manifest.replace(
-            "src/bin/r5_streaming_host.rs", "src/bin/r5_host.rs"
+            "src/bin/r5_control_host_v2.rs", "src/bin/r5_host.rs"
         )
         self.write("apps/host/Cargo.toml", manifest)
         report = module.verify(self.root)
