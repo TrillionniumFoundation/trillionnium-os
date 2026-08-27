@@ -1,0 +1,244 @@
+{
+  "schema": "org.trillionnium.owner-open-r4-status.v1",
+  "plan_revision": "2026-08-27-r4",
+  "semantic_contract_revision": "2026-08-27-r3",
+  "updated_at": "2026-08-27",
+  "source_baseline": "bfa331fda97fac740ac1145b57784af273c8a777",
+  "development_branch": "codex/owner-open-r4-foundation-20260827",
+  "product_claim": "P0 source prototype and owner-authorized dogfood substrate; integrated owner-open Codex-to-shell/ADB turn is not yet claimed",
+  "public_release": false,
+  "status_levels": [
+    "NOT_STARTED",
+    "SPEC_ONLY",
+    "SOURCE_IMPLEMENTED",
+    "HOST_TESTED",
+    "IMAGE_INCLUDED",
+    "DEVICE_OBSERVED",
+    "FAULT_TESTED",
+    "RELEASE_QUALIFIED"
+  ],
+  "evidence_levels": {
+    "L0": "contract and source shape",
+    "L1": "unit, property and fuzz",
+    "L2": "host process integration",
+    "L3": "Android image and static product graph",
+    "L4": "physical live effect",
+    "L5": "fault, restart, reboot and power-loss",
+    "L6": "signed public release qualification"
+  },
+  "work_packages": [
+    {
+      "id": "W0",
+      "name": "product graph isolation",
+      "status": "SOURCE_IMPLEMENTED",
+      "complete": false,
+      "target_status": "IMAGE_INCLUDED",
+      "implemented": [
+        "owner-open Host and types packages added as isolated workspace members",
+        "only owner-open Host and types remain in Cargo default-members",
+        "legacy trillionniumd, privilege broker, stdio proxy, direct-tools, shell-exec and tool-runtime roots require explicit selection",
+        "machine-readable exact/forbidden default graph contract",
+        "foundation graph/dependency/source-marker verifier and negative tests"
+      ],
+      "open": [
+        "split Android owner-open product make/Soong graph",
+        "remove Authority, lease, egress, P01 and old shell broker nodes from owner-open target files",
+        "remove broad org.trillionnium.platform(.internal) owner-open classpath/source edges",
+        "collect Soong module, init service, SELinux and target-files negative evidence"
+      ],
+      "latest_evidence_level": "L0"
+    },
+    {
+      "id": "W1",
+      "name": "codec and connection substrate",
+      "status": "SOURCE_IMPLEMENTED",
+      "complete": false,
+      "target_status": "HOST_TESTED",
+      "implemented": [
+        "strict duplicate-member JSON frame decoder",
+        "extensible RunTurnFrame, RunTurnRequest and TurnCancelRequest codecs",
+        "mechanical shell and raw ADB request validation",
+        "codec-only generated constants and JSON schema",
+        "isolated Host stdio and filesystem-UDS carrier",
+        "hello, turn.start, turn.cancel and host.error handling",
+        "stable connection/turn-stream correlation for one synchronous turn",
+        "spawned Host-process JSONL integration tests"
+      ],
+      "open": [
+        "Android abstract socket and kernel peer admission",
+        "asynchronous one-active-turn state machine with serviceable controls",
+        "hello resume and reconnect",
+        "flow control and stable event replay",
+        "absolute read/write deadlines, multi-connection concurrency and fuzz/property corpus"
+      ],
+      "latest_evidence_level": "L1"
+    },
+    {
+      "id": "W2",
+      "name": "provider and same-turn event bridge",
+      "status": "SOURCE_IMPLEMENTED",
+      "complete": false,
+      "target_status": "HOST_TESTED",
+      "implemented": [
+        "isolated owner-open Host product root",
+        "TurnProvider interface separating Host mechanics from Codex semantics",
+        "normalized provider status/model/extension events bound to one turn stream",
+        "UnavailableProvider returns a truthful provider_unavailable terminal result"
+      ],
+      "open": [
+        "installed Codex capability probe",
+        "full-access flag observation and launch configuration",
+        "native Codex JSON event adapter",
+        "same-turn tool-call and observation delivery",
+        "asynchronous provider cancellation and descendant cleanup"
+      ],
+      "latest_evidence_level": "L1"
+    },
+    {
+      "id": "W3",
+      "name": "direct shell substrate",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "target_status": "DEVICE_OBSERVED",
+      "implemented": [],
+      "open": [
+        "command-string and argv process execution",
+        "cwd, environment and stdin",
+        "PTY and byte-preserving streaming",
+        "process groups, signals, timeout and cancellation",
+        "event spool and crash reconciliation",
+        "same-turn Root Linux physical observation"
+      ],
+      "latest_evidence_level": "L0",
+      "legacy_note": "pre-r3 shell.exec.v1 broker/worker is not the owner-open implementation"
+    },
+    {
+      "id": "W4",
+      "name": "raw ADB substrate",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "target_status": "DEVICE_OBSERVED",
+      "implemented": [],
+      "open": [
+        "ADB topology ADR",
+        "real ARM64 adb client/server or transparent relay",
+        "raw argv without target or privilege injection",
+        "USB, unauthorized, offline and reconnect behavior",
+        "same-turn physical Android effect"
+      ],
+      "latest_evidence_level": "L0",
+      "legacy_note": "current typed production adapter returns BackendUnavailable and is migration material"
+    },
+    {
+      "id": "W5",
+      "name": "event store, jobs and recovery",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "target_status": "FAULT_TESTED",
+      "implemented": [],
+      "open": [
+        "accepted/started/chunk/terminal records",
+        "best-effort and unreplayable storage status",
+        "duplicate call attach and conflict behavior",
+        "restart reconciliation and unknown_after_disconnect",
+        "long-running shell jobs and inclusive cursors"
+      ],
+      "latest_evidence_level": "L0"
+    },
+    {
+      "id": "W6",
+      "name": "Android and Root Linux integration",
+      "status": "NOT_STARTED",
+      "complete": false,
+      "target_status": "DEVICE_OBSERVED",
+      "implemented": [],
+      "open": [
+        "convert dirty overlay to reviewed commits or zero-fuzz patch series",
+        "wire owner-open Host/init/SELinux/product profile",
+        "remove old semantic gates from startup",
+        "build clean target files",
+        "prove Root Linux restart and writable overlay on device"
+      ],
+      "latest_evidence_level": "L0",
+      "hold": "checked-in Android audit overlay still selects legacy Authority/lease/P01/shell-broker graph"
+    },
+    {
+      "id": "W7",
+      "name": "AiShell owner-open UI",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "target_status": "DEVICE_OBSERVED",
+      "implemented": [],
+      "open": [
+        "turn.start client",
+        "model/tool stream rendering",
+        "cancel, reconnect and inspect",
+        "unknown and unreplayable presentation",
+        "owner-open source selection without Capability Lease/Authority UI"
+      ],
+      "latest_evidence_level": "L0"
+    },
+    {
+      "id": "W8",
+      "name": "qualification and evidence",
+      "status": "SPEC_ONLY",
+      "complete": false,
+      "target_status": "FAULT_TESTED",
+      "implemented": [
+        "evidence-level vocabulary and required binding fields defined in r4 plan"
+      ],
+      "open": [
+        "L0/L1 automated evidence publication",
+        "L2 host integration suite",
+        "L3 clean Android build package",
+        "L4 physical same-turn effect package",
+        "L5 crash, USB, reboot, ENOSPC and power-loss package"
+      ],
+      "latest_evidence_level": "L0"
+    },
+    {
+      "id": "W9",
+      "name": "optional sealed/public profile",
+      "status": "NOT_STARTED",
+      "complete": false,
+      "target_status": "RELEASE_QUALIFIED",
+      "implemented": [],
+      "open": [
+        "explicit sealed profile adapter",
+        "production signing and AVB/rollback",
+        "multi-user isolation",
+        "OTA and release security review"
+      ],
+      "latest_evidence_level": "L0",
+      "deferred": true
+    }
+  ],
+  "critical_path_next": [
+    "complete W0 Android product graph split",
+    "harden W1 Android/async connection carrier, deadlines, resume and flow control",
+    "integrate W2 installed Codex same-turn event bridge",
+    "replace pre-r3 shell broker path with W3 direct process substrate",
+    "select and implement W4 transparent ADB topology"
+  ],
+  "not_claimed": [
+    "integrated Android owner-open Host",
+    "live same-turn Codex shell effect",
+    "live same-turn raw ADB effect",
+    "durable restart/replay guarantees",
+    "clean owner-open target-files image",
+    "physical reboot or power-loss conformance",
+    "signed public release"
+  ],
+  "foundation_runtime": {
+    "cargo_default_root": "apps/trillionnium-owner-open-host",
+    "carriers": [
+      "stdio",
+      "filesystem_unix_socket"
+    ],
+    "android_abstract_socket": "not_implemented",
+    "provider": "unavailable_provider_stub",
+    "shell_backend": "not_implemented",
+    "adb_backend": "not_implemented",
+    "event_store": "best_effort_in_memory_output_only"
+  }
+}
