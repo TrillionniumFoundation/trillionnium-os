@@ -55,5 +55,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     assert!(stored.contains("completed-with-detached-client"));
     assert!(stored.contains("\"kind\":\"turn.end\""));
     assert!(stored.contains("\"status\":\"completed\""));
-    assert!(stored.contains("\"client_delivery_status\":\"detached\""));
+    assert!(stored.contains(
+        "\"client_delivery_status_before_terminal_attempt\":\"detached\""
+    ));
 }
