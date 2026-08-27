@@ -14,7 +14,8 @@
 - [`status/owner-open-r5-traceability.tsv`](status/owner-open-r5-traceability.tsv)
   — requirement-to-source/test/evidence mapping.
 - [`contracts/owner-open-forbidden-default-graph-v2.json`](contracts/owner-open-forbidden-default-graph-v2.json)
-  — exact R5 Cargo source closure and Android forbidden graph.
+  — exact R5 Cargo, internal-dependency and Host-binary graph plus the Android
+  forbidden graph.
 
 R4 documents are retained as the prior foundation and evidence history. They no
 longer determine the next implementation batch or completion status.
@@ -27,18 +28,29 @@ longer determine the next implementation batch or completion status.
   — direct process substrate for shell and ordinary ADB argv.
 - [`../crates/trillionnium-owner-open-call-registry/`](../crates/trillionnium-owner-open-call-registry/)
   — concurrent scoped call identity and uncertainty state.
+- [`../crates/trillionnium-owner-open-event-store/`](../crates/trillionnium-owner-open-event-store/)
+  — append-only durable observations, scoped cursors and strict reopen.
 - [`../crates/trillionnium-owner-open-tool-bridge/`](../crates/trillionnium-owner-open-tool-bridge/)
   — at-most-one spawn handoff and failure closure.
 - [`../crates/trillionnium-owner-open-turn-loop/`](../crates/trillionnium-owner-open-turn-loop/)
-  — same-turn provider/tool callback source slice.
+  — same-turn streaming callback and turn-level cancellation token.
+- [`../crates/trillionnium-owner-open-provider-jsonl/`](../crates/trillionnium-owner-open-provider-jsonl/)
+  — bounded provider process, tool-result duplex and provider cancellation.
 - [`../apps/trillionnium-owner-open-host/`](../apps/trillionnium-owner-open-host/)
-  — foundation carrier; it has not yet imported the R5 same-turn loop.
+  — selected R5 Host with a bounded input/control reader, independent turn
+  worker, streaming persistence, detached delivery, completed replay,
+  incomplete reconciliation, active `turn.cancel` and targeted `tool.cancel`.
 - [`implementation/owner-open-same-turn-loop-v1.md`](implementation/owner-open-same-turn-loop-v1.md)
-  — W1 behavior and current limitations.
+  — W1 behavior and evidence boundary.
+- [`implementation/owner-open-provider-jsonl-v1.md`](implementation/owner-open-provider-jsonl-v1.md)
+  — W2 provider boundary and cancellation semantics.
+- [`protocols/owner-open-event-store-v1.md`](protocols/owner-open-event-store-v1.md)
+  — W5 record, replay and uncertainty semantics.
 
 ## Protocol, security and architecture
 
 - [`protocols/owner-open-direct-agent-host-v1.md`](protocols/owner-open-direct-agent-host-v1.md)
+- [`protocols/owner-open-provider-jsonl-v1.md`](protocols/owner-open-provider-jsonl-v1.md)
 - [`implementation/owner-open-codex-provider-v1.md`](implementation/owner-open-codex-provider-v1.md)
 - [`implementation/owner-open-process-substrate-v1.md`](implementation/owner-open-process-substrate-v1.md)
 - [`implementation/owner-open-call-registry-v1.md`](implementation/owner-open-call-registry-v1.md)
@@ -48,10 +60,12 @@ longer determine the next implementation batch or completion status.
 
 ## Evidence boundary
 
-The latest R5 checkpoint is
+The latest checked-in R5 checkpoint is
 [`evidence/2026-08-28-owner-open-turn-loop-source.md`](evidence/2026-08-28-owner-open-turn-loop-source.md).
-It is L0 source evidence plus locally executed Python verifier tests. Rust,
-Host, Android, device, fault and release promotions remain pending.
+The branch now contains additional streaming, durable recovery and active-control
+source plus authored tests, but no executing Rust runner has validated the
+current head. Rust, Host, Android, device, fault and release promotions remain
+pending.
 
 Historical audits, receipts and Android dirty-overlay files remain useful for
 provenance and migration, but they do not prove the current owner-open product.
