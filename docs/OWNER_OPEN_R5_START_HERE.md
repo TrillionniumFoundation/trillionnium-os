@@ -20,21 +20,26 @@ Trillionnium OS. Read the documents in this order:
 
 ```text
 turn.start
-  -> selected R5 streaming Host
-  -> external provider JSONL process
+  -> selected R5 active-control Host
+  -> independent bounded input/control reader
+  -> external provider JSONL turn worker
   -> provider model/tool events
   -> call registry + direct shell/ordinary adb runtime
   -> runtime accepted/started/output/terminal events
-  -> synchronous Host event sink
+  -> Host event channel
   -> per-event durable append + immediate delivery attempt
   -> same provider turn continuation
   -> one turn terminal
+
+while active:
+  turn.cancel -> turn cancellation token -> provider and active call
+  tool.cancel -> scoped call registry -> target process group only
 ```
 
 With `--event-store /absolute/path/events.jsonl`:
 
-- provider and tool events are appended while the provider/tool is still
-  active, rather than after a complete turn has been collected;
+- provider, tool and cancellation acknowledgement events are appended while the
+  turn is active;
 - a completed durable turn replays without starting the provider or tool again;
 - an incomplete durable turn is reconciled to `unknown_after_disconnect` and
   is never automatically redispatched;
@@ -43,16 +48,14 @@ With `--event-store /absolute/path/events.jsonl`:
 - event-store failure is reported as unavailable/unreplayable and does not
   become semantic denial.
 
-The turn loop also has a cross-thread cancellation token. It reaches an active
-call through the scoped call registry and process group, and the provider JSONL
-adapter sends a correlated `turn.cancel`. The current stdio carrier still
-blocks on the provider thread and therefore cannot read a client `turn.cancel`
-frame during the active turn. That carrier limitation remains the next source
-gate.
+The selected Host now services correlated `turn.cancel` and targeted
+`tool.cancel` while the provider worker runs. Turn cancellation also enters the
+provider JSONL protocol as `turn.cancel`; tool cancellation returns a cancelled
+tool observation and permits the provider to continue the same turn.
 
-This remains source-level until the exact Rust commands execute successfully.
-The observed GitHub Actions runs have reported failure with no assigned runner
-steps or logs, so they are not treated as source failures or passes.
+This remains source-level until exact Rust commands execute successfully. The
+observed GitHub Actions runs have reported failure without assigned runner steps
+or logs, so they are not treated as source failures or passes.
 
 ## Current development command sequence
 
@@ -72,19 +75,17 @@ cargo clippy --all-targets -- -D warnings
 
 1. obtain a runner that actually executes Rust 1.93 commands and fix every
    compile, formatting, test and clippy defect;
-2. replace the blocking stdio carrier with an active-turn control loop;
-3. keep correlated `turn.cancel` and targeted `tool.cancel` serviceable while
-   provider/tools run;
-4. add inclusive replay cursors and inspect/attach APIs;
-5. add bounded window/pause/resume behavior;
-6. bind the installed Codex provider;
-7. implement the real ADB topology; and
-8. cut the Android owner-open product graph.
+2. add inclusive replay cursors and `turn.inspect`/`call.inspect` APIs;
+3. add bounded stream window, pause and resume mechanics;
+4. add durable long-running jobs and attach/write/resize/close/kill;
+5. bind the installed Codex provider;
+6. implement the real ADB topology; and
+7. cut the Android owner-open product graph.
 
 ## Do not claim yet
 
 Do not describe this branch as having successful Rust validation, a live
-installed Codex turn, carrier-serviceable asynchronous cancellation, physical
+installed Codex turn, validated active cancellation, replay cursors, physical
 Root Linux shell, physical ADB effect, clean Android image,
 Host-crash/ENOSPC/reboot/power-loss qualification or public release. Those
 promotions require the evidence levels defined by R5.
