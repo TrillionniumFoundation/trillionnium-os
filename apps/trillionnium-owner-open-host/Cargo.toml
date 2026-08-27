@@ -35,4 +35,4 @@ path = "src/main.rs"
 
 [[bin]]
 name = "trillionnium-owner-open-r5-host"
-path = "src/bin/r5_streaming_host.rs"
+path = "src/bin/r5_control_host_v2.rs"
