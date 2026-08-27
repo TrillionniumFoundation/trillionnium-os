@@ -7,6 +7,9 @@ use trillionnium_owner_open_event_store::{
 };
 use trillionnium_owner_open_types::{RunTurnFrame, RunTurnRequest};
 
+const TURN_REQUEST_DIGEST_SCHEMA: &str = "trillionnium.owner-open.turn-request-digest.v1";
+const TURN_STREAM_SCHEMA: &str = "trillionnium.owner-open.turn-stream.v1";
+
 #[derive(Debug, Clone)]
 pub enum StoredTurn {
     Empty,
@@ -81,17 +84,19 @@ impl Persistence {
         if records.is_empty() {
             return StoredTurn::Empty;
         }
-        let first_request = records
-            .first()
-            .and_then(|record| record.payload.get("request_sha256"))
-            .and_then(Value::as_str);
-        if first_request != Some(request_sha256) {
-            return StoredTurn::Conflict(
-                "stored turn request digest conflicts with the incoming turn".to_string(),
-            );
-        }
+
         let mut frames = Vec::with_capacity(records.len());
-        for record in records {
+        let mut terminal_index = None;
+        for (index, record) in records.into_iter().enumerate() {
+            let stored_request = record
+                .payload
+                .get("request_sha256")
+                .and_then(Value::as_str);
+            if stored_request != Some(request_sha256) {
+                return StoredTurn::Conflict(
+                    "stored event request digest conflicts with the incoming turn".to_string(),
+                );
+            }
             let Some(frame_value) = record.payload.get("frame").cloned() else {
                 return StoredTurn::Conflict(
                     "stored event payload has no Host frame".to_string(),
@@ -106,12 +111,32 @@ impl Persistence {
                     "stored Host frame does not match its event record identity".to_string(),
                 );
             }
+            if frame.turn_stream_id.as_deref() != Some(scope.turn_stream_id.as_str())
+                || frame.session_id.as_deref() != Some(scope.session_id.as_str())
+                || frame.profile_id.as_deref() != Some(scope.profile_id.as_str())
+                || frame.task_id.as_deref() != Some(scope.task_id.as_str())
+                || frame.turn_id.as_deref() != Some(scope.turn_id.as_str())
+            {
+                return StoredTurn::Conflict(
+                    "stored Host frame does not match its event-store turn scope".to_string(),
+                );
+            }
+            if frame.kind == "turn.end" {
+                if terminal_index.replace(index).is_some() {
+                    return StoredTurn::Conflict(
+                        "stored turn has more than one terminal frame".to_string(),
+                    );
+                }
+            }
             frames.push(frame);
         }
-        if frames.iter().any(|frame| frame.kind == "turn.end") {
-            StoredTurn::Complete(frames)
-        } else {
-            StoredTurn::Incomplete(frames)
+
+        match terminal_index {
+            Some(index) if index + 1 == frames.len() => StoredTurn::Complete(frames),
+            Some(_) => StoredTurn::Conflict(
+                "stored turn contains events after its terminal frame".to_string(),
+            ),
+            None => StoredTurn::Incomplete(frames),
         }
     }
 
@@ -124,13 +149,22 @@ impl Persistence {
         request_sha256: &str,
         frame: &RunTurnFrame,
     ) -> bool {
-        let Some(store) = &self.store else {
+        if self.store.is_none() {
             return false;
-        };
+        }
         let Some(event_id) = frame.event_id.clone() else {
             self.disable("Host frame has no event_id".to_string());
             return false;
         };
+        if frame.turn_stream_id.as_deref() != Some(scope.turn_stream_id.as_str())
+            || frame.session_id.as_deref() != Some(scope.session_id.as_str())
+            || frame.profile_id.as_deref() != Some(scope.profile_id.as_str())
+            || frame.task_id.as_deref() != Some(scope.task_id.as_str())
+            || frame.turn_id.as_deref() != Some(scope.turn_id.as_str())
+        {
+            self.disable("Host frame does not match the durable turn scope".to_string());
+            return false;
+        }
         let frame_value = match serde_json::to_value(frame) {
             Ok(value) => value,
             Err(error) => {
@@ -142,12 +176,17 @@ impl Persistence {
             "request_sha256": request_sha256,
             "frame": frame_value
         });
-        match store.append(EventInput {
-            scope: scope.clone(),
-            event_id,
-            kind: frame.kind.clone(),
-            payload,
-        }) {
+        let result = self
+            .store
+            .as_ref()
+            .expect("store presence checked")
+            .append(EventInput {
+                scope: scope.clone(),
+                event_id,
+                kind: frame.kind.clone(),
+                payload,
+            });
+        match result {
             Ok(_) => true,
             Err(error) => {
                 self.disable(error.to_string());
@@ -174,18 +213,34 @@ pub fn event_scope(request: &RunTurnRequest, turn_stream_id: &str) -> TurnScope 
     )
 }
 
+/// Digest only stable turn request semantics. Correlation-only request IDs,
+/// resume transport fields and a caller-supplied digest are deliberately
+/// excluded so reconnect/replay does not create a recursive or connection-bound
+/// identity.
 pub fn request_sha256(request: &RunTurnRequest) -> Result<String, String> {
-    let encoded = serde_json::to_vec(request).map_err(|error| error.to_string())?;
+    let encoded = serde_json::to_vec(&json!({
+        "schema": TURN_REQUEST_DIGEST_SCHEMA,
+        "protocol": &request.protocol,
+        "protocol_version": &request.protocol_version,
+        "session_id": &request.session_id,
+        "profile_id": request.effective_profile_id(),
+        "task_id": &request.task_id,
+        "turn_id": &request.turn_id,
+        "config_generation": &request.config_generation,
+        "user_input": &request.user_input,
+        "context_ref": &request.context_ref
+    }))
+    .map_err(|error| error.to_string())?;
     Ok(hex_lower(&Sha256::digest(encoded)))
 }
 
 pub fn stable_turn_stream_id(request: &RunTurnRequest) -> Result<String, String> {
     let encoded = serde_json::to_vec(&json!({
-        "schema": "trillionnium.owner-open.turn-stream.v1",
-        "session_id": request.session_id,
+        "schema": TURN_STREAM_SCHEMA,
+        "session_id": &request.session_id,
         "profile_id": request.effective_profile_id(),
-        "task_id": request.task_id,
-        "turn_id": request.turn_id
+        "task_id": &request.task_id,
+        "turn_id": &request.turn_id
     }))
     .map_err(|error| error.to_string())?;
     Ok(format!("r5-stream-{}", hex_lower(&Sha256::digest(encoded))))
