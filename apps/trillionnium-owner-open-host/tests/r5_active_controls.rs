@@ -89,7 +89,7 @@ IFS= read -r start || exit 10
 printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"tool.call","seq":0,"call":{"call_id":"call-turn-cancel","tool":"shell.exec","command":"sleep 30"}}'
 IFS= read -r tool_result || exit 11
 case "$tool_result" in
-  *'"terminal_kind":"client_cancelled"'*) ;;
+  *'"kind":"client_cancelled"'*) ;;
   *) exit 12 ;;
 esac
 IFS= read -r cancel || exit 13
@@ -144,7 +144,7 @@ IFS= read -r start || exit 10
 printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"tool.call","seq":0,"call":{"call_id":"call-tool-cancel","tool":"shell.exec","command":"sleep 30"}}'
 IFS= read -r tool_result || exit 11
 case "$tool_result" in
-  *'"terminal_kind":"client_cancelled"'*) ;;
+  *'"kind":"client_cancelled"'*) ;;
   *) exit 12 ;;
 esac
 printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"provider.event","seq":1,"event":"model.message","text":"continued after targeted cancel"}'
