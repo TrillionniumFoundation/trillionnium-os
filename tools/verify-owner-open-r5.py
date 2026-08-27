@@ -105,10 +105,75 @@ def verify(root: Path, strict_android: bool = False) -> Report:
     allowed_defaults = set(str(value) for value in cargo.get("allowed_default_members", []))
     forbidden_defaults = set(str(value) for value in cargo.get("forbidden_default_members", []))
 
-    report.check(required_members <= members, "required R5 workspace members are absent: " + ", ".join(sorted(required_members - members)))
-    report.check(required_defaults <= defaults, "required R5 default members are absent: " + ", ".join(sorted(required_defaults - defaults)))
-    report.check(not (defaults & forbidden_defaults), "forbidden legacy default members are present: " + ", ".join(sorted(defaults & forbidden_defaults)))
-    report.check(defaults == allowed_defaults, "Cargo default-members drifted from the exact R5 closure: " + ", ".join(sorted(defaults ^ allowed_defaults)))
+    report.check(
+        required_members <= members,
+        "required R5 workspace members are absent: "
+        + ", ".join(sorted(required_members - members)),
+    )
+    report.check(
+        required_defaults <= defaults,
+        "required R5 default members are absent: "
+        + ", ".join(sorted(required_defaults - defaults)),
+    )
+    report.check(
+        not (defaults & forbidden_defaults),
+        "forbidden legacy default members are present: "
+        + ", ".join(sorted(defaults & forbidden_defaults)),
+    )
+    report.check(
+        defaults == allowed_defaults,
+        "Cargo default-members drifted from the exact R5 closure: "
+        + ", ".join(sorted(defaults ^ allowed_defaults)),
+    )
+
+    host_binary_facts: list[dict[str, str]] = []
+    host_contract = cargo.get("host_binary_contract")
+    if not isinstance(host_contract, dict):
+        report.errors.append("R5 graph host_binary_contract is not an object")
+    else:
+        host_manifest_path = root / str(host_contract.get("manifest", ""))
+        report.check(
+            host_manifest_path.is_file(),
+            f"R5 Host manifest is absent: {host_manifest_path}",
+        )
+        if host_manifest_path.is_file():
+            host_manifest = read_toml(host_manifest_path)
+            package = host_manifest.get("package", {})
+            report.check(
+                isinstance(package, dict)
+                and package.get("autobins") is host_contract.get("autobins"),
+                "R5 Host autobins setting drifted from the exact binary contract",
+            )
+            raw_bins = host_manifest.get("bin", [])
+            actual_bins: set[tuple[str, str]] = set()
+            if isinstance(raw_bins, list):
+                for item in raw_bins:
+                    if isinstance(item, dict):
+                        name = str(item.get("name", ""))
+                        path = str(item.get("path", ""))
+                        actual_bins.add((name, path))
+                        host_binary_facts.append({"name": name, "path": path})
+            required_bins = {
+                (str(item.get("name", "")), str(item.get("path", "")))
+                for item in host_contract.get("required_bins", [])
+                if isinstance(item, dict)
+            }
+            report.check(
+                actual_bins == required_bins,
+                "R5 Host explicit binaries drifted from the exact contract: "
+                + ", ".join(
+                    sorted(f"{name}={path}" for name, path in actual_bins ^ required_bins)
+                ),
+            )
+            forbidden_paths = {
+                str(value) for value in host_contract.get("forbidden_selected_paths", [])
+            }
+            selected_paths = {path for _, path in actual_bins}
+            report.check(
+                not (selected_paths & forbidden_paths),
+                "a superseded Host entrypoint is selected: "
+                + ", ".join(sorted(selected_paths & forbidden_paths)),
+            )
 
     forbidden_dependencies = set(str(value) for value in cargo.get("forbidden_internal_dependencies", []))
     package_specs = cargo.get("owner_open_packages", [])
@@ -131,12 +196,16 @@ def verify(root: Path, strict_android: bool = False) -> Report:
         dependencies = dependency_names(manifest)
         package_facts[str(path)] = sorted(dependencies)
         leaked = dependencies & forbidden_dependencies
-        report.check(not leaked, f"{path} imports forbidden legacy dependencies: " + ", ".join(sorted(leaked)))
+        report.check(
+            not leaked,
+            f"{path} imports forbidden legacy dependencies: " + ", ".join(sorted(leaked)),
+        )
         allowed_internal = set(str(value) for value in spec.get("allowed_internal_dependencies", []))
         actual_internal = {value for value in dependencies if value.startswith("trillionnium-")}
         report.check(
             actual_internal <= allowed_internal,
-            f"{path} has an unreviewed owner-open internal edge: " + ", ".join(sorted(actual_internal - allowed_internal)),
+            f"{path} has an unreviewed owner-open internal edge: "
+            + ", ".join(sorted(actual_internal - allowed_internal)),
         )
         source_root = root / path / "src"
         if source_root.is_dir():
@@ -146,7 +215,10 @@ def verify(root: Path, strict_android: bool = False) -> Report:
                     if str(marker) in text:
                         marker_hits.append(f"{source.relative_to(root)}:{marker}")
 
-    report.check(not marker_hits, "owner-open source contains forbidden legacy markers: " + ", ".join(marker_hits))
+    report.check(
+        not marker_hits,
+        "owner-open source contains forbidden legacy markers: " + ", ".join(marker_hits),
+    )
 
     allowed_status = {
         "NOT_STARTED",
@@ -167,16 +239,22 @@ def verify(root: Path, strict_android: bool = False) -> Report:
                 report.errors.append("R5 status work-package entry is not an object")
                 continue
             identifier = str(item.get("id", ""))
-            report.check(identifier and identifier not in seen, f"duplicate or empty R5 work-package id: {identifier}")
+            report.check(
+                bool(identifier) and identifier not in seen,
+                f"duplicate or empty R5 work-package id: {identifier}",
+            )
             seen.add(identifier)
             report.check(item.get("status") in allowed_status, f"invalid status level for {identifier}")
             evidence = str(item.get("latest_evidence_level", ""))
-            report.check(evidence in {"L0", "L1", "L2", "L3", "L4", "L5", "L6"}, f"invalid evidence level for {identifier}")
+            report.check(
+                evidence in {"L0", "L1", "L2", "L3", "L4", "L5", "L6"},
+                f"invalid evidence level for {identifier}",
+            )
         report.check(seen == {f"W{index}" for index in range(8)}, "R5 status must contain exactly W0-W7")
 
     report.check(status.get("public_release") is False, "R5 source branch must not claim a public release")
     negative = status.get("not_claimed", [])
-    report.check(isinstance(negative, list) and negative, "R5 status must carry explicit negative claims")
+    report.check(isinstance(negative, list) and bool(negative), "R5 status must carry explicit negative claims")
 
     android = contract.get("android", {})
     android_hits: list[str] = []
@@ -204,6 +282,7 @@ def verify(root: Path, strict_android: bool = False) -> Report:
         {
             "workspace_members": sorted(members),
             "default_members": sorted(defaults),
+            "host_binaries": sorted(host_binary_facts, key=lambda item: item["name"]),
             "owner_open_package_dependencies": package_facts,
             "forbidden_source_marker_hits": marker_hits,
             "android_forbidden_package_hits": android_hits,
