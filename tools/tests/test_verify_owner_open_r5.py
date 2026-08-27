@@ -139,13 +139,23 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
 
     def test_unreviewed_internal_edge_fails(self) -> None:
         manifest = (self.root / "apps/host/Cargo.toml").read_text(encoding="utf-8")
-        self.write("apps/host/Cargo.toml", manifest + 'trillionnium-surprise = "1"\n')
+        manifest = manifest.replace(
+            "[dependencies]\n",
+            '[dependencies]\ntrillionnium-surprise = "1"\n',
+            1,
+        )
+        self.write("apps/host/Cargo.toml", manifest)
         report = module.verify(self.root)
         self.assertTrue(any("unreviewed owner-open internal edge" in value for value in report.errors))
 
     def test_legacy_dependency_fails(self) -> None:
         manifest = (self.root / "crates/turn-loop/Cargo.toml").read_text(encoding="utf-8")
-        self.write("crates/turn-loop/Cargo.toml", manifest + 'legacy-crate = "1"\n')
+        manifest = manifest.replace(
+            "[dependencies]\n",
+            '[dependencies]\nlegacy-crate = "1"\n',
+            1,
+        )
+        self.write("crates/turn-loop/Cargo.toml", manifest)
         report = module.verify(self.root)
         self.assertTrue(any("forbidden legacy dependencies" in value for value in report.errors))
 
