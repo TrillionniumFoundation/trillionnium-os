@@ -15,7 +15,7 @@ framing, process, transport, storage, liveness and recovery mechanics. R5
 supersedes R4 for implementation order, source closure, evidence promotion and
 what the project builds next.
 
-No source file, test source, schema, receipt or historical device observation
+No source file, authored test, schema, receipt or historical device observation
 may promote a capability beyond evidence actually captured against the exact
 commit. In particular:
 
@@ -28,12 +28,12 @@ commit. In particular:
 
 ## 1. R5 critical-path outcome
 
-R5 closes the first executable same-turn loop:
+R5 closes the first executable, controllable same-turn loop:
 
 ```text
 owner/AiShell turn.start
   -> one owner-open Host connection
-  -> one Codex/provider semantic turn
+  -> one Codex/provider semantic turn worker
   -> provider model/status event
   -> provider tool call
   -> exact shell command/argv or ordinary adb argv
@@ -41,6 +41,13 @@ owner/AiShell turn.start
   -> observation returned to the same provider turn
   -> provider continues and produces final model output
   -> exactly one turn terminal
+
+parallel control path:
+client frame reader
+  -> correlated turn.cancel or tool.cancel
+  -> turn token or scoped call registry
+  -> provider/tool process-group cancellation
+  -> truthful cancelled observation
 ```
 
 The loop must preserve uncertainty. An exact duplicate call attaches to a
@@ -48,11 +55,11 @@ known local call; a changed request under the same scoped call ID conflicts; an
 uncertain remote effect is not automatically repeated; a missing terminal after
 restart becomes inspectable or `unknown_after_disconnect`.
 
-Provider and tool events are not allowed to wait in a complete-turn vector
-before becoming observable. The Host must persist and attempt delivery as each
-event is produced. Loss of the client output path detaches delivery; it does
-not retroactively cancel an accepted effect. Cancellation is a distinct control
-operation with its own correlation and terminal observation.
+Provider, tool and control events must not wait in a complete-turn vector before
+becoming observable. The Host persists and attempts delivery as each event is
+produced. Loss of the client output path detaches delivery; it does not
+retroactively cancel an accepted effect. Cancellation is a distinct correlated
+control operation with its own acknowledgement and terminal observation.
 
 ## 2. Non-negotiable engineering invariants
 
@@ -66,14 +73,14 @@ provider.
 
 ### 2.2 Mechanism safety remains mandatory
 
-The source closure must still provide:
+The source closure must provide:
 
 - duplicate-member-safe and bounded framing;
 - exact connection/turn/call correlation;
-- finite argv, environment, stdin, output, process and spool ceilings;
+- finite argv, environment, stdin, output, process, queue and spool ceilings;
 - process groups, cancellation, timeout and child reaping;
 - byte-preserving stdout/stderr and later PTY transport;
-- stable accepted/started/chunk/terminal observations;
+- stable accepted/started/chunk/control/terminal observations;
 - per-event best-effort persistence and honest delivery status;
 - conservative disconnect and restart reconciliation;
 - explicit local peer/socket admission on Android;
@@ -97,18 +104,23 @@ crates/trillionnium-owner-open-tool-bridge
 crates/trillionnium-owner-open-turn-loop
 ```
 
-The Host package must disable automatic binary discovery. Only the foundation
-Host and the selected R5 streaming Host may be product candidates; superseded
-`src/bin` experiments may remain as history but must not enter `--all-targets`
-implicitly.
+The Host package disables automatic binary discovery. Only these binary roots
+are selected:
+
+```text
+trillionnium-owner-open-host    -> src/main.rs
+trillionnium-owner-open-r5-host -> src/bin/r5_control_host_v2.rs
+```
+
+Superseded `r5_host`, streaming-only and first control-carrier experiments may
+remain as unselected history, but must not enter `--all-targets` implicitly.
+The exact machine gate is
+`docs/contracts/owner-open-forbidden-default-graph-v2.json`.
 
 Legacy `trillionniumd`, plan/Authority, privilege broker, broad OS types, typed
 direct tools, sealed shell broker, egress and journal packages remain explicit
-history/sealed targets. They may not enter the owner-open defaults through a
-workspace default, feature unification or an unreviewed internal dependency.
-
-The exact machine gate is
-`docs/contracts/owner-open-forbidden-default-graph-v2.json`.
+history/sealed targets. They may not enter owner-open defaults through a
+workspace default, feature unification or unreviewed internal dependency.
 
 ## 3. Evidence vocabulary
 
@@ -141,14 +153,14 @@ Deliverables:
 
 1. exact R5 Cargo default closure;
 2. package-by-package reviewed internal dependency edges;
-3. explicit binary targets with Cargo autobin discovery disabled;
+3. explicit Host binary targets with Cargo autobin discovery disabled;
 4. negative source-marker checks;
 5. Android owner-open product profile with Authority/lease/P01/old broker nodes absent;
 6. Soong, init, SELinux and target-files negative evidence.
 
 Exit: source closure is `HOST_TESTED`; Android closure is `IMAGE_INCLUDED`.
 
-### W1 — same-turn provider/tool loop
+### W1 — same-turn provider/tool loop and active controls
 
 Deliverables:
 
@@ -157,27 +169,34 @@ Deliverables:
 3. direct bridge executes one shell/ADB process at most once;
 4. raw runtime events return to the provider;
 5. every turn/runtime event reaches a synchronous Host sink when produced;
-6. provider may continue after a non-zero tool exit;
-7. a cross-thread cancellation token reaches an active process group;
-8. exactly one turn terminal is emitted;
-9. provider panic/failure becomes one truthful terminal.
+6. provider may continue after a non-zero or cancelled tool result;
+7. bounded input/control reader remains serviceable while the turn worker runs;
+8. correlated `turn.cancel` reaches the turn token and provider;
+9. targeted `tool.cancel` reaches the scoped call registry only;
+10. client EOF does not imply cancellation;
+11. exactly one turn terminal is emitted;
+12. provider panic/failure becomes one truthful terminal.
 
-Current source root:
-`crates/trillionnium-owner-open-turn-loop`.
+Current source roots:
+
+- `crates/trillionnium-owner-open-turn-loop`;
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs`.
 
 Immediate acceptance tests:
 
 - failed shell observation followed by provider continuation;
 - provider event sink runs before `ProviderHost::emit` returns;
-- runtime `started` reaches the sink before the process can complete;
+- runtime `started` reaches the sink before the process completes;
 - exact duplicate call causes one process effect and one existing-call event;
 - ordinary ADB unknown argv remains exact and receives no target injection;
-- turn cancellation terminates an active tool process group;
+- `turn.cancel` is accepted while a shell process runs and the provider returns
+  a cancelled turn;
+- `tool.cancel` cancels only the target call and provider reasoning continues;
 - provider panic closes one terminal;
 - conflicting canonical request under the same scoped call ID does not spawn.
 
-Exit: fake provider through a real Host process reaches `HOST_TESTED`, including
-streaming and cancellation tests.
+Exit: fake provider through the selected Host reaches `HOST_TESTED`, including
+streaming, detached-delivery and active-control process tests.
 
 ### W2 — external and installed Codex provider adapter
 
@@ -222,22 +241,23 @@ Deliverables:
 - unknown/future subcommands remain transport-valid;
 - USB/offline/unauthorized/recovery/reboot observations remain raw;
 - conservative disconnect/reconnect state;
-- the same cancellation and lifecycle mechanics as shell execution.
+- the same targeted cancellation and process lifecycle mechanics as shell.
 
 Exit: physical `adb devices -l`, `adb shell id`, deliberate failure and one
 visible device mutation in the same Codex turn.
 
-### W5 — event store, replay and recovery
+### W5 — event store, replay and recovery APIs
 
 Deliverables:
 
-- append-only accepted/started/chunk/terminal records;
+- append-only accepted/started/chunk/control/terminal records;
 - explicit `best_effort`/`unreplayable` storage state;
 - stable event IDs and inclusive cursors;
 - event-by-event persistence while provider/tools are active;
 - completed-call replay without re-execution;
 - incomplete-call reconciliation to `unknown_after_disconnect` where needed;
 - client-delivery detach without cancellation of accepted effects;
+- turn/call inspect operations;
 - long-running job inspect/attach/write/resize/close/kill;
 - bounded retention and explicit cleanup.
 
@@ -249,9 +269,11 @@ Immediate acceptance tests:
   persistence;
 - completed replay does not start a second provider process;
 - incomplete replay persists `unknown_after_disconnect` before delivery and
-  never automatically redispatches.
+  never automatically redispatches;
+- turn/tool cancellation acknowledgement is persisted before the resulting
+  terminal observation.
 
-Exit: L2 streaming/replay/restart tests and L5 fault matrix.
+Exit: L2 streaming/control/replay/restart tests and L5 fault matrix.
 
 ### W6 — Android/Root Linux integration and AiShell
 
@@ -280,7 +302,7 @@ Deliverables:
 Owner-open dogfood exits at L4/L5. Public release requires separate L6 and may
 not block owner-open development.
 
-## 5. Immediate implementation batches
+## 5. Implementation batches
 
 ### Batch A — graph and direct-process foundation
 
@@ -304,16 +326,18 @@ Source-authored:
 
 Promotion hold: replay and fault tests have not executed on a real runner.
 
-### Batch C — current streaming and cancellation slice
+### Batch C — streaming, detached delivery and active controls
 
 Source-authored:
 
 - synchronous turn-event sink;
-- runtime event forwarding while the process is active;
+- runtime event forwarding while a process is active;
 - per-event Host persistence and flush;
 - detached client delivery without effect cancellation;
-- turn cancellation token to active registry/process group;
-- provider JSONL `turn.cancel` acknowledgement and finite cleanup grace;
+- bounded input/control reader and independent turn worker;
+- active correlated `turn.cancel`;
+- targeted active `tool.cancel`;
+- provider JSONL cancellation acknowledgement and finite cleanup grace;
 - explicit Host binary selection with autobin discovery disabled.
 
 Current acceptance gate:
@@ -325,11 +349,10 @@ Current acceptance gate:
 
 ### Batch D — next source development
 
-- replace the blocking stdio reader with an active-turn control carrier;
-- service correlated `turn.cancel` and targeted `tool.cancel` while provider and
-  tools remain active;
-- add inclusive replay cursor, inspect and attach operations;
-- define bounded backpressure/window/pause/resume behavior;
+- add inclusive replay cursors and `turn.inspect`/`call.inspect` APIs;
+- add bounded stream window, pause and resume behavior;
+- add durable long-running jobs and attach/write/resize/close/kill;
+- define multi-connection ownership and cross-connection control correlation;
 - bind the installed Codex provider;
 - implement the selected real ADB topology.
 
