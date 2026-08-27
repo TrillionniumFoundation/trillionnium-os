@@ -6,6 +6,7 @@ license.workspace = true
 authors.workspace = true
 rust-version.workspace = true
 publish = false
+autobins = false
 
 [features]
 default = []
@@ -27,6 +28,10 @@ trillionnium-owner-open-types.workspace = true
 [dev-dependencies]
 serde_json.workspace = true
 tempfile.workspace = true
+
+[[bin]]
+name = "trillionnium-owner-open-host"
+path = "src/main.rs"
 
 [[bin]]
 name = "trillionnium-owner-open-r5-host"
