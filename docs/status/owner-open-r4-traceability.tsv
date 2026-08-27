@@ -18,9 +18,10 @@ R4-SHELL-001	W3	docs/protocols/owner-open-direct-agent-host-v1.md#5-shellexec	ow
 R4-SHELL-002	W3	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#92-process-mechanics	owner-open process substrate	future cwd/env/stdin/PTY/process-group suite	SPEC_ONLY
 R4-SHELL-003	W3	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#93-cancellation-and-races	owner-open process substrate	future timeout/cancel/exit race property tests	SPEC_ONLY
 R4-SHELL-004	W3	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#94-acceptance	Android Root Linux owner-open Host	future physical same-turn shell evidence	NOT_STARTED
-R4-ADB-001	W4	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#101-architecture-decision-required-before-implementation	docs/architecture future ADB topology ADR	future ADR review	SPEC_ONLY
-R4-ADB-002	W4	docs/protocols/owner-open-direct-agent-host-v1.md#6-adbexec	owner-open ADB substrate	no_serial_host_port_or_privilege_is_injected_by_the_codec	SOURCE_IMPLEMENTED
-R4-ADB-003	W4	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#103-acceptance	owner-open ADB substrate and physical device	future unauthorized/offline/reboot/USB suite	NOT_STARTED
+R4-ADB-001	W4	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#101-architecture-decision-required-before-implementation	docs/architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md	accepted P0 architecture decision; issue #5	SPEC_ONLY
+R4-ADB-002	W4	docs/protocols/owner-open-direct-agent-host-v1.md#6-adbexec	crates/trillionnium-owner-open-types/src/lib.rs::ToolCall::validate_adb_exec	no_serial_host_port_or_privilege_is_injected_by_the_codec	SOURCE_IMPLEMENTED
+R4-ADB-003	W4	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#103-acceptance	owner-open ADB relay and physical device	future unauthorized/offline/reboot/USB suite	NOT_STARTED
+R4-ADB-004	W4	docs/architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md#12-implementation-surfaces	future owner-open relay protocol; supervisor; Host adb backend	future exact argv/fake adb/relay disconnect tests	SPEC_ONLY
 R4-STORE-001	W5	docs/protocols/owner-open-direct-agent-host-v1.md#10-persistence-and-uncertainty	owner-open event store	future accepted/started/chunk/terminal crash matrix	SPEC_ONLY
 R4-STORE-002	W5	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#112-duplicate-calls	owner-open call registry	future duplicate attach/conflict/restart tests	SPEC_ONLY
 R4-JOB-001	W5	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#113-jobs	owner-open job registry	future attach/write/resize/kill/cursor tests	SPEC_ONLY
@@ -28,9 +29,9 @@ R4-ANDROID-001	W6	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#121-clean-in
 R4-ANDROID-002	W6	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#122-root-linux-lifecycle	Android init/rootfs/SELinux	future kill/restart/writable-overlay physical evidence	NOT_STARTED
 R4-UI-001	W7	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#13-w7--aishell-owner-open-ui	packages/apps/TrillionniumAiShell owner-open source set	future UI stream/cancel/reconnect device tests	SPEC_ONLY
 R4-EVIDENCE-001	W8	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#14-w8--qualification-and-evidence	docs/evidence future r4 packages	future evidence schema and publication tool	SPEC_ONLY
-R4-SEC-001	W0/W1	docs/security/owner-open-threat-model.md#51-t1-unauthorized-local-peer-reaches-the-host	owner-open Host socket/stdio carrier	future peer/socket admission tests	SPEC_ONLY
+R4-SEC-001	W0/W1	docs/security/owner-open-threat-model.md#51-t1-unauthorized-local-peer-reaches-the-host	apps/trillionnium-owner-open-host/src/main.rs filesystem UDS admission	writable_service_owned_socket_parent_is_rejected; exact 0600 socket/inode-bound cleanup source	SOURCE_IMPLEMENTED
 R4-SEC-002	W3	docs/security/owner-open-threat-model.md#54-t4-child-process-escapes-lifecycle-ownership	owner-open process substrate	future descendant/fd/cgroup fault tests	SPEC_ONLY
-R4-SEC-003	W4	docs/security/owner-open-threat-model.md#56-t6-adb-wrapper-changes-the-requested-operation	owner-open ADB substrate	future exact argv and raw output integration tests	SPEC_ONLY
+R4-SEC-003	W4	docs/security/owner-open-threat-model.md#56-t6-adb-wrapper-changes-the-requested-operation	owner-open ADB relay	future exact argv and raw output integration tests	SPEC_ONLY
 R4-SEC-004	W5	docs/security/owner-open-threat-model.md#57-t7-disconnectrestart-causes-duplicate-effects	owner-open call/event registry	future disconnect/restart no-redispatch suite	SPEC_ONLY
 R4-SEC-005	W6	docs/security/owner-open-threat-model.md#512-t12-emergency-stop-depends-on-compromised-components	Android init/recovery path	future wedged-provider/host/recovery device evidence	NOT_STARTED
 R4-RELEASE-001	W9	docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md#15-w9--optional-sealedpublic-profile	future sealed profile and release pipeline	future L6 evidence	NOT_STARTED
