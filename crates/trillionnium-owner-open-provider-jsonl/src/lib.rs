@@ -5,22 +5,23 @@
 //! truthful terminal reporting. It never adds plan, risk, approval, target
 //! substitution, command rewriting or a typed ADB subcommand table.
 
+mod process;
+mod strict_json;
+
 use std::collections::BTreeMap;
-use std::io::{BufRead, BufReader, Read, Write};
+use std::io::Write;
 use std::os::unix::ffi::OsStrExt;
 use std::os::unix::process::CommandExt;
 use std::path::PathBuf;
-use std::process::{Child, Command, ExitStatus, Stdio};
+use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::{Sender, channel};
+use std::sync::mpsc::channel;
 use std::sync::{Arc, Mutex};
-use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
-use serde::de::{self, MapAccess, SeqAccess, Visitor};
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::Serialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use thiserror::Error;
@@ -35,6 +36,8 @@ use trillionnium_owner_open_turn_loop::{
     ToolOutcome, TurnRequest,
 };
 use trillionnium_owner_open_types::{MechanicalLimits as CodecLimits, ToolCall};
+
+use process::{ProviderOutput, finish_child, spawn_stderr_reader, spawn_stdout_reader};
 
 pub const PROVIDER_PROTOCOL: &str = "trillionnium.owner-open.provider-jsonl.v1";
 
@@ -128,9 +131,9 @@ impl Default for JsonlProviderConfig {
             timeout: Duration::from_secs(300),
             poll_interval: Duration::from_millis(20),
             terminate_grace: Duration::from_millis(250),
-            // One tool.result may contain the bounded 16 MiB runtime output in
-            // base64 plus lifecycle metadata. Keep one finite line above that
-            // closed envelope until incremental provider result frames land.
+            // A bounded tool.result may contain 16 MiB of runtime output in
+            // base64 plus lifecycle metadata. Incremental result frames remain
+            // a later optimization; this first protocol keeps one finite line.
             max_line_bytes: 32 * 1024 * 1024,
             max_stdout_bytes: 64 * 1024 * 1024,
             max_event_count: 4096,
@@ -259,7 +262,8 @@ impl JsonlProvider {
                                 "provider event count exceeds its bound".to_string(),
                             ));
                         }
-                        let value = decode_strict_object(&raw)?;
+                        let value = strict_json::decode_object(&raw)
+                            .map_err(JsonlProviderError::Protocol)?;
                         validate_envelope(&value, inbound_seq)?;
                         inbound_seq = inbound_seq.saturating_add(1);
                         match required_string(&value, "kind")? {
@@ -368,7 +372,8 @@ impl JsonlProvider {
         })();
 
         drop(provider_stdin);
-        let cleanup = finish_child(&mut child, pid, self.config.terminate_grace);
+        let cleanup = finish_child(&mut child, pid, self.config.terminate_grace)
+            .map_err(JsonlProviderError::Cleanup);
         drop(receiver);
         let stdout_join = stdout_thread.join();
         let stderr_join = stderr_thread.join();
@@ -383,9 +388,10 @@ impl JsonlProvider {
             ));
         }
         let status = cleanup?;
-        if let Err(error) = result {
-            return Err(error);
-        }
+        let terminal = match result {
+            Ok(terminal) => terminal,
+            Err(error) => return Err(error),
+        };
         if stderr_overflow.load(Ordering::SeqCst) {
             return Err(JsonlProviderError::Protocol(format!(
                 "provider stderr exceeded its bound; prefix={}",
@@ -398,7 +404,7 @@ impl JsonlProvider {
                 String::from_utf8_lossy(&stderr)
             )));
         }
-        result
+        Ok(terminal)
     }
 }
 
@@ -411,101 +417,6 @@ impl SameTurnProvider for JsonlProvider {
         self.run_session(request, host)
             .map_err(|error| error.to_string())
     }
-}
-
-#[derive(Debug)]
-enum ProviderOutput {
-    Line(Vec<u8>),
-    Eof,
-    Error(String),
-}
-
-fn spawn_stdout_reader(
-    stdout: impl Read + Send + 'static,
-    max_line_bytes: usize,
-    max_stdout_bytes: usize,
-    sender: Sender<ProviderOutput>,
-) -> JoinHandle<()> {
-    thread::spawn(move || {
-        let mut reader = BufReader::new(stdout);
-        let mut total = 0usize;
-        loop {
-            match read_bounded_line(&mut reader, max_line_bytes) {
-                Ok(Some(line)) => {
-                    total = match total.checked_add(line.len().saturating_add(1)) {
-                        Some(total) if total <= max_stdout_bytes => total,
-                        _ => {
-                            let _ = sender.send(ProviderOutput::Error(
-                                "provider aggregate stdout exceeds its bound".to_string(),
-                            ));
-                            return;
-                        }
-                    };
-                    if sender.send(ProviderOutput::Line(line)).is_err() {
-                        return;
-                    }
-                }
-                Ok(None) => {
-                    let _ = sender.send(ProviderOutput::Eof);
-                    return;
-                }
-                Err(error) => {
-                    let _ = sender.send(ProviderOutput::Error(error));
-                    return;
-                }
-            }
-        }
-    })
-}
-
-fn spawn_stderr_reader(
-    mut stderr: impl Read + Send + 'static,
-    maximum: usize,
-    capture: Arc<Mutex<Vec<u8>>>,
-    overflow: Arc<AtomicBool>,
-) -> JoinHandle<()> {
-    thread::spawn(move || {
-        let mut buffer = [0_u8; 16 * 1024];
-        loop {
-            match stderr.read(&mut buffer) {
-                Ok(0) => return,
-                Ok(count) => {
-                    let Ok(mut bytes) = capture.lock() else {
-                        return;
-                    };
-                    let remaining = maximum.saturating_sub(bytes.len());
-                    bytes.extend_from_slice(&buffer[..count.min(remaining)]);
-                    if count > remaining {
-                        overflow.store(true, Ordering::SeqCst);
-                    }
-                }
-                Err(error) if error.kind() == std::io::ErrorKind::Interrupted => {}
-                Err(_) => return,
-            }
-        }
-    })
-}
-
-fn read_bounded_line(
-    reader: &mut impl BufRead,
-    maximum: usize,
-) -> std::result::Result<Option<Vec<u8>>, String> {
-    let mut line = Vec::new();
-    let read = reader
-        .take(maximum as u64 + 2)
-        .read_until(b'\n', &mut line)
-        .map_err(|error| format!("provider stdout read failed: {error}"))?;
-    if read == 0 {
-        return Ok(None);
-    }
-    if line.last() != Some(&b'\n') {
-        return Err("provider JSONL record is unterminated or oversized".to_string());
-    }
-    line.pop();
-    if line.is_empty() || line.len() > maximum {
-        return Err("provider JSONL record is empty or oversized".to_string());
-    }
-    Ok(Some(line))
 }
 
 fn write_json_line(
@@ -944,53 +855,6 @@ fn validate_environment(environment: &EnvironmentDelta) -> Result<()> {
     Ok(())
 }
 
-fn finish_child(child: &mut Child, pid: u32, grace: Duration) -> Result<ExitStatus> {
-    let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => return Ok(status),
-            Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-            Ok(None) => break,
-            Err(error) => return Err(JsonlProviderError::Cleanup(error.to_string())),
-        }
-    }
-    terminate_process_group(child, pid, grace)
-}
-
-fn terminate_process_group(child: &mut Child, pid: u32, grace: Duration) -> Result<ExitStatus> {
-    send_group_signal(pid, libc::SIGTERM)?;
-    let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => return Ok(status),
-            Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-            Ok(None) => break,
-            Err(error) => return Err(JsonlProviderError::Cleanup(error.to_string())),
-        }
-    }
-    send_group_signal(pid, libc::SIGKILL)?;
-    child
-        .wait()
-        .map_err(|error| JsonlProviderError::Cleanup(error.to_string()))
-}
-
-fn send_group_signal(pid: u32, signal: i32) -> Result<()> {
-    let group = i32::try_from(pid).map_err(|_| {
-        JsonlProviderError::Cleanup("provider pid does not fit a process-group id".to_string())
-    })?;
-    if unsafe { libc::kill(-group, signal) } == 0 {
-        return Ok(());
-    }
-    let error = std::io::Error::last_os_error();
-    if error.raw_os_error() == Some(libc::ESRCH) {
-        Ok(())
-    } else {
-        Err(JsonlProviderError::Cleanup(format!(
-            "provider process-group signal {signal} failed: {error}"
-        )))
-    }
-}
-
 fn hash_field(hasher: &mut Sha256, name: &[u8], value: &[u8]) {
     hasher.update((name.len() as u64).to_be_bytes());
     hasher.update(name);
@@ -1009,111 +873,4 @@ fn hex_lower(value: &[u8]) -> String {
 
 fn invalid_config(message: impl Into<String>) -> JsonlProviderError {
     JsonlProviderError::InvalidConfiguration(message.into())
-}
-
-struct UniqueJson(Value);
-
-impl<'de> Deserialize<'de> for UniqueJson {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_any(UniqueJsonVisitor)
-    }
-}
-
-struct UniqueJsonVisitor;
-
-impl<'de> Visitor<'de> for UniqueJsonVisitor {
-    type Value = UniqueJson;
-
-    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        formatter.write_str("JSON without duplicate object members")
-    }
-
-    fn visit_unit<E>(self) -> std::result::Result<Self::Value, E> {
-        Ok(UniqueJson(Value::Null))
-    }
-
-    fn visit_none<E>(self) -> std::result::Result<Self::Value, E> {
-        Ok(UniqueJson(Value::Null))
-    }
-
-    fn visit_some<D>(self, deserializer: D) -> std::result::Result<Self::Value, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        UniqueJson::deserialize(deserializer)
-    }
-
-    fn visit_bool<E>(self, value: bool) -> std::result::Result<Self::Value, E> {
-        Ok(UniqueJson(Value::Bool(value)))
-    }
-
-    fn visit_i64<E>(self, value: i64) -> std::result::Result<Self::Value, E> {
-        Ok(UniqueJson(Value::Number(value.into())))
-    }
-
-    fn visit_u64<E>(self, value: u64) -> std::result::Result<Self::Value, E> {
-        Ok(UniqueJson(Value::Number(value.into())))
-    }
-
-    fn visit_f64<E>(self, value: f64) -> std::result::Result<Self::Value, E>
-    where
-        E: de::Error,
-    {
-        serde_json::Number::from_f64(value)
-            .map(Value::Number)
-            .map(UniqueJson)
-            .ok_or_else(|| E::custom("non-finite JSON number"))
-    }
-
-    fn visit_str<E>(self, value: &str) -> std::result::Result<Self::Value, E> {
-        Ok(UniqueJson(Value::String(value.to_string())))
-    }
-
-    fn visit_string<E>(self, value: String) -> std::result::Result<Self::Value, E> {
-        Ok(UniqueJson(Value::String(value)))
-    }
-
-    fn visit_seq<A>(self, mut sequence: A) -> std::result::Result<Self::Value, A::Error>
-    where
-        A: SeqAccess<'de>,
-    {
-        let mut output = Vec::new();
-        while let Some(value) = sequence.next_element::<UniqueJson>()? {
-            output.push(value.0);
-        }
-        Ok(UniqueJson(Value::Array(output)))
-    }
-
-    fn visit_map<A>(self, mut map: A) -> std::result::Result<Self::Value, A::Error>
-    where
-        A: MapAccess<'de>,
-    {
-        let mut output = serde_json::Map::new();
-        while let Some(key) = map.next_key::<String>()? {
-            if output.contains_key(&key) {
-                return Err(de::Error::custom(format!("duplicate key {key}")));
-            }
-            let value = map.next_value::<UniqueJson>()?;
-            output.insert(key, value.0);
-        }
-        Ok(UniqueJson(Value::Object(output)))
-    }
-}
-
-fn decode_strict_object(encoded: &[u8]) -> Result<Value> {
-    let mut deserializer = serde_json::Deserializer::from_slice(encoded);
-    let UniqueJson(value) = UniqueJson::deserialize(&mut deserializer)
-        .map_err(|error| JsonlProviderError::Protocol(error.to_string()))?;
-    deserializer
-        .end()
-        .map_err(|error| JsonlProviderError::Protocol(error.to_string()))?;
-    if !value.is_object() {
-        return Err(JsonlProviderError::Protocol(
-            "provider JSONL record must be an object".to_string(),
-        ));
-    }
-    Ok(value)
 }
