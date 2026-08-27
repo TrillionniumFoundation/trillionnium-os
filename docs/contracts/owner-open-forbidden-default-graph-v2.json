@@ -1,7 +1,7 @@
 {
   "schema": "org.trillionnium.owner-open-forbidden-default-graph.v2",
   "revision": "2026-08-28-r5",
-  "description": "Exact negative graph contract for the R5 owner-open source closure. Legacy code may remain as explicit history/sealed targets, but must not enter Cargo defaults, owner-open internal dependencies, Android owner-open packages, startup services, or broad classpaths.",
+  "description": "Exact negative graph contract for the R5 owner-open source closure. Legacy code may remain as explicit history/sealed targets, but must not enter Cargo defaults, owner-open internal dependencies, Host binary targets, Android owner-open packages, startup services, or broad classpaths.",
   "cargo": {
     "required_workspace_members": [
       "apps/trillionnium-owner-open-host",
@@ -75,6 +75,23 @@
       "AgentExecutionRequest",
       "CapabilityLease"
     ],
+    "host_binary_contract": {
+      "manifest": "apps/trillionnium-owner-open-host/Cargo.toml",
+      "autobins": false,
+      "required_bins": [
+        {
+          "name": "trillionnium-owner-open-host",
+          "path": "src/main.rs"
+        },
+        {
+          "name": "trillionnium-owner-open-r5-host",
+          "path": "src/bin/r5_streaming_host.rs"
+        }
+      ],
+      "forbidden_selected_paths": [
+        "src/bin/r5_host.rs"
+      ]
+    },
     "owner_open_packages": [
       {
         "path": "apps/trillionnium-owner-open-host",
