@@ -102,6 +102,7 @@ impl JsonlProviderConfig {
         }
         if self.timeout.is_zero()
             || self.poll_interval.is_zero()
+            || self.terminate_grace.is_zero()
             || self.max_line_bytes == 0
             || self.max_stdout_bytes < self.max_line_bytes
             || self.max_event_count == 0
@@ -249,10 +250,40 @@ impl JsonlProvider {
 
             let mut terminal = None;
             let mut event_count = 0usize;
+            let mut cancellation_sent = false;
+            let mut cancellation_deadline = None::<Instant>;
             while terminal.is_none() {
                 if started.elapsed() >= self.config.timeout {
                     return Err(JsonlProviderError::TimedOut);
                 }
+                if host.is_cancelled() && !cancellation_sent {
+                    write_json_line(
+                        &mut provider_stdin,
+                        &json!({
+                            "protocol": PROVIDER_PROTOCOL,
+                            "kind": "turn.cancel",
+                            "seq": outbound_seq,
+                            "turn": {
+                                "session_id": &request.session_id,
+                                "profile_id": &request.profile_id,
+                                "task_id": &request.task_id,
+                                "turn_id": &request.turn_id,
+                                "turn_stream_id": &request.turn_stream_id
+                            }
+                        }),
+                        self.config.max_line_bytes,
+                    )?;
+                    outbound_seq = outbound_seq.saturating_add(1);
+                    cancellation_sent = true;
+                    cancellation_deadline = Instant::now().checked_add(self.config.terminate_grace);
+                }
+                if cancellation_deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+                    terminal = Some(ProviderTerminal::cancelled(
+                        "provider cancellation grace expired; its process group was terminated",
+                    ));
+                    continue;
+                }
+
                 match receiver.recv_timeout(self.config.poll_interval) {
                     Ok(ProviderOutput::Line(raw)) => {
                         event_count = event_count.saturating_add(1);
@@ -338,6 +369,12 @@ impl JsonlProvider {
                         }
                     }
                     Ok(ProviderOutput::Eof) => {
+                        if cancellation_sent {
+                            terminal = Some(ProviderTerminal::cancelled(
+                                "provider exited after turn cancellation",
+                            ));
+                            continue;
+                        }
                         let status = child
                             .try_wait()
                             .map_err(|error| JsonlProviderError::Io(error.to_string()))?;
@@ -353,15 +390,27 @@ impl JsonlProvider {
                             .try_wait()
                             .map_err(|error| JsonlProviderError::Io(error.to_string()))?
                         {
-                            return Err(JsonlProviderError::Interrupted(format!(
-                                "process exited before turn terminal: {status}"
-                            )));
+                            if cancellation_sent {
+                                terminal = Some(ProviderTerminal::cancelled(format!(
+                                    "provider exited after cancellation: {status}"
+                                )));
+                            } else {
+                                return Err(JsonlProviderError::Interrupted(format!(
+                                    "process exited before turn terminal: {status}"
+                                )));
+                            }
                         }
                     }
                     Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
-                        return Err(JsonlProviderError::Interrupted(
-                            "provider stdout reader disconnected".to_string(),
-                        ));
+                        if cancellation_sent {
+                            terminal = Some(ProviderTerminal::cancelled(
+                                "provider output closed after turn cancellation",
+                            ));
+                        } else {
+                            return Err(JsonlProviderError::Interrupted(
+                                "provider stdout reader disconnected".to_string(),
+                            ));
+                        }
                     }
                 }
             }
@@ -399,7 +448,7 @@ impl JsonlProvider {
                 String::from_utf8_lossy(&stderr)
             )));
         }
-        if !status.success() {
+        if !status.success() && terminal.status != ProviderTerminalStatus::Cancelled {
             return Err(JsonlProviderError::Interrupted(format!(
                 "provider exited unsuccessfully: {status}; stderr={}",
                 String::from_utf8_lossy(&stderr)
