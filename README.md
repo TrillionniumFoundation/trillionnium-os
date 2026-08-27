@@ -94,15 +94,22 @@ order, evidence levels and completion gates.
 
 The foundation verifier checks the isolated Cargo default graph, generated
 codec constants, machine status, required documents and the known Android
-legacy graph hold:
+legacy graph hold. The r4 branch introduces new workspace packages, so refresh
+the lock before running locked package tests:
 
 ```sh
 python3 tools/generate-owner-open-types.py --check
 python3 tools/verify-owner-open-foundation.py
 python3 -m unittest discover -s tools/tests -p 'test_*.py'
+cargo generate-lockfile
 cargo test --locked --package trillionnium-owner-open-types
 cargo test --locked --package trillionnium-owner-open-host
 ```
+
+The checked-in lock remains an audit-snapshot input until a Rust 1.93 build
+refreshes and reviews its exact diff. A pull request must not merge merely
+because source-shape checks pass; the refreshed lock, Rust formatting and both
+package test suites are explicit merge gates.
 
 `--strict-android` is intentionally not the default until the W0 Android
 profile split lands. After that cutover it becomes mandatory and any forbidden
