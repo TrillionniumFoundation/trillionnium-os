@@ -85,7 +85,7 @@ impl SameTurnProvider for WaitsForStartedSink {
         host: &mut ProviderHost<'_>,
     ) -> Result<ProviderTerminal, String> {
         let command = format!(
-            "deadline=$((SECONDS + 3)); while [ ! -f '{}' ]; do [ $SECONDS -lt $deadline ] || exit 88; sleep 0.01; done; printf streamed",
+            "i=0; while [ ! -f '{}' ]; do i=$((i + 1)); [ $i -lt 300 ] || exit 88; sleep 0.01; done; printf streamed",
             self.marker.display()
         );
         match host
@@ -113,7 +113,10 @@ fn runtime_started_event_reaches_the_sink_before_the_process_finishes() {
         if matches!(
             &event.kind,
             TurnEventKind::ToolRuntime(runtime)
-                if matches!(runtime.kind, trillionnium_owner_open_runtime::ExecutionEventKind::Started { .. })
+                if matches!(
+                    &runtime.kind,
+                    trillionnium_owner_open_runtime::ExecutionEventKind::Started { .. }
+                )
         ) {
             fs::write(&sink_marker, b"started").map_err(|error| error.to_string())?;
         }
@@ -173,7 +176,10 @@ fn turn_cancellation_reaches_an_active_tool_process_group() {
             if matches!(
                 &event.kind,
                 TurnEventKind::ToolRuntime(runtime)
-                    if matches!(runtime.kind, trillionnium_owner_open_runtime::ExecutionEventKind::Started { .. })
+                    if matches!(
+                        &runtime.kind,
+                        trillionnium_owner_open_runtime::ExecutionEventKind::Started { .. }
+                    )
             ) {
                 fs::write(&sink_started, b"started").map_err(|error| error.to_string())?;
             }
