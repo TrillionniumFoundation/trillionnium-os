@@ -9,12 +9,33 @@ use trillionnium_owner_open_types::{RunTurnFrame, RunTurnRequest};
 
 const TURN_REQUEST_DIGEST_SCHEMA: &str = "trillionnium.owner-open.turn-request-digest.v1";
 const TURN_STREAM_SCHEMA: &str = "trillionnium.owner-open.turn-stream.v1";
+const MAX_INSPECT_FRAMES: usize = 4096;
 
 #[derive(Debug, Clone)]
 pub enum StoredTurn {
     Empty,
     Complete(Vec<RunTurnFrame>),
     Incomplete(Vec<RunTurnFrame>),
+    Conflict(String),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct TurnInspection {
+    pub frames: Vec<RunTurnFrame>,
+    pub inclusive_cursor: u64,
+    pub next_cursor: u64,
+    pub total_events: u64,
+    pub complete: bool,
+    pub has_more: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum StoredInspection {
+    Unavailable {
+        status: String,
+        error: Option<String>,
+    },
+    Found(TurnInspection),
     Conflict(String),
 }
 
@@ -138,6 +159,74 @@ impl Persistence {
             ),
             None => StoredTurn::Incomplete(frames),
         }
+    }
+
+    /// Inspect already-validated durable frames using an inclusive turn-event
+    /// cursor. Inspection is read-only: it never appends, reconciles, starts a
+    /// provider, claims a call, or dispatches an effect.
+    pub fn inspect(
+        &self,
+        scope: &TurnScope,
+        request_sha256: &str,
+        inclusive_cursor: u64,
+        limit: usize,
+    ) -> StoredInspection {
+        if self.store.is_none() {
+            return StoredInspection::Unavailable {
+                status: self.status().to_string(),
+                error: self.error.clone(),
+            };
+        }
+        if limit == 0 || limit > MAX_INSPECT_FRAMES {
+            return StoredInspection::Conflict(format!(
+                "inspect limit must be between 1 and {MAX_INSPECT_FRAMES}"
+            ));
+        }
+
+        let (frames, complete) = match self.load(scope, request_sha256) {
+            StoredTurn::Empty => (Vec::new(), false),
+            StoredTurn::Complete(frames) => (frames, true),
+            StoredTurn::Incomplete(frames) => (frames, false),
+            StoredTurn::Conflict(error) => return StoredInspection::Conflict(error),
+        };
+        let total_events = match u64::try_from(frames.len()) {
+            Ok(value) => value,
+            Err(_) => {
+                return StoredInspection::Conflict(
+                    "stored turn event count does not fit the cursor domain".to_string(),
+                );
+            }
+        };
+        if inclusive_cursor > total_events {
+            return StoredInspection::Conflict(format!(
+                "inclusive cursor {inclusive_cursor} is after next cursor {total_events}"
+            ));
+        }
+        let start = match usize::try_from(inclusive_cursor) {
+            Ok(value) => value,
+            Err(_) => {
+                return StoredInspection::Conflict(
+                    "inclusive cursor does not fit the local index domain".to_string(),
+                );
+            }
+        };
+        let end = start.saturating_add(limit).min(frames.len());
+        let next_cursor = match u64::try_from(end) {
+            Ok(value) => value,
+            Err(_) => {
+                return StoredInspection::Conflict(
+                    "next cursor does not fit the cursor domain".to_string(),
+                );
+            }
+        };
+        StoredInspection::Found(TurnInspection {
+            frames: frames[start..end].to_vec(),
+            inclusive_cursor,
+            next_cursor,
+            total_events,
+            complete,
+            has_more: end < frames.len(),
+        })
     }
 
     /// Returns true only when the frame is durably present or an exact
