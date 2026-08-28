@@ -1,0 +1,14 @@
+   Compiling trnm-token-jwt-adapter-gate v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter-gate-v2)
+error: non-ASCII character in raw byte string literal
+   --> src/../../trnm-token-jwt-adapter/src/json.rs:722:56
+    |
+722 |         let source = br#" { "b" : [true,null,-0], "a":"é" } "#;
+    |                                                        ^ must be ASCII
+
+error: non-ASCII character in raw byte string literal
+   --> src/../../trnm-token-jwt-adapter/src/json.rs:725:37
+    |
+725 |         assert_eq!(first, br#"{"a":"é","b":[true,null,0]}"#);
+    |                                     ^ must be ASCII
+
+error: could not compile `trnm-token-jwt-adapter-gate` (lib) due to 2 previous errors
