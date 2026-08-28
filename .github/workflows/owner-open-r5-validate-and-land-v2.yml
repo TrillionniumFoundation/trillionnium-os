@@ -1,4 +1,4 @@
-name: owner-open R5 validate and land repairs v2
+name: owner-open R5 strict source closeout v3
 
 on:
   workflow_dispatch:
@@ -12,12 +12,16 @@ permissions:
   contents: write
 
 concurrency:
-  group: owner-open-r5-validate-and-land-v2-${{ github.ref }}
+  group: owner-open-r5-source-closeout-v3-${{ github.ref }}
   cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   validate-and-land:
-    name: Validate and land the strict Python/Rust/lockfile candidate
+    name: Validate truthful Python/Rust/Cargo closure and land exact Rust fixes
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
@@ -39,64 +43,61 @@ jobs:
           toolchain: 1.93.0
           components: rustfmt, clippy
 
-      - name: Bind the base head and apply the strict v2 repair
+      - name: Bind base head and apply the exact v3 Rust closeout repair
         run: |
-          rm -rf /tmp/owner-open-r5-v2
-          mkdir -p /tmp/owner-open-r5-v2
-          git rev-parse HEAD | tee /tmp/owner-open-r5-v2/base-head.txt
-          python3 --version 2>&1 | tee /tmp/owner-open-r5-v2/python-version.txt
-          rustc --version --verbose 2>&1 | tee /tmp/owner-open-r5-v2/rustc-version.txt
-          cargo -Vv 2>&1 | tee /tmp/owner-open-r5-v2/cargo-version.txt
-          python3 -m py_compile \
-            tools/owner-open/apply_r5_runner_repair_candidate.py \
-            tools/owner-open/apply_r5_runner_repair_candidate_v2.py
-          python3 tools/owner-open/apply_r5_runner_repair_candidate_v2.py --apply \
-            2>&1 | tee /tmp/owner-open-r5-v2/applicator.log
-          grep -Fxq PASS_R5_EXACT_REPAIRS_V2_APPLIED \
-            /tmp/owner-open-r5-v2/applicator.log
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v3
+          rm -rf "$evidence"
+          mkdir -p "$evidence"
+          git rev-parse HEAD | tee "$evidence/base-head.txt"
+          python3 --version 2>&1 | tee "$evidence/python-version.txt"
+          rustc --version --verbose 2>&1 | tee "$evidence/rustc-version.txt"
+          cargo -Vv 2>&1 | tee "$evidence/cargo-version.txt"
+          python3 -m py_compile tools/owner-open/apply_r5_rust_closeout_v3.py
+          python3 tools/owner-open/apply_r5_rust_closeout_v3.py --apply \
+            2>&1 | tee "$evidence/applicator.log"
+          grep -Fxq PASS_R5_RUST_CLOSEOUT_V3_APPLIED "$evidence/applicator.log"
 
-      - name: Refresh lockfile, format and verify the complete repair diff
+      - name: Format and require the exact reviewed source delta
         run: |
-          cargo generate-lockfile 2>&1 | tee /tmp/owner-open-r5-v2/cargo-generate-lockfile.log
-          cargo fmt --all 2>&1 | tee /tmp/owner-open-r5-v2/cargo-fmt.log
-          cargo fmt --all -- --check 2>&1 | tee /tmp/owner-open-r5-v2/cargo-fmt-check.log
-          git diff --check 2>&1 | tee /tmp/owner-open-r5-v2/git-diff-check.log
-          git diff --name-only | sort > /tmp/owner-open-r5-v2/changed-files.txt
-          for required in \
-            Cargo.lock \
-            crates/trillionnium-owner-open-call-registry/src/lib.rs \
-            crates/trillionnium-owner-open-event-store/src/lib.rs \
-            crates/trillionnium-owner-open-runtime/src/lib.rs \
-            crates/trillionnium-owner-open-runtime/tests/runtime.rs \
-            tools/owner-open/supervise_codex_mcp_qualification.py \
-            tools/tests/test_adb_smart_socket_relay_selected.py \
-            tools/tests/test_release_qualification_paths.py \
-            tools/tests/test_release_qualification_paths_v2.py \
-            tools/tests/test_stage_owner_open_rootfs_payload_release.py \
-            tools/tests/test_supervise_codex_mcp_qualification_release.py
-          do
-            grep -Fxq "$required" /tmp/owner-open-r5-v2/changed-files.txt
-          done
-          bash -n tools/owner-open/prepare-adb-reverse-v1.sh
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v3
+          cargo fmt --all 2>&1 | tee "$evidence/cargo-fmt.log"
+          cargo fmt --all -- --check 2>&1 | tee "$evidence/cargo-fmt-check.log"
+          git diff --check 2>&1 | tee "$evidence/git-diff-check.log"
+          cat > "$evidence/expected-changed-files.txt" <<'EOF'
+          crates/trillionnium-owner-open-event-store/src/lib.rs
+          crates/trillionnium-owner-open-tool-bridge/src/lib.rs
+          EOF
+          git diff --name-only | sort > "$evidence/changed-files.txt"
+          diff -u "$evidence/expected-changed-files.txt" "$evidence/changed-files.txt" \
+            | tee "$evidence/changed-files.diff"
 
       - name: Create a clean local candidate commit
         run: |
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v3
           git config user.name "R5 validation fixture"
           git config user.email "r5-validation@invalid.local"
-          git add -A
-          git commit -m "fix: close complete R5 Python Rust and lockfile gates"
-          git rev-parse HEAD | tee /tmp/owner-open-r5-v2/candidate-head.txt
-          git diff HEAD^ --binary > /tmp/owner-open-r5-v2/candidate.patch
-          git diff HEAD^ --stat > /tmp/owner-open-r5-v2/candidate.stat
+          git add \
+            crates/trillionnium-owner-open-event-store/src/lib.rs \
+            crates/trillionnium-owner-open-tool-bridge/src/lib.rs
+          git commit -m "fix: close truthful R5 Rust test and clippy gates"
+          git rev-parse HEAD | tee "$evidence/candidate-head.txt"
+          git diff HEAD^ --binary > "$evidence/candidate.patch"
+          git diff HEAD^ --stat > "$evidence/candidate.stat"
           git diff-tree --no-commit-id --name-only -r HEAD \
-            > /tmp/owner-open-r5-v2/candidate-files.txt
+            > "$evidence/candidate-files.txt"
           test -z "$(git status --porcelain=v1)"
 
       - name: Reject unittest TestCase.run collisions
         run: |
-          python3 - <<'PY' | tee /tmp/owner-open-r5-v2/testcase-reserved-methods.txt
+          set -Eeuo pipefail
+          python3 - <<'PY' \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v3/testcase-reserved-methods.txt
           import ast
           from pathlib import Path
+
           findings = []
           for path in sorted(Path("tools/tests").rglob("test_*.py")):
               tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -107,7 +108,10 @@ jobs:
                   if not any(base.endswith("TestCase") for base in bases):
                       continue
                   for item in node.body:
-                      if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == "run":
+                      if (
+                          isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                          and item.name == "run"
+                      ):
                           findings.append((str(path), node.name, item.lineno))
           for path, cls, line in findings:
               print(f"{path}:{line}: {cls}.run")
@@ -118,60 +122,102 @@ jobs:
 
       - name: Run generated-source and graph gates
         run: |
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v3
           python3 tools/generate-owner-open-types.py --check \
-            2>&1 | tee /tmp/owner-open-r5-v2/generated-types.log
+            2>&1 | tee "$evidence/generated-types.log"
           python3 tools/verify-owner-open-r5.py --json \
-            2>&1 | tee /tmp/owner-open-r5-v2/r5-graph.json
+            2>&1 | tee "$evidence/r5-graph.json"
           python3 -m unittest tools.tests.test_verify_owner_open_r5 -v \
-            2>&1 | tee /tmp/owner-open-r5-v2/r5-verifier-tests.log
+            2>&1 | tee "$evidence/r5-verifier-tests.log"
 
       - name: Run the complete Python source suite
         env:
           PYTHONWARNINGS: error::ResourceWarning
         run: |
+          set -Eeuo pipefail
           python3 -m unittest discover -s tools/tests -p 'test_*.py' -v \
-            2>&1 | tee /tmp/owner-open-r5-v2/python-discover.log
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v3/python-discover.log
 
       - name: Run the complete default Rust test closure
         run: |
+          set -Eeuo pipefail
           cargo test --locked --all-targets \
-            2>&1 | tee /tmp/owner-open-r5-v2/rust-test.log
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v3/rust-test.log
 
       - name: Run the complete default Rust clippy closure
         run: |
+          set -Eeuo pipefail
           cargo clippy --locked --all-targets -- -D warnings \
-            2>&1 | tee /tmp/owner-open-r5-v2/rust-clippy.log
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v3/rust-clippy.log
 
-      - name: Capture exact Cargo graph and candidate bytes
+      - name: Capture exact Cargo graph, source bytes and terminal claim ceiling
         run: |
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v3
           cargo metadata --locked --format-version 1 \
-            > /tmp/owner-open-r5-v2/cargo-metadata.json \
-            2> /tmp/owner-open-r5-v2/cargo-metadata.stderr
+            > "$evidence/cargo-metadata.json" \
+            2> "$evidence/cargo-metadata.stderr"
           cargo tree --locked -e features \
-            > /tmp/owner-open-r5-v2/cargo-tree.txt \
-            2> /tmp/owner-open-r5-v2/cargo-tree.stderr
-          mkdir -p /tmp/owner-open-r5-v2/files
+            > "$evidence/cargo-tree.txt" \
+            2> "$evidence/cargo-tree.stderr"
+          mkdir -p "$evidence/files"
           while IFS= read -r path; do
             test -n "$path" || continue
-            test -f "$path" || continue
-            mkdir -p "/tmp/owner-open-r5-v2/files/$(dirname "$path")"
-            cp -- "$path" "/tmp/owner-open-r5-v2/files/$path"
-          done < /tmp/owner-open-r5-v2/changed-files.txt
-          sha256sum /tmp/owner-open-r5-v2/candidate.patch \
-            > /tmp/owner-open-r5-v2/candidate.patch.sha256
-          find /tmp/owner-open-r5-v2 -type f ! -name SHA256SUMS -print0 \
-            | sort -z \
-            | xargs -0 sha256sum \
-            > /tmp/owner-open-r5-v2/SHA256SUMS
+            mkdir -p "$evidence/files/$(dirname "$path")"
+            cp -- "$path" "$evidence/files/$path"
+          done < "$evidence/candidate-files.txt"
+          BASE_HEAD="$(cat "$evidence/base-head.txt")" \
+          CANDIDATE_HEAD="$(cat "$evidence/candidate-head.txt")" \
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
 
-      - name: Upload exact candidate evidence
+          output = Path("/tmp/owner-open-r5-source-closeout-v3/qualification-terminal.json")
+          value = {
+              "schema": "org.trillionnium.owner-open.r5-source-closeout.v3",
+              "status": "passed",
+              "base_head": os.environ["BASE_HEAD"],
+              "candidate_head": os.environ["CANDIDATE_HEAD"],
+              "python_source_suite": "passed",
+              "rust_default_all_targets_test": "passed",
+              "rust_default_all_targets_clippy_deny_warnings": "passed",
+              "cargo_locked_metadata": "captured",
+              "cargo_locked_feature_tree": "captured",
+              "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
+              "installed_codex_qualified": False,
+              "android_image_qualified": False,
+              "public_release": False,
+              "automatic_redispatch": False,
+          }
+          output.write_text(
+              json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          sha256sum "$evidence/candidate.patch" \
+            > "$evidence/candidate.patch.sha256"
+          (
+            cd "$evidence"
+            find . -type f ! -name SHA256SUMS -print0 \
+              | sort -z \
+              | xargs -0 sha256sum \
+              > SHA256SUMS
+            sha256sum -c SHA256SUMS \
+              > SHA256SUMS.verify
+          )
+
+      - name: Upload exact source-closeout evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-r5-repair-v2-evidence-${{ github.sha }}
+          name: owner-open-r5-source-closeout-v3-${{ github.sha }}
           if-no-files-found: error
           retention-days: 14
-          path: /tmp/owner-open-r5-v2/
+          path: /tmp/owner-open-r5-source-closeout-v3/
 
       - name: Push the exact validated non-workflow candidate commit
-        run: git push origin HEAD:refs/heads/codex/owner-open-r5-tool-loop-20260827
+        run: |
+          set -Eeuo pipefail
+          git push origin HEAD:refs/heads/codex/owner-open-r5-tool-loop-20260827
