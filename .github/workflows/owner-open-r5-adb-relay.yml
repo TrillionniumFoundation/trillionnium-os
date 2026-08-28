@@ -1,0 +1,56 @@
+name: owner-open R5 ADB relay
+
+on:
+  pull_request:
+    paths:
+      - "tools/owner-open/owner_open_adb_relay.py"
+      - "tools/tests/test_owner_open_adb_relay.py"
+      - "docs/protocols/owner-open-adb-smart-socket-relay-v1.md"
+      - "docs/status/owner-open-r5-*"
+      - ".github/workflows/owner-open-r5-adb-relay.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "tools/owner-open/owner_open_adb_relay.py"
+      - "tools/tests/test_owner_open_adb_relay.py"
+      - "docs/protocols/owner-open-adb-smart-socket-relay-v1.md"
+      - "docs/status/owner-open-r5-*"
+      - ".github/workflows/owner-open-r5-adb-relay.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-r5-adb-relay-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  byte-transparent-relay:
+    name: Byte-transparent ADB smart-socket relay
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Compile relay source and tests
+        run: |
+          python3 -m py_compile \
+            tools/owner-open/owner_open_adb_relay.py \
+            tools/tests/test_owner_open_adb_relay.py
+      - name: Run relay process fixtures
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          python3 -m unittest tools.tests.test_owner_open_adb_relay -v \
+            2>&1 | tee owner-open-r5-adb-relay-tests.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-r5-adb-relay-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: owner-open-r5-adb-relay-tests.txt
