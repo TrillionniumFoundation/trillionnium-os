@@ -3,9 +3,9 @@
   "plan_revision": "2026-08-28-r5",
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
-  "status_cut_parent": "344bde141cc9ec3aba14b303a1c081296ff7acbb",
+  "status_cut_parent": "588738f520b46fef9e4da7c0c614b07298253c02",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source implementation with same-turn callbacks, active cancellation, durable replay, wire inspection, bounded v5 transport delivery, and a selected job-aware v7 execution core with durable pipe and PTY job controls; no executed Rust, Android, physical-device, real-Codex, real-ADB or release claim",
+  "product_claim": "owner-open source implementation with same-turn callbacks, active cancellation, durable replay, wire inspection, bounded v5 transport delivery, a selected job-aware v7 core, durable pipe and PTY job controls, and a local Codex STDIO MCP job bridge; no executed Rust, Android, physical-device, installed-Codex, real-ADB or release claim",
   "public_release": false,
   "status_levels": [
     "NOT_STARTED",
@@ -27,18 +27,20 @@
     "L6": "signed public release qualification"
   },
   "local_l0_execution": {
-    "status": "SOURCE_GRAPH_WRITTEN_NOT_EXECUTED",
+    "status": "PASS_ISOLATED_CODEX_MCP_FIXTURE_ONLY",
     "date": "2026-08-28",
-    "environment": "GitHub repository connector; local Rust 1.93 toolchain and private checkout unavailable",
+    "environment": "Python 3.13.5 on Linux x86_64; isolated staged source; Rust 1.93 and private checkout unavailable",
     "checks": [
-      "root workspace and default-members now include job registry and job runtime",
-      "selected Host core changed from v4 to job-aware v7",
-      "negative graph contracts bind the selected v7 core and both job crates",
-      "CI candidate loops include job registry and job runtime",
-      "verifier fixtures reject removal of job runtime and downgrade to v4"
+      "root workspace and default-members select job registry and job runtime",
+      "selected Host core is job-aware v7 under the v5 transport carrier",
+      "negative graph contracts bind v7 and both job crates",
+      "Codex STDIO MCP bridge sources compile with Python",
+      "MCP bridge fake-Host regression suite executed 3 of 3 successfully",
+      "resource warnings were promoted to errors during the isolated MCP run"
     ],
     "exact_checkout": false,
-    "claim_ceiling": "L0 source graph and reviewed source binding only"
+    "evidence": "docs/evidence/2026-08-28-owner-open-codex-mcp-job-source.md",
+    "claim_ceiling": "L0 source graph and isolated adapter fixture only"
   },
   "ci_observation": {
     "observed_head": "344bde141cc9ec3aba14b303a1c081296ff7acbb",
@@ -68,7 +70,7 @@
       ],
       "open": [
         "execute exact graph verifier and Rust 1.93 commands on one commit",
-        "review the generated Cargo.lock, metadata and feature tree",
+        "review generated Cargo.lock, metadata and feature tree",
         "split Android owner-open product profile",
         "collect Soong, init, SELinux and target-files negative evidence"
       ]
@@ -84,10 +86,12 @@
         "turn.cancel and targeted tool.cancel remain serviceable while work is active",
         "transport control and inspection frames bypass the high-volume credit gate",
         "client output detachment does not cancel accepted work",
-        "job frames coexist with turn controls on the selected core"
+        "job frames coexist with turn controls on the selected core",
+        "the MCP server handles independent tools/call requests and JSON-RPC cancellation tokens"
       ],
       "open": [
         "execute active-control, transport and selected-core compatibility tests",
+        "prove installed Codex same-turn continuation after job observations",
         "define multi-connection ownership and cross-connection controls",
         "prove provider disconnect while a job continues"
       ]
@@ -102,12 +106,17 @@
         "bounded external provider JSONL process and duplex tool-result transport",
         "provider cancellation acknowledgement and finite cleanup grace",
         "digest-bound installed Codex help probe, exec-prefix generator and explicit execution bootstrap exist",
-        "job-aware Host surface is ready for a native shell.job callback"
+        "local MCP protocol version 2025-06-18 server maps native Codex tools to the selected job wire",
+        "MCP tools cover start, inspect, attach, detach, write, resize, close-stdin, kill and bounded wait",
+        "one MCP lifetime receives one owner-pinned or mechanically generated scope",
+        "effectful MCP tools require stable operation IDs and never add an internal retry",
+        "isolated fake-Host MCP tests passed 3 of 3 with ResourceWarning promoted to error"
       ],
       "open": [
         "run the help probe against the installed Codex executable in target Root Linux",
-        "observe and bind the actual Codex JSON or app-server event schema",
-        "map shell.job start, write, PTY resize, inspect and kill into the same native provider turn",
+        "register the bridge through the installed Codex MCP configuration",
+        "capture the actual MCP initialize, tools/list and tools/call exchange",
+        "prove pipe and PTY job controls inside one real Codex turn",
         "capture a real same-turn L2 result without parsing terminal prose"
       ]
     },
@@ -123,11 +132,13 @@
         "process groups, timeout, cancellation, output bounds and descendant cleanup",
         "durable pipe and PTY job start",
         "job attach, write, resize, close-stdin and process-group kill",
-        "bounded job observations and operation-level request binding"
+        "bounded job observations and operation-level request binding",
+        "Codex MCP tool schemas preserve command or argv and UTF-8 or base64 job bytes"
       ],
       "open": [
         "execute job registry, job runtime and Host process tests",
         "prove PTY start, resize, output, detach and kill on one exact build",
+        "prove those operations through installed Codex MCP",
         "place processes in configured Root Linux UID, GID, namespaces and cgroups",
         "collect physical Root Linux evidence"
       ]
@@ -163,7 +174,8 @@
         "turn.inspect, call.inspect and job.inspect source paths",
         "exact job operation IDs bind accepted-before-effect write, resize, close and kill operations",
         "bounded stream window, pause, resume and cursor-bound resync",
-        "live attachment bookkeeping and detach within the same Host lifetime"
+        "live attachment bookkeeping and detach within the same Host lifetime",
+        "MCP errors preserve raw Host frames where available and automatic_redispatch=false"
       ],
       "open": [
         "execute persistence, replay, flow-control and job recovery tests",
@@ -184,6 +196,7 @@
         "init, abstract socket and SELinux peer admission",
         "Root Linux lifecycle and writable overlay",
         "thin AiShell turn, flow-control, inspect and job-control client",
+        "install and configure the local Codex MCP server in the target rootfs",
         "out-of-band emergency stop",
         "clean target-files and physical normal-path evidence"
       ],
@@ -197,13 +210,14 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "R5 evidence vocabulary and source checkpoint boundaries are defined",
-        "durable job qualification gates are documented"
+        "durable job and Codex MCP qualification gates are documented",
+        "isolated MCP bridge process-fixture evidence is recorded without promotion"
       ],
       "open": [
         "runner-backed L1 and L2 evidence",
         "clean Android L3 evidence",
         "physical L4 same-turn shell, job and ADB evidence",
-        "L5 provider, Host, client, child, PTY, USB, reboot, ENOSPC and power-loss matrix",
+        "L5 provider, Host, MCP client, child, PTY, USB, reboot, ENOSPC and power-loss matrix",
         "Codex self-development loop",
         "separate signed L6 profile"
       ]
@@ -211,17 +225,19 @@
   ],
   "critical_path_next": [
     "obtain an actual Rust 1.93 runner and fix every formatting, compilation, test and clippy finding",
+    "execute the exact repository Python MCP bridge tests in CI",
     "review and bind Cargo.lock, cargo metadata and feature trees",
-    "run the installed Codex probe in target Root Linux and bind native shell.job callbacks",
-    "prove same-turn pipe and PTY job control through the installed provider",
+    "run the installed Codex probe in target Root Linux and register the local MCP server",
+    "prove same-turn pipe and PTY job control through installed Codex",
     "implement the real ADB topology",
     "cut the Android owner-open graph and collect target-files evidence"
   ],
   "not_claimed": [
     "successful Rust formatting, compilation, tests or clippy for the selected job-aware source cut",
     "reviewed Cargo.lock generated by the current source closure",
+    "exact-checkout CI pass for the Python MCP bridge",
     "executed proof that the v5 transport launches the v7 core successfully",
-    "live installed Codex shell.job turn",
+    "live installed Codex MCP shell.job turn",
     "cross-Host live file-descriptor reattachment",
     "real ARM64 adb or transparent relay",
     "Android image inclusion",
