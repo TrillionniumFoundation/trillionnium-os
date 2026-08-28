@@ -1,0 +1,37 @@
+*
+* WARNING: ALL SECURITY CONTROLS HAVE BEEN DISABLED!
+* 
+* This mode is intended for non-production testing only.
+* 
+* In this mode:
+* - Your cluster is open to any client that can access any of your IP addresses.
+* - Intruders with access to your machine or network can observe client-server traffic.
+* - Intruders can log in without password and read or write any data in the cluster.
+* - Intruders can consume all your server's resources and cause unavailability.
+*
+*
+* INFO: To start a secure server without mandating TLS for clients,
+* consider --accept-sql-without-tls instead. For other options, see:
+* 
+* - https://go.crdb.dev/issue-v/53404/v25.1
+* - https://www.cockroachlabs.com/docs/v25.1/secure-a-cluster.html
+*
+*
+* WARNING: Running a server without --sql-addr, with a combined RPC/SQL listener, is deprecated.
+* This feature will be removed in a later version of CockroachDB.
+*
+CockroachDB node starting at 2026-08-28 12:26:31.85099958 +0000 UTC m=+1.042416549 (took 0.8s)
+build:               CCL v25.1.6 @ 2025/05/09 15:48:03 (go1.22.8 X:nocoverageredesign)
+malloc_conf:         prof:false,prof_active:true,background_thread:true,thp:never,metadata_thp:disabled,narenas:16,dirty_decay_ms:2000,muzzy_decay_ms:0
+webui:               http://127.0.0.1:8080
+sql:                 postgresql://root@127.0.0.1:26257/defaultdb?sslmode=disable
+sql (JDBC):          jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable&user=root
+RPC client flags:    /cockroach/cockroach <client cmd> --host=127.0.0.1:26257 --insecure
+logs:                /cockroach/cockroach-data/logs
+temp dir:            /cockroach/cockroach-data/cockroach-temp3426103305
+external I/O path:   /cockroach/cockroach-data/extern
+store[0]:            path=/cockroach/cockroach-data
+storage engine:      pebble
+clusterID:           cbe2f3ee-8b00-40f9-a84c-6171e24cb6f0
+status:              restarted pre-existing node
+nodeID:              1

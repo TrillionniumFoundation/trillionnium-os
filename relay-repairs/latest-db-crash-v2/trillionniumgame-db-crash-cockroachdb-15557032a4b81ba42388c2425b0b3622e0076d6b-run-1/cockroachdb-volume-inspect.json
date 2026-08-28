@@ -1,0 +1,11 @@
+[
+    {
+        "CreatedAt": "2026-08-28T12:26:13Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/trnm-crdb-crash-33171014124/_data",
+        "Name": "trnm-crdb-crash-33171014124",
+        "Options": null,
+        "Scope": "local"
+    }
+]

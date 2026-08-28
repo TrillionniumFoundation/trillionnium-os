@@ -1,0 +1,285 @@
+[
+    {
+        "Id": "d7c7bb3d7b5d14c5e888650c521708c0e9903fdf75dd679ae5ff5b9e3cb1a0b6",
+        "Created": "2026-08-28T12:26:30.628759625Z",
+        "Path": "/cockroach/cockroach.sh",
+        "Args": [
+            "start-single-node",
+            "--insecure",
+            "--store=/cockroach/cockroach-data",
+            "--cache=128MiB",
+            "--max-sql-memory=128MiB"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 2876,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-08-28T12:26:30.649526999Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:0328c3fbf417e2cef7f842ffdb5a66faa7af8380f2e12e003370fbd692212ff6",
+        "ResolvConfPath": "/var/lib/docker/containers/d7c7bb3d7b5d14c5e888650c521708c0e9903fdf75dd679ae5ff5b9e3cb1a0b6/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/d7c7bb3d7b5d14c5e888650c521708c0e9903fdf75dd679ae5ff5b9e3cb1a0b6/hostname",
+        "HostsPath": "/var/lib/docker/containers/d7c7bb3d7b5d14c5e888650c521708c0e9903fdf75dd679ae5ff5b9e3cb1a0b6/hosts",
+        "LogPath": "/var/lib/docker/containers/d7c7bb3d7b5d14c5e888650c521708c0e9903fdf75dd679ae5ff5b9e3cb1a0b6/d7c7bb3d7b5d14c5e888650c521708c0e9903fdf75dd679ae5ff5b9e3cb1a0b6-json.log",
+        "Name": "/trnm-crdb-restarted",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": [
+                "trnm-crdb-crash-33171014124:/cockroach/cockroach-data"
+            ],
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "bridge",
+            "PortBindings": {
+                "26257/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "26259"
+                    }
+                ],
+                "8080/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "58082"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "d7c7bb3d7b5d14c5e888650c521708c0e9903fdf75dd679ae5ff5b9e3cb1a0b6",
+                "LowerDir": "/var/lib/docker/overlay2/51328ccafe924c90ba938757cd2774cac4ce8004770d244b8189fba6963b13fc-init/diff:/var/lib/docker/overlay2/8bf7e4c8428d80484782f5dbabbd2ef894ed9ac1238ab4272394f91169e793fe/diff:/var/lib/docker/overlay2/e08cb0429c3d27e811ea2ea7f08ec0786791b59522af7359a5577b8f75aab096/diff:/var/lib/docker/overlay2/1bd6674f3582b2495f6baf98e2e376ef97c6b8da4369c3fd5a15e0693122f851/diff:/var/lib/docker/overlay2/dac624fa1bb159b46f4adc95c23977c60e28dd132774994211e357674d92d1e8/diff:/var/lib/docker/overlay2/8fd0eb970484595a2929201b3cfcfbedc9e479f3a2110359dd486d53e951e38d/diff:/var/lib/docker/overlay2/e9c5b8fef5e50b94abf2194d58a98c939a8682a8908f364f7a6298a5afb13921/diff:/var/lib/docker/overlay2/6bdd8a055f7c062c5cac4228f3010d7240316acc1cdc3212b8b033e005d91871/diff:/var/lib/docker/overlay2/a83614ffc2d9bf519e518904c706d8a8683066d612813877ccef5e53afb4b923/diff:/var/lib/docker/overlay2/e5aba1bdfcbb9f9fc4e8c7dc97d03ca713cf85b7d4a03cde5bc41154cd475bbf/diff",
+                "MergedDir": "/var/lib/docker/overlay2/51328ccafe924c90ba938757cd2774cac4ce8004770d244b8189fba6963b13fc/merged",
+                "UpperDir": "/var/lib/docker/overlay2/51328ccafe924c90ba938757cd2774cac4ce8004770d244b8189fba6963b13fc/diff",
+                "WorkDir": "/var/lib/docker/overlay2/51328ccafe924c90ba938757cd2774cac4ce8004770d244b8189fba6963b13fc/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [
+            {
+                "Type": "volume",
+                "Name": "trnm-crdb-crash-33171014124",
+                "Source": "/var/lib/docker/volumes/trnm-crdb-crash-33171014124/_data",
+                "Destination": "/cockroach/cockroach-data",
+                "Driver": "local",
+                "Mode": "z",
+                "RW": true,
+                "Propagation": ""
+            }
+        ],
+        "Config": {
+            "Hostname": "d7c7bb3d7b5d",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "26257/tcp": {},
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/cockroach:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "container=oci",
+                "COCKROACH_CHANNEL=official-docker"
+            ],
+            "Cmd": [
+                "start-single-node",
+                "--insecure",
+                "--store=/cockroach/cockroach-data",
+                "--cache=128MiB",
+                "--max-sql-memory=128MiB"
+            ],
+            "Image": "cockroachdb/cockroach:v25.1.6",
+            "Volumes": null,
+            "WorkingDir": "/cockroach/",
+            "Entrypoint": [
+                "/cockroach/cockroach.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "architecture": "x86_64",
+                "build-date": "2025-04-28T15:45:43",
+                "com.redhat.component": "ubi9-minimal-container",
+                "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+                "description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+                "distribution-scope": "public",
+                "io.buildah.version": "1.39.0-dev",
+                "io.k8s.description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+                "io.k8s.display-name": "Red Hat Universal Base Image 9 Minimal",
+                "io.openshift.expose-services": "",
+                "io.openshift.tags": "minimal rhel9",
+                "maintainer": "Red Hat, Inc.",
+                "name": "ubi9-minimal",
+                "release": "1745855087",
+                "summary": "Provides the latest release of the minimal Red Hat Universal Base Image 9.",
+                "url": "https://www.redhat.com",
+                "vcs-ref": "f072486a5ead2d7d882ba4af2ce72e19cce20791",
+                "vcs-type": "git",
+                "vendor": "Red Hat, Inc.",
+                "version": "25.1.6"
+            }
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "35eeef86736256d1ae8328eae3fb0f41367e2ce072805cca70749554fed2acf3",
+            "SandboxKey": "/var/run/docker/netns/35eeef867362",
+            "Ports": {
+                "26257/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "26259"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "26259"
+                    }
+                ],
+                "8080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "58082"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "58082"
+                    }
+                ]
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "c91c7d5600a4b55f035c82069a16fea022dc357464195aaab281211035919f41",
+            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.2",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "MacAddress": "76:22:8d:ad:14:6a",
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "76:22:8d:ad:14:6a",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "c780fa3c0b7e464cc143eef52969ac12e73e20ce4cb2646457c9d3573130cf62",
+                    "EndpointID": "c91c7d5600a4b55f035c82069a16fea022dc357464195aaab281211035919f41",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        }
+    }
+]

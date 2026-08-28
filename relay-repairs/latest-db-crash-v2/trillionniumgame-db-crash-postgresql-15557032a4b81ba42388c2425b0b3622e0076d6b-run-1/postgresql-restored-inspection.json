@@ -1,0 +1,1 @@
+{"checks":{"applied_outbox_present":true,"entity_head_present":true,"event_present":true,"lease_generation_preserved":true,"receipt_present":true},"claims":{"logical_snapshot_restore_readback":true,"point_in_time_recovery_complete":false,"production_ready":false},"profile":"postgresql","schema":"trillionnium.game.database-restored-inspection.v2"}
