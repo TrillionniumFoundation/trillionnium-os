@@ -4,7 +4,7 @@
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source implementation with selected v5 transport, job-aware v7 core, durable pipe and PTY jobs, same-turn callbacks, active controls, replay and inspection, connection-bound Codex MCP live controls, a strict multi-connection broker foundation, exact-byte MCP tracing, and an installed-Codex qualification runner; no runner-backed Rust, installed-Codex, Android, physical-device, real-ADB or release claim",
+  "product_claim": "owner-open exact source implementation is HOST_TESTED at L1 with selected v5 transport, job-aware v7 core, durable pipe and PTY jobs, same-turn callbacks, active controls, replay and inspection, connection-bound Codex MCP controls, strict multi-connection broker mechanics and exact-byte tracing; no installed-Codex, target Root Linux placement, Android image, physical-device, real-ADB, destructive-fault or release claim",
   "public_release": false,
   "status_levels": [
     "NOT_STARTED",
@@ -17,116 +17,184 @@
     "RELEASE_QUALIFIED"
   ],
   "evidence_levels": {
-    "L0": "contract, source graph and isolated source fixtures",
-    "L1": "unit, property and fuzz tests on one exact checkout",
-    "L2": "real Host, broker, provider and installed-Codex process integration",
+    "L0": "contract, source graph and isolated source shape",
+    "L1": "exact-checkout unit, property, fixture and process tests",
+    "L2": "installed target Root Linux Host, broker, provider and Codex process integration",
     "L3": "clean Android image and static product graph",
-    "L4": "physical live effect",
-    "L5": "fault, restart, reboot and power-loss",
+    "L4": "physical live shell and ordinary ADB effects",
+    "L5": "fault, restart, reboot, USB-loss, ENOSPC and power-loss qualification",
     "L6": "signed public-release qualification"
   },
   "current_source_slice": {
-    "status": "SOURCE_IMPLEMENTED",
-    "latest_evidence_level": "L0",
+    "status": "HOST_TESTED",
+    "latest_evidence_level": "L1",
+    "validated_source_commit": "fa1d287103c46aff35cf5e95addbc18da8a92063",
+    "closeout_base_commit": "668c031ba4533dc482866fd2da37b61118b92bf8",
     "implemented": [
-      "MCP connection_info returns one process-lifetime bridge_instance_id",
-      "live and mutating job tools reject missing or mismatched bridge identity before Host dispatch",
-      "job.inspect and job.wait remain durable read-only operations for later connections",
-      "filesystem Unix multi-connection broker foundation uses strict JSON, same-UID peer admission, private token and digest-bound descriptor mechanics",
-      "broker response model binds direct results to request owners and bounded observations to admitted clients",
+      "selected default Cargo graph contains exactly the reviewed owner-open Host, types, runtime, call registry, event store, job registry, job runtime, provider, stream window, tool bridge and turn loop",
+      "selected Host binaries are foundation Host, v7 core and v5 transport",
+      "same-turn provider, shell and ordinary adb fixture paths preserve raw observations and exactly-once local effects",
+      "turn.cancel and tool.cancel remain serviceable while provider and tool processes run",
+      "durable pipe and PTY jobs support inspect, attach, detach, write, resize, close-stdin, kill and bounded wait",
+      "configured journal unavailability fails closed and never authorizes automatic redispatch",
+      "turn, call and job inspection remain read-only and cursor bound",
+      "bounded stream window supports pause, resume and durable-cursor resynchronization without stopping execution or persistence",
+      "MCP connection_info returns one process-lifetime bridge_instance_id and live controls reject missing or mismatched identity before Host dispatch",
+      "filesystem Unix multi-connection broker uses strict JSON, same-UID admission, private token and digest-bound descriptor mechanics",
+      "broker direct results are request-owner scoped while bounded observations are broadcast to admitted clients",
       "client disconnect is not interpreted as effect cancellation or automatic redispatch",
-      "exact-byte MCP STDIO trace records both directions and uses finite downstream process-group teardown",
-      "installed-Codex qualification runner temporarily registers the traced MCP server, validates an exact eleven-call pipe/PTY sequence, removes registration and restores config",
-      "CI candidate workflow includes graph, MCP, qualification-lifecycle, broker, Rust format, test, clippy and graph capture commands"
+      "exact-byte MCP STDIO trace uses finite downstream process-group teardown",
+      "installed-Codex qualification runner source validates the required traced job sequence and cleanup lifecycle",
+      "all transient diagnostic, repair and source-landing workflows were retired after exact source landing; reproducibility scripts and manifests remain"
     ],
     "execution_boundary": {
-      "runner_backed_exact_checkout_pass": false,
-      "rust_1_93_pass": false,
+      "runner_backed_exact_checkout_pass": true,
+      "python_3_12_full_suite_pass": true,
+      "python_tests_run": 680,
+      "python_tests_skipped_for_external_material": 5,
+      "rust_1_93_pass": true,
+      "rust_default_all_targets_test_pass": true,
+      "rust_default_all_targets_clippy_deny_warnings_pass": true,
+      "generated_source_gate_pass": true,
+      "r5_graph_gate_pass": true,
+      "cargo_locked_metadata_captured": true,
+      "cargo_locked_feature_tree_captured": true,
+      "candidate_manifest_exact": true,
+      "evidence_hashes_verified": true,
       "installed_codex_executed": false,
+      "target_root_linux_placement_observed": false,
+      "android_image_qualified": false,
       "physical_effect_observed": false,
-      "claim_ceiling": "SOURCE_IMPLEMENTED / L0"
+      "fault_matrix_qualified": false,
+      "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
+      "automatic_redispatch": false
     }
   },
   "ci_observation": {
-    "status": "NO_EXECUTING_RUNNER_EVIDENCE_BOUND_TO_CURRENT_SOURCE",
-    "previous_pattern": {
-      "runner_id": 0,
-      "steps_observed": 0,
-      "logs_available": false
-    },
-    "interpretation": "a workflow conclusion without an assigned runner, steps or logs is neither a source pass nor a source failure"
+    "status": "PASSED_EXACT_SOURCE_CLOSEOUT",
+    "workflow": "owner-open R5 strict source closeout v15",
+    "run_id": 33186972324,
+    "job_id": 98902377009,
+    "artifact_id": 9692313160,
+    "artifact_name": "owner-open-r5-source-closeout-v15-668c031ba4533dc482866fd2da37b61118b92bf8-1",
+    "artifact_sha256": "b4756c407108235db2afe6f0a73b26851ca77716a9d9728395770f3d4047a2c4",
+    "logs_available": true,
+    "interpretation": "the exact 31-file source candidate passed generated-source, graph, complete Python, complete Rust test and complete Rust Clippy gates before the exact candidate commit was pushed"
   },
+  "closed_repository_gaps": [
+    "exact default Cargo graph and selected Host binary drift",
+    "Python source regressions and ResourceWarning leaks in the exercised suite",
+    "Rust formatting, compilation, all-target tests and complete-default-graph Clippy warnings",
+    "pipe EOF completion semantics",
+    "configured-journal unavailable fail-closed behavior",
+    "completed and uncertain job no-redispatch behavior",
+    "live turn and call inspection",
+    "stream-window credit, pause, resume and resync behavior",
+    "multi-connection broker owner-result isolation, observation broadcast and disconnect truth",
+    "temporary workflow false-red and source-rewrite execution surface"
+  ],
+  "external_evidence_holds": [
+    {
+      "id": "HOLD-INSTALLED-CODEX",
+      "required": "actual target Root Linux Codex executable, exact path/digest/version/help bytes, authentication and traced MCP execution",
+      "status": "NOT_PROVIDED"
+    },
+    {
+      "id": "HOLD-ANDROID-BUILD",
+      "required": "clean Android source checkout, selected owner-open product graph, toolchain and target-files output",
+      "status": "NOT_PROVIDED"
+    },
+    {
+      "id": "HOLD-PHYSICAL-DEVICE",
+      "required": "authorized physical device, USB/ADB path and device fingerprint",
+      "status": "NOT_PROVIDED"
+    },
+    {
+      "id": "HOLD-FAULT-MATRIX",
+      "required": "target storage and lifecycle environment for crash, ENOSPC, reboot, USB-loss and power-loss qualification",
+      "status": "NOT_PROVIDED"
+    },
+    {
+      "id": "HOLD-RELEASE",
+      "required": "separate signed L6 profile, keys, AVB/rollback, OTA and multi-user evidence",
+      "status": "NOT_PROVIDED"
+    }
+  ],
   "work_packages": [
     {
       "id": "W0",
       "name": "source and product graph isolation",
-      "status": "SOURCE_IMPLEMENTED",
+      "status": "HOST_TESTED",
       "complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": true,
+      "latest_evidence_level": "L1",
       "implemented": [
-        "default Cargo closure includes the reviewed owner-open Host, runtime, registries, stores, provider, stream window and job runtime",
-        "selected Host binaries are foundation Host, v7 core and v5 transport",
-        "legacy semantic dependencies remain forbidden"
+        "exact reviewed default Cargo closure",
+        "selected foundation Host, v7 core and v5 transport binaries",
+        "legacy semantic dependencies and source markers remain forbidden",
+        "locked metadata and feature tree captured"
       ],
       "open": [
-        "execute exact Python and Rust closure on one commit",
-        "review Cargo.lock, metadata and feature trees",
-        "split and prove the Android owner-open product graph"
+        "remove forbidden legacy nodes from the selected Android product graph",
+        "collect Soong, init, SELinux and target-files negative evidence"
       ]
     },
     {
       "id": "W1",
       "name": "same-turn provider, tool callback and active controls",
-      "status": "SOURCE_IMPLEMENTED",
+      "status": "HOST_TESTED",
       "complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": true,
+      "latest_evidence_level": "L1",
       "implemented": [
         "same-turn provider/tool event path",
         "active turn.cancel and targeted tool.cancel",
         "bounded delivery controls and client-detach truth",
-        "broker request-owner correlation and bounded observation delivery"
+        "broker request-owner correlation and bounded observation delivery",
+        "provider and Host failure become truthful terminal observations"
       ],
       "open": [
-        "execute active-control and broker process tests",
-        "prove installed Codex continuation after real job observations",
-        "qualify multi-client disconnect and backpressure"
+        "prove the same continuation and control sequence through the installed target Codex",
+        "qualify target Root Linux multi-client disconnect and sustained backpressure"
       ]
     },
     {
       "id": "W2",
       "name": "external and installed Codex provider adapter",
-      "status": "SOURCE_IMPLEMENTED",
+      "status": "HOST_TESTED",
       "complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": true,
+      "latest_evidence_level": "L1",
       "implemented": [
         "bounded provider JSONL adapter and cancellation",
-        "local MCP server exposing connection identity and nine job operations",
+        "local MCP server exposing connection identity and reviewed job operations",
         "connection-bound live controls and no hidden effect retry",
         "exact-byte MCP trace proxy",
-        "temporary-registration installed-Codex qualification runner"
+        "temporary-registration installed-Codex qualification runner and lifecycle fixtures"
       ],
       "open": [
         "run the installed Codex probe in target Root Linux",
+        "bind executable path, digest, version, help bytes and authentication state",
         "execute the traced qualification against the installed CLI",
-        "review exact initialize, tools/list, eleven tools/call responses and completed-turn JSONL",
+        "review exact initialize, tools/list, tools/call and completed-turn events",
         "bind a real same-turn L2 result"
       ]
     },
     {
       "id": "W3",
       "name": "direct shell and durable job substrate",
-      "status": "SOURCE_IMPLEMENTED",
+      "status": "HOST_TESTED",
       "complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": true,
+      "latest_evidence_level": "L1",
       "implemented": [
         "direct command and argv shell",
         "process groups, timeout, cancellation and bounded byte streams",
         "durable pipe and PTY job start",
-        "job inspect, attach, detach, write, resize, close-stdin and kill",
-        "operation-level request binding and completed-job no-redispatch replay"
+        "job inspect, attach, detach, write, resize, close-stdin, kill and wait",
+        "operation-level request binding, EOF completion and completed-job no-redispatch replay"
       ],
       "open": [
-        "execute Rust registry/runtime/Host tests",
         "prove pipe and PTY operations through installed Codex MCP",
         "bind configured Root Linux identity, namespace and cgroup placement"
       ]
@@ -134,15 +202,17 @@
     {
       "id": "W4",
       "name": "ordinary raw ADB substrate",
-      "status": "SOURCE_IMPLEMENTED",
+      "status": "HOST_TESTED",
       "complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": false,
+      "latest_evidence_level": "L1",
       "implemented": [
         "exact configured adb argv without serial, host or port injection",
-        "unknown subcommands remain transport-valid"
+        "unknown subcommands remain transport-valid",
+        "byte-transparent relay and exact-argv qualification fixtures"
       ],
       "open": [
-        "implement physical ARM64 adb or byte-transparent relay topology",
+        "select and materialize the physical ARM64 adb or byte-transparent relay topology",
         "qualify USB, offline, unauthorized, recovery and reboot",
         "collect same-turn physical ADB evidence"
       ]
@@ -150,30 +220,34 @@
     {
       "id": "W5",
       "name": "persistence, replay, inspection, flow and connection recovery",
-      "status": "SOURCE_IMPLEMENTED",
+      "status": "HOST_TESTED",
       "complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": true,
+      "latest_evidence_level": "L1",
       "implemented": [
         "append-only turn and job observations",
         "completed replay and conservative incomplete recovery",
         "turn, call and job inspection",
         "bounded stream window and resync-required",
         "accepted-before-effect job operation records",
+        "configured journal failure is fail-closed",
         "bridge and broker connection ownership without automatic redispatch"
       ],
       "open": [
-        "execute persistence, recovery, flow, broker and job tests",
         "keep cross-Host live descriptor adoption unsupported or define a separately reviewed supervisor design",
-        "qualify ENOSPC, partial writes, crash and power loss"
+        "qualify target crash, disconnect, ENOSPC, reboot and power loss"
       ]
     },
     {
       "id": "W6",
       "name": "Android, Root Linux and AiShell integration",
-      "status": "NOT_STARTED",
+      "status": "SPEC_ONLY",
       "complete": false,
+      "source_complete": false,
       "latest_evidence_level": "L0",
-      "implemented": [],
+      "implemented": [
+        "Android profile, selection, payload and admission contracts with source-level verifier fixtures"
+      ],
       "open": [
         "clean owner-open product profile",
         "init, abstract socket and SELinux admission",
@@ -182,20 +256,22 @@
         "thin AiShell event, inspect, flow and job client",
         "emergency stop and clean target-files"
       ],
-      "hold": "the Android audit overlay still selects the pre-r3 Authority, lease, P01 and old shell-broker graph"
+      "hold": "the audited Android overlay still selects pre-r3 Authority, lease, P01 and old shell-broker nodes"
     },
     {
       "id": "W7",
       "name": "qualification, self-development and optional release",
-      "status": "SPEC_ONLY",
+      "status": "HOST_TESTED",
       "complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": false,
+      "latest_evidence_level": "L1",
       "implemented": [
         "L0-L6 promotion vocabulary",
+        "exact source manifest, full source test, full Clippy, Cargo graph and hashed evidence closeout",
         "durable job, broker and installed-Codex qualification contracts"
       ],
       "open": [
-        "runner-backed L1 and L2",
+        "installed target Root Linux and Codex L2",
         "clean Android L3",
         "physical shell, job and ADB L4",
         "provider, Host, broker, MCP, PTY, USB, reboot, ENOSPC and power-loss L5",
@@ -204,22 +280,22 @@
     }
   ],
   "critical_path_next": [
-    "execute the current Python and Rust 1.93 command closure on one exact commit and repair every finding",
-    "bind reviewed Cargo.lock, metadata, feature trees and raw logs",
-    "run the installed target Root Linux Codex probe and traced MCP qualification",
-    "prove same-turn pipe and PTY job control without hidden retry",
-    "implement the physical ADB topology",
-    "cut the Android owner-open product graph and collect L3-L5 evidence"
+    "run the installed target Root Linux Codex probe and bind executable identity and capability bytes",
+    "execute the exact traced MCP qualification with real pipe and PTY jobs and no hidden retry",
+    "select and execute the physical ordinary ADB topology",
+    "remove every forbidden legacy node from the Android owner-open product graph",
+    "wire init, SELinux, abstract socket, Root Linux and AiShell and build clean target files",
+    "collect L3, L4 and L5 evidence",
+    "keep public release false until a separate signed L6 profile passes"
   ],
   "not_claimed": [
-    "successful runner-backed Python or Rust closure for the current head",
-    "reviewed Cargo.lock for the current source closure",
     "live installed Codex MCP job qualification",
+    "target Root Linux UID, namespace or cgroup placement",
     "cross-Host live file-descriptor adoption",
-    "real ARM64 adb or transparent relay",
-    "Android image inclusion",
+    "real ARM64 adb or a deployed transparent relay",
+    "Android image inclusion or clean target-files",
     "physical shell, job or ADB effect",
-    "crash, ENOSPC, reboot or power-loss conformance",
-    "public release"
+    "crash, ENOSPC, USB-loss, reboot or power-loss conformance",
+    "signed public release"
   ]
 }
