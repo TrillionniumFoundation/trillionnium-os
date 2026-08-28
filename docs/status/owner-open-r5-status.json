@@ -3,9 +3,8 @@
   "plan_revision": "2026-08-28-r5",
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
-  "source_cut_parent": "fb6bff1a07e40bca60a6c08c047da7d4e96c16cd",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source implementation with selected v5 transport, job-aware v7 core, durable pipe and PTY jobs, same-turn callbacks, active controls, replay and inspection, plus an exact-source-bound local Codex STDIO MCP job bridge; no executed Rust, installed-Codex, Android, physical-device, real-ADB or release claim",
+  "product_claim": "owner-open source implementation with selected v5 transport, job-aware v7 core, durable pipe and PTY jobs, same-turn callbacks, active controls, replay and inspection, connection-bound Codex MCP live controls, a strict multi-connection broker foundation, exact-byte MCP tracing, and an installed-Codex qualification runner; no runner-backed Rust, installed-Codex, Android, physical-device, real-ADB or release claim",
   "public_release": false,
   "status_levels": [
     "NOT_STARTED",
@@ -19,45 +18,43 @@
   ],
   "evidence_levels": {
     "L0": "contract, source graph and isolated source fixtures",
-    "L1": "unit, property and fuzz tests on the exact checkout",
-    "L2": "real host/provider/MCP process integration",
+    "L1": "unit, property and fuzz tests on one exact checkout",
+    "L2": "real Host, broker, provider and installed-Codex process integration",
     "L3": "clean Android image and static product graph",
     "L4": "physical live effect",
     "L5": "fault, restart, reboot and power-loss",
     "L6": "signed public-release qualification"
   },
-  "local_l0_execution": {
-    "status": "PASS_EXACT_MCP_BLOBS_ISOLATED_FIXTURE_ONLY",
-    "environment": "Python 3.13.5 on Linux x86_64; Rust 1.93 and private full checkout unavailable",
-    "commands": [
-      "python3 -m py_compile tools/owner-open/codex_owner_open_mcp.py tools/owner-open/owner_open_mcp_common.py tools/owner-open/owner_open_mcp_host.py tools/owner-open/owner_open_mcp_jobs.py tools/tests/test_codex_owner_open_mcp.py",
-      "PYTHONWARNINGS=error::ResourceWarning python3 -m unittest tools.tests.test_codex_owner_open_mcp -v"
+  "current_source_slice": {
+    "status": "SOURCE_IMPLEMENTED",
+    "latest_evidence_level": "L0",
+    "implemented": [
+      "MCP connection_info returns one process-lifetime bridge_instance_id",
+      "live and mutating job tools reject missing or mismatched bridge identity before Host dispatch",
+      "job.inspect and job.wait remain durable read-only operations for later connections",
+      "filesystem Unix multi-connection broker foundation uses strict JSON, same-UID peer admission, private token and digest-bound descriptor mechanics",
+      "broker response model binds direct results to request owners and bounded observations to admitted clients",
+      "client disconnect is not interpreted as effect cancellation or automatic redispatch",
+      "exact-byte MCP STDIO trace records both directions and uses finite downstream process-group teardown",
+      "installed-Codex qualification runner temporarily registers the traced MCP server, validates an exact eleven-call pipe/PTY sequence, removes registration and restores config",
+      "CI candidate workflow includes graph, MCP, qualification-lifecycle, broker, Rust format, test, clippy and graph capture commands"
     ],
-    "tests_run": 4,
-    "tests_passed": 4,
-    "exact_blob_binding": {
-      "tools/owner-open/codex_owner_open_mcp.py": "b400d7545f37a4ccfdd56f4da0a3afe61e27e9b6",
-      "tools/owner-open/owner_open_mcp_common.py": "31474ac9d38a5a3376dc5962d5244161c2d35514",
-      "tools/owner-open/owner_open_mcp_host.py": "e95a0c20d53d65ae675c81cbe17aa182a282ce96",
-      "tools/owner-open/owner_open_mcp_jobs.py": "04742f50cb4165ef665955a9a45dcca141087e8f",
-      "tools/tests/test_codex_owner_open_mcp.py": "5af3139c03f801102b064a82275d4ac37ff4af2e"
-    },
-    "evidence": "docs/evidence/2026-08-28-owner-open-codex-mcp-job-source.md",
-    "exact_checkout": false,
-    "claim_ceiling": "L0 exact adapter bytes and isolated fake-Host process fixture"
+    "execution_boundary": {
+      "runner_backed_exact_checkout_pass": false,
+      "rust_1_93_pass": false,
+      "installed_codex_executed": false,
+      "physical_effect_observed": false,
+      "claim_ceiling": "SOURCE_IMPLEMENTED / L0"
+    }
   },
   "ci_observation": {
-    "observed_head": "1ce66a646d87c64b90f5b47477d964a12323dd9c",
-    "owner_open_r5_run_id": 33145276723,
-    "workflow_conclusion": "failure",
-    "jobs": [
-      "R5 graph, Codex MCP and machine contracts",
-      "Rust 1.93 job-aware Host, flow-control and recovery closure"
-    ],
-    "runner_id": 0,
-    "steps_observed": 0,
-    "logs_available": false,
-    "interpretation": "both jobs completed with steps=[] and no assigned runner; no Python or Rust source command executed, so this is neither a source pass nor a source failure"
+    "status": "NO_EXECUTING_RUNNER_EVIDENCE_BOUND_TO_CURRENT_SOURCE",
+    "previous_pattern": {
+      "runner_id": 0,
+      "steps_observed": 0,
+      "logs_available": false
+    },
+    "interpretation": "a workflow conclusion without an assigned runner, steps or logs is neither a source pass nor a source failure"
   },
   "work_packages": [
     {
@@ -67,12 +64,12 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "default Cargo closure includes job registry and job runtime",
+        "default Cargo closure includes the reviewed owner-open Host, runtime, registries, stores, provider, stream window and job runtime",
         "selected Host binaries are foundation Host, v7 core and v5 transport",
-        "negative graph gates reject v4 downgrade, job-runtime removal and legacy semantic dependencies"
+        "legacy semantic dependencies remain forbidden"
       ],
       "open": [
-        "execute verifier and Rust 1.93 closure on one exact checkout",
+        "execute exact Python and Rust closure on one commit",
         "review Cargo.lock, metadata and feature trees",
         "split and prove the Android owner-open product graph"
       ]
@@ -84,15 +81,15 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "same-turn provider and tool event path",
+        "same-turn provider/tool event path",
         "active turn.cancel and targeted tool.cancel",
         "bounded delivery controls and client-detach truth",
-        "concurrent MCP tools/call request workers with cancellation tokens"
+        "broker request-owner correlation and bounded observation delivery"
       ],
       "open": [
-        "execute selected Host and active-control tests",
-        "prove installed Codex continuation after a real job observation",
-        "define multi-connection and cross-Host ownership"
+        "execute active-control and broker process tests",
+        "prove installed Codex continuation after real job observations",
+        "qualify multi-client disconnect and backpressure"
       ]
     },
     {
@@ -103,18 +100,16 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "bounded provider JSONL adapter and cancellation",
-        "installed-Codex probe and launch-plan tools",
-        "local MCP 2025-06-18 server exposing nine job tools",
-        "owner-pinned or mechanically generated MCP job scope",
-        "stable operation IDs, no semantic gate and no hidden effect retry",
-        "exact checked-in MCP source blobs passed four isolated fake-Host tests",
-        "MCP safety annotations distinguish read-only, mutating, destructive and open-world operations"
+        "local MCP server exposing connection identity and nine job operations",
+        "connection-bound live controls and no hidden effect retry",
+        "exact-byte MCP trace proxy",
+        "temporary-registration installed-Codex qualification runner"
       ],
       "open": [
-        "run the probe in target Root Linux",
-        "register the MCP server with the installed Codex",
-        "capture real initialize, tools/list and tools/call exchange",
-        "prove pipe and PTY job controls inside one real Codex turn"
+        "run the installed Codex probe in target Root Linux",
+        "execute the traced qualification against the installed CLI",
+        "review exact initialize, tools/list, eleven tools/call responses and completed-turn JSONL",
+        "bind a real same-turn L2 result"
       ]
     },
     {
@@ -132,8 +127,8 @@
       ],
       "open": [
         "execute Rust registry/runtime/Host tests",
-        "prove PTY and pipe operations through installed Codex MCP",
-        "bind configured Root Linux identity and physical evidence"
+        "prove pipe and PTY operations through installed Codex MCP",
+        "bind configured Root Linux identity, namespace and cgroup placement"
       ]
     },
     {
@@ -154,7 +149,7 @@
     },
     {
       "id": "W5",
-      "name": "persistence, replay, inspection, flow and job recovery",
+      "name": "persistence, replay, inspection, flow and connection recovery",
       "status": "SOURCE_IMPLEMENTED",
       "complete": false,
       "latest_evidence_level": "L0",
@@ -164,11 +159,11 @@
         "turn, call and job inspection",
         "bounded stream window and resync-required",
         "accepted-before-effect job operation records",
-        "MCP errors preserve Host evidence and automatic_redispatch=false"
+        "bridge and broker connection ownership without automatic redispatch"
       ],
       "open": [
-        "execute persistence, recovery, flow and job tests",
-        "decide cross-Host live descriptor adoption boundary",
+        "execute persistence, recovery, flow, broker and job tests",
+        "keep cross-Host live descriptor adoption unsupported or define a separately reviewed supervisor design",
         "qualify ENOSPC, partial writes, crash and power loss"
       ]
     },
@@ -183,7 +178,7 @@
         "clean owner-open product profile",
         "init, abstract socket and SELinux admission",
         "Root Linux lifecycle and writable overlay",
-        "install Host, v7 core and Codex MCP bridge",
+        "install Host, broker, core, trace and Codex MCP bridge",
         "thin AiShell event, inspect, flow and job client",
         "emergency stop and clean target-files"
       ],
@@ -196,33 +191,31 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "L0-L6 promotion vocabulary and job/MCP qualification gates"
+        "L0-L6 promotion vocabulary",
+        "durable job, broker and installed-Codex qualification contracts"
       ],
       "open": [
-        "runner-backed L1/L2",
+        "runner-backed L1 and L2",
         "clean Android L3",
         "physical shell, job and ADB L4",
-        "provider, Host, MCP, PTY, USB, reboot, ENOSPC and power-loss L5",
+        "provider, Host, broker, MCP, PTY, USB, reboot, ENOSPC and power-loss L5",
         "separate signed L6 profile"
       ]
     }
   ],
   "critical_path_next": [
-    "obtain an executing Rust 1.93 runner and fix every format, compile, test and clippy finding",
-    "execute the exact-checkout Python MCP suite",
-    "bind reviewed Cargo.lock, metadata and feature graphs",
-    "probe installed target Root Linux Codex and register the local MCP server",
-    "prove same-turn pipe and PTY job control through installed Codex",
+    "execute the current Python and Rust 1.93 command closure on one exact commit and repair every finding",
+    "bind reviewed Cargo.lock, metadata, feature trees and raw logs",
+    "run the installed target Root Linux Codex probe and traced MCP qualification",
+    "prove same-turn pipe and PTY job control without hidden retry",
     "implement the physical ADB topology",
     "cut the Android owner-open product graph and collect L3-L5 evidence"
   ],
   "not_claimed": [
-    "successful Rust formatting, compilation, tests or clippy",
-    "reviewed Cargo.lock for the selected source closure",
-    "exact-checkout CI pass for the Python MCP suite",
-    "executed v5 transport to v7 core integration",
-    "live installed Codex MCP shell.job turn",
-    "cross-Host live file-descriptor reattachment",
+    "successful runner-backed Python or Rust closure for the current head",
+    "reviewed Cargo.lock for the current source closure",
+    "live installed Codex MCP job qualification",
+    "cross-Host live file-descriptor adoption",
     "real ARM64 adb or transparent relay",
     "Android image inclusion",
     "physical shell, job or ADB effect",
