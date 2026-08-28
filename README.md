@@ -1,124 +1,97 @@
 # Trillionnium OS
 
-Trillionnium is an AI Agent Native Android OS. Codex is the single built-in
-semantic Agent. The OS supplies an owner-open mechanism substrate for provider
-lifecycle, direct shell, ordinary raw ADB, event transport, storage, watchdog
-and recovery; it does not insert a second semantic planner, risk engine or
-approval authority.
+Trillionnium is an AI Agent Native Android OS. Codex is the single semantic
+Agent. The owner-open substrate supplies provider lifecycle, direct shell,
+ordinary raw ADB, event transport, storage, watchdog and recovery mechanics; it
+does not add a second planner, risk engine or approval authority.
 
 ```text
 AiShell / owner client
   -> owner-open Direct Agent Host
   -> one Codex/provider turn
   -> shell.exec / adb.exec
-  -> raw process or transport observation
+  -> raw observation
   -> the same provider turn
 ```
 
-Root Linux is the Android-managed headless execution environment for Codex and
-its tools. Inference remains off-device. WindowsCompat and historical local
-model/desktop paths are not current product capabilities.
-
 ## Current authority
 
-- **R3 semantic contract:**
-  [`docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
-- **R5 implementation and closeout plan — active:**
-  [`docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md`](docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md)
-- **R5 machine status:**
-  [`docs/status/owner-open-r5-status.json`](docs/status/owner-open-r5-status.json)
-- **R5 traceability:**
-  [`docs/status/owner-open-r5-traceability.tsv`](docs/status/owner-open-r5-traceability.tsv)
-- **R5 start page:**
-  [`docs/OWNER_OPEN_R5_START_HERE.md`](docs/OWNER_OPEN_R5_START_HERE.md)
+- [R3 semantic contract](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
+- [Active R5 implementation plan](docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md)
+- [Current Batch D checkpoint](docs/plan/owner-open-r5-batch-d-inspection-flow-control.md)
+- [Machine status](docs/status/owner-open-r5-status.json)
+- [Traceability](docs/status/owner-open-r5-traceability.tsv)
+- [Start page](docs/OWNER_OPEN_R5_START_HERE.md)
 
-R4 remains retained as the previous execution plan and source foundation. R5
-supersedes R4 for what is built next and what counts as complete; R3 continues
-to govern product semantics.
+R3 governs product semantics. R5 governs implementation order, evidence
+promotion and completion. This branch is an owner-open development lane, not a
+public release.
 
 ## Current source state
 
-The branch is an owner-open source development lane, not a public release.
+Source-authored now:
 
-Implemented at source level:
+- strict owner-open frame/tool codecs;
+- direct command-string and argv shell execution;
+- ordinary configured ADB argv without serial/host/port injection;
+- process groups, timeout, cancellation, output bounds and descendant cleanup;
+- scoped call identity, at-most-one spawn and truthful uncertainty states;
+- same-turn streaming provider/tool callback;
+- external provider JSONL duplex and provider cancellation;
+- selected Host v4 with active `turn.cancel` and targeted `tool.cancel`;
+- per-event durable append, detached client delivery, completed replay and
+  conservative incomplete recovery;
+- read-only wire `turn.inspect` and `call.inspect`, with live-registry and
+  durable-frame paths and no automatic redispatch;
+- isolated bounded stream-window state for byte credit, pause, resume, close
+  and exact control sequencing;
+- exact negative Cargo/Host graph contracts and candidate CI commands.
 
-- strict owner-open frame and tool codecs;
-- direct command-string shell and element-preserving argv runtime;
-- ordinary configured ADB argv without injected serial/host/port;
-- process groups, cancellation, timeout, output bounds and descendant cleanup;
-- concurrent scoped call registry and registry-to-runtime failure closure;
-- same-turn callback loop in which a provider receives a tool observation and
-  may continue before producing one turn terminal;
-- bounded external provider JSONL process adapter;
-- selected R5 Host with an independent bounded input/control reader and turn
-  worker;
-- streaming provider/tool event delivery and per-event durable append while a
-  turn is active;
-- correlated active `turn.cancel` reaching the provider and active call;
-- targeted active `tool.cancel` reaching only the scoped call registry;
-- client EOF/output loss detached from effect cancellation;
-- append-only event store with strict reopen and scoped event identity;
-- stable turn identity, completed-turn replay without provider/tool respawn and
-  incomplete-turn reconciliation to `unknown_after_disconnect` without
-  automatic redispatch;
-- explicit Host binary graph with Cargo autobin discovery disabled;
-- exact negative source-graph contracts and Python verifier tests.
+Explicitly not claimed:
 
-Not yet claimed:
+- Rust 1.93 formatting, compilation, tests or clippy for the current head;
+- a reviewed current `Cargo.lock`;
+- Host-integrated stream credit/pause/resume;
+- a live installed Codex turn;
+- real ARM64 ADB or a deployed transparent relay;
+- a clean Android owner-open image or physical shell/ADB effect;
+- crash, ENOSPC, reboot or power-loss qualification;
+- public release.
 
-- successful Rust formatting, compilation, tests or clippy for the latest R5
-  commit—the observed Actions runs had no executed runner steps or logs;
-- reviewed Cargo lock refresh from the current source closure;
-- executed proof that active `turn.cancel`/`tool.cancel` passes;
-- live installed Codex provider events;
-- inclusive replay cursors, inspect/attach APIs or stream flow control;
-- real ARM64 ADB or transparent relay;
-- Android owner-open product graph, image or physical effect;
-- Host-crash, ENOSPC, reboot or power-loss qualification;
-- signed public release.
+The latest observed Actions jobs ended without assigned steps or logs. That is
+an infrastructure failure, not evidence that the Rust source passed or failed.
 
-The checked-in Android audit overlay still contains the pre-R3
-Authority/Capability Lease/P01/old shell-broker product graph. It is audit
-material and an explicit W6 hold, not the owner-open product closure.
-
-## R5 source checks
+## Source gates
 
 ```sh
-python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v2.json >/dev/null
-python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
+python3 tools/generate-owner-open-types.py --check
 python3 tools/verify-owner-open-r5.py --json
 python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
 
 cargo generate-lockfile
 cargo fmt --all -- --check
-cargo test --all-targets --package trillionnium-owner-open-types
-cargo test --all-targets --package trillionnium-owner-open-runtime
-cargo test --all-targets --package trillionnium-owner-open-call-registry
-cargo test --all-targets --package trillionnium-owner-open-event-store
-cargo test --all-targets --package trillionnium-owner-open-tool-bridge
-cargo test --all-targets --package trillionnium-owner-open-turn-loop
-cargo test --all-targets --package trillionnium-owner-open-provider-jsonl
-cargo test --all-targets --package trillionnium-owner-open-host
-cargo clippy --all-targets -- -D warnings
+cargo test --locked --all-targets
+cargo clippy --locked --all-targets -- -D warnings
 ```
 
-Only exact command output bound to the commit may promote the machine status.
-Source presence alone remains L0.
+Only exact output bound to the commit can raise a capability above L0 source
+evidence.
 
 ## Owner-open dogfood completion boundary
 
-Dogfood is complete only when one bound evidence package proves:
+Dogfood completes only when one bound evidence package proves:
 
 1. Android starts one owner-open Host and no forbidden legacy semantic node;
 2. one physical Codex turn invokes Root Linux shell and ordinary raw ADB;
-3. raw tool events return to that same turn and Codex continues;
-4. duplicate local calls do not spawn twice and uncertain effects are not
-   blindly re-dispatched;
-5. client/provider/Host failure, USB loss and reboot produce inspectable truth;
-6. out-of-band emergency stop works without provider availability;
+3. raw observations return to that same turn and Codex continues;
+4. duplicate calls do not spawn twice and uncertain effects are not blindly
+   redispatched;
+5. inspect/reconnect/cancel and provider/Host/client failure produce truthful
+   state;
+6. emergency stop works without provider availability;
 7. Codex can build, install, inspect and recover the dogfood userland; and
-8. evidence binds exact control-plane source, Android manifest/patches, Cargo
-   graph, Soong graph, rootfs, provider runtime, target files and device.
+8. evidence binds exact source, Android manifest/patches, Cargo/Soong graphs,
+   rootfs, provider runtime, target files and device.
 
-Public signing, AVB/rollback, OTA, multi-user isolation and release security
-review are separate L6 properties and do not block owner-open development.
+Signing, AVB/rollback, OTA, multi-user isolation and public-release security are
+separate L6 properties.
