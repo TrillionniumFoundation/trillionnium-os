@@ -60,7 +60,7 @@ jobs:
               "    def run(self, command: list[str], timeout: float = 30) -> subprocess.CompletedProcess[bytes]:\n",
               "    def run_command(\n        self, command: list[str], timeout: float = 30\n    ) -> subprocess.CompletedProcess[bytes]:\n",
           )
-          replace_exact(image_test, "self.run(", "self.run_command(", expected=6)
+          replace_exact(image_test, "self.run(", "self.run_command(", expected=7)
 
           replace_exact(
               "tools/tests/test_build_codex_only_raw_elf_set.py",
