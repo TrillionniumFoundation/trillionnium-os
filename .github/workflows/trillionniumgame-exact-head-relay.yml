@@ -30,11 +30,14 @@ jobs:
           - label: pr30-persistence
             ref: 679db34685774d88fecd405124c79deac3814153
             check_script: scripts/check-persistence-core.py
+          - label: pr31-schema
+            ref: 15557032a4b81ba42388c2425b0b3622e0076d6b
+            check_script: scripts/check-foundation-schema.py
           - label: pr32-token
-            ref: 857c7a6e5dd366e80ef3dcf128cd825ad7143257
+            ref: 729b543a4454ee494fe6f2653aa2cf0ea36c6ba3
             check_script: scripts/check-token-core.py
           - label: pr34-presence
-            ref: 3c06924110d1e80e729cbcff156a68533bb889d4
+            ref: 3fb11af2e8631e9c172d870f6746ba1caa5f3b5a
             check_script: scripts/check-presence-core.py
 
     steps:
