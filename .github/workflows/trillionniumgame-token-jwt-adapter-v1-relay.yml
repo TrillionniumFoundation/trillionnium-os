@@ -1,0 +1,221 @@
+name: TrillionniumGame token JWT adapter v1 relay
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-token-jwt-adapter-v1-relay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trillionniumgame-token-jwt-adapter-v1-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: feature/trillionniumgame-w3-token-policy-core-v1
+  MANIFEST: crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Resolve token branch
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out immutable token head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal \
+            --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Run format repair, tests, strict Clippy and Python cross-check
+        working-directory: source
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p relay-evidence/formatted
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          rustc --version --verbose > relay-evidence/rustc-version.txt
+          cargo --version --verbose > relay-evidence/cargo-version.txt
+
+          set +e
+          cargo fmt --manifest-path "$MANIFEST" \
+            2>&1 | tee relay-evidence/cargo-fmt-apply.log
+          fmt_apply_status=${PIPESTATUS[0]}
+          git diff --binary -- . ':(exclude)relay-evidence' \
+            > relay-evidence/cargo-fmt.patch
+          git diff --name-only -- . ':(exclude)relay-evidence' \
+            > relay-evidence/cargo-fmt-files.txt
+          if [[ -s relay-evidence/cargo-fmt-files.txt ]]; then
+            while IFS= read -r path; do
+              mkdir -p "relay-evidence/formatted/$(dirname "$path")"
+              cp "$path" "relay-evidence/formatted/$path"
+            done < relay-evidence/cargo-fmt-files.txt
+            format_dirty=1
+          else
+            format_dirty=0
+          fi
+
+          cargo fmt --manifest-path "$MANIFEST" -- --check \
+            2>&1 | tee relay-evidence/cargo-fmt-check.log
+          fmt_check_status=${PIPESTATUS[0]}
+          cargo test --manifest-path "$MANIFEST" --locked \
+            2>&1 | tee relay-evidence/cargo-test.log
+          test_status=${PIPESTATUS[0]}
+          cargo clippy --manifest-path "$MANIFEST" --all-targets --locked \
+            -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
+          clippy_status=${PIPESTATUS[0]}
+
+          cargo run --quiet --manifest-path "$MANIFEST" --locked \
+            --example vector > relay-evidence/rust-vectors.txt 2>relay-evidence/vector-stderr.txt
+          vector_status=$?
+          legacy=$(sed -n 's/^legacy=//p' relay-evidence/rust-vectors.txt)
+          epoch=$(sed -n 's/^epoch=//p' relay-evidence/rust-vectors.txt)
+          if [[ -n "$legacy" && -n "$epoch" ]]; then
+            python3 scripts/test-jwt-hs256-adapter-v1.py \
+              --legacy "$legacy" --epoch "$epoch" \
+              2>&1 | tee relay-evidence/python-reference.json
+            python_status=${PIPESTATUS[0]}
+          else
+            printf '%s\n' 'missing Rust vector output' \
+              | tee relay-evidence/python-reference.json
+            python_status=1
+          fi
+
+          python3 -m compileall -q scripts
+          python_compile_status=$?
+          if grep -RIn --include='*.rs' -E '\bunsafe\b' \
+            crates/trnm-token-jwt-adapter crates/trnm-token-jwt-adapter-gate-v2 \
+            > relay-evidence/unsafe-scan.txt; then
+            unsafe_status=1
+          else
+            unsafe_status=0
+          fi
+          set -e
+
+          python3 - <<PY
+          import json
+          from pathlib import Path
+          statuses = {
+              'cargo_fmt_apply': int('${fmt_apply_status}'),
+              'cargo_fmt_check_after_apply': int('${fmt_check_status}'),
+              'source_format_dirty': int('${format_dirty}'),
+              'cargo_test': int('${test_status}'),
+              'cargo_clippy': int('${clippy_status}'),
+              'rust_vector': int('${vector_status}'),
+              'python_reference': int('${python_status}'),
+              'python_compile': int('${python_compile_status}'),
+              'unsafe_scan': int('${unsafe_status}'),
+          }
+          record = {
+              'schema': 'trillionnium.game.jwt-hs256-adapter-relay.v1',
+              'repository': '${{ env.TARGET_REPOSITORY }}',
+              'branch': '${{ env.TARGET_BRANCH }}',
+              'commit': '${{ steps.resolve.outputs.sha }}',
+              'manifest': '${{ env.MANIFEST }}',
+              'statuses': statuses,
+              'format_patch_required': statuses['source_format_dirty'] != 0,
+              'logic_gate_passed': all(statuses[key] == 0 for key in [
+                  'cargo_fmt_apply', 'cargo_fmt_check_after_apply',
+                  'cargo_test', 'cargo_clippy', 'rust_vector',
+                  'python_reference', 'python_compile', 'unsafe_scan'
+              ]),
+              'exact_head_green': all(value == 0 for value in statuses.values()),
+              'claims': {
+                  'official_nakama_golden_tokens_verified': False,
+                  'external_crypto_review_complete': False,
+                  'production_ready': False,
+              },
+          }
+          Path('relay-evidence/summary.json').write_text(
+              json.dumps(record, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+          if (( fmt_apply_status || fmt_check_status || test_status || clippy_status \
+                || vector_status || python_status || python_compile_status \
+                || unsafe_status )); then
+            exit 1
+          fi
+
+      - name: Upload token adapter evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-token-jwt-adapter-${{ steps.resolve.outputs.sha }}-run-${{ github.run_number }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    if: always()
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out relay audit branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ci/trillionniumgame-exact-head-relay-v1
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Download token adapter evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: trillionniumgame-token-jwt-adapter-*-run-${{ github.run_number }}
+          path: downloaded
+          merge-multiple: false
+
+      - name: Publish immutable and latest token evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="relay-repairs/token-jwt-v1-run-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}"
+          latest="relay-repairs/latest-token-jwt-v1"
+          mkdir -p "$destination"
+          rm -rf "$latest"
+          mkdir -p "$latest"
+          cp -R downloaded/. "$destination/"
+          cp -R downloaded/. "$latest/"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$destination/run-id.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$destination/relay-head.txt"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$latest/run-id.txt"
+          find "$destination" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$destination/SHA256SUMS"
+          find "$latest" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$latest/SHA256SUMS"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$destination" "$latest"
+          git commit -m "ci(relay): publish token JWT adapter v1 run ${GITHUB_RUN_NUMBER}"
+          git push origin HEAD:ci/trillionniumgame-exact-head-relay-v1
