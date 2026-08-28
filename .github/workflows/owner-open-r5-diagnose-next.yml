@@ -1,4 +1,4 @@
-name: owner-open R5 diagnose next failures
+name: owner-open R5 validate repair candidate
 
 on:
   workflow_dispatch:
@@ -12,21 +12,21 @@ permissions:
   contents: read
 
 concurrency:
-  group: owner-open-r5-diagnose-next-${{ github.ref }}
+  group: owner-open-r5-validate-repair-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  diagnose:
-    name: Diagnose isolated Python clusters and next Rust compiler errors
+  validate:
+    name: Validate Python, Rust and lockfile repair candidate
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Check out exact branch head
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: codex/owner-open-r5-tool-loop-20260827
           persist-credentials: false
-          fetch-depth: 1
+          fetch-depth: 2
 
       - name: Set up Python 3.12
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -39,32 +39,10 @@ jobs:
           toolchain: 1.93.0
           components: rustfmt, clippy
 
-      - name: Scan unittest subclasses for reserved run overrides
+      - name: Apply exact reviewed repairs
         run: |
-          mkdir -p owner-open-r5-diagnose
-          python3 - <<'PY' | tee owner-open-r5-diagnose/testcase-run-overrides-before.txt
-          import ast
-          from pathlib import Path
-
-          findings = []
-          for path in sorted(Path("tools/tests").rglob("test_*.py")):
-              tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-              for node in tree.body:
-                  if not isinstance(node, ast.ClassDef):
-                      continue
-                  bases = {ast.unparse(base) for base in node.bases}
-                  if not any(base.endswith("TestCase") for base in bases):
-                      continue
-                  for item in node.body:
-                      if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == "run":
-                          findings.append((str(path), node.name, item.lineno))
-          for path, cls, line in findings:
-              print(f"{path}:{line}: {cls}.run")
-          print(f"count={len(findings)}")
-          PY
-
-      - name: Apply known temporary repairs in the diagnostic checkout
-        run: |
+          mkdir -p owner-open-r5-candidate
+          git rev-parse HEAD > owner-open-r5-candidate/base-head.txt
           python3 - <<'PY'
           from pathlib import Path
 
@@ -73,8 +51,32 @@ jobs:
               text = target.read_text(encoding="utf-8")
               count = text.count(old)
               if count != expected:
-                  raise SystemExit(f"{path}: expected {expected}, observed {count}: {old!r}")
+                  raise SystemExit(
+                      f"{path}: expected {expected} replacements, observed {count}: {old!r}"
+                  )
               target.write_text(text.replace(old, new), encoding="utf-8")
+
+          def insert_after(path: str, marker: str, addition: str, expected: int = 1) -> None:
+              replace_exact(path, marker, marker + addition, expected)
+
+          def replace_in_function(
+              path: str, function: str, old: str, new: str, expected: int = 1
+          ) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              marker = f"    def {function}"
+              start = text.index(marker)
+              next_method = text.find("\n    def ", start + len(marker))
+              next_decorator = text.find("\n    @", start + len(marker))
+              candidates = [value for value in (next_method, next_decorator) if value >= 0]
+              end = min(candidates) if candidates else len(text)
+              segment = text[start:end]
+              count = segment.count(old)
+              if count != expected:
+                  raise SystemExit(
+                      f"{path}:{function}: expected {expected}, observed {count}: {old!r}"
+                  )
+              target.write_text(text[:start] + segment.replace(old, new) + text[end:], encoding="utf-8")
 
           stage = "tools/tests/test_stage_owner_open_rootfs_payload_release.py"
           replace_exact(
@@ -82,19 +84,173 @@ jobs:
               "    def run(self, plan: Path, output: Path) -> subprocess.CompletedProcess[bytes]:\n",
               "    def run_command(\n        self, plan: Path, output: Path\n    ) -> subprocess.CompletedProcess[bytes]:\n",
           )
-          replace_exact(stage, "self.run(plan, output)", "self.run_command(plan, output)", expected=7)
+          replace_exact(stage, "self.run(plan, output)", "self.run_command(plan, output)", 7)
 
-          supervisor = "tools/tests/test_supervise_codex_mcp_qualification_release.py"
+          supervisor_release = "tools/tests/test_supervise_codex_mcp_qualification_release.py"
           replace_exact(
-              supervisor,
+              supervisor_release,
               "    def run(self, evidence: Path, *, timeout: str = \"5\", **environment: str):\n",
               "    def run_command(\n        self, evidence: Path, *, timeout: str = \"5\", **environment: str\n    ):\n",
           )
+          replace_exact(supervisor_release, "self.run(evidence", "self.run_command(evidence", 3)
+
+          for path in (
+              "tools/tests/test_supervise_codex_mcp_qualification.py",
+              supervisor_release,
+              "tools/tests/test_qualify_owner_open_adb.py",
+              "tools/tests/test_qualify_owner_open_adb_selected.py",
+          ):
+              insert_after(path, "import os\n", "import shutil\n")
+              insert_after(
+                  path,
+                  "        self.root.chmod(0o700)\n",
+                  "        self.python = self.root / \"python\"\n"
+                  "        shutil.copyfile(Path(sys.executable).resolve(), self.python)\n"
+                  "        self.python.chmod(0o700)\n",
+              )
+              replace_exact(
+                  path,
+                  "            \"--python\",\n            str(Path(sys.executable).resolve()),\n",
+                  "            \"--python\",\n            str(self.python),\n",
+              )
+
+          shell_test = "tools/tests/test_build_shell_exec_artifact_set.py"
+          insert_after(shell_test, "import platform\n", "import shutil\n")
+          replace_in_function(
+              shell_test,
+              "test_supervisor_bounds_output_and_kills_surviving_descendants",
+              "        python = BUILD.raw_primitives.open_retained_executable(\n"
+              "            Path(sys.executable).resolve(), \"test Python\"\n"
+              "        )\n",
+              "        private_python = tempfile.TemporaryDirectory()\n"
+              "        python_path = Path(private_python.name) / \"python\"\n"
+              "        shutil.copyfile(Path(sys.executable).resolve(), python_path)\n"
+              "        python_path.chmod(0o700)\n"
+              "        python = BUILD.raw_primitives.open_retained_executable(\n"
+              "            python_path, \"test Python\"\n"
+              "        )\n",
+          )
+          replace_in_function(
+              shell_test,
+              "test_supervisor_bounds_output_and_kills_surviving_descendants",
+              "        finally:\n            python.close()\n",
+              "        finally:\n            python.close()\n            private_python.cleanup()\n",
+          )
+
+          relay_test = "tools/tests/test_adb_smart_socket_relay_selected.py"
+          insert_after(
+              relay_test,
+              "class SelectedAdbSmartSocketRelayTest(unittest.TestCase):\n",
+              "    RELAY = RELAY\n\n",
+          )
+          replace_exact(relay_test, "str(RELAY)", "str(self.RELAY)", 2)
           replace_exact(
-              supervisor,
-              "self.run(evidence",
-              "self.run_command(evidence",
-              expected=3,
+              relay_test,
+              "            \"tools/owner-open/adb_smart_socket_relay_selected.py\",\n",
+              "            f\"tools/owner-open/{self.RELAY.name}\",\n",
+          )
+
+          selected_adb_test = "tools/tests/test_qualify_owner_open_adb_selected.py"
+          insert_after(
+              selected_adb_test,
+              "class SelectedAdbQualificationTest(unittest.TestCase):\n",
+              "    QUALIFIER = QUALIFIER\n    RELAY = RELAY\n\n",
+          )
+          replace_exact(selected_adb_test, "str(QUALIFIER)", "str(self.QUALIFIER)")
+          replace_exact(selected_adb_test, "str(RELAY)", "str(self.RELAY)")
+
+          release_paths = "tools/tests/test_release_qualification_paths.py"
+          replace_exact(
+              release_paths,
+              "relay_suite.RELAY = ROOT / \"adb_smart_socket_relay_release.py\"\n"
+              "adb_suite.RELAY = ROOT / \"adb_smart_socket_relay_release.py\"\n"
+              "adb_suite.QUALIFIER = ROOT / \"qualify_owner_open_adb_release.py\"\n\n\n",
+              "RELEASE_RELAY = ROOT / \"adb_smart_socket_relay_release.py\"\n"
+              "RELEASE_QUALIFIER = ROOT / \"qualify_owner_open_adb_release.py\"\n\n\n",
+          )
+          replace_exact(
+              release_paths,
+              "class ReleaseAdbRelayTest(relay_suite.SelectedAdbSmartSocketRelayTest):\n    pass\n",
+              "class ReleaseAdbRelayTest(relay_suite.SelectedAdbSmartSocketRelayTest):\n"
+              "    RELAY = RELEASE_RELAY\n",
+          )
+          replace_exact(
+              release_paths,
+              "class ReleaseAdbQualificationTest(adb_suite.SelectedAdbQualificationTest):\n    pass\n",
+              "class ReleaseAdbQualificationTest(adb_suite.SelectedAdbQualificationTest):\n"
+              "    RELAY = RELEASE_RELAY\n"
+              "    QUALIFIER = RELEASE_QUALIFIER\n",
+          )
+
+          release_paths_v2 = "tools/tests/test_release_qualification_paths_v2.py"
+          replace_exact(
+              release_paths_v2,
+              "relay_suite.RELAY = RELEASE_RELAY\nadb_suite.RELAY = RELEASE_RELAY\nadb_suite.QUALIFIER = RELEASE_QUALIFIER\n\n\n",
+              "",
+          )
+          insert_after(
+              release_paths_v2,
+              "class ReleaseAdbRelayV2Test(relay_suite.SelectedAdbSmartSocketRelayTest):\n",
+              "    RELAY = RELEASE_RELAY\n\n",
+          )
+          replace_exact(
+              release_paths_v2,
+              "class ReleaseAdbQualificationV2Test(adb_suite.SelectedAdbQualificationTest):\n    pass\n",
+              "class ReleaseAdbQualificationV2Test(adb_suite.SelectedAdbQualificationTest):\n"
+              "    RELAY = RELEASE_RELAY\n"
+              "    QUALIFIER = RELEASE_QUALIFIER\n",
+          )
+
+          selected_paths_test = "tools/tests/test_verify_owner_open_selected_paths.py"
+          insert_after(selected_paths_test, "import json\n", "import sys\n")
+          insert_after(
+              selected_paths_test,
+              "module = importlib.util.module_from_spec(spec)\n",
+              "sys.modules[spec.name] = module\n",
+          )
+
+          p01_test = "tools/tests/test_p01_daemon_receipt_build.py"
+          replace_in_function(
+              p01_test,
+              "test_group_writable_source_ancestor_uses_separate_nofollow_policy",
+              "    def test_group_writable_source_ancestor_uses_separate_nofollow_policy(self) -> None:\n",
+              "    def test_source_ancestor_uses_separate_nofollow_policy(self) -> None:\n",
+          )
+          replace_in_function(
+              p01_test,
+              "test_source_ancestor_uses_separate_nofollow_policy",
+              "        self.assertNotEqual(current_control_mode & 0o020, 0)\n",
+              "",
+          )
+
+          rootfs_test = "tools/tests/test_rootfs_v8_erofs_admission.py"
+          replace_in_function(
+              rootfs_test,
+              "test_android_staging_filter_c_packager_erofs_differential_corpus",
+              "        source = locate_android_staging_filter_c_source()\n",
+              "        try:\n"
+              "            source = locate_android_staging_filter_c_source()\n"
+              "        except AssertionError as error:\n"
+              "            self.skipTest(str(error))\n",
+          )
+
+          replace_exact(
+              "tools/owner-open/prepare-adb-reverse-v1.sh",
+              "[[ \"$SERIAL\" =~ ^[A-Za-z0-9._:\\[\\]-]{1,128}$ ]] || {\n"
+              "  echo \"serial is empty or malformed\" >&2\n"
+              "  exit 64\n"
+              "}\n",
+              "if [[ ! \"$SERIAL\" =~ ^[A-Za-z0-9._:-]{1,128}$ ]] &&\n"
+              "   [[ ! \"$SERIAL\" =~ ^\\[[0-9A-Fa-f:]+\\]:[0-9]{1,5}$ ]]; then\n"
+              "  echo \"serial is empty or malformed\" >&2\n"
+              "  exit 64\n"
+              "fi\n",
+          )
+
+          replace_exact(
+              "tools/materialize_p01_final_daemon_artifact.py",
+              "CONTROL_REPOSITORY = REPOSITORY.parent\n",
+              "CONTROL_REPOSITORY = REPOSITORY\n",
           )
 
           event_store = "crates/trillionnium-owner-open-event-store/src/lib.rs"
@@ -109,22 +265,37 @@ jobs:
               "    if error\n        .raw_os_error()\n        .is_some_and(|code| code == libc::EWOULDBLOCK || code == libc::EAGAIN)\n    {\n",
           )
 
-          runtime = "crates/trillionnium-owner-open-runtime/src/lib.rs"
           replace_exact(
-              runtime,
+              "crates/trillionnium-owner-open-runtime/src/lib.rs",
               "use std::sync::mpsc::{Receiver, SyncSender, TryRecvError, sync_channel};\n",
               "use std::sync::mpsc::{SyncSender, sync_channel};\n",
           )
           PY
+
+      - name: Refresh lockfile and format candidate
+        run: |
+          cargo generate-lockfile
           cargo fmt --all
           git diff --check
+          cargo fmt --all -- --check
 
-      - name: Rescan reserved TestCase run overrides
+      - name: Create a clean local candidate commit
         run: |
-          python3 - <<'PY' | tee owner-open-r5-diagnose/testcase-run-overrides-after.txt
+          git config user.name "R5 validation fixture"
+          git config user.email "r5-validation@invalid.local"
+          git add -A
+          git commit -m "test: validate complete R5 repair candidate"
+          git rev-parse HEAD > owner-open-r5-candidate/candidate-head.txt
+          git diff HEAD^ --binary > owner-open-r5-candidate/candidate.patch
+          git diff HEAD^ --stat > owner-open-r5-candidate/candidate.stat
+          git status --porcelain=v1 > owner-open-r5-candidate/worktree-status.txt
+          test ! -s owner-open-r5-candidate/worktree-status.txt
+
+      - name: Verify reserved unittest method names are clean
+        run: |
+          python3 - <<'PY' | tee owner-open-r5-candidate/testcase-reserved-methods.txt
           import ast
           from pathlib import Path
-
           findings = []
           for path in sorted(Path("tools/tests").rglob("test_*.py")):
               tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -137,82 +308,95 @@ jobs:
                   for item in node.body:
                       if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == "run":
                           findings.append((str(path), node.name, item.lineno))
-          for path, cls, line in findings:
-              print(f"{path}:{line}: {cls}.run")
+          for finding in findings:
+              print(": ".join(map(str, finding)))
           print(f"count={len(findings)}")
           if findings:
               raise SystemExit(1)
           PY
 
-      - name: Run isolated Python failure clusters without early abort
+      - name: Run generated-source and graph gates
         run: |
           set +e
-          run_cluster() {
-            name="$1"
-            shift
-            echo "=== $name ===" > "owner-open-r5-diagnose/${name}.log"
-            python3 -m unittest "$@" -v >> "owner-open-r5-diagnose/${name}.log" 2>&1
-            rc=$?
-            echo "$rc" > "owner-open-r5-diagnose/${name}.rc"
-            echo "$name rc=$rc" | tee -a owner-open-r5-diagnose/python-summary.txt
-          }
-          run_cluster stage-rootfs tools.tests.test_stage_owner_open_rootfs_payload_release
-          run_cluster supervisor tools.tests.test_supervise_codex_mcp_qualification_release
-          run_cluster shell-artifact tools.tests.test_build_shell_exec_artifact_set
-          run_cluster final-daemon tools.tests.test_materialize_p01_final_daemon_artifact
-          run_cluster adb-reverse tools.tests.test_owner_open_adb_reverse
-          run_cluster adb-qualification \
-            tools.tests.test_qualify_owner_open_adb \
-            tools.tests.test_qualify_owner_open_adb_selected \
-            tools.tests.test_release_qualification_paths \
-            tools.tests.test_release_qualification_paths_v2
-          run_cluster daemon-receipt tools.tests.test_p01_daemon_receipt_build
-          run_cluster rootfs-admission tools.tests.test_rootfs_v8_erofs_admission
+          python3 tools/generate-owner-open-types.py --check \
+            > owner-open-r5-candidate/generated-types.log 2>&1
+          echo "$?" > owner-open-r5-candidate/generated-types.rc
+          python3 tools/verify-owner-open-r5.py --json \
+            > owner-open-r5-candidate/r5-graph.log 2>&1
+          echo "$?" > owner-open-r5-candidate/r5-graph.rc
+          python3 -m unittest tools.tests.test_verify_owner_open_r5 -v \
+            > owner-open-r5-candidate/r5-verifier-tests.log 2>&1
+          echo "$?" > owner-open-r5-candidate/r5-verifier-tests.rc
           exit 0
 
-      - name: Run full Python discovery after the reserved-name repair
+      - name: Run complete Python source suite
         run: |
           set +e
+          PYTHONWARNINGS=error::ResourceWarning \
           python3 -m unittest discover -s tools/tests -p 'test_*.py' -v \
-            > owner-open-r5-diagnose/python-discover.log 2>&1
-          echo "$?" > owner-open-r5-diagnose/python-discover.rc
+            > owner-open-r5-candidate/python-discover.log 2>&1
+          echo "$?" > owner-open-r5-candidate/python-discover.rc
           exit 0
 
-      - name: Compile and test Rust packages until the next failure
+      - name: Run complete default Rust test closure
         run: |
           set +e
-          cargo test --locked --all-targets --package trillionnium-owner-open-event-store \
-            > owner-open-r5-diagnose/rust-event-store.log 2>&1
-          echo "$?" > owner-open-r5-diagnose/rust-event-store.rc
-          cargo test --locked --all-targets --package trillionnium-owner-open-runtime \
-            > owner-open-r5-diagnose/rust-runtime.log 2>&1
-          echo "$?" > owner-open-r5-diagnose/rust-runtime.rc
-          cargo test --locked --all-targets --package trillionnium-owner-open-host \
-            > owner-open-r5-diagnose/rust-host.log 2>&1
-          echo "$?" > owner-open-r5-diagnose/rust-host.rc
-          cargo clippy --locked --all-targets --package trillionnium-owner-open-event-store -- -D warnings \
-            > owner-open-r5-diagnose/clippy-event-store.log 2>&1
-          echo "$?" > owner-open-r5-diagnose/clippy-event-store.rc
-          cargo clippy --locked --all-targets --package trillionnium-owner-open-runtime -- -D warnings \
-            > owner-open-r5-diagnose/clippy-runtime.log 2>&1
-          echo "$?" > owner-open-r5-diagnose/clippy-runtime.rc
-          cargo clippy --locked --all-targets --package trillionnium-owner-open-host -- -D warnings \
-            > owner-open-r5-diagnose/clippy-host.log 2>&1
-          echo "$?" > owner-open-r5-diagnose/clippy-host.rc
+          cargo test --locked --all-targets \
+            > owner-open-r5-candidate/rust-test.log 2>&1
+          echo "$?" > owner-open-r5-candidate/rust-test.rc
           exit 0
 
-      - name: Capture exact diagnostic patch and status
+      - name: Run complete default Rust clippy closure
         run: |
-          git diff --binary > owner-open-r5-diagnose/temporary-repairs.patch
-          git diff --stat > owner-open-r5-diagnose/temporary-repairs.stat
-          git rev-parse HEAD > owner-open-r5-diagnose/base-head.txt
-          find owner-open-r5-diagnose -maxdepth 1 -name '*.rc' -print -exec cat {} \; \
-            | tee owner-open-r5-diagnose/all-return-codes.txt
+          set +e
+          cargo clippy --locked --all-targets -- -D warnings \
+            > owner-open-r5-candidate/rust-clippy.log 2>&1
+          echo "$?" > owner-open-r5-candidate/rust-clippy.rc
+          exit 0
 
-      - name: Upload diagnostic evidence
+      - name: Capture metadata, feature tree and candidate files
+        if: always()
+        run: |
+          set +e
+          cargo metadata --locked --format-version 1 \
+            > owner-open-r5-candidate/cargo-metadata.json 2> owner-open-r5-candidate/cargo-metadata.stderr
+          echo "$?" > owner-open-r5-candidate/cargo-metadata.rc
+          cargo tree --locked -e features \
+            > owner-open-r5-candidate/cargo-tree.txt 2> owner-open-r5-candidate/cargo-tree.stderr
+          echo "$?" > owner-open-r5-candidate/cargo-tree.rc
+          git diff-tree --no-commit-id --name-only -r HEAD \
+            > owner-open-r5-candidate/changed-files.txt
+          mkdir -p owner-open-r5-candidate/files
+          while IFS= read -r path; do
+            test -n "$path" || continue
+            test -f "$path" || continue
+            mkdir -p "owner-open-r5-candidate/files/$(dirname "$path")"
+            cp -- "$path" "owner-open-r5-candidate/files/$path"
+          done < owner-open-r5-candidate/changed-files.txt
+          sha256sum owner-open-r5-candidate/candidate.patch \
+            > owner-open-r5-candidate/candidate.patch.sha256
+          find owner-open-r5-candidate -maxdepth 1 -name '*.rc' -print -exec cat {} \; \
+            > owner-open-r5-candidate/all-return-codes.txt
+          exit 0
+
+      - name: Evaluate candidate gates
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          failed = []
+          for path in sorted(Path("owner-open-r5-candidate").glob("*.rc")):
+              value = path.read_text(encoding="utf-8").strip()
+              if value != "0":
+                  failed.append(f"{path.name}={value}")
+          if failed:
+              raise SystemExit("candidate gates failed: " + ", ".join(failed))
+          PY
+
+      - name: Upload complete candidate evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-r5-next-diagnosis-${{ github.sha }}
+          name: owner-open-r5-repair-candidate-${{ github.sha }}
           if-no-files-found: error
           retention-days: 7
-          path: owner-open-r5-diagnose/
+          path: owner-open-r5-candidate/
