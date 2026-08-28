@@ -1,0 +1,184 @@
+name: TrillionniumGame token JWT adapter v2 relay
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-token-jwt-adapter-v2-relay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trillionniumgame-token-jwt-adapter-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: feature/trillionniumgame-w3-token-policy-core-v1
+  TARGET_SHA: 729b543a4454ee494fe6f2653aa2cf0ea36c6ba3
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out exact token head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.TARGET_SHA }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify immutable source identity
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal \
+            --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Run core, adapter, gate and cross-version vector matrix
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=relay-evidence/token-jwt-v2
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/commit.txt"
+          git rev-parse HEAD^{tree} > "$evidence/tree.txt"
+          rustc --version --verbose > "$evidence/rustc-version.txt"
+          cargo --version --verbose > "$evidence/cargo-version.txt"
+
+          python3 scripts/check-token-core.py \
+            | tee "$evidence/token-core-static.json"
+          python3 tests/session/test_token_policy_vectors.py \
+            2>&1 | tee "$evidence/token-policy-vectors.log"
+
+          manifests=(
+            crates/trnm-token-jwt-adapter/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+          )
+          for manifest in "${manifests[@]}"; do
+            label=$(basename "$(dirname "$manifest")")
+            cargo fmt --manifest-path "$manifest" -- --check \
+              2>&1 | tee "$evidence/${label}-fmt.log"
+            cargo test --manifest-path "$manifest" --locked --all-targets \
+              2>&1 | tee "$evidence/${label}-test.log"
+            cargo clippy --manifest-path "$manifest" --locked --all-targets \
+              -- -D warnings 2>&1 | tee "$evidence/${label}-clippy.log"
+          done
+
+          cargo run --quiet \
+            --manifest-path crates/trnm-token-jwt-adapter-gate/Cargo.toml \
+            --locked --example vector \
+            > "$evidence/gate-v1-vector.txt"
+          cargo run --quiet \
+            --manifest-path crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml \
+            --locked --example vector \
+            > "$evidence/gate-v2-vector.txt"
+          cmp "$evidence/gate-v1-vector.txt" "$evidence/gate-v2-vector.txt"
+          sha256sum "$evidence/gate-v1-vector.txt" \
+            > "$evidence/vector.sha256"
+
+          git status --short -- . ':(exclude)relay-evidence' \
+            > "$evidence/git-status.txt"
+          test ! -s "$evidence/git-status.txt"
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('relay-evidence/token-jwt-v2')
+          payload = {
+              'schema': 'trillionnium.game.token-jwt-adapter-relay.v2',
+              'repository': 'TrillionniumFoundation/TrillionniumGame',
+              'branch': 'feature/trillionniumgame-w3-token-policy-core-v1',
+              'commit': '729b543a4454ee494fe6f2653aa2cf0ea36c6ba3',
+              'exact_head_green': True,
+              'validated_manifests': [
+                  'crates/trnm-token-jwt-adapter/Cargo.toml',
+                  'crates/trnm-token-jwt-adapter-gate/Cargo.toml',
+                  'crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml',
+              ],
+              'claims': {
+                  'hs256_negative_matrix_passed': True,
+                  'deterministic_gate_v1_v2_parity': True,
+                  'nakama_cross_implementation_verified': False,
+                  'external_kms_integration_verified': False,
+                  'production_ready': False,
+              },
+          }
+          (root / 'summary.json').write_text(
+              json.dumps(payload, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          find "$evidence" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+
+      - name: Upload token JWT evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-token-jwt-v2-${{ env.TARGET_SHA }}-run-${{ github.run_number }}
+          path: source/relay-evidence/token-jwt-v2
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    if: always()
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out relay audit branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ci/trillionniumgame-exact-head-relay-v1
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Download token JWT evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: trillionniumgame-token-jwt-v2-*-run-${{ github.run_number }}
+          path: downloaded
+          merge-multiple: false
+
+      - name: Publish immutable and latest token evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="relay-repairs/token-jwt-v2-run-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}"
+          latest="relay-repairs/latest-token-jwt-v2"
+          mkdir -p "$destination"
+          rm -rf "$latest"
+          mkdir -p "$latest"
+          cp -R downloaded/. "$destination/"
+          cp -R downloaded/. "$latest/"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$destination/run-id.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$destination/relay-head.txt"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$latest/run-id.txt"
+          find "$destination" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$destination/SHA256SUMS"
+          find "$latest" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$latest/SHA256SUMS"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$destination" "$latest"
+          git commit -m "ci(relay): publish token JWT adapter v2 run ${GITHUB_RUN_NUMBER}"
+          git push origin HEAD:ci/trillionniumgame-exact-head-relay-v1
