@@ -17,7 +17,8 @@ concurrency:
 
 env:
   TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
-  TARGET_BRANCH: feature/trillionniumgame-w6-presence-router-v1
+  TARGET_BRANCH: feature/trillionniumgame-w6-presence-router-core-v1
+  TARGET_SHA: 7323978fc9384ae6795fa1e93d746fad2c7168b7
   MANIFEST: crates/trnm-presence-router-v2/Cargo.toml
 
 jobs:
@@ -30,9 +31,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
-          test -n "$sha"
-          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+          test "${#TARGET_SHA}" -eq 40
+          test "$(printf '%s' "$TARGET_SHA" | tr -d '0-9a-f')" = ''
+          printf 'sha=%s\n' "$TARGET_SHA" >> "$GITHUB_OUTPUT"
 
       - name: Check out immutable presence head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
