@@ -1,0 +1,28 @@
+   Compiling trnm-presence-router-v2 v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-presence-router-v2)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.86s
+     Running unittests src/lib.rs (crates/trnm-presence-router-v2/target/debug/deps/trnm_presence_router_v2-c1d0d4a33934a3c4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/black_box.rs (crates/trnm-presence-router-v2/target/debug/deps/black_box-6cf8fb005b449bc3)
+
+running 8 tests
+test exact_duplicate_and_visibility_transitions_are_deterministic ... ok
+test higher_generation_atomically_retires_all_old_streams ... ok
+test identity_remains_bound_after_last_stream_is_left ... ok
+test snapshots_are_sorted_and_filter_hidden_records ... ok
+test invariant_check_remains_green_after_mixed_mutations ... ok
+test remove_connection_keeps_generation_and_identity_tombstone ... ok
+test stale_and_future_non_join_mutations_are_rejected_atomically ... ok
+test validated_types_reject_zero_empty_control_and_oversize_inputs ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests trnm_presence_router_v2
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
