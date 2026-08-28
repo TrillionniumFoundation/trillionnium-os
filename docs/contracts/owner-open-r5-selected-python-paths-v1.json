@@ -1,0 +1,65 @@
+{
+  "schema": "org.trillionnium.owner-open.selected-python-paths.v1",
+  "revision": "2026-08-28-r5-batch-e",
+  "description": "Exact source selection for owner-open Python transport and qualification mechanics. Drafts remain auditable but cannot be selected by product plans, release-candidate workflows or status promotion.",
+  "selected": {
+    "codex_mcp_bridge": "tools/owner-open/codex_owner_open_mcp.py",
+    "codex_mcp_trace": "tools/owner-open/trace_mcp_stdio.py",
+    "codex_mcp_inner_qualifier": "tools/owner-open/qualify_codex_mcp_jobs.py",
+    "codex_mcp_qualification_supervisor": "tools/owner-open/supervise_codex_mcp_qualification_release.py",
+    "connection_broker": "tools/owner-open/owner_open_connection_broker.py",
+    "connection_broker_client": "tools/owner-open/owner_open_broker_client.py",
+    "adb_smart_socket_relay": "tools/owner-open/adb_smart_socket_relay_release.py",
+    "adb_exact_argv_qualifier": "tools/owner-open/qualify_owner_open_adb_release.py"
+  },
+  "selected_tests": [
+    "tools/tests/test_codex_owner_open_mcp.py",
+    "tools/tests/test_codex_mcp_qualification_lifecycle.py",
+    "tools/tests/test_supervise_codex_mcp_qualification.py",
+    "tools/tests/test_release_qualification_paths_v2.py"
+  ],
+  "selected_workflows": [
+    ".github/workflows/owner-open-r5-tool-loop.yml",
+    ".github/workflows/owner-open-r5-selected-qualification.yml",
+    ".github/workflows/owner-open-r5-release-qualification.yml"
+  ],
+  "superseded_drafts": [
+    "tools/owner-open/owner_open_adb_relay.py",
+    "tools/owner-open/owner_open_adb_relay_v2.py",
+    "tools/owner-open/adb_smart_socket_relay.py",
+    "tools/owner-open/adb_smart_socket_relay_selected.py",
+    "tools/owner-open/qualify_owner_open_adb.py",
+    "tools/owner-open/qualify_owner_open_adb_selected.py",
+    "tools/tests/test_release_qualification_paths.py"
+  ],
+  "required_markers": {
+    "tools/owner-open/supervise_codex_mcp_qualification_release.py": [
+      "evidence parent",
+      "config_restored",
+      "PASS_RELEASE_SUPERVISED_INSTALLED_CODEX_MCP_QUALIFICATION"
+    ],
+    "tools/owner-open/adb_smart_socket_relay_release.py": [
+      "SELECTED_ENTRY",
+      "automatic_redispatch=False",
+      "payload_logged=False"
+    ],
+    "tools/owner-open/qualify_owner_open_adb_release.py": [
+      "SELECTED_RELAY",
+      "relay descriptor does not identify the release entry"
+    ]
+  },
+  "release_reference_roots": [
+    "docs/plan/owner-open-r5-batch-e-release-selection.md",
+    "docs/status/owner-open-r5-batch-e-status.json",
+    ".github/workflows/owner-open-r5-release-qualification.yml"
+  ],
+  "forbidden_release_reference_tokens": [
+    "owner_open_adb_relay.py",
+    "owner_open_adb_relay_v2.py",
+    "adb_smart_socket_relay.py",
+    "adb_smart_socket_relay_selected.py",
+    "qualify_owner_open_adb.py",
+    "qualify_owner_open_adb_selected.py",
+    "test_release_qualification_paths.py"
+  ]
+}
