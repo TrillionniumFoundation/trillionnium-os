@@ -18,7 +18,7 @@ concurrency:
 env:
   TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
   TARGET_BRANCH: feature/trillionniumgame-w3-token-policy-core-v1
-  TARGET_SHA: 729b543a4454ee494fe6f2653aa2cf0ea36c6ba3
+  TARGET_SHA: f16628407912ffb4f55fb189942f829caea8a479
 
 jobs:
   validate:
@@ -107,7 +107,7 @@ jobs:
               'schema': 'trillionnium.game.token-jwt-adapter-relay.v2',
               'repository': 'TrillionniumFoundation/TrillionniumGame',
               'branch': 'feature/trillionniumgame-w3-token-policy-core-v1',
-              'commit': '729b543a4454ee494fe6f2653aa2cf0ea36c6ba3',
+              'commit': 'f16628407912ffb4f55fb189942f829caea8a479',
               'exact_head_green': True,
               'validated_manifests': [
                   'crates/trnm-token-jwt-adapter/Cargo.toml',
