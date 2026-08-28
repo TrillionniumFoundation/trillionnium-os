@@ -81,7 +81,7 @@ jobs:
           path: owner-open-r5-graph.json
 
   rust-tool-loop:
-    name: Rust 1.93 inspect, flow-control, job-registry and recovery closure
+    name: Rust 1.93 job-aware Host, flow-control and recovery closure
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -101,6 +101,7 @@ jobs:
             trillionnium-owner-open-call-registry \
             trillionnium-owner-open-event-store \
             trillionnium-owner-open-job-registry \
+            trillionnium-owner-open-job-runtime \
             trillionnium-owner-open-stream-window \
             trillionnium-owner-open-tool-bridge \
             trillionnium-owner-open-turn-loop \
@@ -117,6 +118,7 @@ jobs:
             trillionnium-owner-open-call-registry \
             trillionnium-owner-open-event-store \
             trillionnium-owner-open-job-registry \
+            trillionnium-owner-open-job-runtime \
             trillionnium-owner-open-stream-window \
             trillionnium-owner-open-tool-bridge \
             trillionnium-owner-open-turn-loop \
@@ -135,6 +137,7 @@ jobs:
             trillionnium-owner-open-call-registry \
             trillionnium-owner-open-event-store \
             trillionnium-owner-open-job-registry \
+            trillionnium-owner-open-job-runtime \
             trillionnium-owner-open-stream-window \
             trillionnium-owner-open-tool-bridge \
             trillionnium-owner-open-turn-loop \
@@ -146,7 +149,7 @@ jobs:
           git diff -- Cargo.lock > owner-open-r5-cargo-lock.patch || true
       - uses: actions/upload-artifact@v4
         with:
-          name: owner-open-r5-inspection-flow-jobs-${{ github.sha }}
+          name: owner-open-r5-selected-jobs-${{ github.sha }}
           if-no-files-found: error
           retention-days: 14
           path: |
