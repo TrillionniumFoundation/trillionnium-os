@@ -1,0 +1,41 @@
+v24.1.2: Pulling from cockroachdb/cockroach
+fde3ad1312f5: Pulling fs layer
+dba15ebb20f7: Pulling fs layer
+4f4fb700ef54: Pulling fs layer
+02530da6c839: Pulling fs layer
+c5be60d52fc7: Pulling fs layer
+a228df3d3774: Pulling fs layer
+f0a680ace519: Pulling fs layer
+11bf38360377: Pulling fs layer
+a228df3d3774: Waiting
+f0a680ace519: Waiting
+11bf38360377: Waiting
+02530da6c839: Waiting
+c5be60d52fc7: Waiting
+4f4fb700ef54: Verifying Checksum
+4f4fb700ef54: Download complete
+dba15ebb20f7: Verifying Checksum
+dba15ebb20f7: Download complete
+fde3ad1312f5: Verifying Checksum
+fde3ad1312f5: Download complete
+02530da6c839: Verifying Checksum
+02530da6c839: Download complete
+a228df3d3774: Verifying Checksum
+a228df3d3774: Download complete
+f0a680ace519: Verifying Checksum
+f0a680ace519: Download complete
+11bf38360377: Verifying Checksum
+11bf38360377: Download complete
+c5be60d52fc7: Verifying Checksum
+c5be60d52fc7: Download complete
+fde3ad1312f5: Pull complete
+dba15ebb20f7: Pull complete
+4f4fb700ef54: Pull complete
+02530da6c839: Pull complete
+c5be60d52fc7: Pull complete
+a228df3d3774: Pull complete
+f0a680ace519: Pull complete
+11bf38360377: Pull complete
+Digest: sha256:105b9d1e10e4845c9c59266bef3c27ff8b82eeaeb1b464c75423408c3a2968ba
+Status: Downloaded newer image for cockroachdb/cockroach:v24.1.2
+docker.io/cockroachdb/cockroach:v24.1.2

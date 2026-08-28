@@ -1,0 +1,95 @@
+[
+    {
+        "Id": "sha256:13156f587d7c94e0d32a3adb9793d06bcbd92a90bfe2b88440d6f74fd6b110ba",
+        "RepoTags": [
+            "cockroachdb/cockroach:v24.1.2"
+        ],
+        "RepoDigests": [
+            "cockroachdb/cockroach@sha256:105b9d1e10e4845c9c59266bef3c27ff8b82eeaeb1b464c75423408c3a2968ba"
+        ],
+        "Parent": "",
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2024-07-08T19:01:15.759926593Z",
+        "DockerVersion": "",
+        "Author": "",
+        "Config": {
+            "Hostname": "",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "26257/tcp": {},
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/cockroach:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "container=oci",
+                "COCKROACH_CHANNEL=official-docker"
+            ],
+            "Cmd": null,
+            "Image": "",
+            "Volumes": null,
+            "WorkingDir": "/cockroach/",
+            "Entrypoint": [
+                "/cockroach/cockroach.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "architecture": "x86_64",
+                "build-date": "2024-06-06T00:53:59",
+                "com.redhat.component": "ubi9-minimal-container",
+                "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+                "description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+                "distribution-scope": "public",
+                "io.buildah.version": "1.29.0",
+                "io.k8s.description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+                "io.k8s.display-name": "Red Hat Universal Base Image 9 Minimal",
+                "io.openshift.expose-services": "",
+                "io.openshift.tags": "minimal rhel9",
+                "maintainer": "Red Hat, Inc.",
+                "name": "ubi9-minimal",
+                "release": "1134",
+                "summary": "Provides the latest release of the minimal Red Hat Universal Base Image 9.",
+                "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi9-minimal/images/9.4-1134",
+                "vcs-ref": "4b4efbdd5a311b6a9c56319e756ca58c10a2b4de",
+                "vcs-type": "git",
+                "vendor": "Red Hat, Inc.",
+                "version": "24.1.2"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 415260099,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/d85c13a9c4b17acc8186b47f47487b6d00f3a5e84fcc4b1f28472f7d8a094381/diff:/var/lib/docker/overlay2/7037d8c7f130e2f3d25cf3fed7442e1c1b3ffc0ca34d882bd6e81c80ec76d659/diff:/var/lib/docker/overlay2/bdafe9cd66ee1345eaa293678b29b94423e903a594ad52a1cb7009426fa53368/diff:/var/lib/docker/overlay2/4735ae102b33db7da7ffb80d2d69b80a237904e44cc3f549684cadbb4a10e026/diff:/var/lib/docker/overlay2/cbc5e7889537162dea5b04f5bf5149080bd0c689fd1556943fef718dfddec3d6/diff:/var/lib/docker/overlay2/a63d114c490e0e23c206c344d959b99654401a83c3afcb41334d318c4c4a4f06/diff:/var/lib/docker/overlay2/b5ae907ad9cfc676b25e55dfa87ddc80811195a1167787e745cf290cf8670153/diff:/var/lib/docker/overlay2/7b5b72887b578ea574cbfd37a56152894b5a84336679bcabcf6ca515db645d27/diff",
+                "MergedDir": "/var/lib/docker/overlay2/bdb813a631a0254eeeb7f7fbf5d210b86f663a553e6574110dd95a127aafd133/merged",
+                "UpperDir": "/var/lib/docker/overlay2/bdb813a631a0254eeeb7f7fbf5d210b86f663a553e6574110dd95a127aafd133/diff",
+                "WorkDir": "/var/lib/docker/overlay2/bdb813a631a0254eeeb7f7fbf5d210b86f663a553e6574110dd95a127aafd133/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:53544948f51f66ab8080a28acc12474abac3103c6194ca36777aa60762ede49c",
+                "sha256:7a92f74ea8b08ef6a6d439795af735161d26df0cd8cd2e8dc48b27ea467ad54d",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:a8ef40ece60aa1b7485a1bd065e12b6e47d41dbef029b97202060212dab7f7b0",
+                "sha256:ad77fe813d103e1e9c97dc70bb5fe727e0fb73c90d907414336e72cb57b53f5d",
+                "sha256:6ff90547820d6775f081bf4e256714106cf04c8b78bcf3e709a1222882b764b0",
+                "sha256:4b6ce20b3be92b11dfdd66819727a1703cc2eef7b38e0f7c6771ca1fa9a7b8ac",
+                "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+                "sha256:2d31545242fbd8a9dafd5f27975f549761d434fa3fb9fb86972485e0e02d78ec"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    }
+]
