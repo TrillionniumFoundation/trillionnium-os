@@ -1,0 +1,24 @@
+requirement_id	work_package	source	test	evidence	status
+R5-ROOTFS-ARCH-001	W6	docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md	tools/tests/test_verify_owner_open_android_profile_v3.py	target Android/Root Linux ABI evidence pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-PROFILE-001	W6	android-integration/owner-open-profile/profile-v2.json;docs/contracts/owner-open-r5-android-profile-selection-v1.json	tools/tests/test_verify_owner_open_android_profile_selection.py;tools/tests/test_verify_owner_open_android_profile_v3.py	runner-backed Android profile workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-GENERATE-001	W6	tools/generate-owner-open-android-profile-v3.py;android-integration/owner-open-profile/generated/owner_open_packages_v2.mk	python3 tools/generate-owner-open-android-profile-v3.py --check	runner-backed Android profile workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-STAGE-001	W6	tools/owner-open/stage_owner_open_rootfs_payload_release.py	tools/tests/test_stage_owner_open_rootfs_payload_release.py	real payload source plan pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-STAGE-PREFLIGHT-001	W6	tools/owner-open/stage_owner_open_rootfs_payload_release.py	test_digest_mismatch_fails_before_output_creation;test_duplicate_role_or_destination_is_rejected	runner-backed payload workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-STAGE-STREAM-001	W6	tools/owner-open/stage_owner_open_rootfs_payload_release.py	test_exact_payload_tree_and_manifest_are_staged_without_image_claim	real large-payload qualification pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-STAGE-ELF-001	W6	tools/owner-open/stage_owner_open_rootfs_payload_release.py	test_x86_elf_is_rejected_before_output_creation	real Host/Core/Codex ELF closure pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-STAGE-PATH-001	W6	tools/owner-open/stage_owner_open_rootfs_payload_release.py	test_credential_and_path_escape_destinations_are_rejected	runner-backed payload workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-STAGE-METADATA-001	W6	tools/owner-open/stage_owner_open_rootfs_payload_release.py	test_hardlinked_or_group_writable_source_is_rejected	runner-backed payload workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-STAGE-NOIMAGE-001	W6	docs/protocols/owner-open-rootfs-payload-staging-v1.md	test_exact_payload_tree_and_manifest_are_staged_without_image_claim	ROOTFS_PAYLOAD_STAGED_NOT_IMAGE claim boundary	SOURCE_IMPLEMENTED
+R5-ROOTFS-IMAGE-SELECT-001	W6	docs/contracts/owner-open-r5-rootfs-payload-selection-v1.json;tools/verify-owner-open-rootfs-payload-selection.py	tools/tests/test_verify_owner_open_rootfs_payload_selection.py	runner-backed image workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-IMAGE-TOOL-001	W6	tools/owner-open/build_owner_open_rootfs_image_release.py;tools/owner-open/build_owner_open_rootfs_image_release_v2.py	test_tool_digest_and_help_options_are_bound	real mksquashfs measurement pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-IMAGE-REVALIDATE-001	W6	tools/owner-open/build_owner_open_rootfs_image_release.py	test_staging_tamper_is_rejected_before_output_creation	runner-backed image workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-IMAGE-REPRO-001	W6	tools/owner-open/build_owner_open_rootfs_image_release.py;tools/owner-open/build_owner_open_rootfs_image_release_v2.py	test_two_independent_builds_are_byte_identical;test_nondeterministic_image_tool_is_rejected_and_cleaned	real independent-build reproduction pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-IMAGE-LIFECYCLE-001	W6	tools/owner-open/build_owner_open_rootfs_image_release_v2.py	test_timed_out_image_tool_is_reaped_and_output_is_removed	runner-backed image workflow pending	SOURCE_IMPLEMENTED
+R5-ROOTFS-IMAGE-NOINCLUDE-001	W6	docs/protocols/owner-open-rootfs-image-build-v1.md	test_two_independent_builds_are_byte_identical	ROOTFS_IMAGE_BUILT_NOT_ANDROID_INCLUDED claim boundary	SOURCE_IMPLEMENTED
+R5-ANDROID-BOOTSTRAP-001	W6	docs/plan/owner-open-r5-batch-e-rootlinux-payload-profile.md	Android-native bootstrap unit/process/device qualification	None	SPEC_ONLY
+R5-ANDROID-EMERGENCY-STOP-001	W6	android-integration/owner-open-profile/profile-v2.json	provider-independent emergency-stop device test	None	SPEC_ONLY
+R5-ANDROID-SOONG-001	W6	android-integration/owner-open-profile/profile-v2.json	strict v3 verifier plus clean target-files	None	NOT_STARTED
+R5-ANDROID-SELINUX-001	W6	android-integration/owner-open-profile/profile-v2.json	SELinux compile and device peer-admission tests	None	NOT_STARTED
+R5-ROOTFS-L3-001	W7	docs/status/owner-open-r5-android-profile-v3-status.json	clean target-files and independent payload inspection	None	SPEC_ONLY
+R5-ROOTFS-L4-001	W7	docs/status/owner-open-r5-rootfs-payload-status.json	physical same-turn shell, job and ordinary ADB qualification	None	SPEC_ONLY
+R5-ROOTFS-L5-001	W7	docs/plan/owner-open-r5-batch-e-rootlinux-payload-profile.md	bootstrap, Host, broker, USB, reboot, ENOSPC and power-loss matrix	None	SPEC_ONLY
