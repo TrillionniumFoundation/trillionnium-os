@@ -1,0 +1,101 @@
+create_statement
+"CREATE TABLE public.trnm_schema_migrations (
+	profile STRING NOT NULL,
+	version INT8 NOT NULL,
+	contract_digest BYTES NOT NULL,
+	applied_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp():::TIMESTAMPTZ,
+	CONSTRAINT trnm_schema_migrations_pkey PRIMARY KEY (profile ASC, version ASC),
+	CONSTRAINT check_version CHECK (version > 0:::INT8),
+	CONSTRAINT check_contract_digest CHECK (octet_length(contract_digest) = 32:::INT8)
+);"
+"CREATE TABLE public.trnm_entity_heads (
+	tenant_id UUID NOT NULL,
+	entity_id UUID NOT NULL,
+	revision INT8 NOT NULL,
+	last_sequence INT8 NOT NULL,
+	authority_generation INT8 NOT NULL,
+	state_digest BYTES NOT NULL,
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp():::TIMESTAMPTZ,
+	CONSTRAINT trnm_entity_heads_pkey PRIMARY KEY (tenant_id ASC, entity_id ASC),
+	CONSTRAINT check_revision CHECK (revision >= 0:::INT8),
+	CONSTRAINT check_last_sequence CHECK (last_sequence >= 0:::INT8),
+	CONSTRAINT check_authority_generation CHECK (authority_generation > 0:::INT8),
+	CONSTRAINT check_state_digest CHECK (octet_length(state_digest) = 32:::INT8)
+);"
+"CREATE TABLE public.trnm_command_receipts (
+	tenant_id UUID NOT NULL,
+	entity_id UUID NOT NULL,
+	command_id UUID NOT NULL,
+	fingerprint BYTES NOT NULL,
+	committed_revision INT8 NOT NULL,
+	committed_state_digest BYTES NOT NULL,
+	first_sequence INT8 NULL,
+	last_sequence INT8 NOT NULL,
+	event_count INT4 NOT NULL,
+	outbox_count INT4 NOT NULL,
+	receipt_bytes BYTES NOT NULL,
+	receipt_digest BYTES NOT NULL,
+	committed_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp():::TIMESTAMPTZ,
+	CONSTRAINT trnm_command_receipts_pkey PRIMARY KEY (tenant_id ASC, entity_id ASC, command_id ASC),
+	CONSTRAINT trnm_receipt_sequence_shape_ck CHECK ((((event_count = 0:::INT8) AND (first_sequence IS NULL)) AND (last_sequence >= 0:::INT8)) OR ((((event_count > 0:::INT8) AND (first_sequence IS NOT NULL)) AND (first_sequence > 0:::INT8)) AND (last_sequence = ((first_sequence + event_count) - 1:::INT8)))),
+	CONSTRAINT check_fingerprint CHECK (octet_length(fingerprint) = 32:::INT8),
+	CONSTRAINT check_committed_revision CHECK (committed_revision > 0:::INT8),
+	CONSTRAINT check_committed_state_digest CHECK (octet_length(committed_state_digest) = 32:::INT8),
+	CONSTRAINT check_last_sequence CHECK (last_sequence >= 0:::INT8),
+	CONSTRAINT check_event_count CHECK (event_count BETWEEN 0:::INT8 AND 64:::INT8),
+	CONSTRAINT check_outbox_count CHECK (outbox_count BETWEEN 0:::INT8 AND 64:::INT8),
+	CONSTRAINT check_receipt_digest CHECK (octet_length(receipt_digest) = 32:::INT8)
+);"
+"CREATE TABLE public.trnm_events (
+	tenant_id UUID NOT NULL,
+	entity_id UUID NOT NULL,
+	sequence INT8 NOT NULL,
+	event_id UUID NOT NULL,
+	command_id UUID NOT NULL,
+	payload_digest BYTES NOT NULL,
+	payload_bytes BYTES NOT NULL,
+	recorded_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp():::TIMESTAMPTZ,
+	CONSTRAINT trnm_events_pkey PRIMARY KEY (tenant_id ASC, entity_id ASC, sequence ASC),
+	UNIQUE INDEX trnm_event_identity_uq (tenant_id ASC, entity_id ASC, event_id ASC),
+	INDEX trnm_events_by_command_idx (tenant_id ASC, entity_id ASC, command_id ASC, sequence ASC),
+	CONSTRAINT check_sequence CHECK (sequence > 0:::INT8),
+	CONSTRAINT check_payload_digest CHECK (octet_length(payload_digest) = 32:::INT8)
+);"
+"CREATE TABLE public.trnm_outbox (
+	tenant_id UUID NOT NULL,
+	intent_id UUID NOT NULL,
+	entity_id UUID NOT NULL,
+	command_id UUID NOT NULL,
+	kind STRING NOT NULL,
+	payload_digest BYTES NOT NULL,
+	payload_bytes BYTES NOT NULL,
+	attempt INT4 NOT NULL DEFAULT 0:::INT8,
+	lease_generation INT8 NOT NULL DEFAULT 0:::INT8,
+	state STRING NOT NULL DEFAULT 'pending':::STRING,
+	lease_owner UUID NULL,
+	lease_expires_at TIMESTAMPTZ NULL,
+	applied_receipt_digest BYTES NULL,
+	dead_letter_reason_digest BYTES NULL,
+	available_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp():::TIMESTAMPTZ,
+	created_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp():::TIMESTAMPTZ,
+	updated_at TIMESTAMPTZ NOT NULL DEFAULT current_timestamp():::TIMESTAMPTZ,
+	CONSTRAINT trnm_outbox_pkey PRIMARY KEY (tenant_id ASC, intent_id ASC),
+	INDEX trnm_outbox_by_command_idx (tenant_id ASC, entity_id ASC, command_id ASC, intent_id ASC),
+	INDEX trnm_outbox_pending_idx (tenant_id ASC, available_at ASC, intent_id ASC) WHERE state = 'pending':::STRING,
+	INDEX trnm_outbox_expired_lease_idx (tenant_id ASC, lease_expires_at ASC, intent_id ASC) WHERE state = 'leased':::STRING,
+	CONSTRAINT trnm_outbox_applied_digest_ck CHECK ((applied_receipt_digest IS NULL) OR (octet_length(applied_receipt_digest) = 32:::INT8)),
+	CONSTRAINT trnm_outbox_dead_letter_digest_ck CHECK ((dead_letter_reason_digest IS NULL) OR (octet_length(dead_letter_reason_digest) = 32:::INT8)),
+	CONSTRAINT trnm_outbox_state_shape_ck CHECK ((((((((state = 'pending':::STRING) AND (lease_owner IS NULL)) AND (lease_expires_at IS NULL)) AND (applied_receipt_digest IS NULL)) AND (dead_letter_reason_digest IS NULL)) OR ((((((state = 'leased':::STRING) AND (lease_owner IS NOT NULL)) AND (lease_expires_at IS NOT NULL)) AND (lease_generation > 0:::INT8)) AND (applied_receipt_digest IS NULL)) AND (dead_letter_reason_digest IS NULL))) OR (((((state = 'applied':::STRING) AND (lease_owner IS NULL)) AND (lease_expires_at IS NULL)) AND (applied_receipt_digest IS NOT NULL)) AND (dead_letter_reason_digest IS NULL))) OR (((((state = 'dead_letter':::STRING) AND (lease_owner IS NULL)) AND (lease_expires_at IS NULL)) AND (applied_receipt_digest IS NULL)) AND (dead_letter_reason_digest IS NOT NULL))),
+	CONSTRAINT check_kind_kind CHECK ((kind != '':::STRING) AND (octet_length(kind) <= 128:::INT8)),
+	CONSTRAINT check_payload_digest CHECK (octet_length(payload_digest) = 32:::INT8),
+	CONSTRAINT check_attempt CHECK (attempt BETWEEN 0:::INT8 AND 32:::INT8),
+	CONSTRAINT check_lease_generation CHECK (lease_generation >= 0:::INT8),
+	CONSTRAINT check_state CHECK (state IN ('pending':::STRING, 'leased':::STRING, 'applied':::STRING, 'dead_letter':::STRING))
+);"
+ALTER TABLE public.trnm_command_receipts ADD CONSTRAINT trnm_receipt_entity_head_fk FOREIGN KEY (tenant_id, entity_id) REFERENCES public.trnm_entity_heads(tenant_id, entity_id) ON DELETE RESTRICT;
+ALTER TABLE public.trnm_events ADD CONSTRAINT trnm_event_command_receipt_fk FOREIGN KEY (tenant_id, entity_id, command_id) REFERENCES public.trnm_command_receipts(tenant_id, entity_id, command_id) ON DELETE RESTRICT;
+ALTER TABLE public.trnm_outbox ADD CONSTRAINT trnm_outbox_command_receipt_fk FOREIGN KEY (tenant_id, entity_id, command_id) REFERENCES public.trnm_command_receipts(tenant_id, entity_id, command_id) ON DELETE RESTRICT;
+-- Validate foreign key constraints. These can fail if there was unvalidated data during the SHOW CREATE ALL TABLES
+ALTER TABLE public.trnm_command_receipts VALIDATE CONSTRAINT trnm_receipt_entity_head_fk;
+ALTER TABLE public.trnm_events VALIDATE CONSTRAINT trnm_event_command_receipt_fk;
+ALTER TABLE public.trnm_outbox VALIDATE CONSTRAINT trnm_outbox_command_receipt_fk;
