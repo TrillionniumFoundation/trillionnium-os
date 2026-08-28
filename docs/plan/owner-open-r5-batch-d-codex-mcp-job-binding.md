@@ -27,7 +27,9 @@ Implemented source behavior:
 7. no semantic approval, risk classification or command rewriting;
 8. no internal retry of uncertain Host effects;
 9. `automatic_redispatch=false` on Host and bridge error results;
-10. MCP cancellation separated from explicit job termination.
+10. MCP cancellation separated from explicit job termination;
+11. read-only hints only on inspect/wait, with attach and effectful tools marked
+    as mutating/open-world operations.
 
 ## Executed isolated evidence
 
@@ -45,9 +47,10 @@ PYTHONWARNINGS=error::ResourceWarning \
 python3 -m unittest tools.tests.test_codex_owner_open_mcp -v
 ```
 
-Result: **3 tests run, 3 passed**. The test used a fake Host and did not use an
-installed Codex or the Rust v5/v7 binaries, so it cannot promote W2 or W3 beyond
-L0 source evidence.
+Result: **4 tests run, 4 passed**. Five checked-in Git blobs match the exact
+source and test files used by that run. The suite used a fake Host and did not
+use an installed Codex or the Rust v5/v7 binaries, so it cannot promote W2 or W3
+beyond L0 source evidence.
 
 ## Next acceptance gate
 
