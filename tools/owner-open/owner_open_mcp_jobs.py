@@ -43,7 +43,7 @@ def _tool(name: str, title: str, description: str, schema: dict[str, Any], *, re
         "annotations": {
             "readOnlyHint": read_only,
             "destructiveHint": not read_only,
-            "openWorldHint": False,
+            "openWorldHint": not read_only,
         },
     }
 
@@ -87,7 +87,7 @@ TOOLS = [
         "Attach to owner-open job",
         "Register one live attachment and return bounded observations. Cross-Host FD adoption is not implied.",
         _schema({**_common(), "attachment_id": {"type": "string"}, "inclusive_cursor": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 256}}, ["job_id", "attachment_id"]),
-        read_only=True,
+        read_only=False,
     ),
     _tool(
         "trillionnium_job_detach",
