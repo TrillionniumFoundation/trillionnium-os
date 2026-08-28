@@ -29,6 +29,8 @@ jobs:
             ref: b8886cbd8a0fd58e3b04899bcc720dbe9b4eb650
           - label: pr24-query
             ref: fea51c020b442a98839a4568237908f1636db1e0
+          - label: pr33-transport
+            ref: d26324f52df2ffc059e0bde5b446ea082f0e9d18
 
     steps:
       - name: Check out exact TrillionniumGame head
@@ -48,30 +50,33 @@ jobs:
 
       - name: Verify exact identity and run strict gates
         working-directory: source
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/trillionniumgame-evidence/${{ matrix.label }}
         run: |
           set -euo pipefail
-          mkdir -p relay-evidence
+          mkdir -p "$EVIDENCE_DIR"
           test "$(git rev-parse HEAD)" = '${{ matrix.ref }}'
-          git rev-parse HEAD | tee relay-evidence/commit.txt
-          git rev-parse HEAD^{tree} | tee relay-evidence/tree.txt
-          rustc --version --verbose | tee relay-evidence/rustc-version.txt
-          cargo --version --verbose | tee relay-evidence/cargo-version.txt
-          cargo fmt --all -- --check 2>&1 | tee relay-evidence/cargo-fmt.log
-          cargo test --workspace --all-targets --locked 2>&1 | tee relay-evidence/cargo-test.log
-          cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
+          git rev-parse HEAD | tee "$EVIDENCE_DIR/commit.txt"
+          git rev-parse HEAD^{tree} | tee "$EVIDENCE_DIR/tree.txt"
+          rustc --version --verbose | tee "$EVIDENCE_DIR/rustc-version.txt"
+          cargo --version --verbose | tee "$EVIDENCE_DIR/cargo-version.txt"
+          cargo fmt --all -- --check 2>&1 | tee "$EVIDENCE_DIR/cargo-fmt.log"
+          cargo test --workspace --all-targets --locked 2>&1 | tee "$EVIDENCE_DIR/cargo-test.log"
+          cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$EVIDENCE_DIR/cargo-clippy.log"
           python_paths=()
           for path in scripts tests tools; do [[ -d "$path" ]] && python_paths+=("$path"); done
           if (( ${#python_paths[@]} )); then
-            python3 -m compileall -q "${python_paths[@]}" 2>&1 | tee relay-evidence/python-compileall.log
+            python3 -m compileall -q "${python_paths[@]}" 2>&1 | tee "$EVIDENCE_DIR/python-compileall.log"
           else
-            : > relay-evidence/python-compileall.log
+            : > "$EVIDENCE_DIR/python-compileall.log"
           fi
           test -z "$(git status --porcelain)"
-          python3 - <<PY
-          import json
+          EVIDENCE_DIR="$EVIDENCE_DIR" python3 - <<PY
+          import json, os
           from pathlib import Path
-          Path('relay-evidence/summary.json').write_text(json.dumps({
-              'schema': 'trillionnium.game.repaired-exact-head.v1',
+          output = Path(os.environ['EVIDENCE_DIR'])
+          output.joinpath('summary.json').write_text(json.dumps({
+              'schema': 'trillionnium.game.repaired-exact-head.v2',
               'repository': 'TrillionniumFoundation/TrillionniumGame',
               'label': '${{ matrix.label }}',
               'commit': '${{ matrix.ref }}',
@@ -86,12 +91,13 @@ jobs:
               },
           }, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
           PY
-          find relay-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+          find "$EVIDENCE_DIR" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$EVIDENCE_DIR/SHA256SUMS"
 
       - name: Upload exact-head evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: trillionniumgame-repaired-${{ matrix.label }}-${{ matrix.ref }}
-          path: source/relay-evidence
+          path: ${{ runner.temp }}/trillionniumgame-evidence/${{ matrix.label }}
           if-no-files-found: error
           retention-days: 30
