@@ -1,0 +1,12 @@
+join_visible=applied:1:1:0:0:0
+join_hidden=applied:2:0:0:0:1
+update=applied:3:0:1:0:0
+leave=applied:4:0:0:1:0
+rejoin=applied:5:1:0:0:0
+replacement=applied:6:1:0:1:0
+stale=stale_generation
+revision=6
+entry_count=2
+connection_count=2
+public=session-c@node-a/connection-a:new
+all=session-b@node-b/connection-b:hidden:hidden|session-c@node-a/connection-a:new:visible
