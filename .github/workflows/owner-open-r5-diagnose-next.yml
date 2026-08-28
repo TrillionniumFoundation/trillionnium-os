@@ -82,7 +82,20 @@ jobs:
               "    def run(self, plan: Path, output: Path) -> subprocess.CompletedProcess[bytes]:\n",
               "    def run_command(\n        self, plan: Path, output: Path\n    ) -> subprocess.CompletedProcess[bytes]:\n",
           )
-          replace_exact(stage, "self.run(plan, output)", "self.run_command(plan, output)", expected=6)
+          replace_exact(stage, "self.run(plan, output)", "self.run_command(plan, output)", expected=7)
+
+          supervisor = "tools/tests/test_supervise_codex_mcp_qualification_release.py"
+          replace_exact(
+              supervisor,
+              "    def run(self, evidence: Path, *, timeout: str = \"5\", **environment: str):\n",
+              "    def run_command(\n        self, evidence: Path, *, timeout: str = \"5\", **environment: str\n    ):\n",
+          )
+          replace_exact(
+              supervisor,
+              "self.run(evidence",
+              "self.run_command(evidence",
+              expected=3,
+          )
 
           event_store = "crates/trillionnium-owner-open-event-store/src/lib.rs"
           replace_exact(
@@ -144,6 +157,7 @@ jobs:
             echo "$name rc=$rc" | tee -a owner-open-r5-diagnose/python-summary.txt
           }
           run_cluster stage-rootfs tools.tests.test_stage_owner_open_rootfs_payload_release
+          run_cluster supervisor tools.tests.test_supervise_codex_mcp_qualification_release
           run_cluster shell-artifact tools.tests.test_build_shell_exec_artifact_set
           run_cluster final-daemon tools.tests.test_materialize_p01_final_daemon_artifact
           run_cluster adb-reverse tools.tests.test_owner_open_adb_reverse
