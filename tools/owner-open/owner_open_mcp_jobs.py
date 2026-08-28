@@ -34,7 +34,16 @@ def _common() -> dict[str, Any]:
     return {"job_id": {"type": "string"}, "request_sha256": {"type": "string"}}
 
 
-def _tool(name: str, title: str, description: str, schema: dict[str, Any], *, read_only: bool) -> dict[str, Any]:
+def _tool(
+    name: str,
+    title: str,
+    description: str,
+    schema: dict[str, Any],
+    *,
+    read_only: bool,
+    destructive: bool,
+    open_world: bool,
+) -> dict[str, Any]:
     return {
         "name": name,
         "title": title,
@@ -42,8 +51,8 @@ def _tool(name: str, title: str, description: str, schema: dict[str, Any], *, re
         "inputSchema": schema,
         "annotations": {
             "readOnlyHint": read_only,
-            "destructiveHint": not read_only,
-            "openWorldHint": not read_only,
+            "destructiveHint": destructive,
+            "openWorldHint": open_world,
         },
     }
 
@@ -74,6 +83,8 @@ TOOLS = [
             ["job_id", "operation_id", "mode"],
         ),
         read_only=False,
+        destructive=True,
+        open_world=True,
     ),
     _tool(
         "trillionnium_job_inspect",
@@ -81,6 +92,8 @@ TOOLS = [
         "Read bounded resident and durable job observations without dispatching an effect.",
         _schema({**_common(), "inclusive_cursor": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 256}}, ["job_id"]),
         read_only=True,
+        destructive=False,
+        open_world=False,
     ),
     _tool(
         "trillionnium_job_attach",
@@ -88,6 +101,8 @@ TOOLS = [
         "Register one live attachment and return bounded observations. Cross-Host FD adoption is not implied.",
         _schema({**_common(), "attachment_id": {"type": "string"}, "inclusive_cursor": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 256}}, ["job_id", "attachment_id"]),
         read_only=False,
+        destructive=False,
+        open_world=False,
     ),
     _tool(
         "trillionnium_job_detach",
@@ -95,6 +110,8 @@ TOOLS = [
         "Remove one attachment without terminating the job.",
         _schema({**_common(), "attachment_id": {"type": "string"}}, ["job_id", "attachment_id"]),
         read_only=False,
+        destructive=False,
+        open_world=False,
     ),
     _tool(
         "trillionnium_job_write",
@@ -102,6 +119,8 @@ TOOLS = [
         "Write exact UTF-8 or base64 bytes. operation_id binds accepted-before-effect durability.",
         _schema({**_common(), "operation_id": {"type": "string"}, "data": {}}, ["job_id", "operation_id", "data"]),
         read_only=False,
+        destructive=True,
+        open_world=True,
     ),
     _tool(
         "trillionnium_job_resize",
@@ -109,6 +128,8 @@ TOOLS = [
         "Apply exact non-zero PTY rows and columns using a stable operation_id.",
         _schema({**_common(), "operation_id": {"type": "string"}, "rows": {"type": "integer", "minimum": 1, "maximum": 65535}, "cols": {"type": "integer", "minimum": 1, "maximum": 65535}}, ["job_id", "operation_id", "rows", "cols"]),
         read_only=False,
+        destructive=False,
+        open_world=True,
     ),
     _tool(
         "trillionnium_job_close_stdin",
@@ -116,6 +137,8 @@ TOOLS = [
         "Close pipe stdin or send PTY EOT. Unknown outcomes are not retried automatically.",
         _schema({**_common(), "operation_id": {"type": "string"}}, ["job_id", "operation_id"]),
         read_only=False,
+        destructive=True,
+        open_world=True,
     ),
     _tool(
         "trillionnium_job_kill",
@@ -123,6 +146,8 @@ TOOLS = [
         "Signal the job process group with a stable operation_id.",
         _schema({**_common(), "operation_id": {"type": "string"}, "signal": {"type": "integer", "minimum": 1, "maximum": 128}}, ["job_id", "operation_id"]),
         read_only=False,
+        destructive=True,
+        open_world=True,
     ),
     _tool(
         "trillionnium_job_wait",
@@ -130,6 +155,8 @@ TOOLS = [
         "Poll read-only job.inspect until terminal observation or bounded timeout.",
         _schema({**_common(), "inclusive_cursor": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 256}, "timeout_seconds": {"type": "number", "minimum": 0, "maximum": 300}, "poll_interval_ms": {"type": "integer", "minimum": 10, "maximum": 5000}}, ["job_id"]),
         read_only=True,
+        destructive=False,
+        open_world=False,
     ),
 ]
 TOOL_NAMES = {item["name"] for item in TOOLS}
