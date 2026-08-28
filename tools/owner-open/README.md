@@ -1,8 +1,8 @@
 # Owner-open development tools
 
-These are explicit owner bootstrap, observation and source-qualification
-utilities. They are not semantic approval gates, and their output alone is not
-an integrated Codex turn or device-effect claim.
+These are explicit owner bootstrap, transport, observation and
+source-qualification utilities. They are not semantic approval gates, and their
+output alone is not an integrated Codex turn or device-effect claim.
 
 Canonical entries:
 
@@ -15,15 +15,24 @@ Canonical entries:
   mechanics shared by the MCP bridge;
 - `owner_open_mcp_host.py` — bounded exact-frame client for the selected v5
   transport Host and v7 core;
-- `owner_open_mcp_jobs.py` — MCP tool schemas and exact job-wire mapping;
+- `owner_open_mcp_jobs.py` — MCP tool schemas, connection identity and exact
+  job-wire mapping;
+- `owner_open_broker_common.py` — strict descriptor, token, path and executable
+  mechanics for the multi-connection broker;
+- `owner_open_connection_broker.py` — one-upstream filesystem Unix broker with
+  bounded multi-client routing;
+- `owner_open_broker_client.py` — Host-compatible broker client transport;
+- `trace_mcp_stdio.py` — exact-byte bounded MCP STDIO trace and deterministic
+  downstream process-group lifecycle;
+- `qualify_codex_mcp_jobs.py` — temporary-registration installed-Codex MCP job
+  qualification runner;
 - `jsonl_provider_runtime.py` — provider-neutral bounded duplex JSONL process
   mechanics for W1 fixtures and bootstrap adapters;
 - `prepare-adb-reverse-v1.sh` — explicit owner-host reverse bootstrap.
 
 ## Codex MCP registration
 
-The bridge is intended to run as a local STDIO MCP server under Codex. A
-representative registration is:
+The bridge can run directly over the selected Host:
 
 ```sh
 codex mcp add trillionnium-owner-open-jobs -- \
@@ -35,25 +44,10 @@ codex mcp add trillionnium-owner-open-jobs -- \
   --event-store /absolute/state/events.jsonl
 ```
 
-Equivalent `config.toml`:
-
-```toml
-[mcp_servers.trillionnium-owner-open-jobs]
-command = "python3"
-args = [
-  "/absolute/repo/tools/owner-open/codex_owner_open_mcp.py",
-  "--host", "/absolute/bin/trillionnium-owner-open-r5-host",
-  "--core", "/absolute/bin/trillionnium-owner-open-r5-core",
-  "--provider", "/absolute/provider-adapter",
-  "--job-store", "/absolute/state/jobs.jsonl",
-  "--event-store", "/absolute/state/events.jsonl",
-]
-startup_timeout_sec = 10
-```
-
 The bridge exposes:
 
 ```text
+trillionnium_connection_info
 trillionnium_job_start
 trillionnium_job_inspect
 trillionnium_job_attach
@@ -65,15 +59,59 @@ trillionnium_job_kill
 trillionnium_job_wait
 ```
 
-One MCP server lifetime receives one mechanically allocated scope unless the
-owner pins explicit session/task/turn/stream IDs. Effectful controls require a
-stable `operation_id`. The bridge never supplies semantic approval, rewrites a
-command, chooses a weaker target, or retries an uncertain effect.
+One MCP server lifetime receives one mechanically allocated
+`bridge_instance_id` and one correlation scope unless the owner pins explicit
+session/task/turn/stream IDs. Start, attach, detach, write, resize, close and
+kill require that live bridge ID. Inspect and wait remain durable read-only
+operations for later connections.
+
+The bridge never supplies semantic approval, rewrites a command, chooses a
+weaker target or retries an uncertain effect.
+
+## Installed Codex qualification
+
+Use a dedicated private `CODEX_HOME`, workspace and new evidence directory:
+
+```sh
+python3 tools/owner-open/qualify_codex_mcp_jobs.py \
+  --execute \
+  --codex /absolute/bin/codex \
+  --python /absolute/bin/python3 \
+  --trace-proxy /absolute/repo/tools/owner-open/trace_mcp_stdio.py \
+  --mcp-bridge /absolute/repo/tools/owner-open/codex_owner_open_mcp.py \
+  --host /absolute/bin/trillionnium-owner-open-r5-host \
+  --core /absolute/bin/trillionnium-owner-open-r5-core \
+  --provider /absolute/provider-adapter \
+  --shell /absolute/bin/sh \
+  --job-store /absolute/private-state/jobs.jsonl \
+  --event-store /absolute/private-state/events.jsonl \
+  --codex-home /absolute/private-codex-home \
+  --workspace /absolute/private-workspace \
+  --evidence-dir /absolute/new-private-evidence
+```
+
+The runner measures files, observes installed CLI help/login, refuses a
+pre-existing qualification server name, records `mcp get/list`, executes one
+exact eleven-call pipe/PTY turn through the trace proxy, validates Codex JSONL
+and MCP responses, removes the server and restores the original configuration
+bytes.
+
+## Multi-connection broker boundary
+
+The foundation broker uses a filesystem Unix socket, same-UID `SO_PEERCRED` and
+a private random token. It routes direct responses to the request owner and can
+broadcast bounded observations. Client disconnect never means automatic
+`turn.cancel`, `job.kill` or effect redispatch.
+
+A new bridge/Host process can inspect durable job truth but cannot claim that it
+has adopted an old pipe, PTY master or process-group descriptor. Android
+abstract-socket/SELinux admission and any future descriptor transfer are
+separate W6 gates.
 
 The unversioned `prepare-adb-reverse.sh` was an intermediate source draft. It
 must not be referenced by plans, automation or evidence; use the `-v1` tool.
 
-Every tool has a machine status/evidence boundary. A help probe, MCP fixture,
-launch prefix, fake provider, reverse mapping or qualified ELF may never be
-promoted to a live installed-Codex, physical-device or release claim without
-the later acceptance gates.
+Every utility has a machine status/evidence boundary. A help probe, MCP fixture,
+trace, launch prefix, fake provider, reverse mapping or qualified ELF may never
+be promoted to a physical-device or release claim without the later acceptance
+gates.
