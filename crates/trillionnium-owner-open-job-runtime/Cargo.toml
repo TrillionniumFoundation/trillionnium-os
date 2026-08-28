@@ -1,0 +1,23 @@
+[package]
+name = "trillionnium-owner-open-job-runtime"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+publish = false
+
+[features]
+default = []
+
+[dependencies]
+libc.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+trillionnium-owner-open-event-store.workspace = true
+trillionnium-owner-open-job-registry.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
