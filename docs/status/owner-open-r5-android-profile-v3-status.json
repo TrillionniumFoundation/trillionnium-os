@@ -1,0 +1,72 @@
+{
+  "schema": "org.trillionnium.owner-open.android-profile-v3-status.v1",
+  "revision": "2026-08-28-r5-batch-e-rootlinux-payload",
+  "development_branch": "codex/owner-open-r5-tool-loop-20260827",
+  "status": "SOURCE_IMPLEMENTED",
+  "latest_evidence_level": "L0",
+  "public_release": false,
+  "selected_contract": "docs/contracts/owner-open-r5-android-profile-selection-v1.json",
+  "selected_profile": "android-integration/owner-open-profile/profile-v2.json",
+  "selected_generator": "tools/generate-owner-open-android-profile-v3.py",
+  "selected_verifier": "tools/verify-owner-open-android-profile-v3.py",
+  "selected_workflow": ".github/workflows/owner-open-r5-android-profile-v3.yml",
+  "architecture": {
+    "decision": "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md",
+    "rootlinux_runtime_installed_as_android_executables": false,
+    "rootlinux_payload_read_only": true,
+    "android_native_boundary": [
+      "bootstrap",
+      "emergency_stop",
+      "init_config",
+      "profile_config"
+    ],
+    "runtime_state_root": "/data/trillionnium/owner-open/"
+  },
+  "implemented": [
+    "Root Linux payload based Android product profile v2",
+    "generated but deliberately unselected product package fragment",
+    "machine source-selection contract for profile/generator/verifier/workflow",
+    "foundation and strict v3 verification modes",
+    "claim implication checks for payload, bootstrap, target-files, image, physical device and release",
+    "separate Android-init and Root-Linux-supervisor service binding states",
+    "Root Linux payload entry and manifest binding states",
+    "negative gate against installing Root Linux Host/Core as Android system_ext/bin executables",
+    "exact forbidden legacy Authority, lease, P01, old shell and semantic ADB package set",
+    "CI source gate that requires the current unbound tree to fail strict verification"
+  ],
+  "current_truth": {
+    "selected_in_current_product": false,
+    "source_contract_only": true,
+    "rootlinux_payload_bound": false,
+    "android_bootstrap_bound": false,
+    "soong_modules_bound": false,
+    "init_services_bound": false,
+    "selinux_domains_bound": false,
+    "target_files_built": false,
+    "image_included": false,
+    "physical_device_observed": false,
+    "claim_ceiling": "SOURCE_CONTRACT_ONLY_L0"
+  },
+  "open": [
+    "build deterministic Root Linux payload image and manifest",
+    "bind AArch64 ELF loader/libc/shared-library closure",
+    "implement Android-native bootstrap and emergency stop",
+    "select Android-native client ingress and SELinux domain transition",
+    "create reviewed Soong modules",
+    "remove forbidden legacy graph from the owner-open product",
+    "activate the v2 fragment only after strict verification can pass",
+    "build clean target-files",
+    "collect physical and fault evidence"
+  ],
+  "not_claimed": [
+    "Root Linux payload artifact exists",
+    "Android-native bootstrap exists",
+    "Soong modules resolve",
+    "init or SELinux source compiles",
+    "current product selects the owner-open v2 profile",
+    "target-files or Android image exists",
+    "physical shell, job or ADB effect",
+    "fault, reboot or power-loss qualification",
+    "public release"
+  ]
+}
