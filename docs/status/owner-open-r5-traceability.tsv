@@ -19,6 +19,18 @@ R5-CODEX-MCP-001	W2	tools/owner-open/codex_owner_open_mcp.py;tools/owner-open/ow
 R5-CODEX-MCP-JOB-001	W2	tools/owner-open/owner_open_mcp_jobs.py;docs/protocols/owner-open-codex-mcp-jobs-v1.md	test_stdio_mcp_exposes_and_drives_job_tools	docs/evidence/2026-08-28-owner-open-codex-mcp-job-source.md	SOURCE_IMPLEMENTED
 R5-CODEX-MCP-NORETRY-001	W5	tools/owner-open/owner_open_mcp_host.py;tools/owner-open/owner_open_mcp_jobs.py	test_exact_duplicate_host_control_result_is_returned_without_server_retry	docs/evidence/2026-08-28-owner-open-codex-mcp-job-source.md	SOURCE_IMPLEMENTED
 R5-CODEX-MCP-STRICT-001	W1	tools/owner-open/owner_open_mcp_common.py;tools/owner-open/codex_owner_open_mcp.py	test_duplicate_json_and_invalid_effect_arguments_fail_mechanically	docs/evidence/2026-08-28-owner-open-codex-mcp-job-source.md	SOURCE_IMPLEMENTED
-R5-CODEX-JOB-LIVE-001	W2	docs/plan/owner-open-r5-batch-d-codex-mcp-job-binding.md	installed Codex MCP pipe and PTY same-turn qualification	None	SPEC_ONLY
+R5-CODEX-CONNECTION-001	W1	tools/owner-open/codex_owner_open_mcp.py;tools/owner-open/owner_open_mcp_jobs.py	test_bridge_instance_mismatch_fails_before_host_dispatch	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-CODEX-CONNECTION-INFO-001	W2	tools/owner-open/codex_owner_open_mcp.py;tools/owner-open/owner_open_mcp_jobs.py	tools/tests/test_codex_owner_open_mcp.py	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-BROKER-COMMON-001	W1	tools/owner-open/owner_open_broker_common.py	tools/tests/test_*broker*.py	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-BROKER-ADMISSION-001	W1	tools/owner-open/owner_open_connection_broker.py;docs/protocols/owner-open-multi-connection-broker-v1.md	tools/tests/test_*broker*.py	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-BROKER-ROUTING-001	W1	tools/owner-open/owner_open_connection_broker.py;tools/owner-open/owner_open_broker_client.py	tools/tests/test_*broker*.py	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-BROKER-DISCONNECT-001	W5	tools/owner-open/owner_open_connection_broker.py	tools/tests/test_*broker*.py	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-MCP-TRACE-001	W2	tools/owner-open/trace_mcp_stdio.py	tools/tests/test_codex_mcp_qualification_lifecycle.py	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-MCP-TRACE-LIFECYCLE-001	W5	tools/owner-open/trace_mcp_stdio.py	test_trace_proxy_closes_and_reaps_a_downstream_that_ignores_eof	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-CODEX-QUALIFY-001	W2	tools/owner-open/qualify_codex_mcp_jobs.py;docs/protocols/owner-open-installed-codex-mcp-qualification-v1.md	tools/tests/test_codex_mcp_qualification_lifecycle.py	installed target Codex pending	SOURCE_IMPLEMENTED
+R5-CODEX-QUALIFY-SEQUENCE-001	W2	tools/owner-open/qualify_codex_mcp_jobs.py	test_validate_trace_binds_exact_tools_operations_and_bridge	installed target Codex pending	SOURCE_IMPLEMENTED
+R5-CODEX-QUALIFY-CLEANUP-001	W5	tools/owner-open/qualify_codex_mcp_jobs.py;tools/owner-open/trace_mcp_stdio.py	test_bounded_run_terminates_a_timed_out_process_group;test_trace_proxy_closes_and_reaps_a_downstream_that_ignores_eof	runner-backed exact-checkout pending	SOURCE_IMPLEMENTED
+R5-CODEX-JOB-LIVE-001	W2	docs/plan/owner-open-r5-batch-d-connection-and-installed-codex.md	installed Codex MCP exact eleven-call same-turn qualification	None	SPEC_ONLY
+R5-ADB-PHYSICAL-001	W4	docs/architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md	physical USB/offline/unauthorized/reboot qualification	None	SPEC_ONLY
 R5-ANDROID-001	W6	android-integration/working-tree/vendor/trillionnium/config/common.mk	strict Android graph verifier after profile cutover	None	NOT_STARTED
 R5-QUAL-001	W7	docs/status/owner-open-r5-status.json	tools/verify-owner-open-r5.py	L0-L6 promotion rules	SPEC_ONLY
