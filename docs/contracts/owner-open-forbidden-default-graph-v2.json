@@ -1,7 +1,7 @@
 {
   "schema": "org.trillionnium.owner-open-forbidden-default-graph.v2",
   "revision": "2026-08-28-r5",
-  "description": "Exact negative graph contract for the R5 owner-open source closure. Legacy code may remain as explicit history/sealed targets, but must not enter Cargo defaults, owner-open internal dependencies, Host binary targets, Android owner-open packages, startup services, or broad classpaths.",
+  "description": "Exact negative graph contract for the R5 owner-open source closure. Legacy code may remain as explicit history or sealed targets, but must not enter Cargo defaults, reviewed owner-open dependencies, selected Host binaries, Android owner-open packages, startup services or broad classpaths.",
   "cargo": {
     "required_workspace_members": [
       "apps/trillionnium-owner-open-host",
@@ -10,6 +10,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -20,6 +21,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -30,6 +32,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -85,14 +88,15 @@
         },
         {
           "name": "trillionnium-owner-open-r5-host",
-          "path": "src/bin/r5_control_host_v3.rs"
+          "path": "src/bin/r5_control_host_v4.rs"
         }
       ],
       "forbidden_selected_paths": [
         "src/bin/r5_host.rs",
         "src/bin/r5_streaming_host.rs",
         "src/bin/r5_control_host.rs",
-        "src/bin/r5_control_host_v2.rs"
+        "src/bin/r5_control_host_v2.rs",
+        "src/bin/r5_control_host_v3.rs"
       ]
     },
     "owner_open_packages": [
@@ -132,6 +136,10 @@
           "trillionnium-owner-open-turn-loop",
           "trillionnium-owner-open-types"
         ]
+      },
+      {
+        "path": "crates/trillionnium-owner-open-stream-window",
+        "allowed_internal_dependencies": []
       },
       {
         "path": "crates/trillionnium-owner-open-tool-bridge",
