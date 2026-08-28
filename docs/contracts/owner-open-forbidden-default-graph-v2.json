@@ -1,7 +1,7 @@
 {
   "schema": "org.trillionnium.owner-open-forbidden-default-graph.v2",
   "revision": "2026-08-28-r5",
-  "description": "Exact negative graph contract for the R5 owner-open source closure. The selected v5 transport Host wraps the reviewed v4 execution core, adds durable-store-backed bounded delivery flow control, and still excludes legacy semantic authority nodes.",
+  "description": "Exact negative graph contract for the R5 owner-open source closure. The selected v5 transport Host wraps the reviewed v4 execution core, adds durable-store-backed bounded delivery flow control, and the closure now includes an isolated mechanism-only long-running job registry while still excluding legacy semantic authority nodes.",
   "cargo": {
     "required_workspace_members": [
       "apps/trillionnium-owner-open-host",
@@ -9,6 +9,7 @@
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
+      "crates/trillionnium-owner-open-job-registry",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
@@ -20,6 +21,7 @@
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
+      "crates/trillionnium-owner-open-job-registry",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
@@ -31,6 +33,7 @@
       "crates/trillionnium-owner-open-runtime",
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
+      "crates/trillionnium-owner-open-job-registry",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
@@ -130,6 +133,10 @@
       },
       {
         "path": "crates/trillionnium-owner-open-event-store",
+        "allowed_internal_dependencies": []
+      },
+      {
+        "path": "crates/trillionnium-owner-open-job-registry",
         "allowed_internal_dependencies": []
       },
       {
