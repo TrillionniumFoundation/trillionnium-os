@@ -4,6 +4,8 @@ members = [
   "apps/trillionniumd",
   "crates/trillionnium-owner-open-call-registry",
   "crates/trillionnium-owner-open-event-store",
+  "crates/trillionnium-owner-open-job-registry",
+  "crates/trillionnium-owner-open-job-runtime",
   "crates/trillionnium-owner-open-provider-jsonl",
   "crates/trillionnium-owner-open-stream-window",
   "crates/trillionnium-owner-open-tool-bridge",
@@ -30,6 +32,8 @@ default-members = [
   "apps/trillionnium-owner-open-host",
   "crates/trillionnium-owner-open-call-registry",
   "crates/trillionnium-owner-open-event-store",
+  "crates/trillionnium-owner-open-job-registry",
+  "crates/trillionnium-owner-open-job-runtime",
   "crates/trillionnium-owner-open-provider-jsonl",
   "crates/trillionnium-owner-open-stream-window",
   "crates/trillionnium-owner-open-tool-bridge",
@@ -49,6 +53,8 @@ rust-version = "1.93"
 [workspace.dependencies]
 trillionnium-owner-open-call-registry = { path = "crates/trillionnium-owner-open-call-registry" }
 trillionnium-owner-open-event-store = { path = "crates/trillionnium-owner-open-event-store" }
+trillionnium-owner-open-job-registry = { path = "crates/trillionnium-owner-open-job-registry" }
+trillionnium-owner-open-job-runtime = { path = "crates/trillionnium-owner-open-job-runtime" }
 trillionnium-owner-open-provider-jsonl = { path = "crates/trillionnium-owner-open-provider-jsonl" }
 trillionnium-owner-open-stream-window = { path = "crates/trillionnium-owner-open-stream-window" }
 trillionnium-owner-open-tool-bridge = { path = "crates/trillionnium-owner-open-tool-bridge" }
