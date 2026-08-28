@@ -1,8 +1,8 @@
 {
   "schema": "org.trillionnium.owner-open-forbidden-default-graph.v1",
   "revision": "2026-08-27-r4",
-  "amended_by": "2026-08-28-r5",
-  "description": "Negative graph contract for the owner-open default product. R5 expands the isolated source closure with runtime, call registry, durable event store, duplex provider adapter, tool bridge and same-turn loop while retaining the r4 semantic boundary.",
+  "amended_by": "2026-08-28-r5-batch-d",
+  "description": "Retained R4-compatible negative graph contract amended to recognize the reviewed R5 runtime, registry, event store, provider adapter, stream window, tool bridge and same-turn loop while preserving the owner-open semantic boundary.",
   "cargo": {
     "required_workspace_members": [
       "apps/trillionnium-owner-open-host",
@@ -11,6 +11,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -21,6 +22,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -52,6 +54,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
@@ -75,6 +78,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-provider-jsonl",
+      "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
       "crates/trillionnium-owner-open-turn-loop"
     ],
