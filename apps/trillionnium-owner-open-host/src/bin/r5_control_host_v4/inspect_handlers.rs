@@ -130,7 +130,19 @@ fn handle_call_inspect<W: Write>(
         .as_deref()
         .expect("call.inspect parser requires call_id");
     let key = CallKey::new(request.context.registry_scope(), call_id);
-    let payload = match registry.snapshot(&key) {
+
+    // The live registry has no turn-request digest of its own. It is therefore
+    // safe to use only while the active turn has already bound and verified the
+    // exact request digest. Once the turn is no longer active, inspection must
+    // go through the durable request-bound path even if this process still has
+    // a completed registry entry in memory.
+    let live_snapshot = if active.is_some() {
+        registry.snapshot(&key)
+    } else {
+        Err(RegistryError::NotFound)
+    };
+
+    let payload = match live_snapshot {
         Ok(snapshot) => {
             let history = match registry.history_from(&key, request.inclusive_cursor) {
                 Ok(history) => history,
