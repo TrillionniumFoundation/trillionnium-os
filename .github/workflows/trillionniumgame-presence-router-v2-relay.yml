@@ -17,7 +17,7 @@ concurrency:
 
 env:
   TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
-  TARGET_BRANCH: feature/trillionniumgame-w6-presence-router-final-v2
+  TARGET_BRANCH: feature/trillionniumgame-w6-presence-router-v1
   MANIFEST: crates/trnm-presence-router-v2/Cargo.toml
 
 jobs:
