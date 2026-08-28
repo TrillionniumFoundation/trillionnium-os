@@ -20,6 +20,8 @@ sha2.workspace = true
 thiserror.workspace = true
 trillionnium-owner-open-call-registry.workspace = true
 trillionnium-owner-open-event-store.workspace = true
+trillionnium-owner-open-job-registry.workspace = true
+trillionnium-owner-open-job-runtime.workspace = true
 trillionnium-owner-open-provider-jsonl.workspace = true
 trillionnium-owner-open-runtime.workspace = true
 trillionnium-owner-open-stream-window.workspace = true
@@ -36,7 +38,7 @@ path = "src/main.rs"
 
 [[bin]]
 name = "trillionnium-owner-open-r5-core"
-path = "src/bin/r5_control_host_v4.rs"
+path = "src/bin/r5_control_host_v7.rs"
 
 [[bin]]
 name = "trillionnium-owner-open-r5-host"
