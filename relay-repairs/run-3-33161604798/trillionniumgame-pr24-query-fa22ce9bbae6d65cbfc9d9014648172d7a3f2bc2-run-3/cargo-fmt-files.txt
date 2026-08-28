@@ -1,0 +1,7 @@
+crates/trnm-authority-core/src/lib.rs
+crates/trnm-contracts/src/lib.rs
+crates/trnm-query-core/src/lexer.rs
+crates/trnm-query-core/src/parser.rs
+crates/trnm-query-core/src/tests.rs
+crates/trnm-session-core/src/lib.rs
+crates/trnm-storage-core/src/lib.rs

@@ -1,0 +1,5 @@
+crates/trnm-authority-core/src/lib.rs
+crates/trnm-contracts/src/lib.rs
+crates/trnm-presence-core/src/lib.rs
+crates/trnm-session-core/src/lib.rs
+crates/trnm-storage-core/src/lib.rs

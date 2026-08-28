@@ -1,0 +1,112 @@
+diff --git a/crates/trnm-authority-core/src/lib.rs b/crates/trnm-authority-core/src/lib.rs
+index 5f44267..1f3f757 100644
+--- a/crates/trnm-authority-core/src/lib.rs
++++ b/crates/trnm-authority-core/src/lib.rs
+@@ -314,11 +314,17 @@ mod tests {
+     fn stale_version_and_sequence_gap_fail_closed() {
+         let state = MatchState::new(AuthorityGeneration::new(1));
+         assert_eq!(
+-            state.prepare(command(1, 1, 1, 1, 1, 7)).unwrap_err().reason(),
++            state
++                .prepare(command(1, 1, 1, 1, 1, 7))
++                .unwrap_err()
++                .reason(),
+             "stale_match_version"
+         );
+         assert_eq!(
+-            state.prepare(command(1, 1, 2, 0, 1, 7)).unwrap_err().reason(),
++            state
++                .prepare(command(1, 1, 2, 0, 1, 7))
++                .unwrap_err()
++                .reason(),
+             "participant_sequence_mismatch"
+         );
+     }
+@@ -336,7 +342,10 @@ mod tests {
+             "stale_pending_generation"
+         );
+         assert_eq!(
+-            state.prepare(command(2, 1, 1, 0, 1, 8)).unwrap_err().reason(),
++            state
++                .prepare(command(2, 1, 1, 0, 1, 8))
++                .unwrap_err()
++                .reason(),
+             "stale_authority_generation"
+         );
+     }
+diff --git a/crates/trnm-contracts/src/lib.rs b/crates/trnm-contracts/src/lib.rs
+index e9c8515..e68c955 100644
+--- a/crates/trnm-contracts/src/lib.rs
++++ b/crates/trnm-contracts/src/lib.rs
+@@ -43,10 +43,13 @@ macro_rules! counter {
+             }
+ 
+             pub fn checked_next(self) -> Result<Self, DomainError> {
+-                self.0
+-                    .checked_add(1)
+-                    .map(Self)
+-                    .ok_or_else(|| DomainError::new(StableCode::OutOfRange, "counter_overflow", RetryClass::Never))
++                self.0.checked_add(1).map(Self).ok_or_else(|| {
++                    DomainError::new(
++                        StableCode::OutOfRange,
++                        "counter_overflow",
++                        RetryClass::Never,
++                    )
++                })
+             }
+         }
+     };
+@@ -144,7 +147,11 @@ pub struct DomainError {
+ impl DomainError {
+     #[must_use]
+     pub const fn new(code: StableCode, reason: &'static str, retry: RetryClass) -> Self {
+-        Self { code, reason, retry }
++        Self {
++            code,
++            reason,
++            retry,
++        }
+     }
+ 
+     #[must_use]
+diff --git a/crates/trnm-session-core/src/lib.rs b/crates/trnm-session-core/src/lib.rs
+index 0c371eb..bd6c8fe 100644
+--- a/crates/trnm-session-core/src/lib.rs
++++ b/crates/trnm-session-core/src/lib.rs
+@@ -164,11 +164,7 @@ mod tests {
+     use super::*;
+ 
+     fn family() -> RefreshFamily {
+-        RefreshFamily::new(
+-            SessionFamilyId::new([1; 16]),
+-            RefreshTokenId::new([2; 16]),
+-        )
+-        .unwrap()
++        RefreshFamily::new(SessionFamilyId::new([1; 16]), RefreshTokenId::new([2; 16])).unwrap()
+     }
+ 
+     #[test]
+@@ -197,7 +193,10 @@ mod tests {
+             FamilyStatus::Revoked(RevocationReason::RefreshReplay)
+         );
+         assert_eq!(
+-            value.verify_active(RefreshTokenId::new([3; 16])).unwrap_err().reason(),
++            value
++                .verify_active(RefreshTokenId::new([3; 16]))
++                .unwrap_err()
++                .reason(),
+             "session_family_revoked"
+         );
+     }
+@@ -218,7 +217,10 @@ mod tests {
+         let mut value = family();
+         value.revoke(RevocationReason::Logout);
+         assert_eq!(
+-            value.verify_active(RefreshTokenId::new([2; 16])).unwrap_err().reason(),
++            value
++                .verify_active(RefreshTokenId::new([2; 16]))
++                .unwrap_err()
++                .reason(),
+             "session_family_revoked"
+         );
+     }

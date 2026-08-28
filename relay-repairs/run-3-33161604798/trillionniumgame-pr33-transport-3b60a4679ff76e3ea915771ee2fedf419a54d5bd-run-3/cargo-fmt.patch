@@ -1,0 +1,261 @@
+diff --git a/crates/trnm-authority-core/src/lib.rs b/crates/trnm-authority-core/src/lib.rs
+index 5f44267..1f3f757 100644
+--- a/crates/trnm-authority-core/src/lib.rs
++++ b/crates/trnm-authority-core/src/lib.rs
+@@ -314,11 +314,17 @@ mod tests {
+     fn stale_version_and_sequence_gap_fail_closed() {
+         let state = MatchState::new(AuthorityGeneration::new(1));
+         assert_eq!(
+-            state.prepare(command(1, 1, 1, 1, 1, 7)).unwrap_err().reason(),
++            state
++                .prepare(command(1, 1, 1, 1, 1, 7))
++                .unwrap_err()
++                .reason(),
+             "stale_match_version"
+         );
+         assert_eq!(
+-            state.prepare(command(1, 1, 2, 0, 1, 7)).unwrap_err().reason(),
++            state
++                .prepare(command(1, 1, 2, 0, 1, 7))
++                .unwrap_err()
++                .reason(),
+             "participant_sequence_mismatch"
+         );
+     }
+@@ -336,7 +342,10 @@ mod tests {
+             "stale_pending_generation"
+         );
+         assert_eq!(
+-            state.prepare(command(2, 1, 1, 0, 1, 8)).unwrap_err().reason(),
++            state
++                .prepare(command(2, 1, 1, 0, 1, 8))
++                .unwrap_err()
++                .reason(),
+             "stale_authority_generation"
+         );
+     }
+diff --git a/crates/trnm-contracts/src/lib.rs b/crates/trnm-contracts/src/lib.rs
+index e9c8515..e68c955 100644
+--- a/crates/trnm-contracts/src/lib.rs
++++ b/crates/trnm-contracts/src/lib.rs
+@@ -43,10 +43,13 @@ macro_rules! counter {
+             }
+ 
+             pub fn checked_next(self) -> Result<Self, DomainError> {
+-                self.0
+-                    .checked_add(1)
+-                    .map(Self)
+-                    .ok_or_else(|| DomainError::new(StableCode::OutOfRange, "counter_overflow", RetryClass::Never))
++                self.0.checked_add(1).map(Self).ok_or_else(|| {
++                    DomainError::new(
++                        StableCode::OutOfRange,
++                        "counter_overflow",
++                        RetryClass::Never,
++                    )
++                })
+             }
+         }
+     };
+@@ -144,7 +147,11 @@ pub struct DomainError {
+ impl DomainError {
+     #[must_use]
+     pub const fn new(code: StableCode, reason: &'static str, retry: RetryClass) -> Self {
+-        Self { code, reason, retry }
++        Self {
++            code,
++            reason,
++            retry,
++        }
+     }
+ 
+     #[must_use]
+diff --git a/crates/trnm-session-core/src/lib.rs b/crates/trnm-session-core/src/lib.rs
+index 0c371eb..bd6c8fe 100644
+--- a/crates/trnm-session-core/src/lib.rs
++++ b/crates/trnm-session-core/src/lib.rs
+@@ -164,11 +164,7 @@ mod tests {
+     use super::*;
+ 
+     fn family() -> RefreshFamily {
+-        RefreshFamily::new(
+-            SessionFamilyId::new([1; 16]),
+-            RefreshTokenId::new([2; 16]),
+-        )
+-        .unwrap()
++        RefreshFamily::new(SessionFamilyId::new([1; 16]), RefreshTokenId::new([2; 16])).unwrap()
+     }
+ 
+     #[test]
+@@ -197,7 +193,10 @@ mod tests {
+             FamilyStatus::Revoked(RevocationReason::RefreshReplay)
+         );
+         assert_eq!(
+-            value.verify_active(RefreshTokenId::new([3; 16])).unwrap_err().reason(),
++            value
++                .verify_active(RefreshTokenId::new([3; 16]))
++                .unwrap_err()
++                .reason(),
+             "session_family_revoked"
+         );
+     }
+@@ -218,7 +217,10 @@ mod tests {
+         let mut value = family();
+         value.revoke(RevocationReason::Logout);
+         assert_eq!(
+-            value.verify_active(RefreshTokenId::new([2; 16])).unwrap_err().reason(),
++            value
++                .verify_active(RefreshTokenId::new([2; 16]))
++                .unwrap_err()
++                .reason(),
+             "session_family_revoked"
+         );
+     }
+diff --git a/crates/trnm-transport-core/src/lib.rs b/crates/trnm-transport-core/src/lib.rs
+index 436d63c..d941ae8 100644
+--- a/crates/trnm-transport-core/src/lib.rs
++++ b/crates/trnm-transport-core/src/lib.rs
+@@ -117,12 +117,8 @@ const fn realtime_code(code: StableCode, context: RealtimeContext) -> RealtimeEr
+         RealtimeContext::MissingPayload => RealtimeErrorCode::MissingPayload,
+         RealtimeContext::MatchNotFound => RealtimeErrorCode::MatchNotFound,
+         RealtimeContext::MatchJoinRejected => RealtimeErrorCode::MatchJoinRejected,
+-        RealtimeContext::RuntimeFunctionNotFound => {
+-            RealtimeErrorCode::RuntimeFunctionNotFound
+-        }
+-        RealtimeContext::RuntimeFunctionException => {
+-            RealtimeErrorCode::RuntimeFunctionException
+-        }
++        RealtimeContext::RuntimeFunctionNotFound => RealtimeErrorCode::RuntimeFunctionNotFound,
++        RealtimeContext::RuntimeFunctionException => RealtimeErrorCode::RuntimeFunctionException,
+         RealtimeContext::Generic => match code {
+             StableCode::Internal | StableCode::Unavailable | StableCode::DataLoss => {
+                 RealtimeErrorCode::RuntimeException
+@@ -140,9 +136,9 @@ const fn websocket_action(
+ ) -> WebSocketAction {
+     match phase {
+         TransportPhase::RequestResponse => WebSocketAction::None,
+-        TransportPhase::WebSocketHandshake => {
+-            WebSocketAction::RejectUpgrade { http_status: status }
+-        }
++        TransportPhase::WebSocketHandshake => WebSocketAction::RejectUpgrade {
++            http_status: status,
++        },
+         TransportPhase::WebSocketEstablished => match context {
+             RealtimeContext::UnrecognizedPayload | RealtimeContext::MissingPayload => {
+                 WebSocketAction::Close { code: 1002 }
+@@ -197,7 +193,10 @@ fn validate_context(code: StableCode, context: RealtimeContext) -> Result<(), Do
+         }
+         RealtimeContext::MatchNotFound => code == StableCode::NotFound,
+         RealtimeContext::MatchJoinRejected => {
+-            matches!(code, StableCode::PermissionDenied | StableCode::FailedPrecondition)
++            matches!(
++                code,
++                StableCode::PermissionDenied | StableCode::FailedPrecondition
++            )
+         }
+         RealtimeContext::RuntimeFunctionNotFound => {
+             matches!(code, StableCode::NotFound | StableCode::Unimplemented)
+@@ -255,17 +254,39 @@ mod tests {
+     #[test]
+     fn rtapi_context_codes_match_pinned_enum_values() {
+         let cases = [
+-            (RealtimeContext::UnrecognizedPayload, RealtimeErrorCode::UnrecognizedPayload),
+-            (RealtimeContext::MissingPayload, RealtimeErrorCode::MissingPayload),
+-            (RealtimeContext::MatchNotFound, RealtimeErrorCode::MatchNotFound),
+-            (RealtimeContext::MatchJoinRejected, RealtimeErrorCode::MatchJoinRejected),
+-            (RealtimeContext::RuntimeFunctionNotFound, RealtimeErrorCode::RuntimeFunctionNotFound),
+-            (RealtimeContext::RuntimeFunctionException, RealtimeErrorCode::RuntimeFunctionException),
++            (
++                RealtimeContext::UnrecognizedPayload,
++                RealtimeErrorCode::UnrecognizedPayload,
++            ),
++            (
++                RealtimeContext::MissingPayload,
++                RealtimeErrorCode::MissingPayload,
++            ),
++            (
++                RealtimeContext::MatchNotFound,
++                RealtimeErrorCode::MatchNotFound,
++            ),
++            (
++                RealtimeContext::MatchJoinRejected,
++                RealtimeErrorCode::MatchJoinRejected,
++            ),
++            (
++                RealtimeContext::RuntimeFunctionNotFound,
++                RealtimeErrorCode::RuntimeFunctionNotFound,
++            ),
++            (
++                RealtimeContext::RuntimeFunctionException,
++                RealtimeErrorCode::RuntimeFunctionException,
++            ),
+         ];
+         for (context, expected) in cases {
+             let code = match context {
+-                RealtimeContext::UnrecognizedPayload | RealtimeContext::MissingPayload => StableCode::InvalidArgument,
+-                RealtimeContext::MatchNotFound | RealtimeContext::RuntimeFunctionNotFound => StableCode::NotFound,
++                RealtimeContext::UnrecognizedPayload | RealtimeContext::MissingPayload => {
++                    StableCode::InvalidArgument
++                }
++                RealtimeContext::MatchNotFound | RealtimeContext::RuntimeFunctionNotFound => {
++                    StableCode::NotFound
++                }
+                 RealtimeContext::MatchJoinRejected => StableCode::PermissionDenied,
+                 RealtimeContext::RuntimeFunctionException => StableCode::Internal,
+                 RealtimeContext::Generic => unreachable!(),
+@@ -302,7 +323,10 @@ mod tests {
+             TransportPhase::WebSocketHandshake,
+         )
+         .unwrap();
+-        assert_eq!(mapping.websocket_action, WebSocketAction::RejectUpgrade { http_status: 401 });
++        assert_eq!(
++            mapping.websocket_action,
++            WebSocketAction::RejectUpgrade { http_status: 401 }
++        );
+     }
+ 
+     #[test]
+@@ -321,7 +345,10 @@ mod tests {
+             TransportPhase::WebSocketEstablished,
+         )
+         .unwrap();
+-        assert_eq!(pressure.websocket_action, WebSocketAction::Close { code: 1013 });
++        assert_eq!(
++            pressure.websocket_action,
++            WebSocketAction::Close { code: 1013 }
++        );
+         assert_eq!(pressure.retry, RetryAdvice::Backoff);
+     }
+ 
+@@ -334,7 +361,10 @@ mod tests {
+         )
+         .unwrap();
+         assert_eq!(mapping.realtime_code as i32, 2);
+-        assert_eq!(mapping.websocket_action, WebSocketAction::Close { code: 1002 });
++        assert_eq!(
++            mapping.websocket_action,
++            WebSocketAction::Close { code: 1002 }
++        );
+     }
+ 
+     #[test]
+@@ -354,8 +384,17 @@ mod tests {
+     #[test]
+     fn retry_classes_map_without_transport_guessing() {
+         assert_eq!(RetryAdvice::from(RetryClass::Never), RetryAdvice::None);
+-        assert_eq!(RetryAdvice::from(RetryClass::SafeImmediate), RetryAdvice::Immediate);
+-        assert_eq!(RetryAdvice::from(RetryClass::SafeBackoff), RetryAdvice::Backoff);
+-        assert_eq!(RetryAdvice::from(RetryClass::ResyncRequired), RetryAdvice::Resync);
++        assert_eq!(
++            RetryAdvice::from(RetryClass::SafeImmediate),
++            RetryAdvice::Immediate
++        );
++        assert_eq!(
++            RetryAdvice::from(RetryClass::SafeBackoff),
++            RetryAdvice::Backoff
++        );
++        assert_eq!(
++            RetryAdvice::from(RetryClass::ResyncRequired),
++            RetryAdvice::Resync
++        );
+     }
+ }
