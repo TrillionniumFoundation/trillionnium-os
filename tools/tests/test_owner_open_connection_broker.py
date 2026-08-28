@@ -118,7 +118,11 @@ class BrokerTest(unittest.TestCase):
         finally:
             first.close(); second.close()
         frames=[json.loads(x) for x in self.record.read_text().splitlines()]
-        self.assertEqual([f["kind"] for f in frames],["hello","job.start","job.inspect"])
+        self.assertEqual(frames[0]["kind"],"hello")
+        # Independent client-reader threads race before entering the single FIFO.
+        # The contract promises one dispatch per request and broker-assigned
+        # contiguous upstream sequence numbers, not cross-client socket order.
+        self.assertCountEqual([f["kind"] for f in frames[1:]],["job.start","job.inspect"])
         self.assertEqual([f["seq"] for f in frames],[0,1,2])
 
     def test_bad_token_is_rejected(self) -> None:
