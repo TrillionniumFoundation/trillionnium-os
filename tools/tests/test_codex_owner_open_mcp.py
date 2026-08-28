@@ -196,8 +196,11 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
         self.assertTrue(tools["trillionnium_job_inspect"]["annotations"]["readOnlyHint"])
         self.assertTrue(tools["trillionnium_job_wait"]["annotations"]["readOnlyHint"])
         self.assertFalse(tools["trillionnium_job_attach"]["annotations"]["readOnlyHint"])
-        self.assertTrue(tools["trillionnium_job_attach"]["annotations"]["destructiveHint"])
+        self.assertFalse(tools["trillionnium_job_attach"]["annotations"]["destructiveHint"])
+        self.assertTrue(tools["trillionnium_job_start"]["annotations"]["destructiveHint"])
         self.assertTrue(tools["trillionnium_job_start"]["annotations"]["openWorldHint"])
+        self.assertFalse(tools["trillionnium_job_resize"]["annotations"]["destructiveHint"])
+        self.assertTrue(tools["trillionnium_job_resize"]["annotations"]["openWorldHint"])
         self.assertFalse(tools["trillionnium_job_inspect"]["annotations"]["openWorldHint"])
 
     def test_duplicate_json_and_invalid_effect_arguments_fail_mechanically(self) -> None:
