@@ -51,6 +51,31 @@ def apply_repairs() -> None:
         "        drop(observe);\n",
         "",
     )
+    replace_exact(
+        "crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
+        "use std::path::PathBuf;\n",
+        "use std::os::unix::ffi::OsStrExt;\nuse std::path::PathBuf;\n",
+    )
+    replace_exact(
+        "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+        "struct RunningJob {\n"
+        "    control: Arc<ProcessControl>,\n"
+        "    generation: u64,\n"
+        "    request: JobRequest,\n",
+        "struct RunningJob {\n"
+        "    control: Arc<ProcessControl>,\n"
+        "    request: JobRequest,\n",
+    )
+    replace_exact(
+        "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+        "        let running = Arc::new(RunningJob {\n"
+        "            control,\n"
+        "            generation,\n"
+        "            request: request.request.clone(),\n",
+        "        let running = Arc::new(RunningJob {\n"
+        "            control,\n"
+        "            request: request.request.clone(),\n",
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -58,7 +83,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--apply",
         action="store_true",
-        help="apply the exact audited v3 Rust closeout replacements",
+        help="apply the exact audited v4 Rust closeout replacements",
     )
     return parser.parse_args()
 
@@ -68,7 +93,7 @@ def main() -> int:
     if not arguments.apply:
         raise SystemExit("HOLD: --apply is required")
     apply_repairs()
-    print("PASS_R5_RUST_CLOSEOUT_V3_APPLIED")
+    print("PASS_R5_RUST_CLOSEOUT_V4_APPLIED")
     return 0
 
 
