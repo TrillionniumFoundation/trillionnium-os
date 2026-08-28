@@ -1,0 +1,288 @@
+name: TrillionniumGame database profile v2 relay
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-database-profile-v2-relay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trillionniumgame-database-profile-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: feature/trillionniumgame-w1-foundation-schema-profiles-v1
+
+jobs:
+  static-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Resolve target head
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out resolved target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate static database contract
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p relay-evidence
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          python3 scripts/verify-database-profile-v2.py \
+            | tee relay-evidence/static-verification.json
+          python3 tests/database/test_database_profile_v2.py \
+            2>&1 | tee relay-evidence/static-unittest.log
+          python3 -m compileall -q scripts tests
+          git status --short > relay-evidence/git-status.txt
+          test ! -s relay-evidence/git-status.txt
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+      - name: Upload static evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-database-v2-static-${{ steps.resolve.outputs.sha }}-run-${{ github.run_number }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  postgresql-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Resolve target head
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out resolved target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Start PostgreSQL
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='postgres:17.6-alpine'
+          docker pull "$image"
+          docker image inspect --format '{{json .RepoDigests}}' "$image" \
+            > postgresql-image-digests.json
+          docker run --detach --name trnm-postgresql \
+            --env POSTGRES_PASSWORD=trnm \
+            --env POSTGRES_DB=trnm \
+            --publish 55432:5432 \
+            "$image"
+          for attempt in $(seq 1 90); do
+            if docker exec trnm-postgresql pg_isready --username postgres --dbname trnm; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs trnm-postgresql
+          exit 1
+
+      - name: Run PostgreSQL transaction smoke
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p relay-evidence
+          cp ../postgresql-image-digests.json relay-evidence/
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          python3 -m pip install --disable-pip-version-check \
+            --requirement requirements/database-profile-v2-smoke.txt
+          python3 -m pip freeze > relay-evidence/pip-freeze.txt
+          python3 scripts/run-database-profile-v2-smoke.py \
+            --profile postgresql \
+            --dsn 'postgresql://postgres:trnm@127.0.0.1:55432/trnm?sslmode=disable' \
+            --output relay-evidence/postgresql-runtime-smoke.json
+          docker exec trnm-postgresql pg_dump \
+            --username postgres --dbname trnm --schema-only --no-owner --no-privileges \
+            > relay-evidence/postgresql-schema.sql
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+      - name: Capture PostgreSQL logs
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p source/relay-evidence
+          docker logs trnm-postgresql > source/relay-evidence/postgresql-container.log 2>&1 || true
+          docker inspect trnm-postgresql > source/relay-evidence/postgresql-container-inspect.json 2>&1 || true
+          find source/relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > source/relay-evidence/SHA256SUMS || true
+
+      - name: Upload PostgreSQL evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-database-v2-postgresql-${{ steps.resolve.outputs.sha }}-run-${{ github.run_number }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  cockroachdb-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Resolve target head
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out resolved target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Start CockroachDB
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='cockroachdb/cockroach:v25.1.6'
+          docker pull "$image"
+          docker image inspect --format '{{json .RepoDigests}}' "$image" \
+            > cockroachdb-image-digests.json
+          docker run --detach --name trnm-cockroachdb \
+            --publish 26257:26257 --publish 58080:8080 \
+            "$image" start-single-node --insecure --store=type=mem,size=1GiB
+          for attempt in $(seq 1 120); do
+            if docker exec trnm-cockroachdb cockroach sql --insecure \
+              --execute 'SELECT 1' >/dev/null 2>&1; then
+              docker exec trnm-cockroachdb cockroach sql --insecure \
+                --execute 'CREATE DATABASE IF NOT EXISTS trnm'
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs trnm-cockroachdb
+          exit 1
+
+      - name: Run CockroachDB transaction smoke
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p relay-evidence
+          cp ../cockroachdb-image-digests.json relay-evidence/
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          python3 -m pip install --disable-pip-version-check \
+            --requirement requirements/database-profile-v2-smoke.txt
+          python3 -m pip freeze > relay-evidence/pip-freeze.txt
+          python3 scripts/run-database-profile-v2-smoke.py \
+            --profile cockroachdb \
+            --dsn 'postgresql://root@127.0.0.1:26257/trnm?sslmode=disable' \
+            --output relay-evidence/cockroachdb-runtime-smoke.json
+          docker exec trnm-cockroachdb cockroach sql --insecure --database trnm \
+            --format=tsv --execute 'SHOW CREATE ALL TABLES' \
+            > relay-evidence/cockroachdb-schema.tsv
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+      - name: Capture CockroachDB logs
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p source/relay-evidence
+          docker logs trnm-cockroachdb > source/relay-evidence/cockroachdb-container.log 2>&1 || true
+          docker inspect trnm-cockroachdb > source/relay-evidence/cockroachdb-container-inspect.json 2>&1 || true
+          find source/relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > source/relay-evidence/SHA256SUMS || true
+
+      - name: Upload CockroachDB evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-database-v2-cockroachdb-${{ steps.resolve.outputs.sha }}-run-${{ github.run_number }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    if: always()
+    needs:
+      - static-contract
+      - postgresql-runtime
+      - cockroachdb-runtime
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out relay branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ci/trillionniumgame-exact-head-relay-v1
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Download database evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: trillionniumgame-database-v2-*-run-${{ github.run_number }}
+          path: downloaded
+          merge-multiple: false
+
+      - name: Publish immutable database evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="relay-repairs/database-v2-run-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}"
+          latest="relay-repairs/latest-database-v2"
+          mkdir -p "$destination"
+          rm -rf "$latest"
+          mkdir -p "$latest"
+          cp -R downloaded/. "$destination/"
+          cp -R downloaded/. "$latest/"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$destination/run-id.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$destination/relay-head.txt"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$latest/run-id.txt"
+          find "$destination" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$destination/SHA256SUMS"
+          find "$latest" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$latest/SHA256SUMS"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$destination" "$latest"
+          git commit -m "ci(relay): publish database profile v2 evidence run ${GITHUB_RUN_NUMBER}"
+          git push origin HEAD:ci/trillionniumgame-exact-head-relay-v1
