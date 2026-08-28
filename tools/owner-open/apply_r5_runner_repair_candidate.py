@@ -281,6 +281,12 @@ def repair_python_source_and_environment_contracts() -> None:
     )
 
     replace_exact(
+        "tools/owner-open/supervise_codex_mcp_qualification.py",
+        "    if not 1 <= result.timeout <= 3600 or not 0.1 <= result.cleanup_timeout <= 120:\n",
+        "    if not 0.1 <= result.timeout <= 3600 or not 0.1 <= result.cleanup_timeout <= 120:\n",
+    )
+
+    replace_exact(
         "tools/materialize_p01_final_daemon_artifact.py",
         "CONTROL_REPOSITORY = REPOSITORY.parent\n",
         "CONTROL_REPOSITORY = REPOSITORY\n",
@@ -292,10 +298,10 @@ def repair_rust_sources() -> None:
     replace_exact(
         event_store,
         "    let read = reader\n"
-        "        .take(maximum as u64 + 2)\n",
-        "    let read = reader\n"
-        "        .by_ref()\n"
-        "        .take(maximum as u64 + 2)\n",
+        "        .take(maximum as u64 + 2)\n"
+        "        .read_until(b'\\n', &mut line)?;\n",
+        "    let mut limited = (&mut *reader).take(maximum as u64 + 2);\n"
+        "    let read = limited.read_until(b'\\n', &mut line)?;\n",
     )
     replace_exact(
         event_store,
@@ -313,6 +319,21 @@ def repair_rust_sources() -> None:
         "crates/trillionnium-owner-open-runtime/src/lib.rs",
         "use std::sync::mpsc::{Receiver, SyncSender, TryRecvError, sync_channel};\n",
         "use std::sync::mpsc::{SyncSender, sync_channel};\n",
+    )
+    replace_exact(
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs",
+        "use std::path::PathBuf;\n",
+        "",
+    )
+    replace_exact(
+        "crates/trillionnium-owner-open-call-registry/src/lib.rs",
+        "    #[must_use]\n    pub fn len(&self) -> Result<usize> {\n",
+        "    pub fn len(&self) -> Result<usize> {\n",
+    )
+    replace_exact(
+        "crates/trillionnium-owner-open-call-registry/src/lib.rs",
+        "    #[must_use]\n    pub fn is_empty(&self) -> Result<bool> {\n",
+        "    pub fn is_empty(&self) -> Result<bool> {\n",
     )
 
 
