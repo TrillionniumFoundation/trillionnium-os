@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import shutil
 import socket
 import subprocess
 import sys
@@ -103,10 +104,16 @@ if "fail-exactly-once" in sys.argv[1:]:
 
 
 class SelectedAdbQualificationTest(unittest.TestCase):
+    QUALIFIER = QUALIFIER
+    RELAY = RELAY
+
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.root.chmod(0o700)
+        self.python = self.root / "python"
+        shutil.copyfile(Path(sys.executable).resolve(), self.python)
+        self.python.chmod(0o700)
         self.workspace = self.root / "workspace"
         self.state = self.root / "state"
         self.workspace.mkdir(mode=0o700)
@@ -138,16 +145,16 @@ class SelectedAdbQualificationTest(unittest.TestCase):
     def command(self, plan: Path, evidence: Path) -> list[str]:
         return [
             str(Path(sys.executable).resolve()),
-            str(QUALIFIER),
+            str(self.QUALIFIER),
             "--execute",
             "--plan",
             str(plan),
             "--adb",
             str(self.adb),
             "--python",
-            str(Path(sys.executable).resolve()),
+            str(self.python),
             "--relay",
-            str(RELAY),
+            str(self.RELAY),
             "--upstream-port",
             str(self.server.port),
             "--workspace",

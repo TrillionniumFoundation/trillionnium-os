@@ -496,8 +496,8 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
 
 fn read_record_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option<(Vec<u8>, u64)>> {
     let mut line = Vec::new();
-    let read = reader
-        .take(maximum as u64 + 2)
+    let mut limited = (&mut *reader).take(maximum as u64 + 2);
+    let read = limited
         .read_until(b'\n', &mut line)
         .map_err(|error| EventStoreError::Io(error.to_string()))?;
     if read == 0 {
@@ -759,10 +759,10 @@ fn lock_writer(file: &File) -> Result<()> {
         return Ok(());
     }
     let error = std::io::Error::last_os_error();
-    if matches!(
-        error.raw_os_error(),
-        Some(libc::EWOULDBLOCK) | Some(libc::EAGAIN)
-    ) {
+    if error
+        .raw_os_error()
+        .is_some_and(|code| code == libc::EWOULDBLOCK || code == libc::EAGAIN)
+    {
         Err(EventStoreError::WriterBusy)
     } else {
         Err(EventStoreError::Io(error.to_string()))

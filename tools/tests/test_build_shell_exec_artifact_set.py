@@ -7,6 +7,7 @@ import inspect
 import json
 import os
 import platform
+import shutil
 import stat
 import struct
 import subprocess
@@ -1489,8 +1490,12 @@ esac
         "supervised execution is Linux-host specific",
     )
     def test_supervisor_bounds_output_and_kills_surviving_descendants(self) -> None:
+        private_python = tempfile.TemporaryDirectory()
+        python_path = Path(private_python.name) / "python"
+        shutil.copyfile(Path(sys.executable).resolve(), python_path)
+        python_path.chmod(0o700)
         python = BUILD.raw_primitives.open_retained_executable(
-            Path(sys.executable).resolve(), "test Python"
+            python_path, "test Python"
         )
         environment = {"LANG": "C", "LC_ALL": "C", "PATH": "", "TZ": "UTC"}
         try:
@@ -1522,6 +1527,7 @@ esac
                 )
         finally:
             python.close()
+            private_python.cleanup()
 
 
 if __name__ == "__main__":

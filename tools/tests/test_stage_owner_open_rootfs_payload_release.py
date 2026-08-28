@@ -109,7 +109,9 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
             "--json",
         ]
 
-    def run(self, plan: Path, output: Path) -> subprocess.CompletedProcess[bytes]:
+    def run_command(
+        self, plan: Path, output: Path
+    ) -> subprocess.CompletedProcess[bytes]:
         return subprocess.run(
             self.command(plan, output),
             stdin=subprocess.DEVNULL,
@@ -123,7 +125,7 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         plan = self.write_plan(self.plan_value())
         output = self.outputs / "payload"
         parent_mode = stat.S_IMODE(self.outputs.lstat().st_mode)
-        completed = self.run(plan, output)
+        completed = self.run_command(plan, output)
         self.assertEqual(
             completed.returncode,
             0,
@@ -152,7 +154,7 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         value["entries"][0]["expected_sha256"] = "0" * 64
         plan = self.write_plan(value)
         output = self.outputs / "bad-digest"
-        completed = self.run(plan, output)
+        completed = self.run_command(plan, output)
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"digest does not match", completed.stderr)
         self.assertFalse(output.exists())
@@ -164,7 +166,7 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         value["entries"][0]["expected_sha256"] = digest(self.host)
         plan = self.write_plan(value)
         output = self.outputs / "wrong-arch"
-        completed = self.run(plan, output)
+        completed = self.run_command(plan, output)
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"must target AArch64", completed.stderr)
         self.assertFalse(output.exists())
@@ -181,7 +183,7 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
             value["entries"][1]["destination"] = destination
             plan = self.write_plan(value, f"plan-{index}.json")
             output = self.outputs / f"bad-path-{index}"
-            completed = self.run(plan, output)
+            completed = self.run_command(plan, output)
             self.assertNotEqual(completed.returncode, 0)
             self.assertFalse(output.exists())
 
@@ -190,7 +192,7 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         os.link(self.host, link)
         plan = self.write_plan(self.plan_value(), "hardlink-plan.json")
         output = self.outputs / "hardlink"
-        completed = self.run(plan, output)
+        completed = self.run_command(plan, output)
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"stable bounded private file", completed.stderr)
         self.assertFalse(output.exists())
@@ -201,7 +203,7 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         value["entries"][0]["expected_sha256"] = digest(self.host)
         plan = self.write_plan(value, "writable-plan.json")
         output = self.outputs / "writable"
-        completed = self.run(plan, output)
+        completed = self.run_command(plan, output)
         self.assertNotEqual(completed.returncode, 0)
         self.assertFalse(output.exists())
 
@@ -211,7 +213,7 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
             value["entries"][1][field] = value["entries"][0][field]
             plan = self.write_plan(value, f"duplicate-{field}.json")
             output = self.outputs / f"duplicate-{field}"
-            completed = self.run(plan, output)
+            completed = self.run_command(plan, output)
             self.assertNotEqual(completed.returncode, 0)
             self.assertFalse(output.exists())
 

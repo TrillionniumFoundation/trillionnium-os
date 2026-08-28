@@ -10,17 +10,17 @@ from tools.tests import test_adb_smart_socket_relay_selected as relay_suite
 from tools.tests import test_qualify_owner_open_adb_selected as adb_suite
 
 ROOT = Path(__file__).resolve().parents[1] / "owner-open"
-relay_suite.RELAY = ROOT / "adb_smart_socket_relay_release.py"
-adb_suite.RELAY = ROOT / "adb_smart_socket_relay_release.py"
-adb_suite.QUALIFIER = ROOT / "qualify_owner_open_adb_release.py"
+RELEASE_RELAY = ROOT / "adb_smart_socket_relay_release.py"
+RELEASE_QUALIFIER = ROOT / "qualify_owner_open_adb_release.py"
 
 
 class ReleaseAdbRelayTest(relay_suite.SelectedAdbSmartSocketRelayTest):
-    pass
+    RELAY = RELEASE_RELAY
 
 
 class ReleaseAdbQualificationTest(adb_suite.SelectedAdbQualificationTest):
-    pass
+    RELAY = RELEASE_RELAY
+    QUALIFIER = RELEASE_QUALIFIER
 
 
 class ReleaseCodexSupervisorPreflightTest(unittest.TestCase):

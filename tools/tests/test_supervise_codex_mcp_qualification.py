@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -58,6 +59,9 @@ class SuperviseCodexMcpQualificationTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.root.chmod(0o700)
+        self.python = self.root / "python"
+        shutil.copyfile(Path(sys.executable).resolve(), self.python)
+        self.python.chmod(0o700)
         self.home = self.root / "codex-home"
         self.workspace = self.root / "workspace"
         self.home.mkdir(mode=0o700)
@@ -84,7 +88,7 @@ class SuperviseCodexMcpQualificationTest(unittest.TestCase):
             str(SUPERVISOR),
             "--execute",
             "--python",
-            str(Path(sys.executable).resolve()),
+            str(self.python),
             "--qualifier",
             str(self.qualifier),
             "--codex",

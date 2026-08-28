@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -50,6 +51,9 @@ class ReleaseCodexQualificationSupervisorTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.root.chmod(0o700)
+        self.python = self.root / "python"
+        shutil.copyfile(Path(sys.executable).resolve(), self.python)
+        self.python.chmod(0o700)
         self.home = self.root / "home"
         self.workspace = self.root / "workspace"
         self.evidence_parent = self.root / "evidence"
@@ -77,7 +81,7 @@ class ReleaseCodexQualificationSupervisorTest(unittest.TestCase):
             str(SUPERVISOR),
             "--execute",
             "--python",
-            str(Path(sys.executable).resolve()),
+            str(self.python),
             "--qualifier",
             str(self.qualifier),
             "--codex",
@@ -99,7 +103,9 @@ class ReleaseCodexQualificationSupervisorTest(unittest.TestCase):
             str(self.root / "trace.py"),
         ]
 
-    def run(self, evidence: Path, *, timeout: str = "5", **environment: str):
+    def run_command(
+        self, evidence: Path, *, timeout: str = "5", **environment: str
+    ):
         env = self.environment.copy()
         env.update(environment)
         return subprocess.run(
@@ -122,7 +128,7 @@ class ReleaseCodexQualificationSupervisorTest(unittest.TestCase):
 
     def test_success_requires_passed_terminal_and_restored_config(self) -> None:
         evidence = self.evidence_parent / "pass"
-        completed = self.run(evidence)
+        completed = self.run_command(evidence)
         self.assertEqual(
             completed.returncode,
             0,
@@ -137,7 +143,7 @@ class ReleaseCodexQualificationSupervisorTest(unittest.TestCase):
 
     def test_inner_zero_exit_with_nonpassed_terminal_fails(self) -> None:
         evidence = self.evidence_parent / "nonpass"
-        completed = self.run(evidence, FAKE_STATUS="failed_cleanup")
+        completed = self.run_command(evidence, FAKE_STATUS="failed_cleanup")
         self.assertNotEqual(completed.returncode, 0)
         self.assert_restored()
         report = self.report(evidence)
@@ -146,7 +152,7 @@ class ReleaseCodexQualificationSupervisorTest(unittest.TestCase):
     def test_timeout_kills_group_and_restores_config(self) -> None:
         evidence = self.evidence_parent / "timeout"
         started = time.monotonic()
-        completed = self.run(evidence, timeout="1", FAKE_HANG="1")
+        completed = self.run_command(evidence, timeout="1", FAKE_HANG="1")
         self.assertLess(time.monotonic() - started, 8)
         self.assertNotEqual(completed.returncode, 0)
         self.assert_restored()

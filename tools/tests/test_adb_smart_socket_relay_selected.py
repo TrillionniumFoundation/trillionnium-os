@@ -60,6 +60,8 @@ class EchoServer:
 
 
 class SelectedAdbSmartSocketRelayTest(unittest.TestCase):
+    RELAY = RELAY
+
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -76,7 +78,7 @@ class SelectedAdbSmartSocketRelayTest(unittest.TestCase):
         child = subprocess.Popen(
             [
                 str(Path(sys.executable).resolve()),
-                str(RELAY),
+                str(self.RELAY),
                 "--listen-port",
                 "0",
                 "--upstream-port",
@@ -148,20 +150,40 @@ class SelectedAdbSmartSocketRelayTest(unittest.TestCase):
             b"\x00\xffunknown-service\n"
             + os.urandom(131072)
         )
+        terminal = None
         try:
             self.assertEqual(self.exchange(descriptor, payload), payload)
+            deadline = time.monotonic() + 3
+            while time.monotonic() < deadline:
+                records = [
+                    json.loads(line)
+                    for line in events.read_text().splitlines()
+                ]
+                terminal = next(
+                    (
+                        item
+                        for item in records
+                        if item["kind"] == "connection_terminal"
+                    ),
+                    None,
+                )
+                if terminal is not None:
+                    break
+                time.sleep(0.02)
         finally:
             _stdout, stderr = self.stop_relay(child)
         self.assertEqual(stderr, b"")
         self.assertEqual(
             descriptor["selected_entry"],
-            "tools/owner-open/adb_smart_socket_relay_selected.py",
+            f"tools/owner-open/{self.RELAY.name}",
         )
         self.assertTrue(descriptor["byte_transparent"])
         self.assertFalse(descriptor["adb_protocol_parsed"])
         self.assertFalse(descriptor["argv_or_serial_injected"])
-        records = [json.loads(line) for line in events.read_text().splitlines()]
-        terminal = next(item for item in records if item["kind"] == "connection_terminal")
+        if terminal is None:
+            self.fail(
+                "relay did not durably record connection_terminal before shutdown"
+            )
         self.assertEqual(terminal["client_to_upstream_bytes"], len(payload))
         self.assertEqual(terminal["upstream_to_client_bytes"], len(payload))
         self.assertFalse(terminal["payload_logged"])
@@ -195,7 +217,7 @@ class SelectedAdbSmartSocketRelayTest(unittest.TestCase):
             completed = subprocess.run(
                 [
                     str(Path(sys.executable).resolve()),
-                    str(RELAY),
+                    str(self.RELAY),
                     "--listen-port",
                     "0",
                     "--upstream-port",

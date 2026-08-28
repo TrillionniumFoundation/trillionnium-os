@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import shutil
 import socket
 import subprocess
 import sys
@@ -105,6 +106,9 @@ class QualifyOwnerOpenAdbTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         self.root.chmod(0o700)
+        self.python = self.root / "python"
+        shutil.copyfile(Path(sys.executable).resolve(), self.python)
+        self.python.chmod(0o700)
         self.workspace = self.root / "workspace"
         self.state = self.root / "state"
         self.workspace.mkdir(mode=0o700)
@@ -143,7 +147,7 @@ class QualifyOwnerOpenAdbTest(unittest.TestCase):
             "--adb",
             str(self.adb),
             "--python",
-            str(Path(sys.executable).resolve()),
+            str(self.python),
             "--relay",
             str(RELAY),
             "--upstream-port",

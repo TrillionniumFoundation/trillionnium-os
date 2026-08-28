@@ -88,10 +88,11 @@ done
 
 [[ -n "$SERIAL" ]] || { echo "--serial is required" >&2; exit 64; }
 [[ -n "$MODE" ]] || { echo "select exactly one of --apply or --remove" >&2; exit 64; }
-[[ "$SERIAL" =~ ^[A-Za-z0-9._:\[\]-]{1,128}$ ]] || {
+if [[ ! "$SERIAL" =~ ^[A-Za-z0-9._:-]{1,128}$ ]] &&
+   [[ ! "$SERIAL" =~ ^\[[0-9A-Fa-f:]+\]:[0-9]{1,5}$ ]]; then
   echo "serial is empty or malformed" >&2
   exit 64
-}
+fi
 for value in "$DEVICE_PORT" "$HOST_PORT"; do
   [[ "$value" =~ ^[0-9]+$ ]] || { echo "ports must be decimal integers" >&2; exit 64; }
   ((value >= 1 && value <= 65535)) || { echo "ports must be in 1..65535" >&2; exit 64; }

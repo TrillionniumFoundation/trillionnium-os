@@ -343,7 +343,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     result = parser.parse_args(argv)
     if not result.execute:
         parser.error("--execute is required")
-    if not 1 <= result.timeout <= 3600 or not 0.1 <= result.cleanup_timeout <= 120:
+    if not 0.1 <= result.timeout <= 3600 or not 0.1 <= result.cleanup_timeout <= 120:
         parser.error("qualification or cleanup timeout is outside the finite bound")
     return result
 
