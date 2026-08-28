@@ -118,3 +118,19 @@ jobs:
             -p trillionnium-owner-open-job-runtime \
             --test diagnostic_journal_recovery \
             -- --nocapture
+
+      - name: Reproduce the real recovery test alone and in its complete binary
+        run: |
+          set -Eeuo pipefail
+          for iteration in $(seq 1 20); do
+            echo "focused iteration=$iteration"
+            cargo test --locked \
+              -p trillionnium-owner-open-job-runtime \
+              --test runtime \
+              accepted_without_terminal_is_unknown_and_not_redispatched \
+              -- --exact --nocapture
+          done
+          cargo test --locked \
+            -p trillionnium-owner-open-job-runtime \
+            --test runtime \
+            -- --nocapture
