@@ -19,6 +19,7 @@ from owner_open_mcp_common import (
 from owner_open_mcp_host import HostClient
 
 MAX_WAIT_SECONDS = 300.0
+CONNECTION_INFO_TOOL = "trillionnium_connection_info"
 
 
 def _schema(properties: dict[str, Any], required: list[str]) -> dict[str, Any]:
@@ -30,8 +31,14 @@ def _schema(properties: dict[str, Any], required: list[str]) -> dict[str, Any]:
     }
 
 
-def _common() -> dict[str, Any]:
-    return {"job_id": {"type": "string"}, "request_sha256": {"type": "string"}}
+def _common(*, live: bool = False) -> dict[str, Any]:
+    value: dict[str, Any] = {
+        "job_id": {"type": "string"},
+        "request_sha256": {"type": "string"},
+    }
+    if live:
+        value["bridge_instance_id"] = {"type": "string"}
+    return value
 
 
 def _tool(
@@ -59,12 +66,21 @@ def _tool(
 
 TOOLS = [
     _tool(
+        CONNECTION_INFO_TOOL,
+        "Inspect owner-open MCP connection",
+        "Return the live bridge identity required by mutating job tools.",
+        _schema({}, []),
+        read_only=True,
+        destructive=False,
+        open_world=False,
+    ),
+    _tool(
         "trillionnium_job_start",
         "Start owner-open shell job",
-        "Start or attach to one exact shell.job. Stable job_id and operation_id prevent blind redispatch.",
+        "Start one exact pipe or PTY job on this bridge instance.",
         _schema(
             {
-                **_common(),
+                **_common(live=True),
                 "operation_id": {"type": "string"},
                 "mode": {"type": "string", "enum": ["pipe", "pty"]},
                 "command": {"type": "string"},
@@ -73,14 +89,17 @@ TOOLS = [
                 "env": {"type": "object", "additionalProperties": {"type": ["string", "null"]}},
                 "stdin": {},
                 "pty": _schema(
-                    {"rows": {"type": "integer", "minimum": 1, "maximum": 65535}, "cols": {"type": "integer", "minimum": 1, "maximum": 65535}},
+                    {
+                        "rows": {"type": "integer", "minimum": 1, "maximum": 65535},
+                        "cols": {"type": "integer", "minimum": 1, "maximum": 65535},
+                    },
                     ["rows", "cols"],
                 ),
                 "target_id": {"type": "string"},
                 "binding_fingerprint": {"type": "string"},
                 "extensions": {"type": "object"},
             },
-            ["job_id", "operation_id", "mode"],
+            ["job_id", "bridge_instance_id", "operation_id", "mode"],
         ),
         read_only=False,
         destructive=True,
@@ -89,8 +108,15 @@ TOOLS = [
     _tool(
         "trillionnium_job_inspect",
         "Inspect owner-open job",
-        "Read bounded resident and durable job observations without dispatching an effect.",
-        _schema({**_common(), "inclusive_cursor": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 256}}, ["job_id"]),
+        "Read bounded resident and durable observations without dispatching an effect.",
+        _schema(
+            {
+                **_common(),
+                "inclusive_cursor": {"type": "integer", "minimum": 0},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 256},
+            },
+            ["job_id"],
+        ),
         read_only=True,
         destructive=False,
         open_world=False,
@@ -98,8 +124,16 @@ TOOLS = [
     _tool(
         "trillionnium_job_attach",
         "Attach to owner-open job",
-        "Register one live attachment and return bounded observations. Cross-Host FD adoption is not implied.",
-        _schema({**_common(), "attachment_id": {"type": "string"}, "inclusive_cursor": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 256}}, ["job_id", "attachment_id"]),
+        "Register one live attachment owned by this bridge instance.",
+        _schema(
+            {
+                **_common(live=True),
+                "attachment_id": {"type": "string"},
+                "inclusive_cursor": {"type": "integer", "minimum": 0},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 256},
+            },
+            ["job_id", "bridge_instance_id", "attachment_id"],
+        ),
         read_only=False,
         destructive=False,
         open_world=False,
@@ -107,8 +141,11 @@ TOOLS = [
     _tool(
         "trillionnium_job_detach",
         "Detach from owner-open job",
-        "Remove one attachment without terminating the job.",
-        _schema({**_common(), "attachment_id": {"type": "string"}}, ["job_id", "attachment_id"]),
+        "Remove one attachment owned by this bridge instance without terminating the job.",
+        _schema(
+            {**_common(live=True), "attachment_id": {"type": "string"}},
+            ["job_id", "bridge_instance_id", "attachment_id"],
+        ),
         read_only=False,
         destructive=False,
         open_world=False,
@@ -116,8 +153,11 @@ TOOLS = [
     _tool(
         "trillionnium_job_write",
         "Write owner-open job stdin",
-        "Write exact UTF-8 or base64 bytes. operation_id binds accepted-before-effect durability.",
-        _schema({**_common(), "operation_id": {"type": "string"}, "data": {}}, ["job_id", "operation_id", "data"]),
+        "Write exact UTF-8 or base64 bytes using a stable operation ID.",
+        _schema(
+            {**_common(live=True), "operation_id": {"type": "string"}, "data": {}},
+            ["job_id", "bridge_instance_id", "operation_id", "data"],
+        ),
         read_only=False,
         destructive=True,
         open_world=True,
@@ -125,8 +165,16 @@ TOOLS = [
     _tool(
         "trillionnium_job_resize",
         "Resize owner-open PTY",
-        "Apply exact non-zero PTY rows and columns using a stable operation_id.",
-        _schema({**_common(), "operation_id": {"type": "string"}, "rows": {"type": "integer", "minimum": 1, "maximum": 65535}, "cols": {"type": "integer", "minimum": 1, "maximum": 65535}}, ["job_id", "operation_id", "rows", "cols"]),
+        "Resize one live PTY through this bridge instance.",
+        _schema(
+            {
+                **_common(live=True),
+                "operation_id": {"type": "string"},
+                "rows": {"type": "integer", "minimum": 1, "maximum": 65535},
+                "cols": {"type": "integer", "minimum": 1, "maximum": 65535},
+            },
+            ["job_id", "bridge_instance_id", "operation_id", "rows", "cols"],
+        ),
         read_only=False,
         destructive=False,
         open_world=True,
@@ -134,8 +182,11 @@ TOOLS = [
     _tool(
         "trillionnium_job_close_stdin",
         "Close owner-open job stdin",
-        "Close pipe stdin or send PTY EOT. Unknown outcomes are not retried automatically.",
-        _schema({**_common(), "operation_id": {"type": "string"}}, ["job_id", "operation_id"]),
+        "Close pipe stdin or send PTY EOT using a stable operation ID.",
+        _schema(
+            {**_common(live=True), "operation_id": {"type": "string"}},
+            ["job_id", "bridge_instance_id", "operation_id"],
+        ),
         read_only=False,
         destructive=True,
         open_world=True,
@@ -143,8 +194,15 @@ TOOLS = [
     _tool(
         "trillionnium_job_kill",
         "Signal owner-open job",
-        "Signal the job process group with a stable operation_id.",
-        _schema({**_common(), "operation_id": {"type": "string"}, "signal": {"type": "integer", "minimum": 1, "maximum": 128}}, ["job_id", "operation_id"]),
+        "Signal the live job process group using a stable operation ID.",
+        _schema(
+            {
+                **_common(live=True),
+                "operation_id": {"type": "string"},
+                "signal": {"type": "integer", "minimum": 1, "maximum": 128},
+            },
+            ["job_id", "bridge_instance_id", "operation_id"],
+        ),
         read_only=False,
         destructive=True,
         open_world=True,
@@ -153,7 +211,16 @@ TOOLS = [
         "trillionnium_job_wait",
         "Wait for owner-open job observation",
         "Poll read-only job.inspect until terminal observation or bounded timeout.",
-        _schema({**_common(), "inclusive_cursor": {"type": "integer", "minimum": 0}, "limit": {"type": "integer", "minimum": 1, "maximum": 256}, "timeout_seconds": {"type": "number", "minimum": 0, "maximum": 300}, "poll_interval_ms": {"type": "integer", "minimum": 10, "maximum": 5000}}, ["job_id"]),
+        _schema(
+            {
+                **_common(),
+                "inclusive_cursor": {"type": "integer", "minimum": 0},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 256},
+                "timeout_seconds": {"type": "number", "minimum": 0, "maximum": 300},
+                "poll_interval_ms": {"type": "integer", "minimum": 10, "maximum": 5000},
+            },
+            ["job_id"],
+        ),
         read_only=True,
         destructive=False,
         open_world=False,
@@ -163,8 +230,33 @@ TOOL_NAMES = {item["name"] for item in TOOLS}
 
 
 class JobBridge:
-    def __init__(self, host: HostClient, scope: Scope) -> None:
-        self.host, self.scope = host, scope
+    def __init__(self, host: HostClient, scope: Scope, bridge_instance_id: str) -> None:
+        self.host = host
+        self.scope = scope
+        self.bridge_instance_id = require_id(bridge_instance_id, "bridge_instance_id")
+
+    def connection_info(self) -> dict[str, Any]:
+        return {
+            "schema": "org.trillionnium.owner-open.mcp-connection.v1",
+            "bridge_instance_id": self.bridge_instance_id,
+            "scope": self.scope.payload(),
+            "connection_model": {
+                "one_host_process_per_bridge": True,
+                "one_serial_host_transaction_stream": True,
+                "mutating_tools_require_exact_bridge_instance_id": True,
+                "durable_cross_process_reinspect": True,
+                "cross_process_live_descriptor_control": False,
+                "automatic_redispatch": False,
+            },
+        }
+
+    def require_current_connection(self, args: dict[str, Any]) -> None:
+        claimed = require_id(args.get("bridge_instance_id"), "bridge_instance_id")
+        if claimed != self.bridge_instance_id:
+            raise InvalidArguments(
+                "bridge_instance_id does not match this live MCP/Host connection; "
+                "use trillionnium_connection_info and never reuse a stale live-control identity"
+            )
 
     def common(self, args: dict[str, Any]) -> tuple[str, dict[str, Any]]:
         job_id = require_id(args.get("job_id"), "job_id")
@@ -179,6 +271,7 @@ class JobBridge:
         return {
             "schema": "org.trillionnium.owner-open.mcp-job-result.v1",
             "job_id": job_id,
+            "bridge_instance_id": self.bridge_instance_id,
             "scope": self.scope.payload(),
             "automatic_redispatch": False,
             **transaction,
@@ -186,27 +279,29 @@ class JobBridge:
 
     def call(self, name: str, value: Any, cancelled: threading.Event) -> dict[str, Any]:
         args = require_object(value, "tool arguments")
-        if name == "trillionnium_job_start":
-            return self.start(args, cancelled)
+        if name == CONNECTION_INFO_TOOL:
+            if args:
+                raise InvalidArguments("trillionnium_connection_info takes no arguments")
+            return self.connection_info()
+        dispatch = {
+            "trillionnium_job_start": self.start,
+            "trillionnium_job_detach": self.detach,
+            "trillionnium_job_write": lambda a, c: self.effect(a, c, "job.write", data=True),
+            "trillionnium_job_resize": lambda a, c: self.effect(a, c, "job.resize", resize=True),
+            "trillionnium_job_close_stdin": lambda a, c: self.effect(a, c, "job.close_stdin"),
+            "trillionnium_job_kill": lambda a, c: self.effect(a, c, "job.kill", signal=True),
+            "trillionnium_job_wait": self.wait,
+        }
         if name == "trillionnium_job_inspect":
             return self.inspect(args, cancelled, "job.inspect", "job.inspect.result")
         if name == "trillionnium_job_attach":
             return self.inspect(args, cancelled, "job.attach", "job.attach.result")
-        if name == "trillionnium_job_detach":
-            return self.detach(args, cancelled)
-        if name == "trillionnium_job_write":
-            return self.effect(args, cancelled, "job.write", data=True)
-        if name == "trillionnium_job_resize":
-            return self.effect(args, cancelled, "job.resize", resize=True)
-        if name == "trillionnium_job_close_stdin":
-            return self.effect(args, cancelled, "job.close_stdin")
-        if name == "trillionnium_job_kill":
-            return self.effect(args, cancelled, "job.kill", signal=True)
-        if name == "trillionnium_job_wait":
-            return self.wait(args, cancelled)
+        if name in dispatch:
+            return dispatch[name](args, cancelled)
         raise InvalidArguments(f"unknown tool {name}")
 
     def start(self, args: dict[str, Any], cancelled: threading.Event) -> dict[str, Any]:
+        self.require_current_connection(args)
         job_id, payload = self.common(args)
         payload.update(
             operation_id=require_id(args.get("operation_id"), "operation_id"),
@@ -224,7 +319,9 @@ class JobBridge:
                 raise InvalidArguments("command must be nonempty and NUL-free")
             payload["command"] = command
         else:
-            if not isinstance(argv, list) or not argv or any(not isinstance(item, str) or not item or "\0" in item for item in argv):
+            if not isinstance(argv, list) or not argv or any(
+                not isinstance(item, str) or not item or "\0" in item for item in argv
+            ):
                 raise InvalidArguments("argv must contain nonempty NUL-free strings")
             payload["argv"] = list(argv)
         if "cwd" in args:
@@ -262,21 +359,42 @@ class JobBridge:
                 payload[key] = item
         return self.result(
             job_id,
-            self.host.transact("job.start", payload, expected={"job.start.result"}, job_id=job_id, cancelled=cancelled),
+            self.host.transact(
+                "job.start", payload, expected={"job.start.result"}, job_id=job_id, cancelled=cancelled
+            ),
         )
 
-    def inspect(self, args: dict[str, Any], cancelled: threading.Event, kind: str, expected: str) -> dict[str, Any]:
+    def inspect(
+        self,
+        args: dict[str, Any],
+        cancelled: threading.Event,
+        kind: str,
+        expected: str,
+    ) -> dict[str, Any]:
+        if kind == "job.attach":
+            self.require_current_connection(args)
         job_id, payload = self.common(args)
-        payload["inclusive_cursor"] = require_int(args.get("inclusive_cursor", 0), "inclusive_cursor", 0, (1 << 63) - 1)
+        payload["inclusive_cursor"] = require_int(
+            args.get("inclusive_cursor", 0), "inclusive_cursor", 0, (1 << 63) - 1
+        )
         payload["limit"] = require_int(args.get("limit", 128), "limit", 1, 256)
         if kind == "job.attach":
             payload["attachment_id"] = require_id(args.get("attachment_id"), "attachment_id")
-        return self.result(job_id, self.host.transact(kind, payload, expected={expected}, job_id=job_id, cancelled=cancelled))
+        return self.result(
+            job_id,
+            self.host.transact(kind, payload, expected={expected}, job_id=job_id, cancelled=cancelled),
+        )
 
     def detach(self, args: dict[str, Any], cancelled: threading.Event) -> dict[str, Any]:
+        self.require_current_connection(args)
         job_id, payload = self.common(args)
         payload["attachment_id"] = require_id(args.get("attachment_id"), "attachment_id")
-        return self.result(job_id, self.host.transact("job.detach", payload, expected={"job.detach.result"}, job_id=job_id, cancelled=cancelled))
+        return self.result(
+            job_id,
+            self.host.transact(
+                "job.detach", payload, expected={"job.detach.result"}, job_id=job_id, cancelled=cancelled
+            ),
+        )
 
     def effect(
         self,
@@ -288,6 +406,7 @@ class JobBridge:
         resize: bool = False,
         signal: bool = False,
     ) -> dict[str, Any]:
+        self.require_current_connection(args)
         job_id, payload = self.common(args)
         payload["operation_id"] = require_id(args.get("operation_id"), "operation_id")
         if data:
@@ -297,7 +416,12 @@ class JobBridge:
             payload["cols"] = require_int(args.get("cols"), "cols", 1, 65535)
         if signal:
             payload["signal"] = require_int(args.get("signal", 15), "signal", 1, 128)
-        return self.result(job_id, self.host.transact(kind, payload, expected={"job.control.result"}, job_id=job_id, cancelled=cancelled))
+        return self.result(
+            job_id,
+            self.host.transact(
+                kind, payload, expected={"job.control.result"}, job_id=job_id, cancelled=cancelled
+            ),
+        )
 
     def wait(self, args: dict[str, Any], cancelled: threading.Event) -> dict[str, Any]:
         raw_timeout = args.get("timeout_seconds", 60.0)
