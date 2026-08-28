@@ -1,0 +1,97 @@
+name: TrillionniumGame repaired exact heads
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths:
+      - '.github/workflows/trillionniumgame-repaired-heads.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trillionniumgame-repaired-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: ${{ matrix.label }} / exact clean source
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: pr22-foundation
+            ref: 3d258cbfb27beba7cdab95361a8222302a598ffb
+          - label: pr23-storage
+            ref: b8886cbd8a0fd58e3b04899bcc720dbe9b4eb650
+          - label: pr24-query
+            ref: fea51c020b442a98839a4568237908f1636db1e0
+
+    steps:
+      - name: Check out exact TrillionniumGame head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/TrillionniumGame
+          ref: ${{ matrix.ref }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install Rust 1.85.1
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+
+      - name: Verify exact identity and run strict gates
+        working-directory: source
+        run: |
+          set -euo pipefail
+          mkdir -p relay-evidence
+          test "$(git rev-parse HEAD)" = '${{ matrix.ref }}'
+          git rev-parse HEAD | tee relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} | tee relay-evidence/tree.txt
+          rustc --version --verbose | tee relay-evidence/rustc-version.txt
+          cargo --version --verbose | tee relay-evidence/cargo-version.txt
+          cargo fmt --all -- --check 2>&1 | tee relay-evidence/cargo-fmt.log
+          cargo test --workspace --all-targets --locked 2>&1 | tee relay-evidence/cargo-test.log
+          cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
+          python_paths=()
+          for path in scripts tests tools; do [[ -d "$path" ]] && python_paths+=("$path"); done
+          if (( ${#python_paths[@]} )); then
+            python3 -m compileall -q "${python_paths[@]}" 2>&1 | tee relay-evidence/python-compileall.log
+          else
+            : > relay-evidence/python-compileall.log
+          fi
+          test -z "$(git status --porcelain)"
+          python3 - <<PY
+          import json
+          from pathlib import Path
+          Path('relay-evidence/summary.json').write_text(json.dumps({
+              'schema': 'trillionnium.game.repaired-exact-head.v1',
+              'repository': 'TrillionniumFoundation/TrillionniumGame',
+              'label': '${{ matrix.label }}',
+              'commit': '${{ matrix.ref }}',
+              'format_clean': True,
+              'tests_passed': True,
+              'clippy_passed': True,
+              'source_clean_after_gates': True,
+              'claims': {
+                  'same_repository_actions_unblocked': False,
+                  'compatibility_credit': False,
+                  'production_ready': False,
+              },
+          }, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
+          PY
+          find relay-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+      - name: Upload exact-head evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-repaired-${{ matrix.label }}-${{ matrix.ref }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
