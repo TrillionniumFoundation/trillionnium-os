@@ -1,0 +1,431 @@
+name: TrillionniumGame database profile runtime
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-database-profiles.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trillionniumgame-database-profiles-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_SHA: e9b63462fa91383b06706894afed31b378f6b48c
+
+jobs:
+  static-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact schema head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.TARGET_SHA }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Validate exact identity and static schema contracts
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TARGET_SHA"
+          python3 scripts/check-foundation-schema.py
+          python3 -m unittest discover -s tests/schema -p 'test_*.py' -v
+          python3 -m compileall -q scripts tests/schema
+
+  postgresql-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact schema head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.TARGET_SHA }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Apply, introspect and exercise PostgreSQL profile
+        working-directory: source
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence=database-evidence/postgresql
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/commit.txt"
+          git rev-parse HEAD^{tree} > "$evidence/tree.txt"
+          printf '%s\n' 'postgres:16.4-bookworm' > "$evidence/image.txt"
+
+          set +e
+          docker pull postgres:16.4-bookworm > "$evidence/image-pull.log" 2>&1
+          pull_status=$?
+          if (( pull_status == 0 )); then
+            docker image inspect postgres:16.4-bookworm > "$evidence/image-inspect.json" 2>&1
+            docker run --detach --name trnm-postgresql \
+              -e POSTGRES_USER=trnm \
+              -e POSTGRES_PASSWORD=trnm \
+              -e POSTGRES_DB=trnm \
+              postgres:16.4-bookworm > "$evidence/container-start.log" 2>&1
+            start_status=$?
+          else
+            start_status=1
+          fi
+
+          ready_status=1
+          if (( start_status == 0 )); then
+            for _ in $(seq 1 60); do
+              if docker exec trnm-postgresql pg_isready -U trnm -d trnm >/dev/null 2>&1; then
+                ready_status=0
+                break
+              fi
+              sleep 1
+            done
+            docker inspect trnm-postgresql > "$evidence/container-inspect.json" 2>&1
+            docker logs trnm-postgresql > "$evidence/container.log" 2>&1
+          fi
+
+          apply_status=1
+          smoke_status=1
+          introspect_status=1
+          negative_status=1
+          if (( ready_status == 0 )); then
+            docker exec trnm-postgresql postgres --version > "$evidence/database-version.txt" 2>&1
+            docker exec -i trnm-postgresql psql -X -v ON_ERROR_STOP=1 -U trnm -d trnm \
+              < migrations/postgresql/0001_foundation_up.sql \
+              > "$evidence/apply.log" 2>&1
+            apply_status=$?
+          fi
+
+          if (( apply_status == 0 )); then
+            cat > "$evidence/smoke.sql" <<SQL
+          INSERT INTO trnm_schema_metadata
+            (singleton, schema_version, profile, source_commit, applied_at_ms)
+          VALUES
+            (1, 1, 'postgresql', '$TARGET_SHA', 1);
+
+          BEGIN;
+          INSERT INTO trnm_entity_heads VALUES
+            (decode(repeat('01', 16), 'hex'), 0, 0, 1, decode(repeat('11', 32), 'hex'), 1);
+          INSERT INTO trnm_command_receipts VALUES
+            (decode(repeat('01', 16), 'hex'), decode(repeat('02', 16), 'hex'),
+             decode(repeat('12', 32), 'hex'), 1, decode(repeat('13', 32), 'hex'),
+             1, 1, 1, 2);
+          INSERT INTO trnm_events VALUES
+            (decode(repeat('01', 16), 'hex'), 1, decode(repeat('03', 16), 'hex'),
+             decode(repeat('02', 16), 'hex'), decode(repeat('14', 32), 'hex'), 2);
+          INSERT INTO trnm_outbox
+            (intent_id, entity_id, command_id, kind, payload_digest, available_at_ms, updated_at_ms)
+          VALUES
+            (decode(repeat('04', 16), 'hex'), decode(repeat('01', 16), 'hex'),
+             decode(repeat('02', 16), 'hex'), 0, decode(repeat('15', 32), 'hex'), 2, 2);
+          INSERT INTO trnm_command_outbox VALUES
+            (decode(repeat('01', 16), 'hex'), decode(repeat('02', 16), 'hex'),
+             0, decode(repeat('04', 16), 'hex'));
+          INSERT INTO trnm_authority_leases VALUES
+            (decode(repeat('01', 16), 'hex'), decode(repeat('05', 16), 'hex'), 1, 1, 1000, 2);
+          INSERT INTO trnm_session_families VALUES
+            (decode(repeat('06', 16), 'hex'), decode(repeat('07', 16), 'hex'),
+             0, decode(repeat('08', 16), 'hex'), NULL, 1, 1);
+          INSERT INTO trnm_refresh_tokens VALUES
+            (decode(repeat('06', 16), 'hex'), decode(repeat('08', 16), 'hex'),
+             decode(repeat('16', 32), 'hex'), 0, 0, 1, NULL);
+          INSERT INTO trnm_storage_objects VALUES
+            ('profile', 'player', decode(repeat('07', 16), 'hex'),
+             decode('7b7d', 'hex'), decode(repeat('17', 32), 'hex'), 2, 1, 2);
+          COMMIT;
+          SQL
+            docker exec -i trnm-postgresql psql -X -v ON_ERROR_STOP=1 -U trnm -d trnm \
+              < "$evidence/smoke.sql" > "$evidence/smoke.log" 2>&1
+            smoke_status=$?
+
+            docker exec trnm-postgresql psql -X -At -U trnm -d trnm \
+              -c "SELECT tablename FROM pg_tables WHERE schemaname='public' AND tablename LIKE 'trnm_%' ORDER BY tablename" \
+              > "$evidence/tables.txt" 2> "$evidence/introspect.stderr"
+            table_query_status=$?
+            docker exec trnm-postgresql psql -X -At -U trnm -d trnm \
+              -c "SELECT count(*) FROM information_schema.table_constraints WHERE table_schema='public' AND table_name LIKE 'trnm_%'" \
+              > "$evidence/constraint-count.txt" 2>> "$evidence/introspect.stderr"
+            constraint_query_status=$?
+            docker exec trnm-postgresql pg_dump -U trnm -d trnm --schema-only --no-owner --no-privileges \
+              > "$evidence/schema-dump.sql" 2>> "$evidence/introspect.stderr"
+            dump_status=$?
+            table_count=$(wc -l < "$evidence/tables.txt")
+            if (( table_query_status == 0 && constraint_query_status == 0 && dump_status == 0 && table_count == 10 )); then
+              introspect_status=0
+            fi
+
+            docker exec trnm-postgresql psql -X -v ON_ERROR_STOP=1 -U trnm -d trnm \
+              -c "INSERT INTO trnm_entity_heads VALUES (decode('01','hex'),0,0,1,decode(repeat('22',32),'hex'),1)" \
+              > "$evidence/negative-invalid-id.log" 2>&1
+            invalid_insert_status=$?
+            if (( invalid_insert_status != 0 )); then
+              negative_status=0
+            fi
+          fi
+          set -e
+
+          python3 - <<PY
+          import json
+          from pathlib import Path
+          statuses = {
+              'image_pull': int('$pull_status'),
+              'container_start': int('$start_status'),
+              'database_ready': int('$ready_status'),
+              'migration_apply': int('$apply_status'),
+              'runtime_smoke': int('$smoke_status'),
+              'introspection': int('$introspect_status'),
+              'negative_constraint': int('$negative_status'),
+          }
+          Path('$evidence/summary.json').write_text(json.dumps({
+              'schema': 'trillionnium.game.database-runtime.v1',
+              'profile': 'postgresql',
+              'target_commit': '$TARGET_SHA',
+              'image': 'postgres:16.4-bookworm',
+              'statuses': statuses,
+              'all_passed': all(value == 0 for value in statuses.values()),
+              'claims': {
+                  'single_node_runtime_execution_verified': all(value == 0 for value in statuses.values()),
+                  'ha_verified': False,
+                  'migration_verified': False,
+                  'production_ready': False,
+              },
+          }, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
+          PY
+          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+          if (( pull_status || start_status || ready_status || apply_status || smoke_status || introspect_status || negative_status )); then
+            exit 1
+          fi
+
+      - name: Upload PostgreSQL runtime evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-database-postgresql-${{ env.TARGET_SHA }}-run-${{ github.run_number }}
+          path: source/database-evidence/postgresql
+          if-no-files-found: error
+          retention-days: 30
+
+  cockroachdb-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact schema head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.TARGET_SHA }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Apply, introspect and exercise CockroachDB profile
+        working-directory: source
+        shell: bash
+        run: |
+          set -uo pipefail
+          evidence=database-evidence/cockroachdb
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/commit.txt"
+          git rev-parse HEAD^{tree} > "$evidence/tree.txt"
+          printf '%s\n' 'cockroachdb/cockroach:v24.1.2' > "$evidence/image.txt"
+
+          set +e
+          docker pull cockroachdb/cockroach:v24.1.2 > "$evidence/image-pull.log" 2>&1
+          pull_status=$?
+          if (( pull_status == 0 )); then
+            docker image inspect cockroachdb/cockroach:v24.1.2 > "$evidence/image-inspect.json" 2>&1
+            docker run --detach --name trnm-cockroachdb \
+              cockroachdb/cockroach:v24.1.2 \
+              start-single-node --insecure --listen-addr=0.0.0.0:26257 --http-addr=0.0.0.0:8080 \
+              > "$evidence/container-start.log" 2>&1
+            start_status=$?
+          else
+            start_status=1
+          fi
+
+          ready_status=1
+          if (( start_status == 0 )); then
+            for _ in $(seq 1 90); do
+              if docker exec trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 --execute='SELECT 1' >/dev/null 2>&1; then
+                ready_status=0
+                break
+              fi
+              sleep 1
+            done
+            docker inspect trnm-cockroachdb > "$evidence/container-inspect.json" 2>&1
+            docker logs trnm-cockroachdb > "$evidence/container.log" 2>&1
+          fi
+
+          apply_status=1
+          smoke_status=1
+          introspect_status=1
+          negative_status=1
+          if (( ready_status == 0 )); then
+            docker exec trnm-cockroachdb /cockroach/cockroach version > "$evidence/database-version.txt" 2>&1
+            docker exec trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 \
+              --execute='CREATE DATABASE trnm' > "$evidence/create-database.log" 2>&1
+            create_database_status=$?
+            if (( create_database_status == 0 )); then
+              docker exec -i trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 --database=trnm \
+                < migrations/cockroachdb/0001_foundation_up.sql \
+                > "$evidence/apply.log" 2>&1
+              apply_status=$?
+            fi
+          fi
+
+          if (( apply_status == 0 )); then
+            cat > "$evidence/smoke.sql" <<SQL
+          INSERT INTO trnm_schema_metadata
+            (singleton, schema_version, profile, source_commit, applied_at_ms)
+          VALUES
+            (1, 1, 'cockroachdb', '$TARGET_SHA', 1);
+
+          BEGIN;
+          INSERT INTO trnm_entity_heads VALUES
+            (decode(repeat('01', 16), 'hex'), 0, 0, 1, decode(repeat('11', 32), 'hex'), 1);
+          INSERT INTO trnm_command_receipts VALUES
+            (decode(repeat('01', 16), 'hex'), decode(repeat('02', 16), 'hex'),
+             decode(repeat('12', 32), 'hex'), 1, decode(repeat('13', 32), 'hex'),
+             1, 1, 1, 2);
+          INSERT INTO trnm_events VALUES
+            (decode(repeat('01', 16), 'hex'), 1, decode(repeat('03', 16), 'hex'),
+             decode(repeat('02', 16), 'hex'), decode(repeat('14', 32), 'hex'), 2);
+          INSERT INTO trnm_outbox
+            (intent_id, entity_id, command_id, kind, payload_digest, available_at_ms, updated_at_ms)
+          VALUES
+            (decode(repeat('04', 16), 'hex'), decode(repeat('01', 16), 'hex'),
+             decode(repeat('02', 16), 'hex'), 0, decode(repeat('15', 32), 'hex'), 2, 2);
+          INSERT INTO trnm_command_outbox VALUES
+            (decode(repeat('01', 16), 'hex'), decode(repeat('02', 16), 'hex'),
+             0, decode(repeat('04', 16), 'hex'));
+          INSERT INTO trnm_authority_leases VALUES
+            (decode(repeat('01', 16), 'hex'), decode(repeat('05', 16), 'hex'), 1, 1, 1000, 2);
+          INSERT INTO trnm_session_families VALUES
+            (decode(repeat('06', 16), 'hex'), decode(repeat('07', 16), 'hex'),
+             0, decode(repeat('08', 16), 'hex'), NULL, 1, 1);
+          INSERT INTO trnm_refresh_tokens VALUES
+            (decode(repeat('06', 16), 'hex'), decode(repeat('08', 16), 'hex'),
+             decode(repeat('16', 32), 'hex'), 0, 0, 1, NULL);
+          INSERT INTO trnm_storage_objects VALUES
+            ('profile', 'player', decode(repeat('07', 16), 'hex'),
+             decode('7b7d', 'hex'), decode(repeat('17', 32), 'hex'), 2, 1, 2);
+          COMMIT;
+          SQL
+            docker exec -i trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 --database=trnm \
+              < "$evidence/smoke.sql" > "$evidence/smoke.log" 2>&1
+            smoke_status=$?
+
+            docker exec trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 --database=trnm \
+              --format=csv --execute="SELECT table_name FROM information_schema.tables WHERE table_schema='public' AND table_name LIKE 'trnm_%' ORDER BY table_name" \
+              > "$evidence/tables.csv" 2> "$evidence/introspect.stderr"
+            table_query_status=$?
+            docker exec trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 --database=trnm \
+              --format=csv --execute="SELECT count(*) AS constraint_count FROM information_schema.table_constraints WHERE table_schema='public' AND table_name LIKE 'trnm_%'" \
+              > "$evidence/constraint-count.csv" 2>> "$evidence/introspect.stderr"
+            constraint_query_status=$?
+            : > "$evidence/schema-dump.sql"
+            dump_status=0
+            for table in trnm_schema_metadata trnm_entity_heads trnm_command_receipts trnm_events trnm_outbox trnm_command_outbox trnm_authority_leases trnm_session_families trnm_refresh_tokens trnm_storage_objects; do
+              docker exec trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 --database=trnm \
+                --execute="SHOW CREATE TABLE $table" >> "$evidence/schema-dump.sql" 2>> "$evidence/introspect.stderr" || dump_status=1
+            done
+            table_count=$(tail -n +2 "$evidence/tables.csv" | sed '/^[[:space:]]*$/d' | wc -l)
+            if (( table_query_status == 0 && constraint_query_status == 0 && dump_status == 0 && table_count == 10 )); then
+              introspect_status=0
+            fi
+
+            docker exec trnm-cockroachdb /cockroach/cockroach sql --insecure --host=localhost:26257 --database=trnm \
+              --execute="INSERT INTO trnm_entity_heads VALUES (decode('01','hex'),0,0,1,decode(repeat('22',32),'hex'),1)" \
+              > "$evidence/negative-invalid-id.log" 2>&1
+            invalid_insert_status=$?
+            if (( invalid_insert_status != 0 )); then
+              negative_status=0
+            fi
+          fi
+          set -e
+
+          python3 - <<PY
+          import json
+          from pathlib import Path
+          statuses = {
+              'image_pull': int('$pull_status'),
+              'container_start': int('$start_status'),
+              'database_ready': int('$ready_status'),
+              'migration_apply': int('$apply_status'),
+              'runtime_smoke': int('$smoke_status'),
+              'introspection': int('$introspect_status'),
+              'negative_constraint': int('$negative_status'),
+          }
+          Path('$evidence/summary.json').write_text(json.dumps({
+              'schema': 'trillionnium.game.database-runtime.v1',
+              'profile': 'cockroachdb',
+              'target_commit': '$TARGET_SHA',
+              'image': 'cockroachdb/cockroach:v24.1.2',
+              'statuses': statuses,
+              'all_passed': all(value == 0 for value in statuses.values()),
+              'claims': {
+                  'single_node_runtime_execution_verified': all(value == 0 for value in statuses.values()),
+                  'ha_verified': False,
+                  'migration_verified': False,
+                  'production_ready': False,
+              },
+          }, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
+          PY
+          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+          if (( pull_status || start_status || ready_status || apply_status || smoke_status || introspect_status || negative_status )); then
+            exit 1
+          fi
+
+      - name: Upload CockroachDB runtime evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-database-cockroachdb-${{ env.TARGET_SHA }}-run-${{ github.run_number }}
+          path: source/database-evidence/cockroachdb
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-database-evidence:
+    if: always()
+    needs: [postgresql-runtime, cockroachdb-runtime]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out relay branch with write credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ci/trillionniumgame-exact-head-relay-v1
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Download database evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: trillionniumgame-database-*-run-${{ github.run_number }}
+          path: downloaded
+          merge-multiple: false
+      - name: Publish immutable database evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin ci/trillionniumgame-exact-head-relay-v1
+          destination="relay-evidence/database/run-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}"
+          mkdir -p "$destination"
+          cp -R downloaded/. "$destination/"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$destination/run-id.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$destination/relay-head.txt"
+          find "$destination" -type f ! -name SHA256SUMS.root -print0 | sort -z | xargs -0 sha256sum > "$destination/SHA256SUMS.root"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$destination"
+          git commit -m "ci(database): publish TrillionniumGame database evidence run ${GITHUB_RUN_NUMBER}"
+          git push origin HEAD:ci/trillionniumgame-exact-head-relay-v1
