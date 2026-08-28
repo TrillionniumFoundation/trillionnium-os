@@ -9,7 +9,7 @@ on:
       - ".github/workflows/owner-open-r5-repair-format.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: owner-open-r5-repair-format-${{ github.ref }}
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   repair-and-format:
-    name: Generate reviewed Python repair and Rust 1.93 format artifact
+    name: Generate and commit reviewed Python repair and Rust 1.93 format bytes
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: codex/owner-open-r5-tool-loop-20260827
-          persist-credentials: false
+          persist-credentials: true
           fetch-depth: 1
 
       - name: Set up Python 3.12
@@ -108,6 +108,15 @@ jobs:
           sha256sum owner-open-r5-repair/repair-and-rustfmt.patch \
             > owner-open-r5-repair/repair-and-rustfmt.patch.sha256
           tar -C owner-open-r5-repair -czf owner-open-r5-repair.tar.gz .
+
+      - name: Commit and push the exact validated repair bytes
+        run: |
+          test -s owner-open-r5-repair/changed-files.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git commit -m "chore: apply R5 runner repairs and rustfmt"
+          git push origin HEAD:refs/heads/codex/owner-open-r5-tool-loop-20260827
 
       - name: Upload exact repair artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
