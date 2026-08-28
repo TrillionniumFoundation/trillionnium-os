@@ -1,0 +1,360 @@
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/base64url.rs:1:
+ use core::fmt;
+ 
+-const ALPHABET: &[u8; 64] =
+-    b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
++const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+ 
+ #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+ pub enum Base64UrlError {
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/base64url.rs:15:
+     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+         match self {
+             Self::InvalidCharacter { index, byte } => {
+-                write!(formatter, "invalid base64url byte 0x{byte:02x} at index {index}")
++                write!(
++                    formatter,
++                    "invalid base64url byte 0x{byte:02x} at index {index}"
++                )
+             }
+             Self::InvalidLength => formatter.write_str("invalid unpadded base64url length"),
+             Self::NonCanonicalTrailingBits => {
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/base64url.rs:35:
+     let remainder = input.len() % 3;
+     let encoded_len = full_groups
+         .checked_mul(4)
+-        .and_then(|value| value.checked_add(match remainder {
+-            0 => 0,
+-            1 => 2,
+-            2 => 3,
+-            _ => unreachable!(),
+-        }))
++        .and_then(|value| {
++            value.checked_add(match remainder {
++                0 => 0,
++                1 => 2,
++                2 => 3,
++                _ => unreachable!(),
++            })
++        })
+         .expect("base64url output length overflow");
+     let mut output = String::with_capacity(encoded_len);
+ 
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/base64url.rs:47:
+     for chunk in input.chunks_exact(3) {
+-        let value = (u32::from(chunk[0]) << 16)
+-            | (u32::from(chunk[1]) << 8)
+-            | u32::from(chunk[2]);
++        let value = (u32::from(chunk[0]) << 16) | (u32::from(chunk[1]) << 8) | u32::from(chunk[2]);
+         output.push(char::from(ALPHABET[((value >> 18) & 0x3f) as usize]));
+         output.push(char::from(ALPHABET[((value >> 12) & 0x3f) as usize]));
+         output.push(char::from(ALPHABET[((value >> 6) & 0x3f) as usize]));
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/json.rs:430:
+                 if !(0xdc00..=0xdfff).contains(&second) {
+                     return Err(self.error(JsonErrorKind::LoneSurrogate));
+                 }
+-                0x1_0000
+-                    + ((u32::from(first) - 0xd800) << 10)
+-                    + (u32::from(second) - 0xdc00)
++                0x1_0000 + ((u32::from(first) - 0xd800) << 10) + (u32::from(second) - 0xdc00)
+             }
+             0xdc00..=0xdfff => return Err(self.error(JsonErrorKind::LoneSurrogate)),
+             _ => u32::from(first),
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/json.rs:481:
+     }
+ 
+     fn skip_whitespace(&mut self) {
+-        while matches!(self.input.get(self.offset), Some(b' ' | b'\n' | b'\r' | b'\t')) {
++        while matches!(
++            self.input.get(self.offset),
++            Some(b' ' | b'\n' | b'\r' | b'\t')
++        ) {
+             self.offset += 1;
+         }
+     }
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/json.rs:525:
+     Ok(())
+ }
+ 
+-fn encode_string(
+-    value: &str,
+-    output: &mut Vec<u8>,
+-    limit: usize,
+-) -> Result<(), JsonEncodeError> {
++fn encode_string(value: &str, output: &mut Vec<u8>, limit: usize) -> Result<(), JsonEncodeError> {
+     push_byte(output, b'"', limit)?;
+     for character in value.chars() {
+         match character {
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/json.rs:554:
+             }
+             _ => {
+                 let mut encoded = [0u8; 4];
+-                push_bytes(output, character.encode_utf8(&mut encoded).as_bytes(), limit)?;
++                push_bytes(
++                    output,
++                    character.encode_utf8(&mut encoded).as_bytes(),
++                    limit,
++                )?;
+             }
+         }
+     }
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/json.rs:577:
+     Ok(())
+ }
+ 
+-fn push_bytes(
+-    output: &mut Vec<u8>,
+-    bytes: &[u8],
+-    limit: usize,
+-) -> Result<(), JsonEncodeError> {
++fn push_bytes(output: &mut Vec<u8>, bytes: &[u8], limit: usize) -> Result<(), JsonEncodeError> {
+     if output.len().saturating_add(bytes.len()) > limit {
+         return Err(JsonEncodeError::OutputLengthExceeded { limit });
+     }
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/json.rs:646:
+ 
+     #[test]
+     fn rejects_floats_exponents_leading_zero_and_overflow() {
+-        for value in ["1.0", "1e3", "01", "18446744073709551616", "-9223372036854775809"] {
+-            assert!(parse(value.as_bytes(), JsonLimits::default()).is_err(), "{value}");
++        for value in [
++            "1.0",
++            "1e3",
++            "01",
++            "18446744073709551616",
++            "-9223372036854775809",
++        ] {
++            assert!(
++                parse(value.as_bytes(), JsonLimits::default()).is_err(),
++                "{value}"
++            );
+         }
+     }
+ 
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:115:
+         claims: &JsonValue,
+         profile: &VerificationProfile,
+     ) -> Result<String, JwtError> {
+-        let key = self
+-            .legacy
+-            .as_ref()
+-            .ok_or(JwtError::LegacyKeyUnavailable)?;
++        let key = self.legacy.as_ref().ok_or(JwtError::LegacyKeyUnavailable)?;
+         issue_legacy(claims, key, profile)
+     }
+ 
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:137:
+ 
+     fn key_for_route(&self, route: TokenRoute) -> Result<&SecretKey, JwtError> {
+         match route {
+-            TokenRoute::Legacy => self
+-                .legacy
+-                .as_ref()
+-                .ok_or(JwtError::LegacyKeyUnavailable),
++            TokenRoute::Legacy => self.legacy.as_ref().ok_or(JwtError::LegacyKeyUnavailable),
+             TokenRoute::Epoch(epoch) => self
+                 .epoch_keys
+                 .get(&epoch)
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:404:
+             Self::UnsupportedAlgorithm(value) => {
+                 write!(formatter, "unsupported JWT algorithm {value:?}")
+             }
+-            Self::InvalidTypeHeader => formatter.write_str("JWT typ header must be JWT when present"),
++            Self::InvalidTypeHeader => {
++                formatter.write_str("JWT typ header must be JWT when present")
++            }
+             Self::InvalidKeyId => formatter.write_str("JWT kid header is malformed"),
+             Self::UnknownKeyEpoch(epoch) => write!(formatter, "unknown JWT key epoch {epoch}"),
+             Self::LegacyRouteForbidden => formatter.write_str("legacy JWT route is disabled"),
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:411:
+             Self::LegacyKeyUnavailable => formatter.write_str("legacy JWT key is unavailable"),
+             Self::SignatureLength { actual } => {
+-                write!(formatter, "HS256 signature must be 32 bytes, received {actual}")
++                write!(
++                    formatter,
++                    "HS256 signature must be 32 bytes, received {actual}"
++                )
+             }
+             Self::SignatureMismatch => formatter.write_str("JWT signature mismatch"),
+             Self::EpochClaimMissing => formatter.write_str("epoch JWT payload claim is missing"),
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:421:
+             Self::EpochClaimOnLegacyRoute => {
+                 formatter.write_str("legacy JWT must not carry an epoch payload claim")
+             }
+-            Self::MissingClaim(claim) => write!(formatter, "required JWT claim {claim:?} is missing"),
++            Self::MissingClaim(claim) => {
++                write!(formatter, "required JWT claim {claim:?} is missing")
++            }
+             Self::InvalidClaimType(claim) => {
+                 write!(formatter, "JWT claim {claim:?} has an invalid type")
+             }
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:433:
+                 write!(formatter, "JWT NumericDate claim {claim:?} is invalid")
+             }
+             Self::Expired { expires_at, now } => {
+-                write!(formatter, "JWT expired at {expires_at}; current time is {now}")
++                write!(
++                    formatter,
++                    "JWT expired at {expires_at}; current time is {now}"
++                )
+             }
+             Self::NotYetValid { not_before, now } => write!(
+                 formatter,
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:503:
+     let route = parse_route(header_object, profile)?;
+     let key = keys.key_for_route(route)?;
+ 
+-    let signature = base64url::decode(signature_segment, SIGNATURE_BYTES)
+-        .map_err(JwtError::SignatureBase64)?;
++    let signature =
++        base64url::decode(signature_segment, SIGNATURE_BYTES).map_err(JwtError::SignatureBase64)?;
+     if signature.len() != SIGNATURE_BYTES {
+         return Err(JwtError::SignatureLength {
+             actual: signature.len(),
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:579:
+             JsonValue::Unsigned(u64::from(epoch)),
+         );
+     }
+-    issue_with_route(JsonValue::Object(object), TokenRoute::Epoch(epoch), key, profile)
++    issue_with_route(
++        JsonValue::Object(object),
++        TokenRoute::Epoch(epoch),
++        key,
++        profile,
++    )
+ }
+ 
+ fn issue_with_route(
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:598:
+             JsonValue::String(format!("{EPOCH_KEY_ID_PREFIX}{epoch}")),
+         );
+     }
+-    let header_bytes = json::to_canonical_bytes(
+-        &JsonValue::Object(header),
+-        profile.max_header_bytes,
+-    )
+-    .map_err(JwtError::HeaderEncode)?;
++    let header_bytes =
++        json::to_canonical_bytes(&JsonValue::Object(header), profile.max_header_bytes)
++            .map_err(JwtError::HeaderEncode)?;
+     let payload_bytes = json::to_canonical_bytes(&claims, profile.max_payload_bytes)
+         .map_err(JwtError::PayloadEncode)?;
+     let header_segment = base64url::encode(&header_bytes);
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:659:
+             {
+                 return Err(JwtError::InvalidKeyId);
+             }
+-            let epoch = raw_epoch.parse::<u32>().map_err(|_| JwtError::InvalidKeyId)?;
++            let epoch = raw_epoch
++                .parse::<u32>()
++                .map_err(|_| JwtError::InvalidKeyId)?;
+             if epoch == 0 {
+                 return Err(JwtError::InvalidKeyId);
+             }
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:685:
+     now: i64,
+ ) -> Result<ValidatedClaims, JwtError> {
+     validate_epoch_claim(claims, route, profile)?;
+-    let subject = bounded_required_string(
+-        claims,
+-        &profile.claims.subject,
+-        profile.max_subject_bytes,
+-    )?
+-    .to_owned();
++    let subject =
++        bounded_required_string(claims, &profile.claims.subject, profile.max_subject_bytes)?
++            .to_owned();
+     let username = match &profile.claims.username {
+-        Some(name) if profile.require_username => Some(
+-            bounded_required_string(claims, name, profile.max_username_bytes)?.to_owned(),
+-        ),
+-        Some(name) => bounded_optional_string(claims, name, profile.max_username_bytes)?
+-            .map(str::to_owned),
++        Some(name) if profile.require_username => {
++            Some(bounded_required_string(claims, name, profile.max_username_bytes)?.to_owned())
++        }
++        Some(name) => {
++            bounded_optional_string(claims, name, profile.max_username_bytes)?.map(str::to_owned)
++        }
+         None if profile.require_username => return Err(JwtError::InvalidProfile),
+         None => None,
+     };
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:703:
+     let token_id = match &profile.claims.token_id {
+-        Some(name) => bounded_optional_string(claims, name, profile.max_token_id_bytes)?
+-            .map(str::to_owned),
++        Some(name) => {
++            bounded_optional_string(claims, name, profile.max_token_id_bytes)?.map(str::to_owned)
++        }
+         None => None,
+     };
+     let variables = validate_variables(claims, profile)?;
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:733:
+         if expires_at <= issued_at {
+             return Err(JwtError::InvalidLifetime);
+         }
+-        let lifetime = u64::try_from(expires_at - issued_at)
+-            .map_err(|_| JwtError::InvalidLifetime)?;
++        let lifetime =
++            u64::try_from(expires_at - issued_at).map_err(|_| JwtError::InvalidLifetime)?;
+         if lifetime > limit {
+             return Err(JwtError::LifetimeExceeded {
+                 limit,
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:787:
+             None if profile.require_epoch_claim => return Err(JwtError::EpochClaimMissing),
+             None => {}
+             Some(value) => {
+-                let payload = value.as_u64().ok_or_else(|| {
+-                    JwtError::InvalidClaimType(profile.claims.key_epoch.clone())
+-                })?;
++                let payload = value
++                    .as_u64()
++                    .ok_or_else(|| JwtError::InvalidClaimType(profile.claims.key_epoch.clone()))?;
+                 if payload != u64::from(header) {
+                     return Err(JwtError::EpochClaimMismatch { header, payload });
+                 }
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:819:
+     }
+     let mut variables = BTreeMap::new();
+     for (key, value) in object {
+-        if key.is_empty()
+-            || key.len() > profile.max_variable_key_bytes
+-            || value.as_str().is_none()
++        if key.is_empty() || key.len() > profile.max_variable_key_bytes || value.as_str().is_none()
+         {
+             return Err(JwtError::InvalidVariableValue(key.clone()));
+         }
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:1075:
+     fn duplicate_payload_keys_and_unrecognized_headers_are_rejected() {
+         let profile = profile();
+         let header = base64url::encode(br#"{"alg":"HS256","x":1}"#);
+-        let payload = base64url::encode(
+-            br#"{"uid":"a","uid":"b","iat":1000,"exp":2000}"#,
+-        );
++        let payload = base64url::encode(br#"{"uid":"a","uid":"b","iat":1000,"exp":2000}"#);
+         let signature = hmac_sha256(
+             key(0x11).expose(),
+             &[header.as_bytes(), b".", payload.as_bytes()],
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/jwt.rs:1097:
+         let mut keys = KeyRing::new();
+         keys.set_legacy_key(key(0x11));
+         for algorithm in ["none", "HS384", "RS256"] {
+-            let header = base64url::encode(
+-                format!(r#"{{"alg":"{algorithm}","typ":"JWT"}}"#).as_bytes(),
+-            );
++            let header =
++                base64url::encode(format!(r#"{{"alg":"{algorithm}","typ":"JWT"}}"#).as_bytes());
+             let payload = base64url::encode(
+                 json::to_canonical_bytes(&claims(), profile.max_payload_bytes)
+                     .unwrap()
+Diff in /home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter/src/lib.rs:15:
+ mod sha256;
+ 
+ pub use jwt::{
+-    issue_epoch, issue_legacy, verify, ClaimMapping, JwtError, KeyRing, SecretKey,
+-    TokenRoute, VerificationProfile, VerifiedPrincipal, VerifiedToken,
+-    EPOCH_KEY_ID_PREFIX,
++    issue_epoch, issue_legacy, verify, ClaimMapping, JwtError, KeyRing, SecretKey, TokenRoute,
++    VerificationProfile, VerifiedPrincipal, VerifiedToken, EPOCH_KEY_ID_PREFIX,
+ };
+ 
