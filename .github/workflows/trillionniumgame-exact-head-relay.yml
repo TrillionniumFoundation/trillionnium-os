@@ -1,0 +1,133 @@
+name: TrillionniumGame exact-head relay
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-exact-head-relay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trillionniumgame-exact-head-relay-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  rust-exact-head:
+    name: ${{ matrix.label }} / Rust 1.85.1
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: pr22-foundation
+            ref: d46b3249d36b75c77b806d721ab4edc284452052
+          - label: pr23-storage
+            ref: 55a09c12af1e3699572d07f4175824731ecb6a91
+          - label: pr24-query
+            ref: fa22ce9bbae6d65cbfc9d9014648172d7a3f2bc2
+          - label: pr30-persistence
+            ref: 66174476b601166fb52f1c497c36bc1ae5dd519d
+          - label: pr32-token
+            ref: 46c1e764174c1a05e6b9a2afc9d583f72f233679
+          - label: pr33-transport
+            ref: 3b60a4679ff76e3ea915771ee2fedf419a54d5bd
+          - label: pr34-presence
+            ref: 02198663e25ee27f0af7be6461daaf6ae3a3dbe3
+
+    steps:
+      - name: Check out exact TrillionniumGame head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/TrillionniumGame
+          ref: ${{ matrix.ref }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ matrix.ref }}'
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Run format, tests, strict Clippy and source checks
+        working-directory: source
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p relay-evidence
+          rustc --version --verbose > relay-evidence/rustc-version.txt
+          cargo --version --verbose > relay-evidence/cargo-version.txt
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+
+          set +e
+          cargo fmt --all -- --check 2>&1 | tee relay-evidence/cargo-fmt.log
+          fmt_status=${PIPESTATUS[0]}
+          cargo test --workspace --all-targets --locked 2>&1 | tee relay-evidence/cargo-test.log
+          test_status=${PIPESTATUS[0]}
+          cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
+          clippy_status=${PIPESTATUS[0]}
+          python3 -m compileall -q scripts tests tools 2>&1 | tee relay-evidence/python-compileall.log
+          python_status=${PIPESTATUS[0]}
+          set -e
+
+          python3 - <<PY
+          import json
+          from pathlib import Path
+          value = {
+              'schema': 'trillionnium.game.exact-head-relay.v1',
+              'repository': 'TrillionniumFoundation/TrillionniumGame',
+              'label': '${{ matrix.label }}',
+              'commit': '${{ matrix.ref }}',
+              'statuses': {
+                  'cargo_fmt': int('${fmt_status}'),
+                  'cargo_test': int('${test_status}'),
+                  'cargo_clippy': int('${clippy_status}'),
+                  'python_compileall': int('${python_status}'),
+              },
+              'all_passed': all(int(x) == 0 for x in [
+                  '${fmt_status}', '${test_status}', '${clippy_status}', '${python_status}'
+              ]),
+              'claims': {
+                  'same_repository_actions_unblocked': False,
+                  'compatibility_credit': False,
+                  'production_ready': False,
+              },
+          }
+          Path('relay-evidence/summary.json').write_text(
+              json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          sha256sum relay-evidence/* > relay-evidence/SHA256SUMS
+
+          if (( fmt_status || test_status || clippy_status || python_status )); then
+            exit 1
+          fi
+
+      - name: Upload exact-head relay evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-${{ matrix.label }}-${{ matrix.ref }}
+          path: source/relay-evidence
+          if-no-files-found: warn
+          retention-days: 30
