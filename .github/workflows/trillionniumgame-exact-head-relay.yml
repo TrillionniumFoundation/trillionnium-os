@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: trillionniumgame-exact-head-relay-${{ github.ref }}
@@ -161,3 +161,49 @@ jobs:
           path: source/relay-evidence
           if-no-files-found: error
           retention-days: 30
+
+  publish-repair-objects:
+    if: always()
+    needs: rust-exact-head
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out relay branch with write credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ci/trillionniumgame-exact-head-relay-v1
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Download all exact-head evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: trillionniumgame-*-run-${{ github.run_number }}
+          path: downloaded
+          merge-multiple: false
+
+      - name: Publish immutable repair objects into relay audit history
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="relay-repairs/run-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}"
+          mkdir -p "$destination"
+          find downloaded -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' artifact; do
+            name=$(basename "$artifact")
+            mkdir -p "$destination/$name"
+            for path in summary.json cargo-fmt.patch cargo-fmt-files.txt SHA256SUMS commit.txt tree.txt; do
+              [[ -f "$artifact/$path" ]] && cp "$artifact/$path" "$destination/$name/$path"
+            done
+            if [[ -d "$artifact/formatted" ]]; then
+              cp -R "$artifact/formatted" "$destination/$name/formatted"
+            fi
+          done
+          printf '%s\n' "$GITHUB_RUN_ID" > "$destination/run-id.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$destination/relay-head.txt"
+          find "$destination" -type f -print0 | sort -z | xargs -0 sha256sum > "$destination/SHA256SUMS"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$destination"
+          git commit -m "ci(relay): publish TrillionniumGame repair objects run ${GITHUB_RUN_NUMBER}"
+          git push origin HEAD:ci/trillionniumgame-exact-head-relay-v1
