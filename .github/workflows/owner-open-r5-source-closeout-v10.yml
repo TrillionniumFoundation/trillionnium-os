@@ -1,5 +1,5 @@
 name: owner-open R5 strict source closeout v10
-# retrigger: include exact runtime and job-registry Clippy closure in the validated source candidate
+# exact candidate paths are independently bound by the sorted source-closeout manifest
 
 on:
   workflow_dispatch:
@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/workflows/owner-open-r5-source-closeout-v10.yml"
       - "tools/owner-open/apply_r5_rust_closeout_v10.py"
+      - "tools/owner-open/r5-source-closeout-v10-files.txt"
 
 permissions:
   contents: write
@@ -49,8 +50,17 @@ jobs:
         run: |
           set -Eeuo pipefail
           evidence=/tmp/owner-open-r5-source-closeout-v10
+          manifest=tools/owner-open/r5-source-closeout-v10-files.txt
           rm -rf "$evidence"
           mkdir -p "$evidence"
+          test -s "$manifest"
+          LC_ALL=C sort -c "$manifest"
+          test "$(wc -l < "$manifest")" -eq "$(LC_ALL=C sort -u "$manifest" | wc -l)"
+          while IFS= read -r path; do
+            test -n "$path"
+            test -f "$path"
+          done < "$manifest"
+          cp "$manifest" "$evidence/expected-changed-files.txt"
           git rev-parse HEAD | tee "$evidence/base-head.txt"
           python3 --version 2>&1 | tee "$evidence/python-version.txt"
           rustc --version --verbose 2>&1 | tee "$evidence/rustc-version.txt"
@@ -69,61 +79,20 @@ jobs:
           cargo fmt --all 2>&1 | tee "$evidence/cargo-fmt.log"
           cargo fmt --all -- --check 2>&1 | tee "$evidence/cargo-fmt-check.log"
           git diff --check 2>&1 | tee "$evidence/git-diff-check.log"
-          cat > "$evidence/expected-changed-files.txt" <<'EOF'
-          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs
-          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs
-          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs
-          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs
-          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs
-          apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs
-          apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs
-          apps/trillionnium-owner-open-host/tests/r5_incomplete_recovery.rs
-          apps/trillionnium-owner-open-host/tests/r5_inspect.rs
-          apps/trillionnium-owner-open-host/tests/r5_persistence.rs
-          apps/trillionnium-owner-open-host/tests/r5_wire_inspect.rs
-          crates/trillionnium-owner-open-call-registry/src/lib.rs
-          crates/trillionnium-owner-open-call-registry/tests/concurrency.rs
-          crates/trillionnium-owner-open-event-store/src/lib.rs
-          crates/trillionnium-owner-open-job-registry/src/registry.rs
-          crates/trillionnium-owner-open-job-runtime/src/manager.rs
-          crates/trillionnium-owner-open-job-runtime/tests/runtime.rs
-          crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs
-          crates/trillionnium-owner-open-runtime/tests/process_group.rs
-          crates/trillionnium-owner-open-stream-window/src/lib.rs
-          crates/trillionnium-owner-open-tool-bridge/src/lib.rs
-          EOF
-          git diff --name-only | sort > "$evidence/changed-files.txt"
-          diff -u "$evidence/expected-changed-files.txt" "$evidence/changed-files.txt" \
+          git diff --name-only | LC_ALL=C sort > "$evidence/changed-files.txt"
+          diff -u "$manifest" "$evidence/changed-files.txt" \
             | tee "$evidence/changed-files.diff"
 
       - name: Create clean local candidate commit
         run: |
           set -Eeuo pipefail
           evidence=/tmp/owner-open-r5-source-closeout-v10
+          manifest=tools/owner-open/r5-source-closeout-v10-files.txt
           git config user.name "R5 validation fixture"
           git config user.email "r5-validation@invalid.local"
-          git add \
-            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs \
-            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs \
-            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs \
-            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs \
-            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs \
-            apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs \
-            apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs \
-            apps/trillionnium-owner-open-host/tests/r5_incomplete_recovery.rs \
-            apps/trillionnium-owner-open-host/tests/r5_inspect.rs \
-            apps/trillionnium-owner-open-host/tests/r5_persistence.rs \
-            apps/trillionnium-owner-open-host/tests/r5_wire_inspect.rs \
-            crates/trillionnium-owner-open-call-registry/src/lib.rs \
-            crates/trillionnium-owner-open-call-registry/tests/concurrency.rs \
-            crates/trillionnium-owner-open-event-store/src/lib.rs \
-            crates/trillionnium-owner-open-job-registry/src/registry.rs \
-            crates/trillionnium-owner-open-job-runtime/src/manager.rs \
-            crates/trillionnium-owner-open-job-runtime/tests/runtime.rs \
-            crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs \
-            crates/trillionnium-owner-open-runtime/tests/process_group.rs \
-            crates/trillionnium-owner-open-stream-window/src/lib.rs \
-            crates/trillionnium-owner-open-tool-bridge/src/lib.rs
+          git add --pathspec-from-file="$manifest"
+          git diff --cached --name-only | LC_ALL=C sort > "$evidence/staged-files.txt"
+          diff -u "$manifest" "$evidence/staged-files.txt"
           git commit -m "fix: close R5 EOF control and complete source gates"
           git rev-parse HEAD | tee "$evidence/candidate-head.txt"
           git diff HEAD^ --binary > "$evidence/candidate.patch"
@@ -202,7 +171,7 @@ jobs:
           cargo test --locked --all-targets \
             2>&1 | tee /tmp/owner-open-r5-source-closeout-v10/rust-test.log
 
-      - name: Run complete default Rust clippy closure
+      - name: Run complete default Rust Clippy closure
         run: |
           set -Eeuo pipefail
           cargo clippy --locked --all-targets -- -D warnings \
@@ -242,8 +211,8 @@ jobs:
               "configured_unavailable_journal_fail_closed": "passed",
               "wire_inspect_active_and_completed": "passed",
               "stream_window_clippy": "passed",
-              "runtime_process_group_clippy": "passed",
-              "job_registry_clippy": "passed",
+              "runtime_all_targets_clippy": "passed",
+              "job_registry_all_targets_clippy": "passed",
               "rust_default_all_targets_test": "passed",
               "rust_default_all_targets_clippy_deny_warnings": "passed",
               "cargo_locked_metadata": "captured",
