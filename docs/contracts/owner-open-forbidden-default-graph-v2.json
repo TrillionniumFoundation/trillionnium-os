@@ -1,7 +1,7 @@
 {
   "schema": "org.trillionnium.owner-open-forbidden-default-graph.v2",
   "revision": "2026-08-28-r5",
-  "description": "Exact negative graph contract for the R5 owner-open source closure. The selected v5 transport Host wraps the reviewed v4 execution core, adds durable-store-backed bounded delivery flow control, and the closure now includes an isolated mechanism-only long-running job registry while still excluding legacy semantic authority nodes.",
+  "description": "Exact negative graph contract for the R5 owner-open source closure. The selected v5 transport Host wraps the reviewed job-aware v7 execution core, preserving durable replay, bounded delivery and direct long-running job control while excluding legacy semantic authority nodes.",
   "cargo": {
     "required_workspace_members": [
       "apps/trillionnium-owner-open-host",
@@ -10,6 +10,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-job-registry",
+      "crates/trillionnium-owner-open-job-runtime",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
@@ -22,6 +23,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-job-registry",
+      "crates/trillionnium-owner-open-job-runtime",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
@@ -34,6 +36,7 @@
       "crates/trillionnium-owner-open-call-registry",
       "crates/trillionnium-owner-open-event-store",
       "crates/trillionnium-owner-open-job-registry",
+      "crates/trillionnium-owner-open-job-runtime",
       "crates/trillionnium-owner-open-provider-jsonl",
       "crates/trillionnium-owner-open-stream-window",
       "crates/trillionnium-owner-open-tool-bridge",
@@ -91,7 +94,7 @@
         },
         {
           "name": "trillionnium-owner-open-r5-core",
-          "path": "src/bin/r5_control_host_v4.rs"
+          "path": "src/bin/r5_control_host_v7.rs"
         },
         {
           "name": "trillionnium-owner-open-r5-host",
@@ -103,7 +106,9 @@
         "src/bin/r5_streaming_host.rs",
         "src/bin/r5_control_host.rs",
         "src/bin/r5_control_host_v2.rs",
-        "src/bin/r5_control_host_v3.rs"
+        "src/bin/r5_control_host_v3.rs",
+        "src/bin/r5_control_host_v4.rs",
+        "src/bin/r5_control_host_v6.rs"
       ]
     },
     "owner_open_packages": [
@@ -112,6 +117,8 @@
         "allowed_internal_dependencies": [
           "trillionnium-owner-open-call-registry",
           "trillionnium-owner-open-event-store",
+          "trillionnium-owner-open-job-registry",
+          "trillionnium-owner-open-job-runtime",
           "trillionnium-owner-open-provider-jsonl",
           "trillionnium-owner-open-runtime",
           "trillionnium-owner-open-stream-window",
@@ -138,6 +145,13 @@
       {
         "path": "crates/trillionnium-owner-open-job-registry",
         "allowed_internal_dependencies": []
+      },
+      {
+        "path": "crates/trillionnium-owner-open-job-runtime",
+        "allowed_internal_dependencies": [
+          "trillionnium-owner-open-event-store",
+          "trillionnium-owner-open-job-registry"
+        ]
       },
       {
         "path": "crates/trillionnium-owner-open-provider-jsonl",
