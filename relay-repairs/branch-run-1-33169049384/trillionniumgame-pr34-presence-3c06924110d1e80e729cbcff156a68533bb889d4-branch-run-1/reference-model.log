@@ -1,0 +1,6 @@
+{"multi_node_verified": false, "production_ready": false, "rust_test_contracts": 12, "socket_implemented": false, "status": "presence-router-static-contract-passed", "vector_cases": 8}
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK

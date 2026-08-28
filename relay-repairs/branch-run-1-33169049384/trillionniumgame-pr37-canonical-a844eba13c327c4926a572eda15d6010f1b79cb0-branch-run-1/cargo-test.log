@@ -1,0 +1,53 @@
+   Compiling trnm-contracts v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-contracts)
+   Compiling trnm-authority-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-authority-core)
+   Compiling trnm-canonical-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-canonical-core)
+   Compiling trnm-session-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-session-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+     Running unittests src/lib.rs (target/debug/deps/trnm_authority_core-b936075789d4f9b4)
+
+running 7 tests
+test tests::duplicate_replays_after_takeover_without_reexecution ... ok
+test tests::exact_duplicate_replays_without_advancing_state ... ok
+test tests::first_command_commits_and_advances_global_and_participant_sequences ... ok
+test tests::participant_sequences_are_independent_while_match_version_is_global ... ok
+test tests::same_command_id_with_different_fingerprint_is_terminal_conflict ... ok
+test tests::stale_version_and_sequence_gap_fail_closed ... ok
+test tests::takeover_fences_old_commands_and_pending_commits ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_canonical_core-cc60a6182ab25a76)
+
+running 9 tests
+test tests::depth_node_collection_and_output_limits_fail_closed ... ok
+test tests::duplicate_object_keys_fail_closed ... ok
+test tests::float_values_are_unrepresentable_by_the_public_type ... ok
+test tests::domains_are_explicitly_separated ... ok
+test tests::invalid_domain_and_zero_protocol_major_are_rejected ... ok
+test tests::object_input_order_does_not_change_bytes ... ok
+test tests::signed_integer_boundaries_are_exact ... ok
+test tests::unicode_strings_remain_exact_utf8 ... ok
+test tests::simple_object_matches_locked_vector ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_contracts-bd335aad9afb7991)
+
+running 3 tests
+test tests::identifiers_do_not_treat_zero_as_valid_business_identity ... ok
+test tests::counters_fail_closed_on_overflow ... ok
+test tests::stable_codes_have_transport_safe_names ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_session_core-58762513c82efb17)
+
+running 5 tests
+test tests::logout_revocation_is_terminal ... ok
+test tests::replacement_token_cannot_reuse_current_or_consumed_identity ... ok
+test tests::replay_of_consumed_refresh_token_revokes_entire_family ... ok
+test tests::unknown_refresh_token_does_not_rotate_or_revoke_family ... ok
+test tests::refresh_rotation_advances_generation_and_replaces_active_token ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

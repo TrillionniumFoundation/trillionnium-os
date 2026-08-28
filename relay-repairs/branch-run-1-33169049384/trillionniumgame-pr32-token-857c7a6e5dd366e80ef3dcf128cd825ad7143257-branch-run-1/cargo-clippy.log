@@ -1,0 +1,6 @@
+    Checking trnm-contracts v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-contracts)
+    Checking trnm-token-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-core)
+    Checking trnm-storage-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-storage-core)
+    Checking trnm-authority-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-authority-core)
+    Checking trnm-session-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-session-core)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.56s

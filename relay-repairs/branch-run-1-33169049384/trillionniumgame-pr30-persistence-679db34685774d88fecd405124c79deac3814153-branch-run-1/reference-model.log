@@ -1,0 +1,6 @@
+{"database_durable": false, "production_ready": false, "rust_test_contracts": 8, "status": "persistence-core-static-contract-passed", "vector_cases": 6}
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK

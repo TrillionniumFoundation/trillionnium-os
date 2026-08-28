@@ -1,0 +1,68 @@
+   Compiling trnm-contracts v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-contracts)
+   Compiling trnm-session-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-session-core)
+   Compiling trnm-authority-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-authority-core)
+   Compiling trnm-persistence-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-persistence-core)
+   Compiling trnm-storage-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-storage-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.20s
+     Running unittests src/lib.rs (target/debug/deps/trnm_authority_core-b936075789d4f9b4)
+
+running 7 tests
+test tests::duplicate_replays_after_takeover_without_reexecution ... ok
+test tests::exact_duplicate_replays_without_advancing_state ... ok
+test tests::first_command_commits_and_advances_global_and_participant_sequences ... ok
+test tests::same_command_id_with_different_fingerprint_is_terminal_conflict ... ok
+test tests::stale_version_and_sequence_gap_fail_closed ... ok
+test tests::takeover_fences_old_commands_and_pending_commits ... ok
+test tests::participant_sequences_are_independent_while_match_version_is_global ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_contracts-bd335aad9afb7991)
+
+running 3 tests
+test tests::counters_fail_closed_on_overflow ... ok
+test tests::identifiers_do_not_treat_zero_as_valid_business_identity ... ok
+test tests::stable_codes_have_transport_safe_names ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_persistence_core-e9e0f3945ed704a4)
+
+running 8 tests
+test tests::applied_receipt_is_exactly_idempotent ... ok
+test tests::concurrent_commit_fences_stale_prepared_result ... ok
+test tests::duplicate_outbox_id_rejects_without_partial_mutation ... ok
+test tests::commit_is_atomic_and_records_events_and_outbox ... ok
+test tests::exact_duplicate_replays_receipt_but_changed_fingerprint_conflicts ... ok
+test tests::outbox_lease_generation_fences_stale_worker ... ok
+test tests::invalid_identity_and_terminal_dead_letter_fail_closed ... ok
+test tests::takeover_fences_prior_generation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_session_core-58762513c82efb17)
+
+running 5 tests
+test tests::logout_revocation_is_terminal ... ok
+test tests::refresh_rotation_advances_generation_and_replaces_active_token ... ok
+test tests::replacement_token_cannot_reuse_current_or_consumed_identity ... ok
+test tests::replay_of_consumed_refresh_token_revokes_entire_family ... ok
+test tests::unknown_refresh_token_does_not_rotate_or_revoke_family ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_storage_core-d30ccec5a750e4e7)
+
+running 9 tests
+test tests::delete_requires_exact_version_when_supplied ... ok
+test tests::duplicate_key_in_batch_is_rejected ... ok
+test tests::identical_version_cannot_name_different_value ... ok
+test tests::owner_write_and_read_respects_occ ... ok
+test tests::multi_operation_batch_rolls_back_on_any_failure ... ok
+test tests::must_not_exist_rejects_existing_object ... ok
+test tests::public_and_private_read_permissions_are_distinct ... ok
+test tests::server_owned_object_cannot_be_mutated_by_user ... ok
+test tests::stale_version_rejects_without_mutation ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

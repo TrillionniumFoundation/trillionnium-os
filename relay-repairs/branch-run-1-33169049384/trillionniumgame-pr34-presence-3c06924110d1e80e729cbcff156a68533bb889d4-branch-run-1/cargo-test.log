@@ -1,0 +1,72 @@
+   Compiling trnm-contracts v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-contracts)
+   Compiling trnm-authority-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-authority-core)
+   Compiling trnm-storage-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-storage-core)
+   Compiling trnm-presence-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-presence-core)
+   Compiling trnm-session-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-session-core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.21s
+     Running unittests src/lib.rs (target/debug/deps/trnm_authority_core-b936075789d4f9b4)
+
+running 7 tests
+test tests::duplicate_replays_after_takeover_without_reexecution ... ok
+test tests::exact_duplicate_replays_without_advancing_state ... ok
+test tests::first_command_commits_and_advances_global_and_participant_sequences ... ok
+test tests::participant_sequences_are_independent_while_match_version_is_global ... ok
+test tests::same_command_id_with_different_fingerprint_is_terminal_conflict ... ok
+test tests::stale_version_and_sequence_gap_fail_closed ... ok
+test tests::takeover_fences_old_commands_and_pending_commits ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_contracts-bd335aad9afb7991)
+
+running 3 tests
+test tests::identifiers_do_not_treat_zero_as_valid_business_identity ... ok
+test tests::counters_fail_closed_on_overflow ... ok
+test tests::stable_codes_have_transport_safe_names ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_presence_core-acd7ce2b7acc4a6b)
+
+running 12 tests
+test tests::duplicate_connection_and_session_limit_do_not_mutate ... ok
+test tests::close_removes_all_presence_indexes ... ok
+test tests::close_session_removes_only_that_session ... ok
+test tests::drain_blocks_new_presence_but_allows_heartbeat ... ok
+test tests::heartbeat_time_regression_is_rejected ... ok
+test tests::duplicate_presence_and_status_limit_fail_closed ... ok
+test tests::idle_expiry_is_ordered_and_bounded ... ok
+test tests::open_join_and_recipients_are_deterministic ... ok
+test tests::outbound_budget_failure_has_zero_partial_mutation ... ok
+test tests::outbound_accounting_underflow_is_data_loss ... ok
+test tests::rebind_increments_generation_and_fences_old_node ... ok
+test tests::user_revocation_closes_connections_and_rejects_stale_epoch ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_session_core-58762513c82efb17)
+
+running 5 tests
+test tests::refresh_rotation_advances_generation_and_replaces_active_token ... ok
+test tests::replay_of_consumed_refresh_token_revokes_entire_family ... ok
+test tests::logout_revocation_is_terminal ... ok
+test tests::unknown_refresh_token_does_not_rotate_or_revoke_family ... ok
+test tests::replacement_token_cannot_reuse_current_or_consumed_identity ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_storage_core-d30ccec5a750e4e7)
+
+running 9 tests
+test tests::duplicate_key_in_batch_is_rejected ... ok
+test tests::delete_requires_exact_version_when_supplied ... ok
+test tests::identical_version_cannot_name_different_value ... ok
+test tests::multi_operation_batch_rolls_back_on_any_failure ... ok
+test tests::must_not_exist_rejects_existing_object ... ok
+test tests::owner_write_and_read_respects_occ ... ok
+test tests::stale_version_rejects_without_mutation ... ok
+test tests::public_and_private_read_permissions_are_distinct ... ok
+test tests::server_owned_object_cannot_be_mutated_by_user ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
