@@ -1,6 +1,7 @@
 requirement_id	work_package	source	test	evidence	status
 R5-GRAPH-001	W0	Cargo.toml;docs/contracts/owner-open-forbidden-default-graph-v2.json	tools/tests/test_verify_owner_open_r5.py	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-HOST-V5-001	W0	apps/trillionnium-owner-open-host/Cargo.toml;apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs	cargo test --all-targets --package trillionnium-owner-open-host	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-HOST-V7-001	W0	apps/trillionnium-owner-open-host/Cargo.toml;apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs	test_job_aware_core_cannot_be_downgraded;apps/trillionnium-owner-open-host/tests/r5_jobs.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-FLOW-001	W5	apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow.rs;crates/trillionnium-owner-open-stream-window/src/lib.rs	flow_tests::pause_credit_and_resume_release_queued_frames_in_order	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-FLOW-002	W5	apps/trillionnium-owner-open-host/src/bin/r5_transport_host/protocol.rs	flow_tests::duplicate_sequence_is_bound_to_exact_payload_fingerprint	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-FLOW-003	W5	apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process.rs	apps/trillionnium-owner-open-host/tests/r5_stream_flow_control.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
@@ -8,5 +9,12 @@ R5-FLOW-RESYNC-001	W5	apps/trillionnium-owner-open-host/src/bin/r5_transport_hos
 R5-FLOW-CANCEL-001	W1	apps/trillionnium-owner-open-host/tests/r5_stream_flow_control.rs	turn_cancel_remains_serviceable_while_high_volume_delivery_is_paused	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-TRANSPORT-JOURNAL-001	W1	apps/trillionnium-owner-open-host/src/bin/r5_transport_host/journal.rs	apps/trillionnium-owner-open-host/tests/r5_client_disconnect.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
 R5-INSPECT-001	W5	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4	apps/trillionnium-owner-open-host/tests/r5_wire_inspect.rs	pre-existing; runner pending	SOURCE_IMPLEMENTED
+R5-JOB-REGISTRY-001	W5	crates/trillionnium-owner-open-job-registry/src	crate unit tests;tools/tests/test_verify_owner_open_r5.py	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-JOB-RUNTIME-001	W3	crates/trillionnium-owner-open-job-runtime/src	crates/trillionnium-owner-open-job-runtime/tests/runtime.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-JOB-WIRE-001	W3	apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs;apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs	apps/trillionnium-owner-open-host/tests/r5_jobs.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-JOB-IDEMPOTENCY-001	W5	crates/trillionnium-owner-open-job-runtime/src/journal.rs;crates/trillionnium-owner-open-job-registry/src/registry.rs	completed_job_is_not_redispatched_after_a_new_core_process	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-JOB-PTY-001	W3	crates/trillionnium-owner-open-job-runtime/src/process.rs;apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs	crates/trillionnium-owner-open-job-runtime/tests/runtime.rs	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-JOB-SELECT-001	W0	Cargo.toml;apps/trillionnium-owner-open-host/Cargo.toml;docs/contracts/owner-open-forbidden-default-graph-v2.json	test_job_runtime_cannot_fall_out_of_default_closure;test_job_aware_core_cannot_be_downgraded	runner-backed CI pending	SOURCE_IMPLEMENTED
+R5-CODEX-JOB-001	W2	docs/plan/owner-open-r5-batch-d-jobs.md	live installed Codex shell.job same-turn qualification	None	SPEC_ONLY
 R5-ANDROID-001	W6	android-integration/working-tree/vendor/trillionnium/config/common.mk	strict Android graph verifier after profile cutover	None	NOT_STARTED
 R5-QUAL-001	W7	docs/status/owner-open-r5-status.json	tools/verify-owner-open-r5.py	L0-L6 promotion rules	SPEC_ONLY
