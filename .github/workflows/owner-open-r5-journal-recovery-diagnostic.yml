@@ -1,0 +1,117 @@
+name: owner-open R5 journal recovery diagnostic
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "codex/owner-open-r5-tool-loop-20260827"
+    paths:
+      - ".github/workflows/owner-open-r5-journal-recovery-diagnostic.yml"
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: codex/owner-open-r5-tool-loop-20260827
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: 1.93.0
+
+      - name: Apply the exact current source candidate
+        run: |
+          set -Eeuo pipefail
+          python3 tools/owner-open/apply_r5_rust_closeout_v10.py --apply
+          cargo fmt --all -- --check
+
+      - name: Run isolated accepted-record recovery diagnostic
+        run: |
+          set -Eeuo pipefail
+          diagnostic=crates/trillionnium-owner-open-job-runtime/tests/diagnostic_journal_recovery.rs
+          trap 'rm -f "$diagnostic"' EXIT
+          cat > "$diagnostic" <<'RS'
+          use std::fs;
+          use std::os::unix::fs::{MetadataExt, PermissionsExt};
+
+          use serde_json::json;
+          use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
+          use trillionnium_owner_open_job_runtime::{JobJournal, OperationBegin};
+
+          #[test]
+          fn accepted_record_is_durable_and_recovered() {
+              let directory = tempfile::tempdir().unwrap();
+              let parent = fs::symlink_metadata(directory.path()).unwrap();
+              eprintln!(
+                  "parent path={} uid={} mode={:04o}",
+                  directory.path().display(),
+                  parent.uid(),
+                  parent.permissions().mode() & 0o7777
+              );
+              let path = directory.path().join("jobs.jsonl");
+              let key = JobKey::new(
+                  JobScope::new("session", "owner-open", "task", "turn", "stream"),
+                  "job-uncertain",
+              );
+              let request = JobRequest::new(
+                  "e".repeat(64),
+                  "b".repeat(64),
+                  "shell.job",
+                  "pipe",
+                  Some("rootlinux".to_string()),
+              );
+              {
+                  let journal = JobJournal::open_best_effort(Some(&path));
+                  eprintln!("first status={:?} error={:?}", journal.status(), journal.error());
+                  let begin = journal
+                      .begin_operation(
+                          &key,
+                          &request,
+                          "start-uncertain",
+                          "start",
+                          &"f".repeat(64),
+                          json!({"fixture": true}),
+                      )
+                      .unwrap();
+                  eprintln!("begin={begin:?}");
+                  assert_eq!(begin, OperationBegin::New);
+                  eprintln!("first recovered={:?}", journal.recovered_job(&key).unwrap());
+              }
+              let bytes = fs::read(&path).unwrap();
+              let file = fs::symlink_metadata(&path).unwrap();
+              eprintln!(
+                  "journal bytes={} uid={} mode={:04o} content={}",
+                  bytes.len(),
+                  file.uid(),
+                  file.permissions().mode() & 0o7777,
+                  String::from_utf8_lossy(&bytes)
+              );
+              let reopened = JobJournal::open_best_effort(Some(&path));
+              eprintln!(
+                  "reopened status={:?} error={:?} recovered={:?}",
+                  reopened.status(),
+                  reopened.error(),
+                  reopened.recovered_job(&key)
+              );
+              assert!(reopened.recovered_job(&key).unwrap().is_some());
+          }
+          RS
+          cargo test --locked \
+            -p trillionnium-owner-open-job-runtime \
+            --test diagnostic_journal_recovery \
+            -- --nocapture
