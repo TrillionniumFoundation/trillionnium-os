@@ -4,7 +4,7 @@
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
   "source_lineage_base": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
-  "status_cut_parent": "f5ba028c82c23b09dadd56fc5238fc3bd9323ce9",
+  "status_cut_parent": "8ff29bf396cc75639aa4028e1919bc3f3f7611e7",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
   "product_claim": "owner-open source implementation with same-turn callbacks, active cancellation, durable replay, wire-level read-only turn/call inspection, and an isolated bounded stream-window state machine; no executed Rust, Android, physical-device, real-Codex, real-ADB or release claim",
   "public_release": false,
@@ -41,16 +41,16 @@
     "claim_ceiling": "L0 source and document preparation only"
   },
   "ci_observation": {
-    "last_observed_executed_head": "23995b0c2f10b2439a8602f3217de647602de0fb",
-    "workflow_conclusions": [
-      "owner-open foundation: failure",
-      "owner-open R5 tool loop: failure",
-      "owner-open source slices: failure"
+    "observed_candidate_head": "b9de84649918d790869292de7db597dc10b6a94a",
+    "owner_open_r5_run_id": 33131266746,
+    "workflow_conclusion": "failure",
+    "jobs": [
+      "Rust 1.93 inspect, flow-control and recovery closure",
+      "R5 graph and machine contracts"
     ],
-    "runner_id": 0,
     "steps_observed": 0,
     "logs_available": false,
-    "interpretation": "the observed workflow infrastructure did not execute source commands; this is neither a Rust pass nor a Rust source failure"
+    "interpretation": "both jobs completed with steps=null and no logs; no source command executed, so this is neither a Rust pass nor a Rust source failure"
   },
   "work_packages": [
     {
