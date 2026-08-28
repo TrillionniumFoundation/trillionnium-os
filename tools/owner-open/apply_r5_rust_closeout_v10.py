@@ -5,9 +5,9 @@ The v9 applicator owns every previously reviewed production and fixture repair.
 This wrapper makes the pipe close test actually wait for EOF before completing,
 narrows dead-code allowance to the four integration-test-local copies of the
 persistence implementation, fails closed when an explicitly configured journal
-is temporarily unavailable, and keeps stream-window validation Clippy-clean.
-Deliberate memory-only operation remains unchanged. This is exact-preimage and
-requires ``--apply``.
+is temporarily unavailable, and keeps the complete default Rust graph
+Clippy-clean. Deliberate memory-only operation remains unchanged. This is
+exact-preimage and requires ``--apply``.
 """
 
 from __future__ import annotations
@@ -152,6 +152,35 @@ def repair_stream_window_clippy() -> None:
     )
 
 
+def repair_runtime_and_job_registry_clippy() -> None:
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-runtime/tests/process_group.rs",
+        "    let mut limits = MechanicalLimits::default();\n"
+        "    limits.terminate_grace = Duration::from_millis(30);\n",
+        "    let limits = MechanicalLimits {\n"
+        "        terminate_grace: Duration::from_millis(30),\n"
+        "        ..MechanicalLimits::default()\n"
+        "    };\n",
+    )
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-job-registry/src/registry.rs",
+        "    #[must_use]\n"
+        "    pub fn len(&self) -> Result<usize> {\n"
+        "        Ok(self.lock()?.entries.len())\n"
+        "    }\n\n"
+        "    #[must_use]\n"
+        "    pub fn is_empty(&self) -> Result<bool> {\n"
+        "        Ok(self.len()? == 0)\n"
+        "    }\n",
+        "    pub fn len(&self) -> Result<usize> {\n"
+        "        Ok(self.lock()?.entries.len())\n"
+        "    }\n\n"
+        "    pub fn is_empty(&self) -> Result<bool> {\n"
+        "        Ok(self.len()? == 0)\n"
+        "    }\n",
+    )
+
+
 def narrow_test_local_persistence_allowance() -> None:
     for path in (
         "apps/trillionnium-owner-open-host/tests/r5_incomplete_recovery.rs",
@@ -185,6 +214,7 @@ def main() -> int:
     repair_pipe_close_fixture()
     fail_closed_configured_unavailable_journal()
     repair_stream_window_clippy()
+    repair_runtime_and_job_registry_clippy()
     narrow_test_local_persistence_allowance()
     print("PASS_R5_RUST_CLOSEOUT_V10_APPLIED")
     return 0
