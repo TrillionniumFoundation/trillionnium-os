@@ -2,10 +2,11 @@
 """Apply the exact v10 Rust test-closure repairs.
 
 The v9 applicator owns every previously reviewed production and fixture repair.
-This wrapper makes the pipe close test actually wait for EOF before completing
-and narrows dead-code allowance to the four integration-test-local copies of
-the persistence implementation. Production warning policy and runtime control
-semantics remain unchanged. This is exact-preimage and requires ``--apply``.
+This wrapper makes the pipe close test actually wait for EOF before completing,
+narrows dead-code allowance to the four integration-test-local copies of the
+persistence implementation, and fails closed when an explicitly configured
+journal is temporarily unavailable. Deliberate memory-only operation remains
+unchanged. This is exact-preimage and requires ``--apply``.
 """
 
 from __future__ import annotations
@@ -32,6 +33,101 @@ def repair_pipe_close_fixture() -> None:
         "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
         "            \"IFS= read -r line; printf 'got:%s' \\\"$line\\\"\".to_string(),\n",
         "            \"IFS= read -r line; cat >/dev/null; printf 'got:%s' \\\"$line\\\"\".to_string(),\n",
+    )
+
+
+def fail_closed_configured_unavailable_journal() -> None:
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+        "        if begin.disposition == BeginDisposition::Existing {\n"
+        "            return Ok(JobStartResult {\n"
+        "                disposition: match &begin.snapshot.state {\n"
+        "                    JobEffectiveState::Terminal { .. } => StartDisposition::ExistingTerminal,\n"
+        "                    JobEffectiveState::UnknownAfterRestart { .. }\n"
+        "                    | JobEffectiveState::ProvenNotStartedAfterRestart => {\n"
+        "                        StartDisposition::UnknownAfterRestart\n"
+        "                    }\n"
+        "                    _ => StartDisposition::ExistingLive,\n"
+        "                },\n"
+        "                snapshot: Some(begin.snapshot),\n"
+        "                replay_status: self.replay_status(false)?,\n"
+        "            });\n"
+        "        }\n\n"
+        "        let operation_sha256 = start_operation_sha256(&request)?;\n",
+        "        if begin.disposition == BeginDisposition::Existing {\n"
+        "            return Ok(JobStartResult {\n"
+        "                disposition: match &begin.snapshot.state {\n"
+        "                    JobEffectiveState::Terminal { .. } => StartDisposition::ExistingTerminal,\n"
+        "                    JobEffectiveState::UnknownAfterRestart { .. }\n"
+        "                    | JobEffectiveState::ProvenNotStartedAfterRestart => {\n"
+        "                        StartDisposition::UnknownAfterRestart\n"
+        "                    }\n"
+        "                    _ => StartDisposition::ExistingLive,\n"
+        "                },\n"
+        "                snapshot: Some(begin.snapshot),\n"
+        "                replay_status: self.replay_status(false)?,\n"
+        "            });\n"
+        "        }\n"
+        "        if matches!(\n"
+        "            self.inner.journal.status()?,\n"
+        "            JournalStatus::Unavailable { .. }\n"
+        "        ) {\n"
+        "            let snapshot = self\n"
+        "                .inner\n"
+        "                .registry\n"
+        "                .mark_restart_uncertain(&request.key)\n"
+        "                .map_err(registry_error)?;\n"
+        "            return Ok(JobStartResult {\n"
+        "                disposition: StartDisposition::UnknownAfterRestart,\n"
+        "                snapshot: Some(snapshot),\n"
+        "                replay_status: ReplayStatus::UnknownAfterRestart,\n"
+        "            });\n"
+        "        }\n\n"
+        "        let operation_sha256 = start_operation_sha256(&request)?;\n",
+    )
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
+        "use trillionnium_owner_open_job_runtime::{\n"
+        "    ControlDisposition, JobInvocation, JobJournal, JobManager, JobRuntimeConfig, JobStartRequest,\n"
+        "    PtySize, RuntimeJobEventKind, StartDisposition,\n"
+        "};\n",
+        "use trillionnium_owner_open_job_runtime::{\n"
+        "    ControlDisposition, JobInvocation, JobJournal, JobManager, JobRuntimeConfig, JobStartRequest,\n"
+        "    JournalStatus, PtySize, RuntimeJobEventKind, StartDisposition,\n"
+        "};\n",
+    )
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
+        "    assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);\n"
+        "    assert!(!marker.exists());\n"
+        "}\n",
+        "    assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);\n"
+        "    assert!(!marker.exists());\n"
+        "}\n\n"
+        "#[test]\n"
+        "fn configured_unavailable_journal_is_unknown_and_never_dispatched() {\n"
+        "    let directory = tempfile::tempdir().unwrap();\n"
+        "    let journal_path = directory.path().join(\"jobs.jsonl\");\n"
+        "    let held = JobJournal::open_best_effort(Some(&journal_path));\n"
+        "    assert_eq!(held.status().unwrap(), JournalStatus::Durable);\n"
+        "    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();\n"
+        "    assert!(matches!(\n"
+        "        manager.journal().status().unwrap(),\n"
+        "        JournalStatus::Unavailable { .. }\n"
+        "    ));\n"
+        "    let marker = directory.path().join(\"must-not-run-unavailable\");\n"
+        "    let result = manager\n"
+        "        .start(start_request(\n"
+        "            key(\"job-unavailable\"),\n"
+        "            request('f', \"pipe\"),\n"
+        "            \"start-unavailable\",\n"
+        "            format!(\"touch '{}'\", marker.display()),\n"
+        "            None,\n"
+        "        ))\n"
+        "        .unwrap();\n"
+        "    assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);\n"
+        "    assert!(!marker.exists());\n"
+        "}\n",
     )
 
 
@@ -66,6 +162,7 @@ def main() -> int:
     if BASE.main() != 0:
         raise RuntimeError("v9 R5 Rust closeout applicator failed")
     repair_pipe_close_fixture()
+    fail_closed_configured_unavailable_journal()
     narrow_test_local_persistence_allowance()
     print("PASS_R5_RUST_CLOSEOUT_V10_APPLIED")
     return 0
