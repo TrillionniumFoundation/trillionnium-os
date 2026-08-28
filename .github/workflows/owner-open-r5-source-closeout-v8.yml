@@ -1,0 +1,239 @@
+name: owner-open R5 strict source closeout v8
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "codex/owner-open-r5-tool-loop-20260827"
+    paths:
+      - ".github/workflows/owner-open-r5-source-closeout-v8.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-open-r5-source-closeout-v8-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  validate-and-land:
+    name: Validate v8 Host imports and complete source closure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: codex/owner-open-r5-tool-loop-20260827
+          persist-credentials: true
+          fetch-depth: 2
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: 1.93.0
+          components: rustfmt, clippy
+
+      - name: Apply exact v8 repairs and bind source delta
+        run: |
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v8
+          rm -rf "$evidence"
+          mkdir -p "$evidence"
+          git rev-parse HEAD | tee "$evidence/base-head.txt"
+          python3 --version 2>&1 | tee "$evidence/python-version.txt"
+          rustc --version --verbose 2>&1 | tee "$evidence/rustc-version.txt"
+          cargo -Vv 2>&1 | tee "$evidence/cargo-version.txt"
+          python3 -m py_compile \
+            tools/owner-open/apply_r5_rust_closeout_v3.py \
+            tools/owner-open/apply_r5_rust_closeout_v5.py \
+            tools/owner-open/apply_r5_rust_closeout_v6.py \
+            tools/owner-open/apply_r5_rust_closeout_v7.py \
+            tools/owner-open/apply_r5_rust_closeout_v8.py
+          python3 tools/owner-open/apply_r5_rust_closeout_v8.py --apply \
+            2>&1 | tee "$evidence/applicator.log"
+          grep -Fxq PASS_R5_RUST_CLOSEOUT_V8_APPLIED "$evidence/applicator.log"
+          cargo fmt --all 2>&1 | tee "$evidence/cargo-fmt.log"
+          cargo fmt --all -- --check 2>&1 | tee "$evidence/cargo-fmt-check.log"
+          git diff --check 2>&1 | tee "$evidence/git-diff-check.log"
+          cat > "$evidence/expected-changed-files.txt" <<'EOF'
+          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs
+          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs
+          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs
+          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs
+          apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs
+          apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs
+          apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs
+          crates/trillionnium-owner-open-call-registry/src/lib.rs
+          crates/trillionnium-owner-open-call-registry/tests/concurrency.rs
+          crates/trillionnium-owner-open-event-store/src/lib.rs
+          crates/trillionnium-owner-open-job-runtime/src/manager.rs
+          crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs
+          crates/trillionnium-owner-open-tool-bridge/src/lib.rs
+          EOF
+          git diff --name-only | sort > "$evidence/changed-files.txt"
+          diff -u "$evidence/expected-changed-files.txt" "$evidence/changed-files.txt" \
+            | tee "$evidence/changed-files.diff"
+
+      - name: Create clean local candidate commit
+        run: |
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v8
+          git config user.name "R5 validation fixture"
+          git config user.email "r5-validation@invalid.local"
+          git add \
+            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs \
+            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs \
+            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs \
+            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs \
+            apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs \
+            apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs \
+            apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs \
+            crates/trillionnium-owner-open-call-registry/src/lib.rs \
+            crates/trillionnium-owner-open-call-registry/tests/concurrency.rs \
+            crates/trillionnium-owner-open-event-store/src/lib.rs \
+            crates/trillionnium-owner-open-job-runtime/src/manager.rs \
+            crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs \
+            crates/trillionnium-owner-open-tool-bridge/src/lib.rs
+          git commit -m "fix: close R5 Host imports and Rust source gates"
+          git rev-parse HEAD | tee "$evidence/candidate-head.txt"
+          git diff HEAD^ --binary > "$evidence/candidate.patch"
+          git diff HEAD^ --stat > "$evidence/candidate.stat"
+          git diff-tree --no-commit-id --name-only -r HEAD \
+            > "$evidence/candidate-files.txt"
+          test -z "$(git status --porcelain=v1)"
+
+      - name: Compile focused control and transport Host targets
+        run: |
+          set -Eeuo pipefail
+          cargo test --locked \
+            -p trillionnium-owner-open-host \
+            --bin trillionnium-owner-open-r5-core \
+            --no-run \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v8/control-host-build.log
+          cargo test --locked \
+            -p trillionnium-owner-open-host \
+            --bin trillionnium-owner-open-r5-host \
+            --no-run \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v8/transport-host-build.log
+
+      - name: Run generated-source and graph gates
+        run: |
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v8
+          python3 tools/generate-owner-open-types.py --check \
+            2>&1 | tee "$evidence/generated-types.log"
+          python3 tools/verify-owner-open-r5.py --json \
+            2>&1 | tee "$evidence/r5-graph.json"
+          python3 -m unittest tools.tests.test_verify_owner_open_r5 -v \
+            2>&1 | tee "$evidence/r5-verifier-tests.log"
+
+      - name: Run complete Python source suite
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          set -Eeuo pipefail
+          python3 -m unittest discover -s tools/tests -p 'test_*.py' -v \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v8/python-discover.log
+
+      - name: Run focused call-registry concurrency closure
+        run: |
+          set -Eeuo pipefail
+          cargo test --locked \
+            -p trillionnium-owner-open-call-registry \
+            --test concurrency \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v8/call-registry-concurrency.log
+
+      - name: Run complete default Rust test closure
+        run: |
+          set -Eeuo pipefail
+          cargo test --locked --all-targets \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v8/rust-test.log
+
+      - name: Run complete default Rust clippy closure
+        run: |
+          set -Eeuo pipefail
+          cargo clippy --locked --all-targets -- -D warnings \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v8/rust-clippy.log
+
+      - name: Capture locked Cargo graph and terminal claim ceiling
+        run: |
+          set -Eeuo pipefail
+          evidence=/tmp/owner-open-r5-source-closeout-v8
+          cargo metadata --locked --format-version 1 \
+            > "$evidence/cargo-metadata.json" \
+            2> "$evidence/cargo-metadata.stderr"
+          cargo tree --locked -e features \
+            > "$evidence/cargo-tree.txt" \
+            2> "$evidence/cargo-tree.stderr"
+          mkdir -p "$evidence/files"
+          while IFS= read -r path; do
+            test -n "$path" || continue
+            mkdir -p "$evidence/files/$(dirname "$path")"
+            cp -- "$path" "$evidence/files/$path"
+          done < "$evidence/candidate-files.txt"
+          BASE_HEAD="$(cat "$evidence/base-head.txt")" \
+          CANDIDATE_HEAD="$(cat "$evidence/candidate-head.txt")" \
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          output = Path("/tmp/owner-open-r5-source-closeout-v8/qualification-terminal.json")
+          value = {
+              "schema": "org.trillionnium.owner-open.r5-source-closeout.v8",
+              "status": "passed",
+              "base_head": os.environ["BASE_HEAD"],
+              "candidate_head": os.environ["CANDIDATE_HEAD"],
+              "python_source_suite": "passed",
+              "control_host_target": "passed",
+              "transport_host_target": "passed",
+              "call_registry_cancel_before_spawn": "passed",
+              "rust_default_all_targets_test": "passed",
+              "rust_default_all_targets_clippy_deny_warnings": "passed",
+              "cargo_locked_metadata": "captured",
+              "cargo_locked_feature_tree": "captured",
+              "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
+              "installed_codex_qualified": False,
+              "android_image_qualified": False,
+              "public_release": False,
+              "automatic_redispatch": False,
+          }
+          output.write_text(
+              json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          sha256sum "$evidence/candidate.patch" \
+            > "$evidence/candidate.patch.sha256"
+          (
+            cd "$evidence"
+            find . -type f ! -name SHA256SUMS -print0 \
+              | sort -z \
+              | xargs -0 sha256sum \
+              > SHA256SUMS
+            sha256sum -c SHA256SUMS > SHA256SUMS.verify
+          )
+
+      - name: Upload exact source-closeout evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-r5-source-closeout-v8-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: /tmp/owner-open-r5-source-closeout-v8/
+
+      - name: Push exact validated non-workflow candidate commit
+        run: |
+          set -Eeuo pipefail
+          git push origin HEAD:refs/heads/codex/owner-open-r5-tool-loop-20260827
