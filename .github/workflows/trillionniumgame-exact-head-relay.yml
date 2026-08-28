@@ -67,44 +67,72 @@ jobs:
           rustc --version --verbose
           cargo --version --verbose
 
-      - name: Run format, tests, strict Clippy and source checks
+      - name: Emit formatting repair, then run tests and strict Clippy
         working-directory: source
         shell: bash
         run: |
           set -uo pipefail
-          mkdir -p relay-evidence
+          mkdir -p relay-evidence/formatted
           rustc --version --verbose > relay-evidence/rustc-version.txt
           cargo --version --verbose > relay-evidence/cargo-version.txt
           git rev-parse HEAD > relay-evidence/commit.txt
           git rev-parse HEAD^{tree} > relay-evidence/tree.txt
 
           set +e
-          cargo fmt --all -- --check 2>&1 | tee relay-evidence/cargo-fmt.log
-          fmt_status=${PIPESTATUS[0]}
+          cargo fmt --all 2>&1 | tee relay-evidence/cargo-fmt-apply.log
+          fmt_apply_status=${PIPESTATUS[0]}
+          git diff --binary -- . ':(exclude)relay-evidence' > relay-evidence/cargo-fmt.patch
+          git diff --name-only -- . ':(exclude)relay-evidence' > relay-evidence/cargo-fmt-files.txt
+          if [[ -s relay-evidence/cargo-fmt-files.txt ]]; then
+            while IFS= read -r path; do
+              mkdir -p "relay-evidence/formatted/$(dirname "$path")"
+              cp "$path" "relay-evidence/formatted/$path"
+            done < relay-evidence/cargo-fmt-files.txt
+            source_format_clean=1
+          else
+            source_format_clean=0
+          fi
+          cargo fmt --all -- --check 2>&1 | tee relay-evidence/cargo-fmt-check.log
+          fmt_check_status=${PIPESTATUS[0]}
           cargo test --workspace --all-targets --locked 2>&1 | tee relay-evidence/cargo-test.log
           test_status=${PIPESTATUS[0]}
           cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
           clippy_status=${PIPESTATUS[0]}
-          python3 -m compileall -q scripts tests tools 2>&1 | tee relay-evidence/python-compileall.log
-          python_status=${PIPESTATUS[0]}
+
+          python_paths=()
+          for path in scripts tests tools; do
+            [[ -d "$path" ]] && python_paths+=("$path")
+          done
+          if (( ${#python_paths[@]} )); then
+            python3 -m compileall -q "${python_paths[@]}" 2>&1 | tee relay-evidence/python-compileall.log
+            python_status=${PIPESTATUS[0]}
+          else
+            : > relay-evidence/python-compileall.log
+            python_status=0
+          fi
           set -e
 
           python3 - <<PY
           import json
           from pathlib import Path
+          statuses = {
+              'cargo_fmt_apply': int('${fmt_apply_status}'),
+              'cargo_fmt_check_after_apply': int('${fmt_check_status}'),
+              'source_format_clean': int('${source_format_clean}'),
+              'cargo_test': int('${test_status}'),
+              'cargo_clippy': int('${clippy_status}'),
+              'python_compileall': int('${python_status}'),
+          }
           value = {
-              'schema': 'trillionnium.game.exact-head-relay.v1',
+              'schema': 'trillionnium.game.exact-head-relay.v2',
               'repository': 'TrillionniumFoundation/TrillionniumGame',
               'label': '${{ matrix.label }}',
               'commit': '${{ matrix.ref }}',
-              'statuses': {
-                  'cargo_fmt': int('${fmt_status}'),
-                  'cargo_test': int('${test_status}'),
-                  'cargo_clippy': int('${clippy_status}'),
-                  'python_compileall': int('${python_status}'),
-              },
-              'all_passed': all(int(x) == 0 for x in [
-                  '${fmt_status}', '${test_status}', '${clippy_status}', '${python_status}'
+              'statuses': statuses,
+              'format_patch_required': statuses['source_format_clean'] != 0,
+              'all_passed': all(statuses[key] == 0 for key in [
+                  'cargo_fmt_apply', 'cargo_fmt_check_after_apply', 'source_format_clean',
+                  'cargo_test', 'cargo_clippy', 'python_compileall'
               ]),
               'claims': {
                   'same_repository_actions_unblocked': False,
@@ -117,17 +145,19 @@ jobs:
               encoding='utf-8',
           )
           PY
-          sha256sum relay-evidence/* > relay-evidence/SHA256SUMS
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z \
+            | xargs -0 sha256sum > relay-evidence/SHA256SUMS
 
-          if (( fmt_status || test_status || clippy_status || python_status )); then
+          if (( fmt_apply_status || fmt_check_status || source_format_clean || test_status || clippy_status || python_status )); then
             exit 1
           fi
 
-      - name: Upload exact-head relay evidence
+      - name: Upload exact-head relay evidence and repair files
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: trillionniumgame-${{ matrix.label }}-${{ matrix.ref }}
+          name: trillionniumgame-${{ matrix.label }}-${{ matrix.ref }}-run-${{ github.run_number }}
           path: source/relay-evidence
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
