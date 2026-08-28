@@ -62,7 +62,8 @@ impl StreamDelivery {
 
     fn disable_and_release(&mut self) -> Vec<RunTurnFrame> {
         self.window = None;
-        self.gap = None;
+        // Preserve an existing gap through turn terminal. Losing durable
+        // storage cannot make already-suppressed delivery magically complete.
         self.control_fingerprints.clear();
         self.queued_bytes = 0;
         self.queue.drain(..).map(|item| item.frame).collect()

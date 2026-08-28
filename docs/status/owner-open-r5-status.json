@@ -3,10 +3,9 @@
   "plan_revision": "2026-08-28-r5",
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
-  "source_lineage_base": "580a720751a0baf6c974b7ea12a1d0bf7725511a",
-  "status_cut_parent": "8ff29bf396cc75639aa4028e1919bc3f3f7611e7",
+  "status_cut_parent": "b3c63d97227d358872bf3333bd10ec8def8cf782",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open source implementation with same-turn callbacks, active cancellation, durable replay, wire-level read-only turn/call inspection, and an isolated bounded stream-window state machine; no executed Rust, Android, physical-device, real-Codex, real-ADB or release claim",
+  "product_claim": "owner-open source implementation with same-turn callbacks, active cancellation, durable replay, wire inspection, and a selected v5 bounded stream-delivery carrier over the reviewed v4 execution core; no executed Rust, Android, physical-device, real-Codex, real-ADB or release claim",
   "public_release": false,
   "status_levels": [
     "NOT_STARTED",
@@ -28,29 +27,30 @@
     "L6": "signed public release qualification"
   },
   "local_l0_execution": {
-    "status": "PASS_STATIC_BATCH_D_PRECHECK_ONLY",
+    "status": "PASS_STATIC_V5_FLOW_SOURCE_PRECHECK_ONLY",
     "date": "2026-08-28",
     "environment": "Python 3.13.5 on Linux x86_64; Rust toolchain unavailable",
     "checks": [
-      "new JSON documents parsed",
-      "new Python generator compiled",
-      "generated owner-open constants matched the authored generator values",
-      "new Rust sources passed bounded source-shape checks only"
+      "all authored JSON parsed",
+      "Rust delimiter/string/comment balance checked",
+      "selected Host manifest and graph were generated coherently",
+      "flow-control tests were authored but not executed"
     ],
     "exact_checkout": false,
-    "claim_ceiling": "L0 source and document preparation only"
+    "claim_ceiling": "L0 source preparation only"
   },
   "ci_observation": {
-    "observed_candidate_head": "cfd75de828e3ec5a41d99659df0c6d477407b9cb",
-    "owner_open_r5_run_id": 33131427213,
+    "observed_head": "b3c63d97227d358872bf3333bd10ec8def8cf782",
+    "owner_open_r5_run_id": 33131657964,
     "workflow_conclusion": "failure",
     "jobs": [
-      "Rust 1.93 inspect, flow-control and recovery closure",
-      "R5 graph and machine contracts"
+      "R5 graph and machine contracts",
+      "Rust 1.93 inspect, flow-control and recovery closure"
     ],
+    "runner_id": 0,
     "steps_observed": 0,
     "logs_available": false,
-    "interpretation": "both jobs completed with steps=null and no logs; no source command executed, so this is neither a Rust pass nor a Rust source failure"
+    "interpretation": "both jobs completed with empty steps and no runner; no source command executed"
   },
   "work_packages": [
     {
@@ -60,14 +60,15 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "the exact Cargo default closure includes Host, types, runtime, call registry, event store, provider JSONL, stream window, tool bridge and turn loop",
-        "the Host package disables automatic binary discovery and selects src/bin/r5_control_host_v4.rs",
-        "the negative graph contract rejects legacy dependencies and superseded Host entrypoints"
+        "exact owner-open default closure includes stream-window",
+        "Host autobin discovery is disabled",
+        "selected binaries are foundation Host, v4 execution core, and v5 transport carrier",
+        "legacy semantic dependencies remain forbidden"
       ],
       "open": [
-        "execute the exact graph verifier and Rust 1.93 commands on a real runner",
-        "split the Android owner-open product profile",
-        "collect strict Soong, init, SELinux and target-files negative evidence"
+        "execute exact verifier and Rust 1.93 commands",
+        "split Android owner-open product profile",
+        "collect Soong/init/SELinux/target-files negative evidence"
       ]
     },
     {
@@ -77,15 +78,14 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "provider and runtime events reach a synchronous Host sink while work is active",
-        "turn.cancel and targeted tool.cancel remain serviceable during an active turn",
-        "client EOF or output detachment does not imply cancellation",
-        "turn.inspect and call.inspect are accepted while a turn is active without changing turn or call state"
+        "v4 core preserves same-turn streaming, cancellation and inspect",
+        "v5 carrier leaves cancellation and inspect frames outside the high-volume credit gate",
+        "client output detachment does not cancel accepted work",
+        "transport terminal delivery status is recorded in a separate append-only transport journal"
       ],
       "open": [
-        "execute streaming, cancellation and wire-inspection process tests",
-        "integrate the bounded stream window into Host delivery",
-        "define multi-connection ownership and cross-connection controls",
+        "execute all active-control and proxy-compatibility tests",
+        "define multi-connection ownership",
         "add durable job-level controls"
       ]
     },
@@ -97,14 +97,12 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "bounded provider JSONL process and duplex tool-result transport",
-        "provider cancellation acknowledgement and finite cleanup grace",
-        "existing Codex CLI probe and launch-prefix tools remain the pre-bind capability-discovery path"
+        "provider cancellation acknowledgement and finite cleanup grace"
       ],
       "open": [
-        "execute provider tests on a real runner",
-        "run the probe against the installed Codex executable in the target Root Linux environment",
-        "translate observed Codex JSON or app-server events into the provider protocol",
-        "capture a real same-turn L2 result"
+        "run against installed Codex executable",
+        "translate observed Codex JSON/app-server events",
+        "capture real same-turn L2 result"
       ]
     },
     {
@@ -115,14 +113,13 @@
       "latest_evidence_level": "L0",
       "implemented": [
         "command-string and exact argv execution",
-        "cwd, environment delta, binary stdin, raw stdout and stderr",
-        "process groups, timeout, cancellation, output exhaustion and descendant cleanup"
+        "cwd/env/binary stdin/raw output",
+        "process groups, timeout, cancellation, output bounds and descendant cleanup"
       ],
       "open": [
         "execute runtime and bridge tests",
         "add PTY and durable interactive jobs",
-        "place execution in the configured Root Linux identity and namespaces",
-        "collect physical Root Linux evidence"
+        "collect Root Linux evidence"
       ]
     },
     {
@@ -132,14 +129,14 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "ordinary configured adb receives exact argv without serial, host or port injection",
-        "unknown subcommands remain mechanically valid",
-        "tool and turn cancellation use the same process-group lifecycle"
+        "configured adb receives exact argv",
+        "unknown subcommands remain valid",
+        "no serial/host/port injection"
       ],
       "open": [
-        "implement the physical ARM64 adb client/server or byte-transparent relay topology",
-        "test USB, unauthorized, offline, recovery and reboot behavior",
-        "collect same-turn physical ADB evidence"
+        "implement physical ARM64 client/server or transparent relay topology",
+        "test USB/offline/unauthorized/recovery/reboot",
+        "collect physical ADB evidence"
       ]
     },
     {
@@ -149,17 +146,20 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "append-only durable event records, completed replay and conservative incomplete recovery",
-        "Persistence::inspect exposes bounded inclusive read-only slices",
-        "the selected Host exposes turn.inspect and call.inspect without appending responses, starting providers, claiming calls or redispatching effects",
-        "call.inspect uses live registry state when present and durable call-correlated frames after restart",
-        "the stream-window crate provides finite byte credit, pause, resume, close, exact control sequence and bounded history"
+        "append-only durable effects and conservative replay remain in v4 core",
+        "turn.inspect and call.inspect remain available through the carrier",
+        "v5 flow is opt-in and defaults to passthrough",
+        "window/pause/resume use exact control sequence and payload fingerprints",
+        "high-volume frames are bounded in memory after durable append",
+        "overflow emits cursor-bound resync_required instead of silently losing truth",
+        "terminal/control/lifecycle frames bypass the high-volume gate",
+        "flow activation requires an available durable store"
       ],
       "open": [
-        "execute persistence, replay, wire-inspection and stream-window tests",
-        "bind stream.window_update, stream.pause and stream.resume to actual Host output queues",
-        "add cross-process attach and durable long-running jobs",
-        "qualify ENOSPC, partial write, Host crash and power loss"
+        "execute stream-flow process tests",
+        "bind runner evidence and Cargo.lock",
+        "add durable jobs and cross-process attach",
+        "qualify ENOSPC/partial write/crash/power loss"
       ]
     },
     {
@@ -171,13 +171,13 @@
       "implemented": [],
       "open": [
         "clean Android owner-open product profile",
-        "init, Android abstract socket and SELinux peer admission",
-        "Root Linux lifecycle and writable overlay",
-        "thin AiShell streaming, cancel, reconnect and inspect client",
-        "out-of-band emergency stop",
-        "clean target-files and physical normal-path evidence"
+        "init/abstract socket/SELinux",
+        "Root Linux lifecycle",
+        "thin AiShell flow-control and inspect client",
+        "emergency stop",
+        "clean target-files and physical evidence"
       ],
-      "hold": "the checked-in Android audit overlay still selects the pre-r3 Authority, lease, P01 and old shell-broker graph"
+      "hold": "checked-in Android audit overlay still selects the pre-r3 Authority/lease/P01/old shell-broker graph"
     },
     {
       "id": "W7",
@@ -186,36 +186,34 @@
       "complete": false,
       "latest_evidence_level": "L0",
       "implemented": [
-        "R5 evidence vocabulary, promotion boundaries and source checkpoint records"
+        "R5 evidence vocabulary and source checkpoint boundaries"
       ],
       "open": [
-        "runner-backed L1 and L2 evidence",
-        "clean Android L3 evidence",
-        "physical L4 same-turn shell and ADB",
-        "L5 provider, Host, client, USB, reboot, ENOSPC and power-loss matrix",
-        "Codex self-build, install and recovery loop",
-        "separate signed L6 release profile"
+        "runner-backed L1/L2",
+        "clean Android L3",
+        "physical L4 shell/ADB",
+        "L5 failure matrix",
+        "Codex self-development loop",
+        "separate signed L6 profile"
       ]
     }
   ],
   "critical_path_next": [
-    "obtain an actual Rust 1.93 runner and fix every format, compile, test and clippy finding",
-    "integrate the bounded stream window into Host delivery and prove pause, resume and credit replenishment",
-    "add durable jobs with inspect, attach, write, resize, close-stdin and kill",
-    "probe and bind the installed Codex provider",
-    "implement the real ADB topology",
-    "cut the Android owner-open product graph and collect clean target-files evidence"
+    "obtain Rust 1.93 runner and fix fmt/compile/test/clippy",
+    "add durable jobs with attach/write/resize/close-stdin/kill",
+    "probe and bind installed Codex",
+    "implement real ADB topology",
+    "cut Android owner-open graph and collect target-files evidence"
   ],
   "not_claimed": [
-    "successful Rust formatting, compilation, tests or clippy for the current source cut",
-    "reviewed Cargo.lock generated by the current source closure",
-    "executed proof that wire-level turn.inspect or call.inspect passes",
-    "Host-integrated stream credit, pause or resume",
+    "successful Rust formatting/compilation/tests/clippy",
+    "reviewed Cargo.lock",
+    "executed v5 flow-control proof",
     "live installed Codex turn",
-    "real ARM64 adb or transparent relay",
+    "real ARM64 adb or relay",
     "Android image inclusion",
     "physical shell or ADB effect",
-    "Host crash, ENOSPC, reboot or power-loss conformance",
+    "fault/reboot/power-loss conformance",
     "public release"
   ]
 }
