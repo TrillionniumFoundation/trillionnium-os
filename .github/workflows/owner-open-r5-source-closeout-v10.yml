@@ -1,5 +1,5 @@
 name: owner-open R5 strict source closeout v10
-# retrigger: configured-unavailable journal fail-closed regression passed focused diagnostics
+# retrigger: include exact stream-window Clippy closure in the validated source candidate
 
 on:
   workflow_dispatch:
@@ -87,6 +87,7 @@ jobs:
           crates/trillionnium-owner-open-job-runtime/src/manager.rs
           crates/trillionnium-owner-open-job-runtime/tests/runtime.rs
           crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs
+          crates/trillionnium-owner-open-stream-window/src/lib.rs
           crates/trillionnium-owner-open-tool-bridge/src/lib.rs
           EOF
           git diff --name-only | sort > "$evidence/changed-files.txt"
@@ -117,6 +118,7 @@ jobs:
             crates/trillionnium-owner-open-job-runtime/src/manager.rs \
             crates/trillionnium-owner-open-job-runtime/tests/runtime.rs \
             crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs \
+            crates/trillionnium-owner-open-stream-window/src/lib.rs \
             crates/trillionnium-owner-open-tool-bridge/src/lib.rs
           git commit -m "fix: close R5 EOF control and complete source gates"
           git rev-parse HEAD | tee "$evidence/candidate-head.txt"
@@ -153,6 +155,14 @@ jobs:
             -p trillionnium-owner-open-host \
             --test r5_wire_inspect \
             2>&1 | tee /tmp/owner-open-r5-source-closeout-v10/wire-inspect.log
+
+      - name: Run focused stream-window Clippy closure
+        run: |
+          set -Eeuo pipefail
+          cargo clippy --locked \
+            -p trillionnium-owner-open-stream-window \
+            --all-targets -- -D warnings \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v10/stream-window-clippy.log
 
       - name: Run generated-source and graph gates
         run: |
@@ -218,6 +228,7 @@ jobs:
               "pipe_eof_control": "passed",
               "configured_unavailable_journal_fail_closed": "passed",
               "wire_inspect_active_and_completed": "passed",
+              "stream_window_clippy": "passed",
               "rust_default_all_targets_test": "passed",
               "rust_default_all_targets_clippy_deny_warnings": "passed",
               "cargo_locked_metadata": "captured",
