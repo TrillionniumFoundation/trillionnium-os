@@ -17,7 +17,7 @@ concurrency:
 
 env:
   TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
-  TARGET_SHA: 491beff41d6a7dda040e20fe396ffd4b979c04de
+  TARGET_SHA: bcee51bc0c80ced445b19b0111cadf04f9540280
   CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 jobs:
@@ -33,74 +33,16 @@ jobs:
           path: source
           fetch-depth: 1
           persist-credentials: false
-
       - name: Install Rust 1.85.1
         shell: bash
         run: |
           set -euo pipefail
           rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
           rustup default 1.85.1
-
-      - name: Resolve, format and validate adapter
+      - name: Materialize lockfile and validate exact head
         working-directory: source
-        shell: bash
-        run: |
-          set -uo pipefail
-          evidence=pgwire-evidence/materialize
-          mkdir -p "$evidence/materialized"
-          git rev-parse HEAD > "$evidence/commit.txt"
-          git rev-parse HEAD^{tree} > "$evidence/tree.txt"
-          rustc --version --verbose > "$evidence/rustc-version.txt"
-          cargo --version --verbose > "$evidence/cargo-version.txt"
-
-          set +e
-          cargo generate-lockfile 2>&1 | tee "$evidence/cargo-generate-lockfile.log"
-          lock_status=${PIPESTATUS[0]}
-          cargo fmt --all 2>&1 | tee "$evidence/cargo-fmt-apply.log"
-          fmt_apply_status=${PIPESTATUS[0]}
-          git diff --binary > "$evidence/materialization.patch"
-          git diff --name-only > "$evidence/materialized-files.txt"
-          while IFS= read -r path; do
-            [[ -z "$path" ]] && continue
-            mkdir -p "$evidence/materialized/$(dirname "$path")"
-            cp "$path" "$evidence/materialized/$path"
-          done < "$evidence/materialized-files.txt"
-          cargo fmt --all -- --check 2>&1 | tee "$evidence/cargo-fmt-check.log"
-          fmt_check_status=${PIPESTATUS[0]}
-          cargo test --workspace --all-targets 2>&1 | tee "$evidence/cargo-test.log"
-          test_status=${PIPESTATUS[0]}
-          cargo clippy --workspace --all-targets -- -D warnings 2>&1 | tee "$evidence/cargo-clippy.log"
-          clippy_status=${PIPESTATUS[0]}
-          python3 -m compileall -q scripts 2>&1 | tee "$evidence/python-compileall.log"
-          python_status=${PIPESTATUS[0]}
-          python3 scripts/check-pgwire-persistence-adapter.py 2>&1 | tee "$evidence/static-contract.log"
-          contract_status=${PIPESTATUS[0]}
-          set -e
-
-          python3 - <<PY
-          import json
-          from pathlib import Path
-          statuses = {
-              'generate_lockfile': int('$lock_status'),
-              'cargo_fmt_apply': int('$fmt_apply_status'),
-              'cargo_fmt_check': int('$fmt_check_status'),
-              'cargo_test': int('$test_status'),
-              'cargo_clippy': int('$clippy_status'),
-              'python_compileall': int('$python_status'),
-              'static_contract': int('$contract_status'),
-          }
-          Path('$evidence/summary.json').write_text(json.dumps({
-              'schema':'trillionnium.game.pgwire-adapter-materialization.v1',
-              'target_commit':'$TARGET_SHA','statuses':statuses,
-              'all_passed':all(v == 0 for v in statuses.values()),
-              'claims':{'live_postgresql_verified':False,'live_cockroachdb_verified':False,
-                        'production_tls_verified':False,'production_ready':False}},
-              sort_keys=True,separators=(',',':'))+'\n',encoding='utf-8')
-          PY
-          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
-          if (( lock_status || fmt_apply_status || fmt_check_status || test_status || clippy_status || python_status || contract_status )); then exit 1; fi
-
-      - name: Upload materialized lock and source evidence
+        run: bash scripts/ci-pgwire-persistence-adapter.sh materialize
+      - name: Upload materialized source evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -128,68 +70,9 @@ jobs:
           set -euo pipefail
           rustup toolchain install 1.85.1 --profile minimal
           rustup default 1.85.1
-      - name: Run live PostgreSQL adapter contract
+      - name: Execute live PostgreSQL adapter contract
         working-directory: source
-        shell: bash
-        run: |
-          set -uo pipefail
-          evidence=pgwire-evidence/postgresql
-          mkdir -p "$evidence"
-          cargo generate-lockfile > "$evidence/cargo-generate-lockfile.log" 2>&1
-          lock_status=$?
-          docker pull postgres:16.4-bookworm > "$evidence/image-pull.log" 2>&1
-          pull_status=$?
-          if (( pull_status == 0 )); then
-            docker run --detach --name trnm-pgwire-postgresql -p 5432:5432 \
-              -e POSTGRES_USER=trnm -e POSTGRES_PASSWORD=trnm -e POSTGRES_DB=trnm \
-              postgres:16.4-bookworm > "$evidence/container-start.log" 2>&1
-            start_status=$?
-          else
-            start_status=1
-          fi
-          ready_status=1
-          if (( start_status == 0 )); then
-            for _ in $(seq 1 90); do
-              if PGPASSWORD=trnm psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 -U trnm -d trnm -c 'SELECT 1' >/dev/null 2>&1; then
-                ready_status=0
-                break
-              fi
-              sleep 1
-            done
-            docker logs trnm-pgwire-postgresql > "$evidence/container.log" 2>&1
-          fi
-          apply_status=1
-          test_status=1
-          if (( ready_status == 0 )); then
-            PGPASSWORD=trnm psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 -U trnm -d trnm \
-              < migrations/postgresql/0001_foundation_up.sql > "$evidence/apply.log" 2>&1
-            apply_status=$?
-          fi
-          if (( apply_status == 0 && lock_status == 0 )); then
-            TRNM_DATABASE_URL='postgresql://trnm:trnm@127.0.0.1:5432/trnm' \
-            TRNM_DATABASE_PROFILE='postgresql' \
-            TRNM_SCHEMA_SOURCE_COMMIT='e9b63462fa91383b06706894afed31b378f6b48c' \
-              cargo test -p trnm-persistence-pg --test runtime -- --nocapture \
-              > "$evidence/runtime-test.log" 2>&1
-            test_status=$?
-          fi
-          set -e
-          python3 - <<PY
-          import json
-          from pathlib import Path
-          statuses={'generate_lockfile':int('$lock_status'),'image_pull':int('$pull_status'),
-                    'container_start':int('$start_status'),'database_ready':int('$ready_status'),
-                    'migration_apply':int('$apply_status'),'live_runtime_test':int('$test_status')}
-          Path('$evidence/summary.json').write_text(json.dumps({
-              'schema':'trillionnium.game.pgwire-adapter-live.v1','profile':'postgresql',
-              'target_commit':'$TARGET_SHA','statuses':statuses,
-              'all_passed':all(v == 0 for v in statuses.values()),
-              'claims':{'reconnect_replay_verified':test_status == 0,
-                        'ha_verified':False,'production_tls_verified':False,'production_ready':False}},
-              sort_keys=True,separators=(',',':'))+'\n',encoding='utf-8')
-          PY
-          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
-          if (( lock_status || pull_status || start_status || ready_status || apply_status || test_status )); then exit 1; fi
+        run: bash scripts/ci-pgwire-persistence-adapter.sh postgresql
       - name: Upload PostgreSQL adapter evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -218,79 +101,9 @@ jobs:
           set -euo pipefail
           rustup toolchain install 1.85.1 --profile minimal
           rustup default 1.85.1
-      - name: Run live CockroachDB adapter contract
+      - name: Execute live CockroachDB adapter contract
         working-directory: source
-        shell: bash
-        run: |
-          set -uo pipefail
-          evidence=pgwire-evidence/cockroachdb
-          mkdir -p "$evidence"
-          cargo generate-lockfile > "$evidence/cargo-generate-lockfile.log" 2>&1
-          lock_status=$?
-          docker pull cockroachdb/cockroach:v24.1.2 > "$evidence/image-pull.log" 2>&1
-          pull_status=$?
-          if (( pull_status == 0 )); then
-            docker run --detach --name trnm-pgwire-cockroachdb --network host \
-              cockroachdb/cockroach:v24.1.2 \
-              start-single-node --insecure --listen-addr=127.0.0.1:26257 --http-addr=127.0.0.1:8080 \
-              > "$evidence/container-start.log" 2>&1
-            start_status=$?
-          else
-            start_status=1
-          fi
-          ready_status=1
-          if (( start_status == 0 )); then
-            for _ in $(seq 1 120); do
-              if docker exec trnm-pgwire-cockroachdb /cockroach/cockroach sql --insecure \
-                   --host=127.0.0.1:26257 --execute='SELECT 1' >/dev/null 2>&1; then
-                ready_status=0
-                break
-              fi
-              sleep 1
-            done
-            docker logs trnm-pgwire-cockroachdb > "$evidence/container.log" 2>&1
-          fi
-          create_status=1
-          apply_status=1
-          test_status=1
-          if (( ready_status == 0 )); then
-            docker exec trnm-pgwire-cockroachdb /cockroach/cockroach sql --insecure \
-              --host=127.0.0.1:26257 --execute='CREATE DATABASE trnm' \
-              > "$evidence/create-database.log" 2>&1
-            create_status=$?
-          fi
-          if (( create_status == 0 )); then
-            docker exec -i trnm-pgwire-cockroachdb /cockroach/cockroach sql --insecure \
-              --host=127.0.0.1:26257 --database=trnm \
-              < migrations/cockroachdb/0001_foundation_up.sql > "$evidence/apply.log" 2>&1
-            apply_status=$?
-          fi
-          if (( apply_status == 0 && lock_status == 0 )); then
-            TRNM_DATABASE_URL='postgresql://root@127.0.0.1:26257/trnm?sslmode=disable' \
-            TRNM_DATABASE_PROFILE='cockroachdb' \
-            TRNM_SCHEMA_SOURCE_COMMIT='e9b63462fa91383b06706894afed31b378f6b48c' \
-              cargo test -p trnm-persistence-pg --test runtime -- --nocapture \
-              > "$evidence/runtime-test.log" 2>&1
-            test_status=$?
-          fi
-          set -e
-          python3 - <<PY
-          import json
-          from pathlib import Path
-          statuses={'generate_lockfile':int('$lock_status'),'image_pull':int('$pull_status'),
-                    'container_start':int('$start_status'),'database_ready':int('$ready_status'),
-                    'create_database':int('$create_status'),'migration_apply':int('$apply_status'),
-                    'live_runtime_test':int('$test_status')}
-          Path('$evidence/summary.json').write_text(json.dumps({
-              'schema':'trillionnium.game.pgwire-adapter-live.v1','profile':'cockroachdb',
-              'target_commit':'$TARGET_SHA','statuses':statuses,
-              'all_passed':all(v == 0 for v in statuses.values()),
-              'claims':{'reconnect_replay_verified':test_status == 0,
-                        'ha_verified':False,'production_tls_verified':False,'production_ready':False}},
-              sort_keys=True,separators=(',',':'))+'\n',encoding='utf-8')
-          PY
-          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
-          if (( lock_status || pull_status || start_status || ready_status || create_status || apply_status || test_status )); then exit 1; fi
+        run: bash scripts/ci-pgwire-persistence-adapter.sh cockroachdb
       - name: Upload CockroachDB adapter evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
