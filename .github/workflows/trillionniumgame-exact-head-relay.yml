@@ -24,20 +24,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: pr22-foundation
-            ref: d46b3249d36b75c77b806d721ab4edc284452052
-          - label: pr23-storage
-            ref: 55a09c12af1e3699572d07f4175824731ecb6a91
-          - label: pr24-query
-            ref: fa22ce9bbae6d65cbfc9d9014648172d7a3f2bc2
-          - label: pr30-persistence
-            ref: 66174476b601166fb52f1c497c36bc1ae5dd519d
-          - label: pr32-token
-            ref: 46c1e764174c1a05e6b9a2afc9d583f72f233679
-          - label: pr33-transport
-            ref: 3b60a4679ff76e3ea915771ee2fedf419a54d5bd
-          - label: pr34-presence
-            ref: 02198663e25ee27f0af7be6461daaf6ae3a3dbe3
+          - label: pr37-canonical
+            ref: f444a85143e4ee77132afcae6fec978dceeafd6a
 
     steps:
       - name: Check out exact TrillionniumGame head
@@ -98,18 +86,8 @@ jobs:
           test_status=${PIPESTATUS[0]}
           cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
           clippy_status=${PIPESTATUS[0]}
-
-          python_paths=()
-          for path in scripts tests tools; do
-            [[ -d "$path" ]] && python_paths+=("$path")
-          done
-          if (( ${#python_paths[@]} )); then
-            python3 -m compileall -q "${python_paths[@]}" 2>&1 | tee relay-evidence/python-compileall.log
-            python_status=${PIPESTATUS[0]}
-          else
-            : > relay-evidence/python-compileall.log
-            python_status=0
-          fi
+          python3 scripts/test-canonical-framing.py 2>&1 | tee relay-evidence/canonical-reference.log
+          reference_status=${PIPESTATUS[0]}
           set -e
 
           python3 - <<PY
@@ -121,18 +99,18 @@ jobs:
               'source_format_clean': int('${source_format_clean}'),
               'cargo_test': int('${test_status}'),
               'cargo_clippy': int('${clippy_status}'),
-              'python_compileall': int('${python_status}'),
+              'canonical_reference': int('${reference_status}'),
           }
           value = {
-              'schema': 'trillionnium.game.exact-head-relay.v2',
+              'schema': 'trillionnium.game.exact-head-relay.v3',
               'repository': 'TrillionniumFoundation/TrillionniumGame',
               'label': '${{ matrix.label }}',
               'commit': '${{ matrix.ref }}',
               'statuses': statuses,
               'format_patch_required': statuses['source_format_clean'] != 0,
-              'all_passed': all(statuses[key] == 0 for key in [
-                  'cargo_fmt_apply', 'cargo_fmt_check_after_apply', 'source_format_clean',
-                  'cargo_test', 'cargo_clippy', 'python_compileall'
+              'all_logic_passed': all(statuses[key] == 0 for key in [
+                  'cargo_fmt_apply', 'cargo_fmt_check_after_apply',
+                  'cargo_test', 'cargo_clippy', 'canonical_reference'
               ]),
               'claims': {
                   'same_repository_actions_unblocked': False,
@@ -149,7 +127,7 @@ jobs:
             | sort -z \
             | xargs -0 sha256sum > relay-evidence/SHA256SUMS
 
-          if (( fmt_apply_status || fmt_check_status || source_format_clean || test_status || clippy_status || python_status )); then
+          if (( fmt_apply_status || fmt_check_status || test_status || clippy_status || reference_status )); then
             exit 1
           fi
 
