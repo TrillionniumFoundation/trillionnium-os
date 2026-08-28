@@ -7,18 +7,19 @@ does not add a second planner, risk engine or approval authority.
 
 ```text
 AiShell / owner client
-  -> owner-open Direct Agent Host
-  -> one Codex/provider turn
-  -> shell.exec / adb.exec
+  -> owner-open transport Host
+  -> job-aware v7 execution core
+  -> one Codex/provider turn or direct shell.job lifecycle
+  -> shell.exec / adb.exec / shell.job
   -> raw observation
-  -> the same provider turn
+  -> the same provider turn or attached owner client
 ```
 
 ## Current authority
 
 - [R3 semantic contract](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
 - [Active R5 implementation plan](docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md)
-- [Current Batch D checkpoint](docs/plan/owner-open-r5-batch-d-inspection-flow-control.md)
+- [Durable jobs closeout checkpoint](docs/plan/owner-open-r5-batch-d-jobs.md)
 - [Machine status](docs/status/owner-open-r5-status.json)
 - [Traceability](docs/status/owner-open-r5-traceability.tsv)
 - [Start page](docs/OWNER_OPEN_R5_START_HERE.md)
@@ -29,7 +30,7 @@ public release.
 
 ## Current source state
 
-Source-authored now:
+Source-authored and selected in the owner-open Cargo closure:
 
 - strict owner-open frame/tool codecs;
 - direct command-string and argv shell execution;
@@ -38,21 +39,21 @@ Source-authored now:
 - scoped call identity, at-most-one spawn and truthful uncertainty states;
 - same-turn streaming provider/tool callback;
 - external provider JSONL duplex and provider cancellation;
-- selected Host v4 with active `turn.cancel` and targeted `tool.cancel`;
-- per-event durable append, detached client delivery, completed replay and
-  conservative incomplete recovery;
-- read-only wire `turn.inspect` and `call.inspect`, with live-registry and
-  durable-frame paths and no automatic redispatch;
-- isolated bounded stream-window state for byte credit, pause, resume, close
-  and exact control sequencing;
+- v5 transport delivery with bounded window, pause/resume and durable resync;
+- selected job-aware v7 execution core beneath the transport carrier;
+- append-only durable turn and job observations with conservative recovery;
+- read-only `turn.inspect`, `call.inspect` and `job.inspect` paths;
+- direct long-running pipe/PTY jobs with attach, write, resize, close-stdin,
+  process-group kill and operation-level idempotency;
+- completed-job replay without child/provider redispatch;
 - exact negative Cargo/Host graph contracts and candidate CI commands.
 
 Explicitly not claimed:
 
 - Rust 1.93 formatting, compilation, tests or clippy for the current head;
 - a reviewed current `Cargo.lock`;
-- Host-integrated stream credit/pause/resume;
-- a live installed Codex turn;
+- a live installed Codex `shell.job` callback;
+- cross-Host live file-descriptor reattachment;
 - real ARM64 ADB or a deployed transparent relay;
 - a clean Android owner-open image or physical shell/ADB effect;
 - crash, ENOSPC, reboot or power-loss qualification;
@@ -83,14 +84,14 @@ Dogfood completes only when one bound evidence package proves:
 
 1. Android starts one owner-open Host and no forbidden legacy semantic node;
 2. one physical Codex turn invokes Root Linux shell and ordinary raw ADB;
-3. raw observations return to that same turn and Codex continues;
-4. duplicate calls do not spawn twice and uncertain effects are not blindly
-   redispatched;
-5. inspect/reconnect/cancel and provider/Host/client failure produce truthful
+3. Codex starts, controls and observes a long-running job in that same turn;
+4. duplicate calls and job operations do not spawn or mutate twice;
+5. uncertain effects are not blindly redispatched;
+6. inspect/reconnect/cancel and provider/Host/client failure produce truthful
    state;
-6. emergency stop works without provider availability;
-7. Codex can build, install, inspect and recover the dogfood userland; and
-8. evidence binds exact source, Android manifest/patches, Cargo/Soong graphs,
+7. emergency stop works without provider availability;
+8. Codex can build, install, inspect and recover the dogfood userland; and
+9. evidence binds exact source, Android manifest/patches, Cargo/Soong graphs,
    rootfs, provider runtime, target files and device.
 
 Signing, AVB/rollback, OTA, multi-user isolation and public-release security are
