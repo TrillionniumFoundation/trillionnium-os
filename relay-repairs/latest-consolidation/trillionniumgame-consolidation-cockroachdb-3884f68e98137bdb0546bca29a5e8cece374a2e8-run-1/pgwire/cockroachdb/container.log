@@ -1,0 +1,41 @@
+ls: cannot access 'cockroach-data': No such file or directory
+certificate dir "certs" is successfully set up
+starting node for the initialization process. This could take a couple seconds...
+*
+* WARNING: ALL SECURITY CONTROLS HAVE BEEN DISABLED!
+* 
+* This mode is intended for non-production testing only.
+* 
+* In this mode:
+* - Your cluster is open to any client that can access 127.0.0.1.
+* - Intruders with access to your machine or network can observe client-server traffic.
+* - Intruders can log in without password and read or write any data in the cluster.
+* - Intruders can consume all your server's resources and cause unavailability.
+*
+*
+* INFO: To start a secure server without mandating TLS for clients,
+* consider --accept-sql-without-tls instead. For other options, see:
+* 
+* - https://go.crdb.dev/issue-v/53404/v24.1
+* - https://www.cockroachlabs.com/docs/v24.1/secure-a-cluster.html
+*
+*
+* WARNING: Running a server without --sql-addr, with a combined RPC/SQL listener, is deprecated.
+* This feature will be removed in a later version of CockroachDB.
+*
+init node successfully started
+CockroachDB node starting at 2026-08-28 18:41:57.571356495 +0000 UTC m=+2.748351815 (took 2.5s)
+build:               CCL v24.1.2 @ 2024/06/27 18:06:30 (go1.22.3 X:nocoverageredesign)
+webui:               http://127.0.0.1:8080
+sql:                 postgresql://root@127.0.0.1:26257/defaultdb?sslmode=disable
+sql (JDBC):          jdbc:postgresql://127.0.0.1:26257/defaultdb?sslmode=disable&user=root
+RPC client flags:    /cockroach/cockroach <client cmd> --host=127.0.0.1:26257 --insecure
+logs:                /cockroach/cockroach-data/logs
+temp dir:            /cockroach/cockroach-data/cockroach-temp1241085218
+external I/O path:   /cockroach/cockroach-data/extern
+store[0]:            path=/cockroach/cockroach-data
+storage engine:      pebble
+clusterID:           d00a249f-b57c-4e36-917a-16259858a5a1
+status:              initialized new cluster
+nodeID:              1
+database "defaultdb" already exists

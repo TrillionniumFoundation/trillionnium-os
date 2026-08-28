@@ -1,0 +1,70 @@
+16.4-bookworm: Pulling from library/postgres
+2d429b9e73a6: Pulling fs layer
+46eab5b44a35: Pulling fs layer
+c4d302cc468d: Pulling fs layer
+01e0882c90d9: Pulling fs layer
+531ee2cf3c0c: Pulling fs layer
+ed54a7dee1d8: Pulling fs layer
+12c5c803443f: Pulling fs layer
+e27c75a98748: Pulling fs layer
+e73cb4a42719: Pulling fs layer
+a83b68436f09: Pulling fs layer
+787d6bee9571: Pulling fs layer
+13ff0988aaea: Pulling fs layer
+4b82842ab819: Pulling fs layer
+7e568a0dc8fb: Pulling fs layer
+01e0882c90d9: Waiting
+531ee2cf3c0c: Waiting
+ed54a7dee1d8: Waiting
+12c5c803443f: Waiting
+13ff0988aaea: Waiting
+e27c75a98748: Waiting
+e73cb4a42719: Waiting
+4b82842ab819: Waiting
+7e568a0dc8fb: Waiting
+a83b68436f09: Waiting
+787d6bee9571: Waiting
+46eab5b44a35: Verifying Checksum
+46eab5b44a35: Download complete
+c4d302cc468d: Verifying Checksum
+c4d302cc468d: Download complete
+2d429b9e73a6: Verifying Checksum
+2d429b9e73a6: Download complete
+01e0882c90d9: Verifying Checksum
+01e0882c90d9: Download complete
+12c5c803443f: Verifying Checksum
+12c5c803443f: Download complete
+ed54a7dee1d8: Verifying Checksum
+ed54a7dee1d8: Download complete
+531ee2cf3c0c: Verifying Checksum
+531ee2cf3c0c: Download complete
+e27c75a98748: Verifying Checksum
+e27c75a98748: Download complete
+a83b68436f09: Verifying Checksum
+a83b68436f09: Download complete
+787d6bee9571: Download complete
+13ff0988aaea: Verifying Checksum
+13ff0988aaea: Download complete
+4b82842ab819: Verifying Checksum
+4b82842ab819: Download complete
+7e568a0dc8fb: Verifying Checksum
+7e568a0dc8fb: Download complete
+e73cb4a42719: Verifying Checksum
+e73cb4a42719: Download complete
+2d429b9e73a6: Pull complete
+46eab5b44a35: Pull complete
+c4d302cc468d: Pull complete
+01e0882c90d9: Pull complete
+531ee2cf3c0c: Pull complete
+ed54a7dee1d8: Pull complete
+12c5c803443f: Pull complete
+e27c75a98748: Pull complete
+e73cb4a42719: Pull complete
+a83b68436f09: Pull complete
+787d6bee9571: Pull complete
+13ff0988aaea: Pull complete
+4b82842ab819: Pull complete
+7e568a0dc8fb: Pull complete
+Digest: sha256:e62fbf9d3e2b49816a32c400ed2dba83e3b361e6833e624024309c35d334b412
+Status: Downloaded newer image for postgres:16.4-bookworm
+docker.io/library/postgres:16.4-bookworm

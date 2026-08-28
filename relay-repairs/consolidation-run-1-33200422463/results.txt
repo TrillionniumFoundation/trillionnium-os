@@ -1,0 +1,3 @@
+static=failure
+postgresql=failure
+cockroachdb=failure
