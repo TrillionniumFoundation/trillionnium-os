@@ -98,14 +98,27 @@ def repair_reserved_unittest_names() -> None:
 
 def repair_private_python_fixtures() -> None:
     supervisor_release = "tools/tests/test_supervise_codex_mcp_qualification_release.py"
-    paths = (
+    supervisor_paths = (
         "tools/tests/test_supervise_codex_mcp_qualification.py",
         supervisor_release,
+    )
+    adb_paths = (
         "tools/tests/test_qualify_owner_open_adb.py",
         "tools/tests/test_qualify_owner_open_adb_selected.py",
     )
-    for path in paths:
-        insert_after(path, "from pathlib import Path\n", "import shutil\n")
+    for path in supervisor_paths:
+        replace_exact(
+            path,
+            "from pathlib import Path\nimport subprocess\n",
+            "from pathlib import Path\nimport shutil\nimport subprocess\n",
+        )
+    for path in adb_paths:
+        replace_exact(
+            path,
+            "from pathlib import Path\nimport socket\n",
+            "from pathlib import Path\nimport shutil\nimport socket\n",
+        )
+    for path in (*supervisor_paths, *adb_paths):
         insert_after(
             path,
             "        self.root.chmod(0o700)\n",
