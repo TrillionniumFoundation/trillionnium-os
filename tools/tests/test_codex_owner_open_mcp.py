@@ -191,6 +191,15 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
         self.assertEqual(start_frame["payload"]["operation_id"], "start-one")
         self.assertNotIn("approval", start_frame["payload"])
 
+    def test_tool_annotations_distinguish_read_only_and_mutating_operations(self) -> None:
+        tools = {item["name"]: item for item in module.TOOLS}
+        self.assertTrue(tools["trillionnium_job_inspect"]["annotations"]["readOnlyHint"])
+        self.assertTrue(tools["trillionnium_job_wait"]["annotations"]["readOnlyHint"])
+        self.assertFalse(tools["trillionnium_job_attach"]["annotations"]["readOnlyHint"])
+        self.assertTrue(tools["trillionnium_job_attach"]["annotations"]["destructiveHint"])
+        self.assertTrue(tools["trillionnium_job_start"]["annotations"]["openWorldHint"])
+        self.assertFalse(tools["trillionnium_job_inspect"]["annotations"]["openWorldHint"])
+
     def test_duplicate_json_and_invalid_effect_arguments_fail_mechanically(self) -> None:
         child = subprocess.Popen(
             self.command(),
