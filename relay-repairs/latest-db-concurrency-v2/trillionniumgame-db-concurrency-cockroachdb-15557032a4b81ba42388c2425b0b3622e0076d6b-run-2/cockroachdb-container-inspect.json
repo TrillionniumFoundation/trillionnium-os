@@ -1,0 +1,272 @@
+[
+    {
+        "Id": "e988620fe27219de1bfe70a2aebdf4e1b156f04c239c3a8fafdf9c0a823feaa3",
+        "Created": "2026-08-28T16:21:49.810535781Z",
+        "Path": "/cockroach/cockroach.sh",
+        "Args": [
+            "start-single-node",
+            "--insecure",
+            "--store=type=mem,size=1GiB",
+            "--cache=128MiB",
+            "--max-sql-memory=128MiB"
+        ],
+        "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 2369,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-08-28T16:21:49.832774386Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "Image": "sha256:0328c3fbf417e2cef7f842ffdb5a66faa7af8380f2e12e003370fbd692212ff6",
+        "ResolvConfPath": "/var/lib/docker/containers/e988620fe27219de1bfe70a2aebdf4e1b156f04c239c3a8fafdf9c0a823feaa3/resolv.conf",
+        "HostnamePath": "/var/lib/docker/containers/e988620fe27219de1bfe70a2aebdf4e1b156f04c239c3a8fafdf9c0a823feaa3/hostname",
+        "HostsPath": "/var/lib/docker/containers/e988620fe27219de1bfe70a2aebdf4e1b156f04c239c3a8fafdf9c0a823feaa3/hosts",
+        "LogPath": "/var/lib/docker/containers/e988620fe27219de1bfe70a2aebdf4e1b156f04c239c3a8fafdf9c0a823feaa3/e988620fe27219de1bfe70a2aebdf4e1b156f04c239c3a8fafdf9c0a823feaa3-json.log",
+        "Name": "/trnm-cockroachdb-concurrency",
+        "RestartCount": 0,
+        "Driver": "overlay2",
+        "Platform": "linux",
+        "MountLabel": "",
+        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",
+        "ExecIDs": null,
+        "HostConfig": {
+            "Binds": null,
+            "ContainerIDFile": "",
+            "LogConfig": {
+                "Type": "json-file",
+                "Config": {}
+            },
+            "NetworkMode": "bridge",
+            "PortBindings": {
+                "26257/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "26258"
+                    }
+                ],
+                "8080/tcp": [
+                    {
+                        "HostIp": "",
+                        "HostPort": "58081"
+                    }
+                ]
+            },
+            "RestartPolicy": {
+                "Name": "no",
+                "MaximumRetryCount": 0
+            },
+            "AutoRemove": false,
+            "VolumeDriver": "",
+            "VolumesFrom": null,
+            "ConsoleSize": [
+                0,
+                0
+            ],
+            "CapAdd": null,
+            "CapDrop": null,
+            "CgroupnsMode": "private",
+            "Dns": [],
+            "DnsOptions": [],
+            "DnsSearch": [],
+            "ExtraHosts": null,
+            "GroupAdd": null,
+            "IpcMode": "private",
+            "Cgroup": "",
+            "Links": null,
+            "OomScoreAdj": 0,
+            "PidMode": "",
+            "Privileged": false,
+            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,
+            "SecurityOpt": null,
+            "UTSMode": "",
+            "UsernsMode": "",
+            "ShmSize": 67108864,
+            "Runtime": "runc",
+            "Isolation": "",
+            "CpuShares": 0,
+            "Memory": 0,
+            "NanoCpus": 0,
+            "CgroupParent": "",
+            "BlkioWeight": 0,
+            "BlkioWeightDevice": [],
+            "BlkioDeviceReadBps": [],
+            "BlkioDeviceWriteBps": [],
+            "BlkioDeviceReadIOps": [],
+            "BlkioDeviceWriteIOps": [],
+            "CpuPeriod": 0,
+            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",
+            "CpusetMems": "",
+            "Devices": [],
+            "DeviceCgroupRules": null,
+            "DeviceRequests": null,
+            "MemoryReservation": 0,
+            "MemorySwap": 0,
+            "MemorySwappiness": null,
+            "OomKillDisable": null,
+            "PidsLimit": null,
+            "Ulimits": [],
+            "CpuCount": 0,
+            "CpuPercent": 0,
+            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [
+                "/proc/asound",
+                "/proc/acpi",
+                "/proc/interrupts",
+                "/proc/kcore",
+                "/proc/keys",
+                "/proc/latency_stats",
+                "/proc/timer_list",
+                "/proc/timer_stats",
+                "/proc/sched_debug",
+                "/proc/scsi",
+                "/sys/firmware",
+                "/sys/devices/virtual/powercap"
+            ],
+            "ReadonlyPaths": [
+                "/proc/bus",
+                "/proc/fs",
+                "/proc/irq",
+                "/proc/sys",
+                "/proc/sysrq-trigger"
+            ]
+        },
+        "GraphDriver": {
+            "Data": {
+                "ID": "e988620fe27219de1bfe70a2aebdf4e1b156f04c239c3a8fafdf9c0a823feaa3",
+                "LowerDir": "/var/lib/docker/overlay2/e0a03bc45dc5b1713abd45c4fc1da905667d623bff5258c63dc0d7f5ff5df687-init/diff:/var/lib/docker/overlay2/ecb91dbfb3629be950e3d0ab0dab955db2b9db6d61809f78b92629df192cc32c/diff:/var/lib/docker/overlay2/dded4f9cff7dfe2b77285a11c49a226fb5d8b92299c7d2ba49c4c6c4cf361851/diff:/var/lib/docker/overlay2/f088492eb1d5728897180b192efc29fc8b70f2aa32a70cb9b359e1daa1453e7d/diff:/var/lib/docker/overlay2/a73879c9e8a48168bb446e7e6c4c9d1575d14c7660d2567c66fa821eeb332492/diff:/var/lib/docker/overlay2/61e256362ba57246b1af6b1787e7a1d6f5cbb095b960768d06015de249c2b8e5/diff:/var/lib/docker/overlay2/6efff68bece44714452128191dd5e5623c9134015d50271300b8b9d8135acd69/diff:/var/lib/docker/overlay2/c44d4e1a00c35875c8550298f30df3f0bd06b97545af3adf83bbf36685e2c69d/diff:/var/lib/docker/overlay2/cbd5f8f2c5954d1814debe8d8deb82a31519ab0cd6a30df964cc4b500ccf4efc/diff:/var/lib/docker/overlay2/c745c17c753da8c2ca15b81593349421db740991958819e7ca176871e75cfb31/diff",
+                "MergedDir": "/var/lib/docker/overlay2/e0a03bc45dc5b1713abd45c4fc1da905667d623bff5258c63dc0d7f5ff5df687/merged",
+                "UpperDir": "/var/lib/docker/overlay2/e0a03bc45dc5b1713abd45c4fc1da905667d623bff5258c63dc0d7f5ff5df687/diff",
+                "WorkDir": "/var/lib/docker/overlay2/e0a03bc45dc5b1713abd45c4fc1da905667d623bff5258c63dc0d7f5ff5df687/work"
+            },
+            "Name": "overlay2"
+        },
+        "Mounts": [],
+        "Config": {
+            "Hostname": "e988620fe272",
+            "Domainname": "",
+            "User": "",
+            "AttachStdin": false,
+            "AttachStdout": false,
+            "AttachStderr": false,
+            "ExposedPorts": {
+                "26257/tcp": {},
+                "8080/tcp": {}
+            },
+            "Tty": false,
+            "OpenStdin": false,
+            "StdinOnce": false,
+            "Env": [
+                "PATH=/cockroach:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "container=oci",
+                "COCKROACH_CHANNEL=official-docker"
+            ],
+            "Cmd": [
+                "start-single-node",
+                "--insecure",
+                "--store=type=mem,size=1GiB",
+                "--cache=128MiB",
+                "--max-sql-memory=128MiB"
+            ],
+            "Image": "cockroachdb/cockroach:v25.1.6",
+            "Volumes": null,
+            "WorkingDir": "/cockroach/",
+            "Entrypoint": [
+                "/cockroach/cockroach.sh"
+            ],
+            "OnBuild": null,
+            "Labels": {
+                "architecture": "x86_64",
+                "build-date": "2025-04-28T15:45:43",
+                "com.redhat.component": "ubi9-minimal-container",
+                "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+                "description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+                "distribution-scope": "public",
+                "io.buildah.version": "1.39.0-dev",
+                "io.k8s.description": "The Universal Base Image Minimal is a stripped down image that uses microdnf as a package manager. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+                "io.k8s.display-name": "Red Hat Universal Base Image 9 Minimal",
+                "io.openshift.expose-services": "",
+                "io.openshift.tags": "minimal rhel9",
+                "maintainer": "Red Hat, Inc.",
+                "name": "ubi9-minimal",
+                "release": "1745855087",
+                "summary": "Provides the latest release of the minimal Red Hat Universal Base Image 9.",
+                "url": "https://www.redhat.com",
+                "vcs-ref": "f072486a5ead2d7d882ba4af2ce72e19cce20791",
+                "vcs-type": "git",
+                "vendor": "Red Hat, Inc.",
+                "version": "25.1.6"
+            }
+        },
+        "NetworkSettings": {
+            "Bridge": "",
+            "SandboxID": "e5f74b0f2a8c0e4bd318e1a8c41c2a6e04f7705d9241536048b49b6d82eb7a05",
+            "SandboxKey": "/var/run/docker/netns/e5f74b0f2a8c",
+            "Ports": {
+                "26257/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "26258"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "26258"
+                    }
+                ],
+                "8080/tcp": [
+                    {
+                        "HostIp": "0.0.0.0",
+                        "HostPort": "58081"
+                    },
+                    {
+                        "HostIp": "::",
+                        "HostPort": "58081"
+                    }
+                ]
+            },
+            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,
+            "EndpointID": "42b5c272e2882d0fbc9162c2cc7d4623be602f9ba40dd4771b2468ccf832efd0",
+            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.2",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "MacAddress": "2e:87:76:5d:3c:27",
+            "Networks": {
+                "bridge": {
+                    "IPAMConfig": null,
+                    "Links": null,
+                    "Aliases": null,
+                    "MacAddress": "2e:87:76:5d:3c:27",
+                    "DriverOpts": null,
+                    "GwPriority": 0,
+                    "NetworkID": "a84e9a893dee8c39fda13e179735a2af7565d6f3efb02f49639dcb599e73ca6a",
+                    "EndpointID": "42b5c272e2882d0fbc9162c2cc7d4623be602f9ba40dd4771b2468ccf832efd0",
+                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.2",
+                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null
+                }
+            }
+        }
+    }
+]
