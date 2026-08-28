@@ -53,7 +53,8 @@ jobs:
           git rev-parse HEAD^{tree} > relay-evidence/tree.txt
           python3 scripts/check-database-v2.py \
             | tee relay-evidence/database-v2-static-gate.json
-          git status --short > relay-evidence/git-status.txt
+          git status --short -- . ':(exclude)relay-evidence' \
+            > relay-evidence/git-status.txt
           test ! -s relay-evidence/git-status.txt
           find relay-evidence -type f ! -name SHA256SUMS -print0 \
             | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
