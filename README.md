@@ -2,30 +2,28 @@
 
 Trillionnium is an AI Agent Native Android OS. Codex is the single semantic
 Agent. The owner-open substrate supplies provider lifecycle, direct shell,
-ordinary raw ADB, event transport, storage, watchdog and recovery mechanics; it
-does not add a second planner, risk engine or approval authority.
+ordinary raw ADB, event transport, storage, connection delivery, watchdog and
+recovery mechanics; it does not add a second planner, risk engine or approval
+authority.
 
 ```text
-AiShell / owner client
-  -> owner-open transport Host
+AiShell / owner client / Codex MCP
+  -> optional owner-open multi-connection broker
+  -> selected v5 bounded transport carrier
   -> job-aware v7 execution core
   -> one Codex/provider turn or direct shell.job lifecycle
   -> shell.exec / adb.exec / shell.job
   -> raw observation
-  -> the same provider turn or attached owner client
-
-Codex native local path:
-  Codex STDIO MCP
-    -> owner-open MCP job bridge
-    -> the same selected transport/core/job runtime
+  -> the same provider turn or an attached owner client
 ```
 
 ## Current authority
 
 - [R3 semantic contract](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
 - [Active R5 implementation plan](docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md)
-- [Durable jobs closeout checkpoint](docs/plan/owner-open-r5-batch-d-jobs.md)
-- [Codex MCP job binding checkpoint](docs/plan/owner-open-r5-batch-d-codex-mcp-job-binding.md)
+- [Durable jobs checkpoint](docs/plan/owner-open-r5-batch-d-jobs.md)
+- [Codex MCP binding checkpoint](docs/plan/owner-open-r5-batch-d-codex-mcp-job-binding.md)
+- [Connection and installed-Codex checkpoint](docs/plan/owner-open-r5-batch-d-connection-and-installed-codex.md)
 - [Machine status](docs/status/owner-open-r5-status.json)
 - [Traceability](docs/status/owner-open-r5-traceability.tsv)
 - [Start page](docs/OWNER_OPEN_R5_START_HERE.md)
@@ -34,9 +32,9 @@ R3 governs product semantics. R5 governs implementation order, evidence
 promotion and completion. This branch is an owner-open development lane, not a
 public release.
 
-## Current source state
+## Current selected source state
 
-Source-authored and selected in the owner-open closure:
+Source-authored and selected or directly bound to the owner-open closure:
 
 - strict owner-open frame/tool codecs;
 - direct command-string and argv shell execution;
@@ -52,26 +50,31 @@ Source-authored and selected in the owner-open closure:
 - direct long-running pipe/PTY jobs with attach, write, resize, close-stdin,
   process-group kill and operation-level idempotency;
 - completed-job replay without child/provider redispatch;
-- local STDIO MCP server exposing the selected job wire to Codex through native
-  `tools/list` and `tools/call`;
-- MCP tools for job start, inspect, attach, detach, write, resize, close-stdin,
-  kill and bounded read-only wait;
+- local STDIO MCP server exposing job start, inspect, attach, detach, write,
+  resize, close-stdin, kill and bounded wait to Codex;
+- connection-bound live controls through `bridge_instance_id` and read-only
+  durable inspection from later connections;
+- filesystem Unix multi-connection broker foundation with strict peer/token
+  admission, request-owner response routing and bounded observation broadcast;
+- exact-byte MCP trace proxy with finite process-group teardown;
+- explicit installed-Codex MCP qualification runner with temporary registration,
+  exact eleven-call validation, cleanup and config restoration;
 - exact negative Cargo/Host graph contracts and candidate CI commands.
 
 Explicitly not claimed:
 
 - Rust 1.93 formatting, compilation, tests or clippy for the current head;
-- a reviewed current `Cargo.lock`;
-- exact-checkout CI success for the Python MCP bridge;
-- a live installed Codex MCP `shell.job` callback;
-- cross-Host live file-descriptor reattachment;
-- real ARM64 ADB or a deployed transparent relay;
-- a clean Android owner-open image or physical shell/ADB effect;
+- a reviewed current `Cargo.lock`, Cargo metadata or feature tree;
+- a runner-backed exact-checkout Python pass for the current head;
+- a live installed Codex MCP `shell.job` qualification result;
+- cross-Host live file-descriptor adoption;
+- real ARM64 ADB or a deployed byte-transparent relay;
+- a clean Android owner-open image or physical shell/job/ADB effect;
 - crash, ENOSPC, reboot or power-loss qualification;
 - public release.
 
-The latest observed Actions jobs ended without assigned steps or logs. That is
-an infrastructure failure, not evidence that the Rust source passed or failed.
+A GitHub workflow result with `runner_id=0`, `steps=[]` and no logs remains an
+infrastructure no-execution result, not source pass/fail evidence.
 
 ## Source gates
 
@@ -81,6 +84,10 @@ python3 tools/verify-owner-open-r5.py --json
 python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
 PYTHONWARNINGS=error::ResourceWarning \
   python3 -m unittest tools.tests.test_codex_owner_open_mcp -v
+PYTHONWARNINGS=error::ResourceWarning \
+  python3 -m unittest tools.tests.test_codex_mcp_qualification_lifecycle -v
+PYTHONWARNINGS=error::ResourceWarning \
+  python3 -m unittest discover -s tools/tests -p 'test_*broker*.py' -v
 
 cargo generate-lockfile
 cargo fmt --all -- --check
@@ -88,7 +95,7 @@ cargo test --locked --all-targets
 cargo clippy --locked --all-targets -- -D warnings
 ```
 
-Only exact output bound to the commit can raise a capability above L0 source
+Only exact output bound to one commit can raise a capability above L0 source
 evidence.
 
 ## Owner-open dogfood completion boundary
@@ -101,7 +108,7 @@ Dogfood completes only when one bound evidence package proves:
    long-running pipe and PTY job in that same turn;
 4. duplicate calls and job operations do not spawn or mutate twice;
 5. uncertain effects are not blindly redispatched;
-6. inspect/reconnect/cancel and provider/Host/MCP-client failure produce
+6. inspect/reconnect/cancel and provider/Host/broker/MCP-client failure produce
    truthful state;
 7. emergency stop works without provider availability;
 8. Codex can build, install, inspect and recover the dogfood userland; and
