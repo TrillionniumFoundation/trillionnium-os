@@ -41,8 +41,8 @@
     "claim_ceiling": "L0 source and document preparation only"
   },
   "ci_observation": {
-    "observed_candidate_head": "b9de84649918d790869292de7db597dc10b6a94a",
-    "owner_open_r5_run_id": 33131266746,
+    "observed_candidate_head": "cfd75de828e3ec5a41d99659df0c6d477407b9cb",
+    "owner_open_r5_run_id": 33131427213,
     "workflow_conclusion": "failure",
     "jobs": [
       "Rust 1.93 inspect, flow-control and recovery closure",
