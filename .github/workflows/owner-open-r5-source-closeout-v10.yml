@@ -1,5 +1,5 @@
 name: owner-open R5 strict source closeout v10
-# retrigger: include exact stream-window Clippy closure in the validated source candidate
+# retrigger: include exact runtime and job-registry Clippy closure in the validated source candidate
 
 on:
   workflow_dispatch:
@@ -84,9 +84,11 @@ jobs:
           crates/trillionnium-owner-open-call-registry/src/lib.rs
           crates/trillionnium-owner-open-call-registry/tests/concurrency.rs
           crates/trillionnium-owner-open-event-store/src/lib.rs
+          crates/trillionnium-owner-open-job-registry/src/registry.rs
           crates/trillionnium-owner-open-job-runtime/src/manager.rs
           crates/trillionnium-owner-open-job-runtime/tests/runtime.rs
           crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs
+          crates/trillionnium-owner-open-runtime/tests/process_group.rs
           crates/trillionnium-owner-open-stream-window/src/lib.rs
           crates/trillionnium-owner-open-tool-bridge/src/lib.rs
           EOF
@@ -115,9 +117,11 @@ jobs:
             crates/trillionnium-owner-open-call-registry/src/lib.rs \
             crates/trillionnium-owner-open-call-registry/tests/concurrency.rs \
             crates/trillionnium-owner-open-event-store/src/lib.rs \
+            crates/trillionnium-owner-open-job-registry/src/registry.rs \
             crates/trillionnium-owner-open-job-runtime/src/manager.rs \
             crates/trillionnium-owner-open-job-runtime/tests/runtime.rs \
             crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs \
+            crates/trillionnium-owner-open-runtime/tests/process_group.rs \
             crates/trillionnium-owner-open-stream-window/src/lib.rs \
             crates/trillionnium-owner-open-tool-bridge/src/lib.rs
           git commit -m "fix: close R5 EOF control and complete source gates"
@@ -163,6 +167,15 @@ jobs:
             -p trillionnium-owner-open-stream-window \
             --all-targets -- -D warnings \
             2>&1 | tee /tmp/owner-open-r5-source-closeout-v10/stream-window-clippy.log
+
+      - name: Run focused runtime and job-registry Clippy closure
+        run: |
+          set -Eeuo pipefail
+          cargo clippy --locked \
+            -p trillionnium-owner-open-runtime \
+            -p trillionnium-owner-open-job-registry \
+            --all-targets -- -D warnings \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v10/runtime-job-registry-clippy.log
 
       - name: Run generated-source and graph gates
         run: |
@@ -229,6 +242,8 @@ jobs:
               "configured_unavailable_journal_fail_closed": "passed",
               "wire_inspect_active_and_completed": "passed",
               "stream_window_clippy": "passed",
+              "runtime_process_group_clippy": "passed",
+              "job_registry_clippy": "passed",
               "rust_default_all_targets_test": "passed",
               "rust_default_all_targets_clippy_deny_warnings": "passed",
               "cargo_locked_metadata": "captured",
