@@ -31,6 +31,8 @@ jobs:
             ref: fea51c020b442a98839a4568237908f1636db1e0
           - label: pr33-transport
             ref: d26324f52df2ffc059e0bde5b446ea082f0e9d18
+          - label: pr37-canonical
+            ref: f444a85143e4ee77132afcae6fec978dceeafd6a
 
     steps:
       - name: Check out exact TrillionniumGame head
@@ -60,6 +62,9 @@ jobs:
           git rev-parse HEAD^{tree} | tee "$EVIDENCE_DIR/tree.txt"
           rustc --version --verbose | tee "$EVIDENCE_DIR/rustc-version.txt"
           cargo --version --verbose | tee "$EVIDENCE_DIR/cargo-version.txt"
+          if [[ -f scripts/test-canonical-framing.py ]]; then
+            python3 scripts/test-canonical-framing.py 2>&1 | tee "$EVIDENCE_DIR/canonical-reference.log"
+          fi
           cargo fmt --all -- --check 2>&1 | tee "$EVIDENCE_DIR/cargo-fmt.log"
           cargo test --workspace --all-targets --locked 2>&1 | tee "$EVIDENCE_DIR/cargo-test.log"
           cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$EVIDENCE_DIR/cargo-clippy.log"
@@ -76,7 +81,7 @@ jobs:
           from pathlib import Path
           output = Path(os.environ['EVIDENCE_DIR'])
           output.joinpath('summary.json').write_text(json.dumps({
-              'schema': 'trillionnium.game.repaired-exact-head.v2',
+              'schema': 'trillionnium.game.repaired-exact-head.v3',
               'repository': 'TrillionniumFoundation/TrillionniumGame',
               'label': '${{ matrix.label }}',
               'commit': '${{ matrix.ref }}',
