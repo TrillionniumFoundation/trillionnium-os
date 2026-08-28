@@ -16,10 +16,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Dispatch the validated repair workflow at the latest branch head
+      - name: Dispatch the strict v2 repair workflow at the latest branch head
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          gh workflow run owner-open-r5-validate-and-land-repairs.yml \
+          gh workflow run owner-open-r5-validate-and-land-v2.yml \
             --ref codex/owner-open-r5-tool-loop-20260827
