@@ -18,7 +18,7 @@ concurrency:
 env:
   TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
   TARGET_BRANCH: feature/trillionniumgame-w6-presence-router-core-v1
-  TARGET_SHA: b12f3a719b2e0bd967d1b1fbeb00fafab98a2aa2
+  TARGET_SHA: 3fb11af2e8631e9c172d870f6746ba1caa5f3b5a
   MANIFEST: crates/trnm-presence-router-v2/Cargo.toml
 
 jobs:
