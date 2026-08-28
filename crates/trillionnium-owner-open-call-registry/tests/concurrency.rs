@@ -162,7 +162,7 @@ fn concurrent_different_request_bytes_cannot_share_one_call_id() {
             .iter()
             .filter(|value| value
                 .as_ref()
-                .is_err_and(|error| **error == RegistryError::CallIdConflict))
+                .is_err_and(|error| *error == RegistryError::CallIdConflict))
             .count(),
         1
     );
@@ -239,22 +239,22 @@ fn pid_and_terminal_updates_are_generation_bound_and_idempotent() {
         RegistryError::SpawnGenerationMismatch
     );
 
-    let terminal = terminal(8);
+    let terminal_record = terminal(8);
     assert_eq!(
         registry
-            .complete(&call, generation, terminal.clone())
+            .complete(&call, generation, terminal_record.clone())
             .unwrap(),
         MutationOutcome::Applied
     );
     assert_eq!(
         registry
-            .complete(&call, generation, terminal.clone())
+            .complete(&call, generation, terminal_record.clone())
             .unwrap(),
         MutationOutcome::Idempotent
     );
     assert_eq!(
         registry
-            .complete(&call, generation.saturating_add(1), terminal.clone())
+            .complete(&call, generation.saturating_add(1), terminal_record.clone())
             .unwrap_err(),
         RegistryError::TerminalConflict
     );
@@ -284,6 +284,22 @@ fn cancellation_wins_before_spawn_but_started_calls_become_shared_cancel_request
             assert_eq!(snapshot.state, EffectiveState::CancelledBeforeSpawn)
         }
         other => panic!("cancelled call unexpectedly spawned: {other:?}"),
+    }
+
+    let direct = key(1, "call-cancel-direct-signal");
+    let direct_request = request(17);
+    let direct_begin = registry
+        .begin(direct.clone(), direct_request.clone())
+        .unwrap();
+    assert!(direct_begin.cancellation.cancel());
+    match registry
+        .claim_spawn(&direct, &direct_request.request_sha256)
+        .unwrap()
+    {
+        SpawnClaim::Inhibited(snapshot) => {
+            assert_eq!(snapshot.state, EffectiveState::CancelledBeforeSpawn)
+        }
+        other => panic!("directly cancelled call unexpectedly spawned: {other:?}"),
     }
 
     let after = key(1, "call-cancel-after");
@@ -354,8 +370,10 @@ fn capacity_is_global_and_terminal_cleanup_is_explicit() {
     })
     .unwrap();
     let first = key(1, "call-capacity-first");
-    let request = request(14);
-    registry.begin(first.clone(), request.clone()).unwrap();
+    let first_request = request(14);
+    registry
+        .begin(first.clone(), first_request.clone())
+        .unwrap();
     assert_eq!(
         registry
             .begin(key(2, "call-capacity-second"), request(15))
@@ -364,7 +382,7 @@ fn capacity_is_global_and_terminal_cleanup_is_explicit() {
     );
     assert!(!registry.remove_terminal(&first).unwrap());
     let generation = match registry
-        .claim_spawn(&first, &request.request_sha256)
+        .claim_spawn(&first, &first_request.request_sha256)
         .unwrap()
     {
         SpawnClaim::Granted { generation, .. } => generation,

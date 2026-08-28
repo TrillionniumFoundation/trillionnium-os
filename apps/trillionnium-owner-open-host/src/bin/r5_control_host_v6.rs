@@ -5,7 +5,8 @@ mod base {
     pub(crate) mod v4 {
         include!("r5_control_host_v4/entry.rs");
         include!("r5_control_host_v4/process.rs");
-        include!("r5_control_host_v4/protocol.rs");
+        include!("r5_control_host_v4/inspect_handlers.rs");
+        include!("r5_control_host_v4/inspect_parse.rs");
         include!("r5_control_host_v4/inspect_encode.rs");
 
         pub(crate) mod jobs {

@@ -240,6 +240,7 @@ pub struct CallEvent {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum EffectiveState {
     Accepted,
+    CancelledBeforeSpawn,
     Started {
         generation: u64,
         pid: Option<u32>,
@@ -326,7 +327,9 @@ impl Entry {
     fn effective_state(&self) -> EffectiveState {
         match &self.dispatch {
             DispatchState::Accepted { spawn_inhibited } => {
-                if *spawn_inhibited || self.connection_lost {
+                if self.cancellation.is_cancelled() {
+                    EffectiveState::CancelledBeforeSpawn
+                } else if *spawn_inhibited || self.connection_lost {
                     EffectiveState::ProvenNotStartedAfterDisconnect
                 } else {
                     EffectiveState::Accepted
@@ -454,15 +457,15 @@ impl CallRegistry {
             return Err(RegistryError::RequestDigestMismatch);
         }
         match &entry.dispatch {
-            DispatchState::Accepted {
-                spawn_inhibited: true,
-            } => return Ok(SpawnClaim::Inhibited(entry.snapshot())),
+            DispatchState::Accepted { spawn_inhibited }
+                if *spawn_inhibited || entry.cancellation.is_cancelled() =>
+            {
+                return Ok(SpawnClaim::Inhibited(entry.snapshot()));
+            }
             DispatchState::Started { .. } | DispatchState::Terminal { .. } => {
                 return Ok(SpawnClaim::Existing(entry.snapshot()));
             }
-            DispatchState::Accepted {
-                spawn_inhibited: false,
-            } => {}
+            DispatchState::Accepted { .. } => {}
         }
 
         let generation = state.next_spawn_generation;

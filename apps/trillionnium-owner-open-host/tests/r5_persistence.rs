@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 #[path = "../src/r5_persistence.rs"]
 mod r5_persistence;
 

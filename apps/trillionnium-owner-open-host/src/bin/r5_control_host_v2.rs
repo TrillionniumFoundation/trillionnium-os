@@ -308,7 +308,7 @@ enum HostMessage {
     Inbound(Vec<u8>),
     InputEof,
     InputError(String),
-    TurnEvent(TurnEvent),
+    TurnEvent(Box<TurnEvent>),
     TurnComplete(Result<ProviderTerminal, String>),
 }
 
@@ -560,7 +560,7 @@ fn process_messages<W: Write>(
                                 let event_sender = worker_sender.clone();
                                 let mut sink = move |event: &TurnEvent| -> Result<(), String> {
                                     event_sender
-                                        .send(HostMessage::TurnEvent(event.clone()))
+                                        .send(HostMessage::TurnEvent(Box::new(event.clone())))
                                         .map_err(|_| "Host event receiver disconnected".to_string())
                                 };
                                 let result = runner

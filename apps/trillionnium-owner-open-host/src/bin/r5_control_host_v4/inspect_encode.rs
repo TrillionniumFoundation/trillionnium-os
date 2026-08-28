@@ -56,6 +56,9 @@ fn encode_call_snapshot(snapshot: &CallSnapshot) -> Value {
 fn encode_effective_state(state: &EffectiveState) -> Value {
     match state {
         EffectiveState::Accepted => json!({"kind": "accepted"}),
+        EffectiveState::CancelledBeforeSpawn => {
+            json!({"kind": "cancelled_before_spawn"})
+        }
         EffectiveState::Started { generation, pid } => json!({
             "kind": "started",
             "generation": generation,

@@ -235,7 +235,7 @@ fn process_messages<W: Write>(
                                 let mut sink =
                                     move |event: &TurnEvent| -> Result<(), String> {
                                         event_sender
-                                            .send(HostMessage::TurnEvent(event.clone()))
+                                            .send(HostMessage::TurnEvent(Box::new(event.clone())))
                                             .map_err(|_| {
                                                 "Host event receiver disconnected"
                                                     .to_string()

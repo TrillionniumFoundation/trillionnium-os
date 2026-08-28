@@ -118,8 +118,10 @@ fn cwd_environment_delta_and_stdin_are_mechanical_inputs() {
 
 #[test]
 fn timeout_terminates_the_process_group_and_emits_one_terminal_event() {
-    let mut limits = MechanicalLimits::default();
-    limits.terminate_grace = Duration::from_millis(20);
+    let limits = MechanicalLimits {
+        terminate_grace: Duration::from_millis(20),
+        ..MechanicalLimits::default()
+    };
     let mut request = ShellExecRequest::command("call-timeout", "sleep 30");
     request.timeout = Some(Duration::from_millis(50));
     let mut events = Vec::new();
@@ -136,8 +138,10 @@ fn timeout_terminates_the_process_group_and_emits_one_terminal_event() {
 
 #[test]
 fn cancellation_terminates_the_process_group_without_redispatch() {
-    let mut limits = MechanicalLimits::default();
-    limits.terminate_grace = Duration::from_millis(20);
+    let limits = MechanicalLimits {
+        terminate_grace: Duration::from_millis(20),
+        ..MechanicalLimits::default()
+    };
     let cancellation = CancellationToken::new();
     let canceller = cancellation.clone();
     let worker = thread::spawn(move || {
@@ -168,10 +172,12 @@ fn cancellation_terminates_the_process_group_without_redispatch() {
 
 #[test]
 fn output_exhaustion_is_mechanical_and_returns_truncated_observation() {
-    let mut limits = MechanicalLimits::default();
-    limits.max_output_bytes = 32;
-    limits.stream_chunk_bytes = 8;
-    limits.terminate_grace = Duration::from_millis(20);
+    let limits = MechanicalLimits {
+        max_output_bytes: 32,
+        stream_chunk_bytes: 8,
+        terminate_grace: Duration::from_millis(20),
+        ..MechanicalLimits::default()
+    };
     let mut events = Vec::new();
 
     let terminal = execute_shell(

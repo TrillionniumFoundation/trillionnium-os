@@ -20,7 +20,6 @@ use crate::{
 
 struct RunningJob {
     control: Arc<ProcessControl>,
-    generation: u64,
     request: JobRequest,
     stdout_bytes: Mutex<u64>,
     stderr_bytes: Mutex<u64>,
@@ -124,6 +123,21 @@ impl JobManager {
                 replay_status: self.replay_status(false)?,
             });
         }
+        if matches!(
+            self.inner.journal.status()?,
+            JournalStatus::Unavailable { .. }
+        ) {
+            let snapshot = self
+                .inner
+                .registry
+                .mark_restart_uncertain(&request.key)
+                .map_err(registry_error)?;
+            return Ok(JobStartResult {
+                disposition: StartDisposition::UnknownAfterRestart,
+                snapshot: Some(snapshot),
+                replay_status: ReplayStatus::UnknownAfterRestart,
+            });
+        }
 
         let operation_sha256 = start_operation_sha256(&request)?;
         let journal_begin = self.inner.journal.begin_operation(
@@ -212,7 +226,6 @@ impl JobManager {
             .map_err(registry_error)?;
         let running = Arc::new(RunningJob {
             control,
-            generation,
             request: request.request.clone(),
             stdout_bytes: Mutex::new(0),
             stderr_bytes: Mutex::new(0),
@@ -282,7 +295,7 @@ impl JobManager {
                 "byte_count": bytes.len()
             }),
         )?;
-        match self.begin_control(
+        if let Some(disposition) = self.begin_control(
             key,
             &running.request,
             operation_id,
@@ -293,8 +306,7 @@ impl JobManager {
                 "sha256": sha256_hex(bytes)
             }),
         )? {
-            Some(disposition) => return Ok(disposition),
-            None => {}
+            return Ok(disposition);
         }
         running.control.write(bytes)?;
         self.inner
@@ -731,10 +743,10 @@ impl JobManager {
                 .byte_count
                 .saturating_sub(runtime_event_bytes(&removed));
         }
-        if let Err(error) = journal_result {
-            if !self.inner.config.allow_unjournaled_effects {
-                return Err(error);
-            }
+        if let Err(error) = journal_result
+            && !self.inner.config.allow_unjournaled_effects
+        {
+            return Err(error);
         }
         Ok(seq)
     }

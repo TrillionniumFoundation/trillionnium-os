@@ -358,7 +358,6 @@ impl DirectToolBridge {
                     format!("cancellation_monitor_spawn_failed: {error}"),
                 );
                 emit_synthetic_terminal(&call, &terminal, &mut observe);
-                drop(observe);
                 let observation_sha256 = digest.finish();
                 self.registry.complete(
                     &call.key,
@@ -401,7 +400,6 @@ impl DirectToolBridge {
             }
         };
 
-        drop(observe);
         let observation_sha256 = digest.finish();
         self.registry.complete(
             &call.key,

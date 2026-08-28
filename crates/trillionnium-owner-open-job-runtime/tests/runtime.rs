@@ -8,7 +8,7 @@ use serde_json::json;
 use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
 use trillionnium_owner_open_job_runtime::{
     ControlDisposition, JobInvocation, JobJournal, JobManager, JobRuntimeConfig, JobStartRequest,
-    PtySize, RuntimeJobEventKind, StartDisposition,
+    JournalStatus, PtySize, RuntimeJobEventKind, StartDisposition,
 };
 
 fn key(id: &str) -> JobKey {
@@ -83,7 +83,7 @@ fn pipe_job_supports_write_close_inspect_and_durable_terminal() {
             job.clone(),
             request('a', "pipe"),
             "start-pipe",
-            "IFS= read -r line; printf 'got:%s' \"$line\"".to_string(),
+            "IFS= read -r line; cat >/dev/null; printf 'got:%s' \"$line\"".to_string(),
             None,
         ))
         .unwrap();
@@ -192,6 +192,31 @@ fn accepted_without_terminal_is_unknown_and_not_redispatched() {
             job,
             request,
             "different-delivery-operation",
+            format!("touch '{}'", marker.display()),
+            None,
+        ))
+        .unwrap();
+    assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);
+    assert!(!marker.exists());
+}
+
+#[test]
+fn configured_unavailable_journal_is_unknown_and_never_dispatched() {
+    let directory = tempfile::tempdir().unwrap();
+    let journal_path = directory.path().join("jobs.jsonl");
+    let held = JobJournal::open_best_effort(Some(&journal_path));
+    assert_eq!(held.status().unwrap(), JournalStatus::Durable);
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+    assert!(matches!(
+        manager.journal().status().unwrap(),
+        JournalStatus::Unavailable { .. }
+    ));
+    let marker = directory.path().join("must-not-run-unavailable");
+    let result = manager
+        .start(start_request(
+            key("job-unavailable"),
+            request('f', "pipe"),
+            "start-unavailable",
             format!("touch '{}'", marker.display()),
             None,
         ))

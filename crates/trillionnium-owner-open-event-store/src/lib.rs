@@ -310,16 +310,17 @@ impl DurableEventStore {
             u64::try_from(state.records.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
         let turn_seq = state.next_turn_seq.get(&input.scope).copied().unwrap_or(0);
         let previous_record_sha256 = state.last_record_sha256.clone();
-        let record_sha256 = record_digest(
+        let record_sha256 = record_digest(&RecordPreimage {
+            schema: EVENT_RECORD_SCHEMA,
             store_seq,
             turn_seq,
-            &input.scope,
-            &input.event_id,
-            &input.kind,
-            &input.payload,
-            &payload_sha256,
-            &previous_record_sha256,
-        )?;
+            scope: &input.scope,
+            event_id: &input.event_id,
+            kind: &input.kind,
+            payload: &input.payload,
+            payload_sha256: &payload_sha256,
+            previous_record_sha256: &previous_record_sha256,
+        })?;
         let record = EventRecord {
             schema: EVENT_RECORD_SCHEMA.to_string(),
             store_seq,
@@ -496,7 +497,7 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
 
 fn read_record_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option<(Vec<u8>, u64)>> {
     let mut line = Vec::new();
-    let mut limited = (&mut *reader).take(maximum as u64 + 2);
+    let mut limited = std::io::Read::take(reader, maximum as u64 + 2);
     let read = limited
         .read_until(b'\n', &mut line)
         .map_err(|error| EventStoreError::Io(error.to_string()))?;
@@ -567,16 +568,17 @@ fn validate_record(record: &EventRecord, limits: &EventStoreLimits) -> Result<()
             "payload digest does not match".to_string(),
         ));
     }
-    let expected = record_digest(
-        record.store_seq,
-        record.turn_seq,
-        &record.scope,
-        &record.event_id,
-        &record.kind,
-        &record.payload,
-        &record.payload_sha256,
-        &record.previous_record_sha256,
-    )?;
+    let expected = record_digest(&RecordPreimage {
+        schema: EVENT_RECORD_SCHEMA,
+        store_seq: record.store_seq,
+        turn_seq: record.turn_seq,
+        scope: &record.scope,
+        event_id: &record.event_id,
+        kind: &record.kind,
+        payload: &record.payload,
+        payload_sha256: &record.payload_sha256,
+        previous_record_sha256: &record.previous_record_sha256,
+    })?;
     if expected != record.record_sha256 {
         return Err(EventStoreError::InvalidRecord(
             "record digest does not match".to_string(),
@@ -638,28 +640,9 @@ struct RecordPreimage<'a> {
     previous_record_sha256: &'a str,
 }
 
-fn record_digest(
-    store_seq: u64,
-    turn_seq: u64,
-    scope: &TurnScope,
-    event_id: &str,
-    kind: &str,
-    payload: &Value,
-    payload_sha256: &str,
-    previous_record_sha256: &str,
-) -> Result<String> {
-    let encoded = serde_json::to_vec(&RecordPreimage {
-        schema: EVENT_RECORD_SCHEMA,
-        store_seq,
-        turn_seq,
-        scope,
-        event_id,
-        kind,
-        payload,
-        payload_sha256,
-        previous_record_sha256,
-    })
-    .map_err(|error| EventStoreError::InvalidRecord(error.to_string()))?;
+fn record_digest(preimage: &RecordPreimage<'_>) -> Result<String> {
+    let encoded = serde_json::to_vec(preimage)
+        .map_err(|error| EventStoreError::InvalidRecord(error.to_string()))?;
     Ok(sha256_hex(&encoded))
 }
 

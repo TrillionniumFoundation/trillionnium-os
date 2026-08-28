@@ -79,7 +79,7 @@ struct StreamDelivery {
 
 #[derive(Debug)]
 enum SubmitResult {
-    Deliver(RunTurnFrame),
+    Deliver(Box<RunTurnFrame>),
     Queued,
     GapStarted(ResyncGap),
     Suppressed,

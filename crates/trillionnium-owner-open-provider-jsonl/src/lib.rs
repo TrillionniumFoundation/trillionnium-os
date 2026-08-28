@@ -429,10 +429,7 @@ impl JsonlProvider {
 
         // Preserve the first protocol/tool/provider error. Cleanup exists to
         // close the process tree, not to rewrite the semantic observation.
-        let terminal = match result {
-            Ok(terminal) => terminal,
-            Err(error) => return Err(error),
-        };
+        let terminal = result?;
         if stdout_join.is_err() || stderr_join.is_err() {
             return Err(JsonlProviderError::Cleanup(
                 "provider reader thread panicked".to_string(),

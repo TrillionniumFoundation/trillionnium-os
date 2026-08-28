@@ -27,8 +27,10 @@ wait "$descendant"
         ],
     );
     request.timeout = Some(Duration::from_millis(100));
-    let mut limits = MechanicalLimits::default();
-    limits.terminate_grace = Duration::from_millis(30);
+    let limits = MechanicalLimits {
+        terminate_grace: Duration::from_millis(30),
+        ..MechanicalLimits::default()
+    };
 
     let terminal = execute_shell(request, &limits, &CancellationToken::new(), |_| {}).unwrap();
     assert_eq!(terminal.kind, TerminalKind::TimedOut);

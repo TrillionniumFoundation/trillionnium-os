@@ -80,12 +80,12 @@ pub enum StreamControl {
 
 impl StreamControl {
     fn validate(&self, config: &StreamWindowConfig) -> Result<()> {
-        if let Self::WindowUpdate { credit_bytes } = self {
-            if *credit_bytes == 0 || *credit_bytes > config.max_credit_bytes {
-                return Err(StreamWindowError::InvalidRequest(
-                    "window update must be non-zero and no larger than max credit".to_string(),
-                ));
-            }
+        if let Self::WindowUpdate { credit_bytes } = self
+            && (*credit_bytes == 0 || *credit_bytes > config.max_credit_bytes)
+        {
+            return Err(StreamWindowError::InvalidRequest(
+                "window update must be non-zero and no larger than max credit".to_string(),
+            ));
         }
         Ok(())
     }

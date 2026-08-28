@@ -1,7 +1,7 @@
 impl StreamDelivery {
     fn submit(&mut self, frame: RunTurnFrame) -> Result<SubmitResult, String> {
         if !is_flow_controlled_kind(&frame.kind) || self.window.is_none() {
-            return Ok(SubmitResult::Deliver(frame));
+            return Ok(SubmitResult::Deliver(Box::new(frame)));
         }
         let buffered = BufferedFrame::new(frame)?;
         if let Some(gap) = &mut self.gap {
@@ -16,7 +16,9 @@ impl StreamDelivery {
             return Ok(SubmitResult::GapStarted(gap));
         }
         match self.reserve(buffered.encoded_bytes)? {
-            ReserveDisposition::Granted { .. } => Ok(SubmitResult::Deliver(buffered.frame)),
+            ReserveDisposition::Granted { .. } => {
+                Ok(SubmitResult::Deliver(Box::new(buffered.frame)))
+            }
             ReserveDisposition::Blocked(_) => {
                 let encoded = usize::try_from(buffered.encoded_bytes)
                     .map_err(|_| "encoded frame length does not fit usize".to_string())?;

@@ -592,12 +592,10 @@ impl JobRegistry {
         Ok(terminal)
     }
 
-    #[must_use]
     pub fn len(&self) -> Result<usize> {
         Ok(self.lock()?.entries.len())
     }
 
-    #[must_use]
     pub fn is_empty(&self) -> Result<bool> {
         Ok(self.len()? == 0)
     }

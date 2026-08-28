@@ -59,17 +59,16 @@ fn parse_inspect_request(
         task_id,
         turn_id,
     };
-    if let Some(active) = active {
-        if active.context.session_id != context.session_id
+    if let Some(active) = active
+        && (active.context.session_id != context.session_id
             || active.context.profile_id != context.profile_id
             || active.context.task_id != context.task_id
             || active.context.turn_id != context.turn_id
-            || active.context.turn_stream_id != context.turn_stream_id
-        {
-            return Err(
-                "inspect scope does not match the active turn".to_string(),
-            );
-        }
+            || active.context.turn_stream_id != context.turn_stream_id)
+    {
+        return Err(
+            "inspect scope does not match the active turn".to_string(),
+        );
     }
 
     let claimed_digest =

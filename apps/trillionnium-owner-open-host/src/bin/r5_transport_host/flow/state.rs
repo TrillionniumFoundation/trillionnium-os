@@ -1,2 +1,2 @@
-include!("flow/window.rs");
-include!("flow/queue.rs");
+include!("window.rs");
+include!("queue.rs");

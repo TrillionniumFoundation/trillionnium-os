@@ -23,12 +23,12 @@ use trillionnium_owner_open_call_registry::{
 use trillionnium_owner_open_event_store::TurnScope as DurableTurnScope;
 use trillionnium_owner_open_provider_jsonl::{JsonlProvider, JsonlProviderConfig};
 use trillionnium_owner_open_turn_loop::{
-    ProviderTerminal, TurnCancellation, TurnEvent, TurnRequest as LoopTurnRequest,
-    TurnRunner,
+    TurnCancellation, TurnEvent, TurnRequest as LoopTurnRequest, TurnRunner,
 };
 use trillionnium_owner_open_types::{
-    FRAME_CALL_INSPECT, FRAME_CALL_INSPECT_RESULT, FRAME_HELLO, FRAME_TOOL_CANCEL,
-    FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL, FRAME_TURN_END, FRAME_TURN_INSPECT,
+    FRAME_CALL_INSPECT, FRAME_CALL_INSPECT_RESULT, FRAME_HELLO, FRAME_HELLO_ACK,
+    FRAME_TOOL_CANCEL, FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL, FRAME_TURN_END,
+    FRAME_TURN_INSPECT,
     FRAME_TURN_INSPECT_RESULT, FRAME_TURN_START, MechanicalLimits, PROTOCOL,
     PROTOCOL_VERSION, RunTurnFrame,
 };

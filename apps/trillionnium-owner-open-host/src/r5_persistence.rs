@@ -137,12 +137,10 @@ impl Persistence {
                     "stored Host frame does not match its event-store turn scope".to_string(),
                 );
             }
-            if frame.kind == "turn.end" {
-                if terminal_index.replace(index).is_some() {
-                    return StoredTurn::Conflict(
-                        "stored turn has more than one terminal frame".to_string(),
-                    );
-                }
+            if frame.kind == "turn.end" && terminal_index.replace(index).is_some() {
+                return StoredTurn::Conflict(
+                    "stored turn has more than one terminal frame".to_string(),
+                );
             }
             frames.push(frame);
         }

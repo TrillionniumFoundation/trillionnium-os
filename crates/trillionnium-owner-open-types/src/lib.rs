@@ -137,10 +137,10 @@ impl RunTurnFrame {
         if !self.payload.is_object() {
             return Err(invalid("payload must be a JSON object"));
         }
-        if let Some(direction) = self.direction.as_deref() {
-            if !matches!(direction, "client_to_host" | "host_to_client") {
-                return Err(invalid("direction is not a supported transport role"));
-            }
+        if let Some(direction) = self.direction.as_deref()
+            && !matches!(direction, "client_to_host" | "host_to_client")
+        {
+            return Err(invalid("direction is not a supported transport role"));
         }
         validate_optional_digest("frame_sha256", self.frame_sha256.as_deref())?;
         for (name, value) in [
@@ -197,12 +197,12 @@ impl RunTurnFrame {
         )?;
         validate_mirrored_id("task_id", self.task_id.as_deref(), &request.task_id)?;
         validate_mirrored_id("turn_id", self.turn_id.as_deref(), &request.turn_id)?;
-        if let Some(profile_id) = self.profile_id.as_deref() {
-            if profile_id != request.effective_profile_id() {
-                return Err(invalid(
-                    "envelope profile_id conflicts with payload profile_id",
-                ));
-            }
+        if let Some(profile_id) = self.profile_id.as_deref()
+            && profile_id != request.effective_profile_id()
+        {
+            return Err(invalid(
+                "envelope profile_id conflicts with payload profile_id",
+            ));
         }
         Ok(request)
     }
@@ -451,10 +451,10 @@ impl ToolCall {
         if self.timeout_ms.is_some_and(|value| value < 0) {
             return Err(invalid("timeout_ms must be nonnegative"));
         }
-        if let Some(cwd) = self.cwd.as_deref() {
-            if cwd.contains('\0') {
-                return Err(invalid("cwd contains NUL"));
-            }
+        if let Some(cwd) = self.cwd.as_deref()
+            && cwd.contains('\0')
+        {
+            return Err(invalid("cwd contains NUL"));
         }
         validate_env(&self.env, limits)?;
         if let Some(command) = self.command.as_deref() {
@@ -554,12 +554,12 @@ fn validate_mirrored_id(name: &str, envelope: Option<&str>, payload: &str) -> Re
 }
 
 fn validate_optional_alias(name: &str, first: Option<&str>, second: Option<&str>) -> Result<()> {
-    if let (Some(first), Some(second)) = (first, second) {
-        if first != second {
-            return Err(invalid(format!(
-                "envelope {name} conflicts with payload {name}"
-            )));
-        }
+    if let (Some(first), Some(second)) = (first, second)
+        && first != second
+    {
+        return Err(invalid(format!(
+            "envelope {name} conflicts with payload {name}"
+        )));
     }
     Ok(())
 }
@@ -570,12 +570,12 @@ fn validate_alias_pair(
     second_name: &str,
     second: Option<&str>,
 ) -> Result<()> {
-    if let (Some(first), Some(second)) = (first, second) {
-        if first != second {
-            return Err(invalid(format!(
-                "{first_name} conflicts with alias {second_name}"
-            )));
-        }
+    if let (Some(first), Some(second)) = (first, second)
+        && first != second
+    {
+        return Err(invalid(format!(
+            "{first_name} conflicts with alias {second_name}"
+        )));
     }
     Ok(())
 }
@@ -906,8 +906,10 @@ mod tests {
 
     #[test]
     fn resource_limits_are_mechanical_not_semantic() {
-        let mut limits = MechanicalLimits::default();
-        limits.max_total_argv_bytes = 3;
+        let limits = MechanicalLimits {
+            max_total_argv_bytes: 3,
+            ..MechanicalLimits::default()
+        };
         let mut call = base_tool_call();
         call.argv = Some(vec!["abcd".to_string()]);
         let error = call.validate_shell_exec(&limits).unwrap_err();

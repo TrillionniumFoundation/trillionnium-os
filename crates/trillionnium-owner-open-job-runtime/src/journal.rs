@@ -59,6 +59,10 @@ struct JobState {
     terminal: Option<Value>,
 }
 
+type OperationStates = HashMap<OperationKey, OperationState>;
+type JobStates = HashMap<JobKey, JobState>;
+type RecoveredState = (OperationStates, JobStates);
+
 #[derive(Debug)]
 struct State {
     store: Option<DurableEventStore>,
@@ -205,15 +209,15 @@ impl JobJournal {
                 },
             });
         }
-        if operation_kind == "start" {
-            if let Some(existing) = state.jobs.get(key) {
-                if existing.request != *request {
-                    return Err(JobRuntimeError::JobConflict);
-                }
-                return Ok(OperationBegin::ExistingAccepted {
-                    restart_uncertain: existing.start_result.is_some(),
-                });
+        if operation_kind == "start"
+            && let Some(existing) = state.jobs.get(key)
+        {
+            if existing.request != *request {
+                return Err(JobRuntimeError::JobConflict);
             }
+            return Ok(OperationBegin::ExistingAccepted {
+                restart_uncertain: existing.start_result.is_some(),
+            });
         }
         if state.store.is_none() {
             state.operations.insert(
@@ -346,10 +350,10 @@ impl JobJournal {
             .get_mut(&operation_key)
             .expect("accepted operation presence checked")
             .terminal = Some(result.clone());
-        if operation_kind == "start" {
-            if let Some(job) = state.jobs.get_mut(key) {
-                job.start_result = Some(result);
-            }
+        if operation_kind == "start"
+            && let Some(job) = state.jobs.get_mut(key)
+        {
+            job.start_result = Some(result);
         }
         Ok(())
     }
@@ -466,15 +470,7 @@ impl JobJournal {
     }
 }
 
-fn recover(
-    store: &DurableEventStore,
-) -> std::result::Result<
-    (
-        HashMap<OperationKey, OperationState>,
-        HashMap<JobKey, JobState>,
-    ),
-    String,
-> {
+fn recover(store: &DurableEventStore) -> std::result::Result<RecoveredState, String> {
     let mut operations = HashMap::new();
     let mut jobs = HashMap::<JobKey, JobState>::new();
     for record in store.all_records().map_err(|error| error.to_string())? {

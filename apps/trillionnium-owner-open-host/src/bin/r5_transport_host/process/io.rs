@@ -91,7 +91,7 @@ fn spawn_core_reader(
         .expect("spawn transport core reader");
 }
 
-fn spawn_stderr_drain(mut stderr: std::process::ChildStderr) {
+fn spawn_stderr_drain(stderr: std::process::ChildStderr) {
     thread::Builder::new()
         .name("owner-open-transport-core-stderr".to_string())
         .spawn(move || {

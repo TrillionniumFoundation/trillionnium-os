@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 #[path = "../src/r5_persistence.rs"]
 mod r5_persistence;
 
@@ -279,7 +280,7 @@ IFS= read -r start || exit 10
 printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"tool.call","seq":0,"call":{"call_id":"call-live-inspect","tool":"shell.exec","command":"sleep 30"}}'
 IFS= read -r tool_result || exit 11
 case "$tool_result" in
-  *'"terminal_kind":"client_cancelled"'*) ;;
+  *'"kind":"client_cancelled"'*) ;;
   *) exit 12 ;;
 esac
 printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"turn.complete","seq":1,"summary":"continued after inspection and targeted cancel"}'
