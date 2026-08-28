@@ -1,0 +1,182 @@
+    Checking trnm-presence-router-v2 v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-presence-router-v2)
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:184:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+184 |       ) -> Result<PresenceDelta, PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+    = note: `-D clippy::result-large-err` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::result_large_err)]`
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:299:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+299 |       ) -> Result<PresenceDelta, PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:349:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+349 |       ) -> Result<PresenceDelta, PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:390:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+390 |       ) -> Result<PresenceDelta, PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:427:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+427 |       ) -> Result<Vec<PresenceRecord>, PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:453:40
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+453 |       pub fn verify_invariants(&self) -> Result<(), PresenceError> {
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:472:32
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+472 |       fn next_revision(&self) -> Result<u64, PresenceError> {
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:482:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+482 |       ) -> Result<(), PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:510:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+510 |       ) -> Result<(), PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:527:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+527 |       ) -> Result<Option<&PresenceIdentity>, PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> src/router.rs:558:10
+    |
+72  | /     IdentityConflict {
+73  | |         connection: ConnectionRef,
+74  | |         existing: PresenceIdentity,
+75  | |         received: PresenceIdentity,
+76  | |     },
+    | |_____- the largest variant contains at least 192 bytes
+...
+558 |       ) -> Result<Vec<PresenceRecord>, PresenceError> {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: try reducing the size of `router::PresenceError`, for example by boxing large elements or replacing it with `Box<router::PresenceError>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#result_large_err
+
+error: could not compile `trnm-presence-router-v2` (lib) due to 11 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `trnm-presence-router-v2` (lib test) due to 11 previous errors
