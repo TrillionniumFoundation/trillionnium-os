@@ -1,0 +1,59 @@
+name: owner-open R5 Root Linux payload staging
+
+on:
+  pull_request:
+    paths:
+      - "tools/owner-open/stage_owner_open_rootfs_payload_release.py"
+      - "tools/tests/test_stage_owner_open_rootfs_payload_release.py"
+      - "docs/protocols/owner-open-rootfs-payload-staging-v1.md"
+      - "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md"
+      - "android-integration/owner-open-profile/profile-v2.json"
+      - ".github/workflows/owner-open-r5-rootfs-payload.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "tools/owner-open/stage_owner_open_rootfs_payload_release.py"
+      - "tools/tests/test_stage_owner_open_rootfs_payload_release.py"
+      - "docs/protocols/owner-open-rootfs-payload-staging-v1.md"
+      - "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md"
+      - "android-integration/owner-open-profile/profile-v2.json"
+      - ".github/workflows/owner-open-r5-rootfs-payload.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-r5-rootfs-payload-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  staging-contract:
+    name: Exact Root Linux payload staging and negative paths
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Compile selected source
+        run: |
+          python3 -m py_compile \
+            tools/owner-open/stage_owner_open_rootfs_payload_release.py \
+            tools/tests/test_stage_owner_open_rootfs_payload_release.py
+      - name: Run payload staging process tests
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          python3 -m unittest \
+            tools.tests.test_stage_owner_open_rootfs_payload_release \
+            -v 2>&1 | tee owner-open-r5-rootfs-payload-staging-tests.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-r5-rootfs-payload-staging-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: owner-open-r5-rootfs-payload-staging-tests.txt
