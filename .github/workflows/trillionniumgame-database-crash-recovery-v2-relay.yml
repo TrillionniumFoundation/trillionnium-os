@@ -1,0 +1,416 @@
+name: TrillionniumGame database crash recovery v2 relay
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-database-crash-recovery-v2-relay.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trillionniumgame-database-crash-recovery-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: feature/trillionniumgame-w1-foundation-schema-profiles-v1
+  ENTRYPOINT: scripts/run-database-profile-v2-crash-recovery-entry.py
+
+jobs:
+  postgresql-crash-restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Resolve target branch
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out immutable target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install pinned database driver
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check \
+            --requirement requirements/database-profile-v2-smoke.txt
+
+      - name: Start PostgreSQL on persistent volume
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='postgres:17.6-alpine'
+          volume="trnm-pg-crash-${GITHUB_RUN_ID}"
+          printf '%s\n' "$volume" > postgresql-volume.txt
+          docker volume create "$volume"
+          docker pull "$image"
+          docker image inspect --format '{{json .RepoDigests}}' "$image" \
+            > postgresql-image-digests.json
+          docker run --detach --name trnm-pg-crash \
+            --env POSTGRES_PASSWORD=trnm \
+            --env POSTGRES_DB=trnm \
+            --volume "$volume:/var/lib/postgresql/data" \
+            --publish 55434:5432 \
+            "$image"
+          for attempt in $(seq 1 90); do
+            if docker exec trnm-pg-crash pg_isready \
+              --username postgres --dbname trnm; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs trnm-pg-crash
+          exit 1
+
+      - name: Commit durable graph and lease before crash
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p relay-evidence
+          cp ../postgresql-image-digests.json relay-evidence/
+          cp ../postgresql-volume.txt relay-evidence/
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          python3 "$ENTRYPOINT" prepare \
+            --profile postgresql \
+            --dsn 'postgresql://postgres:trnm@127.0.0.1:55434/trnm?sslmode=disable' \
+            --lease-seconds 3 \
+            --output relay-evidence/postgresql-prepare.json
+
+      - name: Kill PostgreSQL without graceful shutdown
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker kill --signal KILL trnm-pg-crash
+          docker inspect trnm-pg-crash \
+            > source/relay-evidence/postgresql-killed-container.json
+          docker rm trnm-pg-crash
+          sleep 4
+
+      - name: Restart PostgreSQL from the same volume
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='postgres:17.6-alpine'
+          volume=$(cat postgresql-volume.txt)
+          docker run --detach --name trnm-pg-restarted \
+            --env POSTGRES_PASSWORD=trnm \
+            --env POSTGRES_DB=trnm \
+            --volume "$volume:/var/lib/postgresql/data" \
+            --publish 55434:5432 \
+            "$image"
+          for attempt in $(seq 1 120); do
+            if docker exec trnm-pg-restarted pg_isready \
+              --username postgres --dbname trnm; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs trnm-pg-restarted
+          exit 1
+
+      - name: Verify durable graph and fenced lease recovery
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$ENTRYPOINT" recover \
+            --profile postgresql \
+            --dsn 'postgresql://postgres:trnm@127.0.0.1:55434/trnm?sslmode=disable' \
+            --output relay-evidence/postgresql-recovery.json
+
+      - name: Logical backup, restore into a new database and read back
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker exec trnm-pg-restarted pg_dump \
+            --username postgres --dbname trnm --format=custom --no-owner \
+            > relay-evidence/postgresql-logical.dump
+          docker exec trnm-pg-restarted createdb \
+            --username postgres trnm_restore
+          docker exec --interactive trnm-pg-restarted pg_restore \
+            --username postgres --dbname trnm_restore --no-owner \
+            < relay-evidence/postgresql-logical.dump
+          python3 "$ENTRYPOINT" inspect \
+            --profile postgresql \
+            --dsn 'postgresql://postgres:trnm@127.0.0.1:55434/trnm_restore?sslmode=disable' \
+            --output relay-evidence/postgresql-restored-inspection.json
+          docker exec trnm-pg-restarted pg_dump \
+            --username postgres --dbname trnm_restore --schema-only \
+            --no-owner --no-privileges \
+            > relay-evidence/postgresql-restored-schema.sql
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+      - name: Capture PostgreSQL recovery diagnostics
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p source/relay-evidence
+          docker logs trnm-pg-restarted \
+            > source/relay-evidence/postgresql-restarted.log 2>&1 || true
+          docker inspect trnm-pg-restarted \
+            > source/relay-evidence/postgresql-restarted-inspect.json 2>&1 || true
+          volume=$(cat postgresql-volume.txt 2>/dev/null || true)
+          if [[ -n "$volume" ]]; then
+            docker volume inspect "$volume" \
+              > source/relay-evidence/postgresql-volume-inspect.json 2>&1 || true
+          fi
+          find source/relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum \
+            > source/relay-evidence/SHA256SUMS || true
+
+      - name: Upload PostgreSQL crash evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-db-crash-postgresql-${{ steps.resolve.outputs.sha }}-run-${{ github.run_number }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove PostgreSQL resources
+        if: always()
+        shell: bash
+        run: |
+          docker rm --force trnm-pg-crash trnm-pg-restarted 2>/dev/null || true
+          volume=$(cat postgresql-volume.txt 2>/dev/null || true)
+          [[ -z "$volume" ]] || docker volume rm --force "$volume" || true
+
+  cockroachdb-crash-restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Resolve target branch
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out immutable target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install pinned database driver
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check \
+            --requirement requirements/database-profile-v2-smoke.txt
+
+      - name: Start CockroachDB on persistent volume
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='cockroachdb/cockroach:v25.1.6'
+          volume="trnm-crdb-crash-${GITHUB_RUN_ID}"
+          printf '%s\n' "$volume" > cockroachdb-volume.txt
+          docker volume create "$volume"
+          docker pull "$image"
+          docker image inspect --format '{{json .RepoDigests}}' "$image" \
+            > cockroachdb-image-digests.json
+          docker run --detach --name trnm-crdb-crash \
+            --volume "$volume:/cockroach/cockroach-data" \
+            --publish 26259:26257 --publish 58082:8080 \
+            "$image" start-single-node --insecure \
+            --store=/cockroach/cockroach-data \
+            --cache=128MiB --max-sql-memory=128MiB
+          for attempt in $(seq 1 120); do
+            if docker exec trnm-crdb-crash cockroach sql \
+              --insecure --execute 'SELECT 1' >/dev/null 2>&1; then
+              docker exec trnm-crdb-crash cockroach sql \
+                --insecure --execute 'CREATE DATABASE IF NOT EXISTS trnm'
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs trnm-crdb-crash
+          exit 1
+
+      - name: Commit durable graph and lease before crash
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p relay-evidence
+          cp ../cockroachdb-image-digests.json relay-evidence/
+          cp ../cockroachdb-volume.txt relay-evidence/
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          python3 "$ENTRYPOINT" prepare \
+            --profile cockroachdb \
+            --dsn 'postgresql://root@127.0.0.1:26259/trnm?sslmode=disable' \
+            --lease-seconds 3 \
+            --output relay-evidence/cockroachdb-prepare.json
+
+      - name: Kill CockroachDB without graceful shutdown
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker kill --signal KILL trnm-crdb-crash
+          docker inspect trnm-crdb-crash \
+            > source/relay-evidence/cockroachdb-killed-container.json
+          docker rm trnm-crdb-crash
+          sleep 4
+
+      - name: Restart CockroachDB from the same volume
+        shell: bash
+        run: |
+          set -euo pipefail
+          image='cockroachdb/cockroach:v25.1.6'
+          volume=$(cat cockroachdb-volume.txt)
+          docker run --detach --name trnm-crdb-restarted \
+            --volume "$volume:/cockroach/cockroach-data" \
+            --publish 26259:26257 --publish 58082:8080 \
+            "$image" start-single-node --insecure \
+            --store=/cockroach/cockroach-data \
+            --cache=128MiB --max-sql-memory=128MiB
+          for attempt in $(seq 1 150); do
+            if docker exec trnm-crdb-restarted cockroach sql \
+              --insecure --execute 'SELECT 1' >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs trnm-crdb-restarted
+          exit 1
+
+      - name: Verify durable graph and fenced lease recovery
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$ENTRYPOINT" recover \
+            --profile cockroachdb \
+            --dsn 'postgresql://root@127.0.0.1:26259/trnm?sslmode=disable' \
+            --output relay-evidence/cockroachdb-recovery.json
+
+      - name: Native backup, restore into a new database and read back
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker exec trnm-crdb-restarted cockroach sql --insecure \
+            --execute "BACKUP DATABASE trnm INTO 'nodelocal://1/trnm-v2-backup'" \
+            > relay-evidence/cockroachdb-backup.log
+          docker exec trnm-crdb-restarted cockroach sql --insecure \
+            --execute "RESTORE DATABASE trnm FROM LATEST IN 'nodelocal://1/trnm-v2-backup' WITH new_db_name = 'trnm_restore'" \
+            > relay-evidence/cockroachdb-restore.log
+          python3 "$ENTRYPOINT" inspect \
+            --profile cockroachdb \
+            --dsn 'postgresql://root@127.0.0.1:26259/trnm_restore?sslmode=disable' \
+            --output relay-evidence/cockroachdb-restored-inspection.json
+          docker exec trnm-crdb-restarted cockroach sql --insecure \
+            --database trnm_restore --format=tsv \
+            --execute 'SHOW CREATE ALL TABLES' \
+            > relay-evidence/cockroachdb-restored-schema.tsv
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+      - name: Capture CockroachDB recovery diagnostics
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p source/relay-evidence
+          docker logs trnm-crdb-restarted \
+            > source/relay-evidence/cockroachdb-restarted.log 2>&1 || true
+          docker inspect trnm-crdb-restarted \
+            > source/relay-evidence/cockroachdb-restarted-inspect.json 2>&1 || true
+          volume=$(cat cockroachdb-volume.txt 2>/dev/null || true)
+          if [[ -n "$volume" ]]; then
+            docker volume inspect "$volume" \
+              > source/relay-evidence/cockroachdb-volume-inspect.json 2>&1 || true
+          fi
+          find source/relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum \
+            > source/relay-evidence/SHA256SUMS || true
+
+      - name: Upload CockroachDB crash evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-db-crash-cockroachdb-${{ steps.resolve.outputs.sha }}-run-${{ github.run_number }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove CockroachDB resources
+        if: always()
+        shell: bash
+        run: |
+          docker rm --force trnm-crdb-crash trnm-crdb-restarted 2>/dev/null || true
+          volume=$(cat cockroachdb-volume.txt 2>/dev/null || true)
+          [[ -z "$volume" ]] || docker volume rm --force "$volume" || true
+
+  publish:
+    if: always()
+    needs:
+      - postgresql-crash-restart
+      - cockroachdb-crash-restart
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out relay audit branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ci/trillionniumgame-exact-head-relay-v1
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Download crash recovery evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: trillionniumgame-db-crash-*-run-${{ github.run_number }}
+          path: downloaded
+          merge-multiple: false
+
+      - name: Publish immutable and latest crash recovery evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="relay-repairs/db-crash-v2-run-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}"
+          latest="relay-repairs/latest-db-crash-v2"
+          mkdir -p "$destination"
+          rm -rf "$latest"
+          mkdir -p "$latest"
+          cp -R downloaded/. "$destination/"
+          cp -R downloaded/. "$latest/"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$destination/run-id.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$destination/relay-head.txt"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$latest/run-id.txt"
+          find "$destination" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$destination/SHA256SUMS"
+          find "$latest" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$latest/SHA256SUMS"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$destination" "$latest"
+          git commit -m "ci(relay): publish database crash recovery v2 run ${GITHUB_RUN_NUMBER}"
+          git push origin HEAD:ci/trillionniumgame-exact-head-relay-v1
