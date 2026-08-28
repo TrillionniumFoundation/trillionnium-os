@@ -5,6 +5,7 @@ members = [
   "crates/trillionnium-owner-open-call-registry",
   "crates/trillionnium-owner-open-event-store",
   "crates/trillionnium-owner-open-provider-jsonl",
+  "crates/trillionnium-owner-open-stream-window",
   "crates/trillionnium-owner-open-tool-bridge",
   "crates/trillionnium-owner-open-turn-loop",
   "crates/trillionnium-owner-open-types",
@@ -30,6 +31,7 @@ default-members = [
   "crates/trillionnium-owner-open-call-registry",
   "crates/trillionnium-owner-open-event-store",
   "crates/trillionnium-owner-open-provider-jsonl",
+  "crates/trillionnium-owner-open-stream-window",
   "crates/trillionnium-owner-open-tool-bridge",
   "crates/trillionnium-owner-open-turn-loop",
   "crates/trillionnium-owner-open-types",
@@ -48,6 +50,7 @@ rust-version = "1.93"
 trillionnium-owner-open-call-registry = { path = "crates/trillionnium-owner-open-call-registry" }
 trillionnium-owner-open-event-store = { path = "crates/trillionnium-owner-open-event-store" }
 trillionnium-owner-open-provider-jsonl = { path = "crates/trillionnium-owner-open-provider-jsonl" }
+trillionnium-owner-open-stream-window = { path = "crates/trillionnium-owner-open-stream-window" }
 trillionnium-owner-open-tool-bridge = { path = "crates/trillionnium-owner-open-tool-bridge" }
 trillionnium-owner-open-turn-loop = { path = "crates/trillionnium-owner-open-turn-loop" }
 trillionnium-owner-open-types = { path = "crates/trillionnium-owner-open-types" }
