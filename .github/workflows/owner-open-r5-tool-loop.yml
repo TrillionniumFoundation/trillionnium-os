@@ -21,6 +21,8 @@ on:
       - "tools/owner-open/**"
       - "tools/tests/test_verify_owner_open_r5.py"
       - "tools/tests/test_codex_owner_open_mcp.py"
+      - "tools/tests/test_codex_mcp_qualification_lifecycle.py"
+      - "tools/tests/test_*broker*.py"
       - ".github/workflows/owner-open-r5-tool-loop.yml"
   push:
     branches:
@@ -45,6 +47,8 @@ on:
       - "tools/owner-open/**"
       - "tools/tests/test_verify_owner_open_r5.py"
       - "tools/tests/test_codex_owner_open_mcp.py"
+      - "tools/tests/test_codex_mcp_qualification_lifecycle.py"
+      - "tools/tests/test_*broker*.py"
       - ".github/workflows/owner-open-r5-tool-loop.yml"
   workflow_dispatch:
 
@@ -57,44 +61,49 @@ concurrency:
 
 jobs:
   graph-and-python:
-    name: R5 graph, Codex MCP and machine contracts
+    name: R5 graph, broker, Codex MCP and machine contracts
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
       - name: Parse machine documents and Python
         run: |
           python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v1.json >/dev/null
           python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v2.json >/dev/null
           python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
-          python3 -m py_compile \
-            tools/generate-owner-open-types.py \
-            tools/verify-owner-open-r5.py \
-            tools/owner-open/codex_owner_open_mcp.py \
-            tools/owner-open/owner_open_mcp_common.py \
-            tools/owner-open/owner_open_mcp_host.py \
-            tools/owner-open/owner_open_mcp_jobs.py \
-            tools/tests/test_verify_owner_open_r5.py \
-            tools/tests/test_codex_owner_open_mcp.py
+          python3 -m compileall -q tools/owner-open tools/tests
       - name: Verify generated codec constants
         run: python3 tools/generate-owner-open-types.py --check
       - name: Verify exact R5 source graph
         run: python3 tools/verify-owner-open-r5.py --json | tee owner-open-r5-graph.json
       - name: Run R5 verifier regression tests
-        run: python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
+        run: python3 -m unittest tools.tests.test_verify_owner_open_r5 -v 2>&1 | tee owner-open-r5-verifier-tests.txt
       - name: Run Codex STDIO MCP job bridge tests
         env:
           PYTHONWARNINGS: error::ResourceWarning
-        run: python3 -m unittest tools.tests.test_codex_owner_open_mcp -v
+        run: python3 -m unittest tools.tests.test_codex_owner_open_mcp -v 2>&1 | tee owner-open-r5-mcp-tests.txt
+      - name: Run installed-Codex qualification lifecycle tests
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+        run: python3 -m unittest tools.tests.test_codex_mcp_qualification_lifecycle -v 2>&1 | tee owner-open-r5-qualification-tests.txt
+      - name: Run multi-connection broker tests
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+        run: python3 -m unittest discover -s tools/tests -p 'test_*broker*.py' -v 2>&1 | tee owner-open-r5-broker-tests.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: owner-open-r5-graph-and-mcp-${{ github.sha }}
+          name: owner-open-r5-graph-broker-and-mcp-${{ github.sha }}
           if-no-files-found: error
           retention-days: 14
-          path: owner-open-r5-graph.json
+          path: |
+            owner-open-r5-graph.json
+            owner-open-r5-verifier-tests.txt
+            owner-open-r5-mcp-tests.txt
+            owner-open-r5-qualification-tests.txt
+            owner-open-r5-broker-tests.txt
 
   rust-tool-loop:
     name: Rust 1.93 job-aware Host, flow-control and recovery closure
