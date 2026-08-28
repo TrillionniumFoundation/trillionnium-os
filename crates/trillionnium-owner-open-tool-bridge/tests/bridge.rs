@@ -96,9 +96,11 @@ fn shell_call_records_pid_raw_events_terminal_and_observation_digest() {
     assert!(matches!(snapshot.state, EffectiveState::Terminal { .. }));
     let events = events.lock().unwrap();
     assert!(matches!(events[0].kind, ExecutionEventKind::Accepted));
-    assert!(events
-        .iter()
-        .any(|event| matches!(event.kind, ExecutionEventKind::Started { .. })));
+    assert!(
+        events
+            .iter()
+            .any(|event| matches!(event.kind, ExecutionEventKind::Started { .. }))
+    );
     assert_eq!(output(&events, StreamKind::Stdout), b"out");
     assert_eq!(output(&events, StreamKind::Stderr), b"err");
     assert_eq!(

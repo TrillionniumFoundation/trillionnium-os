@@ -7,15 +7,13 @@
 //! typed-ADB, or sealed shell-broker graph.
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 
 use thiserror::Error;
-use trillionnium_owner_open_call_registry::{
-    CallRegistry, CallSnapshot, RegistryError, TurnScope,
-};
+use trillionnium_owner_open_call_registry::{CallRegistry, CallSnapshot, RegistryError, TurnScope};
 use trillionnium_owner_open_runtime::{ExecutionEvent, ExecutionTerminal};
 use trillionnium_owner_open_tool_bridge::{
     BoundToolCall, BridgeError, BridgeLimits, DirectToolBridge, DispatchResult,
@@ -82,9 +80,7 @@ impl TurnRequest {
             validate_id(label, value)?;
         }
         if self.user_input.len() > 1024 * 1024 || self.user_input.as_bytes().contains(&0) {
-            return Err(invalid(
-                "user_input exceeds one MiB or contains a NUL byte",
-            ));
+            return Err(invalid("user_input exceeds one MiB or contains a NUL byte"));
         }
         Ok(())
     }
@@ -281,13 +277,8 @@ impl ProviderHost<'_> {
             let sink = &mut *self.sink;
             bridge.execute_fallible(call, self.limits, |event| {
                 runtime_events.push(event.clone());
-                push_event(
-                    events,
-                    next_seq,
-                    sink,
-                    TurnEventKind::ToolRuntime(event),
-                )
-                .map_err(|error| error.to_string())
+                push_event(events, next_seq, sink, TurnEventKind::ToolRuntime(event))
+                    .map_err(|error| error.to_string())
             })
         };
 
@@ -394,12 +385,7 @@ impl TurnRunner {
         provider: &mut P,
     ) -> Result<TurnRun, TurnLoopError> {
         let mut sink = IgnoreEvents;
-        self.run_with_sink_and_cancellation(
-            request,
-            provider,
-            &TurnCancellation::new(),
-            &mut sink,
-        )
+        self.run_with_sink_and_cancellation(request, provider, &TurnCancellation::new(), &mut sink)
     }
 
     pub fn run_with_sink<P: SameTurnProvider>(
@@ -408,12 +394,7 @@ impl TurnRunner {
         provider: &mut P,
         sink: &mut dyn TurnEventSink,
     ) -> Result<TurnRun, TurnLoopError> {
-        self.run_with_sink_and_cancellation(
-            request,
-            provider,
-            &TurnCancellation::new(),
-            sink,
-        )
+        self.run_with_sink_and_cancellation(request, provider, &TurnCancellation::new(), sink)
     }
 
     pub fn run_with_sink_and_cancellation<P: SameTurnProvider>(
@@ -451,9 +432,8 @@ impl TurnRunner {
                 cancellation: cancellation.clone(),
             };
 
-            let provider_result = catch_unwind(AssertUnwindSafe(|| {
-                provider.run_turn(&request, &mut host)
-            }));
+            let provider_result =
+                catch_unwind(AssertUnwindSafe(|| provider.run_turn(&request, &mut host)));
             drop(host);
             match provider_result {
                 Ok(Ok(terminal)) => terminal,
@@ -534,9 +514,7 @@ fn validate_provider_event(event: &ProviderEvent) -> Result<(), TurnLoopError> {
         .iter()
         .any(|value| value.len() > 1024 * 1024 || value.as_bytes().contains(&0))
     {
-        return Err(invalid(
-            "provider event contains a NUL or exceeds one MiB",
-        ));
+        return Err(invalid("provider event contains a NUL or exceeds one MiB"));
     }
     Ok(())
 }

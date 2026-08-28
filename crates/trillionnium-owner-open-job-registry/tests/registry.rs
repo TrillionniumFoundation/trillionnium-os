@@ -1,6 +1,6 @@
 use trillionnium_owner_open_job_registry::{
-    BeginDisposition, JobEffectiveState, JobKey, JobRegistry, JobRegistryError,
-    JobRegistryLimits, JobRequest, JobScope, JobTerminal, MutationOutcome, SpawnClaim,
+    BeginDisposition, JobEffectiveState, JobKey, JobRegistry, JobRegistryError, JobRegistryLimits,
+    JobRequest, JobScope, JobTerminal, MutationOutcome, SpawnClaim,
 };
 
 fn key(id: &str) -> JobKey {
@@ -36,11 +36,17 @@ fn exact_begin_is_idempotent_and_drift_conflicts() {
     let registry = JobRegistry::default();
     let job = key("job-1");
     assert_eq!(
-        registry.begin(job.clone(), request('a')).unwrap().disposition,
+        registry
+            .begin(job.clone(), request('a'))
+            .unwrap()
+            .disposition,
         BeginDisposition::New
     );
     assert_eq!(
-        registry.begin(job.clone(), request('a')).unwrap().disposition,
+        registry
+            .begin(job.clone(), request('a'))
+            .unwrap()
+            .disposition,
         BeginDisposition::Existing
     );
     assert_eq!(
@@ -93,8 +99,14 @@ fn live_controls_and_terminal_history_are_bounded() {
     registry.record_input(&job, 2, "d".repeat(64)).unwrap();
     registry.record_resize(&job, 40, 120).unwrap();
     registry.attach(&job, "attachment-1").unwrap();
-    assert_eq!(registry.close_stdin(&job).unwrap(), MutationOutcome::Applied);
-    assert_eq!(registry.close_stdin(&job).unwrap(), MutationOutcome::Idempotent);
+    assert_eq!(
+        registry.close_stdin(&job).unwrap(),
+        MutationOutcome::Applied
+    );
+    assert_eq!(
+        registry.close_stdin(&job).unwrap(),
+        MutationOutcome::Idempotent
+    );
     registry.complete(&job, generation, terminal('e')).unwrap();
     let snapshot = registry.snapshot(&job).unwrap();
     assert!(matches!(snapshot.state, JobEffectiveState::Terminal { .. }));
@@ -112,6 +124,8 @@ fn pipe_job_rejects_resize() {
         SpawnClaim::Granted { generation, .. } => generation,
         other => panic!("unexpected claim: {other:?}"),
     };
-    registry.record_started(&job, generation, 44, false).unwrap();
+    registry
+        .record_started(&job, generation, 44, false)
+        .unwrap();
     assert!(registry.record_resize(&job, 24, 80).is_err());
 }

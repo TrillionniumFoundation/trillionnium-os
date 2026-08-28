@@ -30,13 +30,7 @@ wait "$descendant"
     let mut limits = MechanicalLimits::default();
     limits.terminate_grace = Duration::from_millis(30);
 
-    let terminal = execute_shell(
-        request,
-        &limits,
-        &CancellationToken::new(),
-        |_| {},
-    )
-    .unwrap();
+    let terminal = execute_shell(request, &limits, &CancellationToken::new(), |_| {}).unwrap();
     assert_eq!(terminal.kind, TerminalKind::TimedOut);
 
     let descendant = fs::read_to_string(&pid_file)

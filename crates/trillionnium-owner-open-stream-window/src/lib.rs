@@ -83,8 +83,7 @@ impl StreamControl {
         if let Self::WindowUpdate { credit_bytes } = self {
             if *credit_bytes == 0 || *credit_bytes > config.max_credit_bytes {
                 return Err(StreamWindowError::InvalidRequest(
-                    "window update must be non-zero and no larger than max credit"
-                        .to_string(),
+                    "window update must be non-zero and no larger than max credit".to_string(),
                 ));
             }
         }
@@ -276,14 +275,15 @@ impl StreamWindow {
                 },
             ));
         }
-        let total_granted_bytes = state
-            .total_granted_bytes
-            .checked_add(bytes)
-            .ok_or_else(|| {
-                StreamWindowError::InvalidRequest(
-                    "total granted byte counter overflow".to_string(),
-                )
-            })?;
+        let total_granted_bytes =
+            state
+                .total_granted_bytes
+                .checked_add(bytes)
+                .ok_or_else(|| {
+                    StreamWindowError::InvalidRequest(
+                        "total granted byte counter overflow".to_string(),
+                    )
+                })?;
         state.available_credit_bytes -= bytes;
         state.total_granted_bytes = total_granted_bytes;
         Ok(ReserveDisposition::Granted {
@@ -424,7 +424,10 @@ mod tests {
         let window = StreamWindow::new(config(0, 10, 5, 8)).unwrap();
         let command = StreamControl::WindowUpdate { credit_bytes: 3 };
         assert_eq!(
-            window.apply_control(0, command.clone()).unwrap().disposition,
+            window
+                .apply_control(0, command.clone())
+                .unwrap()
+                .disposition,
             ApplyDisposition::Applied
         );
         assert_eq!(
@@ -464,15 +467,17 @@ mod tests {
         for _ in 0..8 {
             let window = Arc::clone(&window);
             let granted = Arc::clone(&granted);
-            workers.push(thread::spawn(move || loop {
-                match window.try_reserve(1).unwrap() {
-                    ReserveDisposition::Granted { .. } => {
-                        granted.fetch_add(1, Ordering::SeqCst);
+            workers.push(thread::spawn(move || {
+                loop {
+                    match window.try_reserve(1).unwrap() {
+                        ReserveDisposition::Granted { .. } => {
+                            granted.fetch_add(1, Ordering::SeqCst);
+                        }
+                        ReserveDisposition::Blocked(BlockedReason::InsufficientCredit {
+                            ..
+                        }) => break,
+                        other => panic!("unexpected reservation result: {other:?}"),
                     }
-                    ReserveDisposition::Blocked(
-                        BlockedReason::InsufficientCredit { .. },
-                    ) => break,
-                    other => panic!("unexpected reservation result: {other:?}"),
                 }
             }));
         }

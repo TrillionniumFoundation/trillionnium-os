@@ -306,13 +306,9 @@ impl DurableEventStore {
         if state.records.len() >= self.limits.max_records {
             return Err(EventStoreError::CapacityExhausted);
         }
-        let store_seq = u64::try_from(state.records.len())
-            .map_err(|_| EventStoreError::CapacityExhausted)?;
-        let turn_seq = state
-            .next_turn_seq
-            .get(&input.scope)
-            .copied()
-            .unwrap_or(0);
+        let store_seq =
+            u64::try_from(state.records.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
+        let turn_seq = state.next_turn_seq.get(&input.scope).copied().unwrap_or(0);
         let previous_record_sha256 = state.last_record_sha256.clone();
         let record_sha256 = record_digest(
             store_seq,
@@ -343,8 +339,8 @@ impl DurableEventStore {
             return Err(EventStoreError::CapacityExhausted);
         }
         encoded.push(b'\n');
-        let encoded_len = u64::try_from(encoded.len())
-            .map_err(|_| EventStoreError::CapacityExhausted)?;
+        let encoded_len =
+            u64::try_from(encoded.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
         let expected_len = state
             .byte_count
             .checked_add(encoded_len)
@@ -445,7 +441,8 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
     let mut byte_count = 0_u64;
     let mut previous = ZERO_SHA256.to_string();
     loop {
-        let Some((encoded, consumed)) = read_record_line(&mut reader, limits.max_record_bytes)? else {
+        let Some((encoded, consumed)) = read_record_line(&mut reader, limits.max_record_bytes)?
+        else {
             break;
         };
         byte_count = byte_count
@@ -455,11 +452,11 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
         if records.len() >= limits.max_records {
             return Err(EventStoreError::CapacityExhausted);
         }
-        let record: EventRecord = strict_json::decode(&encoded)
-            .map_err(EventStoreError::InvalidRecord)?;
+        let record: EventRecord =
+            strict_json::decode(&encoded).map_err(EventStoreError::InvalidRecord)?;
         validate_record(&record, limits)?;
-        let expected_store_seq = u64::try_from(records.len())
-            .map_err(|_| EventStoreError::CapacityExhausted)?;
+        let expected_store_seq =
+            u64::try_from(records.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
         if record.store_seq != expected_store_seq {
             return Err(EventStoreError::InvalidRecord(
                 "store sequence is not contiguous".to_string(),
@@ -497,10 +494,7 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
     })
 }
 
-fn read_record_line(
-    reader: &mut impl BufRead,
-    maximum: usize,
-) -> Result<Option<(Vec<u8>, u64)>> {
+fn read_record_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option<(Vec<u8>, u64)>> {
     let mut line = Vec::new();
     let read = reader
         .take(maximum as u64 + 2)
@@ -564,10 +558,7 @@ fn validate_record(record: &EventRecord, limits: &EventStoreLimits) -> Result<()
         ));
     }
     require_sha256(&record.payload_sha256, "payload_sha256")?;
-    require_sha256(
-        &record.previous_record_sha256,
-        "previous_record_sha256",
-    )?;
+    require_sha256(&record.previous_record_sha256, "previous_record_sha256")?;
     require_sha256(&record.record_sha256, "record_sha256")?;
     let payload_bytes = serde_json::to_vec(&record.payload)
         .map_err(|error| EventStoreError::InvalidRecord(error.to_string()))?;
@@ -734,7 +725,8 @@ fn validate_store_parent(parent: &Path) -> Result<(u64, u64)> {
     if metadata.uid() != effective_uid || mode & 0o022 != 0 {
         return Err(EventStoreError::UnsafePath(format!(
             "store parent must be service-owned and not group/world writable (uid {}, mode {:04o})",
-            metadata.uid(), mode
+            metadata.uid(),
+            mode
         )));
     }
     Ok((metadata.dev(), metadata.ino()))
@@ -753,7 +745,9 @@ fn validate_store_file(file: &File) -> Result<()> {
     {
         return Err(EventStoreError::UnsafePath(format!(
             "store file must be service-owned regular 0600 with one link (uid {}, mode {:04o}, nlink {})",
-            metadata.uid(), mode, metadata.nlink()
+            metadata.uid(),
+            mode,
+            metadata.nlink()
         )));
     }
     Ok(())
@@ -765,7 +759,10 @@ fn lock_writer(file: &File) -> Result<()> {
         return Ok(());
     }
     let error = std::io::Error::last_os_error();
-    if matches!(error.raw_os_error(), Some(libc::EWOULDBLOCK) | Some(libc::EAGAIN)) {
+    if matches!(
+        error.raw_os_error(),
+        Some(libc::EWOULDBLOCK) | Some(libc::EAGAIN)
+    ) {
         Err(EventStoreError::WriterBusy)
     } else {
         Err(EventStoreError::Io(error.to_string()))

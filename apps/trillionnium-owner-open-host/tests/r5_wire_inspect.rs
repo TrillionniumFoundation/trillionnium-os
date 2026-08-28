@@ -10,9 +10,7 @@ use std::process::{Child, ChildStdin, ChildStdout, Command, Output, Stdio};
 
 use r5_persistence::{Persistence, event_scope, request_sha256, stable_turn_stream_id};
 use serde_json::{Value, json};
-use trillionnium_owner_open_types::{
-    PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest,
-};
+use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
 fn request(session: &str, task: &str, turn: &str, input: &str) -> RunTurnRequest {
     RunTurnRequest {
@@ -107,8 +105,20 @@ fn completed_turn_and_call_inspection_are_read_only_and_do_not_spawn_provider() 
     let scope = event_scope(&request, &stream);
     let durable = vec![
         durable_frame(&request, &stream, "turn.accepted", 0, None),
-        durable_frame(&request, &stream, "tool.accepted", 1, Some("call-wire-inspect")),
-        durable_frame(&request, &stream, "tool.result", 2, Some("call-wire-inspect")),
+        durable_frame(
+            &request,
+            &stream,
+            "tool.accepted",
+            1,
+            Some("call-wire-inspect"),
+        ),
+        durable_frame(
+            &request,
+            &stream,
+            "tool.result",
+            2,
+            Some("call-wire-inspect"),
+        ),
         durable_frame(&request, &stream, "turn.end", 3, None),
     ];
     {
@@ -149,10 +159,19 @@ fn completed_turn_and_call_inspection_are_read_only_and_do_not_spawn_provider() 
     let frames = parse_output(&output);
 
     assert_eq!(frames[0]["kind"], "hello.ack");
-    assert_eq!(frames[0]["payload"]["turn_inspect"], "read_only_inclusive_cursor");
-    assert_eq!(frames[0]["payload"]["call_inspect"], "live_registry_or_durable_frames");
+    assert_eq!(
+        frames[0]["payload"]["turn_inspect"],
+        "read_only_inclusive_cursor"
+    );
+    assert_eq!(
+        frames[0]["payload"]["call_inspect"],
+        "live_registry_or_durable_frames"
+    );
 
-    let turn = frames.iter().find(|frame| frame["kind"] == "turn.inspect.result").unwrap();
+    let turn = frames
+        .iter()
+        .find(|frame| frame["kind"] == "turn.inspect.result")
+        .unwrap();
     assert_eq!(turn["payload"]["status"], "found");
     assert_eq!(turn["payload"]["source"], "durable_event_store");
     assert_eq!(turn["payload"]["inclusive_cursor"], 1);
@@ -162,7 +181,10 @@ fn completed_turn_and_call_inspection_are_read_only_and_do_not_spawn_provider() 
     assert_eq!(turn["payload"]["has_more"], true);
     assert_eq!(turn["payload"]["frames"].as_array().unwrap().len(), 2);
 
-    let call = frames.iter().find(|frame| frame["kind"] == "call.inspect.result").unwrap();
+    let call = frames
+        .iter()
+        .find(|frame| frame["kind"] == "call.inspect.result")
+        .unwrap();
     assert_eq!(call["payload"]["status"], "found");
     assert_eq!(call["payload"]["source"], "durable_event_store");
     assert_eq!(call["payload"]["total_call_events"], 2);
@@ -171,8 +193,15 @@ fn completed_turn_and_call_inspection_are_read_only_and_do_not_spawn_provider() 
     assert_eq!(call_frames[0]["kind"], "tool.accepted");
     assert_eq!(call_frames[1]["kind"], "tool.result");
 
-    assert!(!provider_counter.exists(), "read-only inspection must never start the provider");
-    assert_eq!(fs::read(&event_store).unwrap(), before, "wire inspection mutated the durable event store");
+    assert!(
+        !provider_counter.exists(),
+        "read-only inspection must never start the provider"
+    );
+    assert_eq!(
+        fs::read(&event_store).unwrap(),
+        before,
+        "wire inspection mutated the durable event store"
+    );
 }
 
 struct RunningHost {
@@ -194,7 +223,11 @@ fn start_host(provider: &Path, event_store: &Path) -> RunningHost {
         .unwrap();
     let stdin = child.stdin.take().unwrap();
     let stdout = BufReader::new(child.stdout.take().unwrap());
-    RunningHost { child, stdin, stdout }
+    RunningHost {
+        child,
+        stdin,
+        stdout,
+    }
 }
 
 fn read_until_kind(reader: &mut BufReader<ChildStdout>, target: &str) -> Vec<Value> {
@@ -216,10 +249,20 @@ fn finish(mut running: RunningHost, mut frames: Vec<Value>) -> Vec<Value> {
     drop(running.stdin);
     let mut remainder = String::new();
     running.stdout.read_to_string(&mut remainder).unwrap();
-    frames.extend(remainder.lines().map(|line| serde_json::from_str::<Value>(line).unwrap()));
+    frames.extend(
+        remainder
+            .lines()
+            .map(|line| serde_json::from_str::<Value>(line).unwrap()),
+    );
     let status = running.child.wait().unwrap();
     let mut stderr = String::new();
-    running.child.stderr.take().unwrap().read_to_string(&mut stderr).unwrap();
+    running
+        .child
+        .stderr
+        .take()
+        .unwrap()
+        .read_to_string(&mut stderr)
+        .unwrap();
     assert!(status.success(), "Host failed: {stderr}");
     frames
 }
@@ -259,10 +302,20 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     .unwrap();
     running.stdin.flush().unwrap();
     frames.extend(read_until_kind(&mut running.stdout, "turn.inspect.result"));
-    let turn = frames.iter().rev().find(|frame| frame["kind"] == "turn.inspect.result").unwrap();
+    let turn = frames
+        .iter()
+        .rev()
+        .find(|frame| frame["kind"] == "turn.inspect.result")
+        .unwrap();
     assert_eq!(turn["payload"]["status"], "found");
     assert_eq!(turn["payload"]["complete"], false);
-    assert!(turn["payload"]["frames"].as_array().unwrap().iter().any(|frame| frame["kind"] == "tool.started"));
+    assert!(
+        turn["payload"]["frames"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|frame| frame["kind"] == "tool.started")
+    );
 
     writeln!(
         running.stdin,
@@ -271,7 +324,11 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     .unwrap();
     running.stdin.flush().unwrap();
     frames.extend(read_until_kind(&mut running.stdout, "call.inspect.result"));
-    let call = frames.iter().rev().find(|frame| frame["kind"] == "call.inspect.result").unwrap();
+    let call = frames
+        .iter()
+        .rev()
+        .find(|frame| frame["kind"] == "call.inspect.result")
+        .unwrap();
     assert_eq!(call["payload"]["status"], "found");
     assert_eq!(call["payload"]["source"], "live_registry");
     assert_eq!(call["payload"]["snapshot"]["state"]["kind"], "started");
@@ -285,9 +342,16 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     running.stdin.flush().unwrap();
 
     let frames = finish(running, frames);
-    assert!(frames.iter().any(|frame| frame["kind"] == "tool.cancel.accepted"));
+    assert!(
+        frames
+            .iter()
+            .any(|frame| frame["kind"] == "tool.cancel.accepted")
+    );
     let terminal = frames.last().unwrap();
     assert_eq!(terminal["kind"], "turn.end");
     assert_eq!(terminal["payload"]["status"], "completed");
-    assert_eq!(terminal["payload"]["summary"], "continued after inspection and targeted cancel");
+    assert_eq!(
+        terminal["payload"]["summary"],
+        "continued after inspection and targeted cancel"
+    );
 }

@@ -1,12 +1,8 @@
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use trillionnium_owner_open_call_registry::{
-    CallKey, CallRegistry, EffectiveState, TurnScope,
-};
-use trillionnium_owner_open_runtime::{
-    ExecutionEventKind, ShellExecRequest,
-};
+use trillionnium_owner_open_call_registry::{CallKey, CallRegistry, EffectiveState, TurnScope};
+use trillionnium_owner_open_runtime::{ExecutionEventKind, ShellExecRequest};
 use trillionnium_owner_open_tool_bridge::{
     BoundToolCall, BridgeError, BridgeLimits, DirectToolBridge, DirectToolRequest,
 };

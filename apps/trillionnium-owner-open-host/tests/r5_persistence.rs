@@ -3,13 +3,9 @@ mod r5_persistence;
 
 use std::collections::BTreeMap;
 
-use r5_persistence::{
-    Persistence, StoredTurn, event_scope, request_sha256, stable_turn_stream_id,
-};
+use r5_persistence::{Persistence, StoredTurn, event_scope, request_sha256, stable_turn_stream_id};
 use serde_json::json;
-use trillionnium_owner_open_types::{
-    PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest,
-};
+use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
 fn request() -> RunTurnRequest {
     RunTurnRequest {
@@ -34,12 +30,7 @@ fn request() -> RunTurnRequest {
     }
 }
 
-fn frame(
-    request: &RunTurnRequest,
-    stream: &str,
-    kind: &str,
-    seq: u64,
-) -> RunTurnFrame {
+fn frame(request: &RunTurnRequest, stream: &str, kind: &str, seq: u64) -> RunTurnFrame {
     RunTurnFrame {
         kind: kind.to_string(),
         seq,
@@ -74,11 +65,17 @@ fn request_digest_excludes_transport_correlation_but_binds_semantics() {
     correlated.turn_request_sha256 = Some("ab".repeat(32));
     correlated.resume_token = Some("resume-token".to_string());
     correlated.prior_connection_id = Some("prior-connection".to_string());
-    assert_eq!(request_sha256(&first).unwrap(), request_sha256(&correlated).unwrap());
+    assert_eq!(
+        request_sha256(&first).unwrap(),
+        request_sha256(&correlated).unwrap()
+    );
 
     let mut changed = first.clone();
     changed.user_input = "different semantic input".to_string();
-    assert_ne!(request_sha256(&first).unwrap(), request_sha256(&changed).unwrap());
+    assert_ne!(
+        request_sha256(&first).unwrap(),
+        request_sha256(&changed).unwrap()
+    );
     assert_eq!(
         stable_turn_stream_id(&first).unwrap(),
         stable_turn_stream_id(&changed).unwrap(),

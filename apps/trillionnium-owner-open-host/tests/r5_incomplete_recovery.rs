@@ -7,13 +7,9 @@ use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::process::{Command, Stdio};
 
-use r5_persistence::{
-    Persistence, StoredTurn, event_scope, request_sha256, stable_turn_stream_id,
-};
+use r5_persistence::{Persistence, StoredTurn, event_scope, request_sha256, stable_turn_stream_id};
 use serde_json::{Value, json};
-use trillionnium_owner_open_types::{
-    PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest,
-};
+use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
 fn request() -> RunTurnRequest {
     RunTurnRequest {

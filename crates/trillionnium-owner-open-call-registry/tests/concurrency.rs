@@ -160,7 +160,9 @@ fn concurrent_different_request_bytes_cannot_share_one_call_id() {
     assert_eq!(
         results
             .iter()
-            .filter(|value| value.as_ref().is_err_and(|error| **error == RegistryError::CallIdConflict))
+            .filter(|value| value
+                .as_ref()
+                .is_err_and(|error| **error == RegistryError::CallIdConflict))
             .count(),
         1
     );
@@ -173,11 +175,17 @@ fn identical_call_ids_in_different_turn_scopes_are_independent() {
     let first = key(1, "call-shared-label");
     let second = key(2, "call-shared-label");
     assert_eq!(
-        registry.begin(first.clone(), request(5)).unwrap().disposition,
+        registry
+            .begin(first.clone(), request(5))
+            .unwrap()
+            .disposition,
         BeginDisposition::New
     );
     assert_eq!(
-        registry.begin(second.clone(), request(6)).unwrap().disposition,
+        registry
+            .begin(second.clone(), request(6))
+            .unwrap()
+            .disposition,
         BeginDisposition::New
     );
     let first_generation = match registry
@@ -362,9 +370,7 @@ fn capacity_is_global_and_terminal_cleanup_is_explicit() {
         SpawnClaim::Granted { generation, .. } => generation,
         other => panic!("unexpected claim: {other:?}"),
     };
-    registry
-        .complete(&first, generation, terminal(16))
-        .unwrap();
+    registry.complete(&first, generation, terminal(16)).unwrap();
     assert!(registry.remove_terminal(&first).unwrap());
     assert!(registry.is_empty().unwrap());
     assert_eq!(

@@ -31,16 +31,11 @@ pub(crate) fn validate_envelope(value: &Value, expected_seq: u64) -> Result<()> 
     Ok(())
 }
 
-pub(crate) fn handle_provider_event(
-    value: &Value,
-    host: &mut ProviderHost<'_>,
-) -> Result<()> {
+pub(crate) fn handle_provider_event(value: &Value, host: &mut ProviderHost<'_>) -> Result<()> {
     let event = required_string(value, "event")?;
     let converted = match event {
         "model.delta" => ProviderEvent::ModelDelta(required_string(value, "text")?.to_string()),
-        "model.message" => {
-            ProviderEvent::ModelMessage(required_string(value, "text")?.to_string())
-        }
+        "model.message" => ProviderEvent::ModelMessage(required_string(value, "text")?.to_string()),
         "provider.status" => ProviderEvent::Status {
             status: required_string(value, "status")?.to_string(),
             detail: optional_string(value, "detail")?.map(str::to_string),
@@ -163,12 +158,7 @@ pub(crate) fn encode_tool_outcome(seq: u64, call_id: &str, outcome: ToolOutcome)
     }
 }
 
-pub(crate) fn encode_tool_error(
-    seq: u64,
-    call_id: &str,
-    status: &str,
-    error: &str,
-) -> Value {
+pub(crate) fn encode_tool_error(seq: u64, call_id: &str, status: &str, error: &str) -> Value {
     json!({
         "protocol": PROVIDER_PROTOCOL,
         "kind": "tool.result",
@@ -253,9 +243,10 @@ fn adb_request(call: &ToolCall, config: &JsonlProviderConfig) -> Result<AdbExecR
     Ok(AdbExecRequest {
         call_id: call.call_id.clone(),
         target_id: call.target_id.clone().or(call.target.clone()),
-        argv: call.argv.clone().ok_or_else(|| {
-            JsonlProviderError::Protocol("adb.exec has no argv".to_string())
-        })?,
+        argv: call
+            .argv
+            .clone()
+            .ok_or_else(|| JsonlProviderError::Protocol("adb.exec has no argv".to_string()))?,
         adb_executable: config.adb_executable.clone(),
         cwd: call.cwd.as_ref().map(PathBuf::from),
         env: call.env.clone(),
@@ -296,12 +287,9 @@ fn decode_stdin(value: Option<&Value>) -> Result<Vec<u8>> {
                 .ok_or_else(|| {
                     JsonlProviderError::Protocol("stdin object has no encoding".to_string())
                 })?;
-            let data = object
-                .get("data")
-                .and_then(Value::as_str)
-                .ok_or_else(|| {
-                    JsonlProviderError::Protocol("stdin object has no data".to_string())
-                })?;
+            let data = object.get("data").and_then(Value::as_str).ok_or_else(|| {
+                JsonlProviderError::Protocol("stdin object has no data".to_string())
+            })?;
             match encoding {
                 "utf8" | "utf-8" => Ok(data.as_bytes().to_vec()),
                 "base64" => BASE64_STANDARD.decode(data).map_err(|error| {
@@ -321,11 +309,9 @@ fn decode_stdin(value: Option<&Value>) -> Result<Vec<u8>> {
 fn decode_timeout(value: Option<i64>) -> Result<Option<Duration>> {
     match value {
         None | Some(0) => Ok(None),
-        Some(value) if value > 0 => Ok(Some(Duration::from_millis(
-            u64::try_from(value).map_err(|_| {
-                JsonlProviderError::Protocol("timeout_ms is out of range".to_string())
-            })?,
-        ))),
+        Some(value) if value > 0 => Ok(Some(Duration::from_millis(u64::try_from(value).map_err(
+            |_| JsonlProviderError::Protocol("timeout_ms is out of range".to_string()),
+        )?))),
         Some(_) => Err(JsonlProviderError::Protocol(
             "timeout_ms must be nonnegative".to_string(),
         )),
@@ -334,14 +320,22 @@ fn decode_timeout(value: Option<i64>) -> Result<Option<Duration>> {
 
 fn configuration_fingerprint(call: &ToolCall, config: &JsonlProviderConfig) -> Result<String> {
     let mut hasher = Sha256::new();
-    hash_field(&mut hasher, b"schema", b"trillionnium.owner-open.binding.v1");
+    hash_field(
+        &mut hasher,
+        b"schema",
+        b"trillionnium.owner-open.binding.v1",
+    );
     hash_field(&mut hasher, b"tool", call.tool.as_bytes());
     let executable = if call.tool == "adb.exec" {
         &config.adb_executable
     } else {
         &config.shell_executable
     };
-    hash_field(&mut hasher, b"executable", executable.as_os_str().as_bytes());
+    hash_field(
+        &mut hasher,
+        b"executable",
+        executable.as_os_str().as_bytes(),
+    );
     hash_field(
         &mut hasher,
         b"config_generation",

@@ -23,7 +23,12 @@ fn request() -> TurnRequest {
     }
 }
 
-fn shell_call(request: &TurnRequest, call_id: &str, canonical: &[u8], command: &str) -> BoundToolCall {
+fn shell_call(
+    request: &TurnRequest,
+    call_id: &str,
+    canonical: &[u8],
+    command: &str,
+) -> BoundToolCall {
     BoundToolCall::new(
         CallKey::new(request.scope(), call_id),
         "ab".repeat(32),
@@ -34,7 +39,10 @@ fn shell_call(request: &TurnRequest, call_id: &str, canonical: &[u8], command: &
     .unwrap()
 }
 
-fn output(events: &[trillionnium_owner_open_runtime::ExecutionEvent], stream: StreamKind) -> Vec<u8> {
+fn output(
+    events: &[trillionnium_owner_open_runtime::ExecutionEvent],
+    stream: StreamKind,
+) -> Vec<u8> {
     events
         .iter()
         .filter_map(|event| match &event.kind {
@@ -83,7 +91,9 @@ impl SameTurnProvider for ContinueAfterFailure {
         }
         host.emit(ProviderEvent::ModelMessage("after-tool".to_string()))
             .map_err(|error| error.to_string())?;
-        Ok(ProviderTerminal::completed("provider continued after failure"))
+        Ok(ProviderTerminal::completed(
+            "provider continued after failure",
+        ))
     }
 }
 
@@ -150,7 +160,8 @@ impl SameTurnProvider for DuplicateProvider {
             &command,
         );
         if !matches!(
-            host.invoke_tool(call.clone()).map_err(|error| error.to_string())?,
+            host.invoke_tool(call.clone())
+                .map_err(|error| error.to_string())?,
             ToolOutcome::Executed { .. }
         ) {
             return Err("first duplicate call did not execute".to_string());
@@ -216,14 +227,15 @@ impl SameTurnProvider for TransparentAdb {
         )
         .unwrap();
         match host.invoke_tool(call).map_err(|error| error.to_string())? {
-            ToolOutcome::Executed { terminal, events, .. } => {
+            ToolOutcome::Executed {
+                terminal, events, ..
+            } => {
                 if !terminal.success() {
                     return Err("fake ordinary adb failed".to_string());
                 }
                 let stdout = String::from_utf8(output(&events, StreamKind::Stdout))
                     .map_err(|error| error.to_string())?;
-                if stdout
-                    != "future-subcommand\n--future-option\nvalue with spaces\n"
+                if stdout != "future-subcommand\n--future-option\nvalue with spaces\n"
                     || stdout.contains("android:correlation-only")
                     || stdout.lines().any(|line| line == "-s")
                 {
@@ -232,7 +244,9 @@ impl SameTurnProvider for TransparentAdb {
             }
             _ => return Err("ADB call did not execute".to_string()),
         }
-        Ok(ProviderTerminal::completed("ordinary adb remained transparent"))
+        Ok(ProviderTerminal::completed(
+            "ordinary adb remained transparent",
+        ))
     }
 }
 

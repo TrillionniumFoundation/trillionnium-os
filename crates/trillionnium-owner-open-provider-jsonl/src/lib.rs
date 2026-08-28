@@ -306,29 +306,26 @@ impl JsonlProvider {
                                     .and_then(Value::as_str)
                                     .unwrap_or("unknown-call")
                                     .to_string();
-                                let response = match decode_bound_tool_call(
-                                    &value,
-                                    request,
-                                    &self.config,
-                                ) {
-                                    Ok(call) => match host.invoke_tool(call) {
-                                        Ok(outcome) => {
-                                            encode_tool_outcome(outbound_seq, &call_id, outcome)
-                                        }
+                                let response =
+                                    match decode_bound_tool_call(&value, request, &self.config) {
+                                        Ok(call) => match host.invoke_tool(call) {
+                                            Ok(outcome) => {
+                                                encode_tool_outcome(outbound_seq, &call_id, outcome)
+                                            }
+                                            Err(error) => encode_tool_error(
+                                                outbound_seq,
+                                                &call_id,
+                                                "host_error",
+                                                &error.to_string(),
+                                            ),
+                                        },
                                         Err(error) => encode_tool_error(
                                             outbound_seq,
                                             &call_id,
-                                            "host_error",
+                                            "invalid_request",
                                             &error.to_string(),
                                         ),
-                                    },
-                                    Err(error) => encode_tool_error(
-                                        outbound_seq,
-                                        &call_id,
-                                        "invalid_request",
-                                        &error.to_string(),
-                                    ),
-                                };
+                                    };
                                 write_json_line(
                                     &mut provider_stdin,
                                     &response,
@@ -339,14 +336,16 @@ impl JsonlProvider {
                             "turn.complete" => {
                                 terminal = Some(ProviderTerminal {
                                     status: ProviderTerminalStatus::Completed,
-                                    summary: optional_string(&value, "summary")?.map(str::to_string),
+                                    summary: optional_string(&value, "summary")?
+                                        .map(str::to_string),
                                     error: None,
                                 });
                             }
                             "turn.cancelled" => {
                                 terminal = Some(ProviderTerminal {
                                     status: ProviderTerminalStatus::Cancelled,
-                                    summary: optional_string(&value, "summary")?.map(str::to_string),
+                                    summary: optional_string(&value, "summary")?
+                                        .map(str::to_string),
                                     error: None,
                                 });
                             }
@@ -362,9 +361,7 @@ impl JsonlProvider {
                                         JsonlProviderError::Protocol(error.to_string())
                                     })?,
                                 })
-                                .map_err(|error| {
-                                    JsonlProviderError::Protocol(error.to_string())
-                                })?;
+                                .map_err(|error| JsonlProviderError::Protocol(error.to_string()))?;
                             }
                         }
                     }
@@ -469,13 +466,9 @@ impl SameTurnProvider for JsonlProvider {
     }
 }
 
-fn write_json_line(
-    writer: &mut impl Write,
-    value: &impl Serialize,
-    maximum: usize,
-) -> Result<()> {
-    let encoded = serde_json::to_vec(value)
-        .map_err(|error| JsonlProviderError::Io(error.to_string()))?;
+fn write_json_line(writer: &mut impl Write, value: &impl Serialize, maximum: usize) -> Result<()> {
+    let encoded =
+        serde_json::to_vec(value).map_err(|error| JsonlProviderError::Io(error.to_string()))?;
     if encoded.is_empty() || encoded.len() > maximum {
         return Err(JsonlProviderError::Io(
             "provider outbound JSONL record exceeds its bound".to_string(),

@@ -85,8 +85,17 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     assert_eq!(frames.last().unwrap()["payload"]["status"], "completed");
     assert_eq!(frames.last().unwrap()["payload"]["runtime_ready"], true);
 
-    let before = kinds.iter().position(|kind| *kind == "model.delta").unwrap();
-    let result = kinds.iter().position(|kind| *kind == "tool.result").unwrap();
-    let after = kinds.iter().position(|kind| *kind == "model.message").unwrap();
+    let before = kinds
+        .iter()
+        .position(|kind| *kind == "model.delta")
+        .unwrap();
+    let result = kinds
+        .iter()
+        .position(|kind| *kind == "tool.result")
+        .unwrap();
+    let after = kinds
+        .iter()
+        .position(|kind| *kind == "model.message")
+        .unwrap();
     assert!(before < result && result < after);
 }

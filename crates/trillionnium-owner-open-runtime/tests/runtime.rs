@@ -90,12 +90,11 @@ fn cwd_environment_delta_and_stdin_are_mechanical_inputs() {
         "printf '%s\\n' \"$TRILLIONNIUM_SET\"; printf '%s\\n' \"${TRILLIONNIUM_REMOVED-unset}\"; pwd; cat",
     );
     request.cwd = Some(directory.path().to_path_buf());
-    request
-        .env
-        .insert("TRILLIONNIUM_SET".to_string(), Some("exact value".to_string()));
-    request
-        .env
-        .insert("TRILLIONNIUM_REMOVED".to_string(), None);
+    request.env.insert(
+        "TRILLIONNIUM_SET".to_string(),
+        Some("exact value".to_string()),
+    );
+    request.env.insert("TRILLIONNIUM_REMOVED".to_string(), None);
     request.stdin = b"stdin bytes\0remain binary".to_vec();
 
     let mut events = Vec::new();
@@ -110,9 +109,11 @@ fn cwd_environment_delta_and_stdin_are_mechanical_inputs() {
     assert!(terminal.success());
     let stdout = output(&events, StreamKind::Stdout);
     assert!(stdout.starts_with(b"exact value\nunset\n"));
-    assert!(stdout
-        .windows(directory.path().as_os_str().as_encoded_bytes().len())
-        .any(|window| window == directory.path().as_os_str().as_encoded_bytes()));
+    assert!(
+        stdout
+            .windows(directory.path().as_os_str().as_encoded_bytes().len())
+            .any(|window| window == directory.path().as_os_str().as_encoded_bytes())
+    );
     assert!(stdout.ends_with(b"stdin bytes\0remain binary"));
 }
 
@@ -196,11 +197,7 @@ fn output_exhaustion_is_mechanical_and_returns_truncated_observation() {
 fn adb_exec_passes_unknown_future_argv_without_target_or_serial_injection() {
     let directory = tempfile::tempdir().unwrap();
     let fake_adb = directory.path().join("adb");
-    fs::write(
-        &fake_adb,
-        "#!/bin/sh\nprintf '%s\\n' \"$@\"\n",
-    )
-    .unwrap();
+    fs::write(&fake_adb, "#!/bin/sh\nprintf '%s\\n' \"$@\"\n").unwrap();
     fs::set_permissions(&fake_adb, fs::Permissions::from_mode(0o700)).unwrap();
 
     let mut request = AdbExecRequest::new(
@@ -254,9 +251,11 @@ fn spawn_failure_is_an_honest_terminal_observation() {
     assert!(terminal.error.is_some());
     assert_eq!(terminal_count(&events), 1);
     assert!(matches!(events[0].kind, ExecutionEventKind::Accepted));
-    assert!(!events
-        .iter()
-        .any(|event| matches!(event.kind, ExecutionEventKind::Started { .. })));
+    assert!(
+        !events
+            .iter()
+            .any(|event| matches!(event.kind, ExecutionEventKind::Started { .. }))
+    );
 }
 
 #[test]

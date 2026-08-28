@@ -65,9 +65,11 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     let response = serde_json::from_str::<Value>(line.trim_end()).unwrap();
     assert_eq!(response["kind"], "host.error");
     assert_eq!(response["payload"]["code"], "inspect_conflict");
-    assert!(response["payload"]["message"]
-        .as_str()
-        .is_some_and(|message| message.contains("request digest")));
+    assert!(
+        response["payload"]["message"]
+            .as_str()
+            .is_some_and(|message| message.contains("request digest"))
+    );
 
     drop(stdin);
     let mut remainder = String::new();

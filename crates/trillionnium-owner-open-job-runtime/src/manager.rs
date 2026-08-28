@@ -352,11 +352,7 @@ impl JobManager {
         Ok(ControlDisposition::Applied)
     }
 
-    pub fn close_stdin(
-        &self,
-        key: &JobKey,
-        operation_id: &str,
-    ) -> Result<ControlDisposition> {
+    pub fn close_stdin(&self, key: &JobKey, operation_id: &str) -> Result<ControlDisposition> {
         let running = self.running_job(key)?;
         let details = json!({
             "mode": if running.control.pty {
@@ -493,19 +489,16 @@ impl JobManager {
                     .collect::<Vec<_>>()
             })
             .unwrap_or_default();
-        let next_cursor = events.last().map_or(inclusive_cursor, |event| {
-            event.seq.saturating_add(1)
-        });
+        let next_cursor = events
+            .last()
+            .map_or(inclusive_cursor, |event| event.seq.saturating_add(1));
         let recovered = self.inner.journal.recovered_job(key)?;
-        let replay_status = if snapshot.is_none()
-            && recovered
-                .as_ref()
-                .is_some_and(|job| job.terminal.is_none())
-        {
-            ReplayStatus::UnknownAfterRestart
-        } else {
-            self.replay_status(false)?
-        };
+        let replay_status =
+            if snapshot.is_none() && recovered.as_ref().is_some_and(|job| job.terminal.is_none()) {
+                ReplayStatus::UnknownAfterRestart
+            } else {
+                self.replay_status(false)?
+            };
         Ok(JobInspection {
             snapshot,
             registry_events,
@@ -531,29 +524,32 @@ impl JobManager {
         details: Value,
     ) -> Result<Option<ControlDisposition>> {
         validate_operation_id(operation_id, self.inner.config.max_operation_id_bytes)?;
-        Ok(match self.inner.journal.begin_operation(
-            key,
-            request,
-            operation_id,
-            operation_kind,
-            digest,
-            details,
-        )? {
-            OperationBegin::New => None,
-            OperationBegin::ExistingTerminal(_) => Some(ControlDisposition::Existing),
-            OperationBegin::ExistingAccepted {
-                restart_uncertain: true,
-            } => Some(ControlDisposition::UnknownAfterRestart),
-            OperationBegin::ExistingAccepted {
-                restart_uncertain: false,
-            } => Some(ControlDisposition::Existing),
-            OperationBegin::Unjournaled if self.inner.config.allow_unjournaled_effects => None,
-            OperationBegin::Unjournaled => {
-                return Err(JobRuntimeError::Journal(
-                    "job journal is unavailable and unjournaled effects are disabled".to_string(),
-                ));
-            }
-        })
+        Ok(
+            match self.inner.journal.begin_operation(
+                key,
+                request,
+                operation_id,
+                operation_kind,
+                digest,
+                details,
+            )? {
+                OperationBegin::New => None,
+                OperationBegin::ExistingTerminal(_) => Some(ControlDisposition::Existing),
+                OperationBegin::ExistingAccepted {
+                    restart_uncertain: true,
+                } => Some(ControlDisposition::UnknownAfterRestart),
+                OperationBegin::ExistingAccepted {
+                    restart_uncertain: false,
+                } => Some(ControlDisposition::Existing),
+                OperationBegin::Unjournaled if self.inner.config.allow_unjournaled_effects => None,
+                OperationBegin::Unjournaled => {
+                    return Err(JobRuntimeError::Journal(
+                        "job journal is unavailable and unjournaled effects are disabled"
+                            .to_string(),
+                    ));
+                }
+            },
+        )
     }
 
     fn complete_control(
@@ -642,16 +638,10 @@ impl JobManager {
                             exit_code,
                             signal,
                         } => {
-                            let stdout_bytes = running
-                                .stdout_bytes
-                                .lock()
-                                .map(|value| *value)
-                                .unwrap_or(0);
-                            let stderr_bytes = running
-                                .stderr_bytes
-                                .lock()
-                                .map(|value| *value)
-                                .unwrap_or(0);
+                            let stdout_bytes =
+                                running.stdout_bytes.lock().map(|value| *value).unwrap_or(0);
+                            let stderr_bytes =
+                                running.stderr_bytes.lock().map(|value| *value).unwrap_or(0);
                             let observation_sha256 = terminal_digest(
                                 &key,
                                 generation,
@@ -669,11 +659,11 @@ impl JobManager {
                                 stdout_bytes,
                                 stderr_bytes,
                             };
-                            let _ = manager.inner.registry.complete(
-                                &key,
-                                generation,
-                                terminal.clone(),
-                            );
+                            let _ =
+                                manager
+                                    .inner
+                                    .registry
+                                    .complete(&key, generation, terminal.clone());
                             let event = RuntimeJobEventKind::Terminal {
                                 generation,
                                 terminal_kind,
@@ -737,7 +727,9 @@ impl JobManager {
             let Some(removed) = state.events.pop_front() else {
                 break;
             };
-            state.byte_count = state.byte_count.saturating_sub(runtime_event_bytes(&removed));
+            state.byte_count = state
+                .byte_count
+                .saturating_sub(runtime_event_bytes(&removed));
         }
         if let Err(error) = journal_result {
             if !self.inner.config.allow_unjournaled_effects {

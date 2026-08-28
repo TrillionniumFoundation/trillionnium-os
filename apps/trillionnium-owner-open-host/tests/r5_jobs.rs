@@ -135,7 +135,11 @@ fn pipe_job_runs_on_the_same_carrier_without_starting_the_provider() {
     assert!(frames.iter().any(|frame| {
         frame["kind"] == "hello.ack" && frame["payload"]["long_running_jobs"] == true
     }));
-    assert!(frames.iter().any(|frame| frame["kind"] == "job.start.result"));
+    assert!(
+        frames
+            .iter()
+            .any(|frame| frame["kind"] == "job.start.result")
+    );
     assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));
     assert!(frames.iter().any(|frame| {
         frame["kind"] == "job.output"
@@ -145,7 +149,11 @@ fn pipe_job_runs_on_the_same_carrier_without_starting_the_provider() {
     assert!(frames.iter().any(|frame| {
         frame["kind"] == "job.result" && frame["payload"]["terminal_kind"] == "exited"
     }));
-    assert!(fs::read_to_string(job_store).unwrap().contains("job.terminal"));
+    assert!(
+        fs::read_to_string(job_store)
+            .unwrap()
+            .contains("job.terminal")
+    );
 }
 
 #[test]
@@ -158,19 +166,11 @@ fn completed_job_is_not_redispatched_after_a_new_core_process() {
     provider_fixture(&provider, &provider_marker);
     let command = format!("printf x >> '{}'; printf completed", counter.display());
 
-    let first = decoded(&run_core(
-        &provider,
-        &job_store,
-        &[job_start(&command)],
-    ));
+    let first = decoded(&run_core(&provider, &job_store, &[job_start(&command)]));
     assert!(first.iter().any(|frame| frame["kind"] == "job.result"));
     assert_eq!(fs::read(&counter).unwrap(), b"x");
 
-    let second = decoded(&run_core(
-        &provider,
-        &job_store,
-        &[job_start(&command)],
-    ));
+    let second = decoded(&run_core(&provider, &job_store, &[job_start(&command)]));
     assert_eq!(fs::read(&counter).unwrap(), b"x");
     assert!(!provider_marker.exists());
     let start = second

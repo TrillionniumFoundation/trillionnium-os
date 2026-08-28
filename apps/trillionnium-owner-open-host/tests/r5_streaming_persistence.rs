@@ -51,10 +51,16 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
 
     let deadline = Instant::now() + Duration::from_secs(5);
     while !ready.exists() {
-        assert!(Instant::now() < deadline, "provider never reached its hold point");
+        assert!(
+            Instant::now() < deadline,
+            "provider never reached its hold point"
+        );
         thread::sleep(Duration::from_millis(5));
     }
-    assert!(child.try_wait().unwrap().is_none(), "turn completed too early");
+    assert!(
+        child.try_wait().unwrap().is_none(),
+        "turn completed too early"
+    );
 
     let persisted_deadline = Instant::now() + Duration::from_secs(5);
     loop {

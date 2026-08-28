@@ -114,7 +114,11 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     running.stdin.flush().unwrap();
     let frames = finish(running, frames);
 
-    assert!(frames.iter().any(|frame| frame["kind"] == "turn.cancel.accepted"));
+    assert!(
+        frames
+            .iter()
+            .any(|frame| frame["kind"] == "turn.cancel.accepted")
+    );
     let tool_result = frames
         .iter()
         .find(|frame| frame["kind"] == "tool.result")
@@ -123,10 +127,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     let terminal = frames.last().unwrap();
     assert_eq!(terminal["kind"], "turn.end");
     assert_eq!(terminal["payload"]["status"], "cancelled");
-    assert_eq!(
-        terminal["payload"]["summary"],
-        "turn cancel acknowledged"
-    );
+    assert_eq!(terminal["payload"]["summary"], "turn cancel acknowledged");
     let stored = fs::read_to_string(event_store).unwrap();
     assert!(stored.contains("turn.cancel.accepted"));
     assert!(stored.contains("client_cancelled"));
@@ -165,7 +166,11 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     running.stdin.flush().unwrap();
     let frames = finish(running, frames);
 
-    assert!(frames.iter().any(|frame| frame["kind"] == "tool.cancel.accepted"));
+    assert!(
+        frames
+            .iter()
+            .any(|frame| frame["kind"] == "tool.cancel.accepted")
+    );
     let tool_result = frames
         .iter()
         .find(|frame| frame["kind"] == "tool.result")

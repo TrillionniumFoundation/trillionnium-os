@@ -244,21 +244,24 @@ class AgentExecAdbWindowsProductBoundaryTest(unittest.TestCase):
         with self.assertRaises(AssertionError):
             self.assert_boundary(mutated)
 
-    def test_canonical_documents_bind_the_same_direction(self) -> None:
-        documents = (
-            ADR_PATH.read_text(encoding="utf-8"),
-            CURRENT_STATE_PATH.read_text(encoding="utf-8"),
-            README_PATH.read_text(encoding="utf-8"),
-        )
-        for document in documents:
+    def test_canonical_documents_preserve_history_and_bind_owner_open(self) -> None:
+        adr = ADR_PATH.read_text(encoding="utf-8")
+        current_state = CURRENT_STATE_PATH.read_text(encoding="utf-8")
+        readme = README_PATH.read_text(encoding="utf-8")
+
+        historical = " ".join(adr.split()).casefold()
+        for token in ("codex", "off-device", "shell", "adb"):
+            self.assertIn(token, historical)
+        self.assertIn("only built-in Agent", adr)
+        self.assertIn("implementation work", historical)
+
+        for document in (current_state, readme):
             normalized = " ".join(document.split()).casefold()
-            self.assertIn("codex", normalized)
-            self.assertIn("off-device", normalized)
-            self.assertIn("shell", normalized)
-            self.assertIn("adb", normalized)
-            self.assertIn("hold", normalized)
-        self.assertIn("only built-in Agent", documents[0])
-        self.assertIn("Codex is the single built-in", documents[2])
+            for token in ("codex", "owner-open", "shell", "adb"):
+                self.assertIn(token, normalized)
+        self.assertIn("supersedes older semantic", current_state)
+        self.assertIn("Codex is the single semantic", readme)
+        self.assertIn("Explicitly not claimed", readme)
 
 
 if __name__ == "__main__":

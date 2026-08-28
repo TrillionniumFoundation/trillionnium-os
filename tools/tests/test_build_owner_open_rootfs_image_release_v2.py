@@ -192,7 +192,9 @@ class BuildOwnerOpenRootfsImageReleaseV2Test(unittest.TestCase):
             "--json",
         ]
 
-    def run(self, command: list[str], timeout: float = 30) -> subprocess.CompletedProcess[bytes]:
+    def run_command(
+        self, command: list[str], timeout: float = 30
+    ) -> subprocess.CompletedProcess[bytes]:
         return subprocess.run(
             command,
             stdin=subprocess.DEVNULL,
@@ -205,7 +207,7 @@ class BuildOwnerOpenRootfsImageReleaseV2Test(unittest.TestCase):
     def test_two_independent_builds_are_byte_identical(self) -> None:
         tool = self.tool(deterministic_tool())
         output = self.output_parent / "pass"
-        completed = self.run(self.command(tool, output))
+        completed = self.run_command(self.command(tool, output))
         self.assertEqual(
             completed.returncode,
             0,
@@ -231,7 +233,7 @@ class BuildOwnerOpenRootfsImageReleaseV2Test(unittest.TestCase):
         target.chmod(0o444)
         tool = self.tool(deterministic_tool())
         output = self.output_parent / "tampered"
-        completed = self.run(self.command(tool, output))
+        completed = self.run_command(self.command(tool, output))
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"digest or byte count drifted", completed.stderr)
         self.assertFalse(output.exists())
@@ -239,13 +241,13 @@ class BuildOwnerOpenRootfsImageReleaseV2Test(unittest.TestCase):
     def test_tool_digest_and_help_options_are_bound(self) -> None:
         tool = self.tool(deterministic_tool())
         output = self.output_parent / "wrong-tool"
-        completed = self.run(self.command(tool, output, expected="0" * 64))
+        completed = self.run_command(self.command(tool, output, expected="0" * 64))
         self.assertNotEqual(completed.returncode, 0)
         self.assertFalse(output.exists())
 
         missing = self.tool(deterministic_tool("-noappend -all-root"), "mksquashfs-missing")
         output = self.output_parent / "missing-options"
-        completed = self.run(self.command(missing, output))
+        completed = self.run_command(self.command(missing, output))
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"lacks required deterministic options", completed.stderr)
         self.assertFalse(output.exists())
@@ -256,7 +258,7 @@ class BuildOwnerOpenRootfsImageReleaseV2Test(unittest.TestCase):
             "mksquashfs-nondeterministic",
         )
         output = self.output_parent / "nondeterministic"
-        completed = self.run(self.command(tool, output))
+        completed = self.run_command(self.command(tool, output))
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"not byte-identical", completed.stderr)
         self.assertFalse(output.exists())
@@ -275,7 +277,7 @@ time.sleep(60)
         )
         output = self.output_parent / "timeout"
         started = time.monotonic()
-        completed = self.run(self.command(tool, output, timeout="1"), timeout=10)
+        completed = self.run_command(self.command(tool, output, timeout="1"), timeout=10)
         self.assertLess(time.monotonic() - started, 8)
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"timed out and was reaped", completed.stderr)
@@ -286,7 +288,7 @@ time.sleep(60)
         output = self.output_parent / "not-executed"
         command = self.command(tool, output)
         command.remove("--execute")
-        completed = self.run(command, timeout=5)
+        completed = self.run_command(command, timeout=5)
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"--execute is required", completed.stderr)
         self.assertFalse(output.exists())

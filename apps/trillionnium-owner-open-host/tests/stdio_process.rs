@@ -63,13 +63,14 @@ fn stdio_process_preserves_one_turn_lineage_and_reports_provider_hold() {
 
 #[test]
 fn stdio_process_rejects_duplicate_members_without_starting_a_turn() {
-    let frames = run_host(
-        "{\"kind\":\"turn.start\",\"kind\":\"hello\",\"seq\":0,\"payload\":{}}\n",
-    );
+    let frames =
+        run_host("{\"kind\":\"turn.start\",\"kind\":\"hello\",\"seq\":0,\"payload\":{}}\n");
     assert_eq!(frames.len(), 1);
     assert_eq!(frames[0]["kind"], "host.error");
     assert_eq!(frames[0]["payload"]["code"], "invalid_frame");
-    assert!(frames[0]["payload"]["message"]
-        .as_str()
-        .is_some_and(|message| message.contains("duplicate key kind")));
+    assert!(
+        frames[0]["payload"]["message"]
+            .as_str()
+            .is_some_and(|message| message.contains("duplicate key kind"))
+    );
 }

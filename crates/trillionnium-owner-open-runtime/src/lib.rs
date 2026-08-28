@@ -13,9 +13,9 @@ use std::os::unix::ffi::OsStrExt;
 use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::path::PathBuf;
 use std::process::{Child, Command, ExitStatus, Stdio};
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, SyncSender, TryRecvError, sync_channel};
-use std::sync::Arc;
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
 
@@ -330,7 +330,12 @@ where
 
     let (program, args) = match &request.invocation {
         ShellInvocation::Command(command) => {
-            validate_scalar(command, "shell command", limits.max_total_argument_bytes, false)?;
+            validate_scalar(
+                command,
+                "shell command",
+                limits.max_total_argument_bytes,
+                false,
+            )?;
             validate_os_value(
                 request.shell_executable.as_os_str(),
                 "shell executable",
@@ -417,7 +422,9 @@ where
 }
 
 fn normalized_timeout(timeout: Option<Duration>, limits: &MechanicalLimits) -> Duration {
-    timeout.filter(|value| !value.is_zero()).unwrap_or(limits.default_timeout)
+    timeout
+        .filter(|value| !value.is_zero())
+        .unwrap_or(limits.default_timeout)
 }
 
 fn validate_common_request(
@@ -437,12 +444,7 @@ fn validate_common_request(
         return Err(invalid("call_id is empty, oversized, or malformed"));
     }
     if let Some(target_id) = target_id {
-        validate_scalar(
-            target_id,
-            "target_id",
-            limits.max_target_id_bytes,
-            false,
-        )?;
+        validate_scalar(target_id, "target_id", limits.max_target_id_bytes, false)?;
     }
     if let Some(cwd) = cwd {
         validate_os_value(cwd.as_os_str(), "cwd", limits.max_cwd_bytes, false)?;
@@ -471,7 +473,9 @@ fn validate_common_request(
         }
     }
     if environment_bytes > limits.max_environment_bytes {
-        return Err(invalid("environment delta exceeds the configured byte bound"));
+        return Err(invalid(
+            "environment delta exceeds the configured byte bound",
+        ));
     }
     Ok(())
 }
@@ -497,17 +501,28 @@ fn validate_argv(argv: &[String], limits: &MechanicalLimits, field: &str) -> Res
 }
 
 fn validate_scalar(value: &str, field: &str, max_bytes: usize, allow_empty: bool) -> Result<()> {
-    if (!allow_empty && value.is_empty()) || value.len() > max_bytes || value.as_bytes().contains(&0)
+    if (!allow_empty && value.is_empty())
+        || value.len() > max_bytes
+        || value.as_bytes().contains(&0)
     {
-        return Err(invalid(format!("{field} is empty, oversized, or contains NUL")));
+        return Err(invalid(format!(
+            "{field} is empty, oversized, or contains NUL"
+        )));
     }
     Ok(())
 }
 
-fn validate_os_value(value: &OsStr, field: &str, max_bytes: usize, allow_empty: bool) -> Result<()> {
+fn validate_os_value(
+    value: &OsStr,
+    field: &str,
+    max_bytes: usize,
+    allow_empty: bool,
+) -> Result<()> {
     let bytes = value.as_bytes();
     if (!allow_empty && bytes.is_empty()) || bytes.len() > max_bytes || bytes.contains(&0) {
-        return Err(invalid(format!("{field} is empty, oversized, or contains NUL")));
+        return Err(invalid(format!(
+            "{field} is empty, oversized, or contains NUL"
+        )));
     }
     Ok(())
 }
@@ -591,14 +606,22 @@ where
     emit(ExecutionEventKind::Started { pid });
 
     let (sender, receiver) = sync_channel::<ReaderMessage>(limits.reader_queue_depth);
-    let stdout_thread = child
-        .stdout
-        .take()
-        .map(|stdout| spawn_reader(stdout, StreamKind::Stdout, limits.stream_chunk_bytes, sender.clone()));
-    let stderr_thread = child
-        .stderr
-        .take()
-        .map(|stderr| spawn_reader(stderr, StreamKind::Stderr, limits.stream_chunk_bytes, sender));
+    let stdout_thread = child.stdout.take().map(|stdout| {
+        spawn_reader(
+            stdout,
+            StreamKind::Stdout,
+            limits.stream_chunk_bytes,
+            sender.clone(),
+        )
+    });
+    let stderr_thread = child.stderr.take().map(|stderr| {
+        spawn_reader(
+            stderr,
+            StreamKind::Stderr,
+            limits.stream_chunk_bytes,
+            sender,
+        )
+    });
     let stdin_thread = child.stdin.take().map(|mut stdin| {
         let bytes = spec.stdin;
         thread::spawn(move || {
@@ -718,15 +741,19 @@ where
             Ok(Some(error)) => runtime_error = Some(join_error(runtime_error, error)),
             Ok(None) => {}
             Err(_) => {
-                runtime_error = Some(join_error(runtime_error, "stdin_writer_panicked".to_string()))
+                runtime_error = Some(join_error(
+                    runtime_error,
+                    "stdin_writer_panicked".to_string(),
+                ))
             }
         }
     }
 
-    let status_kind = forced_kind.unwrap_or_else(|| match status.as_ref().and_then(ExitStatusExt::signal) {
-        Some(_) => TerminalKind::Signaled,
-        None => TerminalKind::Exited,
-    });
+    let status_kind =
+        forced_kind.unwrap_or_else(|| match status.as_ref().and_then(ExitStatusExt::signal) {
+            Some(_) => TerminalKind::Signaled,
+            None => TerminalKind::Exited,
+        });
     let output_truncated = status_kind == TerminalKind::OutputLimitExceeded;
     let terminal = ExecutionTerminal {
         kind: status_kind,
@@ -771,10 +798,13 @@ where
                 Err(error) => {
                     let _ = sender.send(ReaderMessage::Error(
                         stream,
-                        format!("{}_read_error: {error}", match stream {
-                            StreamKind::Stdout => "stdout",
-                            StreamKind::Stderr => "stderr",
-                        }),
+                        format!(
+                            "{}_read_error: {error}",
+                            match stream {
+                                StreamKind::Stdout => "stdout",
+                                StreamKind::Stderr => "stderr",
+                            }
+                        ),
                     ));
                     return;
                 }
@@ -791,9 +821,15 @@ fn join_reader(thread: Option<JoinHandle<()>>, error: &mut Option<String>, label
     }
 }
 
-fn terminate_process_group(child: &mut Child, pid: u32, grace: Duration) -> std::result::Result<ExitStatus, String> {
+fn terminate_process_group(
+    child: &mut Child,
+    pid: u32,
+    grace: Duration,
+) -> std::result::Result<ExitStatus, String> {
     send_process_group_signal(pid, libc::SIGTERM)?;
-    let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
+    let deadline = Instant::now()
+        .checked_add(grace)
+        .unwrap_or_else(Instant::now);
     loop {
         match child.try_wait() {
             Ok(Some(status)) => return Ok(status),
@@ -862,6 +898,9 @@ mod tests {
     #[test]
     fn zero_request_timeout_uses_owner_default() {
         let limits = MechanicalLimits::default();
-        assert_eq!(normalized_timeout(Some(Duration::ZERO), &limits), limits.default_timeout);
+        assert_eq!(
+            normalized_timeout(Some(Duration::ZERO), &limits),
+            limits.default_timeout
+        );
     }
 }

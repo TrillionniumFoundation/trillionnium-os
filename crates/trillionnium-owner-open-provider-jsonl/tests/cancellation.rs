@@ -63,7 +63,10 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
 
     let deadline = Instant::now() + Duration::from_secs(5);
     while !ready.exists() {
-        assert!(Instant::now() < deadline, "provider never received turn.start");
+        assert!(
+            Instant::now() < deadline,
+            "provider never received turn.start"
+        );
         thread::sleep(Duration::from_millis(5));
     }
     assert!(cancellation.cancel());

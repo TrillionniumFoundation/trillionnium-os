@@ -53,7 +53,10 @@ fn send(writer: &mut ChildStdin, value: Value) {
 
 fn read_frame(reader: &mut BufReader<ChildStdout>) -> Value {
     let mut line = String::new();
-    assert!(reader.read_line(&mut line).unwrap() > 0, "Host stdout closed");
+    assert!(
+        reader.read_line(&mut line).unwrap() > 0,
+        "Host stdout closed"
+    );
     serde_json::from_str(line.trim_end()).unwrap()
 }
 
@@ -327,8 +330,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
             .any(|frame| frame["kind"] == "turn.cancel.accepted")
     );
     assert!(frames.iter().any(|frame| {
-        frame["kind"] == "tool.result"
-            && frame["payload"]["terminal_kind"] == "client_cancelled"
+        frame["kind"] == "tool.result" && frame["payload"]["terminal_kind"] == "client_cancelled"
     }));
     assert_eq!(frames.last().unwrap()["payload"]["status"], "cancelled");
     finish(running);

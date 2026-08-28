@@ -82,7 +82,10 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     assert_eq!(first[0]["payload"]["durable_event_store"], true);
     assert_eq!(first.last().unwrap()["kind"], "turn.end");
     assert_eq!(first.last().unwrap()["payload"]["status"], "completed");
-    assert_eq!(first.last().unwrap()["payload"]["event_log_status"], "durable");
+    assert_eq!(
+        first.last().unwrap()["payload"]["event_log_status"],
+        "durable"
+    );
 
     let second_output = run_host(&provider, &counter, &event_store);
     let second = frames(&second_output);

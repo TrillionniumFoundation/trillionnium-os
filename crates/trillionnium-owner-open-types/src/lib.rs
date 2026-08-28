@@ -190,7 +190,11 @@ impl RunTurnFrame {
         let request: RunTurnRequest = serde_json::from_value(self.payload.clone())
             .map_err(|error| invalid(format!("invalid turn.start payload: {error}")))?;
         request.validate_mechanical(limits)?;
-        validate_mirrored_id("session_id", self.session_id.as_deref(), &request.session_id)?;
+        validate_mirrored_id(
+            "session_id",
+            self.session_id.as_deref(),
+            &request.session_id,
+        )?;
         validate_mirrored_id("task_id", self.task_id.as_deref(), &request.task_id)?;
         validate_mirrored_id("turn_id", self.turn_id.as_deref(), &request.turn_id)?;
         if let Some(profile_id) = self.profile_id.as_deref() {
@@ -210,7 +214,11 @@ impl RunTurnFrame {
         let request: TurnCancelRequest = serde_json::from_value(self.payload.clone())
             .map_err(|error| invalid(format!("invalid turn.cancel payload: {error}")))?;
         request.validate_mechanical(limits)?;
-        validate_mirrored_id("session_id", self.session_id.as_deref(), &request.session_id)?;
+        validate_mirrored_id(
+            "session_id",
+            self.session_id.as_deref(),
+            &request.session_id,
+        )?;
         validate_mirrored_id("turn_id", self.turn_id.as_deref(), &request.turn_id)?;
         validate_optional_alias(
             "profile_id",
@@ -424,10 +432,7 @@ impl ToolCall {
             }
         }
         validate_optional_digest("request_sha256", self.request_sha256.as_deref())?;
-        validate_optional_digest(
-            "binding_fingerprint",
-            self.binding_fingerprint.as_deref(),
-        )?;
+        validate_optional_digest("binding_fingerprint", self.binding_fingerprint.as_deref())?;
         for (name, value) in [
             ("target", self.target.as_deref()),
             ("target_id", self.target_id.as_deref()),
@@ -532,8 +537,7 @@ fn validate_resume_pair(cursor: Option<&Value>, token: Option<&str>) -> Result<(
     if let Some(cursor) = cursor {
         match cursor {
             Value::Number(number) if number.as_u64().is_some() => {}
-            Value::String(value)
-                if !value.is_empty() && !value.chars().any(char::is_control) => {}
+            Value::String(value) if !value.is_empty() && !value.chars().any(char::is_control) => {}
             _ => return Err(invalid("resume_cursor has an invalid shape")),
         }
     }
@@ -633,9 +637,10 @@ fn validate_env(env: &BTreeMap<String, Option<String>>, limits: &MechanicalLimit
         {
             return Err(invalid("env key is not mechanically representable"));
         }
-        if value.as_deref().is_some_and(|value| {
-            value.len() > limits.max_env_value_bytes || value.contains('\0')
-        }) {
+        if value
+            .as_deref()
+            .is_some_and(|value| value.len() > limits.max_env_value_bytes || value.contains('\0'))
+        {
             return Err(invalid("env value is not mechanically representable"));
         }
     }
@@ -851,7 +856,8 @@ mod tests {
             "argv": ["shell", "id"]
         }))
         .unwrap();
-        call.validate_adb_exec(&MechanicalLimits::default()).unwrap();
+        call.validate_adb_exec(&MechanicalLimits::default())
+            .unwrap();
         assert_eq!(
             call.argv.unwrap(),
             vec!["shell".to_string(), "id".to_string()]
@@ -892,7 +898,9 @@ mod tests {
             target_id: None,
             extensions: BTreeMap::new(),
         };
-        let error = frame.turn_request(&MechanicalLimits::default()).unwrap_err();
+        let error = frame
+            .turn_request(&MechanicalLimits::default())
+            .unwrap_err();
         assert!(error.to_string().contains("envelope session_id conflicts"));
     }
 
@@ -964,6 +972,10 @@ mod tests {
             target_id: None,
             extensions: BTreeMap::new(),
         };
-        assert!(frame.validate_mechanical(&MechanicalLimits::default()).is_err());
+        assert!(
+            frame
+                .validate_mechanical(&MechanicalLimits::default())
+                .is_err()
+        );
     }
 }

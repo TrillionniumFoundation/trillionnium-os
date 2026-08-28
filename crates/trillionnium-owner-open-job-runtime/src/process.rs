@@ -252,9 +252,9 @@ fn base_command(request: &JobStartRequest) -> Result<Command> {
             command
         }
         JobInvocation::Argv { argv } => {
-            let executable = argv.first().ok_or_else(|| {
-                JobRuntimeError::InvalidRequest("job argv is empty".to_string())
-            })?;
+            let executable = argv
+                .first()
+                .ok_or_else(|| JobRuntimeError::InvalidRequest("job argv is empty".to_string()))?;
             let mut command = Command::new(executable);
             command.args(&argv[1..]);
             command
@@ -329,9 +329,7 @@ fn validate_start(request: &JobStartRequest) -> Result<()> {
 
 fn validate_path(path: &Path, label: &str) -> Result<()> {
     if path.as_os_str().is_empty() {
-        return Err(JobRuntimeError::InvalidRequest(format!(
-            "{label} is empty"
-        )));
+        return Err(JobRuntimeError::InvalidRequest(format!("{label} is empty")));
     }
     Ok(())
 }

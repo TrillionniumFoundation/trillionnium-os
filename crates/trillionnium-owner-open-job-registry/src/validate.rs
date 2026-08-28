@@ -49,7 +49,10 @@ pub(crate) fn validate_terminal(terminal: &JobTerminal) -> Result<()> {
     if terminal.exit_code.is_some() && terminal.signal.is_some() {
         return Err(invalid("terminal cannot contain exit_code and signal"));
     }
-    if terminal.signal.is_some_and(|signal| !(1..=128).contains(&signal)) {
+    if terminal
+        .signal
+        .is_some_and(|signal| !(1..=128).contains(&signal))
+    {
         return Err(invalid("terminal signal is outside the supported range"));
     }
     Ok(())

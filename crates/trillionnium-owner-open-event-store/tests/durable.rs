@@ -12,7 +12,13 @@ fn path(directory: &tempfile::TempDir) -> std::path::PathBuf {
 }
 
 fn scope(turn: &str) -> TurnScope {
-    TurnScope::new("session-1", "owner-open", "task-1", turn, format!("stream-{turn}"))
+    TurnScope::new(
+        "session-1",
+        "owner-open",
+        "task-1",
+        turn,
+        format!("stream-{turn}"),
+    )
 }
 
 fn input(turn: &str, event_id: &str, kind: &str, value: i64) -> EventInput {
@@ -28,15 +34,17 @@ fn input(turn: &str, event_id: &str, kind: &str, value: i64) -> EventInput {
 fn append_reopen_and_inclusive_replay_preserve_exact_records() {
     let directory = tempfile::tempdir().unwrap();
     let store_path = path(&directory);
-    let store = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::Full,
-    )
-    .unwrap();
-    let first = store.append(input("turn-a", "event-0", "turn.accepted", 0)).unwrap();
-    let second = store.append(input("turn-a", "event-1", "model.delta", 1)).unwrap();
-    let other = store.append(input("turn-b", "event-0", "turn.accepted", 2)).unwrap();
+    let store = DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Full)
+        .unwrap();
+    let first = store
+        .append(input("turn-a", "event-0", "turn.accepted", 0))
+        .unwrap();
+    let second = store
+        .append(input("turn-a", "event-1", "model.delta", 1))
+        .unwrap();
+    let other = store
+        .append(input("turn-b", "event-0", "turn.accepted", 2))
+        .unwrap();
     assert_eq!(first.record.store_seq, 0);
     assert_eq!(first.record.turn_seq, 0);
     assert_eq!(second.record.store_seq, 1);
@@ -45,12 +53,9 @@ fn append_reopen_and_inclusive_replay_preserve_exact_records() {
     assert_eq!(other.record.turn_seq, 0);
     drop(store);
 
-    let reopened = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::Full,
-    )
-    .unwrap();
+    let reopened =
+        DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Full)
+            .unwrap();
     let replay = reopened.replay(&scope("turn-a"), 1).unwrap();
     assert_eq!(replay.len(), 1);
     assert_eq!(replay[0].event_id, "event-1");
@@ -89,8 +94,12 @@ fn the_same_event_id_is_independent_in_another_turn_scope() {
         SyncPolicy::None,
     )
     .unwrap();
-    store.append(input("turn-a", "event-0", "turn.accepted", 1)).unwrap();
-    store.append(input("turn-b", "event-0", "turn.accepted", 2)).unwrap();
+    store
+        .append(input("turn-a", "event-0", "turn.accepted", 1))
+        .unwrap();
+    store
+        .append(input("turn-b", "event-0", "turn.accepted", 2))
+        .unwrap();
     assert_eq!(store.snapshot().unwrap().record_count, 2);
 }
 
@@ -98,26 +107,13 @@ fn the_same_event_id_is_independent_in_another_turn_scope() {
 fn a_second_writer_is_rejected_without_mutating_the_store() {
     let directory = tempfile::tempdir().unwrap();
     let store_path = path(&directory);
-    let first = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::Data,
-    )
-    .unwrap();
-    let error = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::Data,
-    )
-    .unwrap_err();
+    let first = DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Data)
+        .unwrap();
+    let error = DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Data)
+        .unwrap_err();
     assert!(matches!(error, EventStoreError::WriterBusy));
     drop(first);
-    DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::Data,
-    )
-    .unwrap();
+    DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Data).unwrap();
 }
 
 #[test]
@@ -125,34 +121,27 @@ fn truncated_or_tampered_records_fail_closed_on_reopen() {
     let directory = tempfile::tempdir().unwrap();
     let store_path = path(&directory);
     {
-        let store = DurableEventStore::open(
-            &store_path,
-            EventStoreLimits::default(),
-            SyncPolicy::Full,
-        )
-        .unwrap();
-        store.append(input("turn-a", "event-0", "turn.accepted", 1)).unwrap();
+        let store =
+            DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Full)
+                .unwrap();
+        store
+            .append(input("turn-a", "event-0", "turn.accepted", 1))
+            .unwrap();
     }
     let original = fs::read(&store_path).unwrap();
     fs::write(&store_path, &original[..original.len() - 1]).unwrap();
-    let truncated = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::Full,
-    )
-    .unwrap_err();
+    let truncated =
+        DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Full)
+            .unwrap_err();
     assert!(matches!(truncated, EventStoreError::TruncatedRecord));
 
     fs::write(&store_path, original).unwrap();
     let text = fs::read_to_string(&store_path).unwrap();
     let tampered = text.replace("\"value\":1", "\"value\":2");
     fs::write(&store_path, tampered).unwrap();
-    let digest_error = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::Full,
-    )
-    .unwrap_err();
+    let digest_error =
+        DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Full)
+            .unwrap_err();
     assert!(matches!(digest_error, EventStoreError::InvalidRecord(_)));
 }
 
@@ -160,28 +149,17 @@ fn truncated_or_tampered_records_fail_closed_on_reopen() {
 fn duplicate_json_members_and_unsafe_modes_are_rejected() {
     let directory = tempfile::tempdir().unwrap();
     let store_path = path(&directory);
-    fs::write(
-        &store_path,
-        b"{\"schema\":\"x\",\"schema\":\"y\"}\n",
-    )
-    .unwrap();
+    fs::write(&store_path, b"{\"schema\":\"x\",\"schema\":\"y\"}\n").unwrap();
     fs::set_permissions(&store_path, fs::Permissions::from_mode(0o600)).unwrap();
-    let duplicate = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::None,
-    )
-    .unwrap_err();
+    let duplicate =
+        DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::None)
+            .unwrap_err();
     assert!(matches!(duplicate, EventStoreError::InvalidRecord(_)));
 
     fs::write(&store_path, b"").unwrap();
     fs::set_permissions(&store_path, fs::Permissions::from_mode(0o644)).unwrap();
-    let mode = DurableEventStore::open(
-        &store_path,
-        EventStoreLimits::default(),
-        SyncPolicy::None,
-    )
-    .unwrap_err();
+    let mode = DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::None)
+        .unwrap_err();
     assert!(matches!(mode, EventStoreError::UnsafePath(_)));
 }
 
@@ -199,7 +177,9 @@ fn record_and_store_capacity_are_enforced_before_append() {
         SyncPolicy::None,
     )
     .unwrap();
-    store.append(input("turn-a", "event-0", "turn.accepted", 1)).unwrap();
+    store
+        .append(input("turn-a", "event-0", "turn.accepted", 1))
+        .unwrap();
     let error = store
         .append(input("turn-a", "event-1", "model.delta", 2))
         .unwrap_err();

@@ -9,10 +9,7 @@ fn client_output_disconnect_does_not_cancel_an_accepted_turn() {
     let provider = directory.path().join("provider.sh");
     let counter = directory.path().join("provider-starts");
     let event_store = directory.path().join("events.jsonl");
-    let transport_store = std::path::PathBuf::from(format!(
-        "{}.transport",
-        event_store.display()
-    ));
+    let transport_store = std::path::PathBuf::from(format!("{}.transport", event_store.display()));
     fs::write(
         &provider,
         r#"#!/bin/sh

@@ -7,8 +7,8 @@ use std::time::{Duration, Instant};
 use serde_json::json;
 use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
 use trillionnium_owner_open_job_runtime::{
-    ControlDisposition, JobInvocation, JobJournal, JobManager, JobRuntimeConfig,
-    JobStartRequest, PtySize, RuntimeJobEventKind, StartDisposition,
+    ControlDisposition, JobInvocation, JobJournal, JobManager, JobRuntimeConfig, JobStartRequest,
+    PtySize, RuntimeJobEventKind, StartDisposition,
 };
 
 fn key(id: &str) -> JobKey {
@@ -118,7 +118,14 @@ fn pty_job_supports_resize_and_process_group_kill() {
         .unwrap();
     assert_eq!(
         manager
-            .resize(&job, "resize-pty", PtySize { rows: 40, cols: 120 })
+            .resize(
+                &job,
+                "resize-pty",
+                PtySize {
+                    rows: 40,
+                    cols: 120
+                }
+            )
             .unwrap(),
         ControlDisposition::Applied
     );
@@ -153,13 +160,7 @@ fn completed_durable_job_never_spawns_again_after_manager_restart() {
     }
     let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
     let replay = manager
-        .start(start_request(
-            job,
-            request,
-            "start-once",
-            command,
-            None,
-        ))
+        .start(start_request(job, request, "start-once", command, None))
         .unwrap();
     assert_eq!(replay.disposition, StartDisposition::ExistingTerminal);
     assert_eq!(fs::read(counter).unwrap(), b"x");

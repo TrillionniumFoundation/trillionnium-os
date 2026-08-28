@@ -7,9 +7,7 @@ use r5_persistence::{
     Persistence, StoredInspection, event_scope, request_sha256, stable_turn_stream_id,
 };
 use serde_json::json;
-use trillionnium_owner_open_types::{
-    PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest,
-};
+use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
 fn request() -> RunTurnRequest {
     RunTurnRequest {
@@ -34,12 +32,7 @@ fn request() -> RunTurnRequest {
     }
 }
 
-fn frame(
-    request: &RunTurnRequest,
-    stream: &str,
-    kind: &str,
-    seq: u64,
-) -> RunTurnFrame {
+fn frame(request: &RunTurnRequest, stream: &str, kind: &str, seq: u64) -> RunTurnFrame {
     RunTurnFrame {
         kind: kind.to_string(),
         seq,
@@ -115,7 +108,11 @@ fn inclusive_cursor_returns_a_bounded_read_only_slice() {
         other => panic!("unexpected end-cursor inspection result: {other:?}"),
     }
 
-    assert_eq!(std::fs::read(&path).unwrap(), before, "inspect mutated the store");
+    assert_eq!(
+        std::fs::read(&path).unwrap(),
+        before,
+        "inspect mutated the store"
+    );
 }
 
 #[test]

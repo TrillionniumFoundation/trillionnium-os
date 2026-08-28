@@ -11,8 +11,8 @@ use std::fmt::{Display, Formatter};
 use std::os::unix::ffi::OsStrExt;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 
@@ -29,10 +29,7 @@ use trillionnium_owner_open_runtime::{
 #[derive(Debug)]
 pub enum BridgeError {
     InvalidRequest(String),
-    ClaimedDigestMismatch {
-        claimed: String,
-        computed: String,
-    },
+    ClaimedDigestMismatch { claimed: String, computed: String },
     Registry(RegistryError),
     RegistryObservation(RegistryError),
     EventSinkFailed(String),
@@ -292,18 +289,16 @@ impl DirectToolBridge {
         validate_runtime_request(&call.request, &limits.runtime)?;
         self.registry
             .begin(call.key.clone(), call.registry_request())?;
-        let (generation, cancellation) = match self
-            .registry
-            .claim_spawn(&call.key, &call.request_sha256)?
-        {
-            SpawnClaim::Granted {
-                generation,
-                cancellation,
-                ..
-            } => (generation, cancellation),
-            SpawnClaim::Existing(snapshot) => return Ok(DispatchResult::Existing(snapshot)),
-            SpawnClaim::Inhibited(snapshot) => return Ok(DispatchResult::Inhibited(snapshot)),
-        };
+        let (generation, cancellation) =
+            match self.registry.claim_spawn(&call.key, &call.request_sha256)? {
+                SpawnClaim::Granted {
+                    generation,
+                    cancellation,
+                    ..
+                } => (generation, cancellation),
+                SpawnClaim::Existing(snapshot) => return Ok(DispatchResult::Existing(snapshot)),
+                SpawnClaim::Inhibited(snapshot) => return Ok(DispatchResult::Inhibited(snapshot)),
+            };
 
         let runtime_cancellation = RuntimeCancellationToken::new();
         let monitor_cancellation = runtime_cancellation.clone();
@@ -355,8 +350,7 @@ impl DirectToolBridge {
                     }
                     thread::sleep(poll);
                 }
-            })
-        {
+            }) {
             Ok(monitor) => monitor,
             Err(error) => {
                 let terminal = synthetic_terminal(
@@ -456,7 +450,11 @@ struct ObservationDigest {
 impl ObservationDigest {
     fn new(call_id: &str, tool: &str, target_id: Option<&str>, generation: u64) -> Self {
         let mut hasher = Sha256::new();
-        field(&mut hasher, b"schema", b"trillionnium.owner-open.local-observation.v1");
+        field(
+            &mut hasher,
+            b"schema",
+            b"trillionnium.owner-open.local-observation.v1",
+        );
         field(&mut hasher, b"call_id", call_id.as_bytes());
         field(&mut hasher, b"tool", tool.as_bytes());
         field(
@@ -508,8 +506,16 @@ impl ObservationDigest {
                     b"signal",
                     &terminal.signal.unwrap_or(i32::MIN).to_be_bytes(),
                 );
-                field(hasher, b"stdout_bytes", &terminal.stdout_bytes.to_be_bytes());
-                field(hasher, b"stderr_bytes", &terminal.stderr_bytes.to_be_bytes());
+                field(
+                    hasher,
+                    b"stdout_bytes",
+                    &terminal.stdout_bytes.to_be_bytes(),
+                );
+                field(
+                    hasher,
+                    b"stderr_bytes",
+                    &terminal.stderr_bytes.to_be_bytes(),
+                );
                 field(
                     hasher,
                     b"output_truncated",
@@ -570,7 +576,10 @@ fn synthetic_terminal(kind: TerminalKind, error: String) -> ExecutionTerminal {
     }
 }
 
-fn terminal_record(terminal: &ExecutionTerminal, observation_sha256: String) -> Result<TerminalRecord> {
+fn terminal_record(
+    terminal: &ExecutionTerminal,
+    observation_sha256: String,
+) -> Result<TerminalRecord> {
     require_sha256(&observation_sha256, "observation_sha256")?;
     Ok(TerminalRecord::new(
         terminal.kind.as_str(),
@@ -650,12 +659,7 @@ fn validate_common(
         return Err(invalid("call_id is empty, oversized, or malformed"));
     }
     if let Some(target_id) = target_id {
-        validate_text(
-            target_id,
-            "target_id",
-            limits.max_target_id_bytes,
-            false,
-        )?;
+        validate_text(target_id, "target_id", limits.max_target_id_bytes, false)?;
     }
     if let Some(cwd) = cwd {
         validate_path(cwd, "cwd", limits.max_cwd_bytes)?;
@@ -684,7 +688,9 @@ fn validate_common(
         }
     }
     if total > limits.max_environment_bytes {
-        return Err(invalid("environment delta exceeds the configured byte bound"));
+        return Err(invalid(
+            "environment delta exceeds the configured byte bound",
+        ));
     }
     Ok(())
 }

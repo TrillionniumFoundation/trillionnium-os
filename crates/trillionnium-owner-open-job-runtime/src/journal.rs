@@ -145,16 +145,18 @@ impl JobJournal {
 
     pub fn status(&self) -> Result<JournalStatus> {
         let state = self.lock()?;
-        Ok(match (&state.store, state.configured, state.error.as_deref()) {
-            (Some(_), _, _) => JournalStatus::Durable,
-            (None, false, _) => JournalStatus::BestEffortMemoryOnly,
-            (None, true, Some(error)) => JournalStatus::Unavailable {
-                error: error.to_string(),
+        Ok(
+            match (&state.store, state.configured, state.error.as_deref()) {
+                (Some(_), _, _) => JournalStatus::Durable,
+                (None, false, _) => JournalStatus::BestEffortMemoryOnly,
+                (None, true, Some(error)) => JournalStatus::Unavailable {
+                    error: error.to_string(),
+                },
+                (None, true, None) => JournalStatus::Unavailable {
+                    error: "job journal is unavailable".to_string(),
+                },
             },
-            (None, true, None) => JournalStatus::Unavailable {
-                error: "job journal is unavailable".to_string(),
-            },
-        })
+        )
     }
 
     pub fn is_durable(&self) -> Result<bool> {
@@ -467,14 +469,17 @@ impl JobJournal {
 fn recover(
     store: &DurableEventStore,
 ) -> std::result::Result<
-    (HashMap<OperationKey, OperationState>, HashMap<JobKey, JobState>),
+    (
+        HashMap<OperationKey, OperationState>,
+        HashMap<JobKey, JobState>,
+    ),
     String,
 > {
     let mut operations = HashMap::new();
     let mut jobs = HashMap::<JobKey, JobState>::new();
     for record in store.all_records().map_err(|error| error.to_string())? {
-        let envelope: JournalEnvelope = serde_json::from_value(record.payload.clone())
-            .map_err(|error| error.to_string())?;
+        let envelope: JournalEnvelope =
+            serde_json::from_value(record.payload.clone()).map_err(|error| error.to_string())?;
         if envelope.schema != JOURNAL_SCHEMA {
             return Err("job journal schema does not match".to_string());
         }
@@ -545,7 +550,10 @@ fn recover(
                     .ok_or_else(|| "operation terminal precedes acceptance".to_string())?;
                 if operation.operation_kind != operation_kind
                     || operation.operation_sha256 != operation_sha256
-                    || operation.terminal.replace(envelope.payload.clone()).is_some()
+                    || operation
+                        .terminal
+                        .replace(envelope.payload.clone())
+                        .is_some()
                 {
                     return Err("job operation terminal conflicts".to_string());
                 }

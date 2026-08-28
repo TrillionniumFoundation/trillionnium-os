@@ -59,8 +59,12 @@ fn serve_unix(path: &Path) -> Result<(), String> {
         .map_err(|error| format!("cannot bind Unix socket {}: {error}", path.display()))?;
     std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600))
         .map_err(|error| format!("cannot set Unix socket mode on {}: {error}", path.display()))?;
-    let socket_metadata = std::fs::symlink_metadata(path)
-        .map_err(|error| format!("cannot inspect bound Unix socket {}: {error}", path.display()))?;
+    let socket_metadata = std::fs::symlink_metadata(path).map_err(|error| {
+        format!(
+            "cannot inspect bound Unix socket {}: {error}",
+            path.display()
+        )
+    })?;
     let effective_uid = unsafe { libc::geteuid() };
     if !socket_metadata.file_type().is_socket()
         || socket_metadata.uid() != effective_uid

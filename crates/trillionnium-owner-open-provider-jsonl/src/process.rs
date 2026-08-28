@@ -79,10 +79,7 @@ pub(crate) fn spawn_stderr_reader(
     })
 }
 
-fn read_bounded_line(
-    reader: &mut impl BufRead,
-    maximum: usize,
-) -> Result<Option<Vec<u8>>, String> {
+fn read_bounded_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option<Vec<u8>>, String> {
     let mut line = Vec::new();
     let read = reader
         .take(maximum as u64 + 2)
@@ -106,7 +103,9 @@ pub(crate) fn finish_child(
     pid: u32,
     grace: Duration,
 ) -> Result<ExitStatus, String> {
-    let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
+    let deadline = Instant::now()
+        .checked_add(grace)
+        .unwrap_or_else(Instant::now);
     loop {
         match child.try_wait() {
             Ok(Some(status)) => return Ok(status),
@@ -124,7 +123,9 @@ fn terminate_process_group(
     grace: Duration,
 ) -> Result<ExitStatus, String> {
     send_group_signal(pid, libc::SIGTERM)?;
-    let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
+    let deadline = Instant::now()
+        .checked_add(grace)
+        .unwrap_or_else(Instant::now);
     loop {
         match child.try_wait() {
             Ok(Some(status)) => return Ok(status),

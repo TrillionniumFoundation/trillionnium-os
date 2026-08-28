@@ -7,9 +7,9 @@
 use serde_json::{Value, json};
 use thiserror::Error;
 use trillionnium_owner_open_types::{
-    DEFAULT_PROFILE_ID, FRAME_HELLO, FRAME_HELLO_ACK, FRAME_TURN_ACCEPTED,
-    FRAME_TURN_CANCEL, FRAME_TURN_END, FRAME_TURN_START, MechanicalLimits, PROTOCOL,
-    PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest,
+    DEFAULT_PROFILE_ID, FRAME_HELLO, FRAME_HELLO_ACK, FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL,
+    FRAME_TURN_END, FRAME_TURN_START, MechanicalLimits, PROTOCOL, PROTOCOL_VERSION, RunTurnFrame,
+    RunTurnRequest,
 };
 
 pub const FRAME_HOST_ERROR: &str = "host.error";
@@ -47,10 +47,20 @@ pub struct TurnContext {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum ProviderEvent {
-    Status { status: String, detail: Option<String> },
-    ModelDelta { text: String },
-    ModelMessage { text: String },
-    Extension { label: String, payload: Value },
+    Status {
+        status: String,
+        detail: Option<String>,
+    },
+    ModelDelta {
+        text: String,
+    },
+    ModelMessage {
+        text: String,
+    },
+    Extension {
+        label: String,
+        payload: Value,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -309,11 +319,13 @@ impl<P: TurnProvider> ConnectionEngine<P> {
         Ok(output)
     }
 
-    fn allocate_turn_context(&mut self, request: &RunTurnRequest) -> Result<TurnContext, HostError> {
-        self.next_stream_ordinal = self
-            .next_stream_ordinal
-            .checked_add(1)
-            .ok_or_else(|| HostError::ConnectionState("turn stream ordinal overflow".to_string()))?;
+    fn allocate_turn_context(
+        &mut self,
+        request: &RunTurnRequest,
+    ) -> Result<TurnContext, HostError> {
+        self.next_stream_ordinal = self.next_stream_ordinal.checked_add(1).ok_or_else(|| {
+            HostError::ConnectionState("turn stream ordinal overflow".to_string())
+        })?;
         Ok(TurnContext {
             connection_id: self.connection_id.clone(),
             turn_stream_id: format!(
@@ -469,8 +481,8 @@ mod tests {
 
     #[test]
     fn hello_reports_the_foundation_hold_without_claiming_runtime_ready() {
-        let mut engine = ConnectionEngine::new("connection-test", UnavailableProvider::default())
-            .unwrap();
+        let mut engine =
+            ConnectionEngine::new("connection-test", UnavailableProvider::default()).unwrap();
         let output = engine
             .handle_encoded(
                 &serde_json::to_vec(&json!({
@@ -487,12 +499,15 @@ mod tests {
 
     #[test]
     fn unavailable_provider_returns_an_honest_same_turn_terminal_result() {
-        let mut engine = ConnectionEngine::new("connection-test", UnavailableProvider::default())
-            .unwrap();
+        let mut engine =
+            ConnectionEngine::new("connection-test", UnavailableProvider::default()).unwrap();
         let output = engine.handle_encoded(&turn_start()).unwrap();
         assert_eq!(output.first().unwrap().kind, FRAME_TURN_ACCEPTED);
         assert_eq!(output.last().unwrap().kind, FRAME_TURN_END);
-        assert_eq!(output.last().unwrap().payload["status"], "provider_unavailable");
+        assert_eq!(
+            output.last().unwrap().payload["status"],
+            "provider_unavailable"
+        );
         let stream = output[0].turn_stream_id.clone();
         assert!(stream.is_some());
         assert!(output.iter().all(|frame| frame.turn_stream_id == stream));
@@ -540,9 +555,7 @@ mod tests {
     fn duplicate_json_members_fail_before_state_change() {
         let mut engine = ConnectionEngine::new("connection-test", FixtureProvider).unwrap();
         let error = engine
-            .handle_encoded(
-                br#"{"kind":"turn.start","kind":"hello","seq":1,"payload":{}}"#,
-            )
+            .handle_encoded(br#"{"kind":"turn.start","kind":"hello","seq":1,"payload":{}}"#)
             .unwrap_err();
         assert!(error.to_string().contains("duplicate key kind"));
         assert!(!engine.has_active_turn());

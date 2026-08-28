@@ -1,6 +1,6 @@
 use std::fs;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -49,7 +49,9 @@ impl SameTurnProvider for SinkAwareProvider {
         if !self.observed.load(Ordering::SeqCst) {
             return Err("event sink did not run before ProviderHost::emit returned".to_string());
         }
-        Ok(ProviderTerminal::completed("provider observed streaming delivery"))
+        Ok(ProviderTerminal::completed(
+            "provider observed streaming delivery",
+        ))
     }
 }
 
@@ -146,9 +148,7 @@ impl SameTurnProvider for LongRunningTool {
             ))
             .map_err(|error| error.to_string())?
         {
-            ToolOutcome::Executed { terminal, .. }
-                if terminal.kind == TerminalKind::Cancelled =>
-            {
+            ToolOutcome::Executed { terminal, .. } if terminal.kind == TerminalKind::Cancelled => {
                 Ok(ProviderTerminal::cancelled(
                     "turn cancellation reached the active process group",
                 ))
@@ -195,7 +195,10 @@ fn turn_cancellation_reaches_an_active_tool_process_group() {
 
     let deadline = Instant::now() + Duration::from_secs(5);
     while !started.exists() {
-        assert!(Instant::now() < deadline, "tool never reached the started state");
+        assert!(
+            Instant::now() < deadline,
+            "tool never reached the started state"
+        );
         thread::sleep(Duration::from_millis(5));
     }
     assert!(cancellation.cancel());

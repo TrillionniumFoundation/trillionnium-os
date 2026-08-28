@@ -31,36 +31,33 @@ impl Display for RegistryError {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::InvalidRequest(message) => {
-                write!(formatter, "invalid owner-open call registry request: {message}")
+                write!(
+                    formatter,
+                    "invalid owner-open call registry request: {message}"
+                )
             }
             Self::NotFound => formatter.write_str("owner-open call is not registered"),
-            Self::CallIdConflict => formatter.write_str(
-                "owner-open call_id is already bound to different request bytes",
-            ),
-            Self::RequestDigestMismatch => formatter.write_str(
-                "owner-open call request digest does not match the registered call",
-            ),
+            Self::CallIdConflict => formatter
+                .write_str("owner-open call_id is already bound to different request bytes"),
+            Self::RequestDigestMismatch => formatter
+                .write_str("owner-open call request digest does not match the registered call"),
             Self::InvalidTransition(message) => {
                 write!(formatter, "invalid owner-open call transition: {message}")
             }
-            Self::SpawnGenerationMismatch => formatter.write_str(
-                "owner-open spawn generation does not match the registered call",
-            ),
-            Self::PidConflict => formatter.write_str(
-                "owner-open call already records a different process identity",
-            ),
-            Self::TerminalConflict => formatter.write_str(
-                "owner-open call already records a different terminal observation",
-            ),
+            Self::SpawnGenerationMismatch => formatter
+                .write_str("owner-open spawn generation does not match the registered call"),
+            Self::PidConflict => {
+                formatter.write_str("owner-open call already records a different process identity")
+            }
+            Self::TerminalConflict => formatter
+                .write_str("owner-open call already records a different terminal observation"),
             Self::CapacityExhausted => {
                 formatter.write_str("owner-open call registry capacity is exhausted")
             }
             Self::GenerationExhausted => {
                 formatter.write_str("owner-open spawn generation is exhausted")
             }
-            Self::StatePoisoned => {
-                formatter.write_str("owner-open call registry lock is poisoned")
-            }
+            Self::StatePoisoned => formatter.write_str("owner-open call registry lock is poisoned"),
         }
     }
 }
@@ -218,12 +215,20 @@ impl CancellationSignal {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CallEventKind {
     Accepted,
-    SpawnClaimed { generation: u64 },
-    PidObserved { generation: u64, pid: u32 },
+    SpawnClaimed {
+        generation: u64,
+    },
+    PidObserved {
+        generation: u64,
+        pid: u32,
+    },
     CancelRequested,
     ConnectionLost,
     ConnectionAttached,
-    TerminalRecorded { generation: u64, terminal: TerminalRecord },
+    TerminalRecorded {
+        generation: u64,
+        terminal: TerminalRecord,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -293,9 +298,17 @@ pub enum MutationOutcome {
 
 #[derive(Debug, Clone)]
 enum DispatchState {
-    Accepted { spawn_inhibited: bool },
-    Started { generation: u64, pid: Option<u32> },
-    Terminal { generation: u64, terminal: TerminalRecord },
+    Accepted {
+        spawn_inhibited: bool,
+    },
+    Started {
+        generation: u64,
+        pid: Option<u32>,
+    },
+    Terminal {
+        generation: u64,
+        terminal: TerminalRecord,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -332,7 +345,10 @@ impl Entry {
                     }
                 }
             }
-            DispatchState::Terminal { generation, terminal } => EffectiveState::Terminal {
+            DispatchState::Terminal {
+                generation,
+                terminal,
+            } => EffectiveState::Terminal {
                 generation: *generation,
                 terminal: terminal.clone(),
             },
@@ -649,19 +665,9 @@ impl CallRegistry {
     fn validate_request(&self, request: &CallRequest) -> Result<()> {
         require_sha256(&request.request_sha256, "request_sha256")?;
         require_sha256(&request.binding_fingerprint, "binding_fingerprint")?;
-        require_text(
-            &request.tool,
-            "tool",
-            self.limits.max_tool_bytes,
-            false,
-        )?;
+        require_text(&request.tool, "tool", self.limits.max_tool_bytes, false)?;
         if let Some(target_id) = &request.target_id {
-            require_text(
-                target_id,
-                "target_id",
-                self.limits.max_target_bytes,
-                true,
-            )?;
+            require_text(target_id, "target_id", self.limits.max_target_bytes, true)?;
         }
         Ok(())
     }
@@ -669,7 +675,10 @@ impl CallRegistry {
     fn validate_terminal(&self, terminal: &TerminalRecord) -> Result<()> {
         require_text(&terminal.terminal_kind, "terminal_kind", 128, false)?;
         require_sha256(&terminal.observation_sha256, "observation_sha256")?;
-        if terminal.signal.is_some_and(|signal| !(1..=128).contains(&signal)) {
+        if terminal
+            .signal
+            .is_some_and(|signal| !(1..=128).contains(&signal))
+        {
             return Err(invalid("terminal signal is outside the supported range"));
         }
         if terminal.exit_code.is_some() && terminal.signal.is_some() {
@@ -803,9 +812,7 @@ mod tests {
                 pid: Some(42)
             }
         );
-        registry
-            .complete(&call, generation, terminal('d'))
-            .unwrap();
+        registry.complete(&call, generation, terminal('d')).unwrap();
         assert_eq!(
             registry.snapshot(&call).unwrap().state,
             EffectiveState::Terminal {
@@ -847,15 +854,11 @@ mod tests {
             other => panic!("unexpected spawn claim: {other:?}"),
         };
         assert_eq!(
-            registry
-                .complete(&call, generation, terminal('d'))
-                .unwrap(),
+            registry.complete(&call, generation, terminal('d')).unwrap(),
             MutationOutcome::Applied
         );
         assert_eq!(
-            registry
-                .complete(&call, generation, terminal('d'))
-                .unwrap(),
+            registry.complete(&call, generation, terminal('d')).unwrap(),
             MutationOutcome::Idempotent
         );
         assert_eq!(

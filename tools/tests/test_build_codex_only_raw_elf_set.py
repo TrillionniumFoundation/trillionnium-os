@@ -475,7 +475,7 @@ class CodexOnlyRawElfBuilderTests(unittest.TestCase):
                     os.fstat(descriptor)
 
     def test_control_root_is_the_outer_git_worktree(self) -> None:
-        self.assertEqual(BUILDER.derive_control_root(), ROOT.parent.resolve())
+        self.assertEqual(BUILDER.derive_control_root(), ROOT.resolve())
 
     def test_live_source_bom_must_be_byte_equal(self) -> None:
         measured = {

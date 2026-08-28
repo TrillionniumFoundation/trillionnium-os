@@ -96,8 +96,8 @@ impl<'de> Visitor<'de> for UniqueJsonVisitor {
 
 pub(crate) fn decode_object(encoded: &[u8]) -> Result<Value, String> {
     let mut deserializer = serde_json::Deserializer::from_slice(encoded);
-    let UniqueJson(value) = UniqueJson::deserialize(&mut deserializer)
-        .map_err(|error| error.to_string())?;
+    let UniqueJson(value) =
+        UniqueJson::deserialize(&mut deserializer).map_err(|error| error.to_string())?;
     deserializer.end().map_err(|error| error.to_string())?;
     if !value.is_object() {
         return Err("provider JSONL record must be an object".to_string());

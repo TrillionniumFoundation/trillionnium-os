@@ -109,19 +109,14 @@ impl Persistence {
         let mut frames = Vec::with_capacity(records.len());
         let mut terminal_index = None;
         for (index, record) in records.into_iter().enumerate() {
-            let stored_request = record
-                .payload
-                .get("request_sha256")
-                .and_then(Value::as_str);
+            let stored_request = record.payload.get("request_sha256").and_then(Value::as_str);
             if stored_request != Some(request_sha256) {
                 return StoredTurn::Conflict(
                     "stored event request digest conflicts with the incoming turn".to_string(),
                 );
             }
             let Some(frame_value) = record.payload.get("frame").cloned() else {
-                return StoredTurn::Conflict(
-                    "stored event payload has no Host frame".to_string(),
-                );
+                return StoredTurn::Conflict("stored event payload has no Host frame".to_string());
             };
             let frame = match serde_json::from_value::<RunTurnFrame>(frame_value) {
                 Ok(frame) => frame,

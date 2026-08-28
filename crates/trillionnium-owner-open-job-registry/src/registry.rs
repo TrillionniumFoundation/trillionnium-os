@@ -4,21 +4,29 @@ use std::sync::{Mutex, MutexGuard};
 use crate::validate::{invalid, require_id, require_sha256, require_text, validate_terminal};
 use crate::{
     BeginDisposition, BeginResult, JobEffectiveState, JobEvent, JobEventKind, JobKey,
-    JobRegistryError, JobRegistryLimits, JobRequest, JobSnapshot, JobTerminal,
-    MutationOutcome, Result, SpawnClaim,
+    JobRegistryError, JobRegistryLimits, JobRequest, JobSnapshot, JobTerminal, MutationOutcome,
+    Result, SpawnClaim,
 };
 
 #[derive(Debug, Clone)]
 enum DispatchState {
-    Accepted { spawn_inhibited: bool },
-    Claimed { generation: u64, restart_uncertain: bool },
+    Accepted {
+        spawn_inhibited: bool,
+    },
+    Claimed {
+        generation: u64,
+        restart_uncertain: bool,
+    },
     Running {
         generation: u64,
         pid: u32,
         pty: bool,
         restart_uncertain: bool,
     },
-    Terminal { generation: u64, terminal: JobTerminal },
+    Terminal {
+        generation: u64,
+        terminal: JobTerminal,
+    },
 }
 
 #[derive(Debug, Clone)]
@@ -37,20 +45,26 @@ struct Entry {
 impl Entry {
     fn state(&self) -> JobEffectiveState {
         match &self.dispatch {
-            DispatchState::Accepted { spawn_inhibited: false } => JobEffectiveState::Accepted,
-            DispatchState::Accepted { spawn_inhibited: true } => {
-                JobEffectiveState::ProvenNotStartedAfterRestart
-            }
-            DispatchState::Claimed { generation, restart_uncertain: false } => {
-                JobEffectiveState::Starting { generation: *generation }
-            }
-            DispatchState::Claimed { generation, restart_uncertain: true } => {
-                JobEffectiveState::UnknownAfterRestart {
-                    generation: *generation,
-                    pid: None,
-                    pty: None,
-                }
-            }
+            DispatchState::Accepted {
+                spawn_inhibited: false,
+            } => JobEffectiveState::Accepted,
+            DispatchState::Accepted {
+                spawn_inhibited: true,
+            } => JobEffectiveState::ProvenNotStartedAfterRestart,
+            DispatchState::Claimed {
+                generation,
+                restart_uncertain: false,
+            } => JobEffectiveState::Starting {
+                generation: *generation,
+            },
+            DispatchState::Claimed {
+                generation,
+                restart_uncertain: true,
+            } => JobEffectiveState::UnknownAfterRestart {
+                generation: *generation,
+                pid: None,
+                pty: None,
+            },
             DispatchState::Running {
                 generation,
                 pid,
@@ -71,7 +85,10 @@ impl Entry {
                 pid: Some(*pid),
                 pty: Some(*pty),
             },
-            DispatchState::Terminal { generation, terminal } => JobEffectiveState::Terminal {
+            DispatchState::Terminal {
+                generation,
+                terminal,
+            } => JobEffectiveState::Terminal {
                 generation: *generation,
                 terminal: terminal.clone(),
             },
@@ -179,7 +196,9 @@ impl JobRegistry {
             return Err(JobRegistryError::RequestDigestMismatch);
         }
         match &entry.dispatch {
-            DispatchState::Accepted { spawn_inhibited: true } => {
+            DispatchState::Accepted {
+                spawn_inhibited: true,
+            } => {
                 return Ok(SpawnClaim::Inhibited(entry.snapshot()));
             }
             DispatchState::Claimed { .. }
@@ -187,14 +206,19 @@ impl JobRegistry {
             | DispatchState::Terminal { .. } => {
                 return Ok(SpawnClaim::Existing(entry.snapshot()));
             }
-            DispatchState::Accepted { spawn_inhibited: false } => {}
+            DispatchState::Accepted {
+                spawn_inhibited: false,
+            } => {}
         }
         let generation = state.next_spawn_generation;
         if generation == 0 || generation == u64::MAX {
             return Err(JobRegistryError::GenerationExhausted);
         }
         state.next_spawn_generation += 1;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         entry.dispatch = DispatchState::Claimed {
             generation,
             restart_uncertain: false,
@@ -220,7 +244,10 @@ impl JobRegistry {
             return Err(invalid("pid must be non-zero"));
         }
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         match &entry.dispatch {
             DispatchState::Claimed {
                 generation: expected,
@@ -239,10 +266,14 @@ impl JobRegistry {
             }
             DispatchState::Running { .. } => return Err(JobRegistryError::PidConflict),
             DispatchState::Accepted { .. } => {
-                return Err(JobRegistryError::InvalidTransition("job start was not claimed"));
+                return Err(JobRegistryError::InvalidTransition(
+                    "job start was not claimed",
+                ));
             }
             DispatchState::Terminal { .. } => {
-                return Err(JobRegistryError::InvalidTransition("terminal job cannot start"));
+                return Err(JobRegistryError::InvalidTransition(
+                    "terminal job cannot start",
+                ));
             }
         }
         entry.dispatch = DispatchState::Running {
@@ -275,7 +306,10 @@ impl JobRegistry {
         require_text(&stream, "stream", 64, false)?;
         require_sha256(&sha256, "sha256")?;
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         match &entry.dispatch {
             DispatchState::Running {
                 generation: expected,
@@ -320,10 +354,15 @@ impl JobRegistry {
         let sha256 = sha256.into();
         require_sha256(&sha256, "sha256")?;
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         require_live(entry)?;
         if entry.stdin_closed {
-            return Err(JobRegistryError::InvalidTransition("stdin is already closed"));
+            return Err(JobRegistryError::InvalidTransition(
+                "stdin is already closed",
+            ));
         }
         entry.push(
             JobEventKind::InputWritten { bytes, sha256 },
@@ -337,7 +376,10 @@ impl JobRegistry {
             return Err(invalid("PTY rows and cols must be non-zero"));
         }
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         match &entry.dispatch {
             DispatchState::Running {
                 pty: true,
@@ -360,7 +402,10 @@ impl JobRegistry {
 
     pub fn close_stdin(&self, key: &JobKey) -> Result<MutationOutcome> {
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         require_live(entry)?;
         if entry.stdin_closed {
             return Ok(MutationOutcome::Idempotent);
@@ -375,7 +420,10 @@ impl JobRegistry {
             return Err(invalid("kill signal is outside the supported range"));
         }
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         require_live(entry)?;
         entry.kill_requested = true;
         entry.push(
@@ -385,11 +433,18 @@ impl JobRegistry {
         Ok(MutationOutcome::Applied)
     }
 
-    pub fn attach(&self, key: &JobKey, attachment_id: impl Into<String>) -> Result<MutationOutcome> {
+    pub fn attach(
+        &self,
+        key: &JobKey,
+        attachment_id: impl Into<String>,
+    ) -> Result<MutationOutcome> {
         let attachment_id = attachment_id.into();
         require_id(&attachment_id, "attachment_id", self.limits.max_id_bytes)?;
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         if entry.attachments.contains(&attachment_id) {
             return Ok(MutationOutcome::Idempotent);
         }
@@ -406,7 +461,10 @@ impl JobRegistry {
 
     pub fn detach(&self, key: &JobKey, attachment_id: &str) -> Result<MutationOutcome> {
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         if !entry.attachments.remove(attachment_id) {
             return Ok(MutationOutcome::Idempotent);
         }
@@ -421,15 +479,22 @@ impl JobRegistry {
 
     pub fn mark_restart_uncertain(&self, key: &JobKey) -> Result<JobSnapshot> {
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         let changed = match &mut entry.dispatch {
             DispatchState::Accepted { spawn_inhibited } => {
                 let changed = !*spawn_inhibited;
                 *spawn_inhibited = true;
                 changed
             }
-            DispatchState::Claimed { restart_uncertain, .. }
-            | DispatchState::Running { restart_uncertain, .. } => {
+            DispatchState::Claimed {
+                restart_uncertain, ..
+            }
+            | DispatchState::Running {
+                restart_uncertain, ..
+            } => {
                 let changed = !*restart_uncertain;
                 *restart_uncertain = true;
                 changed
@@ -453,7 +518,10 @@ impl JobRegistry {
     ) -> Result<MutationOutcome> {
         validate_terminal(&terminal)?;
         let mut state = self.lock()?;
-        let entry = state.entries.get_mut(key).ok_or(JobRegistryError::NotFound)?;
+        let entry = state
+            .entries
+            .get_mut(key)
+            .ok_or(JobRegistryError::NotFound)?;
         match &entry.dispatch {
             DispatchState::Running {
                 generation: expected,
@@ -554,12 +622,7 @@ impl JobRegistry {
         require_text(&request.tool, "tool", self.limits.max_tool_bytes, false)?;
         require_text(&request.mode, "mode", 64, false)?;
         if let Some(target_id) = &request.target_id {
-            require_text(
-                target_id,
-                "target_id",
-                self.limits.max_target_bytes,
-                true,
-            )?;
+            require_text(target_id, "target_id", self.limits.max_target_bytes, true)?;
         }
         Ok(())
     }

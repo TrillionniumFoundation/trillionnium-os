@@ -159,23 +159,38 @@ pub struct JobTerminal {
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum JobEffectiveState {
     Accepted,
-    Starting { generation: u64 },
-    Running { generation: u64, pid: u32, pty: bool },
+    Starting {
+        generation: u64,
+    },
+    Running {
+        generation: u64,
+        pid: u32,
+        pty: bool,
+    },
     ProvenNotStartedAfterRestart,
     UnknownAfterRestart {
         generation: u64,
         pid: Option<u32>,
         pty: Option<bool>,
     },
-    Terminal { generation: u64, terminal: JobTerminal },
+    Terminal {
+        generation: u64,
+        terminal: JobTerminal,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum JobEventKind {
     Accepted,
-    SpawnClaimed { generation: u64 },
-    Started { generation: u64, pid: u32, pty: bool },
+    SpawnClaimed {
+        generation: u64,
+    },
+    Started {
+        generation: u64,
+        pid: u32,
+        pty: bool,
+    },
     OutputObserved {
         generation: u64,
         output_seq: u64,
@@ -183,14 +198,29 @@ pub enum JobEventKind {
         bytes: u64,
         sha256: String,
     },
-    InputWritten { bytes: u64, sha256: String },
-    Resized { rows: u16, cols: u16 },
+    InputWritten {
+        bytes: u64,
+        sha256: String,
+    },
+    Resized {
+        rows: u16,
+        cols: u16,
+    },
     StdinClosed,
-    KillRequested { signal: i32 },
-    Attached { attachment_id: String },
-    Detached { attachment_id: String },
+    KillRequested {
+        signal: i32,
+    },
+    Attached {
+        attachment_id: String,
+    },
+    Detached {
+        attachment_id: String,
+    },
     RestartObserved,
-    TerminalRecorded { generation: u64, terminal: JobTerminal },
+    TerminalRecorded {
+        generation: u64,
+        terminal: JobTerminal,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -228,7 +258,10 @@ pub struct BeginResult {
 
 #[derive(Debug, Clone)]
 pub enum SpawnClaim {
-    Granted { generation: u64, snapshot: JobSnapshot },
+    Granted {
+        generation: u64,
+        snapshot: JobSnapshot,
+    },
     Existing(JobSnapshot),
     Inhibited(JobSnapshot),
 }

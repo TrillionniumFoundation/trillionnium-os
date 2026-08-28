@@ -99,8 +99,8 @@ where
     T: serde::de::DeserializeOwned,
 {
     let mut deserializer = serde_json::Deserializer::from_slice(encoded);
-    let UniqueJson(value) = UniqueJson::deserialize(&mut deserializer)
-        .map_err(|error| error.to_string())?;
+    let UniqueJson(value) =
+        UniqueJson::deserialize(&mut deserializer).map_err(|error| error.to_string())?;
     deserializer.end().map_err(|error| error.to_string())?;
     serde_json::from_value(value).map_err(|error| error.to_string())
 }
