@@ -1,0 +1,168 @@
+{
+  "schema": "org.trillionnium.owner-open.android-profile.v1",
+  "revision": "2026-08-28-r5-batch-e",
+  "profile_id": "owner-open-dogfood",
+  "semantic_contract": "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md",
+  "activation": {
+    "selected_in_current_product": false,
+    "product_make_fragment": "android-integration/owner-open-profile/generated/owner_open_packages.mk",
+    "current_audit_overlay": "android-integration/working-tree/vendor/trillionnium/config/common.mk",
+    "strict_verification_required_before_selection": true
+  },
+  "claims": {
+    "source_contract_only": true,
+    "soong_modules_bound": false,
+    "init_services_bound": false,
+    "selinux_domains_bound": false,
+    "target_files_built": false,
+    "image_included": false,
+    "physical_device_observed": false,
+    "public_release": false
+  },
+  "required_source_artifacts": [
+    {
+      "role": "host_manifest",
+      "path": "apps/trillionnium-owner-open-host/Cargo.toml"
+    },
+    {
+      "role": "codex_mcp_bridge",
+      "path": "tools/owner-open/codex_owner_open_mcp.py"
+    },
+    {
+      "role": "connection_broker",
+      "path": "tools/owner-open/owner_open_connection_broker.py"
+    },
+    {
+      "role": "codex_qualification_supervisor",
+      "path": "tools/owner-open/supervise_codex_mcp_qualification_release.py"
+    },
+    {
+      "role": "adb_smart_socket_relay",
+      "path": "tools/owner-open/adb_smart_socket_relay_release.py"
+    },
+    {
+      "role": "adb_exact_argv_qualifier",
+      "path": "tools/owner-open/qualify_owner_open_adb_release.py"
+    }
+  ],
+  "required_product_modules": [
+    {
+      "name": "trillionnium-owner-open-host",
+      "partition": "system_ext",
+      "destination": "bin/trillionnium-owner-open-r5-host",
+      "mode": "0755",
+      "materialization": "UNBOUND_SOONG_MODULE"
+    },
+    {
+      "name": "trillionnium-owner-open-core",
+      "partition": "system_ext",
+      "destination": "bin/trillionnium-owner-open-r5-core",
+      "mode": "0755",
+      "materialization": "UNBOUND_SOONG_MODULE"
+    },
+    {
+      "name": "trillionnium-owner-open-python-tools",
+      "partition": "system_ext",
+      "destination": "libexec/trillionnium/owner-open",
+      "mode": "0755",
+      "materialization": "UNBOUND_SOONG_MODULE"
+    },
+    {
+      "name": "trillionnium-owner-open-profile-config",
+      "partition": "system_ext",
+      "destination": "etc/trillionnium/owner-open/profile.json",
+      "mode": "0644",
+      "materialization": "UNBOUND_SOONG_MODULE"
+    }
+  ],
+  "required_services": [
+    {
+      "name": "trillionnium_owner_open_rootlinux",
+      "owner": "android_init",
+      "purpose": "start and supervise the configured Root Linux environment",
+      "state": "CONTRACT_ONLY"
+    },
+    {
+      "name": "trillionnium_owner_open_host",
+      "owner": "rootlinux_supervisor",
+      "purpose": "run the selected v5 transport and v7 core",
+      "state": "CONTRACT_ONLY"
+    },
+    {
+      "name": "trillionnium_owner_open_broker",
+      "owner": "rootlinux_supervisor",
+      "purpose": "admit local owner clients and route one upstream Host",
+      "state": "CONTRACT_ONLY"
+    },
+    {
+      "name": "trillionnium_owner_open_adb_relay",
+      "owner": "rootlinux_supervisor",
+      "purpose": "transport ordinary adb smart-socket bytes over the selected topology",
+      "state": "CONTRACT_ONLY"
+    },
+    {
+      "name": "trillionnium_owner_open_emergency_stop",
+      "owner": "android_init",
+      "purpose": "terminate owner-open effects without Codex or provider availability",
+      "state": "CONTRACT_ONLY"
+    }
+  ],
+  "required_local_endpoints": [
+    {
+      "name": "owner_open_broker",
+      "transport": "android_abstract_or_rootlinux_filesystem_unselected",
+      "peer_admission": "UID_GID_SELINUX_AND_OWNER_TOKEN",
+      "state": "CONTRACT_ONLY"
+    },
+    {
+      "name": "adb_smart_socket_relay",
+      "transport": "rootlinux_loopback_tcp",
+      "peer_admission": "ROOTLINUX_NAMESPACE_AND_UID",
+      "state": "SOURCE_IMPLEMENTED_HOST_ONLY"
+    }
+  ],
+  "required_selinux_boundaries": [
+    "trillionnium_owner_open_client",
+    "trillionnium_owner_open_bootstrap",
+    "trillionnium_owner_open_emergency_stop"
+  ],
+  "forbidden_product_packages": [
+    "TrillionniumAiAuthority",
+    "TrillionniumCapabilityLeaseIssuer",
+    "trillionnium-capability-lease-trust-config",
+    "trillionnium-agent-egress-guard",
+    "trillionnium-agent-egress-launcher",
+    "trillionnium-agent-egress-probe",
+    "trillionnium-agent-operation-journal-v3-promotion-contract",
+    "trillionnium-agent-operation-epoch-replay-hold-contract",
+    "trillionnium-direct-operation-custody-high-water",
+    "trillionnium-direct-operation-custody-high-water-ready-gate",
+    "trillionnium-shell-exec-broker-userdebug",
+    "trillionnium-shell-exec-worker-userdebug",
+    "trillionnium-agentd-materialization-p01-userdebug",
+    "trillionnium-p01-runtime-config",
+    "trillionnium-p01-receipt-stage-evidence",
+    "trillionnium-p01-receipt-stage-custody-evidence",
+    "trillionnium-shell-exec-artifact-set-v1",
+    "trillionnium-p01-final-artifact-set-v5",
+    "trillionnium-agent-adb"
+  ],
+  "forbidden_source_markers": [
+    "org.trillionnium.platform.internal",
+    "CapabilityLease",
+    "AiAuthority",
+    "trillionnium_shell_exec_broker",
+    "trillionnium_direct_operation_custody_high_water",
+    "AgentPlanSubmission"
+  ],
+  "promotion_gates": [
+    "all required product modules are bound to reviewed Soong modules",
+    "current product explicitly selects this fragment and removes the legacy graph",
+    "init and SELinux source compile",
+    "strict Android profile verifier passes",
+    "clean target-files prove exact package/service/domain inclusion and exclusion",
+    "physical same-turn shell, job and ordinary adb effects are observed",
+    "emergency stop and L5 failure matrix pass"
+  ],
+  "claim_ceiling": "SOURCE_CONTRACT_ONLY_L0"
+}
