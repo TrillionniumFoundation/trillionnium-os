@@ -25,7 +25,17 @@ jobs:
       matrix:
         include:
           - label: pr37-canonical
-            ref: d768772b5d366a2718296d10182fba9d66e23891
+            ref: a844eba13c327c4926a572eda15d6010f1b79cb0
+            check_script: scripts/test-canonical-framing.py
+          - label: pr30-persistence
+            ref: 679db34685774d88fecd405124c79deac3814153
+            check_script: scripts/check-persistence-core.py
+          - label: pr32-token
+            ref: 1b1bc76ac4d1a7caf4286df5b11d39f5d7ed76f0
+            check_script: scripts/check-token-core.py
+          - label: pr34-presence
+            ref: 3c06924110d1e80e729cbcff156a68533bb889d4
+            check_script: scripts/check-presence-core.py
 
     steps:
       - name: Check out exact TrillionniumGame head
@@ -55,7 +65,7 @@ jobs:
           rustc --version --verbose
           cargo --version --verbose
 
-      - name: Emit formatting repair, then run tests and strict Clippy
+      - name: Validate exact head and emit deterministic repair evidence
         working-directory: source
         shell: bash
         run: |
@@ -65,6 +75,7 @@ jobs:
           cargo --version --verbose > relay-evidence/cargo-version.txt
           git rev-parse HEAD > relay-evidence/commit.txt
           git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          printf '%s\n' '${{ matrix.check_script }}' > relay-evidence/static-contract-command.txt
 
           set +e
           cargo fmt --all 2>&1 | tee relay-evidence/cargo-fmt-apply.log
@@ -86,8 +97,10 @@ jobs:
           test_status=${PIPESTATUS[0]}
           cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
           clippy_status=${PIPESTATUS[0]}
-          python3 scripts/test-canonical-framing.py 2>&1 | tee relay-evidence/canonical-reference.log
-          reference_status=${PIPESTATUS[0]}
+          python3 -m compileall -q scripts 2>&1 | tee relay-evidence/python-compileall.log
+          python_compile_status=${PIPESTATUS[0]}
+          python3 '${{ matrix.check_script }}' 2>&1 | tee relay-evidence/static-contract.log
+          static_contract_status=${PIPESTATUS[0]}
           set -e
 
           python3 - <<PY
@@ -99,19 +112,18 @@ jobs:
               'source_format_clean': int('${source_format_clean}'),
               'cargo_test': int('${test_status}'),
               'cargo_clippy': int('${clippy_status}'),
-              'canonical_reference': int('${reference_status}'),
+              'python_compileall': int('${python_compile_status}'),
+              'static_contract': int('${static_contract_status}'),
           }
           value = {
-              'schema': 'trillionnium.game.exact-head-relay.v3',
+              'schema': 'trillionnium.game.exact-head-relay.v4',
               'repository': 'TrillionniumFoundation/TrillionniumGame',
               'label': '${{ matrix.label }}',
               'commit': '${{ matrix.ref }}',
+              'static_contract_command': '${{ matrix.check_script }}',
               'statuses': statuses,
               'format_patch_required': statuses['source_format_clean'] != 0,
-              'all_logic_passed': all(statuses[key] == 0 for key in [
-                  'cargo_fmt_apply', 'cargo_fmt_check_after_apply',
-                  'cargo_test', 'cargo_clippy', 'canonical_reference'
-              ]),
+              'all_logic_passed': all(status == 0 for status in statuses.values()),
               'claims': {
                   'same_repository_actions_unblocked': False,
                   'compatibility_credit': False,
@@ -127,7 +139,7 @@ jobs:
             | sort -z \
             | xargs -0 sha256sum > relay-evidence/SHA256SUMS
 
-          if (( fmt_apply_status || fmt_check_status || test_status || clippy_status || reference_status )); then
+          if (( fmt_apply_status || fmt_check_status || source_format_clean || test_status || clippy_status || python_compile_status || static_contract_status )); then
             exit 1
           fi
 
@@ -169,7 +181,7 @@ jobs:
           find downloaded -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' artifact; do
             name=$(basename "$artifact")
             mkdir -p "$destination/$name"
-            for path in summary.json cargo-fmt.patch cargo-fmt-files.txt SHA256SUMS commit.txt tree.txt; do
+            for path in summary.json cargo-fmt.patch cargo-fmt-files.txt SHA256SUMS commit.txt tree.txt static-contract-command.txt; do
               [[ -f "$artifact/$path" ]] && cp "$artifact/$path" "$destination/$name/$path"
             done
             if [[ -d "$artifact/formatted" ]]; then
