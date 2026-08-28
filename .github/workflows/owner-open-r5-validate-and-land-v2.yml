@@ -44,20 +44,23 @@ jobs:
           rm -rf /tmp/owner-open-r5-v2
           mkdir -p /tmp/owner-open-r5-v2
           git rev-parse HEAD | tee /tmp/owner-open-r5-v2/base-head.txt
+          python3 --version 2>&1 | tee /tmp/owner-open-r5-v2/python-version.txt
+          rustc --version --verbose 2>&1 | tee /tmp/owner-open-r5-v2/rustc-version.txt
+          cargo -Vv 2>&1 | tee /tmp/owner-open-r5-v2/cargo-version.txt
           python3 -m py_compile \
             tools/owner-open/apply_r5_runner_repair_candidate.py \
             tools/owner-open/apply_r5_runner_repair_candidate_v2.py
           python3 tools/owner-open/apply_r5_runner_repair_candidate_v2.py --apply \
-            | tee /tmp/owner-open-r5-v2/applicator.log
+            2>&1 | tee /tmp/owner-open-r5-v2/applicator.log
           grep -Fxq PASS_R5_EXACT_REPAIRS_V2_APPLIED \
             /tmp/owner-open-r5-v2/applicator.log
 
       - name: Refresh lockfile, format and verify the complete repair diff
         run: |
-          cargo generate-lockfile
-          cargo fmt --all
-          cargo fmt --all -- --check
-          git diff --check
+          cargo generate-lockfile 2>&1 | tee /tmp/owner-open-r5-v2/cargo-generate-lockfile.log
+          cargo fmt --all 2>&1 | tee /tmp/owner-open-r5-v2/cargo-fmt.log
+          cargo fmt --all -- --check 2>&1 | tee /tmp/owner-open-r5-v2/cargo-fmt-check.log
+          git diff --check 2>&1 | tee /tmp/owner-open-r5-v2/git-diff-check.log
           git diff --name-only | sort > /tmp/owner-open-r5-v2/changed-files.txt
           for required in \
             Cargo.lock \
@@ -66,6 +69,9 @@ jobs:
             crates/trillionnium-owner-open-runtime/src/lib.rs \
             crates/trillionnium-owner-open-runtime/tests/runtime.rs \
             tools/owner-open/supervise_codex_mcp_qualification.py \
+            tools/tests/test_adb_smart_socket_relay_selected.py \
+            tools/tests/test_release_qualification_paths.py \
+            tools/tests/test_release_qualification_paths_v2.py \
             tools/tests/test_stage_owner_open_rootfs_payload_release.py \
             tools/tests/test_supervise_codex_mcp_qualification_release.py
           do
@@ -82,6 +88,8 @@ jobs:
           git rev-parse HEAD | tee /tmp/owner-open-r5-v2/candidate-head.txt
           git diff HEAD^ --binary > /tmp/owner-open-r5-v2/candidate.patch
           git diff HEAD^ --stat > /tmp/owner-open-r5-v2/candidate.stat
+          git diff-tree --no-commit-id --name-only -r HEAD \
+            > /tmp/owner-open-r5-v2/candidate-files.txt
           test -z "$(git status --porcelain=v1)"
 
       - name: Reject unittest TestCase.run collisions
@@ -110,28 +118,38 @@ jobs:
 
       - name: Run generated-source and graph gates
         run: |
-          python3 tools/generate-owner-open-types.py --check
+          python3 tools/generate-owner-open-types.py --check \
+            2>&1 | tee /tmp/owner-open-r5-v2/generated-types.log
           python3 tools/verify-owner-open-r5.py --json \
-            | tee /tmp/owner-open-r5-v2/r5-graph.json
-          python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
+            2>&1 | tee /tmp/owner-open-r5-v2/r5-graph.json
+          python3 -m unittest tools.tests.test_verify_owner_open_r5 -v \
+            2>&1 | tee /tmp/owner-open-r5-v2/r5-verifier-tests.log
 
       - name: Run the complete Python source suite
         env:
           PYTHONWARNINGS: error::ResourceWarning
-        run: python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
+        run: |
+          python3 -m unittest discover -s tools/tests -p 'test_*.py' -v \
+            2>&1 | tee /tmp/owner-open-r5-v2/python-discover.log
 
       - name: Run the complete default Rust test closure
-        run: cargo test --locked --all-targets
+        run: |
+          cargo test --locked --all-targets \
+            2>&1 | tee /tmp/owner-open-r5-v2/rust-test.log
 
       - name: Run the complete default Rust clippy closure
-        run: cargo clippy --locked --all-targets -- -D warnings
+        run: |
+          cargo clippy --locked --all-targets -- -D warnings \
+            2>&1 | tee /tmp/owner-open-r5-v2/rust-clippy.log
 
       - name: Capture exact Cargo graph and candidate bytes
         run: |
           cargo metadata --locked --format-version 1 \
-            > /tmp/owner-open-r5-v2/cargo-metadata.json
+            > /tmp/owner-open-r5-v2/cargo-metadata.json \
+            2> /tmp/owner-open-r5-v2/cargo-metadata.stderr
           cargo tree --locked -e features \
-            > /tmp/owner-open-r5-v2/cargo-tree.txt
+            > /tmp/owner-open-r5-v2/cargo-tree.txt \
+            2> /tmp/owner-open-r5-v2/cargo-tree.stderr
           mkdir -p /tmp/owner-open-r5-v2/files
           while IFS= read -r path; do
             test -n "$path" || continue
@@ -141,11 +159,16 @@ jobs:
           done < /tmp/owner-open-r5-v2/changed-files.txt
           sha256sum /tmp/owner-open-r5-v2/candidate.patch \
             > /tmp/owner-open-r5-v2/candidate.patch.sha256
+          find /tmp/owner-open-r5-v2 -type f ! -name SHA256SUMS -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > /tmp/owner-open-r5-v2/SHA256SUMS
 
-      - name: Upload exact successful candidate evidence
+      - name: Upload exact candidate evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-r5-validated-repair-v2-${{ github.sha }}
+          name: owner-open-r5-repair-v2-evidence-${{ github.sha }}
           if-no-files-found: error
           retention-days: 14
           path: /tmp/owner-open-r5-v2/
