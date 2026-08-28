@@ -35,11 +35,13 @@ jobs:
           toolchain: 1.93.0
           components: rustfmt
 
-      - name: Apply the exact current source candidate
+      - name: Apply and format the exact current source candidate
         run: |
           set -Eeuo pipefail
           python3 tools/owner-open/apply_r5_rust_closeout_v10.py --apply
+          cargo fmt --all
           cargo fmt --all -- --check
+          git diff --check
 
       - name: Run isolated accepted-record recovery diagnostic
         run: |
