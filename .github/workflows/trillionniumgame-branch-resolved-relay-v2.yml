@@ -1,0 +1,217 @@
+name: TrillionniumGame branch-resolved relay v2
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-branch-resolved-relay-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: trillionniumgame-branch-resolved-relay-v2-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: ${{ matrix.label }} / Rust 1.85.1
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: pr30-persistence
+            branch: feature/trillionniumgame-w1-persistence-outbox-core-v1
+            reference_command: python3 scripts/check-persistence-core.py && python3 tests/persistence/test_persistence_vectors.py
+          - label: pr32-token
+            branch: feature/trillionniumgame-w3-token-policy-core-v1
+            reference_command: python3 scripts/check-token-core.py && python3 tests/session/test_token_policy_vectors.py
+          - label: pr34-presence
+            branch: feature/trillionniumgame-w6-presence-router-core-v1
+            reference_command: python3 scripts/check-presence-core.py && python3 tests/realtime/test_presence_vectors.py
+          - label: pr37-canonical
+            branch: feature/trillionniumgame-w2-canonical-framing-core-v1
+            reference_command: python3 scripts/test-canonical-framing.py
+
+    steps:
+      - name: Resolve branch head
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          repository='https://github.com/TrillionniumFoundation/TrillionniumGame.git'
+          resolved=$(git ls-remote "$repository" "refs/heads/${{ matrix.branch }}" | awk '{print $1}')
+          test -n "$resolved"
+          printf 'sha=%s\n' "$resolved" >> "$GITHUB_OUTPUT"
+          printf 'resolved=%s\n' "$resolved"
+
+      - name: Check out resolved head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/TrillionniumGame
+          ref: ${{ steps.resolve.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify immutable checkout
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ steps.resolve.outputs.sha }}'
+          printf 'commit=%s\n' "$(git rev-parse HEAD)"
+          printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+
+      - name: Install exact Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+
+      - name: Validate and materialize repair
+        working-directory: source
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p relay-evidence/formatted
+          rustc --version --verbose > relay-evidence/rustc-version.txt
+          cargo --version --verbose > relay-evidence/cargo-version.txt
+          git rev-parse HEAD > relay-evidence/commit.txt
+          git rev-parse HEAD^{tree} > relay-evidence/tree.txt
+          printf '%s\n' '${{ matrix.branch }}' > relay-evidence/branch.txt
+
+          set +e
+          cargo fmt --all 2>&1 | tee relay-evidence/cargo-fmt-apply.log
+          fmt_apply_status=${PIPESTATUS[0]}
+          git diff --binary -- . ':(exclude)relay-evidence' > relay-evidence/cargo-fmt.patch
+          git diff --name-only -- . ':(exclude)relay-evidence' > relay-evidence/cargo-fmt-files.txt
+          if [[ -s relay-evidence/cargo-fmt-files.txt ]]; then
+            while IFS= read -r path; do
+              mkdir -p "relay-evidence/formatted/$(dirname "$path")"
+              cp "$path" "relay-evidence/formatted/$path"
+            done < relay-evidence/cargo-fmt-files.txt
+            format_dirty=1
+          else
+            format_dirty=0
+          fi
+          cargo fmt --all -- --check 2>&1 | tee relay-evidence/cargo-fmt-check.log
+          fmt_check_status=${PIPESTATUS[0]}
+          cargo test --workspace --all-targets --locked 2>&1 | tee relay-evidence/cargo-test.log
+          test_status=${PIPESTATUS[0]}
+          cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee relay-evidence/cargo-clippy.log
+          clippy_status=${PIPESTATUS[0]}
+          bash -lc '${{ matrix.reference_command }}' 2>&1 | tee relay-evidence/reference-model.log
+          reference_status=${PIPESTATUS[0]}
+          set -e
+
+          python3 - <<PY
+          import json
+          from pathlib import Path
+          statuses = {
+              'cargo_fmt_apply': int('${fmt_apply_status}'),
+              'cargo_fmt_check_after_apply': int('${fmt_check_status}'),
+              'source_format_dirty': int('${format_dirty}'),
+              'cargo_test': int('${test_status}'),
+              'cargo_clippy': int('${clippy_status}'),
+              'reference_model': int('${reference_status}'),
+          }
+          record = {
+              'schema': 'trillionnium.game.branch-resolved-relay.v1',
+              'repository': 'TrillionniumFoundation/TrillionniumGame',
+              'label': '${{ matrix.label }}',
+              'branch': '${{ matrix.branch }}',
+              'commit': '${{ steps.resolve.outputs.sha }}',
+              'statuses': statuses,
+              'format_patch_required': statuses['source_format_dirty'] != 0,
+              'logic_and_lint_passed_after_format': all(statuses[key] == 0 for key in [
+                  'cargo_fmt_apply', 'cargo_fmt_check_after_apply',
+                  'cargo_test', 'cargo_clippy', 'reference_model'
+              ]),
+              'exact_head_green': all(value == 0 for value in statuses.values()),
+              'claims': {
+                  'same_repository_actions_unblocked': False,
+                  'compatibility_credit': False,
+                  'production_ready': False,
+              },
+          }
+          Path('relay-evidence/summary.json').write_text(
+              json.dumps(record, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          find relay-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z \
+            | xargs -0 sha256sum > relay-evidence/SHA256SUMS
+
+          if (( fmt_apply_status || fmt_check_status || test_status || clippy_status || reference_status )); then
+            exit 1
+          fi
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-${{ matrix.label }}-${{ steps.resolve.outputs.sha }}-branch-run-${{ github.run_number }}
+          path: source/relay-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    if: always()
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out relay branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ci/trillionniumgame-exact-head-relay-v1
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Download evidence
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: trillionniumgame-*-branch-run-${{ github.run_number }}
+          path: downloaded
+          merge-multiple: false
+
+      - name: Publish immutable audit objects and latest index
+        shell: bash
+        run: |
+          set -euo pipefail
+          destination="relay-repairs/branch-run-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ID}"
+          latest="relay-repairs/latest-branch-resolved"
+          mkdir -p "$destination"
+          rm -rf "$latest"
+          mkdir -p "$latest"
+          find downloaded -mindepth 1 -maxdepth 1 -type d -print0 | sort -z | while IFS= read -r -d '' artifact; do
+            name=$(basename "$artifact")
+            mkdir -p "$destination/$name" "$latest/$name"
+            cp -R "$artifact"/. "$destination/$name/"
+            for path in summary.json cargo-fmt.patch cargo-fmt-files.txt commit.txt tree.txt branch.txt SHA256SUMS; do
+              [[ -f "$artifact/$path" ]] && cp "$artifact/$path" "$latest/$name/$path"
+            done
+            if [[ -d "$artifact/formatted" ]]; then
+              cp -R "$artifact/formatted" "$latest/$name/formatted"
+            fi
+          done
+          printf '%s\n' "$GITHUB_RUN_ID" > "$destination/run-id.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$destination/relay-head.txt"
+          printf '%s\n' "$GITHUB_RUN_ID" > "$latest/run-id.txt"
+          find "$destination" -type f -print0 | sort -z | xargs -0 sha256sum > "$destination/SHA256SUMS"
+          find "$latest" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$latest/SHA256SUMS"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$destination" "$latest"
+          git commit -m "ci(relay): publish branch-resolved repair objects run ${GITHUB_RUN_NUMBER}"
+          git push origin HEAD:ci/trillionniumgame-exact-head-relay-v1
