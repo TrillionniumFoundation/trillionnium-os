@@ -13,6 +13,11 @@ AiShell / owner client
   -> shell.exec / adb.exec / shell.job
   -> raw observation
   -> the same provider turn or attached owner client
+
+Codex native local path:
+  Codex STDIO MCP
+    -> owner-open MCP job bridge
+    -> the same selected transport/core/job runtime
 ```
 
 ## Current authority
@@ -20,6 +25,7 @@ AiShell / owner client
 - [R3 semantic contract](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
 - [Active R5 implementation plan](docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md)
 - [Durable jobs closeout checkpoint](docs/plan/owner-open-r5-batch-d-jobs.md)
+- [Codex MCP job binding checkpoint](docs/plan/owner-open-r5-batch-d-codex-mcp-job-binding.md)
 - [Machine status](docs/status/owner-open-r5-status.json)
 - [Traceability](docs/status/owner-open-r5-traceability.tsv)
 - [Start page](docs/OWNER_OPEN_R5_START_HERE.md)
@@ -30,7 +36,7 @@ public release.
 
 ## Current source state
 
-Source-authored and selected in the owner-open Cargo closure:
+Source-authored and selected in the owner-open closure:
 
 - strict owner-open frame/tool codecs;
 - direct command-string and argv shell execution;
@@ -46,13 +52,18 @@ Source-authored and selected in the owner-open Cargo closure:
 - direct long-running pipe/PTY jobs with attach, write, resize, close-stdin,
   process-group kill and operation-level idempotency;
 - completed-job replay without child/provider redispatch;
+- local STDIO MCP server exposing the selected job wire to Codex through native
+  `tools/list` and `tools/call`;
+- MCP tools for job start, inspect, attach, detach, write, resize, close-stdin,
+  kill and bounded read-only wait;
 - exact negative Cargo/Host graph contracts and candidate CI commands.
 
 Explicitly not claimed:
 
 - Rust 1.93 formatting, compilation, tests or clippy for the current head;
 - a reviewed current `Cargo.lock`;
-- a live installed Codex `shell.job` callback;
+- exact-checkout CI success for the Python MCP bridge;
+- a live installed Codex MCP `shell.job` callback;
 - cross-Host live file-descriptor reattachment;
 - real ARM64 ADB or a deployed transparent relay;
 - a clean Android owner-open image or physical shell/ADB effect;
@@ -68,6 +79,8 @@ an infrastructure failure, not evidence that the Rust source passed or failed.
 python3 tools/generate-owner-open-types.py --check
 python3 tools/verify-owner-open-r5.py --json
 python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
+PYTHONWARNINGS=error::ResourceWarning \
+  python3 -m unittest tools.tests.test_codex_owner_open_mcp -v
 
 cargo generate-lockfile
 cargo fmt --all -- --check
@@ -84,11 +97,12 @@ Dogfood completes only when one bound evidence package proves:
 
 1. Android starts one owner-open Host and no forbidden legacy semantic node;
 2. one physical Codex turn invokes Root Linux shell and ordinary raw ADB;
-3. Codex starts, controls and observes a long-running job in that same turn;
+3. Codex loads the local MCP server and starts, controls and observes a
+   long-running pipe and PTY job in that same turn;
 4. duplicate calls and job operations do not spawn or mutate twice;
 5. uncertain effects are not blindly redispatched;
-6. inspect/reconnect/cancel and provider/Host/client failure produce truthful
-   state;
+6. inspect/reconnect/cancel and provider/Host/MCP-client failure produce
+   truthful state;
 7. emergency stop works without provider availability;
 8. Codex can build, install, inspect and recover the dogfood userland; and
 9. evidence binds exact source, Android manifest/patches, Cargo/Soong graphs,
