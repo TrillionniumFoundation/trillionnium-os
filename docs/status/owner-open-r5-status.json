@@ -40,8 +40,8 @@
     "claim_ceiling": "L0 source preparation only"
   },
   "ci_observation": {
-    "observed_head": "b3c63d97227d358872bf3333bd10ec8def8cf782",
-    "owner_open_r5_run_id": 33131657964,
+    "observed_head": "7f8d8b0ae7317325819aa2a527e85ca8d13c7902",
+    "owner_open_r5_run_id": 33136555231,
     "workflow_conclusion": "failure",
     "jobs": [
       "R5 graph and machine contracts",
