@@ -7,9 +7,11 @@
 - [`TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md`](TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md)
   — active implementation and closeout plan.
 - [`plan/owner-open-r5-batch-d-jobs.md`](plan/owner-open-r5-batch-d-jobs.md)
-  — durable job source closeout checkpoint.
+  — durable job source checkpoint.
 - [`plan/owner-open-r5-batch-d-codex-mcp-job-binding.md`](plan/owner-open-r5-batch-d-codex-mcp-job-binding.md)
-  — current Codex-native source checkpoint.
+  — Codex MCP source checkpoint.
+- [`plan/owner-open-r5-batch-d-connection-and-installed-codex.md`](plan/owner-open-r5-batch-d-connection-and-installed-codex.md)
+  — current connection-ownership and installed-Codex checkpoint.
 - [`OWNER_OPEN_R5_START_HERE.md`](OWNER_OPEN_R5_START_HERE.md)
   — concise development entry.
 - [`status/owner-open-r5-status.json`](status/owner-open-r5-status.json)
@@ -17,10 +19,10 @@
 - [`status/owner-open-r5-traceability.tsv`](status/owner-open-r5-traceability.tsv)
   — requirement/source/test/evidence mapping.
 - [`contracts/owner-open-forbidden-default-graph-v2.json`](contracts/owner-open-forbidden-default-graph-v2.json)
-  — exact Cargo, internal-dependency, Host-binary and Android negative graph.
+  — exact Cargo, dependency, Host-binary and Android negative graph.
 
-R4 documents remain historical foundation material. R5 determines the next
-batch and what counts as complete; R3 remains normative for product semantics.
+R4 documents remain historical foundation material. R5 determines current
+sequencing and evidence; R3 remains normative for product semantics.
 
 ## Current R5 source closure
 
@@ -33,7 +35,7 @@ batch and what counts as complete; R3 remains normative for product semantics.
 - [`../crates/trillionnium-owner-open-event-store/`](../crates/trillionnium-owner-open-event-store/)
   — append-only durable turn observations and strict reopen.
 - [`../crates/trillionnium-owner-open-job-registry/`](../crates/trillionnium-owner-open-job-registry/)
-  — exact job and operation identity, lifecycle and bounded observation state.
+  — exact job/operation identity, lifecycle and bounded observation state.
 - [`../crates/trillionnium-owner-open-job-runtime/`](../crates/trillionnium-owner-open-job-runtime/)
   — direct pipe/PTY process groups, job controls and durable recovery.
 - [`../crates/trillionnium-owner-open-provider-jsonl/`](../crates/trillionnium-owner-open-provider-jsonl/)
@@ -47,7 +49,13 @@ batch and what counts as complete; R3 remains normative for product semantics.
 - [`../apps/trillionnium-owner-open-host/`](../apps/trillionnium-owner-open-host/)
   — selected v5 transport carrier plus job-aware v7 execution core.
 - [`../tools/owner-open/codex_owner_open_mcp.py`](../tools/owner-open/codex_owner_open_mcp.py)
-  — local STDIO MCP server exposing the selected job wire to Codex.
+  — local Codex STDIO MCP job server.
+- [`../tools/owner-open/owner_open_connection_broker.py`](../tools/owner-open/owner_open_connection_broker.py)
+  — multi-client, single-upstream mechanical broker foundation.
+- [`../tools/owner-open/trace_mcp_stdio.py`](../tools/owner-open/trace_mcp_stdio.py)
+  — exact-byte MCP trace and deterministic teardown.
+- [`../tools/owner-open/qualify_codex_mcp_jobs.py`](../tools/owner-open/qualify_codex_mcp_jobs.py)
+  — installed-Codex registration and exact job-sequence qualification.
 
 ## Current protocols
 
@@ -58,20 +66,17 @@ batch and what counts as complete; R3 remains normative for product semantics.
 - [`protocols/owner-open-stream-flow-v1.md`](protocols/owner-open-stream-flow-v1.md)
 - [`protocols/owner-open-jobs-v1.md`](protocols/owner-open-jobs-v1.md)
 - [`protocols/owner-open-codex-mcp-jobs-v1.md`](protocols/owner-open-codex-mcp-jobs-v1.md)
+- [`protocols/owner-open-multi-connection-broker-v1.md`](protocols/owner-open-multi-connection-broker-v1.md)
+- [`protocols/owner-open-installed-codex-mcp-qualification-v1.md`](protocols/owner-open-installed-codex-mcp-qualification-v1.md)
 - [`security/owner-open-threat-model.md`](security/owner-open-threat-model.md)
 - [`architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md`](architecture/2026-08-27-owner-open-raw-adb-transparent-host-relay.md)
 
 ## Evidence boundary
 
-Latest source records:
-
-- [`evidence/2026-08-28-owner-open-jobs-source.md`](evidence/2026-08-28-owner-open-jobs-source.md)
-- [`evidence/2026-08-28-owner-open-codex-mcp-job-source.md`](evidence/2026-08-28-owner-open-codex-mcp-job-source.md)
-
-The MCP record binds five exact Git blobs to an isolated Python process-fixture
-run. No current Rust runner has executed formatting, compilation, tests or
-clippy for the selected v5/v7 Host closure, and no installed Codex has loaded
-the MCP server. Android, device, fault and release promotions remain pending.
+Current source records bind durable jobs and the initial MCP adapter fixtures.
+The broker/trace/qualification slice remains at L0 until its exact-checkout
+Python tests and the selected Rust closure execute on one commit. Installed
+Codex, Android, physical device, fault and release promotions remain pending.
 
 Historical audits, receipts and the Android dirty overlay remain useful for
 provenance and migration. They do not prove the current owner-open product.
