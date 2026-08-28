@@ -9,3 +9,7 @@ pub const OWNER_OPEN_REQUEST_TYPE: &str = "RunTurnRequest";
 pub const FRAME_PROVIDER_STATUS: &str = "provider.status";
 pub const FRAME_MODEL_DELTA: &str = "model.delta";
 pub const FRAME_MODEL_MESSAGE: &str = "model.message";
+pub const FRAME_TURN_INSPECT: &str = "turn.inspect";
+pub const FRAME_TURN_INSPECT_RESULT: &str = "turn.inspect.result";
+pub const FRAME_CALL_INSPECT: &str = "call.inspect";
+pub const FRAME_CALL_INSPECT_RESULT: &str = "call.inspect.result";
