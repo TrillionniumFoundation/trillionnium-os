@@ -32,12 +32,26 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
 
     def _write_fixture(self) -> None:
         packages = {
-            "apps/host": ["types", "turn-loop"],
+            "apps/host": [
+                "trillionnium-job-runtime",
+                "trillionnium-types",
+                "trillionnium-turn-loop",
+            ],
             "crates/types": [],
             "crates/runtime": [],
             "crates/registry": [],
-            "crates/bridge": ["registry", "runtime"],
-            "crates/turn-loop": ["registry", "bridge", "runtime"],
+            "crates/event-store": [],
+            "crates/job-registry": [],
+            "crates/job-runtime": [
+                "trillionnium-event-store",
+                "trillionnium-job-registry",
+            ],
+            "crates/bridge": ["trillionnium-registry", "trillionnium-runtime"],
+            "crates/turn-loop": [
+                "trillionnium-registry",
+                "trillionnium-bridge",
+                "trillionnium-runtime",
+            ],
         }
         defaults = list(packages)
         self.write(
@@ -52,7 +66,8 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
             package_extra = "autobins = false\n" if path == "apps/host" else ""
             bins = (
                 "\n[[bin]]\nname = \"foundation-host\"\npath = \"src/main.rs\"\n"
-                "\n[[bin]]\nname = \"r5-host\"\npath = \"src/bin/r5_control_host_v3.rs\"\n"
+                "\n[[bin]]\nname = \"r5-core\"\npath = \"src/bin/r5_control_host_v7.rs\"\n"
+                "\n[[bin]]\nname = \"r5-host\"\npath = \"src/bin/r5_transport_host.rs\"\n"
                 if path == "apps/host"
                 else ""
             )
@@ -83,8 +98,12 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
                     "required_bins": [
                         {"name": "foundation-host", "path": "src/main.rs"},
                         {
+                            "name": "r5-core",
+                            "path": "src/bin/r5_control_host_v7.rs",
+                        },
+                        {
                             "name": "r5-host",
-                            "path": "src/bin/r5_control_host_v3.rs",
+                            "path": "src/bin/r5_transport_host.rs",
                         },
                     ],
                     "forbidden_selected_paths": [
@@ -92,6 +111,8 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
                         "src/bin/r5_streaming_host.rs",
                         "src/bin/r5_control_host.rs",
                         "src/bin/r5_control_host_v2.rs",
+                        "src/bin/r5_control_host_v4.rs",
+                        "src/bin/r5_control_host_v6.rs",
                     ],
                 },
                 "owner_open_packages": specs,
@@ -131,7 +152,8 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
             report.facts["host_binaries"],
             [
                 {"name": "foundation-host", "path": "src/main.rs"},
-                {"name": "r5-host", "path": "src/bin/r5_control_host_v3.rs"},
+                {"name": "r5-core", "path": "src/bin/r5_control_host_v7.rs"},
+                {"name": "r5-host", "path": "src/bin/r5_transport_host.rs"},
             ],
         )
 
@@ -141,6 +163,16 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
         self.write("Cargo.toml", cargo)
         report = module.verify(self.root)
         self.assertTrue(any("forbidden legacy default" in value for value in report.errors))
+
+    def test_job_runtime_cannot_fall_out_of_default_closure(self) -> None:
+        cargo = (self.root / "Cargo.toml").read_text(encoding="utf-8")
+        first = cargo.find('"crates/job-runtime"')
+        second = cargo.find('"crates/job-runtime"', first + 1)
+        self.assertGreaterEqual(second, 0)
+        cargo = cargo[:second] + cargo[second + len('"crates/job-runtime", '):]
+        self.write("Cargo.toml", cargo)
+        report = module.verify(self.root)
+        self.assertTrue(any("required R5 default members are absent" in value for value in report.errors))
 
     def test_unreviewed_internal_edge_fails(self) -> None:
         manifest = (self.root / "apps/host/Cargo.toml").read_text(encoding="utf-8")
@@ -175,10 +207,10 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
         report = module.verify(self.root)
         self.assertTrue(any("autobins setting drifted" in value for value in report.errors))
 
-    def test_superseded_host_path_cannot_be_selected(self) -> None:
+    def test_job_aware_core_cannot_be_downgraded(self) -> None:
         manifest = (self.root / "apps/host/Cargo.toml").read_text(encoding="utf-8")
         manifest = manifest.replace(
-            "src/bin/r5_control_host_v3.rs", "src/bin/r5_host.rs"
+            "src/bin/r5_control_host_v7.rs", "src/bin/r5_control_host_v4.rs"
         )
         self.write("apps/host/Cargo.toml", manifest)
         report = module.verify(self.root)
