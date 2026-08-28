@@ -163,6 +163,49 @@ def repair_runtime_and_job_registry_clippy() -> None:
         "    };\n",
     )
     REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs",
+        "fn timeout_terminates_the_process_group_and_emits_one_terminal_event() {\n"
+        "    let mut limits = MechanicalLimits::default();\n"
+        "    limits.terminate_grace = Duration::from_millis(20);\n"
+        "    let mut request = ShellExecRequest::command(\"call-timeout\", \"sleep 30\");\n",
+        "fn timeout_terminates_the_process_group_and_emits_one_terminal_event() {\n"
+        "    let limits = MechanicalLimits {\n"
+        "        terminate_grace: Duration::from_millis(20),\n"
+        "        ..MechanicalLimits::default()\n"
+        "    };\n"
+        "    let mut request = ShellExecRequest::command(\"call-timeout\", \"sleep 30\");\n",
+    )
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs",
+        "fn cancellation_terminates_the_process_group_without_redispatch() {\n"
+        "    let mut limits = MechanicalLimits::default();\n"
+        "    limits.terminate_grace = Duration::from_millis(20);\n"
+        "    let cancellation = CancellationToken::new();\n",
+        "fn cancellation_terminates_the_process_group_without_redispatch() {\n"
+        "    let limits = MechanicalLimits {\n"
+        "        terminate_grace: Duration::from_millis(20),\n"
+        "        ..MechanicalLimits::default()\n"
+        "    };\n"
+        "    let cancellation = CancellationToken::new();\n",
+    )
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs",
+        "fn output_exhaustion_is_mechanical_and_returns_truncated_observation() {\n"
+        "    let mut limits = MechanicalLimits::default();\n"
+        "    limits.max_output_bytes = 32;\n"
+        "    limits.stream_chunk_bytes = 8;\n"
+        "    limits.terminate_grace = Duration::from_millis(20);\n"
+        "    let mut events = Vec::new();\n",
+        "fn output_exhaustion_is_mechanical_and_returns_truncated_observation() {\n"
+        "    let limits = MechanicalLimits {\n"
+        "        max_output_bytes: 32,\n"
+        "        stream_chunk_bytes: 8,\n"
+        "        terminate_grace: Duration::from_millis(20),\n"
+        "        ..MechanicalLimits::default()\n"
+        "    };\n"
+        "    let mut events = Vec::new();\n",
+    )
+    REPAIR.replace_exact(
         "crates/trillionnium-owner-open-job-registry/src/registry.rs",
         "    #[must_use]\n"
         "    pub fn len(&self) -> Result<usize> {\n"
