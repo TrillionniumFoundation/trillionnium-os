@@ -4,9 +4,10 @@
 The v9 applicator owns every previously reviewed production and fixture repair.
 This wrapper makes the pipe close test actually wait for EOF before completing,
 narrows dead-code allowance to the four integration-test-local copies of the
-persistence implementation, and fails closed when an explicitly configured
-journal is temporarily unavailable. Deliberate memory-only operation remains
-unchanged. This is exact-preimage and requires ``--apply``.
+persistence implementation, fails closed when an explicitly configured journal
+is temporarily unavailable, and keeps stream-window validation Clippy-clean.
+Deliberate memory-only operation remains unchanged. This is exact-preimage and
+requires ``--apply``.
 """
 
 from __future__ import annotations
@@ -131,6 +132,26 @@ def fail_closed_configured_unavailable_journal() -> None:
     )
 
 
+def repair_stream_window_clippy() -> None:
+    REPAIR.replace_exact(
+        "crates/trillionnium-owner-open-stream-window/src/lib.rs",
+        "        if let Self::WindowUpdate { credit_bytes } = self {\n"
+        "            if *credit_bytes == 0 || *credit_bytes > config.max_credit_bytes {\n"
+        "                return Err(StreamWindowError::InvalidRequest(\n"
+        "                    \"window update must be non-zero and no larger than max credit\".to_string(),\n"
+        "                ));\n"
+        "            }\n"
+        "        }\n",
+        "        if let Self::WindowUpdate { credit_bytes } = self\n"
+        "            && (*credit_bytes == 0 || *credit_bytes > config.max_credit_bytes)\n"
+        "        {\n"
+        "            return Err(StreamWindowError::InvalidRequest(\n"
+        "                \"window update must be non-zero and no larger than max credit\".to_string(),\n"
+        "            ));\n"
+        "        }\n",
+    )
+
+
 def narrow_test_local_persistence_allowance() -> None:
     for path in (
         "apps/trillionnium-owner-open-host/tests/r5_incomplete_recovery.rs",
@@ -163,6 +184,7 @@ def main() -> int:
         raise RuntimeError("v9 R5 Rust closeout applicator failed")
     repair_pipe_close_fixture()
     fail_closed_configured_unavailable_journal()
+    repair_stream_window_clippy()
     narrow_test_local_persistence_allowance()
     print("PASS_R5_RUST_CLOSEOUT_V10_APPLIED")
     return 0
