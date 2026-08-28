@@ -48,7 +48,7 @@ test_exact_duplicate_host_control_result_is_returned_without_server_retry ... ok
 test_stdio_mcp_exposes_and_drives_job_tools ... ok
 test_tool_annotations_distinguish_read_only_and_mutating_operations ... ok
 
-Ran 4 tests in 8.367s
+Ran 4 tests in 7.960s
 OK
 ```
 
@@ -61,8 +61,8 @@ the GitHub blob SHA returned for each checked-in file:
 b400d7545f37a4ccfdd56f4da0a3afe61e27e9b6  codex_owner_open_mcp.py
 31474ac9d38a5a3376dc5962d5244161c2d35514  owner_open_mcp_common.py
 e95a0c20d53d65ae675c81cbe17aa182a282ce96  owner_open_mcp_host.py
-bb765a030629b2fd3b395a0a5b427a109a6e0142  owner_open_mcp_jobs.py
-4b4e9f35af52ac3cee2aa3140718d812cc099d9d  test_codex_owner_open_mcp.py
+04742f50cb4165ef665955a9a45dcca141087e8f  owner_open_mcp_jobs.py
+5af3139c03f801102b064a82275d4ac37ff4af2e  test_codex_owner_open_mcp.py
 ```
 
 All five GitHub blob SHAs match the exact files used by the final isolated test.
@@ -81,10 +81,10 @@ checkout or CI result.
 - command plus argv ambiguity fails before Host dispatch;
 - two explicit duplicate start calls result in exactly two Host requests, not a
   hidden third bridge retry;
-- read-only inspect/wait tools and mutating attach/start tools carry distinct
-  MCP annotations;
-- effectful job tools advertise open-world interaction instead of being
-  mislabeled as closed-world reads;
+- inspect/wait are read-only and closed-world in MCP metadata;
+- attach/detach mutate local bookkeeping without being labeled destructive;
+- start/write/close/kill are explicitly destructive and open-world;
+- PTY resize is mutating and open-world but not labeled destructive;
 - child pipes and reader threads close cleanly with resource warnings promoted
   to errors.
 
