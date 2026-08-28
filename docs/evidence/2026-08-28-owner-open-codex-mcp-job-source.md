@@ -1,7 +1,7 @@
 # Owner-open Codex MCP job bridge — isolated source evidence
 
 Date: 2026-08-28  
-Evidence ceiling: **L0 isolated adapter source and process-fixture evidence**
+Evidence ceiling: **L0 exact adapter-source and isolated process-fixture evidence**
 
 ## Scope
 
@@ -47,9 +47,26 @@ test_duplicate_json_and_invalid_effect_arguments_fail_mechanically ... ok
 test_exact_duplicate_host_control_result_is_returned_without_server_retry ... ok
 test_stdio_mcp_exposes_and_drives_job_tools ... ok
 
-Ran 3 tests in 7.869s
+Ran 3 tests in 7.920s
 OK
 ```
+
+## Source binding
+
+After the final isolated run, local `git hash-object` values were compared with
+the GitHub blob SHA returned for each checked-in file:
+
+```text
+b400d7545f37a4ccfdd56f4da0a3afe61e27e9b6  codex_owner_open_mcp.py
+31474ac9d38a5a3376dc5962d5244161c2d35514  owner_open_mcp_common.py
+e95a0c20d53d65ae675c81cbe17aa182a282ce96  owner_open_mcp_host.py
+6dd454b1d863e44de0c60c5516b1aa8e3752898b  owner_open_mcp_jobs.py
+75efa13846dfbe8ca2de53d2c01ec47d86ff27b6  test_codex_owner_open_mcp.py
+```
+
+All five GitHub blob SHAs match the exact files used by the final isolated test.
+This binds the adapter source and test bytes, but it is not a full repository
+checkout or CI result.
 
 ## Verified behavior
 
@@ -68,8 +85,7 @@ OK
 
 ## Not proved
 
-- exact checkout equality beyond later source fetch comparison;
-- GitHub Actions execution;
+- full exact-checkout graph or workflow execution;
 - Rust compilation, tests or clippy;
 - v5 transport to v7 core startup;
 - installed Codex MCP registration or tool invocation;
