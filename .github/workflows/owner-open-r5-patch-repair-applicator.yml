@@ -1,0 +1,112 @@
+name: owner-open R5 patch repair applicator
+
+on:
+  push:
+    branches:
+      - "codex/owner-open-r5-tool-loop-20260827"
+    paths:
+      - ".github/workflows/owner-open-r5-patch-repair-applicator.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: codex/owner-open-r5-tool-loop-20260827
+          persist-credentials: true
+          fetch-depth: 1
+
+      - name: Apply exact remaining applicator edits
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("tools/owner-open/apply_r5_runner_repair_candidate.py")
+          text = path.read_text(encoding="utf-8")
+
+          def replace(old: str, new: str) -> None:
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"expected one applicator replacement, observed {count}: {old!r}")
+              text = text.replace(old, new)
+
+          replace(
+              '    replace_exact(\n'
+              '        "tools/materialize_p01_final_daemon_artifact.py",\n'
+              '        "CONTROL_REPOSITORY = REPOSITORY.parent\\n",\n'
+              '        "CONTROL_REPOSITORY = REPOSITORY\\n",\n'
+              '    )\n',
+              '    replace_exact(\n'
+              '        "tools/owner-open/supervise_codex_mcp_qualification.py",\n'
+              '        "    if not 1 <= result.timeout <= 3600 or not 0.1 <= result.cleanup_timeout <= 120:\\n",\n'
+              '        "    if not 0.1 <= result.timeout <= 3600 or not 0.1 <= result.cleanup_timeout <= 120:\\n",\n'
+              '    )\n\n'
+              '    replace_exact(\n'
+              '        "tools/materialize_p01_final_daemon_artifact.py",\n'
+              '        "CONTROL_REPOSITORY = REPOSITORY.parent\\n",\n'
+              '        "CONTROL_REPOSITORY = REPOSITORY\\n",\n'
+              '    )\n',
+          )
+
+          replace(
+              '    replace_exact(\n'
+              '        event_store,\n'
+              '        "    let read = reader\\n"\n'
+              '        "        .take(maximum as u64 + 2)\\n",\n'
+              '        "    let read = reader\\n"\n'
+              '        "        .by_ref()\\n"\n'
+              '        "        .take(maximum as u64 + 2)\\n",\n'
+              '    )\n',
+              '    replace_exact(\n'
+              '        event_store,\n'
+              '        "    let read = reader\\n"\n'
+              '        "        .take(maximum as u64 + 2)\\n"\n'
+              '        "        .read_until(b\'\\\\n\', &mut line)?;\\n",\n'
+              '        "    let mut limited = (&mut *reader).take(maximum as u64 + 2);\\n"\n'
+              '        "    let read = limited.read_until(b\'\\\\n\', &mut line)?;\\n",\n'
+              '    )\n',
+          )
+
+          replace(
+              '    replace_exact(\n'
+              '        "crates/trillionnium-owner-open-runtime/src/lib.rs",\n'
+              '        "use std::sync::mpsc::{Receiver, SyncSender, TryRecvError, sync_channel};\\n",\n'
+              '        "use std::sync::mpsc::{SyncSender, sync_channel};\\n",\n'
+              '    )\n',
+              '    replace_exact(\n'
+              '        "crates/trillionnium-owner-open-runtime/src/lib.rs",\n'
+              '        "use std::sync::mpsc::{Receiver, SyncSender, TryRecvError, sync_channel};\\n",\n'
+              '        "use std::sync::mpsc::{SyncSender, sync_channel};\\n",\n'
+              '    )\n'
+              '    replace_exact(\n'
+              '        "crates/trillionnium-owner-open-runtime/tests/runtime.rs",\n'
+              '        "use std::path::PathBuf;\\n",\n'
+              '        "",\n'
+              '    )\n'
+              '    replace_exact(\n'
+              '        "crates/trillionnium-owner-open-call-registry/src/lib.rs",\n'
+              '        "    #[must_use]\\n    pub fn len(&self) -> Result<usize> {\\n",\n'
+              '        "    pub fn len(&self) -> Result<usize> {\\n",\n'
+              '    )\n'
+              '    replace_exact(\n'
+              '        "crates/trillionnium-owner-open-call-registry/src/lib.rs",\n'
+              '        "    #[must_use]\\n    pub fn is_empty(&self) -> Result<bool> {\\n",\n'
+              '        "    pub fn is_empty(&self) -> Result<bool> {\\n",\n'
+              '    )\n',
+          )
+
+          path.write_text(text, encoding="utf-8")
+          PY
+          python3 -m py_compile tools/owner-open/apply_r5_runner_repair_candidate.py
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/owner-open/apply_r5_runner_repair_candidate.py
+          git commit -m "tools: cover remaining Python and Rust R5 gates"
+          git push origin HEAD:refs/heads/codex/owner-open-r5-tool-loop-20260827
