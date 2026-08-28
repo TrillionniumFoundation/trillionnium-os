@@ -1,0 +1,63 @@
+{
+  "schema": "org.trillionnium.owner-open.rootfs-payload-status.v1",
+  "revision": "2026-08-28-r5-batch-e",
+  "development_branch": "codex/owner-open-r5-tool-loop-20260827",
+  "status": "SOURCE_IMPLEMENTED",
+  "latest_evidence_level": "L0",
+  "public_release": false,
+  "selected_contract": "docs/contracts/owner-open-r5-rootfs-payload-selection-v1.json",
+  "selected_stager": "tools/owner-open/stage_owner_open_rootfs_payload_release.py",
+  "selected_image_builder": "tools/owner-open/build_owner_open_rootfs_image_release_v2.py",
+  "selected_workflow": ".github/workflows/owner-open-r5-rootfs-image.yml",
+  "architecture_decision": "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md",
+  "implemented": [
+    "owner-authored exact-digest Root Linux payload plan",
+    "all source entries preflighted before output creation",
+    "descriptor-bound two-pass source inspection and streaming copy",
+    "AArch64 ELF64 little-endian EM_AARCH64 header verification where required",
+    "canonical Root Linux destination and credential-path rejection",
+    "private deterministic staging tree with external and embedded manifests",
+    "full staging-tree revalidation before image construction",
+    "exact measured mksquashfs digest and deterministic-option help probe",
+    "independent normalized staging copies with epoch timestamps",
+    "fixed squashfs compression, block-size, ownership, xattr, export and ordering options",
+    "two-to-four independent image builds requiring identical byte counts and SHA-256 values",
+    "finite image-tool process-group TERM, KILL and reap handling",
+    "machine selection contract preventing staging or builder draft promotion"
+  ],
+  "claims": {
+    "payload_source_contract_defined": true,
+    "payload_staging_source_implemented": true,
+    "image_builder_source_implemented": true,
+    "real_payload_staged": false,
+    "real_mksquashfs_qualified": false,
+    "real_rootfs_image_built": false,
+    "independent_build_host_reproduction": false,
+    "android_soong_module_bound": false,
+    "target_files_built": false,
+    "android_image_included": false,
+    "physical_device_observed": false,
+    "public_release": false
+  },
+  "open": [
+    "execute the selected staging and image workflow on one exact commit",
+    "stage the real Host, core, Codex, Python, provider and owner-open tool closure",
+    "bind ELF interpreter, libc and complete shared-library dependencies",
+    "measure and qualify a real target mksquashfs and independent unsquashfs reader",
+    "reproduce the image on an independent clean build host",
+    "bind payload image and manifest to reviewed Soong modules",
+    "integrate Android-native bootstrap, emergency stop, init and SELinux",
+    "build clean target-files and collect physical and fault evidence"
+  ],
+  "not_claimed": [
+    "the real Root Linux payload has been staged",
+    "a real squashfs payload has been produced",
+    "the current target toolchain produced byte-identical images",
+    "the image was independently unpacked and verified",
+    "Soong or Android target-files include the payload",
+    "the payload boots on a physical device",
+    "reboot, crash, ENOSPC or power-loss qualification",
+    "public release"
+  ],
+  "claim_ceiling": "SOURCE_IMPLEMENTED / L0"
+}
