@@ -1,5 +1,5 @@
 name: owner-open R5 strict source closeout v10
-# retrigger: isolated and complete job-runtime recovery diagnostics passed on 2026-08-28
+# retrigger: configured-unavailable journal fail-closed regression passed focused diagnostics
 
 on:
   workflow_dispatch:
@@ -8,6 +8,7 @@ on:
       - "codex/owner-open-r5-tool-loop-20260827"
     paths:
       - ".github/workflows/owner-open-r5-source-closeout-v10.yml"
+      - "tools/owner-open/apply_r5_rust_closeout_v10.py"
 
 permissions:
   contents: write
@@ -135,6 +136,16 @@ jobs:
             -- --exact \
             2>&1 | tee /tmp/owner-open-r5-source-closeout-v10/job-runtime-pipe-close.log
 
+      - name: Run focused configured-journal fail-closed closure
+        run: |
+          set -Eeuo pipefail
+          cargo test --locked \
+            -p trillionnium-owner-open-job-runtime \
+            --test runtime \
+            configured_unavailable_journal_is_unknown_and_never_dispatched \
+            -- --exact \
+            2>&1 | tee /tmp/owner-open-r5-source-closeout-v10/job-runtime-configured-unavailable.log
+
       - name: Run focused live wire-inspection closure
         run: |
           set -Eeuo pipefail
@@ -205,6 +216,7 @@ jobs:
               "candidate_head": os.environ["CANDIDATE_HEAD"],
               "python_source_suite": "passed",
               "pipe_eof_control": "passed",
+              "configured_unavailable_journal_fail_closed": "passed",
               "wire_inspect_active_and_completed": "passed",
               "rust_default_all_targets_test": "passed",
               "rust_default_all_targets_clippy_deny_warnings": "passed",
@@ -236,7 +248,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-r5-source-closeout-v10-${{ github.sha }}
+          name: owner-open-r5-source-closeout-v10-${{ github.sha }}-${{ github.run_attempt }}
           if-no-files-found: error
           retention-days: 14
           path: /tmp/owner-open-r5-source-closeout-v10/
