@@ -2,10 +2,10 @@
 """Apply the exact v15 Host complete-graph Clippy repairs.
 
 The v14 applicator owns all previously reviewed R5 source closure. This wrapper
-boxes only the legacy v2 Host TurnEvent message payload and collapses one v4
-active-inspection scope guard. Event contents, channel ordering, persistence,
-inspection scope, cancellation and redispatch semantics remain unchanged. This
-is exact-preimage and requires ``--apply``.
+boxes only the legacy v2 Host TurnEvent message payload at both production
+sites and collapses one v4 active-inspection scope guard. Event contents,
+channel ordering, persistence, inspection scope, cancellation and redispatch
+semantics remain unchanged. This is exact-preimage and requires ``--apply``.
 """
 
 from __future__ import annotations
@@ -50,6 +50,11 @@ def repair_v2_host_message_layout() -> None:
         path,
         "                                        .send(HostMessage::TurnEvent(event.clone()))\n",
         "                                        .send(HostMessage::TurnEvent(Box::new(event.clone())))\n",
+    )
+    REPAIR.replace_exact(
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+        "                                            .send(HostMessage::TurnEvent(event.clone()))\n",
+        "                                            .send(HostMessage::TurnEvent(Box::new(event.clone())))\n",
     )
 
 
