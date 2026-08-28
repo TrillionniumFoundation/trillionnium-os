@@ -25,7 +25,7 @@ jobs:
       matrix:
         include:
           - label: pr37-canonical
-            ref: f444a85143e4ee77132afcae6fec978dceeafd6a
+            ref: d768772b5d366a2718296d10182fba9d66e23891
 
     steps:
       - name: Check out exact TrillionniumGame head
