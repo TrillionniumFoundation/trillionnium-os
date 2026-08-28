@@ -1,0 +1,77 @@
+name: owner-open R5 Android profile contract
+
+on:
+  pull_request:
+    paths:
+      - "android-integration/owner-open-profile/**"
+      - "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+      - "tools/generate-owner-open-android-profile-v2.py"
+      - "tools/verify-owner-open-android-profile.py"
+      - "tools/tests/test_verify_owner_open_android_profile.py"
+      - "docs/plan/owner-open-r5-batch-e-android-profile-split.md"
+      - ".github/workflows/owner-open-r5-android-profile.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "android-integration/owner-open-profile/**"
+      - "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+      - "tools/generate-owner-open-android-profile-v2.py"
+      - "tools/verify-owner-open-android-profile.py"
+      - "tools/tests/test_verify_owner_open_android_profile.py"
+      - "docs/plan/owner-open-r5-batch-e-android-profile-split.md"
+      - ".github/workflows/owner-open-r5-android-profile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-r5-android-profile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  profile-contract:
+    name: Android owner-open profile generation and holds
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Parse and compile
+        run: |
+          python3 -m json.tool android-integration/owner-open-profile/profile.json >/dev/null
+          python3 -m py_compile \
+            tools/generate-owner-open-android-profile-v2.py \
+            tools/verify-owner-open-android-profile.py \
+            tools/tests/test_verify_owner_open_android_profile.py
+      - name: Check generated package fragment
+        run: python3 tools/generate-owner-open-android-profile-v2.py --check
+      - name: Verify foundation mode and capture exact holds
+        run: |
+          python3 tools/verify-owner-open-android-profile.py --json \
+            | tee owner-open-r5-android-profile-foundation.json
+      - name: Prove current tree cannot be promoted as strict
+        run: |
+          if python3 tools/verify-owner-open-android-profile.py --strict --json \
+              > owner-open-r5-android-profile-strict.json 2>&1; then
+            echo "current unselected/unbound Android profile unexpectedly passed strict verification" >&2
+            exit 1
+          fi
+      - name: Run profile state-machine tests
+        run: |
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_android_profile \
+            -v 2>&1 | tee owner-open-r5-android-profile-tests.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-r5-android-profile-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            owner-open-r5-android-profile-foundation.json
+            owner-open-r5-android-profile-strict.json
+            owner-open-r5-android-profile-tests.txt
