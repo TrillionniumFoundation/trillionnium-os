@@ -1,0 +1,154 @@
+name: owner-open R5 validate and land repairs v2
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "codex/owner-open-r5-tool-loop-20260827"
+    paths:
+      - ".github/workflows/owner-open-r5-validate-and-land-v2.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-open-r5-validate-and-land-v2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-land:
+    name: Validate and land the strict Python/Rust/lockfile candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: codex/owner-open-r5-tool-loop-20260827
+          persist-credentials: true
+          fetch-depth: 2
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772
+        with:
+          toolchain: 1.93.0
+          components: rustfmt, clippy
+
+      - name: Bind the base head and apply the strict v2 repair
+        run: |
+          rm -rf /tmp/owner-open-r5-v2
+          mkdir -p /tmp/owner-open-r5-v2
+          git rev-parse HEAD | tee /tmp/owner-open-r5-v2/base-head.txt
+          python3 -m py_compile \
+            tools/owner-open/apply_r5_runner_repair_candidate.py \
+            tools/owner-open/apply_r5_runner_repair_candidate_v2.py
+          python3 tools/owner-open/apply_r5_runner_repair_candidate_v2.py --apply \
+            | tee /tmp/owner-open-r5-v2/applicator.log
+          grep -Fxq PASS_R5_EXACT_REPAIRS_V2_APPLIED \
+            /tmp/owner-open-r5-v2/applicator.log
+
+      - name: Refresh lockfile, format and verify the complete repair diff
+        run: |
+          cargo generate-lockfile
+          cargo fmt --all
+          cargo fmt --all -- --check
+          git diff --check
+          git diff --name-only | sort > /tmp/owner-open-r5-v2/changed-files.txt
+          for required in \
+            Cargo.lock \
+            crates/trillionnium-owner-open-call-registry/src/lib.rs \
+            crates/trillionnium-owner-open-event-store/src/lib.rs \
+            crates/trillionnium-owner-open-runtime/src/lib.rs \
+            crates/trillionnium-owner-open-runtime/tests/runtime.rs \
+            tools/owner-open/supervise_codex_mcp_qualification.py \
+            tools/tests/test_stage_owner_open_rootfs_payload_release.py \
+            tools/tests/test_supervise_codex_mcp_qualification_release.py
+          do
+            grep -Fxq "$required" /tmp/owner-open-r5-v2/changed-files.txt
+          done
+          bash -n tools/owner-open/prepare-adb-reverse-v1.sh
+
+      - name: Create a clean local candidate commit
+        run: |
+          git config user.name "R5 validation fixture"
+          git config user.email "r5-validation@invalid.local"
+          git add -A
+          git commit -m "fix: close complete R5 Python Rust and lockfile gates"
+          git rev-parse HEAD | tee /tmp/owner-open-r5-v2/candidate-head.txt
+          git diff HEAD^ --binary > /tmp/owner-open-r5-v2/candidate.patch
+          git diff HEAD^ --stat > /tmp/owner-open-r5-v2/candidate.stat
+          test -z "$(git status --porcelain=v1)"
+
+      - name: Reject unittest TestCase.run collisions
+        run: |
+          python3 - <<'PY' | tee /tmp/owner-open-r5-v2/testcase-reserved-methods.txt
+          import ast
+          from pathlib import Path
+          findings = []
+          for path in sorted(Path("tools/tests").rglob("test_*.py")):
+              tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+              for node in tree.body:
+                  if not isinstance(node, ast.ClassDef):
+                      continue
+                  bases = {ast.unparse(base) for base in node.bases}
+                  if not any(base.endswith("TestCase") for base in bases):
+                      continue
+                  for item in node.body:
+                      if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name == "run":
+                          findings.append((str(path), node.name, item.lineno))
+          for path, cls, line in findings:
+              print(f"{path}:{line}: {cls}.run")
+          print(f"count={len(findings)}")
+          if findings:
+              raise SystemExit(1)
+          PY
+
+      - name: Run generated-source and graph gates
+        run: |
+          python3 tools/generate-owner-open-types.py --check
+          python3 tools/verify-owner-open-r5.py --json \
+            | tee /tmp/owner-open-r5-v2/r5-graph.json
+          python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
+
+      - name: Run the complete Python source suite
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+        run: python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
+
+      - name: Run the complete default Rust test closure
+        run: cargo test --locked --all-targets
+
+      - name: Run the complete default Rust clippy closure
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Capture exact Cargo graph and candidate bytes
+        run: |
+          cargo metadata --locked --format-version 1 \
+            > /tmp/owner-open-r5-v2/cargo-metadata.json
+          cargo tree --locked -e features \
+            > /tmp/owner-open-r5-v2/cargo-tree.txt
+          mkdir -p /tmp/owner-open-r5-v2/files
+          while IFS= read -r path; do
+            test -n "$path" || continue
+            test -f "$path" || continue
+            mkdir -p "/tmp/owner-open-r5-v2/files/$(dirname "$path")"
+            cp -- "$path" "/tmp/owner-open-r5-v2/files/$path"
+          done < /tmp/owner-open-r5-v2/changed-files.txt
+          sha256sum /tmp/owner-open-r5-v2/candidate.patch \
+            > /tmp/owner-open-r5-v2/candidate.patch.sha256
+
+      - name: Upload exact successful candidate evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-r5-validated-repair-v2-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: /tmp/owner-open-r5-v2/
+
+      - name: Push the exact validated non-workflow candidate commit
+        run: git push origin HEAD:refs/heads/codex/owner-open-r5-tool-loop-20260827
