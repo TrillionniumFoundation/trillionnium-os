@@ -6,8 +6,10 @@ This wrapper makes the pipe close test actually wait for EOF before completing,
 narrows dead-code allowance to the four integration-test-local copies of the
 persistence implementation, fails closed when an explicitly configured journal
 is temporarily unavailable, and keeps the complete default Rust graph
-Clippy-clean. Deliberate memory-only operation remains unchanged. This is
-exact-preimage and requires ``--apply``.
+Clippy-clean. The broker suite separately treats cross-client arrival order as
+unordered while retaining exact-once and contiguous-sequence assertions.
+Deliberate memory-only operation remains unchanged. This is exact-preimage and
+requires ``--apply``.
 """
 
 from __future__ import annotations
