@@ -3,7 +3,7 @@
   "plan_revision": "2026-08-28-r5",
   "semantic_contract_revision": "2026-08-27-r3",
   "updated_at": "2026-08-28",
-  "source_cut_parent": "1ce66a646d87c64b90f5b47477d964a12323dd9c",
+  "source_cut_parent": "fb6bff1a07e40bca60a6c08c047da7d4e96c16cd",
   "development_branch": "codex/owner-open-r5-tool-loop-20260827",
   "product_claim": "owner-open source implementation with selected v5 transport, job-aware v7 core, durable pipe and PTY jobs, same-turn callbacks, active controls, replay and inspection, plus an exact-source-bound local Codex STDIO MCP job bridge; no executed Rust, installed-Codex, Android, physical-device, real-ADB or release claim",
   "public_release": false,
@@ -39,8 +39,8 @@
       "tools/owner-open/codex_owner_open_mcp.py": "b400d7545f37a4ccfdd56f4da0a3afe61e27e9b6",
       "tools/owner-open/owner_open_mcp_common.py": "31474ac9d38a5a3376dc5962d5244161c2d35514",
       "tools/owner-open/owner_open_mcp_host.py": "e95a0c20d53d65ae675c81cbe17aa182a282ce96",
-      "tools/owner-open/owner_open_mcp_jobs.py": "bb765a030629b2fd3b395a0a5b427a109a6e0142",
-      "tools/tests/test_codex_owner_open_mcp.py": "4b4e9f35af52ac3cee2aa3140718d812cc099d9d"
+      "tools/owner-open/owner_open_mcp_jobs.py": "04742f50cb4165ef665955a9a45dcca141087e8f",
+      "tools/tests/test_codex_owner_open_mcp.py": "5af3139c03f801102b064a82275d4ac37ff4af2e"
     },
     "evidence": "docs/evidence/2026-08-28-owner-open-codex-mcp-job-source.md",
     "exact_checkout": false,
@@ -107,7 +107,8 @@
         "local MCP 2025-06-18 server exposing nine job tools",
         "owner-pinned or mechanically generated MCP job scope",
         "stable operation IDs, no semantic gate and no hidden effect retry",
-        "exact checked-in MCP source blobs passed four isolated fake-Host tests"
+        "exact checked-in MCP source blobs passed four isolated fake-Host tests",
+        "MCP safety annotations distinguish read-only, mutating, destructive and open-world operations"
       ],
       "open": [
         "run the probe in target Root Linux",
