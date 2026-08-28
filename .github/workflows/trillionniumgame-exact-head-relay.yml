@@ -31,7 +31,7 @@ jobs:
             ref: 679db34685774d88fecd405124c79deac3814153
             check_script: scripts/check-persistence-core.py
           - label: pr32-token
-            ref: bdf760a12ec21a946d3f8bd272da26e625f802cf
+            ref: 857c7a6e5dd366e80ef3dcf128cd825ad7143257
             check_script: scripts/check-token-core.py
           - label: pr34-presence
             ref: 3c06924110d1e80e729cbcff156a68533bb889d4
