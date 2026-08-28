@@ -17,6 +17,7 @@ module = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
+BRIDGE_ID = "bridge-test"
 
 FAKE_HOST = r'''#!/usr/bin/env python3
 import json
@@ -113,6 +114,8 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
             "turn-test",
             "--turn-stream-id",
             "stream-test",
+            "--bridge-instance-id",
+            BRIDGE_ID,
         ]
 
     def request(self, child: subprocess.Popen[str], value: dict) -> dict:
@@ -129,7 +132,16 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
                 return response
         self.fail(f"no response for {value}")
 
-    def test_stdio_mcp_exposes_and_drives_job_tools(self) -> None:
+    def close_child(self, child: subprocess.Popen[str]) -> None:
+        if child.stdin:
+            child.stdin.close()
+        child.wait(timeout=5)
+        if child.stdout:
+            child.stdout.close()
+        if child.stderr:
+            child.stderr.close()
+
+    def test_stdio_mcp_exposes_connection_and_drives_job_tools(self) -> None:
         child = subprocess.Popen(
             self.command(),
             stdin=subprocess.PIPE,
@@ -141,67 +153,197 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
         try:
             initialize = self.request(
                 child,
-                {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "fixture", "version": "1"}}},
+                {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "initialize",
+                    "params": {
+                        "protocolVersion": "2025-06-18",
+                        "capabilities": {},
+                        "clientInfo": {"name": "fixture", "version": "1"},
+                    },
+                },
             )
-            self.assertEqual(initialize["result"]["protocolVersion"], "2025-06-18")
-            tools = self.request(child, {"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
+            self.assertEqual(
+                initialize["result"]["protocolVersion"], "2025-06-18"
+            )
+            self.assertIn(BRIDGE_ID, initialize["result"]["instructions"])
+            tools = self.request(
+                child,
+                {
+                    "jsonrpc": "2.0",
+                    "id": 2,
+                    "method": "tools/list",
+                    "params": {},
+                },
+            )
             names = {item["name"] for item in tools["result"]["tools"]}
+            self.assertIn("trillionnium_connection_info", names)
             self.assertIn("trillionnium_job_start", names)
             self.assertIn("trillionnium_job_wait", names)
 
+            connection = self.request(
+                child,
+                {
+                    "jsonrpc": "2.0",
+                    "id": 3,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "trillionnium_connection_info",
+                        "arguments": {},
+                    },
+                },
+            )
+            self.assertEqual(
+                connection["result"]["structuredContent"]["bridge_instance_id"],
+                BRIDGE_ID,
+            )
+            self.assertFalse(
+                connection["result"]["structuredContent"]["connection_model"]
+                ["cross_process_live_descriptor_control"]
+            )
+
             start = self.request(
                 child,
-                {"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "trillionnium_job_start", "arguments": {"job_id": "job-one", "operation_id": "start-one", "mode": "pipe", "command": "cat"}}},
+                {
+                    "jsonrpc": "2.0",
+                    "id": 4,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "trillionnium_job_start",
+                        "arguments": {
+                            "job_id": "job-one",
+                            "bridge_instance_id": BRIDGE_ID,
+                            "operation_id": "start-one",
+                            "mode": "pipe",
+                            "command": "cat",
+                        },
+                    },
+                },
             )
             self.assertFalse(start["result"]["isError"])
             structured = start["result"]["structuredContent"]
             self.assertEqual(structured["scope"]["session_id"], "session-test")
+            self.assertEqual(structured["bridge_instance_id"], BRIDGE_ID)
             self.assertEqual(structured["response"]["kind"], "job.start.result")
 
             write = self.request(
                 child,
-                {"jsonrpc": "2.0", "id": 4, "method": "tools/call", "params": {"name": "trillionnium_job_write", "arguments": {"job_id": "job-one", "operation_id": "write-one", "data": {"encoding": "base64", "data": "aGVsbG8K"}}}},
+                {
+                    "jsonrpc": "2.0",
+                    "id": 5,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "trillionnium_job_write",
+                        "arguments": {
+                            "job_id": "job-one",
+                            "bridge_instance_id": BRIDGE_ID,
+                            "operation_id": "write-one",
+                            "data": {
+                                "encoding": "base64",
+                                "data": "aGVsbG8K",
+                            },
+                        },
+                    },
+                },
             )
-            self.assertEqual(write["result"]["structuredContent"]["response"]["kind"], "job.control.result")
+            self.assertEqual(
+                write["result"]["structuredContent"]["response"]["kind"],
+                "job.control.result",
+            )
 
             close = self.request(
                 child,
-                {"jsonrpc": "2.0", "id": 5, "method": "tools/call", "params": {"name": "trillionnium_job_close_stdin", "arguments": {"job_id": "job-one", "operation_id": "close-one"}}},
+                {
+                    "jsonrpc": "2.0",
+                    "id": 6,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "trillionnium_job_close_stdin",
+                        "arguments": {
+                            "job_id": "job-one",
+                            "bridge_instance_id": BRIDGE_ID,
+                            "operation_id": "close-one",
+                        },
+                    },
+                },
             )
             self.assertFalse(close["result"]["isError"])
 
             wait = self.request(
                 child,
-                {"jsonrpc": "2.0", "id": 6, "method": "tools/call", "params": {"name": "trillionnium_job_wait", "arguments": {"job_id": "job-one", "timeout_seconds": 1, "poll_interval_ms": 10}}},
+                {
+                    "jsonrpc": "2.0",
+                    "id": 7,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "trillionnium_job_wait",
+                        "arguments": {
+                            "job_id": "job-one",
+                            "timeout_seconds": 1,
+                            "poll_interval_ms": 10,
+                        },
+                    },
+                },
             )
-            self.assertEqual(wait["result"]["structuredContent"]["wait_status"], "terminal_observed")
+            self.assertEqual(
+                wait["result"]["structuredContent"]["wait_status"],
+                "terminal_observed",
+            )
         finally:
-            if child.stdin:
-                child.stdin.close()
-            child.wait(timeout=5)
-            if child.stdout:
-                child.stdout.close()
-            if child.stderr:
-                child.stderr.close()
+            self.close_child(child)
 
-        requests = [json.loads(line) for line in self.record.read_text(encoding="utf-8").splitlines()]
+        requests = [
+            json.loads(line)
+            for line in self.record.read_text(encoding="utf-8").splitlines()
+        ]
         start_frame = next(item for item in requests if item["kind"] == "job.start")
         self.assertEqual(start_frame["payload"]["turn_stream_id"], "stream-test")
         self.assertEqual(start_frame["payload"]["tool"], "shell.job")
         self.assertEqual(start_frame["payload"]["operation_id"], "start-one")
+        self.assertNotIn("bridge_instance_id", start_frame["payload"])
         self.assertNotIn("approval", start_frame["payload"])
 
-    def test_tool_annotations_distinguish_read_only_and_mutating_operations(self) -> None:
+    def test_tool_annotations_and_schemas_distinguish_connection_boundary(self) -> None:
         tools = {item["name"]: item for item in module.TOOLS}
-        self.assertTrue(tools["trillionnium_job_inspect"]["annotations"]["readOnlyHint"])
-        self.assertTrue(tools["trillionnium_job_wait"]["annotations"]["readOnlyHint"])
-        self.assertFalse(tools["trillionnium_job_attach"]["annotations"]["readOnlyHint"])
-        self.assertFalse(tools["trillionnium_job_attach"]["annotations"]["destructiveHint"])
-        self.assertTrue(tools["trillionnium_job_start"]["annotations"]["destructiveHint"])
-        self.assertTrue(tools["trillionnium_job_start"]["annotations"]["openWorldHint"])
-        self.assertFalse(tools["trillionnium_job_resize"]["annotations"]["destructiveHint"])
-        self.assertTrue(tools["trillionnium_job_resize"]["annotations"]["openWorldHint"])
-        self.assertFalse(tools["trillionnium_job_inspect"]["annotations"]["openWorldHint"])
+        self.assertTrue(
+            tools["trillionnium_connection_info"]["annotations"]["readOnlyHint"]
+        )
+        self.assertTrue(
+            tools["trillionnium_job_inspect"]["annotations"]["readOnlyHint"]
+        )
+        self.assertTrue(
+            tools["trillionnium_job_wait"]["annotations"]["readOnlyHint"]
+        )
+        self.assertFalse(
+            tools["trillionnium_job_attach"]["annotations"]["readOnlyHint"]
+        )
+        self.assertFalse(
+            tools["trillionnium_job_attach"]["annotations"]["destructiveHint"]
+        )
+        self.assertTrue(
+            tools["trillionnium_job_start"]["annotations"]["destructiveHint"]
+        )
+        self.assertTrue(
+            tools["trillionnium_job_start"]["annotations"]["openWorldHint"]
+        )
+        self.assertFalse(
+            tools["trillionnium_job_resize"]["annotations"]["destructiveHint"]
+        )
+        self.assertTrue(
+            tools["trillionnium_job_resize"]["annotations"]["openWorldHint"]
+        )
+        self.assertFalse(
+            tools["trillionnium_job_inspect"]["annotations"]["openWorldHint"]
+        )
+        self.assertIn(
+            "bridge_instance_id",
+            tools["trillionnium_job_start"]["inputSchema"]["required"],
+        )
+        self.assertNotIn(
+            "bridge_instance_id",
+            tools["trillionnium_job_inspect"]["inputSchema"]["required"],
+        )
 
     def test_duplicate_json_and_invalid_effect_arguments_fail_mechanically(self) -> None:
         child = subprocess.Popen(
@@ -214,35 +356,112 @@ class CodexOwnerOpenMcpTest(unittest.TestCase):
         )
         try:
             assert child.stdin is not None and child.stdout is not None
-            child.stdin.write('{"jsonrpc":"2.0","id":1,"id":2,"method":"ping"}\n')
+            child.stdin.write(
+                '{"jsonrpc":"2.0","id":1,"id":2,"method":"ping"}\n'
+            )
             child.stdin.flush()
             parse_error = json.loads(child.stdout.readline())
             self.assertEqual(parse_error["error"]["code"], -32700)
 
             invalid = self.request(
                 child,
-                {"jsonrpc": "2.0", "id": 9, "method": "tools/call", "params": {"name": "trillionnium_job_start", "arguments": {"job_id": "job-two", "operation_id": "start-two", "mode": "pipe", "command": "pwd", "argv": ["pwd"]}}},
+                {
+                    "jsonrpc": "2.0",
+                    "id": 9,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "trillionnium_job_start",
+                        "arguments": {
+                            "job_id": "job-two",
+                            "bridge_instance_id": BRIDGE_ID,
+                            "operation_id": "start-two",
+                            "mode": "pipe",
+                            "command": "pwd",
+                            "argv": ["pwd"],
+                        },
+                    },
+                },
             )
             self.assertEqual(invalid["error"]["code"], -32602)
         finally:
-            if child.stdin:
-                child.stdin.close()
-            child.wait(timeout=5)
-            if child.stdout:
-                child.stdout.close()
-            if child.stderr:
-                child.stderr.close()
+            self.close_child(child)
+
+    def test_mismatched_bridge_identity_fails_before_host_dispatch(self) -> None:
+        child = subprocess.Popen(
+            self.command(),
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=self.env,
+        )
+        try:
+            response = self.request(
+                child,
+                {
+                    "jsonrpc": "2.0",
+                    "id": 10,
+                    "method": "tools/call",
+                    "params": {
+                        "name": "trillionnium_job_start",
+                        "arguments": {
+                            "job_id": "job-wrong-connection",
+                            "bridge_instance_id": "another-bridge",
+                            "operation_id": "start-wrong",
+                            "mode": "pipe",
+                            "command": "pwd",
+                        },
+                    },
+                },
+            )
+            self.assertEqual(response["error"]["code"], -32602)
+            self.assertIn("does not match", response["error"]["message"])
+        finally:
+            self.close_child(child)
+        requests = [
+            json.loads(line)
+            for line in self.record.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertFalse(
+            any(item.get("kind") == "job.start" for item in requests),
+            "a mismatched live connection must fail before Host dispatch",
+        )
 
     def test_exact_duplicate_host_control_result_is_returned_without_server_retry(self) -> None:
         scope = module.Scope("session", "owner-open", "task", "turn", "stream")
-        host_argv = [str(self.host), "--provider", str(self.provider), "--job-store", str(self.job_store)]
+        host_argv = [
+            str(self.host),
+            "--provider",
+            str(self.provider),
+            "--job-store",
+            str(self.job_store),
+        ]
         old = os.environ.get("FAKE_HOST_RECORD")
         os.environ["FAKE_HOST_RECORD"] = str(self.record)
         try:
-            host = module.HostClient(host_argv, startup_timeout=2, request_timeout=2)
-            bridge = module.JobBridge(host, scope)
-            first = bridge.call("trillionnium_job_start", {"job_id": "job-three", "operation_id": "start-three", "mode": "pipe", "command": "sleep 1"}, module.threading.Event())
-            second = bridge.call("trillionnium_job_start", {"job_id": "job-three", "operation_id": "start-three", "mode": "pipe", "command": "sleep 1"}, module.threading.Event())
+            host = module.HostClient(
+                host_argv,
+                startup_timeout=2,
+                request_timeout=2,
+            )
+            bridge = module.JobBridge(host, scope, BRIDGE_ID)
+            arguments = {
+                "job_id": "job-three",
+                "bridge_instance_id": BRIDGE_ID,
+                "operation_id": "start-three",
+                "mode": "pipe",
+                "command": "sleep 1",
+            }
+            first = bridge.call(
+                "trillionnium_job_start",
+                arguments,
+                module.threading.Event(),
+            )
+            second = bridge.call(
+                "trillionnium_job_start",
+                arguments,
+                module.threading.Event(),
+            )
             self.assertEqual(first["response"]["kind"], "job.start.result")
             self.assertEqual(second["response"]["kind"], "job.start.result")
             host.close()
