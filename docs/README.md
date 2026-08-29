@@ -180,3 +180,9 @@ The project is not zero-gap while any entry in
 Fixtures and status edits cannot close installed, image, physical, fault or
 release lanes. Public release remains false until the L6 release gap is closed
 with cryptographic and human authorization evidence.
+
+## R5 exact-source closure evidence
+
+- [Exact-source L1 closure evidence](status/owner-open-r5-source-closure-evidence-2026-08-29.md)
+- [R5 machine gap register](status/owner-open-r5-gap-closure.json)
+- [R5 current status](status/owner-open-r5-status.json)

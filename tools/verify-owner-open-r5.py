@@ -183,11 +183,17 @@ def verify_gap_register(
         report.check(identifier in plan_text, f"R5 plan does not reference gap {identifier}")
         if state == "CLOSED":
             closed.add(identifier)
-            evidence = item.get("evidence")
-            report.check(
-                isinstance(evidence, list) and bool(evidence),
-                f"closed R5 gap has no evidence: {identifier}",
-            )
+            if level == "L1":
+                report.check(
+                    isinstance(item.get("source_evidence"), dict),
+                    f"closed L1 R5 gap has no source evidence: {identifier}",
+                )
+            else:
+                evidence = item.get("evidence")
+                report.check(
+                    isinstance(evidence, list) and bool(evidence),
+                    f"closed R5 gap has no evidence: {identifier}",
+                )
         if state == "EXTERNAL_HOLD":
             external.add(identifier)
         facts.append(

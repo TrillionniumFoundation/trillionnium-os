@@ -496,3 +496,16 @@ produce the required records.
 
 `public_release` remains false until `R5-GAP-RELEASE-001` is closed by a
 separate signed profile and explicit human authorization.
+
+## 2026-08-29 exact-source closure checkpoint
+
+Permanent exact-head run `33256008472` passed for source commit
+`f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` and tree
+`8d25f3b4cfa0190e93a07031891e6b0de62404ce`.
+
+This checkpoint closes only the L1 job-admission gap. It moves the completed process-lifecycle,
+stream-recovery, journal-convergence, Broker-correlation and product-entrypoint source work into
+`SOURCE_CLOSED_PENDING_EVIDENCE`; it does not lower their declared L2-L5 exit levels. Governance
+and all target/device/release lanes remain explicit holds. The ordered next path is protected-main
+and independent review, installed Root Linux L2, Android L3, physical ADB L4, destructive faults
+L5 and separately authorized release L6.

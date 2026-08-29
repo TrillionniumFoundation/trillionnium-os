@@ -12,7 +12,7 @@
   "zero_gap": false,
   "public_release": false,
   "automatic_redispatch": false,
-  "product_claim": "The exact implementation baseline 479e5fb78385d3706b42f83b334025fa2b6ccd50 is HOST_TESTED at L1. The active r6 plan reopens audited job-admission, process-lifecycle, stream-recovery, journal-convergence, broker-correlation, product-entrypoint and repository-governance blockers. Installed Codex, Root Linux placement, Android image, physical ADB, destructive-fault and public-release claims remain open.",
+  "product_claim": "Exact source commit f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28 and tree 8d25f3b4cfa0190e93a07031891e6b0de62404ce passed the permanent L1 source, gap, Rust, Broker, MCP, release-path, product-entrypoint, ADB-relay and foundation gates. Job admission is CLOSED at L1. Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint are source-closed but still require their declared L2-L5 target evidence. Repository governance, installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public release remain explicit holds.",
   "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
   "status_levels": [
     "NOT_STARTED",
@@ -68,92 +68,99 @@
   },
   "current_candidate": {
     "branch": "codex/owner-open-r5-gap-closure-20260829",
-    "status": "SOURCE_IMPLEMENTED",
-    "latest_evidence_level": "L0",
-    "exact_head_validation_pending": true,
-    "must_not_inherit_baseline_l1": true,
+    "status": "HOST_TESTED",
+    "latest_evidence_level": "L1",
+    "exact_head_validation_pending": false,
+    "must_not_inherit_baseline_l1": false,
     "scope": [
       "r6 active plan and machine gap register",
       "semantic-authority and process-topology ADR",
       "unified effect state machine",
-      "deployment, restart and emergency-stop runbook",
-      "L0-L6 evidence and fault-matrix contract",
-      "repository blocker issues and consistency gates"
-    ]
+      "durable jobs, process lifecycle and bounded stream recovery",
+      "three-stage durable Broker audit and exact direct-error correlation",
+      "one source-selected product entrypoint and release-path mechanics",
+      "deployment, restart, emergency-stop and L0-L6 evidence contracts"
+    ],
+    "validated_source_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+    "validated_source_tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+    "workflow_run_id": 33256008472,
+    "promotion_commit_requires_new_exact_head_ci": true
   },
   "open_repository_gaps": [
     {
       "id": "R5-GAP-GOVERNANCE-001",
       "issue": 20,
-      "priority": "P0"
-    },
-    {
-      "id": "R5-GAP-JOB-ADMISSION-001",
-      "issue": 14,
-      "priority": "P0"
-    },
-    {
-      "id": "R5-GAP-PROCESS-LIFECYCLE-001",
-      "issue": 15,
-      "priority": "P0"
-    },
-    {
-      "id": "R5-GAP-STREAM-RECOVERY-001",
-      "issue": 16,
-      "priority": "P0"
-    },
-    {
-      "id": "R5-GAP-JOURNAL-CONVERGENCE-001",
-      "issue": 17,
-      "priority": "P0"
-    },
-    {
-      "id": "R5-GAP-BROKER-CORRELATION-001",
-      "issue": 18,
-      "priority": "P0"
-    },
-    {
-      "id": "R5-GAP-PRODUCT-ENTRYPOINT-001",
-      "issue": 19,
-      "priority": "P1"
+      "priority": "P0",
+      "status": "EXTERNAL_HOLD",
+      "reason": "protected-main configuration and independent review require repository authority outside source CI"
     }
   ],
   "external_evidence_holds": [
     {
       "id": "R5-GAP-INSTALLED-CODEX-001",
-      "issues": [10, 13],
+      "issues": [
+        10,
+        13
+      ],
       "required_level": "L2",
-      "status": "NOT_PROVIDED"
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
     },
     {
       "id": "R5-GAP-ROOTLINUX-PLACEMENT-001",
-      "issues": [4, 13],
+      "issues": [
+        4,
+        13
+      ],
       "required_level": "L2",
-      "status": "NOT_PROVIDED"
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
     },
     {
       "id": "R5-GAP-ANDROID-GRAPH-001",
-      "issues": [2, 13],
+      "issues": [
+        2,
+        13
+      ],
       "required_level": "L3",
-      "status": "NOT_PROVIDED"
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
     },
     {
       "id": "R5-GAP-PHYSICAL-ADB-001",
-      "issues": [5, 8, 13],
+      "issues": [
+        5,
+        8,
+        13
+      ],
       "required_level": "L4",
-      "status": "NOT_PROVIDED"
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
     },
     {
       "id": "R5-GAP-FAULT-MATRIX-001",
-      "issues": [6, 13],
+      "issues": [
+        6,
+        13
+      ],
       "required_level": "L5",
-      "status": "NOT_PROVIDED"
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
     },
     {
       "id": "R5-GAP-RELEASE-001",
-      "issues": [13],
+      "issues": [
+        13
+      ],
       "required_level": "L6",
-      "status": "NOT_PROVIDED"
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
     }
   ],
   "work_packages": [
@@ -162,7 +169,7 @@
       "name": "source, product graph and repository truth",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
       "open_gap_ids": [
         "R5-GAP-GOVERNANCE-001",
@@ -175,7 +182,7 @@
       "name": "same-turn loop, controls and broker ownership",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
       "open_gap_ids": [
         "R5-GAP-BROKER-CORRELATION-001"
@@ -197,10 +204,9 @@
       "name": "direct shell and durable job substrate",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
       "open_gap_ids": [
-        "R5-GAP-JOB-ADMISSION-001",
         "R5-GAP-PROCESS-LIFECYCLE-001",
         "R5-GAP-STREAM-RECOVERY-001",
         "R5-GAP-ROOTLINUX-PLACEMENT-001"
@@ -211,7 +217,7 @@
       "name": "ordinary raw ADB substrate",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
       "open_gap_ids": [
         "R5-GAP-PHYSICAL-ADB-001"
@@ -222,7 +228,7 @@
       "name": "durability, inspection, flow and recovery",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
       "open_gap_ids": [
         "R5-GAP-STREAM-RECOVERY-001",
@@ -233,10 +239,10 @@
     {
       "id": "W6",
       "name": "Android, Root Linux and AiShell integration",
-      "status": "SPEC_ONLY",
+      "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
-      "latest_evidence_level": "L0",
+      "source_complete": true,
+      "latest_evidence_level": "L1",
       "open_gap_ids": [
         "R5-GAP-PRODUCT-ENTRYPOINT-001",
         "R5-GAP-ROOTLINUX-PLACEMENT-001",
@@ -249,7 +255,7 @@
       "name": "qualification, self-development and optional release",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
       "open_gap_ids": [
         "R5-GAP-GOVERNANCE-001",
@@ -261,23 +267,80 @@
     }
   ],
   "critical_path_next": [
-    "validate and land the r6 documentation and gap-consistency gate on an exact head",
-    "close Issues 14 through 19 with source and exact-head tests",
-    "make exact-head evidence and protected-main governance authoritative under Issue 20",
-    "execute installed target Root Linux Codex and service-placement qualification",
-    "build clean Android target files and execute physical ordinary ADB",
-    "complete the L5 destructive fault matrix",
-    "keep public release false until a separate L6 authorization"
+    "enable protected-main required checks and obtain independent integration review for Issue 20",
+    "execute installed target Root Linux Codex, Broker and process-placement L2 qualification",
+    "build clean Android target files and bind the installed product entrypoint at L3",
+    "execute authorized physical ordinary ADB and visible effects at L4",
+    "complete ENOSPC, corruption, USB-loss, reboot and power-loss qualification at L5",
+    "keep public_release=false until separate cryptographic and human L6 authorization"
   ],
   "not_claimed": [
-    "the active documentation candidate has passed exact-head CI",
-    "all repository source blockers are closed",
+    "protected-main governance and independent integration approval",
     "installed target Root Linux Codex qualification",
-    "target Root Linux UID, namespace or cgroup placement",
-    "one final product entrypoint is installed",
+    "target Root Linux UID, namespace, cgroup or service-manager placement",
     "clean Android image or target-files",
+    "installed product entrypoint on a target image",
     "physical shell, job or ordinary ADB effect",
     "crash, ENOSPC, USB-loss, reboot or power-loss conformance",
-    "cryptographically verified and human-authorized public release"
+    "cryptographically verified and human-authorized public release",
+    "zero-gap completion"
+  ],
+  "source_evidence_document": "docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md",
+  "known_exact_candidate": {
+    "status": "HOST_TESTED",
+    "evidence_level": "L1",
+    "branch": "codex/owner-open-r5-gap-closure-20260829",
+    "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+    "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+    "workflow_run_id": 33256008472,
+    "successful_jobs": [
+      "L1 graph, documentation, broker and MCP source closure",
+      "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+    ],
+    "artifacts": [
+      {
+        "id": 9715819868,
+        "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+      },
+      {
+        "id": 9715826446,
+        "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+      }
+    ],
+    "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX"
+  },
+  "source_closed_pending_evidence": [
+    {
+      "id": "R5-GAP-PROCESS-LIFECYCLE-001",
+      "issue": 15,
+      "required_level": "L2",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-STREAM-RECOVERY-001",
+      "issue": 16,
+      "required_level": "L2",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-JOURNAL-CONVERGENCE-001",
+      "issue": 17,
+      "required_level": "L5",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-BROKER-CORRELATION-001",
+      "issue": 18,
+      "required_level": "L2",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-PRODUCT-ENTRYPOINT-001",
+      "issue": 19,
+      "required_level": "L3",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    }
   ]
 }

@@ -180,3 +180,10 @@ above its declared exit level.
 Fixtures never close installed Codex, target placement, image, physical-device,
 fault or release lanes. `public_release` remains false until the L6 release gap
 is independently closed and a human go/no-go authorization is recorded.
+
+## Exact-source L1 checkpoint (2026-08-29)
+
+Start with the [exact-source closure evidence](status/owner-open-r5-source-closure-evidence-2026-08-29.md),
+then read the [machine gap register](status/owner-open-r5-gap-closure.json) and
+[current status](status/owner-open-r5-status.json). Source closure must not be confused with
+installed, image, physical, destructive-fault, governance or release evidence.

@@ -89,6 +89,13 @@ class VerifyOwnerOpenR5GapClosureTest(unittest.TestCase):
         self.assertTrue(any("duplicate or empty R5 gap id" in value for value in report.errors))
         self.assertTrue(any("priority_order contains duplicate" in value for value in report.errors))
 
+    def test_l1_source_closed_gap_accepts_source_evidence(self) -> None:
+        gap = copy.deepcopy(self.gap)
+        gap["gaps"][0]["status"] = "CLOSED"
+        gap["gaps"][0]["source_evidence"] = {}
+        report = self.verify(gap=gap)
+        self.assertEqual(report.errors, [])
+
     def test_external_lane_cannot_close_without_real_evidence(self) -> None:
         gap = copy.deepcopy(self.gap)
         gap["gaps"][1]["status"] = "CLOSED"

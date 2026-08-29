@@ -30,9 +30,12 @@
   },
   "documentation_candidate": {
     "branch": "codex/owner-open-r5-gap-closure-20260829",
-    "state": "SOURCE_AUTHORED_VALIDATION_PENDING",
-    "evidence_level": "L0",
-    "must_not_inherit_baseline_l1_until_exact_head_ci_passes": true
+    "state": "EXACT_SOURCE_HEAD_L1_PASSED",
+    "evidence_level": "L1",
+    "validated_source_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+    "validated_source_tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+    "workflow_run_id": 33256008472,
+    "checked_in_promotion_requires_new_exact_head_ci": true
   },
   "state_vocabulary": {
     "OPEN": "The requirement is not source-closed and has no qualifying evidence.",
@@ -63,7 +66,7 @@
         "W0",
         "W7"
       ],
-      "status": "OPEN",
+      "status": "EXTERNAL_HOLD",
       "issue": 20,
       "summary": "Protect the integration truth: exact-head CI-generated evidence, coherent PR topology and protected main.",
       "source_surfaces": [
@@ -78,6 +81,34 @@
         "Checked-in status never claims an unvalidated HEAD.",
         "Main requires the declared exact-head checks and independent review.",
         "Plan, status, README and PR narrative share one revision and claim ceiling."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      },
+      "required_authority": [
+        "repository administrator must protect main with the declared exact-head checks",
+        "independent reviewer must approve the ordered branch-chain integration",
+        "repository administrator must prevent direct unreviewed integration"
       ]
     },
     {
@@ -87,7 +118,7 @@
         "W3",
         "W5"
       ],
-      "status": "OPEN",
+      "status": "CLOSED",
       "issue": 14,
       "summary": "Reserve finite job capacity before any spawn and make every post-spawn failure converge.",
       "source_surfaces": [
@@ -101,7 +132,30 @@
         "Concurrent starts cannot exceed max_jobs.",
         "All post-spawn cuts kill, reap, release reservation and close registry/journal state.",
         "No automatic redispatch follows an ambiguous cleanup."
-      ]
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      }
     },
     {
       "id": "R5-GAP-PROCESS-LIFECYCLE-001",
@@ -110,7 +164,7 @@
         "W3",
         "W5"
       ],
-      "status": "OPEN",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
       "issue": 15,
       "summary": "Eliminate initial-stdin deadlock windows and bind parent-death/descendant cleanup to qualified behavior.",
       "source_surfaces": [
@@ -125,6 +179,34 @@
         "Every setup failure after spawn is covered by a total lifecycle guard.",
         "Linux parent-death and PID identity checks are explicit and tested.",
         "Leader exit cannot silently leave descendants while reporting terminal cleanup."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "installed target Root Linux parent-death and process-group observations",
+        "target service-manager restart and descendant-reaping evidence",
+        "target PID, cgroup and namespace identity binding"
       ]
     },
     {
@@ -134,7 +216,7 @@
         "W3",
         "W5"
       ],
-      "status": "OPEN",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
       "issue": 16,
       "summary": "Apply bounded flow control to job output and report retention gaps with exact cursor semantics.",
       "source_surfaces": [
@@ -149,6 +231,34 @@
         "Zero credit never blocks cancel, inspect or terminal paths.",
         "oldest_available_cursor and missing ranges are explicit.",
         "Resume is cursor-bound and never authorizes effect redispatch."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "installed multi-connection pause, credit and resume observations",
+        "target reconnect from retained cursors under live output",
+        "target proof that recovery never redispatches an effect"
       ]
     },
     {
@@ -157,7 +267,7 @@
       "work_packages": [
         "W5"
       ],
-      "status": "OPEN",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
       "issue": 17,
       "summary": "Converge process, registry and durable truth under journal failure.",
       "source_surfaces": [
@@ -172,6 +282,34 @@
         "Degraded live and terminal states are explicit and inspectable.",
         "New effects are inhibited when required durability is unavailable.",
         "ENOSPC, torn write, corruption and restart cuts preserve no-redispatch truth."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "authorized L5 ENOSPC and torn-write injection",
+        "corrupt-journal and restart convergence observations",
+        "power-loss evidence showing conservative no-redispatch recovery"
       ]
     },
     {
@@ -181,7 +319,7 @@
         "W1",
         "W5"
       ],
-      "status": "OPEN",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
       "issue": 18,
       "summary": "Replace kind/job matching with exact request identity and a three-stage durable broker audit.",
       "source_surfaces": [
@@ -196,6 +334,34 @@
         "accepted, forwarded and terminal/uncertain records are durable.",
         "Delayed or spontaneous frames cannot satisfy another request.",
         "All startup failures terminate and reap the upstream process group."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "installed L2 multi-client Broker and Host execution",
+        "target disconnect, Broker restart and delayed-frame observations",
+        "target audit-store ownership, mode and fsync evidence"
       ]
     },
     {
@@ -205,7 +371,7 @@
         "W0",
         "W6"
       ],
-      "status": "OPEN",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
       "issue": 19,
       "summary": "Select one installable product entrypoint and prevent packaging the unavailable-provider stub.",
       "source_surfaces": [
@@ -220,6 +386,34 @@
         "Install and target-files inventories contain only permitted binaries.",
         "The entrypoint reaches provider, shell, ADB and job paths.",
         "Binary hashes, argv, UID/GID, socket and SELinux binding are machine-readable."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "clean L3 Android target-files and image inventories",
+        "installed init, UID/GID, socket and SELinux observations",
+        "one product command reaching provider, shell, ADB and job paths"
       ]
     },
     {
@@ -247,7 +441,30 @@
         "Cryptographic release identity policy passes before execution.",
         "One same turn performs success, deliberate failure, pipe and PTY control, then continues.",
         "Disconnect/reconnect produces no hidden effect retry."
-      ]
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      }
     },
     {
       "id": "R5-GAP-ROOTLINUX-PLACEMENT-001",
@@ -274,7 +491,30 @@
         "service-manager unit and identity configuration",
         "namespace, cgroup and mount observations",
         "writable store and socket ownership evidence"
-      ]
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      }
     },
     {
       "id": "R5-GAP-ANDROID-GRAPH-001",
@@ -298,7 +538,30 @@
         "authorized AOSP build toolchain and build capacity",
         "target-files and image inventories",
         "Soong, init and SELinux build evidence"
-      ]
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      }
     },
     {
       "id": "R5-GAP-PHYSICAL-ADB-001",
@@ -326,7 +589,30 @@
         "selected ARM64 adb client and server artifacts",
         "ordinary adbd offline, unauthorized and reconnect states",
         "raw visible-effect and no-redispatch observations"
-      ]
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      }
     },
     {
       "id": "R5-GAP-FAULT-MATRIX-001",
@@ -353,7 +639,30 @@
         "controllable ENOSPC, corruption and power-loss fault injection",
         "target service and physical-device access",
         "independently retained recovery evidence"
-      ]
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      }
     },
     {
       "id": "R5-GAP-RELEASE-001",
@@ -376,7 +685,30 @@
         "authorized production signing-key custodian",
         "AVB, OTA and rollback policy owner",
         "explicit human public-release authorization"
-      ]
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+        "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
+        "workflow_run_id": 33256008472,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+        ],
+        "artifacts": [
+          {
+            "id": 9715819868,
+            "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+          },
+          {
+            "id": 9715826446,
+            "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+            "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+          }
+        ]
+      }
     }
   ],
   "closure_rule": {
