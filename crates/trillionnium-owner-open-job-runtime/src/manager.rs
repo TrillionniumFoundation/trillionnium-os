@@ -13,9 +13,9 @@ use trillionnium_owner_open_job_registry::{
 use crate::journal::{JournalStatus, OperationBegin};
 use crate::process::{ProcessControl, spawn_process};
 use crate::{
-    ControlDisposition, InternalProcessEvent, JobInspection, JobJournal, JobRuntimeConfig,
-    JobRuntimeError, JobStartRequest, JobStartResult, PtySize, ReplayStatus, Result,
-    RuntimeJobEvent, RuntimeJobEventKind, StartDisposition,
+    ControlDisposition, InternalProcessEvent, JobInspection, JobJournal, JobObservationGap,
+    JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult, PtySize, ReplayStatus,
+    Result, RuntimeJobEvent, RuntimeJobEventKind, StartDisposition,
 };
 
 struct RunningJob {
@@ -38,6 +38,7 @@ struct Inner {
     journal: Arc<JobJournal>,
     running: Mutex<HashMap<JobKey, Arc<RunningJob>>>,
     observations: Mutex<HashMap<JobKey, ObservationState>>,
+    durability_error: Mutex<Option<String>>,
 }
 
 #[derive(Clone)]
@@ -55,6 +56,7 @@ impl JobManager {
                 journal: Arc::new(journal),
                 running: Mutex::new(HashMap::new()),
                 observations: Mutex::new(HashMap::new()),
+                durability_error: Mutex::new(None),
             }),
         })
     }
@@ -139,6 +141,27 @@ impl JobManager {
             });
         }
 
+        // Holding the running-map lock from this finite capacity check until
+        // insertion is the admission reservation. Concurrent starts cannot
+        // both observe the same free slot, and a capacity rejection occurs
+        // before the durable accepted record or any child spawn attempt.
+        let mut running_jobs = self.running()?;
+        if running_jobs.len() >= self.inner.config.max_jobs {
+            return Err(JobRuntimeError::InvalidRequest(
+                "job runtime capacity is exhausted before acceptance".to_string(),
+            ));
+        }
+        if let Some(running) = running_jobs.get(&request.key) {
+            if running.request != request.request {
+                return Err(JobRuntimeError::JobConflict);
+            }
+            return Ok(JobStartResult {
+                disposition: StartDisposition::ExistingLive,
+                snapshot: self.inner.registry.snapshot(&request.key).ok(),
+                replay_status: self.replay_status(false)?,
+            });
+        }
+
         let operation_sha256 = start_operation_sha256(&request)?;
         let journal_begin = self.inner.journal.begin_operation(
             &request.key,
@@ -203,7 +226,7 @@ impl JobManager {
         let spawned = match spawn_process(&request, self.inner.config.max_output_chunk_bytes) {
             Ok(spawned) => spawned,
             Err(error) => {
-                let _ = self.inner.journal.complete_operation(
+                if let Err(journal_error) = self.inner.journal.complete_operation(
                     &request.key,
                     &request.request,
                     &request.operation_id,
@@ -212,41 +235,62 @@ impl JobManager {
                     json!({
                         "status": "spawn_failed",
                         "error": error.to_string(),
+                        "effect_attempted": false,
                         "automatic_redispatch": false
                     }),
-                );
+                ) {
+                    let _ = self.note_journal_failure(journal_error.to_string());
+                }
                 let _ = self.inner.registry.mark_restart_uncertain(&request.key);
                 return Err(error);
             }
         };
         let control = Arc::clone(&spawned.control);
-        self.inner
+        if let Err(error) = self
+            .inner
             .registry
             .record_started(&request.key, generation, control.pid, control.pty)
-            .map_err(registry_error)?;
+            .map_err(registry_error)
+        {
+            let cleanup_error = control.kill(libc::SIGKILL).err().map(|value| value.to_string());
+            if let Err(journal_error) = self.inner.journal.complete_operation(
+                &request.key,
+                &request.request,
+                &request.operation_id,
+                "start",
+                &operation_sha256,
+                json!({
+                    "status": "started_then_internal_failure",
+                    "error": error.to_string(),
+                    "cleanup_error": cleanup_error,
+                    "effect_may_have_started": true,
+                    "automatic_redispatch": false
+                }),
+            ) {
+                let _ = self.note_journal_failure(journal_error.to_string());
+            }
+            let _ = self.inner.registry.mark_restart_uncertain(&request.key);
+            return Err(error);
+        }
         let running = Arc::new(RunningJob {
             control,
             request: request.request.clone(),
             stdout_bytes: Mutex::new(0),
             stderr_bytes: Mutex::new(0),
         });
-        {
-            let mut running_jobs = self.running()?;
-            if running_jobs.len() >= self.inner.config.max_jobs {
-                let _ = running.control.kill(libc::SIGKILL);
-                return Err(JobRuntimeError::InvalidRequest(
-                    "job runtime capacity is exhausted".to_string(),
-                ));
-            }
-            running_jobs.insert(request.key.clone(), Arc::clone(&running));
-        }
+        running_jobs.insert(request.key.clone(), Arc::clone(&running));
+        drop(running_jobs);
+
         let started = RuntimeJobEventKind::Started {
             generation,
             pid: running.control.pid,
             pty: running.control.pty,
         };
-        self.push_runtime_event(&request.key, &request.request, started)?;
-        self.inner.journal.complete_operation(
+        if let Err(error) = self.push_runtime_event(&request.key, &request.request, started) {
+            self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
+            return Err(error);
+        }
+        if let Err(error) = self.inner.journal.complete_operation(
             &request.key,
             &request.request,
             &request.operation_id,
@@ -259,14 +303,21 @@ impl JobManager {
                 "pty": running.control.pty,
                 "automatic_redispatch": false
             }),
-        )?;
-        self.spawn_dispatcher(
+        ) {
+            let _ = self.note_journal_failure(error.to_string());
+            self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
+            return Err(error);
+        }
+        if let Err(error) = self.spawn_dispatcher(
             request.key.clone(),
             request.request.clone(),
             generation,
-            running,
+            Arc::clone(&running),
             spawned.events,
-        );
+        ) {
+            self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
+            return Err(error);
+        }
         Ok(JobStartResult {
             disposition: StartDisposition::Started,
             snapshot: self.inner.registry.snapshot(&request.key).ok(),
@@ -490,6 +541,13 @@ impl JobManager {
                 "inclusive cursor {inclusive_cursor} is after next cursor {total}"
             )));
         }
+        let oldest_available_cursor = state
+            .and_then(|state| state.events.front())
+            .map_or(total, |event| event.seq);
+        let gap = (inclusive_cursor < oldest_available_cursor).then_some(JobObservationGap {
+            first_missing_cursor: inclusive_cursor,
+            last_missing_cursor: oldest_available_cursor.saturating_sub(1),
+        });
         let events = state
             .map(|state| {
                 state
@@ -503,7 +561,9 @@ impl JobManager {
             .unwrap_or_default();
         let next_cursor = events
             .last()
-            .map_or(inclusive_cursor, |event| event.seq.saturating_add(1));
+            .map_or(inclusive_cursor.max(oldest_available_cursor), |event| {
+                event.seq.saturating_add(1)
+            });
         let recovered = self.inner.journal.recovered_job(key)?;
         let replay_status =
             if snapshot.is_none() && recovered.as_ref().is_some_and(|job| job.terminal.is_none()) {
@@ -511,13 +571,22 @@ impl JobManager {
             } else {
                 self.replay_status(false)?
             };
+        let durable_fallback_available = matches!(
+            self.inner.journal.status()?,
+            JournalStatus::Durable
+        ) && self.durability_error()?.is_none();
         Ok(JobInspection {
             snapshot,
             registry_events,
             runtime_events: events,
             inclusive_cursor,
+            oldest_available_cursor,
             next_cursor,
+            total_events: total,
             has_more: next_cursor < total,
+            resync_required: gap.is_some(),
+            gap,
+            durable_fallback_available,
             replay_status,
         })
     }
@@ -536,6 +605,13 @@ impl JobManager {
         details: Value,
     ) -> Result<Option<ControlDisposition>> {
         validate_operation_id(operation_id, self.inner.config.max_operation_id_bytes)?;
+        if let Some(error) = self.durability_error()?
+            && !self.inner.config.allow_unjournaled_effects
+        {
+            return Err(JobRuntimeError::Journal(format!(
+                "job runtime durability is degraded; effectful control is inhibited: {error}"
+            )));
+        }
         Ok(
             match self.inner.journal.begin_operation(
                 key,
@@ -573,14 +649,20 @@ impl JobManager {
         digest: &str,
         result: Value,
     ) -> Result<()> {
-        self.inner.journal.complete_operation(
+        match self.inner.journal.complete_operation(
             key,
             request,
             operation_id,
             operation_kind,
             digest,
             result,
-        )
+        ) {
+            Ok(()) => Ok(()),
+            Err(error) => {
+                self.note_journal_failure(error.to_string())?;
+                Err(error)
+            }
+        }
     }
 
     fn running_job(&self, key: &JobKey) -> Result<Arc<RunningJob>> {
@@ -590,6 +672,40 @@ impl JobManager {
             .ok_or(JobRuntimeError::NotLive)
     }
 
+    fn abort_started_job(
+        &self,
+        request: &JobStartRequest,
+        operation_sha256: &str,
+        running: &Arc<RunningJob>,
+        failure: &str,
+    ) {
+        let cleanup_error = running
+            .control
+            .kill(libc::SIGKILL)
+            .err()
+            .map(|error| error.to_string());
+        if let Ok(mut jobs) = self.running() {
+            jobs.remove(&request.key);
+        }
+        if let Err(error) = self.inner.journal.complete_operation(
+            &request.key,
+            &request.request,
+            &request.operation_id,
+            "start",
+            operation_sha256,
+            json!({
+                "status": "started_then_internal_failure",
+                "error": failure,
+                "cleanup_error": cleanup_error,
+                "effect_may_have_started": true,
+                "automatic_redispatch": false
+            }),
+        ) {
+            let _ = self.note_journal_failure(error.to_string());
+        }
+        let _ = self.inner.registry.mark_restart_uncertain(&request.key);
+    }
+
     fn spawn_dispatcher(
         &self,
         key: JobKey,
@@ -597,7 +713,7 @@ impl JobManager {
         generation: u64,
         running: Arc<RunningJob>,
         receiver: std::sync::mpsc::Receiver<InternalProcessEvent>,
-    ) {
+    ) -> Result<()> {
         let manager = self.clone();
         thread::Builder::new()
             .name(format!("owner-open-job-dispatch-{}", key.job_id))
@@ -623,7 +739,7 @@ impl JobManager {
                             } {
                                 *counter = counter.saturating_add(bytes.len() as u64);
                             }
-                            let _ = manager.push_runtime_event(
+                            if let Err(error) = manager.push_runtime_event(
                                 &key,
                                 &request,
                                 RuntimeJobEventKind::Output {
@@ -633,16 +749,23 @@ impl JobManager {
                                     bytes,
                                     sha256: digest,
                                 },
-                            );
+                            ) {
+                                let _ = manager.note_journal_failure(error.to_string());
+                                if !manager.inner.config.allow_unjournaled_effects {
+                                    let _ = running.control.kill(libc::SIGKILL);
+                                }
+                            }
                         }
                         InternalProcessEvent::ReaderFailed { stream, error } => {
-                            let _ = manager.push_runtime_event(
+                            if let Err(journal_error) = manager.push_runtime_event(
                                 &key,
                                 &request,
                                 RuntimeJobEventKind::JournalUnavailable {
                                     error: Some(format!("{stream} reader failed: {error}")),
                                 },
-                            );
+                            ) {
+                                let _ = manager.note_journal_failure(journal_error.to_string());
+                            }
                             let _ = running.control.kill(libc::SIGKILL);
                         }
                         InternalProcessEvent::Exited {
@@ -680,21 +803,26 @@ impl JobManager {
                                 stdout_bytes,
                                 stderr_bytes,
                             };
-                            if let Ok(seq) =
-                                manager.push_runtime_event(&key, &request, event.clone())
-                                && manager
-                                    .inner
-                                    .journal
-                                    .record_job_terminal(
+                            match manager.push_runtime_event(&key, &request, event.clone()) {
+                                Ok(seq) => {
+                                    if let Err(error) = manager.inner.journal.record_job_terminal(
                                         &key,
                                         &request,
                                         seq,
                                         serde_json::to_value(event).unwrap_or(Value::Null),
-                                    )
-                                    .is_ok()
-                            {
-                                let _ = manager.inner.registry.complete(&key, generation, terminal);
+                                    ) {
+                                        let _ = manager.note_journal_failure(error.to_string());
+                                    }
+                                }
+                                Err(error) => {
+                                    let _ = manager.note_journal_failure(error.to_string());
+                                }
                             }
+                            // Process truth must converge even when the terminal
+                            // journal append failed. Replay status will remain
+                            // degraded and no new durable-required effect is
+                            // authorized from that missing record.
+                            let _ = manager.inner.registry.complete(&key, generation, terminal);
                             if let Ok(mut jobs) = manager.running() {
                                 jobs.remove(&key);
                             }
@@ -703,7 +831,10 @@ impl JobManager {
                     }
                 }
             })
-            .expect("spawn owner-open job dispatcher");
+            .map(|_| ())
+            .map_err(|error| {
+                JobRuntimeError::Io(format!("failed to spawn owner-open job dispatcher: {error}"))
+            })
     }
 
     fn push_runtime_event(
@@ -743,16 +874,35 @@ impl JobManager {
                 .byte_count
                 .saturating_sub(runtime_event_bytes(&removed));
         }
-        if let Err(error) = journal_result
-            && !self.inner.config.allow_unjournaled_effects
-        {
-            return Err(error);
+        if let Err(error) = journal_result {
+            self.note_journal_failure(error.to_string())?;
+            if !self.inner.config.allow_unjournaled_effects {
+                return Err(error);
+            }
         }
         Ok(seq)
     }
 
+    fn note_journal_failure(&self, error: String) -> Result<()> {
+        let mut state = self
+            .inner
+            .durability_error
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        state.get_or_insert(error);
+        Ok(())
+    }
+
+    fn durability_error(&self) -> Result<Option<String>> {
+        self.inner
+            .durability_error
+            .lock()
+            .map(|value| value.clone())
+            .map_err(|_| JobRuntimeError::StatePoisoned)
+    }
+
     fn replay_status(&self, unjournaled: bool) -> Result<ReplayStatus> {
-        if unjournaled {
+        if unjournaled || self.durability_error()?.is_some() {
             return Ok(ReplayStatus::BestEffortUnreplayable);
         }
         Ok(match self.inner.journal.status()? {
