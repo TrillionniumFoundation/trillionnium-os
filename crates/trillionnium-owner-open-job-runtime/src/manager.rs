@@ -671,11 +671,6 @@ impl JobManager {
                                 stdout_bytes,
                                 stderr_bytes,
                             };
-                            let _ =
-                                manager
-                                    .inner
-                                    .registry
-                                    .complete(&key, generation, terminal.clone());
                             let event = RuntimeJobEventKind::Terminal {
                                 generation,
                                 terminal_kind,
@@ -687,13 +682,18 @@ impl JobManager {
                             };
                             if let Ok(seq) =
                                 manager.push_runtime_event(&key, &request, event.clone())
+                                && manager
+                                    .inner
+                                    .journal
+                                    .record_job_terminal(
+                                        &key,
+                                        &request,
+                                        seq,
+                                        serde_json::to_value(event).unwrap_or(Value::Null),
+                                    )
+                                    .is_ok()
                             {
-                                let _ = manager.inner.journal.record_job_terminal(
-                                    &key,
-                                    &request,
-                                    seq,
-                                    serde_json::to_value(event).unwrap_or(Value::Null),
-                                );
+                                let _ = manager.inner.registry.complete(&key, generation, terminal);
                             }
                             if let Ok(mut jobs) = manager.running() {
                                 jobs.remove(&key);
