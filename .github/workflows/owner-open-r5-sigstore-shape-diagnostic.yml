@@ -17,6 +17,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Assert exact source-head checkout
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
       - name: Download exact public Sigstore bundles
         run: |
           set -euo pipefail
@@ -55,7 +62,7 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: owner-open-r5-sigstore-public-shape-${{ github.sha }}
+          name: owner-open-r5-sigstore-public-shape-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error
           retention-days: 3
           path: sigstore-shape.json

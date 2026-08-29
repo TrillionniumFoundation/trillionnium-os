@@ -48,6 +48,14 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact source-head checkout
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -84,7 +92,7 @@ jobs:
             -v 2>&1 | tee owner-open-product-entrypoint-tests.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: owner-open-l1-product-entrypoint-${{ github.sha }}
+          name: owner-open-l1-product-entrypoint-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error
           retention-days: 30
           path: |

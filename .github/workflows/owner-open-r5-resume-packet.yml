@@ -11,6 +11,9 @@ on:
       - "tools/generate-owner-open-r5-resume-packet.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/verify-owner-open-r5-gap-evidence.py"
+      - "tools/owner_open_r5_evidence_bundle.py"
+      - "tools/promote-owner-open-r5-evidence.py"
+      - "evidence/owner-open-r5/**"
       - "tools/tests/test_generate_owner_open_r5_resume_packet.py"
   push:
     branches:
@@ -24,6 +27,9 @@ on:
       - "tools/generate-owner-open-r5-resume-packet.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/verify-owner-open-r5-gap-evidence.py"
+      - "tools/owner_open_r5_evidence_bundle.py"
+      - "tools/promote-owner-open-r5-evidence.py"
+      - "evidence/owner-open-r5/**"
       - "tools/tests/test_generate_owner_open_r5_resume_packet.py"
 
 permissions:

@@ -23,6 +23,22 @@ on:
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/verify-owner-open-r5-gap-evidence.py"
+      - "tools/owner_open_r5_evidence_bundle.py"
+      - "tools/finalize-owner-open-r5-evidence-bundle.py"
+      - "tools/verify-owner-open-r5-evidence-bundle.py"
+      - "tools/capture-owner-open-r5-target-evidence.py"
+      - "tools/promote-owner-open-r5-evidence.py"
+      - "tools/verify-owner-open-r5-governance-readiness.py"
+      - "tools/verify-owner-open-r5-workflow-boundaries.py"
+      - "tools/tests/test_verify_owner_open_r5_workflow_boundaries.py"
+      - "tools/tests/test_owner_open_r5_evidence_bundle.py"
+      - "tools/tests/test_promote_owner_open_r5_evidence.py"
+      - "tools/tests/test_verify_owner_open_r5_governance_readiness.py"
+      - "docs/contracts/owner-open-r5-*.json"
+      - "docs/operations/owner-open-r5-external-evidence-capture-and-promotion.md"
+      - "evidence/owner-open-r5/**"
+      - ".github/workflows/owner-open-r5-target-evidence-capture.yml"
+      - ".github/workflows/owner-open-r5-governance-readiness.yml"
       - "tools/owner-open/**"
       - "tools/tests/test_verify_owner_open_r5*.py"
       - "tools/tests/test_generate_owner_open_l1_candidate.py"
@@ -55,6 +71,22 @@ on:
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/verify-owner-open-r5-gap-evidence.py"
+      - "tools/owner_open_r5_evidence_bundle.py"
+      - "tools/finalize-owner-open-r5-evidence-bundle.py"
+      - "tools/verify-owner-open-r5-evidence-bundle.py"
+      - "tools/capture-owner-open-r5-target-evidence.py"
+      - "tools/promote-owner-open-r5-evidence.py"
+      - "tools/verify-owner-open-r5-governance-readiness.py"
+      - "tools/verify-owner-open-r5-workflow-boundaries.py"
+      - "tools/tests/test_verify_owner_open_r5_workflow_boundaries.py"
+      - "tools/tests/test_owner_open_r5_evidence_bundle.py"
+      - "tools/tests/test_promote_owner_open_r5_evidence.py"
+      - "tools/tests/test_verify_owner_open_r5_governance_readiness.py"
+      - "docs/contracts/owner-open-r5-*.json"
+      - "docs/operations/owner-open-r5-external-evidence-capture-and-promotion.md"
+      - "evidence/owner-open-r5/**"
+      - ".github/workflows/owner-open-r5-target-evidence-capture.yml"
+      - ".github/workflows/owner-open-r5-governance-readiness.yml"
       - "tools/owner-open/**"
       - "tools/tests/test_verify_owner_open_r5*.py"
       - "tools/tests/test_generate_owner_open_l1_candidate.py"
@@ -81,6 +113,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
@@ -99,9 +132,18 @@ jobs:
             tools/owner-open \
             tools/tests \
             tools/verify-owner-open-r5.py \
-            tools/verify-owner-open-r5-gap-evidence.py
+            tools/verify-owner-open-r5-gap-evidence.py \
+            tools/owner_open_r5_evidence_bundle.py \
+            tools/finalize-owner-open-r5-evidence-bundle.py \
+            tools/verify-owner-open-r5-evidence-bundle.py \
+            tools/capture-owner-open-r5-target-evidence.py \
+            tools/promote-owner-open-r5-evidence.py \
+            tools/verify-owner-open-r5-governance-readiness.py \
+            tools/verify-owner-open-r5-workflow-boundaries.py
       - name: Verify generated codec constants
         run: python3 tools/generate-owner-open-types.py --check
+      - name: Verify permanent workflow and exact-head boundaries
+        run: python3 tools/verify-owner-open-r5-workflow-boundaries.py --json | tee owner-open-r5-workflow-boundaries.json
       - name: Verify exact R5 graph, active plan and gap evidence
         run: |
           set -euo pipefail
@@ -114,10 +156,9 @@ jobs:
           assert value.get("ok") is True, value
           facts = value.get("facts", {})
           assert facts.get("active_plan_revision") == "2026-08-29-r6", facts
-          assert facts.get("zero_gap") is False, facts
           gap = json.loads(Path("owner-open-r5-gap-evidence.json").read_text())
           assert gap.get("ok") is True, gap
-          assert gap.get("facts", {}).get("zero_gap") is False, gap
+          assert facts.get("zero_gap") is gap.get("facts", {}).get("zero_gap"), (facts, gap)
           PY
       - name: Run R5 verifier and evidence-binding tests
         run: |
@@ -126,6 +167,10 @@ jobs:
             tools.tests.test_verify_owner_open_r5 \
             tools.tests.test_verify_owner_open_r5_gap_closure \
             tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_owner_open_r5_evidence_bundle \
+            tools.tests.test_promote_owner_open_r5_evidence \
+            tools.tests.test_verify_owner_open_r5_governance_readiness \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
             tools.tests.test_generate_owner_open_l1_candidate \
             -v 2>&1 | tee owner-open-r5-verifier-tests.txt
       - name: Run Codex STDIO MCP job bridge tests
@@ -152,6 +197,7 @@ jobs:
           path: |
             owner-open-r5-verification.json
             owner-open-r5-gap-evidence.json
+            owner-open-r5-workflow-boundaries.json
             owner-open-r5-verifier-tests.txt
             owner-open-r5-mcp-tests.txt
             owner-open-r5-qualification-fixtures.txt
@@ -166,6 +212,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: dtolnay/rust-toolchain@1.93.0
         with:
           components: rustfmt, clippy
@@ -235,6 +282,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"

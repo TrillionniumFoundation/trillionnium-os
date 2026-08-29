@@ -58,6 +58,7 @@ class CodexMcpQualificationLifecycleTest(unittest.TestCase):
             "#!/usr/bin/env python3\n"
             "import json, signal, sys, time\n"
             "signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))\n"
+            "time.sleep(1.25)\n"
             "for line in sys.stdin:\n"
             "    value=json.loads(line)\n"
             "    print(json.dumps({'jsonrpc':'2.0','id':value.get('id'),'result':{}}, separators=(',',':')), flush=True)\n"

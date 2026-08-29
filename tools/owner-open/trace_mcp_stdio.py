@@ -27,6 +27,8 @@ MAX_DEFAULT_TRACE_BYTES = 64 * 1024 * 1024
 MAX_DEFAULT_STDERR_BYTES = 4 * 1024 * 1024
 READ_CHUNK_BYTES = 64 * 1024
 POLL_SECONDS = 0.05
+EOF_RESPONSE_GRACE_SECONDS = 4.0
+EOF_DRAIN_GRACE_SECONDS = 0.25
 TERM_GRACE_SECONDS = 1.0
 KILL_GRACE_SECONDS = 1.0
 TRACE_SCHEMA = "org.trillionnium.owner-open.mcp-stdio-trace.v1"
@@ -176,13 +178,14 @@ def consume_lines(
     trace: TraceWriter,
     sink: BinaryIO,
     pending: bytearray | None = None,
-) -> None:
+) -> int:
+    consumed = 0
     while True:
         position = buffer.find(b"\n")
         if position < 0:
             if len(buffer) > maximum:
                 raise TraceError(f"{direction} MCP frame exceeds {maximum} bytes")
-            return
+            return consumed
         raw = bytes(buffer[:position])
         del buffer[: position + 1]
         if len(raw) > maximum:
@@ -195,6 +198,7 @@ def consume_lines(
         else:
             sink.write(wire)
             sink.flush()
+        consumed += 1
 
 
 def terminate_group(process: subprocess.Popen[bytes], trace: TraceWriter, reason: str) -> None:
@@ -243,7 +247,8 @@ def run(args: argparse.Namespace) -> int:
     client_eof = False
     child_stdout_eof = False
     child_stderr_eof = False
-    eof_deadline: float | None = None
+    eof_hard_deadline: float | None = None
+    eof_quiet_deadline: float | None = None
     try:
         process = subprocess.Popen(
             argv,
@@ -271,11 +276,8 @@ def run(args: argparse.Namespace) -> int:
                 write_all_nonblocking(process.stdin, child_pending)
             if client_eof and not child_pending and process.stdin and not process.stdin.closed:
                 process.stdin.close()
-                eof_deadline = time.monotonic() + TERM_GRACE_SECONDS
+                eof_hard_deadline = time.monotonic() + EOF_RESPONSE_GRACE_SECONDS
                 trace.append("upstream_eof")
-            if eof_deadline is not None and process.poll() is None and time.monotonic() >= eof_deadline:
-                terminate_group(process, trace, "upstream_eof_grace_expired")
-                eof_deadline = None
             if process.poll() is not None and child_stdout_eof and child_stderr_eof:
                 break
 
@@ -308,13 +310,18 @@ def run(args: argparse.Namespace) -> int:
                             raise TraceError("downstream MCP stdout ended with an unterminated frame")
                     else:
                         server_buffer.extend(chunk)
-                        consume_lines(
+                        consumed = consume_lines(
                             server_buffer,
                             direction="server_to_client",
                             maximum=args.max_line_bytes,
                             trace=trace,
                             sink=downstream_output,
                         )
+                        if consumed and eof_hard_deadline is not None:
+                            eof_quiet_deadline = min(
+                                eof_hard_deadline,
+                                time.monotonic() + EOF_DRAIN_GRACE_SECONDS,
+                            )
                 else:
                     if not chunk:
                         child_stderr_eof = True
@@ -326,6 +333,21 @@ def run(args: argparse.Namespace) -> int:
                         stderr_handle.write(chunk)
                         stderr_handle.flush()
                         stderr_bytes += len(chunk)
+
+            deadline = eof_quiet_deadline or eof_hard_deadline
+            if (
+                deadline is not None
+                and process.poll() is None
+                and time.monotonic() >= deadline
+            ):
+                reason = (
+                    "upstream_eof_output_drained"
+                    if eof_quiet_deadline is not None
+                    else "upstream_eof_response_grace_expired"
+                )
+                terminate_group(process, trace, reason)
+                eof_hard_deadline = None
+                eof_quiet_deadline = None
 
         returncode = process.wait(timeout=KILL_GRACE_SECONDS)
         if client_buffer:
