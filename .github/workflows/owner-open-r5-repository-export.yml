@@ -1,0 +1,48 @@
+name: temporary owner-open R5 exact-head repository export
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-repository-export.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+          persist-credentials: false
+      - name: Bind exact head and build deterministic source archive
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          commit="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          printf '%s\n' "$commit" > EXACT_COMMIT
+          printf '%s\n' "$tree" > EXACT_TREE
+          git status --short
+          test -z "$(git status --short)"
+          tar \
+            --exclude=.git \
+            --sort=name \
+            --mtime='UTC 2026-08-30' \
+            --owner=0 --group=0 --numeric-owner \
+            -czf "$RUNNER_TEMP/trillionnium-os-r5-${commit}.tar.gz" .
+          sha256sum "$RUNNER_TEMP/trillionnium-os-r5-${commit}.tar.gz" \
+            > "$RUNNER_TEMP/SHA256SUMS"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trillionnium-os-r5-repository-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/trillionnium-os-r5-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 3
