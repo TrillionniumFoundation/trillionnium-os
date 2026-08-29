@@ -758,23 +758,44 @@ impl JobManager {
                                 }
                             }
                         }
-                        InternalProcessEvent::ReaderFailed { stream, error } => {
-                            if let Err(journal_error) = manager.push_runtime_event(
+                        InternalProcessEvent::InputFailed { error } => {
+                            let _ = manager.push_runtime_event(
                                 &key,
                                 &request,
-                                RuntimeJobEventKind::JournalUnavailable {
-                                    error: Some(format!("{stream} reader failed: {error}")),
+                                RuntimeJobEventKind::ProcessFault {
+                                    phase: "initial_stdin".to_string(),
+                                    error,
                                 },
-                            ) {
-                                let _ = manager.note_journal_failure(journal_error.to_string());
-                            }
+                            );
+                            let _ = running.control.kill(libc::SIGKILL);
+                        }
+                        InternalProcessEvent::ReaderFailed { stream, error } => {
+                            let _ = manager.push_runtime_event(
+                                &key,
+                                &request,
+                                RuntimeJobEventKind::ProcessFault {
+                                    phase: format!("{stream}_reader"),
+                                    error,
+                                },
+                            );
                             let _ = running.control.kill(libc::SIGKILL);
                         }
                         InternalProcessEvent::Exited {
                             terminal_kind,
                             exit_code,
                             signal,
+                            cleanup_error,
                         } => {
+                            if let Some(error) = cleanup_error {
+                                let _ = manager.push_runtime_event(
+                                    &key,
+                                    &request,
+                                    RuntimeJobEventKind::ProcessFault {
+                                        phase: "process_group_cleanup".to_string(),
+                                        error,
+                                    },
+                                );
+                            }
                             let stdout_bytes =
                                 running.stdout_bytes.lock().map(|value| *value).unwrap_or(0);
                             let stderr_bytes =
@@ -1011,6 +1032,7 @@ fn runtime_event_kind(event: &RuntimeJobEvent) -> &'static str {
         RuntimeJobEventKind::Started { .. } => "job.started",
         RuntimeJobEventKind::Output { .. } => "job.output",
         RuntimeJobEventKind::Terminal { .. } => "job.terminal.observation",
+        RuntimeJobEventKind::ProcessFault { .. } => "job.process_fault",
         RuntimeJobEventKind::JournalUnavailable { .. } => "job.journal_unavailable",
     }
 }

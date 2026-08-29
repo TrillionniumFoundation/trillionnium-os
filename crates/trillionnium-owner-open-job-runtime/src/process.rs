@@ -503,9 +503,7 @@ where
                         }
                     }
                     Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
-                    Err(error)
-                        if stream == "pty" && error.raw_os_error() == Some(libc::EIO) =>
-                    {
+                    Err(error) if stream == "pty" && error.raw_os_error() == Some(libc::EIO) => {
                         return;
                     }
                     Err(error) => {
