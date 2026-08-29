@@ -1,0 +1,134 @@
+name: R5 exact-head resume packet
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/owner-open-r5-resume-packet.yml"
+      - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
+      - "docs/status/owner-open-r5-gap-closure.json"
+      - "docs/status/owner-open-r5-status.json"
+      - "docs/operations/owner-open-r5-external-evidence-resume-runbook.md"
+      - "tools/generate-owner-open-r5-resume-packet.py"
+      - "tools/verify-owner-open-r5.py"
+      - "tools/verify-owner-open-r5-gap-evidence.py"
+      - "tools/tests/test_generate_owner_open_r5_resume_packet.py"
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-resume-packet.yml"
+      - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
+      - "docs/status/owner-open-r5-gap-closure.json"
+      - "docs/status/owner-open-r5-status.json"
+      - "docs/operations/owner-open-r5-external-evidence-resume-runbook.md"
+      - "tools/generate-owner-open-r5-resume-packet.py"
+      - "tools/verify-owner-open-r5.py"
+      - "tools/verify-owner-open-r5-gap-evidence.py"
+      - "tools/tests/test_generate_owner_open_r5_resume_packet.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-r5-resume-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head-resume-packet:
+    name: R5 exact-head RESUME_REQUIRED truth
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.EXPECTED_SHA }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Revalidate the exact checkout
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -n "$(git rev-parse HEAD^{tree})"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git diff --check
+
+      - name: Verify canonical R5 source and evidence truth
+        run: |
+          set -euo pipefail
+          mkdir -p out/owner-open-r5-resume
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
+          python3 tools/verify-owner-open-r5.py --json \
+            | tee out/owner-open-r5-resume/verify-r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json \
+            | tee out/owner-open-r5-resume/verify-r5-gap-evidence.json
+          python3 -m unittest \
+            tools.tests.test_generate_owner_open_r5_resume_packet \
+            -v \
+            2>&1 | tee out/owner-open-r5-resume/resume-packet-tests.log
+
+      - name: Generate exact-head resume packet
+        run: |
+          set -euo pipefail
+          HEAD_SHA="$(git rev-parse HEAD)"
+          TREE_SHA="$(git rev-parse HEAD^{tree})"
+          python3 tools/generate-owner-open-r5-resume-packet.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --branch "$EXPECTED_BRANCH" \
+            --commit "$HEAD_SHA" \
+            --tree "$TREE_SHA" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --workflow-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --output out/owner-open-r5-resume/resume-packet.json
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          packet = json.loads(
+              Path("out/owner-open-r5-resume/resume-packet.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          assert packet["commit_sha"] == os.environ["EXPECTED_SHA"]
+          assert packet["branch"] == os.environ["EXPECTED_BRANCH"]
+          assert packet["state_counts"]["OPEN"] == 0
+          assert packet["outcome"] in {
+              "RESUME_REQUIRED",
+              "MODULE_CLOSED_CANDIDATE",
+          }
+          assert packet["invariants"]["automatic_redispatch"] is False
+          assert packet["invariants"]["packet_promotes_gap_state"] is False
+          assert packet["invariants"]["packet_is_environment_evidence"] is False
+          if packet["outcome"] == "RESUME_REQUIRED":
+              assert packet["remaining_gap_count"] > 0
+              assert packet["invariants"]["zero_gap"] is False
+          else:
+              assert packet["remaining_gap_count"] == 0
+              assert packet["invariants"]["zero_gap"] is True
+          PY
+          (
+            cd out/owner-open-r5-resume
+            sha256sum \
+              resume-packet.json \
+              verify-r5.json \
+              verify-r5-gap-evidence.json \
+              resume-packet-tests.log \
+              > SHA256SUMS
+          )
+
+      - name: Upload exact-head resume artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-r5-resume-${{ env.EXPECTED_SHA }}
+          path: out/owner-open-r5-resume/
+          if-no-files-found: error
+          retention-days: 30
