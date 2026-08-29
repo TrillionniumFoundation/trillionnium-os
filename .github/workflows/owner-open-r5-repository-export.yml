@@ -24,12 +24,12 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          commit="$(git rev-parse HEAD)"
-          tree="$(git rev-parse HEAD^{tree})"
-          printf '%s\n' "$commit" > EXACT_COMMIT
-          printf '%s\n' "$tree" > EXACT_TREE
           git status --short
           test -z "$(git status --short)"
+          commit="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          printf '%s\n' "$commit" > "$RUNNER_TEMP/EXACT_COMMIT"
+          printf '%s\n' "$tree" > "$RUNNER_TEMP/EXACT_TREE"
           tar \
             --exclude=.git \
             --sort=name \
@@ -43,6 +43,8 @@ jobs:
           name: trillionnium-os-r5-repository-${{ github.sha }}
           path: |
             ${{ runner.temp }}/trillionnium-os-r5-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/EXACT_COMMIT
+            ${{ runner.temp }}/EXACT_TREE
             ${{ runner.temp }}/SHA256SUMS
           if-no-files-found: error
           retention-days: 3
