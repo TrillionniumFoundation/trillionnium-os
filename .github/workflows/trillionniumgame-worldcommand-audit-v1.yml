@@ -1,0 +1,67 @@
+# exact-target: c5bfd906f98a4dc65cfd1db2c389edde481850a1
+name: TrillionniumGame worldcommand audit v1
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-worldcommand-audit-v1.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: c5bfd906f98a4dc65cfd1db2c389edde481850a1
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Run authority-boundary race and vet gates
+        working-directory: source/runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ../worldcommand-audit-evidence
+          go test -race -count=1 ./internal/worldcommand ./internal/core \
+            2>&1 | tee ../worldcommand-audit-evidence/go-test-race.log
+          go vet ./internal/worldcommand ./internal/core \
+            2>&1 | tee ../worldcommand-audit-evidence/go-vet.log
+      - name: Seal exact source subset
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=worldcommand-audit-evidence/source
+          mkdir -p "$out/runtime/internal" "$out/contracts" "$out/docs"
+          cp -R runtime/internal/worldcommand "$out/runtime/internal/"
+          cp -R runtime/internal/core "$out/runtime/internal/"
+          cp runtime/nakama_adapter_test.go runtime/nakama_archive_test.go \
+            runtime/nakama_golden_test.go "$out/runtime/" 2>/dev/null || true
+          cp -R contracts/world-command-rpc-v1 "$out/contracts/" 2>/dev/null || true
+          cp contracts/world-command-*.json contracts/world-transition-v1*.json \
+            "$out/contracts/" 2>/dev/null || true
+          cp docs/WORLD_COMMAND_RUNTIME_V1.md docs/WORLD_COMMAND_DEPLOYED_RUNTIME_V1.md \
+            docs/WORLD_TRANSITION_V1_ADAPTER.md docs/WORLD_TRANSITION_V1_GO_ADAPTER.md \
+            "$out/docs/" 2>/dev/null || true
+          git rev-parse HEAD > worldcommand-audit-evidence/commit.txt
+          find worldcommand-audit-evidence -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > worldcommand-audit-evidence/SHA256SUMS
+      - name: Upload audit source and evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-worldcommand-audit-v1-${{ env.EXPECTED_HEAD }}
+          path: source/worldcommand-audit-evidence
+          if-no-files-found: error
+          retention-days: 30
