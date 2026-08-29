@@ -1,126 +1,182 @@
 # Owner-open R5: start here
 
-R3 remains the semantic contract. R5 is the active implementation and evidence
-sequence. The exact repository-internal source closure is now
-`HOST_TESTED / L1`; installed Codex, Android image, physical device and release
-qualification remain open and must not be inferred from source tests.
+Status: **ACTIVE ENTRY — plan revision `2026-08-29-r6`**  
+Semantic baseline: `TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`, revision `2026-08-27-r3`  
+Implementation baseline: `codex/owner-open-r5-tool-loop-20260827@479e5fb78385d3706b42f83b334025fa2b6ccd50`  
+Implementation evidence: **HOST_TESTED / L1**  
+Documentation candidate: `codex/owner-open-r5-gap-closure-20260829`  
+Documentation candidate evidence: **L0 until exact-head CI succeeds**  
+Public release: **false**
 
-Read in this order:
+R3 remains the product-semantic authority: Codex/provider is the only semantic
+principal. R5 r6 is the only active implementation sequencing and gap-closure
+plan. Broker, transport, core, runtime, stores and supervisors own mechanical
+identity, resource, process, transport, persistence and recovery behavior only.
+
+## Read in this order
 
 1. `TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`
 2. `TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md`
-3. `evidence/2026-08-28-owner-open-r5-exact-source-closeout.md`
-4. `plan/owner-open-r5-batch-d-jobs.md`
-5. `plan/owner-open-r5-batch-d-codex-mcp-job-binding.md`
-6. `plan/owner-open-r5-batch-d-connection-and-installed-codex.md`
-7. `status/owner-open-r5-status.json`
-8. `status/owner-open-r5-traceability.tsv`
-9. `contracts/owner-open-forbidden-default-graph-v2.json`
-10. `protocols/owner-open-inspect-v1.md`
-11. `protocols/owner-open-stream-flow-v1.md`
-12. `protocols/owner-open-jobs-v1.md`
-13. `protocols/owner-open-codex-mcp-jobs-v1.md`
-14. `protocols/owner-open-multi-connection-broker-v1.md`
-15. `protocols/owner-open-installed-codex-mcp-qualification-v1.md`
+3. `status/owner-open-r5-gap-closure.json`
+4. `architecture/2026-08-29-owner-open-runtime-authority-and-process-topology.md`
+5. `protocols/owner-open-effect-state-machine-v1.md`
+6. `operations/owner-open-deployment-lifecycle-and-emergency-stop.md`
+7. `qualification/owner-open-evidence-promotion-and-fault-matrix.md`
+8. `status/owner-open-r5-status.json`
+9. `status/owner-open-r5-traceability.tsv`
+10. `contracts/owner-open-forbidden-default-graph-v2.json`
+11. `protocols/owner-open-direct-agent-host-v1.md`
+12. `protocols/owner-open-provider-jsonl-v1.md`
+13. `protocols/owner-open-event-store-v1.md`
+14. `protocols/owner-open-inspect-v1.md`
+15. `protocols/owner-open-stream-flow-v1.md`
+16. `protocols/owner-open-jobs-v1.md`
+17. `protocols/owner-open-codex-mcp-jobs-v1.md`
+18. `protocols/owner-open-multi-connection-broker-v1.md`
+19. `protocols/owner-open-installed-codex-mcp-qualification-v1.md`
+20. `security/owner-open-threat-model.md`
 
-## Selected source path
+Documents under `plan/`, earlier R4 plans and previous batch checkpoints are
+provenance. They cannot override the r6 plan or machine gap register.
+
+## Current product path
 
 ```text
-AiShell / owner clients
-  -> optional filesystem Unix multi-connection broker
-       - same-UID plus private-token admission
-       - request-owner direct responses
-       - bounded observation broadcast
-       - disconnect is not cancellation
-  -> v5 transport carrier
-       - exact transport sequence
-       - bounded high-volume byte window
-       - pause/resume and resync-required
-       - separate transport delivery journal
-  -> job-aware v7 execution core
-       - provider JSONL same-turn loop
-       - direct shell / ordinary adb process runtime
-       - durable shell.job pipe and PTY lifecycle
-       - job.inspect / attach / detach / write / resize / close-stdin / kill / wait
-       - active turn.cancel / tool.cancel
-       - persist-before-delivery turn and job stores
-       - turn.inspect / call.inspect
-
-Codex-native local path
-  -> exact-byte STDIO trace proxy
-  -> Codex MCP job bridge
-       - connection_info / bridge_instance_id
-       - connection-bound live controls
-       - durable read-only inspect/wait from later connections
-  -> the same broker/transport/core/job runtime
+AiShell / owner clients / local Codex MCP
+  -> one final product entrypoint                       [not yet selected]
+  -> optional same-trust-domain broker                  [source L1; P0 gaps open]
+  -> bounded v5 transport carrier                       [source L1]
+  -> job-aware v7 execution core                        [source L1]
+  -> installed provider/Codex semantic turn             [L2 hold]
+  -> direct shell / ordinary adb / durable shell.job
+  -> raw observation returned to the same turn
+  -> provider continues
+  -> exactly one turn terminal
 ```
 
-High-volume model/output frames consume bounded delivery credit. Cancellation,
-inspection, lifecycle and terminal frames bypass the byte gate. If a finite
-queue cannot retain another delivery copy, the carrier emits a durable-cursor
-resynchronization requirement; it never redispatches provider, tool or job
-effects.
+“One semantic principal” does not mean one operating-system process. It means
+only the provider/Codex may interpret intent, select target/tool/command,
+decide retry/compensation and interpret observations. No mechanism component
+may rewrite argv, inject ADB routing, select another provider or automatically
+redispatch an uncertain effect.
 
-Long-running jobs are direct mechanical primitives. Exact operation IDs bind
-start/write/resize/close/kill effects, completed jobs replay without a second
-child process, configured journal failure is fail-closed, and incomplete restart
-state remains inspectable or unknown rather than automatically redispatched.
+## Exact known L1 baseline
 
-The local MCP server exposes connection identity plus job start, inspect,
-attach, detach, write, resize, close-stdin, kill and bounded wait. A live or
-mutating job call must carry the current bridge identity. A later process can
-inspect durable truth but cannot claim old live file descriptors.
+The current implementation baseline is exact commit:
 
-## Exact L1 source evidence
-
-The source candidate
-`fa1d287103c46aff35cf5e95addbc18da8a92063` passed the strict v15 closeout in
-GitHub Actions run `33186972324`:
-
-```sh
-python3 tools/generate-owner-open-types.py --check
-python3 tools/verify-owner-open-r5.py --json
-python3 -m unittest tools.tests.test_verify_owner_open_r5 -v
-PYTHONWARNINGS=error::ResourceWarning \
-  python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
-cargo fmt --all -- --check
-cargo test --locked --all-targets
-cargo clippy --locked --all-targets -- -D warnings
-cargo metadata --locked --format-version 1
-cargo tree --locked -e features
+```text
+479e5fb78385d3706b42f83b334025fa2b6ccd50
 ```
 
-Observed result:
+Its permanent GitHub Actions runs include:
 
-- exact sorted 31-file candidate boundary;
-- 680 Python tests passed, with five explicit external-material skips;
-- complete Rust default all-target test closure passed;
-- complete Rust default all-target Clippy closure passed with warnings denied;
-- generated source and R5 graph gates passed;
-- locked metadata, feature tree, patch and evidence hashes captured;
-- automatic redispatch remained false.
+```text
+owner-open R5 tool loop      run 33244626387  success
+owner-open foundation        run 33244626392  success
+```
 
-Claim ceiling:
+The R5 tool-loop run executed locked Rust 1.93 metadata, formatting,
+`cargo test --locked --all-targets`, strict Clippy, generated-code and graph
+gates, broker tests, Codex MCP tests and installed-Codex lifecycle fixtures.
+
+This proves an exact-checkout source/host baseline only. It does not prove:
+
+```text
+installed target Root Linux Codex
+provider authentication
+Root Linux UID/GID/namespace/cgroup placement
+clean Android image or target-files
+physical shell/job/ADB effect
+crash/ENOSPC/USB-loss/reboot/power-loss qualification
+signed public release
+```
+
+The claim ceiling remains:
 
 ```text
 EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX
 ```
 
-## Next gate
+## Repository P0/P1 blocker chain
 
-1. run the target Root Linux installed-Codex help/version probe and bind the
-   executable path, digest and exact capability bytes;
-2. execute `qualify_codex_mcp_jobs.py --execute` against that installed CLI and
-   review the exact MCP trace;
-3. prove one installed Codex turn controls pipe and PTY jobs, survives
-   disconnect/reconnect and never hides an effect retry;
-4. select and execute the physical ADB topology with USB/offline/unauthorized,
-   recovery and reboot evidence;
-5. remove forbidden legacy nodes from the Android owner-open product graph;
-6. wire init, SELinux, abstract socket, Root Linux and AiShell, then build clean
-   target files;
-7. collect L3–L5 evidence and keep public release false until a separate signed
-   L6 profile passes.
+The r6 gap register makes these source blockers load-bearing:
 
-Missing installed binaries, credentials, Android build outputs or physical
-devices are evidence holds, not permission to synthesize a pass.
+| Gap | Issue | Required result |
+| --- | ---: | --- |
+| `R5-GAP-GOVERNANCE-001` | #20 | exact-head generated evidence, coherent PR chain, protected main |
+| `R5-GAP-JOB-ADMISSION-001` | #14 | reserve capacity before spawn; total rollback |
+| `R5-GAP-PROCESS-LIFECYCLE-001` | #15 | reader-before-stdin, parent/descendant cleanup truth |
+| `R5-GAP-STREAM-RECOVERY-001` | #16 | `job.output` bounded flow and exact cursor gaps |
+| `R5-GAP-JOURNAL-CONVERGENCE-001` | #17 | explicit degraded durable states; no dropped critical errors |
+| `R5-GAP-BROKER-CORRELATION-001` | #18 | exact request identity, three-stage broker audit, total startup cleanup |
+| `R5-GAP-PRODUCT-ENTRYPOINT-001` | #19 | one installable product entrypoint and manifest |
+
+A source PR may move one of these to
+`SOURCE_CLOSED_PENDING_EVIDENCE`. It cannot close a higher environment exit by
+editing status.
+
+## External evidence lanes
+
+These remain real-environment holds:
+
+| Lane | Issues | Exit |
+| --- | --- | --- |
+| Installed Codex | #10, #13 | L2 |
+| Root Linux placement | #4, #13 | L2 |
+| Android graph/image | #2, #13 | L3 |
+| Physical ordinary ADB | #5, #8, #13 | L4 |
+| Destructive fault matrix | #6, #13 | L5 |
+| Signed public release | #13 | L6 |
+
+Missing target binaries, credentials, Android build outputs, physical devices,
+signing authority or independently controlled fault infrastructure are evidence
+holds. They are not permission to synthesize a pass.
+
+## Development order
+
+```text
+A. enforce repository/document/evidence truth
+B. close job/process/flow/journal/broker/product-entrypoint source blockers
+C. install and qualify target Root Linux + real Codex
+D. build clean Android image and execute physical shell/job/ADB
+E. execute crash/storage/USB/reboot/power-loss matrix
+F. separately authorize a signed L6 release
+```
+
+Do not begin a dependent promotion while an earlier load-bearing blocker is
+open.
+
+## Effect and recovery rule
+
+Every effect follows the unified protocol:
+
+```text
+received
+-> validated
+-> capacity_reserved
+-> accepted_durable
+-> effect_attempted
+-> started_or_forwarded_durable
+-> observations
+-> terminal_observed
+-> terminal_durable
+-> delivery_attempted
+```
+
+After an effect attempt, disconnect, timeout, journal failure or restart may be
+uncertain. The result is inspected/reconciled; it is never automatically
+redispatched.
+
+Client EOF and backpressure detach delivery. They do not imply cancellation.
+A capacity rejection may claim no-start only when it occurred before spawn or
+upstream write.
+
+## Zero-gap rule
+
+`zero_gap=true` is legal only when every entry in
+`status/owner-open-r5-gap-closure.json` is `CLOSED` with exact evidence at or
+above its declared exit level.
+
+Fixtures never close installed Codex, target placement, image, physical-device,
+fault or release lanes. `public_release` remains false until the L6 release gap
+is independently closed and a human go/no-go authorization is recorded.
