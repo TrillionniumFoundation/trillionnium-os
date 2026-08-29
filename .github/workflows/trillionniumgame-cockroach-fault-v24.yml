@@ -1,0 +1,117 @@
+name: TrillionniumGame CockroachDB fault matrix v24
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-cockroach-fault-v24.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: 5f45e7636da9f33fd84fd599adea638903a20df1
+  COCKROACH_IMAGE: cockroachdb/cockroach:v24.1.2@sha256:105b9d1e10e4845c9c59266bef3c27ff8b82eeaeb1b464c75423408c3a2968ba
+  COCKROACH_EXPECTED_IMAGE_ID: sha256:13156f587d7c94e0d32a3adb9793d06bcbd92a90bfe2b88440d6f74fd6b110ba
+
+jobs:
+  cockroachdb:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Run exact CockroachDB matrix
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=evidence/cockroachdb
+          mkdir -p "$evidence"
+          container="trnm-fault-cockroach-${GITHUB_RUN_ID}"
+          cleanup() { docker logs "$container" > "$evidence/container.log" 2>&1 || true; docker rm -f "$container" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          wait_crdb() {
+            local stable=0
+            for attempt in $(seq 1 150); do
+              if docker exec "$container" /cockroach/cockroach sql --insecure \
+                --host=127.0.0.1:26257 --execute='SELECT 1' >/dev/null 2>&1; then
+                stable=$((stable + 1))
+                (( stable >= 3 )) && return 0
+              else
+                stable=0
+              fi
+              sleep 1
+            done
+            docker logs "$container" >&2 || true
+            return 1
+          }
+          docker pull "$COCKROACH_IMAGE" | tee "$evidence/image-pull.log"
+          actual_image_id=$(docker image inspect --format '{{.Id}}' "$COCKROACH_IMAGE")
+          test "$actual_image_id" = "$COCKROACH_EXPECTED_IMAGE_ID"
+          printf '%s\n' "$actual_image_id" > "$evidence/image-id.txt"
+          docker image inspect --format '{{json .RepoDigests}}' "$COCKROACH_IMAGE" > "$evidence/repo-digests.json"
+          docker run -d --name "$container" --network host \
+            "$COCKROACH_IMAGE" start-single-node --insecure \
+            --store=/cockroach/cockroach-data \
+            --listen-addr=127.0.0.1:26257 --http-addr=127.0.0.1:8080 \
+            > "$evidence/container-id.txt"
+          wait_crdb
+          docker exec "$container" /cockroach/cockroach sql --insecure \
+            --host=127.0.0.1:26257 --execute='CREATE DATABASE IF NOT EXISTS trnm' >/dev/null
+          docker exec -i "$container" /cockroach/cockroach sql --insecure \
+            --host=127.0.0.1:26257 --database=trnm --set=errexit=true \
+            < migrations/cockroachdb/0001_foundation_up.sql > "$evidence/migration.log" 2>&1
+          database_url='postgres://root@127.0.0.1:26257/trnm?sslmode=disable'
+          TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE=cockroachdb \
+            cargo test -p trnm-persistence-pg --test fault_matrix --locked -- --nocapture \
+            2>&1 | tee "$evidence/fault-matrix.log"
+          TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE=cockroachdb \
+            TRNM_RECOVERY_PHASE=seed cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-seed.log"
+          docker restart "$container" > "$evidence/restart.log"
+          wait_crdb
+          TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE=cockroachdb \
+            TRNM_RECOVERY_PHASE=verify cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-verify.log"
+
+          crsql() { docker exec "$container" /cockroach/cockroach sql --insecure \
+            --host=127.0.0.1:26257 --database=trnm --format=tsv --execute="$1" | tail -n +2; }
+          crsql "SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name" > "$evidence/tables.txt"
+          crsql "SELECT table_name || '|' || column_name FROM information_schema.columns WHERE table_schema='public' ORDER BY table_name, ordinal_position" > "$evidence/columns.txt"
+          crsql "SELECT table_name || '|' || constraint_name || '|' || constraint_type FROM information_schema.table_constraints WHERE table_schema='public' ORDER BY table_name, constraint_name" > "$evidence/constraints.txt"
+          docker exec "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 \
+            --database=trnm --format=tsv --execute='SHOW CREATE ALL TABLES' > "$evidence/indexes.txt"
+          python3 scripts/check-pgwire-catalog.py --tables "$evidence/tables.txt" \
+            --columns "$evidence/columns.txt" --constraints "$evidence/constraints.txt" \
+            --indexes "$evidence/indexes.txt" | tee "$evidence/catalog-check.log"
+          if crsql "INSERT INTO trnm_entity_heads(entity_id,revision,last_event_sequence,authority_generation,state_digest,updated_at_ms) VALUES ('x',0,0,1,'x',0)" > "$evidence/invalid-row.log" 2>&1; then
+            echo 'invalid row unexpectedly accepted' >&2; exit 1
+          fi
+          if docker exec -i "$container" /cockroach/cockroach sql --insecure \
+            --host=127.0.0.1:26257 --database=trnm --set=errexit=true \
+            < migrations/cockroachdb/0001_foundation_up.sql > "$evidence/reapply.log" 2>&1; then
+            echo 'migration reapply unexpectedly succeeded' >&2; exit 1
+          fi
+          printf '{"schema":"trillionnium.pgwire-fault-matrix.v2","profile":"cockroachdb","transaction_rollback":true,"response_loss_replay":true,"restart_recovery":true,"catalog_verified":true,"negative_constraints":true,"migration_reapply_rejected":true,"backup_restore":false,"failover":false}\n' > "$evidence/summary.json"
+          docker inspect "$container" > "$evidence/container-inspect.json"
+          docker image inspect "$COCKROACH_IMAGE" > "$evidence/image-inspect.json"
+          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-cockroach-fault-v24-${{ env.EXPECTED_HEAD }}
+          path: source/evidence/cockroachdb
+          if-no-files-found: error
+          retention-days: 30
