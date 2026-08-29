@@ -80,6 +80,9 @@ jobs:
               if old_has_lf:
                   pattern += r"\n"
               matches = list(re.finditer(pattern, text))
+              if label == "attach identity source" and len(matches) == 2:
+                  # The attach path precedes detach; detach has its own larger patch.
+                  matches = [matches[0]]
               if len(matches) != 1:
                   raise SystemExit(
                       f"{label}: expected one structural match, observed {len(matches)}"
