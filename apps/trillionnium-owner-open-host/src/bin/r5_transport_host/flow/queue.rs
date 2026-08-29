@@ -136,6 +136,7 @@ fn is_flow_controlled_kind(kind: &str) -> bool {
             | FRAME_TOOL_STDOUT
             | FRAME_TOOL_STDERR
             | "provider.opaque"
+            | "job.output"
     )
 }
 
