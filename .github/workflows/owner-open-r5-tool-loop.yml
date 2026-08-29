@@ -114,47 +114,23 @@ jobs:
       - uses: dtolnay/rust-toolchain@1.93.0
         with:
           components: rustfmt, clippy
-      - name: Refresh dependency lock for the candidate closure
-        run: cargo generate-lockfile
+      - name: Verify reviewed dependency lock without mutation
+        run: |
+          test -s Cargo.lock
+          cp Cargo.lock owner-open-r5-reviewed-Cargo.lock
+          cargo metadata --locked --format-version 1 > owner-open-r5-cargo-metadata.json
+          cmp --silent Cargo.lock owner-open-r5-reviewed-Cargo.lock
+          git diff --exit-code -- Cargo.lock
       - name: Check formatting
         run: cargo fmt --all -- --check
-      - name: Test owner-open source packages
+      - name: Test exact owner-open default closure
+        run: cargo test --locked --all-targets
+      - name: Deny clippy warnings in the exact default closure
+        run: cargo clippy --locked --all-targets -- -D warnings
+      - name: Capture exact candidate graph and prove lock immutability
         run: |
-          for package in \
-            trillionnium-owner-open-types \
-            trillionnium-owner-open-runtime \
-            trillionnium-owner-open-call-registry \
-            trillionnium-owner-open-event-store \
-            trillionnium-owner-open-job-registry \
-            trillionnium-owner-open-job-runtime \
-            trillionnium-owner-open-stream-window \
-            trillionnium-owner-open-tool-bridge \
-            trillionnium-owner-open-turn-loop \
-            trillionnium-owner-open-provider-jsonl \
-            trillionnium-owner-open-host
-          do
-            cargo test --locked --all-targets --package "$package"
-          done
-      - name: Deny clippy warnings in the R5 closure
-        run: |
-          for package in \
-            trillionnium-owner-open-types \
-            trillionnium-owner-open-runtime \
-            trillionnium-owner-open-call-registry \
-            trillionnium-owner-open-event-store \
-            trillionnium-owner-open-job-registry \
-            trillionnium-owner-open-job-runtime \
-            trillionnium-owner-open-stream-window \
-            trillionnium-owner-open-tool-bridge \
-            trillionnium-owner-open-turn-loop \
-            trillionnium-owner-open-provider-jsonl \
-            trillionnium-owner-open-host
-          do
-            cargo clippy --locked --all-targets --package "$package" -- -D warnings
-          done
-      - name: Capture exact candidate graph
-        run: |
-          cargo metadata --locked --format-version 1 > owner-open-r5-cargo-metadata.json
+          cmp --silent Cargo.lock owner-open-r5-reviewed-Cargo.lock
+          git diff --exit-code -- Cargo.lock
           : > owner-open-r5-cargo-tree.txt
           for package in \
             trillionnium-owner-open-types \
@@ -171,7 +147,8 @@ jobs:
           do
             cargo tree --locked -e features -p "$package" >> owner-open-r5-cargo-tree.txt
           done
-          git diff -- Cargo.lock > owner-open-r5-cargo-lock.patch || true
+          git diff -- Cargo.lock > owner-open-r5-cargo-lock.patch
+          test ! -s owner-open-r5-cargo-lock.patch
       - uses: actions/upload-artifact@v4
         with:
           name: owner-open-r5-selected-jobs-${{ github.sha }}
@@ -179,6 +156,7 @@ jobs:
           retention-days: 14
           path: |
             Cargo.lock
+            owner-open-r5-reviewed-Cargo.lock
             owner-open-r5-cargo-metadata.json
             owner-open-r5-cargo-tree.txt
             owner-open-r5-cargo-lock.patch
