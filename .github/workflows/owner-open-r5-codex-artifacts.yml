@@ -8,9 +8,11 @@ on:
       - "tools/verify-owner-open-codex-artifacts.py"
       - "tools/verify-owner-open-codex-artifacts-v2.py"
       - "tools/verify-owner-open-codex-artifacts-v3.py"
+      - "tools/verify-owner-open-codex-artifacts-v4.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v3.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v4.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   push:
     branches:
@@ -22,9 +24,11 @@ on:
       - "tools/verify-owner-open-codex-artifacts.py"
       - "tools/verify-owner-open-codex-artifacts-v2.py"
       - "tools/verify-owner-open-codex-artifacts-v3.py"
+      - "tools/verify-owner-open-codex-artifacts-v4.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v3.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v4.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   workflow_dispatch:
 
@@ -56,10 +60,12 @@ jobs:
             tools/verify-owner-open-codex-artifacts.py \
             tools/verify-owner-open-codex-artifacts-v2.py \
             tools/verify-owner-open-codex-artifacts-v3.py \
+            tools/verify-owner-open-codex-artifacts-v4.py \
             tools/tests/test_verify_owner_open_codex_artifacts.py \
             tools/tests/test_verify_owner_open_codex_artifacts_v2.py \
-            tools/tests/test_verify_owner_open_codex_artifacts_v3.py
-          python3 tools/verify-owner-open-codex-artifacts-v3.py --json \
+            tools/tests/test_verify_owner_open_codex_artifacts_v3.py \
+            tools/tests/test_verify_owner_open_codex_artifacts_v4.py
+          python3 tools/verify-owner-open-codex-artifacts-v4.py --json \
             | tee owner-open-r5-codex-artifact-source.json
       - name: Run archive, package-checksum, ELF, release-metadata and bundle regressions
         run: |
@@ -68,6 +74,7 @@ jobs:
             tools.tests.test_verify_owner_open_codex_artifacts \
             tools.tests.test_verify_owner_open_codex_artifacts_v2 \
             tools.tests.test_verify_owner_open_codex_artifacts_v3 \
+            tools.tests.test_verify_owner_open_codex_artifacts_v4 \
             -v 2>&1 | tee owner-open-r5-codex-artifact-tests.txt
       - name: Download exact upstream release metadata
         env:
@@ -107,7 +114,7 @@ jobs:
               --output "owner-open-r5-codex-release-assets-${page}.json" \
               "https://api.github.com/repos/openai/codex/releases/${release_id}/assets?per_page=100&page=${page}"
           done
-      - name: Download exact execution archives, Sigstore bundles and checksum list
+      - name: Download exact execution archives, Cosign bundles and checksum list
         run: |
           set -euo pipefail
           mkdir -m 0700 owner-open-r5-codex-assets
@@ -127,43 +134,17 @@ jobs:
               --output "owner-open-r5-codex-assets/${filename}" \
               "$url"
           done < owner-open-r5-codex-selected-assets.tsv
-      - name: Record public Sigstore JSON key and type shape
-        run: |
-          set -euo pipefail
-          python3 - <<'PY' | tee owner-open-r5-codex-sigstore-shape.json
-          import json
-          from pathlib import Path
-
-          def shape(value, depth=0):
-              if depth >= 4:
-                  return type(value).__name__
-              if isinstance(value, dict):
-                  return {key: shape(item, depth + 1) for key, item in sorted(value.items())}
-              if isinstance(value, list):
-                  return {
-                      "type": "list",
-                      "length": len(value),
-                      "first": shape(value[0], depth + 1) if value else None,
-                  }
-              return type(value).__name__
-
-          result = {}
-          for path in sorted(Path('owner-open-r5-codex-assets').glob('*.sigstore')):
-              value = json.loads(path.read_text(encoding='utf-8'))
-              result[path.name] = shape(value)
-          print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
-          PY
-      - name: Bind and expose the public checksum-list bytes
+      - name: Bind the public checksum-list bytes
         run: |
           set -euo pipefail
           checksum=owner-open-r5-codex-assets/codex-package_SHA256SUMS
           test -f "$checksum"
           sha256sum "$checksum" | tee owner-open-r5-codex-checksum-list.sha256
           wc -c "$checksum" | tee owner-open-r5-codex-checksum-list.bytes
-      - name: Verify official bytes, package metadata and host-compatible CLI identity
+      - name: Verify official bytes, package metadata, Rekor binding and host CLI identity
         run: |
           set -euo pipefail
-          python3 tools/verify-owner-open-codex-artifacts-v3.py \
+          python3 tools/verify-owner-open-codex-artifacts-v4.py \
             --asset-dir owner-open-r5-codex-assets \
             --release-json owner-open-r5-codex-release.json \
             --release-assets-json owner-open-r5-codex-release-assets-1.json \
@@ -201,7 +182,6 @@ jobs:
             owner-open-r5-codex-release-assets-2.json
             owner-open-r5-codex-selected-assets.tsv
             owner-open-r5-codex-artifact-report.json
-            owner-open-r5-codex-sigstore-shape.json
             owner-open-r5-codex-checksum-list.sha256
             owner-open-r5-codex-checksum-list.bytes
             owner-open-r5-codex-assets/codex-package_SHA256SUMS
