@@ -1,0 +1,143 @@
+name: TrillionniumGame integration v21 attested
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-integration-v21-attested.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: 78cb5e656cb21be70a4be1f261b5e5690d2e2a6c
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact toolchains
+        run: |
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+          go version
+          python3 --version
+      - name: Verify exact source and ancestry
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git fetch --force origin '+refs/heads/*:refs/remotes/origin/*'
+          : > non-ancestors.tsv
+          while IFS= read -r ref; do
+            branch=${ref#refs/remotes/origin/}
+            [[ "$branch" == HEAD || "$branch" == integration/all-branches-main-v1 ]] && continue
+            tip=$(git rev-parse "$ref")
+            git merge-base --is-ancestor "$tip" HEAD || printf '%s\t%s\n' "$branch" "$tip" >> non-ancestors.tsv
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/origin | sort)
+          test ! -s non-ancestors.tsv
+      - name: Run canonical static gate
+        working-directory: source
+        run: bash scripts/ci-consolidation-static.sh evidence/static
+      - name: Require narrow source-freeze policy
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t freezes < <(find crates -name rustfmt.toml -print | sort)
+          test "${#freezes[@]}" -eq 4
+          expected=$(cat <<'EOF'
+          crates/trnm-persistence-pg/rustfmt.toml
+          crates/trnm-token-jwt-adapter-gate-v2/rustfmt.toml
+          crates/trnm-token-jwt-adapter-gate/rustfmt.toml
+          crates/trnm-token-jwt-adapter/rustfmt.toml
+          EOF
+          )
+          test "$(printf '%s\n' "${freezes[@]}")" = "$expected"
+          for path in "${freezes[@]}"; do test "$(cat "$path")" = 'disable_all_formatting = true'; done
+          test -f docs/development/SOURCE_FROZEN_RUST_ADAPTERS.md
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-v21-static-${{ env.EXPECTED_HEAD }}
+          path: source/evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  database:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Run live database profile
+        working-directory: source
+        run: TRNM_EVIDENCE_ROOT=evidence/pgwire bash scripts/ci-pgwire-persistence-adapter.sh "${{ matrix.profile }}"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-v21-${{ matrix.profile }}-${{ env.EXPECTED_HEAD }}
+          path: source/evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  attest:
+    needs: [static, database]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Commit immutable success attestation
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          RELAY_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          path="relay-attestations/trillionniumgame-${EXPECTED_HEAD}-v21.json"
+          payload=$(jq -n -c \
+            --arg schema 'trillionnium.relay-attestation.v1' \
+            --arg target_repository "$TARGET_REPOSITORY" \
+            --arg target_head "$EXPECTED_HEAD" \
+            --arg relay_repository "$GITHUB_REPOSITORY" \
+            --arg relay_sha "$RELAY_SHA" \
+            --arg run_id "$RUN_ID" \
+            --arg run_attempt "$RUN_ATTEMPT" \
+            '{schema:$schema,target_repository:$target_repository,target_head:$target_head,relay_repository:$relay_repository,relay_sha:$relay_sha,run_id:($run_id|tonumber),run_attempt:($run_attempt|tonumber),static:"success",postgresql:"success",cockroachdb:"success",all_gates:"success",production_credit:false}')
+          encoded=$(printf '%s\n' "$payload" | base64 -w0)
+          jq -n --arg message "attest(ci): TrillionniumGame ${EXPECTED_HEAD} all gates" \
+                --arg content "$encoded" \
+                --arg branch "ci/trillionniumgame-exact-head-relay-v1" \
+                '{message:$message,content:$content,branch:$branch}' > request.json
+          curl --fail-with-body --silent --show-error \
+            -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/${path}" \
+            --data-binary @request.json
