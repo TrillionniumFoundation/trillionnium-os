@@ -122,7 +122,27 @@ impl JobManager {
             Err(JobRegistryError::NotFound) => false,
             Err(error) => return Err(registry_error(error)),
         };
-        if !registry_entry_exists && running_jobs.len() >= self.inner.config.max_jobs {
+        let active_running_jobs = running_jobs
+            .keys()
+            .filter(|key| {
+                self.inner
+                    .registry
+                    .snapshot(key)
+                    .map(|snapshot| {
+                        matches!(
+                            snapshot.state,
+                            JobEffectiveState::Accepted
+                                | JobEffectiveState::Starting { .. }
+                                | JobEffectiveState::Running { .. }
+                        )
+                    })
+                    // A registry read failure is conservatively counted as
+                    // occupied.  Admission must not turn an uncertain state
+                    // into an additional child process.
+                    .unwrap_or(true)
+            })
+            .count();
+        if !registry_entry_exists && active_running_jobs >= self.inner.config.max_jobs {
             return Err(JobRuntimeError::InvalidRequest(
                 "job runtime capacity is exhausted before acceptance".to_string(),
             ));
@@ -846,9 +866,6 @@ impl JobManager {
                             {
                                 let _ = manager.note_journal_failure(error.to_string());
                             }
-                            if let Ok(mut jobs) = manager.running() {
-                                jobs.remove(&key);
-                            }
                             match manager.push_runtime_event(&key, &request, event.clone()) {
                                 Ok(seq) => {
                                     if let Err(error) = manager.inner.journal.record_job_terminal(
@@ -863,6 +880,16 @@ impl JobManager {
                                 Err(error) => {
                                     let _ = manager.note_journal_failure(error.to_string());
                                 }
+                            }
+                            // Keep the owned process marker until the durable
+                            // terminal record has been attempted.  The
+                            // registry is already terminal above, so admission
+                            // capacity is free; the marker only prevents the
+                            // Host loop from exiting in the small interval
+                            // between publishing the terminal observation and
+                            // recording `job.terminal`.
+                            if let Ok(mut jobs) = manager.running() {
+                                jobs.remove(&key);
                             }
                             // Process truth remains terminal even when the
                             // observation journal append failed. Replay status
@@ -962,6 +989,15 @@ impl JobManager {
             .running
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)
+    }
+
+    /// Returns true while a locally owned child is live or its terminal
+    /// observation is still being committed.  The latter state is deliberately
+    /// kept separate from registry admission capacity: a terminal registry
+    /// entry no longer consumes a job slot, but the Host must not exit before
+    /// the durable terminal record is attempted.
+    pub fn has_live_or_pending_jobs(&self) -> bool {
+        self.running().map(|jobs| !jobs.is_empty()).unwrap_or(true)
     }
 
     fn observations(&self) -> Result<MutexGuard<'_, HashMap<JobKey, ObservationState>>> {

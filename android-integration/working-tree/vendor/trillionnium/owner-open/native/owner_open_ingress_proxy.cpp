@@ -1,5 +1,6 @@
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <cerrno>
 #include <csignal>
 #include <cstddef>
@@ -29,6 +30,10 @@ constexpr std::string_view kAllowedPeer = "u:r:trillionnium_owner_open_client:s0
 constexpr std::string_view kWireSchema = "org.trillionnium.owner-open.connection-broker-wire.v1";
 constexpr std::string_view kBrokerId = "owner-open-device";
 constexpr int kMaximumConnections = 32;
+// Handshake bytes are control-plane authentication, not an unbounded stream.
+// Keep one absolute deadline across connect, hello write and ack read so a
+// peer that drips one byte at a time cannot pin a connection slot forever.
+constexpr int kHandshakeTimeoutMilliseconds = 5000;
 constexpr int kIdleTimeoutMilliseconds = 300000;
 constexpr std::size_t kMaximumLineBytes = 1024 * 1024;
 constexpr std::size_t kBufferBytes = 64 * 1024;
@@ -144,7 +149,35 @@ bool ReadBrokerToken(std::string* output) {
   return true;
 }
 
-int ConnectUpstream() {
+using Clock = std::chrono::steady_clock;
+using Deadline = Clock::time_point;
+
+bool WaitForIo(int fd, short events, Deadline deadline) {
+  while (true) {
+    const auto now = Clock::now();
+    if (now >= deadline) {
+      errno = ETIMEDOUT;
+      return false;
+    }
+    const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(deadline - now);
+    const auto bounded = std::clamp<std::int64_t>(remaining.count(), 1, std::numeric_limits<int>::max());
+    struct pollfd descriptor { fd, events, 0 };
+    const int result = poll(&descriptor, 1, static_cast<int>(bounded));
+    if (result < 0 && errno == EINTR) continue;
+    if (result <= 0) {
+      if (result == 0) errno = ETIMEDOUT;
+      return false;
+    }
+    if ((descriptor.revents & (events | POLLERR | POLLHUP | POLLNVAL)) == 0) continue;
+    if ((descriptor.revents & (events | POLLERR | POLLHUP)) == 0) {
+      errno = EBADF;
+      return false;
+    }
+    return true;
+  }
+}
+
+int ConnectUpstream(Deadline deadline) {
   const int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
   if (fd < 0) return -1;
   struct sockaddr_un address {};
@@ -155,7 +188,36 @@ int ConnectUpstream() {
     return -1;
   }
   std::snprintf(address.sun_path, sizeof(address.sun_path), "%s", kUpstream);
-  if (connect(fd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) != 0) {
+  const int original_flags = fcntl(fd, F_GETFL, 0);
+  if (original_flags < 0 || fcntl(fd, F_SETFL, original_flags | O_NONBLOCK) != 0) {
+    const int saved = errno;
+    close(fd);
+    errno = saved;
+    return -1;
+  }
+  const int connect_result = connect(fd, reinterpret_cast<struct sockaddr*>(&address), sizeof(address));
+  if (connect_result != 0 && errno != EINPROGRESS) {
+    const int saved = errno;
+    close(fd);
+    errno = saved;
+    return -1;
+  }
+  if (connect_result != 0 && !WaitForIo(fd, POLLOUT, deadline)) {
+    const int saved = errno;
+    close(fd);
+    errno = saved;
+    return -1;
+  }
+  int socket_error = 0;
+  socklen_t socket_error_size = sizeof(socket_error);
+  if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &socket_error, &socket_error_size) != 0 ||
+      socket_error != 0) {
+    const int saved = socket_error != 0 ? socket_error : errno;
+    close(fd);
+    errno = saved;
+    return -1;
+  }
+  if (fcntl(fd, F_SETFL, original_flags) != 0) {
     const int saved = errno;
     close(fd);
     errno = saved;
@@ -164,31 +226,33 @@ int ConnectUpstream() {
   return fd;
 }
 
-bool WriteAll(int fd, const unsigned char* data, std::size_t length) {
+bool WriteAll(int fd, const unsigned char* data, std::size_t length, Deadline deadline) {
   std::size_t offset = 0;
   while (offset < length) {
-    const ssize_t count = send(fd, data + offset, length - offset, MSG_NOSIGNAL);
+    const ssize_t count = send(fd, data + offset, length - offset, MSG_NOSIGNAL | MSG_DONTWAIT);
     if (count < 0 && errno == EINTR) continue;
+    if (count < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+      if (!WaitForIo(fd, POLLOUT, deadline)) return false;
+      continue;
+    }
     if (count <= 0) return false;
     offset += static_cast<std::size_t>(count);
   }
   return true;
 }
 
-bool WriteAll(int fd, std::string_view value) {
-  return WriteAll(fd, reinterpret_cast<const unsigned char*>(value.data()), value.size());
-}
-
-bool ReadLine(int fd, std::string* output) {
+bool ReadLine(int fd, std::string* output, Deadline deadline) {
   output->clear();
   output->reserve(4096);
   // The bound covers the complete wire line, including its trailing newline.
   // Stop before reading byte max+1 so an unterminated/oversized frame cannot
   // grow the string beyond the advertised limit.
   while (output->size() < kMaximumLineBytes) {
+    if (!WaitForIo(fd, POLLIN, deadline)) return false;
     unsigned char current = 0;
-    const ssize_t count = recv(fd, &current, 1, 0);
+    const ssize_t count = recv(fd, &current, 1, MSG_DONTWAIT);
     if (count < 0 && errno == EINTR) continue;
+    if (count < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) continue;
     if (count <= 0) return false;
     if (current == 0) return false;
     output->push_back(static_cast<char>(current));
@@ -296,7 +360,7 @@ std::string BrokerHello(const struct ucred& peer, std::string_view token,
   return std::string(encoded.data(), static_cast<std::size_t>(count));
 }
 
-bool AuthenticateUpstream(int client, int upstream, const struct ucred& peer) {
+bool AuthenticateUpstream(int client, int upstream, const struct ucred& peer, Deadline deadline) {
   std::string token;
   if (!ReadBrokerToken(&token)) return false;
   // SO_PEERCRED is directional.  On this connected client socket it reports
@@ -314,19 +378,26 @@ bool AuthenticateUpstream(int client, int upstream, const struct ucred& peer) {
   std::string expected_client_id;
   const std::string hello = BrokerHello(peer, token, &expected_client_id);
   token.assign(token.size(), '\0');
-  if (hello.empty() || !WriteAll(upstream, hello)) return false;
+  if (hello.empty() ||
+      !WriteAll(upstream, reinterpret_cast<const unsigned char*>(hello.data()), hello.size(),
+                deadline)) {
+    return false;
+  }
   std::string response;
-  if (!ReadLine(upstream, &response)) return false;
+  if (!ReadLine(upstream, &response, deadline)) return false;
   // Do not forward any upstream bytes until the first frame is a strict,
   // identity-bound broker acknowledgement.  This prevents a malformed or
   // stale broker response from being mistaken for an authenticated session.
   if (!ValidateHelloAck(response, expected_client_id, ingress_peer)) return false;
-  return WriteAll(client, response);
+  return WriteAll(client, reinterpret_cast<const unsigned char*>(response.data()), response.size(),
+                  deadline);
 }
 
 void Pump(int client, struct ucred peer) {
-  const int upstream = ConnectUpstream();
-  if (upstream < 0 || !AuthenticateUpstream(client, upstream, peer)) {
+  const Deadline handshake_deadline =
+      Clock::now() + std::chrono::milliseconds(kHandshakeTimeoutMilliseconds);
+  const int upstream = ConnectUpstream(handshake_deadline);
+  if (upstream < 0 || !AuthenticateUpstream(client, upstream, peer, handshake_deadline)) {
     if (upstream >= 0) close(upstream);
     shutdown(client, SHUT_RDWR);
     close(client);
@@ -356,7 +427,8 @@ void Pump(int client, struct ucred peer) {
         shutdown(destination, SHUT_WR);
         continue;
       }
-      if (!WriteAll(destination, buffer.data(), static_cast<std::size_t>(count))) {
+      if (!WriteAll(destination, buffer.data(), static_cast<std::size_t>(count),
+                    Clock::now() + std::chrono::milliseconds(kIdleTimeoutMilliseconds))) {
         client_read = false;
         upstream_read = false;
         break;

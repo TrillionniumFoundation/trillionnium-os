@@ -2159,7 +2159,8 @@ mod tests {
             assert_eq!(root_reentry, "1");
         }
 
-        for provider in [Provider::Codex] {
+        {
+            let provider = Provider::Codex;
             let fixture = build_fixture(provider, FixtureFault::None)
                 .expect("purpose-built provider-specific final ELF fixture");
             assert_ne!(fixture.elf_contract_sha256, fixture.executable_sha256);
@@ -2261,17 +2262,16 @@ mod tests {
                 LinuxFixtureHoldReason::FinalExecEventDrift,
             ),
         ] {
-            for provider in [Provider::Codex] {
-                let fixture = build_fixture(provider, fault).expect("fixture");
-                let recipe = recipe_for_fixture(provider, &fixture);
-                let sink = SharedHoldSink::default();
-                let error = match launch_held_fixture(recipe, fixture, sink.clone()) {
-                    Ok(_) => panic!("fault must fail closed"),
-                    Err(error) => error,
-                };
-                assert_eq!(error, expected_error);
-                assert_eq!(sink.snapshot(), vec![expected_hold]);
-            }
+            let provider = Provider::Codex;
+            let fixture = build_fixture(provider, fault).expect("fixture");
+            let recipe = recipe_for_fixture(provider, &fixture);
+            let sink = SharedHoldSink::default();
+            let error = match launch_held_fixture(recipe, fixture, sink.clone()) {
+                Ok(_) => panic!("fault must fail closed"),
+                Err(error) => error,
+            };
+            assert_eq!(error, expected_error);
+            assert_eq!(sink.snapshot(), vec![expected_hold]);
         }
 
         let fixture = build_fixture(Provider::Codex, FixtureFault::None).expect("fixture");

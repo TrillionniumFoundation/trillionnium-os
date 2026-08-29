@@ -433,8 +433,10 @@ mod tests {
             SOURCE_STATUS,
             "source_only_shape_validator_no_product_authority_v1"
         );
-        assert!(!PRODUCT_AUTHORITY_AVAILABLE);
-        assert!(!CONFERS_EFFECT_AUTHORITY);
+        const {
+            assert!(!PRODUCT_AUTHORITY_AVAILABLE);
+            assert!(!CONFERS_EFFECT_AUTHORITY);
+        }
     }
 
     #[test]

@@ -218,10 +218,10 @@ fn unknown_catalog_entries_writer_lock_and_root_swap_fail_closed() {
     let record = terminal_record(&ledger_root);
     let store = DurableShellExecReceiptStoreV1::open(receipt_root.path()).unwrap();
     assert!(DurableShellExecReceiptStoreV1::open(receipt_root.path()).is_err());
-    assert!(store.verify_catalog(&[record.clone()]).is_err());
+    assert!(store.verify_catalog(std::slice::from_ref(&record)).is_err());
     store.ensure(&record).unwrap();
     fs::write(receipt_root.path().join("unknown-receipt"), b"x").unwrap();
-    assert!(store.verify_catalog(&[record.clone()]).is_err());
+    assert!(store.verify_catalog(std::slice::from_ref(&record)).is_err());
     fs::remove_file(receipt_root.path().join("unknown-receipt")).unwrap();
 
     let retained = receipt_root.path().with_extension("retained");

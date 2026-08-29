@@ -614,6 +614,13 @@ fn control_disposition(disposition: &ControlDisposition) -> &'static str {
 }
 
 fn jobs_are_live(manager: &JobManager) -> bool {
+    // A terminal registry state can be visible just before the dispatcher has
+    // finished committing its durable `job.terminal` record.  Keep the Host
+    // carrier alive for that short pending window; admission capacity is
+    // already released by the registry transition itself.
+    if manager.has_live_or_pending_jobs() {
+        return true;
+    }
     manager
         .registry()
         .keys()

@@ -280,6 +280,7 @@ pub struct TrustedAdapterContext {
     agent_id: &'static str,
     delivery_provider_attempt_id: String,
     binding_sha256: String,
+    #[cfg(feature = "device-launch-package-conformance")]
     binding_inbox_bytes_sha256: String,
     binding: DirectOperationBinding,
     journal_path: PathBuf,
@@ -912,6 +913,7 @@ impl TrustedAdapterContext {
             ));
         }
         let journal_path = specification.state_directory.join(JOURNAL_FILE_NAME);
+        #[cfg(feature = "device-launch-package-conformance")]
         let binding_inbox_bytes_sha256 = trillionnium_os_types::sha256_bytes(&inbox_value);
         Ok(Self {
             adapter: specification.adapter,
@@ -923,6 +925,7 @@ impl TrustedAdapterContext {
                 .delivery_provider_attempt_id
                 .clone(),
             binding_sha256: envelope.binding_sha256,
+            #[cfg(feature = "device-launch-package-conformance")]
             binding_inbox_bytes_sha256,
             binding: envelope.binding,
             journal_path,

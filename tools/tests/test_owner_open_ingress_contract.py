@@ -61,6 +61,11 @@ class OwnerOpenIngressContractTest(unittest.TestCase):
             "if (!ReadPeerCredentials(upstream, &broker_peer) || broker_peer.uid != 0) return false;",
             "struct ucred ingress_peer {",
             "if (!ValidateHelloAck(response, expected_client_id, ingress_peer)) return false;",
+            "kHandshakeTimeoutMilliseconds",
+            "WaitForIo",
+            "Clock::now() + std::chrono::milliseconds(kHandshakeTimeoutMilliseconds)",
+            "O_NONBLOCK",
+            "MSG_DONTWAIT",
         ):
             self.assertIn(marker, source)
         self.assertIn('JsonInteger(acknowledged_peer, "uid", ingress_peer.uid)', source)
@@ -70,7 +75,7 @@ class OwnerOpenIngressContractTest(unittest.TestCase):
         self.assertNotIn("response.find(", source)
         self.assertLess(
             source.index("ValidateHelloAck(response, expected_client_id, ingress_peer)"),
-            source.index("return WriteAll(client, response);"),
+            source.index("return WriteAll(client, reinterpret_cast<const unsigned char*>(response.data()),"),
         )
 
     def test_android_module_links_json_parser_for_ingress(self) -> None:
@@ -114,18 +119,28 @@ class OwnerOpenIngressContractTest(unittest.TestCase):
         if compiler is None:
             self.skipTest("no host C++ compiler is available")
         source = self.read(SOURCE)
-        start = source.index("bool ReadLine(int fd, std::string* output) {")
+        helper_start = source.index("using Clock = std::chrono::steady_clock;")
+        helper_end = source.index("\n\nint ConnectUpstream", helper_start)
+        helper = source[helper_start:helper_end]
+        start = source.index("bool ReadLine(int fd, std::string* output, Deadline deadline) {")
         end = source.index("\n}\n\nbool ParseJsonObject", start) + 2
         read_line = source[start:end]
         harness = textwrap.dedent(
             f"""\
+            #include <algorithm>
             #include <cassert>
+            #include <cerrno>
+            #include <chrono>
             #include <cstddef>
+            #include <cstdint>
+            #include <limits>
+            #include <poll.h>
             #include <string>
             #include <sys/socket.h>
             #include <thread>
             #include <unistd.h>
             constexpr std::size_t kMaximumLineBytes = 1024 * 1024;
+            {helper}
             {read_line}
             static bool exercise(std::size_t payload_bytes, bool expected) {{
               int fds[2];
@@ -143,7 +158,8 @@ class OwnerOpenIngressContractTest(unittest.TestCase):
                 shutdown(fds[0], SHUT_WR);
               }});
               std::string output;
-              const bool result = ReadLine(fds[1], &output);
+              const bool result = ReadLine(
+                  fds[1], &output, Clock::now() + std::chrono::seconds(30));
               writer.join();
               close(fds[0]);
               close(fds[1]);
