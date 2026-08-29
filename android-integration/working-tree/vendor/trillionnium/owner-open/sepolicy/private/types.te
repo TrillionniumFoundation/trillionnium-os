@@ -1,0 +1,23 @@
+# Owner-open Android-native mechanism domains and files. Root Linux processes
+# deliberately inherit the bootstrap domain; Codex remains the sole semantic
+# principal and no Authority/lease/P01 policy type is introduced.
+
+type trillionnium_owner_open_bootstrap, domain, coredomain;
+type trillionnium_owner_open_bootstrap_exec, exec_type, system_file_type, file_type;
+init_daemon_domain(trillionnium_owner_open_bootstrap)
+
+type trillionnium_owner_open_ingress, domain, coredomain;
+type trillionnium_owner_open_ingress_exec, exec_type, system_file_type, file_type;
+init_daemon_domain(trillionnium_owner_open_ingress)
+
+type trillionnium_owner_open_emergency_stop, domain, coredomain;
+type trillionnium_owner_open_emergency_stop_exec, exec_type, system_file_type, file_type;
+init_daemon_domain(trillionnium_owner_open_emergency_stop)
+
+type trillionnium_owner_open_client, domain;
+app_domain(trillionnium_owner_open_client)
+
+type trillionnium_owner_open_state_file, file_type, data_file_type, core_data_file_type;
+type trillionnium_owner_open_payload_file, file_type, system_file_type;
+
+system_internal_prop(trillionnium_owner_open_prop)
