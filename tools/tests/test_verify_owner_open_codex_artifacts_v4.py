@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import tarfile
 import tempfile
 import unittest
 
@@ -36,6 +38,24 @@ class LegacyCosignFixture:
         self.contract_path.write_text(
             json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8"
         )
+
+    def archive(self, role: str) -> dict:
+        return next(item for item in self.contract()["archives"] if item["role"] == role)
+
+    def archive_member_sha256(self, role: str) -> str:
+        archive = self.archive(role)
+        path = self.fixture.base.assets / archive["filename"]
+        with tarfile.open(path, "r:gz") as handle:
+            members = [member for member in handle.getmembers() if member.isfile()]
+            if len(members) != 1:
+                raise AssertionError(f"fixture archive member count: {len(members)}")
+            source = handle.extractfile(members[0])
+            if source is None:
+                raise AssertionError("fixture archive member cannot be read")
+            digest = hashlib.sha256()
+            while chunk := source.read(1024 * 1024):
+                digest.update(chunk)
+        return digest.hexdigest()
 
     def rewrite_all(self) -> None:
         contract = self.contract()
@@ -114,6 +134,17 @@ class LegacyCosignFixture:
             json.dumps(metadata, sort_keys=True), encoding="utf-8"
         )
 
+    def set_rekor_digest(self, role: str, digest: str) -> None:
+        def mutate(value):
+            payload = value["rekorBundle"]["Payload"]
+            body = json.loads(base64.b64decode(payload["body"], validate=True))
+            body["spec"]["data"]["hash"]["value"] = digest
+            payload["body"] = b64(
+                json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
+            )
+
+        self.mutate_bundle(role, mutate)
+
     def verify(self):
         return module.verify(
             self.root,
@@ -149,21 +180,35 @@ class VerifyOwnerOpenCodexArtifactsV4Test(unittest.TestCase):
             )
             self.assertEqual(facts["bundle_encoding"], "cosign_legacy_sign_blob_bundle")
             self.assertTrue(facts["archive_digest_bound"])
+            self.assertFalse(facts["archive_member_digest_bound"])
+            self.assertEqual(facts["signed_subject_kind"], "release_archive")
             self.assertTrue(facts["signature_bytes_cross_bound"])
             self.assertTrue(facts["certificate_bytes_cross_bound"])
             self.assertFalse(facts["cryptographic_signature_verified"])
             self.assertFalse(facts["cryptographic_rekor_set_verified"])
 
-    def test_rekor_archive_digest_drift_fails_closed(self) -> None:
-        def mutate(value):
-            payload = value["rekorBundle"]["Payload"]
-            body = json.loads(base64.b64decode(payload["body"], validate=True))
-            body["spec"]["data"]["hash"]["value"] = "0" * 64
-            payload["body"] = b64(
-                json.dumps(body, sort_keys=True, separators=(",", ":")).encode()
-            )
+    def test_rekor_unique_archive_member_digest_binding_passes(self) -> None:
+        role = "qualification_host_codex"
+        member_digest = self.legacy.archive_member_sha256(role)
+        self.legacy.set_rekor_digest(role, member_digest)
+        report = self.legacy.verify()
+        self.assertEqual(report.errors, [])
+        self.assertTrue(report.ok)
+        archive = self.legacy.archive(role)
+        facts = module.verify_sigstore_bundle_v4(
+            self.legacy.fixture.base.assets / archive["sigstore"]["filename"],
+            archive["sigstore"],
+            archive["sha256"],
+            member_digest,
+        )
+        self.assertFalse(facts["archive_digest_bound"])
+        self.assertTrue(facts["archive_member_digest_bound"])
+        self.assertTrue(facts["signed_subject_digest_bound"])
+        self.assertEqual(facts["signed_subject_kind"], "unique_archive_member")
+        self.assertEqual(facts["signed_subject_sha256"], member_digest)
 
-        self.legacy.mutate_bundle("target_root_linux_codex", mutate)
+    def test_rekor_archive_digest_drift_fails_closed(self) -> None:
+        self.legacy.set_rekor_digest("target_root_linux_codex", "0" * 64)
         report = self.legacy.verify()
         self.assertTrue(
             any("not bound to the selected archive digest" in error for error in report.errors),
