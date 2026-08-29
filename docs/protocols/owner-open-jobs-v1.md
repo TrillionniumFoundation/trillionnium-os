@@ -1,24 +1,42 @@
 # Owner-open long-running jobs v1
 
-Status: **R5 source contract and implementation; exact-repository Rust and device evidence pending**  
-Semantic authority: `TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`  
+Status: **ACTIVE TARGET CONTRACT — implementation baseline L1; audited source gaps #14–#17 remain open**  
+Plan revision: `2026-08-29-r6`  
+Unified state machine: `owner-open-effect-state-machine-v1.md`  
 Implementation packages:
 
 - `crates/trillionnium-owner-open-job-registry`
 - `crates/trillionnium-owner-open-job-runtime`
 - `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs`
 
 ## 1. Boundary
 
-A job is a mechanism-only long-running local process. The owner/Codex supplies the exact command or argv and interprets every observation. The Host does not classify command meaning, select a target, require a semantic approval lease, rewrite arguments or automatically retry an uncertain job operation.
+A job is a mechanism-only long-running local process. Codex/provider supplies
+the exact command or argv and interprets every observation. The Host does not
+classify command meaning, select a target, require a semantic approval lease,
+rewrite arguments or automatically retry an uncertain job operation.
 
-A job is distinct from a one-shot `shell.exec` call:
+A job differs from one-shot `shell.exec` because it may survive its creating
+turn and exposes separate effectful controls:
 
-- it may remain live after its creating turn finishes;
-- it has a stable `job_id` and job stream;
-- stdin, PTY resize, attach/detach and kill are separate operations;
-- observations can be inspected after live delivery is lost;
-- every effectful control has an independent `operation_id`.
+```text
+job.start
+job.write
+job.resize
+job.close_stdin
+job.kill
+```
+
+Read-only operations are:
+
+```text
+job.inspect
+job.wait
+```
+
+`job.attach`/`job.detach` affect live delivery ownership and do not adopt an old
+file descriptor after Host restart.
 
 ## 2. Identity
 
@@ -37,9 +55,10 @@ The canonical job request binds:
 
 ```text
 tool = shell.job
-target_id               # correlation only
+target_id as correlation/routing metadata
 mode = pipe | pty
 command XOR argv
+shell executable identity
 cwd
 environment delta
 initial stdin digest and length
@@ -47,41 +66,120 @@ PTY dimensions
 opaque extensions
 ```
 
-The Host computes `request_sha256`. A caller-supplied request digest is accepted only when it exactly matches the canonical request. The binding fingerprint binds the configured shell executable, tool and mode.
-
-An exact scoped job and exact request is idempotent. The same scoped `job_id` with different request bytes is a conflict.
+The Host computes `request_sha256`. A supplied digest is accepted only when it
+matches the canonical request. Same key + same request attaches/replays; same
+key + different bytes conflicts before effect.
 
 ## 3. Operation identity
 
-Each effectful operation carries a stable `operation_id`:
-
-```text
-job.start
-job.write
-job.resize
-job.close_stdin
-job.kill
-```
-
-The operation digest binds:
+Every effectful operation has a stable `operation_id`. Its digest binds:
 
 ```text
 operation kind
 job key
+canonical job request digest
 exact operation payload
 ```
 
-The durable journal writes `operation.accepted` before invoking the local effect. It then writes `operation.terminal` after the effect result is known.
+Rules:
 
-On restart:
+- accepted + terminal: replay the exact result;
+- accepted without terminal: `unknown_after_restart` or
+  `reconciliation_required`;
+- same operation ID + different bytes: conflict;
+- no accepted record permits a no-start claim only when no effect attempt is
+  independently proven;
+- automatic redispatch is always false.
 
-- accepted + terminal: return the recorded result; do not repeat the effect;
-- accepted without terminal: report `unknown_after_restart`; do not repeat the effect;
-- different operation bytes under the same operation ID: conflict.
+## 4. Pre-spawn admission
 
-This rule applies to start, stdin write, resize, close and kill. There is no blind automatic redispatch.
+`job.start` must reserve finite job capacity **before** durable acceptance or
+spawn. Capacity refusal returns:
 
-## 4. Frames
+```json
+{
+  "status": "resource_exhausted",
+  "effect_attempted": false,
+  "accepted": false,
+  "automatic_redispatch": false
+}
+```
+
+The implementation must not spawn a child and then discover that `max_jobs` is
+full. This requirement is tracked by `R5-GAP-JOB-ADMISSION-001` / Issue #14.
+
+## 5. Start lifecycle
+
+Target order:
+
+```text
+validate request
+reserve job slot
+write operation.accepted
+claim one spawn generation
+spawn child under lifecycle guard
+establish readers and control handles
+record PID/process-group/session/start/boot identity
+insert live job and start dispatcher
+write job.started / operation.terminal(started)
+commit reservation to live ownership
+```
+
+Until the live state is committed, one lifecycle guard owns the child,
+reservation, FDs, registry and journal transitions. Every failure after spawn
+performs bounded process-group cleanup, leader reap, FD closure, reservation
+release and a truthful terminal/degraded state.
+
+## 6. Pipe and PTY process mechanics
+
+### Pipe mode
+
+- child has separate stdin/stdout/stderr pipes;
+- stdout and stderr drains are active before non-empty initial stdin is written;
+- initial stdin is written by a bounded writer task;
+- closing stdin drops the pipe writer;
+- output remains byte preserving.
+
+### PTY mode
+
+- child creates a session and controlling terminal;
+- stdout/stderr are merged into the PTY stream;
+- resize uses `TIOCSWINSZ`;
+- the current close-stdin mechanism may write an EOT byte;
+- EOT is not a universal guarantee that every program treated stdin as closed.
+
+The reader-before-writer and total post-spawn cleanup requirements are tracked
+by Issue #15.
+
+## 7. Parent, PID and descendant truth
+
+Where Linux provides the required primitives, the runtime binds:
+
+```text
+PID
+process start time
+boot ID
+process group
+session ID
+parent-death signal configuration
+```
+
+The parent-PID race is checked after configuring parent-death behavior.
+
+Leader exit alone is not proof that descendants are gone. After leader exit or
+forced termination, the runtime performs bounded group cleanup and records:
+
+```text
+leader_reaped
+process_group_observed_gone
+cleanup_error
+```
+
+If process-group absence cannot be proven, terminal status is
+`unknown_after_cleanup_failure` or `reconciliation_required`; it is not a clean
+completion claim.
+
+## 8. Frames
 
 Client to Host:
 
@@ -94,6 +192,7 @@ job.write
 job.resize
 job.close_stdin
 job.kill
+job.wait
 ```
 
 Host to client:
@@ -111,9 +210,10 @@ job.status
 job.error
 ```
 
-All job frames carry the job scope and `job_id`. Host output uses a stable job-specific `stream_id`; the creating turn stream remains part of the job key but is not reused as the delivery stream.
+Every effectful response binds the exact `operation_id` and request digest.
+All job frames carry the complete job scope and `job_id`.
 
-## 5. Start payload
+## 9. Start payload
 
 Example pipe job:
 
@@ -148,11 +248,12 @@ Example PTY fields:
 }
 ```
 
-`command` and `argv` are mutually exclusive. PTY dimensions must be non-zero. A pipe job must not carry PTY dimensions.
+`command` and `argv` are mutually exclusive. PTY dimensions are non-zero. A
+pipe job must not carry PTY dimensions.
 
-## 6. Bytes and PTY
+## 10. Input and output bytes
 
-`job.write.payload.data` accepts either a UTF-8 string or:
+`job.write.payload.data` accepts a UTF-8 string or bounded base64 bytes:
 
 ```json
 {"encoding": "base64", "data": "AAEC"}
@@ -162,71 +263,160 @@ Example PTY fields:
 
 ```json
 {
+  "job_id": "build-1",
   "stream": "stdout",
   "encoding": "base64",
   "data": "...",
   "byte_count": 4096,
-  "sha256": "..."
+  "sha256": "...",
+  "cursor": 12
 }
 ```
 
-Pipe jobs expose `stdout` and `stderr`. PTY jobs expose the merged `pty` stream. PTY close-stdin currently writes an EOT byte; pipe close-stdin closes the stdin pipe.
+Output counts and hashes describe observed bytes. They do not guarantee output
+completeness after a declared delivery/retention gap.
 
-## 7. Inspection and attachment
+## 11. Bounded flow control
 
-`job.inspect` is read-only. It returns:
-
-- resident registry snapshot and bounded registry history when the Host still owns the job;
-- bounded in-memory runtime events;
-- bounded raw durable journal records;
-- inclusive cursor and next cursor metadata;
-- replay status: `durable`, `best_effort_unreplayable` or `unknown_after_restart`.
-
-`job.attach` registers a live attachment and returns the same inspection shape. `job.detach` removes that live attachment. After Host restart, durable inspection remains available; reconstruction of a live PTY file descriptor across process restart is not claimed.
-
-## 8. Delivery flow control
-
-The selected Host remains the v5 transport over the v7 job-aware execution core. Job output frames use their own stream ID and therefore participate in the same persisted bounded delivery mechanics as turn/tool output:
+`job.output` is a `bounded_stream` frame and participates in:
 
 ```text
 stream.window_update
 stream.pause
 stream.resume
+stream.resync_required
 ```
 
-Pausing delivery does not pause the child process. Job observations are journaled before live delivery where the journal is available. Retention exhaustion is a mechanical backpressure/fault condition, not semantic denial.
+Pausing delivery does not pause the child process, persistence, cancellation,
+inspection or terminal observation. Accepted/control/inspect/terminal frames
+bypass the byte-credit gate.
 
-## 9. Process lifecycle
+The current implementation baseline omits `job.output` from the selected flow
+classifier; Issue #16 must close this source gap before this section is claimed
+as implemented.
 
-The runtime provides:
+## 12. Retention and cursor recovery
 
-- one process group/session per job;
-- pipe or PTY setup;
-- continuously drained bounded output;
-- PTY resize with `TIOCSWINSZ`;
-- group signal delivery;
-- leader reap and descendant cleanup after leader exit;
-- parent-death signal for the direct job child;
-- Linux PTY `EIO` interpreted as slave EOF.
+Every job inspection returns:
 
-The current source does not yet provide cgroup placement, namespace selection, durable file-descriptor transfer, cross-Host live reattachment or proof that all forked descendants die after abrupt Host power loss. Those are later Root Linux and L5 gates.
+```text
+requested_inclusive_cursor
+oldest_available_cursor
+next_cursor
+total_events
+has_more
+durable_fallback_available
+resync_required
+gap(first_missing_cursor,last_missing_cursor)
+```
 
-## 10. Recovery truth
+If bounded memory evicted old events, inspection must not silently begin at the
+oldest retained event. It returns an exact gap and, when possible, durable
+records that fill it.
 
-A completed durable job never spawns again for the same job request. A journaled start without a durable terminal is `unknown_after_restart`. The Host does not infer that such a job never started and does not start a replacement.
+A resume after a delivery gap is accepted only when
+`resumed_through_cursor` proves the client inspected through the required
+cursor.
 
-A late external observation may later resolve uncertainty, but the current source does not discover or re-adopt an orphan process after Host restart.
+## 13. Journal policy and degraded state
 
-## 11. Claim ceiling
+Effectful job operations default to:
 
-The checked-in source and authored tests do not establish:
+```text
+durable_before_effect = true
+durable_after_effect = true
+continue_when_unavailable = false
+terminal_replayable = true
+```
 
-- exact-repository Rust format/test/clippy success;
-- installed Codex use of `shell.job`;
-- Android image inclusion;
-- Root Linux identity/cgroup placement;
-- live cross-process PTY reattachment;
-- reboot or power-loss conformance;
-- public release qualification.
+If the accepted record cannot be written, the effect is not attempted. If
+persistence fails after the effect may have started, the state is one of:
 
-Until those records exist, this capability remains `SOURCE_IMPLEMENTED / L0`.
+```text
+live_journal_degraded
+completed_observed_undurable
+unknown_after_journal_failure
+reconciliation_required
+```
+
+Critical append failures are never discarded. New effectful controls that
+require durability are inhibited while read-only inspection remains available
+where possible. Issue #17 tracks this source and fault gap.
+
+## 14. Controls
+
+### `job.write`
+
+Binds exact bytes/digest and writes at most once. An accepted operation without
+a durable terminal after restart is unknown and is not repeated.
+
+### `job.resize`
+
+Valid only for PTY jobs. It binds rows/columns and one operation identity.
+
+### `job.close_stdin`
+
+Pipe mode closes the pipe writer. PTY mode applies the documented EOT behavior.
+
+### `job.kill`
+
+Signals the exact live process group/session associated with the bound PID
+identity. A successful signal syscall is not itself proof that all processes
+terminated.
+
+## 15. Inspection and attachment
+
+`job.inspect` and `job.wait` are read-only. They never claim a spawn, control or
+retry. They return resident registry state, bounded history, runtime/durable
+observations and replay/degraded status.
+
+`job.attach` creates live delivery ownership for the current Host/bridge epoch.
+A later process may inspect durable truth but cannot pretend to own an old pipe,
+PTY master or process-group handle.
+
+Cross-process live descriptor adoption remains unsupported unless a separate
+supervisor/SCM_RIGHTS design is reviewed and qualified.
+
+## 16. Restart truth
+
+A completed durable job never spawns again for the same exact key/request. A
+durable accepted start without terminal remains unknown. The current source
+does not discover and re-adopt an orphaned process after Host restart.
+
+A late independently authenticated observation may resolve uncertainty, but it
+cannot retroactively authorize an automatic replacement process.
+
+## 17. Bounds and cleanup
+
+Configuration declares finite:
+
+```text
+max live jobs
+max input bytes
+max output chunk bytes
+max observations/job
+max observation bytes/job
+journal bytes/records
+inspect limit
+control operation history
+termination grace
+startup recovery time
+```
+
+Retention/rotation and cleanup are explicit. Exhaustion produces a typed
+resource/degraded condition; it is not semantic denial.
+
+## 18. Evidence and claim ceiling
+
+Known exact baseline `479e5fb...` has L1 source/host evidence, including pipe,
+PTY, control and no-redispatch fixtures. The audited requirements in Issues
+#14–#17 are not closed merely by that historical pass.
+
+Minimum exits:
+
+- Issues #14–#17 source portions: exact-head L1;
+- installed Root Linux placement/lifecycle: L2;
+- physical normal path: L4;
+- crash/ENOSPC/reboot/power-loss: L5.
+
+No source document or fixture promotes those external levels.
