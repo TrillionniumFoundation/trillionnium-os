@@ -35,10 +35,13 @@ service trillionnium-owner-open-bootstrap /system_ext/bin/trillionnium-owner-ope
     seclabel u:r:trillionnium_owner_open_bootstrap:s0
     capabilities SYS_ADMIN SYS_CHROOT KILL
 
+# Ingress runs as root only to satisfy the broker's same-UID and 0600-token
+# boundary. SELinux admits only the dedicated unprivileged app domain, and the
+# token is consumed here rather than exposed to the app process.
 service trillionnium-owner-open-ingress /system_ext/bin/trillionnium-owner-open-ingress
     class core
-    user system
-    group system
+    user root
+    group root system
     disabled
     seclabel u:r:trillionnium_owner_open_ingress:s0
 
