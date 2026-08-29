@@ -100,7 +100,7 @@
     ],
     "packaging/owner-open-adb/verify_arm64_adb.py": [
       "EM_AARCH64",
-      "physical_effect_observed"
+      "physical_device_effect"
     ]
   },
   "claims": {
