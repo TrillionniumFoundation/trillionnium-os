@@ -1,0 +1,171 @@
+name: one-shot owner-open R5 exact-head CI repair
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-ci-repair-one-shot.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair-test-commit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: dtolnay/rust-toolchain@1.93.0
+        with:
+          components: rustfmt
+      - name: Repair exact-head evidence and provider fixtures
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: Path, old: str, new: str, label: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected one match, observed {count}")
+              path.write_text(text.replace(old, new), encoding="utf-8")
+
+          gaps = Path("docs/status/owner-open-r5-gap-closure.json")
+          replacements = [
+              (
+                  '      "summary": "Bind actual UID/GID, namespace, cgroup, filesystem and writable overlay placement.",\n'
+                  '      "exit_evidence_level": "L2",\n'
+                  '      "acceptance": [',
+                  '      "summary": "Bind actual UID/GID, namespace, cgroup, filesystem and writable overlay placement.",\n'
+                  '      "exit_evidence_level": "L2",\n'
+                  '      "required_material": [\n'
+                  '        "authorized target Root Linux instance",\n'
+                  '        "service-manager unit and identity configuration",\n'
+                  '        "namespace, cgroup and mount observations",\n'
+                  '        "writable store and socket ownership evidence"\n'
+                  '      ],\n'
+                  '      "acceptance": [',
+                  "rootlinux required material",
+              ),
+              (
+                  '      "summary": "Build a clean Android owner-open product graph with init and SELinux admission.",\n'
+                  '      "exit_evidence_level": "L3",\n'
+                  '      "acceptance": [',
+                  '      "summary": "Build a clean Android owner-open product graph with init and SELinux admission.",\n'
+                  '      "exit_evidence_level": "L3",\n'
+                  '      "required_material": [\n'
+                  '        "clean pinned Android source checkout",\n'
+                  '        "authorized AOSP build toolchain and build capacity",\n'
+                  '        "target-files and image inventories",\n'
+                  '        "Soong, init and SELinux build evidence"\n'
+                  '      ],\n'
+                  '      "acceptance": [',
+                  "android graph required material",
+              ),
+              (
+                  '      "summary": "Select and physically execute the ordinary ADB topology with raw observations.",\n'
+                  '      "exit_evidence_level": "L4",\n'
+                  '      "acceptance": [',
+                  '      "summary": "Select and physically execute the ordinary ADB topology with raw observations.",\n'
+                  '      "exit_evidence_level": "L4",\n'
+                  '      "required_material": [\n'
+                  '        "authorized physical Android device and USB host",\n'
+                  '        "selected ARM64 adb client and server artifacts",\n'
+                  '        "ordinary adbd offline, unauthorized and reconnect states",\n'
+                  '        "raw visible-effect and no-redispatch observations"\n'
+                  '      ],\n'
+                  '      "acceptance": [',
+                  "physical adb required material",
+              ),
+              (
+                  '      "summary": "Qualify crash, disconnect, ENOSPC, USB loss, reboot and power-loss recovery.",\n'
+                  '      "exit_evidence_level": "L5",\n'
+                  '      "acceptance": [',
+                  '      "summary": "Qualify crash, disconnect, ENOSPC, USB loss, reboot and power-loss recovery.",\n'
+                  '      "exit_evidence_level": "L5",\n'
+                  '      "required_material": [\n'
+                  '        "authorized destructive test environment",\n'
+                  '        "controllable ENOSPC, corruption and power-loss fault injection",\n'
+                  '        "target service and physical-device access",\n'
+                  '        "independently retained recovery evidence"\n'
+                  '      ],\n'
+                  '      "acceptance": [',
+                  "fault matrix required material",
+              ),
+              (
+                  '      "summary": "Create a separately authorized signed public-release profile.",\n'
+                  '      "exit_evidence_level": "L6",\n'
+                  '      "acceptance": [',
+                  '      "summary": "Create a separately authorized signed public-release profile.",\n'
+                  '      "exit_evidence_level": "L6",\n'
+                  '      "required_authority": [\n'
+                  '        "independent security and release reviewers",\n'
+                  '        "authorized production signing-key custodian",\n'
+                  '        "AVB, OTA and rollback policy owner",\n'
+                  '        "explicit human public-release authorization"\n'
+                  '      ],\n'
+                  '      "acceptance": [',
+                  "release required authority",
+              ),
+          ]
+          for old, new, label in replacements:
+              replace_once(gaps, old, new, label)
+
+          evidence_test = Path("tools/tests/test_verify_owner_open_r5_gap_evidence.py")
+          replace_once(
+              evidence_test,
+              "import json\nfrom pathlib import Path",
+              "import json\nfrom pathlib import Path\nimport sys",
+              "dataclass dynamic-import sys import",
+          )
+          replace_once(
+              evidence_test,
+              "module = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)",
+              "module = importlib.util.module_from_spec(spec)\nsys.modules[spec.name] = module\nspec.loader.exec_module(module)",
+              "dataclass dynamic-import module registration",
+          )
+
+          duplex = Path("crates/trillionnium-owner-open-provider-jsonl/tests/duplex.rs")
+          replace_once(
+              duplex,
+              "  *'\\\"status\\\":\\\"invalid_request\\\"'*) ;;",
+              "  *'\"status\":\"invalid_request\"'*) ;;",
+              "unknown-tool strict response fixture",
+          )
+
+          Path(".github/workflows/owner-open-r5-ci-repair-one-shot.yml").unlink()
+          PY
+      - name: Verify repaired machine state
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 tools/verify-owner-open-r5.py --json >/tmp/owner-open-r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json >/tmp/owner-open-r5-gap-evidence.json
+          python3 -m unittest tools.tests.test_verify_owner_open_r5_gap_evidence -v
+      - name: Verify repaired provider behavior
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked -p trillionnium-owner-open-provider-jsonl --test duplex
+      - name: Commit repaired exact-head inputs
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add \
+            docs/status/owner-open-r5-gap-closure.json \
+            tools/tests/test_verify_owner_open_r5_gap_evidence.py \
+            crates/trillionnium-owner-open-provider-jsonl/tests/duplex.rs \
+            .github/workflows/owner-open-r5-ci-repair-one-shot.yml
+          git diff --cached --check
+          git commit -m "fix(r5): repair exact-head evidence and provider fixtures"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
