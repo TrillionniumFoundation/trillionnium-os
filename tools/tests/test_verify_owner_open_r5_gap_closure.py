@@ -119,11 +119,14 @@ class VerifyOwnerOpenR5GapClosureTest(unittest.TestCase):
         )
         external["status"] = "CLOSED"
         report = self.verify(gap=gap)
+        # This verifier owns the coarse register invariant. The dedicated
+        # gap-evidence verifier separately validates exact source-evidence
+        # structure for every CLOSED entry.
         self.assertTrue(
-            any("closed R5 gap has no exact source evidence" in value for value in report.errors)
+            any("closed R5 gap has no evidence" in value for value in report.errors)
         )
         self.assertTrue(
-            any("closed external R5 gap has no evidence" in value for value in report.errors)
+            any("external evidence lane cannot be closed" in value for value in report.errors)
         )
 
     def test_false_zero_gap_fails(self) -> None:
