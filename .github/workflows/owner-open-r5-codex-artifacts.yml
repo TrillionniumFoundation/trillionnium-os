@@ -1,0 +1,150 @@
+name: owner-open R5 official Codex artifacts
+
+on:
+  pull_request:
+    paths:
+      - "docs/contracts/owner-open-r5-codex-artifacts-v1.json"
+      - "docs/status/owner-open-r5-codex-artifacts-status.json"
+      - "tools/verify-owner-open-codex-artifacts.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts.py"
+      - ".github/workflows/owner-open-r5-codex-artifacts.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "docs/contracts/owner-open-r5-codex-artifacts-v1.json"
+      - "docs/status/owner-open-r5-codex-artifacts-status.json"
+      - "tools/verify-owner-open-codex-artifacts.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts.py"
+      - ".github/workflows/owner-open-r5-codex-artifacts.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-r5-codex-artifacts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-release-artifacts:
+    name: Official release bytes, ELF identity and local CLI probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      PYTHONWARNINGS: error::ResourceWarning
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Compile and verify the source contract
+        run: |
+          python3 -m json.tool \
+            docs/contracts/owner-open-r5-codex-artifacts-v1.json >/dev/null
+          python3 -m py_compile \
+            tools/verify-owner-open-codex-artifacts.py \
+            tools/tests/test_verify_owner_open_codex_artifacts.py
+          python3 tools/verify-owner-open-codex-artifacts.py --json \
+            | tee owner-open-r5-codex-artifact-source.json
+      - name: Run archive, ELF, release-metadata and bundle regressions
+        run: |
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_codex_artifacts \
+            -v 2>&1 | tee owner-open-r5-codex-artifact-tests.txt
+      - name: Download exact upstream release metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          release_api="$({ python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('docs/contracts/owner-open-r5-codex-artifacts-v1.json').read_text())
+          print(value['upstream']['release_api'])
+          PY
+          } )"
+          curl --proto '=https' --tlsv1.2 --fail --show-error --silent \
+            --location --retry 4 --retry-all-errors --connect-timeout 20 --max-time 120 \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            --output owner-open-r5-codex-release.json \
+            "$release_api"
+          release_id="$({ python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('owner-open-r5-codex-release.json').read_text())
+          release_id = value.get('id')
+          if not isinstance(release_id, int) or release_id <= 0:
+              raise SystemExit('release ID is missing')
+          print(release_id)
+          PY
+          } )"
+          for page in 1 2; do
+            curl --proto '=https' --tlsv1.2 --fail --show-error --silent \
+              --location --retry 4 --retry-all-errors --connect-timeout 20 --max-time 120 \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              --output "owner-open-r5-codex-release-assets-${page}.json" \
+              "https://api.github.com/repos/openai/codex/releases/${release_id}/assets?per_page=100&page=${page}"
+          done
+      - name: Download exact selected release assets
+        run: |
+          set -euo pipefail
+          mkdir -m 0700 owner-open-r5-codex-assets
+          python3 - <<'PY' > owner-open-r5-codex-selected-assets.tsv
+          import json
+          from pathlib import Path
+          value = json.loads(Path('docs/contracts/owner-open-r5-codex-artifacts-v1.json').read_text())
+          selected = [value['checksum_list']]
+          for archive in value['archives']:
+              selected.extend((archive, archive['sigstore']))
+          for item in selected:
+              print(f"{item['filename']}\t{item['url']}")
+          PY
+          while IFS=$'\t' read -r filename url; do
+            curl --proto '=https' --tlsv1.2 --fail --show-error --silent \
+              --location --retry 4 --retry-all-errors --connect-timeout 20 --max-time 1200 \
+              --output "owner-open-r5-codex-assets/${filename}" \
+              "$url"
+          done < owner-open-r5-codex-selected-assets.tsv
+      - name: Verify official bytes and probe the host-compatible CLI
+        run: |
+          python3 tools/verify-owner-open-codex-artifacts.py \
+            --asset-dir owner-open-r5-codex-assets \
+            --release-json owner-open-r5-codex-release.json \
+            --release-assets-json owner-open-r5-codex-release-assets-1.json \
+            --release-assets-json owner-open-r5-codex-release-assets-2.json \
+            --probe --json \
+            | tee owner-open-r5-codex-artifact-report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('owner-open-r5-codex-artifact-report.json').read_text())
+          facts = value.get('facts', {})
+          assert value.get('ok') is True, value
+          assert facts.get('artifact_bytes_verified') is True, facts
+          assert facts.get('host_cli_identity_probe_passed') is True, facts
+          assert facts.get('authenticated_codex_execution') is False, facts
+          assert facts.get('same_turn_mcp_qualification') is False, facts
+          assert facts.get('target_root_linux_installed') is False, facts
+          assert facts.get('cryptographic_sigstore_verification') is False, facts
+          assert facts.get('public_release') is False, facts
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-r5-official-codex-artifacts-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            owner-open-r5-codex-artifact-source.json
+            owner-open-r5-codex-artifact-tests.txt
+            owner-open-r5-codex-release.json
+            owner-open-r5-codex-release-assets-1.json
+            owner-open-r5-codex-release-assets-2.json
+            owner-open-r5-codex-selected-assets.tsv
+            owner-open-r5-codex-artifact-report.json
+            owner-open-r5-codex-assets/codex-package_SHA256SUMS
