@@ -1,6 +1,6 @@
 {
   "schema": "org.trillionnium.owner-open.codex-artifacts.v1",
-  "revision": "2026-08-29-r5-official-codex-0.150.1",
+  "revision": "2026-08-29-r5-official-codex-0.150.1-package-bindings-v2",
   "upstream": {
     "repository": "openai/codex",
     "release_tag": "rust-v0.150.1",
@@ -49,6 +49,24 @@
         "sha256": "fbbe63a9c8b98c85e75f63a71d66568d20b3e79b1c914c00217715cb41b2d044"
       },
       "execute_on_github_host": true
+    }
+  ],
+  "checksum_bindings": [
+    {
+      "role": "target_root_linux_codex",
+      "archive_filename": "codex-aarch64-unknown-linux-musl.tar.gz",
+      "checksum_filename": "codex-package-aarch64-unknown-linux-musl.tar.gz",
+      "url": "https://github.com/openai/codex/releases/download/rust-v0.150.1/codex-package-aarch64-unknown-linux-musl.tar.gz",
+      "bytes": 117217323,
+      "sha256": "1ecac3f87823efb98153233b076ea3d6e34a7a8cebe43c5285dc5f79e1514639"
+    },
+    {
+      "role": "qualification_host_codex",
+      "archive_filename": "codex-x86_64-unknown-linux-musl.tar.gz",
+      "checksum_filename": "codex-package-x86_64-unknown-linux-musl.tar.gz",
+      "url": "https://github.com/openai/codex/releases/download/rust-v0.150.1/codex-package-x86_64-unknown-linux-musl.tar.gz",
+      "bytes": 126175380,
+      "sha256": "00aba704f029f6dc0d948be407a756e0c97cc840132fd691353b2c6b0a505b17"
     }
   ],
   "verification": {
