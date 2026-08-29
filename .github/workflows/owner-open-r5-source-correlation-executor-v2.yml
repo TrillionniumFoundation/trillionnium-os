@@ -107,6 +107,14 @@ jobs:
                   f"source patch helper drifted: observed {script.count(old_helper)}"
               )
           script = script.replace(old_helper, new_helper)
+
+          raw_prefix = "textwrap.dedent(r'''" + "\\" + "\n"
+          clean_prefix = "textwrap.dedent(r'''" + "\n"
+          raw_literal_count = script.count(raw_prefix)
+          if raw_literal_count == 0:
+              raise SystemExit("source patch has no raw literal prefixes to normalize")
+          script = script.replace(raw_prefix, clean_prefix)
+
           exec(compile(script, str(workflow_path) + "#patch", "exec"), {})
           PY
       - name: Format and test exact Host and broker closure
