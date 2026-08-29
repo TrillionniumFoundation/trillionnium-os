@@ -6,7 +6,9 @@ on:
       - "docs/contracts/owner-open-r5-codex-artifacts-v1.json"
       - "docs/status/owner-open-r5-codex-artifacts-status.json"
       - "tools/verify-owner-open-codex-artifacts.py"
+      - "tools/verify-owner-open-codex-artifacts-v2.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   push:
     branches:
@@ -16,7 +18,9 @@ on:
       - "docs/contracts/owner-open-r5-codex-artifacts-v1.json"
       - "docs/status/owner-open-r5-codex-artifacts-status.json"
       - "tools/verify-owner-open-codex-artifacts.py"
+      - "tools/verify-owner-open-codex-artifacts-v2.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   workflow_dispatch:
 
@@ -29,7 +33,7 @@ concurrency:
 
 jobs:
   official-release-artifacts:
-    name: Official release bytes, ELF identity and local CLI probe
+    name: Official release bytes, package checksums, ELF identity and local CLI probe
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
@@ -39,19 +43,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: Compile and verify the source contract
+      - name: Compile and verify the dual-binding source contract
         run: |
+          set -euo pipefail
           python3 -m json.tool \
             docs/contracts/owner-open-r5-codex-artifacts-v1.json >/dev/null
           python3 -m py_compile \
             tools/verify-owner-open-codex-artifacts.py \
-            tools/tests/test_verify_owner_open_codex_artifacts.py
-          python3 tools/verify-owner-open-codex-artifacts.py --json \
+            tools/verify-owner-open-codex-artifacts-v2.py \
+            tools/tests/test_verify_owner_open_codex_artifacts.py \
+            tools/tests/test_verify_owner_open_codex_artifacts_v2.py
+          python3 tools/verify-owner-open-codex-artifacts-v2.py --json \
             | tee owner-open-r5-codex-artifact-source.json
-      - name: Run archive, ELF, release-metadata and bundle regressions
+      - name: Run archive, package-checksum, ELF, release-metadata and bundle regressions
         run: |
+          set -euo pipefail
           python3 -m unittest \
             tools.tests.test_verify_owner_open_codex_artifacts \
+            tools.tests.test_verify_owner_open_codex_artifacts_v2 \
             -v 2>&1 | tee owner-open-r5-codex-artifact-tests.txt
       - name: Download exact upstream release metadata
         env:
@@ -91,7 +100,7 @@ jobs:
               --output "owner-open-r5-codex-release-assets-${page}.json" \
               "https://api.github.com/repos/openai/codex/releases/${release_id}/assets?per_page=100&page=${page}"
           done
-      - name: Download exact selected release assets
+      - name: Download exact execution archives, Sigstore bundles and checksum list
         run: |
           set -euo pipefail
           mkdir -m 0700 owner-open-r5-codex-assets
@@ -126,9 +135,10 @@ jobs:
           print(text, end='' if text.endswith('\n') else '\n')
           print('END_CODEX_PACKAGE_SHA256SUMS')
           PY
-      - name: Verify official bytes and probe the host-compatible CLI
+      - name: Verify official bytes, package metadata and host-compatible CLI identity
         run: |
-          python3 tools/verify-owner-open-codex-artifacts.py \
+          set -euo pipefail
+          python3 tools/verify-owner-open-codex-artifacts-v2.py \
             --asset-dir owner-open-r5-codex-assets \
             --release-json owner-open-r5-codex-release.json \
             --release-assets-json owner-open-r5-codex-release-assets-1.json \
@@ -142,6 +152,9 @@ jobs:
           facts = value.get('facts', {})
           assert value.get('ok') is True, value
           assert facts.get('artifact_bytes_verified') is True, facts
+          assert facts.get('package_checksum_binding_contract_valid') is True, facts
+          assert facts.get('package_checksum_list_cross_check_passed') is True, facts
+          assert facts.get('package_release_metadata_cross_check_passed') is True, facts
           assert facts.get('host_cli_identity_probe_passed') is True, facts
           assert facts.get('authenticated_codex_execution') is False, facts
           assert facts.get('same_turn_mcp_qualification') is False, facts
