@@ -238,7 +238,7 @@ fn capacity_rejection_happens_before_spawn_or_visible_side_effect() {
     manager
         .start(start_request(
             live.clone(),
-            request('g', "pipe"),
+            request('a', "pipe"),
             "start-capacity-live",
             "trap 'exit 0' TERM; while :; do sleep 1; done".to_string(),
             None,
@@ -249,7 +249,7 @@ fn capacity_rejection_happens_before_spawn_or_visible_side_effect() {
     let error = manager
         .start(start_request(
             key("job-capacity-rejected"),
-            request('h', "pipe"),
+            request('b', "pipe"),
             "start-capacity-rejected",
             format!("touch '{}'", marker.display()),
             None,
@@ -273,7 +273,7 @@ fn output_drains_are_live_before_large_initial_stdin_is_written() {
     let job = key("job-reader-before-writer");
     let mut start = start_request(
         job.clone(),
-        request('i', "pipe"),
+        request('c', "pipe"),
         "start-reader-before-writer",
         concat!(
             "dd if=/dev/zero bs=65536 count=16 2>/dev/null; ",
@@ -304,7 +304,7 @@ fn retained_observation_prefix_loss_is_reported_as_an_exact_gap() {
     manager
         .start(start_request(
             job.clone(),
-            request('j', "pipe"),
+            request('d', "pipe"),
             "start-retention-gap",
             "printf 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'".to_string(),
             None,
@@ -351,7 +351,7 @@ fn leader_exit_does_not_leave_a_background_process_group_member() {
     manager
         .start(start_request(
             job.clone(),
-            request('k', "pipe"),
+            request('e', "pipe"),
             "start-descendant-cleanup",
             "sleep 30 & printf '%s' \"$!\"; exit 0".to_string(),
             None,
