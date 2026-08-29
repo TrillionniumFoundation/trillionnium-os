@@ -1,0 +1,61 @@
+name: owner-open R5 Sigstore public-bundle shape diagnostic
+
+on:
+  push:
+    branches:
+      - "codex/owner-open-r5-tool-loop-20260827"
+    paths:
+      - ".github/workflows/owner-open-r5-sigstore-shape-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download exact public Sigstore bundles
+        run: |
+          set -euo pipefail
+          mkdir -m 0700 bundles
+          for name in \
+            codex-aarch64-unknown-linux-musl.sigstore \
+            codex-x86_64-unknown-linux-musl.sigstore
+          do
+            curl --proto '=https' --tlsv1.2 --fail --show-error --silent \
+              --location --retry 4 --retry-all-errors --connect-timeout 20 --max-time 120 \
+              --output "bundles/$name" \
+              "https://github.com/openai/codex/releases/download/rust-v0.150.1/$name"
+          done
+      - name: Record strict public JSON shape without private material
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' | tee sigstore-shape.json
+          import json
+          from pathlib import Path
+
+          result = {}
+          for path in sorted(Path('bundles').glob('*.sigstore')):
+              value = json.loads(path.read_text(encoding='utf-8'))
+              material = value.get('verificationMaterial')
+              signature = value.get('messageSignature')
+              envelope = value.get('dsseEnvelope')
+              result[path.name] = {
+                  'top_level_keys': sorted(value) if isinstance(value, dict) else None,
+                  'mediaType': value.get('mediaType') if isinstance(value, dict) else None,
+                  'media_type': value.get('media_type') if isinstance(value, dict) else None,
+                  'verificationMaterial_keys': sorted(material) if isinstance(material, dict) else None,
+                  'messageSignature_keys': sorted(signature) if isinstance(signature, dict) else None,
+                  'dsseEnvelope_keys': sorted(envelope) if isinstance(envelope, dict) else None,
+              }
+          print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-r5-sigstore-public-shape-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 3
+          path: sigstore-shape.json
