@@ -1,0 +1,73 @@
+{
+  "schema": "org.trillionnium.owner-open.codex-artifacts.v1",
+  "revision": "2026-08-29-r5-official-codex-0.150.1",
+  "upstream": {
+    "repository": "openai/codex",
+    "release_tag": "rust-v0.150.1",
+    "version": "0.150.1",
+    "release_api": "https://api.github.com/repos/openai/codex/releases/tags/rust-v0.150.1",
+    "release_page": "https://github.com/openai/codex/releases/tag/rust-v0.150.1",
+    "published_at": "2026-08-27T01:55:47Z"
+  },
+  "checksum_list": {
+    "filename": "codex-package_SHA256SUMS",
+    "url": "https://github.com/openai/codex/releases/download/rust-v0.150.1/codex-package_SHA256SUMS",
+    "bytes": 1392,
+    "sha256": "5580070dd9e1c06a603421111f32aa107fd77de2ab306986c11a26166b78e6fa"
+  },
+  "archives": [
+    {
+      "role": "target_root_linux_codex",
+      "architecture": "aarch64-unknown-linux-musl",
+      "elf_machine": 183,
+      "filename": "codex-aarch64-unknown-linux-musl.tar.gz",
+      "archive_member": "codex-aarch64-unknown-linux-musl",
+      "url": "https://github.com/openai/codex/releases/download/rust-v0.150.1/codex-aarch64-unknown-linux-musl.tar.gz",
+      "bytes": 95376924,
+      "sha256": "5bb1f75e1a1588845b4a31f2c98fb2b394be5c2a8d90a24a8ab0ebbae1169264",
+      "sigstore": {
+        "filename": "codex-aarch64-unknown-linux-musl.sigstore",
+        "url": "https://github.com/openai/codex/releases/download/rust-v0.150.1/codex-aarch64-unknown-linux-musl.sigstore",
+        "bytes": 8585,
+        "sha256": "c84bbe74bd4fd61905dbe4bf5b89c6a29ceb63eaa76cc01ef4e0bb45d4c043d8"
+      },
+      "execute_on_github_host": false
+    },
+    {
+      "role": "qualification_host_codex",
+      "architecture": "x86_64-unknown-linux-musl",
+      "elf_machine": 62,
+      "filename": "codex-x86_64-unknown-linux-musl.tar.gz",
+      "archive_member": "codex-x86_64-unknown-linux-musl",
+      "url": "https://github.com/openai/codex/releases/download/rust-v0.150.1/codex-x86_64-unknown-linux-musl.tar.gz",
+      "bytes": 103098758,
+      "sha256": "ab308870bc7fc048c23dc49d03f6b8af9ce7fc99b9da882d6688be7a90155c7a",
+      "sigstore": {
+        "filename": "codex-x86_64-unknown-linux-musl.sigstore",
+        "url": "https://github.com/openai/codex/releases/download/rust-v0.150.1/codex-x86_64-unknown-linux-musl.sigstore",
+        "bytes": 8585,
+        "sha256": "fbbe63a9c8b98c85e75f63a71d66568d20b3e79b1c914c00217715cb41b2d044"
+      },
+      "execute_on_github_host": true
+    }
+  ],
+  "verification": {
+    "require_exact_release_tag": true,
+    "require_github_asset_digest_match": true,
+    "require_checksum_list_cross_check": true,
+    "require_safe_single_file_archive": true,
+    "require_exact_elf_machine": true,
+    "require_sigstore_bundle_digest_binding": true,
+    "cryptographic_sigstore_verification_required_for_release": true
+  },
+  "claims": {
+    "official_release_identity_bound": true,
+    "artifact_bytes_present_in_repository": false,
+    "target_root_linux_installed": false,
+    "authenticated_codex_execution": false,
+    "same_turn_mcp_qualification": false,
+    "cryptographic_sigstore_verification": false,
+    "public_release": false
+  },
+  "claim_ceiling": "OFFICIAL_RELEASE_ASSET_IDENTITY_AND_CHECKSUM_CONTRACT_ONLY"
+}
