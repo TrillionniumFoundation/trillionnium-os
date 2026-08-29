@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -60,6 +61,7 @@ class BrokerTest(unittest.TestCase):
         self.socket=self.root/"broker.sock"
         self.descriptor=self.root/"broker.json"
         self.token=self.root/"broker.token"
+        self.audit=Path(f"{self.descriptor}.audit.jsonl")
         self.upstream.write_text(FAKE_UPSTREAM)
         self.upstream.chmod(0o700)
         env=os.environ.copy(); env["UPSTREAM_RECORD"]=str(self.record)
@@ -73,6 +75,7 @@ class BrokerTest(unittest.TestCase):
         if not self.descriptor.exists():
             out,err=self.process.communicate(timeout=2)
             self.fail(f"broker did not start: {out!r} {err!r}")
+        self.descriptor_value=json.loads(self.descriptor.read_text())
         self.token_value=self.token.read_text().strip()
 
     def tearDown(self) -> None:
@@ -87,10 +90,12 @@ class BrokerTest(unittest.TestCase):
 
     def connect(self, client_id: str, token: str | None = None) -> socket.socket:
         sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM); sock.connect(str(self.socket))
-        send(sock,{"kind":"broker.hello","client_id":client_id,"token":token or self.token_value})
+        send(sock,{"kind":"broker.hello","broker_epoch":self.descriptor_value["broker_epoch"],"client_id":client_id,"token":token or self.token_value})
         ack=line(sock)
         self.assertEqual(ack["kind"],"broker.hello.ack")
         self.assertEqual(ack["client_id"],client_id)
+        self.assertEqual(ack["broker_epoch"],self.descriptor_value["broker_epoch"])
+        self.assertEqual(ack["descriptor_sha256"],self.descriptor_value["descriptor_sha256"])
         return sock
 
     def request(self, client: socket.socket, request_id: str, frame: dict, expected: list[str]) -> None:
@@ -99,9 +104,9 @@ class BrokerTest(unittest.TestCase):
 
     def collect_until(self, client: socket.socket, request_id: str) -> list[dict]:
         values=[]
-        for _ in range(20):
+        for _ in range(30):
             value=line(client); values.append(value)
-            if value.get("kind")=="result" and value.get("request_id")==request_id: return values
+            if value.get("kind") in {"result","error"} and value.get("request_id")==request_id: return values
         self.fail(f"no result for {request_id}: {values}")
 
     def test_two_clients_share_one_upstream_with_owner_results_and_broadcast_observations(self) -> None:
@@ -119,9 +124,6 @@ class BrokerTest(unittest.TestCase):
             first.close(); second.close()
         frames=[json.loads(x) for x in self.record.read_text().splitlines()]
         self.assertEqual(frames[0]["kind"],"hello")
-        # Independent client-reader threads race before entering the single FIFO.
-        # The contract promises one dispatch per request and broker-assigned
-        # contiguous upstream sequence numbers, not cross-client socket order.
         self.assertCountEqual([f["kind"] for f in frames[1:]],["job.start","job.inspect"])
         self.assertEqual([f["seq"] for f in frames],[0,1,2])
 
@@ -147,6 +149,56 @@ class BrokerTest(unittest.TestCase):
         self.assertTrue(any(v.get("frame",{}).get("kind")=="job.start.result" for v in observations))
         frames=[json.loads(x) for x in self.record.read_text().splitlines()]
         self.assertEqual(sum(f["kind"]=="job.start" for f in frames),1)
+
+    def test_exact_duplicate_replays_terminal_without_second_upstream_write(self) -> None:
+        client=self.connect("duplicate-client")
+        frame={"kind":"job.inspect","seq":4,"direction":"client_to_host","payload":{"job_id":"job-duplicate"}}
+        try:
+            self.request(client,"req-duplicate",frame,["job.inspect.result"])
+            first=self.collect_until(client,"req-duplicate")
+            self.assertTrue(any(v.get("kind")=="result" for v in first))
+            self.request(client,"req-duplicate",frame,["job.inspect.result"])
+            second=self.collect_until(client,"req-duplicate")
+            self.assertTrue(any(v.get("kind")=="result" for v in second))
+        finally:
+            client.close()
+        frames=[json.loads(x) for x in self.record.read_text().splitlines()]
+        self.assertEqual(sum(f["kind"]=="job.inspect" for f in frames),1)
+
+    def test_conflicting_duplicate_fails_before_second_upstream_write(self) -> None:
+        client=self.connect("conflict-client")
+        first={"kind":"job.inspect","seq":0,"direction":"client_to_host","payload":{"job_id":"job-a"}}
+        second={"kind":"job.inspect","seq":1,"direction":"client_to_host","payload":{"job_id":"job-b"}}
+        try:
+            self.request(client,"same-request",first,["job.inspect.result"])
+            self.collect_until(client,"same-request")
+            self.request(client,"same-request",second,["job.inspect.result"])
+            values=self.collect_until(client,"same-request")
+            error=next(v for v in values if v.get("kind")=="error")
+            self.assertEqual(error["code"],"request_id_conflict")
+        finally:
+            client.close()
+        frames=[json.loads(x) for x in self.record.read_text().splitlines()]
+        self.assertEqual(sum(f["kind"]=="job.inspect" for f in frames),1)
+
+    def test_audit_records_accepted_forwarded_terminal_hash_chain(self) -> None:
+        client=self.connect("audit-client")
+        try:
+            self.request(client,"audit-request",{"kind":"job.inspect","seq":0,"direction":"client_to_host","payload":{"job_id":"job-audit"}},["job.inspect.result"])
+            self.collect_until(client,"audit-request")
+        finally:
+            client.close()
+        records=[json.loads(x) for x in self.audit.read_text().splitlines()]
+        selected=[r for r in records if r["request_id"]=="audit-request"]
+        self.assertEqual([r["stage"] for r in selected],["broker.accepted","broker.forwarded","broker.terminal"])
+        previous="0"*64
+        for index,record in enumerate(records):
+            self.assertEqual(record["seq"],index)
+            self.assertEqual(record["previous_record_sha256"],previous)
+            supplied=record.pop("record_sha256")
+            calculated=hashlib.sha256(json.dumps(record,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+            self.assertEqual(supplied,calculated)
+            previous=supplied
 
     def test_stdio_client_preserves_host_surface(self) -> None:
         child=subprocess.Popen([
