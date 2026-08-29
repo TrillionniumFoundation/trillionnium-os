@@ -1,5 +1,5 @@
 name: one-shot owner-open R5 permanent evidence-program bootstrap
-# retry: permanent-evidence-program-v5
+# retry: permanent-evidence-program-v6
 
 on:
   push:
@@ -83,6 +83,20 @@ jobs:
             tools.tests.test_verify_owner_open_r5_gap_closure \
             tools.tests.test_generate_owner_open_r5_resume_packet \
             -v
+          python3 - <<'PY'
+          from pathlib import Path
+
+          for name in (
+              "docs/OWNER_OPEN_R5_START_HERE.md",
+              "docs/README.md",
+              "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md",
+          ):
+              path = Path(name)
+              path.write_text(
+                  path.read_text(encoding="utf-8").rstrip("\n") + "\n",
+                  encoding="utf-8",
+              )
+          PY
           git diff --check
       - name: Retire bootstrap payload and patcher
         run: |
