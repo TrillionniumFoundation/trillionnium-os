@@ -59,19 +59,11 @@ jobs:
           python3 - <<'PY'
           import json
           from pathlib import Path
+          import re
 
           verifier = Path("tools/verify-owner-open-r5.py")
           text = verifier.read_text(encoding="utf-8")
-          old = '''        if state == "CLOSED":
-                      closed.add(identifier)
-                      evidence = item.get("evidence")
-                      report.check(
-                          isinstance(evidence, list) and bool(evidence),
-                          f"closed R5 gap has no evidence: {identifier}",
-                      )
-          '''
-          old = "\n".join(line[10:] if line.startswith("          ") else line for line in old.splitlines()) + "\n"
-          new = '''        if state == "CLOSED":
+          replacement = '''        if state == "CLOSED":
                       closed.add(identifier)
                       if level == "L1":
                           report.check(
@@ -85,20 +77,32 @@ jobs:
                               f"closed R5 gap has no evidence: {identifier}",
                           )
           '''
-          new = "\n".join(line[10:] if line.startswith("          ") else line for line in new.splitlines()) + "\n"
-          if new not in text:
-              if text.count(old) != 1:
+          replacement = "\n".join(
+              line[10:] if line.startswith("          ") else line
+              for line in replacement.splitlines()
+          ) + "\n"
+          if replacement not in text:
+              pattern = re.compile(
+                  r'(?m)^        if state == "CLOSED":\n'
+                  r'            closed\.add\(identifier\)\n'
+                  r'            evidence = item\.get\("evidence"\)\n'
+                  r'            report\.check\(\n'
+                  r'                isinstance\(evidence, list\) and bool\(evidence\),\n'
+                  r'                f"closed R5 gap has no evidence: \{identifier\}",\n'
+                  r'            \)\n'
+              )
+              text, count = pattern.subn(replacement, text, count=1)
+              if count != 1:
                   raise SystemExit(
-                      f"closed-gap verifier anchor drifted: observed {text.count(old)}"
+                      f"closed-gap verifier structural anchor drifted: observed {count}"
                   )
-              verifier.write_text(text.replace(old, new), encoding="utf-8")
+              verifier.write_text(text, encoding="utf-8")
 
           test = Path("tools/tests/test_verify_owner_open_r5_gap_closure.py")
           value = test.read_text(encoding="utf-8")
           marker = "    def test_l1_source_closed_gap_accepts_source_evidence(self) -> None:\n"
           if marker not in value:
-              anchor = '''    def test_external_lane_cannot_close_without_real_evidence(self) -> None:
-          '''
+              anchor = "    def test_external_lane_cannot_close_without_real_evidence(self) -> None:\n"
               addition = '''    def test_l1_source_closed_gap_accepts_source_evidence(self) -> None:
                       gap = copy.deepcopy(self.gap)
                       gap["gaps"][0]["status"] = "CLOSED"
