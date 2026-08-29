@@ -29,104 +29,91 @@ jobs:
       - name: Repair exact-head evidence and provider fixtures
         run: |
           python3 - <<'PY'
+          import json
           from pathlib import Path
 
-          def replace_once(path: Path, old: str, new: str, label: str) -> None:
+          def ensure_once(path: Path, old: str, new: str, label: str) -> None:
               text = path.read_text(encoding="utf-8")
+              if new in text:
+                  return
               count = text.count(old)
               if count != 1:
-                  raise SystemExit(f"{label}: expected one match, observed {count}")
+                  raise SystemExit(f"{label}: expected one old match, observed {count}")
               path.write_text(text.replace(old, new), encoding="utf-8")
 
-          gaps = Path("docs/status/owner-open-r5-gap-closure.json")
-          replacements = [
-              (
-                  '      "summary": "Bind actual UID/GID, namespace, cgroup, filesystem and writable overlay placement.",\n'
-                  '      "exit_evidence_level": "L2",\n'
-                  '      "acceptance": [',
-                  '      "summary": "Bind actual UID/GID, namespace, cgroup, filesystem and writable overlay placement.",\n'
-                  '      "exit_evidence_level": "L2",\n'
-                  '      "required_material": [\n'
-                  '        "authorized target Root Linux instance",\n'
-                  '        "service-manager unit and identity configuration",\n'
-                  '        "namespace, cgroup and mount observations",\n'
-                  '        "writable store and socket ownership evidence"\n'
-                  '      ],\n'
-                  '      "acceptance": [',
-                  "rootlinux required material",
+          gap_path = Path("docs/status/owner-open-r5-gap-closure.json")
+          gaps = json.loads(gap_path.read_text(encoding="utf-8"))
+          required = {
+              "R5-GAP-ROOTLINUX-PLACEMENT-001": (
+                  "required_material",
+                  [
+                      "authorized target Root Linux instance",
+                      "service-manager unit and identity configuration",
+                      "namespace, cgroup and mount observations",
+                      "writable store and socket ownership evidence",
+                  ],
               ),
-              (
-                  '      "summary": "Build a clean Android owner-open product graph with init and SELinux admission.",\n'
-                  '      "exit_evidence_level": "L3",\n'
-                  '      "acceptance": [',
-                  '      "summary": "Build a clean Android owner-open product graph with init and SELinux admission.",\n'
-                  '      "exit_evidence_level": "L3",\n'
-                  '      "required_material": [\n'
-                  '        "clean pinned Android source checkout",\n'
-                  '        "authorized AOSP build toolchain and build capacity",\n'
-                  '        "target-files and image inventories",\n'
-                  '        "Soong, init and SELinux build evidence"\n'
-                  '      ],\n'
-                  '      "acceptance": [',
-                  "android graph required material",
+              "R5-GAP-ANDROID-GRAPH-001": (
+                  "required_material",
+                  [
+                      "clean pinned Android source checkout",
+                      "authorized AOSP build toolchain and build capacity",
+                      "target-files and image inventories",
+                      "Soong, init and SELinux build evidence",
+                  ],
               ),
-              (
-                  '      "summary": "Select and physically execute the ordinary ADB topology with raw observations.",\n'
-                  '      "exit_evidence_level": "L4",\n'
-                  '      "acceptance": [',
-                  '      "summary": "Select and physically execute the ordinary ADB topology with raw observations.",\n'
-                  '      "exit_evidence_level": "L4",\n'
-                  '      "required_material": [\n'
-                  '        "authorized physical Android device and USB host",\n'
-                  '        "selected ARM64 adb client and server artifacts",\n'
-                  '        "ordinary adbd offline, unauthorized and reconnect states",\n'
-                  '        "raw visible-effect and no-redispatch observations"\n'
-                  '      ],\n'
-                  '      "acceptance": [',
-                  "physical adb required material",
+              "R5-GAP-PHYSICAL-ADB-001": (
+                  "required_material",
+                  [
+                      "authorized physical Android device and USB host",
+                      "selected ARM64 adb client and server artifacts",
+                      "ordinary adbd offline, unauthorized and reconnect states",
+                      "raw visible-effect and no-redispatch observations",
+                  ],
               ),
-              (
-                  '      "summary": "Qualify crash, disconnect, ENOSPC, USB loss, reboot and power-loss recovery.",\n'
-                  '      "exit_evidence_level": "L5",\n'
-                  '      "acceptance": [',
-                  '      "summary": "Qualify crash, disconnect, ENOSPC, USB loss, reboot and power-loss recovery.",\n'
-                  '      "exit_evidence_level": "L5",\n'
-                  '      "required_material": [\n'
-                  '        "authorized destructive test environment",\n'
-                  '        "controllable ENOSPC, corruption and power-loss fault injection",\n'
-                  '        "target service and physical-device access",\n'
-                  '        "independently retained recovery evidence"\n'
-                  '      ],\n'
-                  '      "acceptance": [',
-                  "fault matrix required material",
+              "R5-GAP-FAULT-MATRIX-001": (
+                  "required_material",
+                  [
+                      "authorized destructive test environment",
+                      "controllable ENOSPC, corruption and power-loss fault injection",
+                      "target service and physical-device access",
+                      "independently retained recovery evidence",
+                  ],
               ),
-              (
-                  '      "summary": "Create a separately authorized signed public-release profile.",\n'
-                  '      "exit_evidence_level": "L6",\n'
-                  '      "acceptance": [',
-                  '      "summary": "Create a separately authorized signed public-release profile.",\n'
-                  '      "exit_evidence_level": "L6",\n'
-                  '      "required_authority": [\n'
-                  '        "independent security and release reviewers",\n'
-                  '        "authorized production signing-key custodian",\n'
-                  '        "AVB, OTA and rollback policy owner",\n'
-                  '        "explicit human public-release authorization"\n'
-                  '      ],\n'
-                  '      "acceptance": [',
-                  "release required authority",
+              "R5-GAP-RELEASE-001": (
+                  "required_authority",
+                  [
+                      "independent security and release reviewers",
+                      "authorized production signing-key custodian",
+                      "AVB, OTA and rollback policy owner",
+                      "explicit human public-release authorization",
+                  ],
               ),
-          ]
-          for old, new, label in replacements:
-              replace_once(gaps, old, new, label)
+          }
+          observed = set()
+          for gap in gaps.get("gaps", []):
+              gap_id = gap.get("id")
+              if gap_id not in required:
+                  continue
+              field, values = required[gap_id]
+              gap[field] = values
+              observed.add(gap_id)
+          missing = sorted(set(required) - observed)
+          if missing:
+              raise SystemExit(f"required external-hold gaps missing: {missing}")
+          gap_path.write_text(
+              json.dumps(gaps, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
 
           evidence_test = Path("tools/tests/test_verify_owner_open_r5_gap_evidence.py")
-          replace_once(
+          ensure_once(
               evidence_test,
               "import json\nfrom pathlib import Path",
               "import json\nfrom pathlib import Path\nimport sys",
               "dataclass dynamic-import sys import",
           )
-          replace_once(
+          ensure_once(
               evidence_test,
               "module = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)",
               "module = importlib.util.module_from_spec(spec)\nsys.modules[spec.name] = module\nspec.loader.exec_module(module)",
@@ -134,12 +121,18 @@ jobs:
           )
 
           duplex = Path("crates/trillionnium-owner-open-provider-jsonl/tests/duplex.rs")
-          replace_once(
-              duplex,
-              "  *'\\\"status\\\":\\\"invalid_request\\\"'*) ;;",
-              "  *'\"status\":\"invalid_request\"'*) ;;",
-              "unknown-tool strict response fixture",
-          )
+          text = duplex.read_text(encoding="utf-8")
+          old_token = r'\"status\":\"invalid_request\"'
+          new_token = '"status":"invalid_request"'
+          if old_token in text:
+              count = text.count(old_token)
+              if count != 1:
+                  raise SystemExit(
+                      f"unknown-tool response token: expected one match, observed {count}"
+                  )
+              duplex.write_text(text.replace(old_token, new_token), encoding="utf-8")
+          elif new_token not in text:
+              raise SystemExit("unknown-tool response token is absent")
 
           Path(".github/workflows/owner-open-r5-ci-repair-one-shot.yml").unlink()
           PY
@@ -149,7 +142,10 @@ jobs:
           python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
           python3 tools/verify-owner-open-r5.py --json >/tmp/owner-open-r5.json
           python3 tools/verify-owner-open-r5-gap-evidence.py --json >/tmp/owner-open-r5-gap-evidence.json
-          python3 -m unittest tools.tests.test_verify_owner_open_r5_gap_evidence -v
+          python3 -m unittest discover \
+            -s tools/tests \
+            -p 'test_verify_owner_open_r5_gap_evidence.py' \
+            -v
       - name: Verify repaired provider behavior
         run: |
           set -euo pipefail
