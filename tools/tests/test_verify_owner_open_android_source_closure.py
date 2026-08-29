@@ -8,9 +8,9 @@ import sys
 import tempfile
 import unittest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "verify-owner-open-android-source-closure.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "verify-owner-open-android-source-closure-v2.py"
 spec = importlib.util.spec_from_file_location(
-    "verify_owner_open_android_source_closure", SCRIPT
+    "verify_owner_open_android_source_closure_v2", SCRIPT
 )
 assert spec is not None and spec.loader is not None
 module = importlib.util.module_from_spec(spec)
