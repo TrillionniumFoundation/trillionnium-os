@@ -1,0 +1,119 @@
+{
+  "schema": "org.trillionnium.owner-open.adb-topology.v1",
+  "revision": "2026-08-29-r5-batch-e-topology",
+  "topology_id": "owner-host-usb-device-reverse-rootlinux-relay-v1",
+  "selection_status": "SOURCE_SELECTED",
+  "mode": "device_loopback_reverse_to_owner_host_adb_server",
+  "rootlinux_client": {
+    "adb_path": "/usr/bin/adb",
+    "artifact_state": "UNBOUND_ARM64_ADB_ARTIFACT",
+    "required_architecture": "aarch64",
+    "adb_server_socket": "tcp:127.0.0.1:15038",
+    "android_serial_environment": "UNSET",
+    "exact_argv_passthrough": true,
+    "serial_injected": false,
+    "host_injected": false,
+    "port_injected": false,
+    "privilege_injected": false,
+    "automatic_redispatch": false
+  },
+  "device_relay": {
+    "entry": "tools/owner-open/adb_smart_socket_relay_release.py",
+    "listen_host": "127.0.0.1",
+    "listen_port": 15038,
+    "upstream_host": "127.0.0.1",
+    "upstream_port": 15037,
+    "byte_transparent": true,
+    "adb_protocol_parsed": false,
+    "payload_logged": false,
+    "automatic_redispatch": false
+  },
+  "owner_host_bootstrap": {
+    "entry": "tools/owner-open/prepare-adb-reverse-v1.sh",
+    "mapping_direction": "device_to_owner_host",
+    "mapping_action": "adb_reverse",
+    "device_endpoint": "tcp:15037",
+    "owner_host_endpoint": "tcp:5037",
+    "exact_serial_required": true,
+    "host_server_listener_policy": "LOOPBACK_OR_EXPLICIT_OWNER_ACKNOWLEDGEMENT",
+    "credential_custody": "OWNER_HOST_PRIVATE_ADB_KEY",
+    "usb_transport_owner": "OWNER_HOST_ADB_SERVER",
+    "automatic_mapping_retry": false
+  },
+  "qualification": {
+    "exact_argv_runner": "tools/owner-open/qualify_owner_open_adb_release.py",
+    "required_cases": [
+      "zero_targets",
+      "one_target",
+      "multiple_targets",
+      "authorized",
+      "unauthorized",
+      "offline",
+      "unknown_subcommand",
+      "shell_success",
+      "shell_failure",
+      "binary_push_pull",
+      "install_update",
+      "server_restart",
+      "usb_disconnect",
+      "reboot_recovery"
+    ],
+    "same_installed_codex_turn_required": true,
+    "uncertain_acceptance_requires_unknown_not_retry": true
+  },
+  "required_sources": [
+    {
+      "role": "release_relay",
+      "path": "tools/owner-open/adb_smart_socket_relay_release.py"
+    },
+    {
+      "role": "owner_host_reverse_bootstrap",
+      "path": "tools/owner-open/prepare-adb-reverse-v1.sh"
+    },
+    {
+      "role": "release_exact_argv_qualifier",
+      "path": "tools/owner-open/qualify_owner_open_adb_release.py"
+    },
+    {
+      "role": "arm64_adb_verifier",
+      "path": "packaging/owner-open-adb/verify_arm64_adb.py"
+    },
+    {
+      "role": "arm64_adb_schema",
+      "path": "packaging/owner-open-adb/owner-open-adb-arm64-artifact.schema.json"
+    }
+  ],
+  "required_markers": {
+    "tools/owner-open/adb_smart_socket_relay_release.py": [
+      "SELECTED_ENTRY",
+      "payload_logged=False",
+      "automatic_redispatch=False"
+    ],
+    "tools/owner-open/prepare-adb-reverse-v1.sh": [
+      "--serial SERIAL",
+      "reverse \"$REMOTE\" \"$LOCAL\"",
+      "ADB_SERVER_SOCKET=\"tcp:127.0.0.1:$DEVICE_PORT\""
+    ],
+    "tools/owner-open/qualify_owner_open_adb_release.py": [
+      "automatic_redispatch",
+      "ANDROID_SERIAL"
+    ],
+    "packaging/owner-open-adb/verify_arm64_adb.py": [
+      "EM_AARCH64",
+      "physical_effect_observed"
+    ]
+  },
+  "claims": {
+    "source_topology_selected": true,
+    "relay_source_implemented": true,
+    "reverse_bootstrap_source_implemented": true,
+    "exact_argv_qualification_source_implemented": true,
+    "arm64_adb_artifact_bound": false,
+    "owner_host_mapping_observed": false,
+    "physical_usb_target_observed": false,
+    "same_turn_physical_adb_effect_observed": false,
+    "fault_matrix_qualified": false,
+    "public_release": false
+  },
+  "claim_ceiling": "ADB_TOPOLOGY_SOURCE_SELECTED_NOT_PHYSICAL"
+}

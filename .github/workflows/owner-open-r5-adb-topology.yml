@@ -1,0 +1,77 @@
+name: owner-open R5 selected physical ADB topology
+
+on:
+  pull_request:
+    paths:
+      - "docs/contracts/owner-open-r5-adb-topology-v1.json"
+      - "docs/status/owner-open-r5-adb-topology-status.json"
+      - "tools/verify-owner-open-adb-topology.py"
+      - "tools/owner-open/adb_smart_socket_relay_release.py"
+      - "tools/owner-open/prepare-adb-reverse-v1.sh"
+      - "tools/owner-open/qualify_owner_open_adb_release.py"
+      - "packaging/owner-open-adb/**"
+      - "tools/tests/test_verify_owner_open_adb_topology.py"
+      - ".github/workflows/owner-open-r5-adb-topology.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "docs/contracts/owner-open-r5-adb-topology-v1.json"
+      - "docs/status/owner-open-r5-adb-topology-status.json"
+      - "tools/verify-owner-open-adb-topology.py"
+      - "tools/owner-open/adb_smart_socket_relay_release.py"
+      - "tools/owner-open/prepare-adb-reverse-v1.sh"
+      - "tools/owner-open/qualify_owner_open_adb_release.py"
+      - "packaging/owner-open-adb/**"
+      - "tools/tests/test_verify_owner_open_adb_topology.py"
+      - ".github/workflows/owner-open-r5-adb-topology.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-r5-adb-topology-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  selected-topology:
+    name: Selected ordinary-ADB topology source gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Parse, compile and shell-check selected topology
+        run: |
+          set -Eeuo pipefail
+          python3 -m json.tool docs/contracts/owner-open-r5-adb-topology-v1.json >/dev/null
+          python3 -m json.tool docs/status/owner-open-r5-adb-topology-status.json >/dev/null
+          python3 -m py_compile \
+            tools/verify-owner-open-adb-topology.py \
+            tools/tests/test_verify_owner_open_adb_topology.py
+          bash -n tools/owner-open/prepare-adb-reverse-v1.sh
+      - name: Verify exact selected topology
+        run: |
+          set -Eeuo pipefail
+          python3 tools/verify-owner-open-adb-topology.py --json \
+            | tee owner-open-r5-adb-topology.json
+      - name: Run topology mutation tests
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          set -Eeuo pipefail
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_adb_topology \
+            -v 2>&1 | tee owner-open-r5-adb-topology-tests.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-r5-adb-topology-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            owner-open-r5-adb-topology.json
+            owner-open-r5-adb-topology-tests.txt
