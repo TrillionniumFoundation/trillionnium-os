@@ -7,7 +7,7 @@
     "version": "0.150.1",
     "release_api": "https://api.github.com/repos/openai/codex/releases/tags/rust-v0.150.1",
     "release_page": "https://github.com/openai/codex/releases/tag/rust-v0.150.1",
-    "published_at": "2026-08-27T01:55:47Z"
+    "published_at": "2026-08-27T01:56:54Z"
   },
   "checksum_list": {
     "filename": "codex-package_SHA256SUMS",
