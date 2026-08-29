@@ -22,6 +22,7 @@ on:
       - "docs/evidence/2026-08-28-owner-open-*.md"
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
+      - "tools/verify-owner-open-r5-gap-evidence.py"
       - "tools/owner-open/**"
       - "tools/tests/test_verify_owner_open_r5*.py"
       - "tools/tests/test_generate_owner_open_l1_candidate.py"
@@ -53,6 +54,7 @@ on:
       - "docs/evidence/2026-08-28-owner-open-*.md"
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
+      - "tools/verify-owner-open-r5-gap-evidence.py"
       - "tools/owner-open/**"
       - "tools/tests/test_verify_owner_open_r5*.py"
       - "tools/tests/test_generate_owner_open_l1_candidate.py"
@@ -93,13 +95,18 @@ jobs:
           python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v2.json >/dev/null
           python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
           python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
-          python3 -m compileall -q tools/owner-open tools/tests tools/verify-owner-open-r5.py
+          python3 -m compileall -q \
+            tools/owner-open \
+            tools/tests \
+            tools/verify-owner-open-r5.py \
+            tools/verify-owner-open-r5-gap-evidence.py
       - name: Verify generated codec constants
         run: python3 tools/generate-owner-open-types.py --check
-      - name: Verify exact R5 graph, active plan and gap register
+      - name: Verify exact R5 graph, active plan and gap evidence
         run: |
           set -euo pipefail
           python3 tools/verify-owner-open-r5.py --json | tee owner-open-r5-verification.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json | tee owner-open-r5-gap-evidence.json
           python3 - <<'PY'
           import json
           from pathlib import Path
@@ -108,6 +115,9 @@ jobs:
           facts = value.get("facts", {})
           assert facts.get("active_plan_revision") == "2026-08-29-r6", facts
           assert facts.get("zero_gap") is False, facts
+          gap = json.loads(Path("owner-open-r5-gap-evidence.json").read_text())
+          assert gap.get("ok") is True, gap
+          assert gap.get("facts", {}).get("zero_gap") is False, gap
           PY
       - name: Run R5 verifier and evidence-binding tests
         run: |
@@ -115,6 +125,7 @@ jobs:
           python3 -m unittest \
             tools.tests.test_verify_owner_open_r5 \
             tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
             tools.tests.test_generate_owner_open_l1_candidate \
             -v 2>&1 | tee owner-open-r5-verifier-tests.txt
       - name: Run Codex STDIO MCP job bridge tests
@@ -140,6 +151,7 @@ jobs:
           retention-days: 30
           path: |
             owner-open-r5-verification.json
+            owner-open-r5-gap-evidence.json
             owner-open-r5-verifier-tests.txt
             owner-open-r5-mcp-tests.txt
             owner-open-r5-qualification-fixtures.txt
