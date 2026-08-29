@@ -443,6 +443,15 @@ fn build_job_frame(
     discriminator: &str,
     payload: Value,
 ) -> RunTurnFrame {
+    let mut payload = payload;
+    if let Some(request_sha256) = context.request_sha256.as_ref()
+        && let Some(object) = payload.as_object_mut()
+    {
+        object.insert(
+            "request_sha256".to_string(),
+            Value::String(request_sha256.clone()),
+        );
+    }
     RunTurnFrame {
         kind: kind.to_string(),
         seq,
@@ -454,7 +463,7 @@ fn build_job_frame(
         event_id: Some(job_event_id(&context.key, kind, discriminator)),
         connection_id: None,
         stream_id: Some(context.stream_id.clone()),
-        turn_stream_id: None,
+        turn_stream_id: Some(context.key.scope.turn_stream_id.clone()),
         session_id: Some(context.key.scope.session_id.clone()),
         profile_id: Some(context.key.scope.profile_id.clone()),
         task_id: Some(context.key.scope.task_id.clone()),

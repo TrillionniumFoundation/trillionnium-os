@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import tempfile
+import time
 import unittest
 
 SCRIPT = (
@@ -57,7 +58,16 @@ class GenerateOwnerOpenL1CandidateTest(unittest.TestCase):
         ).strip()
 
     def tearDown(self) -> None:
-        self.temp.cleanup()
+        last_error: OSError | None = None
+        for _ in range(25):
+            try:
+                self.temp.cleanup()
+                return
+            except OSError as error:
+                last_error = error
+                time.sleep(0.02)
+        if last_error is not None:
+            raise last_error
 
     def build(self, source_head_sha: str | None = None) -> dict:
         return module.build_candidate(

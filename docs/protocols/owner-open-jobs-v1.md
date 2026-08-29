@@ -420,3 +420,23 @@ Minimum exits:
 - crash/ENOSPC/reboot/power-loss: L5.
 
 No source document or fixture promotes those external levels.
+
+## Exact direct-response correlation matrix
+
+Every direct job response binds the full job scope, `turn_stream_id`,
+`job_id` and canonical job `request_sha256` once that digest exists.
+Effectful responses additionally echo the exact `operation_id`.
+
+| Request | Direct result | Required echoed identity |
+| --- | --- | --- |
+| `job.start` | `job.start.result` | full scope, `job_id`, start `operation_id`, canonical request digest |
+| `job.inspect` | `job.inspect.result` | full scope, `job_id`, optional supplied `operation_id`, canonical request digest |
+| `job.attach` | `job.attach.result` | full scope, `job_id`, optional supplied `operation_id`, `attachment_id`, canonical request digest |
+| `job.detach` | `job.detach.result` | full scope, `job_id`, optional supplied `operation_id`, `attachment_id`, canonical request digest |
+| write/resize/close/kill | `job.control.result` | full scope, `job_id`, exact `operation_id`, canonical request digest |
+| rejected job request | `job.error` | every mechanically recoverable field from the rejected request; no field is a wildcard |
+
+An error that cannot recover enough exact request correlation remains an
+observation and cannot resolve a different active Broker request. Missing
+correlation fails closed into timeout or uncertainty rather than
+cross-delivering an error to the wrong operation.

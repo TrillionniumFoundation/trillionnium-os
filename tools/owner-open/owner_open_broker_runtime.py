@@ -48,10 +48,7 @@ def frame_correlation(frame: dict[str, Any]) -> dict[str, str | None]:
     return {name: frame_value(frame, name) for name in CORRELATION_FIELDS}
 
 
-def response_matches(request: "Request", frame: dict[str, Any]) -> bool:
-    kind = frame.get("kind")
-    if kind not in request.expected_kinds:
-        return False
+def correlation_matches(request: "Request", frame: dict[str, Any]) -> bool:
     actual = frame_correlation(frame)
     if request.expected_job_id is not None and actual["job_id"] != request.expected_job_id:
         return False
@@ -59,6 +56,11 @@ def response_matches(request: "Request", frame: dict[str, Any]) -> bool:
         if expected is not None and actual.get(name) != expected:
             return False
     return True
+
+
+def response_matches(request: "Request", frame: dict[str, Any]) -> bool:
+    kind = frame.get("kind")
+    return kind in request.expected_kinds and correlation_matches(request, frame)
 
 
 def peer_credentials(connection: socket.socket) -> tuple[int, int, int]:

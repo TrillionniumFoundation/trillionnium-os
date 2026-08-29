@@ -37,6 +37,7 @@ from owner_open_broker_common import (
 from owner_open_broker_runtime import (
     Client,
     Request,
+    correlation_matches,
     frame_correlation,
     frame_job_id,
     peer_credentials,
@@ -303,7 +304,9 @@ class Broker:
                 if active is None:
                     continue
                 direct_error = frame["kind"] in {"host.error", "job.error"}
-                if direct_error or response_matches(active, frame):
+                if response_matches(active, frame) or (
+                    direct_error and correlation_matches(active, frame)
+                ):
                     self._finish_active(
                         active,
                         self._result(active, frame),

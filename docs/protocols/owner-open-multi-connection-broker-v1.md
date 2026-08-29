@@ -420,3 +420,15 @@ operations. Until that evidence is bound, `R5-GAP-BROKER-CORRELATION-001` is
 
 This protocol never promotes Android image, physical device, destructive fault
 or signed release claims.
+
+## Direct error ownership rule
+
+`host.error` and `job.error` may resolve the active request only when every
+non-null request correlation field is present and exact. Merely having one
+active request is insufficient. An uncorrelated or stale error is broadcast
+as an observation, cannot steal owner-result delivery, and leaves the request
+unresolved until an exact result or the finite uncertainty deadline.
+
+Even an exactly correlated error is not proof that an external effect did or
+did not start. The Broker records the observed error and never retries the
+semantic request automatically.

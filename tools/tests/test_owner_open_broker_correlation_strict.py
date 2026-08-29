@@ -7,7 +7,12 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "owner-open"))
 
-from owner_open_broker_runtime import Request, frame_correlation, response_matches
+from owner_open_broker_runtime import (
+    Request,
+    correlation_matches,
+    frame_correlation,
+    response_matches,
+)
 
 
 class BrokerCorrelationStrictTest(unittest.TestCase):
@@ -85,6 +90,17 @@ class BrokerCorrelationStrictTest(unittest.TestCase):
         response["turn_id"] = "old-turn"
         response["payload"]["turn_id"] = "old-turn"
         self.assertFalse(response_matches(self.request(), response))
+
+    def test_exact_correlated_direct_error_is_eligible_for_active_request(self) -> None:
+        response = self.response("write-new")
+        response["kind"] = "job.error"
+        self.assertTrue(correlation_matches(self.request(), response))
+        self.assertFalse(response_matches(self.request(), response))
+
+    def test_stale_direct_error_cannot_steal_active_request_ownership(self) -> None:
+        response = self.response("write-old")
+        response["kind"] = "job.error"
+        self.assertFalse(correlation_matches(self.request(), response))
 
 
 if __name__ == "__main__":
