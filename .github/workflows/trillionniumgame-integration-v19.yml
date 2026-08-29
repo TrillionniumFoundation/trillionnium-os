@@ -61,7 +61,7 @@ jobs:
           test ! -s evidence/static/non-ancestors.tsv
           git rev-parse HEAD > evidence/static/commit.txt
           git rev-parse HEAD^{tree} > evidence/static/tree.txt
-          test -z "$(git status --porcelain)"
+          test -z "$(git status --porcelain --untracked-files=no)"
       - name: Validate root Rust workspace
         working-directory: source
         shell: bash
