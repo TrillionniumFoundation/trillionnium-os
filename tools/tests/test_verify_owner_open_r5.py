@@ -3,8 +3,10 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 SCRIPT = Path(__file__).resolve().parents[1] / "verify-owner-open-r5.py"
 spec = importlib.util.spec_from_file_location("verify_owner_open_r5", SCRIPT)
@@ -29,6 +31,12 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
 
     def json_write(self, path: str, value: object) -> None:
         self.write(path, json.dumps(value, indent=2) + "\n")
+
+    @staticmethod
+    def _git_result(stdout: str) -> mock.Mock:
+        result = mock.Mock()
+        result.stdout = stdout
+        return result
 
     def _write_fixture(self) -> None:
         packages = {
@@ -130,8 +138,10 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
         self.json_write(
             "docs/status/owner-open-r5-status.json",
             {
+                "schema": module.STATUS_SCHEMA,
                 "plan_revision": "2026-08-28-r5",
                 "public_release": False,
+                "automatic_redispatch": False,
                 "not_claimed": ["device"],
                 "work_packages": [
                     {"id": f"W{index}", "status": "SOURCE_IMPLEMENTED", "latest_evidence_level": "L0"}
@@ -201,6 +211,17 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
         report = module.verify(self.root)
         self.assertTrue(any("forbidden legacy markers" in value for value in report.errors))
 
+    def test_invalid_utf8_owner_open_source_fails_closed(self) -> None:
+        path = self.root / "crates/runtime/src/invalid.rs"
+        path.write_bytes(b"fn invalid() { \xff }\n")
+        report = module.verify(self.root)
+        self.assertTrue(any("cannot read owner-open source" in value for value in report.errors))
+
+    def test_invalid_utf8_android_overlay_fails_closed(self) -> None:
+        (self.root / "android.mk").write_bytes(b"PRODUCT_PACKAGES += \xff\n")
+        report = module.verify(self.root)
+        self.assertTrue(any("cannot read Android audit overlay" in value for value in report.errors))
+
     def test_host_autobins_drift_fails(self) -> None:
         manifest = (self.root / "apps/host/Cargo.toml").read_text(encoding="utf-8")
         self.write("apps/host/Cargo.toml", manifest.replace("autobins = false", "autobins = true"))
@@ -229,6 +250,65 @@ class VerifyOwnerOpenR5Test(unittest.TestCase):
         self.assertTrue(report.warnings)
         strict = module.verify(self.root, strict_android=True)
         self.assertTrue(any("Android overlay" in value for value in strict.errors))
+
+    def test_active_r6_status_cannot_bypass_missing_gap_register(self) -> None:
+        status_path = self.root / "docs/status/owner-open-r5-status.json"
+        status = json.loads(status_path.read_text(encoding="utf-8"))
+        status.update(
+            {
+                "schema": module.STATUS_SCHEMA,
+                "active_plan_revision": module.ACTIVE_PLAN_REVISION,
+                "automatic_redispatch": False,
+            }
+        )
+        self.json_write("docs/status/owner-open-r5-status.json", status)
+        report = module.verify(self.root)
+        self.assertTrue(
+            any("requires the canonical gap register" in value for value in report.errors)
+        )
+
+    def test_checkout_status_probe_failure_is_fail_closed(self) -> None:
+        report = module.Report()
+        with mock.patch.object(
+            module.subprocess,
+            "run",
+            side_effect=[
+                self._git_result(str(self.root)),
+                self._git_result("a" * 40),
+                self._git_result("b" * 40),
+                self._git_result(""),
+                subprocess.CalledProcessError(128, ["git", "status"]),
+            ],
+        ):
+            module._check_checkout_against_expected(
+                self.root, "a" * 40, "b" * 40, report
+            )
+        self.assertTrue(
+            any("cannot verify checkout exact source files" in error for error in report.errors)
+        )
+
+    def test_checkout_hash_probe_failure_is_fail_closed(self) -> None:
+        report = module.Report()
+        with mock.patch.object(
+            module.subprocess,
+            "run",
+            side_effect=[
+                self._git_result(str(self.root)),
+                self._git_result("a" * 40),
+                self._git_result("b" * 40),
+                self._git_result(""),
+                self._git_result(""),
+                self._git_result("H docs/status/owner-open-r5-gap-closure.json\n"),
+                self._git_result("f" * 40),
+                subprocess.CalledProcessError(128, ["git", "hash-object"]),
+            ],
+        ):
+            module._check_checkout_against_expected(
+                self.root, "a" * 40, "b" * 40, report
+            )
+        self.assertTrue(
+            any("cannot verify checkout exact source files" in error for error in report.errors)
+        )
 
 
 if __name__ == "__main__":

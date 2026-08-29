@@ -77,7 +77,12 @@ impl JobManager {
 
     pub fn start(&self, request: JobStartRequest) -> Result<JobStartResult> {
         validate_start_request(&request, &self.inner.config)?;
-        if let Some(running) = self.running()?.get(&request.key) {
+        // Hold the running-map lock across the capacity check, registry begin,
+        // spawn and insertion.  A new key must be rejected before
+        // `registry.begin`, otherwise a full runtime leaves an Accepted entry
+        // that falsely occupies the key and prevents a later retry.
+        let mut running_jobs = self.running()?;
+        if let Some(running) = running_jobs.get(&request.key) {
             if running.request != request.request {
                 return Err(JobRuntimeError::JobConflict);
             }
@@ -87,6 +92,12 @@ impl JobManager {
                 replay_status: self.replay_status(false)?,
             });
         }
+
+        // A live in-process child is stronger than a stale recovered record:
+        // restart recovery may still contain the accepted/start record while
+        // a child that this manager owns is running.  Check the live map first
+        // so an idempotent repeat returns ExistingLive rather than incorrectly
+        // downgrading the operation to UnknownAfterRestart.
         if let Some(recovered) = self.inner.journal.recovered_job(&request.key)? {
             if recovered.request != request.request {
                 return Err(JobRuntimeError::JobConflict);
@@ -104,6 +115,17 @@ impl JobManager {
                     ReplayStatus::UnknownAfterRestart
                 },
             });
+        }
+
+        let registry_entry_exists = match self.inner.registry.snapshot(&request.key) {
+            Ok(_) => true,
+            Err(JobRegistryError::NotFound) => false,
+            Err(error) => return Err(registry_error(error)),
+        };
+        if !registry_entry_exists && running_jobs.len() >= self.inner.config.max_jobs {
+            return Err(JobRuntimeError::InvalidRequest(
+                "job runtime capacity is exhausted before acceptance".to_string(),
+            ));
         }
 
         let begin = self
@@ -138,27 +160,6 @@ impl JobManager {
                 disposition: StartDisposition::UnknownAfterRestart,
                 snapshot: Some(snapshot),
                 replay_status: ReplayStatus::UnknownAfterRestart,
-            });
-        }
-
-        // Holding the running-map lock from this finite capacity check until
-        // insertion is the admission reservation. Concurrent starts cannot
-        // both observe the same free slot, and a capacity rejection occurs
-        // before the durable accepted record or any child spawn attempt.
-        let mut running_jobs = self.running()?;
-        if running_jobs.len() >= self.inner.config.max_jobs {
-            return Err(JobRuntimeError::InvalidRequest(
-                "job runtime capacity is exhausted before acceptance".to_string(),
-            ));
-        }
-        if let Some(running) = running_jobs.get(&request.key) {
-            if running.request != request.request {
-                return Err(JobRuntimeError::JobConflict);
-            }
-            return Ok(JobStartResult {
-                disposition: StartDisposition::ExistingLive,
-                snapshot: self.inner.registry.snapshot(&request.key).ok(),
-                replay_status: self.replay_status(false)?,
             });
         }
 
@@ -252,6 +253,11 @@ impl JobManager {
             .record_started(&request.key, generation, control.pid, control.pty)
             .map_err(registry_error)
         {
+            // record_started failed after the child was spawned. Release the
+            // admission reservation before the rollback path tries to remove
+            // the running entry; otherwise abort_started_job would attempt to
+            // lock this same mutex and deadlock forever.
+            drop(running_jobs);
             let cleanup_error = control
                 .kill(libc::SIGKILL)
                 .err()

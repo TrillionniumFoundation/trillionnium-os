@@ -109,6 +109,32 @@ mod flow_tests {
     }
 
     #[test]
+    fn hello_ack_advertises_every_classified_bounded_frame() {
+        let options = options(4096);
+        let flow = StreamDelivery::new(&options);
+        let journal = TransportJournal::open(None);
+        let mut hello = data(0, 0);
+        hello.kind = FRAME_HELLO_ACK.to_string();
+        hello.payload = json!({});
+
+        augment_core_frame(&mut hello, None, &options, &flow, false, &journal);
+
+        let advertised = hello
+            .payload
+            .get("flow_controlled_frame_kinds")
+            .and_then(Value::as_array)
+            .expect("HELLO_ACK must advertise bounded frame classes");
+        let advertised = advertised
+            .iter()
+            .map(|value| value.as_str().expect("class names are strings"))
+            .collect::<Vec<_>>();
+        assert_eq!(advertised, FLOW_CONTROLLED_FRAME_KINDS);
+        for kind in FLOW_CONTROLLED_FRAME_KINDS {
+            assert!(is_flow_controlled_kind(kind));
+        }
+    }
+
+    #[test]
     fn overflow_requires_cursor_bound_resynchronization() {
         let mut flow = StreamDelivery::new(&options(128));
         flow.apply_control(&control(0, StreamControl::Pause, "pause"))

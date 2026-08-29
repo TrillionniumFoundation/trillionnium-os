@@ -13,7 +13,7 @@ The permanent workflow `.github/workflows/owner-open-r5-resume-packet.yml`
 checks the canonical register and emits an artifact named:
 
 ```text
-owner-open-r5-resume-<exact-commit-sha>
+owner-open-r5-resume-<exact-commit-sha>-<workflow-run-id>-<run-attempt>
 ```
 
 The artifact contains:
@@ -35,6 +35,17 @@ Before any target run, require all of the following:
 5. `automatic_redispatch`, `public_release` and every negative claim remain
    unchanged unless the corresponding reviewed evidence lane closes;
 6. every input artifact is content-addressed and retained independently.
+
+The source identity in the packet is a provenance anchor, not an implicit
+claim about a newer checkout: all checked-in source records and optional status
+or documentation candidates must agree on branch, commit, tree and workflow
+run. Repeated source records must also agree on their normalized artifact
+`(id, name, digest)` set; an explicit source-SHA suffix in an artifact name
+must match the source commit. Environment records must repeat that commit and
+(when supplied) tree.
+When CI is promoting a particular checkout, invoke the verifiers with
+`--expected-commit` and `--expected-tree` from that checkout rather than
+rewriting the historical source record in the same commit.
 
 A resume packet is a handoff. It is not installed-target, Android-image,
 physical-device, fault, signing or release evidence.
@@ -161,6 +172,11 @@ image and target-files SHA-256 values
 source-to-image receipt chain
 ```
 
+For the owner-open init handoff, retain the parsed RC and property trace showing
+that `trillionnium.owner_open.data_ready=1` is published only after the
+`post-fs-data` mkdir/`restorecon_recursive` action, and that bootstrap is gated
+by the combined enabled/data-ready property trigger.
+
 Run the strict owner-open graph verifier against the exact source tree:
 
 ```sh
@@ -256,7 +272,10 @@ For each candidate evidence package:
 7. update only the gaps whose full acceptance and exit level are satisfied;
 8. run both canonical verifiers and the exact-head resume workflow;
 9. retain `zero_gap=false` until every gap is `CLOSED`;
-10. retain `public_release=false` until the independently authorized L6 step.
+10. retain `public_release=false` until the independently authorized L6 step;
+11. once `R5-GAP-RELEASE-001` is `CLOSED` with the reviewed L6 evidence and
+    every other gap is `CLOSED`, set `public_release` and
+    `generated_policy.public_release` to `true`; otherwise keep both `false`.
 
 Valid terminal outcomes are:
 

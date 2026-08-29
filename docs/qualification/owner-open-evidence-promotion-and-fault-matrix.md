@@ -73,6 +73,17 @@ The workflow manifest records `GITHUB_SHA` and the Git tree observed after
 checkout. A status promotion references that immutable evidence; it does not
 copy a green result from another commit.
 
+Source identity is cross-bound before promotion. Every `source_evidence` record
+in one register, plus any `documentation_candidate` and
+`status.current_candidate` records, must agree on branch, commit, tree and
+workflow run. Repeated source records must also carry the same normalized
+artifact `(id, name, digest)` set; an explicit source-SHA suffix in an artifact
+name must match the record's commit. Environment evidence must carry the same
+`source_commit` and, when present, `source_tree`. The checked-in identity may
+be the last reviewed historical L1 baseline; the canonical verifiers do not
+silently equate it with the checkout being inspected. Exact-head CI can opt
+into that stronger assertion with `--expected-commit` and `--expected-tree`.
+
 ## 4. Promotion ladder
 
 ### L0 — contract and source shape
@@ -212,6 +223,38 @@ Required:
 - explicit human go/no-go authorization.
 
 No workflow may set `public_release=true` by inference.
+
+When the release gap is promoted to `CLOSED`—and, once zero-gap is complete,
+when `public_release=true`—at least one L6 evidence item must also carry these
+explicit, externally reviewed records.  The gap verifiers validate the shape
+and affirmative claims; the dedicated signing/transparency tooling remains the
+authority for cryptographic verification:
+
+```json
+{
+  "release_signature": {
+    "manifest_sha256": "<64 lowercase hex>",
+    "signature": "<non-empty detached signature or object identifier>",
+    "cryptographic_signature_verified": true,
+    "certificate_identity": "<non-empty identity>",
+    "oidc_issuer": "<non-empty issuer>",
+    "oidc_subject": "<non-empty subject>",
+    "transparency_log_entry": "<non-empty inclusion/entry identifier>"
+  },
+  "release_authorization": {
+    "decision": "GO",
+    "authorization_id": "<non-empty approval identifier>",
+    "authorized_by": "<non-empty human approver identity>",
+    "approved_at": "<ISO-8601 timestamp with timezone>"
+  }
+}
+```
+
+The `release_authorization` object is intentionally separate from the generic
+`reviewer` field, so a self-authored reviewer string cannot substitute for a
+human go/no-go decision.  These fields are binding claims to the retained
+external manifest, not a license to fabricate release evidence in the
+repository.
 
 ## 5. Artifact authenticity
 
@@ -353,13 +396,24 @@ OPEN
 
 or remains `EXTERNAL_HOLD` until required material exists.
 
+The machine field `requires_external_evidence` is fail-closed.  It must be
+`true` for every L2--L6 gap and for `R5-GAP-GOVERNANCE-001` (the latter is an
+L1 exit whose protected-branch and independent-review acceptance is external
+to source CI).  The verifier derives those requirements from the gap ID and
+exit level, so setting the field to `false` cannot downgrade an external lane
+to source-only closure.  A `CLOSED` external lane must carry reviewed,
+non-synthetic evidence at or above its exit level; a source-only `CLOSED`
+entry is valid only for a non-external L1 gap.
+
 The verifier rejects:
 
 - duplicate gap IDs;
 - a closed gap without evidence at its exit level;
 - an external gap closed by fixture evidence;
 - `zero_gap=true` while any gap is not closed;
-- `public_release=true` while the release gap is not closed;
+- `public_release=true` without a CLOSED release gap and zero-gap completion;
+- `public_release` or `generated_policy.public_release` disagreeing with the
+  `(release_gap_closed and zero_gap)` state;
 - evidence bound to a different source/tree/artifact;
 - skipped, cancelled, empty or failed workflow conclusions.
 

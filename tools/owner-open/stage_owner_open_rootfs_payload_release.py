@@ -23,6 +23,7 @@ from typing import Any
 
 PLAN_SCHEMA = "org.trillionnium.owner-open.rootfs-payload-plan.v1"
 MANIFEST_SCHEMA = "org.trillionnium.owner-open.rootfs-payload-manifest.v1"
+RUNTIME_STATE_DIRECTORY = "/var/lib/trillionnium/owner-open"
 MAX_PLAN_BYTES = 8 * 1024 * 1024
 MAX_FILE_BYTES = 512 * 1024 * 1024
 MAX_TOTAL_BYTES = 4 * 1024 * 1024 * 1024
@@ -295,7 +296,14 @@ def parse_entries(plan: dict[str, Any]) -> tuple[list[SourceRecord], int]:
         destinations.add(target)
         mode = require_mode(item.get("mode"))
         uid, gid = item.get("uid"), item.get("gid")
-        if uid != 0 or gid != 0:
+        if (
+            not isinstance(uid, int)
+            or isinstance(uid, bool)
+            or not isinstance(gid, int)
+            or isinstance(gid, bool)
+            or uid != 0
+            or gid != 0
+        ):
             raise StageError("payload staging v1 requires uid=0 and gid=0")
         expected = require_digest(item.get("expected_sha256"), "expected_sha256")
         source_value = item.get("source")
@@ -427,6 +435,12 @@ def stage(plan_path: Path, output: Path) -> dict[str, Any]:
     parent_mode_before = stat.S_IMODE(output.parent.lstat().st_mode)
     try:
         entries = [copy_record(record, staging) for record in sorted(records, key=lambda item: item.destination)]
+        # Bootstrap binds writable Android state over this mountpoint after the
+        # squashfs is mounted. Reserve the exact directory in the immutable
+        # lower tree so BindState() cannot fail with ENOENT.
+        make_parent_directories(
+            staging, staging / RUNTIME_STATE_DIRECTORY.removeprefix("/")
+        )
         manifest = {
             "schema": MANIFEST_SCHEMA,
             "payload_id": plan["payload_id"],
@@ -435,6 +449,7 @@ def stage(plan_path: Path, output: Path) -> dict[str, Any]:
             "libc": plan["libc"],
             "entry_count": len(entries),
             "total_bytes": total,
+            "runtime_state_directory": RUNTIME_STATE_DIRECTORY,
             "entries": entries,
             "claims": {
                 "staging_tree_complete": True,

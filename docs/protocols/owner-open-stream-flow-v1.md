@@ -68,9 +68,10 @@ host.error
 Bypass prevents a zero-credit or paused reader from blocking cancellation,
 inspection or terminal truth.
 
-The known baseline currently omits `job.output` from the selected flow
-classifier. This document states the required target, not a completed source
-claim.
+The selected transport source classifies `job.output` as bounded and advertises
+the same list in `hello.ack`; the classifier and advertisement share one source
+table. Installed multi-client delivery, durable cursor recovery and sustained
+slow-consumer evidence remain open under gap #16.
 
 ## 3. Identity
 
@@ -309,7 +310,7 @@ supplied values have finite maxima.
 Known baseline `479e5fb...` has L1 source evidence for the stream-window
 mechanics, pause/resume and resync tests. The following are still required:
 
-- add `job.output` to generated delivery classification;
+- retain one shared bounded-stream classification in source and `hello.ack`;
 - explicit oldest-retained cursor/gap behavior;
 - zero-credit long-job control responsiveness;
 - slow-client sustained-output soak;

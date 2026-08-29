@@ -291,9 +291,10 @@ Pausing delivery does not pause the child process, persistence, cancellation,
 inspection or terminal observation. Accepted/control/inspect/terminal frames
 bypass the byte-credit gate.
 
-The current implementation baseline omits `job.output` from the selected flow
-classifier; Issue #16 must close this source gap before this section is claimed
-as implemented.
+The selected transport source now classifies and advertises `job.output` as a
+bounded stream. Issue #16 remains open for durable cursor/reconnect and
+installed slow-consumer evidence; those higher-level gates are not implied by
+the source classifier alone.
 
 ## 12. Retention and cursor recovery
 

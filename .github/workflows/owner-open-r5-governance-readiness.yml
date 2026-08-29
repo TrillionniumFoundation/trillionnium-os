@@ -54,8 +54,8 @@ jobs:
       - name: Revalidate exact inspected head
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=no)"
       - name: Verify tracked workflow boundaries
         run: |
           set -euo pipefail
@@ -135,7 +135,7 @@ jobs:
           started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           expires="$(date -u -d '+1 day' +%Y-%m-%dT%H:%M:%SZ)"
           artifact_expires="$(date -u -d '+30 days' +%Y-%m-%dT%H:%M:%SZ)"
-          tree="$(git rev-parse HEAD^{tree})"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
           cat > "$RUNNER_TEMP/governance-attestation.json" <<JSON
           {
             "schema": "org.trillionnium.owner-open-r5.target-attestation.v1",

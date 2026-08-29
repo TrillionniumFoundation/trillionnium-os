@@ -18,6 +18,6 @@ type trillionnium_owner_open_client, domain;
 app_domain(trillionnium_owner_open_client)
 
 type trillionnium_owner_open_state_file, file_type, data_file_type, core_data_file_type;
-type trillionnium_owner_open_payload_file, file_type, system_file_type;
+type trillionnium_owner_open_payload_file, file_type, system_file_type, contextmount_type;
 
 system_internal_prop(trillionnium_owner_open_prop)

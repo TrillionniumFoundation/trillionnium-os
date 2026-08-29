@@ -1109,25 +1109,24 @@ impl Drop for SocketEntryCleanup {
 }
 
 fn require_android_builtin_manifests(service: &AgentService) -> Result<()> {
-    for (descriptor, adapter_version) in [(&CODEX, codex_adapter::CODEX_ADAPTER_VERSION)] {
-        let agent_id = descriptor.agent_id;
-        let registration = service
-            .get_agent_local(agent_id)
-            .map_err(anyhow::Error::msg)?
-            .with_context(|| {
-                format!("Android built-in provider {agent_id} requires an OS-owned AgentManifest")
-            })?;
-        if !registration.enabled
-            || registration.api_version != AGENT_API_VERSION
-            || registration.adapter_version != adapter_version
-            || !builtin_provider_identity::matches_stable_registration(descriptor, &registration)
-            || registration.network_policy != trillionnium_os_types::AgentNetworkPolicy::PerRequest
-            || registration.health != trillionnium_os_types::AgentHealth::Ready
-            || registration.registered_at_unix_ms == 0
-            || registration.updated_at_unix_ms < registration.registered_at_unix_ms
-        {
-            bail!("Android built-in provider AgentManifest is disabled or incompatible");
-        }
+    let (descriptor, adapter_version) = (&CODEX, codex_adapter::CODEX_ADAPTER_VERSION);
+    let agent_id = descriptor.agent_id;
+    let registration = service
+        .get_agent_local(agent_id)
+        .map_err(anyhow::Error::msg)?
+        .with_context(|| {
+            format!("Android built-in provider {agent_id} requires an OS-owned AgentManifest")
+        })?;
+    if !registration.enabled
+        || registration.api_version != AGENT_API_VERSION
+        || registration.adapter_version != adapter_version
+        || !builtin_provider_identity::matches_stable_registration(descriptor, &registration)
+        || registration.network_policy != trillionnium_os_types::AgentNetworkPolicy::PerRequest
+        || registration.health != trillionnium_os_types::AgentHealth::Ready
+        || registration.registered_at_unix_ms == 0
+        || registration.updated_at_unix_ms < registration.registered_at_unix_ms
+    {
+        bail!("Android built-in provider AgentManifest is disabled or incompatible");
     }
     Ok(())
 }

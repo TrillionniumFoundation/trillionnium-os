@@ -24,6 +24,7 @@ from typing import Any
 
 STAGING_SCHEMA = "org.trillionnium.owner-open.rootfs-payload-manifest.v1"
 IMAGE_SCHEMA = "org.trillionnium.owner-open.rootfs-image-manifest.v1"
+RUNTIME_STATE_DIRECTORY = "/var/lib/trillionnium/owner-open"
 MAX_MANIFEST_BYTES = 16 * 1024 * 1024
 MAX_FILE_BYTES = 512 * 1024 * 1024
 MAX_IMAGE_BYTES = 8 * 1024 * 1024 * 1024
@@ -183,6 +184,10 @@ def validate_staging(staging: Path) -> tuple[dict[str, Any], bytes, Path, list[s
         or claims.get("rootfs_image_built") is not False
     ):
         raise ImageError("staging manifest claims are incompatible")
+    if manifest.get("runtime_state_directory") != RUNTIME_STATE_DIRECTORY:
+        raise ImageError(
+            "staging manifest does not reserve the canonical writable state mountpoint"
+        )
     entries = manifest_entries(manifest)
     embedded = root / "etc/trillionnium/owner-open/rootfs.manifest.json"
     embedded_metadata = stable_file(embedded.resolve(), "embedded staging manifest", MAX_MANIFEST_BYTES)
@@ -196,6 +201,12 @@ def validate_staging(staging: Path) -> tuple[dict[str, Any], bytes, Path, list[s
         "bytes": len(manifest_raw),
         "mode": "0444",
     }
+    state_directory = root / RUNTIME_STATE_DIRECTORY.removeprefix("/")
+    if state_directory.is_symlink() or not state_directory.is_dir():
+        raise ImageError("staging tree is missing the canonical writable state mountpoint")
+    state_metadata = state_directory.lstat()
+    if stat.S_IMODE(state_metadata.st_mode) != 0o755:
+        raise ImageError("canonical writable state mountpoint mode is not 0755")
     observed: list[str] = []
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root).as_posix()
@@ -419,6 +430,11 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
             "architecture": manifest.get("architecture"),
             "libc": manifest.get("libc"),
             "entry_count": manifest.get("entry_count"),
+            # Carry the complete per-entry contract into the Android-facing
+            # manifest. The native bootstrap validates these records against
+            # the mounted image before it starts the Root Linux supervisor.
+            "entries": manifest.get("entries"),
+            "runtime_state_directory": manifest.get("runtime_state_directory"),
             "mksquashfs": measurement,
             "help_observation": help_observation,
             "build_runs": runs,

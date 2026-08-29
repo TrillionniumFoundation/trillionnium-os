@@ -59,7 +59,7 @@ prebuilt_etc {
 cc_binary {
     name: "trillionnium-owner-open-bootstrap",
     srcs: ["native/owner_open_bootstrap.cpp"],
-    shared_libs: ["libcrypto"],
+    shared_libs: ["libcrypto", "libjsoncpp"],
     cpp_std: "c++20",
     cflags: ["-Wall", "-Wextra", "-Werror"],
     system_ext_specific: true,
@@ -82,6 +82,7 @@ cc_binary {
 cc_binary {
     name: "trillionnium-owner-open-ingress",
     srcs: ["native/owner_open_ingress_proxy.cpp"],
+    shared_libs: ["libjsoncpp"],
     cpp_std: "c++20",
     cflags: ["-Wall", "-Wextra", "-Werror"],
     system_ext_specific: true,

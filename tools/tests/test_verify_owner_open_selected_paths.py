@@ -48,17 +48,22 @@ class VerifyOwnerOpenSelectedPathsTest(unittest.TestCase):
         }
         self.write(
             selected["supervisor"],
-            "evidence parent\nconfig_restored\nPASS_RELEASE_SUPERVISED_INSTALLED_CODEX_MCP_QUALIFICATION\n",
+            "# evidence parent\n# config_restored\n"
+            "# PASS_RELEASE_SUPERVISED_INSTALLED_CODEX_MCP_QUALIFICATION\n",
         )
         self.write(
             selected["relay"],
+            "import relay_impl as base\n"
             "SELECTED_ENTRY\nautomatic_redispatch=False\npayload_logged=False\n",
         )
         self.write(
             selected["qualifier"],
-            "SELECTED_RELAY\nrelay descriptor does not identify the release entry\n",
+            "# SELECTED_RELAY\n"
+            "# relay descriptor does not identify the release entry\n",
         )
         self.write("tools/tests/test_release.py", "PASS = True\n")
+        self.write("tools/relay_impl.py", "IMPLEMENTATION = True\n")
+        self.write("tools/draft_relay.py", "DRAFT = True\n")
         self.write(".github/workflows/release.yml", "name: release\n")
         self.write("docs/plan/release.md", "release supervisor relay qualifier\n")
         self.write("docs/status/release.json", "{}\n")
@@ -66,6 +71,7 @@ class VerifyOwnerOpenSelectedPathsTest(unittest.TestCase):
             "schema": module.EXPECTED_SCHEMA,
             "revision": "fixture",
             "selected": selected,
+            "implementation_helpers": ["tools/relay_impl.py"],
             "selected_tests": ["tools/tests/test_release.py"],
             "selected_workflows": [".github/workflows/release.yml"],
             "superseded_drafts": ["tools/draft_relay.py"],
@@ -98,6 +104,11 @@ class VerifyOwnerOpenSelectedPathsTest(unittest.TestCase):
         report = module.verify(self.root)
         self.assertEqual(report.errors, [])
         self.assertEqual(report.facts["selected_count"], 3)
+        self.assertEqual(report.facts["implementation_helper_count"], 1)
+        self.assertEqual(
+            report.facts["import_closure"]["tools/release_relay.py"],
+            ["tools/relay_impl.py"],
+        )
 
     def test_selected_path_cannot_also_be_a_draft(self) -> None:
         value = self.contract()
@@ -105,6 +116,37 @@ class VerifyOwnerOpenSelectedPathsTest(unittest.TestCase):
         self.write_contract(value)
         report = module.verify(self.root)
         self.assertTrue(any("also appear as drafts" in item for item in report.errors))
+
+    def test_implementation_helper_cannot_also_be_a_draft(self) -> None:
+        value = self.contract()
+        value["superseded_drafts"].append(value["implementation_helpers"][0])
+        self.write_contract(value)
+        report = module.verify(self.root)
+        self.assertTrue(
+            any("implementation helpers also appear as drafts" in item for item in report.errors)
+        )
+
+    def test_missing_implementation_helper_fails(self) -> None:
+        (self.root / "tools/relay_impl.py").unlink()
+        report = module.verify(self.root)
+        self.assertTrue(any("relay_impl.py" in item and "is missing" in item for item in report.errors))
+
+    def test_undeclared_local_import_fails(self) -> None:
+        self.write("tools/unbound.py", "UNBOUND = True\n")
+        relay = self.root / "tools/release_relay.py"
+        relay.write_text(relay.read_text() + "import unbound\n", encoding="utf-8")
+        report = module.verify(self.root)
+        self.assertTrue(
+            any("imports undeclared local module" in item for item in report.errors)
+        )
+
+    def test_import_of_superseded_draft_fails(self) -> None:
+        relay = self.root / "tools/release_relay.py"
+        relay.write_text(relay.read_text() + "import draft_relay\n", encoding="utf-8")
+        report = module.verify(self.root)
+        self.assertTrue(
+            any("imports superseded draft" in item for item in report.errors)
+        )
 
     def test_release_reference_cannot_select_draft_token(self) -> None:
         self.write("docs/plan/release.md", "use tools/draft_relay.py\n")
@@ -131,6 +173,22 @@ class VerifyOwnerOpenSelectedPathsTest(unittest.TestCase):
         path.symlink_to(target.name)
         report = module.verify(self.root)
         self.assertTrue(any("not a real file" in item for item in report.errors))
+
+    def test_embedded_nul_path_fails_closed(self) -> None:
+        value = self.contract()
+        value["selected"]["relay"] = "tools/bad\u0000path.py"
+        self.write_contract(value)
+        report = module.verify(self.root)
+        self.assertTrue(any("selected path is missing" in item for item in report.errors))
+
+    def test_symlink_loop_path_fails_closed(self) -> None:
+        value = self.contract()
+        value["selected"]["relay"] = "tools/loop/release_relay.py"
+        self.write_contract(value)
+        loop = self.root / "tools/loop"
+        loop.symlink_to("loop", target_is_directory=True)
+        report = module.verify(self.root)
+        self.assertTrue(any("selected path is missing" in item for item in report.errors))
 
 
 if __name__ == "__main__":

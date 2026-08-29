@@ -102,6 +102,33 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
             report.errors,
         )
 
+    def test_missing_data_ready_property_fails_closed(self) -> None:
+        relative = module.ANDROID_ROOT / "sepolicy/private/property_contexts"
+        self.rewrite(
+            relative,
+            "trillionnium.owner_open.data_ready",
+            "trillionnium.owner_open.data_ready_drifted",
+        )
+        report = module.verify(self.root)
+        self.assertTrue(
+            any("property_contexts misses trillionnium.owner_open.data_ready" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_profile_data_ready_property_drift_fails_closed(self) -> None:
+        path = self.root / module.ANDROID_ROOT / "config/profile-v3.json"
+        value = json.loads(path.read_text(encoding="utf-8"))
+        value["data_ready_property"] = "trillionnium.owner_open.data_ready_drifted"
+        path.write_text(
+            json.dumps(value, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        report = module.verify(self.root)
+        self.assertTrue(
+            any("runtime profile data_ready_property" in error for error in report.errors),
+            report.errors,
+        )
+
     def test_supervisor_automatic_redispatch_fails_closed(self) -> None:
         path = self.root / module.SUPERVISOR_CONFIG
         value = json.loads(path.read_text(encoding="utf-8"))

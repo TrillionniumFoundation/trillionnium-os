@@ -52,9 +52,9 @@ jobs:
           EXPECTED_TREE: ${{ inputs.source_tree }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
-          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=no)"
           python3 --version
       - name: Execute fixed target-owned L2 harness
         env:
@@ -112,9 +112,9 @@ jobs:
           EXPECTED_TREE: ${{ inputs.source_tree }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
-          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=no)"
           python3 --version
       - name: Execute fixed target-owned installed Codex harness
         env:
@@ -169,9 +169,9 @@ jobs:
           EXPECTED_TREE: ${{ inputs.source_tree }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
-          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=no)"
           python3 --version
       - name: Execute fixed clean-builder harness
         env:
@@ -226,9 +226,9 @@ jobs:
           EXPECTED_TREE: ${{ inputs.source_tree }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
-          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=no)"
           python3 --version
       - name: Execute fixed authorized-device harness
         env:
@@ -281,9 +281,9 @@ jobs:
           EXPECTED_TREE: ${{ inputs.source_tree }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
-          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=no)"
           python3 --version
       - name: Execute fixed destructive-lab harness
         env:
@@ -337,9 +337,9 @@ jobs:
           EXPECTED_TREE: ${{ inputs.source_tree }}
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
-          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=no)"
           python3 --version
       - name: Execute fixed protected release harness
         env:

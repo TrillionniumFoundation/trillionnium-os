@@ -87,6 +87,33 @@ A client may provide `broker_epoch` in `broker.hello`. A mismatched epoch is a
 stale descriptor and fails before request admission. The hello acknowledgement
 returns the same epoch and descriptor digest; the client must reject drift.
 
+### 3.1 Native ingress and broker peer semantics
+
+The native Android ingress and the Python broker observe opposite ends of the
+upstream socket. On the broker's accepted client socket, the broker's
+`SO_PEERCRED` value is the authenticated native-ingress process. Therefore the
+`peer` object in `broker.hello.ack` identifies the ingress process as observed
+by the broker and must exactly match its `pid`, effective `uid` and effective
+`gid`. It is not the Android caller's credentials and it is not the broker's
+credentials.
+
+The native ingress independently reads `SO_PEERCRED` on its connected upstream
+socket to authenticate the broker server (currently requiring the broker's
+effective UID to be root), then validates the acknowledgement's `peer` object
+against its own process credentials before forwarding any frame to Android.
+The Android caller is authenticated separately at the abstract ingress socket;
+its authenticated peer identity is represented in the generated canonical
+`client_id`. A valid handshake must satisfy all three bindings and always has
+`automatic_redispatch = false`.
+
+After the handshake, the Android client adds a top-level
+`direction = client_to_host` and a contiguous per-connection `seq` to every
+semantic Host frame before wrapping it as a broker request. The first business
+frame is `seq = 0`; the sequence advances only after the complete broker frame
+is written, and a reconnect starts a new sequence at zero. The broker and
+native ingress preserve these fields; neither layer synthesizes a missing
+sequence or silently repairs a gap.
+
 ## 4. Client and upstream sequencing
 
 Each connection has one `client_id` and one strictly contiguous nonnegative

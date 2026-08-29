@@ -3,6 +3,11 @@
 # namespace, binds only the writable state directory, chroots and execs the
 # finite Root Linux supervisor. No Authority/lease/P01 service participates.
 
+on early-init
+    # Keep the readiness barrier false until post-fs-data has created and
+    # relabeled every private state directory.
+    setprop trillionnium.owner_open.data_ready 0
+
 on post-fs-data
     mkdir /data/trillionnium 0700 root root
     mkdir /data/trillionnium/owner-open 0700 root root
@@ -10,8 +15,11 @@ on post-fs-data
     mkdir /data/trillionnium/owner-open/state 0700 root root
     mkdir /data/trillionnium/owner-open/state/broker 0700 root root
     restorecon_recursive /data/trillionnium/owner-open
+    # The combined property trigger below can fire in either property order,
+    # but only after this action has completed its mkdir/restorecon sequence.
+    setprop trillionnium.owner_open.data_ready 1
 
-on property:ro.trillionnium.owner_open.enabled=true
+on property:ro.trillionnium.owner_open.enabled=true && property:trillionnium.owner_open.data_ready=1
     start trillionnium_owner_open_bootstrap
 
 on property:trillionnium.owner_open.ready=1

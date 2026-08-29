@@ -126,15 +126,7 @@ impl BufferedFrame {
 }
 
 fn is_flow_controlled_kind(kind: &str) -> bool {
-    matches!(
-        kind,
-        FRAME_MODEL_DELTA
-            | FRAME_MODEL_MESSAGE
-            | FRAME_TOOL_STDOUT
-            | FRAME_TOOL_STDERR
-            | "provider.opaque"
-            | "job.output"
-    )
+    FLOW_CONTROLLED_FRAME_KINDS.contains(&kind)
 }
 
 fn cursor_from_event_id(event_id: &str) -> Option<u64> {

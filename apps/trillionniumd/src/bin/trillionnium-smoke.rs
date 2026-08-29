@@ -26,6 +26,9 @@ use trillionnium_tool_runtime::{
 };
 
 #[path = "../providers/codex.rs"]
+// The smoke binary only exercises the adapter readiness/plan entrypoints; the
+// shared provider module also contains daemon-only lifecycle helpers.
+#[allow(dead_code)]
 mod codex_adapter;
 #[path = "../providers/contract.rs"]
 mod provider_contract;

@@ -43,7 +43,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - run: test \"$(git rev-parse HEAD)\" = \"${{ github.event.pull_request.head.sha || github.sha }}\"
+      - run: test \"$(git --no-replace-objects rev-parse HEAD)\" = \"${{ github.event.pull_request.head.sha || github.sha }}\"
       - uses: actions/upload-artifact@v4
         with:
           name: evidence-${{ github.event.pull_request.head.sha || github.sha }}
@@ -106,6 +106,12 @@ jobs:
         applicator.parent.mkdir(parents=True)
         applicator.write_text("# retired\n", encoding="utf-8")
         self.assertTrue(any("apply_r5_dead_patch.py" in item for item in self.errors()))
+
+    def test_unreadable_utf8_workflow_fails_closed(self) -> None:
+        path = self.workflows / "owner-open-r5-unreadable.yml"
+        path.write_bytes(b"name: invalid-\xff\n")
+        errors = self.errors()
+        self.assertTrue(any("cannot read workflow" in item for item in errors))
 
 
 if __name__ == "__main__":

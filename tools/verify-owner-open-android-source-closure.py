@@ -460,12 +460,32 @@ def verify(root: Path) -> Report:
     missing_boundaries = sorted(boundary for boundary in required_boundaries if boundary not in all_policy)
     if missing_boundaries:
         report.errors.append(f"SELinux source misses required boundaries: {missing_boundaries}")
+    expected_properties = {
+        "enabled_property": "ro.trillionnium.owner_open.enabled",
+        "data_ready_property": "trillionnium.owner_open.data_ready",
+        "ready_property": "trillionnium.owner_open.ready",
+        "emergency_stop_property": "sys.trillionnium.owner_open.stop",
+    }
+    for field, property_name in expected_properties.items():
+        if runtime_profile.get(field) != property_name:
+            report.errors.append(
+                f"Android runtime profile {field} must be {property_name}"
+            )
+    # The bootstrap must not start merely because the read-only enable bit is
+    # present: post-fs-data has to publish the data_ready barrier after
+    # creating and relabeling the private state tree. Keep all four property
+    # names in this verifier so profile/SELinux drift cannot silently bypass
+    # that ordering contract.
     for property_name in (
         "ro.trillionnium.owner_open.enabled",
+        "trillionnium.owner_open.data_ready",
         "trillionnium.owner_open.ready",
         "sys.trillionnium.owner_open.stop",
     ):
-        if property_name not in sepolicy_text.get("property_contexts", ""):
+        if not re.search(
+            rf"(?m)^\s*{re.escape(property_name)}(?:\s|$)",
+            sepolicy_text.get("property_contexts", ""),
+        ):
             report.errors.append(f"property_contexts misses {property_name}")
     if client_package and f"name={client_package}" not in sepolicy_text.get("seapp_contexts", ""):
         report.errors.append("seapp_contexts does not bind the owner-open client package")
@@ -473,6 +493,10 @@ def verify(root: Path) -> Report:
     report.facts = {
         "revision": profile.get("revision"),
         "profile_id": profile.get("profile_id"),
+        "enabled_property": runtime_profile.get("enabled_property"),
+        "data_ready_property": runtime_profile.get("data_ready_property"),
+        "ready_property": runtime_profile.get("ready_property"),
+        "emergency_stop_property": runtime_profile.get("emergency_stop_property"),
         "source_artifact_count": len(source_paths),
         "required_module_count": len(module_names),
         "android_bp_modules": sorted(bp_modules),

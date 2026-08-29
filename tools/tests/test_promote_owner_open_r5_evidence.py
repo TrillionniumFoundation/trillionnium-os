@@ -95,13 +95,65 @@ class PromotionTest(unittest.TestCase):
                 },
             ],
         }
+        # Exercise promotion against the same immutable thirteen-lane R6
+        # register used in production.  A three-lane toy register can hide
+        # missing-lane or mutable-external-flag regressions in the promoter.
+        verifier = module.gap_verifier_module()
+        by_id = {
+            str(item["id"]): item for item in self.gaps["gaps"]
+        }
+        for identifier, (issues, level, external) in verifier.CANONICAL_GAP_SPECS.items():
+            if identifier in by_id:
+                item = by_id[identifier]
+                item["requires_external_evidence"] = external
+                continue
+            state = (
+                "SOURCE_CLOSED_PENDING_EVIDENCE"
+                if identifier in {
+                    "R5-GAP-PROCESS-LIFECYCLE-001",
+                    "R5-GAP-STREAM-RECOVERY-001",
+                    "R5-GAP-JOURNAL-CONVERGENCE-001",
+                    "R5-GAP-BROKER-CORRELATION-001",
+                    "R5-GAP-PRODUCT-ENTRYPOINT-001",
+                }
+                else "EXTERNAL_HOLD"
+            )
+            item = {
+                "id": identifier,
+                "status": state,
+                "summary": identifier,
+                "exit_evidence_level": level,
+                "requires_external_evidence": external,
+                "acceptance": ["exact reviewed evidence"],
+                "source_evidence": dict(SOURCE),
+            }
+            if len(issues) == 1:
+                item["issue"] = issues[0]
+            else:
+                item["issues"] = list(issues)
+            if state == "SOURCE_CLOSED_PENDING_EVIDENCE":
+                item["remaining_evidence"] = ["target observation"]
+            else:
+                item["required_material"] = ["authorized target evidence"]
+            by_id[identifier] = item
+        self.gaps["gaps"] = [
+            by_id[identifier] for identifier in verifier.CANONICAL_GAP_ORDER
+        ]
+        self.gaps["priority_order"] = [item["id"] for item in self.gaps["gaps"]]
+        self.gaps["generated_policy"].update(
+            {
+                "checked_in_status_is_claim_policy_not_exact_head_evidence": True,
+                "exact_head_evidence_must_be_ci_generated": True,
+            }
+        )
         self.status = {
             "schema": "org.trillionnium.owner-open-r5-status.v2",
             "active_plan_revision": "2026-08-29-r6",
             "zero_gap": False,
             "public_release": False,
             "automatic_redispatch": False,
-            "claim_ceiling": "L1_ONLY",
+            "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
+            "development_branch": SOURCE["branch"],
             "open_repository_gaps": [],
             "external_evidence_holds": [
                 {"id": "R5-GAP-RELEASE-001"}
@@ -111,23 +163,22 @@ class PromotionTest(unittest.TestCase):
             ],
             "work_packages": [
                 {
-                    "id": "W3",
-                    "open_gap_ids": ["R5-GAP-ROOTLINUX-PLACEMENT-001"],
+                    "id": f"W{index}",
+                    "open_gap_ids": [],
                     "complete": False,
                     "latest_evidence_level": "L1",
                     "status": "HOST_TESTED",
-                },
-                {
-                    "id": "W7",
-                    "open_gap_ids": ["R5-GAP-RELEASE-001"],
-                    "complete": False,
-                    "latest_evidence_level": "L1",
-                    "status": "HOST_TESTED",
-                },
+                }
+                for index in range(8)
             ],
             "critical_path_next": ["collect target evidence"],
             "not_claimed": ["target placement", "release"],
-            "current_candidate": {},
+            "current_candidate": {
+                "branch": SOURCE["branch"],
+                "validated_source_commit": SOURCE["commit"],
+                "validated_source_tree": SOURCE["tree"],
+                "workflow_run_id": SOURCE["workflow_run_id"],
+            },
         }
         self.write()
 
@@ -186,7 +237,10 @@ class PromotionTest(unittest.TestCase):
         )
         self.gaps["gaps"][1]["source_evidence"]["commit"] = "d" * 40
         self.write()
-        with self.assertRaisesRegex(module.EvidenceError, "source evidence differs"):
+        with self.assertRaisesRegex(
+            module.EvidenceError,
+            "source evidence differs|source identity differs",
+        ):
             module.apply_promotion(self.root, fixture.bundle / "manifest.json")
 
 

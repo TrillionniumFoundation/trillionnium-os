@@ -179,7 +179,9 @@ above its declared exit level.
 
 Fixtures never close installed Codex, target placement, image, physical-device,
 fault or release lanes. `public_release` remains false until the L6 release gap
-is independently closed and a human go/no-go authorization is recorded.
+is independently closed, every other gap is CLOSED, and a human go/no-go
+authorization is recorded; the machine rule is
+`public_release == (release_gap_closed and zero_gap)`.
 
 ## Exact-source L1 checkpoint (2026-08-29)
 
@@ -191,7 +193,10 @@ installed, image, physical, destructive-fault, governance or release evidence.
 ## External evidence execution entry
 
 Use `operations/owner-open-r5-external-evidence-capture-and-promotion.md`,
-`.github/workflows/owner-open-r5-target-evidence-capture.yml`, and
-`.github/workflows/owner-open-r5-governance-readiness.yml`. An uploaded target
-artifact remains capture-only until an independent reviewer finalizes the
-bundle and the canonical promotion tool verifies every raw byte.
+`tools/capture-owner-open-r5-target-evidence.py`, and
+`tools/verify-owner-open-r5-governance-readiness.py`. The repository contains
+the capture, finalization and promotion tools; a target-controlled runner must
+invoke them with the reviewed attestation and harness described by the
+runbook. An uploaded target artifact remains capture-only until an independent
+reviewer finalizes the bundle and the canonical promotion tool verifies every
+raw byte.

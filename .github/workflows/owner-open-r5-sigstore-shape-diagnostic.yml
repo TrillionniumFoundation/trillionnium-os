@@ -16,14 +16,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
-      - name: Assert exact source-head checkout
+          persist-credentials: false
+      - name: Assert exact diagnostic checkout
         env:
           SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: test "$(git rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Download exact public Sigstore bundles
         run: |
           set -euo pipefail
@@ -60,7 +65,7 @@ jobs:
               }
           print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: owner-open-r5-sigstore-public-shape-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error

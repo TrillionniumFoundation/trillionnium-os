@@ -76,6 +76,7 @@
         "docs/status/owner-open-r5-status.json"
       ],
       "exit_evidence_level": "L1",
+      "requires_external_evidence": true,
       "acceptance": [
         "The active candidate commit and tree are emitted by a permanent workflow.",
         "Checked-in status never claims an unvalidated HEAD.",
@@ -134,6 +135,7 @@
         "docs/protocols/owner-open-jobs-v1.md"
       ],
       "exit_evidence_level": "L1",
+      "requires_external_evidence": false,
       "acceptance": [
         "Capacity rejection proves no child was started.",
         "Concurrent starts cannot exceed max_jobs.",
@@ -187,6 +189,7 @@
         "docs/protocols/owner-open-jobs-v1.md"
       ],
       "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
       "acceptance": [
         "Readers are live before bounded initial stdin is written.",
         "Every setup failure after spawn is covered by a total lifecycle guard.",
@@ -245,6 +248,7 @@
         "docs/protocols/owner-open-inspect-v1.md"
       ],
       "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
       "acceptance": [
         "job.output is a generated bounded-stream delivery class.",
         "Zero credit never blocks cancel, inspect or terminal paths.",
@@ -302,6 +306,7 @@
         "docs/protocols/owner-open-effect-state-machine-v1.md"
       ],
       "exit_evidence_level": "L5",
+      "requires_external_evidence": true,
       "acceptance": [
         "Critical append failures are never discarded.",
         "Degraded live and terminal states are explicit and inspectable.",
@@ -360,6 +365,7 @@
         "docs/protocols/owner-open-multi-connection-broker-v1.md"
       ],
       "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
       "acceptance": [
         "Connection, client, broker and Host sequences are separately bound.",
         "accepted, forwarded and terminal/uncertain records are durable.",
@@ -418,6 +424,7 @@
         "docs/operations/owner-open-deployment-lifecycle-and-emergency-stop.md"
       ],
       "exit_evidence_level": "L3",
+      "requires_external_evidence": true,
       "acceptance": [
         "One product command and one init service start the supported topology.",
         "Install and target-files inventories contain only permitted binaries.",
@@ -473,6 +480,7 @@
       ],
       "summary": "Execute the exact installed target Root Linux Codex with authenticated same-turn MCP/tool continuation.",
       "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
       "required_material": [
         "target Root Linux filesystem and service identity",
         "installed Codex executable and credentials",
@@ -529,6 +537,7 @@
       ],
       "summary": "Bind actual UID/GID, namespace, cgroup, filesystem and writable overlay placement.",
       "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
       "acceptance": [
         "Installed processes run under the declared identities and cgroup/namespace.",
         "Writable stores and sockets have exact owners, modes and mount ancestry.",
@@ -582,6 +591,7 @@
       "issue": 2,
       "summary": "Build a clean Android owner-open product graph with init and SELinux admission.",
       "exit_evidence_level": "L3",
+      "requires_external_evidence": true,
       "acceptance": [
         "Strict Android graph verifier reports no forbidden legacy node.",
         "Soong, init, SELinux and target-files inventories bind one product entrypoint.",
@@ -639,6 +649,7 @@
       ],
       "summary": "Select and physically execute the ordinary ADB topology with raw observations.",
       "exit_evidence_level": "L4",
+      "requires_external_evidence": true,
       "acceptance": [
         "The selected ARM64 client/server or transparent relay is artifact-bound.",
         "A physical turn performs devices, shell id, deliberate failure and visible mutation.",
@@ -695,6 +706,7 @@
       ],
       "summary": "Qualify crash, disconnect, ENOSPC, USB loss, reboot and power-loss recovery.",
       "exit_evidence_level": "L5",
+      "requires_external_evidence": true,
       "acceptance": [
         "Every durable-before/during/after-effect crash cut has a recorded outcome.",
         "Provider, core, transport, broker, MCP and client failures are isolated.",
@@ -747,6 +759,7 @@
       "issue": 13,
       "summary": "Create a separately authorized signed public-release profile.",
       "exit_evidence_level": "L6",
+      "requires_external_evidence": true,
       "acceptance": [
         "Artifact signatures, certificate identity and transparency-log proofs are cryptographically verified.",
         "AVB, rollback indexes, OTA, key custody and recovery are independently approved.",
@@ -795,7 +808,7 @@
       "every gap status is CLOSED",
       "every gap carries exact evidence at or above its exit level",
       "the evidence source commit/tree and installed artifacts match",
-      "public release remains false unless R5-GAP-RELEASE-001 is CLOSED"
+      "public_release is true exactly when R5-GAP-RELEASE-001 is CLOSED and every gap is CLOSED"
     ],
     "fixtures_never_close": [
       "installed Codex",

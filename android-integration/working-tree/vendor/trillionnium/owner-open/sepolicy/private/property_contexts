@@ -1,3 +1,4 @@
 ro.trillionnium.owner_open.enabled    u:object_r:trillionnium_owner_open_prop:s0 exact bool
+trillionnium.owner_open.data_ready   u:object_r:trillionnium_owner_open_prop:s0 exact bool
 trillionnium.owner_open.ready         u:object_r:trillionnium_owner_open_prop:s0 exact bool
 sys.trillionnium.owner_open.stop      u:object_r:trillionnium_owner_open_prop:s0 exact bool

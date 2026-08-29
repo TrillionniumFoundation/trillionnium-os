@@ -23,7 +23,6 @@ FORBIDDEN_NAME_PARTS = (
     "migration",
     "executor",
     "history-hardening",
-    "repository-export",
 )
 EXACT_REF_TOKENS = (
     "github.event.pull_request.head.sha",
@@ -40,6 +39,9 @@ API_WRITE = re.compile(
     re.IGNORECASE,
 )
 CHECKOUT = re.compile(r"^\s*- uses: actions/checkout@")
+EXACT_HEAD_ASSERTION = re.compile(
+    r"\bgit\s+(?:--no-replace-objects\s+)?rev-parse\s+HEAD\b"
+)
 
 
 class BoundaryError(ValueError):
@@ -81,7 +83,11 @@ def verify(root: Path) -> dict[str, Any]:
         errors.append(f"required permanent workflow is absent: {name}")
 
     for path in sorted(workflow_dir.glob("owner-open-r5*.yml")):
-        text = path.read_text(encoding="utf-8")
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            errors.append(f"cannot read workflow {path.name}: {error}")
+            continue
         lines = text.splitlines()
         checked.append(path.name)
         lowered = path.name.lower()
@@ -116,7 +122,7 @@ def verify(root: Path) -> dict[str, Any]:
                     f"PR checkout persists credentials: {path.name}:{line_number}"
                 )
 
-        if "git rev-parse HEAD" not in text:
+        if EXACT_HEAD_ASSERTION.search(text) is None:
             errors.append(f"PR workflow lacks exact-head assertion: {path.name}")
         for line_number, line in enumerate(lines, 1):
             if (

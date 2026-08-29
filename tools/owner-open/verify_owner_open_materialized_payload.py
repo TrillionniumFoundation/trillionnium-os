@@ -12,7 +12,7 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import stat
 import sys
@@ -21,8 +21,11 @@ from typing import Any, Iterable
 IMAGE_NAME = "owner-open-rootfs.squashfs"
 MANIFEST_NAME = "owner-open-rootfs.image-manifest.json"
 IMAGE_SCHEMA = "org.trillionnium.owner-open.rootfs-image-manifest.v1"
+RUNTIME_STATE_DIRECTORY = "/var/lib/trillionnium/owner-open"
 MAX_IMAGE_BYTES = 8 * 1024 * 1024 * 1024
 MAX_MANIFEST_BYTES = 16 * 1024 * 1024
+MAX_ENTRY_BYTES = 512 * 1024 * 1024
+MAX_ENTRIES = 4096
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
 
@@ -128,10 +131,80 @@ def locate(inputs: Iterable[Path]) -> tuple[Path, Path]:
     return images[0], manifests[0]
 
 
+def validate_entries(manifest: dict[str, Any]) -> None:
+    entries = manifest.get("entries")
+    entry_count = manifest.get("entry_count")
+    if (
+        not isinstance(entry_count, int)
+        or isinstance(entry_count, bool)
+        or not 1 <= entry_count <= MAX_ENTRIES
+        or not isinstance(entries, list)
+        or len(entries) != entry_count
+    ):
+        raise MaterializationError("image manifest entry inventory is incomplete")
+    roles: set[str] = set()
+    destinations: set[str] = set()
+    allowed_prefixes = (
+        "/bin/",
+        "/lib/",
+        "/lib64/",
+        "/usr/bin/",
+        "/usr/lib/",
+        "/usr/lib64/",
+        "/usr/libexec/trillionnium/",
+        "/etc/trillionnium/",
+    )
+    for index, item in enumerate(entries):
+        if not isinstance(item, dict):
+            raise MaterializationError(f"image manifest entry {index} is malformed")
+        role = item.get("role")
+        destination = item.get("destination")
+        mode = item.get("mode")
+        uid = item.get("uid")
+        gid = item.get("gid")
+        bytes_value = item.get("bytes")
+        digest_value = item.get("sha256")
+        if (
+            not isinstance(role, str)
+            or not role
+            or role in roles
+            or not isinstance(destination, str)
+            or not destination.startswith("/")
+            or destination.endswith("/")
+            or "\x00" in destination
+            or ".." in PurePosixPath(destination).parts
+            or str(PurePosixPath(destination)) != destination
+            or not any(destination.startswith(prefix) for prefix in allowed_prefixes)
+            or destination in destinations
+            or not isinstance(mode, str)
+            or re.fullmatch(r"0[0-7]{3}", mode) is None
+            or int(mode, 8) & 0o022
+            or not isinstance(uid, int)
+            or isinstance(uid, bool)
+            or uid != 0
+            or not isinstance(gid, int)
+            or isinstance(gid, bool)
+            or gid != 0
+            or not isinstance(bytes_value, int)
+            or isinstance(bytes_value, bool)
+            or not 1 <= bytes_value <= MAX_ENTRY_BYTES
+            or not isinstance(digest_value, str)
+            or SHA256.fullmatch(digest_value) is None
+        ):
+            raise MaterializationError(f"image manifest entry {index} is malformed")
+        roles.add(role)
+        destinations.add(destination)
+
+
 def validate(image: Path, manifest_path: Path) -> tuple[dict[str, Any], bytes, str, int]:
     stable_regular(image, "rootfs image", MAX_IMAGE_BYTES)
     manifest, raw = load_manifest(manifest_path)
     digest, count = hash_file(image, MAX_IMAGE_BYTES)
+    if manifest.get("runtime_state_directory") != RUNTIME_STATE_DIRECTORY:
+        raise MaterializationError(
+            "image manifest does not bind the canonical writable state mountpoint"
+        )
+    validate_entries(manifest)
     expected_digest = manifest.get("image_sha256")
     expected_bytes = manifest.get("image_bytes")
     if not isinstance(expected_digest, str) or SHA256.fullmatch(expected_digest) is None:
@@ -151,7 +224,13 @@ def validate(image: Path, manifest_path: Path) -> tuple[dict[str, Any], bytes, s
     for index, item in enumerate(build_runs):
         if not isinstance(item, dict):
             raise MaterializationError(f"image manifest build run {index} is malformed")
-        if item.get("image_sha256") != digest or item.get("image_bytes") != count:
+        run_bytes = item.get("image_bytes")
+        if (
+            item.get("image_sha256") != digest
+            or not isinstance(run_bytes, int)
+            or isinstance(run_bytes, bool)
+            or run_bytes != count
+        ):
             raise MaterializationError(f"image manifest build run {index} does not bind selected bytes")
     claims = manifest.get("claims")
     expected_claims = {
@@ -177,7 +256,7 @@ def validate(image: Path, manifest_path: Path) -> tuple[dict[str, Any], bytes, s
 def open_output(path: Path) -> int:
     if not path.is_absolute() or path.parent.is_symlink() or not path.parent.is_dir():
         raise MaterializationError("Soong output must be an absolute path below a real directory")
-    return os.open(
+    descriptor = os.open(
         path,
         os.O_WRONLY
         | os.O_CREAT
@@ -186,6 +265,17 @@ def open_output(path: Path) -> int:
         | os.O_CLOEXEC,
         0o644,
     )
+    try:
+        # `open(2)` applies the process umask.  The materialization contract
+        # is an exact 0644 output, so normalize the descriptor before any
+        # bytes are published and make the mode independent of the caller's
+        # umask.
+        os.fchmod(descriptor, 0o644)
+        return descriptor
+    except Exception:
+        os.close(descriptor)
+        path.unlink(missing_ok=True)
+        raise
 
 
 def publish_bytes(path: Path, value: bytes) -> None:

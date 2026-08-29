@@ -115,7 +115,7 @@ mod tests {
             SOURCE_STATUS,
             "source_only_allocator_commit_android_ack_replay_bridge_product_hold_v1"
         );
-        assert!(!ANDROID_ACK_REPLAY_HANDOFF_PRODUCT_WIRED);
+        const { assert!(!ANDROID_ACK_REPLAY_HANDOFF_PRODUCT_WIRED) };
         let error = require_product_handoff().unwrap_err();
         assert_eq!(error.to_string(), PRODUCT_HOLD_CODE);
     }

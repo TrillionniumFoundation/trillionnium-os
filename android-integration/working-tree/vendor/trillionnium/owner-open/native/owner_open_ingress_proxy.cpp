@@ -6,7 +6,10 @@
 #include <cstdio>
 #include <cstring>
 #include <fcntl.h>
+#include <cstdint>
+#include <limits>
 #include <poll.h>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <sys/socket.h>
@@ -16,12 +19,15 @@
 #include <thread>
 #include <unistd.h>
 
+#include <json/json.h>
+
 namespace {
 constexpr std::string_view kAbstractName = "trillionnium_owner_open";
 constexpr const char* kUpstream = "/data/trillionnium/owner-open/state/broker/owner-open.sock";
 constexpr const char* kToken = "/data/trillionnium/owner-open/state/broker/owner-open.token";
 constexpr std::string_view kAllowedPeer = "u:r:trillionnium_owner_open_client:s0";
-constexpr std::string_view kAckMarker = "\"kind\":\"broker.hello.ack\"";
+constexpr std::string_view kWireSchema = "org.trillionnium.owner-open.connection-broker-wire.v1";
+constexpr std::string_view kBrokerId = "owner-open-device";
 constexpr int kMaximumConnections = 32;
 constexpr int kIdleTimeoutMilliseconds = 300000;
 constexpr std::size_t kMaximumLineBytes = 1024 * 1024;
@@ -29,6 +35,20 @@ constexpr std::size_t kBufferBytes = 64 * 1024;
 std::atomic<int> g_connections{0};
 std::atomic<unsigned long long> g_client_sequence{1};
 volatile sig_atomic_t g_stop = 0;
+
+bool TryAcquireConnection() {
+  int current = g_connections.load(std::memory_order_relaxed);
+  while (current < kMaximumConnections &&
+         !g_connections.compare_exchange_weak(current, current + 1,
+                                               std::memory_order_acquire,
+                                               std::memory_order_relaxed)) {
+  }
+  return current < kMaximumConnections;
+}
+
+void ReleaseConnection() {
+  g_connections.fetch_sub(1, std::memory_order_release);
+}
 
 int Fail(std::string_view message) {
   std::fprintf(stderr, "owner-open ingress HOLD: %.*s: %s\n",
@@ -47,21 +67,36 @@ bool InstallSignals() {
          signal(SIGPIPE, SIG_IGN) != SIG_ERR;
 }
 
-bool AllowedPeer(int fd, struct ucred* output) {
-#ifdef SO_PEERSEC
-  std::array<char, 256> security {};
-  socklen_t length = security.size();
-  if (getsockopt(fd, SOL_SOCKET, SO_PEERSEC, security.data(), &length) != 0 ||
-      length == 0 || length > security.size()) {
-    return false;
-  }
-  const std::string_view value(security.data(), strnlen(security.data(), length));
-  if (value != kAllowedPeer && !value.starts_with(std::string(kAllowedPeer) + ":")) return false;
-#endif
+bool ReadPeerCredentials(int fd, struct ucred* output) {
+  if (output == nullptr) return false;
   struct ucred credentials {};
   socklen_t size = sizeof(credentials);
   if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &credentials, &size) != 0 ||
-      size != sizeof(credentials) || credentials.pid <= 1 || credentials.uid < 10000) {
+      size != sizeof(credentials) || credentials.pid <= 1) {
+    return false;
+  }
+  *output = credentials;
+  return true;
+}
+
+bool AllowedPeer(int fd, struct ucred* output) {
+#ifndef SO_PEERSEC
+  (void)fd;
+  (void)output;
+  errno = ENOTSUP;
+  return false;
+#else
+  std::array<char, 256> security {};
+  socklen_t length = security.size();
+  if (getsockopt(fd, SOL_SOCKET, SO_PEERSEC, security.data(), &length) != 0 ||
+      length == 0 || length > security.size() || security[length - 1] != '\0') {
+    return false;
+  }
+  const std::string_view value(security.data(), length - 1);
+  if (value != kAllowedPeer) return false;
+#endif
+  struct ucred credentials {};
+  if (!ReadPeerCredentials(fd, &credentials) || credentials.uid < 10000) {
     return false;
   }
   *output = credentials;
@@ -147,7 +182,10 @@ bool WriteAll(int fd, std::string_view value) {
 bool ReadLine(int fd, std::string* output) {
   output->clear();
   output->reserve(4096);
-  while (output->size() <= kMaximumLineBytes) {
+  // The bound covers the complete wire line, including its trailing newline.
+  // Stop before reading byte max+1 so an unterminated/oversized frame cannot
+  // grow the string beyond the advertised limit.
+  while (output->size() < kMaximumLineBytes) {
     unsigned char current = 0;
     const ssize_t count = recv(fd, &current, 1, 0);
     if (count < 0 && errno == EINTR) continue;
@@ -160,13 +198,99 @@ bool ReadLine(int fd, std::string* output) {
   return false;
 }
 
-std::string BrokerHello(const struct ucred& peer, std::string_view token) {
+bool ParseJsonObject(std::string_view raw, Json::Value* value) {
+  Json::CharReaderBuilder builder;
+  Json::CharReaderBuilder::strictMode(&builder.settings_);
+  builder["collectComments"] = false;
+  builder["skipBom"] = false;
+  builder["rejectDupKeys"] = true;
+  builder["stackLimit"] = 128;
+  std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+  if (reader == nullptr) return false;
+  std::string errors;
+  return reader->parse(raw.data(), raw.data() + raw.size(), value, &errors) && value->isObject();
+}
+
+bool IsLowerHex(std::string_view value, std::size_t expected_size) {
+  if (value.size() != expected_size) return false;
+  for (char current : value) {
+    if (!((current >= '0' && current <= '9') || (current >= 'a' && current <= 'f'))) return false;
+  }
+  return true;
+}
+
+bool IsHexDigest(std::string_view value) { return IsLowerHex(value, 64); }
+
+bool JsonString(const Json::Value& object, const char* key, std::string* value) {
+  const Json::Value& candidate = object[key];
+  if (!candidate.isString()) return false;
+  *value = candidate.asString();
+  return !value->empty() && value->find('\0') == std::string::npos;
+}
+
+bool JsonInteger(const Json::Value& object, const char* key, std::int64_t expected) {
+  const Json::Value& candidate = object[key];
+  if (candidate.type() == Json::intValue) return candidate.asInt64() == expected;
+  if (candidate.type() == Json::uintValue && expected >= 0) {
+    return candidate.asUInt64() == static_cast<std::uint64_t>(expected);
+  }
+  return false;
+}
+
+bool ValidateHelloAck(std::string_view raw, std::string_view expected_client_id,
+                      const struct ucred& ingress_peer) {
+  Json::Value ack;
+  std::string schema;
+  std::string kind;
+  if (!ParseJsonObject(raw, &ack) || !JsonString(ack, "schema", &schema) ||
+      schema != kWireSchema || !JsonString(ack, "kind", &kind) ||
+      kind != "broker.hello.ack" || !ack["automatic_redispatch"].isBool() ||
+      ack["automatic_redispatch"].asBool()) {
+    return false;
+  }
+  std::string broker_id;
+  std::string client_id;
+  std::string broker_epoch;
+  std::string token_epoch;
+  std::string descriptor_digest;
+  if (!JsonString(ack, "broker_id", &broker_id) || broker_id != kBrokerId ||
+      !JsonString(ack, "client_id", &client_id) || client_id != expected_client_id ||
+      !JsonString(ack, "broker_epoch", &broker_epoch) ||
+      !JsonString(ack, "token_epoch", &token_epoch) ||
+      !JsonString(ack, "descriptor_sha256", &descriptor_digest) ||
+      !IsLowerHex(broker_epoch, 32) || !IsLowerHex(token_epoch, 32) ||
+      !IsHexDigest(descriptor_digest) || !ack["host_hello_ack"].isObject()) {
+    return false;
+  }
+  const Json::Value& host_ack = ack["host_hello_ack"];
+  std::string host_kind;
+  if (!JsonString(host_ack, "kind", &host_kind) || host_kind != "hello.ack" ||
+      !host_ack["payload"].isObject()) {
+    return false;
+  }
+  const Json::Value& acknowledged_peer = ack["peer"];
+  return acknowledged_peer.isObject() &&
+         JsonInteger(acknowledged_peer, "pid", ingress_peer.pid) &&
+         JsonInteger(acknowledged_peer, "uid", ingress_peer.uid) &&
+         JsonInteger(acknowledged_peer, "gid", ingress_peer.gid);
+}
+
+std::string BrokerHello(const struct ucred& peer, std::string_view token,
+                        std::string* client_id_output) {
   const unsigned long long sequence = g_client_sequence.fetch_add(1);
+  std::array<char, 256> client_id_buffer {};
+  const int client_id_count = std::snprintf(
+      client_id_buffer.data(), client_id_buffer.size(), "android.%u.%d.%llu",
+      static_cast<unsigned int>(peer.uid), peer.pid, sequence);
+  if (client_id_count <= 0 || static_cast<std::size_t>(client_id_count) >= client_id_buffer.size()) {
+    return {};
+  }
+  *client_id_output = std::string(client_id_buffer.data(), static_cast<std::size_t>(client_id_count));
   std::array<char, 1024> encoded {};
   const int count = std::snprintf(
       encoded.data(), encoded.size(),
-      "{\"client_id\":\"android.%u.%d.%llu\",\"kind\":\"broker.hello\",\"token\":\"%.*s\"}\n",
-      static_cast<unsigned int>(peer.uid), peer.pid, sequence,
+      "{\"client_id\":\"%s\",\"kind\":\"broker.hello\",\"token\":\"%.*s\"}\n",
+      client_id_output->c_str(),
       static_cast<int>(token.size()), token.data());
   if (count <= 0 || static_cast<std::size_t>(count) >= encoded.size()) return {};
   return std::string(encoded.data(), static_cast<std::size_t>(count));
@@ -175,17 +299,29 @@ std::string BrokerHello(const struct ucred& peer, std::string_view token) {
 bool AuthenticateUpstream(int client, int upstream, const struct ucred& peer) {
   std::string token;
   if (!ReadBrokerToken(&token)) return false;
-  const std::string hello = BrokerHello(peer, token);
+  // SO_PEERCRED is directional.  On this connected client socket it reports
+  // the broker (the server), while the broker's acknowledgement `peer` reports
+  // this root ingress process (the broker's client).  Validate both identities
+  // independently; comparing the acknowledgement with the Android peer or
+  // with this socket's broker peer would reject every valid handshake.
+  struct ucred broker_peer {};
+  if (!ReadPeerCredentials(upstream, &broker_peer) || broker_peer.uid != 0) return false;
+  struct ucred ingress_peer {
+      getpid(),
+      geteuid(),
+      getegid(),
+  };
+  std::string expected_client_id;
+  const std::string hello = BrokerHello(peer, token, &expected_client_id);
   token.assign(token.size(), '\0');
   if (hello.empty() || !WriteAll(upstream, hello)) return false;
   std::string response;
   if (!ReadLine(upstream, &response)) return false;
-  // The upstream broker is the sole trusted JSON producer here. It already
-  // performs duplicate-key and schema validation; the ingress only proves the
-  // first bounded frame is the broker acknowledgement before enabling relay.
-  const bool acknowledged = response.find(kAckMarker) != std::string::npos;
-  if (!WriteAll(client, response)) return false;
-  return acknowledged;
+  // Do not forward any upstream bytes until the first frame is a strict,
+  // identity-bound broker acknowledgement.  This prevents a malformed or
+  // stale broker response from being mistaken for an authenticated session.
+  if (!ValidateHelloAck(response, expected_client_id, ingress_peer)) return false;
+  return WriteAll(client, response);
 }
 
 void Pump(int client, struct ucred peer) {
@@ -194,7 +330,7 @@ void Pump(int client, struct ucred peer) {
     if (upstream >= 0) close(upstream);
     shutdown(client, SHUT_RDWR);
     close(client);
-    --g_connections;
+    ReleaseConnection();
     return;
   }
   std::array<unsigned char, kBufferBytes> buffer {};
@@ -231,7 +367,7 @@ void Pump(int client, struct ucred peer) {
   shutdown(upstream, SHUT_RDWR);
   close(client);
   close(upstream);
-  --g_connections;
+  ReleaseConnection();
 }
 
 int Listen() {
@@ -275,15 +411,14 @@ int main() {
       return Fail("accept failed");
     }
     struct ucred peer {};
-    if (g_connections.load() >= kMaximumConnections || !AllowedPeer(client, &peer)) {
+    if (!AllowedPeer(client, &peer) || !TryAcquireConnection()) {
       close(client);
       continue;
     }
-    ++g_connections;
     try {
       std::thread(Pump, client, peer).detach();
     } catch (...) {
-      --g_connections;
+      ReleaseConnection();
       close(client);
     }
   }

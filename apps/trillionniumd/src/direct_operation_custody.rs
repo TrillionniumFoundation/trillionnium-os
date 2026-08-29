@@ -4551,6 +4551,14 @@ mod tests {
         temporary
     }
 
+    fn create_test_dir(path: &std::path::Path, mode: u32) {
+        fs::DirBuilder::new().mode(mode).create(path).unwrap();
+        // DirBuilder honours the process umask.  Security fixtures assert an
+        // exact mode, so make that assertion independent of the caller's
+        // umask (including the hardened 077 test environment).
+        fs::set_permissions(path, fs::Permissions::from_mode(mode)).unwrap();
+    }
+
     struct MockReplayChild {
         executable_sha256: String,
         executable_identity_sha256: String,
@@ -5626,10 +5634,7 @@ mod tests {
             .unwrap();
 
         let publication_root = fixture._temporary.path().join("p0-guarded-outer-ack");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let mut publisher = outer_ack_publisher::FixedOuterAckInboxPublisher::for_test(
             publication_root,
             owner_uid(),
@@ -6265,10 +6270,7 @@ mod tests {
         let adapter = DirectOperationAdapter::SystemApi;
         let mut fixture = ack_intent_fixture(adapter);
         let publication_root = fixture._temporary.path().join("outer-ack-empty");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let prepared = fixture
             .store
             .prepare_outer_ack_publication(&fixture.head, &fixture.prepared.binding_sha256, adapter)
@@ -6325,10 +6327,7 @@ mod tests {
                 ._temporary
                 .path()
                 .join(format!("outer-ack-fault-{fault:?}"));
-            fs::DirBuilder::new()
-                .mode(0o750)
-                .create(&publication_root)
-                .unwrap();
+            create_test_dir(&publication_root, 0o750);
             let prepared = fixture
                 .store
                 .prepare_outer_ack_publication(
@@ -6353,10 +6352,7 @@ mod tests {
 
         let mut fixture = ack_intent_fixture(adapter);
         let publication_root = fixture._temporary.path().join("outer-ack-exact-race");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let prepared = fixture
             .store
             .prepare_outer_ack_publication(&fixture.head, &fixture.prepared.binding_sha256, adapter)
@@ -6381,10 +6377,7 @@ mod tests {
 
         let mut fixture = ack_intent_fixture(adapter);
         let publication_root = fixture._temporary.path().join("outer-ack-drift-race");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let prepared = fixture
             .store
             .prepare_outer_ack_publication(&fixture.head, &fixture.prepared.binding_sha256, adapter)
@@ -6407,10 +6400,7 @@ mod tests {
 
         let mut fixture = ack_intent_fixture(adapter);
         let publication_root = fixture._temporary.path().join("outer-ack-drift");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let named = publication_root.join("pending-outer-ack-v3.json");
         fs::write(&named, b"drift\n").unwrap();
         fs::set_permissions(&named, fs::Permissions::from_mode(0o440)).unwrap();
@@ -6432,10 +6422,7 @@ mod tests {
         let mut fixture = ack_intent_fixture(adapter);
         let publication_root = fixture._temporary.path().join("outer-ack-rebind");
         let displaced = fixture._temporary.path().join("outer-ack-displaced");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let prepared = fixture
             .store
             .prepare_outer_ack_publication(&fixture.head, &fixture.prepared.binding_sha256, adapter)
@@ -6450,10 +6437,7 @@ mod tests {
         );
         let published = publisher.publish(prepared).unwrap();
         fs::rename(&publication_root, &displaced).unwrap();
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         assert!(
             fixture
                 .store
@@ -6470,10 +6454,7 @@ mod tests {
         let adapter = DirectOperationAdapter::Accessibility;
         let mut fixture = future_dual_ack_intent_fixture(adapter);
         let publication_root = fixture._temporary.path().join("outer-ack-unknown");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let prepared = fixture
             .store
             .prepare_outer_ack_publication(&fixture.head, &fixture.prepared.binding_sha256, adapter)
@@ -6646,15 +6627,18 @@ mod tests {
             )
             .unwrap();
         let mut exact = exact_replay_confirmation(&prepared);
+        #[cfg(feature = "p0-launch-package-device-conformance")]
         let confirmation = match &mut exact.confirmation {
             operation_replay_sync_launcher::ReplaySyncAckConfirmation::Product(confirmation) => {
                 confirmation
             }
-            #[cfg(feature = "p0-launch-package-device-conformance")]
             operation_replay_sync_launcher::ReplaySyncAckConfirmation::P0(_) => {
                 panic!("test fixture must use the product confirmation lane")
             }
         };
+        #[cfg(not(feature = "p0-launch-package-device-conformance"))]
+        let operation_replay_sync_launcher::ReplaySyncAckConfirmation::Product(confirmation) =
+            &mut exact.confirmation;
         confirmation.acknowledgement_sha256 = digest("wrong-helper-acknowledgement");
         let mut ops = MockReplayLaunchOps {
             exact,
@@ -6778,10 +6762,7 @@ mod tests {
         let mut fixture = ack_intent_fixture(adapter);
         let intent = fixture.store.file.records[0].ack_intents[0].clone();
         let publication_root = fixture._temporary.path().join("outer-ack-retirement");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let mut publisher = outer_ack_publisher::FixedOuterAckInboxPublisher::for_test(
             publication_root.clone(),
             owner_uid(),
@@ -7326,7 +7307,7 @@ mod tests {
         let parent = fixture.path.parent().unwrap().to_path_buf();
         let moved = fixture._temporary.path().join("private-original-inode");
         fs::rename(&parent, &moved).unwrap();
-        fs::DirBuilder::new().mode(0o700).create(&parent).unwrap();
+        create_test_dir(&parent, 0o700);
         let error = fixture
             .store
             .prepare_ack_intent(
@@ -7582,7 +7563,7 @@ mod tests {
 
         let temporary = private_tempdir();
         let private = temporary.path().join("private");
-        fs::DirBuilder::new().mode(0o700).create(&private).unwrap();
+        create_test_dir(&private, 0o700);
         let target = private.join("target");
         fs::write(&target, b"not a store").unwrap();
         let symlink_path = private.join("custody.json");
@@ -7591,10 +7572,7 @@ mod tests {
 
         let temporary = private_tempdir();
         let unsafe_parent = temporary.path().join("unsafe");
-        fs::DirBuilder::new()
-            .mode(0o770)
-            .create(&unsafe_parent)
-            .unwrap();
+        create_test_dir(&unsafe_parent, 0o770);
         assert!(
             DirectOperationCustodyStore::open_for_test(
                 &unsafe_parent.join("custody.json"),
@@ -7705,10 +7683,7 @@ mod tests {
         assert_external_head_exact(&fixture, &authority);
         let intent = fixture.store.file.records[0].ack_intents[0].clone();
         let publication_root = fixture._temporary.path().join("high-water-outer-ack");
-        fs::DirBuilder::new()
-            .mode(0o750)
-            .create(&publication_root)
-            .unwrap();
+        create_test_dir(&publication_root, 0o750);
         let mut publisher = outer_ack_publisher::FixedOuterAckInboxPublisher::for_test(
             publication_root,
             owner_uid(),

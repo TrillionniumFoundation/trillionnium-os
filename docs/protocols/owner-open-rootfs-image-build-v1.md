@@ -136,14 +136,24 @@ the whole new output directory.
 The selected image is made read-only after comparison. Run roots, sort files and
 secondary images are removed.
 
+The v1 image-manifest schema now requires the complete entries inventory.
+Older v1 manifests that contain only aggregate counts are rejected by both the
+materialization verifier and the Android bootstrap; this prevents a stale
+manifest from being paired with a newly built image.
+
 ## 8. Image manifest
 
 The external image manifest binds:
+
+The image manifest also carries runtime_state_directory with the exact value /var/lib/trillionnium/owner-open. The builder refuses a staging tree that does not contain this real 0755 directory, because Android bootstrap binds /data/trillionnium/owner-open/state over it.
 
 ```text
 payload/plan/staging manifest identity
 architecture and libc
 entry count
+complete per-entry role, payload path, mode, UID/GID, byte count and SHA-256
+records (the Android-native bootstrap validates these records against the
+mounted image before starting Root Linux)
 mksquashfs path, inode and SHA-256
 help observation digests
 canonical option vector

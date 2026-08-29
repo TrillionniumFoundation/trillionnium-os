@@ -110,6 +110,7 @@ def evidence_entry(
         "kind": facts["kind"],
         "reviewer": facts["reviewer"],
         "synthetic": False,
+        "automatic_redispatch": False,
         "bundle_path": bundle_relative,
     }
 

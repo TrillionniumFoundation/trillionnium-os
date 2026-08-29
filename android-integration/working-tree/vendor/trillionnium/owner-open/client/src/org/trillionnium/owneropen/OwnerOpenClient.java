@@ -31,6 +31,15 @@ public final class OwnerOpenClient implements AutoCloseable {
     private final AtomicLong requestSequence = new AtomicLong(1);
     private final AtomicBoolean closed = new AtomicBoolean(true);
     private final String clientInstance = "android-client-" + UUID.randomUUID();
+    // The broker requires one contiguous semantic Host-frame sequence per
+    // authenticated connection.  This is deliberately separate from the
+    // request ID sequence: a reconnect starts a fresh broker Client stream at
+    // seq=0, while request IDs remain process-lifetime unique.
+    private long nextClientFrameSequence;
+    // A reader can still be unwinding after connect() replaces its socket. The
+    // generation and socket identity bind cleanup to the connection that
+    // created the reader, so an old reader can never close a newer connection.
+    private long connectionGeneration;
     private LocalSocket socket;
     private InputStream input;
     private OutputStream output;
@@ -40,6 +49,9 @@ public final class OwnerOpenClient implements AutoCloseable {
     }
 
     public void connect() throws IOException {
+        final long generation;
+        final LocalSocket ownedSocket;
+        final InputStream ownedInput;
         synchronized (lock) {
             closeLocked();
             LocalSocket candidate = new LocalSocket();
@@ -52,20 +64,28 @@ public final class OwnerOpenClient implements AutoCloseable {
                 if (!OwnerOpenFrame.hasKind(acknowledgement, "broker.hello.ack")) {
                     throw new IOException("ingress did not return broker.hello.ack: " + acknowledgement);
                 }
+                generation = ++connectionGeneration;
                 socket = candidate;
                 input = candidateInput;
                 output = candidateOutput;
+                nextClientFrameSequence = 0;
+                ownedSocket = candidate;
+                ownedInput = candidateInput;
                 closed.set(false);
                 listener.onFrame(acknowledgement);
             } catch (IOException | RuntimeException error) {
-                try {
-                    candidate.close();
-                } catch (IOException ignored) {
+                if (socket == candidate) {
+                    closeLocked();
+                } else {
+                    try {
+                        candidate.close();
+                    } catch (IOException ignored) {
+                    }
                 }
                 throw error;
             }
         }
-        reader.execute(this::readLoop);
+        reader.execute(() -> readLoop(generation, ownedSocket, ownedInput));
     }
 
     public boolean isConnected() {
@@ -91,14 +111,17 @@ public final class OwnerOpenClient implements AutoCloseable {
 
     private String send(String frame, List<String> expectedKinds) throws IOException {
         String requestId = clientInstance + ":" + requestSequence.getAndIncrement();
-        String request = OwnerOpenFrame.brokerRequest(
-                requestId, frame, expectedKinds, REQUEST_TIMEOUT_MILLISECONDS);
         synchronized (lock) {
             if (closed.get() || output == null) {
                 throw new IOException("owner-open ingress is not connected");
             }
             try {
+                String clientFrame = OwnerOpenFrame.withClientTransportSequence(
+                        frame, nextClientFrameSequence);
+                String request = OwnerOpenFrame.brokerRequest(
+                        requestId, clientFrame, expectedKinds, REQUEST_TIMEOUT_MILLISECONDS);
                 OwnerOpenFrame.writeLine(output, request);
+                nextClientFrameSequence++;
             } catch (IOException error) {
                 closeLocked();
                 throw error;
@@ -107,27 +130,36 @@ public final class OwnerOpenClient implements AutoCloseable {
         return requestId;
     }
 
-    private void readLoop() {
+    private void readLoop(long generation, LocalSocket ownedSocket, InputStream ownedInput) {
         String reason = "owner-open ingress closed";
         try {
-            while (!closed.get()) {
-                InputStream current;
-                synchronized (lock) {
-                    current = input;
-                }
-                if (current == null) {
-                    break;
-                }
-                listener.onFrame(OwnerOpenFrame.readLine(current));
+            while (isCurrent(generation, ownedSocket)) {
+                listener.onFrame(OwnerOpenFrame.readLine(ownedInput));
             }
         } catch (IOException | RuntimeException error) {
             reason = error.toString();
         } finally {
+            boolean notify = false;
             synchronized (lock) {
-                closeLocked();
+                if (isCurrentLocked(generation, ownedSocket)) {
+                    closeLocked();
+                    notify = true;
+                }
             }
-            listener.onDisconnected(reason);
+            if (notify) {
+                listener.onDisconnected(reason);
+            }
         }
+    }
+
+    private boolean isCurrent(long generation, LocalSocket ownedSocket) {
+        synchronized (lock) {
+            return isCurrentLocked(generation, ownedSocket);
+        }
+    }
+
+    private boolean isCurrentLocked(long generation, LocalSocket ownedSocket) {
+        return !closed.get() && connectionGeneration == generation && socket == ownedSocket;
     }
 
     @Override
@@ -153,5 +185,6 @@ public final class OwnerOpenClient implements AutoCloseable {
         socket = null;
         input = null;
         output = null;
+        nextClientFrameSequence = 0;
     }
 }

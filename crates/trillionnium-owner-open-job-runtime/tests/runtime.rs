@@ -167,6 +167,44 @@ fn completed_durable_job_never_spawns_again_after_manager_restart() {
 }
 
 #[test]
+fn repeated_start_of_a_live_job_returns_existing_live_before_recovery_state() {
+    let directory = tempfile::tempdir().unwrap();
+    let journal = directory.path().join("jobs.jsonl");
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    let job = key("job-live-idempotent");
+    let request = request('a', "pipe");
+    let command = "trap 'exit 0' TERM; while :; do sleep 1; done".to_string();
+    manager
+        .start(start_request(
+            job.clone(),
+            request.clone(),
+            "start-live-idempotent",
+            command.clone(),
+            None,
+        ))
+        .unwrap();
+
+    // The durable journal already contains the accepted/start record while
+    // this manager still owns a live child.  The live map must win over that
+    // recovery record for an idempotent repeat.
+    let repeat = manager
+        .start(start_request(
+            job.clone(),
+            request,
+            "start-live-idempotent",
+            command,
+            None,
+        ))
+        .unwrap();
+    assert_eq!(repeat.disposition, StartDisposition::ExistingLive);
+
+    manager
+        .kill(&job, "kill-live-idempotent", libc::SIGTERM)
+        .unwrap();
+    wait_terminal(&manager, &job);
+}
+
+#[test]
 fn accepted_without_terminal_is_unknown_and_not_redispatched() {
     let directory = tempfile::tempdir().unwrap();
     let journal_path = directory.path().join("jobs.jsonl");
@@ -246,10 +284,12 @@ fn capacity_rejection_happens_before_spawn_or_visible_side_effect() {
         .unwrap();
 
     let marker = directory.path().join("capacity-must-not-run");
+    let rejected_key = key("job-capacity-rejected");
+    let rejected_request = request('b', "pipe");
     let error = manager
         .start(start_request(
-            key("job-capacity-rejected"),
-            request('b', "pipe"),
+            rejected_key.clone(),
+            rejected_request.clone(),
             "start-capacity-rejected",
             format!("touch '{}'", marker.display()),
             None,
@@ -257,12 +297,27 @@ fn capacity_rejection_happens_before_spawn_or_visible_side_effect() {
         .unwrap_err();
     assert!(error.to_string().contains("before acceptance"));
     assert!(!marker.exists());
+    assert!(manager.registry().snapshot(&rejected_key).is_err());
 
     manager
         .kill(&live, "kill-capacity-live", libc::SIGTERM)
         .unwrap();
     wait_terminal(&manager, &live);
     assert!(!marker.exists());
+
+    let retry_marker = directory.path().join("capacity-retry-ran");
+    let retry = manager
+        .start(start_request(
+            rejected_key.clone(),
+            rejected_request,
+            "start-capacity-retry",
+            format!("touch '{}'", retry_marker.display()),
+            None,
+        ))
+        .unwrap();
+    assert_eq!(retry.disposition, StartDisposition::Started);
+    wait_terminal(&manager, &rejected_key);
+    assert!(retry_marker.exists());
 }
 
 #[test]

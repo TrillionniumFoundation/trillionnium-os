@@ -141,10 +141,18 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         self.assertEqual(staged_config.read_bytes(), self.config.read_bytes())
         self.assertEqual(stat.S_IMODE(staged_host.lstat().st_mode), 0o555)
         self.assertEqual(stat.S_IMODE(staged_config.lstat().st_mode), 0o444)
+        state_mountpoint = output / "root/var/lib/trillionnium/owner-open"
+        self.assertTrue(state_mountpoint.is_dir())
+        self.assertFalse(state_mountpoint.is_symlink())
+        self.assertEqual(stat.S_IMODE(state_mountpoint.lstat().st_mode), 0o755)
         external = output / "owner-open-rootfs.manifest.json"
         embedded = output / "root/etc/trillionnium/owner-open/rootfs.manifest.json"
         self.assertEqual(external.read_bytes(), embedded.read_bytes())
         manifest = json.loads(external.read_text())
+        self.assertEqual(
+            manifest["runtime_state_directory"],
+            "/var/lib/trillionnium/owner-open",
+        )
         host_entry = next(item for item in manifest["entries"] if item["role"] == "owner_open_host")
         self.assertEqual(host_entry["elf"]["machine"], "AArch64")
         self.assertEqual(stat.S_IMODE(self.outputs.lstat().st_mode), parent_mode)
@@ -158,6 +166,17 @@ class StageOwnerOpenRootfsPayloadReleaseTest(unittest.TestCase):
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn(b"digest does not match", completed.stderr)
         self.assertFalse(output.exists())
+
+    def test_uid_and_gid_must_be_json_integers(self) -> None:
+        for field in ("uid", "gid"):
+            value = self.plan_value()
+            value["entries"][0][field] = False
+            plan = self.write_plan(value, f"bool-{field}.json")
+            output = self.outputs / f"bool-{field}"
+            completed = self.run_command(plan, output)
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertIn(b"uid=0 and gid=0", completed.stderr)
+            self.assertFalse(output.exists())
 
     def test_x86_elf_is_rejected_before_output_creation(self) -> None:
         self.host.write_bytes(x86_64_elf())

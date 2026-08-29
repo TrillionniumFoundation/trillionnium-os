@@ -105,6 +105,8 @@ class BrokerTest(unittest.TestCase):
         self.assertEqual(ack["client_id"],client_id)
         self.assertEqual(ack["broker_epoch"],self.descriptor_value["broker_epoch"])
         self.assertEqual(ack["descriptor_sha256"],self.descriptor_value["descriptor_sha256"])
+        self.assertIs(ack.get("automatic_redispatch"), False)
+        self.assertNotIn("automatic_effect_redispatch", ack)
         return sock
 
     def request(self, client: socket.socket, request_id: str, frame: dict, expected: list[str]) -> None:

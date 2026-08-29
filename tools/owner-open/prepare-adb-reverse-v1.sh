@@ -98,6 +98,14 @@ for value in "$DEVICE_PORT" "$HOST_PORT"; do
   ((value >= 1 && value <= 65535)) || { echo "ports must be in 1..65535" >&2; exit 64; }
 done
 
+# Bind every adb invocation in this bootstrap to the explicitly selected host
+# server. A caller-provided socket/address/port must not silently redirect
+# version, device, or reverse commands to a different server. Use the same
+# ADB_SERVER_SOCKET contract as the measured qualification runners; clear the
+# alternate Android routing variables so they cannot override this endpoint.
+unset ADB_SERVER_PORT ANDROID_ADB_SERVER_PORT ANDROID_ADB_SERVER_ADDRESS
+export ADB_SERVER_SOCKET="tcp:127.0.0.1:$HOST_PORT"
+
 command -v "$ADB" >/dev/null 2>&1 || {
   echo "host adb executable is unavailable: $ADB" >&2
   exit 69
@@ -124,25 +132,107 @@ MATCH_COUNT=$(printf '%s\n' "$DEVICES" | awk -v serial="$SERIAL" '
   exit 66
 }
 
-HOST_LISTENERS=
-if command -v ss >/dev/null 2>&1; then
-  HOST_LISTENERS=$(ss -ltnH "sport = :$HOST_PORT" 2>&1 || true)
-  if [[ -n "$HOST_LISTENERS" && "$ALLOW_NONLOOPBACK_SERVER" != 1 ]]; then
-    while IFS= read -r listener; do
-      [[ -z "$listener" ]] && continue
-      local_address=$(awk '{print $4}' <<<"$listener")
-      case "$local_address" in
-        127.0.0.1:"$HOST_PORT"|[::1]:"$HOST_PORT") ;;
-        *)
-          echo "host port $HOST_PORT has a non-loopback listener; review and pass --allow-nonloopback-server explicitly" >&2
-          exit 77
-          ;;
-      esac
-    done <<<"$HOST_LISTENERS"
-  fi
-fi
+# Parse the local-address column emitted by `ss -ltnH`.  Linux normally
+# renders IPv6 endpoints as `[::1]:PORT`, but some builds omit the brackets;
+# splitting at the final colon handles both forms.  Keep this deliberately
+# strict: an address we cannot parse is not evidence of a safe listener.
+listener_is_loopback() {
+  local endpoint=$1
+  local host
+  local port
 
-"$ADB" start-server >/dev/null
+  if [[ "$endpoint" =~ ^\[([^][]+)\]:([0-9]+)$ ]]; then
+    host=${BASH_REMATCH[1]}
+    port=${BASH_REMATCH[2]}
+  elif [[ "$endpoint" =~ ^(.+):([0-9]+)$ ]]; then
+    host=${BASH_REMATCH[1]}
+    port=${BASH_REMATCH[2]}
+  else
+    return 2
+  fi
+
+  # Strip a Linux interface scope (for example, `%lo`) before classifying an
+  # IPv6 address. `ss -n` emits canonical addresses, so accept the canonical
+  # and fully expanded spellings of IPv6 loopback plus IPv4-mapped loopback.
+  if [[ "$host" == *%* ]]; then
+    host=${host%%\%*}
+  fi
+  host=${host,,}
+  [[ "$port" == "$HOST_PORT" ]] || return 2
+  case "$host" in
+    127.*|::1|0:0:0:0:0:0:0:1|0000:0000:0000:0000:0000:0000:0000:0001|\
+    ::ffff:127.*|0:0:0:0:0:ffff:7f00:*)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+require_ss() {
+  command -v ss >/dev/null 2>&1 || {
+    echo "ss is required to verify the host adb-server listener" >&2
+    return 69
+  }
+}
+
+check_host_listener() {
+  require_ss || return $?
+
+  local output
+  if ! output=$(ss -ltnH "sport = :$HOST_PORT" 2>&1); then
+    echo "host listener probe failed: $output" >&2
+    return 69
+  fi
+  [[ -n "$output" ]] || {
+    echo "host adb-server listener is not observable on port $HOST_PORT" >&2
+    return 77
+  }
+
+  local listener
+  local local_address
+  local listener_status
+  local listener_count=0
+  while IFS= read -r listener; do
+    [[ -z "${listener//[[:space:]]/}" ]] && continue
+    local_address=$(awk 'NF >= 4 { print $4; exit }' <<<"$listener")
+    [[ -n "$local_address" ]] || {
+      echo "host listener probe returned an unparsable record" >&2
+      return 69
+    }
+    if listener_is_loopback "$local_address"; then
+      ((listener_count += 1))
+      continue
+    else
+      listener_status=$?
+    fi
+    if [[ "$listener_status" -eq 2 ]]; then
+      echo "host listener probe returned an unexpected endpoint: $local_address" >&2
+      return 69
+    fi
+    ((listener_count += 1))
+    if [[ "$ALLOW_NONLOOPBACK_SERVER" != 1 ]]; then
+      echo "host port $HOST_PORT has a non-loopback listener; review and pass --allow-nonloopback-server explicitly" >&2
+      return 77
+    fi
+  done <<<"$output"
+  ((listener_count > 0)) || {
+    echo "host adb-server listener is not observable on port $HOST_PORT" >&2
+    return 77
+  }
+  HOST_LISTENERS=$output
+}
+
+# Start (or attach to) the explicitly selected host server before checking its
+# listener.  Checking only before this call misses a server that adb launches
+# here and would make the loopback exposure test fail open.
+require_ss || exit $?
+if ! "$ADB" start-server >/dev/null 2>&1; then
+  echo "adb start-server failed" >&2
+  exit 69
+fi
+check_host_listener
 REMOTE="tcp:$DEVICE_PORT"
 LOCAL="tcp:$HOST_PORT"
 

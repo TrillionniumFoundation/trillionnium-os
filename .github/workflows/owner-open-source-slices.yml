@@ -54,11 +54,23 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.13"
+      - name: Assert exact source-head checkout
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Validate canonical shell bootstrap syntax
         run: bash -n tools/owner-open/prepare-adb-reverse-v1.sh
       - name: Validate JSON status and schemas
@@ -82,23 +94,38 @@ jobs:
         run: python3 -m compileall -q tools/owner-open tools/tests tools/verify-owner-open-r5.py
       - name: Run complete owner-open Python and fake-process tests
         env:
+          EVIDENCE_DIR: ${{ runner.temp }}/owner-open-source-slices-l1-python-${{ github.run_id }}-${{ github.run_attempt }}
           PYTHONWARNINGS: error::ResourceWarning
-        run: python3 -m unittest discover -s tools/tests -p 'test_*.py' -v 2>&1 | tee owner-open-python-tests.txt
-      - name: Run foundation and active R5 graph verifiers
         run: |
           set -euo pipefail
-          python3 tools/verify-owner-open-foundation.py --json | tee owner-open-foundation-report.json
-          python3 tools/verify-owner-open-r5.py --json | tee owner-open-r5-report.json
+          mkdir -m 0700 -p "$EVIDENCE_DIR"
+          python3 -m unittest discover -s tools/tests -p 'test_*.py' -v 2>&1 \
+            | tee "$EVIDENCE_DIR/owner-open-python-tests.txt"
+      - name: Run foundation and active R5 graph verifiers
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/owner-open-source-slices-l1-python-${{ github.run_id }}-${{ github.run_attempt }}
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -m 0700 -p "$EVIDENCE_DIR"
+          SOURCE_HEAD_TREE="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          python3 tools/verify-owner-open-foundation.py --json \
+            | tee "$EVIDENCE_DIR/owner-open-foundation-report.json"
+          python3 tools/verify-owner-open-r5.py \
+            --expected-commit "$SOURCE_HEAD_SHA" \
+            --expected-tree "$SOURCE_HEAD_TREE" \
+            --json | tee "$EVIDENCE_DIR/owner-open-r5-report.json"
       - name: Upload L1 Python and contract evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-l1-python-contracts-${{ github.sha }}
+          name: owner-open-l1-python-contracts-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error
           retention-days: 30
           path: |
-            owner-open-python-tests.txt
-            owner-open-foundation-report.json
-            owner-open-r5-report.json
+            ${{ runner.temp }}/owner-open-source-slices-l1-python-${{ github.run_id }}-${{ github.run_attempt }}/owner-open-python-tests.txt
+            ${{ runner.temp }}/owner-open-source-slices-l1-python-${{ github.run_id }}-${{ github.run_attempt }}/owner-open-foundation-report.json
+            ${{ runner.temp }}/owner-open-source-slices-l1-python-${{ github.run_id }}-${{ github.run_attempt }}/owner-open-r5-report.json
 
   l1-rust-source-closure:
     name: L1 Rust 1.93 exact selected closure
@@ -106,11 +133,21 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact source-head checkout
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Set up Rust 1.93
-        uses: dtolnay/rust-toolchain@1.93.0
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
         with:
           components: rustfmt, clippy
       - name: Bind locked metadata without mutation
@@ -120,7 +157,7 @@ jobs:
           cp Cargo.lock owner-open-reviewed-Cargo.lock
           cargo metadata --locked --format-version 1 > owner-open-cargo-metadata.json
           cmp --silent Cargo.lock owner-open-reviewed-Cargo.lock
-          git diff --exit-code -- Cargo.lock
+          git --no-replace-objects diff --exit-code -- Cargo.lock
       - name: Check exact workspace formatting
         run: cargo fmt --all -- --check
       - name: Test exact selected default closure once
@@ -136,7 +173,7 @@ jobs:
         run: |
           set -euo pipefail
           cmp --silent Cargo.lock owner-open-reviewed-Cargo.lock
-          git diff --exit-code -- Cargo.lock
+          git --no-replace-objects diff --exit-code -- Cargo.lock
           : > owner-open-cargo-tree.txt
           for package in \
             trillionnium-owner-open-types \
@@ -153,13 +190,13 @@ jobs:
           do
             cargo tree --locked -e features -p "$package" >> owner-open-cargo-tree.txt
           done
-          git diff -- Cargo.lock > owner-open-cargo-lock.patch
+          git --no-replace-objects diff -- Cargo.lock > owner-open-cargo-lock.patch
           test ! -s owner-open-cargo-lock.patch
-          git diff --exit-code
+          git --no-replace-objects diff --exit-code
       - name: Upload L1 Rust source evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-l1-rust-source-${{ github.sha }}
+          name: owner-open-l1-rust-source-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error
           retention-days: 30
           path: |
