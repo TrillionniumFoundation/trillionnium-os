@@ -2,11 +2,11 @@
 """Verify official Codex artifacts with legacy Cosign certificate encodings.
 
 The selected OpenAI bundles use the legacy Cosign sign-blob shape and encode
-``cert`` as canonical base64 certificate bytes.  Some older producers emit PEM
-text directly.  This adapter accepts exactly those two encodings and then
-requires the resulting certificate bytes to equal Rekor ``publicKey.content``.
-All archive, signature, Rekor and package-checksum bindings from v4 remain
-mandatory. Cryptographic trust-chain verification remains false.
+``cert`` as canonical base64 certificate bytes. Some older producers emit PEM
+text directly. This adapter accepts exactly those encodings, requires the
+resulting certificate bytes to equal Rekor ``publicKey.content``, and preserves
+the v4 requirement that Rekor bind the exact outer archive or its verified
+unique executable member. Cryptographic trust-chain verification remains false.
 """
 from __future__ import annotations
 
@@ -60,7 +60,9 @@ def certificate_bytes(value: Any) -> tuple[bytes, str]:
 
 
 def verify_legacy_cosign_bundle_v5(
-    document: dict[str, Any], archive_digest: str
+    document: dict[str, Any],
+    archive_digest: str,
+    archive_member_digest: str | None = None,
 ) -> dict[str, Any]:
     V4.exact_keys(document, V4.LEGACY_TOP_KEYS, "legacy Cosign bundle")
     signature_bytes = V4.canonical_base64(
@@ -113,12 +115,11 @@ def verify_legacy_cosign_bundle_v5(
             f"legacy Cosign Rekor hash algorithm is not SHA-256: {algorithm!r}"
         )
     rekor_digest = BASE.require_sha(
-        digest.get("value"), "legacy Cosign Rekor archive digest"
+        digest.get("value"), "legacy Cosign Rekor signed-object digest"
     )
-    if rekor_digest != archive_digest:
-        raise BASE.VerificationError(
-            "legacy Cosign Rekor entry is not bound to the selected archive digest"
-        )
+    binding = V4.signed_subject_binding(
+        rekor_digest, archive_digest, archive_member_digest
+    )
 
     rekor_signature = BASE.require_dict(
         spec.get("signature"), "legacy Cosign Rekor signature"
@@ -147,7 +148,7 @@ def verify_legacy_cosign_bundle_v5(
     return {
         "bundle_encoding": "cosign_legacy_sign_blob_bundle",
         "certificate_encoding": certificate_encoding,
-        "archive_digest_bound": True,
+        **binding,
         "signature_bytes_cross_bound": True,
         "certificate_bytes_cross_bound": True,
         "rekor_kind": "hashedrekord",
@@ -186,6 +187,9 @@ def verify(
         V4.verify_legacy_cosign_bundle = original
     report.facts["legacy_cosign_certificate_encodings"] = (
         "pem_text_or_canonical_base64_pem_or_der"
+    )
+    report.facts["legacy_cosign_signed_object_binding"] = (
+        "exact_release_archive_or_verified_unique_archive_member"
     )
     report.facts["cryptographic_sigstore_verification"] = False
     return report
