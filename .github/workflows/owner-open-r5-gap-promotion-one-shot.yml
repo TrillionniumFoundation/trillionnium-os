@@ -1,0 +1,403 @@
+name: one-shot owner-open R5 exact-source gap promotion
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-gap-promotion-one-shot.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  promote-test-commit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Promote only evidence-supported gap states
+        run: |
+          python3 - <<'PY'
+          from copy import deepcopy
+          import json
+          from pathlib import Path
+
+          SOURCE_COMMIT = "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
+          SOURCE_TREE = "8d25f3b4cfa0190e93a07031891e6b0de62404ce"
+          RUN_ID = 33256008472
+          BRANCH = "codex/owner-open-r5-gap-closure-20260829"
+
+          source_evidence = {
+              "level": "L1",
+              "branch": BRANCH,
+              "commit": SOURCE_COMMIT,
+              "tree": SOURCE_TREE,
+              "workflow_run_id": RUN_ID,
+              "successful_jobs": [
+                  "L1 graph, documentation, broker and MCP source closure",
+                  "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+              ],
+              "artifacts": [
+                  {
+                      "id": 9715819868,
+                      "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+                      "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc",
+                  },
+                  {
+                      "id": 9715826446,
+                      "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
+                      "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203",
+                  },
+              ],
+          }
+
+          pending = {
+              "R5-GAP-PROCESS-LIFECYCLE-001": [
+                  "installed target Root Linux parent-death and process-group observations",
+                  "target service-manager restart and descendant-reaping evidence",
+                  "target PID, cgroup and namespace identity binding",
+              ],
+              "R5-GAP-STREAM-RECOVERY-001": [
+                  "installed multi-connection pause, credit and resume observations",
+                  "target reconnect from retained cursors under live output",
+                  "target proof that recovery never redispatches an effect",
+              ],
+              "R5-GAP-JOURNAL-CONVERGENCE-001": [
+                  "authorized L5 ENOSPC and torn-write injection",
+                  "corrupt-journal and restart convergence observations",
+                  "power-loss evidence showing conservative no-redispatch recovery",
+              ],
+              "R5-GAP-BROKER-CORRELATION-001": [
+                  "installed L2 multi-client Broker and Host execution",
+                  "target disconnect, Broker restart and delayed-frame observations",
+                  "target audit-store ownership, mode and fsync evidence",
+              ],
+              "R5-GAP-PRODUCT-ENTRYPOINT-001": [
+                  "clean L3 Android target-files and image inventories",
+                  "installed init, UID/GID, socket and SELinux observations",
+                  "one product command reaching provider, shell, ADB and job paths",
+              ],
+          }
+          external_ids = {
+              "R5-GAP-INSTALLED-CODEX-001",
+              "R5-GAP-ROOTLINUX-PLACEMENT-001",
+              "R5-GAP-ANDROID-GRAPH-001",
+              "R5-GAP-PHYSICAL-ADB-001",
+              "R5-GAP-FAULT-MATRIX-001",
+              "R5-GAP-RELEASE-001",
+          }
+
+          gap_path = Path("docs/status/owner-open-r5-gap-closure.json")
+          gaps = json.loads(gap_path.read_text(encoding="utf-8"))
+          gaps["documentation_candidate"] = {
+              "branch": BRANCH,
+              "state": "EXACT_SOURCE_HEAD_L1_PASSED",
+              "evidence_level": "L1",
+              "validated_source_commit": SOURCE_COMMIT,
+              "validated_source_tree": SOURCE_TREE,
+              "workflow_run_id": RUN_ID,
+              "checked_in_promotion_requires_new_exact_head_ci": True,
+          }
+          observed = set()
+          for gap in gaps["gaps"]:
+              identifier = gap["id"]
+              observed.add(identifier)
+              gap.pop("evidence", None)
+              gap.pop("remaining_evidence", None)
+              if identifier == "R5-GAP-GOVERNANCE-001":
+                  gap["status"] = "EXTERNAL_HOLD"
+                  gap["source_evidence"] = deepcopy(source_evidence)
+                  gap["required_authority"] = [
+                      "repository administrator must protect main with the declared exact-head checks",
+                      "independent reviewer must approve the ordered branch-chain integration",
+                      "repository administrator must prevent direct unreviewed integration",
+                  ]
+              elif identifier == "R5-GAP-JOB-ADMISSION-001":
+                  gap["status"] = "CLOSED"
+                  gap["source_evidence"] = deepcopy(source_evidence)
+              elif identifier in pending:
+                  gap["status"] = "SOURCE_CLOSED_PENDING_EVIDENCE"
+                  gap["source_evidence"] = deepcopy(source_evidence)
+                  gap["remaining_evidence"] = pending[identifier]
+              elif identifier in external_ids:
+                  gap["status"] = "EXTERNAL_HOLD"
+                  gap["source_evidence"] = deepcopy(source_evidence)
+          expected = {
+              "R5-GAP-GOVERNANCE-001",
+              "R5-GAP-JOB-ADMISSION-001",
+              *pending.keys(),
+              *external_ids,
+          }
+          if observed != expected:
+              raise SystemExit(
+                  f"gap inventory drifted: missing={sorted(expected-observed)} extra={sorted(observed-expected)}"
+              )
+          gap_path.write_text(
+              json.dumps(gaps, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+
+          status_path = Path("docs/status/owner-open-r5-status.json")
+          status = json.loads(status_path.read_text(encoding="utf-8"))
+          status["product_claim"] = (
+              "Exact source commit f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28 and tree "
+              "8d25f3b4cfa0190e93a07031891e6b0de62404ce passed the permanent L1 source, "
+              "gap, Rust, Broker, MCP, release-path, product-entrypoint, ADB-relay and foundation "
+              "gates. Job admission is CLOSED at L1. Process lifecycle, stream recovery, journal "
+              "convergence, Broker correlation and product entrypoint are source-closed but still "
+              "require their declared L2-L5 target evidence. Repository governance, installed "
+              "Codex, Root Linux placement, Android image, physical ADB, destructive faults and "
+              "public release remain explicit holds."
+          )
+          status["source_evidence_document"] = (
+              "docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md"
+          )
+          status["known_exact_candidate"] = {
+              "status": "HOST_TESTED",
+              "evidence_level": "L1",
+              "branch": BRANCH,
+              "commit": SOURCE_COMMIT,
+              "tree": SOURCE_TREE,
+              "workflow_run_id": RUN_ID,
+              "successful_jobs": source_evidence["successful_jobs"],
+              "artifacts": source_evidence["artifacts"],
+              "claim_ceiling": status["claim_ceiling"],
+          }
+          current = status["current_candidate"]
+          current.update(
+              {
+                  "status": "HOST_TESTED",
+                  "latest_evidence_level": "L1",
+                  "exact_head_validation_pending": False,
+                  "must_not_inherit_baseline_l1": False,
+                  "validated_source_commit": SOURCE_COMMIT,
+                  "validated_source_tree": SOURCE_TREE,
+                  "workflow_run_id": RUN_ID,
+                  "promotion_commit_requires_new_exact_head_ci": True,
+                  "scope": [
+                      "r6 active plan and machine gap register",
+                      "semantic-authority and process-topology ADR",
+                      "unified effect state machine",
+                      "durable jobs, process lifecycle and bounded stream recovery",
+                      "three-stage durable Broker audit and exact direct-error correlation",
+                      "one source-selected product entrypoint and release-path mechanics",
+                      "deployment, restart, emergency-stop and L0-L6 evidence contracts",
+                  ],
+              }
+          )
+          status["open_repository_gaps"] = [
+              {
+                  "id": "R5-GAP-GOVERNANCE-001",
+                  "issue": 20,
+                  "priority": "P0",
+                  "status": "EXTERNAL_HOLD",
+                  "reason": "protected-main configuration and independent review require repository authority outside source CI",
+              }
+          ]
+          status["source_closed_pending_evidence"] = [
+              {
+                  "id": identifier,
+                  "issue": next(
+                      gap.get("issue", gap.get("issues"))
+                      for gap in gaps["gaps"]
+                      if gap["id"] == identifier
+                  ),
+                  "required_level": next(
+                      gap["exit_evidence_level"]
+                      for gap in gaps["gaps"]
+                      if gap["id"] == identifier
+                  ),
+                  "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
+              }
+              for identifier in pending
+          ]
+          for hold in status["external_evidence_holds"]:
+              hold["source_status"] = "HOST_TESTED"
+              hold["source_evidence_commit"] = SOURCE_COMMIT
+          for package in status["work_packages"]:
+              package["source_complete"] = True
+              package["status"] = "HOST_TESTED"
+              package["latest_evidence_level"] = "L1"
+              if package["id"] == "W3":
+                  package["open_gap_ids"] = [
+                      gap_id
+                      for gap_id in package["open_gap_ids"]
+                      if gap_id != "R5-GAP-JOB-ADMISSION-001"
+                  ]
+          status["critical_path_next"] = [
+              "enable protected-main required checks and obtain independent integration review for Issue 20",
+              "execute installed target Root Linux Codex, Broker and process-placement L2 qualification",
+              "build clean Android target files and bind the installed product entrypoint at L3",
+              "execute authorized physical ordinary ADB and visible effects at L4",
+              "complete ENOSPC, corruption, USB-loss, reboot and power-loss qualification at L5",
+              "keep public_release=false until separate cryptographic and human L6 authorization",
+          ]
+          status["not_claimed"] = [
+              "protected-main governance and independent integration approval",
+              "installed target Root Linux Codex qualification",
+              "target Root Linux UID, namespace, cgroup or service-manager placement",
+              "clean Android image or target-files",
+              "installed product entrypoint on a target image",
+              "physical shell, job or ordinary ADB effect",
+              "crash, ENOSPC, USB-loss, reboot or power-loss conformance",
+              "cryptographically verified and human-authorized public release",
+              "zero-gap completion",
+          ]
+          status["zero_gap"] = False
+          status["public_release"] = False
+          status["automatic_redispatch"] = False
+          status_path.write_text(
+              json.dumps(status, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+
+          evidence_doc = Path(
+              "docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md"
+          )
+          evidence_doc.write_text(
+              """# Owner-Open R5 exact-source-head L1 closure evidence
+
+Status: **L1 source closure passed; target, device, destructive-fault and release evidence remains open.**
+
+## Exact source identity
+
+| Field | Value |
+| --- | --- |
+| Repository | `TrillionniumFoundation/trillionnium-os` |
+| Branch | `codex/owner-open-r5-gap-closure-20260829` |
+| Source commit | `f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` |
+| Source tree | `8d25f3b4cfa0190e93a07031891e6b0de62404ce` |
+| Permanent workflow | `L1 owner-open R5 source and gap closure` |
+| Workflow run | `33256008472` |
+| Result | `L1_SOURCE_CLOSURE_PASSED` |
+| Claim ceiling | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX` |
+
+The exact source checkout passed graph and document verification, gap-evidence mutation tests,
+Broker and MCP process fixtures, locked Rust 1.93 formatting/tests/strict Clippy, product-entrypoint
+source checks, release-path mechanics, ADB relay checks and the foundation suite.
+
+## Bound artifacts
+
+| Artifact ID | Name | SHA-256 digest |
+| --- | --- | --- |
+| `9715819868` | `owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` | `sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc` |
+| `9715826446` | `owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` | `sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203` |
+
+## Gap transitions
+
+- `R5-GAP-JOB-ADMISSION-001` is **CLOSED at L1**: finite capacity is reserved before spawn,
+  conflicting concurrency cannot oversubscribe it, and post-spawn cleanup is bounded and tested.
+- Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint
+  are **SOURCE_CLOSED_PENDING_EVIDENCE**. Their source contracts and exact-head tests pass, but their
+  declared L2-L5 installed/environment evidence does not exist yet.
+- Repository governance is **EXTERNAL_HOLD** because protected-main required checks and independent
+  review are repository-administrator actions, not source artifacts.
+- Installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public
+  release remain **EXTERNAL_HOLD** with their exact required material or authority listed in the
+  machine gap register.
+
+## Non-claims
+
+This evidence does not prove installation, target UID/GID or namespace placement, Android image
+inclusion, physical effects, destructive recovery qualification, signed release, protected-main
+configuration or zero-gap completion. `zero_gap=false`, `public_release=false` and
+`automatic_redispatch=false` remain mandatory.
+""",
+              encoding="utf-8",
+          )
+
+          def append_section(path: Path, marker: str, body: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              if marker in text:
+                  return
+              path.write_text(text.rstrip() + "\n\n" + body.rstrip() + "\n", encoding="utf-8")
+
+          append_section(
+              Path("docs/OWNER_OPEN_R5_START_HERE.md"),
+              "## Exact-source L1 checkpoint (2026-08-29)",
+              """## Exact-source L1 checkpoint (2026-08-29)
+
+Start with the [exact-source closure evidence](status/owner-open-r5-source-closure-evidence-2026-08-29.md),
+then read the [machine gap register](status/owner-open-r5-gap-closure.json) and
+[current status](status/owner-open-r5-status.json). Source closure must not be confused with
+installed, image, physical, destructive-fault, governance or release evidence.
+""",
+          )
+          append_section(
+              Path("docs/README.md"),
+              "## R5 exact-source closure evidence",
+              """## R5 exact-source closure evidence
+
+- [Exact-source L1 closure evidence](status/owner-open-r5-source-closure-evidence-2026-08-29.md)
+- [R5 machine gap register](status/owner-open-r5-gap-closure.json)
+- [R5 current status](status/owner-open-r5-status.json)
+""",
+          )
+          append_section(
+              Path("docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"),
+              "## 2026-08-29 exact-source closure checkpoint",
+              """## 2026-08-29 exact-source closure checkpoint
+
+Permanent exact-head run `33256008472` passed for source commit
+`f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` and tree
+`8d25f3b4cfa0190e93a07031891e6b0de62404ce`.
+
+This checkpoint closes only the L1 job-admission gap. It moves the completed process-lifecycle,
+stream-recovery, journal-convergence, Broker-correlation and product-entrypoint source work into
+`SOURCE_CLOSED_PENDING_EVIDENCE`; it does not lower their declared L2-L5 exit levels. Governance
+and all target/device/release lanes remain explicit holds. The ordered next path is protected-main
+and independent review, installed Root Linux L2, Android L3, physical ADB L4, destructive faults
+L5 and separately authorized release L6.
+""",
+          )
+          PY
+      - name: Verify promoted truth without overclaim
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
+          python3 tools/verify-owner-open-r5.py --json >/tmp/r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json >/tmp/r5-gap.json
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_generate_owner_open_l1_candidate \
+            -v
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          gaps = json.loads(Path('docs/status/owner-open-r5-gap-closure.json').read_text())
+          states = {item['id']: item['status'] for item in gaps['gaps']}
+          assert states['R5-GAP-JOB-ADMISSION-001'] == 'CLOSED'
+          assert states['R5-GAP-GOVERNANCE-001'] == 'EXTERNAL_HOLD'
+          assert sum(value == 'SOURCE_CLOSED_PENDING_EVIDENCE' for value in states.values()) == 5
+          assert sum(value == 'EXTERNAL_HOLD' for value in states.values()) == 7
+          status = json.loads(Path('docs/status/owner-open-r5-status.json').read_text())
+          assert status['zero_gap'] is False
+          assert status['public_release'] is False
+          assert status['automatic_redispatch'] is False
+          PY
+          git diff --check
+      - name: Commit evidence-supported promotion
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add \
+            docs/status/owner-open-r5-gap-closure.json \
+            docs/status/owner-open-r5-status.json \
+            docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md \
+            docs/OWNER_OPEN_R5_START_HERE.md \
+            docs/README.md \
+            docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md
+          git diff --cached --check
+          git commit -m "docs(r5): bind exact-source closure and remaining holds"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
