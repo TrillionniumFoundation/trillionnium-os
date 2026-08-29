@@ -7,8 +7,10 @@ on:
       - "docs/status/owner-open-r5-codex-artifacts-status.json"
       - "tools/verify-owner-open-codex-artifacts.py"
       - "tools/verify-owner-open-codex-artifacts-v2.py"
+      - "tools/verify-owner-open-codex-artifacts-v3.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v3.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   push:
     branches:
@@ -19,8 +21,10 @@ on:
       - "docs/status/owner-open-r5-codex-artifacts-status.json"
       - "tools/verify-owner-open-codex-artifacts.py"
       - "tools/verify-owner-open-codex-artifacts-v2.py"
+      - "tools/verify-owner-open-codex-artifacts-v3.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v3.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   workflow_dispatch:
 
@@ -51,9 +55,11 @@ jobs:
           python3 -m py_compile \
             tools/verify-owner-open-codex-artifacts.py \
             tools/verify-owner-open-codex-artifacts-v2.py \
+            tools/verify-owner-open-codex-artifacts-v3.py \
             tools/tests/test_verify_owner_open_codex_artifacts.py \
-            tools/tests/test_verify_owner_open_codex_artifacts_v2.py
-          python3 tools/verify-owner-open-codex-artifacts-v2.py --json \
+            tools/tests/test_verify_owner_open_codex_artifacts_v2.py \
+            tools/tests/test_verify_owner_open_codex_artifacts_v3.py
+          python3 tools/verify-owner-open-codex-artifacts-v3.py --json \
             | tee owner-open-r5-codex-artifact-source.json
       - name: Run archive, package-checksum, ELF, release-metadata and bundle regressions
         run: |
@@ -61,6 +67,7 @@ jobs:
           python3 -m unittest \
             tools.tests.test_verify_owner_open_codex_artifacts \
             tools.tests.test_verify_owner_open_codex_artifacts_v2 \
+            tools.tests.test_verify_owner_open_codex_artifacts_v3 \
             -v 2>&1 | tee owner-open-r5-codex-artifact-tests.txt
       - name: Download exact upstream release metadata
         env:
@@ -127,18 +134,10 @@ jobs:
           test -f "$checksum"
           sha256sum "$checksum" | tee owner-open-r5-codex-checksum-list.sha256
           wc -c "$checksum" | tee owner-open-r5-codex-checksum-list.bytes
-          python3 - <<'PY'
-          from pathlib import Path
-          raw = Path('owner-open-r5-codex-assets/codex-package_SHA256SUMS').read_bytes()
-          text = raw.decode('utf-8')
-          print('BEGIN_CODEX_PACKAGE_SHA256SUMS')
-          print(text, end='' if text.endswith('\n') else '\n')
-          print('END_CODEX_PACKAGE_SHA256SUMS')
-          PY
       - name: Verify official bytes, package metadata and host-compatible CLI identity
         run: |
           set -euo pipefail
-          python3 tools/verify-owner-open-codex-artifacts-v2.py \
+          python3 tools/verify-owner-open-codex-artifacts-v3.py \
             --asset-dir owner-open-r5-codex-assets \
             --release-json owner-open-r5-codex-release.json \
             --release-assets-json owner-open-r5-codex-release-assets-1.json \
