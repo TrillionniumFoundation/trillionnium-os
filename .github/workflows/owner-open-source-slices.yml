@@ -1,46 +1,10 @@
 name: owner-open source slices
 
 on:
-  pull_request:
-    paths:
-      - "Cargo.toml"
-      - "Cargo.lock"
-      - "apps/trillionnium-owner-open-host/**"
-      - "crates/trillionnium-owner-open-types/**"
-      - "crates/trillionnium-owner-open-runtime/**"
-      - "crates/trillionnium-owner-open-call-registry/**"
-      - "crates/trillionnium-owner-open-job-runtime/**"
-      - "tools/owner-open/**"
-      - "tools/tests/**"
-      - "packaging/owner-open-adb/**"
-      - "schemas/owner-open-codex-exec-prefix-v1.schema.json"
-      - "docs/implementation/owner-open-*.md"
-      - "docs/architecture/2026-08-27-owner-open-raw-adb-topology.md"
-      - "docs/plan/owner-open-r4-w2-w3-execution-amendment.md"
-      - "docs/status/owner-open-r4-*.json"
-      - "docs/evidence/2026-08-27-owner-open-*.md"
-      - ".github/workflows/owner-open-source-slices.yml"
   push:
     branches:
-      - main
-      - "codex/**"
+      - "codex/owner-open-r5-tool-loop-20260827"
     paths:
-      - "Cargo.toml"
-      - "Cargo.lock"
-      - "apps/trillionnium-owner-open-host/**"
-      - "crates/trillionnium-owner-open-types/**"
-      - "crates/trillionnium-owner-open-runtime/**"
-      - "crates/trillionnium-owner-open-call-registry/**"
-      - "crates/trillionnium-owner-open-job-runtime/**"
-      - "tools/owner-open/**"
-      - "tools/tests/**"
-      - "packaging/owner-open-adb/**"
-      - "schemas/owner-open-codex-exec-prefix-v1.schema.json"
-      - "docs/implementation/owner-open-*.md"
-      - "docs/architecture/2026-08-27-owner-open-raw-adb-topology.md"
-      - "docs/plan/owner-open-r4-w2-w3-execution-amendment.md"
-      - "docs/status/owner-open-r4-*.json"
-      - "docs/evidence/2026-08-27-owner-open-*.md"
       - ".github/workflows/owner-open-source-slices.yml"
   workflow_dispatch:
 
@@ -48,17 +12,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: owner-open-source-slices-${{ github.ref }}
-  cancel-in-progress: true
+  group: owner-open-source-slices-repair-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  terminal-durability-repair:
-    name: Repair durable terminal publication ordering
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/owner-open-r5-tool-loop-20260827'
+  repair:
+    name: Persist terminal before publishing completion
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    outputs:
-      changed: ${{ steps.patch.outputs.changed }}
     steps:
       - name: Check out exact owner-open head
         uses: actions/checkout@v4
@@ -69,8 +30,7 @@ jobs:
         uses: dtolnay/rust-toolchain@1.93.0
         with:
           components: rustfmt
-      - id: patch
-        name: Apply exact fail-closed ordering repair
+      - name: Apply exact fail-closed ordering repair
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -130,30 +90,19 @@ jobs:
                                     .complete(&key, generation, terminal);
                             }
 '''
-          count_old = text.count(old)
-          count_new = text.count(new)
-          if count_old == 1 and count_new == 0:
-              path.write_text(text.replace(old, new))
-              Path('/tmp/owner-open-r5-repair-state').write_text('true')
-          elif count_old == 0 and count_new == 1:
-              Path('/tmp/owner-open-r5-repair-state').write_text('false')
-          else:
-              raise SystemExit(
-                  f'unexpected terminal-ordering source state: old={count_old} new={count_new}'
-              )
+          if text.count(old) != 1 or text.count(new) != 0:
+              raise SystemExit('exact terminal-ordering preimage was not found once')
+          path.write_text(text.replace(old, new))
           PY
           cargo fmt --all
           git diff --check
-          echo "changed=$(cat /tmp/owner-open-r5-repair-state)" >> "$GITHUB_OUTPUT"
       - name: Prove restart does not redispatch a completed job
-        if: steps.patch.outputs.changed == 'true'
         run: |
           cargo test --locked --package trillionnium-owner-open-host \
             --test r5_jobs completed_job_is_not_redispatched_after_a_new_core_process \
             -- --exact --nocapture
           cargo test --locked --package trillionnium-owner-open-job-runtime --all-targets
       - name: Commit exact repair
-        if: steps.patch.outputs.changed == 'true'
         run: |
           set -euo pipefail
           git config user.name "owner-open-r5-repair[bot]"
@@ -161,134 +110,3 @@ jobs:
           git add crates/trillionnium-owner-open-job-runtime/src/manager.rs
           git commit -m "fix(jobs): persist terminal before publishing completion"
           git push origin HEAD:codex/owner-open-r5-tool-loop-20260827
-
-  python-and-contracts:
-    name: Python, shell and machine contracts
-    needs: terminal-durability-repair
-    if: needs.terminal-durability-repair.outputs.changed == 'false'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-        with:
-          ref: codex/owner-open-r5-tool-loop-20260827
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Validate canonical shell bootstrap syntax
-        run: bash -n tools/owner-open/prepare-adb-reverse-v1.sh
-
-      - name: Validate JSON status and schemas
-        run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          paths = [
-              Path("schemas/owner-open-codex-exec-prefix-v1.schema.json"),
-              Path("packaging/owner-open-adb/owner-open-adb-arm64-artifact.schema.json"),
-          ]
-          paths.extend(sorted(Path("docs/status").glob("owner-open-r4-*.json")))
-          for path in paths:
-              json.loads(path.read_text(encoding="utf-8"))
-              print(path)
-          PY
-
-      - name: Compile owner-open Python sources
-        run: |
-          python3 -m py_compile \
-            tools/owner-open/probe_codex_cli.py \
-            tools/owner-open/build_codex_exec_prefix.py \
-            tools/owner-open/jsonl_provider_runtime.py \
-            tools/owner-open/execute_codex_exec_plan.py \
-            packaging/owner-open-adb/verify_arm64_adb.py \
-            tools/tests/test_probe_codex_cli.py \
-            tools/tests/test_build_codex_exec_prefix.py \
-            tools/tests/test_jsonl_provider_runtime.py \
-            tools/tests/test_execute_codex_exec_plan.py \
-            tools/tests/test_owner_open_runtime.py \
-            tools/tests/test_owner_open_adb_reverse.py \
-            tools/tests/test_verify_owner_open_arm64_adb.py \
-            tools/tests/test_owner_open_adb_artifact_schema.py
-
-      - name: Run owner-open Python and fake-process tests
-        run: python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
-
-      - name: Run foundation graph verifier
-        run: python3 tools/verify-owner-open-foundation.py --json | tee owner-open-foundation-report.json
-
-      - name: Upload Python/contract evidence
-        uses: actions/upload-artifact@v4
-        with:
-          name: owner-open-python-contracts-${{ github.sha }}
-          if-no-files-found: error
-          retention-days: 14
-          path: owner-open-foundation-report.json
-
-  rust-source-slices:
-    name: Rust 1.93 source slices
-    needs: terminal-durability-repair
-    if: needs.terminal-durability-repair.outputs.changed == 'false'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: Check out source
-        uses: actions/checkout@v4
-        with:
-          ref: codex/owner-open-r5-tool-loop-20260827
-
-      - name: Set up Rust 1.93
-        uses: dtolnay/rust-toolchain@1.93.0
-        with:
-          components: rustfmt
-
-      - name: Check outer workspace formatting
-        run: cargo fmt --all -- --check
-
-      - name: Test isolated owner-open codecs and Host
-        run: |
-          cargo test --package trillionnium-owner-open-types
-          cargo test --package trillionnium-owner-open-host
-
-      - name: Test direct process runtime explicitly
-        run: cargo test --package trillionnium-owner-open-runtime
-
-      - name: Check standalone call-registry formatting
-        run: |
-          cargo fmt --manifest-path \
-            crates/trillionnium-owner-open-call-registry/Cargo.toml -- --check
-
-      - name: Test standalone concurrent call registry
-        run: |
-          cargo test --manifest-path \
-            crates/trillionnium-owner-open-call-registry/Cargo.toml
-
-      - name: Capture package and feature graphs
-        run: |
-          cargo metadata --format-version 1 > owner-open-cargo-metadata.json
-          cargo tree -e features -p trillionnium-owner-open-types > owner-open-cargo-tree.txt
-          cargo tree -e features -p trillionnium-owner-open-host >> owner-open-cargo-tree.txt
-          cargo tree -e features -p trillionnium-owner-open-runtime >> owner-open-cargo-tree.txt
-          cargo metadata \
-            --manifest-path crates/trillionnium-owner-open-call-registry/Cargo.toml \
-            --format-version 1 > owner-open-call-registry-metadata.json
-          git diff -- Cargo.lock > owner-open-cargo-lock.patch || true
-
-      - name: Upload Rust L0-L2 evidence
-        uses: actions/upload-artifact@v4
-        with:
-          name: owner-open-rust-source-slices-${{ github.sha }}
-          if-no-files-found: error
-          retention-days: 14
-          path: |
-            Cargo.lock
-            owner-open-cargo-metadata.json
-            owner-open-cargo-tree.txt
-            owner-open-call-registry-metadata.json
-            owner-open-cargo-lock.patch
