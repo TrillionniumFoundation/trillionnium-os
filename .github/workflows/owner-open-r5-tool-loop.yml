@@ -1,4 +1,4 @@
-name: owner-open R5 tool loop
+name: L1 owner-open R5 source and gap closure
 
 on:
   pull_request:
@@ -10,8 +10,12 @@ on:
       - "crates/trillionnium-owner-open-*/**"
       - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
       - "docs/OWNER_OPEN_R5_START_HERE.md"
+      - "docs/README.md"
       - "docs/status/owner-open-r5-*"
       - "docs/contracts/owner-open-forbidden-default-graph-v*.json"
+      - "docs/architecture/2026-08-29-owner-open-*.md"
+      - "docs/operations/owner-open-*.md"
+      - "docs/qualification/owner-open-*.md"
       - "docs/implementation/owner-open-*.md"
       - "docs/protocols/owner-open-*.md"
       - "docs/plan/owner-open-r5-*.md"
@@ -19,7 +23,7 @@ on:
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/owner-open/**"
-      - "tools/tests/test_verify_owner_open_r5.py"
+      - "tools/tests/test_verify_owner_open_r5*.py"
       - "tools/tests/test_codex_owner_open_mcp.py"
       - "tools/tests/test_codex_mcp_qualification_lifecycle.py"
       - "tools/tests/test_*broker*.py"
@@ -36,8 +40,12 @@ on:
       - "crates/trillionnium-owner-open-*/**"
       - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
       - "docs/OWNER_OPEN_R5_START_HERE.md"
+      - "docs/README.md"
       - "docs/status/owner-open-r5-*"
       - "docs/contracts/owner-open-forbidden-default-graph-v*.json"
+      - "docs/architecture/2026-08-29-owner-open-*.md"
+      - "docs/operations/owner-open-*.md"
+      - "docs/qualification/owner-open-*.md"
       - "docs/implementation/owner-open-*.md"
       - "docs/protocols/owner-open-*.md"
       - "docs/plan/owner-open-r5-*.md"
@@ -45,7 +53,7 @@ on:
       - "tools/generate-owner-open-types.py"
       - "tools/verify-owner-open-r5.py"
       - "tools/owner-open/**"
-      - "tools/tests/test_verify_owner_open_r5.py"
+      - "tools/tests/test_verify_owner_open_r5*.py"
       - "tools/tests/test_codex_owner_open_mcp.py"
       - "tools/tests/test_codex_mcp_qualification_lifecycle.py"
       - "tools/tests/test_*broker*.py"
@@ -56,66 +64,142 @@ permissions:
   contents: read
 
 concurrency:
-  group: owner-open-r5-${{ github.ref }}
+  group: owner-open-r5-l1-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  graph-and-python:
-    name: R5 graph, broker, Codex MCP and machine contracts
+  l1-graph-docs-python:
+    name: L1 graph, documentation, broker and MCP source closure
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: Parse machine documents and Python
+      - name: Parse machine contracts and compile Python
         run: |
+          set -euo pipefail
           python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v1.json >/dev/null
           python3 -m json.tool docs/contracts/owner-open-forbidden-default-graph-v2.json >/dev/null
           python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
-          python3 -m compileall -q tools/owner-open tools/tests
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 -m compileall -q tools/owner-open tools/tests tools/verify-owner-open-r5.py
       - name: Verify generated codec constants
         run: python3 tools/generate-owner-open-types.py --check
-      - name: Verify exact R5 source graph
-        run: python3 tools/verify-owner-open-r5.py --json | tee owner-open-r5-graph.json
-      - name: Run R5 verifier regression tests
-        run: python3 -m unittest tools.tests.test_verify_owner_open_r5 -v 2>&1 | tee owner-open-r5-verifier-tests.txt
+      - name: Verify exact R5 graph, active plan and gap register
+        run: |
+          set -euo pipefail
+          python3 tools/verify-owner-open-r5.py --json | tee owner-open-r5-verification.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path("owner-open-r5-verification.json").read_text())
+          assert value.get("ok") is True, value
+          facts = value.get("facts", {})
+          assert facts.get("active_plan_revision") == "2026-08-29-r6", facts
+          assert facts.get("zero_gap") is False, facts
+          PY
+      - name: Run R5 verifier and zero-gap mutation tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5 \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            -v 2>&1 | tee owner-open-r5-verifier-tests.txt
       - name: Run Codex STDIO MCP job bridge tests
         env:
           PYTHONWARNINGS: error::ResourceWarning
         run: python3 -m unittest tools.tests.test_codex_owner_open_mcp -v 2>&1 | tee owner-open-r5-mcp-tests.txt
-      - name: Run installed-Codex qualification lifecycle tests
+      - name: Run installed-Codex qualification lifecycle fixtures
         env:
           PYTHONWARNINGS: error::ResourceWarning
-        run: python3 -m unittest tools.tests.test_codex_mcp_qualification_lifecycle -v 2>&1 | tee owner-open-r5-qualification-tests.txt
-      - name: Run multi-connection broker tests
+        run: python3 -m unittest tools.tests.test_codex_mcp_qualification_lifecycle -v 2>&1 | tee owner-open-r5-qualification-fixtures.txt
+      - name: Run multi-connection broker source tests
         env:
           PYTHONWARNINGS: error::ResourceWarning
         run: python3 -m unittest discover -s tools/tests -p 'test_*broker*.py' -v 2>&1 | tee owner-open-r5-broker-tests.txt
+      - name: Generate exact-head L1 candidate manifest
+        env:
+          WORKFLOW_NAME: L1 owner-open R5 source and gap closure
+          JOB_NAME: L1 graph, documentation, broker and MCP source closure
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          def sha256(path: Path) -> str:
+              digest = hashlib.sha256()
+              with path.open("rb") as source:
+                  while chunk := source.read(1024 * 1024):
+                      digest.update(chunk)
+              return digest.hexdigest()
+
+          status = json.loads(Path("docs/status/owner-open-r5-status.json").read_text())
+          gaps = json.loads(Path("docs/status/owner-open-r5-gap-closure.json").read_text())
+          payload = {
+              "schema": "org.trillionnium.owner-open.l1-candidate.v1",
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "ref": os.environ["GITHUB_REF"],
+              "commit_sha": os.environ["GITHUB_SHA"],
+              "tree_sha": subprocess.check_output(
+                  ["git", "rev-parse", f"{os.environ['GITHUB_SHA']}^{{tree}}"], text=True
+              ).strip(),
+              "dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], text=True)),
+              "workflow": os.environ["WORKFLOW_NAME"],
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "workflow_run_attempt": int(os.environ["GITHUB_RUN_ATTEMPT"]),
+              "job": os.environ["JOB_NAME"],
+              "graph_contract_revision": status["graph_contract_revision"],
+              "active_plan_revision": status["active_plan_revision"],
+              "gap_register_revision": gaps["revision"],
+              "zero_gap": status["zero_gap"],
+              "public_release": status["public_release"],
+              "automatic_redispatch": status["automatic_redispatch"],
+              "claim_ceiling": status["claim_ceiling"],
+              "cargo_lock_sha256": sha256(Path("Cargo.lock")),
+              "negative_claims": status["not_claimed"],
+              "evidence_level": "L1",
+              "result": "source_jobs_in_progress",
+          }
+          Path("owner-open-r5-l1-candidate.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n"
+          )
+          PY
       - uses: actions/upload-artifact@v4
         with:
-          name: owner-open-r5-graph-broker-and-mcp-${{ github.sha }}
+          name: owner-open-r5-l1-graph-docs-python-${{ github.sha }}
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
           path: |
-            owner-open-r5-graph.json
+            owner-open-r5-verification.json
             owner-open-r5-verifier-tests.txt
             owner-open-r5-mcp-tests.txt
-            owner-open-r5-qualification-tests.txt
+            owner-open-r5-qualification-fixtures.txt
             owner-open-r5-broker-tests.txt
+            owner-open-r5-l1-candidate.json
 
-  rust-tool-loop:
-    name: Rust 1.93 job-aware Host, flow-control and recovery closure
+  l1-rust:
+    name: L1 Rust 1.93 selected Host, job, flow and recovery closure
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@1.93.0
         with:
           components: rustfmt, clippy
       - name: Verify reviewed dependency lock without mutation
         run: |
+          set -euo pipefail
           test -s Cargo.lock
           cp Cargo.lock owner-open-r5-reviewed-Cargo.lock
           cargo metadata --locked --format-version 1 > owner-open-r5-cargo-metadata.json
@@ -125,10 +209,11 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Test exact owner-open default closure
         run: cargo test --locked --all-targets
-      - name: Deny clippy warnings in the exact default closure
+      - name: Deny Clippy warnings in the exact default closure
         run: cargo clippy --locked --all-targets -- -D warnings
-      - name: Capture exact candidate graph and prove lock immutability
+      - name: Capture exact feature graph and prove lock immutability
         run: |
+          set -euo pipefail
           cmp --silent Cargo.lock owner-open-r5-reviewed-Cargo.lock
           git diff --exit-code -- Cargo.lock
           : > owner-open-r5-cargo-tree.txt
@@ -149,11 +234,12 @@ jobs:
           done
           git diff -- Cargo.lock > owner-open-r5-cargo-lock.patch
           test ! -s owner-open-r5-cargo-lock.patch
+          git diff --exit-code
       - uses: actions/upload-artifact@v4
         with:
-          name: owner-open-r5-selected-jobs-${{ github.sha }}
+          name: owner-open-r5-l1-rust-${{ github.sha }}
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
           path: |
             Cargo.lock
             owner-open-r5-reviewed-Cargo.lock
