@@ -1,0 +1,125 @@
+name: Owner-open R5 complete-history converger v4
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-history-converger-v4.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-open-r5-history-converger-v4
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Add full history to every permanent R5 checkout
+        run: |
+          set -euo pipefail
+          test -f tools/owner-open/verify_owner_open_r5_workflow_identity.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          workflow_dir = Path('.github/workflows')
+          transient = {
+              'owner-open-r5-history-hardening-v4.yml',
+              'owner-open-r5-history-converger-v4.yml',
+          }
+          for path in sorted(workflow_dir.glob('owner-open-r5*.yml')):
+              if path.name in transient:
+                  continue
+              original = path.read_text()
+              lines = original.splitlines()
+              output = []
+              index = 0
+              while index < len(lines):
+                  line = lines[index]
+                  output.append(line)
+                  if re.match(r'^\s*- uses: actions/checkout@v4\s*$', line):
+                      indent = len(line) - len(line.lstrip())
+                      end = index + 1
+                      while end < len(lines):
+                          stripped = lines[end].strip()
+                          current = len(lines[end]) - len(lines[end].lstrip())
+                          if stripped and current <= indent and stripped.startswith('-'):
+                              break
+                          if stripped and current < indent:
+                              break
+                          end += 1
+                      block = lines[index + 1:end]
+                      if not any(value.strip().startswith('fetch-depth:') for value in block):
+                          with_index = next((i for i, value in enumerate(block) if value.strip() == 'with:'), None)
+                          if with_index is None:
+                              output.extend([' ' * (indent + 2) + 'with:', ' ' * (indent + 4) + 'fetch-depth: 0'])
+                              output.extend(block)
+                          else:
+                              output.extend(block[:with_index + 1])
+                              output.append(' ' * (indent + 4) + 'fetch-depth: 0')
+                              output.extend(block[with_index + 1:])
+                          index = end
+                          continue
+                  index += 1
+              path.write_text('\n'.join(output) + ('\n' if original.endswith('\n') else ''))
+          for name in transient:
+              (workflow_dir / name).unlink(missing_ok=True)
+          PY
+      - name: Validate converged history
+        env:
+          OWNER_OPEN_R5_BINDING_SOURCE_SHA: ${{ github.sha }}
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          set -euo pipefail
+          python3 tools/owner-open/verify_owner_open_r5_workflow_identity.py --json >/tmp/workflow-identity.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json >/tmp/gap-evidence.json
+          python3 -m unittest tools.tests.test_verify_owner_open_r5_gap_evidence -v
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          errors = []
+          for path in sorted(Path('.github/workflows').glob('owner-open-r5*.yml')):
+              lines = path.read_text().splitlines()
+              for index, line in enumerate(lines):
+                  if re.match(r'^\s*- uses: actions/checkout@v4\s*$', line):
+                      indent = len(line) - len(line.lstrip())
+                      block = []
+                      for following in lines[index + 1:]:
+                          stripped = following.strip()
+                          current = len(following) - len(following.lstrip())
+                          if stripped and current <= indent and stripped.startswith('-'):
+                              break
+                          if stripped and current < indent:
+                              break
+                          block.append(following)
+                      if 'fetch-depth: 0' not in '\n'.join(block):
+                          errors.append(f'{path}:{index + 1}')
+          if errors:
+              raise SystemExit('missing fetch-depth: 0: ' + ', '.join(errors))
+          PY
+          git diff --check
+      - name: Publish with remote-head CAS
+        run: |
+          set -euo pipefail
+          remote="$(git ls-remote origin refs/heads/codex/owner-open-r5-gap-closure-20260829 | awk '{print $1}')"
+          test "$remote" = "$GITHUB_SHA"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --check
+          git commit -m "ci(r5): converge full-history exact-source checks"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
