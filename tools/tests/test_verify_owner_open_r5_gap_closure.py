@@ -120,12 +120,15 @@ class VerifyOwnerOpenR5GapClosureTest(unittest.TestCase):
         external["status"] = "CLOSED"
         report = self.verify(gap=gap)
         # During the verifier ownership migration the coarse register verifier
-        # may still report its historical external-lane error, or may fully
-        # delegate to verify-owner-open-r5-gap-evidence.py. Both are valid;
-        # any unrelated error remains a regression.
+        # may report its historical diagnostics or the newer exact source and
+        # external-bundle diagnostics. The dedicated evidence verifier owns the
+        # full bundle/reviewer/level semantics. Any unrelated error regresses
+        # the coarse register contract.
         allowed_fragments = (
             "closed R5 gap has no evidence",
             "external evidence lane cannot be closed",
+            "closed R5 gap has no exact source evidence",
+            "closed external R5 gap has no evidence",
         )
         unexpected = [
             value
