@@ -12,21 +12,21 @@ on post-fs-data
     restorecon_recursive /data/trillionnium/owner-open
 
 on property:ro.trillionnium.owner_open.enabled=true
-    start trillionnium-owner-open-bootstrap
+    start trillionnium_owner_open_bootstrap
 
 on property:trillionnium.owner_open.ready=1
-    start trillionnium-owner-open-ingress
+    start trillionnium_owner_open_ingress
 
 on property:trillionnium.owner_open.ready=0
-    stop trillionnium-owner-open-ingress
+    stop trillionnium_owner_open_ingress
 
 on property:sys.trillionnium.owner_open.stop=1
-    stop trillionnium-owner-open-ingress
-    start trillionnium-owner-open-emergency-stop
-    stop trillionnium-owner-open-bootstrap
+    stop trillionnium_owner_open_ingress
+    start trillionnium_owner_open_emergency_stop
+    stop trillionnium_owner_open_bootstrap
     setprop sys.trillionnium.owner_open.stop 0
 
-service trillionnium-owner-open-bootstrap /system_ext/bin/trillionnium-owner-open-bootstrap
+service trillionnium_owner_open_bootstrap /system_ext/bin/trillionnium-owner-open-bootstrap
     class core
     user root
     group root system
@@ -38,14 +38,14 @@ service trillionnium-owner-open-bootstrap /system_ext/bin/trillionnium-owner-ope
 # Ingress runs as root only to satisfy the broker's same-UID and 0600-token
 # boundary. SELinux admits only the dedicated unprivileged app domain, and the
 # token is consumed here rather than exposed to the app process.
-service trillionnium-owner-open-ingress /system_ext/bin/trillionnium-owner-open-ingress
+service trillionnium_owner_open_ingress /system_ext/bin/trillionnium-owner-open-ingress
     class core
     user root
     group root system
     disabled
     seclabel u:r:trillionnium_owner_open_ingress:s0
 
-service trillionnium-owner-open-emergency-stop /system_ext/bin/trillionnium-owner-open-emergency-stop
+service trillionnium_owner_open_emergency_stop /system_ext/bin/trillionnium-owner-open-emergency-stop
     class core
     user root
     group root system
