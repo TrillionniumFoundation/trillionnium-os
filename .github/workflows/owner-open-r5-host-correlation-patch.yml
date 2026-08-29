@@ -30,14 +30,15 @@ jobs:
 
           def replace_once(path: Path, old: str, new: str, label: str) -> None:
               text = path.read_text(encoding="utf-8")
-              if text.count(old) != 1:
-                  raise SystemExit(f"{label}: expected one match, observed {text.count(old)}")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected one match, observed {count}")
               path.write_text(text.replace(old, new), encoding="utf-8")
 
           wire = Path("apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs")
           replace_once(
               wire,
-              '''fn build_job_frame(
+              """fn build_job_frame(
               context: &JobContext,
               kind: &str,
               seq: u64,
@@ -45,8 +46,8 @@ jobs:
               payload: Value,
           ) -> RunTurnFrame {
               RunTurnFrame {
-          ''',
-              '''fn build_job_frame(
+          """.replace("          ", ""),
+              """fn build_job_frame(
               context: &JobContext,
               kind: &str,
               seq: u64,
@@ -63,55 +64,47 @@ jobs:
                   });
               }
               RunTurnFrame {
-          ''',
+          """.replace("          ", ""),
               "build_job_frame payload binding",
           )
           replace_once(
               wire,
-              '''        stream_id: Some(context.stream_id.clone()),
-              turn_stream_id: None,
-              session_id: Some(context.key.scope.session_id.clone()),
-          ''',
-              '''        stream_id: Some(context.stream_id.clone()),
-              turn_stream_id: Some(context.key.scope.turn_stream_id.clone()),
-              session_id: Some(context.key.scope.session_id.clone()),
-          ''',
+              "        turn_stream_id: None,\n",
+              "        turn_stream_id: Some(context.key.scope.turn_stream_id.clone()),\n",
               "job turn-stream correlation",
           )
 
           process = Path("apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs")
           replace_once(
               process,
-              '''            let decoded = decode_job_start(&frame, shell_executable)?;
+              """            let decoded = decode_job_start(&frame, shell_executable)?;
               let context = decoded.context.clone();
               let result = manager
                   .start(decoded.request)
                   .map_err(|error| error.to_string())?;
-          ''',
-              '''            let decoded = decode_job_start(&frame, shell_executable)?;
+          """.replace("          ", ""),
+              """            let decoded = decode_job_start(&frame, shell_executable)?;
               let context = decoded.context.clone();
               let operation_id = decoded.request.operation_id.clone();
               let result = manager
                   .start(decoded.request)
                   .map_err(|error| error.to_string())?;
-          ''',
+          """.replace("          ", ""),
               "job.start operation capture",
           )
           replace_once(
               process,
-              '''                start_payload(&result),
-          ''',
-              '''                start_payload(&result, &operation_id),
-          ''',
+              "                start_payload(&result),\n",
+              "                start_payload(&result, &operation_id),\n",
               "job.start response operation",
           )
           replace_once(
               process,
-              '''            let decoded = decode_job_control(&frame)?;
+              """            let decoded = decode_job_control(&frame)?;
               let context = resolve_job_context(manager, decoded.context)?;
               let inspection = if frame.kind == FRAME_JOB_ATTACH {
-          ''',
-              '''            let decoded = decode_job_control(&frame)?;
+          """.replace("          ", ""),
+              """            let decoded = decode_job_control(&frame)?;
               let context = resolve_job_context(manager, decoded.context)?;
               let response_attachment_id = if frame.kind == FRAME_JOB_ATTACH {
                   decoded.attachment_id.as_deref()
@@ -119,96 +112,93 @@ jobs:
                   None
               };
               let inspection = if frame.kind == FRAME_JOB_ATTACH {
-          ''',
+          """.replace("          ", ""),
               "job.attach response identity",
           )
           replace_once(
               process,
-              '''                &inspection,
+              """            let response = bounded_inspection_frame(
+                  state,
+                  kind,
+                  &inspection,
                   &durable_records,
                   max_frame_bytes,
-          ''',
-              '''                &inspection,
+              )?;
+          """.replace("          ", ""),
+              """            let response = bounded_inspection_frame(
+                  state,
+                  kind,
+                  &inspection,
                   &durable_records,
                   response_attachment_id,
                   max_frame_bytes,
-          ''',
+              )?;
+          """.replace("          ", ""),
               "inspection response attachment argument",
           )
           replace_once(
               process,
-              '''    inspection: &JobInspection,
+              """fn bounded_inspection_frame(
+              state: &mut JobDeliveryState,
+              kind: &str,
+              inspection: &JobInspection,
               durable_records: &[Value],
               max_frame_bytes: usize,
           ) -> Result<RunTurnFrame, String> {
-          ''',
-              '''    inspection: &JobInspection,
+          """.replace("          ", ""),
+              """fn bounded_inspection_frame(
+              state: &mut JobDeliveryState,
+              kind: &str,
+              inspection: &JobInspection,
               durable_records: &[Value],
               attachment_id: Option<&str>,
               max_frame_bytes: usize,
           ) -> Result<RunTurnFrame, String> {
-          ''',
+          """.replace("          ", ""),
               "bounded inspection signature",
           )
           replace_once(
               process,
-              '''            "durable_has_more": end < durable_records.len(),
-              "read_only": true,
-          ''',
-              '''            "durable_has_more": end < durable_records.len(),
-              "attachment_id": attachment_id,
-              "read_only": true,
-          ''',
+              '            "durable_has_more": end < durable_records.len(),\n            "read_only": true,\n',
+              '            "durable_has_more": end < durable_records.len(),\n            "attachment_id": attachment_id,\n            "read_only": true,\n',
               "inspection attachment payload",
           )
           replace_once(
               process,
-              '''fn start_payload(result: &JobStartResult) -> Value {
-              json!({
-                  "status": match &result.disposition {
-          ''',
-              '''fn start_payload(result: &JobStartResult, operation_id: &str) -> Value {
-              json!({
-                  "status": match &result.disposition {
-          ''',
+              "fn start_payload(result: &JobStartResult) -> Value {\n",
+              "fn start_payload(result: &JobStartResult, operation_id: &str) -> Value {\n",
               "start_payload signature",
           )
           replace_once(
               process,
-              '''        "snapshot": &result.snapshot,
-              "replay_status": &result.replay_status,
-          ''',
-              '''        "snapshot": &result.snapshot,
-              "replay_status": &result.replay_status,
-              "operation_id": operation_id,
-          ''',
+              '        "snapshot": &result.snapshot,\n        "replay_status": &result.replay_status,\n',
+              '        "snapshot": &result.snapshot,\n        "replay_status": &result.replay_status,\n        "operation_id": operation_id,\n',
               "start_payload operation binding",
           )
 
           test = Path("apps/trillionnium-owner-open-host/tests/r5_jobs.rs")
           replace_once(
               test,
-              '''    assert!(
+              """    assert!(
                   frames
                       .iter()
                       .any(|frame| frame["kind"] == "job.start.result")
               );
-          ''',
-              '''    let start = frames
+          """.replace("          ", ""),
+              """    let start = frames
                   .iter()
                   .find(|frame| frame["kind"] == "job.start.result")
                   .expect("job.start.result");
               assert_eq!(start["payload"]["operation_id"], "start-job-pipe");
               assert_eq!(start["turn_stream_id"], "turn-stream-jobs");
               assert_eq!(start["session_id"], "session-jobs");
-          ''',
+          """.replace("          ", ""),
               "job start correlation regression",
           )
           replace_once(
               test,
-              '''    assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));
-          ''',
-              '''    assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));
+              '    assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));\n',
+              """    assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));
               let control_operations = frames
                   .iter()
                   .filter(|frame| frame["kind"] == "job.control.result")
@@ -220,7 +210,7 @@ jobs:
                   .iter()
                   .filter(|frame| frame["job_id"] == "job-pipe")
                   .all(|frame| frame["turn_stream_id"] == "turn-stream-jobs"));
-          ''',
+          """.replace("          ", ""),
               "job control correlation regression",
           )
           PY
