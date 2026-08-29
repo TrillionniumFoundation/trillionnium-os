@@ -1,0 +1,113 @@
+name: Owner-open R5 evidence hardening watchdog v4
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-evidence-hardening-watchdog-v4.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-open-r5-evidence-hardening-watchdog-v4
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Converge the evidence migration if still pending
+        run: |
+          set -euo pipefail
+          if test -f tools/owner-open/apply_r5_evidence_hardening_v4.py; then
+            python3 - <<'PY'
+            from pathlib import Path
+            path = Path('tools/owner-open/apply_r5_evidence_hardening_v4.py')
+            text = path.read_text()
+            repairs = [
+                (
+                    'replace_between(path, "def exact_source_evidence(", "def verify(", replacement + "def verify(")',
+                    'replace_between(path, "def exact_source_evidence(", "def verify(", replacement)',
+                ),
+                (
+                    '''        digest = artifact.get("digest")
+                    if not isinstance(digest, str) or not digest.startswith("sha256:") or HEX64.fullmatch(digest[7:]) is None:
+                        raise ValueError("artifact digest is malformed")''',
+                    '''        digest = artifact.get("digest")
+                    if isinstance(digest, str) and HEX64.fullmatch(digest) is not None:
+                        digest = "sha256:" + digest
+                        artifact["digest"] = digest
+                    if not isinstance(digest, str) or not digest.startswith("sha256:") or HEX64.fullmatch(digest[7:]) is None:
+                        raise ValueError("artifact digest is malformed")''',
+                ),
+                (
+                    '''    manifest_path = manifest_path if manifest_path.is_absolute() else root / manifest_path
+                stable_file(manifest_path, root)
+                manifest, manifest_raw = read_object(manifest_path)''',
+                    '''    manifest_path = manifest_path if manifest_path.is_absolute() else root / manifest_path
+                manifest_container = manifest_path.parent.resolve(strict=True)
+                stable_file(manifest_path, manifest_container)
+                manifest, manifest_raw = read_object(manifest_path)''',
+                ),
+                (
+                    '        "manifest": str(manifest_path.relative_to(root)),',
+                    '        "manifest": str(manifest_path.relative_to(root)) if manifest_path.is_relative_to(root) else str(manifest_path),',
+                ),
+            ]
+            for old, new in repairs:
+                if old in text:
+                    text = text.replace(old, new, 1)
+            path.write_text(text)
+            PY
+            python3 tools/owner-open/apply_r5_evidence_hardening_v4.py
+          fi
+          rm -f \
+            .github/workflows/owner-open-r5-evidence-hardening-watchdog-v4.yml \
+            .github/workflows/owner-open-r5-evidence-hardening-migration-v4.yml \
+            tools/owner-open/apply_r5_evidence_hardening_v4.py
+      - name: Validate converged source
+        env:
+          OWNER_OPEN_R5_BINDING_SOURCE_SHA: ${{ github.sha }}
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          set -euo pipefail
+          test -f tools/owner-open/owner_open_r5_evidence_bundle.py
+          test -f tools/owner-open/promote_owner_open_r5_evidence.py
+          test -f tools/owner-open/bind_owner_open_r5_source_evidence.py
+          test -f .github/workflows/owner-open-r5-exact-source-binder-v4.yml
+          python3 -m compileall -q tools
+          python3 -m unittest \
+            tools.tests.test_owner_open_r5_evidence_bundle \
+            tools.tests.test_bind_owner_open_r5_source_evidence \
+            tools.tests.test_verify_owner_open_r5_workflow_identity \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_generate_owner_open_r5_resume_packet \
+            -v
+          python3 tools/verify-owner-open-r5.py --json >/tmp/verify-r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json >/tmp/verify-gap.json
+          python3 tools/owner-open/verify_owner_open_r5_workflow_identity.py --json >/tmp/verify-workflows.json
+          git diff --check
+      - name: Publish converged source with remote-head CAS
+        run: |
+          set -euo pipefail
+          remote="$(git ls-remote origin refs/heads/codex/owner-open-r5-gap-closure-20260829 | awk '{print $1}')"
+          test "$remote" = "$GITHUB_SHA"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --check
+          git commit -m "feat(r5): converge permanent evidence hardening"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
