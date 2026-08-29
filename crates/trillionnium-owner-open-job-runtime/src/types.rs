@@ -181,13 +181,25 @@ pub struct RuntimeJobEvent {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
+pub struct JobObservationGap {
+    pub first_missing_cursor: u64,
+    pub last_missing_cursor: u64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct JobInspection {
     pub snapshot: Option<JobSnapshot>,
     pub registry_events: Vec<JobEvent>,
     pub runtime_events: Vec<RuntimeJobEvent>,
     pub inclusive_cursor: u64,
+    pub oldest_available_cursor: u64,
     pub next_cursor: u64,
+    pub total_events: u64,
     pub has_more: bool,
+    pub resync_required: bool,
+    pub gap: Option<JobObservationGap>,
+    pub durable_fallback_available: bool,
     pub replay_status: ReplayStatus,
 }
 
