@@ -9,10 +9,12 @@ on:
       - "tools/verify-owner-open-codex-artifacts-v2.py"
       - "tools/verify-owner-open-codex-artifacts-v3.py"
       - "tools/verify-owner-open-codex-artifacts-v4.py"
+      - "tools/verify-owner-open-codex-artifacts-v5.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v3.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v4.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v5.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   push:
     branches:
@@ -25,10 +27,12 @@ on:
       - "tools/verify-owner-open-codex-artifacts-v2.py"
       - "tools/verify-owner-open-codex-artifacts-v3.py"
       - "tools/verify-owner-open-codex-artifacts-v4.py"
+      - "tools/verify-owner-open-codex-artifacts-v5.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v2.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v3.py"
       - "tools/tests/test_verify_owner_open_codex_artifacts_v4.py"
+      - "tools/tests/test_verify_owner_open_codex_artifacts_v5.py"
       - ".github/workflows/owner-open-r5-codex-artifacts.yml"
   workflow_dispatch:
 
@@ -51,7 +55,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: Compile and verify the dual-binding source contract
+      - name: Compile and verify the complete artifact contract
         run: |
           set -euo pipefail
           python3 -m json.tool \
@@ -61,13 +65,15 @@ jobs:
             tools/verify-owner-open-codex-artifacts-v2.py \
             tools/verify-owner-open-codex-artifacts-v3.py \
             tools/verify-owner-open-codex-artifacts-v4.py \
+            tools/verify-owner-open-codex-artifacts-v5.py \
             tools/tests/test_verify_owner_open_codex_artifacts.py \
             tools/tests/test_verify_owner_open_codex_artifacts_v2.py \
             tools/tests/test_verify_owner_open_codex_artifacts_v3.py \
-            tools/tests/test_verify_owner_open_codex_artifacts_v4.py
-          python3 tools/verify-owner-open-codex-artifacts-v4.py --json \
+            tools/tests/test_verify_owner_open_codex_artifacts_v4.py \
+            tools/tests/test_verify_owner_open_codex_artifacts_v5.py
+          python3 tools/verify-owner-open-codex-artifacts-v5.py --json \
             | tee owner-open-r5-codex-artifact-source.json
-      - name: Run archive, package-checksum, ELF, release-metadata and bundle regressions
+      - name: Run archive, checksum, ELF, metadata and Cosign regressions
         run: |
           set -euo pipefail
           python3 -m unittest \
@@ -75,6 +81,7 @@ jobs:
             tools.tests.test_verify_owner_open_codex_artifacts_v2 \
             tools.tests.test_verify_owner_open_codex_artifacts_v3 \
             tools.tests.test_verify_owner_open_codex_artifacts_v4 \
+            tools.tests.test_verify_owner_open_codex_artifacts_v5 \
             -v 2>&1 | tee owner-open-r5-codex-artifact-tests.txt
       - name: Download exact upstream release metadata
         env:
@@ -144,7 +151,7 @@ jobs:
       - name: Verify official bytes, package metadata, Rekor binding and host CLI identity
         run: |
           set -euo pipefail
-          python3 tools/verify-owner-open-codex-artifacts-v4.py \
+          python3 tools/verify-owner-open-codex-artifacts-v5.py \
             --asset-dir owner-open-r5-codex-assets \
             --release-json owner-open-r5-codex-release.json \
             --release-assets-json owner-open-r5-codex-release-assets-1.json \
