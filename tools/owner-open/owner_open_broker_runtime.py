@@ -19,6 +19,8 @@ CORRELATION_FIELDS = (
     "call_id",
     "job_id",
     "operation_id",
+    "attachment_id",
+    "request_sha256",
 )
 
 
@@ -54,8 +56,7 @@ def response_matches(request: "Request", frame: dict[str, Any]) -> bool:
     if request.expected_job_id is not None and actual["job_id"] != request.expected_job_id:
         return False
     for name, expected in request.correlation.items():
-        observed = actual.get(name)
-        if expected is not None and observed is not None and observed != expected:
+        if expected is not None and actual.get(name) != expected:
             return False
     return True
 
