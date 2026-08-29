@@ -14,6 +14,7 @@ on:
       - "tools/verify-owner-open-android-profile-v3.py"
       - "tools/verify-owner-open-android-profile-selection.py"
       - "tools/verify-owner-open-android-source-closure.py"
+      - "tools/verify-owner-open-android-source-closure-v2.py"
       - "tools/tests/test_verify_owner_open_android_profile_v3.py"
       - "tools/tests/test_verify_owner_open_android_profile_selection.py"
       - "tools/tests/test_verify_owner_open_android_source_closure.py"
@@ -37,6 +38,7 @@ on:
       - "tools/verify-owner-open-android-profile-v3.py"
       - "tools/verify-owner-open-android-profile-selection.py"
       - "tools/verify-owner-open-android-source-closure.py"
+      - "tools/verify-owner-open-android-source-closure-v2.py"
       - "tools/tests/test_verify_owner_open_android_profile_v3.py"
       - "tools/tests/test_verify_owner_open_android_profile_selection.py"
       - "tools/tests/test_verify_owner_open_android_source_closure.py"
@@ -79,6 +81,7 @@ jobs:
             tools/verify-owner-open-android-profile-v3.py \
             tools/verify-owner-open-android-profile-selection.py \
             tools/verify-owner-open-android-source-closure.py \
+            tools/verify-owner-open-android-source-closure-v2.py \
             tools/tests/test_verify_owner_open_android_profile_v3.py \
             tools/tests/test_verify_owner_open_android_profile_selection.py \
             tools/tests/test_verify_owner_open_android_source_closure.py
@@ -92,7 +95,7 @@ jobs:
       - name: Verify complete Android and Root Linux authored source closure
         run: |
           set -euo pipefail
-          python3 tools/verify-owner-open-android-source-closure.py --json \
+          python3 tools/verify-owner-open-android-source-closure-v2.py --json \
             | tee owner-open-r5-android-source-closure.json
       - name: Verify foundation consistency and capture external holds
         run: |
