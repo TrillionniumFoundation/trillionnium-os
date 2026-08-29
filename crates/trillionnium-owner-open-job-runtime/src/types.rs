@@ -166,6 +166,10 @@ pub enum RuntimeJobEventKind {
         stdout_bytes: u64,
         stderr_bytes: u64,
     },
+    ProcessFault {
+        phase: String,
+        error: String,
+    },
     JournalUnavailable {
         error: Option<String>,
     },
@@ -193,12 +197,17 @@ pub struct JobInspection {
     pub registry_events: Vec<JobEvent>,
     pub runtime_events: Vec<RuntimeJobEvent>,
     pub inclusive_cursor: u64,
+    #[serde(default)]
     pub oldest_available_cursor: u64,
     pub next_cursor: u64,
+    #[serde(default)]
     pub total_events: u64,
     pub has_more: bool,
+    #[serde(default)]
     pub resync_required: bool,
+    #[serde(default)]
     pub gap: Option<JobObservationGap>,
+    #[serde(default)]
     pub durable_fallback_available: bool,
     pub replay_status: ReplayStatus,
 }
@@ -209,10 +218,14 @@ pub(crate) enum InternalProcessEvent {
         stream: String,
         bytes: Vec<u8>,
     },
+    InputFailed {
+        error: String,
+    },
     Exited {
         terminal_kind: String,
         exit_code: Option<i32>,
         signal: Option<i32>,
+        cleanup_error: Option<String>,
     },
     ReaderFailed {
         stream: String,
