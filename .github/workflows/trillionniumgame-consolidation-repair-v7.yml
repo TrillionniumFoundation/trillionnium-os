@@ -1,0 +1,245 @@
+# exact-target: ae66e74e127bf396c40f0d4585aa35b6daabfd02
+name: TrillionniumGame consolidation repair v7
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-consolidation-repair-v7.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: integration/all-branches-main-v1
+  EXPECTED_TARGET_HEAD: ae66e74e127bf396c40f0d4585aa35b6daabfd02
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - id: target
+        name: Resolve immutable target head
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" \
+            "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test "$sha" = "$EXPECTED_TARGET_HEAD"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install exact toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal \
+            --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+          go version
+          python3 --version
+
+      - name: Prove ancestry and materialize deterministic source
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=repair-v7/static
+          mkdir -p "$evidence/materialized"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET_HEAD"
+          git fetch --force origin '+refs/heads/*:refs/remotes/origin/*'
+          git rev-parse HEAD > "$evidence/commit.txt"
+          git rev-parse HEAD^{tree} > "$evidence/tree.txt"
+          : > "$evidence/branches.tsv"
+          : > "$evidence/non-ancestors.tsv"
+          while IFS= read -r ref; do
+            branch=${ref#refs/remotes/origin/}
+            [[ "$branch" == HEAD ]] && continue
+            tip=$(git rev-parse "$ref")
+            if [[ "$branch" == "$TARGET_BRANCH" ]]; then
+              relation=self
+            elif git merge-base --is-ancestor "$tip" HEAD; then
+              relation=ancestor
+            else
+              relation=NOT_ANCESTOR
+              printf '%s\t%s\n' "$branch" "$tip" >> "$evidence/non-ancestors.tsv"
+            fi
+            printf '%s\t%s\t%s\n' "$branch" "$tip" "$relation" >> "$evidence/branches.tsv"
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/origin | sort)
+          test ! -s "$evidence/non-ancestors.tsv"
+
+          cargo generate-lockfile > "$evidence/cargo-generate-lockfile.log" 2>&1
+          cargo fmt --all > "$evidence/root-fmt-apply.log" 2>&1
+          isolated=(
+            crates/trnm-token-jwt-adapter/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+            crates/trnm-presence-router-v2/Cargo.toml
+          )
+          for manifest in "${isolated[@]}"; do
+            label=$(basename "$(dirname "$manifest")")
+            cargo fmt --manifest-path "$manifest" > "$evidence/${label}-fmt-apply.log" 2>&1
+          done
+          git diff --binary -- . ':(exclude)repair-v7' > "$evidence/materialization.patch"
+          git diff --name-only -- . ':(exclude)repair-v7' > "$evidence/materialized-files.txt"
+          while IFS= read -r path; do
+            [[ -z "$path" || ! -f "$path" ]] && continue
+            mkdir -p "$evidence/materialized/$(dirname "$path")"
+            cp "$path" "$evidence/materialized/$path"
+          done < "$evidence/materialized-files.txt"
+          git diff --check -- . ':(exclude)repair-v7'
+
+      - name: Validate Rust workspaces
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=repair-v7/static
+          cargo fmt --all -- --check > "$evidence/root-fmt-check.log" 2>&1
+          cargo test --workspace --all-targets --locked 2>&1 | tee "$evidence/root-test.log"
+          cargo clippy --workspace --all-targets --locked -- -D warnings \
+            2>&1 | tee "$evidence/root-clippy.log"
+          isolated=(
+            crates/trnm-token-jwt-adapter/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+            crates/trnm-presence-router-v2/Cargo.toml
+          )
+          for manifest in "${isolated[@]}"; do
+            label=$(basename "$(dirname "$manifest")")
+            cargo fmt --manifest-path "$manifest" -- --check > "$evidence/${label}-fmt.log" 2>&1
+            cargo test --manifest-path "$manifest" --all-targets --locked \
+              2>&1 | tee "$evidence/${label}-test.log"
+            cargo clippy --manifest-path "$manifest" --all-targets --locked -- -D warnings \
+              2>&1 | tee "$evidence/${label}-clippy.log"
+          done
+
+      - name: Validate plan, contracts and deployed runtime
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=repair-v7/static
+          python3 -m compileall -q scripts tests tools
+          checks=(
+            scripts/check-plan.py
+            scripts/check-rust-foundation.py
+            scripts/check-storage-core.py
+            scripts/check-persistence-core.py
+            scripts/check-foundation-schema.py
+            scripts/check-database-v2.py
+            scripts/check-pgwire-persistence-adapter.py
+            scripts/test-canonical-framing.py
+            scripts/check-transport-core.py
+            scripts/check-token-core.py
+            scripts/check-presence-core.py
+            scripts/verify-presence-router-v2.py
+            scripts/check-query-core.py
+          )
+          for check in "${checks[@]}"; do
+            label=$(basename "$check")
+            python3 "$check" 2>&1 | tee "$evidence/${label}.log"
+          done
+          python3 -m unittest discover -s tests -p 'test_*.py' \
+            2>&1 | tee "$evidence/unittest-discover.log"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for path in sorted(Path('.').rglob('*.json')):
+              if '.git' in path.parts or 'target' in path.parts or 'repair-v7' in path.parts:
+                  continue
+              json.loads(path.read_text(encoding='utf-8'))
+          PY
+          find scripts -type f -name '*.sh' -print0 | sort -z | xargs -0 -n1 bash -n
+          (cd runtime && go test -mod=readonly ./...) 2>&1 | tee "$evidence/go-test.log"
+          find "$evidence" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+
+      - name: Upload static evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-repair-v7-static-${{ steps.target.outputs.sha }}
+          path: source/repair-v7
+          if-no-files-found: error
+          retention-days: 30
+
+  database:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - id: target
+        name: Resolve immutable target head
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" \
+            "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test "$sha" = "$EXPECTED_TARGET_HEAD"
+          printf 'sha=%s\n' "$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install exact Rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+
+      - name: Run live database contract
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          TRNM_EVIDENCE_ROOT=repair-v7/pgwire \
+            bash scripts/ci-pgwire-persistence-adapter.sh "${{ matrix.profile }}"
+
+      - name: Upload database evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-repair-v7-${{ matrix.profile }}-${{ steps.target.outputs.sha }}
+          path: source/repair-v7
+          if-no-files-found: error
+          retention-days: 30
+
+  all-gates:
+    if: always()
+    needs: [static, database]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all gates
+        shell: bash
+        env:
+          STATIC: ${{ needs.static.result }}
+          DATABASE: ${{ needs.database.result }}
+        run: |
+          set -euo pipefail
+          printf 'static=%s\ndatabase=%s\n' "$STATIC" "$DATABASE"
+          test "$STATIC" = success
+          test "$DATABASE" = success
