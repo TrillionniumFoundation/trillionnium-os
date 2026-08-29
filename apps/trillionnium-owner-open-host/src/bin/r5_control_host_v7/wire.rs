@@ -527,6 +527,15 @@ fn runtime_job_frame(context: &JobContext, seq: u64, event: &RuntimeJobEvent) ->
                 "automatic_redispatch": false
             }),
         ),
+        RuntimeJobEventKind::ProcessFault { phase, error } => (
+            FRAME_JOB_STATUS,
+            json!({
+                "status": "process_fault",
+                "phase": phase,
+                "error": error,
+                "automatic_redispatch": false
+            }),
+        ),
         RuntimeJobEventKind::JournalUnavailable { error } => (
             FRAME_JOB_STATUS,
             json!({
