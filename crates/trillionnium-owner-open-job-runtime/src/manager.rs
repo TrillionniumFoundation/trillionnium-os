@@ -832,6 +832,23 @@ impl JobManager {
                                 stdout_bytes,
                                 stderr_bytes,
                             };
+                            // The reaper has already waited for the leader and
+                            // joined every output worker.  Commit the registry
+                            // terminal state and release the in-process
+                            // admission slot before publishing the terminal
+                            // observation.  A consumer may return from
+                            // `inspect` as soon as that observation is visible;
+                            // keeping the old RunningJob until after the
+                            // observation creates a race where an otherwise
+                            // free capacity slot is rejected for one turn.
+                            if let Err(error) =
+                                manager.inner.registry.complete(&key, generation, terminal)
+                            {
+                                let _ = manager.note_journal_failure(error.to_string());
+                            }
+                            if let Ok(mut jobs) = manager.running() {
+                                jobs.remove(&key);
+                            }
                             match manager.push_runtime_event(&key, &request, event.clone()) {
                                 Ok(seq) => {
                                     if let Err(error) = manager.inner.journal.record_job_terminal(
@@ -847,14 +864,10 @@ impl JobManager {
                                     let _ = manager.note_journal_failure(error.to_string());
                                 }
                             }
-                            // Process truth must converge even when the terminal
-                            // journal append failed. Replay status will remain
-                            // degraded and no new durable-required effect is
-                            // authorized from that missing record.
-                            let _ = manager.inner.registry.complete(&key, generation, terminal);
-                            if let Ok(mut jobs) = manager.running() {
-                                jobs.remove(&key);
-                            }
+                            // Process truth remains terminal even when the
+                            // observation journal append failed. Replay status
+                            // will remain degraded and no new durable-required
+                            // effect is authorized from that missing record.
                             return;
                         }
                     }
