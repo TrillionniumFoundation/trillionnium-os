@@ -1,0 +1,76 @@
+name: TrillionniumGame stage git objects v17
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-stage-git-objects-v17.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: df5cff4eebbc5d8e79be40d2dd646ca50b02d463
+  STAGING_BRANCH: staging/trillionniumgame-materialized-v17
+
+jobs:
+  stage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Materialize and create workflow-free staging commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+          cargo generate-lockfile
+          cargo fmt --all
+          for manifest in \
+            crates/trnm-token-jwt-adapter/Cargo.toml \
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml \
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml \
+            crates/trnm-presence-router-v2/Cargo.toml; do
+            cargo fmt --manifest-path "$manifest"
+          done
+          find runtime -type f -name '*.go' -print0 | sort -z | xargs -0 gofmt -w
+          git diff --check
+          git config user.name 'Trillionnium CI'
+          git config user.email 'ci@trillionnium.invalid'
+          git switch -c "$STAGING_BRANCH"
+          git add Cargo.lock crates runtime
+          git commit -m 'fix(integration): materialize deterministic lock and formatting'
+          git rm -r .github/workflows
+          git commit -m 'chore(staging): remove workflow paths from auxiliary object carrier'
+          git rev-parse HEAD | tee staged-commit.txt
+          git rev-parse HEAD^{tree} | tee staged-tree.txt
+          git ls-tree -r HEAD | tee staged-tree-entries.txt
+
+      - name: Push workflow-free object carrier
+        shell: bash
+        env:
+          AUX_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git remote add auxiliary "https://x-access-token:${AUX_TOKEN}@github.com/TrillionniumFoundation/trillionnium-os.git"
+          git push --force auxiliary HEAD:refs/heads/${STAGING_BRANCH}
+
+      - name: Upload object identities
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-staged-object-identities-v17
+          path: |
+            staged-commit.txt
+            staged-tree.txt
+            staged-tree-entries.txt
+          if-no-files-found: error
+          retention-days: 30
