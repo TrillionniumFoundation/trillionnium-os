@@ -252,7 +252,10 @@ impl JobManager {
             .record_started(&request.key, generation, control.pid, control.pty)
             .map_err(registry_error)
         {
-            let cleanup_error = control.kill(libc::SIGKILL).err().map(|value| value.to_string());
+            let cleanup_error = control
+                .kill(libc::SIGKILL)
+                .err()
+                .map(|value| value.to_string());
             if let Err(journal_error) = self.inner.journal.complete_operation(
                 &request.key,
                 &request.request,
@@ -571,10 +574,9 @@ impl JobManager {
             } else {
                 self.replay_status(false)?
             };
-        let durable_fallback_available = matches!(
-            self.inner.journal.status()?,
-            JournalStatus::Durable
-        ) && self.durability_error()?.is_none();
+        let durable_fallback_available =
+            matches!(self.inner.journal.status()?, JournalStatus::Durable)
+                && self.durability_error()?.is_none();
         Ok(JobInspection {
             snapshot,
             registry_events,
@@ -833,7 +835,9 @@ impl JobManager {
             })
             .map(|_| ())
             .map_err(|error| {
-                JobRuntimeError::Io(format!("failed to spawn owner-open job dispatcher: {error}"))
+                JobRuntimeError::Io(format!(
+                    "failed to spawn owner-open job dispatcher: {error}"
+                ))
             })
     }
 
