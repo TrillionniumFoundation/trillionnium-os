@@ -226,7 +226,10 @@ fn adb_exec_passes_unknown_future_argv_without_target_or_serial_injection() {
     )
     .unwrap();
 
-    assert!(terminal.success(), "terminal={terminal:?}; events={events:#?}");
+    assert!(
+        terminal.success(),
+        "terminal={terminal:?}; events={events:#?}"
+    );
     assert_eq!(
         output(&events, StreamKind::Stdout),
         b"future-subcommand\n--future-option\nvalue with spaces\n"
