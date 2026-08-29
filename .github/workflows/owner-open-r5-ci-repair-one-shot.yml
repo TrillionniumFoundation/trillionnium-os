@@ -120,6 +120,14 @@ jobs:
               "dataclass dynamic-import module registration",
           )
 
+          evidence_verifier = Path("tools/verify-owner-open-r5-gap-evidence.py")
+          ensure_once(
+              evidence_verifier,
+              "    if not isinstance(value, list):\n        return\n    exit_rank = LEVELS[exit_level]\n",
+              "    if not isinstance(value, list):\n        report.check(\n            False,\n            f\"{label} has no evidence at or above exit level {exit_level}\",\n        )\n        return\n    exit_rank = LEVELS[exit_level]\n",
+              "missing environment-evidence exit-level diagnostic",
+          )
+
           duplex = Path("crates/trillionnium-owner-open-provider-jsonl/tests/duplex.rs")
           text = duplex.read_text(encoding="utf-8")
           old_token = r'\"status\":\"invalid_request\"'
@@ -159,6 +167,7 @@ jobs:
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add \
             docs/status/owner-open-r5-gap-closure.json \
+            tools/verify-owner-open-r5-gap-evidence.py \
             tools/tests/test_verify_owner_open_r5_gap_evidence.py \
             crates/trillionnium-owner-open-provider-jsonl/tests/duplex.rs \
             .github/workflows/owner-open-r5-ci-repair-one-shot.yml
