@@ -1,4 +1,4 @@
-# exact-target: c5bfd906f98a4dc65cfd1db2c389edde481850a1
+# exact-target: 30e8f1ebc3ca54131c8de12de2e34bf65c8f3c6b
 name: TrillionniumGame consolidation v12
 
 on:
@@ -13,7 +13,7 @@ permissions:
 env:
   TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
   TARGET_BRANCH: integration/all-branches-main-v1
-  EXPECTED_HEAD: c5bfd906f98a4dc65cfd1db2c389edde481850a1
+  EXPECTED_HEAD: 30e8f1ebc3ca54131c8de12de2e34bf65c8f3c6b
   CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 jobs:
