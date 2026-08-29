@@ -1,119 +1,144 @@
 # Owner-open multi-connection broker v1
 
-Status: **ACTIVE TARGET CONTRACT — baseline fixtures L1; exact correlation/audit/startup gap #18 remains open**  
-Plan revision: `2026-08-29-r6`  
-Unified state machine: `owner-open-effect-state-machine-v1.md`  
-Tracking gap: `R5-GAP-BROKER-CORRELATION-001` / Issue #18
+Status: **R6 normative mechanism contract; repository source candidate, installed-target evidence pending**  
+Semantic authority: `TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`  
+Implementation authority: `TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md`  
+Machine gap: `R5-GAP-BROKER-CORRELATION-001`  
+Selected implementation:
 
-## 1. Purpose and boundary
+- `tools/owner-open/owner_open_connection_broker.py`
+- `tools/owner-open/owner_open_broker_runtime.py`
+- `tools/owner-open/owner_open_broker_audit.py`
+- `tools/owner-open/owner_open_broker_client.py`
 
-The broker lets multiple local owner clients share one selected owner-open Host
-process without becoming a second semantic principal.
+## 1. Purpose and authority boundary
+
+The broker is a mechanism-only local carrier that lets multiple authenticated
+owner processes share one selected upstream owner-open Host process. It does
+not interpret command meaning, classify risk, select a target, approve an
+effect, rewrite shell or ADB arguments, choose a provider, retry an uncertain
+effect or infer that a missing record proves an effect did not start.
+
+The process topology is:
 
 ```text
-AiShell / Codex MCP / owner diagnostics
-  -> local Unix socket
-  -> owner-open connection broker
-  -> bounded transport carrier
-  -> job-aware execution core
+owner/AiShell/Codex MCP clients
+  -> one private filesystem AF_UNIX broker socket
+  -> one broker process
+  -> one selected v5 transport Host process
+  -> one selected v7 execution core
+  -> provider and direct shell/ADB/job processes
 ```
 
-The broker owns only:
+"One semantic Host" means one semantic decision principal, not one operating
+system process. Codex/provider remains the only semantic principal. Broker,
+transport, core, stores and runtimes own framing, correlation, persistence,
+liveness and recovery only.
+
+## 2. Local trust domain
+
+Admission requires both:
+
+1. Linux `SO_PEERCRED` reports the exact broker effective UID; and
+2. the first frame presents the exact private token loaded from a service-owned
+   mode-0600 regular file.
+
+The descriptor, token, socket parent and audit parent must be stable real paths
+with owner and mode checks. The broker refuses to replace an existing socket
+path and removes only the socket/descriptor object whose device and inode it
+recorded after creation.
+
+Same UID plus a token is one local trust domain. It is not isolation from an
+already-compromised process running under that same UID. Product deployment
+must use a dedicated service identity, private parent directories and SELinux,
+namespace and cgroup controls at L2/L3.
+
+## 3. Epochs and immutable descriptor
+
+Each process start creates:
 
 ```text
-local admission
-connection and request identity
-finite request scheduling
-accepted/forwarded/terminal audit
-owner-scoped direct results
-bounded observation broadcast
-disconnect and lifecycle truth
+broker_id       # stable configured service identity
+broker_epoch    # random process-lifetime generation
+token_epoch     # digest-derived token generation identifier
 ```
 
-It never classifies a command, assigns risk, asks for semantic approval,
-rewrites argv, chooses a target/provider or automatically retries an uncertain
-effect.
-
-## 2. Trust domain and admission
-
-The foundation carrier uses a filesystem Unix socket. An admitted peer must
-satisfy:
-
-1. `SO_PEERCRED` UID equals the configured service/owner UID;
-2. the first strict JSON frame carries the current 32-byte random token;
-3. the client binds a unique `client_id` for the current broker epoch;
-4. the descriptor/token epoch is current and digest-bound.
-
-The socket parent is stable and owner-controlled. Token and descriptor files
-are private regular non-symlink files with exact owner/mode/link constraints.
-Duplicate JSON members, oversized/unterminated records and unsafe paths fail
-before admission.
-
-Same UID plus a readable token is one local trust domain. It is not strong
-isolation from a process that has already compromised the same service UID.
-Android product admission therefore requires explicit SELinux client/server
-domains and socket policy.
-
-## 3. Broker epoch and descriptor
-
-Every broker process creates a random `broker_epoch`. The descriptor binds:
+The private descriptor binds:
 
 ```text
 schema
 broker_id
 broker_epoch
-socket carrier and path/name
-token epoch and token-file identity
-service UID/GID
-selected upstream executable identity
-exact upstream argv digest
-protocol and response model
-mechanical bounds
-audit-store identity
-creation time
-no-automatic-redispatch policy
+token_epoch
+socket_path
+token_file
+audit_file
+service_uid
+upstream executable path/device/inode/mode/SHA-256
+upstream argv SHA-256
+Host hello.ack
+finite client/queue/request limits
+request audit stages
+automatic_redispatch = false
 descriptor_sha256
 ```
 
-Clients reject stale epochs, digest mismatch, incompatible response model,
-unsafe paths or non-positive/out-of-policy bounds.
+A client may provide `broker_epoch` in `broker.hello`. A mismatched epoch is a
+stale descriptor and fails before request admission. The hello acknowledgement
+returns the same epoch and descriptor digest; the client must reject drift.
 
-The descriptor is published only after upstream handshake, audit readiness and
-socket admission are ready. Any startup failure must terminate/reap the
-upstream process group and remove only the exact socket/descriptor object
-created by this epoch.
+## 4. Client and upstream sequencing
 
-## 4. Sequence domains
+Each connection has one `client_id` and one strictly contiguous nonnegative
+`client_seq`. The client sequence is the original Host frame `seq` and remains
+immutable request identity. A gap, regression or duplicate sequence under a
+new request ID is a protocol error.
 
-The protocol keeps sequence domains distinct:
+The broker allocates one globally monotonic positive `upstream_seq` for every
+new accepted request. Allocation and durable acceptance occur under one
+serialized admission boundary. Reopen reconstructs the next upstream sequence
+from the durable audit so a new broker process does not reuse a previously
+accepted sequence.
+
+The broker sends the upstream Host:
 
 ```text
-client_seq             per admitted connection
-broker_request_id      stable caller request identity
-broker_upstream_seq    one global upstream order
-host_seq               assigned by the selected Host
-turn/job event cursor  durable observation order
+seq                  = upstream_seq
+client_seq           = original client frame seq
+broker_request_id
+broker_request_sha256
+direction            = client_to_host
 ```
 
-The broker never overwrites one domain without preserving the original in a
-separate field.
+The Host must preserve the original semantic correlation fields in its direct
+response. Transport sequence rewriting must not replace request identity.
 
-Each connection requires contiguous `client_seq`. Exact duplicate client
-requests are idempotent only when their canonical bytes and digest match.
-Sequence reuse with changed bytes is a conflict before forwarding.
+## 5. Canonical request identity
 
-## 5. Exact request identity
+The durable request key is:
 
-Every request binds the applicable tuple:
+```text
+broker_id
+client_id
+request_id
+```
+
+The canonical request digest binds:
+
+```text
+exact client Host frame
+sorted expected response kinds
+expected job ID, when present
+timeout bound
+```
+
+The accepted record additionally binds:
 
 ```text
 broker_epoch
-connection_id
-client_id
 client_seq
-broker_request_id
-broker_upstream_seq
-request_kind
+upstream_seq
+request kind
 session_id
 profile_id
 task_id
@@ -122,242 +147,276 @@ turn_stream_id
 call_id
 job_id
 operation_id
-request_sha256
-expected_terminal_kind
+attachment_id
+request_sha256 supplied by the Host protocol, when present
 ```
 
-A response is correlated by this tuple and Host-provided identity. Matching only
-`frame.kind` plus optional `job_id` is insufficient and is not conformant.
+An exact duplicate key with the same canonical digest has one of three results:
 
-A spontaneous observation, delayed old response or same-kind frame from another
-operation may be broadcast as an observation but cannot satisfy a pending direct
-result.
+- durable terminal exists: replay the exact owner message; no upstream write;
+- same live broker epoch, accepted or forwarded but unresolved: attach to the
+  existing request; no upstream write;
+- older broker epoch, accepted or forwarded without terminal: durably resolve
+  to `unknown_after_restart`; no upstream write.
 
-## 6. Three-stage broker audit
+The same key with different canonical bytes is `request_id_conflict` before any
+second upstream write.
 
-Effectful forwarding uses:
+## 6. Three durable stages
+
+The broker audit is an append-only, single-writer, mode-0600 JSONL log with:
 
 ```text
-broker.accepted
-broker.forwarded
-broker.terminal or broker.uncertain
+contiguous record seq
+previous_record_sha256
+record_sha256
+bounded records/bytes/line size
+strict duplicate-member-safe JSON
+full file fsync per transition
+exclusive nonblocking writer lock
 ```
+
+Every accepted request moves through the following state machine.
 
 ### 6.1 `broker.accepted`
 
-Written and synced before any upstream write attempt. It binds the exact owner,
-request bytes/digest and assigned upstream sequence.
+The record is appended and fsynced before the request enters the pending queue
+and before any upstream write attempt. It binds the complete request identity,
+canonical digest and allocated upstream sequence.
 
-If this write fails:
+Failure before this record is durable is rejection-before-acceptance. The
+request has no broker authorization to reach upstream.
 
-```text
-accepted = false
-upstream_write_attempted = false
-result = broker_audit_unavailable
-automatic_redispatch = false
-```
+If the write or fsync result is ambiguous, the audit becomes poisoned. The
+broker must not forward the request or admit later effects under that audit.
 
 ### 6.2 `broker.forwarded`
 
-Written after the exact upstream write/flush outcome. It distinguishes:
+The broker performs at most one upstream `write + flush` attempt. After the
+write returns successfully, it appends and fsyncs `broker.forwarded` with:
 
 ```text
-not_written
-written_and_flushed
-write_outcome_uncertain
+exact encoded frame SHA-256
+encoded frame byte count
+write_attempts = 1
 ```
 
-A write/flush error after bytes may have reached upstream is uncertain. The
-broker enters a hold and refuses new effectful forwarding that depends on the
-audit. It does not repeat the request.
-
-### 6.3 `broker.terminal` / `broker.uncertain`
-
-A direct terminal binds the complete request tuple and is delivered only to the
-owning connection when attached. If owner delivery is gone, the terminal remains
-in audit/Host durable state for later inspection when supported.
-
-Timeout, upstream disconnect, invalid response identity or audit failure after
-forwarding yields a conservative uncertain result.
-
-## 7. Result and observation delivery
-
-Response model:
+The temporal distinction is explicit:
 
 ```text
-broker_correlated_result_owner_with_broadcast_observation
+accepted_by_broker
+written_to_upstream_pipe
+accepted_by_host
 ```
 
-- direct request results are owner scoped;
-- non-secret Host observations may be broadcast to admitted clients through
-  finite per-client queues;
-- private fields are not broadcast unless the protocol explicitly declares
-  them observable;
-- a client cannot claim another client's result;
-- result ownership survives a slow observer and does not depend on observer
-  consumption.
+`broker.forwarded` proves the local write returned; it does not prove the Host
+parsed or accepted the frame. A crash or audit failure after the pipe write is
+an uncertain effect boundary and never authorizes automatic redispatch.
 
-Every delivered wrapper includes:
+### 6.3 `broker.terminal`
+
+A direct correlated Host result, a pre-forward rejection after acceptance, an
+upstream disconnect, timeout or restart uncertainty produces exactly one
+owner-scoped terminal record. The record includes the exact owner message and a
+mechanical status such as:
 
 ```text
-broker_epoch
-broker_response_connection_id
-broker_request_id
-broker_request_client_seq
-broker_request_upstream_seq
-broker_request_kind
+host_terminal_observed
+rejected_after_acceptance_before_forward
+unknown_after_disconnect
+unknown_after_timeout
+unknown_after_restart
+```
+
+Reopen replays the recorded owner message byte-for-byte after canonical JSON
+encoding. A different terminal under the same request identity is a conflict.
+
+## 7. Exact result correlation
+
+A direct result may satisfy the active request only when:
+
+1. `frame.kind` is in the finite expected-kind set;
+2. expected `job_id` is present and exact;
+3. every non-null request correlation field is present and exact in the Host
+   response; and
+4. the frame is not merely a broadcast observation or an older operation.
+
+Required comparison fields are:
+
+```text
+session_id
+profile_id
+task_id
+turn_id
+turn_stream_id
+call_id
+job_id
+operation_id
+attachment_id
 request_sha256
-automatic_redispatch = false
 ```
 
-## 8. In-flight policy
+A missing required field is not a wildcard. It is a non-match. Therefore a late
+`job.control.result` for operation A cannot satisfy operation B merely because
+both use the same response kind and `job_id`.
 
-The broker declares an explicit in-flight model:
+The selected v7 Host must echo:
 
-```text
-serialized one-at-a-time
-or bounded multiplexed requests with exact response IDs
+- original turn scope and `turn_stream_id` on every job frame;
+- `operation_id` on start/write/resize/close/kill results;
+- `attachment_id` on attach results;
+- canonical job `request_sha256` where the job request exists.
+
+`host.error` and `job.error` remain direct failure frames only while one request
+is active. They are not proof that an external effect did or did not start; the
+broker records the observed error without retry.
+
+## 8. Observation broadcast and owner result
+
+Every valid upstream frame is broadcast as:
+
+```json
+{
+  "schema": "org.trillionnium.owner-open.connection-broker-wire.v1",
+  "kind": "observation",
+  "broker_epoch": "...",
+  "frame": {},
+  "automatic_redispatch": false
+}
 ```
 
-A single accidental global `pending` slot is not an undocumented concurrency
-contract. If upstream supports only serialization, the descriptor states that
-fact and the broker uses a bounded FIFO with deterministic owner request order
-only after requests enter the broker queue. Cross-connection socket arrival
-order is not promised.
+Broadcast gives admitted owner clients bounded observation access. It does not
+transfer request ownership.
 
-Queue exhaustion rejects before forwarding. It does not enqueue and later drop
-an accepted effect.
+The exact request owner alone receives:
 
-## 9. Live job controls
-
-Live/mutating MCP operations additionally bind a process-lifetime
-`bridge_instance_id` where the MCP contract requires it:
-
-```text
-job.start
-job.attach
-job.detach
-job.write
-job.resize
-job.close_stdin
-job.kill
+```json
+{
+  "kind": "result",
+  "request_id": "...",
+  "broker_response_connection_id": "...",
+  "broker_request_upstream_seq": 1,
+  "broker_request_downstream_seq": 7,
+  "broker_request_kind": "job.write",
+  "broker_request_sha256": "...",
+  "frame": {},
+  "automatic_redispatch": false
+}
 ```
 
-A later bridge may perform durable read-only inspect/wait using the exact job
-scope and request digest. It cannot claim an old pipe, PTY master or process
-handle unless a separately qualified supervisor transfer design exists.
+A client disconnect detaches only that delivery path. It does not cancel the
+upstream Host, active turn, tool or job and does not trigger another write.
 
-The broker identity does not replace job `operation_id`; both are bound.
+## 9. Finite resource model
 
-## 10. Disconnect semantics
-
-Client EOF, socket reset or queue backpressure does not imply:
-
-```text
-turn.cancel
-job.kill
-effect not started
-request terminal absent
-automatic redispatch
-```
-
-The broker detaches that client's delivery, continues draining upstream and
-preserves audit truth. Accepted work follows Host/job lifecycle rules.
-
-A later client inspects durable state before deciding a new semantic action.
-
-## 11. Slow clients and bounds
-
-Finite limits include:
+The broker has explicit finite limits for:
 
 ```text
 clients
-input frame bytes
-per-client input rate
-pending requests
 per-client queued frames
 per-client queued bytes
+accepted pending requests
+audit records
+audit bytes
+audit line bytes
+request timeout
 upstream stderr capture
-audit bytes/records
-shutdown grace
-startup/handshake deadline
 ```
 
-A slow client is detached or receives a typed resource/resync result. The
-broker never pauses or repeats provider, shell, ADB or job effects to help a
-slow observer.
+Pending capacity is reserved before durable acceptance. Capacity exhaustion is
+therefore a pre-acceptance rejection and cannot leave an accepted request that
+was never queued.
 
-## 12. Startup and cleanup
+The current source intentionally serializes upstream effectful request delivery
+to one active request because the selected Host carrier has one ordered input
+stream and current direct-result semantics are single-active-request. The limit
+is explicit (`max_inflight_requests = 1`), not an accidental unbounded or
+undocumented global variable. Future multiplexing requires a separately
+reviewed protocol revision and exact Host correlation proof.
 
-Startup is owned by one total lifecycle guard:
+A slow client whose bounded queue is exhausted is detached. Other clients and
+the upstream process continue. Detachment is not cancellation.
 
-1. validate configuration and immutable upstream identity;
-2. open audit store;
-3. spawn upstream process group;
-4. complete bounded handshake;
-5. create listener and verify exact socket object;
-6. atomically publish descriptor/token epoch;
-7. start request, response and client lifecycle workers;
-8. emit readiness.
+## 10. Crash and failure matrix
 
-Failure at any stage:
+| Cut | Durable fact | Broker response after recovery | Redispatch |
+| --- | --- | --- | --- |
+| before `broker.accepted` | no accepted record | rejected/not accepted | caller may submit a new identity |
+| accepted, before queue/forward | accepted only | `unknown_after_restart` or recorded pre-forward terminal | never automatic |
+| during upstream write | accepted; write outcome uncertain | `unknown_after_disconnect` | never automatic |
+| write returned, before forwarded fsync | accepted; effect may have started | audit poisoned / unknown | never automatic |
+| forwarded, before Host result | accepted + forwarded | `unknown_after_restart` | never automatic |
+| Host result observed, before terminal fsync | result delivery/durability uncertain | audit poisoned / unknown | never automatic |
+| terminal durable, before owner delivery | terminal durable | exact terminal replay | no effect execution |
+| owner disconnect after acceptance | accepted/possibly forwarded | later inspect or terminal replay | never automatic |
+| descriptor/token epoch change | older unresolved request remains bound | `unknown_after_restart` | never automatic |
+
+Timeout is not cancellation. When an accepted forwarded request misses its
+correlated result deadline, the broker enters upstream-uncertain state, records
+an owner terminal if durability remains available and stops forwarding effects.
+
+## 11. Startup and shutdown cleanup
+
+The upstream process starts in its own process group. Any failure during:
 
 ```text
-closes admission
-terminates and reaps upstream group
-closes FDs/threads
-removes exact socket/temporary descriptor objects
-preserves startup error
+Host hello handshake
+socket creation/bind/chmod/listen
+descriptor publication
+reader/worker initialization
 ```
 
-An executable path hash measured before spawn is not alone a complete
-anti-TOCTOU execution guarantee. L2 installation must bind immutable/deployment
-ownership and the actual executed object identity.
+must enter one `finally` cleanup path that:
 
-## 13. Shutdown and emergency stop
+- stops admission;
+- closes clients and listener;
+- removes only proven socket/descriptor objects;
+- sends process-group TERM then KILL under finite deadlines;
+- reaps the upstream leader;
+- closes all pipe descriptors; and
+- releases the audit lock.
 
-Administrative shutdown:
+No initialization failure may leave a live upstream Host or a stale object that
+the next start would mistake for the current broker.
 
-- stops admission and new forwarding;
-- marks pending accepted requests terminal/uncertain according to durable state;
-- terminates/reaps upstream after finite grace;
-- detaches clients;
-- removes exact epoch objects.
+## 12. Client contract
 
-It does not infer that accepted upstream effects were successfully cancelled.
+The STDIO client verifies the private descriptor and token, supplies the exact
+broker epoch, checks the hello acknowledgement descriptor digest and converts
+broker observations back into ordinary Host frames. It uses a process-lifetime
+request ID including client and broker epoch.
 
-Emergency stop is external to normal broker/Codex health, can inhibit respawn
-and preserves audit stores.
+The client never retries a broker request after timeout, disconnect or unknown
+status. Durable read-only inspection is a new explicit request, not a replay of
+the effect.
 
-## 14. Restart and stale state
+## 13. Evidence ladder and claim ceiling
 
-Broker restart creates a new epoch and token/descriptor. Old descriptors fail
-closed.
+### L1 repository source closure
 
-On reopen:
+Required tests include:
 
-```text
-accepted + terminal    -> replay/inspect exact result
-accepted + forwarded, no terminal -> uncertain; never repeat
-accepted, proven not forwarded -> may report not-forwarded, still no automatic repeat
-corrupt/torn audit     -> quarantine or conservative hold
-```
+- exact duplicate terminal replay with one upstream write;
+- conflicting duplicate rejection before a second write;
+- accepted/forwarded/terminal hash-chain validation;
+- fsync failure poisoning;
+- tamper rejection on reopen;
+- unresolved prior-epoch recovery without redispatch;
+- delayed old operation, missing correlation and wrong-turn non-match;
+- two-client observation broadcast and owner-result isolation;
+- slow/disconnected client detachment;
+- initialization failure process-group cleanup;
+- exact v5/v7 compiled Host integration.
 
-The broker does not reconstruct live connection ownership from an unauthenticated
-old PID or stale descriptor.
+L1 proves the repository implementation and fixtures only.
 
-## 15. Evidence boundary
+### L2 installed target closure
 
-Known baseline fixtures cover strict JSON, same-UID/token admission, bounded
-queues, owner result isolation, observation broadcast and basic disconnect
-truth. They do not close Issue #18's target contract.
+L2 additionally requires the exact installed broker, Host, core and Codex
+binaries under the target Root Linux identities, real filesystem/socket/audit
+paths, sustained backpressure, crash/restart cuts and exact traced MCP job
+operations. Until that evidence is bound, `R5-GAP-BROKER-CORRELATION-001` is
+`SOURCE_CLOSED_PENDING_EVIDENCE`, not fully `CLOSED`.
 
-Required exits:
-
-- exact identity/audit/startup source and mutation tests: L1;
-- compiled selected v5/v7 Host behind the broker in target Root Linux: L2;
-- Android SELinux/admission and image: L3;
-- crash/ENOSPC/reboot/power-loss broker matrix: L5.
-
-Until the corresponding evidence is bound, the broker must not be described as
-fully gap closed.
+This protocol never promotes Android image, physical device, destructive fault
+or signed release claims.
