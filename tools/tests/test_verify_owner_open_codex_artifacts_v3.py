@@ -60,9 +60,19 @@ class VerifyOwnerOpenCodexArtifactsV3Test(unittest.TestCase):
         self.assertTrue(report.ok)
         self.assertTrue(report.facts["artifact_bytes_verified"])
         self.assertFalse(report.facts["cryptographic_sigstore_verification"])
-        for archive in report.facts["archives"]:
-            self.assertFalse(archive["sigstore"]["media_type_declared"])
-            self.assertTrue(archive["sigstore"]["archive_digest_bound"])
+        contract = self.fixture.contract()
+        for archive in contract["archives"]:
+            sigstore_path = self.fixture.base.assets / archive["sigstore"]["filename"]
+            facts = module.verify_sigstore_bundle_v3(
+                sigstore_path,
+                archive["sigstore"],
+                archive["sha256"],
+            )
+            self.assertFalse(facts["media_type_declared"])
+            self.assertEqual(facts["media_type"], "legacy-omitted")
+            self.assertTrue(facts["archive_digest_bound"])
+            self.assertGreaterEqual(facts["transparency_log_entries"], 1)
+            self.assertFalse(facts["cryptographic_signature_verified"])
 
     def test_missing_message_signature_is_not_accepted_as_legacy_shape(self) -> None:
         def transform(value):
