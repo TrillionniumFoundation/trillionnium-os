@@ -31,82 +31,90 @@ jobs:
           path = Path("crates/trillionnium-owner-open-job-runtime/src/manager.rs")
           text = path.read_text(encoding="utf-8")
 
-          old_reader = '''                        InternalProcessEvent::ReaderFailed { stream, error } => {
-                            if let Err(journal_error) = manager.push_runtime_event(
-                                &key,
-                                &request,
-                                RuntimeJobEventKind::JournalUnavailable {
-                                    error: Some(format!("{stream} reader failed: {error}")),
-                                },
-                            ) {
-                                let _ = manager.note_journal_failure(journal_error.to_string());
-                            }
-                            let _ = running.control.kill(libc::SIGKILL);
-                        }
-'''
-          new_reader = '''                        InternalProcessEvent::InputFailed { error } => {
-                            let _ = manager.push_runtime_event(
-                                &key,
-                                &request,
-                                RuntimeJobEventKind::ProcessFault {
-                                    phase: "initial_stdin".to_string(),
-                                    error,
-                                },
-                            );
-                            let _ = running.control.kill(libc::SIGKILL);
-                        }
-                        InternalProcessEvent::ReaderFailed { stream, error } => {
-                            let _ = manager.push_runtime_event(
-                                &key,
-                                &request,
-                                RuntimeJobEventKind::ProcessFault {
-                                    phase: format!("{stream}_reader"),
-                                    error,
-                                },
-                            );
-                            let _ = running.control.kill(libc::SIGKILL);
-                        }
-'''
+          old_reader = "\n".join([
+              "                        InternalProcessEvent::ReaderFailed { stream, error } => {",
+              "                            if let Err(journal_error) = manager.push_runtime_event(",
+              "                                &key,",
+              "                                &request,",
+              "                                RuntimeJobEventKind::JournalUnavailable {",
+              "                                    error: Some(format!(\"{stream} reader failed: {error}\")),",
+              "                                },",
+              "                            ) {",
+              "                                let _ = manager.note_journal_failure(journal_error.to_string());",
+              "                            }",
+              "                            let _ = running.control.kill(libc::SIGKILL);",
+              "                        }",
+              "",
+          ])
+          new_reader = "\n".join([
+              "                        InternalProcessEvent::InputFailed { error } => {",
+              "                            let _ = manager.push_runtime_event(",
+              "                                &key,",
+              "                                &request,",
+              "                                RuntimeJobEventKind::ProcessFault {",
+              "                                    phase: \"initial_stdin\".to_string(),",
+              "                                    error,",
+              "                                },",
+              "                            );",
+              "                            let _ = running.control.kill(libc::SIGKILL);",
+              "                        }",
+              "                        InternalProcessEvent::ReaderFailed { stream, error } => {",
+              "                            let _ = manager.push_runtime_event(",
+              "                                &key,",
+              "                                &request,",
+              "                                RuntimeJobEventKind::ProcessFault {",
+              "                                    phase: format!(\"{stream}_reader\"),",
+              "                                    error,",
+              "                                },",
+              "                            );",
+              "                            let _ = running.control.kill(libc::SIGKILL);",
+              "                        }",
+              "",
+          ])
           if text.count(old_reader) != 1:
               raise SystemExit("expected one reader-failure match block")
           text = text.replace(old_reader, new_reader)
 
-          old_exit = '''                        InternalProcessEvent::Exited {
-                            terminal_kind,
-                            exit_code,
-                            signal,
-                        } => {
-                            let stdout_bytes =
-'''
-          new_exit = '''                        InternalProcessEvent::Exited {
-                            terminal_kind,
-                            exit_code,
-                            signal,
-                            cleanup_error,
-                        } => {
-                            if let Some(error) = cleanup_error {
-                                let _ = manager.push_runtime_event(
-                                    &key,
-                                    &request,
-                                    RuntimeJobEventKind::ProcessFault {
-                                        phase: "process_group_cleanup".to_string(),
-                                        error,
-                                    },
-                                );
-                            }
-                            let stdout_bytes =
-'''
+          old_exit = "\n".join([
+              "                        InternalProcessEvent::Exited {",
+              "                            terminal_kind,",
+              "                            exit_code,",
+              "                            signal,",
+              "                        } => {",
+              "                            let stdout_bytes =",
+          ])
+          new_exit = "\n".join([
+              "                        InternalProcessEvent::Exited {",
+              "                            terminal_kind,",
+              "                            exit_code,",
+              "                            signal,",
+              "                            cleanup_error,",
+              "                        } => {",
+              "                            if let Some(error) = cleanup_error {",
+              "                                let _ = manager.push_runtime_event(",
+              "                                    &key,",
+              "                                    &request,",
+              "                                    RuntimeJobEventKind::ProcessFault {",
+              "                                        phase: \"process_group_cleanup\".to_string(),",
+              "                                        error,",
+              "                                    },",
+              "                                );",
+              "                            }",
+              "                            let stdout_bytes =",
+          ])
           if text.count(old_exit) != 1:
               raise SystemExit("expected one exited match block")
           text = text.replace(old_exit, new_exit)
 
-          old_kind = '''        RuntimeJobEventKind::Terminal { .. } => "job.terminal.observation",
-        RuntimeJobEventKind::JournalUnavailable { .. } => "job.journal_unavailable",
-'''
-          new_kind = '''        RuntimeJobEventKind::Terminal { .. } => "job.terminal.observation",
-        RuntimeJobEventKind::ProcessFault { .. } => "job.process_fault",
-        RuntimeJobEventKind::JournalUnavailable { .. } => "job.journal_unavailable",
-'''
+          old_kind = "\n".join([
+              "        RuntimeJobEventKind::Terminal { .. } => \"job.terminal.observation\",",
+              "        RuntimeJobEventKind::JournalUnavailable { .. } => \"job.journal_unavailable\",",
+          ])
+          new_kind = "\n".join([
+              "        RuntimeJobEventKind::Terminal { .. } => \"job.terminal.observation\",",
+              "        RuntimeJobEventKind::ProcessFault { .. } => \"job.process_fault\",",
+              "        RuntimeJobEventKind::JournalUnavailable { .. } => \"job.journal_unavailable\",",
+          ])
           if text.count(old_kind) != 1:
               raise SystemExit("expected one runtime event kind block")
           text = text.replace(old_kind, new_kind)
