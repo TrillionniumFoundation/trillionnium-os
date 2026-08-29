@@ -1,0 +1,97 @@
+name: one-shot owner-open R5 permanent evidence-program bootstrap
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-evidence-program-bootstrap.yml"
+      - ".github/r5-bootstrap/r5_evidence_program_v1.tar.gz.b64.part-*"
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Expand reviewed evidence-program source package
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/r5-evidence-program-v1.tar.gz"
+          cat .github/r5-bootstrap/r5_evidence_program_v1.tar.gz.b64.part-* \
+            | base64 --decode > "$archive"
+          echo "d9f89f42530e8208005172bbb37477242ecc2bc9600052d44ca168c4ce37097c  $archive" \
+            | sha256sum --check --strict
+          python3 - <<'PY'
+          import tarfile
+          from pathlib import PurePosixPath
+          import os
+          archive = tarfile.open(os.path.join(os.environ["RUNNER_TEMP"], "r5-evidence-program-v1.tar.gz"), "r:gz")
+          for member in archive.getmembers():
+              path = PurePosixPath(member.name)
+              if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):
+                  raise SystemExit(f"unsafe archive member: {member.name}")
+              if not (member.isfile() or member.isdir()):
+                  raise SystemExit(f"unsupported archive node: {member.name}")
+          PY
+          tar -xzf "$archive" --no-same-owner --no-same-permissions
+      - name: Apply fail-closed permanent evidence integration
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 tools/owner-open/apply_r5_evidence_program_v1.py --apply \
+            | tee /tmp/r5-evidence-bootstrap.json
+      - name: Validate patched source and machine truth
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/verify-owner-open-r5.py \
+            tools/verify-owner-open-r5-gap-evidence.py \
+            tools/generate-owner-open-r5-resume-packet.py \
+            tools/owner_open_r5_evidence_bundle.py \
+            tools/finalize-owner-open-r5-evidence-bundle.py \
+            tools/verify-owner-open-r5-evidence-bundle.py \
+            tools/capture-owner-open-r5-target-evidence.py \
+            tools/promote-owner-open-r5-evidence.py \
+            tools/verify-owner-open-r5-governance-readiness.py
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
+          python3 tools/verify-owner-open-r5.py --json | tee /tmp/verify-r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json \
+            | tee /tmp/verify-r5-evidence.json
+          python3 -m unittest \
+            tools.tests.test_owner_open_r5_evidence_bundle \
+            tools.tests.test_promote_owner_open_r5_evidence \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_verify_owner_open_r5_governance_readiness \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_generate_owner_open_r5_resume_packet \
+            -v
+          git diff --check
+      - name: Retire bootstrap and obsolete self-modifying promotion workflows
+        run: |
+          set -euo pipefail
+          git rm \
+            .github/workflows/owner-open-r5-evidence-program-bootstrap.yml \
+            tools/owner-open/apply_r5_evidence_program_v1.py
+          rm -rf .github/r5-bootstrap
+          git status --short
+      - name: Commit permanent evidence program
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git diff --cached --check
+          git commit -m "feat(r5): enforce reviewed target evidence promotion"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
