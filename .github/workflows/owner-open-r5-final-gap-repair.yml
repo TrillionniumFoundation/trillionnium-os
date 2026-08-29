@@ -1,6 +1,9 @@
 name: owner-open R5 final gap repair
 
 on:
+  pull_request:
+    paths:
+      - ".github/workflows/owner-open-r5-final-gap-repair.yml"
   push:
     branches:
       - "codex/owner-open-r5-tool-loop-20260827"
@@ -18,6 +21,7 @@ concurrency:
 jobs:
   repair:
     name: Repair durable terminal publication ordering
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -101,11 +105,14 @@ jobs:
             -- --exact --nocapture
           cargo test --locked --package trillionnium-owner-open-job-runtime --all-targets
       - name: Commit exact repair
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
           set -euo pipefail
+          test "$HEAD_BRANCH" = "codex/owner-open-r5-tool-loop-20260827"
           git config user.name "owner-open-r5-repair[bot]"
           git config user.email "owner-open-r5-repair[bot]@users.noreply.github.com"
           git add crates/trillionnium-owner-open-job-runtime/src/manager.rs
           git diff --cached --exit-code && exit 0 || true
           git commit -m "fix(jobs): persist terminal before publishing completion"
-          git push origin HEAD:codex/owner-open-r5-tool-loop-20260827
+          git push origin HEAD:"$HEAD_BRANCH"
