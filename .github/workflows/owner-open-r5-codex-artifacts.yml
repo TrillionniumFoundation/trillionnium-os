@@ -127,6 +127,32 @@ jobs:
               --output "owner-open-r5-codex-assets/${filename}" \
               "$url"
           done < owner-open-r5-codex-selected-assets.tsv
+      - name: Record public Sigstore JSON key and type shape
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' | tee owner-open-r5-codex-sigstore-shape.json
+          import json
+          from pathlib import Path
+
+          def shape(value, depth=0):
+              if depth >= 4:
+                  return type(value).__name__
+              if isinstance(value, dict):
+                  return {key: shape(item, depth + 1) for key, item in sorted(value.items())}
+              if isinstance(value, list):
+                  return {
+                      "type": "list",
+                      "length": len(value),
+                      "first": shape(value[0], depth + 1) if value else None,
+                  }
+              return type(value).__name__
+
+          result = {}
+          for path in sorted(Path('owner-open-r5-codex-assets').glob('*.sigstore')):
+              value = json.loads(path.read_text(encoding='utf-8'))
+              result[path.name] = shape(value)
+          print(json.dumps(result, ensure_ascii=False, sort_keys=True, indent=2))
+          PY
       - name: Bind and expose the public checksum-list bytes
         run: |
           set -euo pipefail
@@ -175,6 +201,7 @@ jobs:
             owner-open-r5-codex-release-assets-2.json
             owner-open-r5-codex-selected-assets.tsv
             owner-open-r5-codex-artifact-report.json
+            owner-open-r5-codex-sigstore-shape.json
             owner-open-r5-codex-checksum-list.sha256
             owner-open-r5-codex-checksum-list.bytes
             owner-open-r5-codex-assets/codex-package_SHA256SUMS
