@@ -1,0 +1,44 @@
+{
+  "schema": "org.trillionnium.owner-open.android-runtime-profile.v3",
+  "revision": "2026-08-29-r5-android-source-closure",
+  "profile_id": "owner-open-dogfood-v3",
+  "enabled_property": "ro.trillionnium.owner_open.enabled",
+  "ready_property": "trillionnium.owner_open.ready",
+  "emergency_stop_property": "sys.trillionnium.owner_open.stop",
+  "rootlinux_payload": {
+    "image": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.squashfs",
+    "image_sha256": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.squashfs.sha256",
+    "image_manifest": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+    "mount_root": "/data/trillionnium/owner-open/root",
+    "state_root": "/data/trillionnium/owner-open/state",
+    "read_only_lower": true
+  },
+  "android_services": {
+    "bootstrap": "trillionnium-owner-open-bootstrap",
+    "ingress": "trillionnium-owner-open-ingress",
+    "emergency_stop": "trillionnium-owner-open-emergency-stop"
+  },
+  "android_ingress": {
+    "abstract_socket": "trillionnium_owner_open",
+    "allowed_peer_domain": "u:r:trillionnium_owner_open_client:s0",
+    "upstream_socket": "/data/trillionnium/owner-open/state/broker/owner-open.sock",
+    "broker_token": "/data/trillionnium/owner-open/state/broker/owner-open.token",
+    "maximum_connections": 32,
+    "automatic_effect_redispatch": false
+  },
+  "rootlinux_supervisor": {
+    "executable": "/usr/bin/python3",
+    "entry": "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+    "config": "/etc/trillionnium/owner-open/rootlinux-supervisor.json"
+  },
+  "claims": {
+    "source_modules_authored": true,
+    "soong_compiled": false,
+    "selinux_compiled": false,
+    "target_files_built": false,
+    "image_included": false,
+    "physical_device_observed": false,
+    "public_release": false
+  },
+  "claim_ceiling": "ANDROID_OWNER_OPEN_SOURCE_IMPLEMENTED_NOT_BUILT"
+}
