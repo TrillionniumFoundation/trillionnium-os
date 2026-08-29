@@ -36,63 +36,56 @@ jobs:
           from pathlib import Path
 
           path = Path('crates/trillionnium-owner-open-job-runtime/src/manager.rs')
-          text = path.read_text()
-          old = '''                            let _ =
-                                manager
-                                    .inner
-                                    .registry
-                                    .complete(&key, generation, terminal.clone());
-                            let event = RuntimeJobEventKind::Terminal {
-                                generation,
-                                terminal_kind,
-                                exit_code,
-                                signal,
-                                observation_sha256,
-                                stdout_bytes,
-                                stderr_bytes,
-                            };
-                            if let Ok(seq) =
-                                manager.push_runtime_event(&key, &request, event.clone())
-                            {
-                                let _ = manager.inner.journal.record_job_terminal(
-                                    &key,
-                                    &request,
-                                    seq,
-                                    serde_json::to_value(event).unwrap_or(Value::Null),
-                                );
-                            }
-          '''
-          new = '''                            let event = RuntimeJobEventKind::Terminal {
-                                generation,
-                                terminal_kind,
-                                exit_code,
-                                signal,
-                                observation_sha256,
-                                stdout_bytes,
-                                stderr_bytes,
-                            };
-                            if let Ok(seq) =
-                                manager.push_runtime_event(&key, &request, event.clone())
-                                && manager
-                                    .inner
-                                    .journal
-                                    .record_job_terminal(
-                                        &key,
-                                        &request,
-                                        seq,
-                                        serde_json::to_value(event).unwrap_or(Value::Null),
-                                    )
-                                    .is_ok()
-                            {
-                                let _ = manager
-                                    .inner
-                                    .registry
-                                    .complete(&key, generation, terminal);
-                            }
-          '''
-          if text.count(old) != 1 or text.count(new) != 0:
-              raise SystemExit('exact terminal-ordering preimage was not found once')
-          path.write_text(text.replace(old, new))
+          lines = path.read_text().splitlines()
+          candidates = [
+              index
+              for index, line in enumerate(lines)
+              if line == '                            let _ ='
+              and index + 4 < len(lines)
+              and lines[index + 4]
+              == '                                    .complete(&key, generation, terminal.clone());'
+          ]
+          if len(candidates) != 1:
+              raise SystemExit(f'unexpected terminal completion preimage count: {len(candidates)}')
+          start = candidates[0]
+          end_candidates = [
+              index
+              for index in range(start + 1, min(len(lines), start + 64))
+              if lines[index] == '                            if let Ok(mut jobs) = manager.running() {'
+          ]
+          if len(end_candidates) != 1:
+              raise SystemExit(f'unexpected terminal block end count: {len(end_candidates)}')
+          end = end_candidates[0]
+          replacement = [
+              '                            let event = RuntimeJobEventKind::Terminal {',
+              '                                generation,',
+              '                                terminal_kind,',
+              '                                exit_code,',
+              '                                signal,',
+              '                                observation_sha256,',
+              '                                stdout_bytes,',
+              '                                stderr_bytes,',
+              '                            };',
+              '                            if let Ok(seq) =',
+              '                                manager.push_runtime_event(&key, &request, event.clone())',
+              '                                && manager',
+              '                                    .inner',
+              '                                    .journal',
+              '                                    .record_job_terminal(',
+              '                                        &key,',
+              '                                        &request,',
+              '                                        seq,',
+              '                                        serde_json::to_value(event).unwrap_or(Value::Null),',
+              '                                    )',
+              '                                    .is_ok()',
+              '                            {',
+              '                                let _ = manager',
+              '                                    .inner',
+              '                                    .registry',
+              '                                    .complete(&key, generation, terminal);',
+              '                            }',
+          ]
+          path.write_text('\n'.join(lines[:start] + replacement + lines[end:]) + '\n')
           PY
           cargo fmt --all
           git diff --check
