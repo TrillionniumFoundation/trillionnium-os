@@ -1,0 +1,73 @@
+# exact-target: df5cff4eebbc5d8e79be40d2dd646ca50b02d463
+name: TrillionniumGame materialize v14
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-materialize-v14.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: df5cff4eebbc5d8e79be40d2dd646ca50b02d463
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+      - name: Materialize generated files and formatting
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p materialized/files
+          cargo generate-lockfile
+          cargo fmt --all
+          isolated=(
+            crates/trnm-token-jwt-adapter/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+            crates/trnm-presence-router-v2/Cargo.toml
+          )
+          for manifest in "${isolated[@]}"; do cargo fmt --manifest-path "$manifest"; done
+          test -z "$(gofmt -w runtime && git status --short runtime | tee materialized/gofmt-status.txt | grep '^??' || true)"
+          git diff --binary > materialized/materialization.patch
+          git diff --name-only > materialized/files.txt
+          while IFS= read -r path; do
+            [[ -z "$path" || ! -f "$path" ]] && continue
+            mkdir -p "materialized/files/$(dirname "$path")"
+            cp "$path" "materialized/files/$path"
+          done < materialized/files.txt
+          git diff --check
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets --locked
+          cargo clippy --workspace --all-targets --locked -- -D warnings
+          python3 scripts/check-rust-foundation.py
+          find materialized -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > materialized/SHA256SUMS
+      - name: Upload materialized files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-materialized-${{ env.EXPECTED_HEAD }}
+          path: source/materialized
+          if-no-files-found: error
+          retention-days: 30
