@@ -1,0 +1,215 @@
+name: TrillionniumGame database fault matrix v23
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-database-fault-matrix-v23.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: 5f45e7636da9f33fd84fd599adea638903a20df1
+  POSTGRES_IMAGE: postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+  COCKROACH_IMAGE: cockroachdb/cockroach:v24.1.2
+  COCKROACH_EXPECTED_IMAGE_ID: sha256:13156f587d7c94e0d32a3adb9793d06bcbd92a90bfe2b88440d6f74fd6b110ba
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+      - name: Validate source and tests
+        working-directory: source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets --locked
+          cargo clippy --workspace --all-targets --locked -- -D warnings
+          python3 -m compileall -q scripts/check-pgwire-catalog.py
+          python3 scripts/check-pgwire-persistence-adapter.py
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  database:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Run rollback, response-loss, restart and catalog matrix
+        working-directory: source
+        shell: bash
+        env:
+          PROFILE: ${{ matrix.profile }}
+        run: |
+          set -euo pipefail
+          evidence="evidence/${PROFILE}"
+          mkdir -p "$evidence"
+          container="trnm-fault-${PROFILE}-${GITHUB_RUN_ID}"
+          cleanup() { docker logs "$container" > "$evidence/container.log" 2>&1 || true; docker rm -f "$container" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+
+          wait_postgresql() {
+            local minimum_ready="$1"
+            for attempt in $(seq 1 150); do
+              local ready_count
+              ready_count=$(docker logs "$container" 2>&1 | grep -c 'database system is ready to accept connections' || true)
+              if (( ready_count >= minimum_ready )) && docker exec "$container" \
+                psql -At -U trnm -d trnm -c 'SELECT 1' >/dev/null 2>&1; then
+                return 0
+              fi
+              sleep 1
+            done
+            docker logs "$container" >&2 || true
+            return 1
+          }
+
+          wait_cockroachdb() {
+            local stable=0
+            for attempt in $(seq 1 150); do
+              if docker exec "$container" cockroach sql --insecure --host=127.0.0.1:26257 \
+                --execute='SELECT 1' >/dev/null 2>&1; then
+                stable=$((stable + 1))
+                (( stable >= 3 )) && return 0
+              else
+                stable=0
+              fi
+              sleep 1
+            done
+            docker logs "$container" >&2 || true
+            return 1
+          }
+
+          if [[ "$PROFILE" == postgresql ]]; then
+            image="$POSTGRES_IMAGE"
+            port=55432
+            migration=migrations/postgresql/0001_foundation_up.sql
+            database_url="postgres://trnm:trnm-pass@127.0.0.1:${port}/trnm"
+            docker pull "$image" | tee "$evidence/image-pull.log"
+            docker run -d --name "$container" -p "${port}:5432" \
+              -e POSTGRES_USER=trnm -e POSTGRES_PASSWORD=trnm-pass -e POSTGRES_DB=trnm \
+              "$image" > "$evidence/container-id.txt"
+            wait_postgresql 2
+            docker exec -i "$container" psql -v ON_ERROR_STOP=1 -U trnm -d trnm < "$migration" \
+              > "$evidence/migration.log" 2>&1
+            sql() { docker exec "$container" psql -v ON_ERROR_STOP=1 -At -U trnm -d trnm -c "$1"; }
+          else
+            image="$COCKROACH_IMAGE"
+            port=52657
+            migration=migrations/cockroachdb/0001_foundation_up.sql
+            database_url="postgres://root@127.0.0.1:${port}/trnm?sslmode=disable"
+            docker pull "$image" | tee "$evidence/image-pull.log"
+            actual_image_id=$(docker image inspect --format '{{.Id}}' "$image")
+            printf '%s\n' "$actual_image_id" > "$evidence/image-id.txt"
+            test "$actual_image_id" = "$COCKROACH_EXPECTED_IMAGE_ID"
+            docker image inspect --format '{{json .RepoDigests}}' "$image" > "$evidence/repo-digests.json"
+            docker run -d --name "$container" -p "${port}:26257" \
+              "$image" start-single-node --insecure --store=/cockroach/cockroach-data \
+              --listen-addr=0.0.0.0:26257 --http-addr=0.0.0.0:8080 \
+              > "$evidence/container-id.txt"
+            wait_cockroachdb
+            docker exec "$container" cockroach sql --insecure --host=127.0.0.1:26257 \
+              --execute='CREATE DATABASE IF NOT EXISTS trnm' >/dev/null
+            docker exec -i "$container" cockroach sql --insecure --host=127.0.0.1:26257 \
+              --database=trnm --set=errexit=true < "$migration" > "$evidence/migration.log" 2>&1
+            sql() { docker exec "$container" cockroach sql --insecure --host=127.0.0.1:26257 \
+              --database=trnm --format=tsv --execute="$1" | tail -n +2; }
+          fi
+
+          docker inspect "$container" > "$evidence/container-inspect.json"
+          docker image inspect "$image" > "$evidence/image-inspect.json"
+          sql 'SELECT version()' > "$evidence/database-version.txt"
+
+          TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE="$PROFILE" \
+            cargo test -p trnm-persistence-pg --test fault_matrix --locked -- --nocapture \
+            2>&1 | tee "$evidence/fault-matrix.log"
+
+          TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE="$PROFILE" \
+            TRNM_RECOVERY_PHASE=seed cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-seed.log"
+          docker restart "$container" > "$evidence/restart.log"
+          if [[ "$PROFILE" == postgresql ]]; then wait_postgresql 3; else wait_cockroachdb; fi
+          TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE="$PROFILE" \
+            TRNM_RECOVERY_PHASE=verify cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-verify.log"
+
+          sql "SELECT table_name FROM information_schema.tables WHERE table_schema='public' ORDER BY table_name" > "$evidence/tables.txt"
+          sql "SELECT table_name || '|' || column_name FROM information_schema.columns WHERE table_schema='public' ORDER BY table_name, ordinal_position" > "$evidence/columns.txt"
+          sql "SELECT table_name || '|' || constraint_name || '|' || constraint_type FROM information_schema.table_constraints WHERE table_schema='public' ORDER BY table_name, constraint_name" > "$evidence/constraints.txt"
+          if [[ "$PROFILE" == postgresql ]]; then
+            sql "SELECT tablename || '|' || indexname || '|' || indexdef FROM pg_indexes WHERE schemaname='public' ORDER BY tablename,indexname" > "$evidence/indexes.txt"
+          else
+            docker exec "$container" cockroach sql --insecure --host=127.0.0.1:26257 --database=trnm \
+              --format=tsv --execute='SHOW CREATE ALL TABLES' > "$evidence/indexes.txt"
+          fi
+          python3 scripts/check-pgwire-catalog.py \
+            --tables "$evidence/tables.txt" --columns "$evidence/columns.txt" \
+            --constraints "$evidence/constraints.txt" --indexes "$evidence/indexes.txt" \
+            | tee "$evidence/catalog-check.log"
+
+          if sql "INSERT INTO trnm_entity_heads(entity_id,revision,last_event_sequence,authority_generation,state_digest,updated_at_ms) VALUES ('x',0,0,1,'x',0)" > "$evidence/invalid-row.log" 2>&1; then
+            echo 'invalid row unexpectedly accepted' >&2
+            exit 1
+          fi
+          if [[ "$PROFILE" == postgresql ]]; then
+            if docker exec -i "$container" psql -v ON_ERROR_STOP=1 -U trnm -d trnm < "$migration" > "$evidence/reapply.log" 2>&1; then
+              echo 'migration reapply unexpectedly succeeded' >&2; exit 1
+            fi
+          else
+            if docker exec -i "$container" cockroach sql --insecure --host=127.0.0.1:26257 --database=trnm --set=errexit=true < "$migration" > "$evidence/reapply.log" 2>&1; then
+              echo 'migration reapply unexpectedly succeeded' >&2; exit 1
+            fi
+          fi
+          printf '{"schema":"trillionnium.pgwire-fault-matrix.v2","profile":"%s","transaction_rollback":true,"response_loss_replay":true,"restart_recovery":true,"catalog_verified":true,"negative_constraints":true,"migration_reapply_rejected":true,"backup_restore":false,"failover":false}\n' "$PROFILE" > "$evidence/summary.json"
+          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-database-fault-v23-${{ matrix.profile }}-${{ env.EXPECTED_HEAD }}
+          path: source/evidence/${{ matrix.profile }}
+          if-no-files-found: error
+          retention-days: 30
+
+  all-gates:
+    if: always()
+    needs: [static, database]
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          STATIC: ${{ needs.static.result }}
+          DATABASE: ${{ needs.database.result }}
+        run: |
+          set -euo pipefail
+          printf 'static=%s\ndatabase=%s\n' "$STATIC" "$DATABASE"
+          test "$STATIC" = success
+          test "$DATABASE" = success
