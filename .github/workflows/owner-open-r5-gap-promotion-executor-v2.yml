@@ -1,0 +1,98 @@
+name: one-shot owner-open R5 exact-source gap promotion executor v2
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-gap-promotion-executor-v2.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  promote-test-commit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Execute the evidence-supported promotion script
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path(
+              ".github/workflows/owner-open-r5-gap-promotion-one-shot.yml"
+          ).read_text(encoding="utf-8")
+          start_marker = "          python3 - <<'PY'\n"
+          end_marker = "\n          PY\n"
+          start = source.find(start_marker)
+          if start < 0:
+              raise SystemExit("promotion script start marker is absent")
+          start += len(start_marker)
+          end = source.find(end_marker, start)
+          if end < 0:
+              raise SystemExit("promotion script end marker is absent")
+          raw = source[start:end]
+          script = "\n".join(
+              line[10:] if line.startswith("          ") else line
+              for line in raw.splitlines()
+          )
+          exec(
+              compile(
+                  script,
+                  ".github/workflows/owner-open-r5-gap-promotion-one-shot.yml#script",
+                  "exec",
+              ),
+              {},
+          )
+          PY
+      - name: Verify promoted truth without overclaim
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
+          python3 tools/verify-owner-open-r5.py --json >/tmp/r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json >/tmp/r5-gap.json
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_generate_owner_open_l1_candidate \
+            -v
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          gaps = json.loads(Path('docs/status/owner-open-r5-gap-closure.json').read_text())
+          states = {item['id']: item['status'] for item in gaps['gaps']}
+          assert states['R5-GAP-JOB-ADMISSION-001'] == 'CLOSED'
+          assert states['R5-GAP-GOVERNANCE-001'] == 'EXTERNAL_HOLD'
+          assert sum(value == 'SOURCE_CLOSED_PENDING_EVIDENCE' for value in states.values()) == 5
+          assert sum(value == 'EXTERNAL_HOLD' for value in states.values()) == 7
+          status = json.loads(Path('docs/status/owner-open-r5-status.json').read_text())
+          assert status['zero_gap'] is False
+          assert status['public_release'] is False
+          assert status['automatic_redispatch'] is False
+          PY
+          git diff --check
+      - name: Commit evidence-supported promotion
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add \
+            docs/status/owner-open-r5-gap-closure.json \
+            docs/status/owner-open-r5-status.json \
+            docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md \
+            docs/OWNER_OPEN_R5_START_HERE.md \
+            docs/README.md \
+            docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md
+          git diff --cached --check
+          git commit -m "docs(r5): bind exact-source closure and remaining holds"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
