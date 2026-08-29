@@ -289,13 +289,18 @@ def build_packet(root: Path, identity: Identity) -> dict[str, Any]:
                 raise PacketError(f"{identifier} external hold carries full evidence")
         elif state == "CLOSED":
             source = validate_source_evidence(raw.get("source_evidence"), identifier)
-            if exit_level == "L1":
-                if raw.get("evidence") not in (None, []):
-                    raise PacketError(
-                        f"{identifier} L1 closure must not carry external evidence"
-                    )
-            else:
-                validate_environment_evidence(raw.get("evidence"), identifier, str(exit_level))
+            requires_external = (
+                raw.get("requires_external_evidence") is True
+                or LEVELS[str(exit_level)] >= LEVELS["L2"]
+            )
+            if requires_external:
+                validate_environment_evidence(
+                    raw.get("evidence"), identifier, str(exit_level)
+                )
+            elif raw.get("evidence") not in (None, []):
+                raise PacketError(
+                    f"{identifier} source-only L1 closure must not carry external evidence"
+                )
 
         if source is not None:
             head = source_head(source)
@@ -339,8 +344,12 @@ def build_packet(root: Path, identity: Identity) -> dict[str, Any]:
     public_release = status.get("public_release")
     if not isinstance(public_release, bool):
         raise PacketError("public_release must be boolean")
-    if public_release and not release_closed:
-        raise PacketError("public_release cannot be true while release gap is open")
+    if public_release is not release_closed:
+        raise PacketError(
+            "public_release must be true exactly when the release gap is CLOSED"
+        )
+    if release_closed and not all_closed:
+        raise PacketError("release gap cannot close before every other gap")
 
     if all_closed:
         outcome = "MODULE_CLOSED_CANDIDATE"

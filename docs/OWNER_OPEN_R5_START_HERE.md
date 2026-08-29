@@ -187,3 +187,11 @@ Start with the [exact-source closure evidence](status/owner-open-r5-source-closu
 then read the [machine gap register](status/owner-open-r5-gap-closure.json) and
 [current status](status/owner-open-r5-status.json). Source closure must not be confused with
 installed, image, physical, destructive-fault, governance or release evidence.
+
+## External evidence execution entry
+
+Use `operations/owner-open-r5-external-evidence-capture-and-promotion.md`,
+`.github/workflows/owner-open-r5-target-evidence-capture.yml`, and
+`.github/workflows/owner-open-r5-governance-readiness.yml`. An uploaded target
+artifact remains capture-only until an independent reviewer finalizes the
+bundle and the canonical promotion tool verifies every raw byte.

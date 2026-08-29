@@ -186,3 +186,9 @@ with cryptographic and human authorization evidence.
 - [Exact-source L1 closure evidence](status/owner-open-r5-source-closure-evidence-2026-08-29.md)
 - [R5 machine gap register](status/owner-open-r5-gap-closure.json)
 - [R5 current status](status/owner-open-r5-status.json)
+
+### R5 target evidence
+
+The permanent capture/review/import contract is
+`operations/owner-open-r5-external-evidence-capture-and-promotion.md`.
+Templates under `contracts/owner-open-r5-*` are deliberately non-promotable.

@@ -509,3 +509,14 @@ stream-recovery, journal-convergence, Broker-correlation and product-entrypoint 
 and all target/device/release lanes remain explicit holds. The ordered next path is protected-main
 and independent review, installed Root Linux L2, Android L3, physical ADB L4, destructive faults
 L5 and separately authorized release L6.
+
+## Permanent external-evidence program
+
+The only supported L1-governance and L2–L6 promotion path is defined by
+`operations/owner-open-r5-external-evidence-capture-and-promotion.md`. Target
+workflows emit capture-only bundles; a distinct human review attestation makes
+a byte-identical capture promotable. The canonical gap verifier recursively
+rehashes every checked-in bundle artifact and rejects secret-shaped content,
+undeclared files, stale source identity, synthetic evidence and self-review.
+L6 additionally requires a fourth, distinct human release authorization.
+Temporary self-modifying gap-promotion workflows are retired.

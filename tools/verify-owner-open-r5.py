@@ -43,6 +43,7 @@ GAP_STATES = {
     "CLOSED",
 }
 EXTERNAL_GAPS = {
+    "R5-GAP-GOVERNANCE-001",
     "R5-GAP-INSTALLED-CODEX-001",
     "R5-GAP-ROOTLINUX-PLACEMENT-001",
     "R5-GAP-ANDROID-GRAPH-001",
@@ -154,6 +155,7 @@ def verify_gap_register(
     seen: set[str] = set()
     closed: set[str] = set()
     external: set[str] = set()
+    states_by_id: dict[str, str] = {}
     facts: list[dict[str, Any]] = []
     for item in raw_gaps:
         if not isinstance(item, dict):
@@ -167,6 +169,7 @@ def verify_gap_register(
         seen.add(identifier)
         state = str(item.get("status", ""))
         report.check(state in GAP_STATES, f"invalid R5 gap state for {identifier}: {state}")
+        states_by_id[identifier] = state
         level = str(item.get("exit_evidence_level", ""))
         report.check(level in EVIDENCE_LEVELS, f"invalid exit evidence level for {identifier}")
         issues = _positive_issue_values(item)
@@ -183,16 +186,23 @@ def verify_gap_register(
         report.check(identifier in plan_text, f"R5 plan does not reference gap {identifier}")
         if state == "CLOSED":
             closed.add(identifier)
-            if level == "L1":
-                report.check(
-                    isinstance(item.get("source_evidence"), dict),
-                    f"closed L1 R5 gap has no source evidence: {identifier}",
-                )
-            else:
+            requires_external = (
+                item.get("requires_external_evidence") is True or level != "L1"
+            )
+            report.check(
+                isinstance(item.get("source_evidence"), dict),
+                f"closed R5 gap has no exact source evidence: {identifier}",
+            )
+            if requires_external:
                 evidence = item.get("evidence")
                 report.check(
                     isinstance(evidence, list) and bool(evidence),
-                    f"closed R5 gap has no evidence: {identifier}",
+                    f"closed external R5 gap has no evidence: {identifier}",
+                )
+            else:
+                report.check(
+                    item.get("evidence") in (None, []),
+                    f"source-only L1 R5 gap carries external evidence: {identifier}",
                 )
         if state == "EXTERNAL_HOLD":
             external.add(identifier)
@@ -223,15 +233,15 @@ def verify_gap_register(
         "R5 gap register is missing required external evidence lanes: "
         + ", ".join(sorted(EXTERNAL_GAPS - seen)),
     )
+    invalid_external_states = {
+        identifier
+        for identifier in EXTERNAL_GAPS
+        if states_by_id.get(identifier) not in {"EXTERNAL_HOLD", "CLOSED"}
+    }
     report.check(
-        EXTERNAL_GAPS <= external,
-        "R5 external evidence lane is not held explicitly: "
-        + ", ".join(sorted(EXTERNAL_GAPS - external)),
-    )
-    report.check(
-        not (EXTERNAL_GAPS & closed),
-        "R5 external evidence lane cannot be closed by the source candidate: "
-        + ", ".join(sorted(EXTERNAL_GAPS & closed)),
+        not invalid_external_states,
+        "R5 external evidence lane must be EXTERNAL_HOLD or CLOSED with real evidence: "
+        + ", ".join(sorted(invalid_external_states)),
     )
 
     all_closed = bool(seen) and closed == seen
@@ -247,6 +257,11 @@ def verify_gap_register(
     report.check(
         gap.get("generated_policy", {}).get("automatic_redispatch") is False,
         "R5 gap policy must keep automatic_redispatch false",
+    )
+    report.check(
+        gap.get("generated_policy", {}).get("public_release")
+        is status.get("public_release"),
+        "R5 gap policy public_release must match canonical status",
     )
     report.facts["gap_register"] = sorted(facts, key=lambda value: value["id"])
     report.facts["zero_gap"] = all_closed

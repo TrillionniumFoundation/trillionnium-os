@@ -109,7 +109,8 @@
         "repository administrator must protect main with the declared exact-head checks",
         "independent reviewer must approve the ordered branch-chain integration",
         "repository administrator must prevent direct unreviewed integration"
-      ]
+      ],
+      "requires_external_evidence": true
     },
     {
       "id": "R5-GAP-JOB-ADMISSION-001",

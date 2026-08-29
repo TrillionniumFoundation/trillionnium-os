@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Owner-Open R5 gap states against their declared evidence level.
-
-This verifier deliberately separates repository source closure from installed,
-image, physical, destructive-fault and release evidence.  Editing the gap JSON
-cannot manufacture a promotion: every non-open state must carry the evidence
-shape appropriate to that state, and zero-gap is possible only when every gap
-is fully CLOSED.
-"""
+"""Validate Owner-Open R5 gap states against exact source and target evidence."""
 from __future__ import annotations
 
 import argparse
@@ -16,6 +9,16 @@ from pathlib import Path
 import re
 import sys
 from typing import Any
+
+TOOLS = Path(__file__).resolve().parent
+if str(TOOLS) not in sys.path:
+    sys.path.insert(0, str(TOOLS))
+
+from owner_open_r5_evidence_bundle import (  # noqa: E402
+    EvidenceError,
+    LEVELS,
+    validate_evidence_reference,
+)
 
 GAPS = Path("docs/status/owner-open-r5-gap-closure.json")
 STATUS = Path("docs/status/owner-open-r5-status.json")
@@ -27,10 +30,8 @@ ALLOWED_STATES = {
     "EXTERNAL_HOLD",
     "CLOSED",
 }
-LEVELS = {f"L{index}": index for index in range(7)}
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
-EXTERNAL_LEVELS = {"L2", "L3", "L4", "L5", "L6"}
 
 
 @dataclass
@@ -66,23 +67,25 @@ def nonempty_strings(value: Any) -> bool:
     )
 
 
-def exact_source_evidence(value: Any, label: str, report: Report) -> None:
+def exact_source_evidence(
+    value: Any, label: str, report: Report
+) -> tuple[str, str] | None:
     report.check(isinstance(value, dict), f"{label} source_evidence must be an object")
     if not isinstance(value, dict):
-        return
+        return None
     report.check(value.get("level") == "L1", f"{label} source evidence level must be L1")
     report.check(
         isinstance(value.get("branch"), str) and bool(value.get("branch")),
         f"{label} source evidence branch is missing",
     )
+    commit = value.get("commit")
+    tree = value.get("tree")
     report.check(
-        isinstance(value.get("commit"), str)
-        and HEX40.fullmatch(value["commit"]) is not None,
+        isinstance(commit, str) and HEX40.fullmatch(commit) is not None,
         f"{label} source evidence commit must be lowercase 40-hex",
     )
     report.check(
-        isinstance(value.get("tree"), str)
-        and HEX40.fullmatch(value["tree"]) is not None,
+        isinstance(tree, str) and HEX40.fullmatch(tree) is not None,
         f"{label} source evidence tree must be lowercase 40-hex",
     )
     report.check(
@@ -123,69 +126,77 @@ def exact_source_evidence(value: Any, label: str, report: Report) -> None:
                 and HEX64.fullmatch(digest.removeprefix("sha256:")) is not None,
                 f"{artifact_label}.digest must be sha256:<64 lowercase hex>",
             )
+    if isinstance(commit, str) and isinstance(tree, str):
+        return commit, tree
+    return None
+
+
+def requires_external_evidence(
+    gap: dict[str, Any], exit_level: Any, identifier: str, report: Report
+) -> bool:
+    value = gap.get("requires_external_evidence")
+    report.check(
+        value is None or isinstance(value, bool),
+        f"{identifier} requires_external_evidence must be boolean",
+    )
+    if isinstance(value, bool):
+        return value
+    return exit_level in LEVELS and LEVELS[str(exit_level)] >= LEVELS["L2"]
 
 
 def environment_evidence(
+    root: Path,
     value: Any,
     label: str,
     exit_level: str,
+    source_commit: str,
+    source_tree: str,
     report: Report,
-) -> None:
-    report.check(isinstance(value, list) and bool(value), f"{label} evidence must be a non-empty list")
+) -> list[dict[str, Any]]:
+    report.check(
+        isinstance(value, list) and bool(value),
+        f"{label} evidence must be a non-empty list",
+    )
     if not isinstance(value, list):
-        report.check(
-            False,
-            f"{label} has no evidence at or above exit level {exit_level}",
-        )
-        return
-    exit_rank = LEVELS[exit_level]
+        report.check(False, f"{label} has no evidence at or above exit level {exit_level}")
+        return []
     observed_ranks: list[int] = []
+    facts: list[dict[str, Any]] = []
+    seen_references: set[tuple[str, str]] = set()
     for index, item in enumerate(value):
         item_label = f"{label} evidence[{index}]"
         report.check(isinstance(item, dict), f"{item_label} must be an object")
         if not isinstance(item, dict):
             continue
-        level = item.get("level")
-        report.check(level in LEVELS, f"{item_label}.level is invalid")
-        if level in LEVELS:
-            observed_ranks.append(LEVELS[level])
-        report.check(
-            isinstance(item.get("source_commit"), str)
-            and HEX40.fullmatch(item["source_commit"]) is not None,
-            f"{item_label}.source_commit must be lowercase 40-hex",
-        )
-        report.check(
-            isinstance(item.get("evidence_sha256"), str)
-            and HEX64.fullmatch(item["evidence_sha256"]) is not None,
-            f"{item_label}.evidence_sha256 must be lowercase 64-hex",
-        )
-        report.check(
-            isinstance(item.get("kind"), str) and bool(item.get("kind")),
-            f"{item_label}.kind is missing",
-        )
-        report.check(
-            isinstance(item.get("reviewer"), str) and bool(item.get("reviewer")),
-            f"{item_label}.reviewer is missing",
-        )
-        report.check(
-            item.get("synthetic") is False,
-            f"{item_label} must explicitly declare synthetic=false",
-        )
+        try:
+            item_facts = validate_evidence_reference(
+                root,
+                gap_id=label,
+                exit_level=exit_level,
+                source_commit=source_commit,
+                source_tree=source_tree,
+                item=item,
+            )
+        except (EvidenceError, OSError) as error:
+            report.errors.append(f"{item_label}: {error}")
+            continue
+        reference = (str(item.get("bundle_path")), str(item.get("evidence_sha256")))
+        report.check(reference not in seen_references, f"{item_label} is duplicated")
+        seen_references.add(reference)
+        level = str(item_facts["evidence_level"])
+        observed_ranks.append(LEVELS[level])
+        facts.append(item_facts)
     report.check(
-        any(rank >= exit_rank for rank in observed_ranks),
+        any(rank >= LEVELS[exit_level] for rank in observed_ranks),
         f"{label} has no evidence at or above exit level {exit_level}",
     )
+    return facts
 
 
-def verify(root: Path) -> Report:
+def verify_values(
+    root: Path, gaps: dict[str, Any], status: dict[str, Any]
+) -> Report:
     report = Report()
-    try:
-        gaps = read_object(root / GAPS)
-        status = read_object(root / STATUS)
-    except ValueError as error:
-        report.errors.append(str(error))
-        return report
-
     report.check(gaps.get("schema") == EXPECTED_SCHEMA, "gap schema is unsupported")
     report.check(gaps.get("revision") == EXPECTED_REVISION, "gap revision is not active r6")
     report.check(
@@ -196,7 +207,19 @@ def verify(root: Path) -> Report:
         status.get("automatic_redispatch") is False,
         "automatic_redispatch must remain false",
     )
-    report.check(status.get("public_release") is False, "public_release must remain false")
+    public_release = status.get("public_release")
+    report.check(isinstance(public_release, bool), "public_release must be boolean")
+    generated_policy = gaps.get("generated_policy")
+    report.check(isinstance(generated_policy, dict), "gap generated_policy must be an object")
+    if isinstance(generated_policy, dict):
+        report.check(
+            generated_policy.get("automatic_redispatch") is False,
+            "gap generated_policy automatic_redispatch must remain false",
+        )
+        report.check(
+            generated_policy.get("public_release") is public_release,
+            "gap generated_policy public_release must match status",
+        )
 
     entries = gaps.get("gaps")
     report.check(isinstance(entries, list) and bool(entries), "gaps must be a non-empty list")
@@ -206,6 +229,9 @@ def verify(root: Path) -> Report:
     seen: set[str] = set()
     states: dict[str, int] = {state: 0 for state in sorted(ALLOWED_STATES)}
     ordered: list[str] = []
+    source_heads: set[tuple[str, str]] = set()
+    evidence_facts: dict[str, list[dict[str, Any]]] = {}
+    release_closed = False
     for index, gap in enumerate(entries):
         label = f"gaps[{index}]"
         report.check(isinstance(gap, dict), f"{label} must be an object")
@@ -227,6 +253,9 @@ def verify(root: Path) -> Report:
             states[state] += 1
         exit_level = gap.get("exit_evidence_level")
         report.check(exit_level in LEVELS, f"{identifier} has invalid exit level")
+        external_required = requires_external_evidence(
+            gap, exit_level, identifier, report
+        )
         report.check(
             isinstance(gap.get("summary"), str) and bool(gap.get("summary")),
             f"{identifier} summary is missing",
@@ -242,21 +271,27 @@ def verify(root: Path) -> Report:
             or (
                 isinstance(issues, list)
                 and bool(issues)
-                and all(isinstance(item, int) and item > 0 for item in issues)
+                and all(
+                    isinstance(item, int) and not isinstance(item, bool) and item > 0
+                    for item in issues
+                )
             ),
             f"{identifier} must bind an issue or issues",
         )
 
+        source_identity: tuple[str, str] | None = None
         if state == "OPEN":
             report.check(
                 "source_evidence" not in gap and "evidence" not in gap,
                 f"{identifier} OPEN state must not carry promotion evidence",
             )
         elif state == "SOURCE_CLOSED_PENDING_EVIDENCE":
-            exact_source_evidence(gap.get("source_evidence"), identifier, report)
+            source_identity = exact_source_evidence(
+                gap.get("source_evidence"), identifier, report
+            )
             report.check(
-                exit_level in EXTERNAL_LEVELS,
-                f"{identifier} source-closed pending state requires L2-L6 exit",
+                external_required,
+                f"{identifier} pending state must require external evidence",
             )
             report.check(
                 nonempty_strings(gap.get("remaining_evidence")),
@@ -268,36 +303,78 @@ def verify(root: Path) -> Report:
             )
         elif state == "EXTERNAL_HOLD":
             report.check(
+                external_required,
+                f"{identifier} external hold must require external evidence",
+            )
+            report.check(
                 nonempty_strings(gap.get("required_material"))
                 or nonempty_strings(gap.get("required_authority")),
                 f"{identifier} external hold must list required material or authority",
             )
             if "source_evidence" in gap:
-                exact_source_evidence(gap.get("source_evidence"), identifier, report)
+                source_identity = exact_source_evidence(
+                    gap.get("source_evidence"), identifier, report
+                )
             report.check(
                 "evidence" not in gap,
                 f"{identifier} external hold must not carry full closure evidence",
             )
         elif state == "CLOSED" and exit_level in LEVELS:
-            exact_source_evidence(gap.get("source_evidence"), identifier, report)
-            if exit_level == "L1":
-                report.check(
-                    "evidence" not in gap or gap.get("evidence") in ([], None),
-                    f"{identifier} L1 closure must not pretend to carry external evidence",
-                )
+            source_identity = exact_source_evidence(
+                gap.get("source_evidence"), identifier, report
+            )
+            if external_required:
+                if source_identity is not None:
+                    evidence_facts[identifier] = environment_evidence(
+                        root,
+                        gap.get("evidence"),
+                        identifier,
+                        str(exit_level),
+                        source_identity[0],
+                        source_identity[1],
+                        report,
+                    )
+                else:
+                    report.errors.append(
+                        f"{identifier} external closure cannot validate without source identity"
+                    )
             else:
-                environment_evidence(gap.get("evidence"), identifier, exit_level, report)
+                report.check(
+                    exit_level == "L1",
+                    f"{identifier} source-only closure is allowed only at L1",
+                )
+                report.check(
+                    gap.get("evidence") in (None, []),
+                    f"{identifier} source-only L1 closure must not carry external evidence",
+                )
+            if identifier == "R5-GAP-RELEASE-001":
+                release_closed = True
+        if source_identity is not None:
+            source_heads.add(source_identity)
 
     priority = gaps.get("priority_order")
     report.check(priority == ordered, "priority_order must exactly match gaps order")
-    zero_gap = status.get("zero_gap")
     all_closed = bool(entries) and all(
         isinstance(item, dict) and item.get("status") == "CLOSED" for item in entries
     )
     report.check(
-        zero_gap is all_closed,
+        public_release is release_closed,
+        "public_release must be true exactly when the release gap is CLOSED",
+    )
+    report.check(
+        not release_closed or all_closed,
+        "the release gap cannot close before every other gap is CLOSED",
+    )
+    zero_gap = status.get("zero_gap")
+    report.check(
+        isinstance(zero_gap, bool) and zero_gap is all_closed,
         "zero_gap must be true exactly when every gap is CLOSED",
     )
+    if all_closed:
+        report.check(
+            len(source_heads) == 1,
+            "zero-gap closure must bind one exact source commit/tree across all gaps",
+        )
     if zero_gap:
         report.check(
             states.get("EXTERNAL_HOLD", 0) == 0
@@ -313,16 +390,35 @@ def verify(root: Path) -> Report:
             "states": states,
             "zero_gap": zero_gap,
             "all_closed": all_closed,
-            "public_release": status.get("public_release"),
+            "release_closed": release_closed,
+            "public_release": public_release,
             "automatic_redispatch": status.get("automatic_redispatch"),
+            "source_heads": [
+                {"commit": commit, "tree": tree}
+                for commit, tree in sorted(source_heads)
+            ],
+            "validated_external_evidence": evidence_facts,
         }
     )
     return report
 
 
+def verify(root: Path) -> Report:
+    try:
+        gaps = read_object(root / GAPS)
+        status = read_object(root / STATUS)
+    except ValueError as error:
+        report = Report()
+        report.errors.append(str(error))
+        return report
+    return verify_values(root, gaps, status)
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument(
+        "--root", type=Path, default=Path(__file__).resolve().parents[1]
+    )
     parser.add_argument("--json", action="store_true")
     return parser.parse_args(argv)
 
