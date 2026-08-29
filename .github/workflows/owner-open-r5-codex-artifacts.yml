@@ -111,6 +111,21 @@ jobs:
               --output "owner-open-r5-codex-assets/${filename}" \
               "$url"
           done < owner-open-r5-codex-selected-assets.tsv
+      - name: Bind and expose the public checksum-list bytes
+        run: |
+          set -euo pipefail
+          checksum=owner-open-r5-codex-assets/codex-package_SHA256SUMS
+          test -f "$checksum"
+          sha256sum "$checksum" | tee owner-open-r5-codex-checksum-list.sha256
+          wc -c "$checksum" | tee owner-open-r5-codex-checksum-list.bytes
+          python3 - <<'PY'
+          from pathlib import Path
+          raw = Path('owner-open-r5-codex-assets/codex-package_SHA256SUMS').read_bytes()
+          text = raw.decode('utf-8')
+          print('BEGIN_CODEX_PACKAGE_SHA256SUMS')
+          print(text, end='' if text.endswith('\n') else '\n')
+          print('END_CODEX_PACKAGE_SHA256SUMS')
+          PY
       - name: Verify official bytes and probe the host-compatible CLI
         run: |
           python3 tools/verify-owner-open-codex-artifacts.py \
@@ -135,9 +150,10 @@ jobs:
           assert facts.get('public_release') is False, facts
           PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: owner-open-r5-official-codex-artifacts-${{ github.sha }}
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
           path: |
             owner-open-r5-codex-artifact-source.json
@@ -147,4 +163,6 @@ jobs:
             owner-open-r5-codex-release-assets-2.json
             owner-open-r5-codex-selected-assets.tsv
             owner-open-r5-codex-artifact-report.json
+            owner-open-r5-codex-checksum-list.sha256
+            owner-open-r5-codex-checksum-list.bytes
             owner-open-r5-codex-assets/codex-package_SHA256SUMS
