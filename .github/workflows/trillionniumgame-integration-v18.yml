@@ -1,0 +1,224 @@
+name: TrillionniumGame integration v18
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-integration-v18.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: 5272d89ba3faaca4cb293ef153c6bd2430304397
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install exact toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+          go version
+          python3 --version
+          node --version
+          npm --version
+
+      - name: Verify identity and complete branch ancestry
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence/static
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git rev-parse HEAD > evidence/static/commit.txt
+          git rev-parse HEAD^{tree} > evidence/static/tree.txt
+          test "$(cat evidence/static/tree.txt)" = d21e18978bbb99a4777265d95f29c315829640bb
+          git fetch --force origin '+refs/heads/*:refs/remotes/origin/*'
+          : > evidence/static/branches.tsv
+          : > evidence/static/non-ancestors.tsv
+          while IFS= read -r ref; do
+            branch=${ref#refs/remotes/origin/}
+            [[ "$branch" == HEAD || "$branch" == integration/all-branches-main-v1 ]] && continue
+            tip=$(git rev-parse "$ref")
+            if git merge-base --is-ancestor "$tip" HEAD; then
+              relation=ancestor
+            else
+              relation=NOT_ANCESTOR
+              printf '%s\t%s\n' "$branch" "$tip" >> evidence/static/non-ancestors.tsv
+            fi
+            printf '%s\t%s\t%s\n' "$branch" "$tip" "$relation" >> evidence/static/branches.tsv
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/origin | sort)
+          test ! -s evidence/static/non-ancestors.tsv
+          test -z "$(git status --porcelain)"
+
+      - name: Validate root Rust workspace
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check 2>&1 | tee evidence/static/rust-fmt.log
+          cargo test --workspace --all-targets --locked 2>&1 | tee evidence/static/rust-test.log
+          cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee evidence/static/rust-clippy.log
+
+      - name: Validate isolated Rust workspaces
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifests=(
+            crates/trnm-token-jwt-adapter/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+            crates/trnm-presence-router-v2/Cargo.toml
+          )
+          for manifest in "${manifests[@]}"; do
+            label=$(basename "$(dirname "$manifest")")
+            cargo fmt --manifest-path "$manifest" -- --check 2>&1 | tee "evidence/static/${label}-fmt.log"
+            cargo test --manifest-path "$manifest" --all-targets --locked 2>&1 | tee "evidence/static/${label}-test.log"
+            cargo clippy --manifest-path "$manifest" --all-targets --locked -- -D warnings 2>&1 | tee "evidence/static/${label}-clippy.log"
+          done
+
+      - name: Validate plan and Python contracts
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q scripts tests tools runtime/world_transition_v1
+          checks=(
+            scripts/check-plan.py
+            scripts/check-rust-foundation.py
+            scripts/check-storage-core.py
+            scripts/check-persistence-core.py
+            scripts/check-foundation-schema.py
+            scripts/check-database-v2.py
+            scripts/check-pgwire-persistence-adapter.py
+            scripts/test-canonical-framing.py
+            scripts/check-transport-core.py
+            scripts/check-token-core.py
+            scripts/check-presence-core.py
+            scripts/verify-presence-router-v2.py
+            scripts/check-query-core.py
+          )
+          for check in "${checks[@]}"; do
+            label=$(basename "$check")
+            python3 "$check" 2>&1 | tee "evidence/static/${label}.log"
+          done
+          python3 -m unittest discover -s tests -p 'test_*.py' 2>&1 | tee evidence/static/unittest-discover.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for path in sorted(Path('.').rglob('*.json')):
+              if '.git' in path.parts or 'target' in path.parts or 'evidence' in path.parts:
+                  continue
+              json.loads(path.read_text(encoding='utf-8'))
+          PY
+          find scripts -type f -name '*.sh' -print0 | sort -z | xargs -0 -n1 bash -n
+
+      - name: Validate Go runtime
+        working-directory: source/runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          go test -mod=readonly ./... 2>&1 | tee ../evidence/static/go-test.log
+          go test -race -mod=readonly ./... 2>&1 | tee ../evidence/static/go-race.log
+          go vet -mod=readonly ./... 2>&1 | tee ../evidence/static/go-vet.log
+
+      - name: Validate JavaScript black-box package lock
+        working-directory: source/scripts/blackbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts 2>&1 | tee ../../evidence/static/npm-ci.log
+          npm audit --omit=dev --audit-level=high 2>&1 | tee ../../evidence/static/npm-audit.log
+
+      - name: Seal clean source and evidence
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+          find evidence/static -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > evidence/static/SHA256SUMS
+
+      - name: Upload static evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-v18-static-${{ env.EXPECTED_HEAD }}
+          path: source/evidence/static
+          if-no-files-found: error
+          retention-days: 30
+
+  database:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Install exact Rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+
+      - name: Run live database profile
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          TRNM_EVIDENCE_ROOT=evidence/database bash scripts/ci-pgwire-persistence-adapter.sh "${{ matrix.profile }}"
+
+      - name: Upload database evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-v18-${{ matrix.profile }}-${{ env.EXPECTED_HEAD }}
+          path: source/evidence/database
+          if-no-files-found: error
+          retention-days: 30
+
+  all-gates:
+    if: always()
+    needs: [static, database]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all jobs
+        shell: bash
+        env:
+          STATIC: ${{ needs.static.result }}
+          DATABASE: ${{ needs.database.result }}
+        run: |
+          set -euo pipefail
+          printf 'static=%s\ndatabase=%s\n' "$STATIC" "$DATABASE"
+          test "$STATIC" = success
+          test "$DATABASE" = success
