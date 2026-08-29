@@ -1,0 +1,108 @@
+name: TrillionniumGame cross-repo materialize v15
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-crossrepo-materialize-v15.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: df5cff4eebbc5d8e79be40d2dd646ca50b02d463
+  TARGET_BRANCH: automation/materialized-foundation-v1
+
+jobs:
+  materialize-and-push:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install exact Rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+
+      - name: Materialize deterministic repository bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          cargo generate-lockfile
+          cargo fmt --all
+          for manifest in \
+            crates/trnm-token-jwt-adapter/Cargo.toml \
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml \
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml \
+            crates/trnm-presence-router-v2/Cargo.toml; do
+            cargo fmt --manifest-path "$manifest"
+          done
+          find runtime -type f -name '*.go' -print0 | sort -z | xargs -0 gofmt -w
+          git diff --check
+          test -n "$(git status --short)"
+
+      - name: Select masked write token
+        id: token
+        shell: bash
+        env:
+          TOKEN_TRNM: ${{ secrets.TRILLIONNIUM_GITHUB_TOKEN }}
+          TOKEN_GH_PAT: ${{ secrets.GH_PAT }}
+          TOKEN_PAT: ${{ secrets.PAT }}
+          TOKEN_REPO: ${{ secrets.REPO_TOKEN }}
+          TOKEN_DEFAULT: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          token="$TOKEN_TRNM"
+          source=TRILLIONNIUM_GITHUB_TOKEN
+          if [[ -z "$token" ]]; then token="$TOKEN_GH_PAT"; source=GH_PAT; fi
+          if [[ -z "$token" ]]; then token="$TOKEN_PAT"; source=PAT; fi
+          if [[ -z "$token" ]]; then token="$TOKEN_REPO"; source=REPO_TOKEN; fi
+          if [[ -z "$token" ]]; then token="$TOKEN_DEFAULT"; source=GITHUB_TOKEN; fi
+          test -n "$token"
+          echo "::add-mask::$token"
+          printf 'token=%s\n' "$token" >> "$GITHUB_OUTPUT"
+          printf 'source=%s\n' "$source" >> "$GITHUB_OUTPUT"
+
+      - name: Commit exact repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Trillionnium CI'
+          git config user.email 'ci@trillionnium.invalid'
+          git switch -c "$TARGET_BRANCH"
+          git add Cargo.lock crates runtime
+          git commit -m 'fix(integration): materialize deterministic lock and formatting'
+          git rev-parse HEAD > pushed-commit.txt
+          git rev-parse HEAD^{tree} > pushed-tree.txt
+          git diff --check HEAD^
+
+      - name: Push temporary target branch
+        shell: bash
+        env:
+          WRITE_TOKEN: ${{ steps.token.outputs.token }}
+        run: |
+          set -euo pipefail
+          git remote set-url origin "https://x-access-token:${WRITE_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+          git push --force-with-lease=refs/heads/${TARGET_BRANCH}: origin HEAD:refs/heads/${TARGET_BRANCH}
+
+      - name: Upload push evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-crossrepo-materialize-v15
+          path: |
+            pushed-commit.txt
+            pushed-tree.txt
+          if-no-files-found: warn
+          retention-days: 30
