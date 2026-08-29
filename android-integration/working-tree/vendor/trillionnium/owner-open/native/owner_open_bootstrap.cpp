@@ -30,8 +30,12 @@ constexpr const char* kStateTarget = "/var/lib/trillionnium/owner-open";
 constexpr const char* kEmergencyStop = "/data/trillionnium/owner-open/state/emergency-stop";
 constexpr const char* kSupervisorPid = "/data/trillionnium/owner-open/state/supervisor.pid";
 constexpr const char* kPython = "/usr/bin/python3";
-constexpr const char* kSupervisor = "/usr/libexec/trillionnium/owner_open_rootlinux_supervisor.py";
-constexpr const char* kSupervisorConfig = "/etc/trillionnium/owner-open/rootlinux-supervisor.json";
+constexpr const char* kSupervisor =
+    "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py";
+constexpr const char* kSupervisorConfig =
+    "/etc/trillionnium/owner-open/rootlinux-supervisor.json";
+constexpr const char* kMountOptions =
+    "errors=continue,context=u:object_r:trillionnium_owner_open_payload_file:s0";
 constexpr std::size_t kMaximumImageBytes = 8ULL * 1024ULL * 1024ULL * 1024ULL;
 volatile sig_atomic_t g_child_pid = -1;
 
@@ -200,14 +204,19 @@ bool ConfigureLoop(int image_fd, LoopDevice* loop) {
 }
 
 bool RequiredPayloadEntriesExist() {
-  static constexpr std::array<const char*, 8> kRequired = {
+  static constexpr std::array<const char*, 13> kRequired = {
       "/usr/bin/python3",
       "/usr/bin/adb",
+      "/usr/bin/codex",
       "/usr/libexec/trillionnium/trillionnium-owner-open-r5-host",
       "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
-      "/usr/libexec/trillionnium/owner_open_rootlinux_supervisor.py",
-      "/usr/libexec/trillionnium/owner_open_connection_broker.py",
-      "/usr/libexec/trillionnium/codex_owner_open_mcp.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+      "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker.py",
+      "/usr/libexec/trillionnium/owner-open/codex_owner_open_mcp.py",
+      "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification_release.py",
+      "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_release.py",
+      "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_release.py",
+      "/usr/libexec/trillionnium/provider-adapter",
       "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
   };
   const int root = open(kMountRoot, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
@@ -292,7 +301,8 @@ int main() {
   if (image_fd < 0) return Fail("cannot open rootfs image");
   std::string actual_digest;
   std::size_t image_bytes = 0;
-  if (!HashImage(image_fd, &actual_digest, &image_bytes) || actual_digest != expected_digest) {
+  if (!HashImage(image_fd, &actual_digest, &image_bytes) || image_bytes == 0 ||
+      actual_digest != expected_digest) {
     close(image_fd);
     errno = EBADMSG;
     return Fail("rootfs image digest mismatch");
@@ -309,7 +319,7 @@ int main() {
   }
   close(image_fd);
   if (mount(loop.path.c_str(), kMountRoot, "squashfs", MS_RDONLY | MS_NOSUID | MS_NODEV,
-            "errors=continue") != 0) {
+            kMountOptions) != 0) {
     CloseLoop(&loop);
     return Fail("cannot mount rootfs image read-only");
   }
@@ -328,6 +338,8 @@ int main() {
   if (child == 0) {
     if (setsid() < 0 || chroot(kMountRoot) != 0 || chdir("/") != 0) _exit(126);
     unsetenv("ANDROID_SERIAL");
+    unsetenv("ADB_SERVER_PORT");
+    unsetenv("ANDROID_ADB_SERVER_PORT");
     setenv("ADB_SERVER_SOCKET", "tcp:127.0.0.1:15038", 1);
     execl(kPython, kPython, kSupervisor, "--execute", "--config", kSupervisorConfig,
           static_cast<char*>(nullptr));
