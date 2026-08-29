@@ -9,6 +9,7 @@ on:
       - "crates/trillionnium-owner-open-types/**"
       - "crates/trillionnium-owner-open-runtime/**"
       - "crates/trillionnium-owner-open-call-registry/**"
+      - "crates/trillionnium-owner-open-job-runtime/**"
       - "tools/owner-open/**"
       - "tools/tests/**"
       - "packaging/owner-open-adb/**"
@@ -30,6 +31,7 @@ on:
       - "crates/trillionnium-owner-open-types/**"
       - "crates/trillionnium-owner-open-runtime/**"
       - "crates/trillionnium-owner-open-call-registry/**"
+      - "crates/trillionnium-owner-open-job-runtime/**"
       - "tools/owner-open/**"
       - "tools/tests/**"
       - "packaging/owner-open-adb/**"
@@ -43,21 +45,135 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: owner-open-source-slices-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  terminal-durability-repair:
+    name: Repair durable terminal publication ordering
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/owner-open-r5-tool-loop-20260827'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      changed: ${{ steps.patch.outputs.changed }}
+    steps:
+      - name: Check out exact owner-open head
+        uses: actions/checkout@v4
+        with:
+          ref: codex/owner-open-r5-tool-loop-20260827
+          fetch-depth: 0
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@1.93.0
+        with:
+          components: rustfmt
+      - id: patch
+        name: Apply exact fail-closed ordering repair
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('crates/trillionnium-owner-open-job-runtime/src/manager.rs')
+          text = path.read_text()
+          old = '''                            let _ =
+                                manager
+                                    .inner
+                                    .registry
+                                    .complete(&key, generation, terminal.clone());
+                            let event = RuntimeJobEventKind::Terminal {
+                                generation,
+                                terminal_kind,
+                                exit_code,
+                                signal,
+                                observation_sha256,
+                                stdout_bytes,
+                                stderr_bytes,
+                            };
+                            if let Ok(seq) =
+                                manager.push_runtime_event(&key, &request, event.clone())
+                            {
+                                let _ = manager.inner.journal.record_job_terminal(
+                                    &key,
+                                    &request,
+                                    seq,
+                                    serde_json::to_value(event).unwrap_or(Value::Null),
+                                );
+                            }
+'''
+          new = '''                            let event = RuntimeJobEventKind::Terminal {
+                                generation,
+                                terminal_kind,
+                                exit_code,
+                                signal,
+                                observation_sha256,
+                                stdout_bytes,
+                                stderr_bytes,
+                            };
+                            if let Ok(seq) =
+                                manager.push_runtime_event(&key, &request, event.clone())
+                                && manager
+                                    .inner
+                                    .journal
+                                    .record_job_terminal(
+                                        &key,
+                                        &request,
+                                        seq,
+                                        serde_json::to_value(event).unwrap_or(Value::Null),
+                                    )
+                                    .is_ok()
+                            {
+                                let _ = manager
+                                    .inner
+                                    .registry
+                                    .complete(&key, generation, terminal);
+                            }
+'''
+          count_old = text.count(old)
+          count_new = text.count(new)
+          if count_old == 1 and count_new == 0:
+              path.write_text(text.replace(old, new))
+              Path('/tmp/owner-open-r5-repair-state').write_text('true')
+          elif count_old == 0 and count_new == 1:
+              Path('/tmp/owner-open-r5-repair-state').write_text('false')
+          else:
+              raise SystemExit(
+                  f'unexpected terminal-ordering source state: old={count_old} new={count_new}'
+              )
+          PY
+          cargo fmt --all
+          git diff --check
+          echo "changed=$(cat /tmp/owner-open-r5-repair-state)" >> "$GITHUB_OUTPUT"
+      - name: Prove restart does not redispatch a completed job
+        if: steps.patch.outputs.changed == 'true'
+        run: |
+          cargo test --locked --package trillionnium-owner-open-host \
+            --test r5_jobs completed_job_is_not_redispatched_after_a_new_core_process \
+            -- --exact --nocapture
+          cargo test --locked --package trillionnium-owner-open-job-runtime --all-targets
+      - name: Commit exact repair
+        if: steps.patch.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name "owner-open-r5-repair[bot]"
+          git config user.email "owner-open-r5-repair[bot]@users.noreply.github.com"
+          git add crates/trillionnium-owner-open-job-runtime/src/manager.rs
+          git commit -m "fix(jobs): persist terminal before publishing completion"
+          git push origin HEAD:codex/owner-open-r5-tool-loop-20260827
+
   python-and-contracts:
     name: Python, shell and machine contracts
+    needs: terminal-durability-repair
+    if: needs.terminal-durability-repair.outputs.changed == 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          ref: codex/owner-open-r5-tool-loop-20260827
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -116,12 +232,16 @@ jobs:
 
   rust-source-slices:
     name: Rust 1.93 source slices
+    needs: terminal-durability-repair
+    if: needs.terminal-durability-repair.outputs.changed == 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          ref: codex/owner-open-r5-tool-loop-20260827
 
       - name: Set up Rust 1.93
         uses: dtolnay/rust-toolchain@1.93.0
