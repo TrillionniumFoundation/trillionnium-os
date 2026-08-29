@@ -1,0 +1,62 @@
+name: TrillionniumGame backlog artifact recovery
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-backlog-recovery.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/TrillionniumGame
+          ref: c64c84896e9c34dd9077fd74d92349cee63a36d0
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export binary and recovered prefix
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p recovery
+          cp source/docs/development/backlog/EXECUTION_BACKLOG.v2.json.gz recovery/original.json.gz
+          sha256sum recovery/original.json.gz > recovery/original.sha256
+          python3 - <<'PY'
+          import hashlib, zlib
+          from pathlib import Path
+          source = Path('recovery/original.json.gz').read_bytes()
+          out = bytearray()
+          decoder = zlib.decompressobj(31)
+          offset = 0
+          error = None
+          for offset, byte in enumerate(source):
+              try:
+                  out.extend(decoder.decompress(bytes([byte])))
+              except zlib.error as exc:
+                  error = f'offset={offset}: {exc}'
+                  break
+          Path('recovery/recovered-prefix.json').write_bytes(out)
+          Path('recovery/recovery.txt').write_text(
+              '\n'.join([
+                  f'compressed_bytes={len(source)}',
+                  f'compressed_sha256={hashlib.sha256(source).hexdigest()}',
+                  f'recovered_bytes={len(out)}',
+                  f'recovered_sha256={hashlib.sha256(out).hexdigest()}',
+                  f'error={error}',
+              ]) + '\n', encoding='utf-8')
+          PY
+          file recovery/original.json.gz recovery/recovered-prefix.json > recovery/file.txt
+      - name: Upload exact binary recovery evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-backlog-recovery
+          path: recovery
+          if-no-files-found: error
+          retention-days: 30
