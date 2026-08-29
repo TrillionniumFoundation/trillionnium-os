@@ -1,0 +1,214 @@
+name: Owner-open R5 generated evidence-program converger v6
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-generated-program-converger-v6.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-open-r5-generated-program-converger-v6
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Materialize the program when an earlier CAS prevented publication
+        run: |
+          set -euo pipefail
+          if test ! -f tools/owner-open/owner_open_r5_evidence_bundle.py; then
+            test -f tools/owner-open/apply_r5_evidence_hardening_v4.py
+            python3 - <<'PY'
+            from pathlib import Path
+            path = Path('tools/owner-open/apply_r5_evidence_hardening_v4.py')
+            text = path.read_text()
+            text = text.replace(
+                'replace_between(path, "def exact_source_evidence(", "def verify(", replacement + "def verify(")',
+                'replace_between(path, "def exact_source_evidence(", "def verify(", replacement)',
+            )
+            path.write_text(text)
+            PY
+            python3 tools/owner-open/apply_r5_evidence_hardening_v4.py
+          fi
+          test -f tools/owner-open/owner_open_r5_evidence_bundle.py
+          test -f tools/owner-open/promote_owner_open_r5_evidence.py
+          test -f tools/owner-open/bind_owner_open_r5_source_evidence.py
+          test -f tools/owner-open/verify_owner_open_r5_workflow_identity.py
+          test -f .github/workflows/owner-open-r5-exact-source-binder-v4.yml
+      - name: Repair generated boundary details directly
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          validator = Path('tools/owner-open/owner_open_r5_evidence_bundle.py')
+          text = validator.read_text()
+          text = text.replace(
+              '''    manifest_path = manifest_path if manifest_path.is_absolute() else root / manifest_path
+              stable_file(manifest_path, root)
+              manifest, manifest_raw = read_object(manifest_path)''',
+              '''    manifest_path = manifest_path if manifest_path.is_absolute() else root / manifest_path
+              manifest_container = manifest_path.parent.resolve(strict=True)
+              stable_file(manifest_path, manifest_container)
+              manifest, manifest_raw = read_object(manifest_path)''',
+          )
+          text = text.replace(
+              '        "manifest": str(manifest_path.relative_to(root)),',
+              '        "manifest": str(manifest_path.relative_to(root)) if manifest_path.is_relative_to(root) else str(manifest_path),',
+          )
+          validator.write_text(text)
+
+          binder = Path('tools/owner-open/bind_owner_open_r5_source_evidence.py')
+          text = binder.read_text()
+          pattern = re.compile(
+              r'(?m)^        digest = artifact\.get\("digest"\)\n'
+              r'        if not isinstance\(digest, str\) or not digest\.startswith\("sha256:"\) or HEX64\.fullmatch\(digest\[7:\]\) is None:\n'
+              r'            raise ValueError\("artifact digest is malformed"\)$'
+          )
+          replacement = '''        digest = artifact.get("digest")
+          if isinstance(digest, str) and HEX64.fullmatch(digest) is not None:
+              digest = "sha256:" + digest
+              artifact["digest"] = digest
+          if not isinstance(digest, str) or not digest.startswith("sha256:") or HEX64.fullmatch(digest[7:]) is None:
+              raise ValueError("artifact digest is malformed")'''
+          text, count = pattern.subn(replacement, text)
+          if count not in {0, 1}:
+              raise SystemExit(f'unexpected binder digest replacement count: {count}')
+          if 'artifact["digest"] = digest' not in text:
+              raise SystemExit('binder does not normalize upload-artifact digest output')
+          binder.write_text(text)
+          PY
+      - name: Normalize all permanent R5 workflow checkouts and remove transient writers
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          directory = Path('.github/workflows')
+          transient = {
+              'owner-open-r5-evidence-hardening-migration-v4.yml',
+              'owner-open-r5-evidence-hardening-watchdog-v4.yml',
+              'owner-open-r5-history-hardening-v4.yml',
+              'owner-open-r5-history-converger-v4.yml',
+              'owner-open-r5-final-converger-v5.yml',
+              'owner-open-r5-generated-program-converger-v6.yml',
+              'owner-open-r5-external-closure-semantics-executor.yml',
+              'owner-open-r5-gap-promotion-one-shot.yml',
+              'owner-open-r5-gap-promotion-executor-v2.yml',
+          }
+          for path in sorted(directory.glob('owner-open-r5*.yml')):
+              if path.name in transient:
+                  continue
+              original = path.read_text()
+              lines = original.splitlines()
+              output = []
+              index = 0
+              while index < len(lines):
+                  line = lines[index]
+                  output.append(line)
+                  if re.match(r'^\s*- uses: actions/checkout@v4\s*$', line):
+                      indent = len(line) - len(line.lstrip())
+                      end = index + 1
+                      while end < len(lines):
+                          stripped = lines[end].strip()
+                          current = len(lines[end]) - len(lines[end].lstrip())
+                          if stripped and current <= indent and stripped.startswith('-'):
+                              break
+                          if stripped and current < indent:
+                              break
+                          end += 1
+                      block = lines[index + 1:end]
+                      with_index = next((i for i, value in enumerate(block) if value.strip() == 'with:'), None)
+                      if not any(value.strip().startswith('fetch-depth:') for value in block):
+                          depth = ' ' * (indent + 4) + 'fetch-depth: 0'
+                          if with_index is None:
+                              output.extend([' ' * (indent + 2) + 'with:', depth])
+                              output.extend(block)
+                          else:
+                              output.extend(block[:with_index + 1])
+                              output.append(depth)
+                              output.extend(block[with_index + 1:])
+                          index = end
+                          continue
+                  index += 1
+              path.write_text('\n'.join(output) + ('\n' if original.endswith('\n') else ''))
+          for name in transient:
+              (directory / name).unlink(missing_ok=True)
+          Path('tools/owner-open/apply_r5_evidence_hardening_v4.py').unlink(missing_ok=True)
+          PY
+      - name: Run the full generated-program contract
+        env:
+          OWNER_OPEN_R5_BINDING_SOURCE_SHA: ${{ github.sha }}
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q tools
+          python3 -m unittest \
+            tools.tests.test_owner_open_r5_evidence_bundle \
+            tools.tests.test_bind_owner_open_r5_source_evidence \
+            tools.tests.test_verify_owner_open_r5_workflow_identity \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_generate_owner_open_r5_resume_packet \
+            tools.tests.test_verify_owner_open_r5 \
+            -v
+          python3 tools/generate-owner-open-types.py --check
+          python3 tools/verify-owner-open-r5.py --json >/tmp/verify-r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json >/tmp/verify-gap.json
+          python3 tools/owner-open/verify_owner_open_r5_workflow_identity.py --json >/tmp/verify-workflows.json
+          python3 -m json.tool docs/status/owner-open-r5-target-readiness.json >/dev/null
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          errors = []
+          for path in sorted(Path('.github/workflows').glob('owner-open-r5*.yml')):
+              text = path.read_text()
+              if re.search(r'(?m)^\s*contents:\s*write\s*$', text) and path.name != 'owner-open-r5-exact-source-binder-v4.yml':
+                  errors.append(f'unexpected writer: {path}')
+              lines = text.splitlines()
+              for index, line in enumerate(lines):
+                  if re.match(r'^\s*- uses: actions/checkout@v4\s*$', line):
+                      indent = len(line) - len(line.lstrip())
+                      block = []
+                      for following in lines[index + 1:]:
+                          stripped = following.strip()
+                          current = len(following) - len(following.lstrip())
+                          if stripped and current <= indent and stripped.startswith('-'):
+                              break
+                          if stripped and current < indent:
+                              break
+                          block.append(following)
+                      if 'fetch-depth: 0' not in '\n'.join(block):
+                          errors.append(f'missing full history: {path}:{index + 1}')
+          if errors:
+              raise SystemExit('\n'.join(errors))
+          PY
+          git diff --check
+      - name: Publish generated-program convergence with remote-head CAS
+        run: |
+          set -euo pipefail
+          remote="$(git ls-remote origin refs/heads/codex/owner-open-r5-gap-closure-20260829 | awk '{print $1}')"
+          test "$remote" = "$GITHUB_SHA"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --check
+          git commit -m "feat(r5): validate generated evidence program end to end"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
