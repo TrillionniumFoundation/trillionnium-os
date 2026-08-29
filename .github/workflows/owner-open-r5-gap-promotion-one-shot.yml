@@ -1,5 +1,5 @@
-name: one-shot owner-open R5 permanent evidence-program tree export
-# retry: permanent-evidence-program-v8
+name: one-shot owner-open R5 permanent evidence-program core install
+# retry: permanent-evidence-program-v9
 
 on:
   push:
@@ -9,10 +9,10 @@ on:
       - ".github/workflows/owner-open-r5-gap-promotion-one-shot.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  export-reviewed-tree:
+  install-core:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -82,7 +82,7 @@ jobs:
             tools.tests.test_verify_owner_open_r5_governance_readiness \
             tools.tests.test_verify_owner_open_r5_gap_closure \
             tools.tests.test_generate_owner_open_r5_resume_packet \
-            -v | tee /tmp/evidence-tests.log
+            -v
           python3 - <<'PY'
           from pathlib import Path
 
@@ -98,120 +98,20 @@ jobs:
               )
           PY
           git diff --check
-      - name: Retire bootstrap payload and patcher
+      - name: Commit only the non-workflow evidence-program core
         run: |
           set -euo pipefail
-          git rm --ignore-unmatch \
-            .github/workflows/owner-open-r5-evidence-program-bootstrap.yml
           rm -f tools/owner-open/apply_r5_evidence_program_v1.py
           rm -rf .github/r5-bootstrap
-      - name: Build verified local commit and export its exact changed tree
-        run: |
-          set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
+          git reset -- .github/workflows
           git diff --cached --check
-          git commit -m "feat(r5): enforce reviewed target evidence promotion"
-          export_dir="$RUNNER_TEMP/owner-open-r5-reviewed-tree"
-          mkdir -p "$export_dir/files"
-          git format-patch -1 --stdout > "$export_dir/commit.patch"
-          git show -s --format='%H%n%T%n%P%n%s' HEAD > "$export_dir/commit.txt"
-          cp /tmp/r5-evidence-bootstrap.json "$export_dir/"
-          cp /tmp/verify-r5.json "$export_dir/"
-          cp /tmp/verify-r5-evidence.json "$export_dir/"
-          cp /tmp/evidence-tests.log "$export_dir/"
-          python3 - "$export_dir" <<'PY'
-          from __future__ import annotations
-
-          import hashlib
-          import json
-          from pathlib import Path
-          import shutil
-          import subprocess
-          import sys
-
-          out = Path(sys.argv[1])
-          raw = subprocess.check_output(
-              ["git", "diff", "--name-status", "-z", "HEAD^", "HEAD"]
-          ).decode("utf-8")
-          tokens = raw.split("\0")
-          if tokens and tokens[-1] == "":
-              tokens.pop()
-          entries = []
-          deletions = []
-          index = 0
-          while index < len(tokens):
-              status = tokens[index]
-              index += 1
-              code = status[0]
-              if code in {"R", "C"}:
-                  raise SystemExit(f"rename/copy is not permitted in export: {status}")
-              if code not in {"A", "M", "D"}:
-                  raise SystemExit(f"unsupported change status: {status}")
-              if index >= len(tokens):
-                  raise SystemExit("truncated name-status stream")
-              path = tokens[index]
-              index += 1
-              if path.startswith("/") or ".." in Path(path).parts:
-                  raise SystemExit(f"unsafe changed path: {path}")
-              if code == "D":
-                  deletions.append(path)
-                  continue
-              source = Path(path)
-              if not source.is_file():
-                  raise SystemExit(f"changed file missing after commit: {path}")
-              target = out / "files" / path
-              target.parent.mkdir(parents=True, exist_ok=True)
-              shutil.copyfile(source, target)
-              mode = subprocess.check_output(
-                  ["git", "ls-tree", "HEAD", "--", path], text=True
-              ).split()[0]
-              payload = source.read_bytes()
-              entries.append(
-                  {
-                      "path": path,
-                      "mode": mode,
-                      "bytes": len(payload),
-                      "sha256": hashlib.sha256(payload).hexdigest(),
-                  }
-              )
-          manifest = {
-              "schema": "org.trillionnium.owner-open-r5.reviewed-tree-export.v1",
-              "base_commit": subprocess.check_output(
-                  ["git", "rev-parse", "HEAD^"], text=True
-              ).strip(),
-              "base_tree": subprocess.check_output(
-                  ["git", "rev-parse", "HEAD^^{tree}"], text=True
-              ).strip(),
-              "local_commit": subprocess.check_output(
-                  ["git", "rev-parse", "HEAD"], text=True
-              ).strip(),
-              "local_tree": subprocess.check_output(
-                  ["git", "rev-parse", "HEAD^{tree}"], text=True
-              ).strip(),
-              "entries": sorted(entries, key=lambda item: item["path"]),
-              "deletions": sorted(deletions),
-          }
-          (out / "manifest.json").write_text(
-              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          (out / "deletions.txt").write_text(
-              "".join(f"{path}\n" for path in manifest["deletions"]),
-              encoding="utf-8",
-          )
-          PY
-          (
-            cd "$export_dir"
-            find . -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
-          )
-          tar -C "$RUNNER_TEMP" -czf \
-            "$RUNNER_TEMP/owner-open-r5-reviewed-tree-${GITHUB_SHA}.tar.gz" \
-            owner-open-r5-reviewed-tree
-      - uses: actions/upload-artifact@v4
-        with:
-          name: owner-open-r5-reviewed-tree-${{ github.sha }}
-          path: ${{ runner.temp }}/owner-open-r5-reviewed-tree-${{ github.sha }}.tar.gz
-          if-no-files-found: error
-          retention-days: 30
+          test -n "$(git diff --cached --name-only)"
+          if git diff --cached --name-only | grep -q '^\.github/workflows/'; then
+            echo "workflow path leaked into core commit" >&2
+            exit 1
+          fi
+          git commit -m "feat(r5): install reviewed evidence-program core"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
