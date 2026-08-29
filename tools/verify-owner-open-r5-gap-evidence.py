@@ -133,6 +133,10 @@ def environment_evidence(
 ) -> None:
     report.check(isinstance(value, list) and bool(value), f"{label} evidence must be a non-empty list")
     if not isinstance(value, list):
+        report.check(
+            False,
+            f"{label} has no evidence at or above exit level {exit_level}",
+        )
         return
     exit_rank = LEVELS[exit_level]
     observed_ranks: list[int] = []

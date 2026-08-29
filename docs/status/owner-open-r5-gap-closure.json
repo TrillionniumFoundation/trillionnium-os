@@ -59,7 +59,10 @@
     {
       "id": "R5-GAP-GOVERNANCE-001",
       "priority": "P0",
-      "work_packages": ["W0", "W7"],
+      "work_packages": [
+        "W0",
+        "W7"
+      ],
       "status": "OPEN",
       "issue": 20,
       "summary": "Protect the integration truth: exact-head CI-generated evidence, coherent PR topology and protected main.",
@@ -80,7 +83,10 @@
     {
       "id": "R5-GAP-JOB-ADMISSION-001",
       "priority": "P0",
-      "work_packages": ["W3", "W5"],
+      "work_packages": [
+        "W3",
+        "W5"
+      ],
       "status": "OPEN",
       "issue": 14,
       "summary": "Reserve finite job capacity before any spawn and make every post-spawn failure converge.",
@@ -100,7 +106,10 @@
     {
       "id": "R5-GAP-PROCESS-LIFECYCLE-001",
       "priority": "P0",
-      "work_packages": ["W3", "W5"],
+      "work_packages": [
+        "W3",
+        "W5"
+      ],
       "status": "OPEN",
       "issue": 15,
       "summary": "Eliminate initial-stdin deadlock windows and bind parent-death/descendant cleanup to qualified behavior.",
@@ -121,7 +130,10 @@
     {
       "id": "R5-GAP-STREAM-RECOVERY-001",
       "priority": "P0",
-      "work_packages": ["W3", "W5"],
+      "work_packages": [
+        "W3",
+        "W5"
+      ],
       "status": "OPEN",
       "issue": 16,
       "summary": "Apply bounded flow control to job output and report retention gaps with exact cursor semantics.",
@@ -142,7 +154,9 @@
     {
       "id": "R5-GAP-JOURNAL-CONVERGENCE-001",
       "priority": "P0",
-      "work_packages": ["W5"],
+      "work_packages": [
+        "W5"
+      ],
       "status": "OPEN",
       "issue": 17,
       "summary": "Converge process, registry and durable truth under journal failure.",
@@ -163,7 +177,10 @@
     {
       "id": "R5-GAP-BROKER-CORRELATION-001",
       "priority": "P0",
-      "work_packages": ["W1", "W5"],
+      "work_packages": [
+        "W1",
+        "W5"
+      ],
       "status": "OPEN",
       "issue": 18,
       "summary": "Replace kind/job matching with exact request identity and a three-stage durable broker audit.",
@@ -184,7 +201,10 @@
     {
       "id": "R5-GAP-PRODUCT-ENTRYPOINT-001",
       "priority": "P1",
-      "work_packages": ["W0", "W6"],
+      "work_packages": [
+        "W0",
+        "W6"
+      ],
       "status": "OPEN",
       "issue": 19,
       "summary": "Select one installable product entrypoint and prevent packaging the unavailable-provider stub.",
@@ -205,9 +225,15 @@
     {
       "id": "R5-GAP-INSTALLED-CODEX-001",
       "priority": "P0",
-      "work_packages": ["W2", "W7"],
+      "work_packages": [
+        "W2",
+        "W7"
+      ],
       "status": "EXTERNAL_HOLD",
-      "issues": [10, 13],
+      "issues": [
+        10,
+        13
+      ],
       "summary": "Execute the exact installed target Root Linux Codex with authenticated same-turn MCP/tool continuation.",
       "exit_evidence_level": "L2",
       "required_material": [
@@ -226,9 +252,15 @@
     {
       "id": "R5-GAP-ROOTLINUX-PLACEMENT-001",
       "priority": "P0",
-      "work_packages": ["W3", "W6"],
+      "work_packages": [
+        "W3",
+        "W6"
+      ],
       "status": "EXTERNAL_HOLD",
-      "issues": [4, 13],
+      "issues": [
+        4,
+        13
+      ],
       "summary": "Bind actual UID/GID, namespace, cgroup, filesystem and writable overlay placement.",
       "exit_evidence_level": "L2",
       "acceptance": [
@@ -236,12 +268,21 @@
         "Writable stores and sockets have exact owners, modes and mount ancestry.",
         "Restart/backoff and emergency stop are observed under the service manager.",
         "No legacy authority node is required for startup."
+      ],
+      "required_material": [
+        "authorized target Root Linux instance",
+        "service-manager unit and identity configuration",
+        "namespace, cgroup and mount observations",
+        "writable store and socket ownership evidence"
       ]
     },
     {
       "id": "R5-GAP-ANDROID-GRAPH-001",
       "priority": "P0",
-      "work_packages": ["W0", "W6"],
+      "work_packages": [
+        "W0",
+        "W6"
+      ],
       "status": "EXTERNAL_HOLD",
       "issue": 2,
       "summary": "Build a clean Android owner-open product graph with init and SELinux admission.",
@@ -251,14 +292,27 @@
         "Soong, init, SELinux and target-files inventories bind one product entrypoint.",
         "The image is built from a clean manifest and exact patch/commit set.",
         "No source fixture is promoted as image evidence."
+      ],
+      "required_material": [
+        "clean pinned Android source checkout",
+        "authorized AOSP build toolchain and build capacity",
+        "target-files and image inventories",
+        "Soong, init and SELinux build evidence"
       ]
     },
     {
       "id": "R5-GAP-PHYSICAL-ADB-001",
       "priority": "P0",
-      "work_packages": ["W4", "W7"],
+      "work_packages": [
+        "W4",
+        "W7"
+      ],
       "status": "EXTERNAL_HOLD",
-      "issues": [5, 8, 13],
+      "issues": [
+        5,
+        8,
+        13
+      ],
       "summary": "Select and physically execute the ordinary ADB topology with raw observations.",
       "exit_evidence_level": "L4",
       "acceptance": [
@@ -266,14 +320,26 @@
         "A physical turn performs devices, shell id, deliberate failure and visible mutation.",
         "Offline, unauthorized, multiple-device, recovery and reboot remain raw.",
         "USB loss and reconnect never cause blind redispatch."
+      ],
+      "required_material": [
+        "authorized physical Android device and USB host",
+        "selected ARM64 adb client and server artifacts",
+        "ordinary adbd offline, unauthorized and reconnect states",
+        "raw visible-effect and no-redispatch observations"
       ]
     },
     {
       "id": "R5-GAP-FAULT-MATRIX-001",
       "priority": "P0",
-      "work_packages": ["W5", "W7"],
+      "work_packages": [
+        "W5",
+        "W7"
+      ],
       "status": "EXTERNAL_HOLD",
-      "issues": [6, 13],
+      "issues": [
+        6,
+        13
+      ],
       "summary": "Qualify crash, disconnect, ENOSPC, USB loss, reboot and power-loss recovery.",
       "exit_evidence_level": "L5",
       "acceptance": [
@@ -281,12 +347,20 @@
         "Provider, core, transport, broker, MCP and client failures are isolated.",
         "Storage exhaustion and corruption preserve conservative recovery.",
         "Device reboot and USB loss produce inspectable truth and bounded cleanup."
+      ],
+      "required_material": [
+        "authorized destructive test environment",
+        "controllable ENOSPC, corruption and power-loss fault injection",
+        "target service and physical-device access",
+        "independently retained recovery evidence"
       ]
     },
     {
       "id": "R5-GAP-RELEASE-001",
       "priority": "P1",
-      "work_packages": ["W7"],
+      "work_packages": [
+        "W7"
+      ],
       "status": "EXTERNAL_HOLD",
       "issue": 13,
       "summary": "Create a separately authorized signed public-release profile.",
@@ -296,6 +370,12 @@
         "AVB, rollback indexes, OTA, key custody and recovery are independently approved.",
         "Multi-user, lock-screen and emergency-stop policy is reviewed.",
         "A human release authorization explicitly changes public_release to true."
+      ],
+      "required_authority": [
+        "independent security and release reviewers",
+        "authorized production signing-key custodian",
+        "AVB, OTA and rollback policy owner",
+        "explicit human public-release authorization"
       ]
     }
   ],

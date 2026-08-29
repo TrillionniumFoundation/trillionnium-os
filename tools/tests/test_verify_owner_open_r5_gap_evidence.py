@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -10,6 +11,7 @@ SCRIPT = Path(__file__).resolve().parents[1] / "verify-owner-open-r5-gap-evidenc
 spec = importlib.util.spec_from_file_location("verify_owner_open_r5_gap_evidence", SCRIPT)
 assert spec is not None and spec.loader is not None
 module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
 
