@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""Verify official Codex artifacts and both supported Sigstore bundle encodings.
+"""Verify official Codex artifacts and supported Sigstore bundle encodings.
 
-The OpenAI release selected by the R5 contract publishes legacy Cosign
-``sign-blob --bundle`` JSON with ``base64Signature``, ``cert`` and
-``rekorBundle``.  Modern Sigstore bundles remain accepted through the reviewed
-v3 verifier.  For the legacy form this adapter strictly cross-binds:
+The selected OpenAI release publishes legacy Cosign ``sign-blob --bundle``
+JSON with ``base64Signature``, ``cert`` and ``rekorBundle``. Modern Sigstore
+bundles remain accepted through the reviewed v3 verifier. For the legacy form
+this adapter strictly cross-binds:
 
-* the Rekor hashedrekord SHA-256 to the selected archive;
+* the outer release archive to its GitHub release digest and contract;
+* the Rekor hashedrekord SHA-256 to either that archive or its unique executable
+  member, depending on which exact byte object upstream signed;
 * the Rekor signature bytes to ``base64Signature``;
 * the Rekor public-key bytes to the published certificate;
 * the log identity, index, integration time and signed-entry timestamp.
 
-This is structural and byte-level verification.  Certificate-chain, identity
-policy, Rekor SET and signature cryptography remain an explicit later release
-gate and are never promoted here.
+This is structural and byte-level verification. Certificate-chain, identity
+policy, Rekor SET and signature cryptography remain explicit later release
+gates and are never promoted here.
 """
 from __future__ import annotations
 
@@ -75,8 +77,37 @@ def require_nonnegative_int(value: Any, label: str) -> int:
     return value
 
 
+def signed_subject_binding(
+    rekor_digest: str,
+    archive_digest: str,
+    archive_member_digest: str | None,
+) -> dict[str, Any]:
+    if rekor_digest == archive_digest:
+        return {
+            "archive_digest_bound": True,
+            "archive_member_digest_bound": False,
+            "signed_subject_kind": "release_archive",
+            "signed_subject_sha256": rekor_digest,
+            "signed_subject_digest_bound": True,
+        }
+    if archive_member_digest is not None and rekor_digest == archive_member_digest:
+        return {
+            "archive_digest_bound": False,
+            "archive_member_digest_bound": True,
+            "signed_subject_kind": "unique_archive_member",
+            "signed_subject_sha256": rekor_digest,
+            "signed_subject_digest_bound": True,
+        }
+    raise BASE.VerificationError(
+        "legacy Cosign Rekor entry is not bound to the selected archive digest "
+        "or unique archive member digest"
+    )
+
+
 def verify_legacy_cosign_bundle(
-    document: dict[str, Any], archive_digest: str
+    document: dict[str, Any],
+    archive_digest: str,
+    archive_member_digest: str | None = None,
 ) -> dict[str, Any]:
     exact_keys(document, LEGACY_TOP_KEYS, "legacy Cosign bundle")
     signature_bytes = canonical_base64(
@@ -134,12 +165,11 @@ def verify_legacy_cosign_bundle(
             f"legacy Cosign Rekor hash algorithm is not SHA-256: {algorithm!r}"
         )
     rekor_digest = BASE.require_sha(
-        digest.get("value"), "legacy Cosign Rekor archive digest"
+        digest.get("value"), "legacy Cosign Rekor signed-object digest"
     )
-    if rekor_digest != archive_digest:
-        raise BASE.VerificationError(
-            "legacy Cosign Rekor entry is not bound to the selected archive digest"
-        )
+    binding = signed_subject_binding(
+        rekor_digest, archive_digest, archive_member_digest
+    )
 
     rekor_signature = BASE.require_dict(
         spec.get("signature"), "legacy Cosign Rekor signature"
@@ -167,7 +197,7 @@ def verify_legacy_cosign_bundle(
         )
     return {
         "bundle_encoding": "cosign_legacy_sign_blob_bundle",
-        "archive_digest_bound": True,
+        **binding,
         "signature_bytes_cross_bound": True,
         "certificate_bytes_cross_bound": True,
         "rekor_kind": "hashedrekord",
@@ -185,7 +215,10 @@ def verify_legacy_cosign_bundle(
 
 
 def verify_sigstore_bundle_v4(
-    path: Path, specification: dict[str, Any], archive_digest: str
+    path: Path,
+    specification: dict[str, Any],
+    archive_digest: str,
+    archive_member_digest: str | None = None,
 ) -> dict[str, Any]:
     expected_size = int(specification["bytes"])
     expected_sha = str(specification["sha256"])
@@ -201,10 +234,18 @@ def verify_sigstore_bundle_v4(
         "Codex Sigstore bundle",
     )
     if set(document) == LEGACY_TOP_KEYS:
-        facts = verify_legacy_cosign_bundle(document, archive_digest)
+        facts = verify_legacy_cosign_bundle(
+            document, archive_digest, archive_member_digest
+        )
     else:
         facts = V3.verify_sigstore_bundle_v3(path, specification, archive_digest)
-        facts["bundle_encoding"] = "sigstore_bundle"
+        facts.update(
+            bundle_encoding="sigstore_bundle",
+            archive_member_digest_bound=False,
+            signed_subject_kind="release_archive",
+            signed_subject_sha256=archive_digest,
+            signed_subject_digest_bound=True,
+        )
     return {
         "filename": path.name,
         "bytes": observed_size,
@@ -221,8 +262,32 @@ def verify(
     release_asset_json: list[Path] | None = None,
     probe: bool = False,
 ):
-    original = BASE.verify_sigstore_bundle
-    BASE.verify_sigstore_bundle = verify_sigstore_bundle_v4
+    member_digests: dict[str, str] = {}
+    original_archive = BASE.verify_archive
+    original_sigstore = BASE.verify_sigstore_bundle
+
+    def archive_adapter(path, specification, destination):
+        facts, binary = original_archive(path, specification, destination)
+        archive_digest = BASE.require_sha(
+            facts.get("archive_sha256"), "verified Codex archive digest"
+        )
+        member_digest = BASE.require_sha(
+            facts.get("archive_member_sha256"),
+            "verified Codex archive member digest",
+        )
+        member_digests[archive_digest] = member_digest
+        return facts, binary
+
+    def sigstore_adapter(path, specification, archive_digest):
+        return verify_sigstore_bundle_v4(
+            path,
+            specification,
+            archive_digest,
+            member_digests.get(archive_digest),
+        )
+
+    BASE.verify_archive = archive_adapter
+    BASE.verify_sigstore_bundle = sigstore_adapter
     try:
         report = V2.verify(
             root,
@@ -232,9 +297,13 @@ def verify(
             probe=probe,
         )
     finally:
-        BASE.verify_sigstore_bundle = original
+        BASE.verify_archive = original_archive
+        BASE.verify_sigstore_bundle = original_sigstore
     report.facts["sigstore_bundle_encodings"] = (
         "modern_sigstore_bundle_or_exact_legacy_cosign_sign_blob_bundle"
+    )
+    report.facts["legacy_cosign_signed_object_binding"] = (
+        "exact_release_archive_or_verified_unique_archive_member"
     )
     report.facts["cryptographic_sigstore_verification"] = False
     return report
