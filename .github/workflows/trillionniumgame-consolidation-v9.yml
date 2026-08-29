@@ -1,0 +1,192 @@
+# exact-target: 5239129ed6637108a01571196c1ee72ddfc5d3b4
+name: TrillionniumGame consolidation v9
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-consolidation-v9.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: integration/all-branches-main-v1
+  EXPECTED_HEAD: 5239129ed6637108a01571196c1ee72ddfc5d3b4
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test "$sha" = "$EXPECTED_HEAD"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal --component rustfmt --component clippy
+          rustup default 1.85.1
+          rustc --version --verbose
+          cargo --version --verbose
+          go version
+          python3 --version
+      - name: Full static gate
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          e=consolidation-v9/static
+          mkdir -p "$e/materialized"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          git fetch --force origin '+refs/heads/*:refs/remotes/origin/*'
+          : > "$e/non-ancestors.tsv"
+          while IFS= read -r ref; do
+            branch=${ref#refs/remotes/origin/}
+            [[ "$branch" == HEAD || "$branch" == "$TARGET_BRANCH" ]] && continue
+            tip=$(git rev-parse "$ref")
+            git merge-base --is-ancestor "$tip" HEAD || printf '%s\t%s\n' "$branch" "$tip" >> "$e/non-ancestors.tsv"
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/origin | sort)
+          test ! -s "$e/non-ancestors.tsv"
+
+          gzip -t docs/development/backlog/EXECUTION_BACKLOG.v2.json.gz
+          sha256sum docs/development/backlog/EXECUTION_BACKLOG.v2.json.gz | tee "$e/backlog-sha256.txt"
+          grep -q '^6a3b94c1c76a44b31966e2d5919aa3c5ebc87822fc6169377b174a4a3a50c114 ' "$e/backlog-sha256.txt"
+          python3 scripts/read-backlog.py --summary | tee "$e/backlog-summary.json"
+
+          cargo generate-lockfile > "$e/generate-lockfile.log" 2>&1
+          cargo fmt --all > "$e/root-fmt-apply.log" 2>&1
+          isolated=(
+            crates/trnm-token-jwt-adapter/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+            crates/trnm-presence-router-v2/Cargo.toml
+          )
+          for manifest in "${isolated[@]}"; do cargo fmt --manifest-path "$manifest"; done
+          git diff --binary -- . ':(exclude)consolidation-v9' > "$e/materialization.patch"
+          git diff --name-only -- . ':(exclude)consolidation-v9' > "$e/materialized-files.txt"
+          while IFS= read -r path; do
+            [[ -z "$path" || ! -f "$path" ]] && continue
+            mkdir -p "$e/materialized/$(dirname "$path")"
+            cp "$path" "$e/materialized/$path"
+          done < "$e/materialized-files.txt"
+          git diff --check -- . ':(exclude)consolidation-v9'
+
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets --locked 2>&1 | tee "$e/root-test.log"
+          cargo clippy --workspace --all-targets --locked -- -D warnings 2>&1 | tee "$e/root-clippy.log"
+          for manifest in "${isolated[@]}"; do
+            label=$(basename "$(dirname "$manifest")")
+            cargo fmt --manifest-path "$manifest" -- --check
+            cargo test --manifest-path "$manifest" --all-targets --locked 2>&1 | tee "$e/${label}-test.log"
+            cargo clippy --manifest-path "$manifest" --all-targets --locked -- -D warnings 2>&1 | tee "$e/${label}-clippy.log"
+          done
+
+          python3 -m compileall -q scripts tests tools
+          checks=(
+            scripts/check-plan.py
+            scripts/check-rust-foundation.py
+            scripts/check-storage-core.py
+            scripts/check-persistence-core.py
+            scripts/check-foundation-schema.py
+            scripts/check-database-v2.py
+            scripts/check-pgwire-persistence-adapter.py
+            scripts/test-canonical-framing.py
+            scripts/check-transport-core.py
+            scripts/check-token-core.py
+            scripts/check-presence-core.py
+            scripts/verify-presence-router-v2.py
+            scripts/check-query-core.py
+          )
+          for check in "${checks[@]}"; do
+            python3 "$check" 2>&1 | tee "$e/$(basename "$check").log"
+          done
+          python3 -m unittest discover -s tests -p 'test_*.py' 2>&1 | tee "$e/unittest.log"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in sorted(Path('.').rglob('*.json')):
+              if '.git' in p.parts or 'target' in p.parts or 'consolidation-v9' in p.parts:
+                  continue
+              json.loads(p.read_text(encoding='utf-8'))
+          PY
+          find scripts -type f -name '*.sh' -print0 | sort -z | xargs -0 -n1 bash -n
+          (cd runtime && go test -mod=readonly ./...) 2>&1 | tee "$e/go-test.log"
+          find "$e" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$e/SHA256SUMS"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-consolidation-v9-static-${{ steps.target.outputs.sha }}
+          path: source/consolidation-v9
+          if-no-files-found: error
+          retention-days: 30
+
+  database:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test "$sha" = "$EXPECTED_HEAD"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Run live database contract
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          TRNM_EVIDENCE_ROOT=consolidation-v9/pgwire bash scripts/ci-pgwire-persistence-adapter.sh "${{ matrix.profile }}"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-consolidation-v9-${{ matrix.profile }}-${{ steps.target.outputs.sha }}
+          path: source/consolidation-v9
+          if-no-files-found: error
+          retention-days: 30
+
+  all-gates:
+    if: always()
+    needs: [static, database]
+    runs-on: ubuntu-24.04
+    steps:
+      - shell: bash
+        env:
+          STATIC: ${{ needs.static.result }}
+          DATABASE: ${{ needs.database.result }}
+        run: |
+          set -euo pipefail
+          printf 'static=%s\ndatabase=%s\n' "$STATIC" "$DATABASE"
+          test "$STATIC" = success
+          test "$DATABASE" = success
