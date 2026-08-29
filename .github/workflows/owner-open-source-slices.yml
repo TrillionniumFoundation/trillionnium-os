@@ -61,7 +61,7 @@ jobs:
                                     serde_json::to_value(event).unwrap_or(Value::Null),
                                 );
                             }
-'''
+          '''
           new = '''                            let event = RuntimeJobEventKind::Terminal {
                                 generation,
                                 terminal_kind,
@@ -89,7 +89,7 @@ jobs:
                                     .registry
                                     .complete(&key, generation, terminal);
                             }
-'''
+          '''
           if text.count(old) != 1 or text.count(new) != 0:
               raise SystemExit('exact terminal-ordering preimage was not found once')
           path.write_text(text.replace(old, new))
