@@ -1,0 +1,161 @@
+# target-candidate: c15261c69de5dbb5c8accb3dcac1d99860a83e0f
+name: TrillionniumGame consolidation repair v5
+
+on:
+  push:
+    branches:
+      - ci/trillionniumgame-exact-head-relay-v1
+    paths:
+      - '.github/workflows/trillionniumgame-consolidation-repair-v5.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trillionniumgame-consolidation-repair-v5
+  cancel-in-progress: false
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: integration/all-branches-main-v1
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - id: target
+        name: Resolve exact target
+        run: |
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" \
+            "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Checkout target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install toolchains
+        run: |
+          rustup toolchain install 1.85.1 --profile minimal \
+            --component rustfmt --component clippy
+          rustup default 1.85.1
+      - name: Verify ancestry, materialize, test and lint
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=repair-v5
+          mkdir -p "$evidence/materialized"
+          git fetch --force origin '+refs/heads/*:refs/remotes/origin/*'
+          : > "$evidence/non-ancestors.tsv"
+          while IFS= read -r ref; do
+            branch=${ref#refs/remotes/origin/}
+            [[ "$branch" == HEAD || "$branch" == "$TARGET_BRANCH" ]] && continue
+            tip=$(git rev-parse "$ref")
+            git merge-base --is-ancestor "$tip" HEAD || \
+              printf '%s\t%s\n' "$branch" "$tip" >> "$evidence/non-ancestors.tsv"
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/origin | sort)
+          test ! -s "$evidence/non-ancestors.tsv"
+
+          cargo generate-lockfile
+          cargo fmt --all
+          isolated=(
+            crates/trnm-token-jwt-adapter/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate/Cargo.toml
+            crates/trnm-token-jwt-adapter-gate-v2/Cargo.toml
+            crates/trnm-presence-router-v2/Cargo.toml
+          )
+          for manifest in "${isolated[@]}"; do cargo fmt --manifest-path "$manifest"; done
+          git diff --binary -- . ':(exclude)repair-v5' > "$evidence/materialization.patch"
+          git diff --name-only -- . ':(exclude)repair-v5' > "$evidence/materialized-files.txt"
+          while IFS= read -r path; do
+            [[ -z "$path" || ! -f "$path" ]] && continue
+            mkdir -p "$evidence/materialized/$(dirname "$path")"
+            cp "$path" "$evidence/materialized/$path"
+          done < "$evidence/materialized-files.txt"
+          git diff --check -- . ':(exclude)repair-v5'
+
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets --locked
+          cargo clippy --workspace --all-targets --locked -- -D warnings
+          for manifest in "${isolated[@]}"; do
+            cargo fmt --manifest-path "$manifest" -- --check
+            cargo test --manifest-path "$manifest" --all-targets --locked
+            cargo clippy --manifest-path "$manifest" --all-targets --locked -- -D warnings
+          done
+          python3 -m compileall -q scripts tests tools
+          python3 scripts/check-plan.py
+          python3 -m unittest discover -s tests -p 'test_*.py'
+          find scripts -type f -name '*.sh' -print0 | sort -z | xargs -0 -n1 bash -n
+          (cd runtime && go test -mod=readonly ./...)
+          find "$evidence" -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+      - name: Upload static evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-repair-v5-static-${{ steps.target.outputs.sha }}
+          path: source/repair-v5
+          if-no-files-found: error
+          retention-days: 30
+
+  database:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - id: target
+        name: Resolve exact target
+        run: |
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" \
+            "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test -n "$sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Checkout target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install Rust
+        run: |
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Run live database contract
+        working-directory: source
+        run: |
+          TRNM_EVIDENCE_ROOT=repair-v5/pgwire \
+            bash scripts/ci-pgwire-persistence-adapter.sh "${{ matrix.profile }}"
+      - name: Upload database evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-repair-v5-${{ matrix.profile }}-${{ steps.target.outputs.sha }}
+          path: source/repair-v5
+          if-no-files-found: error
+          retention-days: 30
+
+  all-gates:
+    if: always()
+    needs: [static, database]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require all gates
+        env:
+          STATIC: ${{ needs.static.result }}
+          DATABASE: ${{ needs.database.result }}
+        run: |
+          test "$STATIC" = success
+          test "$DATABASE" = success
