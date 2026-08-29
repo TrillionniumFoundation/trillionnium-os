@@ -1,5 +1,5 @@
 name: one-shot owner-open R5 permanent evidence-program bootstrap
-# retry: permanent-evidence-program-v6
+# retry: permanent-evidence-program-v7
 
 on:
   push:
@@ -101,9 +101,9 @@ jobs:
       - name: Retire bootstrap payload and patcher
         run: |
           set -euo pipefail
-          git rm \
-            .github/workflows/owner-open-r5-evidence-program-bootstrap.yml \
-            tools/owner-open/apply_r5_evidence_program_v1.py
+          git rm --ignore-unmatch \
+            .github/workflows/owner-open-r5-evidence-program-bootstrap.yml
+          rm -f tools/owner-open/apply_r5_evidence_program_v1.py
           rm -rf .github/r5-bootstrap
           git status --short
       - name: Commit permanent evidence program
