@@ -3,7 +3,9 @@
 
 This wrapper selects the lifecycle-correct release relay while retaining the
 reviewed preflight, bounded process observation and no-redispatch mechanics of
-the selected qualification implementation.
+the selected qualification implementation.  It also fails closed if the
+selected implementation ever stops removing ambient ADB routing variables or
+stops reporting exactly-once/no-redispatch operation records.
 """
 from __future__ import annotations
 
@@ -13,6 +15,15 @@ import time
 import qualify_owner_open_adb_selected as base
 
 SELECTED_RELAY = "tools/owner-open/adb_smart_socket_relay_release.py"
+RELEASE_REMOVED_ENVIRONMENT = (
+    "ANDROID_SERIAL",
+    "ADB_SERVER_PORT",
+    "ANDROID_ADB_SERVER_PORT",
+)
+RELEASE_OPERATION_INVARIANTS = {
+    "spawn_count": 1,
+    "automatic_redispatch": False,
+}
 
 
 def wait_descriptor(path, process, timeout):
@@ -46,7 +57,30 @@ def wait_descriptor(path, process, timeout):
     raise base.QualificationError("relay did not become ready within its timeout")
 
 
+_selected_run_step = base.run_step
+
+
+def run_step(adb, step, environment, cwd):
+    leaked = [name for name in RELEASE_REMOVED_ENVIRONMENT if name in environment]
+    if leaked:
+        raise base.QualificationError(
+            f"release ADB environment retained forbidden routing variables: {leaked}"
+        )
+    record, passed = _selected_run_step(adb, step, environment, cwd)
+    drift = {
+        key: record.get(key)
+        for key, expected in RELEASE_OPERATION_INVARIANTS.items()
+        if record.get(key) != expected
+    }
+    if drift:
+        raise base.QualificationError(
+            f"release ADB exactly-once/no-redispatch record drifted: {drift}"
+        )
+    return record, passed
+
+
 base.wait_descriptor = wait_descriptor
+base.run_step = run_step
 
 
 def main(argv: list[str]) -> int:
