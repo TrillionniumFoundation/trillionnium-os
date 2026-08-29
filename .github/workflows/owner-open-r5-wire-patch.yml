@@ -1,0 +1,70 @@
+name: one-shot owner-open R5 wire process-fault patch
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-wire-patch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch-format-test-commit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+      - uses: dtolnay/rust-toolchain@1.93.0
+        with:
+          components: rustfmt
+      - name: Add process-fault wire mapping
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs")
+          text = path.read_text(encoding="utf-8")
+          marker = "\n".join([
+              "        RuntimeJobEventKind::JournalUnavailable { error } => (",
+              "            FRAME_JOB_STATUS,",
+              "            json!({",
+          ])
+          addition = "\n".join([
+              "        RuntimeJobEventKind::ProcessFault { phase, error } => (",
+              "            FRAME_JOB_STATUS,",
+              "            json!({",
+              "                \"status\": \"process_fault\",",
+              "                \"phase\": phase,",
+              "                \"error\": error,",
+              "                \"automatic_redispatch\": false",
+              "            }),",
+              "        ),",
+              "",
+          ])
+          if addition.strip() in text:
+              raise SystemExit("process-fault wire mapping already exists")
+          if text.count(marker) != 1:
+              raise SystemExit("expected one JournalUnavailable wire arm")
+          text = text.replace(marker, addition + marker)
+          path.write_text(text, encoding="utf-8")
+          PY
+      - name: Format and compile selected closure
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          cargo test --locked --all-targets --no-run
+      - name: Commit exact patch
+        run: |
+          set -euo pipefail
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs
+          git commit -m "fix(host): encode job process faults on the v7 wire"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
