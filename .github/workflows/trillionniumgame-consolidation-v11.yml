@@ -1,0 +1,126 @@
+# exact-target: 11da38051b5c9d77bab08459d98f835f3548e72f
+name: TrillionniumGame consolidation v11
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-consolidation-v11.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_BRANCH: integration/all-branches-main-v1
+  EXPECTED_HEAD: 11da38051b5c9d77bab08459d98f835f3548e72f
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+
+jobs:
+  static:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - id: target
+        name: Resolve exact target
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" \
+            "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test "$sha" = "$EXPECTED_HEAD"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install exact toolchains
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal \
+            --component rustfmt --component clippy
+          rustup default 1.85.1
+      - name: Execute canonical static gate
+        working-directory: source
+        shell: bash
+        env:
+          TRNM_EXPECTED_HEAD: ${{ steps.target.outputs.sha }}
+          TRNM_EVIDENCE_ROOT: consolidation-evidence/static
+          TRNM_VERIFY_ALL_BRANCHES: '1'
+        run: bash scripts/ci-consolidation-static.sh
+      - name: Upload static evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-consolidation-v11-static-${{ steps.target.outputs.sha }}
+          path: source/consolidation-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  database:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - id: target
+        name: Resolve exact target
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha=$(git ls-remote "https://github.com/${TARGET_REPOSITORY}.git" \
+            "refs/heads/${TARGET_BRANCH}" | awk '{print $1}')
+          test "$sha" = "$EXPECTED_HEAD"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ steps.target.outputs.sha }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Execute live database contract
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          TRNM_EVIDENCE_ROOT=consolidation-evidence/pgwire \
+            bash scripts/ci-pgwire-persistence-adapter.sh "${{ matrix.profile }}"
+      - name: Upload database evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-consolidation-v11-${{ matrix.profile }}-${{ steps.target.outputs.sha }}
+          path: source/consolidation-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+  all-gates:
+    if: always()
+    needs: [static, database]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require every gate
+        shell: bash
+        env:
+          STATIC: ${{ needs.static.result }}
+          DATABASE: ${{ needs.database.result }}
+        run: |
+          set -euo pipefail
+          printf 'static=%s\ndatabase=%s\n' "$STATIC" "$DATABASE"
+          test "$STATIC" = success
+          test "$DATABASE" = success
