@@ -321,14 +321,19 @@ fn retained_observation_prefix_loss_is_reported_as_an_exact_gap() {
         {
             break inspection;
         }
-        assert!(Instant::now() < deadline, "retention-gap job did not terminate");
+        assert!(
+            Instant::now() < deadline,
+            "retention-gap job did not terminate"
+        );
         thread::sleep(Duration::from_millis(10));
     };
 
     assert!(inspection.resync_required);
     assert!(inspection.oldest_available_cursor > 0);
     assert!(inspection.total_events > inspection.runtime_events.len() as u64);
-    let gap = inspection.gap.expect("retention loss must include an exact gap");
+    let gap = inspection
+        .gap
+        .expect("retention loss must include an exact gap");
     assert_eq!(gap.first_missing_cursor, 0);
     assert_eq!(
         gap.last_missing_cursor,
