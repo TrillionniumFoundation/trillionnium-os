@@ -3,14 +3,20 @@ name: owner-open R5 Android Root Linux payload profile
 on:
   pull_request:
     paths:
-      - "android-integration/owner-open-profile/profile-v2.json"
-      - "android-integration/owner-open-profile/generated/owner_open_packages_v2.mk"
+      - "android-integration/owner-open-profile/**"
       - "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+      - "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk"
+      - "android-integration/working-tree/vendor/trillionnium/owner-open/**"
+      - "packaging/owner-open-rootfs/rootlinux-supervisor.json"
       - "tools/generate-owner-open-android-profile-v3.py"
       - "tools/verify-owner-open-android-profile.py"
       - "tools/verify-owner-open-android-profile-v2.py"
       - "tools/verify-owner-open-android-profile-v3.py"
+      - "tools/verify-owner-open-android-profile-selection.py"
+      - "tools/verify-owner-open-android-source-closure.py"
       - "tools/tests/test_verify_owner_open_android_profile_v3.py"
+      - "tools/tests/test_verify_owner_open_android_profile_selection.py"
+      - "tools/tests/test_verify_owner_open_android_source_closure.py"
       - "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md"
       - "docs/plan/owner-open-r5-batch-e-rootlinux-payload-profile.md"
       - "docs/contracts/owner-open-r5-android-profile-selection-v1.json"
@@ -20,14 +26,20 @@ on:
       - main
       - "codex/**"
     paths:
-      - "android-integration/owner-open-profile/profile-v2.json"
-      - "android-integration/owner-open-profile/generated/owner_open_packages_v2.mk"
+      - "android-integration/owner-open-profile/**"
       - "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+      - "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk"
+      - "android-integration/working-tree/vendor/trillionnium/owner-open/**"
+      - "packaging/owner-open-rootfs/rootlinux-supervisor.json"
       - "tools/generate-owner-open-android-profile-v3.py"
       - "tools/verify-owner-open-android-profile.py"
       - "tools/verify-owner-open-android-profile-v2.py"
       - "tools/verify-owner-open-android-profile-v3.py"
+      - "tools/verify-owner-open-android-profile-selection.py"
+      - "tools/verify-owner-open-android-source-closure.py"
       - "tools/tests/test_verify_owner_open_android_profile_v3.py"
+      - "tools/tests/test_verify_owner_open_android_profile_selection.py"
+      - "tools/tests/test_verify_owner_open_android_source_closure.py"
       - "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md"
       - "docs/plan/owner-open-r5-batch-e-rootlinux-payload-profile.md"
       - "docs/contracts/owner-open-r5-android-profile-selection-v1.json"
@@ -43,17 +55,22 @@ concurrency:
 
 jobs:
   rootlinux-payload-profile:
-    name: Android Root Linux payload profile and holds
+    name: Android Root Linux payload source closure and external holds
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    env:
+      PYTHONWARNINGS: error::ResourceWarning
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: Parse and compile canonical source
+      - name: Parse canonical machine documents and compile verifiers
         run: |
+          set -euo pipefail
           python3 -m json.tool android-integration/owner-open-profile/profile-v2.json >/dev/null
+          python3 -m json.tool android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json >/dev/null
+          python3 -m json.tool packaging/owner-open-rootfs/rootlinux-supervisor.json >/dev/null
           python3 -m json.tool docs/contracts/owner-open-r5-android-profile-selection-v1.json >/dev/null
           python3 -m py_compile \
             tools/generate-owner-open-android-profile-v3.py \
@@ -61,42 +78,56 @@ jobs:
             tools/verify-owner-open-android-profile-v2.py \
             tools/verify-owner-open-android-profile-v3.py \
             tools/verify-owner-open-android-profile-selection.py \
+            tools/verify-owner-open-android-source-closure.py \
             tools/tests/test_verify_owner_open_android_profile_v3.py \
-            tools/tests/test_verify_owner_open_android_profile_selection.py
+            tools/tests/test_verify_owner_open_android_profile_selection.py \
+            tools/tests/test_verify_owner_open_android_source_closure.py
       - name: Check generated Root Linux payload package fragment
         run: python3 tools/generate-owner-open-android-profile-v3.py --check
       - name: Verify exact Android profile source selection
         run: |
+          set -euo pipefail
           python3 tools/verify-owner-open-android-profile-selection.py --json \
             | tee owner-open-r5-android-profile-selection.json
-      - name: Verify foundation consistency and capture exact holds
+      - name: Verify complete Android and Root Linux authored source closure
         run: |
+          set -euo pipefail
+          python3 tools/verify-owner-open-android-source-closure.py --json \
+            | tee owner-open-r5-android-source-closure.json
+      - name: Verify foundation consistency and capture external holds
+        run: |
+          set -euo pipefail
           python3 tools/verify-owner-open-android-profile-v3.py --json \
             | tee owner-open-r5-android-profile-v3-foundation.json
-      - name: Prove the current unbound profile cannot be promoted as strict
+      - name: Prove unbuilt source cannot be promoted as strict image evidence
         run: |
+          set -euo pipefail
           set +e
           python3 tools/verify-owner-open-android-profile-v3.py --strict --json \
             > owner-open-r5-android-profile-v3-strict.json 2>&1
           status=$?
           set -e
           if [ "$status" -eq 0 ]; then
-            echo "current unselected/unbound Root Linux payload profile unexpectedly passed strict verification" >&2
+            echo "unselected/unbuilt source unexpectedly passed strict Android verification" >&2
             exit 1
           fi
-      - name: Run Root Linux payload profile state-machine tests
+      - name: Run profile, selection and source-closure regressions
         run: |
+          set -euo pipefail
           python3 -m unittest \
             tools.tests.test_verify_owner_open_android_profile_v3 \
             tools.tests.test_verify_owner_open_android_profile_selection \
-            -v 2>&1 | tee owner-open-r5-android-profile-v3-tests.txt
+            tools.tests.test_verify_owner_open_android_source_closure \
+            -v 2>&1 | tee owner-open-r5-android-source-tests.txt
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: owner-open-r5-android-profile-v3-${{ github.sha }}
+          name: owner-open-r5-android-source-closure-${{ github.sha }}
           if-no-files-found: error
           retention-days: 14
           path: |
             owner-open-r5-android-profile-selection.json
+            owner-open-r5-android-source-closure.json
             owner-open-r5-android-profile-v3-foundation.json
             owner-open-r5-android-profile-v3-strict.json
-            owner-open-r5-android-profile-v3-tests.txt
+            owner-open-r5-android-source-tests.txt
