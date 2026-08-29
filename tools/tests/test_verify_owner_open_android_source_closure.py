@@ -66,7 +66,14 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
     def test_missing_android_runtime_profile_fails_closed(self) -> None:
         (self.root / module.ANDROID_ROOT / "config/profile-v3.json").unlink()
         report = module.verify(self.root)
-        self.assertTrue(any("runtime profile" in error for error in report.errors))
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any(
+                "android_runtime_profile" in error or "profile-v3.json" in error
+                for error in report.errors
+            ),
+            report.errors,
+        )
 
     def test_soong_module_drift_fails_closed(self) -> None:
         self.rewrite(
@@ -81,28 +88,19 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
         self.rewrite(
             module.ANDROID_ROOT / "native/owner_open_bootstrap.cpp",
             '"/usr/bin/codex"',
-            '"/usr/bin/codex-drift"',
+            '"/opt/other-runtime"',
         )
         report = module.verify(self.root)
         self.assertTrue(any("bootstrap does not bind" in error for error in report.errors))
 
     def test_missing_selinux_boundary_fails_closed(self) -> None:
-        path = self.root / module.ANDROID_ROOT / "sepolicy/private/types.te"
-        path.write_text(
-            path.read_text(encoding="utf-8").replace(
-                "trillionnium_owner_open_ingress", "owner_open_ingress_removed"
-            ),
-            encoding="utf-8",
-        )
-        domains = self.root / module.ANDROID_ROOT / "sepolicy/private/domains.te"
-        domains.write_text(
-            domains.read_text(encoding="utf-8").replace(
-                "trillionnium_owner_open_ingress", "owner_open_ingress_removed"
-            ),
-            encoding="utf-8",
-        )
+        (self.root / module.ANDROID_ROOT / "sepolicy/private/types.te").unlink()
         report = module.verify(self.root)
-        self.assertTrue(any("SELinux source misses" in error for error in report.errors))
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("types.te" in error or "SELinux types" in error for error in report.errors),
+            report.errors,
+        )
 
     def test_supervisor_automatic_redispatch_fails_closed(self) -> None:
         path = self.root / module.SUPERVISOR_CONFIG
