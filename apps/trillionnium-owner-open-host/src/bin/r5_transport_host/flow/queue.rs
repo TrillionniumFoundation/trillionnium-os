@@ -44,10 +44,7 @@ impl StreamDelivery {
             return Ok(Vec::new());
         }
         let mut output = Vec::new();
-        loop {
-            let Some(front) = self.queue.front() else {
-                break;
-            };
+        while let Some(front) = self.queue.front() {
             match self.reserve(front.encoded_bytes)? {
                 ReserveDisposition::Granted { .. } => {
                     let item = self.queue.pop_front().expect("front exists");

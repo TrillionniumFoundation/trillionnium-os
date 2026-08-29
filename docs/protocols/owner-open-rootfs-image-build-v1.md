@@ -129,8 +129,9 @@ counts and digests rather than trusted prose.
 ## 7. Reproducibility
 
 The builder performs two to four independent runs. All resulting image byte
-counts and SHA-256 values must be identical. Any difference removes the whole
-new output directory.
+counts and SHA-256 values must be identical. The selected output therefore has
+byte-identical image hashes across the independent runs. Any difference removes
+the whole new output directory.
 
 The selected image is made read-only after comparison. Run roots, sort files and
 secondary images are removed.

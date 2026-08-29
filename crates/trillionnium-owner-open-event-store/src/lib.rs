@@ -441,11 +441,7 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
     let mut next_turn_seq = HashMap::<TurnScope, u64>::new();
     let mut byte_count = 0_u64;
     let mut previous = ZERO_SHA256.to_string();
-    loop {
-        let Some((encoded, consumed)) = read_record_line(&mut reader, limits.max_record_bytes)?
-        else {
-            break;
-        };
+    while let Some((encoded, consumed)) = read_record_line(&mut reader, limits.max_record_bytes)? {
         byte_count = byte_count
             .checked_add(consumed)
             .filter(|value| *value <= limits.max_store_bytes)

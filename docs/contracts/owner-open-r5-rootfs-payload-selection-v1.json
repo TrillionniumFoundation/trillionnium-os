@@ -21,7 +21,7 @@
   "required_markers": {
     "tools/owner-open/stage_owner_open_rootfs_payload_release.py": [
       "ROOTFS_PAYLOAD_STAGED_NOT_IMAGE",
-      "entry source changed between inspection and copy",
+      "payload source changed between inspection and copy",
       "payload staging changed its output parent mode",
       "rootfs_image_built"
     ],

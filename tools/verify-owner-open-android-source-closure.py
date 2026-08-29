@@ -144,19 +144,38 @@ def object_list(value: Any, label: str, report: Report) -> list[dict[str, Any]]:
 
 
 def added_product_packages(product_text: str) -> set[str]:
+    """Return only package names in the first PRODUCT_PACKAGES assignment.
+
+    Android make fragments commonly place explanatory comments immediately
+    after a continued assignment.  Treating the whole remainder of the file
+    as package data would turn words from those comments into bogus module
+    names and make the source-closure gate fail on its own generated output.
+    Stop at the first blank/comment line after the assignment has started (or
+    at the next make variable) while preserving continuation lines.
+    """
     marker = "PRODUCT_PACKAGES +="
     start = product_text.find(marker)
     if start < 0:
         return set()
-    tail = product_text[start + len(marker) :]
-    end_markers = ("PRODUCT_SYSTEM_EXT_PROPERTIES", "SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS")
-    end = len(tail)
-    for candidate in end_markers:
-        index = tail.find(candidate)
-        if index >= 0:
-            end = min(end, index)
-    block = tail[:end].replace("\\", " ")
-    return {token for token in block.split() if re.fullmatch(r"[A-Za-z0-9_.+-]+", token)}
+    result: set[str] = set()
+    started = False
+    for raw_line in product_text[start + len(marker) :].splitlines():
+        line = raw_line.strip()
+        if "#" in line:
+            line = line.split("#", 1)[0].rstrip()
+        if not line:
+            if started:
+                break
+            continue
+        # A new assignment marks the end even when the author omitted a
+        # separating blank line.
+        if started and re.match(r"^[A-Za-z0-9_.-]+\s*(?:\+=|:=|=)", line):
+            break
+        started = True
+        for token in line.replace("\\", " ").split():
+            if re.fullmatch(r"[A-Za-z0-9_.+-]+", token):
+                result.add(token)
+    return result
 
 
 def verify(root: Path) -> Report:
