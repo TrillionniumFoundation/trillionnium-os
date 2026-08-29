@@ -1,0 +1,200 @@
+name: TrillionniumGame backup restore v25
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-backup-restore-v25.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: 5f45e7636da9f33fd84fd599adea638903a20df1
+  POSTGRES_IMAGE: postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+  COCKROACH_IMAGE: cockroachdb/cockroach:v24.1.2@sha256:105b9d1e10e4845c9c59266bef3c27ff8b82eeaeb1b464c75423408c3a2968ba
+
+jobs:
+  restore:
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [postgresql, cockroachdb]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Execute backup, empty restore and semantic comparison
+        working-directory: source
+        shell: bash
+        env:
+          PROFILE: ${{ matrix.profile }}
+        run: |
+          set -euo pipefail
+          evidence="evidence/${PROFILE}"
+          mkdir -p "$evidence"
+          container="trnm-restore-${PROFILE}-${GITHUB_RUN_ID}"
+          cleanup() { docker logs "$container" > "$evidence/container.log" 2>&1 || true; docker rm -f "$container" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+
+          tables=(
+            trnm_schema_metadata
+            trnm_entity_heads
+            trnm_command_receipts
+            trnm_events
+            trnm_outbox
+            trnm_command_outbox
+            trnm_authority_leases
+            trnm_session_families
+            trnm_refresh_tokens
+            trnm_storage_objects
+          )
+          orders=(
+            singleton
+            entity_id
+            'entity_id,command_id'
+            'entity_id,sequence'
+            intent_id
+            'entity_id,command_id,position'
+            entity_id
+            family_id
+            'family_id,token_id'
+            'collection,object_key,user_id'
+          )
+
+          if [[ "$PROFILE" == postgresql ]]; then
+            port=55434
+            database_url="postgres://trnm:trnm-pass@127.0.0.1:${port}/trnm"
+            docker pull "$POSTGRES_IMAGE" | tee "$evidence/image-pull.log"
+            docker run -d --name "$container" -p "${port}:5432" \
+              -e POSTGRES_USER=trnm -e POSTGRES_PASSWORD=trnm-pass -e POSTGRES_DB=trnm \
+              "$POSTGRES_IMAGE" > "$evidence/container-id.txt"
+            for attempt in $(seq 1 150); do
+              ready=$(docker logs "$container" 2>&1 | grep -c 'database system is ready to accept connections' || true)
+              if (( ready >= 2 )) && docker exec "$container" psql -At -U trnm -d trnm -c 'SELECT 1' >/dev/null 2>&1; then break; fi
+              sleep 1
+            done
+            docker exec "$container" psql -At -U trnm -d trnm -c 'SELECT 1'
+            docker exec -i "$container" psql -v ON_ERROR_STOP=1 -U trnm -d trnm \
+              < migrations/postgresql/0001_foundation_up.sql > "$evidence/migration.log" 2>&1
+            TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE=postgresql \
+              cargo test -p trnm-persistence-pg --test fault_matrix --locked -- --nocapture \
+              2>&1 | tee "$evidence/seed-fault.log"
+            TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE=postgresql TRNM_RECOVERY_PHASE=seed \
+              cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+              2>&1 | tee "$evidence/seed-recovery.log"
+            docker exec "$container" psql -v ON_ERROR_STOP=1 -U trnm -d trnm -c "
+              INSERT INTO trnm_session_families VALUES
+                (decode(repeat('a1',16),'hex'),decode(repeat('a2',16),'hex'),0,decode(repeat('a3',16),'hex'),NULL,10,10);
+              INSERT INTO trnm_refresh_tokens VALUES
+                (decode(repeat('a1',16),'hex'),decode(repeat('a3',16),'hex'),decode(repeat('a4',32),'hex'),0,0,10,NULL);
+              INSERT INTO trnm_storage_objects VALUES
+                ('restore','fixture',decode(repeat('a5',16),'hex'),decode('010203','hex'),decode(repeat('a6',32),'hex'),2,1,10);
+              INSERT INTO trnm_authority_leases
+                SELECT entity_id,decode(repeat('a7',16),'hex'),1,authority_generation,999999,10
+                FROM trnm_entity_heads ORDER BY entity_id LIMIT 1;
+            " > "$evidence/domain-seed.log" 2>&1
+
+            snapshot_pg() {
+              local db="$1" out="$2"
+              : > "$out"
+              for i in "${!tables[@]}"; do
+                printf 'TABLE|%s\n' "${tables[$i]}" >> "$out"
+                docker exec "$container" psql -X --csv -U trnm -d "$db" \
+                  -c "SELECT * FROM ${tables[$i]} ORDER BY ${orders[$i]}" >> "$out"
+              done
+            }
+            snapshot_pg trnm "$evidence/source.csv"
+            docker exec "$container" pg_dump -Fc --no-owner --no-privileges -U trnm -d trnm \
+              > "$evidence/backup.dump"
+            docker exec "$container" createdb -U trnm trnm_restore
+            docker exec -i "$container" pg_restore --no-owner --no-privileges -U trnm -d trnm_restore \
+              < "$evidence/backup.dump" > "$evidence/restore.log" 2>&1
+            snapshot_pg trnm_restore "$evidence/restored.csv"
+          else
+            database_url='postgres://root@127.0.0.1:26257/trnm?sslmode=disable'
+            docker pull "$COCKROACH_IMAGE" | tee "$evidence/image-pull.log"
+            docker run -d --name "$container" --network host \
+              "$COCKROACH_IMAGE" start-single-node --insecure \
+              --store=/cockroach/cockroach-data --external-io-dir=/cockroach/cockroach-data/extern \
+              --listen-addr=127.0.0.1:26257 --http-addr=127.0.0.1:8080 \
+              > "$evidence/container-id.txt"
+            stable=0
+            for attempt in $(seq 1 150); do
+              if docker exec "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 --execute='SELECT 1' >/dev/null 2>&1; then
+                stable=$((stable + 1)); (( stable >= 3 )) && break
+              else stable=0; fi
+              sleep 1
+            done
+            (( stable >= 3 ))
+            docker exec "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 \
+              --execute='CREATE DATABASE trnm' >/dev/null
+            docker exec -i "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 \
+              --database=trnm --set=errexit=true < migrations/cockroachdb/0001_foundation_up.sql \
+              > "$evidence/migration.log" 2>&1
+            TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE=cockroachdb \
+              cargo test -p trnm-persistence-pg --test fault_matrix --locked -- --nocapture \
+              2>&1 | tee "$evidence/seed-fault.log"
+            TRNM_DATABASE_URL="$database_url" TRNM_DATABASE_PROFILE=cockroachdb TRNM_RECOVERY_PHASE=seed \
+              cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+              2>&1 | tee "$evidence/seed-recovery.log"
+            docker exec "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 --database=trnm \
+              --set=errexit=true --execute="
+              INSERT INTO trnm_session_families VALUES
+                (decode(repeat('a1',16),'hex'),decode(repeat('a2',16),'hex'),0,decode(repeat('a3',16),'hex'),NULL,10,10);
+              INSERT INTO trnm_refresh_tokens VALUES
+                (decode(repeat('a1',16),'hex'),decode(repeat('a3',16),'hex'),decode(repeat('a4',32),'hex'),0,0,10,NULL);
+              INSERT INTO trnm_storage_objects VALUES
+                ('restore','fixture',decode(repeat('a5',16),'hex'),decode('010203','hex'),decode(repeat('a6',32),'hex'),2,1,10);
+              INSERT INTO trnm_authority_leases
+                SELECT entity_id,decode(repeat('a7',16),'hex'),1,authority_generation,999999,10
+                FROM trnm_entity_heads ORDER BY entity_id LIMIT 1;
+              " > "$evidence/domain-seed.log" 2>&1
+
+            snapshot_crdb() {
+              local db="$1" out="$2"
+              : > "$out"
+              for i in "${!tables[@]}"; do
+                printf 'TABLE|%s\n' "${tables[$i]}" >> "$out"
+                docker exec "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 \
+                  --database="$db" --format=csv \
+                  --execute="SELECT * FROM ${tables[$i]} ORDER BY ${orders[$i]}" >> "$out"
+              done
+            }
+            snapshot_crdb trnm "$evidence/source.csv"
+            docker exec "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 \
+              --database=defaultdb --set=errexit=true \
+              --execute="BACKUP DATABASE trnm INTO 'nodelocal://1/trnm-backup'" \
+              > "$evidence/backup.log" 2>&1
+            docker exec "$container" /cockroach/cockroach sql --insecure --host=127.0.0.1:26257 \
+              --database=defaultdb --set=errexit=true \
+              --execute="RESTORE DATABASE trnm FROM LATEST IN 'nodelocal://1/trnm-backup' WITH new_db_name='trnm_restore'" \
+              > "$evidence/restore.log" 2>&1
+            snapshot_crdb trnm_restore "$evidence/restored.csv"
+          fi
+
+          sha256sum "$evidence/source.csv" "$evidence/restored.csv" > "$evidence/snapshot-sha256.txt"
+          cmp "$evidence/source.csv" "$evidence/restored.csv"
+          test "$(wc -c < "$evidence/backup.dump" 2>/dev/null || echo 1)" -gt 0
+          printf '{"schema":"trillionnium.backup-restore.v1","profile":"%s","backup_created":true,"empty_restore":true,"semantic_snapshot_equal":true,"production_pitr":false,"multi_node_restore":false}\n' "$PROFILE" > "$evidence/summary.json"
+          docker inspect "$container" > "$evidence/container-inspect.json"
+          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-backup-restore-v25-${{ matrix.profile }}-${{ env.EXPECTED_HEAD }}
+          path: source/evidence/${{ matrix.profile }}
+          if-no-files-found: error
+          retention-days: 30
