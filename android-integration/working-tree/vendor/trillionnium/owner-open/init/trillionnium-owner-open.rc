@@ -1,0 +1,52 @@
+# Android-native owner-open lifecycle boundary. The bootstrap stays outside the
+# Root Linux payload, verifies the immutable image, creates a private mount
+# namespace, binds only the writable state directory, chroots and execs the
+# finite Root Linux supervisor. No Authority/lease/P01 service participates.
+
+on post-fs-data
+    mkdir /data/trillionnium 0700 root root
+    mkdir /data/trillionnium/owner-open 0700 root root
+    mkdir /data/trillionnium/owner-open/root 0700 root root
+    mkdir /data/trillionnium/owner-open/state 0700 root root
+    mkdir /data/trillionnium/owner-open/state/broker 0700 root root
+    restorecon_recursive /data/trillionnium/owner-open
+
+on property:ro.trillionnium.owner_open.enabled=true
+    start trillionnium-owner-open-bootstrap
+
+on property:trillionnium.owner_open.ready=1
+    start trillionnium-owner-open-ingress
+
+on property:trillionnium.owner_open.ready=0
+    stop trillionnium-owner-open-ingress
+
+on property:sys.trillionnium.owner_open.stop=1
+    stop trillionnium-owner-open-ingress
+    start trillionnium-owner-open-emergency-stop
+    stop trillionnium-owner-open-bootstrap
+    setprop sys.trillionnium.owner_open.stop 0
+
+service trillionnium-owner-open-bootstrap /system_ext/bin/trillionnium-owner-open-bootstrap
+    class core
+    user root
+    group root system
+    disabled
+    oneshot
+    seclabel u:r:trillionnium_owner_open_bootstrap:s0
+    capabilities SYS_ADMIN SYS_CHROOT KILL
+
+service trillionnium-owner-open-ingress /system_ext/bin/trillionnium-owner-open-ingress
+    class core
+    user system
+    group system
+    disabled
+    seclabel u:r:trillionnium_owner_open_ingress:s0
+
+service trillionnium-owner-open-emergency-stop /system_ext/bin/trillionnium-owner-open-emergency-stop
+    class core
+    user root
+    group root system
+    disabled
+    oneshot
+    seclabel u:r:trillionnium_owner_open_emergency_stop:s0
+    capabilities KILL
