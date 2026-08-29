@@ -1,0 +1,162 @@
+name: TrillionniumGame CockroachDB failover v30
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-cockroach-failover-v30.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: 326e670cb008a990247e31a63c0c4b0e338df62f
+  COCKROACH_IMAGE: cockroachdb/cockroach:v24.1.2@sha256:105b9d1e10e4845c9c59266bef3c27ff8b82eeaeb1b464c75423408c3a2968ba
+
+jobs:
+  failover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Execute three-node business-range leaseholder loss
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=evidence/cockroach-failover
+          mkdir -p "$evidence"
+          network="trnm-crdb-${GITHUB_RUN_ID}"
+          nodes=(trnm-crdb1-${GITHUB_RUN_ID} trnm-crdb2-${GITHUB_RUN_ID} trnm-crdb3-${GITHUB_RUN_ID})
+          volumes=(trnm-crdb1-data-${GITHUB_RUN_ID} trnm-crdb2-data-${GITHUB_RUN_ID} trnm-crdb3-data-${GITHUB_RUN_ID})
+          cleanup() {
+            status=$?
+            for node in "${nodes[@]}"; do docker logs "$node" > "$evidence/${node}.log" 2>&1 || true; docker rm -f "$node" >/dev/null 2>&1 || true; done
+            for volume in "${volumes[@]}"; do docker volume rm "$volume" >/dev/null 2>&1 || true; done
+            docker network rm "$network" >/dev/null 2>&1 || true
+            exit "$status"
+          }
+          trap cleanup EXIT INT TERM
+          docker pull "$COCKROACH_IMAGE" | tee "$evidence/image-pull.log"
+          docker network create "$network" > "$evidence/network-id.txt"
+          for volume in "${volumes[@]}"; do docker volume create "$volume" >/dev/null; done
+
+          for i in 0 1 2; do
+            node=${nodes[$i]}
+            host="crdb$((i+1))"
+            port=$((56257+i))
+            http=$((58081+i))
+            zone="z$((i+1))"
+            docker run -d --name "$node" --hostname "$host" --network "$network" \
+              -p "${port}:26257" -p "${http}:8080" \
+              -v "${volumes[$i]}:/cockroach/cockroach-data" \
+              "$COCKROACH_IMAGE" start --insecure \
+              --store=/cockroach/cockroach-data \
+              --listen-addr=0.0.0.0:26257 --http-addr=0.0.0.0:8080 \
+              --advertise-addr="${host}:26257" \
+              --join=crdb1:26257,crdb2:26257,crdb3:26257 \
+              --locality="region=test,zone=${zone}" \
+              > "$evidence/${host}-container-id.txt"
+          done
+          docker exec "${nodes[0]}" /cockroach/cockroach init --insecure --host=crdb1:26257 > "$evidence/init.log"
+
+          wait_sql() {
+            local node=$1
+            for attempt in $(seq 1 180); do
+              docker exec "$node" /cockroach/cockroach sql --insecure \
+                --host=127.0.0.1:26257 --execute='SELECT 1' >/dev/null 2>&1 && return 0
+              sleep 1
+            done
+            return 1
+          }
+          for node in "${nodes[@]}"; do wait_sql "$node"; done
+          docker exec "${nodes[0]}" /cockroach/cockroach node status --insecure \
+            --host=crdb1:26257 > "$evidence/node-status-before.tsv"
+
+          docker exec "${nodes[0]}" /cockroach/cockroach sql --insecure --host=crdb1:26257 \
+            --execute='CREATE DATABASE trnm' >/dev/null
+          docker exec -i "${nodes[0]}" /cockroach/cockroach sql --insecure --host=crdb1:26257 \
+            --database=trnm --set=errexit=true < migrations/cockroachdb/0001_foundation_up.sql \
+            > "$evidence/migration.log" 2>&1
+          docker exec "${nodes[0]}" /cockroach/cockroach sql --insecure --host=crdb1:26257 \
+            --database=trnm --set=errexit=true \
+            --execute="ALTER DATABASE trnm CONFIGURE ZONE USING num_replicas=3, constraints='[+region=test]', lease_preferences='[[+zone=z1]]'" \
+            > "$evidence/zone-config.log"
+
+          database1='postgres://root@127.0.0.1:56257/trnm?sslmode=disable'
+          TRNM_DATABASE_URL="$database1" TRNM_DATABASE_PROFILE=cockroachdb TRNM_RECOVERY_PHASE=seed \
+            cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-seed.log"
+
+          lease_query="SELECT range_id, replicas, crdb_internal.lease_holder(start_key) AS lease_holder FROM crdb_internal.ranges_no_leases WHERE database_name='trnm' ORDER BY range_id"
+          replicated=0
+          leased=0
+          for attempt in $(seq 1 180); do
+            # Create a small read workload through node 1 while the explicit lease preference converges.
+            docker exec "${nodes[0]}" /cockroach/cockroach sql --insecure --host=crdb1:26257 \
+              --database=trnm --execute='SELECT count(*) FROM trnm_entity_heads' >/dev/null
+            docker exec "${nodes[0]}" /cockroach/cockroach sql --insecure --host=crdb1:26257 \
+              --database=trnm --format=tsv --execute="$lease_query" > "$evidence/ranges-current.tsv"
+            read -r replicated leased < <(python3 - "$evidence/ranges-current.tsv" <<'PY'
+          import csv, sys
+          rows=list(csv.DictReader(open(sys.argv[1], encoding='utf-8'), delimiter='\t'))
+          replicated = bool(rows) and all(len(row['replicas'].strip('{}').split(',')) >= 3 for row in rows)
+          leased = bool(rows) and all(row['lease_holder'] == '1' for row in rows)
+          print(int(replicated), int(leased))
+          PY
+            )
+            (( replicated == 1 && leased == 1 )) && break
+            sleep 1
+          done
+          (( replicated == 1 ))
+          (( leased == 1 ))
+          cp "$evidence/ranges-current.tsv" "$evidence/ranges-before-loss.tsv"
+
+          docker kill "${nodes[0]}" > "$evidence/killed-node.txt"
+          wait_sql "${nodes[1]}"
+          database2='postgres://root@127.0.0.1:56258/trnm?sslmode=disable'
+          TRNM_DATABASE_URL="$database2" TRNM_DATABASE_PROFILE=cockroachdb TRNM_RECOVERY_PHASE=verify \
+            cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-after-loss.log"
+          TRNM_DATABASE_URL="$database2" TRNM_DATABASE_PROFILE=cockroachdb \
+            cargo test -p trnm-persistence-pg --test fault_matrix --locked -- --nocapture \
+            2>&1 | tee "$evidence/new-writes-after-loss.log"
+          docker exec "${nodes[1]}" /cockroach/cockroach sql --insecure --host=crdb2:26257 \
+            --database=trnm --format=tsv --execute="$lease_query" > "$evidence/ranges-after-loss.tsv"
+          python3 - "$evidence/ranges-after-loss.tsv" <<'PY'
+          import csv, sys
+          rows=list(csv.DictReader(open(sys.argv[1], encoding='utf-8'), delimiter='\t'))
+          assert rows, 'no business ranges after node loss'
+          assert all(row['lease_holder'] in {'2','3'} for row in rows), rows
+          assert all(len(row['replicas'].strip('{}').split(',')) >= 3 for row in rows), rows
+          PY
+
+          docker start "${nodes[0]}" > "$evidence/restarted-node.txt"
+          wait_sql "${nodes[0]}"
+          database3='postgres://root@127.0.0.1:56259/trnm?sslmode=disable'
+          TRNM_DATABASE_URL="$database3" TRNM_DATABASE_PROFILE=cockroachdb TRNM_RECOVERY_PHASE=verify \
+            cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-after-rejoin.log"
+          docker exec "${nodes[2]}" /cockroach/cockroach node status --insecure \
+            --host=crdb3:26257 > "$evidence/node-status-after.tsv"
+          printf '{"schema":"trillionnium.cockroach-failover.v1","replicas":3,"business_ranges_verified":true,"leaseholder_forced_to_node1":true,"node1_killed":true,"lease_transferred":true,"duplicate_replay_after_loss":true,"new_writes_after_loss":true,"node1_rejoined":true,"data_survived":true,"production_multi_region":false}\n' > "$evidence/summary.json"
+          docker image inspect "$COCKROACH_IMAGE" > "$evidence/image-inspect.json"
+          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-cockroach-failover-v30-${{ env.EXPECTED_HEAD }}
+          path: source/evidence/cockroach-failover
+          if-no-files-found: error
+          retention-days: 30
