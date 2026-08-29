@@ -1,0 +1,105 @@
+name: TrillionniumGame backlog forensics v8
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-backlog-forensics-v8.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  TARGET_HEAD: ae66e74e127bf396c40f0d4585aa35b6daabfd02
+  BACKLOG_PATH: docs/development/backlog/EXECUTION_BACKLOG.v2.json.gz
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out complete target history
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.TARGET_HEAD }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Export and inspect every historical backlog object
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=backlog-forensics
+          mkdir -p "$out/objects" "$out/recovered"
+          git log --all --format='%H' -- "$BACKLOG_PATH" | sort -u > "$out/commits.txt"
+          : > "$out/objects.tsv"
+          while IFS= read -r commit; do
+            [[ -z "$commit" ]] && continue
+            blob=$(git rev-parse "$commit:$BACKLOG_PATH")
+            raw="$out/objects/${commit}.gz"
+            git cat-file blob "$blob" > "$raw"
+            bytes=$(wc -c < "$raw")
+            sha256=$(sha256sum "$raw" | awk '{print $1}')
+            magic=$(od -An -tx1 -N2 "$raw" | tr -d ' \n')
+            if gzip -t "$raw" > "$out/objects/${commit}.gzip-test.log" 2>&1; then
+              gzip_status=valid
+              gzip -dc "$raw" > "$out/recovered/${commit}.json"
+              json_status=$(python3 - "$out/recovered/${commit}.json" <<'PY'
+          import json, sys
+          from pathlib import Path
+          p = Path(sys.argv[1])
+          value = json.loads(p.read_text(encoding='utf-8'))
+          tasks = [t for w in value.get('workstreams', []) for t in w.get('tasks', [])]
+          print(f"valid:{value.get('schema')}:{len(value.get('workstreams', []))}:{len(tasks)}")
+          PY
+          )
+            else
+              gzip_status=invalid
+              json_status=not-decoded
+              python3 - "$raw" "$out/recovered/${commit}.partial.bin" > "$out/objects/${commit}.partial.log" 2>&1 <<'PY' || true
+          import sys, zlib
+          from pathlib import Path
+          raw = Path(sys.argv[1]).read_bytes()
+          dec = zlib.decompressobj(16 + zlib.MAX_WBITS)
+          recovered = bytearray()
+          try:
+              recovered.extend(dec.decompress(raw))
+              recovered.extend(dec.flush())
+              status = 'complete'
+          except Exception as exc:
+              recovered.extend(dec.unconsumed_tail[:0])
+              status = f'error:{type(exc).__name__}:{exc}'
+          Path(sys.argv[2]).write_bytes(recovered)
+          print(status)
+          print(f'recovered_bytes={len(recovered)}')
+          PY
+            fi
+            printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+              "$commit" "$blob" "$bytes" "$sha256" "$magic" "$gzip_status" "$json_status" \
+              >> "$out/objects.tsv"
+          done < "$out/commits.txt"
+
+          git rev-list --all --objects | grep " $BACKLOG_PATH$" | sort -u > "$out/all-object-paths.txt"
+          while read -r blob path; do
+            [[ -z "$blob" ]] && continue
+            raw="$out/objects/blob-${blob}.gz"
+            git cat-file blob "$blob" > "$raw"
+            printf '%s  %s\n' "$(sha256sum "$raw" | awk '{print $1}')" "$blob" \
+              >> "$out/all-blob-sha256.txt"
+            gzip -t "$raw" > "$out/objects/blob-${blob}.gzip-test.log" 2>&1 || true
+          done < "$out/all-object-paths.txt"
+          sort -u -o "$out/all-blob-sha256.txt" "$out/all-blob-sha256.txt"
+          find "$out" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$out/SHA256SUMS"
+          cat "$out/objects.tsv"
+
+      - name: Upload forensic evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-backlog-forensics-v8
+          path: source/backlog-forensics
+          if-no-files-found: error
+          retention-days: 30
