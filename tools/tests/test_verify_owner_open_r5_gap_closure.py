@@ -48,8 +48,18 @@ class VerifyOwnerOpenR5GapClosureTest(unittest.TestCase):
         }
 
     def _gap_fixture(self) -> dict:
+        governance = self._item(
+            "R5-GAP-GOVERNANCE-001", "EXTERNAL_HOLD", 20, "L1"
+        )
+        governance.update(
+            requires_external_evidence=True,
+            required_authority=[
+                "administrator branch protection and independent exact-head approval"
+            ],
+        )
         gaps = [
-            self._item("R5-GAP-GOVERNANCE-001", "OPEN", 20, "L1"),
+            governance,
+            self._item("R5-GAP-JOB-ADMISSION-001", "OPEN", 14, "L1"),
             self._item("R5-GAP-INSTALLED-CODEX-001", "EXTERNAL_HOLD", 10, "L2"),
             self._item("R5-GAP-ROOTLINUX-PLACEMENT-001", "EXTERNAL_HOLD", 4, "L2"),
             self._item("R5-GAP-ANDROID-GRAPH-001", "EXTERNAL_HOLD", 2, "L3"),
@@ -60,7 +70,10 @@ class VerifyOwnerOpenR5GapClosureTest(unittest.TestCase):
         return {
             "schema": module.GAP_SCHEMA,
             "revision": module.ACTIVE_PLAN_REVISION,
-            "generated_policy": {"automatic_redispatch": False},
+            "generated_policy": {
+                "automatic_redispatch": False,
+                "public_release": False,
+            },
             "priority_order": [item["id"] for item in gaps],
             "gaps": gaps,
         }
@@ -91,17 +104,27 @@ class VerifyOwnerOpenR5GapClosureTest(unittest.TestCase):
 
     def test_l1_source_closed_gap_accepts_source_evidence(self) -> None:
         gap = copy.deepcopy(self.gap)
-        gap["gaps"][0]["status"] = "CLOSED"
-        gap["gaps"][0]["source_evidence"] = {}
+        source_only = next(
+            item for item in gap["gaps"] if item["id"] == "R5-GAP-JOB-ADMISSION-001"
+        )
+        source_only["status"] = "CLOSED"
+        source_only["source_evidence"] = {}
         report = self.verify(gap=gap)
         self.assertEqual(report.errors, [])
 
     def test_external_lane_cannot_close_without_real_evidence(self) -> None:
         gap = copy.deepcopy(self.gap)
-        gap["gaps"][1]["status"] = "CLOSED"
+        external = next(
+            item for item in gap["gaps"] if item["id"] == "R5-GAP-INSTALLED-CODEX-001"
+        )
+        external["status"] = "CLOSED"
         report = self.verify(gap=gap)
-        self.assertTrue(any("closed R5 gap has no evidence" in value for value in report.errors))
-        self.assertTrue(any("external evidence lane cannot be closed" in value for value in report.errors))
+        self.assertTrue(
+            any("closed R5 gap has no exact source evidence" in value for value in report.errors)
+        )
+        self.assertTrue(
+            any("closed external R5 gap has no evidence" in value for value in report.errors)
+        )
 
     def test_false_zero_gap_fails(self) -> None:
         status = dict(self.status)

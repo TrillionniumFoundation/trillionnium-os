@@ -1,4 +1,5 @@
 name: one-shot owner-open R5 permanent evidence-program bootstrap
+# retry: governance-fixture-v1
 
 on:
   push:
