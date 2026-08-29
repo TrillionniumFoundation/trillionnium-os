@@ -50,6 +50,19 @@ mod flow_tests {
         }
     }
 
+    fn job_output(cursor: u64, bytes: usize) -> RunTurnFrame {
+        let mut frame = data(cursor, bytes);
+        frame.kind = "job.output".to_string();
+        frame.job_id = Some("job-1".to_string());
+        frame.stream_id = Some("job-stream-1".to_string());
+        frame.payload = json!({
+            "stream": "stdout",
+            "encoding": "base64",
+            "data": "eA==".repeat(bytes),
+        });
+        frame
+    }
+
     #[test]
     fn pause_credit_and_resume_release_queued_frames_in_order() {
         let mut flow = StreamDelivery::new(&options(4096));
@@ -68,6 +81,31 @@ mod flow_tests {
         let drained = flow.drain().unwrap();
         assert_eq!(drained.len(), 1);
         assert_eq!(drained[0].event_id.as_deref(), Some("stream-event-1"));
+    }
+
+    #[test]
+    fn job_output_is_subject_to_pause_and_credit() {
+        assert!(is_flow_controlled_kind("job.output"));
+        let mut flow = StreamDelivery::new(&options(4096));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        assert!(matches!(
+            flow.submit(job_output(2, 16)).unwrap(),
+            SubmitResult::Queued
+        ));
+        flow.apply_control(&control(
+            1,
+            StreamControl::WindowUpdate { credit_bytes: 4096 },
+            "credit",
+        ))
+        .unwrap();
+        assert!(flow.drain().unwrap().is_empty());
+        flow.apply_control(&control(2, StreamControl::Resume, "resume"))
+            .unwrap();
+        let drained = flow.drain().unwrap();
+        assert_eq!(drained.len(), 1);
+        assert_eq!(drained[0].kind, "job.output");
+        assert_eq!(drained[0].job_id.as_deref(), Some("job-1"));
     }
 
     #[test]
