@@ -1,0 +1,116 @@
+name: Owner-open R5 evidence hardening migration v4
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-evidence-hardening-migration-v4.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-open-r5-evidence-hardening-migration-v4
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Repair migration transport literals
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('tools/owner-open/apply_r5_evidence_hardening_v4.py')
+          text = path.read_text()
+          old = 'replace_between(path, "def exact_source_evidence(", "def verify(", replacement + "def verify(")'
+          new = 'replace_between(path, "def exact_source_evidence(", "def verify(", replacement)'
+          if old not in text:
+              raise SystemExit('replace-between repair anchor absent')
+          text = text.replace(old, new, 1)
+          old = '''        digest = artifact.get("digest")
+                  if not isinstance(digest, str) or not digest.startswith("sha256:") or HEX64.fullmatch(digest[7:]) is None:
+                      raise ValueError("artifact digest is malformed")'''
+          new = '''        digest = artifact.get("digest")
+                  if isinstance(digest, str) and HEX64.fullmatch(digest) is not None:
+                      digest = "sha256:" + digest
+                      artifact["digest"] = digest
+                  if not isinstance(digest, str) or not digest.startswith("sha256:") or HEX64.fullmatch(digest[7:]) is None:
+                      raise ValueError("artifact digest is malformed")'''
+          if old not in text:
+              raise SystemExit('artifact-digest repair anchor absent')
+          text = text.replace(old, new, 1)
+          old = '''    manifest_path = manifest_path if manifest_path.is_absolute() else root / manifest_path
+              stable_file(manifest_path, root)
+              manifest, manifest_raw = read_object(manifest_path)'''
+          new = '''    manifest_path = manifest_path if manifest_path.is_absolute() else root / manifest_path
+              manifest_container = manifest_path.parent.resolve(strict=True)
+              stable_file(manifest_path, manifest_container)
+              manifest, manifest_raw = read_object(manifest_path)'''
+          if old not in text:
+              raise SystemExit('external-bundle-root repair anchor absent')
+          text = text.replace(old, new, 1)
+          old = '        "manifest": str(manifest_path.relative_to(root)),'
+          new = '        "manifest": str(manifest_path.relative_to(root)) if manifest_path.is_relative_to(root) else str(manifest_path),'
+          if old not in text:
+              raise SystemExit('manifest-display repair anchor absent')
+          text = text.replace(old, new, 1)
+          path.write_text(text)
+          PY
+      - name: Apply permanent evidence program
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 tools/owner-open/apply_r5_evidence_hardening_v4.py
+          test ! -e tools/owner-open/apply_r5_evidence_hardening_v4.py
+          test ! -e .github/workflows/owner-open-r5-evidence-hardening-migration-v4.yml
+      - name: Validate migrated source
+        env:
+          OWNER_OPEN_R5_BINDING_SOURCE_SHA: ${{ github.sha }}
+          PYTHONWARNINGS: error::ResourceWarning
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/owner-open/owner_open_r5_evidence_bundle.py \
+            tools/owner-open/promote_owner_open_r5_evidence.py \
+            tools/owner-open/bind_owner_open_r5_source_evidence.py \
+            tools/owner-open/verify_owner_open_r5_workflow_identity.py \
+            tools/verify-owner-open-r5.py \
+            tools/verify-owner-open-r5-gap-evidence.py \
+            tools/generate-owner-open-r5-resume-packet.py
+          python3 -m unittest \
+            tools.tests.test_owner_open_r5_evidence_bundle \
+            tools.tests.test_bind_owner_open_r5_source_evidence \
+            tools.tests.test_verify_owner_open_r5_workflow_identity \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_generate_owner_open_r5_resume_packet \
+            -v
+          python3 tools/verify-owner-open-r5.py --json > /tmp/verify-r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json > /tmp/verify-gap.json
+          python3 tools/owner-open/verify_owner_open_r5_workflow_identity.py --json > /tmp/verify-workflows.json
+          python3 -m json.tool docs/status/owner-open-r5-target-readiness.json >/dev/null
+          git diff --check
+      - name: Publish source migration with remote-head CAS
+        run: |
+          set -euo pipefail
+          remote="$(git ls-remote origin refs/heads/codex/owner-open-r5-gap-closure-20260829 | awk '{print $1}')"
+          test "$remote" = "$GITHUB_SHA"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          git diff --cached --check
+          git commit -m "feat(r5): install fail-closed external evidence program"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
