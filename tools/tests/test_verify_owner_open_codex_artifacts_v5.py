@@ -7,7 +7,6 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from tools.tests import test_verify_owner_open_codex_artifacts as base_suite
 from tools.tests import test_verify_owner_open_codex_artifacts_v4 as v4_suite
 
 SCRIPT = Path(__file__).resolve().parents[1] / "verify-owner-open-codex-artifacts-v5.py"
@@ -54,11 +53,17 @@ class VerifyOwnerOpenCodexArtifactsV5Test(unittest.TestCase):
         self.assertTrue(report.ok)
         contract = self.legacy.contract()
         for archive in contract["archives"]:
-            facts = module.V4.verify_sigstore_bundle_v4(
-                self.legacy.fixture.base.assets / archive["sigstore"]["filename"],
-                archive["sigstore"],
+            bundle = json.loads(
+                (
+                    self.legacy.fixture.base.assets
+                    / archive["sigstore"]["filename"]
+                ).read_text(encoding="utf-8")
+            )
+            facts = module.verify_legacy_cosign_bundle_v5(
+                bundle,
                 archive["sha256"],
             )
+            self.assertEqual(facts["certificate_encoding"], "base64_pem")
             self.assertTrue(facts["certificate_bytes_cross_bound"])
 
     def test_pem_text_remains_supported(self) -> None:
