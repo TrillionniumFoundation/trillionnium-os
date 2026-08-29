@@ -27,6 +27,7 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           def replace_once(path: Path, old: str, new: str, label: str) -> None:
               text = path.read_text(encoding="utf-8")
@@ -35,26 +36,18 @@ jobs:
                   raise SystemExit(f"{label}: expected one match, observed {count}")
               path.write_text(text.replace(old, new), encoding="utf-8")
 
+          def regex_once(path: Path, pattern: str, replacement: str, label: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=re.MULTILINE)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected one regex match, observed {count}")
+              path.write_text(updated, encoding="utf-8")
+
           wire = Path("apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs")
-          replace_once(
+          regex_once(
               wire,
-              """fn build_job_frame(
-              context: &JobContext,
-              kind: &str,
-              seq: u64,
-              discriminator: &str,
-              payload: Value,
-          ) -> RunTurnFrame {
-              RunTurnFrame {
-          """.replace("          ", ""),
-              """fn build_job_frame(
-              context: &JobContext,
-              kind: &str,
-              seq: u64,
-              discriminator: &str,
-              payload: Value,
-          ) -> RunTurnFrame {
-              let mut payload = payload;
+              r"(fn build_job_frame\(\n(?:.*\n){5}\) -> RunTurnFrame \{\n)(    RunTurnFrame \{)",
+              r'''\1    let mut payload = payload;
               if let Some(object) = payload.as_object_mut() {
                   object.entry("request_sha256".to_string()).or_insert_with(|| {
                       context
@@ -63,33 +56,21 @@ jobs:
                           .map_or(Value::Null, |value| Value::String(value.clone()))
                   });
               }
-              RunTurnFrame {
-          """.replace("          ", ""),
+              \2'''.replace("              ", ""),
               "build_job_frame payload binding",
           )
           replace_once(
               wire,
-              "        turn_stream_id: None,\n",
-              "        turn_stream_id: Some(context.key.scope.turn_stream_id.clone()),\n",
+              "        stream_id: Some(context.stream_id.clone()),\n        turn_stream_id: None,\n",
+              "        stream_id: Some(context.stream_id.clone()),\n        turn_stream_id: Some(context.key.scope.turn_stream_id.clone()),\n",
               "job turn-stream correlation",
           )
 
           process = Path("apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs")
           replace_once(
               process,
-              """            let decoded = decode_job_start(&frame, shell_executable)?;
-              let context = decoded.context.clone();
-              let result = manager
-                  .start(decoded.request)
-                  .map_err(|error| error.to_string())?;
-          """.replace("          ", ""),
-              """            let decoded = decode_job_start(&frame, shell_executable)?;
-              let context = decoded.context.clone();
-              let operation_id = decoded.request.operation_id.clone();
-              let result = manager
-                  .start(decoded.request)
-                  .map_err(|error| error.to_string())?;
-          """.replace("          ", ""),
+              "            let decoded = decode_job_start(&frame, shell_executable)?;\n            let context = decoded.context.clone();\n            let result = manager\n",
+              "            let decoded = decode_job_start(&frame, shell_executable)?;\n            let context = decoded.context.clone();\n            let operation_id = decoded.request.operation_id.clone();\n            let result = manager\n",
               "job.start operation capture",
           )
           replace_once(
@@ -100,61 +81,20 @@ jobs:
           )
           replace_once(
               process,
-              """            let decoded = decode_job_control(&frame)?;
-              let context = resolve_job_context(manager, decoded.context)?;
-              let inspection = if frame.kind == FRAME_JOB_ATTACH {
-          """.replace("          ", ""),
-              """            let decoded = decode_job_control(&frame)?;
-              let context = resolve_job_context(manager, decoded.context)?;
-              let response_attachment_id = if frame.kind == FRAME_JOB_ATTACH {
-                  decoded.attachment_id.as_deref()
-              } else {
-                  None
-              };
-              let inspection = if frame.kind == FRAME_JOB_ATTACH {
-          """.replace("          ", ""),
+              "            let decoded = decode_job_control(&frame)?;\n            let context = resolve_job_context(manager, decoded.context)?;\n            let inspection = if frame.kind == FRAME_JOB_ATTACH {\n",
+              "            let decoded = decode_job_control(&frame)?;\n            let context = resolve_job_context(manager, decoded.context)?;\n            let response_attachment_id = if frame.kind == FRAME_JOB_ATTACH {\n                decoded.attachment_id.as_deref()\n            } else {\n                None\n            };\n            let inspection = if frame.kind == FRAME_JOB_ATTACH {\n",
               "job.attach response identity",
           )
           replace_once(
               process,
-              """            let response = bounded_inspection_frame(
-                  state,
-                  kind,
-                  &inspection,
-                  &durable_records,
-                  max_frame_bytes,
-              )?;
-          """.replace("          ", ""),
-              """            let response = bounded_inspection_frame(
-                  state,
-                  kind,
-                  &inspection,
-                  &durable_records,
-                  response_attachment_id,
-                  max_frame_bytes,
-              )?;
-          """.replace("          ", ""),
+              "            let response = bounded_inspection_frame(\n                state,\n                kind,\n                &inspection,\n                &durable_records,\n                max_frame_bytes,\n            )?;\n",
+              "            let response = bounded_inspection_frame(\n                state,\n                kind,\n                &inspection,\n                &durable_records,\n                response_attachment_id,\n                max_frame_bytes,\n            )?;\n",
               "inspection response attachment argument",
           )
           replace_once(
               process,
-              """fn bounded_inspection_frame(
-              state: &mut JobDeliveryState,
-              kind: &str,
-              inspection: &JobInspection,
-              durable_records: &[Value],
-              max_frame_bytes: usize,
-          ) -> Result<RunTurnFrame, String> {
-          """.replace("          ", ""),
-              """fn bounded_inspection_frame(
-              state: &mut JobDeliveryState,
-              kind: &str,
-              inspection: &JobInspection,
-              durable_records: &[Value],
-              attachment_id: Option<&str>,
-              max_frame_bytes: usize,
-          ) -> Result<RunTurnFrame, String> {
-          """.replace("          ", ""),
+              "fn bounded_inspection_frame(\n    state: &mut JobDeliveryState,\n    kind: &str,\n    inspection: &JobInspection,\n    durable_records: &[Value],\n    max_frame_bytes: usize,\n) -> Result<RunTurnFrame, String> {\n",
+              "fn bounded_inspection_frame(\n    state: &mut JobDeliveryState,\n    kind: &str,\n    inspection: &JobInspection,\n    durable_records: &[Value],\n    attachment_id: Option<&str>,\n    max_frame_bytes: usize,\n) -> Result<RunTurnFrame, String> {\n",
               "bounded inspection signature",
           )
           replace_once(
@@ -179,38 +119,14 @@ jobs:
           test = Path("apps/trillionnium-owner-open-host/tests/r5_jobs.rs")
           replace_once(
               test,
-              """    assert!(
-                  frames
-                      .iter()
-                      .any(|frame| frame["kind"] == "job.start.result")
-              );
-          """.replace("          ", ""),
-              """    let start = frames
-                  .iter()
-                  .find(|frame| frame["kind"] == "job.start.result")
-                  .expect("job.start.result");
-              assert_eq!(start["payload"]["operation_id"], "start-job-pipe");
-              assert_eq!(start["turn_stream_id"], "turn-stream-jobs");
-              assert_eq!(start["session_id"], "session-jobs");
-          """.replace("          ", ""),
+              '    assert!(\n        frames\n            .iter()\n            .any(|frame| frame["kind"] == "job.start.result")\n    );\n',
+              '    let start = frames\n        .iter()\n        .find(|frame| frame["kind"] == "job.start.result")\n        .expect("job.start.result");\n    assert_eq!(start["payload"]["operation_id"], "start-job-pipe");\n    assert_eq!(start["turn_stream_id"], "turn-stream-jobs");\n    assert_eq!(start["session_id"], "session-jobs");\n',
               "job start correlation regression",
           )
           replace_once(
               test,
               '    assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));\n',
-              """    assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));
-              let control_operations = frames
-                  .iter()
-                  .filter(|frame| frame["kind"] == "job.control.result")
-                  .filter_map(|frame| frame["payload"]["operation_id"].as_str())
-                  .collect::<Vec<_>>();
-              assert!(control_operations.contains(&"write-job-pipe"));
-              assert!(control_operations.contains(&"close-job-pipe"));
-              assert!(frames
-                  .iter()
-                  .filter(|frame| frame["job_id"] == "job-pipe")
-                  .all(|frame| frame["turn_stream_id"] == "turn-stream-jobs"));
-          """.replace("          ", ""),
+              '    assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));\n    let control_operations = frames\n        .iter()\n        .filter(|frame| frame["kind"] == "job.control.result")\n        .filter_map(|frame| frame["payload"]["operation_id"].as_str())\n        .collect::<Vec<_>>();\n    assert!(control_operations.contains(&"write-job-pipe"));\n    assert!(control_operations.contains(&"close-job-pipe"));\n    assert!(frames\n        .iter()\n        .filter(|frame| frame["job_id"] == "job-pipe")\n        .all(|frame| frame["turn_stream_id"] == "turn-stream-jobs"));\n',
               "job control correlation regression",
           )
           PY
