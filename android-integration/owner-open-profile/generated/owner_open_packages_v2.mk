@@ -6,10 +6,13 @@
 PRODUCT_PACKAGES += \
     trillionnium-owner-open-rootfs-image \
     trillionnium-owner-open-rootfs-manifest \
+    trillionnium-owner-open-rootfs-digest \
     trillionnium-owner-open-bootstrap \
     trillionnium-owner-open-emergency-stop \
+    trillionnium-owner-open-ingress \
     trillionnium-owner-open-init-rc \
-    trillionnium-owner-open-profile-v2-config
+    trillionnium-owner-open-profile-config \
+    TrillionniumOwnerOpenShell
 
 # Root Linux Host/Core/Codex/Python artifacts live inside the payload
 # image. They are not Android /system_ext/bin executables.
