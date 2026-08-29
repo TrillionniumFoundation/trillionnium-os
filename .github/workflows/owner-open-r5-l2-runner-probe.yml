@@ -1,4 +1,4 @@
-name: temporary owner-open R5 protected L2 runner probe
+name: temporary owner-open R5 L2 probe cleanup
 
 on:
   push:
@@ -8,43 +8,24 @@ on:
       - ".github/workflows/owner-open-r5-l2-runner-probe.yml"
 
 permissions:
+  actions: write
   contents: read
 
 jobs:
-  probe-l2-runner:
-    environment: owner-open-r5-l2
-    runs-on: [self-hosted, linux, x64, trillionnium-r5-target-l2]
+  cancel-unassigned-probe:
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Record non-secret runner and harness readiness
+      - name: Cancel the unassigned self-hosted probe run
         shell: bash
         env:
-          SOURCE_COMMIT: 498d0ffc6818776f7abfa71af5ee2c77cde45a8a
-          SOURCE_TREE: aad53bd41aa8efa4fac5496aba813aed8ffd2d91
-          HARNESS: /opt/trillionnium/owner-open-r5/bin/capture-l2-evidence
+          GH_TOKEN: ${{ github.token }}
+          TARGET_RUN_ID: "33275584879"
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/owner-open-r5-l2-runner-readiness.txt"
-          {
-            printf 'source_commit=%s\n' "$SOURCE_COMMIT"
-            printf 'source_tree=%s\n' "$SOURCE_TREE"
-            printf 'runner_name=%s\n' "$RUNNER_NAME"
-            printf 'runner_os=%s\n' "$RUNNER_OS"
-            printf 'runner_arch=%s\n' "$RUNNER_ARCH"
-            printf 'uid=%s\n' "$(id -u)"
-            printf 'gid=%s\n' "$(id -g)"
-            printf 'uname=%s\n' "$(uname -a)"
-            printf 'harness_path=%s\n' "$HARNESS"
-            if [[ -x "$HARNESS" ]]; then
-              printf 'harness_executable=true\n'
-            else
-              printf 'harness_executable=false\n'
-              exit 23
-            fi
-          } | tee "$out"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: owner-open-r5-l2-runner-readiness-${{ github.sha }}
-          path: ${{ runner.temp }}/owner-open-r5-l2-runner-readiness.txt
-          if-no-files-found: error
-          retention-days: 3
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/actions/runs/${TARGET_RUN_ID}/cancel"
