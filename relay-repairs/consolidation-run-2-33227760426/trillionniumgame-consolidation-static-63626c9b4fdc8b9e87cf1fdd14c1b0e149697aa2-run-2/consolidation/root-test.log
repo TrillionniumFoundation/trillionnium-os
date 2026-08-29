@@ -1,0 +1,297 @@
+ Downloading crates ...
+  Downloaded unicode-properties v0.1.4
+  Downloaded byteorder v1.5.0
+  Downloaded cfg-if v1.0.4
+  Downloaded cmov v0.5.4
+  Downloaded chacha20 v0.10.2
+  Downloaded async-trait v0.1.92
+  Downloaded bytes v1.12.1
+  Downloaded base64 v0.22.1
+  Downloaded block-buffer v0.12.1
+  Downloaded unicode-ident v1.0.24
+  Downloaded md-5 v0.11.0
+  Downloaded rand v0.10.2
+  Downloaded unicode-bidi v0.3.18
+  Downloaded serde v1.0.229
+  Downloaded parking_lot_core v0.9.12
+  Downloaded futures-util v0.3.34
+  Downloaded getrandom v0.4.3
+  Downloaded futures-channel v0.3.34
+  Downloaded digest v0.11.3
+  Downloaded cpufeatures v0.3.1
+  Downloaded siphasher v1.0.3
+  Downloaded futures-task v0.3.34
+  Downloaded scopeguard v1.2.0
+  Downloaded tinyvec_macros v0.1.1
+  Downloaded phf_shared v0.13.1
+  Downloaded stringprep v0.1.5
+  Downloaded lock_api v0.4.14
+  Downloaded whoami v2.1.3
+  Downloaded sha2 v0.11.0
+  Downloaded tinyvec v1.12.0
+  Downloaded serde_core v1.0.229
+  Downloaded tokio-postgres v0.7.18
+  Downloaded unicode-normalization v0.1.25
+  Downloaded typenum v1.20.1
+  Downloaded tokio-util v0.7.19
+  Downloaded mio v1.2.2
+  Downloaded memchr v2.8.3
+  Downloaded const-oid v0.10.2
+  Downloaded socket2 v0.6.5
+  Downloaded smallvec v1.15.2
+  Downloaded proc-macro2 v1.0.107
+  Downloaded syn v3.0.4
+  Downloaded postgres v0.19.14
+  Downloaded parking_lot v0.12.5
+  Downloaded log v0.4.34
+  Downloaded libc v0.2.189
+  Downloaded hybrid-array v0.4.14
+  Downloaded hmac v0.13.0
+  Downloaded rand_core v0.10.1
+  Downloaded postgres-types v0.2.14
+  Downloaded postgres-protocol v0.6.12
+  Downloaded pin-project-lite v0.2.17
+  Downloaded futures-core v0.3.34
+  Downloaded ctutils v0.4.2
+  Downloaded slab v0.4.12
+  Downloaded quote v1.0.47
+  Downloaded phf v0.13.1
+  Downloaded fallible-iterator v0.2.0
+  Downloaded crypto-common v0.2.2
+  Downloaded percent-encoding v2.3.2
+  Downloaded futures-sink v0.3.34
+  Downloaded tokio v1.53.1
+   Compiling libc v0.2.189
+   Compiling cfg-if v1.0.4
+   Compiling typenum v1.20.1
+   Compiling cmov v0.5.4
+   Compiling trnm-contracts v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-contracts)
+   Compiling ctutils v0.4.2
+   Compiling const-oid v0.10.2
+   Compiling getrandom v0.4.3
+   Compiling rand_core v0.10.1
+   Compiling proc-macro2 v1.0.107
+   Compiling cpufeatures v0.3.1
+   Compiling tinyvec_macros v0.1.1
+   Compiling tinyvec v1.12.0
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.47
+   Compiling hybrid-array v0.4.14
+   Compiling bytes v1.12.1
+   Compiling unicode-normalization v0.1.25
+   Compiling crypto-common v0.2.2
+   Compiling block-buffer v0.12.1
+   Compiling chacha20 v0.10.2
+   Compiling futures-sink v0.3.34
+   Compiling parking_lot_core v0.9.12
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.34
+   Compiling unicode-properties v0.1.4
+   Compiling unicode-bidi v0.3.18
+   Compiling rand v0.10.2
+   Compiling socket2 v0.6.5
+   Compiling digest v0.11.3
+   Compiling sha2 v0.11.0
+   Compiling hmac v0.13.0
+   Compiling md-5 v0.11.0
+   Compiling stringprep v0.1.5
+   Compiling mio v1.2.2
+   Compiling memchr v2.8.3
+   Compiling scopeguard v1.2.0
+   Compiling fallible-iterator v0.2.0
+   Compiling siphasher v1.0.3
+   Compiling base64 v0.22.1
+   Compiling smallvec v1.15.2
+   Compiling byteorder v1.5.0
+   Compiling phf_shared v0.13.1
+   Compiling postgres-protocol v0.6.12
+   Compiling lock_api v0.4.14
+   Compiling tokio v1.53.1
+   Compiling syn v3.0.4
+   Compiling futures-task v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling postgres-types v0.2.14
+   Compiling phf v0.13.1
+   Compiling parking_lot v0.12.5
+   Compiling futures-channel v0.3.34
+   Compiling whoami v2.1.3
+   Compiling log v0.4.34
+   Compiling percent-encoding v2.3.2
+   Compiling trnm-query-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-query-core)
+   Compiling trnm-presence-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-presence-core)
+   Compiling trnm-transport-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-transport-core)
+   Compiling trnm-storage-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-storage-core)
+   Compiling tokio-util v0.7.19
+   Compiling trnm-authority-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-authority-core)
+   Compiling async-trait v0.1.92
+   Compiling trnm-token-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-core)
+   Compiling trnm-persistence-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-persistence-core)
+   Compiling trnm-canonical-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-canonical-core)
+   Compiling trnm-session-core v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-session-core)
+   Compiling tokio-postgres v0.7.18
+   Compiling postgres v0.19.14
+   Compiling trnm-persistence-pg v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-persistence-pg)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 15.07s
+     Running unittests src/lib.rs (target/debug/deps/trnm_authority_core-b936075789d4f9b4)
+
+running 7 tests
+test tests::duplicate_replays_after_takeover_without_reexecution ... ok
+test tests::exact_duplicate_replays_without_advancing_state ... ok
+test tests::first_command_commits_and_advances_global_and_participant_sequences ... ok
+test tests::participant_sequences_are_independent_while_match_version_is_global ... ok
+test tests::same_command_id_with_different_fingerprint_is_terminal_conflict ... ok
+test tests::stale_version_and_sequence_gap_fail_closed ... ok
+test tests::takeover_fences_old_commands_and_pending_commits ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_canonical_core-cc60a6182ab25a76)
+
+running 9 tests
+test tests::depth_node_collection_and_output_limits_fail_closed ... ok
+test tests::domains_are_explicitly_separated ... ok
+test tests::duplicate_object_keys_fail_closed ... ok
+test tests::invalid_domain_and_zero_protocol_major_are_rejected ... ok
+test tests::float_values_are_unrepresentable_by_the_public_type ... ok
+test tests::object_input_order_does_not_change_bytes ... ok
+test tests::simple_object_matches_locked_vector ... ok
+test tests::unicode_strings_remain_exact_utf8 ... ok
+test tests::signed_integer_boundaries_are_exact ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_contracts-bd335aad9afb7991)
+
+running 3 tests
+test tests::counters_fail_closed_on_overflow ... ok
+test tests::identifiers_do_not_treat_zero_as_valid_business_identity ... ok
+test tests::stable_codes_have_transport_safe_names ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_persistence_core-e9e0f3945ed704a4)
+
+running 8 tests
+test tests::applied_receipt_is_exactly_idempotent ... ok
+test tests::commit_is_atomic_and_records_events_and_outbox ... ok
+test tests::concurrent_commit_fences_stale_prepared_result ... ok
+test tests::duplicate_outbox_id_rejects_without_partial_mutation ... ok
+test tests::exact_duplicate_replays_receipt_but_changed_fingerprint_conflicts ... ok
+test tests::invalid_identity_and_terminal_dead_letter_fail_closed ... ok
+test tests::outbox_lease_generation_fences_stale_worker ... ok
+test tests::takeover_fences_prior_generation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_persistence_pg-363a59c809af5aa4)
+
+running 3 tests
+test tests::profiles_have_distinct_schema_metadata_values ... ok
+test tests::sqlstate_mapping_is_stable_and_retry_aware ... ok
+test tests::request_validation_rejects_duplicate_ids_and_overflow ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/runtime.rs (target/debug/deps/runtime-3211e58ee54bb56d)
+
+running 1 test
+test pgwire_commit_duplicate_conflict_and_fence_contract ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_presence_core-acd7ce2b7acc4a6b)
+
+running 12 tests
+test tests::close_removes_all_presence_indexes ... ok
+test tests::close_session_removes_only_that_session ... ok
+test tests::drain_blocks_new_presence_but_allows_heartbeat ... ok
+test tests::duplicate_connection_and_session_limit_do_not_mutate ... ok
+test tests::heartbeat_time_regression_is_rejected ... ok
+test tests::duplicate_presence_and_status_limit_fail_closed ... ok
+test tests::idle_expiry_is_ordered_and_bounded ... ok
+test tests::open_join_and_recipients_are_deterministic ... ok
+test tests::outbound_accounting_underflow_is_data_loss ... ok
+test tests::outbound_budget_failure_has_zero_partial_mutation ... ok
+test tests::rebind_increments_generation_and_fences_old_node ... ok
+test tests::user_revocation_closes_connections_and_rejects_stale_epoch ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_query_core-94680b66b4c1ecb1)
+
+running 15 tests
+test tests::an_ip_address_transitions_from_numeric_to_term_after_second_dot ... ok
+test tests::empty_and_star_match_nakama_wrapper_special_cases ... ok
+test tests::escaped_colon_space_and_leading_prefix_are_terms ... ok
+test tests::fielded_terms_phrases_and_occurrence_are_parsed ... ok
+test tests::invalid_quotes_dates_suffixes_and_field_gaps_fail_closed ... ok
+test tests::negative_numeric_values_are_allowed_after_a_field_colon ... ok
+test tests::numeric_exact_represents_match_and_numeric_equality_semantics ... ok
+test tests::non_reserved_escapes_preserve_the_backslash ... ok
+test tests::plus_minus_and_comparison_characters_inside_terms_are_not_operators ... ok
+test tests::numeric_and_date_ranges_preserve_inclusive_boundaries ... ok
+test tests::rfc3339_leap_year_and_offsets_are_validated ... ok
+test tests::single_slash_is_rejected_instead_of_panicking ... ok
+test tests::query_token_and_clause_limits_are_enforced ... ok
+test tests::tilde_without_value_defaults_to_one_and_space_starts_next_clause ... ok
+test tests::wildcard_regexp_fuzzy_and_boost_are_distinct ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_session_core-58762513c82efb17)
+
+running 5 tests
+test tests::refresh_rotation_advances_generation_and_replaces_active_token ... ok
+test tests::logout_revocation_is_terminal ... ok
+test tests::replacement_token_cannot_reuse_current_or_consumed_identity ... ok
+test tests::replay_of_consumed_refresh_token_revokes_entire_family ... ok
+test tests::unknown_refresh_token_does_not_rotate_or_revoke_family ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_storage_core-d30ccec5a750e4e7)
+
+running 9 tests
+test tests::delete_requires_exact_version_when_supplied ... ok
+test tests::duplicate_key_in_batch_is_rejected ... ok
+test tests::identical_version_cannot_name_different_value ... ok
+test tests::multi_operation_batch_rolls_back_on_any_failure ... ok
+test tests::public_and_private_read_permissions_are_distinct ... ok
+test tests::server_owned_object_cannot_be_mutated_by_user ... ok
+test tests::must_not_exist_rejects_existing_object ... ok
+test tests::owner_write_and_read_respects_occ ... ok
+test tests::stale_version_rejects_without_mutation ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_token_core-a85da62841c49fa1)
+
+running 10 tests
+test tests::family_profile_binds_explicit_epoch_and_family_generation ... ok
+test tests::family_claims_and_epoch_must_match ... ok
+test tests::key_ring_rejects_duplicate_epoch_and_zero_digest ... ok
+test tests::legacy_issue_uses_one_active_key_without_emitting_epoch ... ok
+test tests::legacy_profile_rejects_extension_claims ... ok
+test tests::lifetime_and_variable_limits_fail_closed ... ok
+test tests::retired_and_out_of_window_keys_are_rejected ... ok
+test tests::verified_claims_reject_expired_or_future_tokens ... ok
+test tests::verify_only_key_can_verify_but_cannot_issue ... ok
+test tests::legacy_overlap_is_ambiguous_because_no_key_epoch_is_carried ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/trnm_transport_core-5108972d2b9f11d4)
+
+running 9 tests
+test tests::established_socket_close_policy_is_typed ... ok
+test tests::grpc_codes_preserve_canonical_stable_numbers ... ok
+test tests::handshake_rejects_with_http_status_before_upgrade ... ok
+test tests::http_statuses_are_exhaustive_and_stable ... ok
+test tests::malformed_envelopes_use_protocol_close ... ok
+test tests::retry_classes_map_without_transport_guessing ... ok
+test tests::rtapi_context_codes_match_pinned_enum_values ... ok
+test tests::internal_reason_never_reaches_public_mapping ... ok
+test tests::mismatched_context_fails_closed ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

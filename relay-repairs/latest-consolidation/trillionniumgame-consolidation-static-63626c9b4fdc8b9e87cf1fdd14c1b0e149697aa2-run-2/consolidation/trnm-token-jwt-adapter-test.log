@@ -1,0 +1,68 @@
+   Compiling trnm-token-jwt-adapter v0.1.0 (/home/runner/work/trillionnium-os/trillionnium-os/source/crates/trnm-token-jwt-adapter)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.98s
+     Running unittests src/lib.rs (crates/trnm-token-jwt-adapter/target/debug/deps/trnm_token_jwt_adapter-90ddf9242e06b69b)
+
+running 23 tests
+test base64url::tests::enforces_decoded_length_before_allocation ... ok
+test base64url::tests::rejects_impossible_length_and_noncanonical_trailing_bits ... ok
+test base64url::tests::rejects_padding_standard_alphabet_and_whitespace ... ok
+test base64url::tests::rfc4648_url_vectors_round_trip_without_padding ... ok
+test json::tests::canonical_encoder_sorts_object_keys_and_preserves_integer_types ... ok
+test json::tests::canonical_round_trip_is_stable ... ok
+test json::tests::enforces_depth_node_string_collection_and_output_limits ... ok
+test json::tests::rejects_duplicate_keys_at_every_depth ... ok
+test json::tests::parses_escapes_and_surrogate_pairs ... ok
+test json::tests::rejects_floats_exponents_leading_zero_and_overflow ... ok
+test json::tests::rejects_invalid_utf8_and_trailing_data ... ok
+test json::tests::rejects_lone_or_mismatched_surrogates ... ok
+test jwt::tests::duplicate_payload_keys_and_unrecognized_headers_are_rejected ... ok
+test jwt::tests::signature_tamper_and_wrong_key_are_rejected ... ok
+test jwt::tests::algorithm_confusion_and_base64_padding_are_rejected ... ok
+test jwt::tests::legacy_and_epoch_routes_round_trip ... ok
+test sha256::tests::multipart_hmac_input_is_exactly_concatenated ... FAILED
+test jwt::tests::unknown_or_malformed_epoch_never_downgrades_to_legacy_key ... FAILED
+test sha256::tests::constant_time_comparison_handles_lengths_and_values ... ok
+test jwt::tests::time_issuer_audience_and_lifetime_are_enforced ... ok
+test sha256::tests::nist_sha256_vectors ... ok
+test sha256::tests::rfc4231_hmac_sha256_vectors ... FAILED
+test sha256::tests::streaming_updates_match_single_update ... FAILED
+
+failures:
+
+---- sha256::tests::multipart_hmac_input_is_exactly_concatenated stdout ----
+
+thread 'sha256::tests::multipart_hmac_input_is_exactly_concatenated' panicked at src/sha256.rs:355:9:
+assertion `left == right` failed
+  left: [90, 82, 104, 163, 202, 231, 141, 220, 140, 254, 144, 146, 111, 160, 149, 195, 34, 248, 233, 178, 202, 179, 115, 13, 186, 175, 44, 27, 93, 8, 116, 180]
+ right: [156, 25, 110, 50, 220, 1, 117, 248, 111, 75, 28, 184, 146, 137, 214, 97, 157, 230, 190, 230, 153, 228, 195, 120, 230, 131, 9, 237, 151, 161, 166, 171]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- jwt::tests::unknown_or_malformed_epoch_never_downgrades_to_legacy_key stdout ----
+
+thread 'jwt::tests::unknown_or_malformed_epoch_never_downgrades_to_legacy_key' panicked at src/jwt.rs:1032:9:
+assertion failed: keys.verify(&malformed, &profile, 1_500).is_err()
+
+---- sha256::tests::rfc4231_hmac_sha256_vectors stdout ----
+
+thread 'sha256::tests::rfc4231_hmac_sha256_vectors' panicked at src/sha256.rs:280:9:
+assertion `left == right` failed
+  left: 1
+ right: 0
+
+---- sha256::tests::streaming_updates_match_single_update stdout ----
+
+thread 'sha256::tests::streaming_updates_match_single_update' panicked at src/sha256.rs:321:9:
+assertion `left == right` failed
+  left: [124, 175, 74, 144, 175, 69, 132, 145, 174, 197, 176, 96, 19, 165, 66, 133, 41, 1, 247, 22, 247, 103, 113, 91, 224, 131, 79, 237, 230, 199, 78, 130]
+ right: [204, 183, 156, 84, 197, 10, 209, 112, 82, 253, 199, 83, 7, 30, 147, 88, 239, 216, 204, 113, 230, 35, 218, 58, 227, 159, 133, 199, 241, 200, 140, 242]
+
+
+failures:
+    jwt::tests::unknown_or_malformed_epoch_never_downgrades_to_legacy_key
+    sha256::tests::multipart_hmac_input_is_exactly_concatenated
+    sha256::tests::rfc4231_hmac_sha256_vectors
+    sha256::tests::streaming_updates_match_single_update
+
+test result: FAILED. 19 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--lib`
