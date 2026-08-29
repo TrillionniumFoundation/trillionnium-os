@@ -1,0 +1,151 @@
+name: TrillionniumGame PostgreSQL failover v28
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-postgres-failover-v28.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: 326e670cb008a990247e31a63c0c4b0e338df62f
+  POSTGRES_IMAGE: postgres:17.6-alpine3.22@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+
+jobs:
+  failover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          persist-credentials: false
+      - name: Install exact Rust
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.1 --profile minimal
+          rustup default 1.85.1
+      - name: Execute streaming replication and promotion
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=evidence/postgresql-failover
+          mkdir -p "$evidence"
+          network="trnm-pg-${GITHUB_RUN_ID}"
+          primary="trnm-pg-primary-${GITHUB_RUN_ID}"
+          standby="trnm-pg-standby-${GITHUB_RUN_ID}"
+          primary_volume="trnm-pg-primary-data-${GITHUB_RUN_ID}"
+          standby_volume="trnm-pg-standby-data-${GITHUB_RUN_ID}"
+          cleanup() {
+            status=$?
+            for node in "$primary" "$standby"; do docker logs "$node" > "$evidence/${node}.log" 2>&1 || true; docker rm -f "$node" >/dev/null 2>&1 || true; done
+            docker volume rm "$primary_volume" "$standby_volume" >/dev/null 2>&1 || true
+            docker network rm "$network" >/dev/null 2>&1 || true
+            exit "$status"
+          }
+          trap cleanup EXIT INT TERM
+          docker pull "$POSTGRES_IMAGE" | tee "$evidence/image-pull.log"
+          docker network create "$network" > "$evidence/network-id.txt"
+          docker volume create "$primary_volume" >/dev/null
+          docker volume create "$standby_volume" >/dev/null
+          docker run -d --name "$primary" --hostname=pg-primary --network "$network" \
+            -p 55435:5432 -v "$primary_volume:/var/lib/postgresql/data" \
+            -e POSTGRES_USER=trnm -e POSTGRES_PASSWORD=trnm-pass -e POSTGRES_DB=trnm \
+            "$POSTGRES_IMAGE" postgres \
+            -c wal_level=replica -c max_wal_senders=10 -c max_replication_slots=10 \
+            -c hot_standby=on -c listen_addresses='*' -c synchronous_commit=on \
+            > "$evidence/primary-container-id.txt"
+
+          wait_primary() {
+            for attempt in $(seq 1 150); do
+              ready=$(docker logs "$primary" 2>&1 | grep -c 'database system is ready to accept connections' || true)
+              if (( ready >= 2 )) && docker exec "$primary" psql -At -U trnm -d trnm -c 'SELECT 1' >/dev/null 2>&1; then return 0; fi
+              sleep 1
+            done
+            return 1
+          }
+          wait_primary
+          docker exec "$primary" psql -v ON_ERROR_STOP=1 -U trnm -d trnm -c \
+            "CREATE ROLE replicator WITH REPLICATION LOGIN PASSWORD 'rep-pass'" \
+            > "$evidence/replication-role.log"
+          docker exec "$primary" sh -ec \
+            "printf '%s\n' 'host replication replicator 0.0.0.0/0 scram-sha-256' >> /var/lib/postgresql/data/pg_hba.conf"
+          docker exec "$primary" psql -At -U trnm -d trnm -c 'SELECT pg_reload_conf()' \
+            > "$evidence/reload.log"
+
+          docker run --rm --name "trnm-pg-basebackup-${GITHUB_RUN_ID}" \
+            --network "$network" --user postgres \
+            -e PGPASSWORD=rep-pass -v "$standby_volume:/var/lib/postgresql/data" \
+            "$POSTGRES_IMAGE" sh -ec \
+            "rm -rf /var/lib/postgresql/data/*; pg_basebackup -h pg-primary -U replicator \
+             -D /var/lib/postgresql/data -Fp -Xs -P -R -C -S trnm_standby_slot" \
+            > "$evidence/basebackup.log" 2>&1
+          docker run -d --name "$standby" --hostname=pg-standby --network "$network" \
+            -p 55436:5432 -v "$standby_volume:/var/lib/postgresql/data" \
+            "$POSTGRES_IMAGE" postgres -c hot_standby=on -c listen_addresses='*' \
+            > "$evidence/standby-container-id.txt"
+          for attempt in $(seq 1 150); do
+            docker exec "$standby" pg_isready -U trnm -d trnm >/dev/null 2>&1 && break
+            sleep 1
+          done
+          docker exec "$standby" pg_isready -U trnm -d trnm
+          for attempt in $(seq 1 150); do
+            streaming=$(docker exec "$primary" psql -At -U trnm -d trnm \
+              -c "SELECT count(*) FROM pg_stat_replication WHERE state='streaming' AND sync_state IN ('async','sync','potential')")
+            (( streaming >= 1 )) && break
+            sleep 1
+          done
+          (( streaming >= 1 ))
+          docker exec "$primary" psql -x -U trnm -d trnm -c 'SELECT * FROM pg_stat_replication' \
+            > "$evidence/replication-before.tsv"
+
+          docker exec -i "$primary" psql -v ON_ERROR_STOP=1 -U trnm -d trnm \
+            < migrations/postgresql/0001_foundation_up.sql > "$evidence/migration.log" 2>&1
+          database_primary='postgres://trnm:trnm-pass@127.0.0.1:55435/trnm'
+          TRNM_DATABASE_URL="$database_primary" TRNM_DATABASE_PROFILE=postgresql TRNM_RECOVERY_PHASE=seed \
+            cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-seed.log"
+          target_lsn=$(docker exec "$primary" psql -At -U trnm -d trnm -c 'SELECT pg_current_wal_lsn()')
+          printf '%s\n' "$target_lsn" > "$evidence/target-lsn.txt"
+          replayed=0
+          for attempt in $(seq 1 180); do
+            replayed=$(docker exec "$standby" psql -At -U trnm -d trnm \
+              -c "SELECT (pg_last_wal_replay_lsn() >= '${target_lsn}'::pg_lsn)::int")
+            (( replayed == 1 )) && break
+            sleep 1
+          done
+          (( replayed == 1 ))
+          docker exec "$standby" psql -At -U trnm -d trnm \
+            -c 'SELECT pg_last_wal_replay_lsn(), pg_is_in_recovery()' > "$evidence/standby-before-loss.txt"
+
+          docker kill "$primary" > "$evidence/killed-primary.txt"
+          docker exec "$standby" pg_ctl -D /var/lib/postgresql/data promote -w \
+            > "$evidence/promote.log" 2>&1
+          docker exec "$standby" psql -At -U trnm -d trnm \
+            -c 'SELECT pg_is_in_recovery()' | grep -qx false
+          database_standby='postgres://trnm:trnm-pass@127.0.0.1:55436/trnm'
+          TRNM_DATABASE_URL="$database_standby" TRNM_DATABASE_PROFILE=postgresql TRNM_RECOVERY_PHASE=verify \
+            cargo test -p trnm-persistence-pg --test recovery --locked -- --nocapture \
+            2>&1 | tee "$evidence/recovery-after-promotion.log"
+          TRNM_DATABASE_URL="$database_standby" TRNM_DATABASE_PROFILE=postgresql \
+            cargo test -p trnm-persistence-pg --test fault_matrix --locked -- --nocapture \
+            2>&1 | tee "$evidence/new-writes-after-promotion.log"
+          docker exec "$standby" psql -At -U trnm -d trnm \
+            -c 'SELECT count(*) FROM trnm_command_receipts' > "$evidence/receipt-count-after.txt"
+          printf '{"schema":"trillionnium.postgresql-failover.v1","streaming_replication":true,"wal_replay_caught_up":true,"primary_killed":true,"standby_promoted":true,"duplicate_replay_after_promotion":true,"new_writes_after_promotion":true,"automatic_orchestrator":false,"old_primary_rejoin":false,"production_multi_region":false}\n' \
+            > "$evidence/summary.json"
+          docker image inspect "$POSTGRES_IMAGE" > "$evidence/image-inspect.json"
+          find "$evidence" -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > "$evidence/SHA256SUMS"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-postgresql-failover-v28-${{ env.EXPECTED_HEAD }}
+          path: source/evidence/postgresql-failover
+          if-no-files-found: error
+          retention-days: 30
