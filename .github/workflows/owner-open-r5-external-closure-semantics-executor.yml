@@ -1,0 +1,770 @@
+name: one-shot R5 external closure semantics executor
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-external-closure-semantics-executor.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch-test-commit:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Patch eventual external-evidence closure semantics
+        run: |
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from pathlib import Path
+
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{path}: anchor count {count}, expected 1")
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+          gap_verifier = "tools/verify-owner-open-r5-gap-evidence.py"
+          replace_once(
+              gap_verifier,
+              "\n\ndef exact_source_evidence(\n",
+              '''
+
+          def requires_external_evidence(
+              gap: dict[str, Any],
+              exit_level: Any,
+              identifier: str,
+              report: Report,
+          ) -> bool:
+              value = gap.get("requires_external_evidence")
+              report.check(
+                  value is None or isinstance(value, bool),
+                  f"{identifier} requires_external_evidence must be boolean",
+              )
+              if isinstance(value, bool):
+                  return value
+              return exit_level in EXTERNAL_LEVELS
+
+
+          def exact_source_evidence(
+          ''',
+          )
+          replace_once(
+              gap_verifier,
+              '    report.check(status.get("public_release") is False, "public_release must remain false")\n',
+              '''    public_release = status.get("public_release")
+              report.check(isinstance(public_release, bool), "public_release must be boolean")
+              generated_policy = gaps.get("generated_policy")
+              report.check(
+                  isinstance(generated_policy, dict),
+                  "gap generated_policy must be an object",
+              )
+              if isinstance(generated_policy, dict):
+                  report.check(
+                      generated_policy.get("automatic_redispatch") is False,
+                      "gap generated_policy automatic_redispatch must remain false",
+                  )
+                  report.check(
+                      generated_policy.get("public_release") is public_release,
+                      "gap generated_policy public_release must match status",
+                  )
+          ''',
+          )
+          replace_once(
+              gap_verifier,
+              '''        exit_level = gap.get("exit_evidence_level")
+                  report.check(exit_level in LEVELS, f"{identifier} has invalid exit level")
+          ''',
+              '''        exit_level = gap.get("exit_evidence_level")
+                  report.check(exit_level in LEVELS, f"{identifier} has invalid exit level")
+                  external_required = requires_external_evidence(
+                      gap, exit_level, identifier, report
+                  )
+          ''',
+          )
+          replace_once(
+              gap_verifier,
+              '''        elif state == "EXTERNAL_HOLD":
+                  report.check(
+          ''',
+              '''        elif state == "EXTERNAL_HOLD":
+                  report.check(
+                      external_required,
+                      f"{identifier} external hold must require external evidence",
+                  )
+                  report.check(
+          ''',
+          )
+          replace_once(
+              gap_verifier,
+              '''        elif state == "CLOSED" and exit_level in LEVELS:
+                  exact_source_evidence(gap.get("source_evidence"), identifier, report)
+                  if exit_level == "L1":
+                      report.check(
+                          "evidence" not in gap or gap.get("evidence") in ([], None),
+                          f"{identifier} L1 closure must not pretend to carry external evidence",
+                      )
+                  else:
+                      environment_evidence(gap.get("evidence"), identifier, exit_level, report)
+          ''',
+              '''        elif state == "CLOSED" and exit_level in LEVELS:
+                  exact_source_evidence(gap.get("source_evidence"), identifier, report)
+                  if external_required:
+                      environment_evidence(gap.get("evidence"), identifier, exit_level, report)
+                  else:
+                      report.check(
+                          exit_level == "L1",
+                          f"{identifier} source-only closure is allowed only at L1",
+                      )
+                      report.check(
+                          "evidence" not in gap or gap.get("evidence") in ([], None),
+                          f"{identifier} source-only L1 closure must not carry external evidence",
+                      )
+          ''',
+          )
+          replace_once(
+              gap_verifier,
+              '''    priority = gaps.get("priority_order")
+              report.check(priority == ordered, "priority_order must exactly match gaps order")
+              zero_gap = status.get("zero_gap")
+              all_closed = bool(entries) and all(
+                  isinstance(item, dict) and item.get("status") == "CLOSED" for item in entries
+              )
+          ''',
+              '''    priority = gaps.get("priority_order")
+              report.check(priority == ordered, "priority_order must exactly match gaps order")
+              all_closed = bool(entries) and all(
+                  isinstance(item, dict) and item.get("status") == "CLOSED" for item in entries
+              )
+              release_closed = any(
+                  isinstance(item, dict)
+                  and item.get("id") == "R5-GAP-RELEASE-001"
+                  and item.get("status") == "CLOSED"
+                  for item in entries
+              )
+              report.check(
+                  public_release is release_closed,
+                  "public_release must be true exactly when the release gap is CLOSED",
+              )
+              zero_gap = status.get("zero_gap")
+          ''',
+          )
+          replace_once(
+              gap_verifier,
+              '''            "all_closed": all_closed,
+                      "public_release": status.get("public_release"),
+          ''',
+              '''            "all_closed": all_closed,
+                      "release_closed": release_closed,
+                      "public_release": status.get("public_release"),
+          ''',
+          )
+
+          graph_verifier = "tools/verify-owner-open-r5.py"
+          replace_once(
+              graph_verifier,
+              '''EXTERNAL_GAPS = {
+              "R5-GAP-INSTALLED-CODEX-001",
+          ''',
+              '''EXTERNAL_GAPS = {
+              "R5-GAP-GOVERNANCE-001",
+              "R5-GAP-INSTALLED-CODEX-001",
+          ''',
+          )
+          replace_once(
+              graph_verifier,
+              "\n\ndef verify_gap_register(\n",
+              '''
+
+          def _requires_external_evidence(
+              item: dict[str, Any],
+              level: str,
+              identifier: str,
+              report: Report,
+          ) -> bool:
+              value = item.get("requires_external_evidence")
+              report.check(
+                  value is None or isinstance(value, bool),
+                  f"R5 gap requires_external_evidence is not boolean: {identifier}",
+              )
+              if isinstance(value, bool):
+                  return value
+              return level in {"L2", "L3", "L4", "L5", "L6"}
+
+
+          def verify_gap_register(
+          ''',
+          )
+          replace_once(
+              graph_verifier,
+              '''    seen: set[str] = set()
+              closed: set[str] = set()
+              external: set[str] = set()
+              facts: list[dict[str, Any]] = []
+          ''',
+              '''    seen: set[str] = set()
+              closed: set[str] = set()
+              external: set[str] = set()
+              states_by_id: dict[str, str] = {}
+              facts: list[dict[str, Any]] = []
+          ''',
+          )
+          replace_once(
+              graph_verifier,
+              '''        state = str(item.get("status", ""))
+                  report.check(state in GAP_STATES, f"invalid R5 gap state for {identifier}: {state}")
+          ''',
+              '''        state = str(item.get("status", ""))
+                  report.check(state in GAP_STATES, f"invalid R5 gap state for {identifier}: {state}")
+                  states_by_id[identifier] = state
+          ''',
+          )
+          replace_once(
+              graph_verifier,
+              '''        level = str(item.get("exit_evidence_level", ""))
+                  report.check(level in EVIDENCE_LEVELS, f"invalid exit evidence level for {identifier}")
+          ''',
+              '''        level = str(item.get("exit_evidence_level", ""))
+                  report.check(level in EVIDENCE_LEVELS, f"invalid exit evidence level for {identifier}")
+                  external_required = _requires_external_evidence(
+                      item, level, identifier, report
+                  )
+          ''',
+          )
+          replace_once(
+              graph_verifier,
+              '''        if state == "CLOSED":
+                  closed.add(identifier)
+                  if level == "L1":
+                      report.check(
+                          isinstance(item.get("source_evidence"), dict),
+                          f"closed L1 R5 gap has no source evidence: {identifier}",
+                      )
+                  else:
+                      evidence = item.get("evidence")
+                      report.check(
+                          isinstance(evidence, list) and bool(evidence),
+                          f"closed R5 gap has no evidence: {identifier}",
+                      )
+              if state == "EXTERNAL_HOLD":
+                  external.add(identifier)
+          ''',
+              '''        if state == "CLOSED":
+                  closed.add(identifier)
+                  report.check(
+                      isinstance(item.get("source_evidence"), dict),
+                      f"closed R5 gap has no source evidence: {identifier}",
+                  )
+                  if external_required:
+                      evidence = item.get("evidence")
+                      report.check(
+                          isinstance(evidence, list) and bool(evidence),
+                          f"closed R5 gap has no evidence: {identifier}",
+                      )
+                  else:
+                      report.check(
+                          level == "L1",
+                          f"source-only R5 gap must exit at L1: {identifier}",
+                      )
+                      report.check(
+                          item.get("evidence") in (None, []),
+                          f"source-only L1 R5 gap carries external evidence: {identifier}",
+                      )
+              if state == "EXTERNAL_HOLD":
+                  external.add(identifier)
+                  report.check(
+                      external_required,
+                      f"external-hold R5 gap does not require external evidence: {identifier}",
+                  )
+          ''',
+          )
+          replace_once(
+              graph_verifier,
+              '''    report.check(
+                  EXTERNAL_GAPS <= seen,
+                  "R5 gap register is missing required external evidence lanes: "
+                  + ", ".join(sorted(EXTERNAL_GAPS - seen)),
+              )
+              report.check(
+                  EXTERNAL_GAPS <= external,
+                  "R5 external evidence lane is not held explicitly: "
+                  + ", ".join(sorted(EXTERNAL_GAPS - external)),
+              )
+              report.check(
+                  not (EXTERNAL_GAPS & closed),
+                  "R5 external evidence lane cannot be closed by the source candidate: "
+                  + ", ".join(sorted(EXTERNAL_GAPS & closed)),
+              )
+          ''',
+              '''    report.check(
+                  EXTERNAL_GAPS <= seen,
+                  "R5 gap register is missing required external evidence lanes: "
+                  + ", ".join(sorted(EXTERNAL_GAPS - seen)),
+              )
+              for identifier in sorted(EXTERNAL_GAPS & seen):
+                  report.check(
+                      states_by_id.get(identifier) in {"EXTERNAL_HOLD", "CLOSED"},
+                      "R5 external evidence lane must remain held until reviewed "
+                      f"evidence closes it: {identifier}",
+                  )
+          ''',
+          )
+          replace_once(
+              graph_verifier,
+              '''    release_closed = "R5-GAP-RELEASE-001" in closed
+              report.check(
+                  status.get("public_release") is release_closed,
+                  "R5 public_release does not match the release-gap closure state",
+              )
+              report.check(
+                  gap.get("generated_policy", {}).get("automatic_redispatch") is False,
+                  "R5 gap policy must keep automatic_redispatch false",
+              )
+          ''',
+              '''    release_closed = "R5-GAP-RELEASE-001" in closed
+              public_release = status.get("public_release")
+              report.check(isinstance(public_release, bool), "R5 public_release must be boolean")
+              report.check(
+                  public_release is release_closed,
+                  "R5 public_release does not match the release-gap closure state",
+              )
+              generated_policy = gap.get("generated_policy", {})
+              report.check(
+                  generated_policy.get("automatic_redispatch") is False,
+                  "R5 gap policy must keep automatic_redispatch false",
+              )
+              report.check(
+                  generated_policy.get("public_release") is public_release,
+                  "R5 gap policy public_release does not match status",
+              )
+          ''',
+          )
+
+          packet = "tools/generate-owner-open-r5-resume-packet.py"
+          replace_once(
+              packet,
+              "\n\ndef issue_values(\n",
+              '''
+
+          def requires_external_evidence(
+              item: dict[str, Any],
+              exit_level: str,
+              label: str,
+          ) -> bool:
+              value = item.get("requires_external_evidence")
+              if value is not None and not isinstance(value, bool):
+                  raise PacketError(f"{label}.requires_external_evidence must be boolean")
+              if isinstance(value, bool):
+                  return value
+              return LEVELS[exit_level] >= LEVELS["L2"]
+
+
+          def issue_values(
+          ''',
+          )
+          replace_once(
+              packet,
+              '''    if status.get("automatic_redispatch") is not False:
+                  raise PacketError("automatic_redispatch must remain false")
+
+              entries = gaps.get("gaps")
+          ''',
+              '''    if status.get("automatic_redispatch") is not False:
+                  raise PacketError("automatic_redispatch must remain false")
+              generated_policy = gaps.get("generated_policy")
+              if not isinstance(generated_policy, dict):
+                  raise PacketError("gap generated_policy must be an object")
+              if generated_policy.get("automatic_redispatch") is not False:
+                  raise PacketError("gap generated_policy automatic_redispatch must remain false")
+              if generated_policy.get("public_release") is not status.get("public_release"):
+                  raise PacketError("gap generated_policy public_release differs from status")
+
+              entries = gaps.get("gaps")
+          ''',
+          )
+          replace_once(
+              packet,
+              '''        exit_level = raw.get("exit_evidence_level")
+                  if exit_level not in LEVELS:
+                      raise PacketError(f"{identifier} has invalid exit_evidence_level")
+                  issues = issue_values(raw, identifier)
+          ''',
+              '''        exit_level = raw.get("exit_evidence_level")
+                  if exit_level not in LEVELS:
+                      raise PacketError(f"{identifier} has invalid exit_evidence_level")
+                  external_required = requires_external_evidence(
+                      raw, str(exit_level), identifier
+                  )
+                  issues = issue_values(raw, identifier)
+          ''',
+          )
+          replace_once(
+              packet,
+              '''        elif state == "EXTERNAL_HOLD":
+                  materials = raw.get("required_material")
+          ''',
+              '''        elif state == "EXTERNAL_HOLD":
+                  if not external_required:
+                      raise PacketError(
+                          f"{identifier} external hold must require external evidence"
+                      )
+                  materials = raw.get("required_material")
+          ''',
+          )
+          replace_once(
+              packet,
+              '''        elif state == "CLOSED":
+                  source = validate_source_evidence(raw.get("source_evidence"), identifier)
+                  if exit_level == "L1":
+                      if raw.get("evidence") not in (None, []):
+                          raise PacketError(
+                              f"{identifier} L1 closure must not carry external evidence"
+                          )
+                  else:
+                      validate_environment_evidence(raw.get("evidence"), identifier, str(exit_level))
+          ''',
+              '''        elif state == "CLOSED":
+                  source = validate_source_evidence(raw.get("source_evidence"), identifier)
+                  if external_required:
+                      validate_environment_evidence(
+                          raw.get("evidence"), identifier, str(exit_level)
+                      )
+                  else:
+                      if exit_level != "L1":
+                          raise PacketError(
+                              f"{identifier} source-only closure is allowed only at L1"
+                          )
+                      if raw.get("evidence") not in (None, []):
+                          raise PacketError(
+                              f"{identifier} source-only L1 closure carries external evidence"
+                          )
+          ''',
+          )
+          replace_once(
+              packet,
+              '''            item: dict[str, Any] = {
+                      "id": identifier,
+                      "status": state,
+                      "exit_evidence_level": exit_level,
+                      "issues": issues,
+                      "summary": raw["summary"],
+                  }
+          ''',
+              '''            item: dict[str, Any] = {
+                      "id": identifier,
+                      "status": state,
+                      "exit_evidence_level": exit_level,
+                      "requires_external_evidence": external_required,
+                      "issues": issues,
+                      "summary": raw["summary"],
+                  }
+          ''',
+          )
+          replace_once(
+              packet,
+              '''    if public_release and not release_closed:
+                  raise PacketError("public_release cannot be true while release gap is open")
+          ''',
+              '''    if public_release is not release_closed:
+                  raise PacketError(
+                      "public_release must be true exactly when the release gap is CLOSED"
+                  )
+          ''',
+          )
+
+          gap_test = "tools/tests/test_verify_owner_open_r5_gap_evidence.py"
+          replace_once(
+              gap_test,
+              '''        self.gaps = {
+                  "schema": module.EXPECTED_SCHEMA,
+                  "revision": module.EXPECTED_REVISION,
+          ''',
+              '''        self.gaps = {
+                  "schema": module.EXPECTED_SCHEMA,
+                  "revision": module.EXPECTED_REVISION,
+                  "generated_policy": {
+                      "automatic_redispatch": False,
+                      "public_release": False,
+                  },
+          ''',
+          )
+          replace_once(
+              gap_test,
+              '''    def test_zero_gap_requires_every_gap_closed(self) -> None:
+          ''',
+              '''    def test_l1_external_authority_cannot_close_with_source_only(self) -> None:
+                  gap = self.gaps["gaps"][0]
+                  gap.update(
+                      status="CLOSED",
+                      requires_external_evidence=True,
+                      source_evidence=dict(SOURCE),
+                  )
+                  report = self.verify()
+                  self.assertTrue(any("non-empty list" in error for error in report.errors))
+                  self.assertTrue(any("exit level L1" in error for error in report.errors))
+
+              def test_l1_external_authority_can_close_with_reviewed_evidence(self) -> None:
+                  gap = self.gaps["gaps"][0]
+                  gap.update(
+                      status="CLOSED",
+                      requires_external_evidence=True,
+                      source_evidence=dict(SOURCE),
+                      evidence=[
+                          {
+                              "level": "L1",
+                              "source_commit": "a" * 40,
+                              "evidence_sha256": "9" * 64,
+                              "kind": "repository_governance_authority",
+                              "reviewer": "independent-reviewer",
+                              "synthetic": False,
+                          }
+                      ],
+                  )
+                  report = self.verify()
+                  self.assertEqual(report.errors, [])
+
+              def test_l1_external_hold_must_declare_external_requirement(self) -> None:
+                  gap = self.gaps["gaps"][0]
+                  gap.update(
+                      status="EXTERNAL_HOLD",
+                      required_authority=["repository administrator"],
+                  )
+                  report = self.verify()
+                  self.assertTrue(
+                      any("must require external evidence" in error for error in report.errors)
+                  )
+                  gap["requires_external_evidence"] = True
+                  report = self.verify()
+                  self.assertEqual(report.errors, [])
+
+              def test_zero_gap_requires_every_gap_closed(self) -> None:
+          ''',
+          )
+
+          closure_test = "tools/tests/test_verify_owner_open_r5_gap_closure.py"
+          replace_once(
+              closure_test,
+              '''        gaps = [
+                  self._item("R5-GAP-GOVERNANCE-001", "OPEN", 20, "L1"),
+                  self._item("R5-GAP-INSTALLED-CODEX-001", "EXTERNAL_HOLD", 10, "L2"),
+          ''',
+              '''        gaps = [
+                  self._item("R5-GAP-GOVERNANCE-001", "EXTERNAL_HOLD", 20, "L1"),
+                  self._item("R5-GAP-JOB-ADMISSION-001", "OPEN", 14, "L1"),
+                  self._item("R5-GAP-INSTALLED-CODEX-001", "EXTERNAL_HOLD", 10, "L2"),
+          ''',
+          )
+          replace_once(
+              closure_test,
+              '''        return {
+                  "schema": module.GAP_SCHEMA,
+                  "revision": module.ACTIVE_PLAN_REVISION,
+                  "generated_policy": {"automatic_redispatch": False},
+          ''',
+              '''        gaps[0].update(
+                  requires_external_evidence=True,
+                  required_authority=["repository administrator and independent reviewer"],
+              )
+              return {
+                  "schema": module.GAP_SCHEMA,
+                  "revision": module.ACTIVE_PLAN_REVISION,
+                  "generated_policy": {
+                      "automatic_redispatch": False,
+                      "public_release": False,
+                  },
+          ''',
+          )
+          replace_once(
+              closure_test,
+              '''        gap["gaps"][0]["status"] = "CLOSED"
+                  gap["gaps"][0]["source_evidence"] = {}
+          ''',
+              '''        gap["gaps"][1]["status"] = "CLOSED"
+                  gap["gaps"][1]["source_evidence"] = {}
+          ''',
+          )
+          replace_once(
+              closure_test,
+              '''        gap["gaps"][1]["status"] = "CLOSED"
+                  report = self.verify(gap=gap)
+                  self.assertTrue(any("closed R5 gap has no evidence" in value for value in report.errors))
+                  self.assertTrue(any("external evidence lane cannot be closed" in value for value in report.errors))
+          ''',
+              '''        gap["gaps"][2]["status"] = "CLOSED"
+                  gap["gaps"][2]["source_evidence"] = {}
+                  report = self.verify(gap=gap)
+                  self.assertTrue(any("closed R5 gap has no evidence" in value for value in report.errors))
+          ''',
+          )
+          replace_once(
+              closure_test,
+              '''    def test_false_zero_gap_fails(self) -> None:
+          ''',
+              '''    def test_governance_l1_requires_authority_evidence(self) -> None:
+                  gap = copy.deepcopy(self.gap)
+                  gap["gaps"][0]["status"] = "CLOSED"
+                  gap["gaps"][0]["source_evidence"] = {}
+                  report = self.verify(gap=gap)
+                  self.assertTrue(any("closed R5 gap has no evidence" in value for value in report.errors))
+                  gap["gaps"][0]["evidence"] = [{}]
+                  report = self.verify(gap=gap)
+                  self.assertEqual(report.errors, [])
+
+              def test_external_lane_can_close_with_real_evidence(self) -> None:
+                  gap = copy.deepcopy(self.gap)
+                  gap["gaps"][2]["status"] = "CLOSED"
+                  gap["gaps"][2]["source_evidence"] = {}
+                  gap["gaps"][2]["evidence"] = [{}]
+                  report = self.verify(gap=gap)
+                  self.assertEqual(report.errors, [])
+
+              def test_all_external_lanes_can_eventually_close(self) -> None:
+                  gap = copy.deepcopy(self.gap)
+                  status = dict(self.status)
+                  for item in gap["gaps"]:
+                      item["status"] = "CLOSED"
+                      item["source_evidence"] = {}
+                      external_required = item.get("requires_external_evidence") is True or item[
+                          "exit_evidence_level"
+                      ] != "L1"
+                      if external_required:
+                          item["evidence"] = [{}]
+                  gap["generated_policy"]["public_release"] = True
+                  status["zero_gap"] = True
+                  status["public_release"] = True
+                  report = self.verify(gap=gap, status=status)
+                  self.assertEqual(report.errors, [])
+                  self.assertTrue(report.facts["zero_gap"])
+
+              def test_false_zero_gap_fails(self) -> None:
+          ''',
+          )
+
+          packet_test = "tools/tests/test_generate_owner_open_r5_resume_packet.py"
+          replace_once(
+              packet_test,
+              '''    def test_open_gap_reports_source_work_remaining(self) -> None:
+          ''',
+              '''    def test_l1_external_authority_requires_reviewed_evidence(self) -> None:
+                  entry = self.gaps["gaps"][0]
+                  entry["requires_external_evidence"] = True
+                  with self.assertRaisesRegex(module.PacketError, "non-empty list"):
+                      self.build()
+                  entry["evidence"] = [
+                      {
+                          "level": "L1",
+                          "source_commit": HEX_A,
+                          "evidence_sha256": DIGEST,
+                          "kind": "repository_governance_authority",
+                          "reviewer": "independent-reviewer",
+                          "synthetic": False,
+                      }
+                  ]
+                  packet = self.build()
+                  self.assertEqual(packet["state_counts"]["CLOSED"], 1)
+
+              def test_open_gap_reports_source_work_remaining(self) -> None:
+          ''',
+          )
+
+          gap_path = Path("docs/status/owner-open-r5-gap-closure.json")
+          gap_data = json.loads(gap_path.read_text(encoding="utf-8"))
+          governance = next(
+              item
+              for item in gap_data["gaps"]
+              if item["id"] == "R5-GAP-GOVERNANCE-001"
+          )
+          governance["requires_external_evidence"] = True
+          gap_path.write_text(
+              json.dumps(gap_data, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
+
+          contract = Path(
+              "docs/qualification/owner-open-evidence-promotion-and-fault-matrix.md"
+          )
+          text = contract.read_text(encoding="utf-8")
+          anchor = '''A gap moves:
+
+          ```text
+          OPEN
+            -> SOURCE_CLOSED_PENDING_EVIDENCE
+            -> CLOSED
+          ```
+          '''
+          addition = anchor + '''
+          An L1 gap is source-only unless its machine entry sets
+          `requires_external_evidence=true`.  That flag is mandatory for an L1
+          authority/governance hold and requires reviewed, non-synthetic evidence at
+          L1 in addition to exact source evidence.  It prevents branch-protection or
+          independent-review truth from being closed by a source-only status edit.
+          '''
+          if text.count(anchor) != 1:
+              raise SystemExit(
+                  f"evidence contract closure anchor count {text.count(anchor)}, expected 1"
+              )
+          contract.write_text(text.replace(anchor, addition, 1), encoding="utf-8")
+          PY
+
+      - name: Verify patched canonical closure semantics
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 tools/verify-owner-open-r5.py --json | tee /tmp/r5.json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json | tee /tmp/r5-gap.json
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_generate_owner_open_r5_resume_packet \
+            -v
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          gap = json.loads(Path("docs/status/owner-open-r5-gap-closure.json").read_text())
+          governance = next(
+              item for item in gap["gaps"] if item["id"] == "R5-GAP-GOVERNANCE-001"
+          )
+          assert governance["status"] == "EXTERNAL_HOLD"
+          assert governance["requires_external_evidence"] is True
+          assert gap["generated_policy"]["public_release"] is False
+          PY
+          git diff --check
+
+      - name: Commit canonical verifier repair
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git rm .github/workflows/owner-open-r5-external-closure-semantics-executor.yml
+          git add \
+            tools/verify-owner-open-r5.py \
+            tools/verify-owner-open-r5-gap-evidence.py \
+            tools/generate-owner-open-r5-resume-packet.py \
+            tools/tests/test_verify_owner_open_r5_gap_closure.py \
+            tools/tests/test_verify_owner_open_r5_gap_evidence.py \
+            tools/tests/test_generate_owner_open_r5_resume_packet.py \
+            docs/status/owner-open-r5-gap-closure.json \
+            docs/qualification/owner-open-evidence-promotion-and-fault-matrix.md
+          git diff --cached --check
+          git commit -m "fix(r5): require real evidence for external closure"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
