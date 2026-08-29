@@ -1,0 +1,92 @@
+name: L1 owner-open product entrypoint source contract
+
+on:
+  pull_request:
+    paths:
+      - "apps/trillionnium-owner-open-host/Cargo.toml"
+      - "apps/trillionnium-owner-open-host/src/main.rs"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/**"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/**"
+      - "docs/contracts/owner-open-product-entrypoint-v1.json"
+      - "packaging/owner-open-product/**"
+      - "tools/verify-owner-open-product-entrypoint.py"
+      - "tools/tests/test_verify_owner_open_product_entrypoint.py"
+      - "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+      - ".github/workflows/owner-open-r5-product-entrypoint.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "apps/trillionnium-owner-open-host/Cargo.toml"
+      - "apps/trillionnium-owner-open-host/src/main.rs"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/**"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs"
+      - "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/**"
+      - "docs/contracts/owner-open-product-entrypoint-v1.json"
+      - "packaging/owner-open-product/**"
+      - "tools/verify-owner-open-product-entrypoint.py"
+      - "tools/tests/test_verify_owner_open_product_entrypoint.py"
+      - "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+      - ".github/workflows/owner-open-r5-product-entrypoint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-product-entrypoint-l1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  l1-product-entrypoint:
+    name: L1 selected product binary, internal core and install-template gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Parse and compile source contract
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/contracts/owner-open-product-entrypoint-v1.json >/dev/null
+          python3 -m json.tool packaging/owner-open-product/install-manifest.template.json >/dev/null
+          python3 -m py_compile \
+            tools/verify-owner-open-product-entrypoint.py \
+            tools/tests/test_verify_owner_open_product_entrypoint.py
+      - name: Verify one source product entrypoint
+        run: |
+          set -euo pipefail
+          python3 tools/verify-owner-open-product-entrypoint.py --json \
+            | tee owner-open-product-entrypoint-report.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path("owner-open-product-entrypoint-report.json").read_text())
+          assert value.get("ok") is True, value
+          facts = value.get("facts", {})
+          assert facts.get("source_entrypoint_selected") is True, facts
+          assert facts.get("product_entrypoint") == "trillionnium-owner-open-r5-host", facts
+          assert facts.get("internal_execution_core") == "trillionnium-owner-open-r5-core", facts
+          assert "trillionnium-owner-open-host" in facts.get("forbidden_product_binaries", []), facts
+          assert facts.get("target_install_qualified") is False, facts
+          assert facts.get("public_release") is False, facts
+          PY
+      - name: Run product-entrypoint mutation regressions
+        run: |
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_product_entrypoint \
+            -v 2>&1 | tee owner-open-product-entrypoint-tests.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: owner-open-l1-product-entrypoint-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            owner-open-product-entrypoint-report.json
+            owner-open-product-entrypoint-tests.txt
