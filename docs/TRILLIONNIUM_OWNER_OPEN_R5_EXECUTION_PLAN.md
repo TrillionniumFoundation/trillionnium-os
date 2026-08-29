@@ -499,9 +499,10 @@ separate signed profile and explicit human authorization.
 
 ## 2026-08-29 exact-source closure checkpoint
 
-Permanent exact-head run `33256008472` passed for source commit
-`f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` and tree
-`8d25f3b4cfa0190e93a07031891e6b0de62404ce`.
+Permanent exact-source-head run `33275227428` passed for source commit
+`498d0ffc6818776f7abfa71af5ee2c77cde45a8a` and tree
+`aad53bd41aa8efa4fac5496aba813aed8ffd2d91`. The aggregate candidate also binds Cargo.lock SHA-256
+`a469d72776978b143f47ba71904325404dc77307b25374214e6dd321147b99a0`.
 
 This checkpoint closes only the L1 job-admission gap. It moves the completed process-lifecycle,
 stream-recovery, journal-convergence, Broker-correlation and product-entrypoint source work into
@@ -509,6 +510,11 @@ stream-recovery, journal-convergence, Broker-correlation and product-entrypoint 
 and all target/device/release lanes remain explicit holds. The ordered next path is protected-main
 and independent review, installed Root Linux L2, Android L3, physical ADB L4, destructive faults
 L5 and separately authorized release L6.
+
+The qualified source identity and a later evidence-promotion head are deliberately distinct. A
+state-only promotion commit may bind this source evidence or import reviewed target bundles, but any
+change to source, Cargo, contracts, tools or permanent workflows invalidates inheritance and requires
+a new exact-source qualification.
 
 ## Permanent external-evidence program
 

@@ -8,14 +8,16 @@ Status: **L1 source closure passed; target, device, destructive-fault and releas
 | --- | --- |
 | Repository | `TrillionniumFoundation/trillionnium-os` |
 | Branch | `codex/owner-open-r5-gap-closure-20260829` |
-| Source commit | `f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` |
-| Source tree | `8d25f3b4cfa0190e93a07031891e6b0de62404ce` |
+| Source commit | `498d0ffc6818776f7abfa71af5ee2c77cde45a8a` |
+| Source tree | `aad53bd41aa8efa4fac5496aba813aed8ffd2d91` |
 | Permanent workflow | `L1 owner-open R5 source and gap closure` |
-| Workflow run | `33256008472` |
+| Workflow run | `33275227428` |
 | Result | `L1_SOURCE_CLOSURE_PASSED` |
 | Claim ceiling | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX` |
+| Cargo.lock SHA-256 | `a469d72776978b143f47ba71904325404dc77307b25374214e6dd321147b99a0` |
 
-The exact source checkout passed graph and document verification, gap-evidence mutation tests,
+The permanent workflow checked out the pull-request source head rather than GitHub's synthetic merge
+commit. The exact source checkout passed graph and document verification, gap/evidence mutation tests,
 Broker and MCP process fixtures, locked Rust 1.93 formatting/tests/strict Clippy, product-entrypoint
 source checks, release-path mechanics, ADB relay checks and the foundation suite.
 
@@ -23,8 +25,19 @@ source checks, release-path mechanics, ADB relay checks and the foundation suite
 
 | Artifact ID | Name | SHA-256 digest |
 | --- | --- | --- |
-| `9715819868` | `owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` | `sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc` |
-| `9715826446` | `owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28` | `sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203` |
+| `9721291169` | `owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838` |
+| `9721304610` | `owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887` |
+| `9721310376` | `owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3` |
+
+## Source identity versus promotion head
+
+`498d0ffc6818776f7abfa71af5ee2c77cde45a8a` / `aad53bd41aa8efa4fac5496aba813aed8ffd2d91` is the immutable qualified source identity. A later state-only
+promotion commit may update `docs/status/` or import independently reviewed evidence without changing
+that source identity. Such a promotion head must pass its own exact-head repository checks and is not
+allowed to inherit qualification after any source, Cargo, contract, tool or workflow drift.
+
+External evidence bundles must bind their `source_commit` and `source_tree` to this exact pair. The
+promotion script rejects a bundle whose source identity differs from the gap register.
 
 ## Gap transitions
 
@@ -34,7 +47,7 @@ source checks, release-path mechanics, ADB relay checks and the foundation suite
   are **SOURCE_CLOSED_PENDING_EVIDENCE**. Their source contracts and exact-head tests pass, but their
   declared L2-L5 installed/environment evidence does not exist yet.
 - Repository governance is **EXTERNAL_HOLD** because protected-main required checks and independent
-  review are repository-administrator actions, not source artifacts.
+  review are repository-administrator and reviewer actions, not source artifacts.
 - Installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public
   release remain **EXTERNAL_HOLD** with their exact required material or authority listed in the
   machine gap register.

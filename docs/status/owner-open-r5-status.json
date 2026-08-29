@@ -4,7 +4,7 @@
   "active_plan_revision": "2026-08-29-r6",
   "graph_contract_revision": "2026-08-28-r5",
   "semantic_contract_revision": "2026-08-27-r3",
-  "updated_at": "2026-08-29",
+  "updated_at": "2026-08-30",
   "development_branch": "codex/owner-open-r5-gap-closure-20260829",
   "implementation_baseline_branch": "codex/owner-open-r5-tool-loop-20260827",
   "implementation_baseline_commit": "479e5fb78385d3706b42f83b334025fa2b6ccd50",
@@ -12,7 +12,7 @@
   "zero_gap": false,
   "public_release": false,
   "automatic_redispatch": false,
-  "product_claim": "Exact source commit f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28 and tree 8d25f3b4cfa0190e93a07031891e6b0de62404ce passed the permanent L1 source, gap, Rust, Broker, MCP, release-path, product-entrypoint, ADB-relay and foundation gates. Job admission is CLOSED at L1. Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint are source-closed but still require their declared L2-L5 target evidence. Repository governance, installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public release remain explicit holds.",
+  "product_claim": "Exact source commit 498d0ffc6818776f7abfa71af5ee2c77cde45a8a and tree aad53bd41aa8efa4fac5496aba813aed8ffd2d91 passed the permanent L1 source, gap, Rust, Broker, MCP, release-path, product-entrypoint, ADB-relay and foundation gates. Job admission is CLOSED at L1. Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint are source-closed but still require their declared L2-L5 target evidence. Repository governance, installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public release remain explicit holds.",
   "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
   "status_levels": [
     "NOT_STARTED",
@@ -81,9 +81,9 @@
       "one source-selected product entrypoint and release-path mechanics",
       "deployment, restart, emergency-stop and L0-L6 evidence contracts"
     ],
-    "validated_source_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
-    "validated_source_tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
-    "workflow_run_id": 33256008472,
+    "validated_source_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
+    "validated_source_tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
+    "workflow_run_id": 33275227428,
     "promotion_commit_requires_new_exact_head_ci": true
   },
   "open_repository_gaps": [
@@ -105,7 +105,7 @@
       "required_level": "L2",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
+      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
     },
     {
       "id": "R5-GAP-ROOTLINUX-PLACEMENT-001",
@@ -116,7 +116,7 @@
       "required_level": "L2",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
+      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
     },
     {
       "id": "R5-GAP-ANDROID-GRAPH-001",
@@ -127,7 +127,7 @@
       "required_level": "L3",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
+      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
     },
     {
       "id": "R5-GAP-PHYSICAL-ADB-001",
@@ -139,7 +139,7 @@
       "required_level": "L4",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
+      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
     },
     {
       "id": "R5-GAP-FAULT-MATRIX-001",
@@ -150,7 +150,7 @@
       "required_level": "L5",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
+      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
     },
     {
       "id": "R5-GAP-RELEASE-001",
@@ -160,7 +160,7 @@
       "required_level": "L6",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28"
+      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
     }
   ],
   "work_packages": [
@@ -290,23 +290,29 @@
     "status": "HOST_TESTED",
     "evidence_level": "L1",
     "branch": "codex/owner-open-r5-gap-closure-20260829",
-    "commit": "f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
-    "tree": "8d25f3b4cfa0190e93a07031891e6b0de62404ce",
-    "workflow_run_id": 33256008472,
+    "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
+    "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
+    "workflow_run_id": 33275227428,
     "successful_jobs": [
       "L1 graph, documentation, broker and MCP source closure",
-      "L1 Rust 1.93 selected Host, job, flow and recovery closure"
+      "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+      "L1 exact-source-head aggregate candidate"
     ],
     "artifacts": [
       {
-        "id": 9715819868,
-        "name": "owner-open-r5-l1-graph-docs-python-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
-        "digest": "sha256:9730845205c817a126b6a67e36513bc4c21a9819b1e5163f3171136b621b37cc"
+        "id": 9721291169,
+        "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
+        "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
       },
       {
-        "id": 9715826446,
-        "name": "owner-open-r5-l1-rust-f0ce11ed6fc7ab950c34727be92fc2a60bc9dd28",
-        "digest": "sha256:213d0b2bc2fc7a5cf58847361e66da19e88aa53c980631d00fdafc72bfbbb203"
+        "id": 9721304610,
+        "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
+        "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+      },
+      {
+        "id": 9721310376,
+        "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
+        "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
       }
     ],
     "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX"
