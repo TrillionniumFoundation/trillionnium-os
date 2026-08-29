@@ -1,0 +1,48 @@
+# exact-target: df5cff4eebbc5d8e79be40d2dd646ca50b02d463
+name: TrillionniumGame full source export v3
+
+on:
+  push:
+    branches: [ci/trillionniumgame-exact-head-relay-v1]
+    paths: ['.github/workflows/trillionniumgame-full-source-export-v3.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  TARGET_REPOSITORY: TrillionniumFoundation/TrillionniumGame
+  EXPECTED_HEAD: df5cff4eebbc5d8e79be40d2dd646ca50b02d463
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact target
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ env.TARGET_REPOSITORY }}
+          ref: ${{ env.EXPECTED_HEAD }}
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export exact tracked tree
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p ../exact-source
+          git archive --format=tar HEAD | tar -xf - -C ../exact-source
+          printf '%s\n' "$EXPECTED_HEAD" > ../exact-source/.exact-commit
+          git rev-parse HEAD^{tree} > ../exact-source/.exact-tree
+          find ../exact-source -type f ! -name SHA256SUMS -print0 \
+            | sort -z | xargs -0 sha256sum > ../exact-source/SHA256SUMS
+      - name: Upload exact source
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: trillionniumgame-full-source-${{ env.EXPECTED_HEAD }}
+          path: exact-source
+          if-no-files-found: error
+          retention-days: 30
