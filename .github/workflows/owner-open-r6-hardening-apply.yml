@@ -1,0 +1,116 @@
+name: Owner-Open R6 development hardening apply
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r6-development-hardening-20260830
+    paths:
+      - .github/workflows/owner-open-r6-hardening-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: owner-open-r6-development-hardening-apply
+  cancel-in-progress: false
+
+jobs:
+  apply-test-and-self-delete:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out hardening branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: codex/owner-open-r6-development-hardening-20260830
+
+      - name: Assert immutable source base and staged payload identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+          git --no-replace-objects merge-base --is-ancestor "$base" HEAD
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=all)"
+          cat > "$RUNNER_TEMP/expected-staged-files.txt" <<'EOF'
+          .github/owner-open-r6-development-hardening.patch.b64.00
+          .github/owner-open-r6-development-hardening.patch.b64.01
+          .github/owner-open-r6-development-hardening.patch.b64.02
+          .github/owner-open-r6-development-hardening.patch.b64.03
+          .github/owner-open-r6-development-hardening.patch.b64.04
+          .github/owner-open-r6-development-hardening.patch.b64.05
+          .github/owner-open-r6-development-hardening.patch.b64.06
+          .github/workflows/owner-open-r6-hardening-apply.yml
+          EOF
+          git --no-replace-objects diff --name-only "$base"...HEAD | LC_ALL=C sort \
+            > "$RUNNER_TEMP/actual-staged-files.txt"
+          diff -u "$RUNNER_TEMP/expected-staged-files.txt" "$RUNNER_TEMP/actual-staged-files.txt"
+          cat .github/owner-open-r6-development-hardening.patch.b64.* \
+            | base64 --decode > "$RUNNER_TEMP/owner-open-r6-development-hardening.patch"
+          echo "25903233ce2d2ec66f1c33d3675b6d03ad8f28197cabec9558ced0941201e610  $RUNNER_TEMP/owner-open-r6-development-hardening.patch" \
+            | sha256sum --check --strict
+
+      - name: Apply reviewed hardening patch and remove transient write paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          git apply --index --whitespace=error-all "$RUNNER_TEMP/owner-open-r6-development-hardening.patch"
+          git rm .github/owner-open-r6-development-hardening.patch.b64.*
+          git rm .github/workflows/owner-open-r6-hardening-apply.yml
+          git diff --cached --check
+
+      - name: Set up exact Rust 1.93 toolchain
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: 1.93.0
+          components: rustfmt, clippy
+
+      - name: Format and verify complete Rust workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          git add -A
+          cargo fmt --all -- --check
+          test -s Cargo.lock
+          cp Cargo.lock "$RUNNER_TEMP/Cargo.lock.before"
+          cargo test --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cmp --silent Cargo.lock "$RUNNER_TEMP/Cargo.lock.before"
+          git diff -- Cargo.lock --exit-code
+
+      - name: Verify Python, contracts and source truth
+        shell: bash
+        env:
+          PYTHONWARNINGS: error::ResourceWarning
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q tools
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+            tools.tests.test_verify_owner_open_android_source_closure \
+            tools.tests.test_owner_open_bootstrap_manifest_contract \
+            tools.tests.test_verify_owner_open_r5 \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_repository_governance_baseline \
+            -v
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py --json
+          python3 tools/verify-owner-open-r5.py --json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json
+          python3 tools/verify-owner-open-android-source-closure-v2.py --json
+
+      - name: Commit qualified source changes and remove write path
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          test ! -e .github/workflows/owner-open-r6-hardening-apply.yml
+          test -z "$(find .github -maxdepth 1 -type f -name 'owner-open-r6-development-hardening.patch.b64.*' -print -quit)"
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(r6): harden durable effects and process containment"
+          git push origin HEAD:codex/owner-open-r6-development-hardening-20260830
