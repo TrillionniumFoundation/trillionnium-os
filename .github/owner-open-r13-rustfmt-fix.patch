@@ -1,0 +1,36 @@
+diff --git a/crates/trillionnium-owner-open-job-registry/tests/registry.rs b/crates/trillionnium-owner-open-job-registry/tests/registry.rs
+index 8824b69..bbdd3af 100644
+--- a/crates/trillionnium-owner-open-job-registry/tests/registry.rs
++++ b/crates/trillionnium-owner-open-job-registry/tests/registry.rs
+@@ -110,9 +110,11 @@ fn live_controls_and_terminal_history_are_bounded() {
+     assert_eq!(snapshot.attachments, vec!["attachment-1"]);
+     let history = registry.history_from(&job, 0).unwrap();
+     assert_eq!(history.len(), 6);
+-    assert!(history
+-        .iter()
+-        .any(|event| matches!(event.event, JobEventKind::PtyEofCharacterSent)));
++    assert!(
++        history
++            .iter()
++            .any(|event| matches!(event.event, JobEventKind::PtyEofCharacterSent))
++    );
+ }
+ 
+ #[test]
+diff --git a/crates/trillionnium-owner-open-job-runtime/tests/runtime.rs b/crates/trillionnium-owner-open-job-runtime/tests/runtime.rs
+index f16b7db..04530a2 100644
+--- a/crates/trillionnium-owner-open-job-runtime/tests/runtime.rs
++++ b/crates/trillionnium-owner-open-job-runtime/tests/runtime.rs
+@@ -278,7 +278,11 @@ fn memory_only_journal_fails_closed_before_registry_acceptance() {
+             None,
+         ))
+         .unwrap_err();
+-    assert!(error.to_string().contains("unjournaled effects are disabled"));
++    assert!(
++        error
++            .to_string()
++            .contains("unjournaled effects are disabled")
++    );
+     assert!(!marker.exists());
+     assert!(manager.registry().snapshot(&job).is_err());
+ }
