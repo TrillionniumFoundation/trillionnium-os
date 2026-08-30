@@ -1,0 +1,188 @@
+name: Owner-Open R6 exact-source bootstrap bundle (ops)
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r6-governance-control-plane-20260830
+    paths:
+      - .github/workflows/owner-open-r6-bootstrap-bundle-ops.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SOURCE_COMMIT: 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+  SOURCE_TREE: 714a483582906b5c2750ec069e1237f0337d26a5
+  CODEX_VERSION: 0.150.1
+  CODEX_TAG: rust-v0.150.1
+  CODEX_ARCHIVE_SHA256: ab308870bc7fc048c23dc49d03f6b8af9ce7fc99b9da882d6688be7a90155c7a
+  CODEX_MEMBER_SHA256: abf1bb1643a79f73aa78ee627e111e02d4f8c98f25813a0cf6ce277709664386
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  RUST_BACKTRACE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+concurrency:
+  group: owner-open-r6-bootstrap-bundle
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build exact-source non-qualifying bootstrap materials
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out immutable candidate source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_COMMIT }}
+
+      - name: Assert source identity and clean checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_COMMIT"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=all)"
+
+      - name: Install exact Rust toolchain
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: 1.93.0
+
+      - name: Build release workspace from reviewed lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked --release --workspace
+
+      - name: Assemble reviewed source and executable set
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          out="$RUNNER_TEMP/bootstrap"
+          mkdir -p "$out/source" "$out/bin" "$out/upstream" "$out/reports"
+          git archive --format=tar --prefix="trillionnium-os-${SOURCE_COMMIT}/" "$SOURCE_COMMIT" \
+            | gzip -n -9 > "$out/source/trillionnium-os-${SOURCE_COMMIT}.tar.gz"
+          while IFS= read -r -d '' executable; do
+            name="$(basename "$executable")"
+            cp --no-preserve=ownership "$executable" "$out/bin/$name"
+            chmod 0755 "$out/bin/$name"
+          done < <(find target/release -maxdepth 1 -type f -perm -0100 -print0 | sort -z)
+          test -x "$out/bin/trillionnium-owner-open-r5-host"
+          test -x "$out/bin/trillionnium-owner-open-r5-core"
+          test -x "$out/bin/trillionnium-owner-open-host"
+          file "$out"/bin/* > "$out/reports/binary-file-identities.txt"
+          ldd "$out/bin/trillionnium-owner-open-r5-host" > "$out/reports/host-ldd.txt" 2>&1 || true
+          rustc -Vv > "$out/reports/rustc.txt"
+          cargo -Vv > "$out/reports/cargo.txt"
+          git --no-replace-objects status --porcelain --untracked-files=all > "$out/reports/source-status-after-build.txt"
+          test -z "$(cat "$out/reports/source-status-after-build.txt")"
+          echo "BOOTSTRAP_DIR=$out" >> "$GITHUB_ENV"
+
+      - name: Download and verify official Codex execution archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          archive="$BOOTSTRAP_DIR/upstream/codex-x86_64-unknown-linux-musl.tar.gz"
+          sigstore="$BOOTSTRAP_DIR/upstream/codex-x86_64-unknown-linux-musl.sigstore"
+          curl --fail-with-body --location --silent --show-error --proto '=https' --tlsv1.2 \
+            --output "$archive" \
+            "https://github.com/openai/codex/releases/download/${CODEX_TAG}/codex-x86_64-unknown-linux-musl.tar.gz"
+          curl --fail-with-body --location --silent --show-error --proto '=https' --tlsv1.2 \
+            --output "$sigstore" \
+            "https://github.com/openai/codex/releases/download/${CODEX_TAG}/codex-x86_64-unknown-linux-musl.sigstore"
+          echo "$CODEX_ARCHIVE_SHA256  $archive" | sha256sum --check --strict
+          mapfile -t members < <(tar -tzf "$archive")
+          test "${#members[@]}" -eq 1
+          test "${members[0]}" = codex-x86_64-unknown-linux-musl
+          tar -xzf "$archive" -C "$BOOTSTRAP_DIR/upstream"
+          extracted="$BOOTSTRAP_DIR/upstream/codex-x86_64-unknown-linux-musl"
+          test -x "$extracted"
+          echo "$CODEX_MEMBER_SHA256  $extracted" | sha256sum --check --strict
+          cp --no-preserve=ownership "$extracted" "$BOOTSTRAP_DIR/bin/codex"
+          chmod 0755 "$BOOTSTRAP_DIR/bin/codex"
+          "$BOOTSTRAP_DIR/bin/codex" --version > "$BOOTSTRAP_DIR/reports/codex-version.txt" 2>&1
+          "$BOOTSTRAP_DIR/bin/codex" --help > "$BOOTSTRAP_DIR/reports/codex-help.txt" 2> "$BOOTSTRAP_DIR/reports/codex-help.stderr.txt"
+
+      - name: Generate bootstrap manifest and closed digest set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ['BOOTSTRAP_DIR'])
+          records = []
+          for path in sorted(p for p in root.rglob('*') if p.is_file()):
+              relative = path.relative_to(root).as_posix()
+              if relative in {'bootstrap-manifest.json', 'SHA256SUMS'}:
+                  continue
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              records.append({'path': relative, 'bytes': path.stat().st_size, 'sha256': digest})
+          manifest = {
+              'schema': 'org.trillionnium.owner-open-r6.bootstrap-bundle.v1',
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'source_commit': os.environ['SOURCE_COMMIT'],
+              'source_tree': os.environ['SOURCE_TREE'],
+              'workflow': os.environ['GITHUB_WORKFLOW'],
+              'workflow_run_id': int(os.environ['GITHUB_RUN_ID']),
+              'workflow_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+              'builder': {
+                  'runner_os': os.environ['RUNNER_OS'],
+                  'runner_arch': os.environ['RUNNER_ARCH'],
+                  'runner_name': os.environ['RUNNER_NAME'],
+              },
+              'codex': {
+                  'version': os.environ['CODEX_VERSION'],
+                  'tag': os.environ['CODEX_TAG'],
+                  'archive_sha256': os.environ['CODEX_ARCHIVE_SHA256'],
+                  'member_sha256': os.environ['CODEX_MEMBER_SHA256'],
+              },
+              'claim_ceiling': 'BOOTSTRAP_MATERIALS_BUILT_NOT_INSTALLED_NOT_TARGET_ATTESTED_NOT_L2',
+              'synthetic': False,
+              'automatic_redispatch': False,
+              'negative_claims': [
+                  'not_installed_target',
+                  'not_root_linux_placement_evidence',
+                  'not_authenticated_codex_same_turn',
+                  'not_clean_android_image',
+                  'not_physical_device',
+                  'not_destructive_fault_matrix',
+                  'not_signed_release',
+                  'not_public_release',
+              ],
+              'files': records,
+          }
+          (root / 'bootstrap-manifest.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          with (root / 'SHA256SUMS').open('w', encoding='utf-8') as output:
+              for record in records:
+                  output.write(f"{record['sha256']}  {record['path']}\n")
+              raw = (root / 'bootstrap-manifest.json').read_bytes()
+              output.write(f"{hashlib.sha256(raw).hexdigest()}  bootstrap-manifest.json\n")
+          PY
+          (cd "$BOOTSTRAP_DIR" && sha256sum --check --strict SHA256SUMS)
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            -C "$BOOTSTRAP_DIR" -czf "$RUNNER_TEMP/owner-open-r6-bootstrap-${SOURCE_COMMIT}.tar.gz" .
+          sha256sum "$RUNNER_TEMP/owner-open-r6-bootstrap-${SOURCE_COMMIT}.tar.gz" \
+            > "$RUNNER_TEMP/owner-open-r6-bootstrap-${SOURCE_COMMIT}.tar.gz.sha256"
+
+      - name: Upload non-qualifying bootstrap bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-r6-bootstrap-${{ env.SOURCE_COMMIT }}
+          path: |
+            ${{ runner.temp }}/owner-open-r6-bootstrap-${{ env.SOURCE_COMMIT }}.tar.gz
+            ${{ runner.temp }}/owner-open-r6-bootstrap-${{ env.SOURCE_COMMIT }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 7
