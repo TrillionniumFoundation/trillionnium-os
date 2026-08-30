@@ -286,28 +286,25 @@ where
         }
     }
 
-    join_if_finished(stdout_thread, &mut runtime_error, "stdout_reader");
-    join_if_finished(stderr_thread, &mut runtime_error, "stderr_reader");
-    if let Some(thread) = stdin_thread {
-        if thread.is_finished() {
-            match thread.join() {
-                Ok(Some(error)) => runtime_error = Some(join_error(runtime_error, error)),
-                Ok(None) => {}
-                Err(_) => {
-                    runtime_error = Some(join_error(
-                        runtime_error,
-                        "stdin_writer_panicked".to_string(),
-                    ));
-                }
-            }
-        } else {
-            runtime_error = Some(join_error(
-                runtime_error,
-                "stdin_writer_did_not_finish_after_process_cleanup".to_string(),
-            ));
-            forced_kind = Some(TerminalKind::IoError);
-            drop(thread);
-        }
+    let join_grace = post_exit_grace(limits);
+    if !join_reader_bounded(
+        stdout_thread,
+        &mut runtime_error,
+        "stdout_reader",
+        join_grace,
+    ) {
+        forced_kind = Some(TerminalKind::IoError);
+    }
+    if !join_reader_bounded(
+        stderr_thread,
+        &mut runtime_error,
+        "stderr_reader",
+        join_grace,
+    ) {
+        forced_kind = Some(TerminalKind::IoError);
+    }
+    if !join_stdin_bounded(stdin_thread, &mut runtime_error, join_grace) {
+        forced_kind = Some(TerminalKind::IoError);
     }
 
     let status = child_status.or_else(|| child.try_wait().ok().flatten());
@@ -390,20 +387,69 @@ where
     })
 }
 
-fn join_if_finished(thread: Option<JoinHandle<()>>, error: &mut Option<String>, label: &str) {
+fn wait_until_finished<T>(thread: &JoinHandle<T>, timeout: Duration) -> bool {
+    let deadline = Instant::now()
+        .checked_add(timeout)
+        .unwrap_or_else(Instant::now);
+    while !thread.is_finished() && Instant::now() < deadline {
+        thread::sleep(Duration::from_millis(1));
+    }
+    thread.is_finished()
+}
+
+fn join_reader_bounded(
+    thread: Option<JoinHandle<()>>,
+    error: &mut Option<String>,
+    label: &str,
+    timeout: Duration,
+) -> bool {
     let Some(thread) = thread else {
-        return;
+        return true;
     };
-    if !thread.is_finished() {
+    if !wait_until_finished(&thread, timeout) {
         *error = Some(join_error(
             error.take(),
             format!("{label}_did_not_finish_after_process_cleanup"),
         ));
         drop(thread);
-        return;
+        return false;
     }
     if thread.join().is_err() {
         *error = Some(join_error(error.take(), format!("{label}_panicked")));
+        return false;
+    }
+    true
+}
+
+fn join_stdin_bounded(
+    thread: Option<JoinHandle<Option<String>>>,
+    error: &mut Option<String>,
+    timeout: Duration,
+) -> bool {
+    let Some(thread) = thread else {
+        return true;
+    };
+    if !wait_until_finished(&thread, timeout) {
+        *error = Some(join_error(
+            error.take(),
+            "stdin_writer_did_not_finish_after_process_cleanup".to_string(),
+        ));
+        drop(thread);
+        return false;
+    }
+    match thread.join() {
+        Ok(Some(next)) => {
+            *error = Some(join_error(error.take(), next));
+            true
+        }
+        Ok(None) => true,
+        Err(_) => {
+            *error = Some(join_error(
+                error.take(),
+                "stdin_writer_panicked".to_string(),
+            ));
+            false
+        }
     }
 }
 
