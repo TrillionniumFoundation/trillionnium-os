@@ -16,6 +16,7 @@ TOOLS = Path(__file__).resolve().parent
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
+from owner_open_r5_capture_trust import validate_capture_chain  # noqa: E402
 from owner_open_r5_evidence_bundle import (  # noqa: E402
     EvidenceError,
     LEVELS,
@@ -211,6 +212,7 @@ def apply_promotion(
     if not bundle_relative.startswith("evidence/owner-open-r5/"):
         raise EvidenceError("bundle manifest must be below evidence/owner-open-r5/")
     facts = require_valid_bundle(manifest_path, require_promotable=True)
+    capture_trust = validate_capture_chain(manifest_path)
 
     gaps = deepcopy(load_object(root / GAPS_PATH))
     status = deepcopy(load_object(root / STATUS_PATH))
@@ -288,6 +290,9 @@ def apply_promotion(
         "promoted_gap_ids": sorted(promoted),
         "bundle_path": bundle_relative,
         "bundle_sha256": facts["manifest_sha256"],
+        "capture_driver_sha256": capture_trust["capture_driver_sha256"],
+        "target_attestation_sha256": capture_trust["target_attestation_sha256"],
+        "harness_sha256": capture_trust["harness_sha256"],
         "zero_gap": status["zero_gap"],
         "public_release": status["public_release"],
     }
