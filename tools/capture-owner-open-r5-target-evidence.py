@@ -8,7 +8,6 @@ import json
 import os
 from pathlib import Path
 import signal
-import stat
 import subprocess
 import sys
 from typing import Any
@@ -17,6 +16,13 @@ TOOLS = Path(__file__).resolve().parent
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
+from owner_open_r5_capture_trust import (  # noqa: E402
+    assert_harness_identity,
+    environment_statement,
+    harness_environment,
+    require_fixed_target_file,
+    validate_capture_chain,
+)
 from owner_open_r5_evidence_bundle import (  # noqa: E402
     ARTIFACT_INDEX_SCHEMA,
     EvidenceError,
@@ -24,7 +30,6 @@ from owner_open_r5_evidence_bundle import (  # noqa: E402
     OBSERVATIONS_SCHEMA,
     REPOSITORY,
     read_json_object,
-    read_regular_bytes,
     sha256_file,
     validate_target_attestation,
 )
@@ -65,29 +70,11 @@ def atomic_json(path: Path, value: Any) -> None:
     finally:
         os.close(descriptor)
     os.replace(temporary, path)
-
-
-def require_fixed_file(path: Path, *, executable: bool) -> dict[str, Any]:
-    if not path.is_absolute() or path.is_symlink() or not path.is_file():
-        raise EvidenceError(f"fixed target file is absent or unsafe: {path}")
-    metadata = path.lstat()
-    if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
-        raise EvidenceError(f"fixed target file is not a single-link regular file: {path}")
-    if metadata.st_mode & 0o022:
-        raise EvidenceError(f"fixed target file is group/world writable: {path}")
-    if executable and (metadata.st_mode & 0o111 == 0 or not os.access(path, os.X_OK)):
-        raise EvidenceError(f"fixed target harness is not executable: {path}")
-    size, digest = sha256_file(path)
-    return {
-        "path": str(path),
-        "bytes": size,
-        "sha256": digest,
-        "uid": metadata.st_uid,
-        "gid": metadata.st_gid,
-        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
-        "device": metadata.st_dev,
-        "inode": metadata.st_ino,
-    }
+    directory = os.open(path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
 
 
 def run_harness(
@@ -101,18 +88,14 @@ def run_harness(
     source_tree: str,
     timeout: float,
 ) -> dict[str, Any]:
-    environment = {
-        "PATH": os.environ.get("PATH", "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"),
-        "HOME": os.environ.get("HOME", "/nonexistent"),
-        "LANG": "C.UTF-8",
-        "LC_ALL": "C.UTF-8",
-        "OWNER_OPEN_R5_KIND": kind,
-        "OWNER_OPEN_R5_SOURCE_COMMIT": source_commit,
-        "OWNER_OPEN_R5_SOURCE_TREE": source_tree,
-        "OWNER_OPEN_R5_RAW_DIR": str(raw_dir),
-        "OWNER_OPEN_R5_ARTIFACT_INDEX": str(index),
-        "OWNER_OPEN_R5_OBSERVATIONS": str(observations),
-    }
+    environment = harness_environment(
+        kind=kind,
+        source_commit=source_commit,
+        source_tree=source_tree,
+        raw_dir=raw_dir,
+        artifact_index=index,
+        observations=observations,
+    )
     argv = [
         str(harness),
         "--raw-dir",
@@ -134,6 +117,7 @@ def run_harness(
         stderr=subprocess.PIPE,
         env=environment,
         start_new_session=True,
+        close_fds=True,
     )
     try:
         stdout, stderr = process.communicate(timeout=timeout)
@@ -166,6 +150,7 @@ def run_harness(
         "finished_at": utc_text(finished),
         "stdout_bytes": len(stdout),
         "stderr_bytes": len(stderr),
+        "environment": environment_statement(environment),
     }
 
 
@@ -212,16 +197,23 @@ def main(argv: list[str]) -> int:
 
         harness = HARNESS_ROOT / args.kind
         attestation = ATTESTATION_ROOT / f"{args.kind}.json"
-        harness_identity = require_fixed_file(harness, executable=True)
-        require_fixed_file(attestation, executable=False)
+        harness_identity = require_fixed_target_file(
+            harness, executable=True, require_root_owner=True
+        )
+        attestation_identity = require_fixed_target_file(
+            attestation, executable=False, require_root_owner=True
+        )
         provisional = {
             "source_commit": args.source_commit,
             "source_tree": args.source_tree,
             "evidence_level": policy["level"],
         }
         started = utc_now()
-        validate_target_attestation(
+        attestation_value = validate_target_attestation(
             attestation, manifest=provisional, at_time=started
+        )
+        assert_harness_identity(
+            harness_identity, attestation_value.get("harness"), kind=args.kind
         )
         run = run_harness(
             harness,
@@ -253,7 +245,9 @@ def main(argv: list[str]) -> int:
             "kind": args.kind,
             "source_commit": args.source_commit,
             "source_tree": args.source_tree,
+            "synthetic": False,
             "harness": harness_identity,
+            "target_attestation": attestation_identity,
             "run": run,
             "automatic_redispatch": False,
         }
@@ -329,6 +323,7 @@ def main(argv: list[str]) -> int:
             raise EvidenceError(
                 "capture finalization failed: " + completed.stderr[-4096:]
             )
+        validate_capture_chain(bundle_dir / "manifest.json")
     except (EvidenceError, OSError, subprocess.SubprocessError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 1
