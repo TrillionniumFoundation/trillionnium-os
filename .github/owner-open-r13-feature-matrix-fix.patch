@@ -1,0 +1,220 @@
+diff --git a/.github/workflows/owner-open-r13-source-qualification.yml b/.github/workflows/owner-open-r13-source-qualification.yml
+index 961e342..1fd897c 100644
+--- a/.github/workflows/owner-open-r13-source-qualification.yml
++++ b/.github/workflows/owner-open-r13-source-qualification.yml
+@@ -78,11 +78,6 @@ jobs:
+     name: R13 Rust 1.93 full workspace closure
+     runs-on: ubuntu-24.04
+     timeout-minutes: 120
+-    env:
+-      # The all-features lane deliberately includes the separately built P0-1
+-      # device-conformance binaries. Their build script fails closed unless the
+-      # non-product userdebug variant is selected explicitly.
+-      TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT: userdebug
+     steps:
+       - name: Check out the exact source head
+         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+@@ -104,19 +99,9 @@ jobs:
+           test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+           test -s Cargo.lock
+           cp Cargo.lock "$RUNNER_TEMP/reviewed-Cargo.lock"
+-          cargo metadata --workspace --all-features --locked --format-version 1 \
++          cargo metadata --workspace --locked --format-version 1 \
+             > "$RUNNER_TEMP/cargo-metadata.json"
+           cmp --silent Cargo.lock "$RUNNER_TEMP/reviewed-Cargo.lock"
+-      - name: Check formatting
+-        run: cargo fmt --all -- --check
+-      - name: Test the complete workspace
+-        run: cargo test --workspace --all-targets --all-features --locked
+-      - name: Deny warnings in the complete workspace
+-        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+-      - name: Build complete workspace documentation
+-        env:
+-          RUSTDOCFLAGS: "-D warnings"
+-        run: cargo doc --workspace --all-features --no-deps --locked
++      - name: Qualify the default workspace and every valid feature lane
++        run: bash tools/verify-owner-open-r13-rust-workspace.sh
+       - name: Prove clean postflight
+         run: |
+           set -euo pipefail
+diff --git a/docs/implementation/owner-open-r13-runtime-boundary-hardening.md b/docs/implementation/owner-open-r13-runtime-boundary-hardening.md
+index f04af42..b367043 100644
+--- a/docs/implementation/owner-open-r13-runtime-boundary-hardening.md
++++ b/docs/implementation/owner-open-r13-runtime-boundary-hardening.md
+@@ -34,3 +34,13 @@ exact source head in three independent jobs:
+ 
+ The workflow has no path filter, no write permission, no persisted checkout
+ credential and no mutable third-party Action reference.
++
++## Rust workspace feature qualification
++
++The workspace contains intentionally incompatible production, development, and
++device-conformance custody features. Qualification therefore runs the ordinary
++workspace with default features, then tests, lints, and documents every declared
++valid feature lane in isolation. It also proves that forbidden feature unions
++still fail with their expected custody-boundary diagnostics. A Python regression
++compares the matrix against every non-default feature declared by workspace
++packages so a newly added feature cannot silently escape qualification.
+diff --git a/tools/tests/test_owner_open_r13_runtime_hardening.py b/tools/tests/test_owner_open_r13_runtime_hardening.py
+index d0ebb82..f0ad7a9 100644
+--- a/tools/tests/test_owner_open_r13_runtime_hardening.py
++++ b/tools/tests/test_owner_open_r13_runtime_hardening.py
+@@ -98,11 +98,39 @@ class RuntimeBoundaryHardeningTests(unittest.TestCase):
+         report = module.verify(ROOT)
+         self.assertTrue(report["ok"], report)
+ 
+-    def test_full_workspace_gate_selects_explicit_non_product_conformance_variant(self) -> None:
++    def test_full_workspace_gate_uses_audited_feature_matrix(self) -> None:
++        import re
++        import tomllib
++
+         workflow = read(".github/workflows/owner-open-r13-source-qualification.yml")
+-        self.assertIn("TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT: userdebug", workflow)
+-        self.assertIn("cargo test --workspace --all-targets --all-features --locked", workflow)
+-        self.assertIn("cargo clippy --workspace --all-targets --all-features --locked", workflow)
++        matrix = read("tools/verify-owner-open-r13-rust-workspace.sh")
++        self.assertIn("bash tools/verify-owner-open-r13-rust-workspace.sh", workflow)
++        self.assertNotIn("--all-features", workflow)
++        self.assertNotIn("--all-features", matrix)
++        self.assertIn("TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug", matrix)
++        self.assertIn("expect_feature_lane_failure", matrix)
++
++        covered = set()
++        for package, feature in re.findall(
++            r'"([a-z0-9][a-z0-9-]+)\|([a-z0-9][a-z0-9,-]+)(?:\|[^"]+)?"', matrix
++        ):
++            for item in feature.split(","):
++                covered.add((package, item))
++
++        declared = set()
++        for path in sorted((ROOT / "apps").glob("*/Cargo.toml")) + sorted(
++            (ROOT / "crates").glob("*/Cargo.toml")
++        ):
++            value = tomllib.loads(path.read_text(encoding="utf-8"))
++            package = value.get("package", {}).get("name")
++            for feature in value.get("features", {}):
++                if package and feature != "default":
++                    declared.add((package, feature))
++        self.assertEqual(declared, covered)
+ 
+     def test_documentation_does_not_describe_fail_open_as_default(self) -> None:
+         implementation = read("docs/implementation/owner-open-long-running-jobs-v1.md")
+diff --git a/tools/verify-owner-open-r13-rust-workspace.sh b/tools/verify-owner-open-r13-rust-workspace.sh
+new file mode 100755
+index 0000000..fb6ab12
+--- /dev/null
++++ b/tools/verify-owner-open-r13-rust-workspace.sh
+@@ -0,0 +1,113 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++# The workspace contains deliberately incompatible product, development, and
++# device-conformance custody domains. A single feature-unified build would
++# erase that boundary and is expected to fail at compile time. Qualify the
++# default workspace plus every declared valid feature lane in isolation.
++export CARGO_INCREMENTAL="${CARGO_INCREMENTAL:-0}"
++export RUST_BACKTRACE="${RUST_BACKTRACE:-1}"
++export TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug
++
++readonly -a VALID_FEATURE_LANES=(
++  "trillionnium-agent-api-uds|legacy-plan-methods"
++  "trillionnium-agent-direct-tools|dev-overrides"
++  "trillionnium-agent-direct-tools|development-compatibility-lane"
++  "trillionnium-agent-direct-tools|production-durable-hotpath"
++  "trillionnium-agent-direct-tools|device-launch-package-conformance"
++  "trillionnium-dbus|legacy-plan-execution"
++  "trillionnium-os-types|p0-launch-package-device-conformance"
++  "trillionnium-privilege-broker-protocol|p0-launch-package-device-conformance"
++  "trillionnium-shell-exec|root-linux-mcp-adapter"
++  "trillionnium-shell-exec|android-product"
++  "trillionnium-shell-exec|host-conformance"
++  "trillionnium-tool-runtime|dev-conformance-fault-hook"
++  "trillionnium-tool-runtime|p0-launch-package-provider-conformance"
++  "trillionnium-tool-runtime|legacy-authority-effects"
++  "trillionnium-agent-privilege-broker|p0-launch-package-device-conformance"
++  "trillionniumd|dev-conformance-fault-hook"
++  "trillionniumd|p0-launch-package-device-conformance"
++  "trillionniumd|legacy-plan-conformance"
++)
++
++readonly -a INVALID_FEATURE_LANES=(
++  "trillionnium-agent-direct-tools|trusted-context-hotpath|trusted-context-hotpath is source-only"
++  "trillionnium-agent-direct-tools|production-durable-hotpath,dev-overrides|production-durable-hotpath and dev-overrides are mutually exclusive custody domains"
++  "trillionnium-agent-direct-tools|production-durable-hotpath,development-compatibility-lane|production-durable-hotpath and development-compatibility-lane are mutually exclusive effect lanes"
++  "trillionnium-agent-direct-tools|device-launch-package-conformance,production-durable-hotpath|device-launch-package-conformance is a separate non-product custody domain"
++)
++
++run_feature_lane() {
++  local phase="$1"
++  local lane="$2"
++  local package="${lane%%|*}"
++  local features="${lane#*|}"
++  echo "==> ${phase}: ${package} [${features}]"
++  case "$phase" in
++    test)
++      cargo test -p "$package" --all-targets --no-default-features \
++        --features "$features" --locked
++      ;;
++    clippy)
++      cargo clippy -p "$package" --all-targets --no-default-features \
++        --features "$features" --locked -- -D warnings
++      ;;
++    doc)
++      RUSTDOCFLAGS="-D warnings" cargo doc -p "$package" --no-deps \
++        --no-default-features --features "$features" --locked
++      ;;
++    *)
++      echo "unknown feature-lane phase: $phase" >&2
++      return 2
++      ;;
++  esac
++}
++
++expect_feature_lane_failure() {
++  local lane="$1"
++  local package="${lane%%|*}"
++  local remainder="${lane#*|}"
++  local features="${remainder%%|*}"
++  local expected="${remainder#*|}"
++  local log
++  log="$(mktemp)"
++  echo "==> expected compile rejection: ${package} [${features}]"
++  if cargo check -p "$package" --all-targets --no-default-features \
++      --features "$features" --locked >"$log" 2>&1; then
++    cat "$log" >&2
++    rm -f "$log"
++    echo "invalid feature combination unexpectedly compiled" >&2
++    return 1
++  fi
++  if ! grep -Fq "$expected" "$log"; then
++    cat "$log" >&2
++    rm -f "$log"
++    echo "invalid feature combination failed for an unexpected reason" >&2
++    return 1
++  fi
++  rm -f "$log"
++}
++
++cargo metadata --workspace --locked --format-version 1 >/dev/null
++cargo fmt --all -- --check
++
++# First prove the ordinary, feature-minimal workspace closure.
++cargo test --workspace --all-targets --locked
++for lane in "${VALID_FEATURE_LANES[@]}"; do
++  run_feature_lane test "$lane"
++done
++
++cargo clippy --workspace --all-targets --locked -- -D warnings
++for lane in "${VALID_FEATURE_LANES[@]}"; do
++  run_feature_lane clippy "$lane"
++done
++
++RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked
++for lane in "${VALID_FEATURE_LANES[@]}"; do
++  run_feature_lane doc "$lane"
++done
++
++# Finally prove that custody-domain boundaries still reject forbidden unions.
++for lane in "${INVALID_FEATURE_LANES[@]}"; do
++  expect_feature_lane_failure "$lane"
++done
