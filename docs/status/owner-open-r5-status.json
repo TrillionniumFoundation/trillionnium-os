@@ -12,7 +12,7 @@
   "zero_gap": false,
   "public_release": false,
   "automatic_redispatch": false,
-  "product_claim": "Exact source commit 498d0ffc6818776f7abfa71af5ee2c77cde45a8a and tree aad53bd41aa8efa4fac5496aba813aed8ffd2d91 passed the permanent L1 source, gap, Rust, Broker, MCP, release-path, product-entrypoint, ADB-relay and foundation gates. Job admission is CLOSED at L1. Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint are source-closed but still require their declared L2-L5 target evidence. Repository governance, installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public release remain explicit holds.",
+  "product_claim": "Exact source commit c8790b6b5d0e59dff74f527db1d1173d4a2fb043 and tree 02cb419638a7e163c0eb957e6b6e95bb4df54609 passed the permanent L1 source, gap, Rust, Broker, MCP, release-path, product-entrypoint, ADB-relay, Android source-profile, Root-Linux packaging and foundation gates. Job admission is CLOSED at L1. Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint are source-closed but still require their declared L2-L5 target evidence. Repository governance, installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public release remain explicit holds.",
   "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
   "status_levels": [
     "NOT_STARTED",
@@ -81,9 +81,9 @@
       "one source-selected product entrypoint and release-path mechanics",
       "deployment, restart, emergency-stop and L0-L6 evidence contracts"
     ],
-    "validated_source_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-    "validated_source_tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-    "workflow_run_id": 33275227428,
+    "validated_source_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+    "validated_source_tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+    "workflow_run_id": 33282230585,
     "promotion_commit_requires_new_exact_head_ci": true
   },
   "open_repository_gaps": [
@@ -105,7 +105,7 @@
       "required_level": "L2",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
+      "source_evidence_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
     },
     {
       "id": "R5-GAP-ROOTLINUX-PLACEMENT-001",
@@ -116,7 +116,7 @@
       "required_level": "L2",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
+      "source_evidence_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
     },
     {
       "id": "R5-GAP-ANDROID-GRAPH-001",
@@ -127,7 +127,7 @@
       "required_level": "L3",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
+      "source_evidence_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
     },
     {
       "id": "R5-GAP-PHYSICAL-ADB-001",
@@ -139,7 +139,7 @@
       "required_level": "L4",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
+      "source_evidence_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
     },
     {
       "id": "R5-GAP-FAULT-MATRIX-001",
@@ -150,7 +150,7 @@
       "required_level": "L5",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
+      "source_evidence_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
     },
     {
       "id": "R5-GAP-RELEASE-001",
@@ -160,7 +160,7 @@
       "required_level": "L6",
       "status": "NOT_PROVIDED",
       "source_status": "HOST_TESTED",
-      "source_evidence_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a"
+      "source_evidence_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
     }
   ],
   "work_packages": [
@@ -290,9 +290,9 @@
     "status": "HOST_TESTED",
     "evidence_level": "L1",
     "branch": "codex/owner-open-r5-gap-closure-20260829",
-    "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-    "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-    "workflow_run_id": 33275227428,
+    "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+    "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+    "workflow_run_id": 33282230585,
     "successful_jobs": [
       "L1 graph, documentation, broker and MCP source closure",
       "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -300,19 +300,19 @@
     ],
     "artifacts": [
       {
-        "id": 9721291169,
-        "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+        "id": 9723329897,
+        "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
       },
       {
-        "id": 9721304610,
-        "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+        "id": 9723329308,
+        "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
       },
       {
-        "id": 9721310376,
-        "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+        "id": 9723331596,
+        "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
       }
     ],
     "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX"

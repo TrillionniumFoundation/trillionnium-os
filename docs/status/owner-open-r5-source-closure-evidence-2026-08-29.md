@@ -8,10 +8,10 @@ Status: **L1 source closure passed; target, device, destructive-fault and releas
 | --- | --- |
 | Repository | `TrillionniumFoundation/trillionnium-os` |
 | Branch | `codex/owner-open-r5-gap-closure-20260829` |
-| Source commit | `498d0ffc6818776f7abfa71af5ee2c77cde45a8a` |
-| Source tree | `aad53bd41aa8efa4fac5496aba813aed8ffd2d91` |
+| Source commit | `c8790b6b5d0e59dff74f527db1d1173d4a2fb043` |
+| Source tree | `02cb419638a7e163c0eb957e6b6e95bb4df54609` |
 | Permanent workflow | `L1 owner-open R5 source and gap closure` |
-| Workflow run | `33275227428` |
+| Workflow run | `33282230585` |
 | Result | `L1_SOURCE_CLOSURE_PASSED` |
 | Claim ceiling | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX` |
 | Cargo.lock SHA-256 | `a469d72776978b143f47ba71904325404dc77307b25374214e6dd321147b99a0` |
@@ -25,13 +25,13 @@ source checks, release-path mechanics, ADB relay checks and the foundation suite
 
 | Artifact ID | Name | SHA-256 digest |
 | --- | --- | --- |
-| `9721291169` | `owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838` |
-| `9721304610` | `owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887` |
-| `9721310376` | `owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3` |
+| `9723329897` | `owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043` | `sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d` |
+| `9723329308` | `owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043` | `sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a` |
+| `9723331596` | `owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043` | `sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72` |
 
 ## Source identity versus promotion head
 
-`498d0ffc6818776f7abfa71af5ee2c77cde45a8a` / `aad53bd41aa8efa4fac5496aba813aed8ffd2d91` is the immutable qualified source identity. A later state-only
+`c8790b6b5d0e59dff74f527db1d1173d4a2fb043` / `02cb419638a7e163c0eb957e6b6e95bb4df54609` is the immutable qualified source identity. A later state-only
 promotion commit may update `docs/status/` or import independently reviewed evidence without changing
 that source identity. Such a promotion head must pass its own exact-head repository checks and is not
 allowed to inherit qualification after any source, Cargo, contract, tool or workflow drift.

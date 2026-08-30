@@ -32,9 +32,9 @@
     "branch": "codex/owner-open-r5-gap-closure-20260829",
     "state": "EXACT_SOURCE_HEAD_L1_PASSED",
     "evidence_level": "L1",
-    "validated_source_commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-    "validated_source_tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-    "workflow_run_id": 33275227428,
+    "validated_source_commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+    "validated_source_tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+    "workflow_run_id": 33282230585,
     "checked_in_promotion_requires_new_exact_head_ci": true
   },
   "state_vocabulary": {
@@ -86,9 +86,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -96,19 +96,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       },
@@ -116,8 +116,7 @@
         "repository administrator must protect main with the declared exact-head checks",
         "independent reviewer must approve the ordered branch-chain integration",
         "repository administrator must prevent direct unreviewed integration"
-      ],
-      "requires_external_evidence": true
+      ]
     },
     {
       "id": "R5-GAP-JOB-ADMISSION-001",
@@ -145,9 +144,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -155,19 +154,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       }
@@ -199,9 +198,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -209,19 +208,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       },
@@ -258,9 +257,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -268,19 +267,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       },
@@ -316,9 +315,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -326,19 +325,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       },
@@ -375,9 +374,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -385,19 +384,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       },
@@ -434,9 +433,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -444,19 +443,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       },
@@ -496,9 +495,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -506,19 +505,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       }
@@ -553,9 +552,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -563,19 +562,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       }
@@ -607,9 +606,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -617,19 +616,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       }
@@ -665,9 +664,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -675,19 +674,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       }
@@ -722,9 +721,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -732,19 +731,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       }
@@ -775,9 +774,9 @@
       "source_evidence": {
         "level": "L1",
         "branch": "codex/owner-open-r5-gap-closure-20260829",
-        "commit": "498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-        "tree": "aad53bd41aa8efa4fac5496aba813aed8ffd2d91",
-        "workflow_run_id": 33275227428,
+        "commit": "c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+        "tree": "02cb419638a7e163c0eb957e6b6e95bb4df54609",
+        "workflow_run_id": 33282230585,
         "successful_jobs": [
           "L1 graph, documentation, broker and MCP source closure",
           "L1 Rust 1.93 selected Host, job, flow and recovery closure",
@@ -785,19 +784,19 @@
         ],
         "artifacts": [
           {
-            "id": 9721291169,
-            "name": "owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838"
+            "id": 9723329897,
+            "name": "owner-open-r5-l1-graph-docs-python-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d"
           },
           {
-            "id": 9721304610,
-            "name": "owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887"
+            "id": 9723329308,
+            "name": "owner-open-r5-l1-rust-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a"
           },
           {
-            "id": 9721310376,
-            "name": "owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a",
-            "digest": "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3"
+            "id": 9723331596,
+            "name": "owner-open-r5-l1-candidate-c8790b6b5d0e59dff74f527db1d1173d4a2fb043",
+            "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72"
           }
         ]
       }
