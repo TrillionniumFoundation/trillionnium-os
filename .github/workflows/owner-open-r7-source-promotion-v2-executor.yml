@@ -1,0 +1,497 @@
+name: Owner-Open R7 exact-source promotion v2 executor
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r7-source-promotion-20260830-v2
+    paths:
+      - .github/workflows/owner-open-r7-source-promotion-v2-executor.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: owner-open-r7-source-promotion-v2
+  cancel-in-progress: false
+
+jobs:
+  bind-source-truth:
+    name: Bind canonical truth to qualified R7 v4 source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_BRANCH: codex/owner-open-r7-source-promotion-20260830-v2
+      SOURCE_BRANCH: codex/owner-open-r7-workspace-integrity-20260830-v4
+      BASE_SHA: 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONWARNINGS: error::ResourceWarning
+      CARGO_INCREMENTAL: "0"
+
+    steps:
+      - name: Check out promotion executor
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: codex/owner-open-r7-source-promotion-20260830-v2
+
+      - name: Wait for stable source checks and immutable artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cleanup() {
+            git push --force origin "$BASE_SHA:refs/heads/$TARGET_BRANCH" >/dev/null 2>&1 || true
+          }
+          trap cleanup ERR
+          deadline=$((SECONDS + 19800))
+          source_sha=""
+          source_tree=""
+          source_run=""
+          workspace_run=""
+          source_artifacts='[]'
+          workspace_artifacts='[]'
+
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin "$SOURCE_BRANCH"
+            source_sha="$(git rev-parse FETCH_HEAD)"
+            source_tree="$(git rev-parse FETCH_HEAD^{tree})"
+
+            if git cat-file -e "FETCH_HEAD:.github/workflows/owner-open-r7-workspace-integrity-v4-executor.yml" 2>/dev/null; then
+              sleep 30
+              continue
+            fi
+            for required in \
+              .github/workflows/owner-open-workspace-integrity.yml \
+              docs/implementation/owner-open-r7-runtime-hardening.md \
+              docs/implementation/owner-open-r7-complete-workspace-integrity.md
+            do
+              if ! git cat-file -e "FETCH_HEAD:$required" 2>/dev/null; then
+                sleep 30
+                continue 2
+              fi
+            done
+
+            checks="$(gh api -H 'Accept: application/vnd.github+json' \
+              "repos/$GITHUB_REPOSITORY/commits/$source_sha/check-runs?per_page=100" \
+              2>/dev/null || printf '{"total_count":0,"check_runs":[]}')"
+            total="$(jq -r '.total_count // 0' <<<"$checks")"
+            pending="$(jq '[.check_runs[] | select(.status != "completed")] | length' <<<"$checks")"
+            bad="$(jq '[.check_runs[] | select(.status == "completed") | select((.conclusion // "") as $c | ($c != "success" and $c != "neutral" and $c != "skipped"))] | length' <<<"$checks")"
+            l1_ok="$(jq '[.check_runs[] | select(.name == "L1 exact-source-head aggregate candidate" and .status == "completed" and .conclusion == "success")] | length' <<<"$checks")"
+            workspace_ok="$(jq '[.check_runs[] | select(.name == "L1 Rust 1.93 complete workspace tests and strict Clippy" and .status == "completed" and .conclusion == "success")] | length' <<<"$checks")"
+            if [ "$total" -lt 10 ] || [ "$pending" -ne 0 ] || [ "$bad" -ne 0 ] || [ "$l1_ok" -lt 1 ] || [ "$workspace_ok" -lt 1 ]; then
+              sleep 30
+              continue
+            fi
+
+            runs="$(gh api --method GET "repos/$GITHUB_REPOSITORY/actions/runs" \
+              -f head_sha="$source_sha" -F per_page=100 2>/dev/null \
+              || printf '{"workflow_runs":[]}')"
+            source_run="$(jq -r '[.workflow_runs[] | select(.name == "L1 owner-open R5 source and gap closure" and .status == "completed" and .conclusion == "success")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            workspace_run="$(jq -r '[.workflow_runs[] | select(.name == "L1 complete Rust workspace integrity" and .status == "completed" and .conclusion == "success")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            if [ -z "$source_run" ] || [ -z "$workspace_run" ]; then
+              sleep 30
+              continue
+            fi
+
+            all_source="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$source_run/artifacts?per_page=100" 2>/dev/null || printf '{"artifacts":[]}')"
+            source_artifacts="$(jq -c --arg sha "$source_sha" '[.artifacts[] | select(.expired == false) | select(.name == ("owner-open-r5-l1-graph-docs-python-" + $sha) or .name == ("owner-open-r5-l1-rust-" + $sha) or .name == ("owner-open-r5-l1-candidate-" + $sha)) | {id,name,digest}] | sort_by(.name)' <<<"$all_source")"
+            all_workspace="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$workspace_run/artifacts?per_page=100" 2>/dev/null || printf '{"artifacts":[]}')"
+            workspace_artifacts="$(jq -c --arg sha "$source_sha" '[.artifacts[] | select(.expired == false) | select(.name == ("owner-open-workspace-integrity-" + $sha)) | {id,name,digest}] | sort_by(.name)' <<<"$all_workspace")"
+            if [ "$(jq 'length' <<<"$source_artifacts")" -eq 3 ] \
+              && [ "$(jq '[.[] | select((.digest // "") | startswith("sha256:"))] | length' <<<"$source_artifacts")" -eq 3 ] \
+              && [ "$(jq 'length' <<<"$workspace_artifacts")" -eq 1 ] \
+              && [ "$(jq '[.[] | select((.digest // "") | startswith("sha256:"))] | length' <<<"$workspace_artifacts")" -eq 1 ]; then
+              break
+            fi
+            sleep 30
+          done
+
+          test -n "$source_sha"
+          test -n "$source_tree"
+          test -n "$source_run"
+          test -n "$workspace_run"
+          test "$(jq 'length' <<<"$source_artifacts")" -eq 3
+          test "$(jq 'length' <<<"$workspace_artifacts")" -eq 1
+          jq -n \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg branch "$SOURCE_BRANCH" \
+            --arg source_commit "$source_sha" \
+            --arg source_tree "$source_tree" \
+            --argjson source_run "$source_run" \
+            --argjson workspace_run "$workspace_run" \
+            --argjson artifacts "$source_artifacts" \
+            --argjson workspace_artifacts "$workspace_artifacts" \
+            '{repository:$repository,branch:$branch,source_commit:$source_commit,source_tree:$source_tree,source_run:$source_run,workspace_run:$workspace_run,artifacts:$artifacts,workspace_artifacts:$workspace_artifacts}' \
+            > "$RUNNER_TEMP/r7-v4-source-facts.json"
+          cat "$RUNNER_TEMP/r7-v4-source-facts.json"
+          trap - ERR
+
+      - name: Adopt source head and bind canonical truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$SOURCE_BRANCH"
+          git reset --hard FETCH_HEAD
+          cp "$RUNNER_TEMP/r7-v4-source-facts.json" .r7-source-facts.json
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from pathlib import Path
+          import re
+
+          facts = json.loads(Path(".r7-source-facts.json").read_text(encoding="utf-8"))
+          branch = facts["branch"]
+          commit = facts["source_commit"]
+          tree = facts["source_tree"]
+          run_id = facts["source_run"]
+          workspace_run = facts["workspace_run"]
+          artifacts = facts["artifacts"]
+          workspace_artifacts = facts["workspace_artifacts"]
+          jobs = [
+              "L1 graph, documentation, broker and MCP source closure",
+              "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+              "L1 exact-source-head aggregate candidate",
+          ]
+
+          def load(path: str) -> dict:
+              value = json.loads(Path(path).read_text(encoding="utf-8"))
+              if not isinstance(value, dict):
+                  raise ValueError(f"{path} must contain an object")
+              return value
+
+          def save(path: str, value: dict) -> None:
+              Path(path).write_text(
+                  json.dumps(value, ensure_ascii=False, indent=2) + "\n",
+                  encoding="utf-8",
+              )
+
+          def source_record() -> dict:
+              return {
+                  "level": "L1",
+                  "branch": branch,
+                  "commit": commit,
+                  "tree": tree,
+                  "workflow_run_id": run_id,
+                  "successful_jobs": list(jobs),
+                  "artifacts": [dict(item) for item in artifacts],
+              }
+
+          gap_path = "docs/status/owner-open-r5-gap-closure.json"
+          gap = load(gap_path)
+          candidate = gap.get("documentation_candidate")
+          if not isinstance(candidate, dict):
+              raise ValueError("documentation_candidate is absent")
+          candidate.update(
+              {
+                  "branch": branch,
+                  "state": "EXACT_SOURCE_HEAD_L1_PASSED",
+                  "evidence_level": "L1",
+                  "validated_source_commit": commit,
+                  "validated_source_tree": tree,
+                  "workflow_run_id": run_id,
+                  "checked_in_promotion_requires_new_exact_head_ci": True,
+              }
+          )
+          for item in gap.get("gaps", []):
+              if isinstance(item, dict) and isinstance(item.get("source_evidence"), dict):
+                  item["source_evidence"] = source_record()
+          save(gap_path, gap)
+
+          status_path = "docs/status/owner-open-r5-status.json"
+          status = load(status_path)
+          status["updated_at"] = "2026-08-30"
+          status["development_branch"] = "codex/owner-open-r7-source-promotion-20260830-v2"
+          status["product_claim"] = (
+              f"Exact R7 source commit {commit} and tree {tree} passed source/gap run "
+              f"{run_id}, complete-workspace run {workspace_run}, and the remaining "
+              "permanent exact-head checks. Repository-local runtime hardening and "
+              "complete-workspace CI are source-qualified. All L2-L6 target, device, "
+              "fault, governance and release exits remain unchanged and unclaimed."
+          )
+          current = status.get("current_candidate")
+          if not isinstance(current, dict):
+              raise ValueError("current_candidate is absent")
+          current.update(
+              {
+                  "branch": branch,
+                  "status": "HOST_TESTED",
+                  "latest_evidence_level": "L1",
+                  "exact_head_validation_pending": False,
+                  "must_not_inherit_baseline_l1": False,
+                  "validated_source_commit": commit,
+                  "validated_source_tree": tree,
+                  "workflow_run_id": run_id,
+                  "promotion_commit_requires_new_exact_head_ci": True,
+              }
+          )
+          scope = current.setdefault("scope", [])
+          for value in (
+              "R7 fail-closed Provider and job runtime boundary hardening",
+              "R7 exact-head complete Rust workspace integrity",
+          ):
+              if value not in scope:
+                  scope.append(value)
+          status["known_exact_candidate"] = {
+              "status": "HOST_TESTED",
+              "evidence_level": "L1",
+              "branch": branch,
+              "commit": commit,
+              "tree": tree,
+              "workflow_run_id": run_id,
+              "successful_jobs": list(jobs),
+              "artifacts": [dict(item) for item in artifacts],
+              "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
+          }
+          status["workspace_integrity_evidence"] = {
+              "level": "L1",
+              "branch": branch,
+              "commit": commit,
+              "tree": tree,
+              "workflow_run_id": workspace_run,
+              "successful_job": "L1 Rust 1.93 complete workspace tests and strict Clippy",
+              "artifacts": [dict(item) for item in workspace_artifacts],
+          }
+          for item in status.get("external_evidence_holds", []):
+              if isinstance(item, dict) and "source_evidence_commit" in item:
+                  item["source_evidence_commit"] = commit
+          status["source_evidence_document"] = "docs/status/owner-open-r7-v4-source-closure-evidence-2026-08-30.md"
+          save(status_path, status)
+
+          evidence = Path("docs/status/owner-open-r7-v4-source-closure-evidence-2026-08-30.md")
+          artifact_lines = "\n".join(
+              f"- `{item['id']}` — `{item['name']}` — `{item['digest']}`"
+              for item in artifacts
+          )
+          workspace_lines = "\n".join(
+              f"- `{item['id']}` — `{item['name']}` — `{item['digest']}`"
+              for item in workspace_artifacts
+          )
+          evidence.write_text(
+              f'''# Owner-Open R7 v4 exact-source L1 closure evidence
+
+Status: **HOST_TESTED / L1**
+
+```text
+repository: {facts['repository']}
+branch: {branch}
+source commit: {commit}
+source tree: {tree}
+source/gap workflow run: {run_id}
+complete-workspace workflow run: {workspace_run}
+claim ceiling: EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX
+zero_gap: false
+public_release: false
+```
+
+## Bound source artifacts
+
+{artifact_lines}
+
+## Bound complete-workspace artifact
+
+{workspace_lines}
+
+## Qualified repository-local changes
+
+- product-facing job operations require durable journaling by default;
+- Provider environment inheritance is allowlisted;
+- parent-death setup binds the pre-fork Host PID;
+- Provider reader-creation failure performs bounded process cleanup;
+- SpawnGuard rollback avoids unbounded waiting in `Drop`;
+- PTY EOT is distinguished from a pipe descriptor close;
+- owner-open workflow governance covers all generations and named checkout steps;
+- complete-workspace tests and strict Clippy run on source and canonical state heads.
+
+## Unchanged external exits
+
+No protected-main/independent-approval, installed Root Linux/Codex, Android
+image, physical ADB, destructive-fault, signing or human-release evidence is
+promoted by this source checkpoint.
+''',
+              encoding="utf-8",
+          )
+
+          start_path = Path("docs/OWNER_OPEN_R5_START_HERE.md")
+          start = start_path.read_text(encoding="utf-8")
+          start = re.sub(r"^Documentation candidate:.*$", f"Documentation candidate: `{branch}`", start, flags=re.MULTILINE)
+          start = re.sub(r"^Documentation candidate evidence:.*$", f"Documentation candidate evidence: **HOST_TESTED / L1 at exact source `{commit}`**", start, flags=re.MULTILINE)
+          checkpoint = f'''## Exact-source L1 checkpoint (2026-08-30 R7 v4)
+
+Validated source: `{commit}` / tree `{tree}` / permanent source run `{run_id}` /
+complete-workspace run `{workspace_run}`. The checked-in promotion head is
+state-only and promotes no L2-L6 claim.
+
+Start with the [R7 v4 exact-source closure evidence](status/owner-open-r7-v4-source-closure-evidence-2026-08-30.md),
+then read the [machine gap register](status/owner-open-r5-gap-closure.json) and
+[current status](status/owner-open-r5-status.json).
+
+'''
+          start = re.sub(r"## Exact-source L1 checkpoint \(2026-08-29\).*?(?=## External evidence execution entry)", checkpoint, start, flags=re.DOTALL)
+          start_path.write_text(start, encoding="utf-8")
+
+          plan_path = Path("docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md")
+          plan = plan_path.read_text(encoding="utf-8")
+          plan = re.sub(r"^Status: \*\*.*$", "Status: **ACTIVE — R7 v4 repository-local hardening is exact-source L1; zero-gap closure is not yet achieved**  ", plan, count=1, flags=re.MULTILINE)
+          plan = re.sub(
+              r"This plan update is developed on:\n\n```text\nbranch: .*?\ncandidate status: .*?\ncandidate evidence: .*?\n```",
+              "This plan update is developed on:\n\n```text\n"
+              f"branch: {branch}\n"
+              "candidate status: HOST_TESTED\n"
+              f"candidate evidence: L1 exact-source run {run_id}; complete-workspace run {workspace_run}\n"
+              "```",
+              plan,
+              count=1,
+              flags=re.DOTALL,
+          )
+          if "## R7 v4 repository-local hardening checkpoint" not in plan:
+              plan += f'''
+
+## R7 v4 repository-local hardening checkpoint
+
+Exact source `{commit}` / tree `{tree}` passed source/gap run `{run_id}` and
+complete-workspace run `{workspace_run}`. It closes newly audited repository-local
+runtime and CI-boundary weaknesses without changing any external gap exit.
+'''
+          plan_path.write_text(plan, encoding="utf-8")
+
+          readme_path = Path("README.md")
+          readme = readme_path.read_text(encoding="utf-8")
+          checkpoint = f'''## Exact L1 source checkpoint
+
+```text
+source commit: {commit}
+source tree: {tree}
+source/gap run: {run_id}
+complete-workspace run: {workspace_run}
+claim ceiling: EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX
+```
+
+The exact source passes both the selected Owner-Open closure and the complete
+Rust workspace tests/strict Clippy. It is not installed-target or release
+evidence.
+
+'''
+          if "## Exact L1 source checkpoint" in readme:
+              readme = re.sub(r"## Exact L1 source checkpoint.*?(?=## Current selected source state)", checkpoint, readme, flags=re.DOTALL)
+          else:
+              readme = readme.replace("## Current selected source state\n", checkpoint + "## Current selected source state\n", 1)
+          old_negative = '''Explicitly not claimed:
+
+- Rust 1.93 formatting, compilation, tests or clippy for the current head;
+- a reviewed current `Cargo.lock`, Cargo metadata or feature tree;
+- a runner-backed exact-checkout Python pass for the current head;
+- a live installed Codex MCP `shell.job` qualification result;
+- cross-Host live file-descriptor adoption;
+- real ARM64 ADB or a deployed byte-transparent relay;
+- a clean Android owner-open image or physical shell/job/ADB effect;
+- crash, ENOSPC, reboot or power-loss qualification;
+- public release.
+'''
+          new_negative = '''Explicitly not claimed:
+
+- protected-main enforcement and independent exact-head approval;
+- a live installed Codex MCP `shell.job` qualification result;
+- installed Root Linux UID/GID/namespace/cgroup placement;
+- cross-Host live file-descriptor adoption;
+- real ARM64 ADB or a deployed byte-transparent relay;
+- a clean Android owner-open image or physical shell/job/ADB effect;
+- crash, ENOSPC, reboot or power-loss qualification;
+- signed and human-authorized public release.
+'''
+          if old_negative not in readme:
+              raise ValueError("README negative-claim block drifted")
+          readme = readme.replace(old_negative, new_negative, 1)
+          readme = readme.replace("cargo generate-lockfile\n", "cargo metadata --locked --format-version 1 > /dev/null\n", 1)
+          readme_path.write_text(readme, encoding="utf-8")
+
+          docs_readme_path = Path("docs/README.md")
+          docs_readme = docs_readme_path.read_text(encoding="utf-8")
+          docs_readme = docs_readme.replace("## Current exact implementation baseline", "## Historical R5 implementation baseline", 1)
+          candidate_section = f'''## Current exact R7 v4 source candidate
+
+```text
+repository: {facts['repository']}
+branch: {branch}
+commit: {commit}
+tree: {tree}
+source/gap run: {run_id}
+complete-workspace run: {workspace_run}
+status: HOST_TESTED
+evidence: L1
+claim ceiling: EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX
+```
+
+See [`status/owner-open-r7-v4-source-closure-evidence-2026-08-30.md`](status/owner-open-r7-v4-source-closure-evidence-2026-08-30.md).
+External environment, device, fault, governance and release exits remain open.
+
+'''
+          docs_readme = docs_readme.replace("## Selected source closure\n", candidate_section + "## Selected source closure\n", 1)
+          docs_readme_path.write_text(docs_readme, encoding="utf-8")
+          PY
+          rm .r7-source-facts.json
+
+      - name: Install Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: 1.93.0
+          components: rustfmt, clippy
+
+      - name: Verify state-only canonical promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5 \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_owner_open_r5_evidence_bundle \
+            tools.tests.test_promote_owner_open_r5_evidence \
+            -v
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py --json
+          python3 tools/verify-owner-open-r5.py --json
+          cargo fmt --all -- --check
+          cargo check --locked --all-targets
+          git diff --check
+
+      - name: Restrict promotion to durable truth files
+        shell: bash
+        run: |
+          set -euo pipefail
+          allowed='^(README.md|docs/README.md|docs/OWNER_OPEN_R5_START_HERE.md|docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md|docs/status/owner-open-r5-gap-closure.json|docs/status/owner-open-r5-status.json|docs/status/owner-open-r7-v4-source-closure-evidence-2026-08-30.md)$'
+          paths="$(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //')"
+          unexpected="$(printf '%s\n' "$paths" | grep -Ev "$allowed" || true)"
+          test -z "$unexpected" || {
+            printf 'unexpected state-promotion paths:\n%s\n' "$unexpected" >&2
+            exit 1
+          }
+
+      - name: Commit exact state-only promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "docs(r7): bind canonical truth to qualified v4 source"
+          git push --force origin "HEAD:$TARGET_BRANCH"
+
+      - name: Ensure one stacked draft PR exists
+        shell: bash
+        run: |
+          set -u
+          owner="${GITHUB_REPOSITORY%%/*}"
+          pr="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" -f state=open -f head="$owner:$TARGET_BRANCH" -F per_page=20 2>/dev/null | jq -r '.[0].number // empty' || true)"
+          if [ -z "$pr" ]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --draft --base "$SOURCE_BRANCH" --head "$TARGET_BRANCH" --title "docs(r7): bind canonical truth to qualified v4 source" --body "State-only exact-source promotion; external gap states, zero_gap=false and public_release=false are unchanged." >/dev/null || true
+            pr="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" -f state=open -f head="$owner:$TARGET_BRANCH" -F per_page=20 2>/dev/null | jq -r '.[0].number // empty' || true)"
+          fi
+          if [ -n "$pr" ]; then gh pr edit "$pr" --repo "$GITHUB_REPOSITORY" --add-reviewer ProfHepta >/dev/null 2>&1 || true; fi
+          exit 0
