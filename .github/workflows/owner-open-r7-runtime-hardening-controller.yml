@@ -1,0 +1,198 @@
+name: Owner-Open R7 runtime hardening controller
+
+on:
+  push:
+    branches:
+      - ops/owner-open-r7-runtime-hardening-controller-20260830
+    paths:
+      - .github/workflows/owner-open-r7-runtime-hardening-controller.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: owner-open-r7-runtime-hardening-controller
+  cancel-in-progress: false
+
+jobs:
+  supervise:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_BRANCH: codex/owner-open-r7-runtime-hardening-20260830-v3
+      TARGET_WORKFLOW: Owner-Open R7 qualified runtime hardening executor
+      TARGET_EXECUTOR: .github/workflows/owner-open-r7-runtime-hardening-v3-executor.yml
+      TARGET_BASE: codex/owner-open-r5-gap-closure-20260829
+      BASE_SHA: 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+
+    steps:
+      - name: Check out controller branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ops/owner-open-r7-runtime-hardening-controller-20260830
+
+      - name: Supervise executor, persistent head and PR checks
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p out
+          deadline=$((SECONDS + 3000))
+          executor_status=""
+          executor_conclusion=""
+          executor_run=""
+
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            runs="$(gh api --method GET "repos/$GITHUB_REPOSITORY/actions/runs" \
+              -f branch="$TARGET_BRANCH" -F per_page=100 2>/dev/null || printf '{"workflow_runs":[]}')"
+            row="$(jq -c --arg name "$TARGET_WORKFLOW" \
+              '[.workflow_runs[] | select(.name == $name)] | sort_by(.created_at) | last // empty' \
+              <<<"$runs")"
+            if [ -n "$row" ]; then
+              executor_run="$(jq -r .id <<<"$row")"
+              executor_status="$(jq -r .status <<<"$row")"
+              executor_conclusion="$(jq -r '.conclusion // ""' <<<"$row")"
+              if [ "$executor_status" = completed ]; then
+                break
+              fi
+            fi
+            sleep 20
+          done
+
+          owner="${GITHUB_REPOSITORY%%/*}"
+          pr_number="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+            -f state=all -f head="$owner:$TARGET_BRANCH" -F per_page=20 2>/dev/null \
+            | jq -r '.[0].number // empty' || true)"
+
+          if [ "$executor_status" != completed ]; then
+            printf '{"outcome":"executor_timeout","run_id":"%s"}\n' "$executor_run" \
+              > out/controller-result.json
+            if [ -n "$pr_number" ]; then
+              gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                --body "R7 controller: the source executor did not reach a completed state within the bounded observation window. The PR remains draft; no source or evidence claim was promoted." || true
+            fi
+          elif [ "$executor_conclusion" != success ]; then
+            printf '{"outcome":"executor_failed","run_id":"%s","conclusion":"%s"}\n' \
+              "$executor_run" "$executor_conclusion" > out/controller-result.json
+            if [ -n "$pr_number" ]; then
+              gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                --body "R7 controller: one-shot qualification run $executor_run completed with \`$executor_conclusion\`. No qualified source commit was accepted; the temporary branch is being reset to the immutable R6 head." || true
+              gh pr close "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                --comment "Closed automatically because the source-qualification executor did not pass. No gap status was changed." || true
+            fi
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/git/refs/heads/$TARGET_BRANCH" \
+              -f sha="$BASE_SHA" -F force=true >/dev/null || true
+          else
+            target="$(gh api "repos/$GITHUB_REPOSITORY/branches/$TARGET_BRANCH" 2>/dev/null || printf '{}')"
+            target_sha="$(jq -r '.commit.sha // empty' <<<"$target")"
+            executor_present=false
+            if gh api "repos/$GITHUB_REPOSITORY/contents/$TARGET_EXECUTOR?ref=$TARGET_BRANCH" \
+              >/dev/null 2>&1; then
+              executor_present=true
+            fi
+
+            if [ -z "$target_sha" ] || [ "$target_sha" = "$BASE_SHA" ] || [ "$executor_present" = true ]; then
+              printf '{"outcome":"executor_success_without_persistent_source","run_id":"%s","target_sha":"%s"}\n' \
+                "$executor_run" "$target_sha" > out/controller-result.json
+              if [ -n "$pr_number" ]; then
+                gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                  --body "R7 controller: executor run $executor_run reported success, but a self-deleted persistent source head could not be proven. The PR remains draft and no claim is promoted." || true
+              fi
+            else
+              if [ -z "$pr_number" ]; then
+                cat > out/pr-body.md <<EOF
+          ## Purpose
+
+          Close repository-local runtime and workflow-boundary findings discovered after the R6 exact-source audit, without promoting any L2-L6 claim.
+
+          ## Qualified source changes
+
+          - durable-by-default effectful job execution with an explicit unsafe development override;
+          - Provider environment allowlisting and Linux/Android parent-death race protection;
+          - bounded SpawnGuard rollback instead of unbounded waiting in Drop;
+          - generation-independent owner-open workflow scanning, including named checkout steps;
+          - regressions for safe defaults and workflow scanner escape cases.
+
+          ## Claim boundary
+
+          L1 source hardening only. Installed Root Linux/Codex, Android target-files, physical ADB, destructive faults, repository governance, signing and public release remain unclaimed.
+          EOF
+                gh pr create --repo "$GITHUB_REPOSITORY" --draft \
+                  --base "$TARGET_BASE" --head "$TARGET_BRANCH" \
+                  --title "fix(r7): fail closed and harden runtime boundaries" \
+                  --body-file out/pr-body.md >/dev/null || true
+                pr_number="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+                  -f state=open -f head="$owner:$TARGET_BRANCH" -F per_page=20 \
+                  | jq -r '.[0].number // empty' || true)"
+              fi
+
+              checks_deadline=$((SECONDS + 1800))
+              stable=0
+              last_signature=""
+              total=0
+              pending=1
+              bad=0
+              checks='{}'
+              while [ "$SECONDS" -lt "$checks_deadline" ]; do
+                checks="$(gh api -H 'Accept: application/vnd.github+json' \
+                  "repos/$GITHUB_REPOSITORY/commits/$target_sha/check-runs?per_page=100" \
+                  2>/dev/null || printf '{"total_count":0,"check_runs":[]}')"
+                total="$(jq -r '.total_count // 0' <<<"$checks")"
+                pending="$(jq '[.check_runs[] | select(.status != "completed")] | length' <<<"$checks")"
+                bad="$(jq '[.check_runs[] | select(.status == "completed") | select((.conclusion // "") as $c | ($c != "success" and $c != "neutral" and $c != "skipped"))] | length' <<<"$checks")"
+                signature="$total:$pending:$bad:$(jq -r '[.check_runs[] | [.name,.status,(.conclusion // "")] | join(":")] | sort | join("|")' <<<"$checks")"
+                if [ "$total" -ge 10 ] && [ "$pending" -eq 0 ] && [ "$signature" = "$last_signature" ]; then
+                  stable=$((stable + 1))
+                else
+                  stable=0
+                fi
+                last_signature="$signature"
+                if [ "$stable" -ge 2 ]; then
+                  break
+                fi
+                sleep 30
+              done
+
+              jq '{total_count,check_runs:[.check_runs[]|{name,status,conclusion,html_url}]}' \
+                <<<"$checks" > out/permanent-checks.json
+              if [ "$total" -ge 10 ] && [ "$pending" -eq 0 ] && [ "$bad" -eq 0 ]; then
+                printf '{"outcome":"source_and_permanent_checks_passed","run_id":"%s","target_sha":"%s","check_count":%s}\n' \
+                  "$executor_run" "$target_sha" "$total" > out/controller-result.json
+                if [ -n "$pr_number" ]; then
+                  gh pr ready "$pr_number" --repo "$GITHUB_REPOSITORY" || true
+                  gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                    --add-reviewer ProfHepta --add-label ready-for-review || true
+                  gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                    --body "R7 controller: exact persistent head \`$target_sha\` passed the self-deleting source qualification run \`$executor_run\` and $total stable permanent check runs. The PR is ready for independent review. No L2-L6 or public-release claim is promoted." || true
+                fi
+              else
+                printf '{"outcome":"permanent_checks_not_green","run_id":"%s","target_sha":"%s","check_count":%s,"pending":%s,"bad":%s}\n' \
+                  "$executor_run" "$target_sha" "$total" "$pending" "$bad" \
+                  > out/controller-result.json
+                if [ -n "$pr_number" ]; then
+                  failures="$(jq -r '[.check_runs[] | select(.status != "completed" or ((.conclusion // "") as $c | ($c != "success" and $c != "neutral" and $c != "skipped"))) | "- " + .name + ": " + .status + "/" + (.conclusion // "pending")] | join("\n")' <<<"$checks")"
+                  gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                    --body "R7 controller: source executor passed at \`$target_sha\`, but permanent qualification is not fully green. The PR remains draft.\n\n$failures" || true
+                fi
+              fi
+            fi
+          fi
+
+          cat out/controller-result.json
+
+      - name: Retire controller regardless of outcome
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/owner-open-r7-runtime-hardening-controller.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "ops(r7): retire runtime qualification controller"
+          git push origin HEAD:ops/owner-open-r7-runtime-hardening-controller-20260830
