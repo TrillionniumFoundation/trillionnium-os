@@ -1,0 +1,33 @@
+diff --git a/.github/workflows/owner-open-r13-source-qualification.yml b/.github/workflows/owner-open-r13-source-qualification.yml
+index 3e0f255..961e342 100644
+--- a/.github/workflows/owner-open-r13-source-qualification.yml
++++ b/.github/workflows/owner-open-r13-source-qualification.yml
+@@ -78,6 +78,11 @@ jobs:
+     name: R13 Rust 1.93 full workspace closure
+     runs-on: ubuntu-24.04
+     timeout-minutes: 120
++    env:
++      # The all-features lane deliberately includes the separately built P0-1
++      # device-conformance binaries. Their build script fails closed unless the
++      # non-product userdebug variant is selected explicitly.
++      TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT: userdebug
+     steps:
+       - name: Check out the exact source head
+         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+diff --git a/tools/tests/test_owner_open_r13_runtime_hardening.py b/tools/tests/test_owner_open_r13_runtime_hardening.py
+index 351f579..d0ebb82 100644
+--- a/tools/tests/test_owner_open_r13_runtime_hardening.py
++++ b/tools/tests/test_owner_open_r13_runtime_hardening.py
+@@ -98,6 +98,12 @@ class RuntimeBoundaryHardeningTests(unittest.TestCase):
+         report = module.verify(ROOT)
+         self.assertTrue(report["ok"], report)
+ 
++    def test_full_workspace_gate_selects_explicit_non_product_conformance_variant(self) -> None:
++        workflow = read(".github/workflows/owner-open-r13-source-qualification.yml")
++        self.assertIn("TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT: userdebug", workflow)
++        self.assertIn("cargo test --workspace --all-targets --all-features --locked", workflow)
++        self.assertIn("cargo clippy --workspace --all-targets --all-features --locked", workflow)
++
+     def test_documentation_does_not_describe_fail_open_as_default(self) -> None:
+         implementation = read("docs/implementation/owner-open-long-running-jobs-v1.md")
+         self.assertNotIn("Default owner-open behavior permits execution", implementation)
