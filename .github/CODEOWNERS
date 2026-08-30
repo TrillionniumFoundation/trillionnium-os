@@ -1,0 +1,30 @@
+# Default repository ownership. Branch protection must still require a
+# non-author approval; CODEOWNERS alone does not establish independence.
+* @ProfHepta @Tomasrgbsf
+
+# Integration truth, workflows and external-evidence promotion.
+/.github/ @ProfHepta
+/docs/status/ @ProfHepta
+/docs/contracts/ @ProfHepta
+/docs/operations/ @ProfHepta
+/docs/qualification/ @ProfHepta
+/tools/owner_open_r5_evidence_bundle.py @ProfHepta
+/tools/owner_open_r5_capture_trust.py @ProfHepta
+/tools/capture-owner-open-r5-target-evidence.py @ProfHepta
+/tools/finalize-owner-open-r5-evidence-bundle.py @ProfHepta
+/tools/promote-owner-open-r5-evidence.py @ProfHepta
+/tools/verify-owner-open-r5-governance-readiness.py @ProfHepta
+
+# Runtime, transport, provider and durable-effect implementation.
+/apps/trillionnium-owner-open-host/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-*/ @Tomasrgbsf @ProfHepta
+
+# Android product graph, native ingress, init and SELinux boundaries.
+/android-integration/ @ProfHepta @Tomasrgbsf
+/packaging/ @ProfHepta @Tomasrgbsf
+
+# Public release and repository policy files.
+/LICENSE @ProfHepta
+/SECURITY.md @ProfHepta
+/CONTRIBUTING.md @ProfHepta
+/.github/CODEOWNERS @ProfHepta
