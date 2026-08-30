@@ -26,111 +26,14 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.13"
-      - name: Patch terminal publication and explicit writer-lease handoff
+      - name: Apply the exact race closure
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-
-          manager_path = Path("crates/trillionnium-owner-open-job-runtime/src/manager.rs")
-          manager = manager_path.read_text(encoding="utf-8")
-          old = '''                            match manager.push_runtime_event(&key, &request, event.clone()) {
-                                Ok(seq) => {
-                                    if let Err(error) = manager.inner.journal.record_job_terminal(
-                                        &key,
-                                        &request,
-                                        seq,
-                                        serde_json::to_value(event).unwrap_or(Value::Null),
-                                    ) {
-                                        let _ = manager.note_journal_failure(error.to_string());
-                                    }
-                                }
-                                Err(error) => {
-                                    let _ = manager.note_journal_failure(error.to_string());
-                                }
-                            }
-'''
-          new = '''                            // `push_runtime_event` appends the terminal observation and
-                            // the canonical `job.terminal` record under one journal lock before
-                            // exposing the in-memory terminal event. Do not write the same terminal
-                            // again after publication: that redundant call keeps the exclusive
-                            // writer lease alive after a consumer can observe completion and makes
-                            // an immediate in-process manager handoff spuriously fail closed.
-                            if let Err(error) =
-                                manager.push_runtime_event(&key, &request, event)
-                            {
-                                let _ = manager.note_journal_failure(error.to_string());
-                            }
-'''
-          if manager.count(old) != 1:
-              raise SystemExit(f"expected exactly one terminal double-write block, found {manager.count(old)}")
-          manager_path.write_text(manager.replace(old, new), encoding="utf-8")
-
-          test_path = Path("crates/trillionnium-owner-open-job-runtime/tests/runtime.rs")
-          test = test_path.read_text(encoding="utf-8")
-          marker = '''fn wait_terminal(manager: &JobManager, key: &JobKey) -> Vec<u8> {
-    let deadline = Instant::now() + Duration::from_secs(10);
-    loop {
-        let inspection = manager.inspect(key, 0, 4096).unwrap();
-        let mut output = Vec::new();
-        let terminal = inspection
-            .runtime_events
-            .iter()
-            .any(|event| match &event.event {
-                RuntimeJobEventKind::Output { bytes, .. } => {
-                    output.extend_from_slice(bytes);
-                    false
-                }
-                RuntimeJobEventKind::Terminal { .. } => true,
-                _ => false,
-            });
-        if terminal {
-            return output;
-        }
-        assert!(Instant::now() < deadline, "job did not become terminal");
-        thread::sleep(Duration::from_millis(10));
-    }
-}
-'''
-          helper = marker + '''
-fn reopen_after_dispatcher_shutdown(journal: &std::path::Path) -> JobManager {
-    let deadline = Instant::now() + Duration::from_secs(10);
-    loop {
-        let manager = JobManager::open(JobRuntimeConfig::default(), Some(journal)).unwrap();
-        if matches!(manager.journal().status().unwrap(), JournalStatus::Durable) {
-            return manager;
-        }
-        // A terminal observation is durable before it becomes visible, but the old
-        // dispatcher may still be releasing the same-process exclusive writer lease.
-        // Retry only the lease handoff; once reopened, the assertion below still proves
-        // that the terminal record exists and no second process is dispatched.
-        drop(manager);
-        assert!(
-            Instant::now() < deadline,
-            "old job dispatcher did not release the durable journal writer lease"
-        );
-        thread::sleep(Duration::from_millis(10));
-    }
-}
-'''
-          if test.count(marker) != 1:
-              raise SystemExit(f"expected exactly one wait_terminal helper, found {test.count(marker)}")
-          test = test.replace(marker, helper)
-          old_reopen = '''    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
-    let replay = manager
-        .start(start_request(job, request, "start-once", command, None))
-        .unwrap();
-'''
-          new_reopen = '''    let manager = reopen_after_dispatcher_shutdown(&journal);
-    let replay = manager
-        .start(start_request(job, request, "start-once", command, None))
-        .unwrap();
-'''
-          if test.count(old_reopen) != 1:
-              raise SystemExit(f"expected exactly one immediate reopen block, found {test.count(old_reopen)}")
-          test_path.write_text(test.replace(old_reopen, new_reopen), encoding="utf-8")
-          PY
-          rm -f .github/workflows/owner-open-r5-job-restart-flake-fix-one-shot.yml
+          python3 tools/patch-owner-open-r5-job-restart-race.py
+          rm -f \
+            .github/workflows/owner-open-r5-job-restart-flake-fix-one-shot.yml \
+            tools/patch-owner-open-r5-job-restart-race.py
+          cargo fmt --all
           git diff --check
       - name: Stress the exact restart regression
         run: |
@@ -156,14 +59,14 @@ fn reopen_after_dispatcher_shutdown(journal: &std::path::Path) -> JobManager {
           set -euo pipefail
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add \
-            crates/trillionnium-owner-open-job-runtime/src/manager.rs \
-            crates/trillionnium-owner-open-job-runtime/tests/runtime.rs \
-            .github/workflows/owner-open-r5-job-restart-flake-fix-one-shot.yml
+          git add -A
           git diff --cached --check
-          test "$(git diff --cached --name-only | sort)" = "$(printf '%s\n' \
+          actual="$(git diff --cached --name-only | sort)"
+          expected="$(printf '%s\n' \
             .github/workflows/owner-open-r5-job-restart-flake-fix-one-shot.yml \
             crates/trillionnium-owner-open-job-runtime/src/manager.rs \
-            crates/trillionnium-owner-open-job-runtime/tests/runtime.rs | sort)"
+            crates/trillionnium-owner-open-job-runtime/tests/runtime.rs \
+            tools/patch-owner-open-r5-job-restart-race.py | sort)"
+          test "$actual" = "$expected"
           git commit -m "fix(r5): serialize durable job restart handoff"
           git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
