@@ -368,6 +368,22 @@ impl JobJournal {
     ) -> Result<()> {
         require_text(kind, "observation kind", 256, false)
             .map_err(|error| JobRuntimeError::InvalidRequest(error.to_string()))?;
+        let terminal_payload = if kind == "job.terminal.observation" {
+            let event = payload.get("event").ok_or_else(|| {
+                JobRuntimeError::Journal(
+                    "terminal observation is missing its event payload".to_string(),
+                )
+            })?;
+            if event.get("kind").and_then(Value::as_str) != Some("terminal") {
+                return Err(JobRuntimeError::Journal(
+                    "terminal observation payload is not terminal".to_string(),
+                ));
+            }
+            Some(event.clone())
+        } else {
+            None
+        };
+
         let mut state = self.lock()?;
         if state.store.is_none() {
             return Ok(());
@@ -393,10 +409,53 @@ impl JobJournal {
                 &envelope,
             )
         };
-        match append_result {
-            Ok(()) => Ok(()),
-            Err(error) => Err(disable(&mut state, error)),
+        if let Err(error) = append_result {
+            return Err(disable(&mut state, error));
         }
+
+        let Some(terminal_payload) = terminal_payload else {
+            return Ok(());
+        };
+        if let Some(existing) = state.jobs.get(key).and_then(|job| job.terminal.as_ref()) {
+            if existing == &terminal_payload {
+                return Ok(());
+            }
+            return Err(JobRuntimeError::JobConflict);
+        }
+        let terminal_envelope = JournalEnvelope {
+            schema: JOURNAL_SCHEMA.to_string(),
+            record: "job.terminal".to_string(),
+            job_id: key.job_id.clone(),
+            request: request.clone(),
+            operation_id: None,
+            operation_kind: None,
+            operation_sha256: None,
+            event_seq: Some(event_seq),
+            payload: terminal_payload.clone(),
+        };
+        let terminal_append_result = {
+            let store = state.store.as_ref().expect("store presence checked");
+            append_envelope(
+                store,
+                key,
+                "job.terminal",
+                event_id("job-terminal", key, "terminal"),
+                &terminal_envelope,
+            )
+        };
+        if let Err(error) = terminal_append_result {
+            return Err(disable(&mut state, error));
+        }
+        state
+            .jobs
+            .entry(key.clone())
+            .and_modify(|job| job.terminal = Some(terminal_payload.clone()))
+            .or_insert(JobState {
+                request: request.clone(),
+                start_result: None,
+                terminal: Some(terminal_payload),
+            });
+        Ok(())
     }
 
     pub fn record_job_terminal(
