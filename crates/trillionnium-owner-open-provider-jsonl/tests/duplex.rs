@@ -1,5 +1,6 @@
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use trillionnium_owner_open_call_registry::CallRegistry;
@@ -30,7 +31,11 @@ fn executable_script(contents: &str) -> (tempfile::TempDir, std::path::PathBuf) 
 
 fn provider_for(script: &std::path::Path) -> JsonlProvider {
     JsonlProvider::new(JsonlProviderConfig {
-        executable: script.to_path_buf(),
+        // Use a stable executable while passing the freshly-created fixture as
+        // an argument.  Parallel tests on some Linux filesystems can return
+        // ETXTBSY when a just-materialized shebang file is exec'd directly.
+        executable: PathBuf::from("/bin/sh"),
+        args: vec![script.to_string_lossy().into_owned()],
         ..JsonlProviderConfig::default()
     })
     .unwrap()
