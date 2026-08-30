@@ -30,6 +30,7 @@ enum TransportMessage {
     CoreFrame(Vec<u8>),
     CoreEof,
     CoreError(String),
+    CoreExited(std::result::Result<ExitStatus, String>),
 }
 
 #[derive(Debug)]
