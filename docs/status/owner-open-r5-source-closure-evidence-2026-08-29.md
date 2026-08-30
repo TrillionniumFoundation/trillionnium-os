@@ -43,6 +43,16 @@ exact regression repetitions, all workspace tests, strict Clippy, all canonical 
 Python tests. The repaired human-authored exact head above then passed all sixteen permanent PR
 workflows, so no historical L1 result is inherited.
 
+## State-only promotion provenance
+
+The canonical machine truth was atomically rebound to the qualified source by promotion commit
+`bb501e6b0e2c836c360571ca00ed64500c09467a`, tree
+`cf2084dd8ede47f938b77efa80eec3fa762fdb63`, from one-shot run `33284100067`. The run passed its
+state-only staging boundary, canonical verifier, gap-evidence verifier, workflow-boundary verifier,
+targeted regression suite, diff check and bot commit, then removed both transient write-capable files.
+This human-authored provenance update exists only to trigger the normal PR checks against the promotion
+head; it does not change executable source or promote any L2-L6 claim.
+
 ## Source identity versus promotion head
 
 `ae2335814b61fc3c5a472d3a207fdb876f9e620c` / `7e098821b947716cc96c77581259c5422b8b8654` is the immutable qualified source identity. A later state-only
