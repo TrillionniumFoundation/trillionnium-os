@@ -1,0 +1,70 @@
+name: Owner-Open R6 bootstrap portable reseal (ops)
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r6-governance-control-plane-20260830
+    paths:
+      - .github/workflows/owner-open-r6-bootstrap-reseal-ops.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  SOURCE_COMMIT: 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+  SOURCE_TREE: 714a483582906b5c2750ec069e1237f0337d26a5
+  SOURCE_RUN_ID: "33299190121"
+  SOURCE_ARTIFACT: owner-open-r6-bootstrap-34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+
+jobs:
+  reseal:
+    name: Verify and emit path-independent bootstrap checksum
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Download exact successful bootstrap artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p "$RUNNER_TEMP/input" "$RUNNER_TEMP/output"
+          gh run download "$SOURCE_RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name "$SOURCE_ARTIFACT" \
+            --dir "$RUNNER_TEMP/input"
+
+      - name: Verify original digest and internal closed manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="owner-open-r6-bootstrap-${SOURCE_COMMIT}.tar.gz"
+          original="$RUNNER_TEMP/input/${archive}.sha256"
+          test -f "$RUNNER_TEMP/input/$archive"
+          test -f "$original"
+          expected="$(awk 'NR == 1 { print $1 }' "$original")"
+          test "$expected" = "$(sha256sum "$RUNNER_TEMP/input/$archive" | awk '{print $1}')"
+          mkdir "$RUNNER_TEMP/verify"
+          tar -xzf "$RUNNER_TEMP/input/$archive" -C "$RUNNER_TEMP/verify"
+          test "$(jq -r .source_commit "$RUNNER_TEMP/verify/bootstrap-manifest.json")" = "$SOURCE_COMMIT"
+          test "$(jq -r .source_tree "$RUNNER_TEMP/verify/bootstrap-manifest.json")" = "$SOURCE_TREE"
+          test "$(jq -r .claim_ceiling "$RUNNER_TEMP/verify/bootstrap-manifest.json")" = \
+            BOOTSTRAP_MATERIALS_BUILT_NOT_INSTALLED_NOT_TARGET_ATTESTED_NOT_L2
+          (cd "$RUNNER_TEMP/verify" && sha256sum --check --strict SHA256SUMS)
+          cp "$RUNNER_TEMP/input/$archive" "$RUNNER_TEMP/output/$archive"
+          (
+            cd "$RUNNER_TEMP/output"
+            sha256sum "$archive" > "${archive}.sha256"
+            sha256sum --check --strict "${archive}.sha256"
+          )
+
+      - name: Upload portable bootstrap artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-r6-bootstrap-portable-${{ env.SOURCE_COMMIT }}
+          path: ${{ runner.temp }}/output/*
+          if-no-files-found: error
+          retention-days: 7
