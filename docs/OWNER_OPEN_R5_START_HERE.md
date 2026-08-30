@@ -5,7 +5,7 @@ Semantic baseline: `TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`, revision `2026-
 Implementation baseline: `codex/owner-open-r5-tool-loop-20260827@479e5fb78385d3706b42f83b334025fa2b6ccd50`  
 Implementation evidence: **HOST_TESTED / L1**  
 Documentation candidate: `codex/owner-open-r5-gap-closure-20260829`  
-Documentation candidate evidence: **HOST_TESTED / L1 at exact source `ae2335814b61fc3c5a472d3a207fdb876f9e620c`**
+Documentation candidate evidence: **HOST_TESTED / L1 at exact source `60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6`**
 Public release: **false**
 
 R3 remains the product-semantic authority: Codex/provider is the only semantic

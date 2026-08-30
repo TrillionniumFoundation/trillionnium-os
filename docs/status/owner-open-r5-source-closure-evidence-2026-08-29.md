@@ -1,6 +1,6 @@
 # Owner-Open R5 exact-source-head L1 closure evidence
 
-Status: **Repaired exact source passed all permanent L1 and repository workflows; target, device, destructive-fault and release evidence remains open.**
+Status: **Exact repaired source passed all permanent L1 and repository workflows; target, device, destructive-fault and release evidence remains open.**
 
 ## Current exact source identity
 
@@ -8,10 +8,10 @@ Status: **Repaired exact source passed all permanent L1 and repository workflows
 | --- | --- |
 | Repository | `TrillionniumFoundation/trillionnium-os` |
 | Branch | `codex/owner-open-r5-gap-closure-20260829` |
-| Source commit | `ae2335814b61fc3c5a472d3a207fdb876f9e620c` |
-| Source tree | `7e098821b947716cc96c77581259c5422b8b8654` |
+| Source commit | `60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6` |
+| Source tree | `f0fac366e9959b4b471bc8cf3ccedcecfe5bd688` |
 | Permanent workflow | `L1 owner-open R5 source and gap closure` |
-| Workflow run | `33283935102` |
+| Workflow run | `33294911756` |
 | Result | `L1_SOURCE_CLOSURE_PASSED` |
 | All permanent PR workflows | `16/16 success` |
 | Claim ceiling | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX` |
@@ -26,36 +26,40 @@ ADB relay checks, Android source-profile checks, Root-Linux packaging checks and
 
 | Artifact ID | Name | SHA-256 digest |
 | --- | --- | --- |
-| `9723810264` | `owner-open-r5-l1-graph-docs-python-ae2335814b61fc3c5a472d3a207fdb876f9e620c` | `sha256:0176d8753ea6bed28a585e0d46004dd19bde2852335292e2394fad820b9fb62f` |
-| `9723815400` | `owner-open-r5-l1-rust-ae2335814b61fc3c5a472d3a207fdb876f9e620c` | `sha256:e2844b373ad2613012099b64a43b77a13281363d61b953843b1e5dccab15f88f` |
-| `9723817403` | `owner-open-r5-l1-candidate-ae2335814b61fc3c5a472d3a207fdb876f9e620c` | `sha256:8b86b72774b3281829eb3c6ae4cf4d352965bca2957ad0f12962a7cbe7d89ba4` |
+| `9727099892` | `owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6` | `sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935` |
+| `9727104823` | `owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6` | `sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183` |
+| `9727106502` | `owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6` | `sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff` |
 
-## Durable restart race closure
+## Terminal and lifecycle convergence closure
 
-A previous exact-head run exposed an intermittent same-process writer-lease handoff race in
-`completed_durable_job_never_spawns_again_after_manager_restart`. The implementation removes the
-redundant post-publication terminal write; the canonical terminal observation and `job.terminal` record
-remain atomically durable before terminal visibility. The regression waits only for the old dispatcher
-to release its writer lease and still proves the recovered terminal prevents a second spawn.
+The qualified source closes three independently observed ordering failures without weakening the
+fail-closed semantics:
 
-Repair commit `50e33e3643501fae4f2ce2107ac5bf15f0bbb3ab` was validated by one-shot run `33283826378` with 50
-exact regression repetitions, all workspace tests, strict Clippy, all canonical R5 verifiers and all
-Python tests. The repaired human-authored exact head above then passed all sixteen permanent PR
-workflows, so no historical L1 result is inherited.
+- the active-turn worker now sends ordinary errors and panics through the same ordered terminal channel;
+  a timeout-side `JoinHandle::is_finished` path can no longer overtake an already queued terminal;
+- the transport waits for both core exit status and stdout drain, preserves the final core frame and
+  kills/reaps descendants that retain inherited file descriptors;
+- the JSONL Provider treats leader exit as an observation rather than an immediate semantic failure,
+  waits for the ordered stdout reader outcome, and gives a completed Provider a bounded natural-exit
+  window before process-group signal escalation.
+
+The focused one-shot qualifications were transport run `33294435901`, Provider ordering run
+`33294701029`, and Provider natural-exit run `33294827071`. They stress-repeated the formerly racy
+paths, ran package/workspace tests, strict Clippy and canonical verifiers, and removed their transient
+write-capable workflow/helper files before committing the repairs. The human-authored exact source
+`60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6` subsequently passed all sixteen permanent PR workflows, so it inherits no historical
+L1 result.
 
 ## State-only promotion provenance
 
-The canonical machine truth was atomically rebound to the qualified source by promotion commit
-`bb501e6b0e2c836c360571ca00ed64500c09467a`, tree
-`cf2084dd8ede47f938b77efa80eec3fa762fdb63`, from one-shot run `33284100067`. The run passed its
-state-only staging boundary, canonical verifier, gap-evidence verifier, workflow-boundary verifier,
-targeted regression suite, diff check and bot commit, then removed both transient write-capable files.
-This human-authored provenance update exists only to trigger the normal PR checks against the promotion
-head; it does not change executable source or promote any L2-L6 claim.
+This binding is generated by one-shot promotion run `33295064819`. The workflow restricts the
+final diff to the five durable plan/status/evidence files, executes the canonical verifier and evidence
+mutation suites, commits with the repository bot, and deletes both transient write-capable files. The
+resulting promotion head is state-only: it does not change executable source or promote L2-L6 claims.
 
 ## Source identity versus promotion head
 
-`ae2335814b61fc3c5a472d3a207fdb876f9e620c` / `7e098821b947716cc96c77581259c5422b8b8654` is the immutable qualified source identity. A later state-only
+`60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6` / `f0fac366e9959b4b471bc8cf3ccedcecfe5bd688` is the immutable qualified source identity. A later state-only
 promotion commit may update machine status or import independently reviewed evidence without changing
 that source pair. It must pass its own repository checks and may not inherit qualification after source,
 Cargo, contract, tool or workflow drift.

@@ -62,7 +62,7 @@ This plan update is developed on:
 ```text
 branch: codex/owner-open-r5-gap-closure-20260829
 candidate status: HOST_TESTED
-candidate evidence: L1 exact-source run 33283935102
+candidate evidence: L1 exact-source run 33294911756
 ```
 
 The documentation candidate does not inherit the baseline L1 claim merely
