@@ -1,0 +1,117 @@
+name: Owner-Open R7 governance enforcement probe
+
+on:
+  push:
+    branches:
+      - ops/owner-open-r7-governance-enforcement-20260830
+    paths:
+      - .github/workflows/owner-open-r7-governance-enforcement-probe.yml
+
+permissions:
+  contents: write
+  pull-requests: read
+  checks: read
+
+concurrency:
+  group: owner-open-r7-governance-enforcement-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out probe branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ops/owner-open-r7-governance-enforcement-20260830
+      - name: Capture token capability and live governance state
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          repo_api="repos/$GITHUB_REPOSITORY"
+          gh api "$repo_api/branches/main" > out/branch-before.json
+          gh api "$repo_api/rulesets" > out/rulesets-before.json || printf '[]\n' > out/rulesets-before.json
+          cat > out/ruleset.json <<'JSON'
+          {
+            "name": "owner-open-exact-head-integration",
+            "target": "branch",
+            "enforcement": "active",
+            "conditions": {
+              "ref_name": {
+                "include": ["~DEFAULT_BRANCH"],
+                "exclude": []
+              }
+            },
+            "rules": [
+              {"type": "deletion"},
+              {"type": "non_fast_forward"},
+              {
+                "type": "pull_request",
+                "parameters": {
+                  "required_approving_review_count": 1,
+                  "dismiss_stale_reviews_on_push": true,
+                  "require_code_owner_review": true,
+                  "require_last_push_approval": true,
+                  "required_review_thread_resolution": true
+                }
+              },
+              {
+                "type": "required_status_checks",
+                "parameters": {
+                  "strict_required_status_checks_policy": true,
+                  "do_not_enforce_on_create": false,
+                  "required_status_checks": [
+                    {"context": "L1 exact-source-head aggregate candidate"},
+                    {"context": "L1 Rust 1.93 complete workspace tests and strict Clippy"},
+                    {"context": "L1 protected-main and exact-head independent-review readiness"}
+                  ]
+                }
+              }
+            ],
+            "bypass_actors": []
+          }
+          JSON
+          set +e
+          gh api --method POST "$repo_api/rulesets" --input out/ruleset.json \
+            > out/create-response.json 2> out/create-error.txt
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            result=created
+          else
+            result=authority_unavailable
+          fi
+          jq -n --arg result "$result" --argjson exit_code "$status" \
+            '{result:$result,exit_code:$exit_code,public_release:false,automatic_redispatch:false}' \
+            > out/result.json
+          cat out/result.json
+      - name: Record non-secret diagnostic on the canonical governance issue
+        shell: bash
+        run: |
+          set -euo pipefail
+          result="$(jq -r .result out/result.json)"
+          if [ "$result" = created ]; then
+            message="R7 governance probe created the exact-head main ruleset. A non-author approval against the final current head is still required before the governance gap can close."
+          else
+            error="$(tail -c 3000 out/create-error.txt | sed 's/`/\\`/g')"
+            message="R7 governance probe could not mutate repository rules with the workflow token. The live governance gap remains EXTERNAL_HOLD and requires an administrator credential outside ordinary source CI. Diagnostic: \`$error\`"
+          fi
+          gh issue comment 20 --repo "$GITHUB_REPOSITORY" --body "$message" || true
+      - name: Retire probe and preserve no credential-bearing output
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf out
+          rm -f .github/workflows/owner-open-r7-governance-enforcement-probe.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "ops(r7): retire governance enforcement probe"
+          git push origin HEAD:ops/owner-open-r7-governance-enforcement-20260830
