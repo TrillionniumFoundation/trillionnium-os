@@ -1,0 +1,274 @@
+name: Owner-Open R7 workspace integrity v4 executor
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r7-workspace-integrity-20260830-v4
+    paths:
+      - .github/workflows/owner-open-r7-workspace-integrity-v4-executor.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: owner-open-r7-workspace-integrity-v4
+  cancel-in-progress: false
+
+jobs:
+  qualify-and-publish:
+    name: Qualify exact-head complete workspace gate v4
+    runs-on: ubuntu-24.04
+    timeout-minutes: 260
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_BRANCH: codex/owner-open-r7-workspace-integrity-20260830-v4
+      SOURCE_BRANCH: codex/owner-open-r7-runtime-hardening-20260830-v4
+      BASE_SHA: 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+      CARGO_INCREMENTAL: "0"
+      RUST_BACKTRACE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - name: Check out executor branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: codex/owner-open-r7-workspace-integrity-20260830-v4
+
+      - name: Wait for and adopt qualified runtime v4 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cleanup() {
+            git push --force origin "$BASE_SHA:refs/heads/$TARGET_BRANCH" >/dev/null 2>&1 || true
+          }
+          trap cleanup ERR
+          deadline=$((SECONDS + 10800))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            git fetch --no-tags origin "$SOURCE_BRANCH"
+            git reset --hard FETCH_HEAD
+            if [ ! -e .github/workflows/owner-open-r7-runtime-hardening-v4-executor.yml ] \
+              && grep -q 'fn apply_provider_environment' crates/trillionnium-owner-open-provider-jsonl/src/lib.rs \
+              && grep -q 'pty_eot_sent' crates/trillionnium-owner-open-job-runtime/src/manager.rs \
+              && test -f docs/implementation/owner-open-r7-runtime-hardening.md; then
+              trap - ERR
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "qualified runtime v4 source did not become available" >&2
+          false
+
+      - name: Generate permanent workspace gate including canonical state heads
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          open_expr = "$" + "{{"
+          close_expr = "}}"
+          source_head = open_expr + " github.event.pull_request.head.sha || github.sha " + close_expr
+          pr_or_ref = open_expr + " github.event.pull_request.number || github.ref " + close_expr
+          runner_temp = open_expr + " runner.temp " + close_expr
+          workflow = '''name: L1 complete Rust workspace integrity
+
+on:
+  pull_request:
+    paths:
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "README.md"
+      - "apps/**"
+      - "crates/**"
+      - "build-support/**"
+      - "docs/README.md"
+      - "docs/OWNER_OPEN_R5_START_HERE.md"
+      - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
+      - "docs/implementation/owner-open-r7-*.md"
+      - "docs/status/owner-open-r5-*"
+      - "docs/status/owner-open-r7-*"
+      - ".github/workflows/owner-open-workspace-integrity.yml"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "README.md"
+      - "apps/**"
+      - "crates/**"
+      - "build-support/**"
+      - "docs/README.md"
+      - "docs/OWNER_OPEN_R5_START_HERE.md"
+      - "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
+      - "docs/implementation/owner-open-r7-*.md"
+      - "docs/status/owner-open-r5-*"
+      - "docs/status/owner-open-r7-*"
+      - ".github/workflows/owner-open-workspace-integrity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: owner-open-workspace-integrity-__PR_OR_REF__
+  cancel-in-progress: true
+
+jobs:
+  complete-workspace:
+    name: L1 Rust 1.93 complete workspace tests and strict Clippy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 160
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: __SOURCE_HEAD__
+      - name: Assert exact checkout
+        env:
+          SOURCE_HEAD_SHA: __SOURCE_HEAD__
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Install Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: 1.93.0
+          components: rustfmt, clippy
+      - name: Verify complete locked workspace
+        env:
+          CARGO_INCREMENTAL: "0"
+          RUST_BACKTRACE: "1"
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/owner-open-workspace-integrity"
+          mkdir -m 0700 -p "$evidence"
+          cp Cargo.lock "$evidence/Cargo.lock"
+          cargo metadata --locked --format-version 1 > "$evidence/cargo-metadata.json"
+          cargo fmt --all -- --check
+          cargo test --locked --workspace --all-targets 2>&1 | tee "$evidence/tests.log"
+          cargo clippy --locked --workspace --all-targets -- -D warnings 2>&1 | tee "$evidence/clippy.log"
+          cmp --silent Cargo.lock "$evidence/Cargo.lock"
+          git --no-replace-objects diff --exit-code
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Upload exact-head workspace evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-workspace-integrity-__SOURCE_HEAD__
+          if-no-files-found: error
+          retention-days: 30
+          path: __RUNNER_TEMP__/owner-open-workspace-integrity/
+'''
+          workflow = (
+              workflow.replace("__PR_OR_REF__", pr_or_ref)
+              .replace("__SOURCE_HEAD__", source_head)
+              .replace("__RUNNER_TEMP__", runner_temp)
+          )
+          Path(".github/workflows/owner-open-workspace-integrity.yml").write_text(
+              workflow, encoding="utf-8"
+          )
+          PY
+          rm -f .github/workflows/owner-open-r7-workspace-integrity-v4-executor.yml
+
+      - name: Install Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: 1.93.0
+          components: rustfmt, clippy
+
+      - name: Test complete workspace and converge mechanical Clippy findings
+        shell: bash
+        run: |
+          set -euo pipefail
+          cleanup() {
+            git push --force origin "$BASE_SHA:refs/heads/$TARGET_BRANCH" >/dev/null 2>&1 || true
+          }
+          trap cleanup ERR
+          cp Cargo.lock "$RUNNER_TEMP/reviewed-Cargo.lock"
+          cargo fmt --all -- --check
+          cargo test --locked --workspace --all-targets
+          if ! cargo clippy --locked --workspace --all-targets -- -D warnings; then
+            cargo clippy --locked --workspace --all-targets --fix --allow-dirty --allow-staged
+            cargo fmt --all
+          fi
+          cargo test --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cmp --silent Cargo.lock "$RUNNER_TEMP/reviewed-Cargo.lock"
+          git diff --check
+          trap - ERR
+
+      - name: Verify permanent workflow and canonical claim boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py --json
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+            tools.tests.test_owner_open_workflow_boundary_hardening \
+            -v
+          python3 tools/verify-owner-open-r5.py --json
+
+      - name: Add complete-workspace evidence note
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > docs/implementation/owner-open-r7-complete-workspace-integrity.md <<'EOF'
+          # Owner-Open R7 complete-workspace integrity slice
+
+          Status: **SOURCE CANDIDATE — exact-head permanent qualification required**
+
+          This slice adds one read-only, action-pinned workflow that checks the
+          exact pull-request source head and runs Rust 1.93 formatting, all
+          workspace/all-target tests and strict Clippy without changing
+          `Cargo.lock`. Canonical plan/status/evidence changes also trigger the
+          gate, so a state-only promotion cannot inherit a parent commit's green
+          workspace result.
+
+          A source-producing run may apply mechanical Clippy fixes only when the
+          complete tests and strict Clippy matrix pass again on the resulting
+          bytes. This remains L1 source evidence and promotes no external lane.
+          EOF
+          git diff --check
+
+      - name: Commit only qualified persistent source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/owner-open-r7-workspace-integrity-v4-executor.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "ci(r7): enforce exact-head complete workspace integrity"
+          git push --force origin "HEAD:$TARGET_BRANCH"
+
+      - name: Ensure one stacked draft PR exists
+        shell: bash
+        run: |
+          set -u
+          owner="${GITHUB_REPOSITORY%%/*}"
+          pr_number="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+            -f state=open -f head="$owner:$TARGET_BRANCH" -F per_page=20 2>/dev/null \
+            | jq -r '.[0].number // empty' || true)"
+          if [ -z "$pr_number" ]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --draft \
+              --base "$SOURCE_BRANCH" --head "$TARGET_BRANCH" \
+              --title "ci(r7): enforce exact-head complete workspace integrity" \
+              --body "Complete Rust workspace tests/strict Clippy on every exact source and canonical state head. L1 only; no L2-L6 claim." \
+              >/dev/null || true
+            pr_number="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+              -f state=open -f head="$owner:$TARGET_BRANCH" -F per_page=20 2>/dev/null \
+              | jq -r '.[0].number // empty' || true)"
+          fi
+          if [ -n "$pr_number" ]; then
+            gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" \
+              --add-reviewer ProfHepta >/dev/null 2>&1 || true
+          fi
+          exit 0
