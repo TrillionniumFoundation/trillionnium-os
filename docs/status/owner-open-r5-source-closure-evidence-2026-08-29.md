@@ -36,6 +36,13 @@ promotion commit may update `docs/status/` or import independently reviewed evid
 that source identity. Such a promotion head must pass its own exact-head repository checks and is not
 allowed to inherit qualification after any source, Cargo, contract, tool or workflow drift.
 
+The checked-in source-evidence promotion is commit `00348cecc1507c76c8dc87fac306c25e3418c984`
+with tree `32368956b98437789d9368207e629d383465562e`. One-shot run `33283248195` completed its bind,
+canonical verifiers, 96 regression tests, diff-boundary check and bot commit successfully, then removed
+the transient write-capable workflow. This provenance update is state-only and exists to trigger the
+normal pull-request checks under a human-authored head; it does not change the qualified source pair or
+promote any L2-L6 claim.
+
 External evidence bundles must bind their `source_commit` and `source_tree` to this exact pair. The
 promotion script rejects a bundle whose source identity differs from the gap register.
 
