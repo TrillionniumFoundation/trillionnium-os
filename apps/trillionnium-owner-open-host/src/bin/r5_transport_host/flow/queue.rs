@@ -114,7 +114,20 @@ impl BufferedFrame {
                 .saturating_add(1),
         )
         .map_err(|_| "encoded frame length does not fit u64".to_string())?;
-        let cursor = frame.event_id.as_deref().and_then(cursor_from_event_id);
+        // Job frames deliberately use opaque, content-bound event IDs.  The
+        // runtime also exposes an explicit durable cursor for those frames;
+        // prefer it over the legacy numeric event-id convention so a bounded
+        // job.output gap can be resumed from the same inspection domain.  Do
+        // not silently coerce a malformed explicit cursor: claiming a stable
+        // cursor that was not actually supplied would make recovery unsafe.
+        let cursor = match frame.extensions.get("durable_cursor") {
+            Some(value) => Some(
+                value
+                    .as_u64()
+                    .ok_or_else(|| "durable_cursor extension must be a nonnegative integer".to_string())?,
+            ),
+            None => frame.event_id.as_deref().and_then(cursor_from_event_id),
+        };
         let event_id = frame.event_id.clone();
         Ok(Self {
             frame,

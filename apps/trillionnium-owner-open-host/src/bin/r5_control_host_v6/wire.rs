@@ -546,7 +546,14 @@ fn runtime_job_frame(context: &JobContext, seq: u64, event: &RuntimeJobEvent) ->
             }),
         ),
     };
-    build_job_frame(context, kind, seq, &event.seq.to_string(), payload)
+    let mut frame = build_job_frame(context, kind, seq, &event.seq.to_string(), payload);
+    frame
+        .extensions
+        .insert("durable_cursor".to_string(), json!(event.seq));
+    if let Some(object) = frame.payload.as_object_mut() {
+        object.insert("cursor".to_string(), json!(event.seq));
+    }
+    frame
 }
 
 fn default_profile() -> String {

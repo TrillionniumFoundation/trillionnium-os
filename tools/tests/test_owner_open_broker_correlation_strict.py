@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "owner-open"))
 
 from owner_open_broker_runtime import (
+    BrokerError,
     Request,
     correlation_matches,
     frame_correlation,
@@ -101,6 +102,32 @@ class BrokerCorrelationStrictTest(unittest.TestCase):
         response = self.response("write-old")
         response["kind"] = "job.error"
         self.assertFalse(correlation_matches(self.request(), response))
+
+    def test_conflicting_top_level_and_payload_mirror_fails_closed(self) -> None:
+        response = self.response("write-new")
+        response["operation_id"] = "write-other"
+        with self.assertRaisesRegex(
+            BrokerError,
+            "conflicting mirrored correlation field operation_id",
+        ):
+            frame_correlation(response)
+
+    def test_conflicting_stream_aliases_fail_closed(self) -> None:
+        frame = {
+            "turn_stream_id": "stream-a",
+            "stream_id": "stream-b",
+            "payload": {},
+        }
+        with self.assertRaisesRegex(
+            BrokerError,
+            "conflicting mirrored correlation field turn_stream_id",
+        ):
+            frame_correlation(frame)
+
+    def test_non_string_mirror_does_not_fall_back_to_payload(self) -> None:
+        frame = {"job_id": 7, "payload": {"job_id": "job"}}
+        with self.assertRaisesRegex(BrokerError, "frame.job_id must be a string"):
+            frame_correlation(frame)
 
 
 if __name__ == "__main__":

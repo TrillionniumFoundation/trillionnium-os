@@ -8,6 +8,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import textwrap
 import time
 import unittest
 
@@ -61,7 +62,10 @@ def send(sock: socket.socket, value: dict) -> None:
     sock.sendall(json.dumps(value,sort_keys=True,separators=(",",":")).encode()+b"\n")
 
 
-class BrokerTest(unittest.TestCase):
+class BrokerHarness:
+    def broker_command(self) -> list[str]:
+        return [sys.executable, str(BROKER)]
+
     def setUp(self) -> None:
         self.temp=tempfile.TemporaryDirectory()
         self.root=Path(self.temp.name)
@@ -75,7 +79,7 @@ class BrokerTest(unittest.TestCase):
         self.upstream.chmod(0o700)
         env=os.environ.copy(); env["UPSTREAM_RECORD"]=str(self.record)
         self.process=subprocess.Popen([
-            sys.executable,str(BROKER),"--socket",str(self.socket),"--descriptor",str(self.descriptor),"--token-file",str(self.token),"--broker-id","broker-test","--upstream",str(self.upstream)
+            *self.broker_command(),"--socket",str(self.socket),"--descriptor",str(self.descriptor),"--token-file",str(self.token),"--broker-id","broker-test","--upstream",str(self.upstream)
         ],stdout=subprocess.PIPE,stderr=subprocess.PIPE,env=env)
         deadline=time.monotonic()+5
         while time.monotonic()<deadline and not self.descriptor.exists():
@@ -120,6 +124,7 @@ class BrokerTest(unittest.TestCase):
             if value.get("kind") in {"result","error"} and value.get("request_id")==request_id: return values
         self.fail(f"no result for {request_id}: {values}")
 
+class BrokerTest(BrokerHarness, unittest.TestCase):
     def test_two_clients_share_one_upstream_with_owner_results_and_broadcast_observations(self) -> None:
         first=self.connect("client-a"); second=self.connect("client-b")
         try:
@@ -229,6 +234,63 @@ class BrokerTest(unittest.TestCase):
             child.wait(timeout=5)
             if child.stdout: child.stdout.close()
             if child.stderr: child.stderr.close()
+
+
+class BrokerForwardTransitionRaceTest(BrokerHarness, unittest.TestCase):
+    """Keep an immediate Host result behind the durable forwarded transition."""
+
+    def broker_command(self) -> list[str]:
+        wrapper = self.root / "broker_wrapper.py"
+        wrapper.write_text(
+            textwrap.dedent(
+                f"""\
+                import runpy
+                import sys
+                import time
+
+                sys.path.insert(0, {str(ROOT / "owner-open")!r})
+                from owner_open_broker_audit import BrokerAuditJournal
+
+                _forwarded = BrokerAuditJournal.forwarded
+
+                def _delayed_forwarded(self, *args, **kwargs):
+                    time.sleep(0.05)
+                    return _forwarded(self, *args, **kwargs)
+
+                BrokerAuditJournal.forwarded = _delayed_forwarded
+                sys.argv = [{str(BROKER)!r}, *sys.argv[1:]]
+                runpy.run_path({str(BROKER)!r}, run_name="__main__")
+                """
+            ),
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o700)
+        return [sys.executable, str(wrapper)]
+
+    def test_immediate_result_is_audited_after_forwarded(self) -> None:
+        client=self.connect("race-client")
+        try:
+            self.request(
+                client,
+                "race-request",
+                {
+                    "kind":"job.inspect",
+                    "seq":0,
+                    "direction":"client_to_host",
+                    "payload":{"job_id":"job-race"},
+                },
+                ["job.inspect.result"],
+            )
+            values=self.collect_until(client,"race-request")
+            self.assertTrue(any(v.get("kind")=="result" for v in values))
+        finally:
+            client.close()
+        records=[json.loads(x) for x in self.audit.read_text().splitlines()]
+        selected=[r for r in records if r["request_id"]=="race-request"]
+        self.assertEqual(
+            [r["stage"] for r in selected],
+            ["broker.accepted","broker.forwarded","broker.terminal"],
+        )
 
 
 if __name__=="__main__": unittest.main()

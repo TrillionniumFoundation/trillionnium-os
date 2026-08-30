@@ -61,8 +61,8 @@ This plan update is developed on:
 
 ```text
 branch: codex/owner-open-r5-gap-closure-20260829
-candidate status: SOURCE_AUTHORED_VALIDATION_PENDING
-candidate evidence: L0 until exact-head workflows complete
+candidate status: HOST_TESTED
+candidate evidence: L1 exact-source run 33283935102
 ```
 
 The documentation candidate does not inherit the baseline L1 claim merely
@@ -499,9 +499,9 @@ separate signed profile and explicit human authorization.
 
 ## 2026-08-29 exact-source closure checkpoint
 
-Permanent exact-source-head run `33275227428` passed for source commit
-`498d0ffc6818776f7abfa71af5ee2c77cde45a8a` and tree
-`aad53bd41aa8efa4fac5496aba813aed8ffd2d91`. The aggregate candidate also binds Cargo.lock SHA-256
+Permanent exact-source-head run `33282230585` passed for source commit
+`c8790b6b5d0e59dff74f527db1d1173d4a2fb043` and tree
+`02cb419638a7e163c0eb957e6b6e95bb4df54609`. The aggregate candidate also binds Cargo.lock SHA-256
 `a469d72776978b143f47ba71904325404dc77307b25374214e6dd321147b99a0`.
 
 This checkpoint closes only the L1 job-admission gap. It moves the completed process-lifecycle,

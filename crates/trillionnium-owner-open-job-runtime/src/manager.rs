@@ -866,20 +866,14 @@ impl JobManager {
                             {
                                 let _ = manager.note_journal_failure(error.to_string());
                             }
-                            match manager.push_runtime_event(&key, &request, event.clone()) {
-                                Ok(seq) => {
-                                    if let Err(error) = manager.inner.journal.record_job_terminal(
-                                        &key,
-                                        &request,
-                                        seq,
-                                        serde_json::to_value(event).unwrap_or(Value::Null),
-                                    ) {
-                                        let _ = manager.note_journal_failure(error.to_string());
-                                    }
-                                }
-                                Err(error) => {
-                                    let _ = manager.note_journal_failure(error.to_string());
-                                }
+                            // `push_runtime_event` appends the terminal observation and
+                            // the canonical `job.terminal` record under one journal lock before
+                            // exposing the in-memory terminal event. Do not write the same terminal
+                            // again after publication: that redundant call keeps the exclusive
+                            // writer lease alive after a consumer can observe completion and makes
+                            // an immediate in-process manager handoff spuriously fail closed.
+                            if let Err(error) = manager.push_runtime_event(&key, &request, event) {
+                                let _ = manager.note_journal_failure(error.to_string());
                             }
                             // Keep the owned process marker until the durable
                             // terminal record has been attempted.  The

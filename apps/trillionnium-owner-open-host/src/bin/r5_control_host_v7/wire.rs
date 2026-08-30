@@ -554,7 +554,17 @@ fn runtime_job_frame(context: &JobContext, seq: u64, event: &RuntimeJobEvent) ->
             }),
         ),
     };
-    build_job_frame(context, kind, seq, &event.seq.to_string(), payload)
+    let mut frame = build_job_frame(context, kind, seq, &event.seq.to_string(), payload);
+    // `event_id` is intentionally opaque and content-bound.  Carry the
+    // runtime inspection cursor separately so the outer bounded transport can
+    // report an exact recovery range without parsing the event ID.
+    frame
+        .extensions
+        .insert("durable_cursor".to_string(), json!(event.seq));
+    if let Some(object) = frame.payload.as_object_mut() {
+        object.insert("cursor".to_string(), json!(event.seq));
+    }
+    frame
 }
 
 fn default_profile() -> String {

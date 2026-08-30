@@ -249,32 +249,37 @@ class Broker:
         owner_message: dict[str, Any],
         *,
         details: dict[str, Any],
+        require_active: bool = True,
     ) -> bool:
-        try:
-            self.audit.terminal(
-                request.audit_binding,
-                owner_message=owner_message,
-                details=details,
-            )
-        except BrokerError as error:
-            self.upstream_uncertain.set()
-            self._owner(
-                request.owner_id,
-                self._request_error(
+        completed = False
+        with self.active_condition:
+            # The reader may have observed an upstream result while the worker
+            # was still making the write/forwarded transition.  Serializing
+            # terminalization on this condition makes the durable order
+            # accepted -> forwarded -> terminal deterministic.  A pre-forward
+            # rejection is allowed for a request that is not active yet.
+            if require_active and self.active_request is not request:
+                return False
+            try:
+                self.audit.terminal(
+                    request.audit_binding,
+                    owner_message=owner_message,
+                    details=details,
+                )
+            except BrokerError as error:
+                self.upstream_uncertain.set()
+                owner_message = self._request_error(
                     request,
                     "broker_terminal_audit_failed",
                     str(error),
-                ),
-            )
-            self.stopping.set()
-            completed = False
-        else:
-            self._owner(request.owner_id, owner_message)
-            completed = True
-        with self.active_condition:
+                )
+                self.stopping.set()
+            else:
+                completed = True
             if self.active_request is request:
                 self.active_request = None
             self.active_condition.notify_all()
+        self._owner(request.owner_id, owner_message)
         return completed
 
     def _upstream_reader(self) -> None:
@@ -290,6 +295,10 @@ class Broker:
                 frame = strict_json(raw, label="upstream frame")
                 if not isinstance(frame, dict) or not isinstance(frame.get("kind"), str):
                     raise BrokerError("upstream frame has no valid kind")
+                # Validate mirrored correlation before broadcasting an upstream
+                # frame.  A conflicting envelope/payload copy is an invalid
+                # frame, never an observation that may be delivered first.
+                frame_correlation(frame)
                 self._broadcast(
                     {
                         "schema": WIRE,
@@ -325,40 +334,47 @@ class Broker:
         *,
         code: str = "unknown_after_disconnect",
     ) -> None:
-        with self.unknown_lock:
-            if self.upstream_uncertain.is_set():
-                return
-            self.upstream_uncertain.set()
-            with self.active_condition:
+        active: Request | None = None
+        owner_message: dict[str, Any] | None = None
+        # Keep the condition as the outer lock.  The request worker can invoke
+        # this method while it is making the write/forwarded transition (the
+        # condition is re-entrant); no competing unknown marker can then hold
+        # unknown_lock while waiting for the condition.
+        with self.active_condition:
+            with self.unknown_lock:
+                if self.upstream_uncertain.is_set():
+                    return
+                self.upstream_uncertain.set()
                 active, self.active_request = self.active_request, None
                 self.active_condition.notify_all()
-            if active:
-                owner_message = self._request_error(active, code, str(error))
-                try:
-                    self.audit.terminal(
-                        active.audit_binding,
-                        owner_message=owner_message,
-                        details={
-                            "status": code,
-                            "effect_may_have_started": active.audit_binding.stage
-                            == "broker.forwarded",
-                        },
-                    )
-                except BrokerError:
-                    pass
-                self._owner(active.owner_id, owner_message)
-            self._broadcast(
-                {
-                    "schema": WIRE,
-                    "kind": "broker.status",
-                    "broker_epoch": self.broker_epoch,
-                    "status": "upstream_unavailable",
-                    "code": code,
-                    "message": str(error),
-                    "automatic_redispatch": False,
-                }
-            )
-            self.stopping.set()
+                if active:
+                    owner_message = self._request_error(active, code, str(error))
+                    try:
+                        self.audit.terminal(
+                            active.audit_binding,
+                            owner_message=owner_message,
+                            details={
+                                "status": code,
+                                "effect_may_have_started": active.audit_binding.stage
+                                == "broker.forwarded",
+                            },
+                        )
+                    except BrokerError:
+                        pass
+        if active and owner_message is not None:
+            self._owner(active.owner_id, owner_message)
+        self._broadcast(
+            {
+                "schema": WIRE,
+                "kind": "broker.status",
+                "broker_epoch": self.broker_epoch,
+                "status": "upstream_unavailable",
+                "code": code,
+                "message": str(error),
+                "automatic_redispatch": False,
+            }
+        )
+        self.stopping.set()
 
     def _request_worker(self) -> None:
         while not self.stopping.is_set():
@@ -379,6 +395,7 @@ class Broker:
                             "status": "rejected_after_acceptance_before_forward",
                             "effect_may_have_started": False,
                         },
+                        require_active=False,
                     )
                     continue
                 upstream = self.upstream
@@ -412,21 +429,21 @@ class Broker:
                 encoded = canonical(frame) + b"\n"
                 with self.active_condition:
                     self.active_request = request
-                try:
-                    upstream.stdin.write(encoded)
-                    upstream.stdin.flush()
-                except OSError as error:
-                    self._mark_upstream_unknown(error)
-                    return
-                try:
-                    self.audit.forwarded(
-                        request.audit_binding,
-                        frame_sha256=hashlib.sha256(encoded).hexdigest(),
-                        frame_bytes=len(encoded),
-                    )
-                except BrokerError as error:
-                    self._mark_upstream_unknown(error)
-                    return
+                    try:
+                        upstream.stdin.write(encoded)
+                        upstream.stdin.flush()
+                        self.audit.forwarded(
+                            request.audit_binding,
+                            frame_sha256=hashlib.sha256(encoded).hexdigest(),
+                            frame_bytes=len(encoded),
+                        )
+                    except (OSError, BrokerError) as error:
+                        # This call is intentionally inside the re-entrant
+                        # condition: no reader can terminalize the request
+                        # between the successful pipe write and its durable
+                        # forwarded record.
+                        self._mark_upstream_unknown(error)
+                        return
                 deadline = time.monotonic() + request.timeout_ms / 1000
                 with self.active_condition:
                     while self.active_request is request and not self.stopping.is_set():

@@ -141,11 +141,16 @@ fn pipe_job_runs_on_the_same_carrier_without_starting_the_provider() {
             .any(|frame| frame["kind"] == "job.start.result")
     );
     assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));
-    assert!(frames.iter().any(|frame| {
-        frame["kind"] == "job.output"
-            && frame["payload"]["stream"] == "stdout"
-            && frame["payload"]["encoding"] == "base64"
-    }));
+    let output = frames
+        .iter()
+        .find(|frame| {
+            frame["kind"] == "job.output"
+                && frame["payload"]["stream"] == "stdout"
+                && frame["payload"]["encoding"] == "base64"
+        })
+        .expect("job.output");
+    assert!(output["payload"]["cursor"].is_u64());
+    assert!(output["durable_cursor"].is_u64());
     assert!(frames.iter().any(|frame| {
         frame["kind"] == "job.result" && frame["payload"]["terminal_kind"] == "exited"
     }));

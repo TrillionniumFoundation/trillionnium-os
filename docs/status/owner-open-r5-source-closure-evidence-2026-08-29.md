@@ -1,56 +1,77 @@
 # Owner-Open R5 exact-source-head L1 closure evidence
 
-Status: **L1 source closure passed; target, device, destructive-fault and release evidence remains open.**
+Status: **Repaired exact source passed all permanent L1 and repository workflows; target, device, destructive-fault and release evidence remains open.**
 
-## Exact source identity
+## Current exact source identity
 
 | Field | Value |
 | --- | --- |
 | Repository | `TrillionniumFoundation/trillionnium-os` |
 | Branch | `codex/owner-open-r5-gap-closure-20260829` |
-| Source commit | `498d0ffc6818776f7abfa71af5ee2c77cde45a8a` |
-| Source tree | `aad53bd41aa8efa4fac5496aba813aed8ffd2d91` |
+| Source commit | `ae2335814b61fc3c5a472d3a207fdb876f9e620c` |
+| Source tree | `7e098821b947716cc96c77581259c5422b8b8654` |
 | Permanent workflow | `L1 owner-open R5 source and gap closure` |
-| Workflow run | `33275227428` |
+| Workflow run | `33283935102` |
 | Result | `L1_SOURCE_CLOSURE_PASSED` |
+| All permanent PR workflows | `16/16 success` |
 | Claim ceiling | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX` |
 | Cargo.lock SHA-256 | `a469d72776978b143f47ba71904325404dc77307b25374214e6dd321147b99a0` |
 
 The permanent workflow checked out the pull-request source head rather than GitHub's synthetic merge
-commit. The exact source checkout passed graph and document verification, gap/evidence mutation tests,
-Broker and MCP process fixtures, locked Rust 1.93 formatting/tests/strict Clippy, product-entrypoint
-source checks, release-path mechanics, ADB relay checks and the foundation suite.
+commit. The exact source passed graph/document verification, gap/evidence mutation tests, Broker and MCP
+fixtures, locked Rust 1.93 formatting/tests/strict Clippy, product-entrypoint checks, release mechanics,
+ADB relay checks, Android source-profile checks, Root-Linux packaging checks and the foundation suite.
 
 ## Bound artifacts
 
 | Artifact ID | Name | SHA-256 digest |
 | --- | --- | --- |
-| `9721291169` | `owner-open-r5-l1-graph-docs-python-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838` |
-| `9721304610` | `owner-open-r5-l1-rust-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887` |
-| `9721310376` | `owner-open-r5-l1-candidate-498d0ffc6818776f7abfa71af5ee2c77cde45a8a` | `sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3` |
+| `9723810264` | `owner-open-r5-l1-graph-docs-python-ae2335814b61fc3c5a472d3a207fdb876f9e620c` | `sha256:0176d8753ea6bed28a585e0d46004dd19bde2852335292e2394fad820b9fb62f` |
+| `9723815400` | `owner-open-r5-l1-rust-ae2335814b61fc3c5a472d3a207fdb876f9e620c` | `sha256:e2844b373ad2613012099b64a43b77a13281363d61b953843b1e5dccab15f88f` |
+| `9723817403` | `owner-open-r5-l1-candidate-ae2335814b61fc3c5a472d3a207fdb876f9e620c` | `sha256:8b86b72774b3281829eb3c6ae4cf4d352965bca2957ad0f12962a7cbe7d89ba4` |
+
+## Durable restart race closure
+
+A previous exact-head run exposed an intermittent same-process writer-lease handoff race in
+`completed_durable_job_never_spawns_again_after_manager_restart`. The implementation removes the
+redundant post-publication terminal write; the canonical terminal observation and `job.terminal` record
+remain atomically durable before terminal visibility. The regression waits only for the old dispatcher
+to release its writer lease and still proves the recovered terminal prevents a second spawn.
+
+Repair commit `50e33e3643501fae4f2ce2107ac5bf15f0bbb3ab` was validated by one-shot run `33283826378` with 50
+exact regression repetitions, all workspace tests, strict Clippy, all canonical R5 verifiers and all
+Python tests. The repaired human-authored exact head above then passed all sixteen permanent PR
+workflows, so no historical L1 result is inherited.
+
+## State-only promotion provenance
+
+The canonical machine truth was atomically rebound to the qualified source by promotion commit
+`bb501e6b0e2c836c360571ca00ed64500c09467a`, tree
+`cf2084dd8ede47f938b77efa80eec3fa762fdb63`, from one-shot run `33284100067`. The run passed its
+state-only staging boundary, canonical verifier, gap-evidence verifier, workflow-boundary verifier,
+targeted regression suite, diff check and bot commit, then removed both transient write-capable files.
+This human-authored provenance update exists only to trigger the normal PR checks against the promotion
+head; it does not change executable source or promote any L2-L6 claim.
 
 ## Source identity versus promotion head
 
-`498d0ffc6818776f7abfa71af5ee2c77cde45a8a` / `aad53bd41aa8efa4fac5496aba813aed8ffd2d91` is the immutable qualified source identity. A later state-only
-promotion commit may update `docs/status/` or import independently reviewed evidence without changing
-that source identity. Such a promotion head must pass its own exact-head repository checks and is not
-allowed to inherit qualification after any source, Cargo, contract, tool or workflow drift.
+`ae2335814b61fc3c5a472d3a207fdb876f9e620c` / `7e098821b947716cc96c77581259c5422b8b8654` is the immutable qualified source identity. A later state-only
+promotion commit may update machine status or import independently reviewed evidence without changing
+that source pair. It must pass its own repository checks and may not inherit qualification after source,
+Cargo, contract, tool or workflow drift.
 
 External evidence bundles must bind their `source_commit` and `source_tree` to this exact pair. The
-promotion script rejects a bundle whose source identity differs from the gap register.
+promotion script rejects a bundle whose source identity differs from the machine gap register.
 
 ## Gap transitions
 
-- `R5-GAP-JOB-ADMISSION-001` is **CLOSED at L1**: finite capacity is reserved before spawn,
-  conflicting concurrency cannot oversubscribe it, and post-spawn cleanup is bounded and tested.
+- `R5-GAP-JOB-ADMISSION-001` is **CLOSED at L1**.
 - Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint
-  are **SOURCE_CLOSED_PENDING_EVIDENCE**. Their source contracts and exact-head tests pass, but their
-  declared L2-L5 installed/environment evidence does not exist yet.
-- Repository governance is **EXTERNAL_HOLD** because protected-main required checks and independent
-  review are repository-administrator and reviewer actions, not source artifacts.
+  are **SOURCE_CLOSED_PENDING_EVIDENCE** and retain their declared L2-L5 exits.
+- Repository governance is **EXTERNAL_HOLD** until protected-main enforcement and an independent
+  current-head approval exist.
 - Installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public
-  release remain **EXTERNAL_HOLD** with their exact required material or authority listed in the
-  machine gap register.
+  release remain **EXTERNAL_HOLD** until their real target or authority evidence exists.
 
 ## Non-claims
 

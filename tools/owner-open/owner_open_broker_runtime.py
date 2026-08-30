@@ -24,20 +24,58 @@ CORRELATION_FIELDS = (
 )
 
 
+def _optional_string(
+    mapping: dict[str, Any],
+    name: str,
+    *,
+    location: str,
+) -> str | None:
+    """Read an optional correlation member without silently coercing it.
+
+    Correlation is intentionally opaque, but when a protocol-defined member is
+    present it is still an identifier and therefore must be a string (or an
+    explicit null omission).  Ignoring a non-string top-level value would let a
+    payload copy win implicitly, which is the same ambiguity as a conflicting
+    mirror.
+    """
+
+    if name not in mapping:
+        return None
+    value = mapping[name]
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise BrokerError(f"{location}.{name} must be a string or null")
+    return value
+
+
 def frame_value(frame: dict[str, Any], name: str) -> str | None:
-    value = frame.get(name)
-    if isinstance(value, str):
-        return value
+    """Return one correlation value, rejecting conflicting mirrors/aliases.
+
+    The wire contract permits correlation fields in the envelope and in the
+    payload, but they are mirrors rather than precedence layers.  In
+    particular, ``stream_id`` is an alias for ``turn_stream_id``.  Never choose
+    one copy when two supplied values disagree; fail closed instead.
+    """
+
+    names = ("turn_stream_id", "stream_id") if name in {
+        "turn_stream_id",
+        "stream_id",
+    } else (name,)
+    values: list[str] = []
+    for member in names:
+        value = _optional_string(frame, member, location="frame")
+        if value is not None:
+            values.append(value)
     payload = frame.get("payload")
     if isinstance(payload, dict):
-        value = payload.get(name)
-        if isinstance(value, str):
-            return value
-    if name == "turn_stream_id":
-        value = frame.get("stream_id")
-        if isinstance(value, str):
-            return value
-    return None
+        for member in names:
+            value = _optional_string(payload, member, location="frame.payload")
+            if value is not None:
+                values.append(value)
+    if values and any(value != values[0] for value in values[1:]):
+        raise BrokerError(f"conflicting mirrored correlation field {name}")
+    return values[0] if values else None
 
 
 def frame_job_id(frame: dict[str, Any]) -> str | None:

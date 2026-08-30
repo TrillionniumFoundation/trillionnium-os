@@ -72,6 +72,26 @@ fn wait_terminal(manager: &JobManager, key: &JobKey) -> Vec<u8> {
     }
 }
 
+fn reopen_after_dispatcher_shutdown(journal: &std::path::Path) -> JobManager {
+    let deadline = Instant::now() + Duration::from_secs(10);
+    loop {
+        let manager = JobManager::open(JobRuntimeConfig::default(), Some(journal)).unwrap();
+        if matches!(manager.journal().status().unwrap(), JournalStatus::Durable) {
+            return manager;
+        }
+        // A terminal observation is durable before it becomes visible, but the old
+        // dispatcher may still be releasing the same-process exclusive writer lease.
+        // Retry only the lease handoff; once reopened, the assertion below still proves
+        // that the terminal record exists and no second process is dispatched.
+        drop(manager);
+        assert!(
+            Instant::now() < deadline,
+            "old job dispatcher did not release the durable journal writer lease"
+        );
+        thread::sleep(Duration::from_millis(10));
+    }
+}
+
 #[test]
 fn pipe_job_supports_write_close_inspect_and_durable_terminal() {
     let directory = tempfile::tempdir().unwrap();
@@ -158,7 +178,7 @@ fn completed_durable_job_never_spawns_again_after_manager_restart() {
             .unwrap();
         wait_terminal(&manager, &job);
     }
-    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    let manager = reopen_after_dispatcher_shutdown(&journal);
     let replay = manager
         .start(start_request(job, request, "start-once", command, None))
         .unwrap();

@@ -5,7 +5,7 @@ Semantic baseline: `TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`, revision `2026-
 Implementation baseline: `codex/owner-open-r5-tool-loop-20260827@479e5fb78385d3706b42f83b334025fa2b6ccd50`  
 Implementation evidence: **HOST_TESTED / L1**  
 Documentation candidate: `codex/owner-open-r5-gap-closure-20260829`  
-Documentation candidate evidence: **L0 until exact-head CI succeeds**  
+Documentation candidate evidence: **HOST_TESTED / L1 at exact source `ae2335814b61fc3c5a472d3a207fdb876f9e620c`**
 Public release: **false**
 
 R3 remains the product-semantic authority: Codex/provider is the only semantic
@@ -43,7 +43,7 @@ provenance. They cannot override the r6 plan or machine gap register.
 
 ```text
 AiShell / owner clients / local Codex MCP
-  -> one final product entrypoint                       [not yet selected]
+  -> one final product entrypoint                       [source-selected; target install remains L3]
   -> optional same-trust-domain broker                  [source L1; P0 gaps open]
   -> bounded v5 transport carrier                       [source L1]
   -> job-aware v7 execution core                        [source L1]
@@ -184,6 +184,8 @@ authorization is recorded; the machine rule is
 `public_release == (release_gap_closed and zero_gap)`.
 
 ## Exact-source L1 checkpoint (2026-08-29)
+
+Validated source: `c8790b6b5d0e59dff74f527db1d1173d4a2fb043` / tree `02cb419638a7e163c0eb957e6b6e95bb4df54609` / permanent run `33282230585`. The checked-in promotion head is state-only and does not promote any L2-L6 claim.
 
 Start with the [exact-source closure evidence](status/owner-open-r5-source-closure-evidence-2026-08-29.md),
 then read the [machine gap register](status/owner-open-r5-gap-closure.json) and

@@ -109,6 +109,40 @@ mod flow_tests {
     }
 
     #[test]
+    fn opaque_job_event_id_uses_explicit_durable_cursor_for_gap_recovery() {
+        let mut flow = StreamDelivery::new(&options(128));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let mut frame = job_output(7, 512);
+        frame.event_id = Some("job-event-opaque-content-bound-id".to_string());
+        frame
+            .extensions
+            .insert("durable_cursor".to_string(), json!(41));
+        let result = flow.submit(frame).unwrap();
+        let gap = match result {
+            SubmitResult::GapStarted(gap) => gap,
+            other => panic!("unexpected submit result: {other:?}"),
+        };
+        assert_eq!(gap.first_cursor, Some(41));
+        assert_eq!(gap.last_cursor, Some(41));
+        assert_eq!(gap.required_resume_cursor(), Some(42));
+        assert_eq!(gap.first_event_id.as_deref(), Some("job-event-opaque-content-bound-id"));
+    }
+
+    #[test]
+    fn malformed_explicit_durable_cursor_fails_closed() {
+        let mut flow = StreamDelivery::new(&options(4096));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let mut frame = job_output(1, 16);
+        frame
+            .extensions
+            .insert("durable_cursor".to_string(), json!("not-a-cursor"));
+        let error = flow.submit(frame).expect_err("malformed cursor must be rejected");
+        assert!(error.to_string().contains("durable_cursor"));
+    }
+
+    #[test]
     fn hello_ack_advertises_every_classified_bounded_frame() {
         let options = options(4096);
         let flow = StreamDelivery::new(&options);
