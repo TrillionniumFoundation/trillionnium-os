@@ -1,0 +1,251 @@
+name: one-shot owner-open R5 c879 exact-source evidence promotion
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r5-gap-closure-20260829
+    paths:
+      - ".github/workflows/owner-open-r5-c879-source-evidence-promotion-one-shot.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: codex/owner-open-r5-gap-closure-20260829
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Bind the current qualified source evidence without promoting external gaps
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from copy import deepcopy
+          from pathlib import Path
+
+          root = Path.cwd()
+          branch = "codex/owner-open-r5-gap-closure-20260829"
+          source_commit = "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
+          source_tree = "02cb419638a7e163c0eb957e6b6e95bb4df54609"
+          workflow_run_id = 33282230585
+          claim_ceiling = "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX"
+          artifacts = [
+              {
+                  "id": 9723329897,
+                  "name": f"owner-open-r5-l1-graph-docs-python-{source_commit}",
+                  "digest": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d",
+              },
+              {
+                  "id": 9723329308,
+                  "name": f"owner-open-r5-l1-rust-{source_commit}",
+                  "digest": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a",
+              },
+              {
+                  "id": 9723331596,
+                  "name": f"owner-open-r5-l1-candidate-{source_commit}",
+                  "digest": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72",
+              },
+          ]
+          source_evidence = {
+              "level": "L1",
+              "branch": branch,
+              "commit": source_commit,
+              "tree": source_tree,
+              "workflow_run_id": workflow_run_id,
+              "successful_jobs": [
+                  "L1 graph, documentation, broker and MCP source closure",
+                  "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+                  "L1 exact-source-head aggregate candidate",
+              ],
+              "artifacts": artifacts,
+          }
+
+          def write_json(path: Path, value: object) -> None:
+              path.write_text(
+                  json.dumps(value, indent=2, ensure_ascii=False) + "\n",
+                  encoding="utf-8",
+              )
+
+          gap_path = root / "docs/status/owner-open-r5-gap-closure.json"
+          gaps = json.loads(gap_path.read_text(encoding="utf-8"))
+          gaps["documentation_candidate"].update(
+              {
+                  "state": "EXACT_SOURCE_HEAD_L1_PASSED",
+                  "evidence_level": "L1",
+                  "validated_source_commit": source_commit,
+                  "validated_source_tree": source_tree,
+                  "workflow_run_id": workflow_run_id,
+                  "checked_in_promotion_requires_new_exact_head_ci": True,
+              }
+          )
+          for gap in gaps["gaps"]:
+              if "source_evidence" in gap:
+                  gap["source_evidence"] = deepcopy(source_evidence)
+          write_json(gap_path, gaps)
+
+          status_path = root / "docs/status/owner-open-r5-status.json"
+          status = json.loads(status_path.read_text(encoding="utf-8"))
+          status["updated_at"] = "2026-08-30"
+          status["product_claim"] = (
+              f"Exact source commit {source_commit} and tree {source_tree} passed the permanent L1 "
+              "source, gap, Rust, Broker, MCP, release-path, product-entrypoint, ADB-relay, Android "
+              "source-profile, Root-Linux packaging and foundation gates. Job admission is CLOSED at "
+              "L1. Process lifecycle, stream recovery, journal convergence, Broker correlation and "
+              "product entrypoint are source-closed but still require their declared L2-L5 target "
+              "evidence. Repository governance, installed Codex, Root Linux placement, Android image, "
+              "physical ADB, destructive faults and public release remain explicit holds."
+          )
+          status["claim_ceiling"] = claim_ceiling
+          status["current_candidate"].update(
+              {
+                  "status": "HOST_TESTED",
+                  "latest_evidence_level": "L1",
+                  "validated_source_commit": source_commit,
+                  "validated_source_tree": source_tree,
+                  "workflow_run_id": workflow_run_id,
+                  "exact_head_validation_pending": False,
+                  "must_not_inherit_baseline_l1": False,
+                  "promotion_commit_requires_new_exact_head_ci": True,
+              }
+          )
+          for hold in status.get("external_evidence_holds", []):
+              hold["source_evidence_commit"] = source_commit
+          status["known_exact_candidate"] = {
+              "status": "HOST_TESTED",
+              "evidence_level": "L1",
+              "branch": branch,
+              "commit": source_commit,
+              "tree": source_tree,
+              "workflow_run_id": workflow_run_id,
+              "successful_jobs": list(source_evidence["successful_jobs"]),
+              "artifacts": deepcopy(artifacts),
+              "claim_ceiling": claim_ceiling,
+          }
+          write_json(status_path, status)
+
+          replacements = {
+              "498d0ffc6818776f7abfa71af5ee2c77cde45a8a": source_commit,
+              "aad53bd41aa8efa4fac5496aba813aed8ffd2d91": source_tree,
+              "33275227428": str(workflow_run_id),
+              "9721291169": "9723329897",
+              "9721304610": "9723329308",
+              "9721310376": "9723331596",
+              "sha256:165d20d42b4e084e273161cbba28f8012f663e67f8eb070911ed42a7164f7838": "sha256:9d8d2703377e9c93d9299eb4d7696e9d489238cb20b7bbe78301ba241833384d",
+              "sha256:2f8ad943f132cb6b2babab3054d4b160b71cc6e5e4d28117757ce35b1ed68887": "sha256:ddb01b3d5c1e15f5ef9a190346935faa2020100f8c7be12254276d821416bf0a",
+              "sha256:1ebc7fa77055a803a5e9dd66edc981d54939f3be6077304b7015537103ee4aa3": "sha256:159b9ea0465a32ff7e5b60a0f3345ce7c81663d9f7157bfe19343c72f2b45b72",
+          }
+          for relative in (
+              "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md",
+              "docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md",
+          ):
+              path = root / relative
+              text = path.read_text(encoding="utf-8")
+              for old, new in replacements.items():
+                  text = text.replace(old, new)
+              path.write_text(text, encoding="utf-8")
+
+          plan_path = root / "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md"
+          plan = plan_path.read_text(encoding="utf-8")
+          plan = plan.replace(
+              "candidate status: SOURCE_AUTHORED_VALIDATION_PENDING\n"
+              "candidate evidence: L0 until exact-head workflows complete",
+              "candidate status: HOST_TESTED\n"
+              f"candidate evidence: L1 exact-source run {workflow_run_id}",
+          )
+          if "SOURCE_AUTHORED_VALIDATION_PENDING" in plan:
+              raise SystemExit("stale candidate status remains in the active plan")
+          plan_path.write_text(plan, encoding="utf-8")
+
+          start_path = root / "docs/OWNER_OPEN_R5_START_HERE.md"
+          start = start_path.read_text(encoding="utf-8")
+          old_evidence = "Documentation candidate evidence: **L0 until exact-head CI succeeds**"
+          new_evidence = (
+              "Documentation candidate evidence: **HOST_TESTED / L1 at exact source "
+              f"`{source_commit}`**"
+          )
+          if old_evidence not in start:
+              raise SystemExit("expected Start Here candidate-evidence line not found")
+          start = start.replace(old_evidence, new_evidence)
+          start = start.replace(
+              "-> one final product entrypoint                       [not yet selected]",
+              "-> one final product entrypoint                       [source-selected; target install remains L3]",
+          )
+          marker = "## Exact-source L1 checkpoint (2026-08-29)\n\n"
+          identity = (
+              f"Validated source: `{source_commit}` / tree `{source_tree}` / permanent run "
+              f"`{workflow_run_id}`. The checked-in promotion head is state-only and does not "
+              "promote any L2-L6 claim.\n\n"
+          )
+          if marker not in start:
+              raise SystemExit("expected Start Here checkpoint marker not found")
+          start = start.replace(marker, marker + identity, 1)
+          start_path.write_text(start, encoding="utf-8")
+          PY
+          rm -f .github/workflows/owner-open-r5-c879-source-evidence-promotion-one-shot.yml
+      - name: Verify canonical truth and state-only promotion boundaries
+        run: |
+          set -euo pipefail
+          python3 -m json.tool docs/status/owner-open-r5-gap-closure.json >/dev/null
+          python3 -m json.tool docs/status/owner-open-r5-status.json >/dev/null
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py --json
+          python3 tools/verify-owner-open-r5.py --json
+          python3 tools/verify-owner-open-r5-gap-evidence.py --json
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            tools.tests.test_generate_owner_open_l1_candidate \
+            tools.tests.test_generate_owner_open_r5_resume_packet \
+            tools.tests.test_promote_owner_open_r5_evidence \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+            -v
+          if rg -n '498d0ffc6818776f7abfa71af5ee2c77cde45a8a|aad53bd41aa8efa4fac5496aba813aed8ffd2d91|33275227428|9721291169|9721304610|9721310376' \
+            docs/status/owner-open-r5-gap-closure.json \
+            docs/status/owner-open-r5-status.json \
+            docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md \
+            docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md; then
+            echo "stale current-source identity remains in canonical truth" >&2
+            exit 1
+          fi
+          git diff --check
+      - name: Commit the state-only exact-source promotion
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git diff --cached --check
+          actual="$(git diff --cached --name-only | sort)"
+          allowed="$(cat <<'EOF'
+          .github/workflows/owner-open-r5-c879-source-evidence-promotion-one-shot.yml
+          docs/OWNER_OPEN_R5_START_HERE.md
+          docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md
+          docs/status/owner-open-r5-gap-closure.json
+          docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md
+          docs/status/owner-open-r5-status.json
+          EOF
+          )"
+          unexpected="$(comm -23 <(printf '%s\n' "$actual") <(printf '%s\n' "$allowed" | sort))"
+          test -z "$unexpected"
+          for required in \
+            .github/workflows/owner-open-r5-c879-source-evidence-promotion-one-shot.yml \
+            docs/OWNER_OPEN_R5_START_HERE.md \
+            docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md \
+            docs/status/owner-open-r5-gap-closure.json \
+            docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md \
+            docs/status/owner-open-r5-status.json; do
+            printf '%s\n' "$actual" | grep -Fx "$required" >/dev/null
+          done
+          git commit -m "docs(r5): bind c879 exact L1 source evidence"
+          git push origin HEAD:codex/owner-open-r5-gap-closure-20260829
