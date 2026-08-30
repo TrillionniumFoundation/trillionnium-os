@@ -311,12 +311,11 @@ where
     }
 
     let status = child_status.or_else(|| child.try_wait().ok().flatten());
-    let status_kind = forced_kind.unwrap_or_else(|| {
-        match status.as_ref().and_then(ExitStatusExt::signal) {
+    let status_kind =
+        forced_kind.unwrap_or_else(|| match status.as_ref().and_then(ExitStatusExt::signal) {
             Some(_) => TerminalKind::Signaled,
             None => TerminalKind::Exited,
-        }
-    });
+        });
     let terminal = ExecutionTerminal {
         kind: status_kind,
         exit_code: status.as_ref().and_then(ExitStatus::code),
@@ -391,11 +390,7 @@ where
     })
 }
 
-fn join_if_finished(
-    thread: Option<JoinHandle<()>>,
-    error: &mut Option<String>,
-    label: &str,
-) {
+fn join_if_finished(thread: Option<JoinHandle<()>>, error: &mut Option<String>, label: &str) {
     let Some(thread) = thread else {
         return;
     };
@@ -424,7 +419,9 @@ fn terminate_process_group(
 
     if process_group_exists(pid)? {
         send_process_group_signal(pid, libc::SIGTERM)?;
-        let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
+        let deadline = Instant::now()
+            .checked_add(grace)
+            .unwrap_or_else(Instant::now);
         while Instant::now() < deadline {
             if status.is_none() {
                 status = child
@@ -451,7 +448,9 @@ fn terminate_process_group(
         }
     }
 
-    let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
+    let deadline = Instant::now()
+        .checked_add(grace)
+        .unwrap_or_else(Instant::now);
     while Instant::now() < deadline {
         if status.is_none() {
             status = child

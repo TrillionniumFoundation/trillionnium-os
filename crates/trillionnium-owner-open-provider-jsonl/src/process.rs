@@ -116,7 +116,9 @@ pub(crate) fn finish_child(
 
     if process_group_exists(pid)? {
         send_group_signal(pid, libc::SIGTERM)?;
-        let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
+        let deadline = Instant::now()
+            .checked_add(grace)
+            .unwrap_or_else(Instant::now);
         while Instant::now() < deadline {
             if status.is_none() {
                 status = child
@@ -142,7 +144,9 @@ pub(crate) fn finish_child(
         }
     }
 
-    let deadline = Instant::now().checked_add(grace).unwrap_or_else(Instant::now);
+    let deadline = Instant::now()
+        .checked_add(grace)
+        .unwrap_or_else(Instant::now);
     while Instant::now() < deadline {
         if status.is_none() {
             status = child
@@ -227,7 +231,10 @@ mod tests {
             if child.try_wait().unwrap().is_some() {
                 break;
             }
-            assert!(Instant::now() < leader_deadline, "provider leader did not exit");
+            assert!(
+                Instant::now() < leader_deadline,
+                "provider leader did not exit"
+            );
             thread::sleep(Duration::from_millis(5));
         }
 
@@ -247,7 +254,10 @@ mod tests {
                 }
                 panic!("unexpected descendant liveness probe error: {error}");
             }
-            assert!(Instant::now() < deadline, "provider descendant survived cleanup");
+            assert!(
+                Instant::now() < deadline,
+                "provider descendant survived cleanup"
+            );
             thread::sleep(Duration::from_millis(10));
         }
     }

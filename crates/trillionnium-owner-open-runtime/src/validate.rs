@@ -63,10 +63,7 @@ pub(crate) fn shell_spec(
     })
 }
 
-pub(crate) fn adb_spec(
-    request: AdbExecRequest,
-    limits: &MechanicalLimits,
-) -> Result<ProcessSpec> {
+pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Result<ProcessSpec> {
     limits.validate()?;
     validate_common_request(
         &request.call_id,
@@ -216,14 +213,17 @@ mod tests {
     #[test]
     fn invalid_requests_are_rejected_before_acceptance() {
         let limits = MechanicalLimits::default();
-        let error = shell_spec(ShellExecRequest::argv("call-empty", Vec::new()), &limits)
-            .unwrap_err();
+        let error =
+            shell_spec(ShellExecRequest::argv("call-empty", Vec::new()), &limits).unwrap_err();
         assert!(error.to_string().contains("must not be empty"));
     }
 
     #[test]
     fn zero_request_timeout_uses_owner_default() {
         let limits = MechanicalLimits::default();
-        assert_eq!(normalized_timeout(Some(Duration::ZERO), &limits), limits.default_timeout);
+        assert_eq!(
+            normalized_timeout(Some(Duration::ZERO), &limits),
+            limits.default_timeout
+        );
     }
 }
