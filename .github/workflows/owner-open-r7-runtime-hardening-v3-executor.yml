@@ -1,0 +1,502 @@
+name: Owner-Open R7 qualified runtime hardening executor
+
+on:
+  push:
+    branches:
+      - codex/owner-open-r7-runtime-hardening-20260830-v3
+    paths:
+      - .github/workflows/owner-open-r7-runtime-hardening-v3-executor.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: owner-open-r7-runtime-hardening-v3
+  cancel-in-progress: false
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      TARGET_BRANCH: codex/owner-open-r7-runtime-hardening-20260830-v3
+      TARGET_BASE: codex/owner-open-r5-gap-closure-20260829
+      EXPECTED_BASE: 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+      GH_TOKEN: ${{ github.token }}
+      CARGO_INCREMENTAL: "0"
+      RUST_BACKTRACE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONWARNINGS: error::ResourceWarning
+
+    steps:
+      - name: Check out exact executor commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: codex/owner-open-r7-runtime-hardening-20260830-v3
+
+      - name: Assert immutable ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_BASE"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Apply source hardening
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              target = Path(path)
+              text = target.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(
+                      f"{path}: expected exactly one match, observed {count}: {old!r}"
+                  )
+              target.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replace_once(
+              "crates/trillionnium-owner-open-job-runtime/src/types.rs",
+              "            allow_unjournaled_effects: true,\n",
+              "            allow_unjournaled_effects: false,\n",
+          )
+          replace_once(
+              "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+              "        let mut require_job_journal = false;\n",
+              "        let mut require_job_journal = true;\n",
+          )
+          replace_once(
+              "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+              "                \"--require-job-journal\" => {\n                    require_job_journal = true;\n                }\n",
+              "                \"--require-job-journal\" => {\n                    require_job_journal = true;\n                }\n                \"--allow-unjournaled-effects-for-development\" => {\n                    require_job_journal = false;\n                }\n",
+          )
+          replace_once(
+              "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+              "Long-running job options:\\n  --job-store /absolute/path/jobs.jsonl\\n  --require-job-journal\\n\\n",
+              "Long-running job options:\\n  --job-store /absolute/path/jobs.jsonl\\n  --require-job-journal (compatibility no-op; durability is required by default)\\n  --allow-unjournaled-effects-for-development (unsafe development-only override)\\n\\n",
+          )
+
+          provider = Path("crates/trillionnium-owner-open-provider-jsonl/src/lib.rs")
+          text = provider.read_text(encoding="utf-8")
+          old_launch = '''        if let Some(cwd) = &self.config.cwd {
+            command.current_dir(cwd);
+        }
+        for (key, value) in &self.config.env {
+            match value {
+                Some(value) => {
+                    command.env(key, value);
+                }
+                None => {
+                    command.env_remove(key);
+                }
+            }
+        }
+        unsafe {
+            command.pre_exec(|| {
+                if libc::setpgid(0, 0) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+'''
+          new_launch = '''        if let Some(cwd) = &self.config.cwd {
+            command.current_dir(cwd);
+        }
+        apply_provider_environment(&mut command, &self.config.env);
+        let parent_pid = unsafe { libc::getpid() };
+        unsafe {
+            command.pre_exec(move || {
+                if libc::setpgid(0, 0) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                #[cfg(any(target_os = "linux", target_os = "android"))]
+                {
+                    if libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) != 0 {
+                        return Err(std::io::Error::last_os_error());
+                    }
+                    if libc::getppid() != parent_pid {
+                        return Err(std::io::Error::from_raw_os_error(libc::ECHILD));
+                    }
+                }
+                Ok(())
+            });
+        }
+'''
+          if text.count(old_launch) != 1:
+              raise SystemExit("provider environment/lifecycle launch block drifted")
+          text = text.replace(old_launch, new_launch, 1)
+          anchor = "pub type Result<T> = std::result::Result<T, JsonlProviderError>;\n\n"
+          helper = '''pub type Result<T> = std::result::Result<T, JsonlProviderError>;
+
+const PROVIDER_INHERITED_ENVIRONMENT: &[&str] = &[
+    "PATH",
+    "HOME",
+    "CODEX_HOME",
+    "ADB_SERVER_SOCKET",
+    "LANG",
+    "LC_ALL",
+    "TERM",
+    "NO_COLOR",
+];
+
+fn apply_provider_environment(command: &mut Command, delta: &EnvironmentDelta) {
+    command.env_clear();
+    for key in PROVIDER_INHERITED_ENVIRONMENT {
+        if let Some(value) = std::env::var_os(key) {
+            command.env(key, value);
+        }
+    }
+    for (key, value) in delta {
+        match value {
+            Some(value) => {
+                command.env(key, value);
+            }
+            None => {
+                command.env_remove(key);
+            }
+        }
+    }
+}
+
+'''
+          if text.count(anchor) != 1:
+              raise SystemExit("provider Result alias anchor drifted")
+          provider.write_text(text.replace(anchor, helper, 1), encoding="utf-8")
+
+          process = Path("crates/trillionnium-owner-open-job-runtime/src/process.rs")
+          text = process.read_text(encoding="utf-8")
+          old_drop = '''impl Drop for SpawnGuard {
+    fn drop(&mut self) {
+        let Some(child) = self.child.as_mut() else {
+            return;
+        };
+        if send_process_group_signal(self.pid, libc::SIGKILL).is_err() {
+            let _ = child.kill();
+        }
+        let _ = child.wait();
+    }
+}
+'''
+          new_drop = '''impl Drop for SpawnGuard {
+    fn drop(&mut self) {
+        let Some(mut child) = self.child.take() else {
+            return;
+        };
+        if send_process_group_signal(self.pid, libc::SIGKILL).is_err() {
+            let _ = child.kill();
+        }
+        let deadline = Instant::now()
+            .checked_add(Duration::from_secs(2))
+            .unwrap_or_else(Instant::now);
+        loop {
+            match child.try_wait() {
+                Ok(Some(_)) => return,
+                Ok(None) if Instant::now() < deadline => {
+                    thread::sleep(Duration::from_millis(5));
+                }
+                Ok(None) | Err(_) => break,
+            }
+        }
+        let _ = thread::Builder::new()
+            .name(format!("owner-open-job-drop-reaper-{}", self.pid))
+            .spawn(move || {
+                let _ = child.wait();
+            });
+    }
+}
+'''
+          if text.count(old_drop) != 1:
+              raise SystemExit("SpawnGuard Drop implementation drifted")
+          process.write_text(text.replace(old_drop, new_drop, 1), encoding="utf-8")
+
+          verifier = Path("tools/verify-owner-open-r5-workflow-boundaries.py")
+          text = verifier.read_text(encoding="utf-8")
+          old_regex = 'CHECKOUT = re.compile(r"^\\s*- uses: actions/checkout@")'
+          new_regex = (
+              'CHECKOUT = re.compile(r"^\\s*(?:-\\s*)?uses:\\s*actions/checkout@")\n'
+              'STEP_START = re.compile(r"^(\\s*)-\\s+")'
+          )
+          if text.count(old_regex) != 1:
+              raise SystemExit("workflow checkout matcher drifted")
+          text = text.replace(old_regex, new_regex, 1)
+          old_parser = '''def _checkout_blocks(lines: list[str]) -> list[tuple[int, str]]:
+    blocks: list[tuple[int, str]] = []
+    for index, line in enumerate(lines):
+        if CHECKOUT.match(line) is None:
+            continue
+        indent = len(line) - len(line.lstrip())
+        block = [line]
+        for following in lines[index + 1 :]:
+            stripped = following.strip()
+            following_indent = len(following) - len(following.lstrip())
+            if stripped and following_indent <= indent and stripped.startswith("-"):
+                break
+            if stripped and following_indent < indent:
+                break
+            block.append(following)
+        blocks.append((index + 1, "\\n".join(block)))
+    return blocks
+'''
+          new_parser = '''def _checkout_blocks(lines: list[str]) -> list[tuple[int, str]]:
+    blocks: list[tuple[int, str]] = []
+    for index, line in enumerate(lines):
+        if CHECKOUT.match(line) is None:
+            continue
+        uses_indent = len(line) - len(line.lstrip())
+        start = index
+        step_indent = uses_indent
+        for candidate in range(index, -1, -1):
+            match = STEP_START.match(lines[candidate])
+            if match is not None and len(match.group(1)) <= uses_indent:
+                start = candidate
+                step_indent = len(match.group(1))
+                break
+        block = [lines[start]]
+        for following in lines[start + 1 :]:
+            stripped = following.strip()
+            following_indent = len(following) - len(following.lstrip())
+            if (
+                stripped
+                and STEP_START.match(following) is not None
+                and following_indent == step_indent
+            ):
+                break
+            if stripped and following_indent < step_indent:
+                break
+            block.append(following)
+        blocks.append((start + 1, "\\n".join(block)))
+    return blocks
+'''
+          if text.count(old_parser) != 1:
+              raise SystemExit("workflow checkout block parser drifted")
+          text = text.replace(old_parser, new_parser, 1)
+          text = text.replace(
+              'workflow_dir.glob("owner-open-r5*.yml")',
+              'workflow_dir.glob("owner-open*.yml")',
+          )
+          verifier.write_text(text, encoding="utf-8")
+
+          test_path = Path("tools/tests/test_owner_open_workflow_boundary_hardening.py")
+          test_path.write_text(
+              '''from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+import tempfile
+import unittest
+
+MODULE_PATH = Path(__file__).resolve().parents[1] / "verify-owner-open-r5-workflow-boundaries.py"
+SPEC = importlib.util.spec_from_file_location("owner_open_workflow_boundaries", MODULE_PATH)
+assert SPEC is not None and SPEC.loader is not None
+MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+
+CHECKOUT = """name: test
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: __HEAD_EXPRESSION__
+      - name: Assert exact head
+        run: git --no-replace-objects rev-parse HEAD
+""".replace(
+    "__HEAD_EXPRESSION__", "$" + "{{ github.event.pull_request.head.sha }}"
+)
+
+
+class WorkflowBoundaryHardeningTest(unittest.TestCase):
+    def make_root(self) -> Path:
+        root = Path(tempfile.mkdtemp())
+        workflows = root / ".github" / "workflows"
+        workflows.mkdir(parents=True)
+        for name in (
+            "owner-open-r5-tool-loop.yml",
+            "owner-open-r5-target-evidence-capture.yml",
+            "owner-open-r5-governance-readiness.yml",
+        ):
+            (workflows / name).write_text(CHECKOUT, encoding="utf-8")
+        (root / "tools" / "owner-open").mkdir(parents=True)
+        return root
+
+    def test_named_checkout_step_is_exact_head_audited(self) -> None:
+        report = MODULE.verify(self.make_root())
+        self.assertTrue(report["ok"], report)
+
+    def test_r6_workflow_cannot_escape_write_permission_scan(self) -> None:
+        root = self.make_root()
+        path = root / ".github" / "workflows" / "owner-open-r6-escape.yml"
+        path.write_text(
+            CHECKOUT.replace("contents: read", "contents: write"),
+            encoding="utf-8",
+        )
+        report = MODULE.verify(root)
+        self.assertFalse(report["ok"])
+        self.assertTrue(
+            any("write permission" in item for item in report["errors"]), report
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()
+''',
+              encoding="utf-8",
+          )
+
+          runtime_test = Path("crates/trillionnium-owner-open-job-runtime/tests/runtime.rs")
+          runtime_text = runtime_test.read_text(encoding="utf-8")
+          runtime_test.write_text(
+              runtime_text
+              + '''
+
+#[test]
+fn default_runtime_requires_durable_journal() {
+    assert!(!JobRuntimeConfig::default().allow_unjournaled_effects);
+}
+''',
+              encoding="utf-8",
+          )
+
+          provider = Path("crates/trillionnium-owner-open-provider-jsonl/src/lib.rs")
+          provider_text = provider.read_text(encoding="utf-8")
+          provider.write_text(
+              provider_text
+              + '''
+
+#[cfg(test)]
+mod environment_isolation_tests {
+    use super::*;
+    use std::ffi::{OsStr, OsString};
+
+    #[test]
+    fn provider_environment_clears_unreviewed_parent_entries() {
+        let mut command = Command::new("/bin/true");
+        command.env("UNREVIEWED_SECRET", "must-not-survive");
+        let mut delta = EnvironmentDelta::new();
+        delta.insert(
+            "EXPLICIT_PROVIDER_VALUE".to_string(),
+            Some("present".to_string()),
+        );
+        apply_provider_environment(&mut command, &delta);
+        let values = command
+            .get_envs()
+            .map(|(key, value)| {
+                (key.to_os_string(), value.map(OsStr::to_os_string))
+            })
+            .collect::<BTreeMap<OsString, Option<OsString>>>();
+        assert!(!values.contains_key(OsStr::new("UNREVIEWED_SECRET")));
+        assert_eq!(
+            values.get(OsStr::new("EXPLICIT_PROVIDER_VALUE")),
+            Some(&Some(OsString::from("present")))
+        );
+    }
+}
+''',
+              encoding="utf-8",
+          )
+          PY
+
+          rm .github/workflows/owner-open-r7-runtime-hardening-v3-executor.yml
+
+      - name: Install Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: 1.93.0
+          components: rustfmt, clippy
+
+      - name: Verify Python, governance and machine contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q \
+            tools/owner-open \
+            tools/tests \
+            tools/verify-owner-open-r5.py \
+            tools/verify-owner-open-r5-workflow-boundaries.py
+          python3 -m unittest \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+            tools.tests.test_owner_open_workflow_boundary_hardening \
+            tools.tests.test_repository_governance_baseline \
+            tools.tests.test_verify_owner_open_r5 \
+            tools.tests.test_verify_owner_open_r5_gap_closure \
+            tools.tests.test_verify_owner_open_r5_gap_evidence \
+            -v
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py --json
+          python3 tools/verify-owner-open-r5.py --json
+
+      - name: Verify selected Rust closure and complete workspace compilation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo check --locked --workspace --all-targets
+          git diff --check
+
+      - name: Commit qualified patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e .github/workflows/owner-open-r7-runtime-hardening-v3-executor.yml
+          git diff --check
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "fix(r7): fail closed and harden runtime boundaries"
+          git push origin "HEAD:$TARGET_BRANCH"
+
+      - name: Open stacked review and request independent reviewer
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/pr-body.md" <<EOF
+          ## Purpose
+
+          Close repository-local runtime and CI-boundary findings discovered after the R6 exact-source audit, without promoting any L2-L6 claim.
+
+          ## Qualified changes
+
+          - effectful job execution is durable-by-default; unjournaled execution requires an explicit unsafe development switch;
+          - Provider subprocesses inherit only the reviewed operational environment allowlist plus explicit delta values;
+          - Provider subprocesses bind Linux/Android parent-death behavior and check the setup race;
+          - SpawnGuard rollback no longer performs an unbounded wait in Drop;
+          - workflow-boundary verification audits every owner-open workflow generation and named checkout steps;
+          - regression tests cover fail-closed defaults and workflow-name/parser escape attempts.
+
+          ## Qualification
+
+          One-shot workflow run: $GITHUB_RUN_ID, attempt $GITHUB_RUN_ATTEMPT.
+
+          Before committing, the executor passed Python governance/evidence tests, canonical verifiers, Rust formatting, the exact selected default closure tests, strict selected-closure Clippy, and complete workspace compilation. It then deleted itself. Permanent PR workflows must requalify the resulting persistent head.
+
+          ## Claim boundary
+
+          L1 source hardening only. No installed Root Linux/Codex, Android target-files, physical ADB, destructive-fault, protected-main, independent-review, signing or public-release evidence is claimed. `zero_gap` and `public_release` remain false.
+          EOF
+          gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base "$TARGET_BASE" \
+            --head "$TARGET_BRANCH" \
+            --title "fix(r7): fail closed and harden runtime boundaries" \
+            --body-file "$RUNNER_TEMP/pr-body.md"
+          gh pr edit "$TARGET_BRANCH" \
+            --repo "$GITHUB_REPOSITORY" \
+            --add-reviewer ProfHepta \
+            --add-label ready-for-review
