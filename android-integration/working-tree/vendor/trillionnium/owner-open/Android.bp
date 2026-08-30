@@ -110,7 +110,10 @@ android_app {
     srcs: ["client/src/**/*.java"],
     resource_dirs: ["client/res"],
     platform_apis: true,
-    certificate: "shared",
+    // The ingress admits this package by its platform SELinux identity.  A
+    // shared-cert APK is not mapped to seinfo=platform and would therefore
+    // fail the SO_PEERSEC boundary closed at runtime.
+    certificate: "platform",
     system_ext_specific: true,
     privileged: false,
     min_sdk_version: "36",

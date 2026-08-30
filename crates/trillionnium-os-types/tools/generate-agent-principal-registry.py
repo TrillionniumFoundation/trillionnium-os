@@ -656,7 +656,9 @@ mod tests {{
             MATERIALIZATION_STATUS,
             "hold_same_crate_counterfactual_build_required"
         );
-        assert!(SAME_CRATE_COUNTERFACTUAL_BUILD_REQUIRED);
+        const {{
+            assert!(SAME_CRATE_COUNTERFACTUAL_BUILD_REQUIRED);
+        }}
     }}
 
     #[test]

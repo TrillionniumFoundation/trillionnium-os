@@ -2,15 +2,14 @@
 # file, local transport, mount and emergency-stop mechanics. They do not inspect
 # commands, assign risk, require leases, inject ADB routing or authorize retries.
 
-# Bootstrap verifies and mounts the immutable payload, binds private writable
-# state, chroots, and supervises Root Linux children in the same SELinux domain.
+# Bootstrap verifies the immutable payload, then (once the platform-owned
+# mount handoff is qualified) chroots and supervises Root Linux children in the
+# same SELinux domain.  The source-only profile deliberately leaves the mount
+# lifecycle in a platform-policy hold; no vendor fragment may bypass AOSP's
+# filesystem/mount neverallows to make the current native mount code appear
+# buildable.
 allow trillionnium_owner_open_bootstrap self:capability {
-    chown
-    dac_override
-    fowner
     kill
-    setgid
-    setuid
     sys_admin
     sys_chroot
 };
@@ -27,8 +26,6 @@ allow trillionnium_owner_open_bootstrap self:process {
 allow trillionnium_owner_open_bootstrap self:unix_stream_socket create_stream_socket_perms;
 allow trillionnium_owner_open_bootstrap self:tcp_socket create_stream_socket_perms;
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:file {
-    entrypoint
-    execute
     execute_no_trans
     getattr
     map
@@ -44,16 +41,13 @@ allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:dir
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:dir create_dir_perms;
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:file create_file_perms;
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:sock_file create_file_perms;
-# The image is a labeled squashfs and the writable state is an Android data
-# filesystem.  Filesystem permissions are granted on the fs_type, while the
-# context= mount label is restricted to the declared contextmount type.
-allow trillionnium_owner_open_bootstrap labeledfs:filesystem {
-    getattr
-    mount
-    remount
-    unmount
-};
-allow trillionnium_owner_open_bootstrap contextmount_type:filesystem relabelto;
+# PLATFORM_POLICY_HOLD: AOSP's domain.te neverallows intentionally prevent a
+# vendor/private domain from mounting, remounting or relabeling a generic
+# filesystem.  Keep these operations absent rather than adding a local
+# exception.  The platform/init integration must mount the verified squashfs,
+# apply the contextmount label, bind the writable state and own teardown.  The
+# native BindState()/mount path consequently remains source-only and is
+# fail-closed until that reviewed handoff exists.
 allow trillionnium_owner_open_bootstrap loop_control_device:chr_file rw_file_perms;
 allow trillionnium_owner_open_bootstrap loop_device:blk_file rw_file_perms;
 allowxperm trillionnium_owner_open_bootstrap loop_device:blk_file ioctl {
@@ -64,9 +58,7 @@ allowxperm trillionnium_owner_open_bootstrap loop_device:blk_file ioctl {
 };
 allow trillionnium_owner_open_bootstrap block_device:dir search;
 allow trillionnium_owner_open_bootstrap device:dir search;
-allow trillionnium_owner_open_bootstrap rootfs:dir mounton;
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:dir mounton;
-allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:dir mounton;
 allow trillionnium_owner_open_bootstrap proc:filesystem getattr;
 allow trillionnium_owner_open_bootstrap sysfs:filesystem getattr;
 net_domain(trillionnium_owner_open_bootstrap)
@@ -90,7 +82,10 @@ allow trillionnium_owner_open_client trillionnium_owner_open_ingress:unix_stream
 # Emergency stop is independent of Codex/provider liveness. It creates the
 # persistent inhibit marker, clears readiness and terminates the bootstrap
 # process group.
-allow trillionnium_owner_open_emergency_stop self:capability { dac_override kill };
+# State files are owned and mode-controlled by the platform handoff, so the
+# emergency stopper needs only signal authority; never grant the generic
+# dac_override capability to a vendor/private domain.
+allow trillionnium_owner_open_emergency_stop self:capability { kill };
 allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:dir {
     add_name
     getattr

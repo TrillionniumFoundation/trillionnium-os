@@ -40,6 +40,9 @@ class ReleaseCodexSupervisorPreflightTest(unittest.TestCase):
             qualifier.chmod(0o600)
             shared = root / "shared"
             shared.mkdir(mode=0o755)
+            # Keep the hostile fixture world-readable even when the test
+            # runner uses the secure umask required by release workflows.
+            shared.chmod(0o755)
             completed = subprocess.run(
                 [
                     str(Path(sys.executable).resolve()),

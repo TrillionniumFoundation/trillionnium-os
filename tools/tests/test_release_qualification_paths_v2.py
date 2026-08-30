@@ -88,6 +88,9 @@ class ReleaseSupervisorV2PreflightTest(unittest.TestCase):
             home.mkdir(mode=0o700)
             workspace.mkdir(mode=0o700)
             shared.mkdir(mode=0o755)
+            # mkdir(mode=...) is filtered by umask; make the shared parent
+            # explicitly non-private for this fail-closed preflight test.
+            shared.chmod(0o755)
             codex = root / "codex"
             qualifier = root / "qualifier.py"
             codex.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")

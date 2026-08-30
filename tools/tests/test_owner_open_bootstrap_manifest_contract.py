@@ -22,6 +22,10 @@ ANDROID_MATERIALIZER = (
 PROFILE = ROOT / "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json"
 TYPES = ROOT / "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/types.te"
 DOMAINS = ROOT / "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/domains.te"
+SEAPP_CONTEXTS = (
+    ROOT
+    / "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/seapp_contexts"
+)
 
 
 class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
@@ -79,6 +83,21 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
         self.assertIn('shared_libs: ["libcrypto", "libjsoncpp"]', bp)
         self.assertIn("owner-open-rootfs-manifest-verified", bp)
 
+    def test_client_certificate_and_seapp_identity_are_platform_bound(self) -> None:
+        bp = self.read(ANDROID_BP)
+        app_start = bp.index('name: "TrillionniumOwnerOpenShell"')
+        app_end = bp.index("\n}", app_start)
+        app_module = bp[app_start:app_end]
+        self.assertIn('certificate: "platform"', app_module)
+        self.assertNotIn('certificate: "shared"', app_module)
+
+        seapp = self.read(SEAPP_CONTEXTS)
+        self.assertIn(
+            "user=_app isPrivApp=false seinfo=platform "
+            "name=org.trillionnium.owneropen domain=trillionnium_owner_open_client",
+            seapp,
+        )
+
     def test_image_manifest_carries_complete_entry_inventory(self) -> None:
         builder = self.read(BUILDER)
         materializer = self.read(MATERIALIZER)
@@ -115,17 +134,39 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
         types = self.read(TYPES)
         domains = self.read(DOMAINS)
         self.assertIn(
-            "type trillionnium_owner_open_payload_file, file_type, system_file_type, contextmount_type;",
+            "type trillionnium_owner_open_payload_file, file_type, contextmount_type;",
+            types,
+        )
+        self.assertNotIn(
+            "type trillionnium_owner_open_payload_file, file_type, system_file_type",
             types,
         )
         self.assertIn("trillionnium_owner_open_payload_file:dir", domains)
         for permission in ("getattr", "open", "read", "search"):
             self.assertIn(permission, domains)
-        self.assertIn(
+        capability_block_start = domains.index(
+            "allow trillionnium_owner_open_bootstrap self:capability {"
+        )
+        capability_block_end = domains.index("};", capability_block_start)
+        capability_block = domains[capability_block_start:capability_block_end]
+        self.assertEqual(
+            {
+                line.strip()
+                for line in capability_block.splitlines()[1:]
+                if line.strip()
+            },
+            {"kill", "sys_admin", "sys_chroot"},
+        )
+        for capability in ("chown", "dac_override", "fowner", "setgid", "setuid"):
+            self.assertNotIn(f"\n    {capability}\n", capability_block)
+        self.assertIn("execute_no_trans", domains)
+        self.assertNotIn("\n    entrypoint\n", domains)
+        self.assertNotIn("\n    execute\n", domains)
+        self.assertNotIn(
             "allow trillionnium_owner_open_bootstrap labeledfs:filesystem",
             domains,
         )
-        self.assertIn(
+        self.assertNotIn(
             "allow trillionnium_owner_open_bootstrap contextmount_type:filesystem relabelto;",
             domains,
         )
@@ -133,10 +174,29 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
             "allowxperm trillionnium_owner_open_bootstrap loop_device:blk_file ioctl",
             domains,
         )
-        self.assertIn(
+        self.assertNotIn(
             "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:dir mounton;",
             domains,
         )
+        self.assertIn("PLATFORM_POLICY_HOLD", domains)
+
+    def test_platform_policy_hold_is_explicit_and_fail_closed(self) -> None:
+        domains = self.read(DOMAINS)
+        hold = domains[domains.index("PLATFORM_POLICY_HOLD") :]
+        self.assertIn("neverallows", hold)
+        self.assertIn("mounting, remounting", hold)
+        self.assertIn("source-only", hold)
+        self.assertIn(
+            "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:dir mounton;",
+            domains,
+        )
+        emergency_start = domains.index(
+            "allow trillionnium_owner_open_emergency_stop self:capability {"
+        )
+        emergency_end = domains.index("};", emergency_start)
+        emergency_block = domains[emergency_start:emergency_end]
+        self.assertIn("kill", emergency_block)
+        self.assertNotIn("dac_override", emergency_block)
 
 
 if __name__ == "__main__":

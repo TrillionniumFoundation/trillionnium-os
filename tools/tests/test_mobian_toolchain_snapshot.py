@@ -303,6 +303,10 @@ class MobianToolchainSnapshotTests(unittest.TestCase):
     def test_symlink_components_and_insecure_parent_are_rejected(self) -> None:
         insecure = self.base / "insecure"
         insecure.mkdir(mode=0o755)
+        # mkdir(mode=...) is filtered by the process umask.  The suite is
+        # intentionally run with a restrictive umask, so make the insecure
+        # fixture explicit before asserting that the snapshotter rejects it.
+        insecure.chmod(0o755)
         with self.assertRaisesRegex(snapshot.SnapshotError, "mode 0700"):
             snapshot.create(
                 self.source,
