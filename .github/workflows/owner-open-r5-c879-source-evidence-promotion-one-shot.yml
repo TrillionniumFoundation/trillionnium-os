@@ -27,7 +27,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git rev-parse HEAD^)" = "c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
+          source_commit="c8790b6b5d0e59dff74f527db1d1173d4a2fb043"
+          test "$(git diff --name-only "$source_commit"..HEAD | sort)" = ".github/workflows/owner-open-r5-c879-source-evidence-promotion-one-shot.yml"
           python3 - <<'PY'
           from __future__ import annotations
 
@@ -177,6 +178,7 @@ jobs:
           )
           if old_evidence not in start:
               raise SystemExit("expected Start Here candidate-evidence line not found")
+          start = start.replace(old_evidence + "  \n", new_evidence + "\n")
           start = start.replace(old_evidence, new_evidence)
           start = start.replace(
               "-> one final product entrypoint                       [not yet selected]",
@@ -210,7 +212,7 @@ jobs:
             tools.tests.test_promote_owner_open_r5_evidence \
             tools.tests.test_verify_owner_open_r5_workflow_boundaries \
             -v
-          if rg -n '498d0ffc6818776f7abfa71af5ee2c77cde45a8a|aad53bd41aa8efa4fac5496aba813aed8ffd2d91|33275227428|9721291169|9721304610|9721310376' \
+          if grep -En '498d0ffc6818776f7abfa71af5ee2c77cde45a8a|aad53bd41aa8efa4fac5496aba813aed8ffd2d91|33275227428|9721291169|9721304610|9721310376' \
             docs/status/owner-open-r5-gap-closure.json \
             docs/status/owner-open-r5-status.json \
             docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md \
