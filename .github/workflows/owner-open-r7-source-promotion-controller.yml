@@ -1,0 +1,197 @@
+name: Owner-Open R7 source promotion controller
+
+on:
+  push:
+    branches:
+      - ops/owner-open-r7-source-promotion-controller-20260830
+    paths:
+      - .github/workflows/owner-open-r7-source-promotion-controller.yml
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: owner-open-r7-source-promotion-controller
+  cancel-in-progress: false
+
+jobs:
+  supervise:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TARGET_BRANCH: codex/owner-open-r7-source-promotion-20260830
+      TARGET_WORKFLOW: Owner-Open R7 exact-source promotion executor
+      TARGET_EXECUTOR: .github/workflows/owner-open-r7-source-promotion-executor.yml
+      SOURCE_BRANCH: codex/owner-open-r7-workspace-integrity-20260830-v3
+      BASE_SHA: 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+
+    steps:
+      - name: Check out controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ops/owner-open-r7-source-promotion-controller-20260830
+
+      - name: Observe promotion executor and exact-head checks
+        shell: bash
+        run: |
+          set -uo pipefail
+          owner="${GITHUB_REPOSITORY%%/*}"
+          mkdir -p out
+          deadline=$((SECONDS + 20700))
+          run_id=""
+          run_status=""
+          run_conclusion=""
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            runs="$(gh api --method GET "repos/$GITHUB_REPOSITORY/actions/runs" \
+              -f branch="$TARGET_BRANCH" -F per_page=100 2>/dev/null || printf '{"workflow_runs":[]}')"
+            row="$(jq -c --arg name "$TARGET_WORKFLOW" \
+              '[.workflow_runs[] | select(.name == $name)] | sort_by(.created_at) | last // empty' \
+              <<<"$runs")"
+            if [ -n "$row" ]; then
+              run_id="$(jq -r .id <<<"$row")"
+              run_status="$(jq -r .status <<<"$row")"
+              run_conclusion="$(jq -r '.conclusion // ""' <<<"$row")"
+              [ "$run_status" = completed ] && break
+            fi
+            sleep 30
+          done
+
+          branch="$(gh api "repos/$GITHUB_REPOSITORY/branches/$TARGET_BRANCH" 2>/dev/null || printf '{}')"
+          target_sha="$(jq -r '.commit.sha // empty' <<<"$branch")"
+          executor_present=false
+          gh api "repos/$GITHUB_REPOSITORY/contents/$TARGET_EXECUTOR?ref=$TARGET_BRANCH" \
+            >/dev/null 2>&1 && executor_present=true
+          evidence_present=false
+          gh api "repos/$GITHUB_REPOSITORY/contents/docs/status/owner-open-r7-source-closure-evidence-2026-08-30.md?ref=$TARGET_BRANCH" \
+            >/dev/null 2>&1 && evidence_present=true
+          pr_number="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+            -f state=all -f head="$owner:$TARGET_BRANCH" -F per_page=20 2>/dev/null \
+            | jq -r '.[0].number // empty' || true)"
+
+          if [ "$run_status" != completed ] || [ "$run_conclusion" != success ] \
+            || [ -z "$target_sha" ] || [ "$target_sha" = "$BASE_SHA" ] \
+            || [ "$executor_present" = true ] || [ "$evidence_present" != true ]; then
+            failed_log=""
+            if [ -n "$run_id" ]; then
+              failed_log="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" --log-failed 2>/dev/null \
+                | tail -c 18000 || true)"
+            fi
+            printf '%s\n' "$failed_log" > out/failed.log
+            jq -n --arg outcome promotion_not_qualified \
+              --arg run_id "$run_id" --arg status "$run_status" \
+              --arg conclusion "$run_conclusion" --arg target_sha "$target_sha" \
+              --argjson executor_present "$executor_present" \
+              --argjson evidence_present "$evidence_present" \
+              '{outcome:$outcome,run_id:$run_id,status:$status,conclusion:$conclusion,target_sha:$target_sha,executor_present:$executor_present,evidence_present:$evidence_present}' \
+              > out/result.json
+            if [ -n "$pr_number" ]; then
+              gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                --body "R7 promotion controller: exact-source truth promotion did not produce a proven state-only persistent head (run=\`$run_id\`, status=\`$run_status\`, conclusion=\`$run_conclusion\`). No canonical claim was advanced." || true
+              gh pr close "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                --comment "Closed fail-closed after exact-source promotion did not pass." || true
+            fi
+            if [ -n "$failed_log" ]; then
+              existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open \
+                --search 'R7 source promotion diagnostic in:title' \
+                --json number --jq '.[0].number // empty' 2>/dev/null || true)"
+              body="R7 exact-source promotion run \`$run_id\` failed closed.\n\n<details><summary>Failed log tail</summary>\n\n\`\`\`text\n$failed_log\n\`\`\`\n</details>"
+              if [ -n "$existing" ]; then
+                gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body" || true
+              else
+                gh issue create --repo "$GITHUB_REPOSITORY" \
+                  --title "R7 source promotion diagnostic" --body "$body" || true
+              fi
+            fi
+          else
+            if [ -z "$pr_number" ]; then
+              gh pr create --repo "$GITHUB_REPOSITORY" --draft \
+                --base "$SOURCE_BRANCH" --head "$TARGET_BRANCH" \
+                --title "docs(r7): bind canonical truth to qualified source" \
+                --body "State-only exact-source promotion. External gap states, zero_gap=false and public_release=false remain unchanged." \
+                >/dev/null || true
+              pr_number="$(gh api --method GET "repos/$GITHUB_REPOSITORY/pulls" \
+                -f state=open -f head="$owner:$TARGET_BRANCH" -F per_page=20 \
+                | jq -r '.[0].number // empty' || true)"
+            fi
+
+            checks_deadline=$((SECONDS + 5400))
+            stable=0
+            previous=""
+            total=0
+            pending=1
+            bad=0
+            l1_seen=0
+            workspace_seen=0
+            checks='{"total_count":0,"check_runs":[]}'
+            while [ "$SECONDS" -lt "$checks_deadline" ]; do
+              checks="$(gh api -H 'Accept: application/vnd.github+json' \
+                "repos/$GITHUB_REPOSITORY/commits/$target_sha/check-runs?per_page=100" \
+                2>/dev/null || printf '{"total_count":0,"check_runs":[]}')"
+              total="$(jq -r '.total_count // 0' <<<"$checks")"
+              pending="$(jq '[.check_runs[] | select(.status != "completed")] | length' <<<"$checks")"
+              bad="$(jq '[.check_runs[] | select(.status == "completed") | select((.conclusion // "") as $c | ($c != "success" and $c != "neutral" and $c != "skipped"))] | length' <<<"$checks")"
+              l1_seen="$(jq '[.check_runs[] | select(.name == "L1 exact-source-head aggregate candidate") | select(.status == "completed" and .conclusion == "success")] | length' <<<"$checks")"
+              workspace_seen="$(jq '[.check_runs[] | select(.name == "L1 Rust 1.93 complete workspace tests and strict Clippy") | select(.status == "completed" and .conclusion == "success")] | length' <<<"$checks")"
+              signature="$(jq -r '[.check_runs[] | [.name,.status,(.conclusion // "")] | join(":")] | sort | join("|")' <<<"$checks")"
+              if [ "$total" -ge 10 ] && [ "$pending" -eq 0 ] \
+                && [ "$l1_seen" -ge 1 ] && [ "$workspace_seen" -ge 1 ] \
+                && [ "$signature" = "$previous" ]; then
+                stable=$((stable + 1))
+              else
+                stable=0
+              fi
+              previous="$signature"
+              [ "$stable" -ge 2 ] && break
+              sleep 30
+            done
+            jq '{total_count,check_runs:[.check_runs[]|{name,status,conclusion,html_url}]}' \
+              <<<"$checks" > out/checks.json
+
+            if [ "$total" -ge 10 ] && [ "$pending" -eq 0 ] && [ "$bad" -eq 0 ] \
+              && [ "$l1_seen" -ge 1 ] && [ "$workspace_seen" -ge 1 ]; then
+              jq -n --arg outcome qualified --arg run_id "$run_id" \
+                --arg target_sha "$target_sha" --argjson checks "$total" \
+                '{outcome:$outcome,run_id:$run_id,target_sha:$target_sha,checks:$checks}' \
+                > out/result.json
+              if [ -n "$pr_number" ]; then
+                gh pr ready "$pr_number" --repo "$GITHUB_REPOSITORY" || true
+                gh pr edit "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                  --add-reviewer ProfHepta --add-label ready-for-review >/dev/null 2>&1 || true
+                gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                  --body "R7 promotion controller: state-only head \`$target_sha\` passed the canonical exact-head source/gap and complete-workspace gates plus $total stable permanent checks. Ready for independent review. External holds and public_release=false remain unchanged." || true
+              fi
+            else
+              jq -n --arg outcome promotion_head_checks_not_green \
+                --arg run_id "$run_id" --arg target_sha "$target_sha" \
+                --argjson total "$total" --argjson pending "$pending" \
+                --argjson bad "$bad" --argjson l1_seen "$l1_seen" \
+                --argjson workspace_seen "$workspace_seen" \
+                '{outcome:$outcome,run_id:$run_id,target_sha:$target_sha,total:$total,pending:$pending,bad:$bad,l1_seen:$l1_seen,workspace_seen:$workspace_seen}' \
+                > out/result.json
+              if [ -n "$pr_number" ]; then
+                failures="$(jq -r '[.check_runs[] | select(.status != "completed" or ((.conclusion // "") as $c | ($c != "success" and $c != "neutral" and $c != "skipped"))) | "- " + .name + ": " + .status + "/" + (.conclusion // "pending")] | join("\n")' <<<"$checks")"
+                gh pr comment "$pr_number" --repo "$GITHUB_REPOSITORY" \
+                  --body "R7 promotion controller: state-only source binding exists at \`$target_sha\`, but permanent exact-head qualification is incomplete; the PR remains draft.\n\n$failures" || true
+              fi
+            fi
+          fi
+          cat out/result.json
+
+      - name: Retire controller
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/owner-open-r7-source-promotion-controller.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "ops(r7): retire source promotion controller"
+          git push origin HEAD:ops/owner-open-r7-source-promotion-controller-20260830
