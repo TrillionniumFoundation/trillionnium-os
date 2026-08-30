@@ -212,7 +212,11 @@ def apply_promotion(
     if not bundle_relative.startswith("evidence/owner-open-r5/"):
         raise EvidenceError("bundle manifest must be below evidence/owner-open-r5/")
     facts = require_valid_bundle(manifest_path, require_promotable=True)
-    capture_trust = validate_capture_chain(manifest_path)
+    capture_trust = (
+        {}
+        if facts["kind"] == "repository_governance_controls"
+        else validate_capture_chain(manifest_path)
+    )
 
     gaps = deepcopy(load_object(root / GAPS_PATH))
     status = deepcopy(load_object(root / STATUS_PATH))
@@ -286,16 +290,15 @@ def apply_promotion(
     report = verifier.verify_values(root, gaps, status)
     if not report.ok:
         raise EvidenceError("promotion would fail canonical verification: " + "; ".join(report.errors))
-    return gaps, status, {
+    summary = {
         "promoted_gap_ids": sorted(promoted),
         "bundle_path": bundle_relative,
         "bundle_sha256": facts["manifest_sha256"],
-        "capture_driver_sha256": capture_trust["capture_driver_sha256"],
-        "target_attestation_sha256": capture_trust["target_attestation_sha256"],
-        "harness_sha256": capture_trust["harness_sha256"],
         "zero_gap": status["zero_gap"],
         "public_release": status["public_release"],
     }
+    summary.update(capture_trust)
+    return gaps, status, summary
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
