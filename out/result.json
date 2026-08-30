@@ -1,0 +1,9 @@
+{
+  "outcome": "not_qualified",
+  "run_id": "",
+  "status": "",
+  "conclusion": "",
+  "sha": "1bda1aa410d7b5d7e1df8b8cc6664a60630ad718",
+  "executor_present": true,
+  "gate_present": false
+}
