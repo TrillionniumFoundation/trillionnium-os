@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -12,9 +13,16 @@ TOOLS = Path(__file__).resolve().parents[1]
 if str(TOOLS) not in sys.path:
     sys.path.insert(0, str(TOOLS))
 
+from owner_open_r5_capture_trust import (  # noqa: E402
+    CAPTURE_DRIVER_SCHEMA,
+    FIXED_BASE_ENVIRONMENT,
+    assert_harness_identity,
+    validate_capture_chain,
+)
 from owner_open_r5_evidence_bundle import (  # noqa: E402
     ARTIFACT_INDEX_SCHEMA,
     ATTESTATION_SCHEMA,
+    EvidenceError,
     KIND_POLICIES,
     OBSERVATIONS_SCHEMA,
     PLAN_REVISION,
@@ -33,6 +41,10 @@ def write_json(path: Path, value: object) -> None:
         json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 class BundleFixture:
@@ -61,15 +73,19 @@ class BundleFixture:
         self.attestation = root / "attestation-input.json"
         self.review = root / "review-input.json"
         self.release = root / "release-input.json"
-        self._write_raw()
         self._write_attestation()
+        self._write_raw()
         self._write_observations()
         self._write_index()
         self._write_review()
         self._write_release()
 
     def _target(self) -> dict[str, str]:
-        target = {"id": "target-01", "kind": self.kind, "fingerprint": "fingerprint-01"}
+        target = {
+            "id": "target-01",
+            "kind": self.kind,
+            "fingerprint": "fingerprint-01",
+        }
         if self.level == "L2":
             target["boot_id"] = "boot-01"
         elif self.level == "L3":
@@ -81,6 +97,16 @@ class BundleFixture:
         elif self.level == "L6":
             target["authorization_domain"] = "release-domain-01"
         return target
+
+    def _harness(self) -> dict[str, object]:
+        return {
+            "path": f"/opt/owner-open-r5/harnesses/{self.kind}",
+            "bytes": 4096,
+            "sha256": "c" * 64,
+            "uid": 0,
+            "gid": 0,
+            "mode": "0755",
+        }
 
     def _write_attestation(self) -> None:
         write_json(
@@ -112,6 +138,7 @@ class BundleFixture:
                     ),
                 },
                 "target": self._target(),
+                "harness": self._harness(),
                 "operator": {"login": self.operator},
             },
         )
@@ -122,11 +149,57 @@ class BundleFixture:
                 continue
             path = self.bundle / "raw" / f"{index:02d}-{role}.txt"
             path.write_text(f"evidence role {role}\n", encoding="utf-8")
+        dynamic_keys = {
+            "OWNER_OPEN_R5_KIND",
+            "OWNER_OPEN_R5_SOURCE_COMMIT",
+            "OWNER_OPEN_R5_SOURCE_TREE",
+            "OWNER_OPEN_R5_RAW_DIR",
+            "OWNER_OPEN_R5_ARTIFACT_INDEX",
+            "OWNER_OPEN_R5_OBSERVATIONS",
+        }
+        attestation_identity = {
+            "path": f"/etc/owner-open-r5/attestations/{self.kind}.json",
+            "bytes": self.attestation.stat().st_size,
+            "sha256": sha256(self.attestation),
+            "uid": 0,
+            "gid": 0,
+            "mode": "0644",
+        }
+        write_json(
+            self.bundle / "raw/capture-driver.json",
+            {
+                "schema": CAPTURE_DRIVER_SCHEMA,
+                "repository": REPOSITORY,
+                "kind": self.kind,
+                "source_commit": self.source_commit,
+                "source_tree": self.source_tree,
+                "synthetic": False,
+                "harness": self._harness(),
+                "target_attestation": attestation_identity,
+                "run": {
+                    "argv": [self._harness()["path"], "--fixed-fixture"],
+                    "returncode": 0,
+                    "started_at": "2026-08-29T23:00:00Z",
+                    "finished_at": "2026-08-29T23:30:00Z",
+                    "stdout_bytes": 0,
+                    "stderr_bytes": 0,
+                    "environment": {
+                        "inherit_parent": False,
+                        "base": dict(FIXED_BASE_ENVIRONMENT),
+                        "keys": sorted(set(FIXED_BASE_ENVIRONMENT) | dynamic_keys),
+                    },
+                },
+                "automatic_redispatch": False,
+            },
+        )
 
     def _write_observations(self) -> None:
         value = {
             "schema": OBSERVATIONS_SCHEMA,
             "kind": self.kind,
+            "capture_driver_sha256": sha256(
+                self.bundle / "raw/capture-driver.json"
+            ),
         }
         value.update(self.policy["required_observations"])
         write_json(self.bundle / "observations.json", value)
@@ -134,8 +207,14 @@ class BundleFixture:
     def _write_index(self) -> None:
         entries = []
         for path in sorted((self.bundle / "raw").iterdir()):
-            role = path.stem.split("-", 1)[1]
-            entries.append({"path": path.relative_to(self.bundle).as_posix(), "role": role})
+            role = (
+                "capture_driver"
+                if path.name == "capture-driver.json"
+                else path.stem.split("-", 1)[1]
+            )
+            entries.append(
+                {"path": path.relative_to(self.bundle).as_posix(), "role": role}
+            )
         write_json(
             self.bundle / "artifact-index.json",
             {"schema": ARTIFACT_INDEX_SCHEMA, "artifacts": entries},
@@ -157,7 +236,9 @@ class BundleFixture:
                 "reviewer": self.reviewer,
                 "review_id": 987654,
                 "reviewed_at": "2026-08-30T00:00:00Z",
-                "negative_claims": ["no claim beyond the declared evidence level"],
+                "negative_claims": [
+                    "no claim beyond the declared evidence level"
+                ],
             },
         )
 
@@ -178,14 +259,20 @@ class BundleFixture:
             },
         )
 
-    def finalizer_args(self, *, promotable: bool, replace: bool = False) -> list[str]:
+    def finalizer_args(
+        self, *, promotable: bool, replace: bool = False
+    ) -> list[str]:
         args = [
             sys.executable,
             str(FINALIZER),
             "--bundle-dir",
             str(self.bundle),
             "--target-attestation",
-            str(self.attestation if not replace else self.bundle / "target-attestation.json"),
+            str(
+                self.attestation
+                if not replace
+                else self.bundle / "target-attestation.json"
+            ),
             "--kind",
             self.kind,
             "--evidence-level",
@@ -224,14 +311,27 @@ class BundleFixture:
         for gap in self.gaps:
             args.extend(["--gap-id", gap])
         if promotable:
-            args.extend(["--promotable", "--review-attestation", str(self.review)])
+            args.extend(
+                ["--promotable", "--review-attestation", str(self.review)]
+            )
         if replace:
             args.append("--replace-existing-capture")
         if self.kind == "signed_public_release":
-            args.extend(["--release-authorization", str(self.bundle / "release-authorization.json" if replace else self.release)])
+            args.extend(
+                [
+                    "--release-authorization",
+                    str(
+                        self.bundle / "release-authorization.json"
+                        if replace
+                        else self.release
+                    ),
+                ]
+            )
         return args
 
-    def finalize(self, *, promotable: bool, replace: bool = False) -> subprocess.CompletedProcess[str]:
+    def finalize(
+        self, *, promotable: bool, replace: bool = False
+    ) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             self.finalizer_args(promotable=promotable, replace=replace),
             text=True,
@@ -258,6 +358,8 @@ class EvidenceBundleTest(unittest.TestCase):
             fixture.bundle / "manifest.json", require_promotable=False
         )
         self.assertTrue(report.ok, report.errors)
+        trust = validate_capture_chain(fixture.bundle / "manifest.json")
+        self.assertEqual(trust["harness_sha256"], "c" * 64)
         rejected = validate_bundle(
             fixture.bundle / "manifest.json", require_promotable=True
         )
@@ -269,6 +371,44 @@ class EvidenceBundleTest(unittest.TestCase):
         )
         self.assertTrue(report.ok, report.errors)
         self.assertEqual(report.facts["reviewer"], fixture.reviewer)
+        validate_capture_chain(fixture.bundle / "manifest.json")
+
+    def test_capture_chain_rejects_inherited_parent_environment(self) -> None:
+        fixture = BundleFixture(self.root)
+        driver_path = fixture.bundle / "raw/capture-driver.json"
+        driver = read_json(driver_path)
+        driver["run"]["environment"]["inherit_parent"] = True
+        write_json(driver_path, driver)
+        fixture._write_observations()
+        fixture._write_index()
+        completed = fixture.finalize(promotable=False)
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        with self.assertRaisesRegex(EvidenceError, "inherit_parent"):
+            validate_capture_chain(fixture.bundle / "manifest.json")
+
+    def test_attested_harness_mismatch_is_rejected(self) -> None:
+        fixture = BundleFixture(self.root)
+        observed = dict(fixture._harness())
+        observed["sha256"] = "d" * 64
+        with self.assertRaisesRegex(EvidenceError, "identity differs"):
+            assert_harness_identity(
+                observed, fixture._harness(), kind=fixture.kind
+            )
+
+    def test_target_capture_workflow_is_immutable_and_exact(self) -> None:
+        workflow = (
+            TOOLS.parent
+            / ".github/workflows/owner-open-r5-target-evidence-capture.yml"
+        ).read_text(encoding="utf-8")
+        checkout = "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+        upload = "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
+        self.assertEqual(workflow.count(checkout), 6)
+        self.assertEqual(workflow.count(upload), 6)
+        self.assertNotIn("actions/checkout@v4", workflow)
+        self.assertNotIn("actions/upload-artifact@v4", workflow)
+        self.assertNotIn("--untracked-files=no", workflow)
+        self.assertEqual(workflow.count("--untracked-files=all"), 6)
+        self.assertIn('PYTHONDONTWRITEBYTECODE: "1"', workflow)
 
     def test_raw_artifact_tamper_is_detected(self) -> None:
         fixture = BundleFixture(self.root)
@@ -309,7 +449,12 @@ class EvidenceBundleTest(unittest.TestCase):
     def test_kind_policy_requires_all_roles(self) -> None:
         fixture = BundleFixture(self.root)
         index = read_json(fixture.bundle / "artifact-index.json")
-        removed = index["artifacts"].pop()
+        position = next(
+            position
+            for position, item in enumerate(index["artifacts"])
+            if item["role"] in fixture.policy["required_roles"]
+        )
+        removed = index["artifacts"].pop(position)
         Path(fixture.bundle / removed["path"]).unlink()
         write_json(fixture.bundle / "artifact-index.json", index)
         completed = fixture.finalize(promotable=False)
