@@ -24,6 +24,7 @@ fn immediate_provider_exit_cannot_overtake_its_terminal_line() {
     let script = r#"
 IFS= read -r start || exit 10
 printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"turn.complete","seq":0,"summary":"ordered terminal"}'
+sleep 0.05
 exit 0
 "#;
 

@@ -29,7 +29,10 @@ use trillionnium_owner_open_turn_loop::{
     TurnRequest,
 };
 
-use process::{ProviderOutput, finish_child, spawn_stderr_reader, spawn_stdout_reader};
+use process::{
+    ProviderOutput, allow_natural_exit_grace, finish_child, spawn_stderr_reader,
+    spawn_stdout_reader,
+};
 use protocol::{
     decode_bound_tool_call, encode_tool_error, encode_tool_outcome, handle_provider_event,
     optional_string, required_string, validate_envelope,
@@ -438,6 +441,17 @@ impl JsonlProvider {
         })();
 
         drop(provider_stdin);
+        let natural_exit_wait = if result
+            .as_ref()
+            .is_ok_and(|terminal| terminal.status == ProviderTerminalStatus::Completed)
+        {
+            // A valid terminal frame may be read before the provider leader has
+            // completed its ordinary exit. Do not manufacture a SIGTERM failure.
+            allow_natural_exit_grace(&mut child, self.config.terminate_grace)
+                .map_err(JsonlProviderError::Cleanup)
+        } else {
+            Ok(())
+        };
         let cleanup = finish_child(&mut child, pid, self.config.terminate_grace)
             .map_err(JsonlProviderError::Cleanup);
         drop(receiver);
@@ -451,6 +465,7 @@ impl JsonlProvider {
         // Preserve the first protocol/tool/provider error. Cleanup exists to
         // close the process tree, not to rewrite the semantic observation.
         let terminal = result?;
+        natural_exit_wait?;
         if stdout_join.is_err() || stderr_join.is_err() {
             return Err(JsonlProviderError::Cleanup(
                 "provider reader thread panicked".to_string(),

@@ -98,6 +98,27 @@ fn read_bounded_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option
     Ok(Some(line))
 }
 
+/// Allow a provider that emitted a valid completed terminal to perform its
+/// ordinary zero-status exit before process-group cleanup escalates signals.
+pub(crate) fn allow_natural_exit_grace(child: &mut Child, grace: Duration) -> Result<(), String> {
+    let deadline = Instant::now()
+        .checked_add(grace.max(Duration::from_millis(250)))
+        .unwrap_or_else(Instant::now);
+    loop {
+        if child
+            .try_wait()
+            .map_err(|error| format!("provider natural-exit status failed: {error}"))?
+            .is_some()
+        {
+            return Ok(());
+        }
+        if Instant::now() >= deadline {
+            return Ok(());
+        }
+        thread::sleep(Duration::from_millis(5));
+    }
+}
+
 /// Reap the provider leader and prove its original process group is gone.
 ///
 /// The leader may already have exited while one of its descendants still owns
