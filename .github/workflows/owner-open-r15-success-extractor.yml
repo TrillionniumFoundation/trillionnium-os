@@ -1,0 +1,95 @@
+name: Owner-Open R15 source publication extractor
+
+on:
+  push:
+    branches:
+      - ops/owner-open-r15-success-extractor-20260831
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: owner-open-r15-source-publication-extractor
+  cancel-in-progress: true
+
+jobs:
+  extract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TARGET_JOB_ID: "99389332725"
+    steps:
+      - name: Wait for exact materializer job and print bounded publication record
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          api="$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/jobs/$TARGET_JOB_ID"
+          for _ in $(seq 1 180); do
+            status="$(curl --fail --silent --show-error \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header "Accept: application/vnd.github+json" \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              "$api" | python3 -c 'import json,sys; print(json.load(sys.stdin)["status"])')"
+            if [ "$status" = completed ]; then
+              break
+            fi
+            sleep 5
+          done
+          test "$status" = completed
+
+          log=/tmp/owner-open-r15-materializer.log
+          curl --fail --silent --show-error --location \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "$api/logs" --output "$log"
+
+          python3 - "$log" <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          raw = Path(sys.argv[1]).read_bytes()
+          text = raw.decode("utf-8", errors="replace")
+          ansi = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+          lines = [ansi.sub("", line) for line in text.splitlines()]
+
+          begin = next((i for i, line in enumerate(lines) if "R15_SOURCE_COMMIT=" in line), None)
+          end = next((i for i, line in enumerate(lines) if "R15_WORKFLOW_TEXT_END" in line and begin is not None and i >= begin), None)
+          if begin is not None and end is not None:
+              selected = lines[begin : end + 1]
+              print(f"R15_PUBLICATION_LOG_BYTES={len(raw)}")
+              print(f"R15_PUBLICATION_LINES={len(selected)}")
+              for line in selected:
+                  print(line)
+              raise SystemExit(0)
+
+          needles = (
+              "##[error]",
+              "error:",
+              "FAILED",
+              "panicked at",
+              "Process completed with exit code",
+              "remote rejected",
+          )
+          hits = [i for i, line in enumerate(lines) if any(n.lower() in line.lower() for n in needles)]
+          selected_indices: set[int] = set()
+          for i in hits[-24:]:
+              selected_indices.update(range(max(0, i - 8), min(len(lines), i + 10)))
+          if not selected_indices:
+              selected_indices.update(range(max(0, len(lines) - 260), len(lines)))
+          ordered = sorted(selected_indices)[-340:]
+          print(f"R15_PUBLICATION_LOG_BYTES={len(raw)}")
+          print("R15_PUBLICATION_MARKERS=missing")
+          previous = None
+          for i in ordered:
+              if previous is not None and i != previous + 1:
+                  print("... omitted ...")
+              print(f"{i + 1:06d}: {lines[i]}")
+              previous = i
+          raise SystemExit(1)
+          PY
