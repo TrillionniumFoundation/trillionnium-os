@@ -161,3 +161,101 @@ daemon.write_text(
     + new_tail
     + text[end:]
 )
+
+runtime_authority = Path(
+    "apps/trillionniumd/src/direct_operation_runtime_authority_transport.rs"
+)
+text = runtime_authority.read_text()
+old = r'''    #[test]
+    fn malformed_or_uncorrelated_messages_hold_before_response() {
+        let fixture = runtime_fixture();
+        let (mut client, server) = spawn_session(&fixture);
+        let retained_challenge: DirectOperationRuntimeAuthoritySessionChallengeV3 =
+            read_canonical_frame(&mut client).unwrap();
+        let mut wrong_challenge = retained_challenge.clone();
+        wrong_challenge.adapter_peer_identity_sha256 = digest("wrong-peer");
+        wrong_challenge.challenge_sha256 = wrong_challenge.canonical_sha256().unwrap();
+        let wrong_hello = DirectOperationRuntimeAuthoritySessionHelloV3::derive(
+            &wrong_challenge,
+            &fixture.binding,
+            &fixture.binding_sha256,
+            fixture.adapter,
+            &fixture.custody,
+        )
+        .unwrap();
+        let probe = DirectOperationRuntimeAuthorityProbeV3::derive_first_use(
+            &wrong_hello,
+            &digest("directory"),
+        )
+        .unwrap();
+        write_frame(&mut client, &wrong_hello);
+        write_frame(&mut client, &probe);
+        client.shutdown(Shutdown::Write).unwrap();
+        assert!(server.join().unwrap().is_err());
+    }
+'''
+new = r'''    #[test]
+    fn malformed_or_uncorrelated_messages_hold_before_response() {
+        let fixture = runtime_fixture();
+        let (mut client, server) = spawn_session(&fixture);
+        let retained_challenge: DirectOperationRuntimeAuthoritySessionChallengeV3 =
+            read_canonical_frame(&mut client).unwrap();
+        let mut wrong_challenge = retained_challenge.clone();
+        wrong_challenge.adapter_peer_identity_sha256 = digest("wrong-peer");
+        wrong_challenge.challenge_sha256 = wrong_challenge.canonical_sha256().unwrap();
+        let wrong_hello = DirectOperationRuntimeAuthoritySessionHelloV3::derive(
+            &wrong_challenge,
+            &fixture.binding,
+            &fixture.binding_sha256,
+            fixture.adapter,
+            &fixture.custody,
+        )
+        .unwrap();
+        let probe = DirectOperationRuntimeAuthorityProbeV3::derive_first_use(
+            &wrong_hello,
+            &digest("directory"),
+        )
+        .unwrap();
+        write_frame(&mut client, &wrong_hello);
+        let probe_frame = encoded_frame(&probe);
+        match client.write_all(&probe_frame) {
+            Ok(()) => {}
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::BrokenPipe
+                        | std::io::ErrorKind::ConnectionReset
+                        | std::io::ErrorKind::NotConnected
+                ) => {}
+            Err(error) => panic!("unexpected malformed-session write failure: {error}"),
+        }
+        match client.shutdown(Shutdown::Write) {
+            Ok(()) => {}
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::BrokenPipe
+                        | std::io::ErrorKind::ConnectionReset
+                        | std::io::ErrorKind::NotConnected
+                ) => {}
+            Err(error) => panic!("unexpected malformed-session shutdown failure: {error}"),
+        }
+        assert!(server.join().unwrap().is_err());
+        let mut response = [0_u8; 1];
+        match client.read(&mut response) {
+            Ok(0) => {}
+            Ok(count) => panic!("malformed session received {count} response bytes"),
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::BrokenPipe
+                        | std::io::ErrorKind::ConnectionReset
+                        | std::io::ErrorKind::NotConnected
+                ) => {}
+            Err(error) => panic!("unexpected malformed-session read failure: {error}"),
+        }
+    }
+'''
+if text.count(old) != 1:
+    raise SystemExit("R15 malformed-session close-race anchor is not exact")
+runtime_authority.write_text(text.replace(old, new, 1))
