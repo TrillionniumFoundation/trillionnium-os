@@ -56,6 +56,33 @@ fn exact_begin_is_idempotent_and_drift_conflicts() {
 }
 
 #[test]
+fn untouched_acceptance_can_be_rolled_back_but_live_state_cannot() {
+    let registry = JobRegistry::default();
+    let job = key("job-rollback");
+    let request = request('e');
+    registry.begin(job.clone(), request.clone()).unwrap();
+    assert!(registry.rollback_accept(&job, &request).unwrap());
+    assert_eq!(
+        registry.snapshot(&job).unwrap_err(),
+        JobRegistryError::NotFound
+    );
+
+    registry.begin(job.clone(), request.clone()).unwrap();
+    let generation = match registry.claim_spawn(&job, &request.request_sha256).unwrap() {
+        SpawnClaim::Granted { generation, .. } => generation,
+        other => panic!("unexpected claim: {other:?}"),
+    };
+    assert_eq!(
+        registry.rollback_accept(&job, &request).unwrap_err(),
+        JobRegistryError::InvalidTransition("only an untouched accepted job can be rolled back")
+    );
+    assert!(matches!(
+        registry.snapshot(&job).unwrap().state,
+        JobEffectiveState::Starting { generation: observed } if observed == generation
+    ));
+}
+
+#[test]
 fn restart_never_redispatches_an_uncertain_running_job() {
     let registry = JobRegistry::default();
     let job = key("job-restart");

@@ -6,6 +6,10 @@ use std::process::{Command, Output, Stdio};
 
 use serde_json::Value;
 
+mod support;
+
+use support::secure_tempdir;
+
 fn run_host(provider: &Path, counter: &Path, event_store: &Path) -> Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_trillionnium-owner-open-r5-host"))
         .args(["--provider"])
@@ -59,7 +63,7 @@ fn turn_event_ids(frames: &[Value]) -> Vec<String> {
 
 #[test]
 fn completed_turn_replays_without_a_second_provider_process() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let counter = directory.path().join("provider-starts");
     let event_store = directory.path().join("events.jsonl");

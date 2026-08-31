@@ -3,9 +3,13 @@ use std::process::{Command, Stdio};
 use std::thread;
 use std::time::{Duration, Instant};
 
+mod support;
+
+use support::secure_tempdir;
+
 #[test]
 fn transport_drains_the_final_core_frame_and_reaps_the_descendant_group() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let pid_file = directory.path().join("core-descendant.pid");
     let script = r#"
 import json

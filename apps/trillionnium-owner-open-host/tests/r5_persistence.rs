@@ -8,6 +8,10 @@ use r5_persistence::{Persistence, StoredTurn, event_scope, request_sha256, stabl
 use serde_json::json;
 use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
+mod support;
+
+use support::secure_tempdir;
+
 fn request() -> RunTurnRequest {
     RunTurnRequest {
         protocol: PROTOCOL.to_string(),
@@ -86,7 +90,7 @@ fn request_digest_excludes_transport_correlation_but_binds_semantics() {
 
 #[test]
 fn complete_turn_reopens_and_replays_exact_frames() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let path = directory.path().join("events.jsonl");
     let request = request();
     let stream = stable_turn_stream_id(&request).unwrap();
@@ -111,7 +115,7 @@ fn complete_turn_reopens_and_replays_exact_frames() {
 
 #[test]
 fn incomplete_turn_is_never_misclassified_as_complete() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let path = directory.path().join("events.jsonl");
     let request = request();
     let stream = stable_turn_stream_id(&request).unwrap();
@@ -133,7 +137,7 @@ fn incomplete_turn_is_never_misclassified_as_complete() {
 
 #[test]
 fn request_drift_and_events_after_terminal_are_conflicts() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let path = directory.path().join("events.jsonl");
     let request = request();
     let stream = stable_turn_stream_id(&request).unwrap();
@@ -172,7 +176,7 @@ fn request_drift_and_events_after_terminal_are_conflicts() {
 
 #[test]
 fn scope_mismatch_disables_durable_use_instead_of_writing_ambiguous_bytes() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let path = directory.path().join("events.jsonl");
     let request = request();
     let stream = stable_turn_stream_id(&request).unwrap();

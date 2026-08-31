@@ -22,8 +22,9 @@ use trillionnium_owner_open_call_registry::{
 };
 use trillionnium_owner_open_runtime::{
     AdbExecRequest, CancellationToken as RuntimeCancellationToken, ExecutionEvent,
-    ExecutionEventKind, ExecutionTerminal, MechanicalLimits, ShellExecRequest, ShellInvocation,
-    StreamKind, TerminalKind, ToolKind, execute_adb, execute_shell,
+    ExecutionEventKind, ExecutionTerminal, MechanicalLimits, PtySize, ShellExecRequest,
+    ShellInvocation, StreamKind, TerminalKind, ToolKind, execute_adb, execute_adb_pty,
+    execute_shell, execute_shell_pty,
 };
 
 #[derive(Debug)]
@@ -126,6 +127,10 @@ pub struct BoundToolCall {
     pub canonical_request: Vec<u8>,
     pub request_sha256: String,
     pub request: DirectToolRequest,
+    /// Optional foreground PTY transport. `None` retains the historical
+    /// separate stdout/stderr pipe behavior; the option is mechanical and is
+    /// included in the canonical request bytes by the codec layer.
+    pub pty: Option<PtySize>,
 }
 
 impl BoundToolCall {
@@ -135,6 +140,28 @@ impl BoundToolCall {
         target_id: Option<String>,
         canonical_request: Vec<u8>,
         request: DirectToolRequest,
+    ) -> Result<Self> {
+        Self::new_with_pty(
+            key,
+            binding_fingerprint,
+            target_id,
+            canonical_request,
+            request,
+            None,
+        )
+    }
+
+    /// Build a call whose transport mode is bound at construction time.
+    /// PTY-enabled calls must carry a matching normalized `pty` member in the
+    /// canonical JSON preimage; this prevents a caller from reusing one digest
+    /// while changing the actual process wiring.
+    pub fn new_with_pty(
+        key: CallKey,
+        binding_fingerprint: impl Into<String>,
+        target_id: Option<String>,
+        canonical_request: Vec<u8>,
+        request: DirectToolRequest,
+        pty: Option<PtySize>,
     ) -> Result<Self> {
         if canonical_request.is_empty() {
             return Err(invalid("canonical request bytes must not be empty"));
@@ -147,9 +174,26 @@ impl BoundToolCall {
             canonical_request,
             request_sha256,
             request,
+            pty,
         };
         value.validate()?;
+        value.validate_canonical_pty()?;
         Ok(value)
+    }
+
+    /// Attach an owner-selected PTY transport to this already-canonicalized
+    /// call. The canonical bytes must contain the same PTY option; this method
+    /// only carries the decoded mechanical form to the process bridge.
+    pub fn with_pty(mut self, pty: Option<PtySize>) -> Result<Self> {
+        if let Some(size) = pty
+            && (size.rows == 0 || size.cols == 0)
+        {
+            return Err(invalid("PTY rows and cols must be non-zero"));
+        }
+        self.pty = pty;
+        self.validate()?;
+        self.validate_canonical_pty()?;
+        Ok(self)
     }
 
     pub fn with_claimed_digest(
@@ -160,14 +204,35 @@ impl BoundToolCall {
         claimed_request_sha256: impl Into<String>,
         request: DirectToolRequest,
     ) -> Result<Self> {
+        Self::with_claimed_digest_and_pty(
+            key,
+            binding_fingerprint,
+            target_id,
+            canonical_request,
+            claimed_request_sha256,
+            request,
+            None,
+        )
+    }
+
+    pub fn with_claimed_digest_and_pty(
+        key: CallKey,
+        binding_fingerprint: impl Into<String>,
+        target_id: Option<String>,
+        canonical_request: Vec<u8>,
+        claimed_request_sha256: impl Into<String>,
+        request: DirectToolRequest,
+        pty: Option<PtySize>,
+    ) -> Result<Self> {
         let claimed = claimed_request_sha256.into();
         require_sha256(&claimed, "claimed_request_sha256")?;
-        let value = Self::new(
+        let value = Self::new_with_pty(
             key,
             binding_fingerprint,
             target_id,
             canonical_request,
             request,
+            pty,
         )?;
         if value.request_sha256 != claimed {
             return Err(BridgeError::ClaimedDigestMismatch {
@@ -191,6 +256,12 @@ impl BoundToolCall {
         {
             return Err(invalid("target_id exceeds its mechanical bound"));
         }
+        if self
+            .pty
+            .is_some_and(|size| size.rows == 0 || size.cols == 0)
+        {
+            return Err(invalid("PTY rows and cols must be non-zero"));
+        }
         Ok(())
     }
 
@@ -201,6 +272,51 @@ impl BoundToolCall {
             self.request.tool_name(),
             self.target_id.clone(),
         )
+    }
+
+    fn validate_canonical_pty(&self) -> Result<()> {
+        let value: serde_json::Value = match serde_json::from_slice(&self.canonical_request) {
+            Ok(value) => value,
+            Err(error) if self.pty.is_some() => {
+                return Err(invalid(format!(
+                    "PTY-enabled canonical request is not JSON: {error}"
+                )));
+            }
+            // Non-PTY callers may carry codec-owned canonical bytes whose
+            // shape is validated by the upstream codec.  Preserve that
+            // boundary while still enforcing every parseable PTY member.
+            Err(_) => return Ok(()),
+        };
+        let Some(pty) = value.as_object().and_then(|object| object.get("pty")) else {
+            if self.pty.is_some() {
+                return Err(invalid("PTY-enabled canonical request omits pty"));
+            }
+            return Ok(());
+        };
+        let (enabled, rows, cols) = match pty {
+            serde_json::Value::Bool(enabled) => (*enabled, 24, 80),
+            serde_json::Value::Object(object) => {
+                let enabled = match object.get("enabled") {
+                    None => true,
+                    Some(serde_json::Value::Bool(value)) => *value,
+                    Some(_) => return Err(invalid("canonical pty.enabled is not boolean")),
+                };
+                let rows = canonical_pty_dimension(object.get("rows"), "rows", 24)?;
+                let cols = canonical_pty_dimension(object.get("cols"), "cols", 80)?;
+                (enabled, rows, cols)
+            }
+            _ => return Err(invalid("canonical pty must be boolean or object")),
+        };
+        match (self.pty, enabled) {
+            (Some(expected), true) if rows == expected.rows && cols == expected.cols => Ok(()),
+            (Some(_), _) => Err(invalid(
+                "PTY transport does not match the canonical request dimensions",
+            )),
+            (None, false) => Ok(()),
+            (None, true) => Err(invalid(
+                "canonical request enables PTY but the bridge has no PTY transport",
+            )),
+        }
     }
 }
 
@@ -231,6 +347,25 @@ impl BridgeLimits {
         }
         Ok(())
     }
+}
+
+fn canonical_pty_dimension(
+    value: Option<&serde_json::Value>,
+    label: &str,
+    default: u16,
+) -> Result<u16> {
+    let Some(value) = value else {
+        return Ok(default);
+    };
+    let Some(raw) = value.as_u64() else {
+        return Err(invalid(format!("canonical pty.{label} is not an integer")));
+    };
+    let value = u16::try_from(raw)
+        .map_err(|_| invalid(format!("canonical pty.{label} is outside the u16 bound")))?;
+    if value == 0 {
+        return Err(invalid(format!("canonical pty.{label} is zero")));
+    }
+    Ok(value)
 }
 
 #[derive(Debug, Clone)]
@@ -286,7 +421,7 @@ impl DirectToolBridge {
     {
         limits.validate()?;
         call.validate()?;
-        validate_runtime_request(&call.request, &limits.runtime)?;
+        validate_runtime_request(&call.request, call.pty, &limits.runtime)?;
         self.registry
             .begin(call.key.clone(), call.registry_request())?;
         let (generation, cancellation) =
@@ -370,14 +505,28 @@ impl DirectToolBridge {
             }
         };
 
-        let runtime_result = match call.request.clone() {
-            DirectToolRequest::Shell(request) => execute_shell(
+        let runtime_result = match (call.request.clone(), call.pty) {
+            (DirectToolRequest::Shell(request), Some(size)) => execute_shell_pty(
+                request,
+                size,
+                &limits.runtime,
+                &runtime_cancellation,
+                &mut observe,
+            ),
+            (DirectToolRequest::Adb(request), Some(size)) => execute_adb_pty(
+                request,
+                size,
+                &limits.runtime,
+                &runtime_cancellation,
+                &mut observe,
+            ),
+            (DirectToolRequest::Shell(request), None) => execute_shell(
                 request,
                 &limits.runtime,
                 &runtime_cancellation,
                 &mut observe,
             ),
-            DirectToolRequest::Adb(request) => execute_adb(
+            (DirectToolRequest::Adb(request), None) => execute_adb(
                 request,
                 &limits.runtime,
                 &runtime_cancellation,
@@ -487,6 +636,7 @@ impl ObservationDigest {
                     match stream {
                         StreamKind::Stdout => b"stdout",
                         StreamKind::Stderr => b"stderr",
+                        StreamKind::Pty => b"pty",
                     },
                 );
                 field(hasher, b"bytes", bytes);
@@ -589,7 +739,11 @@ fn terminal_record(
     ))
 }
 
-fn validate_runtime_request(request: &DirectToolRequest, limits: &MechanicalLimits) -> Result<()> {
+fn validate_runtime_request(
+    request: &DirectToolRequest,
+    pty: Option<PtySize>,
+    limits: &MechanicalLimits,
+) -> Result<()> {
     limits
         .validate()
         .map_err(|error| invalid(error.to_string()))?;
@@ -615,6 +769,7 @@ fn validate_runtime_request(request: &DirectToolRequest, limits: &MechanicalLimi
                         &request.shell_executable,
                         "shell executable",
                         limits.max_cwd_bytes,
+                        false,
                     )?;
                 }
                 ShellInvocation::Argv(argv) => validate_argv(argv, "shell argv", limits)?,
@@ -634,8 +789,12 @@ fn validate_runtime_request(request: &DirectToolRequest, limits: &MechanicalLimi
                 &request.adb_executable,
                 "adb executable",
                 limits.max_cwd_bytes,
+                true,
             )?;
         }
+    }
+    if pty.is_some_and(|size| size.rows == 0 || size.cols == 0) {
+        return Err(invalid("PTY rows and cols must be non-zero"));
     }
     Ok(())
 }
@@ -660,7 +819,7 @@ fn validate_common(
         validate_text(target_id, "target_id", limits.max_target_id_bytes, false)?;
     }
     if let Some(cwd) = cwd {
-        validate_path(cwd, "cwd", limits.max_cwd_bytes)?;
+        validate_path(cwd, "cwd", limits.max_cwd_bytes, false)?;
     }
     if stdin.len() > limits.max_stdin_bytes {
         return Err(invalid("stdin exceeds the configured byte bound"));
@@ -723,9 +882,9 @@ fn validate_text(value: &str, label: &str, maximum: usize, allow_empty: bool) ->
     Ok(())
 }
 
-fn validate_path(path: &Path, label: &str, maximum: usize) -> Result<()> {
+fn validate_path(path: &Path, label: &str, maximum: usize, allow_empty: bool) -> Result<()> {
     let bytes = path.as_os_str().as_bytes();
-    if bytes.is_empty() || bytes.len() > maximum || bytes.contains(&0) {
+    if (!allow_empty && bytes.is_empty()) || bytes.len() > maximum || bytes.contains(&0) {
         return Err(invalid(format!(
             "{label} is empty, oversized, or contains NUL"
         )));

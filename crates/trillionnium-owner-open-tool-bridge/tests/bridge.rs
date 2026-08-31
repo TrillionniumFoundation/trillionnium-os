@@ -8,7 +8,8 @@ use trillionnium_owner_open_call_registry::{
     CallKey, CallRegistry, EffectiveState, RegistryError, TurnScope,
 };
 use trillionnium_owner_open_runtime::{
-    AdbExecRequest, ExecutionEvent, ExecutionEventKind, ShellExecRequest, StreamKind, TerminalKind,
+    AdbExecRequest, ExecutionEvent, ExecutionEventKind, PtySize, ShellExecRequest, StreamKind,
+    TerminalKind,
 };
 use trillionnium_owner_open_tool_bridge::{
     BoundToolCall, BridgeError, BridgeLimits, DirectToolBridge, DirectToolRequest, DispatchResult,
@@ -122,6 +123,102 @@ fn shell_call_records_pid_raw_events_terminal_and_observation_digest() {
         }
         other => panic!("registry did not retain the terminal: {other:?}"),
     }
+}
+
+#[test]
+fn pty_call_records_merged_pty_stream_without_pipe_streams() {
+    let registry = Arc::new(CallRegistry::default());
+    let bridge = DirectToolBridge::new(Arc::clone(&registry));
+    let events = Arc::new(Mutex::new(Vec::new()));
+    let command =
+        "if [ -t 1 ] && [ -t 2 ]; then printf pty-out; printf pty-err >&2; else exit 8; fi";
+    let mut request = ShellExecRequest::command("call-pty-bridge", command);
+    request
+        .env
+        .insert("TERM".to_string(), Some("xterm-256color".to_string()));
+    let call = BoundToolCall::new_with_pty(
+        key("call-pty-bridge"),
+        "ac".repeat(32),
+        Some("rootlinux".to_string()),
+        br#"{"tool":"shell.exec","command":"if [ -t 1 ] && [ -t 2 ]; then printf pty-out; printf pty-err >&2; else exit 8; fi","env":{"TERM":"xterm-256color"},"pty":{"enabled":true,"rows":24,"cols":80}}"#.to_vec(),
+        DirectToolRequest::Shell(request),
+        Some(PtySize::new(24, 80)),
+    )
+    .unwrap()
+    ;
+    let sink_events = Arc::clone(&events);
+
+    let result = bridge
+        .execute(call, &BridgeLimits::default(), move |event| {
+            sink_events.lock().unwrap().push(event);
+        })
+        .unwrap();
+    let terminal = match result {
+        DispatchResult::Executed { terminal, .. } => terminal,
+        other => panic!("unexpected PTY dispatch result: {other:?}"),
+    };
+    assert!(terminal.success());
+    let events = events.lock().unwrap();
+    let merged = output(&events, StreamKind::Pty);
+    assert!(
+        merged
+            .windows(b"pty-out".len())
+            .any(|window| window == b"pty-out")
+    );
+    assert!(
+        merged
+            .windows(b"pty-err".len())
+            .any(|window| window == b"pty-err")
+    );
+    assert!(output(&events, StreamKind::Stdout).is_empty());
+    assert!(output(&events, StreamKind::Stderr).is_empty());
+}
+
+#[test]
+fn canonical_pty_binding_is_bidirectional() {
+    let request = DirectToolRequest::Shell(ShellExecRequest::command("call-pty-binding", "true"));
+    let enabled =
+        br#"{"tool":"shell.exec","command":"true","pty":{"enabled":true,"rows":24,"cols":80}}"#;
+    let disabled = br#"{"tool":"shell.exec","command":"true","pty":false}"#;
+
+    let error = BoundToolCall::new(
+        key("call-pty-enabled-without-transport"),
+        "bd".repeat(32),
+        Some("rootlinux".to_string()),
+        enabled.to_vec(),
+        request.clone(),
+    )
+    .unwrap_err();
+    assert!(
+        matches!(error, BridgeError::InvalidRequest(message) if message.contains("no PTY transport"))
+    );
+
+    let error = BoundToolCall::new_with_pty(
+        key("call-pty-disabled-with-transport"),
+        "be".repeat(32),
+        Some("rootlinux".to_string()),
+        disabled.to_vec(),
+        request.clone(),
+        Some(PtySize::new(24, 80)),
+    )
+    .unwrap_err();
+    assert!(
+        matches!(error, BridgeError::InvalidRequest(message) if message.contains("does not match"))
+    );
+
+    let call = BoundToolCall::new_with_pty(
+        key("call-pty-clear"),
+        "bf".repeat(32),
+        Some("rootlinux".to_string()),
+        enabled.to_vec(),
+        request,
+        Some(PtySize::new(24, 80)),
+    )
+    .unwrap();
+    let error = call.with_pty(None).unwrap_err();
+    assert!(
+        matches!(error, BridgeError::InvalidRequest(message) if message.contains("no PTY transport"))
+    );
 }
 
 #[test]

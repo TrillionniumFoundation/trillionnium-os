@@ -24,6 +24,7 @@ fields = (
     "session_id", "profile_id", "task_id", "turn_id", "turn_stream_id",
     "call_id", "job_id", "operation_id", "attachment_id", "request_sha256"
 )
+host_sequence=1000
 for line in sys.stdin:
     frame=json.loads(line)
     with record.open("a") as f: f.write(json.dumps(frame,sort_keys=True)+"\n")
@@ -33,9 +34,13 @@ for line in sys.stdin:
         value=frame.get(name,payload.get(name))
         if isinstance(value,str): correlation[name]=value
     def emit(k,p):
+        global host_sequence
         p=dict(p)
         for name,value in correlation.items(): p.setdefault(name,value)
-        value={"kind":k,"seq":seq,"direction":"host_to_client","payload":p,**correlation}
+        value={"kind":k,"seq":host_sequence,"direction":"host_to_client","payload":p,**correlation}
+        host_sequence += 1
+        for name in ("broker_request_id", "broker_request_sha256", "broker_request_upstream_seq"):
+            if name in frame: value[name]=frame[name]
         print(json.dumps(value,separators=(",",":")),flush=True)
     if kind=="hello": emit("hello.ack",{"long_running_jobs":True})
     elif kind=="job.start":

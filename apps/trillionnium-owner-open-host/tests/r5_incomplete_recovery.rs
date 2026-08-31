@@ -12,6 +12,10 @@ use r5_persistence::{Persistence, StoredTurn, event_scope, request_sha256, stabl
 use serde_json::{Value, json};
 use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
+mod support;
+
+use support::secure_tempdir;
+
 fn request() -> RunTurnRequest {
     RunTurnRequest {
         protocol: PROTOCOL.to_string(),
@@ -37,7 +41,7 @@ fn request() -> RunTurnRequest {
 
 #[test]
 fn incomplete_durable_turn_becomes_unknown_without_starting_provider() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let counter = directory.path().join("provider-starts");
     let event_store = directory.path().join("events.jsonl");

@@ -1,11 +1,12 @@
 use std::collections::BTreeMap;
 use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::thread;
 use std::time::{Duration, Instant};
 
 use serde_json::json;
-use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
+use trillionnium_owner_open_job_registry::{JobEffectiveState, JobKey, JobRequest, JobScope};
 use trillionnium_owner_open_job_runtime::{
     ControlDisposition, JobInvocation, JobJournal, JobManager, JobRuntimeConfig, JobStartRequest,
     JournalStatus, PtySize, RuntimeJobEventKind, StartDisposition,
@@ -26,6 +27,15 @@ fn request(seed: char, mode: &str) -> JobRequest {
         mode,
         Some("rootlinux".to_string()),
     )
+}
+
+fn secure_tempdir() -> tempfile::TempDir {
+    let directory = tempfile::tempdir().unwrap();
+    // DurableEventStore intentionally rejects group/world-writable parents.
+    // Make the fixture deterministic instead of inheriting the test runner's
+    // umask (which is commonly 0022 in local shells and CI containers).
+    fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700)).unwrap();
+    directory
 }
 
 fn start_request(
@@ -94,7 +104,7 @@ fn reopen_after_dispatcher_shutdown(journal: &std::path::Path) -> JobManager {
 
 #[test]
 fn pipe_job_supports_write_close_inspect_and_durable_terminal() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
     let job = key("job-pipe");
@@ -123,7 +133,7 @@ fn pipe_job_supports_write_close_inspect_and_durable_terminal() {
 
 #[test]
 fn pty_job_supports_resize_and_process_group_kill() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
     let job = key("job-pty");
@@ -159,7 +169,7 @@ fn pty_job_supports_resize_and_process_group_kill() {
 
 #[test]
 fn completed_durable_job_never_spawns_again_after_manager_restart() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let counter = directory.path().join("counter");
     let job = key("job-restart-complete");
@@ -188,7 +198,7 @@ fn completed_durable_job_never_spawns_again_after_manager_restart() {
 
 #[test]
 fn repeated_start_of_a_live_job_returns_existing_live_before_recovery_state() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
     let job = key("job-live-idempotent");
@@ -226,7 +236,7 @@ fn repeated_start_of_a_live_job_returns_existing_live_before_recovery_state() {
 
 #[test]
 fn accepted_without_terminal_is_unknown_and_not_redispatched() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal_path = directory.path().join("jobs.jsonl");
     let job = key("job-uncertain");
     let request = request('e', "pipe");
@@ -260,7 +270,7 @@ fn accepted_without_terminal_is_unknown_and_not_redispatched() {
 
 #[test]
 fn configured_unavailable_journal_is_rejected_before_dispatch() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal_path = directory.path().join("jobs.jsonl");
     let held = JobJournal::open_best_effort(Some(&journal_path));
     assert_eq!(held.status().unwrap(), JournalStatus::Durable);
@@ -289,7 +299,7 @@ fn configured_unavailable_journal_is_rejected_before_dispatch() {
 
 #[test]
 fn capacity_rejection_happens_before_spawn_or_visible_side_effect() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let config = JobRuntimeConfig {
         max_jobs: 1,
@@ -346,7 +356,7 @@ fn capacity_rejection_happens_before_spawn_or_visible_side_effect() {
 
 #[test]
 fn output_drains_are_live_before_large_initial_stdin_is_written() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
     let job = key("job-reader-before-writer");
@@ -370,7 +380,7 @@ fn output_drains_are_live_before_large_initial_stdin_is_written() {
 
 #[test]
 fn retained_observation_prefix_loss_is_reported_as_an_exact_gap() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let config = JobRuntimeConfig {
         max_output_chunk_bytes: 8,
@@ -422,8 +432,70 @@ fn retained_observation_prefix_loss_is_reported_as_an_exact_gap() {
 }
 
 #[test]
+fn registry_output_failure_is_reported_and_stops_the_owned_effect() {
+    let directory = secure_tempdir();
+    let journal = directory.path().join("jobs.jsonl");
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    let job = key("job-registry-output-failure");
+    manager
+        .start(start_request(
+            job.clone(),
+            request('f', "pipe"),
+            "start-registry-output-failure",
+            "sleep 2; printf 'late-output'".to_string(),
+            None,
+        ))
+        .unwrap();
+
+    // Model a registry convergence failure while the process is still live.
+    // The dispatcher must retain an explicit fault and terminate the
+    // identity-bound child rather than silently dropping the output event.
+    manager
+        .registry()
+        .mark_restart_uncertain(&job)
+        .expect("running job can be marked uncertain");
+
+    let deadline = Instant::now() + Duration::from_secs(10);
+    let inspection = loop {
+        let inspection = manager.inspect(&job, 0, 128).unwrap();
+        let has_fault = inspection.runtime_events.iter().any(|event| {
+            matches!(
+                &event.event,
+                RuntimeJobEventKind::ProcessFault { phase, error }
+                    if phase == "registry_output"
+                        && error.contains("bytes=")
+                        && error.contains("sha256=")
+            )
+        });
+        let has_terminal = inspection
+            .runtime_events
+            .iter()
+            .any(|event| matches!(event.event, RuntimeJobEventKind::Terminal { .. }));
+        if has_fault && has_terminal {
+            break inspection;
+        }
+        assert!(
+            Instant::now() < deadline,
+            "registry output failure did not converge to a fault and terminal"
+        );
+        thread::sleep(Duration::from_millis(10));
+    };
+    assert!(inspection.runtime_events.iter().any(|event| {
+        matches!(
+            &event.event,
+            RuntimeJobEventKind::ProcessFault { phase, .. } if phase == "registry_output"
+        )
+    }));
+    let snapshot = manager
+        .registry()
+        .snapshot(&job)
+        .expect("terminal registry state remains inspectable");
+    assert!(matches!(snapshot.state, JobEffectiveState::Terminal { .. }));
+}
+
+#[test]
 fn leader_exit_does_not_leave_a_background_process_group_member() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
     let job = key("job-descendant-cleanup");
@@ -458,7 +530,7 @@ fn leader_exit_does_not_leave_a_background_process_group_member() {
 
 #[test]
 fn default_configuration_rejects_unjournaled_effects_before_spawn() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let marker = directory.path().join("must-not-run-without-journal");
     let manager = JobManager::open(JobRuntimeConfig::default(), None).unwrap();
     let job = key("job-no-journal");
@@ -482,7 +554,7 @@ fn default_configuration_rejects_unjournaled_effects_before_spawn() {
 
 #[test]
 fn pty_eof_character_does_not_claim_that_the_descriptor_is_closed() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
     let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
     let job = key("job-pty-eof-truth");

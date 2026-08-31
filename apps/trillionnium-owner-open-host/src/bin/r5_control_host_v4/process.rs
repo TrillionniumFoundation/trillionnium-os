@@ -1,14 +1,37 @@
 fn process_messages<W: Write>(
-    mut writer: W,
+    writer: W,
     receiver: Receiver<HostMessage>,
     sender: SyncSender<HostMessage>,
     connection_id: String,
     provider_template: JsonlProvider,
     persistence: &mut Persistence,
 ) -> Result<(), String> {
+    process_messages_with_control_seq(
+        writer,
+        receiver,
+        sender,
+        connection_id,
+        provider_template,
+        persistence,
+        Arc::new(AtomicU64::new(0)),
+    )
+}
+
+/// Control-sequence-aware variant used by the v7 job multiplexer.  Keeping
+/// the implementation in v4 preserves its inspect/replay handlers while
+/// allowing the outer v7 thread to share the connection-control allocator.
+fn process_messages_with_control_seq<W: Write>(
+    mut writer: W,
+    receiver: Receiver<HostMessage>,
+    sender: SyncSender<HostMessage>,
+    connection_id: String,
+    provider_template: JsonlProvider,
+    persistence: &mut Persistence,
+    control_seq: Arc<AtomicU64>,
+) -> Result<(), String> {
     let limits = MechanicalLimits::default();
     let registry = Arc::new(CallRegistry::default());
-    let mut output = OutputState::new(connection_id);
+    let mut output = OutputState::new_with_control_seq(connection_id, control_seq);
     let mut active = None::<ActiveTurn>;
     let mut input_open = true;
     let mut delivery_attached = true;
@@ -171,10 +194,18 @@ fn process_messages<W: Write>(
                                 continue;
                             }
                             StoredTurn::Conflict(error) => {
-                                deliver_host_error(
+                                // A conflicting retry has no valid request
+                                // context for this turn stream.  `context()`
+                                // resets the per-turn host cursor, so emitting
+                                // the error with it would rewind host_seq to
+                                // zero and reuse the prior turn event id.
+                                // Keep the diagnostic in the connection
+                                // control domain instead; this allocator is
+                                // shared with the outer v7 carrier.
+                                deliver_unscoped_host_error_with_context(
                                     &mut writer,
                                     &mut output,
-                                    Some(&context),
+                                    &context,
                                     "turn_replay_conflict",
                                     &error,
                                     limits.max_frame_bytes,

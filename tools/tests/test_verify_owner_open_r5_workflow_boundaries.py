@@ -97,6 +97,45 @@ jobs:
         self.write("owner-open-r5-tool-loop.yml", value)
         self.assertTrue(any("mutate GitHub repository" in item for item in self.errors()))
 
+    def test_yaml_write_all_inline_permissions_and_curl_patch_are_rejected(self) -> None:
+        # The boundary must cover both YAML extensions and the common compact
+        # permission/API spellings; otherwise a sibling workflow can restore
+        # repository-write authority without touching the reviewed .yml file.
+        write_all = self.clean_workflow().replace(
+            "permissions:\n  contents: read", "permissions: write-all"
+        )
+        write_all += (
+            '      - run: curl --request PATCH '
+            '"$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/branches/main/protection"\n'
+        )
+        self.write("owner-open-r16-write-evasion.yaml", write_all)
+        inline = self.clean_workflow().replace(
+            "permissions:\n  contents: read", "permissions: {contents: write}"
+        )
+        self.write("owner-open-r16-inline-write.yaml", inline)
+        errors = self.errors()
+        self.assertTrue(
+            any(
+                "owner-open-r16-write-evasion.yaml" in item
+                and "write permission" in item
+                for item in errors
+            )
+        )
+        self.assertTrue(
+            any(
+                "owner-open-r16-write-evasion.yaml" in item
+                and "mutate GitHub repository controls" in item
+                for item in errors
+            )
+        )
+        self.assertTrue(
+            any(
+                "owner-open-r16-inline-write.yaml" in item
+                and "write permission" in item
+                for item in errors
+            )
+        )
+
     def test_retired_migration_material_is_rejected(self) -> None:
         path = self.root / ".github" / "r5-bootstrap"
         path.mkdir(parents=True)

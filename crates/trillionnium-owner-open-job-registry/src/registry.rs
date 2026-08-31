@@ -188,6 +188,43 @@ impl JobRegistry {
         })
     }
 
+    /// Roll back an acceptance that has not yet crossed the spawn claim.
+    ///
+    /// The owner-open runtime uses this when durable operation acceptance
+    /// fails after the in-memory registry has accepted a new key.  The
+    /// request and the exact pre-spawn state are checked while holding the
+    /// registry lock so a concurrent lifecycle transition can never cause a
+    /// live/claimed entry to be removed accidentally.
+    pub fn rollback_accept(&self, key: &JobKey, request: &JobRequest) -> Result<bool> {
+        let mut state = self.lock()?;
+        let Some(entry) = state.entries.get(key) else {
+            return Ok(false);
+        };
+        if entry.request != *request {
+            return Err(JobRegistryError::JobIdConflict);
+        }
+        let rollbackable = matches!(
+            entry.dispatch,
+            DispatchState::Accepted {
+                spawn_inhibited: false
+            }
+        ) && !entry.stdin_closed
+            && !entry.kill_requested
+            && entry.attachments.is_empty()
+            && entry.history.len() == 1
+            && matches!(
+                entry.history.front().map(|event| &event.event),
+                Some(JobEventKind::Accepted)
+            );
+        if !rollbackable {
+            return Err(JobRegistryError::InvalidTransition(
+                "only an untouched accepted job can be rolled back",
+            ));
+        }
+        state.entries.remove(key);
+        Ok(true)
+    }
+
     pub fn claim_spawn(&self, key: &JobKey, request_sha256: &str) -> Result<SpawnClaim> {
         require_sha256(request_sha256, "request_sha256")?;
         let mut state = self.lock()?;

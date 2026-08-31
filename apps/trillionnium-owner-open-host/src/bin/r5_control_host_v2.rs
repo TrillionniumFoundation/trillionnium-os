@@ -31,7 +31,7 @@ use trillionnium_owner_open_turn_loop::{
 use trillionnium_owner_open_types::{
     FRAME_HELLO, FRAME_HELLO_ACK, FRAME_MODEL_DELTA, FRAME_MODEL_MESSAGE,
     FRAME_PROVIDER_STATUS, FRAME_TOOL_ACCEPTED, FRAME_TOOL_CANCEL, FRAME_TOOL_RESULT,
-    FRAME_TOOL_STARTED, FRAME_TOOL_STDERR, FRAME_TOOL_STDOUT, FRAME_TURN_ACCEPTED,
+    FRAME_TOOL_PTY, FRAME_TOOL_STARTED, FRAME_TOOL_STDERR, FRAME_TOOL_STDOUT, FRAME_TURN_ACCEPTED,
     FRAME_TURN_CANCEL, FRAME_TURN_END, FRAME_TURN_START, MechanicalLimits, PROTOCOL,
     PROTOCOL_VERSION, RunTurnFrame,
 };
@@ -201,6 +201,7 @@ struct TurnContext {
     profile_id: String,
     task_id: String,
     turn_id: String,
+    request_sha256: String,
 }
 
 impl TurnContext {
@@ -224,14 +225,26 @@ struct EventCorrelation {
 
 struct OutputState {
     connection_id: String,
+    /// Connection-control sequence (hello and unscoped errors). It is kept
+    /// separate from the persisted turn-stream cursor so a hello preface does
+    /// not consume the first turn `host_seq`.
+    control_seq: Arc<AtomicU64>,
+    /// Persisted host sequence for the currently selected turn stream. The
+    /// v4 core resets this at each new turn and observes replay before
+    /// allocating any new frame.
     next_host_seq: u64,
     next_turn_event_ordinal: u64,
 }
 
 impl OutputState {
     fn new(connection_id: String) -> Self {
+        Self::new_with_control_seq(connection_id, Arc::new(AtomicU64::new(0)))
+    }
+
+    fn new_with_control_seq(connection_id: String, control_seq: Arc<AtomicU64>) -> Self {
         Self {
             connection_id,
+            control_seq,
             next_host_seq: 0,
             next_turn_event_ordinal: 0,
         }
@@ -242,19 +255,21 @@ impl OutputState {
         request: &trillionnium_owner_open_types::RunTurnRequest,
     ) -> Result<TurnContext, String> {
         self.next_turn_event_ordinal = 0;
+        self.next_host_seq = 0;
         Ok(TurnContext {
             turn_stream_id: stable_turn_stream_id(request)?,
             session_id: request.session_id.clone(),
             profile_id: request.effective_profile_id().to_string(),
             task_id: request.task_id.clone(),
             turn_id: request.turn_id.clone(),
+            request_sha256: request_sha256(request)?,
         })
     }
 
     fn observe_replay(&mut self, frames: &[RunTurnFrame]) {
         if let Some(next) = frames
             .iter()
-            .map(|frame| frame.host_seq.unwrap_or(frame.seq))
+            .filter_map(|frame| frame.host_seq)
             .max()
             .and_then(|value| value.checked_add(1))
         {
@@ -270,8 +285,14 @@ impl OutputState {
         context: Option<&TurnContext>,
         correlation: EventCorrelation,
     ) -> RunTurnFrame {
-        let seq = self.next_host_seq;
-        self.next_host_seq = self.next_host_seq.saturating_add(1);
+        let (seq, host_seq) = if context.is_some() {
+            let seq = self.next_host_seq;
+            self.next_host_seq = self.next_host_seq.saturating_add(1);
+            (seq, Some(seq))
+        } else {
+            let seq = self.control_seq.fetch_add(1, Ordering::SeqCst);
+            (seq, None)
+        };
         let event_id = if let Some(context) = context {
             let ordinal = self.next_turn_event_ordinal;
             self.next_turn_event_ordinal = self.next_turn_event_ordinal.saturating_add(1);
@@ -279,13 +300,13 @@ impl OutputState {
         } else {
             format!("{}-event-{seq}", self.connection_id)
         };
-        RunTurnFrame {
+        let mut frame = RunTurnFrame {
             kind: kind.into(),
             seq,
             payload,
             direction: Some("host_to_client".to_string()),
             client_seq: None,
-            host_seq: Some(seq),
+            host_seq,
             frame_sha256: None,
             event_id: Some(event_id),
             connection_id: Some(self.connection_id.clone()),
@@ -301,7 +322,20 @@ impl OutputState {
             target: None,
             target_id: correlation.target_id,
             extensions: Default::default(),
+        };
+        // Carry the semantic request digest on every frame in a turn.  This
+        // is distinct from the broker envelope and lets the outer transport
+        // reject a delayed frame from an earlier retry even when both retries
+        // reuse the same turn scope and frame kind.
+        if let Some(context) = context
+            && let Some(object) = frame.payload.as_object_mut()
+        {
+            object.insert(
+                "turn_request_sha256".to_string(),
+                Value::String(context.request_sha256.clone()),
+            );
         }
+        frame
     }
 }
 
@@ -349,16 +383,40 @@ fn spawn_stdin_reader(sender: SyncSender<HostMessage>, max_frame_bytes: usize) {
 }
 
 fn process_messages<W: Write>(
-    mut writer: W,
+    writer: W,
     receiver: Receiver<HostMessage>,
     sender: SyncSender<HostMessage>,
     connection_id: String,
     provider_template: JsonlProvider,
     persistence: &mut Persistence,
 ) -> Result<(), String> {
+    process_messages_with_control_seq(
+        writer,
+        receiver,
+        sender,
+        connection_id,
+        provider_template,
+        persistence,
+        Arc::new(AtomicU64::new(0)),
+    )
+}
+
+/// Variant used by the job-aware v7 carrier.  Local protocol errors are
+/// emitted by the outer multiplexer thread, while hello/control responses are
+/// emitted by this core thread; sharing one allocator keeps their unscoped
+/// connection-control `seq` values serialized in a single domain.
+fn process_messages_with_control_seq<W: Write>(
+    mut writer: W,
+    receiver: Receiver<HostMessage>,
+    sender: SyncSender<HostMessage>,
+    connection_id: String,
+    provider_template: JsonlProvider,
+    persistence: &mut Persistence,
+    control_seq: Arc<AtomicU64>,
+) -> Result<(), String> {
     let limits = MechanicalLimits::default();
     let registry = Arc::new(CallRegistry::default());
-    let mut output = OutputState::new(connection_id);
+    let mut output = OutputState::new_with_control_seq(connection_id, control_seq);
     let mut active = None::<ActiveTurn>;
     let mut input_open = true;
     let mut delivery_attached = true;
@@ -499,10 +557,16 @@ fn process_messages<W: Write>(
                                 continue;
                             }
                             StoredTurn::Conflict(error) => {
-                                deliver_host_error(
+                                // `context()` resets the per-turn cursor.  A
+                                // digest-conflicting retry is not a valid
+                                // continuation of that stream, so a scoped
+                                // error here would rewind host_seq and reuse
+                                // an existing event id.  Report it in the
+                                // connection-control sequence domain.
+                                deliver_unscoped_host_error_with_context(
                                     &mut writer,
                                     &mut output,
-                                    Some(&context),
+                                    &context,
                                     "turn_replay_conflict",
                                     &error,
                                     limits.max_frame_bytes,
@@ -1110,6 +1174,49 @@ fn deliver_host_error<W: Write>(
     );
 }
 
+/// Emit a semantic error without claiming a position in the turn replay
+/// cursor.  This is used when a new request conflicts with an already-recorded
+/// turn: `OutputState::context` has to inspect the request, but resetting the
+/// turn allocator and then emitting a scoped error would reuse host_seq=0 and
+/// its event id.  Keeping the lineage in the payload lets an outer broker
+/// correlate the error while the connection-control allocator supplies a
+/// collision-free sequence.
+#[allow(clippy::too_many_arguments)]
+fn deliver_unscoped_host_error_with_context<W: Write>(
+    writer: &mut W,
+    output: &mut OutputState,
+    context: &TurnContext,
+    code: &str,
+    message: &str,
+    max_frame_bytes: usize,
+    delivery_attached: &mut bool,
+    delivery_error: &mut Option<String>,
+) {
+    let frame = output.frame(
+        FRAME_HOST_ERROR,
+        json!({
+            "code": code,
+            "message": message,
+            "session_id": context.session_id,
+            "profile_id": context.profile_id,
+            "task_id": context.task_id,
+            "turn_id": context.turn_id,
+            "turn_stream_id": context.turn_stream_id,
+            "turn_request_sha256": context.request_sha256,
+            "automatic_redispatch": false
+        }),
+        None,
+        EventCorrelation::default(),
+    );
+    deliver_frame(
+        writer,
+        &frame,
+        max_frame_bytes,
+        delivery_attached,
+        delivery_error,
+    );
+}
+
 fn map_turn_event(
     output: &mut OutputState,
     context: &TurnContext,
@@ -1205,6 +1312,7 @@ fn map_runtime_event(
             match stream {
                 StreamKind::Stdout => FRAME_TOOL_STDOUT,
                 StreamKind::Stderr => FRAME_TOOL_STDERR,
+                StreamKind::Pty => FRAME_TOOL_PTY,
             },
             json!({
                 "encoding": "base64",
@@ -1368,5 +1476,35 @@ mod tests {
         ])
         .unwrap_err();
         assert!(error.contains("only once"));
+    }
+
+    #[test]
+    fn hello_control_sequence_does_not_consume_first_turn_host_sequence() {
+        let mut output = OutputState::new("connection-sequence-test".to_string());
+        let hello = output.frame(
+            FRAME_HELLO_ACK,
+            json!({"protocol": PROTOCOL, "protocol_version": PROTOCOL_VERSION}),
+            None,
+            EventCorrelation::default(),
+        );
+        let context = TurnContext {
+            turn_stream_id: "turn-stream-sequence-test".to_string(),
+            session_id: "session-sequence-test".to_string(),
+            profile_id: trillionnium_owner_open_types::DEFAULT_PROFILE_ID.to_string(),
+            task_id: "task-sequence-test".to_string(),
+            turn_id: "turn-sequence-test".to_string(),
+            request_sha256: "a".repeat(64),
+        };
+        let accepted = output.frame(
+            FRAME_TURN_ACCEPTED,
+            json!({"status": "accepted"}),
+            Some(&context),
+            EventCorrelation::default(),
+        );
+
+        assert_eq!(hello.seq, 0);
+        assert_eq!(hello.host_seq, None);
+        assert_eq!(accepted.seq, 0);
+        assert_eq!(accepted.host_seq, Some(0));
     }
 }

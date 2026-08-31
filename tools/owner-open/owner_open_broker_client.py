@@ -33,6 +33,7 @@ def expected_for(frame: dict[str, Any]) -> tuple[list[str], str | None]:
     mapping = {
         "job.start": ["job.start.result"],
         "job.inspect": ["job.inspect.result"],
+        "job.wait": ["job.inspect.result"],
         "job.attach": ["job.attach.result"],
         "job.detach": ["job.detach.result"],
         "job.write": ["job.control.result"],

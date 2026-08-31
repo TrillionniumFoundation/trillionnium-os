@@ -3,9 +3,13 @@ use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::process::{Command, Stdio};
 
+mod support;
+
+use support::secure_tempdir;
+
 #[test]
 fn client_output_disconnect_does_not_cancel_an_accepted_turn() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let counter = directory.path().join("provider-starts");
     let event_store = directory.path().join("events.jsonl");

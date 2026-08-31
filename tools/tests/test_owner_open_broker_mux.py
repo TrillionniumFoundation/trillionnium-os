@@ -214,6 +214,32 @@ class WeightedFairMuxTest(unittest.TestCase):
                 lambda _request, _frame: True,
             )
 
+    def test_broker_sequence_overrides_host_local_response_sequence(self) -> None:
+        mux = WeightedFairMux(max_pending=4, max_inflight=1, max_retired=4)
+        current = Request("a", "current", "job:current", 11)
+        mux.enqueue(current)
+        self.assertIs(mux.acquire(0), current)
+        # Host response seq=0 is intentionally unrelated to the broker's
+        # request sequence. Ownership follows the echoed broker field.
+        self.assertIs(
+            mux.match(
+                {"seq": 0, "broker_request_upstream_seq": 11},
+                lambda _request, _frame: True,
+            ),
+            current,
+        )
+
+    def test_malformed_broker_sequence_fails_closed(self) -> None:
+        mux = WeightedFairMux(max_pending=4, max_inflight=1, max_retired=4)
+        current = Request("a", "current", "job:current", 11)
+        mux.enqueue(current)
+        mux.acquire(0)
+        with self.assertRaisesRegex(MuxError, "broker_request_upstream_seq"):
+            mux.match(
+                {"seq": 0, "broker_request_upstream_seq": "11"},
+                lambda _request, _frame: True,
+            )
+
     def test_uncertain_active_request_fences_key_and_retires_waiters(self) -> None:
         mux = WeightedFairMux(max_pending=6, max_inflight=2, max_retired=6)
         first = Request("a", "first", "job:one", 1)

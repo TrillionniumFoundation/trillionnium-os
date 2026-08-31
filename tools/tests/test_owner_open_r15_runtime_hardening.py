@@ -23,7 +23,7 @@ class RuntimeHardeningSourceTests(unittest.TestCase):
             self.assertIn("conflicts with --allow-unjournaled-effects-for-development", text)
             self.assertNotIn("allow_unjournaled_effects: !parsed.require_job_journal", text)
 
-    def test_all_process_paths_clear_ambient_environment(self) -> None:
+    def test_all_process_paths_preserve_owner_environment_semantics(self) -> None:
         paths = (
             "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
             "crates/trillionnium-owner-open-job-runtime/src/process.rs",
@@ -31,6 +31,9 @@ class RuntimeHardeningSourceTests(unittest.TestCase):
         )
         for path in paths:
             text = (ROOT / path).read_text()
+            # The R15 process boundary is deliberately deterministic: only
+            # the small mechanical inherited allowlist crosses the Host
+            # boundary, and request-specific values are applied afterward.
             self.assertIn("env_clear()", text, path)
             self.assertIn("INHERITED_ENV_ALLOWLIST", text, path)
 
@@ -51,6 +54,33 @@ class RuntimeHardeningSourceTests(unittest.TestCase):
         self.assertIn("PtyEofCharacterSent", process)
         self.assertIn('"pty_eof_character_sent"', manager)
         self.assertIn('"stdin_closed": stdin_closed', manager)
+
+    def test_process_identity_publication_precedes_live_control(self) -> None:
+        types = (ROOT / "crates/trillionnium-owner-open-job-runtime/src/types.rs").read_text()
+        manager = (ROOT / "crates/trillionnium-owner-open-job-runtime/src/manager.rs").read_text()
+        v7_wire = (ROOT / "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs").read_text()
+        docs = (ROOT / "docs/protocols/owner-open-jobs-v1.md").read_text()
+
+        for field in ("pid", "process_group_id", "session_id", "boot_id", "start_time_ticks"):
+            self.assertIn(field, types)
+            self.assertIn(field, manager)
+        self.assertIn("ProcessIdentityBound", types)
+        self.assertIn("process_identity_for_event", manager)
+        self.assertIn("FRAME_JOB_IDENTITY_BOUND", v7_wire)
+        self.assertIn("process_identity_bound", v7_wire)
+        self.assertIn("job.process_identity_bound", docs)
+
+        publication_start = manager.index("let running = Arc::new(RunningJob")
+        publication_end = manager.index("Ok(JobStartResult {", publication_start)
+        publication = manager[publication_start:publication_end]
+        self.assertLess(publication.index("ProcessIdentityBound"), publication.index("running_jobs.insert"))
+        self.assertLess(publication.index("RuntimeJobEventKind::Started"), publication.index("running_jobs.insert"))
+        self.assertLess(publication.index("complete_operation"), publication.index("running_jobs.insert"))
+        self.assertLess(publication.index("spawn_dispatcher"), publication.rindex("drop(running_jobs)"))
+        self.assertIn("running_jobs.remove(&request.key)", publication)
+        # Every post-spawn event/journal failure must release the admission
+        # guard before abort_started_job reacquires it for removal.
+        self.assertGreaterEqual(publication.count("drop(running_jobs)"), 4)
 
 
 class WorkflowBoundaryGenerationTests(unittest.TestCase):

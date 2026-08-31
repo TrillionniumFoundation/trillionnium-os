@@ -130,6 +130,40 @@ pub enum ShellInvocation {
     Argv(Vec<String>),
 }
 
+/// Initial terminal dimensions for an owner-open PTY call.
+///
+/// PTY support is exposed as an additive execution entry point rather than a
+/// field on [`ShellExecRequest`].  Keeping the existing request shape intact
+/// means legacy codecs can continue to construct it with a struct literal
+/// while an owner-open caller can opt into a real controlling terminal.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PtySize {
+    pub rows: u16,
+    pub cols: u16,
+}
+
+impl PtySize {
+    #[must_use]
+    pub const fn new(rows: u16, cols: u16) -> Self {
+        Self { rows, cols }
+    }
+
+    pub(crate) fn validate(self) -> Result<()> {
+        if self.rows == 0 || self.cols == 0 {
+            return Err(RuntimeError::InvalidRequest(
+                "PTY rows and cols must be non-zero".to_string(),
+            ));
+        }
+        Ok(())
+    }
+}
+
+impl Default for PtySize {
+    fn default() -> Self {
+        Self { rows: 24, cols: 80 }
+    }
+}
+
 /// Environment delta: `Some(value)` sets/replaces a variable and `None`
 /// removes it. An absent key is inherited only when it belongs to the finite
 /// mechanical allowlist; arbitrary Host secrets are never inherited.
@@ -205,12 +239,29 @@ impl AdbExecRequest {
             timeout: None,
         }
     }
+
+    /// Construct a request whose transport executable is intentionally absent.
+    /// The runtime preserves the requested argv and emits a
+    /// `transport_unavailable` terminal observation instead of attempting a
+    /// policy fallback.
+    #[must_use]
+    pub fn unconfigured(call_id: impl Into<String>, argv: Vec<String>) -> Self {
+        let mut request = Self::new(call_id, argv);
+        request.adb_executable.clear();
+        request
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StreamKind {
     Stdout,
     Stderr,
+    /// One merged byte stream produced by a foreground PTY.
+    ///
+    /// This remains distinct from `Stdout`: when a PTY is selected the kernel
+    /// presents stdout and stderr through one terminal stream, and the wire
+    /// contract labels that stream `pty` rather than pretending it is a pipe.
+    Pty,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -220,6 +271,10 @@ pub enum TerminalKind {
     TimedOut,
     Cancelled,
     OutputLimitExceeded,
+    /// The selected ADB client/relay was not configured or could not be
+    /// resolved.  This is distinct from a process that ran `adb` and returned
+    /// a non-zero device/command status.
+    TransportUnavailable,
     SpawnFailed,
     IoError,
 }
@@ -233,6 +288,7 @@ impl TerminalKind {
             Self::TimedOut => "timed_out",
             Self::Cancelled => "client_cancelled",
             Self::OutputLimitExceeded => "resource_exhausted",
+            Self::TransportUnavailable => "transport_unavailable",
             Self::SpawnFailed => "spawn_failed",
             Self::IoError => "io_error",
         }
@@ -287,4 +343,13 @@ pub(crate) struct ProcessSpec {
     pub env: EnvironmentDelta,
     pub stdin: Vec<u8>,
     pub timeout: Duration,
+    pub io_mode: ProcessIoMode,
+}
+
+/// Internal process wiring mode.  A PTY deliberately remains a transport
+/// concern; it does not add command or target policy.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ProcessIoMode {
+    Pipe,
+    Pty(PtySize),
 }

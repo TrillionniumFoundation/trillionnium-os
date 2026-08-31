@@ -4,7 +4,8 @@ use std::time::Duration;
 
 use trillionnium_owner_open_runtime::{
     AdbExecRequest, CancellationToken, ExecutionEvent, ExecutionEventKind, MechanicalLimits,
-    ShellExecRequest, StreamKind, TerminalKind, execute_adb, execute_shell,
+    PtySize, ShellExecRequest, StreamKind, TerminalKind, execute_adb, execute_shell,
+    execute_shell_pty, unconfigured_adb_request,
 };
 
 fn output(events: &[ExecutionEvent], stream: StreamKind) -> Vec<u8> {
@@ -280,4 +281,107 @@ fn malformed_adb_request_is_rejected_before_any_process_event() {
 
     assert!(error.to_string().contains("must not be empty"));
     assert!(events.is_empty());
+}
+
+#[test]
+fn pty_shell_has_a_controlling_terminal_and_merges_output_streams() {
+    let mut events = Vec::new();
+    let terminal = execute_shell_pty(
+        ShellExecRequest::command(
+            "call-pty",
+            "if [ -t 1 ] && [ -t 2 ]; then printf pty-out; printf pty-err >&2; exit 9; fi; exit 8",
+        ),
+        PtySize::new(37, 111),
+        &MechanicalLimits::default(),
+        &CancellationToken::new(),
+        |event| events.push(event),
+    )
+    .unwrap();
+
+    assert_eq!(terminal.kind, TerminalKind::Exited);
+    assert_eq!(terminal.exit_code, Some(9));
+    let merged = output(&events, StreamKind::Pty);
+    assert!(
+        merged
+            .windows(b"pty-out".len())
+            .any(|window| window == b"pty-out")
+    );
+    assert!(
+        merged
+            .windows(b"pty-err".len())
+            .any(|window| window == b"pty-err")
+    );
+    assert!(output(&events, StreamKind::Stdout).is_empty());
+    assert!(output(&events, StreamKind::Stderr).is_empty());
+    assert_eq!(terminal.stdout_bytes, merged.len() as u64);
+    assert_eq!(terminal.stderr_bytes, 0);
+}
+
+#[test]
+fn pty_dimensions_are_mechanical_and_rejected_before_acceptance() {
+    let mut events = Vec::new();
+    let error = execute_shell_pty(
+        ShellExecRequest::command("call-pty-invalid", "true"),
+        PtySize::new(0, 80),
+        &MechanicalLimits::default(),
+        &CancellationToken::new(),
+        |event| events.push(event),
+    )
+    .unwrap_err();
+
+    assert!(error.to_string().contains("PTY rows and cols"));
+    assert!(events.is_empty());
+}
+
+#[test]
+fn unconfigured_adb_is_an_honest_transport_unavailable_terminal() {
+    let mut events = Vec::new();
+    let terminal = execute_adb(
+        unconfigured_adb_request("call-adb-unconfigured", vec!["future-subcommand".into()]),
+        &MechanicalLimits::default(),
+        &CancellationToken::new(),
+        |event| events.push(event),
+    )
+    .unwrap();
+
+    assert_eq!(terminal.kind, TerminalKind::TransportUnavailable);
+    assert_eq!(terminal.kind.as_str(), "transport_unavailable");
+    assert!(
+        terminal
+            .error
+            .as_deref()
+            .is_some_and(|error| { error.contains("executable is not configured") })
+    );
+    assert_eq!(terminal_count(&events), 1);
+    assert!(matches!(events[0].kind, ExecutionEventKind::Accepted));
+    assert!(
+        !events
+            .iter()
+            .any(|event| matches!(event.kind, ExecutionEventKind::Started { .. }))
+    );
+}
+
+#[test]
+fn missing_adb_binary_is_transport_unavailable_not_command_failure() {
+    let mut request = AdbExecRequest::new(
+        "call-adb-missing",
+        vec!["future-subcommand".to_string(), "--new-flag".to_string()],
+    );
+    request.adb_executable = PathBuf::from("/definitely/not/a/real/owner-open-arm64-adb-client");
+    let terminal = execute_adb(
+        request,
+        &MechanicalLimits::default(),
+        &CancellationToken::new(),
+        |_| {},
+    )
+    .unwrap();
+
+    assert_eq!(terminal.kind, TerminalKind::TransportUnavailable);
+    assert_eq!(terminal.exit_code, None);
+    assert!(
+        terminal
+            .error
+            .as_deref()
+            .is_some_and(|error| { error.contains("adb transport unavailable") })
+    );
 }

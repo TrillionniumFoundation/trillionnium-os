@@ -31,10 +31,14 @@ EXACT_REF_TOKENS = (
     "inputs.source_commit",
 )
 WRITE_PERMISSION = re.compile(
-    r"(?m)^\s*(?:contents|actions|pull-requests|issues|checks|deployments):\s*write\s*$"
+    r"(?im)^\s*(?:(?:contents|actions|pull-requests|issues|checks|deployments|statuses)"
+    r"\s*:\s*['\"]?write['\"]?|permissions\s*:\s*['\"]?write-all['\"]?|"
+    r"permissions\s*:\s*\{[^}\n]*\b(?:contents|actions|pull-requests|issues|checks|"
+    r"deployments|statuses)\s*:\s*['\"]?write['\"]?[^}\n]*\})\s*(?:#.*)?$"
 )
 API_WRITE = re.compile(
-    r"(?:--method\s+(?:POST|PUT|PATCH|DELETE)\b|"
+    r"(?:--method(?:=|\s+)[\s'\"]*(?:POST|PUT|PATCH|DELETE)\b|"
+    r"(?:-X|--request)(?:=|\s+)[\s'\"]*(?:POST|PUT|PATCH|DELETE)\b|"
     r"method\s*=\s*['\"](?:POST|PUT|PATCH|DELETE)['\"])",
     re.IGNORECASE,
 )
@@ -84,6 +88,20 @@ def _checkout_blocks(lines: list[str]) -> list[tuple[int, str]]:
     ]
 
 
+def _workflow_paths(workflow_dir: Path) -> list[Path]:
+    """Enumerate both YAML extensions in the owner-open namespace.
+
+    A security boundary that only scans ``.yml`` can be bypassed by adding a
+    sibling ``.yaml`` workflow; keep the scope narrow enough that unrelated
+    repository workflows do not become an implicit part of the R5 contract.
+    """
+
+    return sorted(
+        set(workflow_dir.glob("owner-open*.yml"))
+        | set(workflow_dir.glob("owner-open*.yaml"))
+    )
+
+
 def verify(root: Path) -> dict[str, Any]:
     root = root.resolve()
     workflow_dir = root / ".github" / "workflows"
@@ -95,11 +113,12 @@ def verify(root: Path) -> dict[str, Any]:
         "owner-open-r5-target-evidence-capture.yml",
         "owner-open-r5-governance-readiness.yml",
     }
-    observed = {path.name for path in workflow_dir.glob("owner-open*.yml")}
+    workflow_paths = _workflow_paths(workflow_dir)
+    observed = {path.name for path in workflow_paths}
     for name in sorted(required - observed):
         errors.append(f"required permanent workflow is absent: {name}")
 
-    for path in sorted(workflow_dir.glob("owner-open*.yml")):
+    for path in workflow_paths:
         try:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:
@@ -115,7 +134,11 @@ def verify(root: Path) -> dict[str, Any]:
             errors.append(f"repository write permission remains: {path.name}")
         if re.search(r"\bgit\s+push\b", text):
             errors.append(f"workflow can push repository refs: {path.name}")
-        if API_WRITE.search(text) and "api.github.com/repos/" in text:
+        if (
+            API_WRITE.search(text)
+            and "repos/" in text
+            and ("api.github.com" in text or "GITHUB_API_URL" in text)
+        ):
             errors.append(f"workflow can mutate GitHub repository controls: {path.name}")
 
         has_pull_request = bool(re.search(r"(?m)^\s{2}pull_request\s*:", text))

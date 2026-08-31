@@ -7,6 +7,10 @@ use std::time::{Duration, Instant};
 
 use serde_json::{Value, json};
 
+mod support;
+
+use support::secure_tempdir;
+
 struct RunningHost {
     child: Child,
     stdin: ChildStdin,
@@ -143,7 +147,7 @@ fn finish(mut running: RunningHost) -> Vec<Value> {
 
 #[test]
 fn durable_pause_window_update_and_resume_gate_model_delivery() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let emit = directory.path().join("emit");
     let finish_marker = directory.path().join("finish");
@@ -227,7 +231,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
 
 #[test]
 fn flow_control_without_durable_store_is_rejected_without_stopping_the_turn() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let finish_marker = directory.path().join("finish");
     fs::write(
@@ -264,7 +268,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
 
 #[test]
 fn turn_cancel_remains_serviceable_while_high_volume_delivery_is_paused() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let release = directory.path().join("release");
     let event_store = directory.path().join("events.jsonl");

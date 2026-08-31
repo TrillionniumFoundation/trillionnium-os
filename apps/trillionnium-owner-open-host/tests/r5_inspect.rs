@@ -10,6 +10,10 @@ use r5_persistence::{
 use serde_json::json;
 use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
+mod support;
+
+use support::secure_tempdir;
+
 fn request() -> RunTurnRequest {
     RunTurnRequest {
         protocol: PROTOCOL.to_string(),
@@ -61,7 +65,7 @@ fn frame(request: &RunTurnRequest, stream: &str, kind: &str, seq: u64) -> RunTur
 
 #[test]
 fn inclusive_cursor_returns_a_bounded_read_only_slice() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let path = directory.path().join("events.jsonl");
     let request = request();
     let stream = stable_turn_stream_id(&request).unwrap();
@@ -118,7 +122,7 @@ fn inclusive_cursor_returns_a_bounded_read_only_slice() {
 
 #[test]
 fn invalid_cursor_limit_and_request_binding_fail_closed() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let path = directory.path().join("events.jsonl");
     let request = request();
     let stream = stable_turn_stream_id(&request).unwrap();

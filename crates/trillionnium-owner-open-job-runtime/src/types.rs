@@ -19,6 +19,8 @@ pub enum JobRuntimeError {
     UnknownAfterRestart,
     #[error("owner-open job process spawn failed: {0}")]
     Spawn(String),
+    #[error("owner-open job process setup failed after child spawn: {0}")]
+    SpawnAfterFork(String),
     #[error("owner-open job process I/O failed: {0}")]
     Io(String),
     #[error("owner-open job process control failed: {0}")]
@@ -127,6 +129,20 @@ pub enum ReplayStatus {
     UnknownAfterRestart,
 }
 
+/// Persistence health advertised alongside read-only job inspection.
+///
+/// `Unavailable` is deliberately a degraded state, not an authorization
+/// grant: effectful operations remain inhibited unless the caller explicitly
+/// selected the development-only unjournaled mode.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "snake_case")]
+pub enum EventLogStatus {
+    Durable,
+    BestEffortUnreplayable,
+    #[default]
+    Unavailable,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StartDisposition {
@@ -155,6 +171,15 @@ pub enum ControlDisposition {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum RuntimeJobEventKind {
+    /// The kernel identity tuple was captured and bound to this start
+    /// generation before the job became available for live controls.
+    ///
+    /// `boot_id` carries the canonical SHA-256 of the kernel boot identity;
+    /// it is intentionally a digest rather than the raw host identifier.
+    ProcessIdentityBound {
+        generation: u64,
+        identity: ProcessIdentity,
+    },
     Started {
         generation: u64,
         pid: u32,
@@ -183,6 +208,21 @@ pub enum RuntimeJobEventKind {
     JournalUnavailable {
         error: Option<String>,
     },
+}
+
+/// Kernel-observed process identity exposed in the runtime observation stream.
+///
+/// The tuple distinguishes a live child from a later process that happens to
+/// reuse its numeric PID or process-group ID.  `boot_id` is the SHA-256 digest
+/// of `/proc/sys/kernel/random/boot_id`, never the raw host value.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProcessIdentity {
+    pub pid: u32,
+    pub process_group_id: i32,
+    pub session_id: i32,
+    pub boot_id: String,
+    pub start_time_ticks: u64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -219,6 +259,10 @@ pub struct JobInspection {
     pub gap: Option<JobObservationGap>,
     #[serde(default)]
     pub durable_fallback_available: bool,
+    #[serde(default)]
+    pub event_log_status: EventLogStatus,
+    #[serde(default)]
+    pub journal_error: Option<String>,
     pub replay_status: ReplayStatus,
 }
 

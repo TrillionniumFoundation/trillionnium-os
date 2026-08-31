@@ -76,6 +76,34 @@ class RetiredRequest:
     retired_monotonic: float
 
 
+def _upstream_sequence(frame: dict[str, Any]) -> int | None:
+    """Resolve the immutable broker sequence from an upstream frame.
+
+    ``seq`` is the Host response-stream sequence and may be allocated from a
+    different domain.  Once the broker envelope is present,
+    ``broker_request_upstream_seq`` is authoritative; the legacy ``seq``
+    fallback is retained for pre-envelope compatibility only.
+    """
+
+    broker_seq = frame.get("broker_request_upstream_seq")
+    host_seq = frame.get("seq")
+    if broker_seq is not None:
+        if isinstance(broker_seq, bool) or not isinstance(broker_seq, int) or broker_seq < 0:
+            raise MuxError(
+                "upstream broker_request_upstream_seq must be a nonnegative integer"
+            )
+        if host_seq is not None and (
+            isinstance(host_seq, bool) or not isinstance(host_seq, int) or host_seq < 0
+        ):
+            raise MuxError("upstream frame seq must be a nonnegative integer")
+        return broker_seq
+    if host_seq is None:
+        return None
+    if isinstance(host_seq, bool) or not isinstance(host_seq, int) or host_seq < 0:
+        raise MuxError("upstream frame seq must be a nonnegative integer")
+    return host_seq
+
+
 def _optional_string(mapping: dict[str, Any], name: str, location: str) -> str | None:
     if name not in mapping or mapping[name] is None:
         return None
@@ -420,10 +448,8 @@ class WeightedFairMux:
         """
 
         with self._condition:
-            seq = frame.get("seq")
+            seq = _upstream_sequence(frame)
             if seq is not None:
-                if isinstance(seq, bool) or not isinstance(seq, int) or seq < 0:
-                    raise MuxError("upstream frame seq must be a nonnegative integer")
                 request = self._active.get(seq)
                 if request is not None:
                     request_id = frame.get("broker_request_id")
@@ -463,11 +489,9 @@ class WeightedFairMux:
     def sequence_state(self, frame: dict[str, Any]) -> str:
         """Classify a supplied upstream sequence without semantic fallback."""
 
-        seq = frame.get("seq")
+        seq = _upstream_sequence(frame)
         if seq is None:
             return "unsequenced"
-        if isinstance(seq, bool) or not isinstance(seq, int) or seq < 0:
-            raise MuxError("upstream frame seq must be a nonnegative integer")
         with self._condition:
             if seq in self._active:
                 return "active"

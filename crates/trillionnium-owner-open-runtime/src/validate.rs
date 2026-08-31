@@ -4,8 +4,8 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use crate::types::{
-    AdbExecRequest, EnvironmentDelta, MechanicalLimits, ProcessSpec, Result, RuntimeError,
-    ShellExecRequest, ShellInvocation, ToolKind,
+    AdbExecRequest, EnvironmentDelta, MechanicalLimits, ProcessIoMode, ProcessSpec, Result,
+    RuntimeError, ShellExecRequest, ShellInvocation, ToolKind,
 };
 
 pub(crate) fn shell_spec(
@@ -60,6 +60,7 @@ pub(crate) fn shell_spec(
         env: request.env,
         stdin: request.stdin,
         timeout: normalized_timeout(request.timeout, limits),
+        io_mode: ProcessIoMode::Pipe,
     })
 }
 
@@ -74,11 +75,16 @@ pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Re
         limits,
     )?;
     validate_argv(&request.argv, limits, "adb argv")?;
+    // An empty executable is an explicit owner-open "transport not
+    // configured" state.  It is carried to the process boundary so callers
+    // receive one honest `transport_unavailable` terminal observation instead
+    // of a policy-shaped request rejection.  Non-empty paths still receive
+    // ordinary NUL/size framing checks.
     validate_os_value(
         request.adb_executable.as_os_str(),
         "adb executable",
         limits.max_cwd_bytes,
-        false,
+        true,
     )?;
 
     Ok(ProcessSpec {
@@ -91,6 +97,7 @@ pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Re
         env: request.env,
         stdin: request.stdin,
         timeout: normalized_timeout(request.timeout, limits),
+        io_mode: ProcessIoMode::Pipe,
     })
 }
 

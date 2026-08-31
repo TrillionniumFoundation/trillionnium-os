@@ -2,6 +2,19 @@ const JOB_HOST_QUEUE_DEPTH: usize = 256;
 const JOB_POLL_INTERVAL: Duration = Duration::from_millis(20);
 const DEFAULT_JOB_INSPECT_LIMIT: usize = 256;
 const MAX_JOB_INSPECT_LIMIT: usize = 4096;
+/// A valid `hello` is forwarded to the turn core before local job effects are
+/// admitted. Keep the pre-ack queue finite so a peer cannot hold the core at
+/// the handshake boundary while consuming unbounded memory.
+const MAX_HELLO_DEFERRED_JOB_FRAMES: usize = 64;
+const MAX_HELLO_DEFERRED_JOB_BYTES: usize = 4 * 1024 * 1024;
+// Reserve a small tail of the barrier budget for explicit per-request
+// resource errors.  Once the dispatch portion is full, requests are not
+// silently executed or dropped: a bounded number are retained as rejected
+// entries and the remainder is summarized by one bounded error.
+const MAX_HELLO_DEFERRED_RESOURCE_ERRORS: usize = 8;
+const MAX_HELLO_DEFERRED_RESOURCE_ERROR_BYTES: usize = 512 * 1024;
+const MAX_HELLO_DEFERRED_PROTOCOL_ERRORS: usize = 8;
+const MAX_HELLO_DEFERRED_PROTOCOL_ERROR_BYTES: usize = 64 * 1024;
 
 pub(crate) fn run() -> Result<(), String> {
     let parsed = JobHostOptions::parse(std::env::args_os().skip(1).collect())?;
@@ -54,17 +67,21 @@ pub(crate) fn run() -> Result<(), String> {
     let core_sender_for_worker = core_sender.clone();
     let outer_for_core = outer_sender.clone();
     let connection_id = new_connection_id();
+    let control_seq = Arc::new(AtomicU64::new(0));
+    let control_seq_for_core = Arc::clone(&control_seq);
+    let outer_connection_id = connection_id.clone();
     thread::Builder::new()
         .name("owner-open-v7-turn-core".to_string())
         .spawn(move || {
             let writer = CoreChannelWriter::new(outer_for_core.clone());
-            let result = process_messages(
+            let result = process_messages_with_control_seq(
                 writer,
                 core_receiver,
                 core_sender_for_worker,
                 connection_id,
                 provider,
                 &mut persistence,
+                control_seq_for_core,
             );
             let _ = outer_for_core.send(JobHostMessage::CoreComplete(result));
         })
@@ -77,6 +94,8 @@ pub(crate) fn run() -> Result<(), String> {
         core_sender,
         manager,
         shell_executable,
+        control_seq,
+        outer_connection_id,
     )
 }
 
@@ -134,7 +153,7 @@ impl JobHostOptions {
 
     fn usage() -> String {
         format!(
-            "{}\n\nLong-running job options:\n  --job-store /absolute/path/jobs.jsonl\n  --require-job-journal\n  --allow-unjournaled-effects-for-development\n\nDurable journaling is required by default. The development-only override permits unreplayable effects and must not appear in an installed product profile.\n\nThe job-aware v7 core multiplexes job.start/inspect/attach/detach/write/resize/close_stdin/kill with the existing v4 turn core. The selected v5 transport remains responsible for bounded persisted delivery flow control.",
+            "{}\n\nLong-running job options:\n  --job-store /absolute/path/jobs.jsonl\n  --require-job-journal\n  --allow-unjournaled-effects-for-development\n\nDurable journaling is required by default. The development-only override permits unreplayable effects and must not appear in an installed product profile.\n\nThe job-aware v7 core multiplexes job.start/inspect/wait/attach/detach/write/resize/close_stdin/kill with the existing v4 turn core. The selected v5 transport remains responsible for bounded persisted delivery flow control.",
             Options::usage()
         )
     }

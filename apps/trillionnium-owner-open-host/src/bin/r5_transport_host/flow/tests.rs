@@ -54,7 +54,10 @@ mod flow_tests {
         let mut frame = data(cursor, bytes);
         frame.kind = "job.output".to_string();
         frame.job_id = Some("job-1".to_string());
-        frame.stream_id = Some("job-stream-1".to_string());
+        // `stream_id` is the canonical alias of `turn_stream_id`; job
+        // identity is carried by `job_id`, not by a conflicting second
+        // stream value.
+        frame.stream_id = Some("stream".to_string());
         frame.payload = json!({
             "stream": "stdout",
             "encoding": "base64",

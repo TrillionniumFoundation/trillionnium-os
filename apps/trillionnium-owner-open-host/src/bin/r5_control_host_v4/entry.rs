@@ -1,6 +1,7 @@
 use super::{
     ActiveTurn, EventCorrelation, HOST_POLL_INTERVAL, HOST_QUEUE_DEPTH, HostMessage, Options,
-    OutputState, TurnContext, deliver_frame, deliver_host_error, deliver_replay,
+    OutputState, TurnContext, deliver_frame, deliver_host_error,
+    deliver_unscoped_host_error_with_context, deliver_replay,
     finish_active_turn, handle_tool_cancel, handle_turn_cancel, map_turn_event,
     new_connection_id, persist_for_delivery, spawn_stdin_reader, valid_id,
 };
@@ -11,6 +12,7 @@ use super::r5_persistence::{
 use std::env;
 use std::io::{self, Write};
 use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
 use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender, sync_channel};
 use std::thread::{self, JoinHandle};
 

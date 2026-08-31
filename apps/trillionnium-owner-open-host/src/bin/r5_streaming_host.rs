@@ -25,8 +25,8 @@ use trillionnium_owner_open_turn_loop::{
 };
 use trillionnium_owner_open_types::{
     FRAME_HELLO, FRAME_HELLO_ACK, FRAME_MODEL_DELTA, FRAME_MODEL_MESSAGE,
-    FRAME_PROVIDER_STATUS, FRAME_TOOL_ACCEPTED, FRAME_TOOL_RESULT, FRAME_TOOL_STARTED,
-    FRAME_TOOL_STDERR, FRAME_TOOL_STDOUT, FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL,
+    FRAME_PROVIDER_STATUS, FRAME_TOOL_ACCEPTED, FRAME_TOOL_PTY, FRAME_TOOL_RESULT,
+    FRAME_TOOL_STARTED, FRAME_TOOL_STDERR, FRAME_TOOL_STDOUT, FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL,
     FRAME_TURN_END, FRAME_TURN_START, MechanicalLimits, PROTOCOL, PROTOCOL_VERSION,
     RunTurnFrame,
 };
@@ -201,6 +201,7 @@ struct EventCorrelation {
 
 struct OutputState {
     connection_id: String,
+    next_control_seq: u64,
     next_host_seq: u64,
     next_turn_event_ordinal: u64,
 }
@@ -209,6 +210,7 @@ impl OutputState {
     fn new(connection_id: String) -> Self {
         Self {
             connection_id,
+            next_control_seq: 0,
             next_host_seq: 0,
             next_turn_event_ordinal: 0,
         }
@@ -231,7 +233,7 @@ impl OutputState {
     fn observe_replay(&mut self, frames: &[RunTurnFrame]) {
         if let Some(next) = frames
             .iter()
-            .map(|frame| frame.host_seq.unwrap_or(frame.seq))
+            .filter_map(|frame| frame.host_seq)
             .max()
             .and_then(|value| value.checked_add(1))
         {
@@ -247,8 +249,15 @@ impl OutputState {
         context: Option<&TurnContext>,
         correlation: EventCorrelation,
     ) -> RunTurnFrame {
-        let seq = self.next_host_seq;
-        self.next_host_seq = self.next_host_seq.saturating_add(1);
+        let (seq, host_seq) = if context.is_some() {
+            let value = self.next_host_seq;
+            self.next_host_seq = self.next_host_seq.saturating_add(1);
+            (value, Some(value))
+        } else {
+            let value = self.next_control_seq;
+            self.next_control_seq = self.next_control_seq.saturating_add(1);
+            (value, None)
+        };
         let event_id = if let Some(context) = context {
             let ordinal = self.next_turn_event_ordinal;
             self.next_turn_event_ordinal = self.next_turn_event_ordinal.saturating_add(1);
@@ -262,7 +271,7 @@ impl OutputState {
             payload,
             direction: Some("host_to_client".to_string()),
             client_seq: None,
-            host_seq: Some(seq),
+            host_seq,
             frame_sha256: None,
             event_id: Some(event_id),
             connection_id: Some(self.connection_id.clone()),
@@ -686,6 +695,7 @@ fn map_runtime_event(
             match stream {
                 StreamKind::Stdout => FRAME_TOOL_STDOUT,
                 StreamKind::Stderr => FRAME_TOOL_STDERR,
+                StreamKind::Pty => FRAME_TOOL_PTY,
             },
             json!({
                 "encoding": "base64",

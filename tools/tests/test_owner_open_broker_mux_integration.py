@@ -21,6 +21,7 @@ fields = (
     "session_id", "profile_id", "task_id", "turn_id", "turn_stream_id",
     "call_id", "job_id", "operation_id", "attachment_id", "request_sha256"
 )
+host_sequence=[1000]
 def remember(frame):
     with record.open("a") as f:
         f.write(json.dumps({"at": time.monotonic(), "frame": frame}, sort_keys=True)+"\n")
@@ -38,11 +39,15 @@ def response_kind(frame):
         "job.write":"job.control.result",
     }.get(frame["kind"], "host.error")
 def emit(frame):
+    global host_sequence
     corr=correlation(frame)
     payload={"status":"ok","automatic_redispatch":False,**corr}
     value={"kind":response_kind(frame),"direction":"host_to_client","payload":payload,**corr}
-    if "seq" in frame: value["seq"]=frame["seq"]
-    if "broker_request_id" in frame: value["broker_request_id"]=frame["broker_request_id"]
+    if "seq" in frame:
+        value["seq"]=host_sequence[0]
+        host_sequence[0]+=1
+    for name in ("broker_request_id", "broker_request_sha256", "broker_request_upstream_seq"):
+        if name in frame: value[name]=frame[name]
     print(json.dumps(value,separators=(",",":")),flush=True)
 def handshake():
     frame=json.loads(next(sys.stdin)); remember(frame)

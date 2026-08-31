@@ -31,6 +31,7 @@ pub const FRAME_TOOL_ACCEPTED: &str = "tool.accepted";
 pub const FRAME_TOOL_STARTED: &str = "tool.started";
 pub const FRAME_TOOL_STDOUT: &str = "tool.stdout";
 pub const FRAME_TOOL_STDERR: &str = "tool.stderr";
+pub const FRAME_TOOL_PTY: &str = "tool.pty";
 pub const FRAME_TOOL_RESULT: &str = "tool.result";
 pub const FRAME_TOOL_CANCEL: &str = "tool.cancel";
 pub const FRAME_STREAM_WINDOW_UPDATE: &str = "stream.window_update";
@@ -499,7 +500,11 @@ impl ToolCall {
     }
 }
 
-pub fn decode_strict_frame(encoded: &[u8], limits: &MechanicalLimits) -> Result<RunTurnFrame> {
+/// Decode one bounded JSON value while rejecting duplicate members at every
+/// nesting level.  Callers that need to preserve an outer correlation
+/// envelope after frame-level validation fails can inspect this value before
+/// deserializing the semantic `RunTurnFrame`.
+pub fn decode_strict_value(encoded: &[u8], limits: &MechanicalLimits) -> Result<Value> {
     if encoded.is_empty() {
         return Err(ProtocolError::FrameBoundary("frame is empty"));
     }
@@ -514,6 +519,11 @@ pub fn decode_strict_frame(encoded: &[u8], limits: &MechanicalLimits) -> Result<
     deserializer
         .end()
         .map_err(|error| ProtocolError::InvalidJson(error.to_string()))?;
+    Ok(value)
+}
+
+pub fn decode_strict_frame(encoded: &[u8], limits: &MechanicalLimits) -> Result<RunTurnFrame> {
+    let value = decode_strict_value(encoded, limits)?;
     let frame: RunTurnFrame = serde_json::from_value(value)
         .map_err(|error| invalid(format!("invalid frame envelope: {error}")))?;
     frame.validate_mechanical(limits)?;

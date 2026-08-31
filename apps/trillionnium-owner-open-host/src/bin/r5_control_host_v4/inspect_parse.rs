@@ -58,6 +58,7 @@ fn parse_inspect_request(
         profile_id,
         task_id,
         turn_id,
+        request_sha256: String::new(),
     };
     if let Some(active) = active
         && (active.context.session_id != context.session_id
@@ -130,6 +131,8 @@ fn parse_inspect_request(
     } else {
         None
     };
+    let mut context = context;
+    context.request_sha256 = request_sha256.clone();
     Ok(InspectRequest {
         context,
         request_sha256,

@@ -11,6 +11,6 @@ mod process;
 mod types;
 mod validate;
 
-pub use journal::{JobJournal, JournalStatus, OperationBegin, RecoveredJob};
+pub use journal::{JOB_JOURNAL_SCHEMA, JobJournal, JournalStatus, OperationBegin, RecoveredJob};
 pub use manager::JobManager;
 pub use types::*;

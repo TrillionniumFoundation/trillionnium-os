@@ -5,9 +5,13 @@ use std::process::{Command, Stdio};
 
 use serde_json::Value;
 
+mod support;
+
+use support::secure_tempdir;
+
 #[test]
 fn spawned_r5_host_completes_one_provider_shell_callback_turn() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     fs::write(
         &provider,

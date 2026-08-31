@@ -103,6 +103,37 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
 }
 
 #[test]
+fn provider_pty_callback_reaches_a_controlling_terminal_and_merges_output() {
+    let (_directory, script) = executable_script(
+        r#"#!/bin/sh
+IFS= read -r start || exit 10
+printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"tool.call","seq":0,"call":{"call_id":"call-jsonl-pty","tool":"shell.exec","command":"if [ -t 1 ] && [ -t 2 ] && [ \"$TERM\" = \"xterm-256color\" ]; then printf pty-out; printf pty-err >&2; else exit 21; fi","pty":{"enabled":true,"rows":40,"cols":120}}}'
+IFS= read -r result || exit 11
+case "$result" in
+  *'"status":"terminal"'*) ;;
+  *) exit 12 ;;
+esac
+printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"turn.complete","seq":1,"summary":"pty complete"}'
+"#,
+    );
+    let runner = TurnRunner::new(Arc::new(CallRegistry::default()));
+    let mut provider = provider_for(&script);
+    let run = runner.run(request(), &mut provider).unwrap();
+
+    assert_eq!(run.terminal.status, ProviderTerminalStatus::Completed);
+    assert_eq!(output(&run, StreamKind::Pty), b"pty-outpty-err");
+    assert!(output(&run, StreamKind::Stdout).is_empty());
+    assert!(output(&run, StreamKind::Stderr).is_empty());
+    assert!(run.events.iter().any(|event| {
+        matches!(
+            &event.kind,
+            TurnEventKind::ToolRuntime(runtime)
+                if matches!(runtime.kind, ExecutionEventKind::Started { .. })
+        )
+    }));
+}
+
+#[test]
 fn duplicate_provider_members_fail_before_a_tool_can_spawn() {
     let (_directory, script) = executable_script(
         r#"#!/bin/sh

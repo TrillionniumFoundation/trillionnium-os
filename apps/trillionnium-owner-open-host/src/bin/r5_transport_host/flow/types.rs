@@ -4,6 +4,7 @@
 const FLOW_CONTROLLED_FRAME_KINDS: &[&str] = &[
     FRAME_MODEL_DELTA,
     FRAME_MODEL_MESSAGE,
+    FRAME_TOOL_PTY,
     FRAME_TOOL_STDOUT,
     FRAME_TOOL_STDERR,
     "provider.opaque",

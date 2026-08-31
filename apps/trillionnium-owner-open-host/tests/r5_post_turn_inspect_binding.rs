@@ -5,9 +5,13 @@ use std::process::{Command, Stdio};
 
 use serde_json::Value;
 
+mod support;
+
+use support::secure_tempdir;
+
 #[test]
 fn post_turn_call_inspection_cannot_bypass_the_durable_request_digest() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let event_store = directory.path().join("events.jsonl");
     fs::write(

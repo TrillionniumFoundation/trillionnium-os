@@ -10,6 +10,7 @@ mod protocol;
 mod strict_json;
 
 use std::collections::BTreeMap;
+use std::env;
 use std::io::Write;
 use std::os::unix::ffi::OsStrExt;
 use std::os::unix::process::CommandExt;
@@ -30,8 +31,8 @@ use trillionnium_owner_open_turn_loop::{
 };
 
 use process::{
-    ProviderOutput, allow_natural_exit_grace, finish_child, spawn_stderr_reader,
-    spawn_stdout_reader,
+    ProviderChildGuard, ProviderOutput, allow_natural_exit_grace, capture_process_identity,
+    spawn_stderr_reader, spawn_stdout_reader,
 };
 use protocol::{
     decode_bound_tool_call, encode_tool_error, encode_tool_outcome, handle_provider_event,
@@ -40,6 +41,10 @@ use protocol::{
 
 pub const PROVIDER_PROTOCOL: &str = "trillionnium.owner-open.provider-jsonl.v1";
 const PROVIDER_OUTPUT_DRAIN_GRACE_MINIMUM: Duration = Duration::from_secs(2);
+// Provider credentials and host-local state are not implicit request input.
+// Preserve only the mechanical runtime settings needed to resolve the
+// configured executable and ordinary shell/ADB tools; all other values must
+// be supplied through the validated provider environment delta.
 const PROVIDER_INHERITED_ENV_ALLOWLIST: &[&str] = &[
     "PATH",
     "HOME",
@@ -60,7 +65,6 @@ const PROVIDER_INHERITED_ENV_ALLOWLIST: &[&str] = &[
     "all_proxy",
     "no_proxy",
 ];
-
 #[derive(Debug, Error)]
 pub enum JsonlProviderError {
     #[error("invalid owner-open provider configuration: {0}")]
@@ -87,6 +91,11 @@ pub struct JsonlProviderConfig {
     pub args: Vec<String>,
     pub shell_executable: PathBuf,
     pub adb_executable: PathBuf,
+    /// Owner-store generation captured for the provider turn.  `None` means
+    /// that this source adapter has no durable generation source; the
+    /// canonical request still records JSON `null` rather than silently
+    /// inventing a generation value.
+    pub config_generation: Option<Value>,
     pub cwd: Option<PathBuf>,
     pub env: EnvironmentDelta,
     pub timeout: Duration,
@@ -138,6 +147,9 @@ impl JsonlProviderConfig {
             ));
         }
         validate_environment(&self.env)?;
+        if let Some(generation) = &self.config_generation {
+            validate_config_generation(generation)?;
+        }
         Ok(())
     }
 }
@@ -149,6 +161,7 @@ impl Default for JsonlProviderConfig {
             args: Vec::new(),
             shell_executable: PathBuf::from("/bin/sh"),
             adb_executable: PathBuf::from("adb"),
+            config_generation: None,
             cwd: None,
             env: BTreeMap::new(),
             timeout: Duration::from_secs(300),
@@ -192,7 +205,7 @@ impl JsonlProvider {
         let mut command = Command::new(&self.config.executable);
         command.env_clear();
         for &key in PROVIDER_INHERITED_ENV_ALLOWLIST {
-            if let Some(value) = std::env::var_os(key) {
+            if let Some(value) = env::var_os(key) {
                 command.env(key, value);
             }
         }
@@ -233,10 +246,24 @@ impl JsonlProvider {
             });
         }
 
-        let mut child = command
+        let child = command
             .spawn()
             .map_err(|error| JsonlProviderError::Spawn(error.to_string()))?;
-        let pid = child.id();
+        // Install the guard before touching any child-owned pipe.  Every
+        // operation below can fail (including OS thread creation), and a bare
+        // `Child` would otherwise leave the provider process/group alive on
+        // those early-return paths.
+        let mut child = ProviderChildGuard::new(child, self.config.terminate_grace);
+        // Bind the kernel-observed process generation before touching any
+        // child-owned descriptor.  If the leader exits during this tiny
+        // window, the guard's exact Child handle performs bounded cleanup and
+        // no raw PID/PGID signal is attempted.
+        let identity = capture_process_identity(child.id()).map_err(|error| {
+            JsonlProviderError::Io(format!(
+                "failed to capture provider process identity: {error}"
+            ))
+        })?;
+        child.bind_identity(identity);
         let mut provider_stdin = child
             .stdin
             .take()
@@ -256,7 +283,8 @@ impl JsonlProvider {
             self.config.max_line_bytes,
             self.config.max_stdout_bytes,
             sender,
-        );
+        )
+        .map_err(|error| JsonlProviderError::Io(error.to_string()))?;
         let stderr_capture = Arc::new(Mutex::new(Vec::new()));
         let stderr_overflow = Arc::new(AtomicBool::new(false));
         let stderr_thread = spawn_stderr_reader(
@@ -264,7 +292,8 @@ impl JsonlProvider {
             self.config.max_stderr_bytes,
             Arc::clone(&stderr_capture),
             Arc::clone(&stderr_overflow),
-        );
+        )
+        .map_err(|error| JsonlProviderError::Io(error.to_string()))?;
 
         let result = (|| {
             let mut outbound_seq = 0_u64;
@@ -488,8 +517,7 @@ impl JsonlProvider {
         } else {
             Ok(())
         };
-        let cleanup = finish_child(&mut child, pid, self.config.terminate_grace)
-            .map_err(JsonlProviderError::Cleanup);
+        let cleanup = child.finish().map_err(JsonlProviderError::Cleanup);
         drop(receiver);
         let stdout_join = stdout_thread.join();
         let stderr_join = stderr_thread.join();
@@ -581,6 +609,17 @@ fn validate_environment(environment: &EnvironmentDelta) -> Result<()> {
         return Err(invalid_config("provider environment exceeds one MiB"));
     }
     Ok(())
+}
+
+fn validate_config_generation(value: &Value) -> Result<()> {
+    match value {
+        Value::Null => Ok(()),
+        Value::Number(number) if number.as_i64().is_some() || number.as_u64().is_some() => Ok(()),
+        Value::String(value) if !value.as_bytes().contains(&0) => Ok(()),
+        _ => Err(invalid_config(
+            "provider config_generation must be an integer, string or null",
+        )),
+    }
 }
 
 fn invalid_config(message: impl Into<String>) -> JsonlProviderError {

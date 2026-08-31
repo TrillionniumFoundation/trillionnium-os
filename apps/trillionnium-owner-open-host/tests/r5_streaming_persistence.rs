@@ -7,9 +7,13 @@ use std::time::{Duration, Instant};
 
 use serde_json::Value;
 
+mod support;
+
+use support::secure_tempdir;
+
 #[test]
 fn provider_event_is_persisted_while_the_turn_is_still_running() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let ready = directory.path().join("provider-ready");
     let release = directory.path().join("provider-release");

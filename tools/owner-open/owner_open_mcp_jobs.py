@@ -113,6 +113,7 @@ TOOLS = [
             {
                 **_common(),
                 "inclusive_cursor": {"type": "integer", "minimum": 0},
+                "durable_inclusive_cursor": {"type": "integer", "minimum": 0},
                 "limit": {"type": "integer", "minimum": 1, "maximum": 256},
             },
             ["job_id"],
@@ -130,6 +131,7 @@ TOOLS = [
                 **_common(live=True),
                 "attachment_id": {"type": "string"},
                 "inclusive_cursor": {"type": "integer", "minimum": 0},
+                "durable_inclusive_cursor": {"type": "integer", "minimum": 0},
                 "limit": {"type": "integer", "minimum": 1, "maximum": 256},
             },
             ["job_id", "bridge_instance_id", "attachment_id"],
@@ -215,6 +217,7 @@ TOOLS = [
             {
                 **_common(),
                 "inclusive_cursor": {"type": "integer", "minimum": 0},
+                "durable_inclusive_cursor": {"type": "integer", "minimum": 0},
                 "limit": {"type": "integer", "minimum": 1, "maximum": 256},
                 "timeout_seconds": {"type": "number", "minimum": 0, "maximum": 300},
                 "poll_interval_ms": {"type": "integer", "minimum": 10, "maximum": 5000},
@@ -376,6 +379,12 @@ class JobBridge:
         job_id, payload = self.common(args)
         payload["inclusive_cursor"] = require_int(
             args.get("inclusive_cursor", 0), "inclusive_cursor", 0, (1 << 63) - 1
+        )
+        payload["durable_inclusive_cursor"] = require_int(
+            args.get("durable_inclusive_cursor", 0),
+            "durable_inclusive_cursor",
+            0,
+            (1 << 63) - 1,
         )
         payload["limit"] = require_int(args.get("limit", 128), "limit", 1, 256)
         if kind == "job.attach":

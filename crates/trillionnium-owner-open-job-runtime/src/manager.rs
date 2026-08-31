@@ -13,9 +13,10 @@ use trillionnium_owner_open_job_registry::{
 use crate::journal::{JournalStatus, OperationBegin};
 use crate::process::{ProcessControl, StdinCloseEffect, spawn_process};
 use crate::{
-    ControlDisposition, InternalProcessEvent, JobInspection, JobJournal, JobObservationGap,
-    JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult, PtySize, ReplayStatus,
-    Result, RuntimeJobEvent, RuntimeJobEventKind, StartDisposition,
+    ControlDisposition, EventLogStatus, InternalProcessEvent, JobInspection, JobJournal,
+    JobObservationGap, JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult,
+    ProcessIdentity, PtySize, ReplayStatus, Result, RuntimeJobEvent, RuntimeJobEventKind,
+    StartDisposition,
 };
 
 struct RunningJob {
@@ -30,6 +31,7 @@ struct ObservationState {
     events: VecDeque<RuntimeJobEvent>,
     next_seq: u64,
     byte_count: usize,
+    journal_unavailable_emitted: bool,
 }
 
 struct Inner {
@@ -78,7 +80,8 @@ impl JobManager {
     pub fn start(&self, request: JobStartRequest) -> Result<JobStartResult> {
         validate_start_request(&request, &self.inner.config)?;
         // Hold the running-map lock across the capacity check, registry begin,
-        // spawn and insertion.  A new key must be rejected before
+        // spawn, lifecycle observations, durable start completion and
+        // publication. A new key must be rejected before
         // `registry.begin`, otherwise a full runtime leaves an Accepted entry
         // that falsely occupies the key and prevents a later retry.
         let mut running_jobs = self.running()?;
@@ -148,6 +151,11 @@ impl JobManager {
             ));
         }
 
+        // Compute the exact operation identity before the registry accepts the
+        // key.  A serialization/digest failure must not leave an Accepted
+        // entry that has no corresponding journal operation.
+        let operation_sha256 = start_operation_sha256(&request)?;
+
         // Fail closed before the registry accepts the job.  An unavailable or
         // deliberately memory-only journal must not leave an Accepted entry
         // behind when production policy rejects unjournaled effects.
@@ -155,6 +163,8 @@ impl JobManager {
         if !self.inner.config.allow_unjournaled_effects
             && !matches!(&journal_status, JournalStatus::Durable)
         {
+            let reason = journal_status_reason(&journal_status);
+            let _ = self.note_journal_degraded_for_job(&request.key, reason);
             return Err(JobRuntimeError::Journal(
                 "job journal is unavailable and unjournaled effects are disabled".to_string(),
             ));
@@ -180,6 +190,10 @@ impl JobManager {
             });
         }
         if matches!(&journal_status, JournalStatus::Unavailable { .. }) {
+            let _ = self.note_journal_degraded_for_job(
+                &request.key,
+                journal_status_reason(&journal_status),
+            );
             let snapshot = self
                 .inner
                 .registry
@@ -192,15 +206,39 @@ impl JobManager {
             });
         }
 
-        let operation_sha256 = start_operation_sha256(&request)?;
-        let journal_begin = self.inner.journal.begin_operation(
+        let journal_begin = match self.inner.journal.begin_operation(
             &request.key,
             &request.request,
             &request.operation_id,
             "start",
             &operation_sha256,
             start_details(&request),
-        )?;
+        ) {
+            Ok(begin) => begin,
+            Err(error) => {
+                let journal_error = error.to_string();
+                let _ = self.note_journal_failure_for_job(&request.key, journal_error);
+                // `registry.begin` ran first to reserve the exact key.  If
+                // durable acceptance fails, remove only that untouched
+                // Accepted entry; rollback_accept validates request and state
+                // while holding the registry lock.  If it cannot prove the
+                // entry is untouched, inhibit redispatch conservatively.
+                let original = error.to_string();
+                if let Err(rollback_error) = self
+                    .inner
+                    .registry
+                    .rollback_accept(&request.key, &request.request)
+                    .map(|_| ())
+                    .map_err(registry_error)
+                {
+                    let _ = self.inner.registry.mark_restart_uncertain(&request.key);
+                    return Err(JobRuntimeError::Journal(format!(
+                        "{original}; registry acceptance rollback failed: {rollback_error}"
+                    )));
+                }
+                return Err(error);
+            }
+        };
         let unjournaled = matches!(journal_begin, OperationBegin::Unjournaled);
         match journal_begin {
             OperationBegin::ExistingTerminal(_) => {
@@ -223,28 +261,94 @@ impl JobManager {
                 });
             }
             OperationBegin::Unjournaled if !self.inner.config.allow_unjournaled_effects => {
+                // The journal may have degraded between the status check and
+                // begin_operation.  Its in-memory accepted marker is retained
+                // only as a conservative restart barrier; do not leave a
+                // redispatchable Accepted registry state behind.
+                let _ = self.inner.registry.mark_restart_uncertain(&request.key);
+                let _ = self.note_journal_degraded_for_job(
+                    &request.key,
+                    self.journal_error()?.unwrap_or_else(|| {
+                        "job journal is unavailable and unjournaled effects are disabled"
+                            .to_string()
+                    }),
+                );
                 return Err(JobRuntimeError::Journal(
                     "job journal is unavailable and unjournaled effects are disabled".to_string(),
                 ));
             }
-            OperationBegin::New | OperationBegin::Unjournaled => {}
+            OperationBegin::New => {}
+            OperationBegin::Unjournaled => {
+                // Memory-only/degraded mode is an explicit, caller-selected
+                // best-effort path.  Preserve that policy while exposing a
+                // resident degradation event for inspection; this event is
+                // intentionally not written to the unavailable journal.
+                let reason = self.journal_degradation_reason()?;
+                self.note_journal_degraded_for_job(&request.key, reason)?;
+                // A configured journal that disappeared between the status
+                // preflight and `begin_operation` is not equivalent to the
+                // deliberate memory-only development mode.  Keep the
+                // accepted registry marker as an explicit restart barrier and
+                // never dispatch a new effect from that race, even when the
+                // unsafe opt-in is enabled.
+                if matches!(
+                    self.inner.journal.status()?,
+                    JournalStatus::Unavailable { .. }
+                ) {
+                    let snapshot = self
+                        .inner
+                        .registry
+                        .mark_restart_uncertain(&request.key)
+                        .map_err(registry_error)?;
+                    return Ok(JobStartResult {
+                        disposition: StartDisposition::UnknownAfterRestart,
+                        snapshot: Some(snapshot),
+                        replay_status: ReplayStatus::UnknownAfterRestart,
+                    });
+                }
+            }
         }
 
         let generation = match self
             .inner
             .registry
             .claim_spawn(&request.key, &request.request.request_sha256)
-            .map_err(registry_error)?
         {
-            SpawnClaim::Granted { generation, .. } => generation,
-            SpawnClaim::Existing(snapshot) => {
+            Err(registry_failure) => {
+                let error = registry_error(registry_failure);
+                // A claim failure occurs before fork.  Resolve the durable
+                // acceptance to a non-effectful terminal fact and inhibit any
+                // later redispatch rather than leaving an Accepted entry that
+                // can be mistaken for an admission still in progress.
+                if let Err(journal_error) = self.inner.journal.complete_operation(
+                    &request.key,
+                    &request.request,
+                    &request.operation_id,
+                    "start",
+                    &operation_sha256,
+                    json!({
+                        "status": "spawn_failed",
+                        "error": error.to_string(),
+                        "effect_attempted": false,
+                        "effect_may_have_started": false,
+                        "automatic_redispatch": false
+                    }),
+                ) {
+                    let _ =
+                        self.note_journal_failure_for_job(&request.key, journal_error.to_string());
+                }
+                let _ = self.inner.registry.mark_restart_uncertain(&request.key);
+                return Err(error);
+            }
+            Ok(SpawnClaim::Granted { generation, .. }) => generation,
+            Ok(SpawnClaim::Existing(snapshot)) => {
                 return Ok(JobStartResult {
                     disposition: StartDisposition::ExistingLive,
                     snapshot: Some(snapshot),
                     replay_status: self.replay_status(false)?,
                 });
             }
-            SpawnClaim::Inhibited(snapshot) => {
+            Ok(SpawnClaim::Inhibited(snapshot)) => {
                 return Ok(JobStartResult {
                     disposition: StartDisposition::UnknownAfterRestart,
                     snapshot: Some(snapshot),
@@ -256,6 +360,7 @@ impl JobManager {
         let spawned = match spawn_process(&request, self.inner.config.max_output_chunk_bytes) {
             Ok(spawned) => spawned,
             Err(error) => {
+                let effect_may_have_started = matches!(&error, JobRuntimeError::SpawnAfterFork(_));
                 if let Err(journal_error) = self.inner.journal.complete_operation(
                     &request.key,
                     &request.request,
@@ -263,13 +368,19 @@ impl JobManager {
                     "start",
                     &operation_sha256,
                     json!({
-                        "status": "spawn_failed",
+                        "status": if effect_may_have_started {
+                            "started_then_internal_failure"
+                        } else {
+                            "spawn_failed"
+                        },
                         "error": error.to_string(),
-                        "effect_attempted": false,
+                        "effect_attempted": effect_may_have_started,
+                        "effect_may_have_started": effect_may_have_started,
                         "automatic_redispatch": false
                     }),
                 ) {
-                    let _ = self.note_journal_failure(journal_error.to_string());
+                    let _ =
+                        self.note_journal_failure_for_job(&request.key, journal_error.to_string());
                 }
                 let _ = self.inner.registry.mark_restart_uncertain(&request.key);
                 return Err(error);
@@ -302,10 +413,19 @@ impl JobManager {
                     "error": error.to_string(),
                     "cleanup_error": cleanup_error,
                     "effect_may_have_started": true,
+                    "pid": control.pid,
+                    "process_group": control.process_group,
+                    "session_id": control.session_id,
+                    "start_time_ticks": control.start_time_ticks,
+                    "boot_id_sha256": control.boot_id_sha256,
+                    "process_group_id": i32::try_from(control.process_group).ok(),
+                    "process_session_id": i32::try_from(control.session_id).ok(),
+                    "boot_id": control.boot_id_sha256.as_ref(),
+                    "process_start_time_ticks": control.start_time_ticks,
                     "automatic_redispatch": false
                 }),
             ) {
-                let _ = self.note_journal_failure(journal_error.to_string());
+                let _ = self.note_journal_failure_for_job(&request.key, journal_error.to_string());
             }
             let _ = self.inner.registry.mark_restart_uncertain(&request.key);
             return Err(error);
@@ -316,8 +436,31 @@ impl JobManager {
             stdout_bytes: Mutex::new(0),
             stderr_bytes: Mutex::new(0),
         });
-        running_jobs.insert(request.key.clone(), Arc::clone(&running));
-        drop(running_jobs);
+
+        // Publish the kernel-observed identity before announcing `started`.
+        // This event is the immutable process-generation binding that a
+        // reconnecting observer can use to distinguish a recycled PID/PGID.
+        // Keep the admission guard held through both observations and the
+        // durable start completion; no live-control lookup may race ahead of
+        // those facts.
+        let identity = match process_identity_for_event(&running.control) {
+            Ok(identity) => identity,
+            Err(error) => {
+                drop(running_jobs);
+                self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
+                return Err(error);
+            }
+        };
+        let identity_bound = RuntimeJobEventKind::ProcessIdentityBound {
+            generation,
+            identity: identity.clone(),
+        };
+        if let Err(error) = self.push_runtime_event(&request.key, &request.request, identity_bound)
+        {
+            drop(running_jobs);
+            self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
+            return Err(error);
+        }
 
         let started = RuntimeJobEventKind::Started {
             generation,
@@ -325,6 +468,7 @@ impl JobManager {
             pty: running.control.pty,
         };
         if let Err(error) = self.push_runtime_event(&request.key, &request.request, started) {
+            drop(running_jobs);
             self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
             return Err(error);
         }
@@ -338,14 +482,32 @@ impl JobManager {
                 "status": "started",
                 "generation": generation,
                 "pid": running.control.pid,
+                "process_group": running.control.process_group,
+                "session_id": running.control.session_id,
+                "start_time_ticks": running.control.start_time_ticks,
+                "boot_id_sha256": running.control.boot_id_sha256,
+                // Canonical names used by the public identity observation.
+                // Keep the historical fields above for journal readers that
+                // predate the identity-bound event.
+                "process_group_id": identity.process_group_id,
+                "process_session_id": identity.session_id,
+                "boot_id": &identity.boot_id,
+                "process_start_time_ticks": identity.start_time_ticks,
                 "pty": running.control.pty,
                 "automatic_redispatch": false
             }),
         ) {
-            let _ = self.note_journal_failure(error.to_string());
+            let _ = self.note_journal_failure_for_job(&request.key, error.to_string());
+            drop(running_jobs);
             self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
             return Err(error);
         }
+
+        // The dispatcher may immediately observe a fast-exiting child. Insert
+        // the control entry before creating that thread so its terminal path
+        // cannot remove a key that has not yet been published. The guard stays
+        // held until the spawn call returns, closing the publication window.
+        running_jobs.insert(request.key.clone(), Arc::clone(&running));
         if let Err(error) = self.spawn_dispatcher(
             request.key.clone(),
             request.request.clone(),
@@ -353,9 +515,12 @@ impl JobManager {
             Arc::clone(&running),
             spawned.events,
         ) {
+            running_jobs.remove(&request.key);
+            drop(running_jobs);
             self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
             return Err(error);
         }
+        drop(running_jobs);
         Ok(JobStartResult {
             disposition: StartDisposition::Started,
             snapshot: self.inner.registry.snapshot(&request.key).ok(),
@@ -397,11 +562,37 @@ impl JobManager {
         )? {
             return Ok(disposition);
         }
-        running.control.write(bytes)?;
-        self.inner
+        if let Err(error) = running.control.write(bytes) {
+            return Err(self.resolve_control_failure(
+                key,
+                &running.request,
+                operation_id,
+                "write",
+                &digest,
+                "process_input",
+                error,
+                true,
+                true,
+            ));
+        }
+        if let Err(error) = self
+            .inner
             .registry
             .record_input(key, bytes.len() as u64, sha256_hex(bytes))
-            .map_err(registry_error)?;
+            .map_err(registry_error)
+        {
+            return Err(self.resolve_control_failure(
+                key,
+                &running.request,
+                operation_id,
+                "write",
+                &digest,
+                "registry_input",
+                error,
+                true,
+                true,
+            ));
+        }
         self.complete_control(
             key,
             &running.request,
@@ -437,11 +628,37 @@ impl JobManager {
         )? {
             return Ok(disposition);
         }
-        running.control.resize(size)?;
-        self.inner
+        if let Err(error) = running.control.resize(size) {
+            return Err(self.resolve_control_failure(
+                key,
+                &running.request,
+                operation_id,
+                "resize",
+                &digest,
+                "process_resize",
+                error,
+                true,
+                true,
+            ));
+        }
+        if let Err(error) = self
+            .inner
             .registry
             .record_resize(key, size.rows, size.cols)
-            .map_err(registry_error)?;
+            .map_err(registry_error)
+        {
+            return Err(self.resolve_control_failure(
+                key,
+                &running.request,
+                operation_id,
+                "resize",
+                &digest,
+                "registry_resize",
+                error,
+                true,
+                true,
+            ));
+        }
         self.complete_control(
             key,
             &running.request,
@@ -473,12 +690,36 @@ impl JobManager {
         )? {
             return Ok(disposition);
         }
-        let effect = running.control.close_stdin()?;
-        if effect == StdinCloseEffect::PipeClosed {
-            self.inner
-                .registry
-                .close_stdin(key)
-                .map_err(registry_error)?;
+        let effect = match running.control.close_stdin() {
+            Ok(effect) => effect,
+            Err(error) => {
+                return Err(self.resolve_control_failure(
+                    key,
+                    &running.request,
+                    operation_id,
+                    "close_stdin",
+                    &digest,
+                    "process_close_stdin",
+                    error,
+                    true,
+                    true,
+                ));
+            }
+        };
+        if effect == StdinCloseEffect::PipeClosed
+            && let Err(error) = self.inner.registry.close_stdin(key).map_err(registry_error)
+        {
+            return Err(self.resolve_control_failure(
+                key,
+                &running.request,
+                operation_id,
+                "close_stdin",
+                &digest,
+                "registry_close_stdin",
+                error,
+                true,
+                true,
+            ));
         }
         let (status, stdin_closed) = match effect {
             StdinCloseEffect::AlreadyClosed => ("already_applied", !running.control.pty),
@@ -524,11 +765,37 @@ impl JobManager {
         )? {
             return Ok(disposition);
         }
-        self.inner
+        if let Err(error) = self
+            .inner
             .registry
             .request_kill(key, signal)
-            .map_err(registry_error)?;
-        running.control.kill(signal)?;
+            .map_err(registry_error)
+        {
+            return Err(self.resolve_control_failure(
+                key,
+                &running.request,
+                operation_id,
+                "kill",
+                &digest,
+                "registry_kill_request",
+                error,
+                false,
+                false,
+            ));
+        }
+        if let Err(error) = running.control.kill(signal) {
+            return Err(self.resolve_control_failure(
+                key,
+                &running.request,
+                operation_id,
+                "kill",
+                &digest,
+                "process_group_signal",
+                error,
+                true,
+                true,
+            ));
+        }
         self.complete_control(
             key,
             &running.request,
@@ -582,37 +849,45 @@ impl JobManager {
                 .map_err(registry_error)?,
             None => Vec::<JobEvent>::new(),
         };
-        let observations = self.observations()?;
-        let state = observations.get(key);
-        let total = state.map_or(0, |state| state.next_seq);
-        if inclusive_cursor > total {
-            return Err(JobRuntimeError::InvalidRequest(format!(
-                "inclusive cursor {inclusive_cursor} is after next cursor {total}"
-            )));
-        }
-        let oldest_available_cursor = state
-            .and_then(|state| state.events.front())
-            .map_or(total, |event| event.seq);
-        let gap = (inclusive_cursor < oldest_available_cursor).then_some(JobObservationGap {
-            first_missing_cursor: inclusive_cursor,
-            last_missing_cursor: oldest_available_cursor.saturating_sub(1),
-        });
-        let events = state
-            .map(|state| {
-                state
-                    .events
-                    .iter()
-                    .filter(|event| event.seq >= inclusive_cursor)
-                    .take(limit)
-                    .cloned()
-                    .collect::<Vec<_>>()
-            })
-            .unwrap_or_default();
-        let next_cursor = events
-            .last()
-            .map_or(inclusive_cursor.max(oldest_available_cursor), |event| {
-                event.seq.saturating_add(1)
+        // Copy the bounded resident window out before consulting the journal.
+        // Journal failure reporting takes the durability lock and then the
+        // observation lock; releasing this guard avoids a lock-order cycle
+        // with an asynchronous dispatcher that is publishing a degradation
+        // event at the same time.
+        let (total, oldest_available_cursor, gap, events, next_cursor) = {
+            let observations = self.observations()?;
+            let state = observations.get(key);
+            let total = state.map_or(0, |state| state.next_seq);
+            if inclusive_cursor > total {
+                return Err(JobRuntimeError::InvalidRequest(format!(
+                    "inclusive cursor {inclusive_cursor} is after next cursor {total}"
+                )));
+            }
+            let oldest_available_cursor = state
+                .and_then(|state| state.events.front())
+                .map_or(total, |event| event.seq);
+            let gap = (inclusive_cursor < oldest_available_cursor).then_some(JobObservationGap {
+                first_missing_cursor: inclusive_cursor,
+                last_missing_cursor: oldest_available_cursor.saturating_sub(1),
             });
+            let events = state
+                .map(|state| {
+                    state
+                        .events
+                        .iter()
+                        .filter(|event| event.seq >= inclusive_cursor)
+                        .take(limit)
+                        .cloned()
+                        .collect::<Vec<_>>()
+                })
+                .unwrap_or_default();
+            let next_cursor = events
+                .last()
+                .map_or(inclusive_cursor.max(oldest_available_cursor), |event| {
+                    event.seq.saturating_add(1)
+                });
+            (total, oldest_available_cursor, gap, events, next_cursor)
+        };
         let recovered = self.inner.journal.recovered_job(key)?;
         let replay_status =
             if snapshot.is_none() && recovered.as_ref().is_some_and(|job| job.terminal.is_none()) {
@@ -620,9 +895,9 @@ impl JobManager {
             } else {
                 self.replay_status(false)?
             };
-        let durable_fallback_available =
-            matches!(self.inner.journal.status()?, JournalStatus::Durable)
-                && self.durability_error()?.is_none();
+        let event_log_status = self.event_log_status()?;
+        let journal_error = self.journal_error()?;
+        let durable_fallback_available = matches!(event_log_status, EventLogStatus::Durable);
         Ok(JobInspection {
             snapshot,
             registry_events,
@@ -635,12 +910,24 @@ impl JobManager {
             resync_required: gap.is_some(),
             gap,
             durable_fallback_available,
+            event_log_status,
+            journal_error,
             replay_status,
         })
     }
 
     pub fn durable_records(&self, key: &JobKey) -> Result<Vec<Value>> {
         self.inner.journal.inspect_records(key)
+    }
+
+    /// Return job-scoped durable journal records with event-store metadata.
+    ///
+    /// The compatibility [`Self::durable_records`] method intentionally
+    /// exposes only envelope payloads.  Host inspection/reconnect paths should
+    /// use this metadata-preserving view so scope, event identity and the
+    /// per-job durable cursor remain auditable on the wire.
+    pub fn durable_records_with_metadata(&self, key: &JobKey) -> Result<Vec<Value>> {
+        self.inner.journal.inspect_records_with_metadata(key)
     }
 
     fn begin_control(
@@ -656,36 +943,74 @@ impl JobManager {
         if let Some(error) = self.durability_error()?
             && !self.inner.config.allow_unjournaled_effects
         {
-            return Err(JobRuntimeError::Journal(format!(
+            let message = format!(
                 "job runtime durability is degraded; effectful control is inhibited: {error}"
-            )));
+            );
+            self.note_journal_degraded_for_job(key, message.clone())?;
+            return Err(JobRuntimeError::Journal(message));
         }
-        Ok(
-            match self.inner.journal.begin_operation(
-                key,
-                request,
-                operation_id,
-                operation_kind,
-                digest,
-                details,
-            )? {
-                OperationBegin::New => None,
-                OperationBegin::ExistingTerminal(_) => Some(ControlDisposition::Existing),
-                OperationBegin::ExistingAccepted {
-                    restart_uncertain: true,
-                } => Some(ControlDisposition::UnknownAfterRestart),
-                OperationBegin::ExistingAccepted {
-                    restart_uncertain: false,
-                } => Some(ControlDisposition::Existing),
-                OperationBegin::Unjournaled if self.inner.config.allow_unjournaled_effects => None,
-                OperationBegin::Unjournaled => {
-                    return Err(JobRuntimeError::Journal(
-                        "job journal is unavailable and unjournaled effects are disabled"
-                            .to_string(),
-                    ));
-                }
-            },
-        )
+        // Do the same fail-closed preflight as `start`.  Without this check a
+        // configured-but-unavailable journal would insert an in-memory
+        // accepted control and then return an error, leaving an accepted
+        // operation with no terminal record.
+        let journal_status = self.inner.journal.status()?;
+        if !self.inner.config.allow_unjournaled_effects
+            && !matches!(&journal_status, JournalStatus::Durable)
+        {
+            let message =
+                "job journal is unavailable and unjournaled effects are disabled".to_string();
+            self.note_journal_degraded_for_job(key, journal_status_reason(&journal_status))?;
+            return Err(JobRuntimeError::Journal(message));
+        }
+        let begin = match self.inner.journal.begin_operation(
+            key,
+            request,
+            operation_id,
+            operation_kind,
+            digest,
+            details,
+        ) {
+            Ok(begin) => begin,
+            Err(error) => {
+                self.note_journal_failure_for_job(key, error.to_string())?;
+                return Err(error);
+            }
+        };
+        Ok(match begin {
+            OperationBegin::New => None,
+            OperationBegin::ExistingTerminal(_) => Some(ControlDisposition::Existing),
+            OperationBegin::ExistingAccepted {
+                restart_uncertain: true,
+            } => Some(ControlDisposition::UnknownAfterRestart),
+            OperationBegin::ExistingAccepted {
+                restart_uncertain: false,
+            } => Some(ControlDisposition::Existing),
+            OperationBegin::Unjournaled if self.inner.config.allow_unjournaled_effects => {
+                self.note_journal_degraded_for_job(key, self.journal_degradation_reason()?)?;
+                None
+            }
+            OperationBegin::Unjournaled => {
+                let message =
+                    "job journal is unavailable and unjournaled effects are disabled".to_string();
+                self.note_journal_degraded_for_job(key, message.clone())?;
+                // The journal can disappear between the status preflight and
+                // `begin_operation`.  That call may have retained an
+                // in-memory accepted marker; attempt to close it with an
+                // explicit no-effect terminal before returning the error.
+                let failure = JobRuntimeError::Journal(message);
+                return Err(self.resolve_control_failure(
+                    key,
+                    request,
+                    operation_id,
+                    operation_kind,
+                    digest,
+                    "journal_preflight_race",
+                    failure,
+                    false,
+                    false,
+                ));
+            }
+        })
     }
 
     fn complete_control(
@@ -707,9 +1032,44 @@ impl JobManager {
         ) {
             Ok(()) => Ok(()),
             Err(error) => {
-                self.note_journal_failure(error.to_string())?;
+                self.note_journal_failure_for_job(key, error.to_string())?;
+                // The effect already crossed durable acceptance and may have
+                // happened, but its terminal record could not be committed.
+                // Inhibit any later control dispatch from treating the live
+                // registry snapshot as fully converged.
+                let _ = self.inner.registry.mark_restart_uncertain(key);
                 Err(error)
             }
+        }
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn resolve_control_failure(
+        &self,
+        key: &JobKey,
+        request: &JobRequest,
+        operation_id: &str,
+        operation_kind: &str,
+        digest: &str,
+        phase: &str,
+        error: JobRuntimeError,
+        effect_attempted: bool,
+        effect_may_have_started: bool,
+    ) -> JobRuntimeError {
+        let original = error.to_string();
+        let terminal = json!({
+            "status": "control_failed",
+            "phase": phase,
+            "error": original,
+            "effect_attempted": effect_attempted,
+            "effect_may_have_started": effect_may_have_started,
+            "automatic_redispatch": false
+        });
+        match self.complete_control(key, request, operation_id, operation_kind, digest, terminal) {
+            Ok(()) => error,
+            Err(terminal_error) => JobRuntimeError::Journal(format!(
+                "{original}; operation terminal could not be persisted: {terminal_error}"
+            )),
         }
     }
 
@@ -746,10 +1106,19 @@ impl JobManager {
                 "error": failure,
                 "cleanup_error": cleanup_error,
                 "effect_may_have_started": true,
+                "pid": running.control.pid,
+                "process_group": running.control.process_group,
+                "session_id": running.control.session_id,
+                "start_time_ticks": running.control.start_time_ticks,
+                "boot_id_sha256": running.control.boot_id_sha256,
+                "process_group_id": i32::try_from(running.control.process_group).ok(),
+                "process_session_id": i32::try_from(running.control.session_id).ok(),
+                "boot_id": running.control.boot_id_sha256.as_ref(),
+                "process_start_time_ticks": running.control.start_time_ticks,
                 "automatic_redispatch": false
             }),
         ) {
-            let _ = self.note_journal_failure(error.to_string());
+            let _ = self.note_journal_failure_for_job(&request.key, error.to_string());
         }
         let _ = self.inner.registry.mark_restart_uncertain(&request.key);
     }
@@ -766,6 +1135,12 @@ impl JobManager {
         thread::Builder::new()
             .name(format!("owner-open-job-dispatch-{}", key.job_id))
             .spawn(move || {
+                // A registry output failure can be caused by a stale
+                // generation, a terminal transition, or a poisoned/missing
+                // entry.  Report it once and stop the effect, but keep
+                // draining until `Exited` so the reaper can close the
+                // terminal lifecycle and release the owned child marker.
+                let mut registry_output_failure_reported = false;
                 while let Ok(event) = receiver.recv() {
                     match event {
                         InternalProcessEvent::Output { stream, bytes } => {
@@ -778,7 +1153,47 @@ impl JobManager {
                                 digest.clone(),
                             ) {
                                 Ok(seq) => seq,
-                                Err(_) => continue,
+                                Err(error) => {
+                                    if !registry_output_failure_reported {
+                                        registry_output_failure_reported = true;
+                                        let registry_error = error.to_string();
+                                        let uncertainty_error = manager
+                                            .inner
+                                            .registry
+                                            .mark_restart_uncertain(&key)
+                                            .err()
+                                            .map(|error| error.to_string());
+                                        let kill_error = running
+                                            .control
+                                            .kill(libc::SIGKILL)
+                                            .err()
+                                            .map(|error| error.to_string());
+                                        let mut diagnostic = format!(
+                                            "output observation rejected: {registry_error}; stream={stream}; bytes={}; sha256={digest}",
+                                            bytes.len()
+                                        );
+                                        if let Some(error) = uncertainty_error {
+                                            diagnostic.push_str(&format!(
+                                                "; registry uncertainty marker failed: {error}"
+                                            ));
+                                        }
+                                        if let Some(error) = kill_error {
+                                            diagnostic.push_str(&format!(
+                                                "; process-group termination failed: {error}"
+                                            ));
+                                        }
+                                        let diagnostic = bound_journal_error(diagnostic);
+                                        let _ = manager.push_runtime_event(
+                                            &key,
+                                            &request,
+                                            RuntimeJobEventKind::ProcessFault {
+                                                phase: "registry_output".to_string(),
+                                                error: diagnostic,
+                                            },
+                                        );
+                                    }
+                                    continue;
+                                }
                             };
                             if let Ok(mut counter) = if stream == "stderr" {
                                 running.stderr_bytes.lock()
@@ -798,7 +1213,8 @@ impl JobManager {
                                     sha256: digest,
                                 },
                             ) {
-                                let _ = manager.note_journal_failure(error.to_string());
+                                let _ =
+                                    manager.note_journal_failure_for_job(&key, error.to_string());
                                 if !manager.inner.config.allow_unjournaled_effects {
                                     let _ = running.control.kill(libc::SIGKILL);
                                 }
@@ -884,16 +1300,32 @@ impl JobManager {
                             if let Err(error) =
                                 manager.inner.registry.complete(&key, generation, terminal)
                             {
-                                let _ = manager.note_journal_failure(error.to_string());
+                                // A registry commit failure is not a journal
+                                // failure.  Preserve the distinction in the
+                                // observable state and inhibit redispatch;
+                                // otherwise a registry fault would falsely
+                                // advertise an event-store outage.
+                                let error_text = error.to_string();
+                                let _ = manager.inner.registry.mark_restart_uncertain(&key);
+                                let _ = manager.push_runtime_event(
+                                    &key,
+                                    &request,
+                                    RuntimeJobEventKind::ProcessFault {
+                                        phase: "registry_terminal".to_string(),
+                                        error: error_text,
+                                    },
+                                );
                             }
-                            // `push_runtime_event` appends the terminal observation and
-                            // the canonical `job.terminal` record under one journal lock before
-                            // exposing the in-memory terminal event. Do not write the same terminal
-                            // again after publication: that redundant call keeps the exclusive
-                            // writer lease alive after a consumer can observe completion and makes
-                            // an immediate in-process manager handoff spuriously fail closed.
+                            // `push_runtime_event` retains the terminal observation and attempts
+                            // the observation/`job.terminal` append.  If persistence fails, it
+                            // publishes an explicit in-memory degradation marker; do not write the
+                            // same terminal again after publication because that redundant call
+                            // keeps the exclusive writer lease alive after a consumer can observe
+                            // completion and makes an immediate in-process manager handoff
+                            // spuriously fail closed.
                             if let Err(error) = manager.push_runtime_event(&key, &request, event) {
-                                let _ = manager.note_journal_failure(error.to_string());
+                                let _ =
+                                    manager.note_journal_failure_for_job(&key, error.to_string());
                             }
                             // Keep the owned process marker until the durable
                             // terminal record has been attempted.  The
@@ -928,17 +1360,30 @@ impl JobManager {
         request: &JobRequest,
         kind: RuntimeJobEventKind,
     ) -> Result<u64> {
-        let mut observations = self.observations()?;
-        let state = observations.entry(key.clone()).or_default();
-        let seq = state.next_seq;
-        state.next_seq = state.next_seq.saturating_add(1);
-        let event = RuntimeJobEvent {
-            seq,
-            job_id: key.job_id.clone(),
-            event: kind,
+        // Reserve and retain the resident event before touching the journal.
+        // This keeps the inspection cursor monotonic even when the append
+        // fails, and (critically) lets the failure path publish a synthetic
+        // in-memory degradation event without holding the observation lock.
+        let (seq, event, payload) = {
+            let mut observations = self.observations()?;
+            let state = observations.entry(key.clone()).or_default();
+            let seq = state.next_seq;
+            state.next_seq = state.next_seq.saturating_add(1);
+            let event = RuntimeJobEvent {
+                seq,
+                job_id: key.job_id.clone(),
+                event: kind,
+            };
+            let payload = serde_json::to_value(&event)
+                .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
+            retain_runtime_event(
+                state,
+                event.clone(),
+                self.inner.config.max_observations_per_job,
+                self.inner.config.max_observation_bytes_per_job,
+            );
+            (seq, event, payload)
         };
-        let payload = serde_json::to_value(&event)
-            .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
         let journal_result = self.inner.journal.append_observation(
             key,
             request,
@@ -946,24 +1391,18 @@ impl JobManager {
             runtime_event_kind(&event),
             payload,
         );
-        let bytes = runtime_event_bytes(&event);
-        state.byte_count = state.byte_count.saturating_add(bytes);
-        state.events.push_back(event);
-        while state.events.len() > self.inner.config.max_observations_per_job
-            || state.byte_count > self.inner.config.max_observation_bytes_per_job
-        {
-            let Some(removed) = state.events.pop_front() else {
-                break;
-            };
-            state.byte_count = state
-                .byte_count
-                .saturating_sub(runtime_event_bytes(&removed));
-        }
         if let Err(error) = journal_result {
-            self.note_journal_failure(error.to_string())?;
+            let error_text = error.to_string();
+            let note_result = self.note_journal_failure_for_job(key, error_text.clone());
             if !self.inner.config.allow_unjournaled_effects {
-                return Err(error);
+                return match note_result {
+                    Ok(()) => Err(error),
+                    Err(note_error) => Err(JobRuntimeError::Journal(format!(
+                        "{error_text}; failed to expose journal degradation: {note_error}"
+                    ))),
+                };
             }
+            note_result?;
         }
         Ok(seq)
     }
@@ -974,8 +1413,72 @@ impl JobManager {
             .durability_error
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)?;
-        state.get_or_insert(error);
+        state.get_or_insert(bound_journal_error(error));
         Ok(())
+    }
+
+    /// Retain a resident, non-durable marker that explains why this job's
+    /// event stream cannot currently be replayed.  The marker is emitted at
+    /// most once per key and is deliberately never sent back through the
+    /// failed journal.
+    fn note_journal_degraded_for_job(&self, key: &JobKey, error: String) -> Result<()> {
+        let mut observations = self.observations()?;
+        let state = observations.entry(key.clone()).or_default();
+        if state.journal_unavailable_emitted {
+            return Ok(());
+        }
+        state.journal_unavailable_emitted = true;
+        let seq = state.next_seq;
+        state.next_seq = state.next_seq.saturating_add(1);
+        retain_runtime_event(
+            state,
+            RuntimeJobEvent {
+                seq,
+                job_id: key.job_id.clone(),
+                event: RuntimeJobEventKind::JournalUnavailable {
+                    error: Some(bound_journal_error(error)),
+                },
+            },
+            self.inner.config.max_observations_per_job,
+            self.inner.config.max_observation_bytes_per_job,
+        );
+        Ok(())
+    }
+
+    fn note_journal_failure_for_job(&self, key: &JobKey, error: String) -> Result<()> {
+        self.note_journal_failure(error)?;
+        let reason = self
+            .durability_error()?
+            .unwrap_or_else(|| "job journal is unavailable".to_string());
+        self.note_journal_degraded_for_job(key, reason)
+    }
+
+    fn journal_degradation_reason(&self) -> Result<String> {
+        if let Some(error) = self.durability_error()? {
+            return Ok(error);
+        }
+        Ok(journal_status_reason(&self.inner.journal.status()?))
+    }
+
+    fn event_log_status(&self) -> Result<EventLogStatus> {
+        if self.durability_error()?.is_some() {
+            return Ok(EventLogStatus::Unavailable);
+        }
+        Ok(match self.inner.journal.status()? {
+            JournalStatus::Durable => EventLogStatus::Durable,
+            JournalStatus::BestEffortMemoryOnly => EventLogStatus::BestEffortUnreplayable,
+            JournalStatus::Unavailable { .. } => EventLogStatus::Unavailable,
+        })
+    }
+
+    fn journal_error(&self) -> Result<Option<String>> {
+        if let Some(error) = self.durability_error()? {
+            return Ok(Some(error));
+        }
+        Ok(match self.inner.journal.status()? {
+            JournalStatus::Unavailable { error } => Some(bound_journal_error(error)),
+            JournalStatus::Durable | JournalStatus::BestEffortMemoryOnly => None,
+        })
     }
 
     fn durability_error(&self) -> Result<Option<String>> {
@@ -1022,6 +1525,49 @@ impl JobManager {
     }
 }
 
+fn retain_runtime_event(
+    state: &mut ObservationState,
+    event: RuntimeJobEvent,
+    max_observations: usize,
+    max_bytes: usize,
+) {
+    state.byte_count = state.byte_count.saturating_add(runtime_event_bytes(&event));
+    state.events.push_back(event);
+    while state.events.len() > max_observations || state.byte_count > max_bytes {
+        let Some(removed) = state.events.pop_front() else {
+            break;
+        };
+        state.byte_count = state
+            .byte_count
+            .saturating_sub(runtime_event_bytes(&removed));
+    }
+}
+
+const MAX_JOURNAL_ERROR_CHARS: usize = 4096;
+
+fn bound_journal_error(error: String) -> String {
+    let mut chars = error.chars();
+    let bounded = chars
+        .by_ref()
+        .take(MAX_JOURNAL_ERROR_CHARS)
+        .collect::<String>();
+    if chars.next().is_some() {
+        format!("{bounded}…")
+    } else {
+        bounded
+    }
+}
+
+fn journal_status_reason(status: &JournalStatus) -> String {
+    match status {
+        JournalStatus::Durable => "job journal is durable".to_string(),
+        JournalStatus::BestEffortMemoryOnly => {
+            "job journal is memory-only; observations are unreplayable".to_string()
+        }
+        JournalStatus::Unavailable { error } => error.clone(),
+    }
+}
+
 fn validate_start_request(request: &JobStartRequest, config: &JobRuntimeConfig) -> Result<()> {
     validate_operation_id(&request.operation_id, config.max_operation_id_bytes)?;
     if request.initial_stdin.len() > config.max_input_bytes {
@@ -1044,6 +1590,36 @@ fn validate_operation_id(value: &str, maximum: usize) -> Result<()> {
         ));
     }
     Ok(())
+}
+
+/// Convert the private process-control identity into the stable observation
+/// shape exposed by `RuntimeJobEventKind::ProcessIdentityBound`.
+///
+/// Linux/Android capture all five fields immediately after `spawn`. If a
+/// platform cannot provide the start-time or boot tuple, fail closed after
+/// fork instead of emitting an identity event that could not protect a later
+/// numeric process-group control.
+fn process_identity_for_event(control: &ProcessControl) -> Result<ProcessIdentity> {
+    let identity = control.identity();
+    let process_group_id = i32::try_from(identity.process_group).map_err(|_| {
+        JobRuntimeError::Control("child process group does not fit a POSIX identity".to_string())
+    })?;
+    let session_id = i32::try_from(identity.session_id).map_err(|_| {
+        JobRuntimeError::Control("child session does not fit a POSIX identity".to_string())
+    })?;
+    let start_time_ticks = identity.start_time_ticks.ok_or_else(|| {
+        JobRuntimeError::Control("child start-time identity is unavailable".to_string())
+    })?;
+    let boot_id = identity.boot_id_sha256.ok_or_else(|| {
+        JobRuntimeError::Control("child boot identity is unavailable".to_string())
+    })?;
+    Ok(ProcessIdentity {
+        pid: identity.pid,
+        process_group_id,
+        session_id,
+        boot_id,
+        start_time_ticks,
+    })
 }
 
 fn start_details(request: &JobStartRequest) -> Value {
@@ -1098,6 +1674,7 @@ fn terminal_digest(
 
 fn runtime_event_kind(event: &RuntimeJobEvent) -> &'static str {
     match &event.event {
+        RuntimeJobEventKind::ProcessIdentityBound { .. } => "job.process_identity_bound",
         RuntimeJobEventKind::Started { .. } => "job.started",
         RuntimeJobEventKind::Output { .. } => "job.output",
         RuntimeJobEventKind::Terminal { .. } => "job.terminal.observation",
@@ -1128,4 +1705,185 @@ fn sha256_hex(bytes: &[u8]) -> String {
         write!(&mut output, "{byte:02x}").expect("writing to String cannot fail");
     }
     output
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::BTreeMap;
+    use std::os::unix::fs::PermissionsExt;
+    use std::path::PathBuf;
+
+    use tempfile::tempdir;
+    use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
+
+    use super::*;
+    use crate::{JobInvocation, JobJournal};
+
+    fn rollback_test_key() -> JobKey {
+        JobKey::new(
+            JobScope::new("session", "owner-open", "task", "turn", "stream"),
+            "job-accept-rollback",
+        )
+    }
+
+    fn rollback_test_request() -> JobRequest {
+        JobRequest::new(
+            "a".repeat(64),
+            "b".repeat(64),
+            "shell.job",
+            "pipe",
+            Some("rootlinux".to_string()),
+        )
+    }
+
+    #[test]
+    fn durable_acceptance_failure_removes_unclaimed_registry_entry() {
+        let directory = tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("harden temporary directory");
+        let journal_path = directory.path().join("jobs.jsonl");
+        let journal = JobJournal::open_best_effort(Some(&journal_path));
+        assert!(matches!(journal.status().unwrap(), JournalStatus::Durable));
+        journal
+            .fail_next_accept_for_test()
+            .expect("inject acceptance failure");
+        let manager = JobManager::new(JobRuntimeConfig::default(), journal).unwrap();
+        let key = rollback_test_key();
+        let request = rollback_test_request();
+        let error = manager
+            .start(JobStartRequest {
+                key: key.clone(),
+                request,
+                operation_id: "start-rollback".to_string(),
+                invocation: JobInvocation::Command {
+                    command: "exit 0".to_string(),
+                },
+                shell_executable: PathBuf::from("/bin/sh"),
+                cwd: None,
+                env: BTreeMap::new(),
+                initial_stdin: Vec::new(),
+                pty: None,
+            })
+            .expect_err("injected durable append must fail");
+        assert!(
+            error
+                .to_string()
+                .contains("injected durable acceptance append failure")
+        );
+        assert!(matches!(
+            manager.registry().snapshot(&key),
+            Err(JobRegistryError::NotFound)
+        ));
+        assert!(!manager.has_live_or_pending_jobs());
+        let inspection = manager.inspect(&key, 0, 16).expect("degraded inspection");
+        assert_eq!(inspection.event_log_status, EventLogStatus::Unavailable);
+        assert!(
+            inspection
+                .journal_error
+                .as_deref()
+                .is_some_and(|error| error.contains("injected durable acceptance append failure"))
+        );
+        assert!(
+            inspection
+                .runtime_events
+                .iter()
+                .any(|event| matches!(event.event, RuntimeJobEventKind::JournalUnavailable { .. }))
+        );
+    }
+
+    #[test]
+    fn post_spawn_observation_failure_keeps_effectful_truth_degraded() {
+        let directory = tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("harden temporary directory");
+        let journal_path = directory.path().join("jobs.jsonl");
+        let journal = JobJournal::open_best_effort(Some(&journal_path));
+        assert!(matches!(journal.status().unwrap(), JournalStatus::Durable));
+        journal
+            .fail_next_observation_for_test()
+            .expect("inject observation failure");
+        let manager = JobManager::new(JobRuntimeConfig::default(), journal).unwrap();
+        let key = rollback_test_key();
+        let error = manager
+            .start(JobStartRequest {
+                key: key.clone(),
+                request: rollback_test_request(),
+                operation_id: "start-observation-failure".to_string(),
+                invocation: JobInvocation::Command {
+                    command: "sleep 30".to_string(),
+                },
+                shell_executable: PathBuf::from("/bin/sh"),
+                cwd: None,
+                env: BTreeMap::new(),
+                initial_stdin: Vec::new(),
+                pty: None,
+            })
+            .expect_err("injected post-spawn append must fail closed");
+        assert!(
+            error
+                .to_string()
+                .contains("injected durable observation append failure")
+        );
+        assert!(!manager.has_live_or_pending_jobs());
+        let snapshot = manager
+            .registry()
+            .snapshot(&key)
+            .expect("conservative registry marker");
+        assert!(matches!(
+            snapshot.state,
+            JobEffectiveState::UnknownAfterRestart { .. }
+        ));
+        let inspection = manager.inspect(&key, 0, 16).expect("degraded inspection");
+        assert_eq!(inspection.event_log_status, EventLogStatus::Unavailable);
+        assert!(
+            inspection
+                .runtime_events
+                .iter()
+                .any(|event| matches!(event.event, RuntimeJobEventKind::JournalUnavailable { .. }))
+        );
+    }
+
+    #[test]
+    fn explicit_memory_only_mode_reports_unreplayable_inspection() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .expect("memory-only manager");
+        let key = rollback_test_key();
+        let result = manager
+            .start(JobStartRequest {
+                key: key.clone(),
+                request: rollback_test_request(),
+                operation_id: "start-memory-only".to_string(),
+                invocation: JobInvocation::Command {
+                    command: "sleep 0.1".to_string(),
+                },
+                shell_executable: PathBuf::from("/bin/sh"),
+                cwd: None,
+                env: BTreeMap::new(),
+                initial_stdin: Vec::new(),
+                pty: None,
+            })
+            .expect("explicit unsafe mode may dispatch");
+        assert_eq!(result.disposition, StartDisposition::Started);
+        assert_eq!(result.replay_status, ReplayStatus::BestEffortUnreplayable);
+        let inspection = manager.inspect(&key, 0, 16).expect("degraded inspection");
+        assert_eq!(
+            inspection.event_log_status,
+            EventLogStatus::BestEffortUnreplayable
+        );
+        assert!(inspection.journal_error.is_none());
+        assert!(
+            inspection
+                .runtime_events
+                .iter()
+                .any(|event| matches!(event.event, RuntimeJobEventKind::JournalUnavailable { .. }))
+        );
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        while manager.has_live_or_pending_jobs() && std::time::Instant::now() < deadline {
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+        assert!(!manager.has_live_or_pending_jobs());
+    }
 }

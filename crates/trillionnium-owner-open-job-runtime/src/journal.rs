@@ -6,14 +6,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_event_store::{
-    DurableEventStore, EventInput, EventStoreLimits, SyncPolicy, TurnScope,
+    DurableEventStore, EventInput, EventRecord, EventStoreLimits, SyncPolicy, TurnScope,
 };
 use trillionnium_owner_open_job_registry::{JobKey, JobRequest};
 
 use crate::validate::{require_id, require_sha256, require_text};
 use crate::{JobRuntimeError, Result};
 
-const JOURNAL_SCHEMA: &str = "trillionnium.owner-open.job-journal.v1";
+/// Canonical schema carried by every durable job-journal envelope.
+pub const JOB_JOURNAL_SCHEMA: &str = "trillionnium.owner-open.job-journal.v1";
+const JOURNAL_SCHEMA: &str = JOB_JOURNAL_SCHEMA;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum JournalStatus {
@@ -46,10 +48,18 @@ struct OperationKey {
 
 #[derive(Debug, Clone)]
 struct OperationState {
+    /// The full canonical request accepted for this operation.  Keeping the
+    /// request alongside the operation digest prevents a later terminal call
+    /// (or a recovered record) from silently changing the effect identity.
+    request: JobRequest,
     operation_kind: String,
     operation_sha256: String,
     terminal: Option<Value>,
     preexisting: bool,
+    /// True only when the accepted record was committed to the durable store.
+    /// This prevents a later journal outage from being mistaken for a
+    /// successful after-effect append.
+    durable_accept: bool,
 }
 
 #[derive(Debug, Clone)]
@@ -70,6 +80,10 @@ struct State {
     error: Option<String>,
     operations: HashMap<OperationKey, OperationState>,
     jobs: HashMap<JobKey, JobState>,
+    #[cfg(test)]
+    fail_next_accept: bool,
+    #[cfg(test)]
+    fail_next_observation: bool,
 }
 
 #[derive(Debug)]
@@ -105,6 +119,10 @@ impl JobJournal {
                 error: None,
                 operations: HashMap::new(),
                 jobs: HashMap::new(),
+                #[cfg(test)]
+                fail_next_accept: false,
+                #[cfg(test)]
+                fail_next_observation: false,
             }),
         }
     }
@@ -123,6 +141,10 @@ impl JobJournal {
                         error: None,
                         operations,
                         jobs,
+                        #[cfg(test)]
+                        fail_next_accept: false,
+                        #[cfg(test)]
+                        fail_next_observation: false,
                     }),
                 },
                 Err(error) => Self {
@@ -132,6 +154,10 @@ impl JobJournal {
                         error: Some(error),
                         operations: HashMap::new(),
                         jobs: HashMap::new(),
+                        #[cfg(test)]
+                        fail_next_accept: false,
+                        #[cfg(test)]
+                        fail_next_observation: false,
                     }),
                 },
             },
@@ -142,6 +168,10 @@ impl JobJournal {
                     error: Some(error.to_string()),
                     operations: HashMap::new(),
                     jobs: HashMap::new(),
+                    #[cfg(test)]
+                    fail_next_accept: false,
+                    #[cfg(test)]
+                    fail_next_observation: false,
                 }),
             },
         }
@@ -171,6 +201,23 @@ impl JobJournal {
         Ok(self.lock()?.error.clone())
     }
 
+    /// Inject one durable acceptance append failure for the runtime's
+    /// fail-closed rollback tests.  This is compiled only for the crate's
+    /// unit-test configuration and cannot affect production builds.
+    #[cfg(test)]
+    pub(crate) fn fail_next_accept_for_test(&self) -> Result<()> {
+        self.lock()?.fail_next_accept = true;
+        Ok(())
+    }
+
+    /// Inject one observation append failure for post-spawn convergence tests.
+    /// This hook is test-only and cannot alter production behavior.
+    #[cfg(test)]
+    pub(crate) fn fail_next_observation_for_test(&self) -> Result<()> {
+        self.lock()?.fail_next_observation = true;
+        Ok(())
+    }
+
     pub fn recovered_job(&self, key: &JobKey) -> Result<Option<RecoveredJob>> {
         let state = self.lock()?;
         Ok(state.jobs.get(key).map(|job| RecoveredJob {
@@ -196,8 +243,10 @@ impl JobJournal {
             operation_id: operation_id.to_string(),
         };
         let mut state = self.lock()?;
+        ensure_request_for_key(&state, key, request)?;
         if let Some(existing) = state.operations.get(&operation_key) {
-            if existing.operation_kind != operation_kind
+            if existing.request != *request
+                || existing.operation_kind != operation_kind
                 || existing.operation_sha256 != operation_sha256
             {
                 return Err(JobRuntimeError::JobConflict);
@@ -223,10 +272,12 @@ impl JobJournal {
             state.operations.insert(
                 operation_key,
                 OperationState {
+                    request: request.clone(),
                     operation_kind: operation_kind.to_string(),
                     operation_sha256: operation_sha256.to_string(),
                     terminal: None,
                     preexisting: false,
+                    durable_accept: false,
                 },
             );
             if operation_kind == "start" {
@@ -252,6 +303,14 @@ impl JobJournal {
             event_seq: None,
             payload: details,
         };
+        #[cfg(test)]
+        if state.fail_next_accept {
+            state.fail_next_accept = false;
+            return Err(disable(
+                &mut state,
+                "injected durable acceptance append failure".to_string(),
+            ));
+        }
         let append_result = {
             let store = state.store.as_ref().expect("store presence checked");
             append_envelope(
@@ -268,10 +327,12 @@ impl JobJournal {
         state.operations.insert(
             operation_key,
             OperationState {
+                request: request.clone(),
                 operation_kind: operation_kind.to_string(),
                 operation_sha256: operation_sha256.to_string(),
                 terminal: None,
                 preexisting: false,
+                durable_accept: true,
             },
         );
         if operation_kind == "start" {
@@ -302,8 +363,10 @@ impl JobJournal {
             operation_id: operation_id.to_string(),
         };
         let mut state = self.lock()?;
-        if let Some(existing) = state.operations.get(&operation_key) {
-            if existing.operation_kind != operation_kind
+        ensure_request_for_key(&state, key, request)?;
+        let durable_accept = if let Some(existing) = state.operations.get(&operation_key) {
+            if existing.request != *request
+                || existing.operation_kind != operation_kind
                 || existing.operation_sha256 != operation_sha256
             {
                 return Err(JobRuntimeError::JobConflict);
@@ -314,9 +377,18 @@ impl JobJournal {
                 }
                 return Err(JobRuntimeError::JobConflict);
             }
+            existing.durable_accept
         } else {
             return Err(JobRuntimeError::Journal(
                 "operation terminal has no accepted record".to_string(),
+            ));
+        };
+        if durable_accept && state.store.is_none() {
+            mark_operation_uncertain(&mut state, &operation_key);
+            return Err(JobRuntimeError::Journal(
+                state.error.clone().unwrap_or_else(|| {
+                    "job journal became unavailable before operation terminal".to_string()
+                }),
             ));
         }
         if state.store.is_some() {
@@ -342,8 +414,16 @@ impl JobJournal {
                 )
             };
             if let Err(error) = append_result {
+                mark_operation_uncertain(&mut state, &operation_key);
                 return Err(disable(&mut state, error));
             }
+        } else if state.configured {
+            mark_operation_uncertain(&mut state, &operation_key);
+            return Err(JobRuntimeError::Journal(
+                state.error.clone().unwrap_or_else(|| {
+                    "job journal is unavailable before terminal append".to_string()
+                }),
+            ));
         }
         state
             .operations
@@ -385,8 +465,42 @@ impl JobJournal {
         };
 
         let mut state = self.lock()?;
+        ensure_request_for_key(&state, key, request)?;
         if state.store.is_none() {
+            if state.configured {
+                return Err(JobRuntimeError::Journal(
+                    state.error.clone().unwrap_or_else(|| {
+                        "job journal is unavailable before observation append".to_string()
+                    }),
+                ));
+            }
+            // Memory-only mode is intentionally unreplayable, but retain the
+            // request binding in the in-process state so a later call cannot
+            // append an observation for different request bytes under the
+            // same job key.
+            let job = state.jobs.entry(key.clone()).or_insert(JobState {
+                request: request.clone(),
+                start_result: None,
+                terminal: None,
+            });
+            if let Some(terminal_payload) = terminal_payload {
+                if let Some(existing) = &job.terminal {
+                    if existing != &terminal_payload {
+                        return Err(JobRuntimeError::JobConflict);
+                    }
+                } else {
+                    job.terminal = Some(terminal_payload);
+                }
+            }
             return Ok(());
+        }
+        #[cfg(test)]
+        if state.fail_next_observation {
+            state.fail_next_observation = false;
+            return Err(disable(
+                &mut state,
+                "injected durable observation append failure".to_string(),
+            ));
         }
         let envelope = JournalEnvelope {
             schema: JOURNAL_SCHEMA.to_string(),
@@ -412,6 +526,16 @@ impl JobJournal {
         if let Err(error) = append_result {
             return Err(disable(&mut state, error));
         }
+
+        // Bind the request as soon as the observation append succeeds.  If a
+        // subsequent terminal append fails, the request identity still
+        // remains recorded in memory and future calls fail closed instead of
+        // mixing another request into this job's journal lineage.
+        state.jobs.entry(key.clone()).or_insert(JobState {
+            request: request.clone(),
+            start_result: None,
+            terminal: None,
+        });
 
         let Some(terminal_payload) = terminal_payload else {
             return Ok(());
@@ -466,6 +590,7 @@ impl JobJournal {
         payload: Value,
     ) -> Result<()> {
         let mut state = self.lock()?;
+        ensure_request_for_key(&state, key, request)?;
         if let Some(existing) = state.jobs.get(key).and_then(|job| job.terminal.as_ref()) {
             if existing == &payload {
                 return Ok(());
@@ -497,6 +622,12 @@ impl JobJournal {
             if let Err(error) = append_result {
                 return Err(disable(&mut state, error));
             }
+        } else if state.configured {
+            return Err(JobRuntimeError::Journal(
+                state.error.clone().unwrap_or_else(|| {
+                    "job journal is unavailable before terminal append".to_string()
+                }),
+            ));
         }
         state
             .jobs
@@ -510,16 +641,115 @@ impl JobJournal {
         Ok(())
     }
 
+    /// Return the legacy payload-only view of the records belonging to `key`.
+    ///
+    /// The event store is scoped by turn, rather than by job.  Keep the
+    /// filtering here (at the journal boundary) so callers that use this
+    /// compatibility API can never accidentally receive a sibling job's
+    /// records from the same turn.
     pub fn inspect_records(&self, key: &JobKey) -> Result<Vec<Value>> {
+        self.replay_job_records(key)
+            .map(|records| records.into_iter().map(|record| record.payload).collect())
+    }
+
+    /// Return the durable records for `key`, including event-store metadata.
+    ///
+    /// Each item is the canonical [`EventRecord`] JSON object with one
+    /// additive `job_record_seq` field.  `job_record_seq` is a zero-based,
+    /// contiguous cursor in this job's filtered sequence; it is deliberately
+    /// distinct from the event store's global `store_seq` and per-turn
+    /// `turn_seq` values.  Keeping the metadata makes replay/audit consumers
+    /// able to verify scope, event identity and hash-chain position without
+    /// changing the long-standing payload-only API above.
+    pub fn inspect_records_with_metadata(&self, key: &JobKey) -> Result<Vec<Value>> {
+        self.replay_job_records(key)?
+            .into_iter()
+            .enumerate()
+            .map(|(job_record_seq, record)| {
+                let mut value = serde_json::to_value(record).map_err(|error| {
+                    JobRuntimeError::Journal(format!(
+                        "failed to encode durable job journal metadata: {error}"
+                    ))
+                })?;
+                let sequence = u64::try_from(job_record_seq).map_err(|_| {
+                    JobRuntimeError::Journal(
+                        "durable job journal record sequence exceeds u64".to_string(),
+                    )
+                })?;
+                value
+                    .as_object_mut()
+                    .ok_or_else(|| {
+                        JobRuntimeError::Journal(
+                            "durable event-store record did not encode as an object".to_string(),
+                        )
+                    })?
+                    .insert("job_record_seq".to_string(), json!(sequence));
+                Ok(value)
+            })
+            .collect()
+    }
+
+    /// Replay the turn scope and retain only valid journal envelopes for the
+    /// requested job.  A malformed payload is an integrity failure, not a
+    /// reason to silently drop one record; returning an error preserves the
+    /// fail-closed inspection contract.
+    fn replay_job_records(&self, key: &JobKey) -> Result<Vec<EventRecord>> {
         let state = self.lock()?;
         let Some(store) = state.store.as_ref() else {
             return Ok(Vec::new());
         };
         let scope = turn_scope(key);
-        store
+        let records = store
             .replay(&scope, 0)
-            .map(|records| records.into_iter().map(|record| record.payload).collect())
-            .map_err(|error| JobRuntimeError::Journal(error.to_string()))
+            .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
+        let mut matching = Vec::with_capacity(records.len());
+        let mut expected_request =
+            state
+                .jobs
+                .get(key)
+                .map(|job| job.request.clone())
+                .or_else(|| {
+                    state
+                        .operations
+                        .iter()
+                        .find(|(operation_key, _)| operation_key.job == *key)
+                        .map(|(_, operation)| operation.request.clone())
+                });
+        for record in records {
+            if record.scope != scope {
+                return Err(JobRuntimeError::Journal(
+                    "durable job journal record scope metadata does not match replay scope"
+                        .to_string(),
+                ));
+            }
+            let envelope: JournalEnvelope = serde_json::from_value(record.payload.clone())
+                .map_err(|error| {
+                    JobRuntimeError::Journal(format!(
+                        "durable job journal record envelope is invalid: {error}"
+                    ))
+                })?;
+            if envelope.schema != JOURNAL_SCHEMA {
+                return Err(JobRuntimeError::Journal(
+                    "durable job journal record schema does not match".to_string(),
+                ));
+            }
+            if envelope.job_id.is_empty() {
+                return Err(JobRuntimeError::Journal(
+                    "durable job journal record has an empty job_id".to_string(),
+                ));
+            }
+            if envelope.job_id == key.job_id {
+                if let Some(expected) = expected_request.as_ref() {
+                    if expected != &envelope.request {
+                        return Err(JobRuntimeError::JobConflict);
+                    }
+                } else {
+                    expected_request = Some(envelope.request.clone());
+                }
+                matching.push(record);
+            }
+        }
+        Ok(matching)
     }
 
     fn lock(&self) -> Result<MutexGuard<'_, State>> {
@@ -532,6 +762,7 @@ impl JobJournal {
 fn recover(store: &DurableEventStore) -> std::result::Result<RecoveredState, String> {
     let mut operations = HashMap::new();
     let mut jobs = HashMap::<JobKey, JobState>::new();
+    let mut requests = HashMap::<JobKey, JobRequest>::new();
     for record in store.all_records().map_err(|error| error.to_string())? {
         let envelope: JournalEnvelope =
             serde_json::from_value(record.payload.clone()).map_err(|error| error.to_string())?;
@@ -550,6 +781,13 @@ fn recover(store: &DurableEventStore) -> std::result::Result<RecoveredState, Str
         );
         if record.scope != turn_scope(&key) {
             return Err("job journal record scope does not match payload".to_string());
+        }
+        if let Some(existing) = requests.get(&key) {
+            if existing != &envelope.request {
+                return Err("job journal request binding conflicts for job".to_string());
+            }
+        } else {
+            requests.insert(key.clone(), envelope.request.clone());
         }
         match envelope.record.as_str() {
             "operation.accepted" => {
@@ -572,10 +810,12 @@ fn recover(store: &DurableEventStore) -> std::result::Result<RecoveredState, Str
                 operations.insert(
                     operation_key,
                     OperationState {
+                        request: envelope.request.clone(),
                         operation_kind: operation_kind.clone(),
                         operation_sha256,
                         terminal: None,
                         preexisting: true,
+                        durable_accept: true,
                     },
                 );
                 if operation_kind == "start" {
@@ -603,7 +843,8 @@ fn recover(store: &DurableEventStore) -> std::result::Result<RecoveredState, Str
                 let operation = operations
                     .get_mut(&operation_key)
                     .ok_or_else(|| "operation terminal precedes acceptance".to_string())?;
-                if operation.operation_kind != operation_kind
+                if operation.request != envelope.request
+                    || operation.operation_kind != operation_kind
                     || operation.operation_sha256 != operation_sha256
                     || operation
                         .terminal
@@ -652,6 +893,29 @@ fn validate_operation(operation_id: &str, kind: &str, digest: &str) -> Result<()
         .map_err(|error| JobRuntimeError::InvalidRequest(error.to_string()))?;
     require_sha256(digest, "operation_sha256")
         .map_err(|error| JobRuntimeError::InvalidRequest(error.to_string()))
+}
+
+/// Verify that every in-memory record already associated with `key` carries
+/// the same canonical request.  A job key is only reusable for byte-identical
+/// requests; allowing a later observation/terminal call to supply a different
+/// request would make replay appear to belong to the wrong effect.
+fn ensure_request_for_key(state: &State, key: &JobKey, request: &JobRequest) -> Result<()> {
+    if state
+        .jobs
+        .get(key)
+        .is_some_and(|job| job.request != *request)
+    {
+        return Err(JobRuntimeError::JobConflict);
+    }
+    if state
+        .operations
+        .iter()
+        .filter(|(operation_key, _)| operation_key.job == *key)
+        .any(|(_, operation)| operation.request != *request)
+    {
+        return Err(JobRuntimeError::JobConflict);
+    }
+    Ok(())
 }
 
 fn append_envelope(
@@ -709,4 +973,163 @@ fn disable(state: &mut State, error: String) -> JobRuntimeError {
     state.configured = true;
     state.error = Some(error.clone());
     JobRuntimeError::Journal(error)
+}
+
+fn mark_operation_uncertain(state: &mut State, key: &OperationKey) {
+    if let Some(operation) = state.operations.get_mut(key) {
+        // `preexisting` is also the compact persisted-state signal used by
+        // `OperationBegin::ExistingAccepted`: once a terminal append fails,
+        // a same-process retry must receive UnknownAfterRestart rather than
+        // the weaker Existing disposition.
+        operation.preexisting = true;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+    use std::os::unix::fs::PermissionsExt;
+
+    use serde_json::json;
+    use tempfile::tempdir;
+    use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
+
+    use super::*;
+
+    fn key(job_id: &str) -> JobKey {
+        JobKey::new(
+            JobScope::new("session-1", "owner-open", "task-1", "turn-1", "stream-1"),
+            job_id,
+        )
+    }
+
+    fn request(seed: char) -> JobRequest {
+        JobRequest::new(
+            seed.to_string().repeat(64),
+            "b".repeat(64),
+            "shell.job",
+            "pipe",
+            None,
+        )
+    }
+
+    fn secure_tempdir() -> tempfile::TempDir {
+        let directory = tempdir().expect("temporary directory");
+        fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))
+            .expect("harden temporary directory");
+        directory
+    }
+
+    #[test]
+    fn inspect_records_is_job_scoped_and_metadata_has_contiguous_job_cursor() {
+        let directory = secure_tempdir();
+        let journal_path = directory.path().join("jobs.jsonl");
+        let journal = JobJournal::open_best_effort(Some(&journal_path));
+        assert!(matches!(journal.status().unwrap(), JournalStatus::Durable));
+
+        let key_a = key("job-a");
+        let key_b = key("job-b");
+        let request_a = request('a');
+        let request_b = request('b');
+        let digest_a = "c".repeat(64);
+        let digest_b = "d".repeat(64);
+
+        // Interleave two jobs in one turn.  Event-store turn_seq is global to
+        // that turn, while the metadata API must expose a separate contiguous
+        // cursor for each filtered job.
+        assert!(matches!(
+            journal
+                .begin_operation(
+                    &key_a,
+                    &request_a,
+                    "start-a",
+                    "start",
+                    &digest_a,
+                    json!({"status": "accepted"}),
+                )
+                .unwrap(),
+            OperationBegin::New
+        ));
+        assert!(matches!(
+            journal
+                .begin_operation(
+                    &key_b,
+                    &request_b,
+                    "start-b",
+                    "start",
+                    &digest_b,
+                    json!({"status": "accepted"}),
+                )
+                .unwrap(),
+            OperationBegin::New
+        ));
+        journal
+            .append_observation(
+                &key_a,
+                &request_a,
+                0,
+                "job.output",
+                json!({"stream": "stdout", "bytes": [1]}),
+            )
+            .unwrap();
+        journal
+            .append_observation(
+                &key_b,
+                &request_b,
+                0,
+                "job.output",
+                json!({"stream": "stdout", "bytes": [2]}),
+            )
+            .unwrap();
+        journal
+            .complete_operation(
+                &key_a,
+                &request_a,
+                "start-a",
+                "start",
+                &digest_a,
+                json!({"status": "started"}),
+            )
+            .unwrap();
+
+        let payloads = journal.inspect_records(&key_a).unwrap();
+        assert_eq!(payloads.len(), 3);
+        assert!(
+            payloads
+                .iter()
+                .all(|payload| payload["job_id"] == json!("job-a"))
+        );
+
+        let metadata = journal.inspect_records_with_metadata(&key_a).unwrap();
+        assert_eq!(metadata.len(), 3);
+        for (expected, record) in metadata.iter().enumerate() {
+            assert_eq!(record["job_record_seq"], json!(expected as u64));
+            assert_eq!(
+                record["schema"],
+                json!(trillionnium_owner_open_event_store::EVENT_RECORD_SCHEMA)
+            );
+            assert_eq!(record["scope"]["turn_id"], json!("turn-1"));
+            assert_eq!(record["payload"]["schema"], json!(JOB_JOURNAL_SCHEMA));
+            assert_eq!(record["payload"]["job_id"], json!("job-a"));
+            assert!(record["event_id"].as_str().is_some());
+            assert!(record["record_sha256"].as_str().is_some());
+        }
+        // The sibling's record occupies turn_seq=1, so A's second record has
+        // a non-contiguous turn_seq while its explicit job cursor is 1.
+        assert_eq!(metadata[0]["turn_seq"], json!(0));
+        assert_eq!(metadata[1]["turn_seq"], json!(2));
+        assert_eq!(metadata[2]["turn_seq"], json!(4));
+
+        drop(journal);
+        let reopened = JobJournal::open_best_effort(Some(&journal_path));
+        let reopened_metadata = reopened.inspect_records_with_metadata(&key_a).unwrap();
+        assert_eq!(reopened_metadata, metadata);
+        assert!(
+            reopened
+                .inspect_records_with_metadata(&key_b)
+                .unwrap()
+                .iter()
+                .all(|record| record["payload"]["job_id"] == json!("job-b"))
+        );
+    }
 }

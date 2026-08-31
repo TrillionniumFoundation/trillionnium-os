@@ -13,6 +13,10 @@ use r5_persistence::{Persistence, event_scope, request_sha256, stable_turn_strea
 use serde_json::{Value, json};
 use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, RunTurnRequest};
 
+mod support;
+
+use support::secure_tempdir;
+
 fn request(session: &str, task: &str, turn: &str, input: &str) -> RunTurnRequest {
     RunTurnRequest {
         protocol: PROTOCOL.to_string(),
@@ -89,7 +93,7 @@ fn parse_output(output: &Output) -> Vec<Value> {
 
 #[test]
 fn completed_turn_and_call_inspection_are_read_only_and_do_not_spawn_provider() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let event_store = directory.path().join("events.jsonl");
     let provider = directory.path().join("provider.sh");
     let provider_counter = directory.path().join("provider-starts");
@@ -270,7 +274,7 @@ fn finish(mut running: RunningHost, mut frames: Vec<Value>) -> Vec<Value> {
 
 #[test]
 fn active_turn_and_call_inspection_observe_current_state_without_cancelling() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let event_store = directory.path().join("events.jsonl");
     let provider = directory.path().join("provider.sh");
     executable_script(

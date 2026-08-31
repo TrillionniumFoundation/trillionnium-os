@@ -25,6 +25,7 @@ const FRAME_JOB_CLOSE_STDIN: &str = "job.close_stdin";
 const FRAME_JOB_KILL: &str = "job.kill";
 const FRAME_JOB_CONTROL_RESULT: &str = "job.control.result";
 const FRAME_JOB_STARTED: &str = "job.started";
+const FRAME_JOB_IDENTITY_BOUND: &str = "job.process_identity_bound";
 const FRAME_JOB_OUTPUT: &str = "job.output";
 const FRAME_JOB_RESULT: &str = "job.result";
 const FRAME_JOB_STATUS: &str = "job.status";
@@ -480,6 +481,29 @@ fn build_job_frame(
 
 fn runtime_job_frame(context: &JobContext, seq: u64, event: &RuntimeJobEvent) -> RunTurnFrame {
     let (kind, payload) = match &event.event {
+        RuntimeJobEventKind::ProcessIdentityBound {
+            generation,
+            identity,
+        } => (
+            FRAME_JOB_IDENTITY_BOUND,
+            json!({
+                "status": "process_identity_bound",
+                "generation": generation,
+                "identity": {
+                    "pid": identity.pid,
+                    "process_group_id": identity.process_group_id,
+                    "session_id": identity.session_id,
+                    "boot_id": identity.boot_id,
+                    "start_time_ticks": identity.start_time_ticks
+                },
+                "pid": identity.pid,
+                "process_group_id": identity.process_group_id,
+                "session_id": identity.session_id,
+                "boot_id": identity.boot_id,
+                "start_time_ticks": identity.start_time_ticks,
+                "automatic_redispatch": false
+            }),
+        ),
         RuntimeJobEventKind::Started {
             generation,
             pid,

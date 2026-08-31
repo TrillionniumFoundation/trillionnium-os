@@ -21,7 +21,14 @@ class ProviderTerminalOrderingTests(unittest.TestCase):
         )
         self.assertIn("allow_natural_exit_grace", process)
         natural_wait = text.index("allow_natural_exit_grace(&mut child")
-        forced_cleanup = text.index("finish_child(&mut child")
+        # Cleanup is now owned by ProviderChildGuard.  Keep the ordering
+        # assertion at the public turn boundary while separately requiring
+        # the concrete process helper to remain in the lifecycle module.
+        forced_cleanup = text.index("let cleanup = child.finish()")
+        # The guard keeps ownership in an Option so Drop can transfer the
+        # exact Child to its bounded reaper; the explicit path borrows it via
+        # child_mut after the identity binding has succeeded.
+        self.assertIn("finish_child(self.child_mut()?", process)
         self.assertLess(natural_wait, forced_cleanup)
         line_arm = text.index("Ok(ProviderOutput::Line(raw))")
         eof_arm = text.index("Ok(ProviderOutput::Eof)")
