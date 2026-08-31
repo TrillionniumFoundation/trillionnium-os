@@ -40,7 +40,8 @@ def response_kind(frame):
 def emit(frame):
     corr=correlation(frame)
     payload={"status":"ok","automatic_redispatch":False,**corr}
-    value={"kind":response_kind(frame),"seq":frame["seq"],"direction":"host_to_client","payload":payload,**corr}
+    value={"kind":response_kind(frame),"direction":"host_to_client","payload":payload,**corr}
+    if "seq" in frame: value["seq"]=frame["seq"]
     if "broker_request_id" in frame: value["broker_request_id"]=frame["broker_request_id"]
     print(json.dumps(value,separators=(",",":")),flush=True)
 def handshake():
@@ -76,6 +77,20 @@ first=json.loads(next(sys.stdin)); remember(first)
 time.sleep(0.20)
 emit(first)
 second=json.loads(next(sys.stdin)); remember(second); emit(second)
+for line in sys.stdin:
+    frame=json.loads(line); remember(frame); emit(frame)
+'''
+
+DELAYED_UNSEQUENCED_DUPLICATE = "#!/usr/bin/env python3\n" + COMMON + r'''
+handshake()
+first=json.loads(next(sys.stdin)); remember(first); emit(first)
+second=json.loads(next(sys.stdin)); remember(second)
+duplicate=dict(first)
+duplicate.pop("seq", None)
+duplicate.pop("broker_request_id", None)
+duplicate.pop("broker_request_sha256", None)
+emit(duplicate)
+emit(second)
 for line in sys.stdin:
     frame=json.loads(line); remember(frame); emit(frame)
 '''
@@ -165,6 +180,13 @@ class Harness:
 
     @staticmethod
     def request(sock: socket.socket, request_id: str, seq: int, job_id: str, timeout_ms: int = 2000) -> None:
+        scope={
+            "session_id":"session-mux",
+            "profile_id":"profile-mux",
+            "task_id":"task-mux",
+            "turn_id":"turn-mux",
+            "turn_stream_id":"stream-mux",
+        }
         send(sock,{
             "kind":"request",
             "request_id":request_id,
@@ -172,7 +194,7 @@ class Harness:
                 "kind":"job.inspect",
                 "seq":seq,
                 "direction":"client_to_host",
-                "payload":{"job_id":job_id},
+                "payload":{**scope,"job_id":job_id},
             },
             "expected_kinds":["job.inspect.result"],
             "expected_job_id":job_id,
@@ -266,6 +288,37 @@ class LateResultIsolationTest(Harness, unittest.TestCase):
         frames=[record["frame"] for record in self.records()]
         self.assertEqual(sum(frame.get("payload",{}).get("job_id")=="job-old" for frame in frames),1)
         self.assertEqual(sum(frame.get("payload",{}).get("job_id")=="job-new" for frame in frames),1)
+
+
+class DelayedUnsequencedDuplicateTest(Harness, unittest.TestCase):
+    upstream_source = DELAYED_UNSEQUENCED_DUPLICATE
+
+    def test_omitted_sequence_duplicate_cannot_bind_new_active_request(self) -> None:
+        first=self.connect("client-a"); second=self.connect("client-b")
+        try:
+            self.request(first,"request-old",0,"same-job")
+            old_terminal,_=self.terminal(first,"request-old")
+            self.assertEqual(old_terminal["kind"],"result")
+            self.request(second,"request-new",0,"same-job")
+            new_terminal,observed=self.terminal(second,"request-new")
+            self.assertEqual(new_terminal["kind"],"result")
+            self.assertEqual(new_terminal["frame"]["payload"]["job_id"],"same-job")
+            # The duplicate has no broker sequence or request id.  It must be
+            # isolated rather than becoming a second terminal for request-new.
+            self.assertEqual(
+                sum(v.get("kind")=="result" and v.get("request_id")=="request-new" for v in observed),
+                1,
+            )
+            self.assertFalse(any(
+                v.get("kind")=="observation"
+                and "seq" not in v.get("frame", {})
+                and "broker_request_id" not in v.get("frame", {})
+                for v in observed
+            ))
+        finally:
+            first.close(); second.close()
+        frames=[record["frame"] for record in self.records()]
+        self.assertEqual(sum(frame["kind"]=="job.inspect" for frame in frames),2)
 
 
 class SameKeyTimeoutFenceTest(Harness, unittest.TestCase):

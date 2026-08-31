@@ -156,15 +156,27 @@ class BrokerBase:
                 "scheduler": {
                     "kind": "bounded_weighted_round_robin",
                     "per_ordering_key_serialization": True,
-                    "ordering_key_precedence": [
-                        "job_id",
-                        "call_id",
-                        "turn_stream_id",
-                        "turn_id",
-                        "task_id",
-                        "operation_id",
-                        "client_id_fallback",
-                    ],
+                    # Identity is canonicalized by ordering_key_for_frame:
+                    # known families require the complete immutable scope and
+                    # reject partial/inconsistent aliases.  Operation and
+                    # attachment ids are validated but do not split one job's
+                    # serialization fence.
+                    "ordering_key_identity": {
+                        "scope": [
+                            "session_id",
+                            "profile_id",
+                            "task_id",
+                            "turn_id",
+                            "turn_stream_id",
+                        ],
+                        "families": {
+                            "job": ["job_id"],
+                            "turn": ["turn_id"],
+                            "call": ["call_id"],
+                        },
+                        "aliases": ["stream_id -> turn_stream_id"],
+                        "partial_identity": "reject",
+                    },
                     "late_result_isolation": "bounded_retired_upstream_sequence_tombstones",
                 },
                 "max_clients": self.args.max_clients,

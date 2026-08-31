@@ -11,16 +11,54 @@ import threading
 import time
 from typing import Any, Callable, Iterable
 
+from owner_open_broker_common import canonical, require_id
+
 MAX_WEIGHT = 1_024
-_ORDERING_FIELDS = (
-    # Serialize the broadest mutable effect lineage first.  In particular,
-    # distinct operation_id values for one job must not bypass job ordering.
-    "job_id",
-    "call_id",
-    "turn_stream_id",
-    "turn_id",
+# A request's ordering identity is a complete immutable lineage, not a
+# best-effort choice of whichever identifier happens to be present.  The
+# selected Host's job protocol defines this scope for every job operation;
+# keeping it here (rather than in a caller) makes all broker entry paths use
+# the same serialization boundary.
+_IDENTITY_SCOPE_FIELDS = (
+    "session_id",
+    "profile_id",
     "task_id",
-    "operation_id",
+    "turn_id",
+    "turn_stream_id",
+)
+_JOB_KINDS = frozenset(
+    {
+        "job.start",
+        "job.inspect",
+        "job.attach",
+        "job.detach",
+        "job.write",
+        "job.resize",
+        "job.close_stdin",
+        "job.kill",
+    }
+)
+_JOB_EFFECT_KINDS = frozenset(
+    {
+        "job.start",
+        "job.write",
+        "job.resize",
+        "job.close_stdin",
+        "job.kill",
+    }
+)
+_JOB_ATTACHMENT_KINDS = frozenset({"job.attach", "job.detach"})
+_TURN_KINDS = frozenset({"turn.inspect", "turn.cancel"})
+_CALL_KINDS = frozenset({"call.inspect", "tool.cancel"})
+_IDENTITY_FIELDS = frozenset(
+    {
+        *_IDENTITY_SCOPE_FIELDS,
+        "stream_id",
+        "call_id",
+        "job_id",
+        "operation_id",
+        "attachment_id",
+    }
 )
 
 
@@ -47,26 +85,95 @@ def _optional_string(mapping: dict[str, Any], name: str, location: str) -> str |
     return value
 
 
-def ordering_key_for_frame(frame: dict[str, Any], owner_id: str) -> str:
-    """Derive a stable per-effect serialization key from mirrored identifiers.
-
-    Envelope and payload values are mirrors.  Conflicting copies are rejected
-    instead of choosing a precedence rule.  Requests with no protocol key are
-    serialized per client, which is conservative and finite.
-    """
+def _identity_value(frame: dict[str, Any], name: str) -> str | None:
+    """Resolve one canonical lineage field and all documented mirrors."""
 
     payload = frame.get("payload")
     payload_mapping = payload if isinstance(payload, dict) else {}
-    for name in _ORDERING_FIELDS:
-        envelope = _optional_string(frame, name, "frame")
-        body = _optional_string(payload_mapping, name, "frame.payload")
-        if envelope is not None and body is not None and envelope != body:
-            raise MuxError(f"conflicting mirrored ordering field {name}")
-        value = envelope if envelope is not None else body
-        if value is not None:
-            return f"{name}:{value}"
+    names = ("turn_stream_id", "stream_id") if name == "turn_stream_id" else (name,)
+    values: list[str] = []
+    for mapping, location in ((frame, "frame"), (payload_mapping, "frame.payload")):
+        for member in names:
+            value = _optional_string(mapping, member, location)
+            if value is not None:
+                values.append(value)
+    if values and any(value != values[0] for value in values[1:]):
+        raise MuxError(f"conflicting mirrored ordering field {name}")
+    if not values:
+        return None
+    try:
+        return require_id(values[0], f"ordering identity {name}")
+    except Exception as error:
+        raise MuxError(str(error)) from error
+
+
+def _complete_scope(values: dict[str, str | None], family: str) -> dict[str, str]:
+    missing = [name for name in _IDENTITY_SCOPE_FIELDS if values.get(name) is None]
+    if missing:
+        raise MuxError(
+            f"{family} ordering identity requires complete scope: missing "
+            + ", ".join(missing)
+        )
+    return {name: values[name] for name in _IDENTITY_SCOPE_FIELDS}  # type: ignore[misc]
+
+
+def ordering_key_for_frame(frame: dict[str, Any], owner_id: str) -> str:
+    """Derive one canonical immutable effect identity.
+
+    Known protocol families require their complete hierarchy.  In particular,
+    every ``job.*`` request is keyed by the complete session/profile/task/turn/
+    stream scope plus ``job_id``; ``operation_id`` and ``attachment_id`` are
+    validated as required aliases for the operation kinds that define them but
+    deliberately do not split the broader job serialization key.  Thus a
+    partial ``operation_id`` request cannot bypass a job fence, and two clients
+    cannot silently fall back to unrelated client-local keys for one session.
+    Unknown opaque frames with no lineage remain serialized per owner.  A
+    frame that supplies only a partial lineage is rejected instead of being
+    assigned an unsafe best-effort key.
+    """
+
     if not owner_id:
         raise MuxError("owner_id must be non-empty")
+    kind = frame.get("kind")
+    if not isinstance(kind, str) or not kind:
+        raise MuxError("frame.kind must be a non-empty string")
+    values = {name: _identity_value(frame, name) for name in _IDENTITY_FIELDS}
+
+    if kind in _JOB_KINDS:
+        scope = _complete_scope(values, "job")
+        job_id = values.get("job_id")
+        if job_id is None:
+            raise MuxError("job ordering identity requires job_id")
+        if kind in _JOB_EFFECT_KINDS and values.get("operation_id") is None:
+            raise MuxError(f"{kind} ordering identity requires operation_id")
+        if kind in _JOB_ATTACHMENT_KINDS and values.get("attachment_id") is None:
+            raise MuxError(f"{kind} ordering identity requires attachment_id")
+        identity = {"family": "job", **scope, "job_id": job_id}
+        return "effect:" + canonical(identity).decode("utf-8")
+
+    if kind in _TURN_KINDS:
+        scope = _complete_scope(values, "turn")
+        if values.get("turn_id") is None:
+            raise MuxError("turn ordering identity requires turn_id")
+        identity = {"family": "turn", **scope}
+        return "effect:" + canonical(identity).decode("utf-8")
+
+    if kind in _CALL_KINDS:
+        scope = _complete_scope(values, "call")
+        call_id = values.get("call_id")
+        if call_id is None:
+            raise MuxError("call ordering identity requires call_id")
+        identity = {"family": "call", **scope, "call_id": call_id}
+        return "effect:" + canonical(identity).decode("utf-8")
+
+    supplied = {name: value for name, value in values.items() if value is not None}
+    if supplied:
+        # A future protocol family must explicitly define its hierarchy before
+        # it can use a shared ordering key.  Do not let one subset of fields
+        # accidentally run concurrently with another subset.
+        raise MuxError(
+            f"unsupported request kind {kind} has a partial ordering identity"
+        )
     return f"client:{owner_id}"
 
 
@@ -305,8 +412,11 @@ class WeightedFairMux:
         """Return one exact active owner, rejecting correlation ambiguity.
 
         Upstream sequence is authoritative when supplied.  A retired sequence
-        can never bind a later request.  Frames without a sequence are accepted
-        only when semantic matching identifies exactly one active request.
+        can never bind a later request.  Frames without a sequence are never
+        eligible for ownership.  Falling back to semantic matching would let a
+        delayed terminal for an older request bind the only currently-active
+        request with the same job/turn fields.  Callers may still handle such a
+        frame as an unowned observation, but it must not complete a request.
         """
 
         with self._condition:
@@ -319,6 +429,21 @@ class WeightedFairMux:
                     request_id = frame.get("broker_request_id")
                     if request_id is not None and request_id != request.request_id:
                         raise MuxError("upstream sequence conflicts with broker_request_id")
+                    request_sha256 = frame.get("broker_request_sha256")
+                    expected_sha256 = getattr(request, "request_sha256", None)
+                    if (
+                        request_sha256 is not None
+                        and expected_sha256 is not None
+                        and request_sha256 != expected_sha256
+                    ):
+                        raise MuxError(
+                            "upstream sequence conflicts with broker_request_sha256"
+                        )
+                    echoed_seq = frame.get("broker_request_upstream_seq")
+                    if echoed_seq is not None and echoed_seq != request.upstream_seq:
+                        raise MuxError(
+                            "upstream sequence conflicts with broker_request_upstream_seq"
+                        )
                     if not matcher(request, frame):
                         # The upstream sequence also labels non-terminal observations
                         # such as job.started.  They remain broadcast observations and
@@ -329,18 +454,11 @@ class WeightedFairMux:
                 # unknown sequences are never allowed to fall back to semantic
                 # matching, even after a bounded tombstone is evicted.
                 return None
-            request_id = frame.get("broker_request_id")
-            candidates: list[Any] = []
-            for request in self._active.values():
-                if request_id is not None and request_id != request.request_id:
-                    continue
-                if matcher(request, frame):
-                    candidates.append(request)
-            if not candidates:
-                return None
-            if len(candidates) != 1:
-                raise MuxError("upstream terminal correlation is ambiguous")
-            return candidates[0]
+            # There is no safe owner identity without the immutable sequence.
+            # In particular, do not use broker_request_id or semantic fields as
+            # a fallback: a stale Host line can omit either one and otherwise
+            # look identical to a later request.
+            return None
 
     def sequence_state(self, frame: dict[str, Any]) -> str:
         """Classify a supplied upstream sequence without semantic fallback."""

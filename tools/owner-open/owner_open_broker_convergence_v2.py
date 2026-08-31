@@ -27,7 +27,19 @@ class BrokerConvergenceMixin:
         *,
         details: dict[str, Any],
         retire_reason: str,
+        observation: dict[str, Any] | None = None,
     ) -> bool:
+        """Durably retire an active request and publish its terminal atomically.
+
+        ``observation`` is the raw Host terminal frame wrapped in the broker
+        observation envelope.  When present it is published only after the
+        exact request has been durably terminalized and removed from the mux,
+        while still holding ``transition_lock``.  This makes timeout fencing
+        and terminal delivery one ordered transition: a timeout worker cannot
+        retire the sequence between correlation and publication, and a frame
+        whose sequence was already retired cannot escape to an observer.
+        """
+
         audit_failure: BrokerError | None = None
         with self.transition_lock:
             if not self.mux.is_active(request):
@@ -47,8 +59,14 @@ class BrokerConvergenceMixin:
                 )
             if not self.mux.complete(request, reason=retire_reason):
                 return False
+            # Broadcast the raw terminal observation only for a successful
+            # durable transition.  This preserves the v1 observation contract
+            # for surviving clients when the original owner disconnected,
+            # without exposing a terminal that was not durably bound.
+            if observation is not None and audit_failure is None:
+                self._broadcast(observation)
+            self._owner(request.owner_id, owner_message)
         self.request_slots.release()
-        self._owner(request.owner_id, owner_message)
         if audit_failure is not None:
             self._mark_upstream_unknown(
                 audit_failure,
@@ -116,12 +134,9 @@ class BrokerConvergenceMixin:
                 # can receive the frame.  A supplied sequence is authoritative:
                 # retired or unknown sequences are never exposed as raw Host
                 # observations and cannot semantically bind another request.
+                # Unsequenced frames are malformed at this broker boundary and
+                # are isolated rather than guessed against the active set.
                 frame_correlation(frame)
-                with self.transition_lock:
-                    sequence_state = self.mux.sequence_state(frame)
-                    request = self.mux.match(frame, self._terminal_matches)
-                if sequence_state in {"retired", "unknown"}:
-                    continue
                 observation = {
                     "schema": WIRE,
                     "kind": "observation",
@@ -129,24 +144,33 @@ class BrokerConvergenceMixin:
                     "frame": frame,
                     "automatic_redispatch": False,
                 }
-                if request is None:
-                    # Non-terminal observations remain globally observable under
-                    # the v1 response model.  Correlated terminal observations
-                    # are owner-routed below to prevent cross-delivery.
-                    self._broadcast(observation)
-                    continue
-                self._owner(request.owner_id, observation)
-                self._finish_active(
-                    request,
-                    self._result(request, frame),
-                    details={
-                        "status": "host_terminal_observed",
-                        "frame_kind": frame["kind"],
-                        "frame_sha256": hashlib.sha256(canonical(frame)).hexdigest(),
-                        "late_result_isolation": "upstream_seq",
-                    },
-                    retire_reason="terminal",
-                )
+                with self.transition_lock:
+                    sequence_state = self.mux.sequence_state(frame)
+                    request = self.mux.match(frame, self._terminal_matches)
+                    if sequence_state in {"retired", "unknown", "unsequenced"}:
+                        # Never broadcast a line whose owner cannot be proved.
+                        # In particular this prevents an omitted-seq duplicate
+                        # terminal from being mistaken for a live request.
+                        continue
+                    if request is None:
+                        # Non-terminal observations remain globally observable
+                        # under the v1 response model.  Since the sequence is
+                        # still active, this publication is ordered with any
+                        # timeout/fence transition for that sequence.
+                        self._broadcast(observation)
+                        continue
+                    self._finish_active(
+                        request,
+                        self._result(request, frame),
+                        details={
+                            "status": "host_terminal_observed",
+                            "frame_kind": frame["kind"],
+                            "frame_sha256": hashlib.sha256(canonical(frame)).hexdigest(),
+                            "late_result_isolation": "upstream_seq",
+                        },
+                        retire_reason="terminal",
+                        observation=observation,
+                    )
         except Exception as error:
             self._mark_upstream_unknown(error)
 

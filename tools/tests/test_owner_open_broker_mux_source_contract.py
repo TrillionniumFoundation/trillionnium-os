@@ -57,10 +57,23 @@ class BrokerMuxSourceContractTest(unittest.TestCase):
         self.assertIn("return None", match_body)
         self.assertNotIn("if seq in self._retired", match_body)
 
-    def test_job_lineage_precedes_operation_id(self) -> None:
+    def test_canonical_lineage_requires_complete_scope(self) -> None:
         mux = self.read("owner_open_broker_mux.py")
-        fields = mux[mux.index("_ORDERING_FIELDS"):mux.index("class MuxError")]
-        self.assertLess(fields.index('"job_id"'), fields.index('"operation_id"'))
+        self.assertIn("_IDENTITY_SCOPE_FIELDS", mux)
+        self.assertIn('"session_id"', mux)
+        self.assertIn('"profile_id"', mux)
+        self.assertIn('"turn_stream_id"', mux)
+        self.assertIn("_complete_scope", mux)
+        self.assertIn("partial ordering identity", mux)
+        self.assertNotIn("_ORDERING_FIELDS", mux)
+        self.assertIn('"ordering_key"', self.read("owner_open_broker_admission_v2.py"))
+
+    def test_terminal_transition_is_ordered_under_transition_lock(self) -> None:
+        convergence = self.read("owner_open_broker_convergence_v2.py")
+        finish = convergence[convergence.index("def _finish_active"):convergence.index("def _finish_pending")]
+        self.assertIn("with self.transition_lock", finish)
+        self.assertIn("self._broadcast(observation)", finish)
+        self.assertIn("self._owner(request.owner_id, owner_message)", finish)
 
 
 if __name__ == "__main__":

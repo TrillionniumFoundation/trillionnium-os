@@ -99,12 +99,17 @@ class BrokerAdmissionMixin:
         expected: frozenset[str],
         expected_job: str | None,
         timeout_ms: int,
+        ordering_key: str,
     ) -> dict[str, Any]:
         return {
             "frame": frame,
             "expected_kinds": sorted(expected),
             "expected_job_id": expected_job,
             "timeout_ms": timeout_ms,
+            # The scheduler identity is part of the authenticated request
+            # bytes.  A replay/conflict therefore cannot retain the same
+            # request id while silently changing its serialization boundary.
+            "ordering_key": ordering_key,
         }
 
     def _admit_request(
@@ -126,13 +131,19 @@ class BrokerAdmissionMixin:
             )
             return
         client_seq_value = frame.get("seq")
-        preimage = self._request_preimage(frame, expected, expected_job, timeout_ms)
-        request_sha256 = hashlib.sha256(canonical(preimage)).hexdigest()
         correlation = frame_correlation(frame)
         try:
             ordering_key = ordering_key_for_frame(frame, client.client_id)
         except MuxError as error:
             raise BrokerError(str(error)) from error
+        preimage = self._request_preimage(
+            frame,
+            expected,
+            expected_job,
+            timeout_ms,
+            ordering_key,
+        )
+        request_sha256 = hashlib.sha256(canonical(preimage)).hexdigest()
         with self.admission_lock:
             existing = self.audit.lookup(client.client_id, request_id)
             if existing is not None:

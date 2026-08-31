@@ -113,9 +113,24 @@ class BrokerHarness:
         self.assertNotIn("automatic_effect_redispatch", ack)
         return sock
 
-    def request(self, client: socket.socket, request_id: str, frame: dict, expected: list[str]) -> None:
-        payload=frame.get("payload",{})
-        send(client,{"kind":"request","request_id":request_id,"frame":frame,"expected_kinds":expected,"expected_job_id":payload.get("job_id"),"timeout_ms":5000})
+    def request(self, client: socket.socket, request_id: str, frame: dict, expected: list[str], timeout_ms: int = 5000) -> None:
+        frame=dict(frame)
+        payload=dict(frame.get("payload",{}))
+        # G1 ordering identity is the complete immutable protocol scope.  The
+        # harness supplies the same deterministic scope that a real MCP bridge
+        # places on every job frame, while retaining each test's semantic ids.
+        payload.setdefault("session_id", "session-broker-test")
+        payload.setdefault("profile_id", "profile-broker-test")
+        payload.setdefault("task_id", "task-broker-test")
+        payload.setdefault("turn_id", "turn-broker-test")
+        payload.setdefault("turn_stream_id", "stream-broker-test")
+        kind=frame.get("kind")
+        if kind in {"job.start","job.write","job.resize","job.close_stdin","job.kill"}:
+            payload.setdefault("operation_id", f"{request_id}-operation")
+        if kind in {"job.attach","job.detach"}:
+            payload.setdefault("attachment_id", f"{request_id}-attachment")
+        frame["payload"]=payload
+        send(client,{"kind":"request","request_id":request_id,"frame":frame,"expected_kinds":expected,"expected_job_id":payload.get("job_id"),"timeout_ms":timeout_ms})
 
     def collect_until(self, client: socket.socket, request_id: str) -> list[dict]:
         values=[]
@@ -225,7 +240,14 @@ class BrokerTest(BrokerHarness, unittest.TestCase):
             child.stdin.write(json.dumps({"kind":"hello","seq":0,"payload":{}})+"\n")
             child.stdin.flush(); hello=json.loads(child.stdout.readline())
             self.assertEqual(hello["kind"],"hello.ack")
-            child.stdin.write(json.dumps({"kind":"job.inspect","seq":1,"direction":"client_to_host","payload":{"job_id":"job-x"}})+"\n")
+            child.stdin.write(json.dumps({"kind":"job.inspect","seq":1,"direction":"client_to_host","payload":{
+                "session_id":"session-stdio",
+                "profile_id":"profile-stdio",
+                "task_id":"task-stdio",
+                "turn_id":"turn-stdio",
+                "turn_stream_id":"stream-stdio",
+                "job_id":"job-x",
+            }})+"\n")
             child.stdin.flush()
             observed=json.loads(child.stdout.readline())
             self.assertEqual(observed["kind"],"job.inspect.result")
@@ -291,6 +313,91 @@ class BrokerForwardTransitionRaceTest(BrokerHarness, unittest.TestCase):
             [r["stage"] for r in selected],
             ["broker.accepted","broker.forwarded","broker.terminal"],
         )
+
+
+class BrokerTerminalTransitionRaceTest(BrokerHarness, unittest.TestCase):
+    """A terminal correlation and timeout must form one ordered transition."""
+
+    def broker_command(self) -> list[str]:
+        wrapper = self.root / "broker_terminal_wrapper.py"
+        gate_entered = self.root / "terminal-gate-entered"
+        gate_release = self.root / "terminal-gate-release"
+        wrapper.write_text(
+            textwrap.dedent(
+                f"""\
+                import runpy
+                import sys
+                import time
+                from pathlib import Path
+
+                sys.path.insert(0, {str(ROOT / "owner-open")!r})
+                from owner_open_broker_convergence_v2 import BrokerConvergenceMixin
+
+                _finish_active = BrokerConvergenceMixin._finish_active
+                _gate_entered = Path({str(gate_entered)!r})
+                _gate_release = Path({str(gate_release)!r})
+
+                def _gated_finish(self, request, owner_message, *, details, retire_reason, observation=None):
+                    if observation is not None:
+                        # Explicitly pause after correlation.  The test creates
+                        # the release marker only after the deadline has
+                        # elapsed, making the timeout-vs-terminal interleaving
+                        # deterministic rather than sleep-scheduled.
+                        _gate_entered.write_text("entered")
+                        while not _gate_release.exists():
+                            time.sleep(0.001)
+                    return _finish_active(
+                        self,
+                        request,
+                        owner_message,
+                        details=details,
+                        retire_reason=retire_reason,
+                        observation=observation,
+                    )
+
+                BrokerConvergenceMixin._finish_active = _gated_finish
+                sys.argv = [{str(BROKER)!r}, *sys.argv[1:]]
+                runpy.run_path({str(BROKER)!r}, run_name="__main__")
+                """
+            ),
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o700)
+        return [sys.executable, str(wrapper)]
+
+    def test_terminal_wins_timeout_at_transition_barrier(self) -> None:
+        client=self.connect("barrier-client")
+        try:
+            self.request(
+                client,
+                "barrier-request",
+                {
+                    "kind":"job.inspect",
+                    "seq":0,
+                    "direction":"client_to_host",
+                    "payload":{"job_id":"job-barrier"},
+                },
+                ["job.inspect.result"],
+                timeout_ms=50,
+            )
+            gate=self.root / "terminal-gate-entered"
+            deadline=time.monotonic()+2
+            while time.monotonic()<deadline and not gate.exists():
+                time.sleep(0.005)
+            self.assertTrue(gate.exists(), "terminal reader did not reach barrier")
+            # The timeout worker has had ample time to attempt fencing while
+            # the reader is held at the exact correlation boundary.
+            time.sleep(0.12)
+            (self.root / "terminal-gate-release").write_text("release")
+            values=self.collect_until(client,"barrier-request")
+            terminal=next(v for v in values if v.get("kind") in {"result","error"})
+            self.assertEqual(terminal["kind"],"result")
+        finally:
+            client.close()
+        records=[json.loads(x) for x in self.audit.read_text().splitlines()]
+        selected=[r for r in records if r["request_id"]=="barrier-request"]
+        self.assertEqual([r["stage"] for r in selected], ["broker.accepted","broker.forwarded","broker.terminal"])
+        self.assertEqual(selected[-1]["details"]["status"], "host_terminal_observed")
 
 
 if __name__=="__main__": unittest.main()

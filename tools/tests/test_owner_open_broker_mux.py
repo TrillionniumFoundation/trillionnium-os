@@ -24,13 +24,65 @@ class Request:
 
 class OrderingKeyTest(unittest.TestCase):
     def test_mirrored_key_is_stable(self) -> None:
+        scope = {
+            "session_id": "session-a",
+            "profile_id": "profile-a",
+            "task_id": "task-a",
+            "turn_id": "turn-a",
+            "turn_stream_id": "stream-a",
+        }
         self.assertEqual(
             ordering_key_for_frame(
-                {"kind": "job.inspect", "job_id": "job-a", "payload": {"job_id": "job-a"}},
+                {
+                    "kind": "job.inspect",
+                    **scope,
+                    "job_id": "job-a",
+                    "payload": {**scope, "job_id": "job-a"},
+                },
                 "client-a",
             ),
-            "job_id:job-a",
+            'effect:{"family":"job","job_id":"job-a","profile_id":"profile-a","session_id":"session-a","task_id":"task-a","turn_id":"turn-a","turn_stream_id":"stream-a"}',
         )
+
+    def test_partial_or_inconsistent_lineage_fails_closed(self) -> None:
+        with self.assertRaisesRegex(MuxError, "complete scope"):
+            ordering_key_for_frame(
+                {"kind": "job.inspect", "job_id": "job-a"},
+                "client-a",
+            )
+        with self.assertRaises(MuxError):
+            ordering_key_for_frame(
+                {
+                    "kind": "job.inspect",
+                    "session_id": "session-a",
+                    "profile_id": "profile-a",
+                    "task_id": "task-a",
+                    "turn_id": "turn-a",
+                    "turn_stream_id": "stream-a",
+                    "job_id": "job-a",
+                    "payload": {"job_id": "job-b"},
+                },
+                "client-a",
+            )
+
+    def test_same_job_lineage_does_not_split_by_operation_id(self) -> None:
+        scope = {
+            "session_id": "session-a",
+            "profile_id": "profile-a",
+            "task_id": "task-a",
+            "turn_id": "turn-a",
+            "turn_stream_id": "stream-a",
+            "job_id": "job-a",
+        }
+        first = ordering_key_for_frame(
+            {"kind": "job.write", "payload": {**scope, "operation_id": "op-a"}},
+            "client-a",
+        )
+        second = ordering_key_for_frame(
+            {"kind": "job.write", "payload": {**scope, "operation_id": "op-b"}},
+            "client-b",
+        )
+        self.assertEqual(first, second)
 
     def test_conflicting_mirror_fails_closed(self) -> None:
         with self.assertRaises(MuxError):
@@ -95,8 +147,40 @@ class WeightedFairMuxTest(unittest.TestCase):
         second = Request("b", "b", "job:two", 2)
         mux.enqueue(first); mux.enqueue(second)
         mux.acquire(0); mux.acquire(0)
-        with self.assertRaises(MuxError):
-            mux.match({}, lambda _request, _frame: True)
+        self.assertIsNone(mux.match({}, lambda _request, _frame: True))
+
+    def test_sole_active_unsequenced_terminal_never_binds(self) -> None:
+        mux = WeightedFairMux(max_pending=4, max_inflight=1, max_retired=4)
+        request = Request("a", "a", "job:one", 1)
+        mux.enqueue(request)
+        self.assertIs(mux.acquire(0), request)
+        # A delayed terminal can be semantically unique yet still has no
+        # authenticated owner identity when the Host omitted its sequence.
+        self.assertIsNone(mux.match({"kind": "job.result"}, lambda *_: True))
+        self.assertTrue(mux.is_active(request))
+
+    def test_unsequenced_duplicate_stays_unowned_after_tombstone_eviction(self) -> None:
+        mux = WeightedFairMux(max_pending=8, max_inflight=1, max_retired=1)
+        old = Request("a", "old", "job:same", 1)
+        filler = Request("a", "filler", "job:filler", 2)
+        current = Request("b", "current", "job:same", 3)
+        mux.enqueue(old)
+        self.assertIs(mux.acquire(0), old)
+        self.assertTrue(mux.complete(old, reason="terminal"))
+        mux.enqueue(filler)
+        self.assertIs(mux.acquire(0), filler)
+        self.assertTrue(mux.complete(filler, reason="terminal"))
+        # Sequence 1's bounded tombstone has now been evicted.  Eviction must
+        # not turn a missing sequence into permission for semantic guessing.
+        mux.enqueue(current)
+        self.assertIs(mux.acquire(0), current)
+        self.assertIsNone(
+            mux.match(
+                {"kind": "job.result", "job_id": "same"},
+                lambda _request, _frame: True,
+            )
+        )
+        self.assertTrue(mux.is_active(current))
 
     def test_expiry_does_not_redispatch_or_reuse_sequence(self) -> None:
         now = time.monotonic()
@@ -116,6 +200,19 @@ class WeightedFairMuxTest(unittest.TestCase):
         mux.enqueue(current)
         self.assertIs(mux.acquire(0), current)
         self.assertIsNone(mux.match({"seq": 999}, lambda _request, _frame: True))
+
+    def test_echoed_broker_binding_must_match_sequence_owner(self) -> None:
+        mux = WeightedFairMux(max_pending=4, max_inflight=1, max_retired=4)
+        current = Request("a", "current", "job:current", 11)
+        # The lightweight test request has no digest attribute; an id mismatch
+        # is still checked before the matcher is invoked.
+        mux.enqueue(current)
+        self.assertIs(mux.acquire(0), current)
+        with self.assertRaisesRegex(MuxError, "broker_request_id"):
+            mux.match(
+                {"seq": 11, "broker_request_id": "other"},
+                lambda _request, _frame: True,
+            )
 
     def test_uncertain_active_request_fences_key_and_retires_waiters(self) -> None:
         mux = WeightedFairMux(max_pending=6, max_inflight=2, max_retired=6)
