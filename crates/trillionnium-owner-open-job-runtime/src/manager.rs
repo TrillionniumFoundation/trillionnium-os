@@ -1,5 +1,7 @@
 use std::collections::{HashMap, VecDeque};
+use std::hash::{Hash, Hasher};
 use std::path::Path;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::thread;
 
@@ -18,9 +20,61 @@ use crate::{
     Result, RuntimeJobEvent, RuntimeJobEventKind, StartDisposition,
 };
 
+const START_SHARD_COUNT: usize = 64;
+
+struct AdmissionPool {
+    active: AtomicUsize,
+    maximum: usize,
+}
+
+impl AdmissionPool {
+    fn new(maximum: usize) -> Self {
+        Self {
+            active: AtomicUsize::new(0),
+            maximum,
+        }
+    }
+
+    fn try_acquire(self: &Arc<Self>) -> Result<AdmissionPermit> {
+        let mut current = self.active.load(Ordering::Acquire);
+        loop {
+            if current >= self.maximum {
+                return Err(JobRuntimeError::InvalidRequest(
+                    "job runtime capacity is exhausted before acceptance".to_string(),
+                ));
+            }
+            match self.active.compare_exchange_weak(
+                current,
+                current + 1,
+                Ordering::AcqRel,
+                Ordering::Acquire,
+            ) {
+                Ok(_) => {
+                    return Ok(AdmissionPermit {
+                        pool: Arc::clone(self),
+                    });
+                }
+                Err(observed) => current = observed,
+            }
+        }
+    }
+}
+
+struct AdmissionPermit {
+    pool: Arc<AdmissionPool>,
+}
+
+impl Drop for AdmissionPermit {
+    fn drop(&mut self) {
+        let previous = self.pool.active.fetch_sub(1, Ordering::AcqRel);
+        debug_assert!(previous > 0, "job admission permit underflow");
+    }
+}
+
 struct RunningJob {
     control: Arc<ProcessControl>,
     request: JobRequest,
+    _admission_permit: AdmissionPermit,
     stdout_bytes: Mutex<u64>,
     stderr_bytes: Mutex<u64>,
 }
@@ -37,6 +91,8 @@ struct Inner {
     registry: Arc<JobRegistry>,
     journal: Arc<JobJournal>,
     running: Mutex<HashMap<JobKey, Arc<RunningJob>>>,
+    admission: Arc<AdmissionPool>,
+    start_shards: Vec<Mutex<()>>,
     observations: Mutex<HashMap<JobKey, ObservationState>>,
     durability_error: Mutex<Option<String>>,
 }
@@ -49,12 +105,15 @@ pub struct JobManager {
 impl JobManager {
     pub fn new(config: JobRuntimeConfig, journal: JobJournal) -> Result<Self> {
         config.validate()?;
+        let max_jobs = config.max_jobs;
         Ok(Self {
             inner: Arc::new(Inner {
                 config,
                 registry: Arc::new(JobRegistry::default()),
                 journal: Arc::new(journal),
                 running: Mutex::new(HashMap::new()),
+                admission: Arc::new(AdmissionPool::new(max_jobs)),
+                start_shards: (0..START_SHARD_COUNT).map(|_| Mutex::new(())).collect(),
                 observations: Mutex::new(HashMap::new()),
                 durability_error: Mutex::new(None),
             }),
@@ -77,12 +136,11 @@ impl JobManager {
 
     pub fn start(&self, request: JobStartRequest) -> Result<JobStartResult> {
         validate_start_request(&request, &self.inner.config)?;
-        // Hold the running-map lock across the capacity check, registry begin,
-        // spawn and insertion.  A new key must be rejected before
-        // `registry.begin`, otherwise a full runtime leaves an Accepted entry
-        // that falsely occupies the key and prevents a later retry.
-        let mut running_jobs = self.running()?;
-        if let Some(running) = running_jobs.get(&request.key) {
+        // Serialize only the exact start shard.  The running map is never held
+        // across journal I/O, process spawn, or dispatcher creation, so unrelated
+        // keys can start concurrently while one key remains linearizable.
+        let _start_guard = self.start_guard(&request.key)?;
+        if let Some(running) = self.running()?.get(&request.key).cloned() {
             if running.request != request.request {
                 return Err(JobRuntimeError::JobConflict);
             }
@@ -122,31 +180,6 @@ impl JobManager {
             Err(JobRegistryError::NotFound) => false,
             Err(error) => return Err(registry_error(error)),
         };
-        let active_running_jobs = running_jobs
-            .keys()
-            .filter(|key| {
-                self.inner
-                    .registry
-                    .snapshot(key)
-                    .map(|snapshot| {
-                        matches!(
-                            snapshot.state,
-                            JobEffectiveState::Accepted
-                                | JobEffectiveState::Starting { .. }
-                                | JobEffectiveState::Running { .. }
-                        )
-                    })
-                    // A registry read failure is conservatively counted as
-                    // occupied.  Admission must not turn an uncertain state
-                    // into an additional child process.
-                    .unwrap_or(true)
-            })
-            .count();
-        if !registry_entry_exists && active_running_jobs >= self.inner.config.max_jobs {
-            return Err(JobRuntimeError::InvalidRequest(
-                "job runtime capacity is exhausted before acceptance".to_string(),
-            ));
-        }
 
         // Fail closed before the registry accepts the job.  An unavailable or
         // deliberately memory-only journal must not leave an Accepted entry
@@ -159,6 +192,15 @@ impl JobManager {
                 "job journal is unavailable and unjournaled effects are disabled".to_string(),
             ));
         }
+
+        // Reserve finite process capacity before the registry can accept a new
+        // key.  The permit is RAII-owned and is transferred into RunningJob only
+        // after spawn succeeds; every error path before that releases it.
+        let admission_permit = if registry_entry_exists {
+            None
+        } else {
+            Some(self.inner.admission.try_acquire()?)
+        };
 
         let begin = self
             .inner
@@ -230,6 +272,12 @@ impl JobManager {
             OperationBegin::New | OperationBegin::Unjournaled => {}
         }
 
+        let admission_permit = admission_permit.ok_or_else(|| {
+            JobRuntimeError::Registry(
+                "new job registry entry was created without an admission permit".to_string(),
+            )
+        })?;
+
         let generation = match self
             .inner
             .registry
@@ -282,11 +330,8 @@ impl JobManager {
             .record_started(&request.key, generation, control.pid, control.pty)
             .map_err(registry_error)
         {
-            // record_started failed after the child was spawned. Release the
-            // admission reservation before the rollback path tries to remove
-            // the running entry; otherwise abort_started_job would attempt to
-            // lock this same mutex and deadlock forever.
-            drop(running_jobs);
+            // record_started failed after the child was spawned.  The local
+            // admission permit is released when this start path returns.
             let cleanup_error = control
                 .kill(libc::SIGKILL)
                 .err()
@@ -313,11 +358,12 @@ impl JobManager {
         let running = Arc::new(RunningJob {
             control,
             request: request.request.clone(),
+            _admission_permit: admission_permit,
             stdout_bytes: Mutex::new(0),
             stderr_bytes: Mutex::new(0),
         });
-        running_jobs.insert(request.key.clone(), Arc::clone(&running));
-        drop(running_jobs);
+        self.running()?
+            .insert(request.key.clone(), Arc::clone(&running));
 
         let started = RuntimeJobEventKind::Started {
             generation,
@@ -998,6 +1044,18 @@ impl JobManager {
         })
     }
 
+    fn start_shard_index(&self, key: &JobKey) -> usize {
+        let mut hasher = std::collections::hash_map::DefaultHasher::new();
+        key.hash(&mut hasher);
+        (hasher.finish() as usize) % self.inner.start_shards.len()
+    }
+
+    fn start_guard(&self, key: &JobKey) -> Result<MutexGuard<'_, ()>> {
+        self.inner.start_shards[self.start_shard_index(key)]
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)
+    }
+
     fn running(&self) -> Result<MutexGuard<'_, HashMap<JobKey, Arc<RunningJob>>>> {
         self.inner
             .running
@@ -1128,4 +1186,59 @@ fn sha256_hex(bytes: &[u8]) -> String {
         write!(&mut output, "{byte:02x}").expect("writing to String cannot fail");
     }
     output
+}
+
+#[cfg(test)]
+mod concurrency_tests {
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    use trillionnium_owner_open_job_registry::{JobKey, JobScope};
+
+    use super::{AdmissionPool, JobManager, JobRuntimeConfig};
+
+    fn key(job_id: &str) -> JobKey {
+        JobKey::new(
+            JobScope::new("session", "profile", "task", "turn", "stream"),
+            job_id,
+        )
+    }
+
+    #[test]
+    fn admission_permit_releases_capacity_on_every_drop_path() {
+        let pool = std::sync::Arc::new(AdmissionPool::new(1));
+        let first = pool.try_acquire().expect("first permit");
+        assert!(pool.try_acquire().is_err());
+        drop(first);
+        let second = pool.try_acquire().expect("capacity released");
+        drop(second);
+    }
+
+    #[test]
+    fn unrelated_start_shards_can_progress_concurrently() {
+        let manager = JobManager::open(JobRuntimeConfig::development_unsafe(), None)
+            .expect("development manager");
+        let blocked = key("blocked");
+        let blocked_index = manager.start_shard_index(&blocked);
+        let independent = (0..10_000)
+            .map(|index| key(&format!("independent-{index}")))
+            .find(|candidate| manager.start_shard_index(candidate) != blocked_index)
+            .expect("an independent shard");
+
+        let guard = manager.start_guard(&blocked).expect("blocked shard guard");
+        let clone = manager.clone();
+        let (sender, receiver) = mpsc::sync_channel(1);
+        let worker = std::thread::spawn(move || {
+            let _independent_guard = clone
+                .start_guard(&independent)
+                .expect("independent shard guard");
+            sender.send(()).expect("signal independent progress");
+        });
+
+        receiver
+            .recv_timeout(Duration::from_secs(1))
+            .expect("independent shard must not wait for unrelated key");
+        drop(guard);
+        worker.join().expect("start shard worker");
+    }
 }
