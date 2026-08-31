@@ -20,6 +20,7 @@ jobs:
     env:
       TARGET_JOB_ID: "99385546981"
     steps:
+      # Keep the diagnostic output bounded so the connector can retrieve it.
       - name: Print bounded diagnostics from failed materializer job
         shell: bash
         env:
