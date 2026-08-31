@@ -118,14 +118,18 @@ jobs:
           cargo fmt --all -- --check
           cargo test --locked --workspace --all-targets
           cargo clippy --locked --workspace --all-targets -- -D warnings
-          cargo test --locked --package trillionnium-tool-runtime \
-            --features p0-launch-package-provider-conformance --lib
-          cargo test --locked --package trillionniumd \
-            --features p0-launch-package-device-conformance --all-targets
-          cargo clippy --locked --package trillionnium-tool-runtime \
-            --features p0-launch-package-provider-conformance --all-targets -- -D warnings
-          cargo clippy --locked --package trillionniumd \
-            --features p0-launch-package-device-conformance --all-targets -- -D warnings
+          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
+            cargo test --locked --package trillionnium-tool-runtime \
+              --features p0-launch-package-provider-conformance --lib
+          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
+            cargo test --locked --package trillionniumd \
+              --features p0-launch-package-device-conformance --all-targets
+          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
+            cargo clippy --locked --package trillionnium-tool-runtime \
+              --features p0-launch-package-provider-conformance --all-targets -- -D warnings
+          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
+            cargo clippy --locked --package trillionniumd \
+              --features p0-launch-package-device-conformance --all-targets -- -D warnings
 
           test -z "$(git diff --name-only)"
           git diff --cached --check
