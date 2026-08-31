@@ -90,16 +90,17 @@ jobs:
           apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/entry.rs
           apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs
           apps/trillionniumd/src/main.rs
-          crates/trillionnium-owner-open-job-runtime/src/journal.rs
-          crates/trillionnium-owner-open-job-runtime/src/lib.rs
           crates/trillionnium-owner-open-job-runtime/src/manager.rs
           crates/trillionnium-owner-open-job-runtime/src/process.rs
           crates/trillionnium-owner-open-job-runtime/src/types.rs
           crates/trillionnium-owner-open-job-runtime/tests/runtime.rs
+          crates/trillionnium-owner-open-provider-jsonl/src/lib.rs
+          crates/trillionnium-owner-open-runtime/src/process.rs
           crates/trillionnium-owner-open-runtime/src/types.rs
           crates/trillionnium-shell-exec/src/durable.rs
           docs/protocols/owner-open-jobs-v1.md
-          docs/status/owner-open-r5-gap-closure.json
+          tools/tests/test_owner_open_r15_runtime_hardening.py
+          tools/verify-owner-open-r5-workflow-boundaries.py
           EOF
           sed -i 's/^          //' /tmp/r15-expected-paths.txt
           git diff --cached --name-only | LC_ALL=C sort > /tmp/r15-actual-paths.txt
