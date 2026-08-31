@@ -17,6 +17,7 @@ env:
   MATERIAL_BRANCH: ops/owner-open-r15-atomic-builder-20260831-v12
   MATERIAL_COMMIT: 7e1aa2fee006eb00212b034f473fd41774964320
   TARGET_BRANCH: codex/owner-open-r15-runtime-hardening-20260831
+  EXPECTED_TARGET_HEAD: eb1aa598cf466120200b064b8ebfbb3763935688
   PATCH_SHA256: f30cd81483225ebda3192aa8e7ce29a194e1086d290e2a8aae915e1bc5462ae3
   CARGO_INCREMENTAL: "0"
   PYTHONDONTWRITEBYTECODE: "1"
@@ -56,8 +57,10 @@ jobs:
           test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
 
           git fetch --no-tags origin \
-            "+refs/heads/$MATERIAL_BRANCH:refs/remotes/origin/$MATERIAL_BRANCH"
+            "+refs/heads/$MATERIAL_BRANCH:refs/remotes/origin/$MATERIAL_BRANCH" \
+            "+refs/heads/$TARGET_BRANCH:refs/remotes/origin/$TARGET_BRANCH"
           test "$(git rev-parse refs/remotes/origin/$MATERIAL_BRANCH)" = "$MATERIAL_COMMIT"
+          test "$(git rev-parse refs/remotes/origin/$TARGET_BRANCH)" = "$EXPECTED_TARGET_HEAD"
           git cat-file -e "$BASE_COMMIT^{commit}"
 
           rm -f /tmp/owner-open-r15-runtime-hardening.patch.gz \
@@ -184,7 +187,9 @@ jobs:
           test "$(git rev-parse HEAD^)" = "$BASE_COMMIT"
           source_commit="$(git rev-parse HEAD)"
           source_tree="$(git rev-parse HEAD^{tree})"
-          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git push \
+            --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_TARGET_HEAD" \
+            origin "HEAD:refs/heads/$TARGET_BRANCH"
 
           echo "R15_SOURCE_COMMIT=$source_commit"
           echo "R15_SOURCE_TREE=$source_tree"
