@@ -15,7 +15,7 @@ concurrency:
 env:
   BASE_COMMIT: 7ca4d64de1d5acee65a1592b0903a1b4c5bc11b0
   MATERIAL_BRANCH: ops/owner-open-r15-atomic-builder-20260831-v12
-  MATERIAL_COMMIT: a07673a74458afb78c364bf0cc8bd0efaf04fc17
+  MATERIAL_COMMIT: 7e1aa2fee006eb00212b034f473fd41774964320
   TARGET_BRANCH: codex/owner-open-r15-runtime-hardening-20260831
   PATCH_SHA256: f30cd81483225ebda3192aa8e7ce29a194e1086d290e2a8aae915e1bc5462ae3
   CARGO_INCREMENTAL: "0"
@@ -27,7 +27,7 @@ env:
 jobs:
   materialize-and-qualify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 240
     steps:
       - name: Check out exact materializer commit
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -62,7 +62,9 @@ jobs:
 
           rm -f /tmp/owner-open-r15-runtime-hardening.patch.gz \
             /tmp/owner-open-r15-runtime-hardening.patch \
-            /tmp/owner-open-r15-contract-fix.py \
+            /tmp/owner-open-r15-contract-fix-v11.py \
+            /tmp/owner-open-r15-contract-fix-v13.py \
+            /tmp/owner-open-r15-contract-fix-v14.py \
             /tmp/owner-open-r15-runtime-hardening.yml
           for part in 00 01 02 03 04 05; do
             git show "$MATERIAL_COMMIT:.github/owner-open-r15-runtime-hardening.patch.gz.$part" \
@@ -71,11 +73,13 @@ jobs:
           echo "$PATCH_SHA256  /tmp/owner-open-r15-runtime-hardening.patch.gz" | sha256sum -c -
           gzip -dc /tmp/owner-open-r15-runtime-hardening.patch.gz \
             > /tmp/owner-open-r15-runtime-hardening.patch
-          git show "$MATERIAL_COMMIT:.github/owner-open-r15-contract-fix-v11.py" \
-            > /tmp/owner-open-r15-contract-fix.py
-          chmod 600 /tmp/owner-open-r15-runtime-hardening.patch \
-            /tmp/owner-open-r15-contract-fix.py
-          python3 -m py_compile /tmp/owner-open-r15-contract-fix.py
+          for version in v11 v13 v14; do
+            git show "$MATERIAL_COMMIT:.github/owner-open-r15-contract-fix-$version.py" \
+              > "/tmp/owner-open-r15-contract-fix-$version.py"
+            chmod 600 "/tmp/owner-open-r15-contract-fix-$version.py"
+            python3 -m py_compile "/tmp/owner-open-r15-contract-fix-$version.py"
+          done
+          chmod 600 /tmp/owner-open-r15-runtime-hardening.patch
 
           git switch --detach "$BASE_COMMIT"
           git switch -C "$TARGET_BRANCH"
@@ -83,7 +87,9 @@ jobs:
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
 
           git apply --index --whitespace=error /tmp/owner-open-r15-runtime-hardening.patch
-          python3 /tmp/owner-open-r15-contract-fix.py
+          python3 /tmp/owner-open-r15-contract-fix-v11.py
+          python3 /tmp/owner-open-r15-contract-fix-v13.py
+          python3 /tmp/owner-open-r15-contract-fix-v14.py
           cargo fmt --all
           git add -A
           cp .github/workflows/owner-open-r15-runtime-hardening.yml \
@@ -119,15 +125,14 @@ jobs:
           python3 tools/verify-owner-open-r5.py --json
           python3 tools/verify-owner-open-r5-gap-evidence.py --json
           python3 -m compileall -q tools
-          PYTHONWARNINGS=error::ResourceWarning \
-            python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
+          PYTHONWARNINGS=error::ResourceWarning python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
           python3 tools/verify-owner-open-r5-workflow-boundaries.py --json
 
           cargo metadata --locked --format-version 1 > /tmp/r15-cargo-metadata.json
           cargo fmt --all -- --check
           cargo test --locked --workspace --all-targets
           cargo clippy --locked --workspace --all-targets -- -D warnings
-          cargo doc --locked --workspace --no-deps
+          RUSTDOCFLAGS="-D warnings" cargo doc --locked --workspace --no-deps
 
           # The trillionniumd P0 device-conformance feature is artifact-bound.
           # It belongs to the protected Android evidence lane and is not a
@@ -142,6 +147,17 @@ jobs:
           cargo test -p trillionnium-os-types --all-targets --all-features --locked
           cargo test -p trillionnium-privilege-broker-protocol --all-targets --all-features --locked
           cargo test -p trillionniumd --all-targets --no-default-features --features dev-conformance-fault-hook,legacy-plan-conformance --locked
+
+          cargo clippy -p trillionnium-agent-direct-tools --all-targets --no-default-features --features dev-overrides --locked -- -D warnings
+          cargo clippy -p trillionnium-agent-direct-tools --all-targets --no-default-features --features development-compatibility-lane --locked -- -D warnings
+          cargo clippy -p trillionnium-agent-direct-tools --all-targets --no-default-features --features production-durable-hotpath --locked -- -D warnings
+          cargo clippy -p trillionnium-agent-direct-tools --all-targets --no-default-features --features device-launch-package-conformance --locked -- -D warnings
+          cargo clippy -p trillionnium-tool-runtime --all-targets --all-features --locked -- -D warnings
+          cargo clippy -p trillionnium-shell-exec --all-targets --all-features --locked -- -D warnings
+          cargo clippy -p trillionnium-agent-privilege-broker --all-targets --features p0-launch-package-device-conformance --locked -- -D warnings
+          cargo clippy -p trillionnium-os-types --all-targets --all-features --locked -- -D warnings
+          cargo clippy -p trillionnium-privilege-broker-protocol --all-targets --all-features --locked -- -D warnings
+          cargo clippy -p trillionniumd --all-targets --no-default-features --features dev-conformance-fault-hook,legacy-plan-conformance --locked -- -D warnings
 
           test -z "$(git diff --name-only)"
           git diff --cached --check
