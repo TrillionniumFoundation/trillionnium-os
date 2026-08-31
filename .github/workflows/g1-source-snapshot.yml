@@ -1,0 +1,46 @@
+name: G1 source snapshot bootstrap
+
+on:
+  push:
+    branches:
+      - codex/g1-gap-closure-r1-20260831
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-source-snapshot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    name: Build exact-head source snapshot
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Archive tracked source
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$GITHUB_SHA"
+          SNAPSHOT="${RUNNER_TEMP}/trillionnium-os-${GITHUB_SHA}.tar.gz"
+          MANIFEST="${RUNNER_TEMP}/trillionnium-os-${GITHUB_SHA}.sha256"
+          git --no-replace-objects archive --format=tar.gz --output="$SNAPSHOT" HEAD
+          sha256sum "$SNAPSHOT" > "$MANIFEST"
+          test -s "$SNAPSHOT"
+          test -s "$MANIFEST"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Upload exact-head source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-source-snapshot-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 1
+          path: |
+            ${{ runner.temp }}/trillionnium-os-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/trillionnium-os-${{ github.sha }}.sha256

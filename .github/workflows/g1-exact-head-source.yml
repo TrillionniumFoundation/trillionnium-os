@@ -54,9 +54,22 @@ jobs:
       - name: Capture locked source graph
         run: |
           set -euo pipefail
-          cargo metadata --locked --format-version 1 > g1-cargo-metadata.json
-          cargo tree --locked -e features > g1-cargo-tree.txt
+          METADATA_PATH="${RUNNER_TEMP}/g1-cargo-metadata.json"
+          TREE_PATH="${RUNNER_TEMP}/g1-cargo-tree.txt"
+          cargo metadata --locked --format-version 1 > "$METADATA_PATH"
+          cargo tree --locked -e features > "$TREE_PATH"
+          test -s "$METADATA_PATH"
+          test -s "$TREE_PATH"
           test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Upload locked source graph
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-locked-source-graph-${{ env.SOURCE_HEAD_SHA }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/g1-cargo-metadata.json
+            ${{ runner.temp }}/g1-cargo-tree.txt
 
   rust-runtime:
     name: L1 Rust 1.93 selected Host, job, flow and recovery closure
