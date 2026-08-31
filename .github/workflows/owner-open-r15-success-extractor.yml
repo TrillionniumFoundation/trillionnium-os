@@ -16,11 +16,11 @@ concurrency:
 jobs:
   extract:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 5
     env:
       TARGET_JOB_ID: "99389332725"
     steps:
-      - name: Wait for exact materializer job and print bounded publication record
+      - name: Print bounded executed output from exact materializer job
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -28,18 +28,12 @@ jobs:
           set -euo pipefail
           umask 077
           api="$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/jobs/$TARGET_JOB_ID"
-          for _ in $(seq 1 180); do
-            status="$(curl --fail --silent --show-error \
-              --header "Authorization: Bearer $GH_TOKEN" \
-              --header "Accept: application/vnd.github+json" \
-              --header "X-GitHub-Api-Version: 2022-11-28" \
-              "$api" | python3 -c 'import json,sys; print(json.load(sys.stdin)["status"])')"
-            if [ "$status" = completed ]; then
-              break
-            fi
-            sleep 5
-          done
-          test "$status" = completed
+          state="$(curl --fail --silent --show-error \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "Accept: application/vnd.github+json" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "$api")"
+          test "$(printf '%s' "$state" | python3 -c 'import json,sys; print(json.load(sys.stdin)["status"])')" = completed
 
           log=/tmp/owner-open-r15-materializer.log
           curl --fail --silent --show-error --location \
@@ -58,10 +52,33 @@ jobs:
           ansi = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
           lines = [ansi.sub("", line) for line in text.splitlines()]
 
-          begin = next((i for i, line in enumerate(lines) if "R15_SOURCE_COMMIT=" in line), None)
-          end = next((i for i, line in enumerate(lines) if "R15_WORKFLOW_TEXT_END" in line and begin is not None and i >= begin), None)
+          # GitHub first echoes the complete shell program in cyan. Ignore that
+          # source block and inspect only bytes emitted after its end-group.
+          echoed_end = max(
+              (i for i, line in enumerate(lines) if 'echo "R15_WORKFLOW_TEXT_END"' in line),
+              default=-1,
+          )
+          runtime_start = next(
+              (i + 1 for i in range(echoed_end + 1, len(lines)) if "##[endgroup]" in lines[i]),
+              0,
+          )
+          runtime = lines[runtime_start:]
+
+          commit_re = re.compile(r"R15_SOURCE_COMMIT=([0-9a-f]{40})(?:\s|$)")
+          tree_re = re.compile(r"R15_SOURCE_TREE=([0-9a-f]{40})(?:\s|$)")
+          begin = next((i for i, line in enumerate(runtime) if commit_re.search(line)), None)
+          end = next(
+              (
+                  i
+                  for i, line in enumerate(runtime)
+                  if begin is not None and i >= begin and "R15_WORKFLOW_TEXT_END" in line
+              ),
+              None,
+          )
           if begin is not None and end is not None:
-              selected = lines[begin : end + 1]
+              selected = runtime[begin : end + 1]
+              if not any(tree_re.search(line) for line in selected):
+                  raise SystemExit("source tree marker is missing")
               print(f"R15_PUBLICATION_LOG_BYTES={len(raw)}")
               print(f"R15_PUBLICATION_LINES={len(selected)}")
               for line in selected:
@@ -75,21 +92,26 @@ jobs:
               "panicked at",
               "Process completed with exit code",
               "remote rejected",
+              "diff -u",
           )
-          hits = [i for i, line in enumerate(lines) if any(n.lower() in line.lower() for n in needles)]
+          hits = [
+              i
+              for i, line in enumerate(runtime)
+              if any(needle.lower() in line.lower() for needle in needles)
+          ]
           selected_indices: set[int] = set()
           for i in hits[-24:]:
-              selected_indices.update(range(max(0, i - 8), min(len(lines), i + 10)))
+              selected_indices.update(range(max(0, i - 10), min(len(runtime), i + 12)))
           if not selected_indices:
-              selected_indices.update(range(max(0, len(lines) - 260), len(lines)))
-          ordered = sorted(selected_indices)[-340:]
+              selected_indices.update(range(max(0, len(runtime) - 280), len(runtime)))
+          ordered = sorted(selected_indices)[-360:]
           print(f"R15_PUBLICATION_LOG_BYTES={len(raw)}")
           print("R15_PUBLICATION_MARKERS=missing")
           previous = None
           for i in ordered:
               if previous is not None and i != previous + 1:
                   print("... omitted ...")
-              print(f"{i + 1:06d}: {lines[i]}")
+              print(f"{runtime_start + i + 1:06d}: {runtime[i]}")
               previous = i
           raise SystemExit(1)
           PY
