@@ -30,14 +30,7 @@ def _optional_string(
     *,
     location: str,
 ) -> str | None:
-    """Read an optional correlation member without silently coercing it.
-
-    Correlation is intentionally opaque, but when a protocol-defined member is
-    present it is still an identifier and therefore must be a string (or an
-    explicit null omission).  Ignoring a non-string top-level value would let a
-    payload copy win implicitly, which is the same ambiguity as a conflicting
-    mirror.
-    """
+    """Read an optional correlation member without silently coercing it."""
 
     if name not in mapping:
         return None
@@ -50,13 +43,7 @@ def _optional_string(
 
 
 def frame_value(frame: dict[str, Any], name: str) -> str | None:
-    """Return one correlation value, rejecting conflicting mirrors/aliases.
-
-    The wire contract permits correlation fields in the envelope and in the
-    payload, but they are mirrors rather than precedence layers.  In
-    particular, ``stream_id`` is an alias for ``turn_stream_id``.  Never choose
-    one copy when two supplied values disagree; fail closed instead.
-    """
+    """Return one correlation value, rejecting conflicting mirrors/aliases."""
 
     names = ("turn_stream_id", "stream_id") if name in {
         "turn_stream_id",
@@ -191,3 +178,5 @@ class Request:
     request_sha256: str
     correlation: dict[str, str | None]
     audit_binding: Any
+    ordering_key: str = "legacy-unassigned"
+    deadline_monotonic: float = float("inf")

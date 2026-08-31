@@ -51,6 +51,13 @@ jobs:
           python3 tools/docs/generate_global_docs.py --check
           python3 tools/docs/verify_global_docs.py
           python3 -m compileall -q tools
+      - name: Verify bounded broker mux and protocol contracts
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v
+          python3 -m unittest discover -s tools/tests -p 'test_owner_open_connection_broker.py' -v
+          python3 -m unittest discover -s tools/tests -p 'test_owner_open_ingress_contract.py' -v
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Capture locked source graph
         run: |
           set -euo pipefail
