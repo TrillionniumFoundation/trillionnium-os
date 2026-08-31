@@ -15,7 +15,7 @@ concurrency:
 env:
   BASE_COMMIT: 7ca4d64de1d5acee65a1592b0903a1b4c5bc11b0
   MATERIAL_BRANCH: ops/owner-open-r15-atomic-builder-20260831-v12
-  MATERIAL_COMMIT: d4a02e9633df8889d59afe08adf11295c05014f5
+  MATERIAL_COMMIT: a07673a74458afb78c364bf0cc8bd0efaf04fc17
   TARGET_BRANCH: codex/owner-open-r15-runtime-hardening-20260831
   PATCH_SHA256: f30cd81483225ebda3192aa8e7ce29a194e1086d290e2a8aae915e1bc5462ae3
   CARGO_INCREMENTAL: "0"
@@ -95,6 +95,7 @@ jobs:
           apps/trillionnium-agent-privilege-broker/src/linux_provider_post_exec_test_kernel.rs
           apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6/entry.rs
           apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs
+          apps/trillionniumd/src/direct_operation_runtime_authority_transport.rs
           apps/trillionniumd/src/main.rs
           crates/trillionnium-owner-open-job-runtime/src/manager.rs
           crates/trillionnium-owner-open-job-runtime/src/process.rs
