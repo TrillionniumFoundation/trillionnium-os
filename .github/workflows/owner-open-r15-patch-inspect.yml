@@ -1,0 +1,33 @@
+name: Owner-Open R15 patched-function inspection
+on:
+  push:
+    branches: [ops/owner-open-r15-patch-inspect-20260831]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "ops/owner-open-r15-patch-inspect-20260831"
+          cat .github/owner-open-r15-runtime-hardening.patch.gz.* > /tmp/r15.patch.gz
+          echo 'f30cd81483225ebda3192aa8e7ce29a194e1086d290e2a8aae915e1bc5462ae3  /tmp/r15.patch.gz' | sha256sum -c -
+          git reset --hard 34d8b731370b42f84fb50c34ecd6ca41b39f0d08
+          gzip -dc /tmp/r15.patch.gz | git apply --index --whitespace=error
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path("apps/trillionniumd/src/main.rs").read_text()
+          start = text.index("fn codex_provider(")
+          end = text.index("\nconst DEFAULT_AGENT_MANIFEST_DIR", start)
+          print("--- codex_provider after R15 patch ---")
+          print(text[start:end])
+          print("--- end codex_provider ---")
+          PY
