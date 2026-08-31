@@ -1,28 +1,9 @@
-# trillionnium-owner-open-provider-jsonl
+# Owner-Open Provider JSONL
 
-This crate launches one external provider process for one owner-open turn and
-speaks `trillionnium.owner-open.provider-jsonl.v1` over bounded stdin/stdout
-JSONL.
+Current module: `MOD-PROVIDER`  
+Program authority: `docs/START_HERE.md`  
+Machine contract: `docs/machine/module-catalog.v1.json`
 
-The provider may emit model/status events, issue `shell.exec` or `adb.exec`,
-receive the complete raw process observation, continue reasoning and then emit
-one turn terminal. Provider input is decoded recursively without duplicate JSON
-members. Per-direction sequences, line/aggregate stdout limits, bounded stderr,
-one process group and timeout/cleanup are enforced mechanically.
+This crate owns provider process lifecycle, bounded strict JSONL framing and same-turn tool callback transport. Codex/provider remains the only semantic principal; this adapter adds no fallback, approval or retry policy.
 
-Unknown tool labels are returned to the provider as an `invalid_request`
-observation; they do not create a semantic policy decision or kill the turn.
-The adapter injects no ADB serial, host, port or privilege argument.
-
-Current limits:
-
-- one provider process per turn;
-- synchronous tool callback;
-- one bounded aggregate `tool.result` frame per call;
-- no PTY provider request support;
-- no serviceable external cancel while the synchronous provider callback is
-  running;
-- no durable event store or restart replay.
-
-Current claim ceiling: **SOURCE_IMPLEMENTED / L0** until the exact commit passes
-Rust formatting, all-target tests and clippy.
+Installed Codex and event-driven cancellation work remain tracked in the G1 gap register. Current state is generated under `docs/generated/`.

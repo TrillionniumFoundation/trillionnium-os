@@ -1,20 +1,9 @@
-# trillionnium-owner-open-turn-loop
+# Owner-Open Turn Engine
 
-This R5 source slice binds one semantic provider turn to the reviewed
-owner-open call registry and direct process bridge.
+Current module: `MOD-TURN-ENGINE`  
+Program authority: `docs/START_HERE.md`  
+Machine contract: `docs/machine/module-catalog.v1.json`
 
-It proves at source level that a provider can:
+This crate owns the same-turn provider event and tool callback lifecycle, targeted cancellation and exactly-one terminal mechanics. Semantic decisions remain inside Codex/provider.
 
-1. emit model/status events;
-2. invoke command-string shell, exact argv shell, or ordinary ADB argv;
-3. receive raw runtime events and a truthful terminal observation;
-4. continue in the same provider turn after a non-zero tool exit; and
-5. finish with exactly one turn terminal.
-
-Exact duplicate calls attach to the existing registry entry and do not spawn a
-second local process. A conflicting call ID/request binding fails. The crate
-contains no plan, Authority, approval, risk classifier, typed ADB action table,
-or sealed shell broker dependency.
-
-Current claim ceiling: **SOURCE_IMPLEMENTED / L0** until Rust 1.93 formatting,
-unit tests, clippy, and spawned-process integration execute on the exact commit.
+Event-driven cancellation and bounded event-spool work remain tracked by `GAP-CONC-TURN-CANCEL-001`. Current state is generated under `docs/generated/`.

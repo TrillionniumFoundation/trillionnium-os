@@ -1,30 +1,32 @@
-# Default repository ownership. Branch protection must still require a
-# non-author approval; CODEOWNERS alone does not establish independence.
+# Default fallback. Branch protection must still require a non-author approval.
 * @ProfHepta @Tomasrgbsf
 
-# Integration truth, workflows and external-evidence promotion.
-/.github/ @ProfHepta
-/docs/status/ @ProfHepta
-/docs/contracts/ @ProfHepta
-/docs/operations/ @ProfHepta
-/docs/qualification/ @ProfHepta
-/tools/owner_open_r5_evidence_bundle.py @ProfHepta
-/tools/owner_open_r5_capture_trust.py @ProfHepta
-/tools/capture-owner-open-r5-target-evidence.py @ProfHepta
-/tools/finalize-owner-open-r5-evidence-bundle.py @ProfHepta
-/tools/promote-owner-open-r5-evidence.py @ProfHepta
-/tools/verify-owner-open-r5-governance-readiness.py @ProfHepta
+# Global architecture, machine truth and generated views.
+/docs/ @ProfHepta @Tomasrgbsf
+/docs/machine/ @ProfHepta @Franksudoman
+/docs/generated/ @ProfHepta @Franksudoman
+/tools/docs/ @ProfHepta @Franksudoman
+/.github/workflows/ @ProfHepta
+/README.md @ProfHepta @Tomasrgbsf
+/CONTRIBUTING.md @ProfHepta
+/SECURITY.md @ProfHepta
+/.github/CODEOWNERS @ProfHepta
 
-# Runtime, transport, provider and durable-effect implementation.
+# Owner-open implementation modules.
 /apps/trillionnium-owner-open-host/ @Tomasrgbsf @ProfHepta
-/crates/trillionnium-owner-open-*/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-types/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-call-registry/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-event-store/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-job-registry/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-job-runtime/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-provider-jsonl/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-runtime/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-stream-window/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-tool-bridge/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-turn-loop/ @Tomasrgbsf @ProfHepta
+/tools/owner-open/ @Tomasrgbsf @ProfHepta
 
-# Android product graph, native ingress, init and SELinux boundaries.
+# Platform and evidence modules.
 /android-integration/ @ProfHepta @Tomasrgbsf
 /packaging/ @ProfHepta @Tomasrgbsf
-
-# Public release and repository policy files.
-/LICENSE @ProfHepta
-/SECURITY.md @ProfHepta
-/CONTRIBUTING.md @ProfHepta
-/.github/CODEOWNERS @ProfHepta
+/evidence/ @ProfHepta @Franksudoman

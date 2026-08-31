@@ -1,9 +1,0 @@
-# notification-listener enable/revoke smoke
-2026-05-14T22:49:08+08:00
-$ settings get secure enabled_notification_listeners # before
-null
-$ cmd notification allow_listener
-$ settings get secure enabled_notification_listeners # after allow
-ai.trillionnium.bridge/ai.trillionnium.bridge.NotificationRelayService
-$ cmd notification disallow_listener
-$ settings get secure enabled_notification_listeners # after revoke

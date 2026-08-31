@@ -2,56 +2,40 @@
 
 ## Supported scope
 
-This repository is an active owner-controlled dogfood development lane. The
-checked-in source and L1 workflow results are not a claim of installed target,
-Android image, physical-device, destructive-fault, or public-release security.
-The current claim ceiling is defined by `docs/status/owner-open-r5-status.json`.
+The repository currently supports an owner-open dogfood development lane. Source and L1 tests are not claims of installed Root Linux, Android image, physical-device, destructive-fault or public-release security.
 
-## Reporting a vulnerability
+## Reporting
 
-Report suspected vulnerabilities through a private GitHub Security Advisory for
-this repository. Do not open a public issue when a report contains an exploit,
-credential, private key, device identifier, unpublished target evidence, or a
-path to arbitrary Root Linux/ADB execution.
+Report vulnerabilities through a private GitHub Security Advisory. Do not open a public issue containing an exploit, credential, private key, device identifier, target token, unpublished target evidence or a path to arbitrary Root Linux/ADB execution.
 
 Include, where available:
 
-- the exact source commit and tree;
-- affected binary, Android module, service, protocol, or evidence lane;
-- minimal reproduction steps and observed output;
-- whether a process, descendant, credential, device, or signing asset may remain
-  exposed after the reproduction;
-- whether the issue could cause duplicate or falsely reported effects.
+- exact source commit, tree and affected module;
+- affected protocol, state schema, process, ADB/Android path, control lease or evidence lane;
+- minimal reproduction and raw observation;
+- whether an effect may have been attempted;
+- whether a process, credential, device or stale writer may remain active;
+- whether automatic redispatch or false evidence promotion is possible.
 
-Do not include live provider tokens, ADB private keys, release keys, user data,
-or unredacted target evidence in the report body. Arrange an encrypted transfer
-through the advisory when such material is essential.
+## High-risk boundaries
 
-## Response principles
+Treat the following as release-blocking:
 
-Maintainers will preserve the original report and establish a private fix branch.
-A security fix must pass the same exact-head checks as ordinary changes. A fix
-must not promote an L2-L6 claim merely because a source test passes. Any affected
-qualified identity is revoked and must be requalified at every evidence level it
-previously reached.
+- semantic-versus-mechanical authority drift;
+- provider credentials, inherited environment or file descriptors;
+- process, PTY, cgroup, namespace, cancellation and descendant cleanup;
+- effect identity, durability and no-redispatch behavior;
+- broker multiplexing, correlation and owner-result isolation;
+- control epochs, leases and fencing;
+- event-store corruption, replay and state migration;
+- Android product graph, init, SELinux, AVB, rollback and OTA;
+- ADB routing, target identity and physical-device evidence;
+- evidence capture, independent review and release authorization.
 
-## High-risk areas
+## Response
 
-Reports involving the following areas should be treated as release-blocking:
+A fix is developed on an exact-source branch, receives the applicable module and independent review, and passes the same qualification as ordinary changes. Any affected evidence identity is revoked and requalified at every level it previously reached. A source fix never promotes a target, device, fault or release claim by itself.
 
-- owner-open peer admission or SELinux identity;
-- provider credentials or inherited file descriptors/environment;
-- shell, PTY, process-group, cgroup, cancellation, or descendant cleanup;
-- ADB argv/routing substitution;
-- event/journal corruption, replay, or automatic redispatch;
-- Android product graph, init, SELinux, AVB, OTA, rollback, or signing custody;
-- evidence capture, target attestation, independent review, or gap promotion.
+## Disclosure
 
-## Public disclosure
-
-Coordinate public disclosure only after a patched exact source is available and
-previously published artifacts have been revoked or explicitly marked affected.
-The repository's owner-open profile intentionally grants broad authority to its
-configured semantic agent; that accepted product risk does not excuse hidden
-privilege escalation, false evidence, credential leakage, or uncontrolled
-process survival.
+Coordinate public disclosure only after an exact patched source is available and affected artifacts or evidence have been revoked or marked. The owner-open trust model does not excuse hidden privilege escalation, uncontrolled process survival, credential leakage, stale-writer mutation or fabricated evidence.

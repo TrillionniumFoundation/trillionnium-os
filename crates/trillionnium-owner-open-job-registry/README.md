@@ -1,3 +1,9 @@
-# trillionnium-owner-open-job-registry
+# Owner-Open Job Registry
 
-Mechanism-only state for owner-open long-running jobs. The registry binds one scoped `job_id` to one exact request, grants at most one spawn generation, tracks live, terminal and restart-uncertain state, bounded observations, attachments, stdin closure and kill requests. It does not classify command meaning, authorize a target, retry an uncertain effect or replace the durable job observation journal.
+Current module: `MOD-JOB-RUNTIME`  
+Program authority: `docs/START_HERE.md`  
+Machine contract: `docs/machine/module-catalog.v1.json`
+
+This crate owns bounded job and operation identity, lifecycle transitions and duplicate/conflict handling. It does not schedule semantic work or automatically restart an uncertain effect.
+
+Current status and open gaps are generated from `docs/machine/`; no historical maturity statement in this directory is authoritative.

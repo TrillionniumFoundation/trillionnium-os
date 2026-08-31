@@ -1,70 +1,54 @@
 # Contributing to Trillionnium OS
 
-Trillionnium OS uses an evidence-first stacked integration process. A green
-source workflow is necessary but is not sufficient to claim that code is
-installed, image-included, device-observed, fault-qualified, or released.
+Start with `docs/START_HERE.md`. Current program truth lives under `docs/machine/`; files under `docs/generated/` are generated and must not be edited by hand.
 
-## Change topology
+## Historical-document rule
 
-1. Branch from the exact reviewed base named in the active plan.
-2. Keep each pull request narrow enough for an independent reviewer to inspect.
-3. Do not bypass the declared stacked PR order.
-4. Do not push directly to `main` or force-push a reviewed integration head.
-5. Re-run exact-head CI after every behavior-affecting source change.
+Historical development documents must not be reintroduced. Git history is the recovery source for prior plans, audits, status snapshots and evidence narratives. Historical material may be studied, but it must not be copied back into the working tree as an active plan, protocol, status or evidence authority.
 
-The active semantic and implementation authorities are listed in
-`docs/OWNER_OPEN_R5_START_HERE.md`. Historical plans and status snapshots do not
-override the active machine gap register.
+## Module contract
 
-## Required source checks
+Every behavior-affecting change identifies its affected module IDs and updates the applicable:
 
-Before requesting review, the exact pull-request head must pass the permanent
-workflows covering:
+- responsibilities and non-goals;
+- interfaces and state schemas;
+- ordering, concurrency and resource contracts;
+- SLI/SLO and benchmark evidence;
+- failure, recovery, migration and rollback behavior;
+- requirements, gaps, claim ceiling and negative claims.
 
-- generated contracts and exact source graph;
-- Python compilation, mutation and protocol fixtures;
-- locked Rust metadata, formatting, all-target tests and strict Clippy;
-- owner-open product entrypoint and Android source-profile contracts;
-- evidence workflow boundaries and fail-closed promotion rules.
+Each module has a primary and backup owner. Cross-module API or state changes require both producer and consumer review.
 
-Do not copy a successful run from an earlier commit into status documents.
-Checked-in status is claim policy; exact evidence is produced by CI.
+## Change classes
 
-## Evidence levels
+- D0 — wording or link only;
+- D1 — module-internal implementation;
+- D2 — cross-module API or state schema;
+- D3 — concurrency, persistence, resources or lifecycle;
+- D4 — semantic authority or Effect invariant;
+- D5 — evidence, release or claim ceiling.
 
-- **L0** — contract/source shape only.
-- **L1** — exact-checkout host tests.
-- **L2** — installed Root Linux, provider, broker and Codex observations.
-- **L3** — clean Android target-files, Soong, init and SELinux evidence.
-- **L4** — authorized physical shell/job/ordinary-ADB effects.
-- **L5** — crash, storage, disconnect, USB, reboot and power-loss qualification.
-- **L6** — signed public release with independent human authorization.
+Review requirements are defined in `docs/TEAM_AND_DELIVERY_MODEL.md`.
 
-Never edit a gap to `CLOSED` without a promotable evidence bundle at or above
-its declared exit level. Synthetic fixtures and source-only CI cannot close an
-external lane.
+## Branch and CI requirements
 
-## Review independence
+Use short-lived branches and the protected integration path. Do not push directly to `main`, bypass required checks or reuse a historical green run for a changed head.
 
-A reviewer approving integration or external evidence must differ from the
-change author, evidence producer and target operator. Stale approvals do not
-apply after a behavior-affecting head change. Release authorization must be
-separate from production, review and target operation.
+Every behavior-affecting pull request must:
 
-## Security-sensitive changes
+1. check out and identify its exact clean source head;
+2. keep `Cargo.lock` reviewed and unchanged by CI;
+3. pass formatting, locked tests and strict lint;
+4. keep generated documentation byte-exact;
+5. declare API/state compatibility and migration;
+6. report performance and resource-budget impact;
+7. provide canary and rollback conditions;
+8. retain explicit negative claims.
 
-Changes to process lifecycle, credentials, ADB, persistence, Android/SELinux,
-workflows, evidence capture or release paths require explicit negative tests.
-Preserve raw errors and uncertain effect state. Never introduce automatic
-redispatch after disconnect, timeout, journal failure or restart.
+Any behavior-changing push invalidates stale approvals.
 
-## Commit and artifact hygiene
+## Effect and evidence safety
 
-- Sign off commits and use descriptive, scoped messages.
-- Pin third-party workflow actions to full commit SHAs.
-- Keep `Cargo.lock` reviewed and unchanged by locked CI.
-- Do not commit credentials, device secrets, private keys, target tokens or
-  unreviewed release evidence.
-- Bind generated artifacts to exact source, toolchain, manifest and digest.
+Preserve exact identity, durable-before-effect requirements, truthful uncertainty and `automatic_redispatch=false`. Source fixtures cannot close installed, Android-image, physical-device, destructive-fault or release gaps.
 
-Security reports follow `SECURITY.md` rather than the public issue tracker.
+Do not commit credentials, private keys, target tokens, device secrets, unredacted user data or unreviewed release evidence. Security reports follow `SECURITY.md`.

@@ -1,29 +1,9 @@
-# trillionnium-owner-open-event-store
+# Owner-Open Event Store
 
-This crate is the R5 append-only observation store. It records provider/tool/
-turn events for replay and conservative restart analysis. It is explicitly not
-an authorization journal and does not decide whether a direct call may execute.
+Current module: `MOD-EVENT-STORE`  
+Program authority: `docs/START_HERE.md`  
+Machine contract: `docs/machine/module-catalog.v1.json`
 
-Source properties:
+This crate records bounded append-only observations, integrity metadata and replay state. It records facts and never authorizes an effect or treats missing data as proof that an effect did not start.
 
-- one non-blocking exclusive writer lock;
-- owner-controlled regular `0600` file opened with `O_NOFOLLOW|O_CLOEXEC`;
-- global `store_seq` and per-turn `turn_seq`;
-- event identity scoped by session/profile/task/turn/turn-stream/event ID;
-- payload digest and chained record digest;
-- exact duplicate append is idempotent;
-- same event identity with different bytes conflicts;
-- strict recursive duplicate-member rejection on reopen;
-- truncated, reordered, tampered or over-capacity files fail closed;
-- inclusive per-turn replay;
-- none/data/full sync policy;
-- ambiguous append failure poisons the writer so absence is never misreported as
-  proof that no effect occurred.
-
-The embedding owner-open Host must treat store availability as observability.
-A storage failure may mark a lineage best-effort/unreplayable, but it must not
-silently become a semantic command denial.
-
-Current claim ceiling: **SOURCE_IMPLEMENTED / L0** until the exact commit passes
-Rust formatting, all-target tests and clippy. The store is not yet bound into
-the R5 Host event path or restart reconciliation.
+Its durability and scalability work is tracked by `GAP-JOURNAL-CONVERGENCE-001` and `GAP-CONC-EVENT-STORE-001`. Historical source-status prose has been removed; current state is generated under `docs/generated/`.
