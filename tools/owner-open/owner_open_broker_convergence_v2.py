@@ -129,13 +129,14 @@ class BrokerConvergenceMixin:
                     "frame": frame,
                     "automatic_redispatch": False,
                 }
+                # The wire contract keeps observations globally visible while
+                # delivering the correlated terminal result only to its owner.
+                # Broadcasting the terminal observation also preserves durable
+                # observability when the owner disconnects after acceptance; it
+                # never transfers result ownership or authorizes redispatch.
+                self._broadcast(observation)
                 if request is None:
-                    # Non-terminal observations remain globally observable under
-                    # the v1 response model.  Correlated terminal observations
-                    # are owner-routed below to prevent cross-delivery.
-                    self._broadcast(observation)
                     continue
-                self._owner(request.owner_id, observation)
                 self._finish_active(
                     request,
                     self._result(request, frame),
