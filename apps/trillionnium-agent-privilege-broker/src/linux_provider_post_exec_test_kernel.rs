@@ -2377,11 +2377,7 @@ mod tests {
                 .expect("exact parent captured")
                 < launcher.find("libc::SYS_clone3").expect("clone3 boundary")
         );
-        assert!(
-            launcher
-                .find("null.as_raw_fd(),\n                expected_parent_pid,")
-                .is_some()
-        );
+        assert!(launcher.contains("null.as_raw_fd(),\n                expected_parent_pid,"));
         assert!(
             child_setup.rfind(pdeathsig).expect("post-drop rearm")
                 > child_setup

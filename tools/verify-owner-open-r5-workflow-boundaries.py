@@ -38,7 +38,8 @@ API_WRITE = re.compile(
     r"method\s*=\s*['\"](?:POST|PUT|PATCH|DELETE)['\"])",
     re.IGNORECASE,
 )
-CHECKOUT = re.compile(r"^\s*- uses: actions/checkout@")
+STEP_START = re.compile(r"^(?P<indent>\s*)-\s+[A-Za-z_][A-Za-z0-9_-]*\s*:")
+CHECKOUT = re.compile(r"(?m)^\s*(?:-\s*)?uses:\s*actions/checkout@")
 EXACT_HEAD_ASSERTION = re.compile(
     r"\bgit\s+(?:--no-replace-objects\s+)?rev-parse\s+HEAD\b"
 )
@@ -48,23 +49,39 @@ class BoundaryError(ValueError):
     pass
 
 
-def _checkout_blocks(lines: list[str]) -> list[tuple[int, str]]:
+def _workflow_step_blocks(lines: list[str]) -> list[tuple[int, str]]:
     blocks: list[tuple[int, str]] = []
-    for index, line in enumerate(lines):
-        if CHECKOUT.match(line) is None:
+    index = 0
+    while index < len(lines):
+        match = STEP_START.match(lines[index])
+        if match is None:
+            index += 1
             continue
-        indent = len(line) - len(line.lstrip())
-        block = [line]
-        for following in lines[index + 1 :]:
+        indent = len(match.group("indent"))
+        block = [lines[index]]
+        following_index = index + 1
+        while following_index < len(lines):
+            following = lines[following_index]
             stripped = following.strip()
             following_indent = len(following) - len(following.lstrip())
-            if stripped and following_indent <= indent and stripped.startswith("-"):
+            following_match = STEP_START.match(following)
+            if stripped and following_match is not None and following_indent == indent:
                 break
             if stripped and following_indent < indent:
                 break
             block.append(following)
+            following_index += 1
         blocks.append((index + 1, "\n".join(block)))
+        index = following_index
     return blocks
+
+
+def _checkout_blocks(lines: list[str]) -> list[tuple[int, str]]:
+    return [
+        (line_number, block)
+        for line_number, block in _workflow_step_blocks(lines)
+        if CHECKOUT.search(block) is not None
+    ]
 
 
 def verify(root: Path) -> dict[str, Any]:
@@ -78,11 +95,11 @@ def verify(root: Path) -> dict[str, Any]:
         "owner-open-r5-target-evidence-capture.yml",
         "owner-open-r5-governance-readiness.yml",
     }
-    observed = {path.name for path in workflow_dir.glob("owner-open-r5*.yml")}
+    observed = {path.name for path in workflow_dir.glob("owner-open*.yml")}
     for name in sorted(required - observed):
         errors.append(f"required permanent workflow is absent: {name}")
 
-    for path in sorted(workflow_dir.glob("owner-open-r5*.yml")):
+    for path in sorted(workflow_dir.glob("owner-open*.yml")):
         try:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as error:

@@ -244,7 +244,7 @@ fn accepted_without_terminal_is_unknown_and_not_redispatched() {
             .unwrap();
     }
     let marker = directory.path().join("must-not-run");
-    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+    let manager = reopen_after_dispatcher_shutdown(&journal_path);
     let result = manager
         .start(start_request(
             job,
@@ -259,7 +259,7 @@ fn accepted_without_terminal_is_unknown_and_not_redispatched() {
 }
 
 #[test]
-fn configured_unavailable_journal_is_unknown_and_never_dispatched() {
+fn configured_unavailable_journal_is_rejected_before_dispatch() {
     let directory = tempfile::tempdir().unwrap();
     let journal_path = directory.path().join("jobs.jsonl");
     let held = JobJournal::open_best_effort(Some(&journal_path));
@@ -270,7 +270,7 @@ fn configured_unavailable_journal_is_unknown_and_never_dispatched() {
         JournalStatus::Unavailable { .. }
     ));
     let marker = directory.path().join("must-not-run-unavailable");
-    let result = manager
+    let error = manager
         .start(start_request(
             key("job-unavailable"),
             request('f', "pipe"),
@@ -278,8 +278,12 @@ fn configured_unavailable_journal_is_unknown_and_never_dispatched() {
             format!("touch '{}'", marker.display()),
             None,
         ))
-        .unwrap();
-    assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);
+        .unwrap_err();
+    assert!(matches!(
+        error,
+        trillionnium_owner_open_job_runtime::JobRuntimeError::Journal(message)
+            if message == "job journal is unavailable and unjournaled effects are disabled"
+    ));
     assert!(!marker.exists());
 }
 
@@ -450,4 +454,60 @@ fn leader_exit_does_not_leave_a_background_process_group_member() {
         );
         thread::sleep(Duration::from_millis(10));
     }
+}
+
+#[test]
+fn default_configuration_rejects_unjournaled_effects_before_spawn() {
+    let directory = tempfile::tempdir().unwrap();
+    let marker = directory.path().join("must-not-run-without-journal");
+    let manager = JobManager::open(JobRuntimeConfig::default(), None).unwrap();
+    let job = key("job-no-journal");
+    let error = manager
+        .start(start_request(
+            job.clone(),
+            request('f', "pipe"),
+            "start-no-journal",
+            format!("touch '{}'", marker.display()),
+            None,
+        ))
+        .unwrap_err();
+    assert!(
+        error
+            .to_string()
+            .contains("unjournaled effects are disabled")
+    );
+    assert!(!marker.exists());
+    assert!(manager.registry().snapshot(&job).is_err());
+}
+
+#[test]
+fn pty_eof_character_does_not_claim_that_the_descriptor_is_closed() {
+    let directory = tempfile::tempdir().unwrap();
+    let journal = directory.path().join("jobs.jsonl");
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    let job = key("job-pty-eof-truth");
+    manager
+        .start(start_request(
+            job.clone(),
+            request('a', "pty"),
+            "start-pty-eof-truth",
+            "trap 'exit 0' TERM; while :; do sleep 1; done".to_string(),
+            Some(PtySize { rows: 24, cols: 80 }),
+        ))
+        .unwrap();
+    assert_eq!(
+        manager.close_stdin(&job, "send-pty-eof").unwrap(),
+        ControlDisposition::Applied
+    );
+    let inspection = manager.inspect(&job, 0, 4096).unwrap();
+    assert!(!inspection.snapshot.unwrap().stdin_closed);
+    let records = manager.durable_records(&job).unwrap();
+    assert!(records.iter().any(|record| {
+        let encoded = record.to_string();
+        encoded.contains("pty_eof_character_sent") && encoded.contains("\"stdin_closed\":false")
+    }));
+    manager
+        .kill(&job, "kill-pty-eof-truth", libc::SIGTERM)
+        .unwrap();
+    wait_terminal(&manager, &job);
 }

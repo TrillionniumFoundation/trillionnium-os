@@ -936,7 +936,7 @@ fn available_bytes(directory: &File) -> Result<u64, DurableError> {
     if unsafe { libc::fstatvfs(directory.as_raw_fd(), &mut value) } != 0 {
         return Err(std::io::Error::last_os_error().into());
     }
-    Ok((value.f_bavail as u64).saturating_mul(value.f_frsize as u64))
+    Ok(value.f_bavail.saturating_mul(value.f_frsize))
 }
 
 fn validate_private_directory_metadata(metadata: &std::fs::Metadata) -> Result<(), DurableError> {

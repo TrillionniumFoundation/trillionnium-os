@@ -11,6 +11,26 @@ use crate::types::{
 };
 use crate::validate::{adb_spec, shell_spec};
 
+const PROCESS_INHERITED_ENV_ALLOWLIST: &[&str] = &[
+    "PATH",
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "TERM",
+    "NO_COLOR",
+    "ADB_SERVER_SOCKET",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+    "no_proxy",
+];
+
 #[derive(Debug)]
 enum ReaderMessage {
     Chunk(StreamKind, Vec<u8>),
@@ -75,6 +95,12 @@ where
     emit(ExecutionEventKind::Accepted);
 
     let mut command = Command::new(&spec.program);
+    command.env_clear();
+    for &key in PROCESS_INHERITED_ENV_ALLOWLIST {
+        if let Some(value) = std::env::var_os(key) {
+            command.env(key, value);
+        }
+    }
     command
         .args(&spec.args)
         .stdin(Stdio::piped())

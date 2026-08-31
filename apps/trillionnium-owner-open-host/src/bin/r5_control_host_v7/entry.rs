@@ -36,7 +36,7 @@ pub(crate) fn run() -> Result<(), String> {
     });
     let manager = JobManager::open(
         JobRuntimeConfig {
-            allow_unjournaled_effects: !parsed.require_job_journal,
+            allow_unjournaled_effects: parsed.allow_unjournaled_effects,
             ..JobRuntimeConfig::default()
         },
         derived_job_store.as_deref(),
@@ -84,7 +84,7 @@ pub(crate) fn run() -> Result<(), String> {
 struct JobHostOptions {
     base: Options,
     job_store: Option<PathBuf>,
-    require_job_journal: bool,
+    allow_unjournaled_effects: bool,
 }
 
 impl JobHostOptions {
@@ -92,6 +92,7 @@ impl JobHostOptions {
         let mut forwarded = Vec::new();
         let mut job_store = None;
         let mut require_job_journal = false;
+        let mut allow_unjournaled_effects = false;
         let mut index = 0usize;
         while index < args.len() {
             let option = args[index]
@@ -112,19 +113,28 @@ impl JobHostOptions {
                 "--require-job-journal" => {
                     require_job_journal = true;
                 }
+                "--allow-unjournaled-effects-for-development" => {
+                    allow_unjournaled_effects = true;
+                }
                 _ => forwarded.push(args[index.saturating_sub(1)].clone()),
             }
+        }
+        if require_job_journal && allow_unjournaled_effects {
+            return Err(
+                "--require-job-journal conflicts with --allow-unjournaled-effects-for-development"
+                    .to_string(),
+            );
         }
         Ok(Self {
             base: Options::parse(forwarded)?,
             job_store,
-            require_job_journal,
+            allow_unjournaled_effects,
         })
     }
 
     fn usage() -> String {
         format!(
-            "{}\n\nLong-running job options:\n  --job-store /absolute/path/jobs.jsonl\n  --require-job-journal\n\nThe job-aware v7 core multiplexes job.start/inspect/attach/detach/write/resize/close_stdin/kill with the existing v4 turn core. The selected v5 transport remains responsible for bounded persisted delivery flow control.",
+            "{}\n\nLong-running job options:\n  --job-store /absolute/path/jobs.jsonl\n  --require-job-journal\n  --allow-unjournaled-effects-for-development\n\nDurable journaling is required by default. The development-only override permits unreplayable effects and must not appear in an installed product profile.\n\nThe job-aware v7 core multiplexes job.start/inspect/attach/detach/write/resize/close_stdin/kill with the existing v4 turn core. The selected v5 transport remains responsible for bounded persisted delivery flow control.",
             Options::usage()
         )
     }

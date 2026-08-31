@@ -53,12 +53,22 @@ impl Default for JobRuntimeConfig {
             max_output_chunk_bytes: 64 * 1024,
             max_observations_per_job: 4096,
             max_observation_bytes_per_job: 16 * 1024 * 1024,
-            allow_unjournaled_effects: true,
+            allow_unjournaled_effects: false,
         }
     }
 }
 
 impl JobRuntimeConfig {
+    /// Explicit development-only fail-open configuration. Production callers
+    /// must use the fail-closed default and provide a durable journal.
+    #[must_use]
+    pub fn development_unsafe() -> Self {
+        Self {
+            allow_unjournaled_effects: true,
+            ..Self::default()
+        }
+    }
+
     pub fn validate(&self) -> Result<()> {
         if self.max_jobs == 0
             || self.max_operation_id_bytes == 0

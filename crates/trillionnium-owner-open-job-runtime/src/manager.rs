@@ -11,7 +11,7 @@ use trillionnium_owner_open_job_registry::{
 };
 
 use crate::journal::{JournalStatus, OperationBegin};
-use crate::process::{ProcessControl, spawn_process};
+use crate::process::{ProcessControl, StdinCloseEffect, spawn_process};
 use crate::{
     ControlDisposition, InternalProcessEvent, JobInspection, JobJournal, JobObservationGap,
     JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult, PtySize, ReplayStatus,
@@ -148,6 +148,18 @@ impl JobManager {
             ));
         }
 
+        // Fail closed before the registry accepts the job.  An unavailable or
+        // deliberately memory-only journal must not leave an Accepted entry
+        // behind when production policy rejects unjournaled effects.
+        let journal_status = self.inner.journal.status()?;
+        if !self.inner.config.allow_unjournaled_effects
+            && !matches!(&journal_status, JournalStatus::Durable)
+        {
+            return Err(JobRuntimeError::Journal(
+                "job journal is unavailable and unjournaled effects are disabled".to_string(),
+            ));
+        }
+
         let begin = self
             .inner
             .registry
@@ -167,10 +179,7 @@ impl JobManager {
                 replay_status: self.replay_status(false)?,
             });
         }
-        if matches!(
-            self.inner.journal.status()?,
-            JournalStatus::Unavailable { .. }
-        ) {
+        if matches!(&journal_status, JournalStatus::Unavailable { .. }) {
             let snapshot = self
                 .inner
                 .registry
@@ -464,18 +473,29 @@ impl JobManager {
         )? {
             return Ok(disposition);
         }
-        running.control.close_stdin()?;
-        self.inner
-            .registry
-            .close_stdin(key)
-            .map_err(registry_error)?;
+        let effect = running.control.close_stdin()?;
+        if effect == StdinCloseEffect::PipeClosed {
+            self.inner
+                .registry
+                .close_stdin(key)
+                .map_err(registry_error)?;
+        }
+        let (status, stdin_closed) = match effect {
+            StdinCloseEffect::AlreadyClosed => ("already_applied", !running.control.pty),
+            StdinCloseEffect::PipeClosed => ("pipe_stdin_closed", true),
+            StdinCloseEffect::PtyEofCharacterSent => ("pty_eof_character_sent", false),
+        };
         self.complete_control(
             key,
             &running.request,
             operation_id,
             "close_stdin",
             &digest,
-            json!({"status": "stdin_closed"}),
+            json!({
+                "status": status,
+                "stdin_closed": stdin_closed,
+                "pty": running.control.pty
+            }),
         )?;
         Ok(ControlDisposition::Applied)
     }

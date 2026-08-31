@@ -5,6 +5,7 @@ use std::os::fd::{AsRawFd, FromRawFd};
 use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::path::Path;
 use std::process::{Child, ChildStdin, Command, ExitStatus, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, SyncSender, sync_channel};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
@@ -17,6 +18,26 @@ use crate::{
 const PROCESS_EVENT_QUEUE: usize = 256;
 const DESCENDANT_TERM_GRACE: Duration = Duration::from_millis(100);
 const DESCENDANT_KILL_GRACE: Duration = Duration::from_millis(100);
+const SPAWN_GUARD_REAP_GRACE: Duration = Duration::from_millis(500);
+const JOB_INHERITED_ENV_ALLOWLIST: &[&str] = &[
+    "PATH",
+    "HOME",
+    "LANG",
+    "LC_ALL",
+    "TERM",
+    "NO_COLOR",
+    "ADB_SERVER_SOCKET",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+    "no_proxy",
+];
 
 enum InputHandle {
     Pipe(ChildStdin),
@@ -28,6 +49,14 @@ pub(crate) struct ProcessControl {
     pub pty: bool,
     input: Arc<Mutex<Option<InputHandle>>>,
     pty_master: Option<Arc<File>>,
+    pty_eof_sent: AtomicBool,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum StdinCloseEffect {
+    AlreadyClosed,
+    PipeClosed,
+    PtyEofCharacterSent,
 }
 
 pub(crate) struct SpawnedProcess {
@@ -49,27 +78,48 @@ impl SpawnGuard {
         }
     }
 
-    fn child_mut(&mut self) -> &mut Child {
-        self.child.as_mut().expect("spawn guard owns one child")
+    fn child_mut(&mut self) -> std::io::Result<&mut Child> {
+        self.child
+            .as_mut()
+            .ok_or_else(|| std::io::Error::other("spawn guard no longer owns its child"))
     }
 
     fn wait(mut self) -> std::io::Result<ExitStatus> {
         self.child
             .take()
-            .expect("spawn guard owns one child")
+            .ok_or_else(|| std::io::Error::other("spawn guard no longer owns its child"))?
             .wait()
     }
 }
 
 impl Drop for SpawnGuard {
     fn drop(&mut self) {
-        let Some(child) = self.child.as_mut() else {
+        let Some(mut child) = self.child.take() else {
             return;
         };
-        if send_process_group_signal(self.pid, libc::SIGKILL).is_err() {
-            let _ = child.kill();
+        let _ = send_process_group_signal(self.pid, libc::SIGKILL);
+        let _ = child.kill();
+
+        let deadline = Instant::now()
+            .checked_add(SPAWN_GUARD_REAP_GRACE)
+            .unwrap_or_else(Instant::now);
+        loop {
+            match child.try_wait() {
+                Ok(Some(_)) => return,
+                Ok(None) if Instant::now() < deadline => {
+                    thread::sleep(Duration::from_millis(5));
+                }
+                Ok(None) => break,
+                Err(_) => return,
+            }
         }
-        let _ = child.wait();
+
+        // Preserve eventual wait(2) ownership without allowing Drop to wedge
+        // an error-return path indefinitely.
+        let name = format!("owner-open-job-abort-reaper-{}", self.pid);
+        let _ = thread::Builder::new().name(name).spawn(move || {
+            let _ = child.wait();
+        });
     }
 }
 
@@ -80,24 +130,38 @@ impl ProcessControl {
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)?;
         let handle = guard.as_mut().ok_or(JobRuntimeError::NotLive)?;
-        write_input(handle, bytes)
+        write_input(handle, bytes)?;
+        if matches!(handle, InputHandle::Pty(_)) {
+            self.pty_eof_sent.store(false, Ordering::Release);
+        }
+        Ok(())
     }
 
-    pub fn close_stdin(&self) -> Result<()> {
+    pub fn close_stdin(&self) -> Result<StdinCloseEffect> {
         let mut guard = self
             .input
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)?;
         match guard.as_mut() {
-            None => Ok(()),
+            None => Ok(StdinCloseEffect::AlreadyClosed),
             Some(InputHandle::Pipe(_)) => {
                 *guard = None;
-                Ok(())
+                Ok(StdinCloseEffect::PipeClosed)
             }
-            Some(InputHandle::Pty(master)) => master
-                .write_all(&[0x04])
-                .and_then(|_| master.flush())
-                .map_err(|error| JobRuntimeError::Io(error.to_string())),
+            Some(InputHandle::Pty(master)) => {
+                if self
+                    .pty_eof_sent
+                    .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+                    .is_err()
+                {
+                    return Ok(StdinCloseEffect::AlreadyClosed);
+                }
+                if let Err(error) = master.write_all(&[0x04]).and_then(|_| master.flush()) {
+                    self.pty_eof_sent.store(false, Ordering::Release);
+                    return Err(JobRuntimeError::Io(error.to_string()));
+                }
+                Ok(StdinCloseEffect::PtyEofCharacterSent)
+            }
         }
     }
 
@@ -150,10 +214,9 @@ fn spawn_pipe(request: &JobStartRequest, maximum_chunk: usize) -> Result<Spawned
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
+    let parent_pid = unsafe { libc::getpid() };
     unsafe {
-        command.pre_exec(|| {
-            #[cfg(any(target_os = "linux", target_os = "android"))]
-            let parent_pid = libc::getppid();
+        command.pre_exec(move || {
             if libc::setpgid(0, 0) != 0 {
                 return Err(std::io::Error::last_os_error());
             }
@@ -176,16 +239,19 @@ fn spawn_pipe(request: &JobStartRequest, maximum_chunk: usize) -> Result<Spawned
     let pid = guard.pid;
     let stdin = guard
         .child_mut()
+        .map_err(|error| JobRuntimeError::Io(error.to_string()))?
         .stdin
         .take()
         .ok_or_else(|| JobRuntimeError::Io("child stdin was not piped".to_string()))?;
     let stdout = guard
         .child_mut()
+        .map_err(|error| JobRuntimeError::Io(error.to_string()))?
         .stdout
         .take()
         .ok_or_else(|| JobRuntimeError::Io("child stdout was not piped".to_string()))?;
     let stderr = guard
         .child_mut()
+        .map_err(|error| JobRuntimeError::Io(error.to_string()))?
         .stderr
         .take()
         .ok_or_else(|| JobRuntimeError::Io("child stderr was not piped".to_string()))?;
@@ -208,6 +274,7 @@ fn spawn_pipe(request: &JobStartRequest, maximum_chunk: usize) -> Result<Spawned
             pty: false,
             input,
             pty_master: None,
+            pty_eof_sent: AtomicBool::new(false),
         }),
         events: receiver,
     })
@@ -239,10 +306,9 @@ fn spawn_pty(
         .stdin(Stdio::from(stdin_slave))
         .stdout(Stdio::from(stdout_slave))
         .stderr(Stdio::from(stderr_slave));
+    let parent_pid = unsafe { libc::getpid() };
     unsafe {
         command.pre_exec(move || {
-            #[cfg(any(target_os = "linux", target_os = "android"))]
-            let parent_pid = libc::getppid();
             if libc::setsid() == -1 {
                 return Err(std::io::Error::last_os_error());
             }
@@ -292,6 +358,7 @@ fn spawn_pty(
             pty: true,
             input,
             pty_master: Some(master),
+            pty_eof_sent: AtomicBool::new(false),
         }),
         events: receiver,
     })
@@ -313,6 +380,12 @@ fn base_command(request: &JobStartRequest) -> Result<Command> {
             command
         }
     };
+    command.env_clear();
+    for &key in JOB_INHERITED_ENV_ALLOWLIST {
+        if let Some(value) = std::env::var_os(key) {
+            command.env(key, value);
+        }
+    }
     if let Some(cwd) = &request.cwd {
         command.current_dir(cwd);
     }

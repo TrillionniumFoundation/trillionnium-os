@@ -101,11 +101,21 @@ fn codex_provider(
     };
     // The device-conformance feature selects the bounded tool action and
     // evidence lane only; it must never replace production provider admission.
-    codex_adapter::CodexAdapter::new_bound(
+    let adapter = codex_adapter::CodexAdapter::new_bound(
         codex_adapter::config_from_env()?,
         secret,
         capability_identity,
-    )
+    )?;
+    let adapter_registration = provider_contract::AgentAdapter::register(&adapter);
+    if adapter_registration.api_version != registration.api_version
+        || adapter_registration.agent_id != registration.agent_id
+        || adapter_registration.adapter != registration.adapter
+        || adapter_registration.adapter_version != registration.adapter_version
+        || adapter_registration.network_policy != registration.network_policy
+    {
+        bail!("bound Codex adapter registration differs from OS-owned AgentRegistration");
+    }
+    Ok(adapter)
 }
 
 const DEFAULT_AGENT_MANIFEST_DIR: &str = "/system_ext/etc/trillionnium/agents";

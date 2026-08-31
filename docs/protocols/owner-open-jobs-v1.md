@@ -441,3 +441,10 @@ An error that cannot recover enough exact request correlation remains an
 observation and cannot resolve a different active Broker request. Missing
 correlation fails closed into timeout or uncertainty rather than
 cross-delivering an error to the wrong operation.
+
+
+## R15 durability and stdin semantics
+
+- Effectful job operations require a durable journal by default. The only fail-open mode is the explicit development-only command-line escape hatch; installed product profiles must not enable it.
+- `close_stdin` physically closes pipe stdin. For PTY jobs it sends one VEOF (`0x04`) character and reports `pty_eof_character_sent`; it does not claim that the PTY descriptor is closed. A later PTY write permits a later EOF character to be sent again.
+- Provider, direct shell/ADB, and durable job subprocesses inherit only a finite mechanical environment allowlist before applying the explicit request delta.

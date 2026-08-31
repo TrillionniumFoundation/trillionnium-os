@@ -130,8 +130,9 @@ pub enum ShellInvocation {
     Argv(Vec<String>),
 }
 
-/// Environment delta: `Some(value)` sets/replaces a variable, `None` removes
-/// it, and an absent key inherits the parent value.
+/// Environment delta: `Some(value)` sets/replaces a variable and `None`
+/// removes it. An absent key is inherited only when it belongs to the finite
+/// mechanical allowlist; arbitrary Host secrets are never inherited.
 pub type EnvironmentDelta = BTreeMap<String, Option<String>>;
 
 #[derive(Debug, Clone, PartialEq, Eq)]

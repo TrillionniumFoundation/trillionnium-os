@@ -40,6 +40,26 @@ use protocol::{
 
 pub const PROVIDER_PROTOCOL: &str = "trillionnium.owner-open.provider-jsonl.v1";
 const PROVIDER_OUTPUT_DRAIN_GRACE_MINIMUM: Duration = Duration::from_secs(2);
+const PROVIDER_INHERITED_ENV_ALLOWLIST: &[&str] = &[
+    "PATH",
+    "HOME",
+    "CODEX_HOME",
+    "LANG",
+    "LC_ALL",
+    "TERM",
+    "NO_COLOR",
+    "ADB_SERVER_SOCKET",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "NO_PROXY",
+    "http_proxy",
+    "https_proxy",
+    "all_proxy",
+    "no_proxy",
+];
 
 #[derive(Debug, Error)]
 pub enum JsonlProviderError {
@@ -170,6 +190,12 @@ impl JsonlProvider {
         self.config.validate()?;
         let started = Instant::now();
         let mut command = Command::new(&self.config.executable);
+        command.env_clear();
+        for &key in PROVIDER_INHERITED_ENV_ALLOWLIST {
+            if let Some(value) = std::env::var_os(key) {
+                command.env(key, value);
+            }
+        }
         command
             .args(&self.config.args)
             .stdin(Stdio::piped())
@@ -188,10 +214,20 @@ impl JsonlProvider {
                 }
             }
         }
+        let parent_pid = unsafe { libc::getpid() };
         unsafe {
-            command.pre_exec(|| {
+            command.pre_exec(move || {
                 if libc::setpgid(0, 0) != 0 {
                     return Err(std::io::Error::last_os_error());
+                }
+                #[cfg(any(target_os = "linux", target_os = "android"))]
+                {
+                    if libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) != 0 {
+                        return Err(std::io::Error::last_os_error());
+                    }
+                    if libc::getppid() != parent_pid {
+                        return Err(std::io::Error::from_raw_os_error(libc::ECHILD));
+                    }
                 }
                 Ok(())
             });

@@ -584,9 +584,43 @@ mod tests {
         )
         .unwrap();
         write_frame(&mut client, &wrong_hello);
-        write_frame(&mut client, &probe);
-        client.shutdown(Shutdown::Write).unwrap();
+        let probe_frame = encoded_frame(&probe);
+        match client.write_all(&probe_frame) {
+            Ok(()) => {}
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::BrokenPipe
+                        | std::io::ErrorKind::ConnectionReset
+                        | std::io::ErrorKind::NotConnected
+                ) => {}
+            Err(error) => panic!("unexpected malformed-session write failure: {error}"),
+        }
+        match client.shutdown(Shutdown::Write) {
+            Ok(()) => {}
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::BrokenPipe
+                        | std::io::ErrorKind::ConnectionReset
+                        | std::io::ErrorKind::NotConnected
+                ) => {}
+            Err(error) => panic!("unexpected malformed-session shutdown failure: {error}"),
+        }
         assert!(server.join().unwrap().is_err());
+        let mut response = [0_u8; 1];
+        match client.read(&mut response) {
+            Ok(0) => {}
+            Ok(count) => panic!("malformed session received {count} response bytes"),
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::BrokenPipe
+                        | std::io::ErrorKind::ConnectionReset
+                        | std::io::ErrorKind::NotConnected
+                ) => {}
+            Err(error) => panic!("unexpected malformed-session read failure: {error}"),
+        }
     }
 
     #[test]
