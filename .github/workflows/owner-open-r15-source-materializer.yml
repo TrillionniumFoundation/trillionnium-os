@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: owner-open-r15-source-materializer
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   BASE_COMMIT: 7ca4d64de1d5acee65a1592b0903a1b4c5bc11b0
@@ -18,7 +18,9 @@ env:
   MATERIAL_COMMIT: d4a02e9633df8889d59afe08adf11295c05014f5
   TARGET_BRANCH: codex/owner-open-r15-runtime-hardening-20260831
   PATCH_SHA256: f30cd81483225ebda3192aa8e7ce29a194e1086d290e2a8aae915e1bc5462ae3
+  CARGO_INCREMENTAL: "0"
   PYTHONDONTWRITEBYTECODE: "1"
+  TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT: userdebug
   LANG: C.UTF-8
   LC_ALL: C.UTF-8
 
@@ -111,25 +113,30 @@ jobs:
           python3 tools/generate-owner-open-types.py --check
           python3 tools/verify-owner-open-r5.py --json
           python3 tools/verify-owner-open-r5-gap-evidence.py --json
+          python3 -m compileall -q tools
           PYTHONWARNINGS=error::ResourceWarning \
             python3 -m unittest discover -s tools/tests -p 'test_*.py' -v
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py --json
 
           cargo metadata --locked --format-version 1 > /tmp/r15-cargo-metadata.json
           cargo fmt --all -- --check
           cargo test --locked --workspace --all-targets
           cargo clippy --locked --workspace --all-targets -- -D warnings
-          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
-            cargo test --locked --package trillionnium-tool-runtime \
-              --features p0-launch-package-provider-conformance --lib
-          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
-            cargo test --locked --package trillionniumd \
-              --features p0-launch-package-device-conformance --all-targets
-          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
-            cargo clippy --locked --package trillionnium-tool-runtime \
-              --features p0-launch-package-provider-conformance --all-targets -- -D warnings
-          TRILLIONNIUM_P01_CONFORMANCE_BUILD_VARIANT=userdebug \
-            cargo clippy --locked --package trillionniumd \
-              --features p0-launch-package-device-conformance --all-targets -- -D warnings
+          cargo doc --locked --workspace --no-deps
+
+          # The trillionniumd P0 device-conformance feature is artifact-bound.
+          # It belongs to the protected Android evidence lane and is not a
+          # hosted source gate; the feature partitions below are host-valid.
+          cargo test -p trillionnium-agent-direct-tools --all-targets --no-default-features --features dev-overrides --locked
+          cargo test -p trillionnium-agent-direct-tools --all-targets --no-default-features --features development-compatibility-lane --locked
+          cargo test -p trillionnium-agent-direct-tools --all-targets --no-default-features --features production-durable-hotpath --locked
+          cargo test -p trillionnium-agent-direct-tools --all-targets --no-default-features --features device-launch-package-conformance --locked
+          cargo test -p trillionnium-tool-runtime --all-targets --all-features --locked
+          cargo test -p trillionnium-shell-exec --all-targets --all-features --locked
+          cargo test -p trillionnium-agent-privilege-broker --all-targets --features p0-launch-package-device-conformance --locked
+          cargo test -p trillionnium-os-types --all-targets --all-features --locked
+          cargo test -p trillionnium-privilege-broker-protocol --all-targets --all-features --locked
+          cargo test -p trillionniumd --all-targets --no-default-features --features dev-conformance-fault-hook,legacy-plan-conformance --locked
 
           test -z "$(git diff --name-only)"
           git diff --cached --check
