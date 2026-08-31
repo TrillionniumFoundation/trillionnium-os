@@ -33,8 +33,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact source-head checkout
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.13"
       - name: Compile relay source and tests
@@ -48,9 +60,9 @@ jobs:
         run: |
           python3 -m unittest tools.tests.test_owner_open_adb_relay -v \
             2>&1 | tee owner-open-r5-adb-relay-tests.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-r5-adb-relay-${{ github.sha }}
+          name: owner-open-r5-adb-relay-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error
           retention-days: 14
           path: owner-open-r5-adb-relay-tests.txt

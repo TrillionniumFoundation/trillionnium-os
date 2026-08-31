@@ -1,0 +1,28 @@
+"""Lock transport termination to ordered reader/waiter convergence."""
+
+from pathlib import Path
+import unittest
+
+
+RUN = Path(
+    "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/run.rs"
+)
+STATE = Path(
+    "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/state.rs"
+)
+
+
+class TransportCoreDrainTests(unittest.TestCase):
+    def test_exit_observation_cannot_bypass_ordered_core_frames(self) -> None:
+        run = RUN.read_text(encoding="utf-8")
+        state = STATE.read_text(encoding="utf-8")
+        self.assertIn("CoreExited(std::result::Result<ExitStatus, String>)", state)
+        self.assertIn("while core_reader_open || core_wait_open", run)
+        self.assertIn("spawn_core_waiter(child, sender)", run)
+        self.assertIn("terminate_core_process_group(core_pid)", run)
+        self.assertIn("CORE_READER_DRAIN_GRACE", run)
+        self.assertNotIn("child.try_wait()", run)
+
+
+if __name__ == "__main__":
+    unittest.main()

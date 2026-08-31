@@ -21,11 +21,24 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact diagnostic checkout
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Capture exact checkout identity and public Cosign bundles
         run: |
           set -euo pipefail
-          git rev-parse HEAD > owner-open-r5-diagnostic-head.txt
+          git --no-replace-objects rev-parse HEAD > owner-open-r5-diagnostic-head.txt
+          git --no-replace-objects rev-parse HEAD^{tree} > owner-open-r5-diagnostic-tree.txt
           mkdir -m 0700 owner-open-r5-public-bundles owner-open-r5-public-archives
           for arch in aarch64 x86_64; do
             for suffix in tar.gz sigstore; do
@@ -75,13 +88,14 @@ jobs:
           if not records or not all(item['rekor_matches_member'] for item in records):
               raise SystemExit('Rekor entry does not bind exact extracted member')
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-r5-final-gap-diagnostic-${{ github.sha }}
+          name: owner-open-r5-final-gap-diagnostic-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error
           retention-days: 2
           path: |
             owner-open-r5-diagnostic-head.txt
+            owner-open-r5-diagnostic-tree.txt
             owner-open-r5-public-bundles.sha256
             owner-open-r5-public-archives.sha256
             owner-open-r5-rekor-member-binding.json

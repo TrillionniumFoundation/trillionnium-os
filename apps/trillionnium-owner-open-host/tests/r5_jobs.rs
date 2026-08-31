@@ -141,11 +141,16 @@ fn pipe_job_runs_on_the_same_carrier_without_starting_the_provider() {
             .any(|frame| frame["kind"] == "job.start.result")
     );
     assert!(frames.iter().any(|frame| frame["kind"] == "job.started"));
-    assert!(frames.iter().any(|frame| {
-        frame["kind"] == "job.output"
-            && frame["payload"]["stream"] == "stdout"
-            && frame["payload"]["encoding"] == "base64"
-    }));
+    let output = frames
+        .iter()
+        .find(|frame| {
+            frame["kind"] == "job.output"
+                && frame["payload"]["stream"] == "stdout"
+                && frame["payload"]["encoding"] == "base64"
+        })
+        .expect("job.output");
+    assert!(output["payload"]["cursor"].is_u64());
+    assert!(output["durable_cursor"].is_u64());
     assert!(frames.iter().any(|frame| {
         frame["kind"] == "job.result" && frame["payload"]["terminal_kind"] == "exited"
     }));
@@ -179,4 +184,120 @@ fn completed_job_is_not_redispatched_after_a_new_core_process() {
         .unwrap();
     assert_eq!(start["payload"]["status"], "existing_terminal");
     assert_eq!(start["payload"]["automatic_redispatch"], false);
+}
+
+#[test]
+fn exact_job_responses_bind_scope_digest_and_operation_identity() {
+    let directory = tempfile::tempdir().unwrap();
+    let provider = directory.path().join("provider.sh");
+    let provider_marker = directory.path().join("provider-started");
+    let job_store = directory.path().join("jobs.jsonl");
+    provider_fixture(&provider, &provider_marker);
+
+    let frames = vec![
+        job_start("sleep 5"),
+        serde_json::json!({
+            "kind": "job.attach",
+            "seq": 2,
+            "direction": "client_to_host",
+            "payload": {
+                "session_id": "session-jobs",
+                "profile_id": "owner-open",
+                "task_id": "task-jobs",
+                "turn_id": "turn-jobs",
+                "turn_stream_id": "turn-stream-jobs",
+                "job_id": "job-pipe",
+                "operation_id": "attach-job-pipe",
+                "attachment_id": "attachment-job-pipe",
+                "inclusive_cursor": 0,
+                "limit": 16
+            }
+        })
+        .to_string(),
+        serde_json::json!({
+            "kind": "job.resize",
+            "seq": 3,
+            "direction": "client_to_host",
+            "payload": {
+                "session_id": "session-jobs",
+                "profile_id": "owner-open",
+                "task_id": "task-jobs",
+                "turn_id": "turn-jobs",
+                "turn_stream_id": "turn-stream-jobs",
+                "job_id": "job-pipe",
+                "operation_id": "resize-pipe-job",
+                "rows": 40,
+                "cols": 120
+            }
+        })
+        .to_string(),
+        serde_json::json!({
+            "kind": "job.kill",
+            "seq": 4,
+            "direction": "client_to_host",
+            "payload": {
+                "session_id": "session-jobs",
+                "profile_id": "owner-open",
+                "task_id": "task-jobs",
+                "turn_id": "turn-jobs",
+                "turn_stream_id": "turn-stream-jobs",
+                "job_id": "job-pipe",
+                "operation_id": "kill-job-pipe",
+                "signal": 15
+            }
+        })
+        .to_string(),
+    ];
+    let output = run_core(&provider, &job_store, &frames);
+    let frames = decoded(&output);
+    assert!(!provider_marker.exists());
+
+    let start = frames
+        .iter()
+        .find(|frame| frame["kind"] == "job.start.result")
+        .expect("job.start.result");
+    assert_eq!(start["payload"]["operation_id"], "start-job-pipe");
+    let request_sha256 = start["payload"]["request_sha256"]
+        .as_str()
+        .expect("canonical job request digest");
+    assert_eq!(request_sha256.len(), 64);
+    assert!(request_sha256.bytes().all(|byte| byte.is_ascii_hexdigit()));
+
+    let attach = frames
+        .iter()
+        .find(|frame| frame["kind"] == "job.attach.result")
+        .expect("job.attach.result");
+    assert_eq!(attach["payload"]["operation_id"], "attach-job-pipe");
+    assert_eq!(attach["payload"]["attachment_id"], "attachment-job-pipe");
+
+    let error = frames
+        .iter()
+        .find(|frame| {
+            frame["kind"] == "job.error" && frame["payload"]["operation_id"] == "resize-pipe-job"
+        })
+        .expect("correlated job.error");
+    assert_eq!(error["payload"]["request_sha256"], request_sha256);
+
+    let control = frames
+        .iter()
+        .find(|frame| {
+            frame["kind"] == "job.control.result"
+                && frame["payload"]["operation_id"] == "kill-job-pipe"
+        })
+        .expect("correlated job.control.result");
+    assert_eq!(control["payload"]["request_sha256"], request_sha256);
+
+    for frame in frames.iter().filter(|frame| {
+        frame["kind"]
+            .as_str()
+            .is_some_and(|kind| kind.starts_with("job."))
+    }) {
+        assert_eq!(frame["turn_stream_id"], "turn-stream-jobs");
+        assert_eq!(frame["session_id"], "session-jobs");
+        assert_eq!(frame["profile_id"], "owner-open");
+        assert_eq!(frame["task_id"], "task-jobs");
+        assert_eq!(frame["turn_id"], "turn-jobs");
+        assert_eq!(frame["job_id"], "job-pipe");
+        assert_eq!(frame["payload"]["request_sha256"], request_sha256);
+    }
 }

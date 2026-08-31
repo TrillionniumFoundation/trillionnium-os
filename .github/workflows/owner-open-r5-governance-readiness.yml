@@ -1,0 +1,237 @@
+name: L1 owner-open repository governance readiness
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/owner-open-r5-governance-readiness.yml"
+      - ".github/CODEOWNERS"
+      - "LICENSE"
+      - "SECURITY.md"
+      - "CONTRIBUTING.md"
+      - "docs/contracts/owner-open-r5-governance-policy-v1.json"
+      - "tools/verify-owner-open-r5-governance-readiness.py"
+      - "tools/verify-owner-open-r5-workflow-boundaries.py"
+      - "tools/owner_open_r5_evidence_bundle.py"
+      - "tools/owner_open_r5_capture_trust.py"
+      - "tools/finalize-owner-open-r5-evidence-bundle.py"
+      - "tools/tests/test_repository_governance_baseline.py"
+      - "tools/tests/test_verify_owner_open_r5_governance_readiness.py"
+      - "tools/tests/test_verify_owner_open_r5_workflow_boundaries.py"
+      - "docs/status/owner-open-r5-gap-closure.json"
+  push:
+    branches:
+      - main
+      - "codex/**"
+    paths:
+      - ".github/workflows/owner-open-r5-governance-readiness.yml"
+      - ".github/CODEOWNERS"
+      - "LICENSE"
+      - "SECURITY.md"
+      - "CONTRIBUTING.md"
+      - "docs/contracts/owner-open-r5-governance-policy-v1.json"
+      - "tools/verify-owner-open-r5-governance-readiness.py"
+      - "tools/verify-owner-open-r5-workflow-boundaries.py"
+      - "tools/owner_open_r5_evidence_bundle.py"
+      - "tools/owner_open_r5_capture_trust.py"
+      - "tools/finalize-owner-open-r5-evidence-bundle.py"
+      - "tools/tests/test_repository_governance_baseline.py"
+      - "tools/tests/test_verify_owner_open_r5_governance_readiness.py"
+      - "tools/tests/test_verify_owner_open_r5_workflow_boundaries.py"
+      - "docs/status/owner-open-r5-gap-closure.json"
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: Existing evidence PR number to inspect
+        required: true
+        type: number
+      exact_head_sha:
+        description: Exact PR head SHA that must be approved and green
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  LANG: C.UTF-8
+  LC_ALL: C.UTF-8
+
+concurrency:
+  group: owner-open-r5-governance-${{ github.event.pull_request.number || inputs.pull_request_number }}-${{ github.event.pull_request.head.sha || inputs.exact_head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  governance-readiness:
+    name: L1 protected-main and exact-head independent-review readiness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pull_request_number }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || inputs.exact_head_sha }}
+      EXPECTED_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.EXPECTED_HEAD }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Revalidate exact inspected head
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain --untracked-files=all)"
+      - name: Verify repository policy and tracked workflow boundaries
+        run: |
+          set -euo pipefail
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py --json \
+            | tee "$RUNNER_TEMP/workflow-boundaries.json"
+          python3 -m unittest \
+            tools.tests.test_repository_governance_baseline \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+            -v
+      - name: Capture public repository control-plane snapshots
+        run: |
+          set -euo pipefail
+          mkdir -p out/governance/raw
+          api="https://api.github.com/repos/$GITHUB_REPOSITORY"
+          header=(-H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28")
+          curl --fail --silent --show-error --location "${header[@]}" "$api/branches/main" > out/governance/raw/branch.json
+          if ! curl --fail --silent --show-error --location "${header[@]}" "$api/branches/main/protection" > out/governance/raw/protection.json; then
+            printf '{}\n' > out/governance/raw/protection.json
+          fi
+          if ! curl --fail --silent --show-error --location "${header[@]}" "$api/rulesets" > out/governance/raw/rulesets.json; then
+            printf '[]\n' > out/governance/raw/rulesets.json
+          fi
+          curl --fail --silent --show-error --location "${header[@]}" "$api/pulls/$PR_NUMBER" > out/governance/raw/pull-request.json
+          curl --fail --silent --show-error --location "${header[@]}" "$api/pulls/$PR_NUMBER/reviews?per_page=100" > out/governance/raw/reviews.json
+          curl --fail --silent --show-error --location "${header[@]}" "$api/commits/$EXPECTED_HEAD/check-runs?per_page=100" > out/governance/raw/check-runs.json
+      - name: Evaluate governance truth without promotion
+        run: |
+          set -euo pipefail
+          python3 tools/verify-owner-open-r5-governance-readiness.py \
+            --policy docs/contracts/owner-open-r5-governance-policy-v1.json \
+            --branch out/governance/raw/branch.json \
+            --protection out/governance/raw/protection.json \
+            --rulesets out/governance/raw/rulesets.json \
+            --pull-request out/governance/raw/pull-request.json \
+            --reviews out/governance/raw/reviews.json \
+            --check-runs out/governance/raw/check-runs.json \
+            --expected-head "$EXPECTED_HEAD" \
+            --output out/governance/raw/readiness.json \
+            | tee "$RUNNER_TEMP/governance-readiness-summary.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('out/governance/raw/readiness.json').read_text())
+          Path('out/governance/observations.json').write_text(
+              json.dumps(value['observations'], indent=2, sort_keys=True) + '\n'
+          )
+          entries = [
+              ('raw/branch.json', 'branch_snapshot'),
+              ('raw/protection.json', 'branch_protection_detail'),
+              ('raw/rulesets.json', 'ruleset_snapshot'),
+              ('raw/pull-request.json', 'integration_topology'),
+              ('raw/reviews.json', 'governance_reviews'),
+              ('raw/check-runs.json', 'required_checks'),
+              ('raw/readiness.json', 'governance_readiness'),
+          ]
+          Path('out/governance/artifact-index.json').write_text(
+              json.dumps(
+                  {
+                      'schema': 'org.trillionnium.owner-open-r5.artifact-index.v1',
+                      'artifacts': [
+                          {'path': path, 'role': role} for path, role in entries
+                      ],
+                  },
+                  indent=2,
+                  sort_keys=True,
+              ) + '\n'
+          )
+          if not value['ready']:
+              print('::warning::Governance remains RESUME_REQUIRED; no promotable or pass bundle was emitted.')
+          PY
+      - name: Emit capture-only bundle only when controls really pass
+        run: |
+          set -euo pipefail
+          ready="$(python3 -c "import json; print(str(json.load(open('out/governance/raw/readiness.json'))['ready']).lower())")"
+          if [ "$ready" != true ]; then
+            exit 0
+          fi
+          started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          expires="$(date -u -d '+1 day' +%Y-%m-%dT%H:%M:%SZ)"
+          artifact_expires="$(date -u -d '+30 days' +%Y-%m-%dT%H:%M:%SZ)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          cat > "$RUNNER_TEMP/governance-attestation.json" <<JSON
+          {
+            "schema": "org.trillionnium.owner-open-r5.target-attestation.v1",
+            "plan_revision": "2026-08-29-r6",
+            "lane": "L1",
+            "source_commit": "$EXPECTED_HEAD",
+            "source_tree": "$tree",
+            "synthetic": false,
+            "template": false,
+            "captured_at": "$started",
+            "expires_at": "$expires",
+            "environment": {
+              "id": "$GITHUB_REPOSITORY:main",
+              "owner": "$GITHUB_REPOSITORY_OWNER",
+              "class": "repository_governance",
+              "independent_control": true
+            },
+            "runner": {
+              "name": "$RUNNER_NAME",
+              "os": "$RUNNER_OS",
+              "arch": "$RUNNER_ARCH",
+              "labels": ["ubuntu-latest"]
+            },
+            "target": {
+              "id": "$GITHUB_REPOSITORY:main",
+              "kind": "github_repository",
+              "fingerprint": "$EXPECTED_HEAD"
+            },
+            "operator": {"login": "$GITHUB_ACTOR"}
+          }
+          JSON
+          finished="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python3 tools/finalize-owner-open-r5-evidence-bundle.py \
+            --bundle-dir "$(pwd)/out/governance" \
+            --target-attestation "$RUNNER_TEMP/governance-attestation.json" \
+            --target-attestation-name target-attestation.json \
+            --kind repository_governance_controls \
+            --gap-id R5-GAP-GOVERNANCE-001 \
+            --evidence-level L1 \
+            --branch "$EXPECTED_BRANCH" \
+            --source-commit "$EXPECTED_HEAD" \
+            --source-tree "$tree" \
+            --claim-ceiling GOVERNANCE_CONTROLS_L1_CAPTURE_ONLY \
+            --producer-login "$GITHUB_ACTOR" \
+            --workflow "$GITHUB_WORKFLOW" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --workflow-run-attempt "$GITHUB_RUN_ATTEMPT" \
+            --job "$GITHUB_JOB" \
+            --started-at "$started" \
+            --finished-at "$finished" \
+            --negative-claim capture_only_not_gap_promotion \
+            --negative-claim independent_bundle_review_still_required \
+            --artifact-expires-at "$artifact_expires" \
+            --immutable-location "github-actions-run:$GITHUB_RUN_ID:artifact-pending" \
+            --reproduction "rerun governance readiness against exact PR head $EXPECTED_HEAD" \
+            | tee "$RUNNER_TEMP/governance-bundle-validation.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-r5-governance-readiness-${{ env.EXPECTED_HEAD }}
+          path: |
+            out/governance/
+            ${{ runner.temp }}/governance-readiness-summary.json
+            ${{ runner.temp }}/workflow-boundaries.json
+            ${{ runner.temp }}/governance-bundle-validation.json
+          if-no-files-found: error
+          retention-days: 30

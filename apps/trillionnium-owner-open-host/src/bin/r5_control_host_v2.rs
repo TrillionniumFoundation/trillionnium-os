@@ -4,6 +4,7 @@ mod r5_persistence;
 use std::env;
 use std::ffi::OsString;
 use std::io::{self, BufRead, BufReader, Read, Write};
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -556,22 +557,29 @@ fn process_messages<W: Write>(
                         let worker = thread::Builder::new()
                             .name(format!("owner-open-turn-{}", context.turn_id))
                             .spawn(move || {
-                                let runner = TurnRunner::new(worker_registry);
-                                let event_sender = worker_sender.clone();
-                                let mut sink = move |event: &TurnEvent| -> Result<(), String> {
-                                    event_sender
-                                        .send(HostMessage::TurnEvent(Box::new(event.clone())))
-                                        .map_err(|_| "Host event receiver disconnected".to_string())
-                                };
-                                let result = runner
-                                    .run_with_sink_and_cancellation(
-                                        loop_request,
-                                        &mut provider,
-                                        &worker_cancellation,
-                                        &mut sink,
-                                    )
-                                    .map(|run| run.terminal)
-                                    .map_err(|error| error.to_string());
+                                let result = catch_unwind(AssertUnwindSafe(|| {
+                                    let runner = TurnRunner::new(worker_registry);
+                                    let event_sender = worker_sender.clone();
+                                    let mut sink = move |event: &TurnEvent| -> Result<(), String> {
+                                        event_sender
+                                            .send(HostMessage::TurnEvent(Box::new(event.clone())))
+                                            .map_err(|_| {
+                                                "Host event receiver disconnected".to_string()
+                                            })
+                                    };
+                                    runner
+                                        .run_with_sink_and_cancellation(
+                                            loop_request,
+                                            &mut provider,
+                                            &worker_cancellation,
+                                            &mut sink,
+                                        )
+                                        .map(|run| run.terminal)
+                                        .map_err(|error| error.to_string())
+                                }))
+                                .unwrap_or_else(|_| {
+                                    Err("active turn worker panicked".to_string())
+                                });
                                 let _ = worker_sender.send(HostMessage::TurnComplete(result));
                             })
                             .map_err(|error| format!("failed to spawn active turn worker: {error}"))?;
@@ -657,36 +665,7 @@ fn process_messages<W: Write>(
                     &mut delivery_error,
                 );
             }
-            Err(RecvTimeoutError::Timeout) => {
-                let worker_finished = active
-                    .as_ref()
-                    .and_then(|active_turn| active_turn.worker.as_ref())
-                    .is_some_and(JoinHandle::is_finished);
-                if worker_finished {
-                    let mut active_turn = active.take().expect("finished worker has an active turn");
-                    let worker_result = active_turn
-                        .worker
-                        .take()
-                        .expect("active turn has a worker")
-                        .join();
-                    let result = match worker_result {
-                        Ok(()) => Err(
-                            "active turn worker exited without a terminal message".to_string(),
-                        ),
-                        Err(_) => Err("active turn worker panicked".to_string()),
-                    };
-                    finish_active_turn(
-                        active_turn,
-                        result,
-                        &mut writer,
-                        &mut output,
-                        persistence,
-                        limits.max_frame_bytes,
-                        &mut delivery_attached,
-                        &mut delivery_error,
-                    );
-                }
-            }
+            Err(RecvTimeoutError::Timeout) => {}
             Err(RecvTimeoutError::Disconnected) => {
                 input_open = false;
                 if active.is_none() {

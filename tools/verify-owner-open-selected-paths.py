@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 from dataclasses import dataclass, field
 import json
 import os
@@ -82,7 +83,11 @@ def safe_file(root: Path, relative: str, report: Report) -> Path | None:
             report.errors.append(f"selected path escapes repository: {relative}")
             return None
         metadata = path.lstat()
-    except OSError as error:
+    # Contract paths are untrusted JSON strings.  In addition to ordinary
+    # missing/racing filesystem errors, pathlib can raise ValueError for an
+    # embedded NUL and RuntimeError for a symlink loop.  Treat all of these as
+    # a verification error instead of allowing the verifier itself to abort.
+    except (OSError, ValueError, RuntimeError) as error:
         report.errors.append(f"selected path is missing: {relative}: {error}")
         return None
     if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
@@ -100,6 +105,58 @@ def read_text(path: Path, relative: str, report: Report) -> str | None:
     except (OSError, UnicodeDecodeError) as error:
         report.errors.append(f"selected path is not UTF-8 text: {relative}: {error}")
         return None
+
+
+def local_python_imports(
+    root: Path,
+    relative: str,
+    text: str,
+    known_paths: set[str],
+    report: Report,
+) -> list[str]:
+    try:
+        tree = ast.parse(text, filename=relative)
+    except SyntaxError as error:
+        report.errors.append(f"selected Python path does not parse: {relative}: {error}")
+        return []
+
+    source = Path(relative)
+    discovered: set[str] = set()
+
+    def add_module(module: str, level: int = 0) -> None:
+        if not module:
+            return
+        module_path = Path(*module.split("."))
+        candidates: list[Path] = []
+        if level:
+            parent = source.parent
+            for _ in range(level - 1):
+                parent = parent.parent
+            candidates.append((parent / module_path).with_suffix(".py"))
+        else:
+            candidates.extend(
+                (
+                    source.parent / f"{module.rsplit('.', 1)[-1]}.py",
+                    module_path.with_suffix(".py"),
+                )
+            )
+        for candidate in candidates:
+            normalized = candidate.as_posix()
+            if normalized in known_paths or os.path.lexists(root / candidate):
+                discovered.add(normalized)
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                add_module(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                add_module(node.module, node.level)
+            elif node.level:
+                for alias in node.names:
+                    add_module(alias.name, node.level)
+    discovered.discard(relative)
+    return sorted(discovered)
 
 
 def verify(root: Path) -> Report:
@@ -127,6 +184,9 @@ def verify(root: Path) -> Report:
     if len(selected_paths) != len(set(selected_paths)):
         report.errors.append("selected paths are not unique")
 
+    helpers = string_list(
+        contract.get("implementation_helpers"), "implementation_helpers", report
+    )
     tests = string_list(contract.get("selected_tests"), "selected_tests", report)
     workflows = string_list(contract.get("selected_workflows"), "selected_workflows", report)
     drafts = string_list(contract.get("superseded_drafts"), "superseded_drafts", report)
@@ -136,12 +196,27 @@ def verify(root: Path) -> Report:
         "forbidden_release_reference_tokens",
         report,
     )
-    overlap = sorted(set(selected_paths) & set(drafts))
-    if overlap:
-        report.errors.append(f"selected paths also appear as drafts: {overlap}")
+    selected_set = set(selected_paths)
+    helper_set = set(helpers)
+    draft_set = set(drafts)
+    selected_drafts = sorted(selected_set & draft_set)
+    if selected_drafts:
+        report.errors.append(
+            f"selected paths also appear as drafts: {selected_drafts}"
+        )
+    selected_helpers = sorted(selected_set & helper_set)
+    if selected_helpers:
+        report.errors.append(
+            f"selected paths also appear as implementation helpers: {selected_helpers}"
+        )
+    helper_drafts = sorted(helper_set & draft_set)
+    if helper_drafts:
+        report.errors.append(
+            f"implementation helpers also appear as drafts: {helper_drafts}"
+        )
 
     checked: dict[str, str] = {}
-    for relative in [*selected_paths, *tests, *workflows, *roots]:
+    for relative in [*selected_paths, *helpers, *tests, *workflows, *roots]:
         path = safe_file(root, relative, report)
         if path is None:
             continue
@@ -166,6 +241,32 @@ def verify(root: Path) -> Report:
         if missing:
             report.errors.append(f"selected path {relative} is missing markers: {missing}")
 
+    declared_python = selected_set | helper_set
+    known_python = declared_python | draft_set
+    import_closure: dict[str, list[str]] = {}
+    for relative in [*selected_paths, *helpers]:
+        if not relative.endswith(".py"):
+            continue
+        path = safe_file(root, relative, report)
+        if path is None:
+            continue
+        text = read_text(path, relative, report)
+        if text is None:
+            continue
+        imports = local_python_imports(root, relative, text, known_python, report)
+        import_closure[relative] = imports
+        for imported in imports:
+            if imported in draft_set:
+                report.errors.append(
+                    f"selected Python closure imports superseded draft: "
+                    f"{relative} -> {imported}"
+                )
+            elif imported not in declared_python:
+                report.errors.append(
+                    f"selected Python closure imports undeclared local module: "
+                    f"{relative} -> {imported}"
+                )
+
     for relative in roots:
         path = safe_file(root, relative, report)
         if path is None:
@@ -183,6 +284,8 @@ def verify(root: Path) -> Report:
         "revision": contract.get("revision"),
         "selected": selected,
         "selected_count": len(selected),
+        "implementation_helper_count": len(helpers),
+        "import_closure": import_closure,
         "test_count": len(tests),
         "workflow_count": len(workflows),
         "superseded_count": len(drafts),

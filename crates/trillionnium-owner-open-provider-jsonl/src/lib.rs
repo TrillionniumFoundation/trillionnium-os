@@ -29,13 +29,17 @@ use trillionnium_owner_open_turn_loop::{
     TurnRequest,
 };
 
-use process::{ProviderOutput, finish_child, spawn_stderr_reader, spawn_stdout_reader};
+use process::{
+    ProviderOutput, allow_natural_exit_grace, finish_child, spawn_stderr_reader,
+    spawn_stdout_reader,
+};
 use protocol::{
     decode_bound_tool_call, encode_tool_error, encode_tool_outcome, handle_provider_event,
     optional_string, required_string, validate_envelope,
 };
 
 pub const PROVIDER_PROTOCOL: &str = "trillionnium.owner-open.provider-jsonl.v1";
+const PROVIDER_OUTPUT_DRAIN_GRACE_MINIMUM: Duration = Duration::from_secs(2);
 
 #[derive(Debug, Error)]
 pub enum JsonlProviderError {
@@ -252,6 +256,7 @@ impl JsonlProvider {
             let mut event_count = 0usize;
             let mut cancellation_sent = false;
             let mut cancellation_deadline = None::<Instant>;
+            let mut observed_exit = None::<(String, Instant)>;
             while terminal.is_none() {
                 if started.elapsed() >= self.config.timeout {
                     return Err(JsonlProviderError::TimedOut);
@@ -372,20 +377,39 @@ impl JsonlProvider {
                             ));
                             continue;
                         }
-                        let status = child
-                            .try_wait()
-                            .map_err(|error| JsonlProviderError::Io(error.to_string()))?;
+                        let status = match observed_exit.as_ref() {
+                            Some((status, _)) => status.clone(),
+                            None => format!(
+                                "{:?}",
+                                child
+                                    .try_wait()
+                                    .map_err(|error| JsonlProviderError::Io(error.to_string()))?
+                            ),
+                        };
                         return Err(JsonlProviderError::Interrupted(format!(
-                            "EOF before turn terminal; status={status:?}"
+                            "EOF before turn terminal; status={status}"
                         )));
                     }
                     Ok(ProviderOutput::Error(error)) => {
                         return Err(JsonlProviderError::Protocol(error));
                     }
                     Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
-                        if let Some(status) = child
-                            .try_wait()
-                            .map_err(|error| JsonlProviderError::Io(error.to_string()))?
+                        if observed_exit.is_none()
+                            && let Some(status) = child
+                                .try_wait()
+                                .map_err(|error| JsonlProviderError::Io(error.to_string()))?
+                        {
+                            // Child exit and stdout delivery are observed by different
+                            // threads. Exit must never overtake an already-read terminal
+                            // line; wait for the ordered reader outcome (Line then Eof).
+                            observed_exit = Some((status.to_string(), Instant::now()));
+                        }
+                        if let Some((status, observed_at)) = observed_exit.as_ref()
+                            && observed_at.elapsed()
+                                >= self
+                                    .config
+                                    .terminate_grace
+                                    .max(PROVIDER_OUTPUT_DRAIN_GRACE_MINIMUM)
                         {
                             if cancellation_sent {
                                 terminal = Some(ProviderTerminal::cancelled(format!(
@@ -393,7 +417,7 @@ impl JsonlProvider {
                                 )));
                             } else {
                                 return Err(JsonlProviderError::Interrupted(format!(
-                                    "process exited before turn terminal: {status}"
+                                    "provider exited and stdout did not deliver a turn terminal within the drain grace: {status}"
                                 )));
                             }
                         }
@@ -417,6 +441,17 @@ impl JsonlProvider {
         })();
 
         drop(provider_stdin);
+        let natural_exit_wait = if result
+            .as_ref()
+            .is_ok_and(|terminal| terminal.status == ProviderTerminalStatus::Completed)
+        {
+            // A valid terminal frame may be read before the provider leader has
+            // completed its ordinary exit. Do not manufacture a SIGTERM failure.
+            allow_natural_exit_grace(&mut child, self.config.terminate_grace)
+                .map_err(JsonlProviderError::Cleanup)
+        } else {
+            Ok(())
+        };
         let cleanup = finish_child(&mut child, pid, self.config.terminate_grace)
             .map_err(JsonlProviderError::Cleanup);
         drop(receiver);
@@ -430,6 +465,7 @@ impl JsonlProvider {
         // Preserve the first protocol/tool/provider error. Cleanup exists to
         // close the process tree, not to rewrite the semantic observation.
         let terminal = result?;
+        natural_exit_wait?;
         if stdout_join.is_err() || stderr_join.is_err() {
             return Err(JsonlProviderError::Cleanup(
                 "provider reader thread panicked".to_string(),

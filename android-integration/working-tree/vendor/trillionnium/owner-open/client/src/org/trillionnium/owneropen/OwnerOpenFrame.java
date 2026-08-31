@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
 /** Mechanical JSONL codec for the owner-open R5 wire. */
 public final class OwnerOpenFrame {
     public static final int MAX_LINE_BYTES = 1024 * 1024;
+    // MAX_LINE_BYTES includes the one-byte LF delimiter on the wire.
+    private static final int MAX_PAYLOAD_BYTES = MAX_LINE_BYTES - 1;
     private static final Pattern ID = Pattern.compile("[A-Za-z0-9_.:-]{1,256}");
 
     private OwnerOpenFrame() {}
@@ -96,6 +98,25 @@ public final class OwnerOpenFrame {
         return result;
     }
 
+    /**
+     * Bind one semantic Host frame to this Android client's transport
+     * direction and per-connection sequence.  The broker treats {@code seq}
+     * as an immutable contiguous client sequence, so it must be added before
+     * the frame is wrapped in a broker request rather than invented by the
+     * broker or the native ingress.
+     */
+    public static String withClientTransportSequence(String frame, long sequence) {
+        Objects.requireNonNull(frame, "frame");
+        if (sequence < 0 || frame.isEmpty() || frame.indexOf('\n') >= 0
+                || frame.indexOf('\r') >= 0 || !frame.startsWith("{\"kind\":")) {
+            throw new IllegalArgumentException("frame is not a canonical Host object");
+        }
+        String result = "{\"direction\":\"client_to_host\",\"seq\":"
+                + sequence + "," + frame.substring(1);
+        requireEncodedBound(result);
+        return result;
+    }
+
     public static boolean hasKind(String line, String kind) {
         requireText(line, "line", MAX_LINE_BYTES);
         requireText(kind, "kind", 256);
@@ -105,7 +126,11 @@ public final class OwnerOpenFrame {
     public static String readLine(InputStream input) throws IOException {
         Objects.requireNonNull(input, "input");
         ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
-        while (output.size() <= MAX_LINE_BYTES) {
+        // MAX_LINE_BYTES is the complete wire-line bound, including the
+        // trailing newline (the native ingress uses the same contract).
+        // Keep the delimiter out of the returned JSON string, but reserve
+        // one byte for it on every iteration.
+        while (true) {
             int current = input.read();
             if (current < 0) {
                 if (output.size() == 0) {
@@ -122,9 +147,11 @@ public final class OwnerOpenFrame {
                 }
                 return output.toString(StandardCharsets.UTF_8);
             }
+            if (output.size() >= MAX_PAYLOAD_BYTES) {
+                throw new IOException("owner-open frame exceeds the byte bound");
+            }
             output.write(current);
         }
-        throw new IOException("owner-open frame exceeds the byte bound");
     }
 
     public static void writeLine(OutputStream output, String line) throws IOException {
@@ -134,7 +161,7 @@ public final class OwnerOpenFrame {
             throw new IllegalArgumentException("line contains a newline");
         }
         byte[] raw = line.getBytes(StandardCharsets.UTF_8);
-        if (raw.length == 0 || raw.length > MAX_LINE_BYTES) {
+        if (raw.length == 0 || raw.length > MAX_PAYLOAD_BYTES) {
             throw new IllegalArgumentException("line exceeds the encoded byte bound");
         }
         output.write(raw);
@@ -193,7 +220,8 @@ public final class OwnerOpenFrame {
     }
 
     private static void requireEncodedBound(String value) {
-        if (value.getBytes(StandardCharsets.UTF_8).length > MAX_LINE_BYTES) {
+        // The caller will append one delimiter byte when writing the frame.
+        if (value.getBytes(StandardCharsets.UTF_8).length > MAX_PAYLOAD_BYTES) {
             throw new IllegalArgumentException("encoded owner-open frame exceeds the byte bound");
         }
     }

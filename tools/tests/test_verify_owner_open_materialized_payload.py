@@ -45,6 +45,18 @@ class VerifyOwnerOpenMaterializedPayloadTest(unittest.TestCase):
             "architecture": "aarch64",
             "libc": "glibc",
             "entry_count": 1,
+            "entries": [
+                {
+                    "role": "fixture",
+                    "destination": "/etc/trillionnium/owner-open/config.json",
+                    "mode": "0444",
+                    "uid": 0,
+                    "gid": 0,
+                    "sha256": "0" * 64,
+                    "bytes": 1,
+                }
+            ],
+            "runtime_state_directory": "/var/lib/trillionnium/owner-open",
             "mksquashfs": {"sha256": "1" * 64},
             "help_observation": {},
             "build_runs": [
@@ -105,6 +117,35 @@ class VerifyOwnerOpenMaterializedPayloadTest(unittest.TestCase):
             (self.outputs / "out.sha256").read_text(encoding="ascii"),
             hashlib.sha256(self.image_bytes).hexdigest() + "\n",
         )
+
+    def test_state_mountpoint_binding_is_required(self) -> None:
+        value = json.loads(json.dumps(self.value))
+        value["runtime_state_directory"] = "/var/lib/trillionnium/other"
+        self.write_manifest(value)
+        with self.assertRaisesRegex(module.MaterializationError, "canonical writable state"):
+            module.materialize("manifest", self.outputs / "out", [self.image, self.manifest])
+
+    def test_entry_inventory_is_required(self) -> None:
+        value = json.loads(json.dumps(self.value))
+        value.pop("entries")
+        self.write_manifest(value)
+        with self.assertRaisesRegex(module.MaterializationError, "entry inventory"):
+            module.materialize("manifest", self.outputs / "out", [self.image, self.manifest])
+
+    def test_entry_uid_and_gid_must_be_json_integers(self) -> None:
+        for field in ("uid", "gid"):
+            value = json.loads(json.dumps(self.value))
+            value["entries"][0][field] = False
+            self.write_manifest(value)
+            with self.assertRaisesRegex(module.MaterializationError, "entry 0 is malformed"):
+                module.materialize("manifest", self.outputs / f"bad-{field}", [self.image, self.manifest])
+
+    def test_build_run_image_bytes_must_be_json_integer(self) -> None:
+        value = json.loads(json.dumps(self.value))
+        value["build_runs"][0]["image_bytes"] = True
+        self.write_manifest(value)
+        with self.assertRaisesRegex(module.MaterializationError, "build run 0"):
+            module.materialize("manifest", self.outputs / "bad-run-bytes", [self.image, self.manifest])
 
     def test_missing_materialized_pair_is_a_hold(self) -> None:
         self.manifest.unlink()

@@ -42,7 +42,7 @@ The v2 profile instead reserves:
 
 ```text
 /system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.squashfs
-/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.manifest.json
+/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json
 ```
 
 The payload is mounted read-only and combined with private writable state under
@@ -99,7 +99,7 @@ Implement a deterministic builder that accepts exact source artifacts and emits:
 
 ```text
 owner-open-rootfs.squashfs
-owner-open-rootfs.manifest.json
+owner-open-rootfs.image-manifest.json
 SBOM/provenance record
 reproduction command log
 ```

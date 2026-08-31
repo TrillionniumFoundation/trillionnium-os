@@ -262,6 +262,13 @@ pub(crate) struct DirectOperationInboxPublication {
     _test_serial_guard: Option<MutexGuard<'static, ()>>,
 }
 
+// The custody projection is consumed by the device-conformance/product
+// handoff lane (and by tests); the default daemon intentionally keeps it
+// opaque until that lane is enabled.
+#[cfg_attr(
+    not(any(test, feature = "p0-launch-package-device-conformance")),
+    allow(dead_code)
+)]
 #[derive(Debug)]
 pub(crate) struct DirectOperationInboxCustodySeed {
     pub(crate) binding_inbox: DirectOperationBindingInbox,
@@ -1833,7 +1840,7 @@ mod tests {
 
     #[test]
     fn product_paths_are_fixed_to_the_chroot_visible_bind_target() {
-        for (provider, directory, gid) in [(
+        let (provider, directory, gid) = (
             ProviderSpecification {
                 provider_id: CODEX_PROVIDER_ID,
                 agent_id: CODEX_AGENT_ID,
@@ -1843,18 +1850,17 @@ mod tests {
             },
             "codex",
             CODEX_UID_GID,
-        )] {
-            let leaf = PublisherLayout::product().p0_system_api_leaf(&provider);
-            assert_eq!(
-                leaf.path,
-                Path::new("/var/lib/trillionnium/agent-tools/inbox")
-                    .join(directory)
-                    .join("system-api")
-            );
-            assert_eq!(leaf.owner_uid, ROOT_UID);
-            assert_eq!(leaf.group_gid, gid);
-            assert!(!leaf.path.starts_with("/data/trillionnium"));
-        }
+        );
+        let leaf = PublisherLayout::product().p0_system_api_leaf(&provider);
+        assert_eq!(
+            leaf.path,
+            Path::new("/var/lib/trillionnium/agent-tools/inbox")
+                .join(directory)
+                .join("system-api")
+        );
+        assert_eq!(leaf.owner_uid, ROOT_UID);
+        assert_eq!(leaf.group_gid, gid);
+        assert!(!leaf.path.starts_with("/data/trillionnium"));
     }
 
     #[test]

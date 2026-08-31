@@ -98,44 +98,107 @@ fn read_bounded_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option
     Ok(Some(line))
 }
 
+/// Allow a provider that emitted a valid completed terminal to perform its
+/// ordinary zero-status exit before process-group cleanup escalates signals.
+pub(crate) fn allow_natural_exit_grace(child: &mut Child, grace: Duration) -> Result<(), String> {
+    let deadline = Instant::now()
+        .checked_add(grace.max(Duration::from_millis(250)))
+        .unwrap_or_else(Instant::now);
+    loop {
+        if child
+            .try_wait()
+            .map_err(|error| format!("provider natural-exit status failed: {error}"))?
+            .is_some()
+        {
+            return Ok(());
+        }
+        if Instant::now() >= deadline {
+            return Ok(());
+        }
+        thread::sleep(Duration::from_millis(5));
+    }
+}
+
+/// Reap the provider leader and prove its original process group is gone.
+///
+/// The leader may already have exited while one of its descendants still owns
+/// stdout/stderr. Returning immediately in that state would let the caller hang
+/// forever while joining reader threads. This routine therefore treats leader
+/// status and process-group disappearance as separate completion conditions.
 pub(crate) fn finish_child(
     child: &mut Child,
     pid: u32,
     grace: Duration,
 ) -> Result<ExitStatus, String> {
+    let grace = grace.max(Duration::from_millis(250));
+    let mut status = child
+        .try_wait()
+        .map_err(|error| format!("provider status before cleanup failed: {error}"))?;
+
+    if process_group_exists(pid)? {
+        send_group_signal(pid, libc::SIGTERM)?;
+        let deadline = Instant::now()
+            .checked_add(grace)
+            .unwrap_or_else(Instant::now);
+        while Instant::now() < deadline {
+            if status.is_none() {
+                status = child
+                    .try_wait()
+                    .map_err(|error| format!("provider status after SIGTERM failed: {error}"))?;
+            }
+            if status.is_some() && !process_group_exists(pid)? {
+                return status.ok_or("provider status disappeared".to_string());
+            }
+            thread::sleep(Duration::from_millis(5));
+        }
+        send_group_signal(pid, libc::SIGKILL)?;
+    }
+
+    // If the provider changed its process group after exec, the old PGID can be
+    // absent while the direct child is still alive. Kill the direct PID as a
+    // bounded fallback instead of calling an unbounded wait().
+    if status.is_none() {
+        match child.kill() {
+            Ok(()) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::InvalidInput => {}
+            Err(error) => return Err(format!("provider direct SIGKILL failed: {error}")),
+        }
+    }
+
     let deadline = Instant::now()
         .checked_add(grace)
         .unwrap_or_else(Instant::now);
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => return Ok(status),
-            Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-            Ok(None) => break,
-            Err(error) => return Err(error.to_string()),
+    while Instant::now() < deadline {
+        if status.is_none() {
+            status = child
+                .try_wait()
+                .map_err(|error| format!("provider status after SIGKILL failed: {error}"))?;
         }
+        if status.is_some() && !process_group_exists(pid)? {
+            return status.ok_or("provider status disappeared".to_string());
+        }
+        thread::sleep(Duration::from_millis(5));
     }
-    terminate_process_group(child, pid, grace)
+
+    let group_alive = process_group_exists(pid).unwrap_or(true);
+    Err(format!(
+        "provider cleanup deadline exceeded: leader_reaped={}, process_group_alive={group_alive}",
+        status.is_some()
+    ))
 }
 
-fn terminate_process_group(
-    child: &mut Child,
-    pid: u32,
-    grace: Duration,
-) -> Result<ExitStatus, String> {
-    send_group_signal(pid, libc::SIGTERM)?;
-    let deadline = Instant::now()
-        .checked_add(grace)
-        .unwrap_or_else(Instant::now);
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => return Ok(status),
-            Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-            Ok(None) => break,
-            Err(error) => return Err(error.to_string()),
-        }
+fn process_group_exists(pid: u32) -> Result<bool, String> {
+    let group = i32::try_from(pid)
+        .map_err(|_| "provider pid does not fit a process-group id".to_string())?;
+    if unsafe { libc::kill(-group, 0) } == 0 {
+        return Ok(true);
     }
-    send_group_signal(pid, libc::SIGKILL)?;
-    child.wait().map_err(|error| error.to_string())
+    let error = std::io::Error::last_os_error();
+    match error.raw_os_error() {
+        Some(libc::ESRCH) => Ok(false),
+        Some(libc::EPERM) => Ok(true),
+        _ => Err(format!("provider process-group probe failed: {error}")),
+    }
 }
 
 fn send_group_signal(pid: u32, signal: i32) -> Result<(), String> {
@@ -151,5 +214,72 @@ fn send_group_signal(pid: u32, signal: i32) -> Result<(), String> {
         Err(format!(
             "provider process-group signal {signal} failed: {error}"
         ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use std::os::unix::process::CommandExt;
+    use std::process::{Command, Stdio};
+
+    #[test]
+    fn leader_exit_does_not_leave_reader_pipes_owned_by_a_descendant() {
+        let directory = tempfile::tempdir().unwrap();
+        let pid_file = directory.path().join("provider-descendant.pid");
+        let mut command = Command::new("/bin/sh");
+        command
+            .arg("-c")
+            .arg("sleep 30 & descendant=$!; printf '%s\\n' \"$descendant\" >\"$1\"; exit 0")
+            .arg("owner-open-provider-process-test")
+            .arg(&pid_file)
+            .stdin(Stdio::null())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+        unsafe {
+            command.pre_exec(|| {
+                if libc::setpgid(0, 0) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+        let mut child = command.spawn().unwrap();
+        let pid = child.id();
+        let leader_deadline = Instant::now() + Duration::from_secs(2);
+        loop {
+            if child.try_wait().unwrap().is_some() {
+                break;
+            }
+            assert!(
+                Instant::now() < leader_deadline,
+                "provider leader did not exit"
+            );
+            thread::sleep(Duration::from_millis(5));
+        }
+
+        let status = finish_child(&mut child, pid, Duration::from_millis(20)).unwrap();
+        assert!(status.success());
+        let descendant = fs::read_to_string(pid_file)
+            .unwrap()
+            .trim()
+            .parse::<i32>()
+            .unwrap();
+        let deadline = Instant::now() + Duration::from_secs(2);
+        loop {
+            if unsafe { libc::kill(descendant, 0) } != 0 {
+                let error = std::io::Error::last_os_error();
+                if error.raw_os_error() == Some(libc::ESRCH) {
+                    break;
+                }
+                panic!("unexpected descendant liveness probe error: {error}");
+            }
+            assert!(
+                Instant::now() < deadline,
+                "provider descendant survived cleanup"
+            );
+            thread::sleep(Duration::from_millis(10));
+        }
     }
 }

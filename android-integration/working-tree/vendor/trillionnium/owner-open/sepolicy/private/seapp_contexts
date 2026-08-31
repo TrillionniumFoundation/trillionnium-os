@@ -1,1 +1,1 @@
-user=_app seinfo=platform name=org.trillionnium.owneropen domain=trillionnium_owner_open_client type=app_data_file levelFrom=user
+user=_app isPrivApp=false seinfo=platform name=org.trillionnium.owneropen domain=trillionnium_owner_open_client type=app_data_file levelFrom=user

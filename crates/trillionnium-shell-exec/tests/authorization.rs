@@ -237,11 +237,17 @@ fn broker_restart_restores_ordinal_high_water_without_rederiving_request() {
         .register_with_entropy(registration.clone(), now + 3, [0x72; 32])
         .unwrap();
     restarted
-        .restore_durable_requests(&registration.binding_sha256, &[old_request.clone()])
+        .restore_durable_requests(
+            &registration.binding_sha256,
+            std::slice::from_ref(&old_request),
+        )
         .unwrap();
     // Repeated registration/hydration is idempotent.
     restarted
-        .restore_durable_requests(&registration.binding_sha256, &[old_request.clone()])
+        .restore_durable_requests(
+            &registration.binding_sha256,
+            std::slice::from_ref(&old_request),
+        )
         .unwrap();
     assert!(matches!(
         restarted

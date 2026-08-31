@@ -3,6 +3,7 @@
   "revision": "2026-08-29-r5-android-source-closure",
   "profile_id": "owner-open-dogfood-v3",
   "enabled_property": "ro.trillionnium.owner_open.enabled",
+  "data_ready_property": "trillionnium.owner_open.data_ready",
   "ready_property": "trillionnium.owner_open.ready",
   "emergency_stop_property": "sys.trillionnium.owner_open.stop",
   "rootlinux_payload": {
@@ -24,7 +25,7 @@
     "upstream_socket": "/data/trillionnium/owner-open/state/broker/owner-open.sock",
     "broker_token": "/data/trillionnium/owner-open/state/broker/owner-open.token",
     "maximum_connections": 32,
-    "automatic_effect_redispatch": false
+    "automatic_redispatch": false
   },
   "rootlinux_supervisor": {
     "executable": "/usr/bin/python3",

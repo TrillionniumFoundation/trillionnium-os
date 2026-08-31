@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -7,6 +8,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import textwrap
 import time
 import unittest
 
@@ -18,13 +20,22 @@ FAKE_UPSTREAM = r'''#!/usr/bin/env python3
 import json, os, sys, time
 from pathlib import Path
 record = Path(os.environ["UPSTREAM_RECORD"])
+fields = (
+    "session_id", "profile_id", "task_id", "turn_id", "turn_stream_id",
+    "call_id", "job_id", "operation_id", "attachment_id", "request_sha256"
+)
 for line in sys.stdin:
     frame=json.loads(line)
     with record.open("a") as f: f.write(json.dumps(frame,sort_keys=True)+"\n")
-    kind=frame["kind"]; seq=frame["seq"]; payload=frame.get("payload",{}); job=payload.get("job_id")
+    kind=frame["kind"]; seq=frame["seq"]; payload=frame.get("payload",{})
+    correlation={}
+    for name in fields:
+        value=frame.get(name,payload.get(name))
+        if isinstance(value,str): correlation[name]=value
     def emit(k,p):
-        value={"kind":k,"seq":seq,"direction":"host_to_client","payload":p}
-        if job:value["job_id"]=job
+        p=dict(p)
+        for name,value in correlation.items(): p.setdefault(name,value)
+        value={"kind":k,"seq":seq,"direction":"host_to_client","payload":p,**correlation}
         print(json.dumps(value,separators=(",",":")),flush=True)
     if kind=="hello": emit("hello.ack",{"long_running_jobs":True})
     elif kind=="job.start":
@@ -51,7 +62,10 @@ def send(sock: socket.socket, value: dict) -> None:
     sock.sendall(json.dumps(value,sort_keys=True,separators=(",",":")).encode()+b"\n")
 
 
-class BrokerTest(unittest.TestCase):
+class BrokerHarness:
+    def broker_command(self) -> list[str]:
+        return [sys.executable, str(BROKER)]
+
     def setUp(self) -> None:
         self.temp=tempfile.TemporaryDirectory()
         self.root=Path(self.temp.name)
@@ -60,11 +74,12 @@ class BrokerTest(unittest.TestCase):
         self.socket=self.root/"broker.sock"
         self.descriptor=self.root/"broker.json"
         self.token=self.root/"broker.token"
+        self.audit=Path(f"{self.descriptor}.audit.jsonl")
         self.upstream.write_text(FAKE_UPSTREAM)
         self.upstream.chmod(0o700)
         env=os.environ.copy(); env["UPSTREAM_RECORD"]=str(self.record)
         self.process=subprocess.Popen([
-            sys.executable,str(BROKER),"--socket",str(self.socket),"--descriptor",str(self.descriptor),"--token-file",str(self.token),"--broker-id","broker-test","--upstream",str(self.upstream)
+            *self.broker_command(),"--socket",str(self.socket),"--descriptor",str(self.descriptor),"--token-file",str(self.token),"--broker-id","broker-test","--upstream",str(self.upstream)
         ],stdout=subprocess.PIPE,stderr=subprocess.PIPE,env=env)
         deadline=time.monotonic()+5
         while time.monotonic()<deadline and not self.descriptor.exists():
@@ -73,6 +88,7 @@ class BrokerTest(unittest.TestCase):
         if not self.descriptor.exists():
             out,err=self.process.communicate(timeout=2)
             self.fail(f"broker did not start: {out!r} {err!r}")
+        self.descriptor_value=json.loads(self.descriptor.read_text())
         self.token_value=self.token.read_text().strip()
 
     def tearDown(self) -> None:
@@ -87,10 +103,14 @@ class BrokerTest(unittest.TestCase):
 
     def connect(self, client_id: str, token: str | None = None) -> socket.socket:
         sock=socket.socket(socket.AF_UNIX,socket.SOCK_STREAM); sock.connect(str(self.socket))
-        send(sock,{"kind":"broker.hello","client_id":client_id,"token":token or self.token_value})
+        send(sock,{"kind":"broker.hello","broker_epoch":self.descriptor_value["broker_epoch"],"client_id":client_id,"token":token or self.token_value})
         ack=line(sock)
         self.assertEqual(ack["kind"],"broker.hello.ack")
         self.assertEqual(ack["client_id"],client_id)
+        self.assertEqual(ack["broker_epoch"],self.descriptor_value["broker_epoch"])
+        self.assertEqual(ack["descriptor_sha256"],self.descriptor_value["descriptor_sha256"])
+        self.assertIs(ack.get("automatic_redispatch"), False)
+        self.assertNotIn("automatic_effect_redispatch", ack)
         return sock
 
     def request(self, client: socket.socket, request_id: str, frame: dict, expected: list[str]) -> None:
@@ -99,11 +119,12 @@ class BrokerTest(unittest.TestCase):
 
     def collect_until(self, client: socket.socket, request_id: str) -> list[dict]:
         values=[]
-        for _ in range(20):
+        for _ in range(30):
             value=line(client); values.append(value)
-            if value.get("kind")=="result" and value.get("request_id")==request_id: return values
+            if value.get("kind") in {"result","error"} and value.get("request_id")==request_id: return values
         self.fail(f"no result for {request_id}: {values}")
 
+class BrokerTest(BrokerHarness, unittest.TestCase):
     def test_two_clients_share_one_upstream_with_owner_results_and_broadcast_observations(self) -> None:
         first=self.connect("client-a"); second=self.connect("client-b")
         try:
@@ -119,9 +140,6 @@ class BrokerTest(unittest.TestCase):
             first.close(); second.close()
         frames=[json.loads(x) for x in self.record.read_text().splitlines()]
         self.assertEqual(frames[0]["kind"],"hello")
-        # Independent client-reader threads race before entering the single FIFO.
-        # The contract promises one dispatch per request and broker-assigned
-        # contiguous upstream sequence numbers, not cross-client socket order.
         self.assertCountEqual([f["kind"] for f in frames[1:]],["job.start","job.inspect"])
         self.assertEqual([f["seq"] for f in frames],[0,1,2])
 
@@ -148,6 +166,56 @@ class BrokerTest(unittest.TestCase):
         frames=[json.loads(x) for x in self.record.read_text().splitlines()]
         self.assertEqual(sum(f["kind"]=="job.start" for f in frames),1)
 
+    def test_exact_duplicate_replays_terminal_without_second_upstream_write(self) -> None:
+        client=self.connect("duplicate-client")
+        frame={"kind":"job.inspect","seq":4,"direction":"client_to_host","payload":{"job_id":"job-duplicate"}}
+        try:
+            self.request(client,"req-duplicate",frame,["job.inspect.result"])
+            first=self.collect_until(client,"req-duplicate")
+            self.assertTrue(any(v.get("kind")=="result" for v in first))
+            self.request(client,"req-duplicate",frame,["job.inspect.result"])
+            second=self.collect_until(client,"req-duplicate")
+            self.assertTrue(any(v.get("kind")=="result" for v in second))
+        finally:
+            client.close()
+        frames=[json.loads(x) for x in self.record.read_text().splitlines()]
+        self.assertEqual(sum(f["kind"]=="job.inspect" for f in frames),1)
+
+    def test_conflicting_duplicate_fails_before_second_upstream_write(self) -> None:
+        client=self.connect("conflict-client")
+        first={"kind":"job.inspect","seq":0,"direction":"client_to_host","payload":{"job_id":"job-a"}}
+        second={"kind":"job.inspect","seq":1,"direction":"client_to_host","payload":{"job_id":"job-b"}}
+        try:
+            self.request(client,"same-request",first,["job.inspect.result"])
+            self.collect_until(client,"same-request")
+            self.request(client,"same-request",second,["job.inspect.result"])
+            values=self.collect_until(client,"same-request")
+            error=next(v for v in values if v.get("kind")=="error")
+            self.assertEqual(error["code"],"request_id_conflict")
+        finally:
+            client.close()
+        frames=[json.loads(x) for x in self.record.read_text().splitlines()]
+        self.assertEqual(sum(f["kind"]=="job.inspect" for f in frames),1)
+
+    def test_audit_records_accepted_forwarded_terminal_hash_chain(self) -> None:
+        client=self.connect("audit-client")
+        try:
+            self.request(client,"audit-request",{"kind":"job.inspect","seq":0,"direction":"client_to_host","payload":{"job_id":"job-audit"}},["job.inspect.result"])
+            self.collect_until(client,"audit-request")
+        finally:
+            client.close()
+        records=[json.loads(x) for x in self.audit.read_text().splitlines()]
+        selected=[r for r in records if r["request_id"]=="audit-request"]
+        self.assertEqual([r["stage"] for r in selected],["broker.accepted","broker.forwarded","broker.terminal"])
+        previous="0"*64
+        for index,record in enumerate(records):
+            self.assertEqual(record["seq"],index)
+            self.assertEqual(record["previous_record_sha256"],previous)
+            supplied=record.pop("record_sha256")
+            calculated=hashlib.sha256(json.dumps(record,ensure_ascii=False,sort_keys=True,separators=(",",":")).encode()).hexdigest()
+            self.assertEqual(supplied,calculated)
+            previous=supplied
+
     def test_stdio_client_preserves_host_surface(self) -> None:
         child=subprocess.Popen([
             sys.executable,str(CLIENT),"--descriptor",str(self.descriptor),"--client-id","stdio-client"
@@ -166,6 +234,63 @@ class BrokerTest(unittest.TestCase):
             child.wait(timeout=5)
             if child.stdout: child.stdout.close()
             if child.stderr: child.stderr.close()
+
+
+class BrokerForwardTransitionRaceTest(BrokerHarness, unittest.TestCase):
+    """Keep an immediate Host result behind the durable forwarded transition."""
+
+    def broker_command(self) -> list[str]:
+        wrapper = self.root / "broker_wrapper.py"
+        wrapper.write_text(
+            textwrap.dedent(
+                f"""\
+                import runpy
+                import sys
+                import time
+
+                sys.path.insert(0, {str(ROOT / "owner-open")!r})
+                from owner_open_broker_audit import BrokerAuditJournal
+
+                _forwarded = BrokerAuditJournal.forwarded
+
+                def _delayed_forwarded(self, *args, **kwargs):
+                    time.sleep(0.05)
+                    return _forwarded(self, *args, **kwargs)
+
+                BrokerAuditJournal.forwarded = _delayed_forwarded
+                sys.argv = [{str(BROKER)!r}, *sys.argv[1:]]
+                runpy.run_path({str(BROKER)!r}, run_name="__main__")
+                """
+            ),
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o700)
+        return [sys.executable, str(wrapper)]
+
+    def test_immediate_result_is_audited_after_forwarded(self) -> None:
+        client=self.connect("race-client")
+        try:
+            self.request(
+                client,
+                "race-request",
+                {
+                    "kind":"job.inspect",
+                    "seq":0,
+                    "direction":"client_to_host",
+                    "payload":{"job_id":"job-race"},
+                },
+                ["job.inspect.result"],
+            )
+            values=self.collect_until(client,"race-request")
+            self.assertTrue(any(v.get("kind")=="result" for v in values))
+        finally:
+            client.close()
+        records=[json.loads(x) for x in self.audit.read_text().splitlines()]
+        selected=[r for r in records if r["request_id"]=="race-request"]
+        self.assertEqual(
+            [r["stage"] for r in selected],
+            ["broker.accepted","broker.forwarded","broker.terminal"],
+        )
 
 
 if __name__=="__main__": unittest.main()

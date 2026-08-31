@@ -50,6 +50,19 @@ mod flow_tests {
         }
     }
 
+    fn job_output(cursor: u64, bytes: usize) -> RunTurnFrame {
+        let mut frame = data(cursor, bytes);
+        frame.kind = "job.output".to_string();
+        frame.job_id = Some("job-1".to_string());
+        frame.stream_id = Some("job-stream-1".to_string());
+        frame.payload = json!({
+            "stream": "stdout",
+            "encoding": "base64",
+            "data": "eA==".repeat(bytes),
+        });
+        frame
+    }
+
     #[test]
     fn pause_credit_and_resume_release_queued_frames_in_order() {
         let mut flow = StreamDelivery::new(&options(4096));
@@ -68,6 +81,91 @@ mod flow_tests {
         let drained = flow.drain().unwrap();
         assert_eq!(drained.len(), 1);
         assert_eq!(drained[0].event_id.as_deref(), Some("stream-event-1"));
+    }
+
+    #[test]
+    fn job_output_is_subject_to_pause_and_credit() {
+        assert!(is_flow_controlled_kind("job.output"));
+        let mut flow = StreamDelivery::new(&options(4096));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        assert!(matches!(
+            flow.submit(job_output(2, 16)).unwrap(),
+            SubmitResult::Queued
+        ));
+        flow.apply_control(&control(
+            1,
+            StreamControl::WindowUpdate { credit_bytes: 4096 },
+            "credit",
+        ))
+        .unwrap();
+        assert!(flow.drain().unwrap().is_empty());
+        flow.apply_control(&control(2, StreamControl::Resume, "resume"))
+            .unwrap();
+        let drained = flow.drain().unwrap();
+        assert_eq!(drained.len(), 1);
+        assert_eq!(drained[0].kind, "job.output");
+        assert_eq!(drained[0].job_id.as_deref(), Some("job-1"));
+    }
+
+    #[test]
+    fn opaque_job_event_id_uses_explicit_durable_cursor_for_gap_recovery() {
+        let mut flow = StreamDelivery::new(&options(128));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let mut frame = job_output(7, 512);
+        frame.event_id = Some("job-event-opaque-content-bound-id".to_string());
+        frame
+            .extensions
+            .insert("durable_cursor".to_string(), json!(41));
+        let result = flow.submit(frame).unwrap();
+        let gap = match result {
+            SubmitResult::GapStarted(gap) => gap,
+            other => panic!("unexpected submit result: {other:?}"),
+        };
+        assert_eq!(gap.first_cursor, Some(41));
+        assert_eq!(gap.last_cursor, Some(41));
+        assert_eq!(gap.required_resume_cursor(), Some(42));
+        assert_eq!(gap.first_event_id.as_deref(), Some("job-event-opaque-content-bound-id"));
+    }
+
+    #[test]
+    fn malformed_explicit_durable_cursor_fails_closed() {
+        let mut flow = StreamDelivery::new(&options(4096));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let mut frame = job_output(1, 16);
+        frame
+            .extensions
+            .insert("durable_cursor".to_string(), json!("not-a-cursor"));
+        let error = flow.submit(frame).expect_err("malformed cursor must be rejected");
+        assert!(error.to_string().contains("durable_cursor"));
+    }
+
+    #[test]
+    fn hello_ack_advertises_every_classified_bounded_frame() {
+        let options = options(4096);
+        let flow = StreamDelivery::new(&options);
+        let journal = TransportJournal::open(None);
+        let mut hello = data(0, 0);
+        hello.kind = FRAME_HELLO_ACK.to_string();
+        hello.payload = json!({});
+
+        augment_core_frame(&mut hello, None, &options, &flow, false, &journal);
+
+        let advertised = hello
+            .payload
+            .get("flow_controlled_frame_kinds")
+            .and_then(Value::as_array)
+            .expect("HELLO_ACK must advertise bounded frame classes");
+        let advertised = advertised
+            .iter()
+            .map(|value| value.as_str().expect("class names are strings"))
+            .collect::<Vec<_>>();
+        assert_eq!(advertised, FLOW_CONTROLLED_FRAME_KINDS);
+        for kind in FLOW_CONTROLLED_FRAME_KINDS {
+            assert!(is_flow_controlled_kind(kind));
+        }
     }
 
     #[test]

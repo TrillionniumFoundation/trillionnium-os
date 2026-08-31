@@ -40,9 +40,14 @@ Read-only product payload:
 
 ```text
 /system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.squashfs
-/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.manifest.json
-/system_ext/etc/trillionnium/owner-open/profile-v2.json
+/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json
+/system_ext/etc/trillionnium/owner-open/profile-v3.json
 ```
+
+The staging manifest is named owner-open-rootfs.manifest.json and is consumed only by the image builder. The Android install pair uses the distinct image manifest name owner-open-rootfs.image-manifest.json.
+The repository's profile-v2 file is the source-selection envelope; the
+runtime profile installed on Android is profile-v3 and is validated by the
+native bootstrap.
 
 Writable device state:
 
@@ -77,6 +82,14 @@ Root Linux supervisor.
 The Root Linux supervisor, not Android init, owns the Host, broker, provider and
 ADB relay child processes. Android init observes bootstrap health and retains an
 out-of-band stop path.
+
+The init handoff has an explicit data-filesystem barrier: `early-init` resets
+`trillionnium.owner_open.data_ready` to `0`; the `post-fs-data` action creates
+and `restorecon_recursive`s the private owner-open tree, then sets that property
+to `1`. Bootstrap starts only from the combined trigger
+`ro.trillionnium.owner_open.enabled=true &&
+trillionnium.owner_open.data_ready=1`, so either order of the enabled property
+and `post-fs-data` event is fail-closed until the directory action has run.
 
 ## ABI boundary
 

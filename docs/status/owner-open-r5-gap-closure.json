@@ -1,0 +1,821 @@
+{
+  "schema": "org.trillionnium.owner-open-r5.gap-closure.v1",
+  "revision": "2026-08-29-r6",
+  "semantic_baseline_revision": "2026-08-27-r3",
+  "implementation_plan": "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md",
+  "generated_policy": {
+    "checked_in_status_is_claim_policy_not_exact_head_evidence": true,
+    "exact_head_evidence_must_be_ci_generated": true,
+    "automatic_redispatch": false,
+    "public_release": false
+  },
+  "implementation_baseline": {
+    "branch": "codex/owner-open-r5-tool-loop-20260827",
+    "commit": "479e5fb78385d3706b42f83b334025fa2b6ccd50",
+    "source_status": "HOST_TESTED",
+    "evidence_level": "L1",
+    "workflow_runs": [
+      {
+        "name": "owner-open R5 tool loop",
+        "run_id": 33244626387,
+        "conclusion": "success"
+      },
+      {
+        "name": "owner-open foundation",
+        "run_id": 33244626392,
+        "conclusion": "success"
+      }
+    ],
+    "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX"
+  },
+  "documentation_candidate": {
+    "branch": "codex/owner-open-r5-gap-closure-20260829",
+    "state": "EXACT_SOURCE_HEAD_L1_PASSED",
+    "evidence_level": "L1",
+    "validated_source_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+    "validated_source_tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+    "workflow_run_id": 33294911756,
+    "checked_in_promotion_requires_new_exact_head_ci": true
+  },
+  "state_vocabulary": {
+    "OPEN": "The requirement is not source-closed and has no qualifying evidence.",
+    "SOURCE_CLOSED_PENDING_EVIDENCE": "Reviewed source and exact-head L1 tests are complete, but higher-level environment evidence is open.",
+    "EXTERNAL_HOLD": "Closure requires material or authority unavailable inside repository CI.",
+    "CLOSED": "All required source, environment and independent evidence for the declared exit level is bound."
+  },
+  "priority_order": [
+    "R5-GAP-GOVERNANCE-001",
+    "R5-GAP-JOB-ADMISSION-001",
+    "R5-GAP-PROCESS-LIFECYCLE-001",
+    "R5-GAP-STREAM-RECOVERY-001",
+    "R5-GAP-JOURNAL-CONVERGENCE-001",
+    "R5-GAP-BROKER-CORRELATION-001",
+    "R5-GAP-PRODUCT-ENTRYPOINT-001",
+    "R5-GAP-INSTALLED-CODEX-001",
+    "R5-GAP-ROOTLINUX-PLACEMENT-001",
+    "R5-GAP-ANDROID-GRAPH-001",
+    "R5-GAP-PHYSICAL-ADB-001",
+    "R5-GAP-FAULT-MATRIX-001",
+    "R5-GAP-RELEASE-001"
+  ],
+  "gaps": [
+    {
+      "id": "R5-GAP-GOVERNANCE-001",
+      "priority": "P0",
+      "work_packages": [
+        "W0",
+        "W7"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "issue": 20,
+      "summary": "Protect the integration truth: exact-head CI-generated evidence, coherent PR topology and protected main.",
+      "source_surfaces": [
+        ".github/workflows/owner-open-r5-tool-loop.yml",
+        "tools/verify-owner-open-gap-closure.py",
+        "docs/status/owner-open-r5-gap-closure.json",
+        "docs/status/owner-open-r5-status.json"
+      ],
+      "exit_evidence_level": "L1",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "The active candidate commit and tree are emitted by a permanent workflow.",
+        "Checked-in status never claims an unvalidated HEAD.",
+        "Main requires the declared exact-head checks and independent review.",
+        "Plan, status, README and PR narrative share one revision and claim ceiling."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      },
+      "required_authority": [
+        "repository administrator must protect main with the declared exact-head checks",
+        "independent reviewer must approve the ordered branch-chain integration",
+        "repository administrator must prevent direct unreviewed integration"
+      ]
+    },
+    {
+      "id": "R5-GAP-JOB-ADMISSION-001",
+      "priority": "P0",
+      "work_packages": [
+        "W3",
+        "W5"
+      ],
+      "status": "CLOSED",
+      "issue": 14,
+      "summary": "Reserve finite job capacity before any spawn and make every post-spawn failure converge.",
+      "source_surfaces": [
+        "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+        "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
+        "docs/protocols/owner-open-jobs-v1.md"
+      ],
+      "exit_evidence_level": "L1",
+      "requires_external_evidence": false,
+      "acceptance": [
+        "Capacity rejection proves no child was started.",
+        "Concurrent starts cannot exceed max_jobs.",
+        "All post-spawn cuts kill, reap, release reservation and close registry/journal state.",
+        "No automatic redispatch follows an ambiguous cleanup."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R5-GAP-PROCESS-LIFECYCLE-001",
+      "priority": "P0",
+      "work_packages": [
+        "W3",
+        "W5"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
+      "issue": 15,
+      "summary": "Eliminate initial-stdin deadlock windows and bind parent-death/descendant cleanup to qualified behavior.",
+      "source_surfaces": [
+        "crates/trillionnium-owner-open-job-runtime/src/process.rs",
+        "crates/trillionnium-owner-open-runtime/src/lib.rs",
+        "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+        "docs/protocols/owner-open-jobs-v1.md"
+      ],
+      "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "Readers are live before bounded initial stdin is written.",
+        "Every setup failure after spawn is covered by a total lifecycle guard.",
+        "Linux parent-death and PID identity checks are explicit and tested.",
+        "Leader exit cannot silently leave descendants while reporting terminal cleanup."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "installed target Root Linux parent-death and process-group observations",
+        "target service-manager restart and descendant-reaping evidence",
+        "target PID, cgroup and namespace identity binding"
+      ]
+    },
+    {
+      "id": "R5-GAP-STREAM-RECOVERY-001",
+      "priority": "P0",
+      "work_packages": [
+        "W3",
+        "W5"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
+      "issue": 16,
+      "summary": "Apply bounded flow control to job output and report retention gaps with exact cursor semantics.",
+      "source_surfaces": [
+        "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/queue.rs",
+        "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+        "docs/protocols/owner-open-stream-flow-v1.md",
+        "docs/protocols/owner-open-inspect-v1.md"
+      ],
+      "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "job.output is a generated bounded-stream delivery class.",
+        "Zero credit never blocks cancel, inspect or terminal paths.",
+        "oldest_available_cursor and missing ranges are explicit.",
+        "Resume is cursor-bound and never authorizes effect redispatch."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "installed multi-connection pause, credit and resume observations",
+        "target reconnect from retained cursors under live output",
+        "target proof that recovery never redispatches an effect"
+      ]
+    },
+    {
+      "id": "R5-GAP-JOURNAL-CONVERGENCE-001",
+      "priority": "P0",
+      "work_packages": [
+        "W5"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
+      "issue": 17,
+      "summary": "Converge process, registry and durable truth under journal failure.",
+      "source_surfaces": [
+        "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+        "crates/trillionnium-owner-open-job-runtime/src/journal.rs",
+        "crates/trillionnium-owner-open-event-store/src/lib.rs",
+        "docs/protocols/owner-open-effect-state-machine-v1.md"
+      ],
+      "exit_evidence_level": "L5",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "Critical append failures are never discarded.",
+        "Degraded live and terminal states are explicit and inspectable.",
+        "New effects are inhibited when required durability is unavailable.",
+        "ENOSPC, torn write, corruption and restart cuts preserve no-redispatch truth."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "authorized L5 ENOSPC and torn-write injection",
+        "corrupt-journal and restart convergence observations",
+        "power-loss evidence showing conservative no-redispatch recovery"
+      ]
+    },
+    {
+      "id": "R5-GAP-BROKER-CORRELATION-001",
+      "priority": "P0",
+      "work_packages": [
+        "W1",
+        "W5"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
+      "issue": 18,
+      "summary": "Replace kind/job matching with exact request identity and a three-stage durable broker audit.",
+      "source_surfaces": [
+        "tools/owner-open/owner_open_connection_broker.py",
+        "tools/owner-open/owner_open_broker_common.py",
+        "tools/owner-open/owner_open_broker_runtime.py",
+        "docs/protocols/owner-open-multi-connection-broker-v1.md"
+      ],
+      "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "Connection, client, broker and Host sequences are separately bound.",
+        "accepted, forwarded and terminal/uncertain records are durable.",
+        "Delayed or spontaneous frames cannot satisfy another request.",
+        "All startup failures terminate and reap the upstream process group."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "installed L2 multi-client Broker and Host execution",
+        "target disconnect, Broker restart and delayed-frame observations",
+        "target audit-store ownership, mode and fsync evidence"
+      ]
+    },
+    {
+      "id": "R5-GAP-PRODUCT-ENTRYPOINT-001",
+      "priority": "P1",
+      "work_packages": [
+        "W0",
+        "W6"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE",
+      "issue": 19,
+      "summary": "Select one installable product entrypoint and prevent packaging the unavailable-provider stub.",
+      "source_surfaces": [
+        "apps/trillionnium-owner-open-host/Cargo.toml",
+        "apps/trillionnium-owner-open-host/src/main.rs",
+        "android/owner-open",
+        "docs/operations/owner-open-deployment-lifecycle-and-emergency-stop.md"
+      ],
+      "exit_evidence_level": "L3",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "One product command and one init service start the supported topology.",
+        "Install and target-files inventories contain only permitted binaries.",
+        "The entrypoint reaches provider, shell, ADB and job paths.",
+        "Binary hashes, argv, UID/GID, socket and SELinux binding are machine-readable."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      },
+      "remaining_evidence": [
+        "clean L3 Android target-files and image inventories",
+        "installed init, UID/GID, socket and SELinux observations",
+        "one product command reaching provider, shell, ADB and job paths"
+      ]
+    },
+    {
+      "id": "R5-GAP-INSTALLED-CODEX-001",
+      "priority": "P0",
+      "work_packages": [
+        "W2",
+        "W7"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "issues": [
+        10,
+        13
+      ],
+      "summary": "Execute the exact installed target Root Linux Codex with authenticated same-turn MCP/tool continuation.",
+      "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
+      "required_material": [
+        "target Root Linux filesystem and service identity",
+        "installed Codex executable and credentials",
+        "exact help/version/capability bytes",
+        "authenticated provider network access"
+      ],
+      "acceptance": [
+        "Executable path, member/archive digest, version and help bytes are bound.",
+        "Cryptographic release identity policy passes before execution.",
+        "One same turn performs success, deliberate failure, pipe and PTY control, then continues.",
+        "Disconnect/reconnect produces no hidden effect retry."
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R5-GAP-ROOTLINUX-PLACEMENT-001",
+      "priority": "P0",
+      "work_packages": [
+        "W3",
+        "W6"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "issues": [
+        4,
+        13
+      ],
+      "summary": "Bind actual UID/GID, namespace, cgroup, filesystem and writable overlay placement.",
+      "exit_evidence_level": "L2",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "Installed processes run under the declared identities and cgroup/namespace.",
+        "Writable stores and sockets have exact owners, modes and mount ancestry.",
+        "Restart/backoff and emergency stop are observed under the service manager.",
+        "No legacy authority node is required for startup."
+      ],
+      "required_material": [
+        "authorized target Root Linux instance",
+        "service-manager unit and identity configuration",
+        "namespace, cgroup and mount observations",
+        "writable store and socket ownership evidence"
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R5-GAP-ANDROID-GRAPH-001",
+      "priority": "P0",
+      "work_packages": [
+        "W0",
+        "W6"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "issue": 2,
+      "summary": "Build a clean Android owner-open product graph with init and SELinux admission.",
+      "exit_evidence_level": "L3",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "Strict Android graph verifier reports no forbidden legacy node.",
+        "Soong, init, SELinux and target-files inventories bind one product entrypoint.",
+        "The image is built from a clean manifest and exact patch/commit set.",
+        "No source fixture is promoted as image evidence."
+      ],
+      "required_material": [
+        "clean pinned Android source checkout",
+        "authorized AOSP build toolchain and build capacity",
+        "target-files and image inventories",
+        "Soong, init and SELinux build evidence"
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R5-GAP-PHYSICAL-ADB-001",
+      "priority": "P0",
+      "work_packages": [
+        "W4",
+        "W7"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "issues": [
+        5,
+        8,
+        13
+      ],
+      "summary": "Select and physically execute the ordinary ADB topology with raw observations.",
+      "exit_evidence_level": "L4",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "The selected ARM64 client/server or transparent relay is artifact-bound.",
+        "A physical turn performs devices, shell id, deliberate failure and visible mutation.",
+        "Offline, unauthorized, multiple-device, recovery and reboot remain raw.",
+        "USB loss and reconnect never cause blind redispatch."
+      ],
+      "required_material": [
+        "authorized physical Android device and USB host",
+        "selected ARM64 adb client and server artifacts",
+        "ordinary adbd offline, unauthorized and reconnect states",
+        "raw visible-effect and no-redispatch observations"
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R5-GAP-FAULT-MATRIX-001",
+      "priority": "P0",
+      "work_packages": [
+        "W5",
+        "W7"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "issues": [
+        6,
+        13
+      ],
+      "summary": "Qualify crash, disconnect, ENOSPC, USB loss, reboot and power-loss recovery.",
+      "exit_evidence_level": "L5",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "Every durable-before/during/after-effect crash cut has a recorded outcome.",
+        "Provider, core, transport, broker, MCP and client failures are isolated.",
+        "Storage exhaustion and corruption preserve conservative recovery.",
+        "Device reboot and USB loss produce inspectable truth and bounded cleanup."
+      ],
+      "required_material": [
+        "authorized destructive test environment",
+        "controllable ENOSPC, corruption and power-loss fault injection",
+        "target service and physical-device access",
+        "independently retained recovery evidence"
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      }
+    },
+    {
+      "id": "R5-GAP-RELEASE-001",
+      "priority": "P1",
+      "work_packages": [
+        "W7"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "issue": 13,
+      "summary": "Create a separately authorized signed public-release profile.",
+      "exit_evidence_level": "L6",
+      "requires_external_evidence": true,
+      "acceptance": [
+        "Artifact signatures, certificate identity and transparency-log proofs are cryptographically verified.",
+        "AVB, rollback indexes, OTA, key custody and recovery are independently approved.",
+        "Multi-user, lock-screen and emergency-stop policy is reviewed.",
+        "A human release authorization explicitly changes public_release to true."
+      ],
+      "required_authority": [
+        "independent security and release reviewers",
+        "authorized production signing-key custodian",
+        "AVB, OTA and rollback policy owner",
+        "explicit human public-release authorization"
+      ],
+      "source_evidence": {
+        "level": "L1",
+        "branch": "codex/owner-open-r5-gap-closure-20260829",
+        "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+        "workflow_run_id": 33294911756,
+        "successful_jobs": [
+          "L1 graph, documentation, broker and MCP source closure",
+          "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+          "L1 exact-source-head aggregate candidate"
+        ],
+        "artifacts": [
+          {
+            "id": 9727099892,
+            "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+          },
+          {
+            "id": 9727104823,
+            "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+          },
+          {
+            "id": 9727106502,
+            "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+            "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+          }
+        ]
+      }
+    }
+  ],
+  "closure_rule": {
+    "zero_gap_allowed_only_when": [
+      "every gap status is CLOSED",
+      "every gap carries exact evidence at or above its exit level",
+      "the evidence source commit/tree and installed artifacts match",
+      "public_release is true exactly when R5-GAP-RELEASE-001 is CLOSED and every gap is CLOSED"
+    ],
+    "fixtures_never_close": [
+      "installed Codex",
+      "Root Linux placement",
+      "Android image",
+      "physical ADB",
+      "fault matrix",
+      "public release"
+    ]
+  }
+}

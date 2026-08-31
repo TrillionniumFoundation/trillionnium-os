@@ -1,11 +1,19 @@
 {
-  "schema": "org.trillionnium.owner-open-r5-status.v1",
+  "schema": "org.trillionnium.owner-open-r5-status.v2",
   "plan_revision": "2026-08-28-r5",
+  "active_plan_revision": "2026-08-29-r6",
+  "graph_contract_revision": "2026-08-28-r5",
   "semantic_contract_revision": "2026-08-27-r3",
-  "updated_at": "2026-08-28",
-  "development_branch": "codex/owner-open-r5-tool-loop-20260827",
-  "product_claim": "owner-open exact source implementation is HOST_TESTED at L1 with selected v5 transport, job-aware v7 core, durable pipe and PTY jobs, same-turn callbacks, active controls, replay and inspection, connection-bound Codex MCP controls, strict multi-connection broker mechanics and exact-byte tracing; no installed-Codex, target Root Linux placement, Android image, physical-device, real-ADB, destructive-fault or release claim",
+  "updated_at": "2026-08-30",
+  "development_branch": "codex/owner-open-r5-gap-closure-20260829",
+  "implementation_baseline_branch": "codex/owner-open-r5-tool-loop-20260827",
+  "implementation_baseline_commit": "479e5fb78385d3706b42f83b334025fa2b6ccd50",
+  "gap_register": "docs/status/owner-open-r5-gap-closure.json",
+  "zero_gap": false,
   "public_release": false,
+  "automatic_redispatch": false,
+  "product_claim": "Exact source commit 60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6 and tree f0fac366e9959b4b471bc8cf3ccedcecfe5bd688 passed all sixteen permanent pull-request workflows, including ordered Host worker terminal delivery, transport final-frame drain and descendant cleanup, Provider stdout/exit convergence, bounded natural Provider exit, the permanent L1 source/gap workflow, source slices, foundation, release-path, product-entrypoint, ADB, Android source-profile and Root-Linux packaging gates. Job admission is CLOSED at L1. Process lifecycle, stream recovery, journal convergence, Broker correlation and product entrypoint are source-closed but still require their declared L2-L5 target evidence. Repository governance, installed Codex, Root Linux placement, Android image, physical ADB, destructive faults and public release remain explicit holds.",
+  "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
   "status_levels": [
     "NOT_STARTED",
     "SPEC_ONLY",
@@ -17,167 +25,178 @@
     "RELEASE_QUALIFIED"
   ],
   "evidence_levels": {
-    "L0": "contract, source graph and isolated source shape",
+    "L0": "contract, source graph and source-shape checks",
     "L1": "exact-checkout unit, property, fixture and process tests",
-    "L2": "installed target Root Linux Host, broker, provider and Codex process integration",
-    "L3": "clean Android image and static product graph",
-    "L4": "physical live shell and ordinary ADB effects",
-    "L5": "fault, restart, reboot, USB-loss, ENOSPC and power-loss qualification",
-    "L6": "signed public-release qualification"
+    "L2": "installed target Root Linux Host, broker, provider and Codex integration",
+    "L3": "clean Android image, Soong, init, SELinux and target-files evidence",
+    "L4": "authorized physical shell, job and ordinary ADB effects",
+    "L5": "crash, disconnect, ENOSPC, USB-loss, reboot and power-loss qualification",
+    "L6": "signed public release with independent human authorization"
   },
-  "current_source_slice": {
+  "known_exact_baseline": {
+    "status": "HOST_TESTED",
+    "evidence_level": "L1",
+    "branch": "codex/owner-open-r5-tool-loop-20260827",
+    "commit": "479e5fb78385d3706b42f83b334025fa2b6ccd50",
+    "workflow_runs": [
+      {
+        "name": "owner-open R5 tool loop",
+        "run_id": 33244626387,
+        "conclusion": "success"
+      },
+      {
+        "name": "owner-open foundation",
+        "run_id": 33244626392,
+        "conclusion": "success"
+      }
+    ],
+    "proves": [
+      "locked Rust 1.93 metadata, formatting, default all-target tests and strict Clippy",
+      "generated-source and exact owner-open graph gates",
+      "Python broker, MCP and qualification-lifecycle fixtures",
+      "source-level no-automatic-redispatch contracts"
+    ],
+    "does_not_prove": [
+      "the active documentation or later code candidate",
+      "installed target Root Linux Codex",
+      "Root Linux service placement",
+      "Android image inclusion",
+      "physical shell, job or ADB effect",
+      "destructive fault qualification",
+      "signed public release"
+    ]
+  },
+  "current_candidate": {
+    "branch": "codex/owner-open-r5-gap-closure-20260829",
     "status": "HOST_TESTED",
     "latest_evidence_level": "L1",
-    "validated_source_commit": "fa1d287103c46aff35cf5e95addbc18da8a92063",
-    "closeout_base_commit": "668c031ba4533dc482866fd2da37b61118b92bf8",
-    "implemented": [
-      "selected default Cargo graph contains exactly the reviewed owner-open Host, types, runtime, call registry, event store, job registry, job runtime, provider, stream window, tool bridge and turn loop",
-      "selected Host binaries are foundation Host, v7 core and v5 transport",
-      "same-turn provider, shell and ordinary adb fixture paths preserve raw observations and exactly-once local effects",
-      "turn.cancel and tool.cancel remain serviceable while provider and tool processes run",
-      "durable pipe and PTY jobs support inspect, attach, detach, write, resize, close-stdin, kill and bounded wait",
-      "configured journal unavailability fails closed and never authorizes automatic redispatch",
-      "turn, call and job inspection remain read-only and cursor bound",
-      "bounded stream window supports pause, resume and durable-cursor resynchronization without stopping execution or persistence",
-      "MCP connection_info returns one process-lifetime bridge_instance_id and live controls reject missing or mismatched identity before Host dispatch",
-      "filesystem Unix multi-connection broker uses strict JSON, same-UID admission, private token and digest-bound descriptor mechanics",
-      "broker direct results are request-owner scoped while bounded observations are broadcast to admitted clients",
-      "client disconnect is not interpreted as effect cancellation or automatic redispatch",
-      "exact-byte MCP STDIO trace uses finite downstream process-group teardown",
-      "installed-Codex qualification runner source validates the required traced job sequence and cleanup lifecycle",
-      "all transient diagnostic, repair and source-landing workflows were retired after exact source landing; reproducibility scripts and manifests remain"
+    "exact_head_validation_pending": false,
+    "must_not_inherit_baseline_l1": false,
+    "scope": [
+      "r6 active plan and machine gap register",
+      "semantic-authority and process-topology ADR",
+      "unified effect state machine",
+      "durable jobs, process lifecycle and bounded stream recovery",
+      "three-stage durable Broker audit and exact direct-error correlation",
+      "one source-selected product entrypoint and release-path mechanics",
+      "deployment, restart, emergency-stop and L0-L6 evidence contracts"
     ],
-    "execution_boundary": {
-      "runner_backed_exact_checkout_pass": true,
-      "python_3_12_full_suite_pass": true,
-      "python_tests_run": 680,
-      "python_tests_skipped_for_external_material": 5,
-      "rust_1_93_pass": true,
-      "rust_default_all_targets_test_pass": true,
-      "rust_default_all_targets_clippy_deny_warnings_pass": true,
-      "generated_source_gate_pass": true,
-      "r5_graph_gate_pass": true,
-      "cargo_locked_metadata_captured": true,
-      "cargo_locked_feature_tree_captured": true,
-      "candidate_manifest_exact": true,
-      "evidence_hashes_verified": true,
-      "installed_codex_executed": false,
-      "target_root_linux_placement_observed": false,
-      "android_image_qualified": false,
-      "physical_effect_observed": false,
-      "fault_matrix_qualified": false,
-      "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX",
-      "automatic_redispatch": false
+    "validated_source_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+    "validated_source_tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+    "workflow_run_id": 33294911756,
+    "promotion_commit_requires_new_exact_head_ci": true
+  },
+  "open_repository_gaps": [
+    {
+      "id": "R5-GAP-GOVERNANCE-001",
+      "issue": 20,
+      "priority": "P0",
+      "status": "EXTERNAL_HOLD",
+      "reason": "protected-main configuration and independent review require repository authority outside source CI"
     }
-  },
-  "ci_observation": {
-    "status": "PASSED_EXACT_SOURCE_CLOSEOUT",
-    "workflow": "owner-open R5 strict source closeout v15",
-    "run_id": 33186972324,
-    "job_id": 98902377009,
-    "artifact_id": 9692313160,
-    "artifact_name": "owner-open-r5-source-closeout-v15-668c031ba4533dc482866fd2da37b61118b92bf8-1",
-    "artifact_sha256": "b4756c407108235db2afe6f0a73b26851ca77716a9d9728395770f3d4047a2c4",
-    "logs_available": true,
-    "interpretation": "the exact 31-file source candidate passed generated-source, graph, complete Python, complete Rust test and complete Rust Clippy gates before the exact candidate commit was pushed"
-  },
-  "closed_repository_gaps": [
-    "exact default Cargo graph and selected Host binary drift",
-    "Python source regressions and ResourceWarning leaks in the exercised suite",
-    "Rust formatting, compilation, all-target tests and complete-default-graph Clippy warnings",
-    "pipe EOF completion semantics",
-    "configured-journal unavailable fail-closed behavior",
-    "completed and uncertain job no-redispatch behavior",
-    "live turn and call inspection",
-    "stream-window credit, pause, resume and resync behavior",
-    "multi-connection broker owner-result isolation, observation broadcast and disconnect truth",
-    "temporary workflow false-red and source-rewrite execution surface"
   ],
   "external_evidence_holds": [
     {
-      "id": "HOLD-INSTALLED-CODEX",
-      "required": "actual target Root Linux Codex executable, exact path/digest/version/help bytes, authentication and traced MCP execution",
-      "status": "NOT_PROVIDED"
+      "id": "R5-GAP-INSTALLED-CODEX-001",
+      "issues": [
+        10,
+        13
+      ],
+      "required_level": "L2",
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6"
     },
     {
-      "id": "HOLD-ANDROID-BUILD",
-      "required": "clean Android source checkout, selected owner-open product graph, toolchain and target-files output",
-      "status": "NOT_PROVIDED"
+      "id": "R5-GAP-ROOTLINUX-PLACEMENT-001",
+      "issues": [
+        4,
+        13
+      ],
+      "required_level": "L2",
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6"
     },
     {
-      "id": "HOLD-PHYSICAL-DEVICE",
-      "required": "authorized physical device, USB/ADB path and device fingerprint",
-      "status": "NOT_PROVIDED"
+      "id": "R5-GAP-ANDROID-GRAPH-001",
+      "issues": [
+        2,
+        13
+      ],
+      "required_level": "L3",
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6"
     },
     {
-      "id": "HOLD-FAULT-MATRIX",
-      "required": "target storage and lifecycle environment for crash, ENOSPC, reboot, USB-loss and power-loss qualification",
-      "status": "NOT_PROVIDED"
+      "id": "R5-GAP-PHYSICAL-ADB-001",
+      "issues": [
+        5,
+        8,
+        13
+      ],
+      "required_level": "L4",
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6"
     },
     {
-      "id": "HOLD-RELEASE",
-      "required": "separate signed L6 profile, keys, AVB/rollback, OTA and multi-user evidence",
-      "status": "NOT_PROVIDED"
+      "id": "R5-GAP-FAULT-MATRIX-001",
+      "issues": [
+        6,
+        13
+      ],
+      "required_level": "L5",
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6"
+    },
+    {
+      "id": "R5-GAP-RELEASE-001",
+      "issues": [
+        13
+      ],
+      "required_level": "L6",
+      "status": "NOT_PROVIDED",
+      "source_status": "HOST_TESTED",
+      "source_evidence_commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6"
     }
   ],
   "work_packages": [
     {
       "id": "W0",
-      "name": "source and product graph isolation",
+      "name": "source, product graph and repository truth",
       "status": "HOST_TESTED",
       "complete": false,
       "source_complete": true,
       "latest_evidence_level": "L1",
-      "implemented": [
-        "exact reviewed default Cargo closure",
-        "selected foundation Host, v7 core and v5 transport binaries",
-        "legacy semantic dependencies and source markers remain forbidden",
-        "locked metadata and feature tree captured"
-      ],
-      "open": [
-        "remove forbidden legacy nodes from the selected Android product graph",
-        "collect Soong, init, SELinux and target-files negative evidence"
+      "open_gap_ids": [
+        "R5-GAP-GOVERNANCE-001",
+        "R5-GAP-PRODUCT-ENTRYPOINT-001",
+        "R5-GAP-ANDROID-GRAPH-001"
       ]
     },
     {
       "id": "W1",
-      "name": "same-turn provider, tool callback and active controls",
+      "name": "same-turn loop, controls and broker ownership",
       "status": "HOST_TESTED",
       "complete": false,
       "source_complete": true,
       "latest_evidence_level": "L1",
-      "implemented": [
-        "same-turn provider/tool event path",
-        "active turn.cancel and targeted tool.cancel",
-        "bounded delivery controls and client-detach truth",
-        "broker request-owner correlation and bounded observation delivery",
-        "provider and Host failure become truthful terminal observations"
-      ],
-      "open": [
-        "prove the same continuation and control sequence through the installed target Codex",
-        "qualify target Root Linux multi-client disconnect and sustained backpressure"
+      "open_gap_ids": [
+        "R5-GAP-BROKER-CORRELATION-001"
       ]
     },
     {
       "id": "W2",
-      "name": "external and installed Codex provider adapter",
+      "name": "installed Codex provider and MCP binding",
       "status": "HOST_TESTED",
       "complete": false,
       "source_complete": true,
       "latest_evidence_level": "L1",
-      "implemented": [
-        "bounded provider JSONL adapter and cancellation",
-        "local MCP server exposing connection identity and reviewed job operations",
-        "connection-bound live controls and no hidden effect retry",
-        "exact-byte MCP trace proxy",
-        "temporary-registration installed-Codex qualification runner and lifecycle fixtures"
-      ],
-      "open": [
-        "run the installed Codex probe in target Root Linux",
-        "bind executable path, digest, version, help bytes and authentication state",
-        "execute the traced qualification against the installed CLI",
-        "review exact initialize, tools/list, tools/call and completed-turn events",
-        "bind a real same-turn L2 result"
+      "open_gap_ids": [
+        "R5-GAP-INSTALLED-CODEX-001"
       ]
     },
     {
@@ -187,16 +206,10 @@
       "complete": false,
       "source_complete": true,
       "latest_evidence_level": "L1",
-      "implemented": [
-        "direct command and argv shell",
-        "process groups, timeout, cancellation and bounded byte streams",
-        "durable pipe and PTY job start",
-        "job inspect, attach, detach, write, resize, close-stdin, kill and wait",
-        "operation-level request binding, EOF completion and completed-job no-redispatch replay"
-      ],
-      "open": [
-        "prove pipe and PTY operations through installed Codex MCP",
-        "bind configured Root Linux identity, namespace and cgroup placement"
+      "open_gap_ids": [
+        "R5-GAP-PROCESS-LIFECYCLE-001",
+        "R5-GAP-STREAM-RECOVERY-001",
+        "R5-GAP-ROOTLINUX-PLACEMENT-001"
       ]
     },
     {
@@ -204,98 +217,136 @@
       "name": "ordinary raw ADB substrate",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
-      "implemented": [
-        "exact configured adb argv without serial, host or port injection",
-        "unknown subcommands remain transport-valid",
-        "byte-transparent relay and exact-argv qualification fixtures"
-      ],
-      "open": [
-        "select and materialize the physical ARM64 adb or byte-transparent relay topology",
-        "qualify USB, offline, unauthorized, recovery and reboot",
-        "collect same-turn physical ADB evidence"
+      "open_gap_ids": [
+        "R5-GAP-PHYSICAL-ADB-001"
       ]
     },
     {
       "id": "W5",
-      "name": "persistence, replay, inspection, flow and connection recovery",
+      "name": "durability, inspection, flow and recovery",
       "status": "HOST_TESTED",
       "complete": false,
       "source_complete": true,
       "latest_evidence_level": "L1",
-      "implemented": [
-        "append-only turn and job observations",
-        "completed replay and conservative incomplete recovery",
-        "turn, call and job inspection",
-        "bounded stream window and resync-required",
-        "accepted-before-effect job operation records",
-        "configured journal failure is fail-closed",
-        "bridge and broker connection ownership without automatic redispatch"
-      ],
-      "open": [
-        "keep cross-Host live descriptor adoption unsupported or define a separately reviewed supervisor design",
-        "qualify target crash, disconnect, ENOSPC, reboot and power loss"
+      "open_gap_ids": [
+        "R5-GAP-STREAM-RECOVERY-001",
+        "R5-GAP-JOURNAL-CONVERGENCE-001",
+        "R5-GAP-FAULT-MATRIX-001"
       ]
     },
     {
       "id": "W6",
       "name": "Android, Root Linux and AiShell integration",
-      "status": "SPEC_ONLY",
+      "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
-      "latest_evidence_level": "L0",
-      "implemented": [
-        "Android profile, selection, payload and admission contracts with source-level verifier fixtures"
-      ],
-      "open": [
-        "clean owner-open product profile",
-        "init, abstract socket and SELinux admission",
-        "Root Linux lifecycle and writable overlay",
-        "install Host, broker, core, trace and Codex MCP bridge",
-        "thin AiShell event, inspect, flow and job client",
-        "emergency stop and clean target-files"
-      ],
-      "hold": "the audited Android overlay still selects pre-r3 Authority, lease, P01 and old shell-broker nodes"
+      "source_complete": true,
+      "latest_evidence_level": "L1",
+      "open_gap_ids": [
+        "R5-GAP-PRODUCT-ENTRYPOINT-001",
+        "R5-GAP-ROOTLINUX-PLACEMENT-001",
+        "R5-GAP-ANDROID-GRAPH-001",
+        "R5-GAP-FAULT-MATRIX-001"
+      ]
     },
     {
       "id": "W7",
       "name": "qualification, self-development and optional release",
       "status": "HOST_TESTED",
       "complete": false,
-      "source_complete": false,
+      "source_complete": true,
       "latest_evidence_level": "L1",
-      "implemented": [
-        "L0-L6 promotion vocabulary",
-        "exact source manifest, full source test, full Clippy, Cargo graph and hashed evidence closeout",
-        "durable job, broker and installed-Codex qualification contracts"
-      ],
-      "open": [
-        "installed target Root Linux and Codex L2",
-        "clean Android L3",
-        "physical shell, job and ADB L4",
-        "provider, Host, broker, MCP, PTY, USB, reboot, ENOSPC and power-loss L5",
-        "separate signed L6 profile"
+      "open_gap_ids": [
+        "R5-GAP-GOVERNANCE-001",
+        "R5-GAP-INSTALLED-CODEX-001",
+        "R5-GAP-PHYSICAL-ADB-001",
+        "R5-GAP-FAULT-MATRIX-001",
+        "R5-GAP-RELEASE-001"
       ]
     }
   ],
   "critical_path_next": [
-    "run the installed target Root Linux Codex probe and bind executable identity and capability bytes",
-    "execute the exact traced MCP qualification with real pipe and PTY jobs and no hidden retry",
-    "select and execute the physical ordinary ADB topology",
-    "remove every forbidden legacy node from the Android owner-open product graph",
-    "wire init, SELinux, abstract socket, Root Linux and AiShell and build clean target files",
-    "collect L3, L4 and L5 evidence",
-    "keep public release false until a separate signed L6 profile passes"
+    "enable protected-main required checks and obtain independent integration review for Issue 20",
+    "execute installed target Root Linux Codex, Broker and process-placement L2 qualification",
+    "build clean Android target files and bind the installed product entrypoint at L3",
+    "execute authorized physical ordinary ADB and visible effects at L4",
+    "complete ENOSPC, corruption, USB-loss, reboot and power-loss qualification at L5",
+    "keep public_release=false until separate cryptographic and human L6 authorization"
   ],
   "not_claimed": [
-    "live installed Codex MCP job qualification",
-    "target Root Linux UID, namespace or cgroup placement",
-    "cross-Host live file-descriptor adoption",
-    "real ARM64 adb or a deployed transparent relay",
-    "Android image inclusion or clean target-files",
-    "physical shell, job or ADB effect",
+    "protected-main governance and independent integration approval",
+    "installed target Root Linux Codex qualification",
+    "target Root Linux UID, namespace, cgroup or service-manager placement",
+    "clean Android image or target-files",
+    "installed product entrypoint on a target image",
+    "physical shell, job or ordinary ADB effect",
     "crash, ENOSPC, USB-loss, reboot or power-loss conformance",
-    "signed public release"
+    "cryptographically verified and human-authorized public release",
+    "zero-gap completion"
+  ],
+  "source_evidence_document": "docs/status/owner-open-r5-source-closure-evidence-2026-08-29.md",
+  "known_exact_candidate": {
+    "status": "HOST_TESTED",
+    "evidence_level": "L1",
+    "branch": "codex/owner-open-r5-gap-closure-20260829",
+    "commit": "60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+    "tree": "f0fac366e9959b4b471bc8cf3ccedcecfe5bd688",
+    "workflow_run_id": 33294911756,
+    "successful_jobs": [
+      "L1 graph, documentation, broker and MCP source closure",
+      "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+      "L1 exact-source-head aggregate candidate"
+    ],
+    "artifacts": [
+      {
+        "id": 9727099892,
+        "name": "owner-open-r5-l1-graph-docs-python-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "digest": "sha256:2a841fc9e476cad10181e049636ca02e75dd124e1709825f7573c4fdfe114935"
+      },
+      {
+        "id": 9727104823,
+        "name": "owner-open-r5-l1-rust-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "digest": "sha256:fae6d8d178a136316e4d2947993c12fba00a40fbfe0aedcf7c4053cea47f3183"
+      },
+      {
+        "id": 9727106502,
+        "name": "owner-open-r5-l1-candidate-60c6d1581d2ef2a17cb8515bc27f6dd038f9d5b6",
+        "digest": "sha256:a72d48121a27fea2ca71f7066f3311ab04483195097576d2dd86b8504ac0c4ff"
+      }
+    ],
+    "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_CODEX"
+  },
+  "source_closed_pending_evidence": [
+    {
+      "id": "R5-GAP-PROCESS-LIFECYCLE-001",
+      "issue": 15,
+      "required_level": "L2",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-STREAM-RECOVERY-001",
+      "issue": 16,
+      "required_level": "L2",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-JOURNAL-CONVERGENCE-001",
+      "issue": 17,
+      "required_level": "L5",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-BROKER-CORRELATION-001",
+      "issue": 18,
+      "required_level": "L2",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "R5-GAP-PRODUCT-ENTRYPOINT-001",
+      "issue": 19,
+      "required_level": "L3",
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    }
   ]
 }

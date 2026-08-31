@@ -24,6 +24,8 @@ The same manifest is embedded at:
 /etc/trillionnium/owner-open/rootfs.manifest.json
 ```
 
+The stager also reserves the empty runtime mountpoint /var/lib/trillionnium/owner-open. Android bootstrap binds the writable /data/trillionnium/owner-open/state directory over this mountpoint after the read-only image is mounted. The external and embedded manifests carry runtime_state_directory with this exact absolute value.
+
 It does not invoke `mksquashfs`, create an Android module, modify a device or
 claim that an image exists.
 
@@ -110,6 +112,8 @@ The tool rejects traversal, Android partition paths, mutable `/data` paths and
 credential-like destinations such as provider auth files, ADB private keys,
 SSH keys, secret/token/credential paths.
 
+The /var/lib/trillionnium/owner-open path is reserved as a directory mountpoint; payload file entries may not use /var destinations.
+
 Credentials and mutable job/event state are provisioned separately after boot.
 
 ## 6. ELF check
@@ -149,6 +153,7 @@ source path and source filesystem identity
 mode and desired UID/GID
 SHA-256 and byte count
 AArch64 ELF header observation
+runtime state mountpoint
 ```
 
 Claims remain:

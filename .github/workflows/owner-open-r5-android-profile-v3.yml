@@ -18,6 +18,11 @@ on:
       - "tools/tests/test_verify_owner_open_android_profile_v3.py"
       - "tools/tests/test_verify_owner_open_android_profile_selection.py"
       - "tools/tests/test_verify_owner_open_android_source_closure.py"
+      - "tools/tests/test_owner_open_bootstrap_manifest_contract.py"
+      - "tools/tests/test_owner_open_ingress_contract.py"
+      - "tools/tests/test_owner_open_manifest_naming.py"
+      - "tools/tests/test_owner_open_android_client_reconnect.py"
+      - "tools/tests/test_owner_open_init_timing.py"
       - "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md"
       - "docs/plan/owner-open-r5-batch-e-rootlinux-payload-profile.md"
       - "docs/contracts/owner-open-r5-android-profile-selection-v1.json"
@@ -42,6 +47,11 @@ on:
       - "tools/tests/test_verify_owner_open_android_profile_v3.py"
       - "tools/tests/test_verify_owner_open_android_profile_selection.py"
       - "tools/tests/test_verify_owner_open_android_source_closure.py"
+      - "tools/tests/test_owner_open_bootstrap_manifest_contract.py"
+      - "tools/tests/test_owner_open_ingress_contract.py"
+      - "tools/tests/test_owner_open_manifest_naming.py"
+      - "tools/tests/test_owner_open_android_client_reconnect.py"
+      - "tools/tests/test_owner_open_init_timing.py"
       - "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md"
       - "docs/plan/owner-open-r5-batch-e-rootlinux-payload-profile.md"
       - "docs/contracts/owner-open-r5-android-profile-selection-v1.json"
@@ -63,8 +73,20 @@ jobs:
     env:
       PYTHONWARNINGS: error::ResourceWarning
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Assert exact source-head checkout
+        env:
+          SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.13"
       - name: Parse canonical machine documents and compile verifiers
@@ -84,7 +106,12 @@ jobs:
             tools/verify-owner-open-android-source-closure-v2.py \
             tools/tests/test_verify_owner_open_android_profile_v3.py \
             tools/tests/test_verify_owner_open_android_profile_selection.py \
-            tools/tests/test_verify_owner_open_android_source_closure.py
+            tools/tests/test_verify_owner_open_android_source_closure.py \
+            tools/tests/test_owner_open_bootstrap_manifest_contract.py \
+            tools/tests/test_owner_open_ingress_contract.py \
+            tools/tests/test_owner_open_manifest_naming.py \
+            tools/tests/test_owner_open_android_client_reconnect.py \
+            tools/tests/test_owner_open_init_timing.py
       - name: Check generated Root Linux payload package fragment
         run: python3 tools/generate-owner-open-android-profile-v3.py --check
       - name: Verify exact Android profile source selection
@@ -121,11 +148,16 @@ jobs:
             tools.tests.test_verify_owner_open_android_profile_v3 \
             tools.tests.test_verify_owner_open_android_profile_selection \
             tools.tests.test_verify_owner_open_android_source_closure \
+            tools.tests.test_owner_open_bootstrap_manifest_contract \
+            tools.tests.test_owner_open_ingress_contract \
+            tools.tests.test_owner_open_manifest_naming \
+            tools.tests.test_owner_open_android_client_reconnect \
+            tools.tests.test_owner_open_init_timing \
             -v 2>&1 | tee owner-open-r5-android-source-tests.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: owner-open-r5-android-source-closure-${{ github.sha }}
+          name: owner-open-r5-android-source-closure-${{ github.event.pull_request.head.sha || github.sha }}
           if-no-files-found: error
           retention-days: 14
           path: |

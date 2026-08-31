@@ -52,7 +52,7 @@ class VerifyOwnerOpenRootfsPayloadSelectionTest(unittest.TestCase):
         self.write(
             selected["stager"],
             "ROOTFS_PAYLOAD_STAGED_NOT_IMAGE\n"
-            "entry source changed between inspection and copy\n"
+            "payload source changed between inspection and copy\n"
             "payload staging changed its output parent mode\n"
             "rootfs_image_built\n",
         )
@@ -90,7 +90,7 @@ class VerifyOwnerOpenRootfsPayloadSelectionTest(unittest.TestCase):
                 "required_markers": {
                     selected["stager"]: [
                         "ROOTFS_PAYLOAD_STAGED_NOT_IMAGE",
-                        "entry source changed between inspection and copy",
+                        "payload source changed between inspection and copy",
                         "payload staging changed its output parent mode",
                         "rootfs_image_built",
                     ],

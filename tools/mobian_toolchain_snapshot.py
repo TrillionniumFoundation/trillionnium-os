@@ -842,7 +842,7 @@ def collect_entries(root: Path, source_date_epoch: int) -> tuple[list[dict[str, 
             lexical_relative = lexical_resolved.relative_to(root_resolved).as_posix()
             if lexical_relative == ".":
                 lexical_relative = ""
-        except (RuntimeError, ValueError) as exc:
+        except (OSError, RuntimeError, ValueError) as exc:
             raise SnapshotError(f"snapshot symlink is escaping or cyclic: {relative}") from exc
         try:
             resolved = path.resolve(strict=True)
@@ -862,7 +862,7 @@ def collect_entries(root: Path, source_date_epoch: int) -> tuple[list[dict[str, 
                 }
             )
             continue
-        except (RuntimeError, ValueError) as exc:
+        except (OSError, RuntimeError, ValueError) as exc:
             raise SnapshotError(f"snapshot symlink is escaping or cyclic: {relative}") from exc
         resolved_info = resolved.lstat()
         if stat.S_ISREG(resolved_info.st_mode):

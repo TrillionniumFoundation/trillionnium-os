@@ -36,11 +36,9 @@ def added_product_packages(product_text: str) -> set[str]:
     started = False
     for raw_line in product_text[start + len(marker) :].splitlines():
         line = raw_line.strip()
+        if "#" in line:
+            line = line.split("#", 1)[0].rstrip()
         if not line:
-            if started:
-                break
-            continue
-        if line.startswith("#"):
             if started:
                 break
             continue

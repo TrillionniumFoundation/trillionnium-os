@@ -21,13 +21,7 @@ fn augment_core_frame(
         );
         payload.insert(
             "flow_controlled_frame_kinds".to_string(),
-            json!([
-                FRAME_MODEL_DELTA,
-                FRAME_MODEL_MESSAGE,
-                FRAME_TOOL_STDOUT,
-                FRAME_TOOL_STDERR,
-                "provider.opaque"
-            ]),
+            json!(FLOW_CONTROLLED_FRAME_KINDS),
         );
         payload.insert(
             "transport_buffer_bytes".to_string(),

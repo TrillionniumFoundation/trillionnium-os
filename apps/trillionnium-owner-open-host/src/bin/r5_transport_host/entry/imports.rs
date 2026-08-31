@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, ChildStdout, Command, ExitStatus, Stdio};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender, sync_channel};
 use std::thread;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use serde::Deserialize;
 use serde_json::{Value, json};
@@ -39,6 +39,7 @@ const FRAME_STREAM_RESYNC_REQUIRED: &str = "stream.resync_required";
 const FRAME_STREAM_FLOW_DISABLED: &str = "stream.flow_disabled";
 const TRANSPORT_QUEUE_DEPTH: usize = 256;
 const TRANSPORT_POLL_INTERVAL: Duration = Duration::from_millis(20);
+const CORE_READER_DRAIN_GRACE: Duration = Duration::from_secs(2);
 const DEFAULT_BUFFER_BYTES: usize = 4 * 1024 * 1024;
 const DEFAULT_MAX_CREDIT_BYTES: u64 = 16 * 1024 * 1024;
 const DEFAULT_MAX_CHUNK_BYTES: u64 = 2 * 1024 * 1024;

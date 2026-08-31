@@ -34,6 +34,35 @@ fn spawn_core(
     Ok((child, stdin, stdout, stderr))
 }
 
+fn spawn_core_waiter(mut child: Child, sender: SyncSender<TransportMessage>) {
+    thread::Builder::new()
+        .name("owner-open-transport-core-waiter".to_string())
+        .spawn(move || {
+            let result = child
+                .wait()
+                .map_err(|error| format!("cannot wait for core Host: {error}"));
+            let _ = sender.send(TransportMessage::CoreExited(result));
+        })
+        .expect("spawn transport core waiter");
+}
+
+fn terminate_core_process_group(pid: u32) -> Result<(), String> {
+    let process_group = i32::try_from(pid)
+        .map_err(|_| format!("core Host pid {pid} does not fit a process-group id"))?;
+    let result = unsafe { libc::kill(-process_group, libc::SIGKILL) };
+    if result == 0 {
+        return Ok(());
+    }
+    let error = io::Error::last_os_error();
+    if error.raw_os_error() == Some(libc::ESRCH) {
+        Ok(())
+    } else {
+        Err(format!(
+            "cannot terminate descendants in core Host process group {process_group}: {error}"
+        ))
+    }
+}
+
 fn spawn_client_reader(sender: SyncSender<TransportMessage>, max_frame_bytes: usize) {
     thread::Builder::new()
         .name("owner-open-transport-client-reader".to_string())

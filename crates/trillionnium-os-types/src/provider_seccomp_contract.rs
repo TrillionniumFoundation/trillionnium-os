@@ -1165,7 +1165,8 @@ mod tests {
             codex.bootstrap_mechanism,
             ProviderFinalRuntimeBootstrapMechanismV1::ControlledElfEntryTrampolineBeforeCrt
         );
-        for value in [codex] {
+        {
+            let value = codex;
             let encoded = serde_json::to_vec(&value).unwrap();
             let decoded: ProviderSeccompInstallationRecipeV1 =
                 serde_json::from_slice(&encoded).unwrap();

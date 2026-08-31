@@ -41,7 +41,10 @@ class OwnerOpenRuntimeContractTest(unittest.TestCase):
             self.assertNotIn(forbidden, manifest)
 
     def test_shell_and_adb_boundaries_are_mechanical(self) -> None:
-        source = (RUNTIME / "src/lib.rs").read_text(encoding="utf-8")
+        source = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in sorted((RUNTIME / "src").glob("*.rs"))
+        )
         for required in (
             "pub fn execute_shell",
             "pub fn execute_adb",
@@ -68,7 +71,10 @@ class OwnerOpenRuntimeContractTest(unittest.TestCase):
             self.assertNotIn(forbidden, source)
 
     def test_authored_tests_cover_normal_negative_and_fault_paths(self) -> None:
-        tests = (RUNTIME / "tests/runtime.rs").read_text(encoding="utf-8")
+        tests = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in sorted((RUNTIME / "tests").glob("*.rs"))
+        )
         for required in (
             "command_string_streams_raw_stdout_stderr_and_preserves_failure",
             "argv_is_element_preserving_and_does_not_expand_shell_text",
@@ -79,6 +85,7 @@ class OwnerOpenRuntimeContractTest(unittest.TestCase):
             "adb_exec_passes_unknown_future_argv_without_target_or_serial_injection",
             "spawn_failure_is_an_honest_terminal_observation",
             "malformed_adb_request_is_rejected_before_any_process_event",
+            "leader_exit_with_inherited_pipes_is_bounded_and_reaps_the_descendant",
         ):
             self.assertIn(required, tests)
         self.assertIn("assert_eq!(terminal_count(&events), 1)", tests)

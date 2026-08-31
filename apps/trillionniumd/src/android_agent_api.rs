@@ -13531,27 +13531,26 @@ mod tests {
             .materialize_memory_planning_context(&subject, saved["memory_id"].as_str().unwrap())
             .unwrap();
         let mut grant_ids = Vec::new();
-        for (descriptor, workflow) in [(&super::CODEX, "workflow-memory-codex")] {
-            let mut registration = fixture_registration();
-            bind_fixture_registration(&mut registration, descriptor);
-            let prepared = prepare_egress(
-                &store,
-                &contexts,
-                &subject,
-                &registration,
-                &format!("{workflow}-egress-prepare"),
-                json!({
-                    "provider": descriptor.provider_id,
-                    "context_id": memory_context["context_id"],
-                    "intent": "plan one bounded notification",
-                    "workflow_id": workflow,
-                }),
-            )
-            .unwrap();
-            assert_eq!(prepared["consent_challenge"]["source_kind"], "memory");
-            assert_eq!(prepared["consent_challenge"]["allowed_actions"], json!([]));
-            grant_ids.push(prepared["egress_grant_id"].as_str().unwrap().to_string());
-        }
+        let (descriptor, workflow) = (&super::CODEX, "workflow-memory-codex");
+        let mut registration = fixture_registration();
+        bind_fixture_registration(&mut registration, descriptor);
+        let prepared = prepare_egress(
+            &store,
+            &contexts,
+            &subject,
+            &registration,
+            &format!("{workflow}-egress-prepare"),
+            json!({
+                "provider": descriptor.provider_id,
+                "context_id": memory_context["context_id"],
+                "intent": "plan one bounded notification",
+                "workflow_id": workflow,
+            }),
+        )
+        .unwrap();
+        assert_eq!(prepared["consent_challenge"]["source_kind"], "memory");
+        assert_eq!(prepared["consent_challenge"]["allowed_actions"], json!([]));
+        grant_ids.push(prepared["egress_grant_id"].as_str().unwrap().to_string());
         drop(store);
         let reopened = fixture_egress_store(&journal_path);
         for grant_id in grant_ids {

@@ -99,6 +99,10 @@ fn process_job_host<W: IoWrite>(
         match receiver.recv_timeout(JOB_POLL_INTERVAL) {
             Ok(JobHostMessage::Input(encoded)) => match RunTurnFrame::decode(&encoded, &limits) {
                 Ok(frame) if is_job_frame(&frame.kind) => {
+                    let error_context =
+                        job_error_context(&frame, &manager, &shell_executable);
+                    let error_operation_id = frame_string(&frame, "operation_id");
+                    let error_attachment_id = frame_string(&frame, "attachment_id");
                     if let Err(error) = handle_job_frame(
                         frame,
                         &manager,
@@ -110,7 +114,9 @@ fn process_job_host<W: IoWrite>(
                         &mut delivery_error,
                     ) {
                         deliver_job_error(
-                            None,
+                            error_context.as_ref(),
+                            error_operation_id.as_deref(),
+                            error_attachment_id.as_deref(),
                             "job_request_failed",
                             &error,
                             &mut writer,
@@ -148,6 +154,8 @@ fn process_job_host<W: IoWrite>(
                 if let Err(error) = result {
                     deliver_job_error(
                         None,
+                        None,
+                        None,
                         "turn_core_failed",
                         &error,
                         &mut writer,
@@ -182,6 +190,75 @@ fn process_job_host<W: IoWrite>(
     }
 }
 
+
+fn frame_string(frame: &RunTurnFrame, name: &str) -> Option<String> {
+    if let Some(value) = frame
+        .payload
+        .get(name)
+        .and_then(Value::as_str)
+    {
+        return Some(value.to_string());
+    }
+    let value = match name {
+        "session_id" => frame.session_id.as_deref(),
+        "profile_id" => frame.profile_id.as_deref(),
+        "task_id" => frame.task_id.as_deref(),
+        "turn_id" => frame.turn_id.as_deref(),
+        "turn_stream_id" => frame
+            .turn_stream_id
+            .as_deref()
+            .or(frame.stream_id.as_deref()),
+        "call_id" => frame.call_id.as_deref(),
+        "job_id" => frame.job_id.as_deref(),
+        _ => None,
+    };
+    value.map(str::to_string)
+}
+
+fn job_error_context(
+    frame: &RunTurnFrame,
+    manager: &JobManager,
+    shell_executable: &Path,
+) -> Option<JobContext> {
+    if frame.kind == FRAME_JOB_START
+        && let Ok(decoded) = decode_job_start(frame, shell_executable)
+    {
+        return Some(decoded.context);
+    }
+    let session_id = frame_string(frame, "session_id")?;
+    let profile_id = frame_string(frame, "profile_id")?;
+    let task_id = frame_string(frame, "task_id")?;
+    let turn_id = frame_string(frame, "turn_id")?;
+    let turn_stream_id = frame_string(frame, "turn_stream_id")?;
+    let job_id = frame_string(frame, "job_id")?;
+    for (label, value) in [
+        ("session_id", session_id.as_str()),
+        ("profile_id", profile_id.as_str()),
+        ("task_id", task_id.as_str()),
+        ("turn_id", turn_id.as_str()),
+        ("turn_stream_id", turn_stream_id.as_str()),
+        ("job_id", job_id.as_str()),
+    ] {
+        validate_id(value, label).ok()?;
+    }
+    let key = JobKey::new(
+        JobScope::new(
+            session_id,
+            profile_id,
+            task_id,
+            turn_id,
+            turn_stream_id,
+        ),
+        job_id,
+    );
+    let context = JobContext {
+        stream_id: job_stream_id(&key),
+        key,
+        request_sha256: frame_string(frame, "request_sha256"),
+    };
+    Some(resolve_job_context(manager, context.clone()).unwrap_or(context))
+}
+
 #[allow(clippy::too_many_arguments)]
 fn handle_job_frame<W: IoWrite>(
     frame: RunTurnFrame,
@@ -197,6 +274,7 @@ fn handle_job_frame<W: IoWrite>(
         FRAME_JOB_START => {
             let decoded = decode_job_start(&frame, shell_executable)?;
             let context = decoded.context.clone();
+            let operation_id = decoded.request.operation_id.clone();
             let result = manager
                 .start(decoded.request)
                 .map_err(|error| error.to_string())?;
@@ -205,11 +283,12 @@ fn handle_job_frame<W: IoWrite>(
                 next_wire_seq: 0,
                 next_runtime_cursor: 0,
             });
+            let discriminator = format!("start-result-{operation_id}");
             let response = response_frame(
                 state,
                 FRAME_JOB_START_RESULT,
-                "start-result",
-                start_payload(&result),
+                &discriminator,
+                start_payload(&result, &operation_id),
             );
             deliver_job_frame(
                 writer,
@@ -222,9 +301,10 @@ fn handle_job_frame<W: IoWrite>(
         FRAME_JOB_INSPECT | FRAME_JOB_ATTACH => {
             let decoded = decode_job_control(&frame)?;
             let context = resolve_job_context(manager, decoded.context)?;
+            let response_operation_id = decoded.operation_id.clone();
+            let response_attachment_id = decoded.attachment_id.clone();
             let inspection = if frame.kind == FRAME_JOB_ATTACH {
-                let attachment_id = decoded
-                    .attachment_id
+                let attachment_id = response_attachment_id
                     .as_deref()
                     .ok_or_else(|| "job.attach requires attachment_id".to_string())?;
                 manager
@@ -262,6 +342,8 @@ fn handle_job_frame<W: IoWrite>(
                 kind,
                 &inspection,
                 &durable_records,
+                response_operation_id.as_deref(),
+                response_attachment_id.as_deref(),
                 max_frame_bytes,
             )?;
             deliver_job_frame(
@@ -287,12 +369,17 @@ fn handle_job_frame<W: IoWrite>(
                 next_wire_seq: 0,
                 next_runtime_cursor: 0,
             });
+            let discriminator = format!(
+                "detach-{attachment_id}-{}",
+                decoded.operation_id.as_deref().unwrap_or("no-operation")
+            );
             let response = response_frame(
                 state,
                 FRAME_JOB_DETACH_RESULT,
-                attachment_id,
+                &discriminator,
                 json!({
                     "status": "detached",
+                    "operation_id": decoded.operation_id.as_deref(),
                     "attachment_id": attachment_id,
                     "automatic_redispatch": false
                 }),
@@ -446,6 +533,8 @@ fn bounded_inspection_frame(
     kind: &str,
     inspection: &JobInspection,
     durable_records: &[Value],
+    operation_id: Option<&str>,
+    attachment_id: Option<&str>,
     max_frame_bytes: usize,
 ) -> Result<RunTurnFrame, String> {
     let start = usize::try_from(inspection.inclusive_cursor)
@@ -466,15 +555,18 @@ fn bounded_inspection_frame(
             "durable_next_cursor": end,
             "durable_total_records": durable_records.len(),
             "durable_has_more": end < durable_records.len(),
+            "operation_id": operation_id,
+            "attachment_id": attachment_id,
             "read_only": true,
             "automatic_redispatch": false
         });
-        let frame = response_frame(
-            state,
-            kind,
-            &format!("{}-{start}-{end}", inspection.inclusive_cursor),
-            payload,
+        let discriminator = format!(
+            "{}-{start}-{end}-{}-{}",
+            inspection.inclusive_cursor,
+            operation_id.unwrap_or("no-operation"),
+            attachment_id.unwrap_or("no-attachment")
         );
+        let frame = response_frame(state, kind, &discriminator, payload);
         let encoded = serde_json::to_vec(&frame).map_err(|error| error.to_string())?;
         if encoded.len() <= max_frame_bytes {
             return Ok(frame);
@@ -498,7 +590,7 @@ fn response_frame(
     build_job_frame(&state.context, kind, seq, discriminator, payload)
 }
 
-fn start_payload(result: &JobStartResult) -> Value {
+fn start_payload(result: &JobStartResult, operation_id: &str) -> Value {
     json!({
         "status": match &result.disposition {
             trillionnium_owner_open_job_runtime::StartDisposition::Started => "started",
@@ -508,6 +600,7 @@ fn start_payload(result: &JobStartResult) -> Value {
         },
         "snapshot": &result.snapshot,
         "replay_status": &result.replay_status,
+        "operation_id": operation_id,
         "automatic_redispatch": false
     })
 }
@@ -521,6 +614,13 @@ fn control_disposition(disposition: &ControlDisposition) -> &'static str {
 }
 
 fn jobs_are_live(manager: &JobManager) -> bool {
+    // A terminal registry state can be visible just before the dispatcher has
+    // finished committing its durable `job.terminal` record.  Keep the Host
+    // carrier alive for that short pending window; admission capacity is
+    // already released by the registry transition itself.
+    if manager.has_live_or_pending_jobs() {
+        return true;
+    }
     manager
         .registry()
         .keys()
@@ -577,6 +677,8 @@ fn augment_core_line(
 #[allow(clippy::too_many_arguments)]
 fn deliver_job_error<W: IoWrite>(
     context: Option<&JobContext>,
+    operation_id: Option<&str>,
+    attachment_id: Option<&str>,
     code: &str,
     message: &str,
     writer: &mut W,
@@ -584,15 +686,22 @@ fn deliver_job_error<W: IoWrite>(
     delivery_attached: &mut bool,
     delivery_error: &mut Option<String>,
 ) {
+    let discriminator = format!(
+        "{code}-{}-{}",
+        operation_id.unwrap_or("no-operation"),
+        attachment_id.unwrap_or("no-attachment")
+    );
     let frame = match context {
         Some(context) => build_job_frame(
             context,
             "job.error",
             0,
-            code,
+            &discriminator,
             json!({
                 "code": code,
                 "message": message,
+                "operation_id": operation_id,
+                "attachment_id": attachment_id,
                 "automatic_redispatch": false
             }),
         ),
@@ -602,6 +711,8 @@ fn deliver_job_error<W: IoWrite>(
             payload: json!({
                 "code": code,
                 "message": message,
+                "operation_id": operation_id,
+                "attachment_id": attachment_id,
                 "automatic_redispatch": false
             }),
             direction: Some("host_to_client".to_string()),

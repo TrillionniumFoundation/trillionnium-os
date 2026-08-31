@@ -163,6 +163,8 @@ class ReleaseCodexQualificationSupervisorTest(unittest.TestCase):
     def test_nonprivate_evidence_parent_is_rejected(self) -> None:
         shared = self.root / "shared"
         shared.mkdir(mode=0o755)
+        # Preserve the intentionally hostile mode under a restrictive umask.
+        shared.chmod(0o755)
         evidence = shared / "evidence"
         completed = subprocess.run(
             self.command(evidence),

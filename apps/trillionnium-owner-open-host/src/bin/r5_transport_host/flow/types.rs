@@ -1,3 +1,15 @@
+// Keep the wire capability advertisement and the delivery classifier bound to
+// one table. A client must not be told that a bounded stream is pass-through
+// (or vice versa), especially for unbounded durable job output.
+const FLOW_CONTROLLED_FRAME_KINDS: &[&str] = &[
+    FRAME_MODEL_DELTA,
+    FRAME_MODEL_MESSAGE,
+    FRAME_TOOL_STDOUT,
+    FRAME_TOOL_STDERR,
+    "provider.opaque",
+    "job.output",
+];
+
 #[derive(Debug, Clone)]
 struct BufferedFrame {
     frame: RunTurnFrame,

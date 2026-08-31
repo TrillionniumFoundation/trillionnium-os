@@ -60,6 +60,7 @@ class Client:
         descriptor, _ = read_private_json(args.descriptor, label="broker descriptor")
         validate_descriptor(descriptor)
         self.descriptor = descriptor
+        self.broker_epoch = require_id(descriptor.get("broker_epoch"), "broker_epoch")
         token_path = Path(descriptor["token_file"])
         token_raw = read_private_bytes(token_path, label="broker token", maximum=256)
         try:
@@ -76,6 +77,7 @@ class Client:
                 {
                     "schema": WIRE_SCHEMA,
                     "kind": "broker.hello",
+                    "broker_epoch": self.broker_epoch,
                     "client_id": self.client_id,
                     "token": token,
                 }
@@ -88,6 +90,10 @@ class Client:
         ack = strict_json(raw, label="broker hello ack")
         if not isinstance(ack, dict) or ack.get("kind") != "broker.hello.ack":
             raise BrokerError(f"broker rejected client hello: {ack}")
+        if ack.get("broker_epoch") != self.broker_epoch:
+            raise BrokerError("broker hello ack epoch differs from the descriptor")
+        if ack.get("descriptor_sha256") != descriptor.get("descriptor_sha256"):
+            raise BrokerError("broker hello ack descriptor digest differs from the loaded descriptor")
         self.host_hello_ack = ack.get("host_hello_ack")
         if not isinstance(self.host_hello_ack, dict):
             raise BrokerError("broker hello ack has no upstream Host hello.ack")
@@ -112,6 +118,7 @@ class Client:
                 {
                     "connection_broker": True,
                     "broker_id": self.descriptor["broker_id"],
+                    "broker_epoch": self.broker_epoch,
                     "broker_descriptor_sha256": self.descriptor["descriptor_sha256"],
                 }
             )
@@ -119,7 +126,7 @@ class Client:
             write_frame(ack)
             return
         expected, job_id = expected_for(frame)
-        request_id = f"{self.client_id}-{self.next_request}"
+        request_id = f"{self.client_id}-{self.broker_epoch}-{self.next_request}"
         self.next_request += 1
         self.connection.sendall(
             canonical(

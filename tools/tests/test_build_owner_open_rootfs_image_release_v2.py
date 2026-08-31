@@ -73,7 +73,9 @@ if sys.argv[1:] == ["-help"]:
 counter = Path({str(counter)!r})
 value = int(counter.read_text()) + 1 if counter.exists() else 1
 counter.write_text(str(value))
-Path(sys.argv[2]).write_bytes(b"NONDETERMINISTIC" + value.to_bytes(8, "little"))
+output = Path(sys.argv[2])
+output.write_bytes(b"NONDETERMINISTIC" + value.to_bytes(8, "little"))
+output.chmod(0o644)
 raise SystemExit(0)
 '''
 
@@ -223,8 +225,22 @@ class BuildOwnerOpenRootfsImageReleaseV2Test(unittest.TestCase):
         self.assertTrue(image.exists())
         self.assertTrue(manifest.exists())
         self.assertEqual(stat.S_IMODE(image.lstat().st_mode), 0o444)
-        self.assertEqual(json.loads(manifest.read_text())["image_sha256"], digest(image))
+        image_value = json.loads(manifest.read_text())
+        self.assertEqual(image_value["image_sha256"], digest(image))
+        self.assertEqual(
+            image_value["runtime_state_directory"],
+            "/var/lib/trillionnium/owner-open",
+        )
         self.assertFalse(any(path.name.startswith("run-") for path in output.iterdir()))
+
+    def test_missing_runtime_state_mountpoint_is_rejected(self) -> None:
+        (self.staging / "root/var/lib/trillionnium/owner-open").rmdir()
+        tool = self.tool(deterministic_tool())
+        output = self.output_parent / "missing-state-mountpoint"
+        completed = self.run_command(self.command(tool, output))
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn(b"canonical writable state mountpoint", completed.stderr)
+        self.assertFalse(output.exists())
 
     def test_staging_tamper_is_rejected_before_output_creation(self) -> None:
         target = self.staging / "root/etc/trillionnium/owner-open/config.json"

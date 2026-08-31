@@ -1,5 +1,4 @@
-use std::fs;
-use std::os::unix::fs::PermissionsExt;
+use std::path::PathBuf;
 use std::thread;
 use std::time::Duration;
 
@@ -200,21 +199,23 @@ fn output_exhaustion_is_mechanical_and_returns_truncated_observation() {
 
 #[test]
 fn adb_exec_passes_unknown_future_argv_without_target_or_serial_injection() {
-    let directory = tempfile::tempdir().unwrap();
-    let fake_adb = directory.path().join("adb");
-    fs::write(&fake_adb, "#!/bin/sh\nprintf '%s\\n' \"$@\"\n").unwrap();
-    fs::set_permissions(&fake_adb, fs::Permissions::from_mode(0o700)).unwrap();
-
+    // Use a stable system executable rather than a freshly-created script in a
+    // temporary directory. Some CI sandboxes can mount temporary directories
+    // with execution restrictions; that would test the runner filesystem, not
+    // the ordinary-ADB exact-argv boundary.
     let mut request = AdbExecRequest::new(
         "call-adb-transparent",
         vec![
+            "-c".to_string(),
+            "printf '%s\\n' \"$1\" \"$2\" \"$3\"".to_string(),
+            "unused-argv-zero".to_string(),
             "future-subcommand".to_string(),
             "--future-option".to_string(),
             "value with spaces".to_string(),
         ],
     );
     request.target_id = Some("android:diagnostic-only".to_string());
-    request.adb_executable = fake_adb;
+    request.adb_executable = PathBuf::from("/bin/sh");
     let mut events = Vec::new();
 
     let terminal = execute_adb(
@@ -225,7 +226,10 @@ fn adb_exec_passes_unknown_future_argv_without_target_or_serial_injection() {
     )
     .unwrap();
 
-    assert!(terminal.success());
+    assert!(
+        terminal.success(),
+        "terminal={terminal:?}; events={events:#?}"
+    );
     assert_eq!(
         output(&events, StreamKind::Stdout),
         b"future-subcommand\n--future-option\nvalue with spaces\n"

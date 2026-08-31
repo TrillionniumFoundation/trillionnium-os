@@ -514,6 +514,7 @@ fn paths_overlap(left: &Path, right: &Path) -> bool {
     left.starts_with(right) || right.starts_with(left)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn validate_target_native_environment(
     expected_sysroot: &Path,
     expected_compiler_bin: &Path,

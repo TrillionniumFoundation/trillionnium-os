@@ -6,12 +6,14 @@ pub(crate) fn run() -> Result<(), String> {
     }
 
     let limits = MechanicalLimits::default();
-    let (mut child, mut core_stdin, core_stdout, core_stderr) = spawn_core(&options)?;
+    let (child, mut core_stdin, core_stdout, core_stderr) = spawn_core(&options)?;
+    let core_pid = child.id();
     spawn_stderr_drain(core_stderr);
 
     let (sender, receiver) = sync_channel(TRANSPORT_QUEUE_DEPTH);
     spawn_client_reader(sender.clone(), limits.max_frame_bytes);
-    spawn_core_reader(core_stdout, sender, limits.max_frame_bytes);
+    spawn_core_reader(core_stdout, sender.clone(), limits.max_frame_bytes);
+    spawn_core_waiter(child, sender);
 
     let stdout = io::stdout();
     let mut delivery = ClientDelivery::new(stdout.lock(), limits.max_frame_bytes);
@@ -21,10 +23,13 @@ pub(crate) fn run() -> Result<(), String> {
     let mut active = None::<TurnContext>;
     let mut durable_ready = false;
     let mut client_open = true;
-    let mut core_open = true;
+    let mut core_reader_open = true;
+    let mut core_wait_open = true;
+    let mut core_status = None::<ExitStatus>;
+    let mut core_exit_deadline = None::<Instant>;
     let mut terminal_error = None::<String>;
 
-    while core_open {
+    while core_reader_open || core_wait_open {
         match receiver.recv_timeout(TRANSPORT_POLL_INTERVAL) {
             Ok(TransportMessage::ClientFrame(encoded)) => {
                 let frame = match RunTurnFrame::decode(&encoded, &limits) {
@@ -208,27 +213,58 @@ pub(crate) fn run() -> Result<(), String> {
                     }
                 }
             }
-            Ok(TransportMessage::CoreEof) => core_open = false,
-            Ok(TransportMessage::CoreError(error)) => {
-                terminal_error = Some(error);
-                core_open = false;
+            Ok(TransportMessage::CoreEof) => {
+                core_reader_open = false;
+                core_exit_deadline = None;
             }
-            Err(RecvTimeoutError::Timeout) => {
-                if let Some(status) = child.try_wait().map_err(|error| error.to_string())? {
-                    core_open = false;
-                    if !status.success() {
-                        terminal_error = Some(format!("core Host exited unsuccessfully: {status}"));
+            Ok(TransportMessage::CoreError(error)) => {
+                terminal_error.get_or_insert(error);
+                core_reader_open = false;
+                core_exit_deadline = None;
+            }
+            Ok(TransportMessage::CoreExited(result)) => {
+                core_wait_open = false;
+                drop(core_stdin.take());
+                match result {
+                    Ok(status) => core_status = Some(status),
+                    Err(error) => {
+                        terminal_error.get_or_insert(error);
                     }
                 }
+                if let Err(error) = terminate_core_process_group(core_pid) {
+                    terminal_error.get_or_insert(error);
+                }
+                if core_reader_open {
+                    core_exit_deadline = Some(Instant::now() + CORE_READER_DRAIN_GRACE);
+                }
             }
-            Err(RecvTimeoutError::Disconnected) => core_open = false,
+            Err(RecvTimeoutError::Timeout) => {
+                if core_exit_deadline
+                    .is_some_and(|deadline| Instant::now() >= deadline)
+                {
+                    terminal_error.get_or_insert_with(|| {
+                        "core Host stdout did not close after leader exit and process-group cleanup"
+                            .to_string()
+                    });
+                    core_reader_open = false;
+                }
+            }
+            Err(RecvTimeoutError::Disconnected) => {
+                terminal_error.get_or_insert_with(|| {
+                    "transport event channel disconnected before core lifecycle convergence"
+                        .to_string()
+                });
+                core_reader_open = false;
+                core_wait_open = false;
+            }
         }
     }
 
-    let status = child.wait().map_err(|error| error.to_string())?;
     if let Some(error) = terminal_error {
         return Err(error);
     }
+    let status = core_status
+        .ok_or_else(|| "core Host exit status was not observed".to_string())?;
     if !status.success() {
         return Err(format!("core Host exited unsuccessfully: {status}"));
     }

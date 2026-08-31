@@ -4,16 +4,19 @@ use std::io::{Read, Write};
 use std::os::fd::{AsRawFd, FromRawFd};
 use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::path::Path;
-use std::process::{ChildStdin, Command, Stdio};
+use std::process::{Child, ChildStdin, Command, ExitStatus, Stdio};
 use std::sync::mpsc::{Receiver, SyncSender, sync_channel};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
+use std::time::{Duration, Instant};
 
 use crate::{
     InternalProcessEvent, JobInvocation, JobRuntimeError, JobStartRequest, PtySize, Result,
 };
 
 const PROCESS_EVENT_QUEUE: usize = 256;
+const DESCENDANT_TERM_GRACE: Duration = Duration::from_millis(100);
+const DESCENDANT_KILL_GRACE: Duration = Duration::from_millis(100);
 
 enum InputHandle {
     Pipe(ChildStdin),
@@ -32,6 +35,44 @@ pub(crate) struct SpawnedProcess {
     pub events: Receiver<InternalProcessEvent>,
 }
 
+struct SpawnGuard {
+    child: Option<Child>,
+    pid: u32,
+}
+
+impl SpawnGuard {
+    fn new(child: Child) -> Self {
+        let pid = child.id();
+        Self {
+            child: Some(child),
+            pid,
+        }
+    }
+
+    fn child_mut(&mut self) -> &mut Child {
+        self.child.as_mut().expect("spawn guard owns one child")
+    }
+
+    fn wait(mut self) -> std::io::Result<ExitStatus> {
+        self.child
+            .take()
+            .expect("spawn guard owns one child")
+            .wait()
+    }
+}
+
+impl Drop for SpawnGuard {
+    fn drop(&mut self) {
+        let Some(child) = self.child.as_mut() else {
+            return;
+        };
+        if send_process_group_signal(self.pid, libc::SIGKILL).is_err() {
+            let _ = child.kill();
+        }
+        let _ = child.wait();
+    }
+}
+
 impl ProcessControl {
     pub fn write(&self, bytes: &[u8]) -> Result<()> {
         let mut guard = self
@@ -39,16 +80,7 @@ impl ProcessControl {
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)?;
         let handle = guard.as_mut().ok_or(JobRuntimeError::NotLive)?;
-        match handle {
-            InputHandle::Pipe(stdin) => stdin
-                .write_all(bytes)
-                .and_then(|_| stdin.flush())
-                .map_err(|error| JobRuntimeError::Io(error.to_string())),
-            InputHandle::Pty(master) => master
-                .write_all(bytes)
-                .and_then(|_| master.flush())
-                .map_err(|error| JobRuntimeError::Io(error.to_string())),
-        }
+        write_input(handle, bytes)
     }
 
     pub fn close_stdin(&self) -> Result<()> {
@@ -97,16 +129,7 @@ impl ProcessControl {
     }
 
     pub fn kill(&self, signal: i32) -> Result<()> {
-        let pid = i32::try_from(self.pid)
-            .map_err(|_| JobRuntimeError::Control("pid is out of range".to_string()))?;
-        let result = unsafe { libc::kill(-pid, signal) };
-        if result == 0 {
-            Ok(())
-        } else {
-            Err(JobRuntimeError::Control(
-                std::io::Error::last_os_error().to_string(),
-            ))
-        }
+        send_process_group_signal(self.pid, signal).map_err(JobRuntimeError::Control)
     }
 }
 
@@ -129,43 +152,61 @@ fn spawn_pipe(request: &JobStartRequest, maximum_chunk: usize) -> Result<Spawned
         .stderr(Stdio::piped());
     unsafe {
         command.pre_exec(|| {
+            #[cfg(any(target_os = "linux", target_os = "android"))]
+            let parent_pid = libc::getppid();
             if libc::setpgid(0, 0) != 0 {
                 return Err(std::io::Error::last_os_error());
+            }
+            #[cfg(any(target_os = "linux", target_os = "android"))]
+            {
+                if libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                if libc::getppid() != parent_pid {
+                    return Err(std::io::Error::from_raw_os_error(libc::EPIPE));
+                }
             }
             Ok(())
         });
     }
-    let mut child = command
+    let child = command
         .spawn()
         .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
-    let pid = child.id();
-    let mut stdin = child
+    let mut guard = SpawnGuard::new(child);
+    let pid = guard.pid;
+    let stdin = guard
+        .child_mut()
         .stdin
         .take()
         .ok_or_else(|| JobRuntimeError::Io("child stdin was not piped".to_string()))?;
-    if !request.initial_stdin.is_empty() {
-        stdin
-            .write_all(&request.initial_stdin)
-            .and_then(|_| stdin.flush())
-            .map_err(|error| JobRuntimeError::Io(error.to_string()))?;
-    }
-    let stdout = child
+    let stdout = guard
+        .child_mut()
         .stdout
         .take()
         .ok_or_else(|| JobRuntimeError::Io("child stdout was not piped".to_string()))?;
-    let stderr = child
+    let stderr = guard
+        .child_mut()
         .stderr
         .take()
         .ok_or_else(|| JobRuntimeError::Io("child stderr was not piped".to_string()))?;
+    let input = Arc::new(Mutex::new(Some(InputHandle::Pipe(stdin))));
     let (sender, receiver) = sync_channel(PROCESS_EVENT_QUEUE);
-    let stdout_thread = spawn_reader(stdout, "stdout", maximum_chunk, sender.clone());
-    let stderr_thread = spawn_reader(stderr, "stderr", maximum_chunk, sender.clone());
-    spawn_reaper(child, vec![stdout_thread, stderr_thread], sender);
+    let stdout_thread = spawn_reader(stdout, "stdout", maximum_chunk, sender.clone())?;
+    let stderr_thread = spawn_reader(stderr, "stderr", maximum_chunk, sender.clone())?;
+    let mut workers = vec![stdout_thread, stderr_thread];
+    if let Some(writer) = spawn_initial_writer(
+        Arc::clone(&input),
+        request.initial_stdin.clone(),
+        sender.clone(),
+    )? {
+        workers.push(writer);
+    }
+    spawn_reaper(guard, workers, sender)?;
     Ok(SpawnedProcess {
         control: Arc::new(ProcessControl {
             pid,
             pty: false,
-            input: Arc::new(Mutex::new(Some(InputHandle::Pipe(stdin)))),
+            input,
             pty_master: None,
         }),
         events: receiver,
@@ -200,11 +241,22 @@ fn spawn_pty(
         .stderr(Stdio::from(stderr_slave));
     unsafe {
         command.pre_exec(move || {
+            #[cfg(any(target_os = "linux", target_os = "android"))]
+            let parent_pid = libc::getppid();
             if libc::setsid() == -1 {
                 return Err(std::io::Error::last_os_error());
             }
             if libc::ioctl(slave_raw, libc::TIOCSCTTY as _, 0) == -1 {
                 return Err(std::io::Error::last_os_error());
+            }
+            #[cfg(any(target_os = "linux", target_os = "android"))]
+            {
+                if libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                if libc::getppid() != parent_pid {
+                    return Err(std::io::Error::from_raw_os_error(libc::EPIPE));
+                }
             }
             Ok(())
         });
@@ -212,32 +264,33 @@ fn spawn_pty(
     let child = command
         .spawn()
         .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
-    let pid = child.id();
+    let guard = SpawnGuard::new(child);
+    let pid = guard.pid;
     drop(slave);
     let master = Arc::new(master);
-    let mut initial_writer = master
-        .try_clone()
-        .map_err(|error| JobRuntimeError::Io(error.to_string()))?;
-    if !request.initial_stdin.is_empty() {
-        initial_writer
-            .write_all(&request.initial_stdin)
-            .and_then(|_| initial_writer.flush())
-            .map_err(|error| JobRuntimeError::Io(error.to_string()))?;
-    }
     let reader = master
         .try_clone()
         .map_err(|error| JobRuntimeError::Io(error.to_string()))?;
     let writer = master
         .try_clone()
         .map_err(|error| JobRuntimeError::Io(error.to_string()))?;
+    let input = Arc::new(Mutex::new(Some(InputHandle::Pty(writer))));
     let (sender, receiver) = sync_channel(PROCESS_EVENT_QUEUE);
-    let reader_thread = spawn_reader(reader, "pty", maximum_chunk, sender.clone());
-    spawn_reaper(child, vec![reader_thread], sender);
+    let reader_thread = spawn_reader(reader, "pty", maximum_chunk, sender.clone())?;
+    let mut workers = vec![reader_thread];
+    if let Some(writer) = spawn_initial_writer(
+        Arc::clone(&input),
+        request.initial_stdin.clone(),
+        sender.clone(),
+    )? {
+        workers.push(writer);
+    }
+    spawn_reaper(guard, workers, sender)?;
     Ok(SpawnedProcess {
         control: Arc::new(ProcessControl {
             pid,
             pty: true,
-            input: Arc::new(Mutex::new(Some(InputHandle::Pty(writer)))),
+            input,
             pty_master: Some(master),
         }),
         events: receiver,
@@ -334,6 +387,49 @@ fn validate_path(path: &Path, label: &str) -> Result<()> {
     Ok(())
 }
 
+fn write_input(handle: &mut InputHandle, bytes: &[u8]) -> Result<()> {
+    match handle {
+        InputHandle::Pipe(stdin) => stdin
+            .write_all(bytes)
+            .and_then(|_| stdin.flush())
+            .map_err(|error| JobRuntimeError::Io(error.to_string())),
+        InputHandle::Pty(master) => master
+            .write_all(bytes)
+            .and_then(|_| master.flush())
+            .map_err(|error| JobRuntimeError::Io(error.to_string())),
+    }
+}
+
+fn spawn_initial_writer(
+    input: Arc<Mutex<Option<InputHandle>>>,
+    bytes: Vec<u8>,
+    sender: SyncSender<InternalProcessEvent>,
+) -> Result<Option<JoinHandle<()>>> {
+    if bytes.is_empty() {
+        return Ok(None);
+    }
+    thread::Builder::new()
+        .name("owner-open-job-initial-stdin".to_string())
+        .spawn(move || {
+            let result = match input.lock() {
+                Ok(mut guard) => match guard.as_mut() {
+                    Some(handle) => write_input(handle, &bytes),
+                    None => Err(JobRuntimeError::NotLive),
+                },
+                Err(_) => Err(JobRuntimeError::StatePoisoned),
+            };
+            if let Err(error) = result {
+                let _ = sender.send(InternalProcessEvent::InputFailed {
+                    error: error.to_string(),
+                });
+            }
+        })
+        .map(Some)
+        .map_err(|error| {
+            JobRuntimeError::Io(format!("failed to spawn initial stdin writer: {error}"))
+        })
+}
+
 fn open_pty(size: PtySize) -> Result<(File, File)> {
     let mut master = -1;
     let mut slave = -1;
@@ -357,8 +453,13 @@ fn open_pty(size: PtySize) -> Result<(File, File)> {
             std::io::Error::last_os_error().to_string(),
         ));
     }
-    set_cloexec(master)?;
-    set_cloexec(slave)?;
+    if let Err(error) = set_cloexec(master).and_then(|_| set_cloexec(slave)) {
+        unsafe {
+            libc::close(master);
+            libc::close(slave);
+        }
+        return Err(error);
+    }
     let master = unsafe { File::from_raw_fd(master) };
     let slave = unsafe { File::from_raw_fd(slave) };
     Ok((master, slave))
@@ -379,7 +480,7 @@ fn spawn_reader<R>(
     stream: &'static str,
     maximum_chunk: usize,
     sender: SyncSender<InternalProcessEvent>,
-) -> JoinHandle<()>
+) -> Result<JoinHandle<()>>
 where
     R: Read + Send + 'static,
 {
@@ -402,6 +503,9 @@ where
                         }
                     }
                     Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
+                    Err(error) if stream == "pty" && error.raw_os_error() == Some(libc::EIO) => {
+                        return;
+                    }
                     Err(error) => {
                         let _ = sender.send(InternalProcessEvent::ReaderFailed {
                             stream: stream.to_string(),
@@ -412,37 +516,115 @@ where
                 }
             }
         })
-        .expect("spawn owner-open job reader")
+        .map_err(|error| JobRuntimeError::Io(format!("failed to spawn {stream} reader: {error}")))
 }
 
 fn spawn_reaper(
-    mut child: std::process::Child,
-    readers: Vec<JoinHandle<()>>,
+    guard: SpawnGuard,
+    workers: Vec<JoinHandle<()>>,
     sender: SyncSender<InternalProcessEvent>,
-) {
+) -> Result<()> {
+    let pid = guard.pid;
     thread::Builder::new()
-        .name(format!("owner-open-job-reaper-{}", child.id()))
+        .name(format!("owner-open-job-reaper-{pid}"))
         .spawn(move || {
-            let status = child.wait();
-            for reader in readers {
-                let _ = reader.join();
+            let status = guard.wait();
+            let mut cleanup_errors = Vec::new();
+            if let Err(error) = cleanup_process_group(pid) {
+                cleanup_errors.push(error);
             }
+            for worker in workers {
+                if worker.join().is_err() {
+                    cleanup_errors.push("job I/O worker panicked".to_string());
+                }
+            }
+            let cleanup_error = (!cleanup_errors.is_empty()).then(|| cleanup_errors.join("; "));
             let event = match status {
                 Ok(status) => InternalProcessEvent::Exited {
-                    terminal_kind: if status.signal().is_some() {
+                    terminal_kind: if cleanup_error.is_some() {
+                        "cleanup_uncertain".to_string()
+                    } else if status.signal().is_some() {
                         "signaled".to_string()
                     } else {
                         "exited".to_string()
                     },
                     exit_code: status.code(),
                     signal: status.signal(),
+                    cleanup_error,
                 },
-                Err(error) => InternalProcessEvent::ReaderFailed {
-                    stream: "reaper".to_string(),
-                    error: error.to_string(),
+                Err(error) => InternalProcessEvent::Exited {
+                    terminal_kind: "reaper_error".to_string(),
+                    exit_code: None,
+                    signal: None,
+                    cleanup_error: Some(match cleanup_error {
+                        Some(cleanup) => format!("child wait failed: {error}; {cleanup}"),
+                        None => format!("child wait failed: {error}"),
+                    }),
                 },
             };
             let _ = sender.send(event);
         })
-        .expect("spawn owner-open job reaper");
+        .map(|_| ())
+        .map_err(|error| JobRuntimeError::Io(format!("failed to spawn job reaper: {error}")))
+}
+
+fn cleanup_process_group(pid: u32) -> std::result::Result<(), String> {
+    if !process_group_exists(pid)? {
+        return Ok(());
+    }
+    send_process_group_signal(pid, libc::SIGTERM)?;
+    let term_deadline = Instant::now()
+        .checked_add(DESCENDANT_TERM_GRACE)
+        .unwrap_or_else(Instant::now);
+    while Instant::now() < term_deadline {
+        if !process_group_exists(pid)? {
+            return Ok(());
+        }
+        thread::sleep(Duration::from_millis(5));
+    }
+    send_process_group_signal(pid, libc::SIGKILL)?;
+    let kill_deadline = Instant::now()
+        .checked_add(DESCENDANT_KILL_GRACE)
+        .unwrap_or_else(Instant::now);
+    while Instant::now() < kill_deadline {
+        if !process_group_exists(pid)? {
+            return Ok(());
+        }
+        thread::sleep(Duration::from_millis(5));
+    }
+    if process_group_exists(pid)? {
+        Err("process group remains observable after SIGKILL grace".to_string())
+    } else {
+        Ok(())
+    }
+}
+
+fn process_group_exists(pid: u32) -> std::result::Result<bool, String> {
+    let process_group = i32::try_from(pid)
+        .map_err(|_| "child pid does not fit a POSIX process-group id".to_string())?;
+    let result = unsafe { libc::kill(-process_group, 0) };
+    if result == 0 {
+        return Ok(true);
+    }
+    let error = std::io::Error::last_os_error();
+    match error.raw_os_error() {
+        Some(libc::ESRCH) => Ok(false),
+        Some(libc::EPERM) => Ok(true),
+        _ => Err(format!("process group existence check failed: {error}")),
+    }
+}
+
+fn send_process_group_signal(pid: u32, signal: i32) -> std::result::Result<(), String> {
+    let process_group = i32::try_from(pid)
+        .map_err(|_| "child pid does not fit a POSIX process-group id".to_string())?;
+    let result = unsafe { libc::kill(-process_group, signal) };
+    if result == 0 {
+        return Ok(());
+    }
+    let error = std::io::Error::last_os_error();
+    if error.raw_os_error() == Some(libc::ESRCH) {
+        Ok(())
+    } else {
+        Err(format!("process group signal {signal} failed: {error}"))
+    }
 }
