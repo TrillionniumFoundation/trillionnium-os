@@ -15,7 +15,7 @@ concurrency:
 env:
   BASE_COMMIT: 7ca4d64de1d5acee65a1592b0903a1b4c5bc11b0
   MATERIAL_BRANCH: ops/owner-open-r15-atomic-builder-20260831-v12
-  MATERIAL_COMMIT: 7e1aa2fee006eb00212b034f473fd41774964320
+  MATERIAL_COMMIT: cd920e2f844411e840ebc62e0669f791fc190e0b
   TARGET_BRANCH: codex/owner-open-r15-runtime-hardening-20260831
   EXPECTED_TARGET_HEAD: eb1aa598cf466120200b064b8ebfbb3763935688
   PATCH_SHA256: f30cd81483225ebda3192aa8e7ce29a194e1086d290e2a8aae915e1bc5462ae3
@@ -68,6 +68,7 @@ jobs:
             /tmp/owner-open-r15-contract-fix-v11.py \
             /tmp/owner-open-r15-contract-fix-v13.py \
             /tmp/owner-open-r15-contract-fix-v14.py \
+            /tmp/owner-open-r15-contract-fix-v15.py \
             /tmp/owner-open-r15-runtime-hardening.yml
           for part in 00 01 02 03 04 05; do
             git show "$MATERIAL_COMMIT:.github/owner-open-r15-runtime-hardening.patch.gz.$part" \
@@ -76,7 +77,7 @@ jobs:
           echo "$PATCH_SHA256  /tmp/owner-open-r15-runtime-hardening.patch.gz" | sha256sum -c -
           gzip -dc /tmp/owner-open-r15-runtime-hardening.patch.gz \
             > /tmp/owner-open-r15-runtime-hardening.patch
-          for version in v11 v13 v14; do
+          for version in v11 v13 v14 v15; do
             git show "$MATERIAL_COMMIT:.github/owner-open-r15-contract-fix-$version.py" \
               > "/tmp/owner-open-r15-contract-fix-$version.py"
             chmod 600 "/tmp/owner-open-r15-contract-fix-$version.py"
@@ -93,6 +94,7 @@ jobs:
           python3 /tmp/owner-open-r15-contract-fix-v11.py
           python3 /tmp/owner-open-r15-contract-fix-v13.py
           python3 /tmp/owner-open-r15-contract-fix-v14.py
+          python3 /tmp/owner-open-r15-contract-fix-v15.py
           cargo fmt --all
           git add -A
           cp .github/workflows/owner-open-r15-runtime-hardening.yml \
