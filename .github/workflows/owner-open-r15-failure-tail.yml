@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     env:
-      TARGET_JOB_ID: "99385546981"
+      TARGET_JOB_ID: "99389332725"
     steps:
       # Keep the diagnostic output bounded so the connector can retrieve it.
       - name: Print bounded diagnostics from failed materializer job
