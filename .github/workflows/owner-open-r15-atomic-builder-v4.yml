@@ -1,0 +1,170 @@
+name: Owner-Open R15 atomic source builder v7
+on:
+  push:
+    branches: [ops/owner-open-r15-atomic-builder-20260831-v7]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt, clippy
+      - shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "ops/owner-open-r15-atomic-builder-20260831-v7"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cat .github/owner-open-r15-runtime-hardening.patch.gz.* > /tmp/r15.patch.gz
+          echo 'f30cd81483225ebda3192aa8e7ce29a194e1086d290e2a8aae915e1bc5462ae3  /tmp/r15.patch.gz' | sha256sum -c -
+          gzip -dc .github/owner-open-r15-builder.sh.gz > /tmp/r15-builder.sh
+          cat > /tmp/r15-contract-fix.py <<'PY'
+          from pathlib import Path
+
+          runtime_test = Path("crates/trillionnium-owner-open-job-runtime/tests/runtime.rs")
+          text = runtime_test.read_text()
+
+          accepted_start_marker = (
+              "#[test]\n"
+              "fn accepted_without_terminal_is_unknown_and_not_redispatched() {"
+          )
+          accepted_end_marker = (
+              "\n#[test]\n"
+              "fn configured_unavailable_journal_is_unknown_and_never_dispatched() {"
+          )
+          if text.count(accepted_start_marker) != 1 or text.count(accepted_end_marker) != 1:
+              raise SystemExit("R15 accepted-without-terminal test markers are not exact")
+          accepted_start = text.index(accepted_start_marker)
+          accepted_end = text.index(accepted_end_marker, accepted_start)
+          accepted_replacement = r'''#[test]
+          fn accepted_without_terminal_is_unknown_and_not_redispatched() {
+              let directory = tempfile::tempdir().unwrap();
+              let journal_path = directory.path().join("jobs.jsonl");
+              let job = key("job-uncertain");
+              let request = request('e', "pipe");
+              {
+                  let journal = JobJournal::open_best_effort(Some(&journal_path));
+                  journal
+                      .begin_operation(
+                          &job,
+                          &request,
+                          "start-uncertain",
+                          "start",
+                          &"f".repeat(64),
+                          json!({"fixture": true}),
+                      )
+                      .unwrap();
+              }
+              let marker = directory.path().join("must-not-run");
+              let manager = reopen_after_dispatcher_shutdown(&journal_path);
+              let result = manager
+                  .start(start_request(
+                      job,
+                      request,
+                      "different-delivery-operation",
+                      format!("touch '{}'", marker.display()),
+                      None,
+                  ))
+                  .unwrap();
+              assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);
+              assert!(!marker.exists());
+          }
+          '''
+          text = text[:accepted_start] + accepted_replacement + text[accepted_end:]
+
+          unavailable_start_marker = (
+              "#[test]\n"
+              "fn configured_unavailable_journal_is_unknown_and_never_dispatched() {"
+          )
+          unavailable_end_marker = (
+              "\n#[test]\n"
+              "fn capacity_rejection_happens_before_spawn_or_visible_side_effect() {"
+          )
+          if text.count(unavailable_start_marker) != 1 or text.count(unavailable_end_marker) != 1:
+              raise SystemExit("R15 journal-unavailable test markers are not exact")
+          unavailable_start = text.index(unavailable_start_marker)
+          unavailable_end = text.index(unavailable_end_marker, unavailable_start)
+          unavailable_replacement = r'''#[test]
+          fn configured_unavailable_journal_is_rejected_before_dispatch() {
+              let directory = tempfile::tempdir().unwrap();
+              let journal_path = directory.path().join("jobs.jsonl");
+              let held = JobJournal::open_best_effort(Some(&journal_path));
+              assert_eq!(held.status().unwrap(), JournalStatus::Durable);
+              let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+              assert!(matches!(
+                  manager.journal().status().unwrap(),
+                  JournalStatus::Unavailable { .. }
+              ));
+              let marker = directory.path().join("must-not-run-unavailable");
+              let error = manager
+                  .start(start_request(
+                      key("job-unavailable"),
+                      request('f', "pipe"),
+                      "start-unavailable",
+                      format!("touch '{}'", marker.display()),
+                      None,
+                  ))
+                  .unwrap_err();
+              assert!(matches!(
+                  error,
+                  trillionnium_owner_open_job_runtime::JobRuntimeError::Journal(message)
+                      if message == "job journal is unavailable and unjournaled effects are disabled"
+              ));
+              assert!(!marker.exists());
+          }
+          '''
+          text = text[:unavailable_start] + unavailable_replacement + text[unavailable_end:]
+          runtime_test.write_text(text)
+
+          durable = Path("crates/trillionnium-shell-exec/src/durable.rs")
+          text = durable.read_text()
+          old = "    Ok((value.f_bavail as u64).saturating_mul(value.f_frsize as u64))\n"
+          new = "    Ok(value.f_bavail.saturating_mul(value.f_frsize))\n"
+          if text.count(old) != 1:
+              raise SystemExit("R15 statvfs conversion anchor is not exact")
+          durable.write_text(text.replace(old, new, 1))
+          PY
+          python3 -m py_compile /tmp/r15-contract-fix.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("/tmp/r15-builder.sh")
+          text = path.read_text()
+          expected_anchor = (
+              "crates/trillionnium-owner-open-runtime/src/types.rs\n"
+              "docs/protocols/owner-open-jobs-v1.md\n"
+          )
+          expected_replacement = (
+              "crates/trillionnium-owner-open-runtime/src/types.rs\n"
+              "crates/trillionnium-shell-exec/src/durable.rs\n"
+              "docs/protocols/owner-open-jobs-v1.md\n"
+          )
+          apply_anchor = 'git apply --index --whitespace=error "$PATCH"\n'
+          if text.count(expected_anchor) != 1:
+              raise SystemExit("R15 expected-path anchor is not exact")
+          if text.count(apply_anchor) != 1:
+              raise SystemExit("R15 builder apply anchor is not exact")
+          text = text.replace(expected_anchor, expected_replacement, 1)
+          text = text.replace(
+              apply_anchor,
+              apply_anchor
+              + "python3 /tmp/r15-contract-fix.py\n"
+              + "git add crates/trillionnium-owner-open-job-runtime/tests/runtime.rs "
+              + "crates/trillionnium-shell-exec/src/durable.rs\n",
+              1,
+          )
+          path.write_text(text)
+          PY
+          chmod 700 /tmp/r15-builder.sh
+          /tmp/r15-builder.sh /tmp/r15.patch.gz
