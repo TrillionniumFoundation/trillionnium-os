@@ -18,6 +18,10 @@ spec.loader.exec_module(module)
 REPOSITORY = Path(__file__).resolve().parents[2]
 
 
+@unittest.skipUnless(
+    (REPOSITORY / module.CONTRACT).is_file(),
+    "G1 retired the historical R5 ADB-topology contract; this legacy suite is not active evidence",
+)
 class VerifyOwnerOpenAdbTopologyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()

@@ -42,6 +42,10 @@ def load_strict(payload: str) -> dict[str, object]:
     return value
 
 
+@unittest.skipUnless(
+    CONTRACT_PATH.is_file(),
+    "G1 retired the historical product-boundary contract; legacy suite is intentionally inactive in the G1 tree",
+)
 class AgentExecAdbWindowsProductBoundaryTest(unittest.TestCase):
     def setUp(self) -> None:
         self.raw = CONTRACT_PATH.read_text(encoding="utf-8")

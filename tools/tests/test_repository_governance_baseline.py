@@ -6,7 +6,10 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
-WORKFLOW = ROOT / ".github/workflows/owner-open-r5-governance-readiness.yml"
+WORKFLOWS = (
+    ROOT / ".github/workflows/g1-exact-head-source.yml",
+    ROOT / ".github/workflows/g1-synthetic-merge.yml",
+)
 
 
 class RepositoryGovernanceBaselineTest(unittest.TestCase):
@@ -19,45 +22,53 @@ class RepositoryGovernanceBaselineTest(unittest.TestCase):
         self.assertTrue(license_text.startswith("MIT License\n"))
         self.assertIn("private GitHub Security Advisory", security)
         self.assertIn("must not promote an L2-L6 claim", security)
-        for level in range(7):
-            self.assertIn(f"L{level}", contributing)
+        self.assertIn("docs/START_HERE.md", contributing)
+        self.assertIn("docs/machine/", contributing)
+        self.assertIn("Historical development documents must not be reintroduced", contributing)
+        self.assertIn("exact clean source head", contributing)
+        self.assertIn("automatic_redispatch=false", contributing)
         self.assertIn("Do not push directly to `main`", contributing)
         for critical in (
             "/.github/",
-            "/docs/status/",
-            "/tools/owner_open_r5_evidence_bundle.py",
-            "/tools/owner_open_r5_capture_trust.py",
-            "/tools/promote-owner-open-r5-evidence.py",
+            "/docs/machine/",
+            "/docs/generated/",
+            "/tools/docs/",
             "/apps/trillionnium-owner-open-host/",
-            "/crates/trillionnium-owner-open-*/",
+            "/crates/trillionnium-owner-open-types/",
             "/android-integration/",
+            "/packaging/",
         ):
             self.assertIn(critical, codeowners)
         self.assertIn(
-            "CODEOWNERS alone does not establish independence", codeowners
+            "Branch protection must still require a non-author approval", codeowners
         )
 
     def test_governance_workflow_uses_immutable_actions_and_exact_checkout(self) -> None:
-        workflow = WORKFLOW.read_text(encoding="utf-8")
-        self.assertIn(
-            "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
-            workflow,
-        )
-        self.assertIn(
-            "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
-            workflow,
-        )
-        self.assertIn(
-            "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
-            workflow,
-        )
-        self.assertNotRegex(
-            workflow,
-            re.compile(r"uses:\s+[^\s@]+@v\d+", re.MULTILINE),
-        )
-        self.assertIn("--untracked-files=all", workflow)
-        self.assertNotIn("--untracked-files=no", workflow)
-        self.assertIn("test_repository_governance_baseline", workflow)
+        for path in WORKFLOWS:
+            workflow = path.read_text(encoding="utf-8")
+            self.assertIn(
+                "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+                workflow,
+            )
+            self.assertIn(
+                "persist-credentials: false",
+                workflow,
+            )
+            self.assertNotRegex(
+                workflow,
+                re.compile(r"uses:\s+[^\s@]+@v\d+", re.MULTILINE),
+            )
+            self.assertIn("--no-replace-objects", workflow)
+            self.assertIn("--untracked-files=all", workflow)
+            self.assertNotIn("--untracked-files=no", workflow)
+            self.assertIn("python3 tools/docs/verify_global_docs.py", workflow)
+
+        exact = WORKFLOWS[0].read_text(encoding="utf-8")
+        self.assertIn('ref: ${{ env.SOURCE_HEAD_SHA }}', exact)
+        self.assertIn('test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"', exact)
+        synthetic = WORKFLOWS[1].read_text(encoding="utf-8")
+        self.assertIn('rev-parse HEAD^1', synthetic)
+        self.assertIn('rev-parse HEAD^2', synthetic)
 
 
 if __name__ == "__main__":

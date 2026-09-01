@@ -476,6 +476,11 @@ class Client:
     queued_bytes: int = 0
     last_client_seq: int | None = None
     lock: threading.Lock = field(default_factory=threading.Lock)
+    # Admission metadata for one authenticated client/request namespace is
+    # serialized here.  The lock is released before the durable audit append;
+    # it is never a broker-wide gate, so independent clients can admit work
+    # while another client's fsync is slow.
+    admission_lock: threading.Lock = field(default_factory=threading.Lock)
     closed: threading.Event = field(default_factory=threading.Event)
 
     def __post_init__(self) -> None:
@@ -553,3 +558,17 @@ class Request:
     audit_binding: Any
     ordering_key: str = "legacy-unassigned"
     deadline_monotonic: float = float("inf")
+    # Lifecycle transitions for one accepted request are serialized here,
+    # rather than by the broker-wide transition lock.  The lock deliberately
+    # travels with the request so an unrelated ordering key can continue while
+    # this request is in a bounded upstream write or audit fsync.
+    transition_lock: threading.RLock = field(
+        default_factory=threading.RLock,
+        repr=False,
+        compare=False,
+    )
+    # Set immediately before the first upstream write syscall.  A write can
+    # have crossed the effect boundary even when the subsequent durable
+    # ``broker.forwarded`` append fails, so convergence must not infer
+    # no-effect solely from the audit stage.
+    effect_attempted: bool = field(default=False, repr=False, compare=False)

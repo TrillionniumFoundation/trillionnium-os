@@ -109,6 +109,33 @@ for line in sys.stdin:
     frame=json.loads(line); remember(frame); emit(frame)
 '''
 
+# The broker writes requests to a bounded pipe.  This upstream intentionally
+# consumes only the handshake and then stops reading; an oversized request
+# therefore fills the pipe and leaves the broker's bounded write waiting.  A
+# timeout worker must still retire another accepted request while that write
+# is blocked (the old process-wide transition lock made the worker wait for
+# the full five-second write deadline).
+BLOCKED_WRITE = "#!/usr/bin/env python3\n" + COMMON + r'''
+def raw_handshake():
+    # Avoid TextIOWrapper read-ahead: it could consume the oversized request
+    # while reading the hello line and accidentally make the broker write
+    # appear writable.
+    data=bytearray()
+    while True:
+        chunk=os.read(0,1)
+        if not chunk:
+            raise RuntimeError("broker closed before hello")
+        data.extend(chunk)
+        if chunk == b"\n":
+            break
+    frame=json.loads(data)
+    remember(frame)
+    assert frame["kind"]=="hello"
+    print(json.dumps({"kind":"hello.ack","seq":0,"direction":"host_to_client","payload":{}}),flush=True)
+raw_handshake()
+time.sleep(30.0)
+'''
+
 
 def read_line(sock: socket.socket, timeout: float = 5.0) -> dict:
     sock.settimeout(timeout)
@@ -128,6 +155,7 @@ def send(sock: socket.socket, value: dict) -> None:
 
 class Harness:
     upstream_source = CROSS_KEY
+    max_inflight_requests = 4
 
     def setUp(self) -> None:
         self.temp=tempfile.TemporaryDirectory()
@@ -147,7 +175,7 @@ class Harness:
             "--token-file",str(self.token),
             "--broker-id","mux-test",
             "--upstream",str(self.upstream),
-            "--max-inflight-requests","4",
+            "--max-inflight-requests",str(self.max_inflight_requests),
             "--max-pending-requests","16",
         ],stdout=subprocess.PIPE,stderr=subprocess.PIPE,env=env)
         deadline=time.monotonic()+5
@@ -160,7 +188,10 @@ class Harness:
             self.fail(f"broker did not start: {out!r} {err!r}")
         self.descriptor_value=json.loads(self.descriptor.read_text())
         self.token_value=self.token.read_text().strip()
-        self.assertEqual(self.descriptor_value["max_inflight_requests"],4)
+        self.assertEqual(
+            self.descriptor_value["max_inflight_requests"],
+            self.max_inflight_requests,
+        )
         self.assertEqual(self.descriptor_value["scheduler_version"],2)
         self.assertIs(self.descriptor_value["automatic_redispatch"],False)
 
@@ -200,6 +231,39 @@ class Harness:
                 "seq":seq,
                 "direction":"client_to_host",
                 "payload":{**scope,"job_id":job_id},
+            },
+            "expected_kinds":["job.inspect.result"],
+            "expected_job_id":job_id,
+            "timeout_ms":timeout_ms,
+        })
+
+    @staticmethod
+    def request_with_blob(
+        sock: socket.socket,
+        request_id: str,
+        seq: int,
+        job_id: str,
+        *,
+        blob_bytes: int,
+        timeout_ms: int,
+    ) -> None:
+        """Send one protocol-valid request large enough to fill stdin."""
+
+        scope={
+            "session_id":"session-mux",
+            "profile_id":"profile-mux",
+            "task_id":"task-mux",
+            "turn_id":"turn-mux",
+            "turn_stream_id":"stream-mux",
+        }
+        send(sock,{
+            "kind":"request",
+            "request_id":request_id,
+            "frame":{
+                "kind":"job.inspect",
+                "seq":seq,
+                "direction":"client_to_host",
+                "payload":{**scope,"job_id":job_id,"blob":"x"*blob_bytes},
             },
             "expected_kinds":["job.inspect.result"],
             "expected_job_id":job_id,
@@ -362,6 +426,149 @@ class SameKeyTimeoutFenceTest(Harness, unittest.TestCase):
             sum(frame.get("payload",{}).get("job_id")=="same-job" for frame in frames),
             1,
         )
+
+
+class BlockedWriteConvergenceTest(Harness, unittest.TestCase):
+    upstream_source = BLOCKED_WRITE
+    # One dispatcher makes the first active reservation deterministic; the
+    # unrelated request remains pending behind the global inflight bound.  Its
+    # distinct ordering key makes this a cross-key regression for the old
+    # process-wide transition lock: timeout and audit terminalization must
+    # proceed while the first pipe write waits.
+    max_inflight_requests = 1
+
+    def test_unrelated_timeout_progresses_while_upstream_write_is_blocked(self) -> None:
+        first=self.connect("client-a"); waiting=self.connect("client-b")
+        try:
+            # 900 KiB is below the broker's 1 MiB line bound but larger than a
+            # Linux pipe's available capacity after the handshake.
+            self.request_with_blob(
+                first,
+                "request-blocked",
+                0,
+                "blocked-job",
+                blob_bytes=900_000,
+                timeout_ms=10_000,
+            )
+            # Wait for durable acceptance before admitting the waiter.  The
+            # oversized request takes long enough to parse/hash that a blind
+            # short sleep can otherwise let the waiter win the first active
+            # reservation on a loaded host.
+            audit_path=Path(self.descriptor_value["audit_file"])
+            deadline=time.monotonic()+3.0
+            while time.monotonic()<deadline:
+                records=(
+                    [json.loads(line) for line in audit_path.read_text().splitlines()]
+                    if audit_path.exists()
+                    else []
+                )
+                if any(
+                    record.get("stage")=="broker.accepted"
+                    and record.get("request_id")=="request-blocked"
+                    for record in records
+                ):
+                    break
+                time.sleep(0.01)
+            else:
+                self.fail("oversized request was not durably accepted")
+            # With no competing work, one additional scheduling turn is
+            # sufficient for the sole dispatcher to enter the blocked write.
+            time.sleep(0.20)
+            self.request(
+                waiting,
+                "request-waiting",
+                0,
+                "unrelated-job",
+                timeout_ms=150,
+            )
+            started=time.monotonic()
+            terminal,_=self.terminal(waiting,"request-waiting",timeout=2.0)
+            elapsed=time.monotonic()-started
+            self.assertEqual(terminal["kind"],"error")
+            self.assertEqual(terminal["code"],"timeout_before_forward")
+            self.assertLess(elapsed,2.0)
+        finally:
+            first.close(); waiting.close()
+
+
+class ActiveBlockedWriteTimeoutTest(Harness, unittest.TestCase):
+    """An active request waiting for the writer expires without fencing its key."""
+
+    upstream_source = BLOCKED_WRITE
+    # Two dispatcher reservations let the second request become active while
+    # the first worker owns the byte-stream gate and is stalled in its bounded
+    # pipe write.  This exercises the active (rather than pending) timeout
+    # classification introduced for the write-wait interval.
+    max_inflight_requests = 2
+
+    def test_active_timeout_before_writer_has_no_ordering_fence(self) -> None:
+        first=self.connect("client-a"); second=self.connect("client-b")
+        try:
+            self.request_with_blob(
+                first,
+                "request-blocked-active",
+                0,
+                "blocked-active-job",
+                blob_bytes=900_000,
+                timeout_ms=10_000,
+            )
+            audit_path=Path(self.descriptor_value["audit_file"])
+            deadline=time.monotonic()+3.0
+            while time.monotonic()<deadline:
+                records=(
+                    [json.loads(line) for line in audit_path.read_text().splitlines()]
+                    if audit_path.exists()
+                    else []
+                )
+                if any(
+                    record.get("stage")=="broker.accepted"
+                    and record.get("request_id")=="request-blocked-active"
+                    for record in records
+                ):
+                    break
+                time.sleep(0.01)
+            else:
+                self.fail("oversized active request was not durably accepted")
+            # Give the first dispatcher a turn to acquire the writer and fill
+            # the upstream pipe before the second request is admitted.
+            time.sleep(0.20)
+            self.request_with_blob(
+                second,
+                "request-writer-wait",
+                0,
+                "writer-wait-job",
+                blob_bytes=900_000,
+                timeout_ms=150,
+            )
+            terminal,_=self.terminal(second,"request-writer-wait",timeout=2.0)
+            self.assertEqual(terminal["kind"],"error")
+            self.assertEqual(terminal["code"],"timeout_before_forward")
+            records=[json.loads(line) for line in audit_path.read_text().splitlines()]
+            selected=[
+                record for record in records
+                if record.get("request_id")=="request-writer-wait"
+            ]
+            self.assertEqual(
+                [record["stage"] for record in selected],
+                ["broker.accepted","broker.terminal"],
+            )
+            self.assertEqual(selected[-1]["details"]["status"],"timeout_before_forward")
+            self.assertIs(selected[-1]["details"]["effect_may_have_started"],False)
+            # The timeout was before any write attempt, so this ordering key
+            # remains usable.  A same-key follow-up therefore reaches the
+            # writer wait and receives the same bounded timeout, rather than
+            # an ``ordering_key_uncertain`` admission rejection.
+            self.request(
+                second,
+                "request-writer-wait-future",
+                1,
+                "writer-wait-job",
+                timeout_ms=150,
+            )
+            future_terminal,_=self.terminal(second,"request-writer-wait-future",timeout=2.0)
+            self.assertEqual(future_terminal["code"],"timeout_before_forward")
+        finally:
+            first.close(); second.close()
 
 
 if __name__ == "__main__":

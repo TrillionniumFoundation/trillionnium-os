@@ -168,6 +168,148 @@ class BrokerAuditTest(unittest.TestCase):
             with self.assertRaisesRegex(BrokerError, "inode|pathname"):
                 BrokerAuditJournal(self.path, broker_id="broker")
 
+    def test_path_replacement_before_append_poisoned_and_never_binds(self) -> None:
+        journal = BrokerAuditJournal(self.path, broker_id="broker")
+        moved = self.root / "audit.original"
+        self.path.rename(moved)
+        self.path.write_bytes(b"")
+        os.chmod(self.path, 0o600)
+
+        with self.assertRaisesRegex(BrokerError, "identity drift"):
+            journal.admit(
+                broker_epoch="epoch",
+                client_id="client",
+                request_id="request",
+                request_sha256="a" * 64,
+                client_seq=0,
+                upstream_seq=1,
+                request_kind="job.start",
+                correlation={},
+            )
+        self.assertIsNone(journal.lookup("client", "request"))
+        with self.assertRaisesRegex(BrokerError, "poisoned"):
+            journal.admit(
+                broker_epoch="epoch",
+                client_id="client",
+                request_id="second",
+                request_sha256="b" * 64,
+                client_seq=1,
+                upstream_seq=2,
+                request_kind="job.start",
+                correlation={},
+            )
+        self.assertEqual(self.path.read_bytes(), b"")
+        self.assertEqual(moved.read_bytes(), b"")
+        journal.close()
+
+    def test_replacement_during_fsync_poisoned_after_uncertain_append(self) -> None:
+        journal = BrokerAuditJournal(self.path, broker_id="broker")
+        moved = self.root / "audit.original"
+        real_fsync = os.fsync
+        replaced = False
+
+        def racing_fsync(descriptor: int) -> None:
+            nonlocal replaced
+            real_fsync(descriptor)
+            if descriptor == journal._fd and not replaced:
+                replaced = True
+                self.path.rename(moved)
+                self.path.write_bytes(b"")
+                os.chmod(self.path, 0o600)
+
+        with mock.patch(
+            "owner_open_broker_audit.os.fsync", side_effect=racing_fsync
+        ):
+            with self.assertRaisesRegex(BrokerError, "identity drift"):
+                journal.admit(
+                    broker_epoch="epoch",
+                    client_id="client",
+                    request_id="request",
+                    request_sha256="a" * 64,
+                    client_seq=0,
+                    upstream_seq=1,
+                    request_kind="job.start",
+                    correlation={},
+                )
+        self.assertTrue(replaced)
+        self.assertIsNone(journal.lookup("client", "request"))
+        with self.assertRaisesRegex(BrokerError, "poisoned"):
+            journal.admit(
+                broker_epoch="epoch",
+                client_id="client",
+                request_id="second",
+                request_sha256="b" * 64,
+                client_seq=1,
+                upstream_seq=2,
+                request_kind="job.start",
+                correlation={},
+            )
+        self.assertEqual(self.path.read_bytes(), b"")
+        self.assertGreater(len(moved.read_bytes()), 0)
+        journal.close()
+
+    def test_path_replacement_during_load_fails_closed(self) -> None:
+        journal = BrokerAuditJournal(self.path, broker_id="broker")
+        journal.admit(
+            broker_epoch="epoch",
+            client_id="client",
+            request_id="request",
+            request_sha256="a" * 64,
+            client_seq=0,
+            upstream_seq=1,
+            request_kind="job.start",
+            correlation={},
+        )
+        journal.close()
+        original = self.path.read_bytes()
+        moved = self.root / "audit.original"
+        replaced = False
+        real_read = os.read
+
+        def racing_read(descriptor: int, count: int) -> bytes:
+            nonlocal replaced
+            value = real_read(descriptor, count)
+            if not replaced:
+                replaced = True
+                self.path.rename(moved)
+                self.path.write_bytes(original)
+                os.chmod(self.path, 0o600)
+            return value
+
+        with mock.patch("owner_open_broker_audit.os.read", side_effect=racing_read):
+            with self.assertRaisesRegex(BrokerError, "identity drift"):
+                BrokerAuditJournal(self.path, broker_id="broker")
+        self.assertTrue(replaced)
+        self.assertNotEqual(self.path.stat().st_ino, moved.stat().st_ino)
+
+    def test_descriptor_substitution_is_rejected_even_when_path_matches(self) -> None:
+        journal = BrokerAuditJournal(self.path, broker_id="broker")
+        moved = self.root / "audit.original"
+        replacement = self.root / "audit.replacement"
+        self.path.rename(moved)
+        replacement.write_bytes(b"")
+        os.chmod(replacement, 0o600)
+        alternate_fd = os.open(replacement, os.O_RDWR | os.O_APPEND)
+        try:
+            os.dup2(alternate_fd, journal._fd)
+        finally:
+            os.close(alternate_fd)
+        replacement.rename(self.path)
+
+        with self.assertRaisesRegex(BrokerError, "identity drift"):
+            journal.admit(
+                broker_epoch="epoch",
+                client_id="client",
+                request_id="request",
+                request_sha256="a" * 64,
+                client_seq=0,
+                upstream_seq=1,
+                request_kind="job.start",
+                correlation={},
+            )
+        self.assertIsNone(journal.lookup("client", "request"))
+        journal.close()
+
     def test_protocol_json_rejects_nonfinite_numbers(self) -> None:
         with self.assertRaisesRegex(BrokerError, "non-finite"):
             strict_json(b'{"value":NaN}', label="test frame")

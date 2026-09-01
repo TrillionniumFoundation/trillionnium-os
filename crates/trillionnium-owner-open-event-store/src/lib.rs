@@ -26,6 +26,12 @@ pub const EVENT_RECORD_SCHEMA: &str = "trillionnium.owner-open.event-record.v1";
 /// The on-disk layout introduced by [`SegmentedEventStore`].
 pub const SEGMENTED_EVENT_STORE_SCHEMA: &str = "trillionnium.owner-open.event-store.v2";
 const ZERO_SHA256: &str = "0000000000000000000000000000000000000000000000000000000000000000";
+// A source file can remain flock-owned for the short fork→exec window of an
+// unrelated child that inherited its O_CLOEXEC descriptor. Migration opens a
+// retained legacy source with this bounded grace period so transient
+// descriptor inheritance does not turn a healthy upgrade into an outage;
+// genuinely competing writers still receive WriterBusy after the deadline.
+const EXISTING_SOURCE_LOCK_WAIT: Duration = Duration::from_secs(1);
 
 #[derive(Debug, Error)]
 pub enum EventStoreError {
@@ -350,6 +356,7 @@ impl EventKey {
 #[derive(Debug)]
 struct State {
     file: File,
+    identity: FileIdentity,
     records: Vec<EventRecord>,
     by_key: HashMap<EventKey, usize>,
     next_turn_seq: HashMap<TurnScope, u64>,
@@ -361,6 +368,10 @@ struct State {
 #[derive(Debug)]
 pub struct DurableEventStore {
     path: PathBuf,
+    parent_identity: FileIdentity,
+    // Pin the private parent directory so creation/durability barriers cannot
+    // be redirected by a rename/recreate of the configured path.
+    _parent_dir: File,
     limits: EventStoreLimits,
     sync_policy: SyncPolicy,
     state: Mutex<State>,
@@ -372,6 +383,27 @@ impl DurableEventStore {
         limits: EventStoreLimits,
         sync_policy: SyncPolicy,
     ) -> Result<Self> {
+        Self::open_inner(path, limits, sync_policy, true)
+    }
+
+    /// Open an existing v1 store without ever creating a replacement inode.
+    /// Migration callers use this form after an lstat-style source probe: if
+    /// the source disappears before the open, the transition fails closed
+    /// instead of silently creating an empty legacy file.
+    fn open_existing(
+        path: impl AsRef<Path>,
+        limits: EventStoreLimits,
+        sync_policy: SyncPolicy,
+    ) -> Result<Self> {
+        Self::open_inner(path, limits, sync_policy, false)
+    }
+
+    fn open_inner(
+        path: impl AsRef<Path>,
+        limits: EventStoreLimits,
+        sync_policy: SyncPolicy,
+        create_if_missing: bool,
+    ) -> Result<Self> {
         limits.validate()?;
         let path = path.as_ref().to_path_buf();
         validate_store_path(&path)?;
@@ -379,6 +411,7 @@ impl DurableEventStore {
             .parent()
             .ok_or_else(|| EventStoreError::UnsafePath("store path has no parent".to_string()))?;
         let parent_before = validate_store_parent(parent)?;
+        let parent_dir = open_pinned_directory(parent, parent_before, "store parent")?;
         let path_before = regular_path_metadata(&path, "store entry")?;
         let (mut file, existed, identity_before) = match path_before {
             Some(metadata) => {
@@ -388,8 +421,21 @@ impl DurableEventStore {
                     .mode(0o600)
                     .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
                     .open(&path)
-                    .map_err(|error| EventStoreError::Io(error.to_string()))?;
+                    .map_err(|error| {
+                        if error.kind() == std::io::ErrorKind::NotFound {
+                            EventStoreError::UnsafePath(
+                                "store entry disappeared while being opened".to_string(),
+                            )
+                        } else {
+                            EventStoreError::Io(error.to_string())
+                        }
+                    })?;
                 (file, true, Some(metadata))
+            }
+            None if !create_if_missing => {
+                return Err(EventStoreError::UnsafePath(
+                    "existing store entry disappeared before opening".to_string(),
+                ));
             }
             None => {
                 let created = OpenOptions::new()
@@ -417,7 +463,15 @@ impl DurableEventStore {
                             .mode(0o600)
                             .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
                             .open(&path)
-                            .map_err(|error| EventStoreError::Io(error.to_string()))?;
+                            .map_err(|error| {
+                                if error.kind() == std::io::ErrorKind::NotFound {
+                                    EventStoreError::UnsafePath(
+                                        "store entry disappeared after create race".to_string(),
+                                    )
+                                } else {
+                                    EventStoreError::Io(error.to_string())
+                                }
+                            })?;
                         (file, true, Some(raced))
                     }
                     Err(error) => return Err(EventStoreError::Io(error.to_string())),
@@ -429,7 +483,12 @@ impl DurableEventStore {
         }
         let (descriptor_metadata, path_metadata) =
             validate_opened_path_identity(&path, identity_before.as_ref(), &file, "store file")?;
-        lock_writer(&file)?;
+        validate_directory_identity(parent, parent_before, &parent_dir, "store parent")?;
+        if create_if_missing {
+            lock_writer(&file)?;
+        } else {
+            lock_writer_with_bounded_wait(&file, EXISTING_SOURCE_LOCK_WAIT)?;
+        }
         validate_store_file_metadata(&descriptor_metadata, "store file")?;
         validate_store_file_metadata(&path_metadata, "store file")?;
         // A pathname replacement while the writer lease was being acquired
@@ -445,8 +504,9 @@ impl DurableEventStore {
                 "store parent changed while the file was opened".to_string(),
             ));
         }
+        validate_directory_identity(parent, parent_before, &parent_dir, "store parent")?;
         if !existed {
-            sync_directory(parent)?;
+            sync_directory_fd(&parent_dir)?;
         }
 
         if descriptor_metadata.len() > limits.max_store_bytes {
@@ -455,15 +515,37 @@ impl DurableEventStore {
         file.seek(SeekFrom::Start(0))
             .map_err(|error| EventStoreError::Io(error.to_string()))?;
         let recovered = recover_records(&file, &limits)?;
+        validate_directory_identity(parent, parent_before, &parent_dir, "store parent")?;
+        validate_segment_identity(
+            &path,
+            (descriptor_metadata.dev(), descriptor_metadata.ino()),
+            &file,
+            "store file",
+        )?;
         file.seek(SeekFrom::End(0))
             .map_err(|error| EventStoreError::Io(error.to_string()))?;
+        let identity = (descriptor_metadata.dev(), descriptor_metadata.ino());
+        validate_segment_identity(&path, identity, &file, "store file")?;
+        if file
+            .metadata()
+            .map_err(|error| EventStoreError::Io(error.to_string()))?
+            .len()
+            != recovered.byte_count
+        {
+            return Err(EventStoreError::InvalidRecord(
+                "store length changed during recovery".to_string(),
+            ));
+        }
 
         Ok(Self {
             path,
+            parent_identity: parent_before,
+            _parent_dir: parent_dir,
             limits,
             sync_policy,
             state: Mutex::new(State {
                 file,
+                identity,
                 records: recovered.records,
                 by_key: recovered.by_key,
                 next_turn_seq: recovered.next_turn_seq,
@@ -485,10 +567,7 @@ impl DurableEventStore {
             .map_err(|error| EventStoreError::InvalidRecord(error.to_string()))?;
         let payload_sha256 = sha256_hex(&payload_bytes);
         let key = EventKey::new(input.scope.clone(), input.event_id.clone());
-        let mut state = self.lock()?;
-        if state.poisoned {
-            return Err(EventStoreError::Poisoned);
-        }
+        let mut state = self.lock_live()?;
         if let Some(index) = state.by_key.get(&key).copied() {
             let existing = state
                 .records
@@ -511,6 +590,14 @@ impl DurableEventStore {
         let store_seq =
             u64::try_from(state.records.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
         let turn_seq = state.next_turn_seq.get(&input.scope).copied().unwrap_or(0);
+        // `turn_seq` is part of the persisted ordering contract, not a
+        // resource counter.  Never wrap it back to zero: doing so would make
+        // two distinct observations share the same per-scope sequence and
+        // would violate replay linearity.  Reserve the successor before any
+        // bytes are written so exhaustion leaves the WAL untouched.
+        let next_turn_seq = turn_seq
+            .checked_add(1)
+            .ok_or(EventStoreError::CapacityExhausted)?;
         let previous_record_sha256 = state.last_record_sha256.clone();
         let record_sha256 = record_digest(&RecordPreimage {
             schema: EVENT_RECORD_SCHEMA,
@@ -554,6 +641,16 @@ impl DurableEventStore {
             state.poisoned = true;
             return Err(error);
         }
+        if let Err(error) =
+            validate_segment_identity(&self.path, state.identity, &state.file, "store file")
+        {
+            state.poisoned = true;
+            return Err(error);
+        }
+        if let Err(error) = self.validate_parent_identity_current() {
+            state.poisoned = true;
+            return Err(error);
+        }
         let actual_len = match state.file.metadata() {
             Ok(metadata) => metadata.len(),
             Err(error) => {
@@ -570,7 +667,7 @@ impl DurableEventStore {
         state.by_key.insert(key, index);
         state
             .next_turn_seq
-            .insert(record.scope.clone(), turn_seq.saturating_add(1));
+            .insert(record.scope.clone(), next_turn_seq);
         state.byte_count = expected_len;
         state.last_record_sha256 = record.record_sha256.clone();
         state.records.push(record.clone());
@@ -582,7 +679,7 @@ impl DurableEventStore {
 
     pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
         validate_scope(scope, &self.limits)?;
-        let state = self.lock()?;
+        let state = self.lock_live()?;
         Ok(state
             .records
             .iter()
@@ -594,7 +691,7 @@ impl DurableEventStore {
     pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
         validate_scope(scope, &self.limits)?;
         validate_id("event_id", event_id, self.limits.max_id_bytes)?;
-        let state = self.lock()?;
+        let state = self.lock_live()?;
         let key = EventKey::new(scope.clone(), event_id.to_string());
         Ok(state
             .by_key
@@ -604,11 +701,68 @@ impl DurableEventStore {
     }
 
     pub fn all_records(&self) -> Result<Vec<EventRecord>> {
-        Ok(self.lock()?.records.clone())
+        Ok(self.lock_live()?.records.clone())
+    }
+
+    /// Re-read and authenticate the v1 WAL while retaining this store's
+    /// writer lease.  Ordinary reads intentionally use the recovered in-memory
+    /// view, but migration has a pathname/descriptor TOCTOU boundary between
+    /// its initial source snapshot and destination open.  A fresh scan here
+    /// detects same-length content edits as well as appended/truncated bytes;
+    /// any discrepancy poisons the handle so a caller cannot continue with an
+    /// ambiguous source.
+    fn reread_live_records(&self) -> Result<Vec<EventRecord>> {
+        let mut state = self.lock()?;
+        if state.poisoned {
+            return Err(EventStoreError::Poisoned);
+        }
+        let result = (|| {
+            self.validate_parent_identity_current()?;
+            validate_segment_identity(&self.path, state.identity, &state.file, "store file")?;
+            let length_before = state
+                .file
+                .metadata()
+                .map_err(|error| EventStoreError::Io(error.to_string()))?
+                .len();
+
+            // `recover_records` consumes a cloned descriptor.  Seek that
+            // clone explicitly because the append handle normally sits at the
+            // end of the WAL, then restore the live descriptor for callers
+            // that continue to inspect the source after a successful check.
+            let mut scan_file = state
+                .file
+                .try_clone()
+                .map_err(|error| EventStoreError::Io(error.to_string()))?;
+            scan_file
+                .seek(SeekFrom::Start(0))
+                .map_err(|error| EventStoreError::Io(error.to_string()))?;
+            let recovered = recover_records(&scan_file, &self.limits)?;
+            let length_after = state
+                .file
+                .metadata()
+                .map_err(|error| EventStoreError::Io(error.to_string()))?
+                .len();
+            validate_segment_identity(&self.path, state.identity, &state.file, "store file")?;
+            if length_before != length_after
+                || recovered.byte_count != length_after
+                || recovered.records != state.records
+            {
+                return Err(EventStoreError::EventConflict);
+            }
+            state
+                .file
+                .seek(SeekFrom::End(0))
+                .map_err(|error| EventStoreError::Io(error.to_string()))?;
+            Ok(recovered.records)
+        })();
+        if result.is_err() {
+            state.poisoned = true;
+        }
+        result
     }
 
     pub fn snapshot(&self) -> Result<EventStoreSnapshot> {
-        let state = self.lock()?;
+        let state = self.lock_live()?;
         Ok(EventStoreSnapshot {
             record_count: state.records.len(),
             byte_count: state.byte_count,
@@ -622,6 +776,45 @@ impl DurableEventStore {
             .lock()
             .map_err(|_| EventStoreError::StatePoisoned)
     }
+
+    fn lock_live(&self) -> Result<MutexGuard<'_, State>> {
+        let mut state = self.lock()?;
+        if state.poisoned {
+            return Err(EventStoreError::Poisoned);
+        }
+        let identity_result = self.validate_parent_identity_current().and_then(|()| {
+            validate_segment_identity(&self.path, state.identity, &state.file, "store file")
+        });
+        if let Err(error) = identity_result {
+            state.poisoned = true;
+            return Err(error);
+        }
+        let observed_len = match state.file.metadata() {
+            Ok(metadata) => metadata.len(),
+            Err(error) => {
+                state.poisoned = true;
+                return Err(EventStoreError::Io(error.to_string()));
+            }
+        };
+        if observed_len != state.byte_count {
+            state.poisoned = true;
+            return Err(EventStoreError::Poisoned);
+        }
+        Ok(state)
+    }
+
+    fn validate_parent_identity_current(&self) -> Result<()> {
+        let parent = self
+            .path
+            .parent()
+            .ok_or_else(|| EventStoreError::UnsafePath("store path has no parent".to_string()))?;
+        validate_directory_identity(
+            parent,
+            self.parent_identity,
+            &self._parent_dir,
+            "store parent",
+        )
+    }
 }
 
 const SEGMENT_FILE_PREFIX: &str = "segment-";
@@ -634,11 +827,21 @@ const SEGMENT_SNAPSHOT_FILE: &str = "snapshot.v2.json";
 const SEGMENT_SNAPSHOT_TEMP_FILE: &str = ".snapshot.v2.json.tmp";
 const SEGMENT_SNAPSHOT_SCHEMA: &str = "trillionnium.owner-open.event-snapshot.v2";
 
+/// Device/inode identity captured for a pathname-backed store object.
+///
+/// The event store keeps these identities for the root directory and every
+/// opened segment.  A same-UID rename/recreate can otherwise redirect a later
+/// pathname operation while an already-open descriptor continues writing to
+/// the old inode.
+type FileIdentity = (u64, u64);
+type SegmentSyncTarget = (u64, PathBuf, FileIdentity, u64, Arc<Mutex<File>>);
+
 #[derive(Debug)]
 struct SegmentMeta {
     id: u64,
     path: PathBuf,
     file: Arc<Mutex<File>>,
+    identity: FileIdentity,
     byte_count: u64,
     record_count: usize,
     pending_records: usize,
@@ -667,6 +870,7 @@ struct OpenSegment {
     id: u64,
     path: PathBuf,
     file: Arc<Mutex<File>>,
+    identity: FileIdentity,
 }
 
 /// Segmented, indexed v2 event durability.
@@ -681,10 +885,16 @@ struct OpenSegment {
 #[derive(Debug)]
 pub struct SegmentedEventStore {
     root: PathBuf,
+    root_identity: FileIdentity,
     index_path: PathBuf,
     config: SegmentedEventStoreConfig,
+    // Keep the opened root directory alive.  It is both a stable identity
+    // witness and the descriptor used for directory durability barriers;
+    // pathname-only reopens are not sufficient across rename/recreate races.
+    _root_dir: File,
     // Keeping this descriptor alive holds the process-wide writer lease.
     _writer_lock: File,
+    writer_lock_identity: FileIdentity,
     state: RwLock<SegmentedState>,
     append_gate: Mutex<()>,
 }
@@ -774,9 +984,17 @@ impl SegmentedEventStore {
     /// Open or create a v2 store rooted at a dedicated service-owned directory.
     pub fn open(root: impl AsRef<Path>, config: SegmentedEventStoreConfig) -> Result<Self> {
         config.validate()?;
-        let root = prepare_segment_root(root.as_ref())?;
+        let (root, root_dir, root_identity) = prepare_segment_root(root.as_ref())?;
+        validate_root_identity(&root, root_identity, &root_dir)?;
         let lock_path = root.join(SEGMENT_LOCK_FILE);
-        let writer_lock = open_writer_lock(&lock_path)?;
+        let (writer_lock, writer_lock_identity) = open_writer_lock(&lock_path, &root_dir)?;
+        validate_root_identity(&root, root_identity, &root_dir)?;
+        validate_segment_identity(
+            &lock_path,
+            writer_lock_identity,
+            &writer_lock,
+            "segment writer lock",
+        )?;
         validate_optional_sidecar(&root.join(SEGMENT_INDEX_FILE), "event index")?;
         validate_optional_sidecar(
             &root.join(SEGMENT_INDEX_TEMP_FILE),
@@ -787,25 +1005,28 @@ impl SegmentedEventStore {
             &root.join(SEGMENT_SNAPSHOT_TEMP_FILE),
             "event snapshot temporary file",
         )?;
-        let mut segments = discover_segments(&root)?;
+        validate_root_identity(&root, root_identity, &root_dir)?;
+        let mut segments = discover_segments(&root, root_identity, &root_dir)?;
         // Rotation publishes the next segment pathname before the first
         // record is written.  A process cut in that small window can leave a
-        // zero-byte tail segment behind.  It is not an event and must not be
-        // allowed to turn a restart into a permanent recovery failure.  Only
-        // the contiguous empty tail is pruned: an empty segment in the middle
-        // of the WAL remains a fail-closed corruption signal, and one empty
-        // segment is retained for a genuinely new store.
-        prune_empty_segment_tail(&root, &mut segments)?;
+        // zero-byte segment behind.  It is not an event and must not be
+        // allowed to turn a restart into a permanent recovery failure. Empty
+        // segment files are retained (never pathname-unlinked) and are
+        // harmless as long as the authenticated store sequence/hash chain
+        // remains contiguous.
+        prune_empty_segment_tail(&root, root_identity, &root_dir, &segments)?;
         if segments.is_empty() {
-            segments.push(create_segment(&root, 1)?);
+            segments.push(create_segment(&root, root_identity, &root_dir, 1)?);
         }
 
-        let recovered = recover_segmented_segments(&segments, &config)?;
+        let recovered =
+            recover_segmented_segments(&root, root_identity, &root_dir, &segments, &config)?;
         // Sidecars are rebuildable read-models, but an on-disk sidecar that is
         // present must still be authenticated against the WAL.  Accepting a
         // valid stale prefix keeps crash recovery idempotent; malformed or
         // divergent contents fail closed instead of being silently ignored.
-        validate_recovery_sidecars(&root, &recovered, &config)?;
+        validate_recovery_sidecars(&root, root_identity, &root_dir, &recovered, &config)?;
+        validate_root_identity(&root, root_identity, &root_dir)?;
         let active_id = segments
             .last()
             .map(|segment| segment.id)
@@ -822,6 +1043,7 @@ impl SegmentedEventStore {
                     id: segment.id,
                     path: segment.path,
                     file: segment.file,
+                    identity: segment.identity,
                     byte_count: summary.byte_count,
                     record_count: summary.record_count,
                     pending_records: 0,
@@ -829,12 +1051,20 @@ impl SegmentedEventStore {
                 },
             );
         }
+        validate_root_identity(&root, root_identity, &root_dir)?;
+        for segment in segment_meta.values() {
+            let file = lock_file(&segment.file)?;
+            validate_segment_identity(&segment.path, segment.identity, &file, "segment")?;
+        }
 
         Ok(Self {
             root: root.clone(),
+            root_identity,
             index_path: root.join(SEGMENT_INDEX_FILE),
             config,
+            _root_dir: root_dir,
             _writer_lock: writer_lock,
+            writer_lock_identity,
             state: RwLock::new(SegmentedState {
                 segments: segment_meta,
                 active_id,
@@ -882,7 +1112,12 @@ impl SegmentedEventStore {
         config: SegmentedEventStoreConfig,
     ) -> Result<Self> {
         let legacy_path = legacy_path.as_ref();
-        if !legacy_path.exists() {
+        // Use an lstat-style probe instead of `Path::exists()`.  The latter
+        // follows a replacement race and can turn a source that disappears
+        // between the probe and `open` into a silent fresh-store start.  A
+        // positive probe is still revalidated by `DurableEventStore::open`,
+        // while a non-regular/symlink source fails closed immediately.
+        if regular_path_metadata(legacy_path, "legacy event-store source")?.is_none() {
             return Err(EventStoreError::Io(format!(
                 "legacy event-store path does not exist: {}",
                 legacy_path.display()
@@ -892,10 +1127,16 @@ impl SegmentedEventStore {
         // the complete source prefix has been copied.  Dropping this handle
         // after `all_records()` creates a split-brain window in which an old
         // writer can append a tail that the v2 snapshot never sees.
-        let legacy = DurableEventStore::open(legacy_path, config.limits.clone(), SyncPolicy::Full)?;
+        let legacy =
+            DurableEventStore::open_existing(legacy_path, config.limits.clone(), SyncPolicy::Full)?;
         let legacy_records = legacy.all_records()?;
         let store = Self::open(root, config)?;
-        reconcile_legacy_prefix(&store, &legacy_records, false)?;
+        // Revalidate the source after the destination has been opened while
+        // retaining the original v1 writer lease.  A pathname replacement or
+        // an out-of-band source mutation in that interval must never leave us
+        // reconciling a stale snapshot into the v2 store.
+        let stable_legacy_records = verify_legacy_snapshot(&legacy, &legacy_records)?;
+        reconcile_legacy_prefix(&store, &stable_legacy_records, false)?;
         Ok(store)
     }
 
@@ -930,13 +1171,19 @@ impl SegmentedEventStore {
         config: SegmentedEventStoreConfig,
         after_source_snapshot: impl FnOnce(),
     ) -> Result<Self> {
-        if !legacy_path.exists() {
+        // Do not use `Path::exists()` at this migration boundary.  It cannot
+        // distinguish a genuinely absent optional source from a pathname that
+        // was replaced/disappeared while the destination was opening.  The
+        // descriptor/identity checks in `DurableEventStore::open` handle the
+        // positive-race case and preserve fail-closed migration semantics.
+        if regular_path_metadata(legacy_path, "legacy event-store source")?.is_none() {
             return Self::open(root, config);
         }
 
         // Deliberately retain this guard through destination open/reconcile;
         // see the method-level safety contract above.
-        let legacy = DurableEventStore::open(legacy_path, config.limits.clone(), SyncPolicy::Full)?;
+        let legacy =
+            DurableEventStore::open_existing(legacy_path, config.limits.clone(), SyncPolicy::Full)?;
         let legacy_records = legacy.all_records()?;
         // Test callers use this hook to exercise the exact interleaving that
         // previously allowed a legacy append between snapshot and destination
@@ -944,7 +1191,12 @@ impl SegmentedEventStore {
         // held across the callback and all reconciliation below.
         after_source_snapshot();
         let store = Self::open(root, config)?;
-        reconcile_legacy_prefix(&store, &legacy_records, true)?;
+        // The callback (and destination open itself) intentionally sits inside
+        // the source lease.  Read/validate the source again at this final
+        // boundary so a rename/recreate or newly visible record cannot make a
+        // stale pre-open snapshot authoritative.
+        let stable_legacy_records = verify_legacy_snapshot(&legacy, &legacy_records)?;
+        reconcile_legacy_prefix(&store, &stable_legacy_records, true)?;
         Ok(store)
     }
 
@@ -1009,7 +1261,7 @@ impl SegmentedEventStore {
         legacy_path: impl AsRef<Path>,
         config: SegmentedEventStoreConfig,
     ) -> Result<Self> {
-        if legacy_path.as_ref().exists() {
+        if regular_path_metadata(legacy_path.as_ref(), "legacy event-store source")?.is_some() {
             // Always run the convergent migration when a v1 source exists.
             // `migrate_legacy` compares the complete existing destination
             // prefix and fails closed on extra or divergent v2 records.  The
@@ -1042,12 +1294,13 @@ impl SegmentedEventStore {
 
     /// Return the numbered WAL paths in ascending sequence order.
     pub fn segment_paths(&self) -> Result<Vec<PathBuf>> {
-        Ok(self
-            .read_state()?
-            .segments
-            .values()
-            .map(|segment| segment.path.clone())
-            .collect())
+        self.with_live_state(|state| {
+            state
+                .segments
+                .values()
+                .map(|segment| segment.path.clone())
+                .collect()
+        })
     }
 
     pub fn append(&self, input: EventInput) -> Result<AppendResult> {
@@ -1065,7 +1318,8 @@ impl SegmentedEventStore {
             .append_gate
             .lock()
             .map_err(|_| EventStoreError::StatePoisoned)?;
-        let (record, encoded, key) = {
+        self.require_root_identity_current()?;
+        let (record, encoded, key, next_turn_seq) = {
             let state = self.read_state()?;
             if state.poisoned {
                 return Err(EventStoreError::Poisoned);
@@ -1092,6 +1346,12 @@ impl SegmentedEventStore {
             let store_seq = u64::try_from(state.records.len())
                 .map_err(|_| EventStoreError::CapacityExhausted)?;
             let turn_seq = state.next_turn_seq.get(&input.scope).copied().unwrap_or(0);
+            // This is a semantic sequence.  Saturating at MAX would permit a
+            // duplicate MAX ordinal after exhaustion, so fail before
+            // reserving/writing the record.
+            let next_turn_seq = turn_seq
+                .checked_add(1)
+                .ok_or(EventStoreError::CapacityExhausted)?;
             let previous_record_sha256 = state.last_record_sha256.clone();
             let record_sha256 = record_digest(&RecordPreimage {
                 schema: EVENT_RECORD_SCHEMA,
@@ -1130,26 +1390,52 @@ impl SegmentedEventStore {
                 .checked_add(encoded_len)
                 .filter(|value| *value <= self.config.limits.max_store_bytes)
                 .ok_or(EventStoreError::CapacityExhausted)?;
-            (record, encoded, key)
+            (record, encoded, key, next_turn_seq)
         };
 
         self.ensure_active_segment(encoded.len())?;
-        let (segment_id, offset, file) = {
+        let (segment_id, offset, path, identity, file) = {
             let state = self.read_state()?;
             let segment = state
                 .segments
                 .get(&state.active_id)
                 .ok_or(EventStoreError::StatePoisoned)?;
-            (segment.id, segment.byte_count, Arc::clone(&segment.file))
+            (
+                segment.id,
+                segment.byte_count,
+                segment.path.clone(),
+                segment.identity,
+                Arc::clone(&segment.file),
+            )
         };
-        if let Err(error) = append_segment_bytes(&file, offset, &encoded) {
+        if let Err(error) = self.validate_root_and_segment(&path, identity, &file, "active segment")
+        {
+            self.mark_poisoned();
+            return Err(error);
+        }
+        if let Err(error) = append_segment_bytes(&file, &path, identity, offset, &encoded) {
             self.mark_poisoned();
             return Err(error);
         }
 
         let encoded_len =
             u64::try_from(encoded.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
-        let should_sync = {
+        let expected_end = offset
+            .checked_add(encoded_len)
+            .ok_or(EventStoreError::CapacityExhausted)?;
+        if let Err(error) = self
+            .validate_root_and_segment(&path, identity, &file, "active segment")
+            .and_then(|()| validate_segment_length(&path, identity, &file, expected_end))
+        {
+            self.mark_poisoned();
+            return Err(error);
+        }
+        // The WAL bytes are already present at this point.  Any invariant,
+        // arithmetic or state-publication failure must therefore poison the
+        // live store: returning a recoverable error while retaining an
+        // acknowledged on-disk suffix would let a later append build a hash
+        // chain from metadata that no longer describes the file.
+        let should_sync_result = (|| -> Result<bool> {
             let mut state = self.write_state()?;
             if state.poisoned {
                 return Err(EventStoreError::Poisoned);
@@ -1163,6 +1449,52 @@ impl SegmentedEventStore {
                 state.poisoned = true;
                 return Err(EventStoreError::Poisoned);
             }
+            // Every arithmetic/invariant check is completed before mutating
+            // the in-memory indexes.  The record bytes are already on disk at
+            // this point; any unexpected failure therefore poisons the store
+            // rather than leaving a partially published high-water mark.
+            let next_store_byte_count = state
+                .byte_count
+                .checked_add(encoded_len)
+                .filter(|value| *value <= self.config.limits.max_store_bytes)
+                .ok_or(EventStoreError::CapacityExhausted)?;
+            let (
+                next_segment_byte_count,
+                next_segment_record_count,
+                next_segment_pending_records,
+                next_segment_pending_bytes,
+            ) = {
+                let segment = state
+                    .segments
+                    .get(&segment_id)
+                    .ok_or(EventStoreError::StatePoisoned)?;
+                (
+                    segment
+                        .byte_count
+                        .checked_add(encoded_len)
+                        .ok_or(EventStoreError::CapacityExhausted)?,
+                    segment
+                        .record_count
+                        .checked_add(1)
+                        .ok_or(EventStoreError::CapacityExhausted)?,
+                    segment
+                        .pending_records
+                        .checked_add(1)
+                        .ok_or(EventStoreError::CapacityExhausted)?,
+                    segment
+                        .pending_bytes
+                        .checked_add(encoded_len)
+                        .ok_or(EventStoreError::CapacityExhausted)?,
+                )
+            };
+            let next_pending_records = state
+                .pending_records
+                .checked_add(1)
+                .ok_or(EventStoreError::CapacityExhausted)?;
+            let next_pending_bytes = state
+                .pending_bytes
+                .checked_add(encoded_len)
+                .ok_or(EventStoreError::CapacityExhausted)?;
             let index = state.records.len();
             state.by_key.insert(key.clone(), index);
             state
@@ -1172,7 +1504,7 @@ impl SegmentedEventStore {
                 .push(index);
             state
                 .next_turn_seq
-                .insert(record.scope.clone(), record.turn_seq.saturating_add(1));
+                .insert(record.scope.clone(), next_turn_seq);
             state.locations.insert(
                 key,
                 SegmentLocation {
@@ -1182,33 +1514,37 @@ impl SegmentedEventStore {
                     store_seq: record.store_seq,
                 },
             );
-            state.byte_count = state
-                .byte_count
-                .checked_add(encoded_len)
-                .ok_or(EventStoreError::CapacityExhausted)?;
+            state.byte_count = next_store_byte_count;
             state.last_record_sha256 = record.record_sha256.clone();
             state.records.push(record.clone());
             let segment = state
                 .segments
                 .get_mut(&segment_id)
                 .ok_or(EventStoreError::StatePoisoned)?;
-            segment.byte_count = segment
-                .byte_count
-                .checked_add(encoded_len)
-                .ok_or(EventStoreError::CapacityExhausted)?;
-            segment.record_count = segment.record_count.saturating_add(1);
-            segment.pending_records = segment.pending_records.saturating_add(1);
-            segment.pending_bytes = segment.pending_bytes.saturating_add(encoded_len);
-            state.pending_records = state.pending_records.saturating_add(1);
-            state.pending_bytes = state.pending_bytes.saturating_add(encoded_len);
+            segment.byte_count = next_segment_byte_count;
+            segment.record_count = next_segment_record_count;
+            segment.pending_records = next_segment_pending_records;
+            segment.pending_bytes = next_segment_pending_bytes;
+            state.pending_records = next_pending_records;
+            state.pending_bytes = next_pending_bytes;
             let elapsed = state.last_sync.elapsed();
-            state.pending_records >= self.config.group_commit_records
+            Ok(state.pending_records >= self.config.group_commit_records
                 || state.pending_bytes >= self.config.group_commit_bytes
-                || elapsed >= self.config.group_commit_interval
+                || elapsed >= self.config.group_commit_interval)
+        })();
+        let should_sync = match should_sync_result {
+            Ok(value) => value,
+            Err(error) => {
+                self.mark_poisoned();
+                return Err(error);
+            }
         };
 
         if should_sync {
-            self.sync_pending_under_gate()?;
+            // Automatic group commits retain the short pending-target fence
+            // for throughput.  Explicit public durability boundaries use the
+            // full retained-segment validation below.
+            self.sync_pending_under_gate_fast()?;
         }
         Ok(AppendResult {
             disposition: AppendDisposition::Appended,
@@ -1218,56 +1554,45 @@ impl SegmentedEventStore {
 
     pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
         validate_scope(scope, &self.config.limits)?;
-        let state = self.read_state()?;
-        Ok(state
-            .by_scope
-            .get(scope)
-            .into_iter()
-            .flat_map(|indexes| indexes.iter())
-            .filter_map(|index| state.records.get(*index))
-            .filter(|record| record.turn_seq >= inclusive_turn_seq)
-            .cloned()
-            .collect())
+        self.with_live_state(|state| {
+            state
+                .by_scope
+                .get(scope)
+                .into_iter()
+                .flat_map(|indexes| indexes.iter())
+                .filter_map(|index| state.records.get(*index))
+                .filter(|record| record.turn_seq >= inclusive_turn_seq)
+                .cloned()
+                .collect()
+        })
     }
 
     pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
         validate_scope(scope, &self.config.limits)?;
         validate_id("event_id", event_id, self.config.limits.max_id_bytes)?;
-        let state = self.read_state()?;
         let key = EventKey::new(scope.clone(), event_id.to_string());
-        Ok(state
-            .by_key
-            .get(&key)
-            .and_then(|index| state.records.get(*index))
-            .cloned())
+        self.with_live_state(|state| {
+            state
+                .by_key
+                .get(&key)
+                .and_then(|index| state.records.get(*index))
+                .cloned()
+        })
     }
 
     pub fn location(&self, scope: &TurnScope, event_id: &str) -> Result<Option<SegmentLocation>> {
         validate_scope(scope, &self.config.limits)?;
         validate_id("event_id", event_id, self.config.limits.max_id_bytes)?;
-        let state = self.read_state()?;
-        Ok(state
-            .locations
-            .get(&EventKey::new(scope.clone(), event_id.to_string()))
-            .copied())
+        let key = EventKey::new(scope.clone(), event_id.to_string());
+        self.with_live_state(|state| state.locations.get(&key).copied())
     }
 
     pub fn all_records(&self) -> Result<Vec<EventRecord>> {
-        Ok(self.read_state()?.records.clone())
+        self.with_live_state(|state| state.records.clone())
     }
 
     pub fn snapshot(&self) -> Result<SegmentedEventStoreSnapshot> {
-        let state = self.read_state()?;
-        Ok(SegmentedEventStoreSnapshot {
-            segment_count: state.segments.len(),
-            record_count: state.records.len(),
-            indexed_count: state.locations.len(),
-            byte_count: state.byte_count,
-            pending_records: state.pending_records,
-            pending_bytes: state.pending_bytes,
-            last_record_sha256: state.last_record_sha256.clone(),
-            poisoned: state.poisoned,
-        })
+        self.with_live_state(snapshot_from_state)
     }
 
     /// Sync pending segment bytes and atomically publish the rebuildable index.
@@ -1321,6 +1646,12 @@ impl SegmentedEventStore {
             .lock()
             .map_err(|_| EventStoreError::StatePoisoned)?;
         self.sync_pending_under_gate()?;
+        // Validate the complete retained WAL before taking the high-water
+        // snapshot.  A completed segment is immutable; publishing a snapshot
+        // that was assembled after an undetected length/inode drift would
+        // make the derived sidecar claim a durability boundary the WAL no
+        // longer satisfies.
+        self.validate_all_segments_current()?;
         let (record_count, byte_count, last_hash, records) = {
             let state = self.read_state()?;
             (
@@ -1346,7 +1677,9 @@ impl SegmentedEventStore {
             "event snapshot",
         )?;
         self.write_index_manifest()?;
-        self.snapshot()
+        self.validate_all_segments_current()?;
+        let state = self.read_state()?;
+        Ok(snapshot_from_state(&state))
     }
 
     /// Alias for callers that use checkpoint terminology.
@@ -1355,11 +1688,11 @@ impl SegmentedEventStore {
     }
 
     pub fn pending(&self) -> Result<(usize, u64)> {
-        let state = self.read_state()?;
-        Ok((state.pending_records, state.pending_bytes))
+        self.with_live_state(|state| (state.pending_records, state.pending_bytes))
     }
 
     fn ensure_active_segment(&self, encoded_len: usize) -> Result<()> {
+        self.require_root_identity_current()?;
         let encoded_len =
             u64::try_from(encoded_len).map_err(|_| EventStoreError::CapacityExhausted)?;
         let (active_bytes, active_records) = {
@@ -1394,7 +1727,7 @@ impl SegmentedEventStore {
             .copied()
             .and_then(|id| id.checked_add(1))
             .ok_or(EventStoreError::CapacityExhausted)?;
-        let segment = create_segment(&self.root, next_id)?;
+        let segment = create_segment(&self.root, self.root_identity, &self._root_dir, next_id)?;
         state.active_id = next_id;
         state.segments.insert(
             next_id,
@@ -1402,6 +1735,7 @@ impl SegmentedEventStore {
                 id: next_id,
                 path: segment.path,
                 file: segment.file,
+                identity: segment.identity,
                 byte_count: 0,
                 record_count: 0,
                 pending_records: 0,
@@ -1412,7 +1746,27 @@ impl SegmentedEventStore {
     }
 
     fn sync_pending_under_gate(&self) -> Result<()> {
-        let targets: Vec<(u64, Arc<Mutex<File>>)> = {
+        self.sync_pending_under_gate_with_validation(true)
+    }
+
+    /// Internal group-commit path used by append.  It preserves the original
+    /// O(pending-segments) synchronization cost; callers that expose a
+    /// durability acknowledgement use `sync_pending_under_gate` and its
+    /// retained-segment fence instead.
+    fn sync_pending_under_gate_fast(&self) -> Result<()> {
+        self.sync_pending_under_gate_with_validation(false)
+    }
+
+    fn sync_pending_under_gate_with_validation(&self, validate_all: bool) -> Result<()> {
+        if validate_all {
+            // Public sync/flush/checkpoint calls must not acknowledge a
+            // healthy store when an immutable retained segment was replaced
+            // or resized while no segment was pending.
+            self.validate_all_segments_current()?;
+        } else {
+            self.require_root_identity_current()?;
+        }
+        let targets: Vec<SegmentSyncTarget> = {
             let state = self.read_state()?;
             if state.poisoned {
                 return Err(EventStoreError::Poisoned);
@@ -1421,20 +1775,67 @@ impl SegmentedEventStore {
                 .segments
                 .values()
                 .filter(|segment| segment.pending_records > 0)
-                .map(|segment| (segment.id, Arc::clone(&segment.file)))
+                .map(|segment| {
+                    (
+                        segment.id,
+                        segment.path.clone(),
+                        segment.identity,
+                        segment.byte_count,
+                        Arc::clone(&segment.file),
+                    )
+                })
                 .collect()
         };
-        if self.config.sync_policy != SyncPolicy::None {
-            for (_, file) in &targets {
-                let result = lock_file(file)?.sync_for(self.config.sync_policy);
-                if let Err(error) = result {
+        for (_, path, identity, expected_len, file) in &targets {
+            if let Err(error) = self.require_root_identity_current() {
+                self.mark_poisoned();
+                return Err(error);
+            }
+            let guard = lock_file(file)?;
+            if let Err(error) = validate_segment_identity(path, *identity, &guard, "segment") {
+                self.mark_poisoned();
+                return Err(error);
+            }
+            let observed_len = match guard.metadata() {
+                Ok(metadata) => metadata.len(),
+                Err(error) => {
                     self.mark_poisoned();
-                    return Err(error);
+                    return Err(EventStoreError::Io(error.to_string()));
                 }
+            };
+            if observed_len != *expected_len {
+                self.mark_poisoned();
+                return Err(EventStoreError::Poisoned);
+            }
+            if self.config.sync_policy != SyncPolicy::None
+                && let Err(error) = guard.sync_for(self.config.sync_policy)
+            {
+                self.mark_poisoned();
+                return Err(error);
+            }
+            if let Err(error) = validate_segment_identity(path, *identity, &guard, "segment") {
+                self.mark_poisoned();
+                return Err(error);
+            }
+            let observed_len = match guard.metadata() {
+                Ok(metadata) => metadata.len(),
+                Err(error) => {
+                    self.mark_poisoned();
+                    return Err(EventStoreError::Io(error.to_string()));
+                }
+            };
+            if observed_len != *expected_len {
+                self.mark_poisoned();
+                return Err(EventStoreError::Poisoned);
+            }
+            drop(guard);
+            if let Err(error) = self.require_root_identity_current() {
+                self.mark_poisoned();
+                return Err(error);
             }
         }
         let mut state = self.write_state()?;
-        for (id, _) in targets {
+        for (id, _, _, _, _) in targets {
             let Some((pending_records, pending_bytes)) = state
                 .segments
                 .get(&id)
@@ -1442,18 +1843,40 @@ impl SegmentedEventStore {
             else {
                 continue;
             };
-            state.pending_records = state.pending_records.saturating_sub(pending_records);
-            state.pending_bytes = state.pending_bytes.saturating_sub(pending_bytes);
+            state.pending_records = match state.pending_records.checked_sub(pending_records) {
+                Some(value) => value,
+                None => {
+                    state.poisoned = true;
+                    return Err(EventStoreError::Poisoned);
+                }
+            };
+            state.pending_bytes = match state.pending_bytes.checked_sub(pending_bytes) {
+                Some(value) => value,
+                None => {
+                    state.poisoned = true;
+                    return Err(EventStoreError::Poisoned);
+                }
+            };
             if let Some(segment) = state.segments.get_mut(&id) {
                 segment.pending_records = 0;
                 segment.pending_bytes = 0;
             }
         }
         state.last_sync = Instant::now();
-        Ok(())
+        drop(state);
+        if let Err(error) = self.require_root_identity_current() {
+            self.mark_poisoned();
+            return Err(error);
+        }
+        if validate_all {
+            self.validate_all_segments_current()
+        } else {
+            Ok(())
+        }
     }
 
     fn write_index_manifest(&self) -> Result<()> {
+        self.validate_all_segments_current()?;
         let (mut entries, segments, record_count, byte_count, last_hash) = {
             let state = self.read_state()?;
             let mut entries = state
@@ -1498,7 +1921,11 @@ impl SegmentedEventStore {
             SEGMENT_INDEX_TEMP_FILE,
             &encoded,
             "event index",
-        )
+        )?;
+        // The WAL remains authoritative.  Recheck after publication as well
+        // as before it so a segment replacement/length drift during JSON
+        // encoding or rename cannot be reported as a successful checkpoint.
+        self.validate_all_segments_current()
     }
 
     fn atomic_sidecar_write(
@@ -1508,6 +1935,7 @@ impl SegmentedEventStore {
         bytes: &[u8],
         label: &str,
     ) -> Result<()> {
+        self.require_root_identity_current()?;
         let final_path = self.root.join(final_name);
         let temp_path = self.root.join(temp_name);
         validate_optional_sidecar(&final_path, label)?;
@@ -1518,15 +1946,124 @@ impl SegmentedEventStore {
         // create-new branch closes that TOCTOU; the existing branch validates
         // metadata on the opened descriptor before truncating it.
         let mut temp = open_sidecar_temp(&temp_path, label)?;
+        self.require_root_identity_current()?;
         temp.write_all(bytes)
             .and_then(|_| temp.write_all(b"\n"))
             .and_then(|_| temp.flush())
             .and_then(|_| temp.sync_all())
             .map_err(|error| EventStoreError::Io(error.to_string()))?;
-        drop(temp);
-        std::fs::rename(&temp_path, &final_path)
-            .map_err(|error| EventStoreError::Io(error.to_string()))?;
-        sync_directory(&self.root)
+        if let Err(error) = publish_sidecar(&temp_path, &final_path, &temp, label) {
+            // Keep a rejected artifact for forensic inspection.  In
+            // particular, do not unlink the pathname here: after a failed
+            // post-rename identity check it may already name a replacement
+            // inode, and pathname-only cleanup would turn an integrity fault
+            // into an unrelated file deletion.  Startup validation remains
+            // fail-closed while the next successful publication can replace
+            // the derived sidecar atomically.
+            let _ = sync_directory_fd(&self._root_dir);
+            return Err(error);
+        }
+        self.require_root_identity_current()?;
+        sync_directory_fd(&self._root_dir)?;
+        self.require_root_identity_current()
+    }
+
+    /// Revalidate the pinned root directory before a pathname-based mutation.
+    ///
+    /// The directory descriptor prevents us from losing track of the inode we
+    /// originally opened; the pathname check makes a rename/recreate visible
+    /// to the caller instead of silently publishing data into a replacement
+    /// directory.
+    fn validate_root_identity_current(&self) -> Result<()> {
+        validate_root_identity(&self.root, self.root_identity, &self._root_dir)?;
+        validate_segment_identity(
+            &self.root.join(SEGMENT_LOCK_FILE),
+            self.writer_lock_identity,
+            &self._writer_lock,
+            "segment writer lock",
+        )
+    }
+
+    /// Mark a live store poisoned whenever its pinned root/lease identity
+    /// fails.  Continuing after a rename/recreate can otherwise resume if an
+    /// operator happens to restore the pathname, even though the in-memory
+    /// state no longer has a trustworthy durability boundary.
+    fn require_root_identity_current(&self) -> Result<()> {
+        match self.validate_root_identity_current() {
+            Ok(()) => Ok(()),
+            Err(error) => {
+                self.mark_poisoned();
+                Err(error)
+            }
+        }
+    }
+
+    fn validate_root_and_segment(
+        &self,
+        path: &Path,
+        identity: FileIdentity,
+        file: &Arc<Mutex<File>>,
+        label: &str,
+    ) -> Result<()> {
+        self.validate_root_identity_current()?;
+        let file = lock_file(file)?;
+        validate_segment_identity(path, identity, &file, label)?;
+        Ok(())
+    }
+
+    /// Run a read operation only after fencing the append path and checking
+    /// every pathname/descriptor identity and authenticated high-water length.
+    ///
+    /// Segment writes intentionally happen outside the state lock for
+    /// throughput.  Taking the append gate here prevents a read from racing
+    /// the short interval between a WAL write and publication of its in-memory
+    /// counters.  On any identity/length failure the state is released before
+    /// poisoning it, avoiding an RwLock self-deadlock.
+    fn with_live_state<T>(&self, operation: impl FnOnce(&SegmentedState) -> T) -> Result<T> {
+        let _gate = self
+            .append_gate
+            .lock()
+            .map_err(|_| EventStoreError::StatePoisoned)?;
+        let state = self.read_state()?;
+        if state.poisoned {
+            return Err(EventStoreError::Poisoned);
+        }
+        if let Err(error) = self.validate_state_current(&state) {
+            drop(state);
+            self.mark_poisoned();
+            return Err(error);
+        }
+        Ok(operation(&state))
+    }
+
+    fn validate_state_current(&self, state: &SegmentedState) -> Result<()> {
+        self.validate_root_identity_current()?;
+        for segment in state.segments.values() {
+            let file = lock_file(&segment.file)?;
+            validate_segment_identity(&segment.path, segment.identity, &file, "segment")?;
+            let actual_len = file
+                .metadata()
+                .map_err(|error| EventStoreError::Io(error.to_string()))?
+                .len();
+            if actual_len != segment.byte_count {
+                return Err(EventStoreError::Poisoned);
+            }
+        }
+        Ok(())
+    }
+
+    fn validate_all_segments_current(&self) -> Result<()> {
+        let state = self.read_state()?;
+        if state.poisoned {
+            return Err(EventStoreError::Poisoned);
+        }
+        let result = self.validate_state_current(&state);
+        drop(state);
+        if let Err(error) = result {
+            self.mark_poisoned();
+            return Err(error);
+        }
+        Ok(())
     }
 
     fn read_state(&self) -> Result<RwLockReadGuard<'_, SegmentedState>> {
@@ -1548,6 +2085,80 @@ impl SegmentedEventStore {
     }
 }
 
+fn snapshot_from_state(state: &SegmentedState) -> SegmentedEventStoreSnapshot {
+    SegmentedEventStoreSnapshot {
+        segment_count: state.segments.len(),
+        record_count: state.records.len(),
+        indexed_count: state.locations.len(),
+        byte_count: state.byte_count,
+        pending_records: state.pending_records,
+        pending_bytes: state.pending_bytes,
+        last_record_sha256: state.last_record_sha256.clone(),
+        poisoned: state.poisoned,
+    }
+}
+
+/// Publish a fully-written sidecar while retaining the temporary descriptor
+/// through the rename.  A pathname-only check followed by `drop(temp)` leaves
+/// a replacement window in which an attacker can swap the temporary name and
+/// make `rename` publish an inode that was never written or synced by us.
+///
+/// The descriptor is checked both before and after the rename.  The first
+/// check rejects a replacement that happened while the bytes were being
+/// written; the second check binds the final pathname to the exact inode whose
+/// contents were synced.  If a replacement races the rename, the operation
+/// fails closed and startup validation will reject the resulting sidecar.
+fn publish_sidecar(temp_path: &Path, final_path: &Path, temp: &File, label: &str) -> Result<()> {
+    publish_sidecar_with_hook(temp_path, final_path, temp, label, || {})
+}
+
+fn publish_sidecar_with_hook(
+    temp_path: &Path,
+    final_path: &Path,
+    temp: &File,
+    label: &str,
+    before_rename: impl FnOnce(),
+) -> Result<()> {
+    let temp_metadata = temp
+        .metadata()
+        .map_err(|error| EventStoreError::Io(error.to_string()))?;
+    validate_store_file_metadata(&temp_metadata, &format!("{label} temporary file"))?;
+    validate_opened_path_identity(
+        temp_path,
+        Some(&temp_metadata),
+        temp,
+        &format!("{label} temporary file"),
+    )?;
+
+    before_rename();
+    std::fs::rename(temp_path, final_path)
+        .map_err(|error| EventStoreError::Io(error.to_string()))?;
+
+    let (final_descriptor, final_path_metadata) =
+        match validate_opened_path_identity(final_path, Some(&temp_metadata), temp, label) {
+            Ok(identity) => identity,
+            Err(error) => return reject_published_sidecar(error),
+        };
+    if let Err(error) = validate_store_file_metadata(&final_descriptor, label) {
+        return reject_published_sidecar(error);
+    }
+    if let Err(error) = validate_store_file_metadata(&final_path_metadata, label) {
+        return reject_published_sidecar(error);
+    }
+    Ok(())
+}
+
+/// Reject a sidecar that failed the post-rename identity/metadata check.
+///
+/// A derived sidecar is never authoritative.  Deliberately leave the
+/// pathname untouched here: once the post-rename check fails, a pathname-only
+/// unlink could race a replacement and delete an unrelated inode.  Keeping
+/// the artifact makes the failure observable and lets startup validation fail
+/// closed; a later successful publication may atomically replace it.
+fn reject_published_sidecar(error: EventStoreError) -> Result<()> {
+    Err(error)
+}
+
 /// Reconcile a segmented destination against a stable v1 source snapshot.
 ///
 /// `allow_destination_tail` is used only by rolling-upgrade callers: once the
@@ -1556,6 +2167,22 @@ impl SegmentedEventStore {
 /// using [`SegmentedEventStore::migrate_legacy`] retain the historical
 /// contract.  The source writer lease is held by the caller for the complete
 /// duration of this function.
+fn verify_legacy_snapshot(
+    legacy: &DurableEventStore,
+    initial_records: &[EventRecord],
+) -> Result<Vec<EventRecord>> {
+    // The fresh scan performs live pathname/descriptor/length checks while
+    // the v1 lease is still held, and also re-authenticates the bytes on disk.
+    // Comparing the returned sequence catches a source tail that became
+    // visible after the first snapshot (for example, an out-of-band writer
+    // that bypassed flock).
+    let current_records = legacy.reread_live_records()?;
+    if current_records != initial_records {
+        return Err(EventStoreError::EventConflict);
+    }
+    Ok(current_records)
+}
+
 fn reconcile_legacy_prefix(
     store: &SegmentedEventStore,
     legacy_records: &[EventRecord],
@@ -1596,11 +2223,15 @@ fn reconcile_legacy_prefix(
     store.flush()
 }
 
-/// Open the sidecar temporary file without a path-check/truncate race.
+/// Open a fresh sidecar temporary file without a path-check/truncate race.
 ///
 /// `create_new` is important here: `O_NOFOLLOW` blocks symlinks but does not
 /// block hardlinks, and a plain `create(true).truncate(true)` can therefore
-/// truncate an attacker-selected inode between two path metadata checks.
+/// truncate an attacker-selected inode between two path metadata checks.  A
+/// pre-existing temporary pathname is rejected outright; there is no safe
+/// way to infer that its inode is disposable after a crash, and opening it
+/// for truncation would let a same-UID rename race destroy another service
+/// file.  Operators can preserve and inspect the artifact before retrying.
 fn open_sidecar_temp(path: &Path, label: &str) -> Result<File> {
     let flags = libc::O_CLOEXEC | libc::O_NOFOLLOW;
     match OpenOptions::new()
@@ -1622,29 +2253,9 @@ fn open_sidecar_temp(path: &Path, label: &str) -> Result<File> {
             Ok(file)
         }
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-            // The path existed (possibly because it was inserted after the
-            // caller's path-only validation).  Open the inode, validate its
-            // descriptor metadata, and only then truncate that same inode.
-            let path_before = regular_path_metadata(path, label)?.ok_or_else(|| {
-                EventStoreError::UnsafePath(format!(
-                    "{label} temporary file disappeared after create race"
-                ))
-            })?;
-            let mut file = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .custom_flags(flags)
-                .open(path)
-                .map_err(|error| EventStoreError::Io(error.to_string()))?;
-            let (metadata, path_metadata) =
-                validate_opened_path_identity(path, Some(&path_before), &file, label)?;
-            validate_store_file_metadata(&metadata, &format!("{label} temporary file"))?;
-            validate_store_file_metadata(&path_metadata, &format!("{label} temporary file"))?;
-            file.set_len(0)
-                .map_err(|error| EventStoreError::Io(error.to_string()))?;
-            file.seek(SeekFrom::Start(0))
-                .map_err(|error| EventStoreError::Io(error.to_string()))?;
-            Ok(file)
+            Err(EventStoreError::UnsafePath(format!(
+                "{label} temporary file already exists; refusing to truncate it"
+            )))
         }
         Err(error) => Err(EventStoreError::Io(error.to_string())),
     }
@@ -1678,21 +2289,26 @@ fn sidecar_byte_limit(config: &SegmentedEventStoreConfig) -> u64 {
     config
         .limits
         .max_store_bytes
-        .saturating_mul(2)
-        .saturating_add(16 * 1024 * 1024)
+        .checked_mul(2)
+        .and_then(|value| value.checked_add(16 * 1024 * 1024))
+        .unwrap_or(MAX_SIDECAR_BYTES)
         .clamp(16 * 1024 * 1024, MAX_SIDECAR_BYTES)
 }
 
 fn validate_recovery_sidecars(
     root: &Path,
+    root_identity: FileIdentity,
+    root_dir: &File,
     recovered: &SegmentedRecovered,
     config: &SegmentedEventStoreConfig,
 ) -> Result<()> {
+    validate_root_identity(root, root_identity, root_dir)?;
     let maximum = sidecar_byte_limit(config);
     if let Some(encoded) = read_sidecar(&root.join(SEGMENT_INDEX_FILE), "event index", maximum)? {
         let manifest: IndexManifestOwned =
             strict_json::decode(&encoded).map_err(|error| invalid_sidecar("event index", error))?;
         validate_index_manifest(&manifest, recovered, config)?;
+        validate_root_identity(root, root_identity, root_dir)?;
     }
     if let Some(encoded) =
         read_sidecar(&root.join(SEGMENT_SNAPSHOT_FILE), "event snapshot", maximum)?
@@ -1700,7 +2316,9 @@ fn validate_recovery_sidecars(
         let manifest: SnapshotManifestOwned = strict_json::decode(&encoded)
             .map_err(|error| invalid_sidecar("event snapshot", error))?;
         validate_snapshot_manifest(&manifest, recovered, config)?;
+        validate_root_identity(root, root_identity, root_dir)?;
     }
+    validate_root_identity(root, root_identity, root_dir)?;
     Ok(())
 }
 
@@ -1740,8 +2358,11 @@ fn read_sidecar(path: &Path, label: &str, maximum: u64) -> Result<Option<Vec<u8>
     let reader = file
         .try_clone()
         .map_err(|error| EventStoreError::Io(error.to_string()))?;
+    let read_limit = maximum
+        .checked_add(1)
+        .ok_or_else(|| invalid_sidecar(label, "sidecar read bound overflow"))?;
     let read = reader
-        .take(maximum.saturating_add(1))
+        .take(read_limit)
         .read_to_end(&mut bytes)
         .map_err(|error| EventStoreError::Io(error.to_string()))?;
     if u64::try_from(read).unwrap_or(u64::MAX) > maximum
@@ -1812,8 +2433,10 @@ fn validate_index_manifest(
 
     let mut listed = BTreeMap::<u64, (usize, u64)>::new();
     for (position, segment) in manifest.segments.iter().enumerate() {
-        let expected_id = u64::try_from(position + 1)
-            .map_err(|_| invalid_sidecar("event index", "segment ID overflow"))?;
+        let expected_id = position
+            .checked_add(1)
+            .and_then(|value| u64::try_from(value).ok())
+            .ok_or_else(|| invalid_sidecar("event index", "segment ID overflow"))?;
         if segment.id != expected_id {
             return Err(invalid_sidecar(
                 "event index",
@@ -1895,8 +2518,14 @@ fn validate_index_manifest(
         let aggregate = per_segment
             .entry(entry.location.segment_id)
             .or_insert((0, 0));
-        aggregate.0 = aggregate.0.saturating_add(1);
-        aggregate.1 = aggregate.1.saturating_add(entry.location.byte_len);
+        aggregate.0 = aggregate
+            .0
+            .checked_add(1)
+            .ok_or_else(|| invalid_sidecar("event index", "segment record count overflow"))?;
+        aggregate.1 = aggregate
+            .1
+            .checked_add(entry.location.byte_len)
+            .ok_or_else(|| invalid_sidecar("event index", "segment byte count overflow"))?;
     }
     for segment in &manifest.segments {
         let aggregate = per_segment.get(&segment.id).copied().unwrap_or((0, 0));
@@ -1992,12 +2621,18 @@ fn invalid_sidecar(label: &str, message: impl Into<String>) -> EventStoreError {
     EventStoreError::InvalidRecord(format!("{label} is invalid: {}", message.into()))
 }
 
-fn prepare_segment_root(root: &Path) -> Result<PathBuf> {
+fn prepare_segment_root(root: &Path) -> Result<(PathBuf, File, FileIdentity)> {
     validate_store_path(root)?;
     let parent = root
         .parent()
         .ok_or_else(|| EventStoreError::UnsafePath("segment root has no parent".to_string()))?;
     let parent_before = validate_store_parent(parent)?;
+    // Keep the parent pinned while creating/syncing the root. A pathname-only
+    // directory fsync could otherwise be redirected by a rename/recreate
+    // after the initial metadata probe, even if a later identity check notices
+    // the replacement.
+    let parent_dir = open_pinned_directory(parent, parent_before, "segment root parent")?;
+    let mut created = false;
     match std::fs::symlink_metadata(root) {
         Ok(metadata) => {
             if metadata.file_type().is_symlink() || !metadata.is_dir() {
@@ -2008,51 +2643,74 @@ fn prepare_segment_root(root: &Path) -> Result<PathBuf> {
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             match std::fs::create_dir(root) {
-                Ok(()) => {
-                    // Apply the mode through a descriptor.  A pathname-based
-                    // chmod could follow a same-UID rename/recreate and
-                    // change an unrelated directory.
-                    let created_metadata = std::fs::symlink_metadata(root).map_err(|error| {
-                        EventStoreError::Io(format!("unable to inspect new segment root: {error}"))
-                    })?;
-                    let directory = OpenOptions::new()
-                        .read(true)
-                        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_DIRECTORY)
-                        .open(root)
-                        .map_err(|error| EventStoreError::Io(error.to_string()))?;
-                    let (descriptor_metadata, path_metadata) = validate_opened_path_identity(
-                        root,
-                        Some(&created_metadata),
-                        &directory,
-                        "segment root",
-                    )?;
-                    if !descriptor_metadata.is_dir() || !path_metadata.is_dir() {
-                        return Err(EventStoreError::UnsafePath(
-                            "new segment root is not a directory".to_string(),
-                        ));
-                    }
-                    set_mode_on_descriptor(&directory, 0o700, "segment root")?;
-                    sync_directory(parent)?;
-                }
+                Ok(()) => created = true,
                 Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {}
                 Err(error) => return Err(EventStoreError::Io(error.to_string())),
             }
         }
         Err(error) => return Err(EventStoreError::Io(error.to_string())),
     }
-    validate_service_directory(root)?;
-    let parent_after = validate_store_parent(parent)?;
-    if parent_before != parent_after {
+
+    // Pin the directory before any subsequent pathname operation.  The
+    // descriptor remains alive for the lifetime of the store and is used for
+    // directory barriers; every later check compares it with the pathname.
+    let path_before = std::fs::symlink_metadata(root).map_err(|error| {
+        EventStoreError::UnsafePath(format!("unable to inspect segment root: {error}"))
+    })?;
+    if path_before.file_type().is_symlink() || !path_before.is_dir() {
         return Err(EventStoreError::UnsafePath(
-            "segment root parent changed while it was opened".to_string(),
+            "segment root must be a regular non-symlink directory".to_string(),
         ));
     }
-    Ok(root.to_path_buf())
+    let directory = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_DIRECTORY)
+        .open(root)
+        .map_err(|error| EventStoreError::Io(error.to_string()))?;
+    let (descriptor_metadata, current_path_metadata) =
+        validate_opened_path_identity(root, Some(&path_before), &directory, "segment root")?;
+
+    if created {
+        let effective_uid = unsafe { libc::geteuid() };
+        if !descriptor_metadata.is_dir()
+            || !current_path_metadata.is_dir()
+            || descriptor_metadata.uid() != effective_uid
+            || current_path_metadata.uid() != effective_uid
+        {
+            return Err(EventStoreError::UnsafePath(
+                "new segment root must be a service-owned directory".to_string(),
+            ));
+        }
+        // Apply the mode through the pinned descriptor.  A pathname-based
+        // chmod could follow a same-UID rename/recreate and alter an unrelated
+        // directory.
+        set_mode_on_descriptor(&directory, 0o700, "segment root")?;
+        sync_directory_fd(&parent_dir)?;
+    } else {
+        validate_service_directory_metadata(&descriptor_metadata)?;
+        validate_service_directory_metadata(&current_path_metadata)?;
+    }
+
+    // Recheck after mode/durability operations and before returning the
+    // identity witness.  A replacement during creation is therefore rejected
+    // instead of becoming the store's new root by accident.
+    let (descriptor_after, path_after) = validate_opened_path_identity(
+        root,
+        Some(&descriptor_metadata),
+        &directory,
+        "segment root",
+    )?;
+    validate_service_directory_metadata(&descriptor_after)?;
+    validate_service_directory_metadata(&path_after)?;
+    validate_directory_identity(parent, parent_before, &parent_dir, "segment root parent")?;
+    Ok((
+        root.to_path_buf(),
+        directory,
+        (descriptor_after.dev(), descriptor_after.ino()),
+    ))
 }
 
-fn validate_service_directory(path: &Path) -> Result<()> {
-    let metadata = std::fs::symlink_metadata(path)
-        .map_err(|error| EventStoreError::UnsafePath(error.to_string()))?;
+fn validate_service_directory_metadata(metadata: &std::fs::Metadata) -> Result<()> {
     let effective_uid = unsafe { libc::geteuid() };
     let mode = metadata.mode() & 0o7777;
     if metadata.file_type().is_symlink()
@@ -2088,7 +2746,7 @@ fn validate_store_file_metadata(metadata: &std::fs::Metadata, label: &str) -> Re
     Ok(())
 }
 
-fn open_writer_lock(path: &Path) -> Result<File> {
+fn open_writer_lock(path: &Path, root_dir: &File) -> Result<(File, FileIdentity)> {
     let path_before = regular_path_metadata(path, "segment writer lock")?;
     let (file, existed, identity_before) = match path_before {
         Some(metadata) => {
@@ -2155,12 +2813,9 @@ fn open_writer_lock(path: &Path) -> Result<File> {
     validate_store_file_metadata(&descriptor_metadata, "segment writer lock")?;
     validate_store_file_metadata(&path_metadata, "segment writer lock")?;
     if !existed {
-        sync_directory(
-            path.parent()
-                .ok_or_else(|| EventStoreError::UnsafePath("lock has no parent".to_string()))?,
-        )?;
+        sync_directory_fd(root_dir)?;
     }
-    Ok(file)
+    Ok((file, (descriptor_metadata.dev(), descriptor_metadata.ino())))
 }
 
 fn validate_optional_sidecar(path: &Path, label: &str) -> Result<()> {
@@ -2192,7 +2847,12 @@ fn parse_segment_file_name(name: &str) -> Option<u64> {
     body.parse().ok().filter(|id| *id > 0)
 }
 
-fn discover_segments(root: &Path) -> Result<Vec<OpenSegment>> {
+fn discover_segments(
+    root: &Path,
+    root_identity: FileIdentity,
+    root_dir: &File,
+) -> Result<Vec<OpenSegment>> {
+    validate_root_identity(root, root_identity, root_dir)?;
     let mut paths = Vec::<(u64, PathBuf, std::fs::Metadata)>::new();
     for entry in std::fs::read_dir(root).map_err(|error| EventStoreError::Io(error.to_string()))? {
         let entry = entry.map_err(|error| EventStoreError::Io(error.to_string()))?;
@@ -2220,8 +2880,10 @@ fn discover_segments(root: &Path) -> Result<Vec<OpenSegment>> {
     }
     paths.sort_by_key(|(id, _, _)| *id);
     for (expected, (id, _, _)) in paths.iter().enumerate() {
-        let expected =
-            u64::try_from(expected + 1).map_err(|_| EventStoreError::CapacityExhausted)?;
+        let expected = expected
+            .checked_add(1)
+            .and_then(|value| u64::try_from(value).ok())
+            .ok_or(EventStoreError::CapacityExhausted)?;
         if *id != expected {
             return Err(EventStoreError::InvalidRecord(
                 "segment IDs are not contiguous".to_string(),
@@ -2244,29 +2906,38 @@ fn discover_segments(root: &Path) -> Result<Vec<OpenSegment>> {
             id,
             path,
             file: Arc::new(Mutex::new(file)),
+            identity: (descriptor_metadata.dev(), descriptor_metadata.ino()),
         });
     }
+    validate_root_identity(root, root_identity, root_dir)?;
     Ok(segments)
 }
 
-/// Remove crash-orphaned zero-byte segment files at the end of a WAL.
+/// Validate crash-orphaned zero-byte segment files at the end of a WAL.
 ///
 /// `ensure_active_segment` creates a new pathname before the append reaches
 /// the filesystem.  If the process is interrupted after creation, that file
-/// is a harmless, uncommitted segment.  The writer lease held by `open()`
-/// excludes another store instance while we validate and unlink it.  We
-/// re-check the descriptor and pathname metadata immediately before removal so
-/// a replacement inode cannot be mistaken for the descriptor discovered at
-/// startup.  Empty segments before a non-empty segment are deliberately not
-/// removed: preserving their IDs and rejecting that impossible layout keeps
-/// corruption fail-closed rather than silently rewriting locations.
-fn prune_empty_segment_tail(root: &Path, segments: &mut Vec<OpenSegment>) -> Result<()> {
-    while segments.len() > 1 {
-        let Some(segment) = segments.last() else {
-            break;
-        };
+/// is a harmless, uncommitted segment.  Keep the descriptor and pathname in
+/// the recovered segment set instead of unlinking it: even while the writer
+/// lease is held, a same-UID actor can replace the pathname between an inode
+/// check and `remove_file`, turning cleanup into unrelated file deletion.
+/// Retaining empty segments preserves the segment IDs and avoids a destructive
+/// pathname operation.  Empty files carry no records; the global store
+/// sequence and hash-chain checks below still reject deletion or truncation of
+/// a segment that previously contained an event.  A later non-empty segment
+/// may legitimately follow an orphaned empty file after a restart: the active
+/// tail is intentionally the highest segment ID.
+fn prune_empty_segment_tail(
+    root: &Path,
+    root_identity: FileIdentity,
+    root_dir: &File,
+    segments: &[OpenSegment],
+) -> Result<()> {
+    validate_root_identity(root, root_identity, root_dir)?;
+    for segment in segments.iter().rev() {
         let descriptor_metadata = {
             let file = lock_file(&segment.file)?;
+            validate_segment_identity(&segment.path, segment.identity, &file, "segment")?;
             file.metadata()
                 .map_err(|error| EventStoreError::Io(error.to_string()))?
         };
@@ -2287,16 +2958,18 @@ fn prune_empty_segment_tail(root: &Path, segments: &mut Vec<OpenSegment>) -> Res
             ));
         }
         validate_store_file_metadata(&path_metadata, "segment")?;
-
-        let path = segment.path.clone();
-        std::fs::remove_file(&path).map_err(|error| EventStoreError::Io(error.to_string()))?;
-        segments.pop();
-        sync_directory(root)?;
     }
+    validate_root_identity(root, root_identity, root_dir)?;
     Ok(())
 }
 
-fn create_segment(root: &Path, id: u64) -> Result<OpenSegment> {
+fn create_segment(
+    root: &Path,
+    root_identity: FileIdentity,
+    root_dir: &File,
+    id: u64,
+) -> Result<OpenSegment> {
+    validate_root_identity(root, root_identity, root_dir)?;
     let path = root.join(segment_file_name(id));
     let file = OpenOptions::new()
         .read(true)
@@ -2311,11 +2984,13 @@ fn create_segment(root: &Path, id: u64) -> Result<OpenSegment> {
         validate_opened_path_identity(&path, None, &file, "segment")?;
     validate_store_file_metadata(&descriptor_metadata, "segment")?;
     validate_store_file_metadata(&path_metadata, "segment")?;
-    sync_directory(root)?;
+    sync_directory_fd(root_dir)?;
+    validate_root_identity(root, root_identity, root_dir)?;
     Ok(OpenSegment {
         id,
         path,
         file: Arc::new(Mutex::new(file)),
+        identity: (descriptor_metadata.dev(), descriptor_metadata.ino()),
     })
 }
 
@@ -2341,8 +3016,15 @@ impl SyncFile for File {
     }
 }
 
-fn append_segment_bytes(file: &Arc<Mutex<File>>, expected_offset: u64, bytes: &[u8]) -> Result<()> {
+fn append_segment_bytes(
+    file: &Arc<Mutex<File>>,
+    path: &Path,
+    identity: FileIdentity,
+    expected_offset: u64,
+    bytes: &[u8],
+) -> Result<()> {
     let mut file = lock_file(file)?;
+    validate_segment_identity(path, identity, &file, "segment")?;
     let actual_offset = file
         .metadata()
         .map_err(|error| EventStoreError::Io(error.to_string()))?
@@ -2352,13 +3034,29 @@ fn append_segment_bytes(file: &Arc<Mutex<File>>, expected_offset: u64, bytes: &[
     }
     file.write_all(bytes)
         .and_then(|_| file.flush())
-        .map_err(|error| EventStoreError::Io(error.to_string()))
+        .map_err(|error| EventStoreError::Io(error.to_string()))?;
+    validate_segment_identity(path, identity, &file, "segment")?;
+    let expected_end = expected_offset
+        .checked_add(u64::try_from(bytes.len()).map_err(|_| EventStoreError::CapacityExhausted)?)
+        .ok_or(EventStoreError::CapacityExhausted)?;
+    let actual_end = file
+        .metadata()
+        .map_err(|error| EventStoreError::Io(error.to_string()))?
+        .len();
+    if actual_end != expected_end {
+        return Err(EventStoreError::Poisoned);
+    }
+    Ok(())
 }
 
 fn recover_segmented_segments(
+    root: &Path,
+    root_identity: FileIdentity,
+    root_dir: &File,
     segments: &[OpenSegment],
     config: &SegmentedEventStoreConfig,
 ) -> Result<SegmentedRecovered> {
+    validate_root_identity(root, root_identity, root_dir)?;
     let mut records = Vec::new();
     let mut by_key = HashMap::new();
     let mut by_scope = HashMap::<TurnScope, Vec<usize>>::new();
@@ -2369,8 +3067,13 @@ fn recover_segmented_segments(
     let mut previous = ZERO_SHA256.to_string();
 
     for (segment_index, segment) in segments.iter().enumerate() {
-        let is_last = segment_index + 1 == segments.len();
+        let is_last = segment_index
+            .checked_add(1)
+            .ok_or(EventStoreError::CapacityExhausted)?
+            == segments.len();
         let file = lock_file(&segment.file)?;
+        validate_root_identity(root, root_identity, root_dir)?;
+        validate_segment_identity(&segment.path, segment.identity, &file, "segment")?;
         let mut reader = BufReader::new(
             file.try_clone()
                 .map_err(|error| EventStoreError::Io(error.to_string()))?,
@@ -2387,6 +3090,8 @@ fn recover_segmented_segments(
                 // A non-terminated suffix is the only repairable condition.
                 // Complete records are always newline-delimited in v2, so the
                 // suffix is conservatively discarded rather than guessed.
+                validate_root_identity(root, root_identity, root_dir)?;
+                validate_segment_identity(&segment.path, segment.identity, &file, "segment")?;
                 file.set_len(offset)
                     .map_err(|error| EventStoreError::Io(error.to_string()))?;
                 // The truncation itself is part of recovery state.  Persist
@@ -2395,6 +3100,8 @@ fn recover_segmented_segments(
                 // disagree with this repair decision.
                 file.sync_data()
                     .map_err(|error| EventStoreError::Io(error.to_string()))?;
+                validate_segment_identity(&segment.path, segment.identity, &file, "segment")?;
+                validate_root_identity(root, root_identity, root_dir)?;
                 break;
             }
             let consumed_u64 =
@@ -2450,10 +3157,15 @@ fn recover_segmented_segments(
                     store_seq: record.store_seq,
                 },
             );
-            next_turn_seq.insert(record.scope.clone(), expected_turn_seq.saturating_add(1));
+            let next = expected_turn_seq.checked_add(1).ok_or_else(|| {
+                EventStoreError::InvalidRecord("turn sequence exhausted".to_string())
+            })?;
+            next_turn_seq.insert(record.scope.clone(), next);
             previous = record.record_sha256.clone();
             records.push(record);
-            segment_records = segment_records.saturating_add(1);
+            segment_records = segment_records
+                .checked_add(1)
+                .ok_or(EventStoreError::CapacityExhausted)?;
             offset = offset
                 .checked_add(consumed_u64)
                 .ok_or(EventStoreError::CapacityExhausted)?;
@@ -2462,14 +3174,11 @@ fn recover_segmented_segments(
             .metadata()
             .map_err(|error| EventStoreError::Io(error.to_string()))?
             .len();
+        validate_segment_identity(&segment.path, segment.identity, &file, "segment")?;
+        validate_root_identity(root, root_identity, root_dir)?;
         if actual_len != offset {
             return Err(EventStoreError::InvalidRecord(
                 "segment length changed during recovery".to_string(),
-            ));
-        }
-        if !is_last && segment_records == 0 {
-            return Err(EventStoreError::InvalidRecord(
-                "non-active segment is empty".to_string(),
             ));
         }
         segment_summaries.insert(
@@ -2480,6 +3189,7 @@ fn recover_segmented_segments(
             },
         );
     }
+    validate_root_identity(root, root_identity, root_dir)?;
     Ok(SegmentedRecovered {
         records,
         by_key,
@@ -2577,7 +3287,10 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
         }
         let index = records.len();
         by_key.insert(key, index);
-        next_turn_seq.insert(record.scope.clone(), expected_turn_seq.saturating_add(1));
+        let next = expected_turn_seq
+            .checked_add(1)
+            .ok_or_else(|| EventStoreError::InvalidRecord("turn sequence exhausted".to_string()))?;
+        next_turn_seq.insert(record.scope.clone(), next);
         previous = record.record_sha256.clone();
         records.push(record);
     }
@@ -2789,7 +3502,11 @@ fn validate_store_path(path: &Path) -> Result<()> {
     for component in path.components() {
         match component {
             Component::RootDir => {}
-            Component::Normal(value) if !value.is_empty() => normal = normal.saturating_add(1),
+            Component::Normal(value) if !value.is_empty() => {
+                normal = normal.checked_add(1).ok_or_else(|| {
+                    EventStoreError::UnsafePath("store path component count overflow".to_string())
+                })?;
+            }
             _ => {
                 return Err(EventStoreError::UnsafePath(
                     "store path contains a non-normal component".to_string(),
@@ -2808,6 +3525,11 @@ fn validate_store_path(path: &Path) -> Result<()> {
 fn validate_store_parent(parent: &Path) -> Result<(u64, u64)> {
     let metadata = std::fs::symlink_metadata(parent)
         .map_err(|error| EventStoreError::UnsafePath(error.to_string()))?;
+    validate_store_parent_metadata(&metadata)?;
+    Ok((metadata.dev(), metadata.ino()))
+}
+
+fn validate_store_parent_metadata(metadata: &std::fs::Metadata) -> Result<()> {
     if metadata.file_type().is_symlink() || !metadata.is_dir() || metadata.nlink() == 0 {
         return Err(EventStoreError::UnsafePath(
             "store parent must be a stable real directory".to_string(),
@@ -2822,7 +3544,53 @@ fn validate_store_parent(parent: &Path) -> Result<(u64, u64)> {
             mode
         )));
     }
-    Ok((metadata.dev(), metadata.ino()))
+    Ok(())
+}
+
+fn open_pinned_directory(path: &Path, expected: FileIdentity, label: &str) -> Result<File> {
+    let directory = OpenOptions::new()
+        .read(true)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_DIRECTORY)
+        .open(path)
+        .map_err(|error| EventStoreError::Io(format!("unable to open {label}: {error}")))?;
+    validate_directory_identity(path, expected, &directory, label)?;
+    Ok(directory)
+}
+
+fn validate_directory_identity(
+    path: &Path,
+    expected: FileIdentity,
+    directory: &File,
+    label: &str,
+) -> Result<()> {
+    let descriptor = directory.metadata().map_err(|error| {
+        EventStoreError::Io(format!("unable to inspect {label} descriptor: {error}"))
+    })?;
+    if descriptor.file_type().is_symlink()
+        || !descriptor.is_dir()
+        || (descriptor.dev(), descriptor.ino()) != expected
+    {
+        return Err(EventStoreError::UnsafePath(format!(
+            "{label} descriptor changed"
+        )));
+    }
+    let current = std::fs::symlink_metadata(path).map_err(|error| {
+        if error.kind() == std::io::ErrorKind::NotFound {
+            EventStoreError::UnsafePath(format!("{label} pathname disappeared"))
+        } else {
+            EventStoreError::Io(error.to_string())
+        }
+    })?;
+    if current.file_type().is_symlink()
+        || !current.is_dir()
+        || (current.dev(), current.ino()) != expected
+    {
+        return Err(EventStoreError::UnsafePath(format!(
+            "{label} pathname no longer identifies the pinned directory"
+        )));
+    }
+    validate_store_parent_metadata(&descriptor)?;
+    validate_store_parent_metadata(&current)
 }
 
 /// Return whether two metadata snapshots identify the same inode.
@@ -2874,6 +3642,98 @@ fn validate_opened_path_identity(
     Ok((descriptor, current))
 }
 
+/// Verify that the pinned store root still names the same service-owned
+/// directory.  All pathname-based reads/writes in the segmented store are
+/// bracketed by this check; a rename/recreate is an integrity failure rather
+/// than an opportunity to continue against a different directory.
+fn validate_root_identity(path: &Path, expected: FileIdentity, directory: &File) -> Result<()> {
+    let descriptor = directory.metadata().map_err(|error| {
+        EventStoreError::Io(format!("unable to inspect pinned segment root: {error}"))
+    })?;
+    let descriptor_identity = (descriptor.dev(), descriptor.ino());
+    if descriptor.file_type().is_symlink()
+        || !descriptor.is_dir()
+        || descriptor_identity != expected
+    {
+        return Err(EventStoreError::UnsafePath(
+            "pinned segment root descriptor changed".to_string(),
+        ));
+    }
+    let current = std::fs::symlink_metadata(path).map_err(|error| {
+        if error.kind() == std::io::ErrorKind::NotFound {
+            EventStoreError::UnsafePath("segment root pathname disappeared".to_string())
+        } else {
+            EventStoreError::Io(error.to_string())
+        }
+    })?;
+    if current.file_type().is_symlink()
+        || !current.is_dir()
+        || (current.dev(), current.ino()) != expected
+    {
+        return Err(EventStoreError::UnsafePath(
+            "segment root pathname no longer identifies the pinned directory".to_string(),
+        ));
+    }
+    validate_service_directory_metadata(&descriptor)?;
+    validate_service_directory_metadata(&current)
+}
+
+/// Verify that a segment descriptor and its pathname still identify one
+/// service-owned, single-link regular file.  This check is intentionally done
+/// while the caller holds the segment mutex, immediately before and after
+/// writes/syncs, so detached-inode acknowledgements cannot be mistaken for
+/// durable records in the configured WAL path.
+fn validate_segment_identity(
+    path: &Path,
+    expected: FileIdentity,
+    file: &File,
+    label: &str,
+) -> Result<()> {
+    let descriptor = file.metadata().map_err(|error| {
+        EventStoreError::Io(format!("unable to inspect {label} descriptor: {error}"))
+    })?;
+    if !descriptor.is_file() || (descriptor.dev(), descriptor.ino()) != expected {
+        return Err(EventStoreError::UnsafePath(format!(
+            "{label} descriptor changed"
+        )));
+    }
+    let current = std::fs::symlink_metadata(path).map_err(|error| {
+        if error.kind() == std::io::ErrorKind::NotFound {
+            EventStoreError::UnsafePath(format!("{label} pathname disappeared"))
+        } else {
+            EventStoreError::Io(error.to_string())
+        }
+    })?;
+    if current.file_type().is_symlink()
+        || !current.is_file()
+        || (current.dev(), current.ino()) != expected
+    {
+        return Err(EventStoreError::UnsafePath(format!(
+            "{label} pathname no longer identifies the pinned file"
+        )));
+    }
+    validate_store_file_metadata(&descriptor, label)?;
+    validate_store_file_metadata(&current, label)
+}
+
+fn validate_segment_length(
+    path: &Path,
+    expected: FileIdentity,
+    file: &Arc<Mutex<File>>,
+    expected_len: u64,
+) -> Result<()> {
+    let file = lock_file(file)?;
+    validate_segment_identity(path, expected, &file, "segment")?;
+    let actual_len = file
+        .metadata()
+        .map_err(|error| EventStoreError::Io(error.to_string()))?
+        .len();
+    if actual_len != expected_len {
+        return Err(EventStoreError::Poisoned);
+    }
+    Ok(())
+}
+
 fn regular_path_metadata(path: &Path, label: &str) -> Result<Option<std::fs::Metadata>> {
     match std::fs::symlink_metadata(path) {
         Ok(metadata) => {
@@ -2910,12 +3770,28 @@ fn lock_writer(file: &File) -> Result<()> {
     }
 }
 
-fn sync_directory(path: &Path) -> Result<()> {
-    OpenOptions::new()
-        .read(true)
-        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_DIRECTORY)
-        .open(path)
-        .and_then(|directory| directory.sync_all())
+fn lock_writer_with_bounded_wait(file: &File, maximum_wait: Duration) -> Result<()> {
+    let deadline = Instant::now().checked_add(maximum_wait);
+    loop {
+        match lock_writer(file) {
+            Ok(()) => return Ok(()),
+            Err(EventStoreError::WriterBusy)
+                if deadline.is_some_and(|deadline| Instant::now() < deadline) =>
+            {
+                // A concurrent fork can briefly retain an O_CLOEXEC lock
+                // descriptor until its exec boundary.  Yield in small,
+                // bounded increments; a real writer still gets the normal
+                // WriterBusy result once the grace period expires.
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            Err(error) => return Err(error),
+        }
+    }
+}
+
+fn sync_directory_fd(directory: &File) -> Result<()> {
+    directory
+        .sync_all()
         .map_err(|error| EventStoreError::Io(error.to_string()))
 }
 
@@ -3051,6 +3927,66 @@ mod tests {
     }
 
     #[test]
+    fn sidecar_publish_rejects_temp_replacement_between_validation_and_rename() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        let temp_path = directory.path().join(".index.tmp");
+        let moved_path = directory.path().join(".index.original");
+        let final_path = directory.path().join("index");
+        std::fs::write(&temp_path, b"trusted sidecar\n").expect("trusted temp");
+        std::fs::set_permissions(&temp_path, std::fs::Permissions::from_mode(0o600))
+            .expect("trusted temp mode");
+        let temp = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&temp_path)
+            .expect("open trusted temp");
+
+        let error =
+            publish_sidecar_with_hook(&temp_path, &final_path, &temp, "event index", || {
+                std::fs::rename(&temp_path, &moved_path).expect("move trusted temp");
+                std::fs::write(&temp_path, b"attacker sidecar\n").expect("replacement temp");
+                std::fs::set_permissions(&temp_path, std::fs::Permissions::from_mode(0o600))
+                    .expect("replacement temp mode");
+            })
+            .expect_err("replacement must fail closed");
+
+        assert!(matches!(error, EventStoreError::UnsafePath(message) if message.contains("inode")));
+        assert_eq!(
+            std::fs::read(&final_path).unwrap(),
+            b"attacker sidecar\n",
+            "rejected replacement must be retained, never unlinked by pathname"
+        );
+        assert_eq!(std::fs::read(&moved_path).unwrap(), b"trusted sidecar\n");
+        assert!(matches!(
+            read_sidecar(&final_path, "event index", 1024),
+            Ok(Some(bytes)) if bytes == b"attacker sidecar\n"
+        ));
+    }
+
+    #[test]
+    fn opening_an_existing_legacy_source_never_creates_a_missing_inode() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("secure temporary directory");
+        let source = directory.path().join("legacy.jsonl");
+
+        let error = DurableEventStore::open_existing(
+            &source,
+            EventStoreLimits::default(),
+            SyncPolicy::Full,
+        )
+        .expect_err("missing migration source must fail closed");
+
+        assert!(
+            matches!(error, EventStoreError::UnsafePath(message) if message.contains("disappeared"))
+        );
+        assert!(
+            !source.exists(),
+            "existing-only open must not create a source"
+        );
+    }
+
+    #[test]
     fn legacy_migration_fences_source_through_destination_open() {
         let directory = tempfile::tempdir().expect("temporary directory");
         // The production path deliberately rejects group/world-writable
@@ -3096,5 +4032,174 @@ mod tests {
         .expect("migration succeeds while source is fenced");
         assert!(source_was_fenced);
         assert_eq!(migrated.all_records().expect("migrated records").len(), 1);
+    }
+
+    #[test]
+    fn legacy_migration_rejects_source_replacement_after_snapshot() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("secure temporary directory");
+        let legacy_path = directory.path().join("events.jsonl");
+        let original_path = directory.path().join("events.original");
+        let root = directory.path().join("events-v2");
+        let scope = TurnScope::new("session", "profile", "task", "turn", "stream");
+        let legacy =
+            DurableEventStore::open(&legacy_path, EventStoreLimits::default(), SyncPolicy::Full)
+                .expect("legacy store");
+        legacy
+            .append(EventInput {
+                scope,
+                event_id: "event-0".to_string(),
+                kind: "observation".to_string(),
+                payload: serde_json::json!({"value": 0}),
+            })
+            .expect("legacy record");
+        let original_bytes = std::fs::read(&legacy_path).expect("snapshot source bytes");
+        drop(legacy);
+
+        let result = SegmentedEventStore::open_or_migrate_with_legacy_prefix_inner(
+            &root,
+            &legacy_path,
+            SegmentedEventStoreConfig::default(),
+            || {
+                // Replace the source pathname after the first snapshot.  The
+                // migration still owns the original inode via its lease; the
+                // post-destination-open verification must detect that the
+                // configured pathname no longer names that inode.
+                std::fs::rename(&legacy_path, &original_path).expect("move original source");
+                std::fs::write(&legacy_path, b"replacement").expect("create replacement source");
+                std::fs::set_permissions(&legacy_path, std::fs::Permissions::from_mode(0o600))
+                    .expect("replacement source mode");
+            },
+        );
+
+        assert!(matches!(
+            result,
+            Err(EventStoreError::UnsafePath(message))
+                if message.contains("pathname") || message.contains("inode")
+        ));
+        assert_eq!(
+            std::fs::read(&original_path).expect("original source remains intact"),
+            original_bytes,
+            "source replacement must not destroy the original inode"
+        );
+        assert_eq!(
+            std::fs::read(&legacy_path).expect("replacement source remains visible"),
+            b"replacement"
+        );
+
+        // Destination open may have created its empty initial segment before
+        // the final source check.  It must never publish the stale snapshot.
+        let reopened = SegmentedEventStore::open(&root, SegmentedEventStoreConfig::default())
+            .expect("reopen destination after rejected migration");
+        assert!(
+            reopened
+                .all_records()
+                .expect("destination records")
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn durable_append_rejects_turn_sequence_exhaustion_before_writing() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("secure temporary directory");
+        let path = directory.path().join("events.jsonl");
+        let store = DurableEventStore::open(&path, EventStoreLimits::default(), SyncPolicy::None)
+            .expect("event store");
+        let scope = TurnScope::new("session", "profile", "task", "turn", "stream");
+        store
+            .lock()
+            .expect("state lock")
+            .next_turn_seq
+            .insert(scope.clone(), u64::MAX);
+        let before = std::fs::read(&path).expect("read empty WAL");
+
+        let error = store
+            .append(EventInput {
+                scope,
+                event_id: "event-0".to_string(),
+                kind: "observation".to_string(),
+                payload: serde_json::json!({"value": 1}),
+            })
+            .expect_err("semantic sequence exhaustion must fail closed");
+        assert!(matches!(error, EventStoreError::CapacityExhausted));
+        assert_eq!(std::fs::read(&path).expect("read WAL"), before);
+        assert_eq!(store.snapshot().expect("snapshot").record_count, 0);
+    }
+
+    #[test]
+    fn segmented_append_rejects_turn_sequence_exhaustion_before_writing() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("secure temporary directory");
+        let root = directory.path().join("events-v2");
+        let store = SegmentedEventStore::open(&root, SegmentedEventStoreConfig::default())
+            .expect("segmented event store");
+        let scope = TurnScope::new("session", "profile", "task", "turn", "stream");
+        store
+            .write_state()
+            .expect("state lock")
+            .next_turn_seq
+            .insert(scope.clone(), u64::MAX);
+        let segment = store
+            .segment_paths()
+            .expect("segment paths")
+            .into_iter()
+            .next()
+            .expect("active segment");
+        let before = std::fs::read(&segment).expect("read empty segment");
+
+        let error = store
+            .append(EventInput {
+                scope,
+                event_id: "event-0".to_string(),
+                kind: "observation".to_string(),
+                payload: serde_json::json!({"value": 1}),
+            })
+            .expect_err("semantic sequence exhaustion must fail closed");
+        assert!(matches!(error, EventStoreError::CapacityExhausted));
+        assert_eq!(std::fs::read(&segment).expect("read segment"), before);
+        assert_eq!(store.snapshot().expect("snapshot").record_count, 0);
+    }
+
+    #[test]
+    fn post_wal_state_publication_failure_poisoned_the_live_store() {
+        let directory = tempfile::tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("secure temporary directory");
+        let root = directory.path().join("events-v2");
+        let store = SegmentedEventStore::open(&root, SegmentedEventStoreConfig::default())
+            .expect("segmented event store");
+        let segment = store
+            .segment_paths()
+            .expect("segment paths")
+            .into_iter()
+            .next()
+            .expect("active segment");
+
+        // Force a counter invariant failure after the record bytes have been
+        // appended but before the in-memory indexes are published.
+        store.write_state().expect("state lock").pending_records = usize::MAX;
+        let error = store
+            .append(EventInput {
+                scope: TurnScope::new("session", "profile", "task", "turn", "stream"),
+                event_id: "event-0".to_string(),
+                kind: "observation".to_string(),
+                payload: serde_json::json!({"value": 1}),
+            })
+            .expect_err("post-write counter overflow must fail");
+        assert!(matches!(error, EventStoreError::CapacityExhausted));
+        assert!(matches!(
+            store.append(EventInput {
+                scope: TurnScope::new("session", "profile", "task", "turn", "stream"),
+                event_id: "event-1".to_string(),
+                kind: "observation".to_string(),
+                payload: serde_json::json!({"value": 2}),
+            }),
+            Err(EventStoreError::Poisoned)
+        ));
+        assert!(!std::fs::read(&segment).expect("read segment").is_empty());
     }
 }

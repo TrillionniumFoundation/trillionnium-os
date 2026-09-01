@@ -37,6 +37,18 @@ timestamps and retention
 
 Missing or contradictory fields fail closed.
 
+### 2.1 Checked-in evidence index records
+
+`machine/evidence-index.v1.json` is an index of evidence identities and claim
+ceilings, not a substitute for the complete evidence package.  Every index
+record carries the `evidence-package.v1` and `evidence-binding.v1` schemas.
+Fields that are not retained in the checkout are represented explicitly as
+`null` with a `NOT_OBSERVED` hold and a reason; an omitted field, an unexplained
+null, or a contradictory hold is invalid.  The complete command manifest,
+raw observations, artifacts, environment/target/device identity, and review
+bindings remain in the producing CI or qualification artifact.  An index row
+alone never promotes a claim or closes a higher-level gap.
+
 ## 3. Module evidence
 
 Each module supplies evidence for:

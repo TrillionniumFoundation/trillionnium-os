@@ -90,7 +90,7 @@ fn segmented_store_rotates_and_indexes_replay() {
 }
 
 #[test]
-fn recovery_prunes_an_orphaned_empty_rotation_tail() {
+fn recovery_retains_an_orphaned_empty_rotation_tail_without_unlinking() {
     let directory = secure_tempdir();
     let root = directory.path().join("events-v2");
     let store = SegmentedEventStore::open(&root, config()).unwrap();
@@ -112,21 +112,33 @@ fn recovery_prunes_an_orphaned_empty_rotation_tail() {
     }
 
     let reopened = SegmentedEventStore::open(&root, config()).unwrap();
-    assert_eq!(reopened.snapshot().unwrap().segment_count, 1);
+    assert_eq!(reopened.snapshot().unwrap().segment_count, 3);
     assert_eq!(reopened.all_records().unwrap().len(), 1);
-    assert!(!orphan.exists());
-    assert!(!orphan_tail.exists());
+    assert!(orphan.exists());
+    assert!(orphan_tail.exists());
 
-    // The next real rotation still creates a non-empty segment and keeps the
-    // sequence contiguous after the orphan is removed.
+    // The next records use the retained empty active tail. Keeping the
+    // orphaned path avoids a destructive pathname unlink while preserving a
+    // contiguous segment sequence.
     reopened.append(input("turn-a", "event-1", 71)).unwrap();
     reopened.append(input("turn-a", "event-2", 72)).unwrap();
     let paths = reopened.segment_paths().unwrap();
     assert!(paths.iter().any(|path| {
         path.file_name()
-            .is_some_and(|name| name == "segment-00000000000000000002.jsonl")
+            .is_some_and(|name| name == "segment-00000000000000000003.jsonl")
     }));
-    assert!(fs::metadata(&orphan).unwrap().len() > 0);
+    assert!(fs::metadata(&orphan_tail).unwrap().len() > 0);
+
+    // A retained empty orphan may precede the active tail after the first
+    // post-restart append. Recovery must authenticate the record chain while
+    // accepting that harmless topology and remain appendable on the next
+    // process generation.
+    drop(reopened);
+    let reopened_again = SegmentedEventStore::open(&root, config()).unwrap();
+    assert_eq!(reopened_again.all_records().unwrap().len(), 3);
+    reopened_again
+        .append(input("turn-a", "event-3", 73))
+        .unwrap();
 }
 
 #[test]
@@ -390,6 +402,133 @@ fn sidecar_temp_hardlinks_are_rejected_without_truncating_the_target_inode() {
     let error = store.flush().unwrap_err();
     assert!(matches!(error, EventStoreError::UnsafePath(_)));
     assert_eq!(fs::read(&sentinel).unwrap(), b"must-survive");
+}
+
+#[test]
+fn stale_sidecar_temp_is_rejected_without_truncation() {
+    let directory = secure_tempdir();
+    let root = directory.path().join("events-v2");
+    let store = SegmentedEventStore::open(&root, config()).unwrap();
+    store.append(input("turn-a", "event-0", 61)).unwrap();
+
+    let temp = root.join(".index.v2.json.tmp");
+    fs::write(&temp, b"must-survive").unwrap();
+    fs::set_permissions(&temp, fs::Permissions::from_mode(0o600)).unwrap();
+
+    let error = store.flush().unwrap_err();
+    assert!(matches!(
+        error,
+        EventStoreError::UnsafePath(message) if message.contains("refusing to truncate")
+    ));
+    assert_eq!(fs::read(&temp).unwrap(), b"must-survive");
+}
+
+#[test]
+fn pending_sync_rejects_same_inode_segment_length_drift() {
+    let directory = secure_tempdir();
+    let root = directory.path().join("events-v2");
+    let mut store_config = config();
+    store_config.max_segment_records = 100;
+    store_config.max_segment_bytes = 1024 * 1024;
+    store_config.group_commit_records = 128;
+    store_config.group_commit_bytes = 1024 * 1024;
+    let store = SegmentedEventStore::open(&root, store_config).unwrap();
+    store.append(input("turn-a", "event-0", 62)).unwrap();
+    assert_eq!(store.pending().unwrap().0, 1);
+    let segment = store.segment_paths().unwrap().pop().unwrap();
+    let original_len = fs::metadata(&segment).unwrap().len();
+    assert!(original_len > 1);
+
+    // Keep the inode and its mode intact while changing only the observed
+    // length.  The pending-sync fence must reject this as an indeterminate
+    // write instead of acknowledging the batch or adjusting in-memory
+    // counters to the attacker-controlled length.
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&segment)
+        .unwrap()
+        .set_len(original_len - 1)
+        .unwrap();
+    let error = store.sync_pending().unwrap_err();
+    assert!(matches!(error, EventStoreError::Poisoned));
+    assert!(matches!(
+        store.append(input("turn-a", "event-1", 63)),
+        Err(EventStoreError::Poisoned)
+    ));
+}
+
+#[test]
+fn sync_pending_rejects_immutable_segment_drift_without_pending_bytes() {
+    let directory = secure_tempdir();
+    let root = directory.path().join("events-v2");
+    let mut store_config = config();
+    store_config.max_segment_records = 1;
+    store_config.max_segment_bytes = 1024 * 1024;
+    store_config.group_commit_records = 128;
+    store_config.group_commit_bytes = 1024 * 1024;
+    let store = SegmentedEventStore::open(&root, store_config).unwrap();
+    store.append(input("turn-a", "event-0", 67)).unwrap();
+    store.flush().unwrap();
+    store.append(input("turn-a", "event-1", 68)).unwrap();
+    store.flush().unwrap();
+    assert_eq!(store.pending().unwrap().0, 0);
+
+    let first_segment = store.segment_paths().unwrap().first().cloned().unwrap();
+    let original_len = fs::metadata(&first_segment).unwrap().len();
+    assert!(original_len > 1);
+    // The segment is immutable and has no pending bytes.  Public
+    // `sync_pending` must still fence all retained paths before acknowledging
+    // the no-op sync; checking only pending targets would miss this drift.
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&first_segment)
+        .unwrap()
+        .set_len(original_len - 1)
+        .unwrap();
+
+    let error = store.sync_pending().unwrap_err();
+    assert!(matches!(error, EventStoreError::Poisoned));
+    assert!(matches!(
+        store.append(input("turn-a", "event-2", 69)),
+        Err(EventStoreError::Poisoned)
+    ));
+}
+
+#[test]
+fn flush_rejects_immutable_segment_length_tampering() {
+    let directory = secure_tempdir();
+    let root = directory.path().join("events-v2");
+    let mut store_config = config();
+    store_config.max_segment_records = 1;
+    store_config.max_segment_bytes = 1024 * 1024;
+    store_config.group_commit_records = 128;
+    store_config.group_commit_bytes = 1024 * 1024;
+    let store = SegmentedEventStore::open(&root, store_config).unwrap();
+    store.append(input("turn-a", "event-0", 64)).unwrap();
+    store.flush().unwrap();
+    store.append(input("turn-a", "event-1", 65)).unwrap();
+    store.flush().unwrap();
+
+    let first_segment = store.segment_paths().unwrap().first().cloned().unwrap();
+    let original_len = fs::metadata(&first_segment).unwrap().len();
+    assert!(original_len > 1);
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&first_segment)
+        .unwrap()
+        .set_len(original_len - 1)
+        .unwrap();
+
+    // Segment one is immutable after rotation.  A later derived-index
+    // publication must validate every retained segment and poison the live
+    // store when its length no longer matches the authenticated high-water
+    // state.
+    let error = store.flush().unwrap_err();
+    assert!(matches!(error, EventStoreError::Poisoned));
+    assert!(matches!(
+        store.append(input("turn-a", "event-2", 66)),
+        Err(EventStoreError::Poisoned)
+    ));
 }
 
 #[test]

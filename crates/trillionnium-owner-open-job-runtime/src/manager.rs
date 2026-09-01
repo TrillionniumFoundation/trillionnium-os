@@ -1135,11 +1135,12 @@ impl JobManager {
                         .collect::<Vec<_>>()
                 })
                 .unwrap_or_default();
-            let next_cursor = events
-                .last()
-                .map_or(inclusive_cursor.max(oldest_available_cursor), |event| {
-                    event.seq.saturating_add(1)
-                });
+            let next_cursor = match events.last() {
+                Some(event) => event.seq.checked_add(1).ok_or_else(|| {
+                    JobRuntimeError::Journal("runtime observation sequence exhausted".to_string())
+                })?,
+                None => inclusive_cursor.max(oldest_available_cursor),
+            };
             (total, oldest_available_cursor, gap, events, next_cursor)
         };
         let recovered = self.inner.journal.recovered_job(key)?;
@@ -1789,7 +1790,15 @@ impl JobManager {
             let mut observations = self.observations()?;
             let state = observations.entry(key.clone()).or_default();
             let seq = state.next_seq;
-            state.next_seq = state.next_seq.saturating_add(1);
+            // Observation cursors are persisted/replayed semantic ordering,
+            // not a bounded resource counter.  Wrapping would make a new
+            // event indistinguishable from an old one and invalidate gap
+            // detection.  Reserve the successor before retaining or writing
+            // anything so exhaustion fails closed without a phantom event.
+            let next_seq = seq.checked_add(1).ok_or_else(|| {
+                JobRuntimeError::Journal("runtime observation sequence exhausted".to_string())
+            })?;
+            state.next_seq = next_seq;
             let event = RuntimeJobEvent {
                 seq,
                 job_id: key.job_id.clone(),
@@ -1848,9 +1857,12 @@ impl JobManager {
         if state.journal_unavailable_emitted {
             return Ok(());
         }
-        state.journal_unavailable_emitted = true;
         let seq = state.next_seq;
-        state.next_seq = state.next_seq.saturating_add(1);
+        let next_seq = seq.checked_add(1).ok_or_else(|| {
+            JobRuntimeError::Journal("runtime observation sequence exhausted".to_string())
+        })?;
+        state.journal_unavailable_emitted = true;
+        state.next_seq = next_seq;
         retain_runtime_event(
             state,
             RuntimeJobEvent {
@@ -2522,6 +2534,71 @@ mod tests {
             std::thread::sleep(std::time::Duration::from_millis(10));
         }
         assert!(!manager.has_live_or_pending_jobs());
+    }
+
+    #[test]
+    fn runtime_observation_sequence_exhaustion_fails_closed_without_a_phantom_event() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .expect("memory-only manager");
+        let key = rollback_test_key();
+        let request = rollback_test_request();
+        {
+            let mut observations = manager.observations().expect("observations lock");
+            let state = observations.entry(key.clone()).or_default();
+            state.next_seq = u64::MAX;
+        }
+
+        let error = manager
+            .push_runtime_event(
+                &key,
+                &request,
+                RuntimeJobEventKind::ProcessFault {
+                    phase: "test".to_string(),
+                    error: "sequence probe".to_string(),
+                },
+            )
+            .expect_err("MAX cursor cannot be incremented");
+        assert!(matches!(
+            error,
+            JobRuntimeError::Journal(message)
+                if message == "runtime observation sequence exhausted"
+        ));
+        let observations = manager.observations().expect("observations lock");
+        let state = observations.get(&key).expect("observation state");
+        assert_eq!(state.next_seq, u64::MAX);
+        assert!(state.events.is_empty());
+    }
+
+    #[test]
+    fn degradation_marker_does_not_consume_an_exhausted_observation_cursor() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .expect("memory-only manager");
+        let key = rollback_test_key();
+        {
+            let mut observations = manager.observations().expect("observations lock");
+            let state = observations.entry(key.clone()).or_default();
+            state.next_seq = u64::MAX;
+        }
+
+        let error = manager
+            .note_journal_degraded_for_job(&key, "sequence probe".to_string())
+            .expect_err("MAX cursor cannot be incremented");
+        assert!(matches!(
+            error,
+            JobRuntimeError::Journal(message)
+                if message == "runtime observation sequence exhausted"
+        ));
+        let observations = manager.observations().expect("observations lock");
+        let state = observations.get(&key).expect("observation state");
+        assert_eq!(state.next_seq, u64::MAX);
+        assert!(!state.journal_unavailable_emitted);
+        assert!(state.events.is_empty());
     }
 }
 

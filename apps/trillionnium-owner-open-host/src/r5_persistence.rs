@@ -388,7 +388,11 @@ fn open_segmented_store(
     legacy_path: Option<&Path>,
 ) -> trillionnium_owner_open_event_store::Result<SegmentedEventStore> {
     let config = SegmentedEventStoreConfig::default();
-    let Some(legacy_path) = legacy_path.filter(|path| path.exists()) else {
+    // Keep an explicitly configured legacy source visible to the event-store
+    // identity checks.  A `Path::exists()` preflight can race an unlink and
+    // silently skip migration, so absence/replacement is classified by the
+    // storage layer instead of being downgraded to a fresh store.
+    let Some(legacy_path) = legacy_path else {
         return SegmentedEventStore::open(root, config);
     };
 

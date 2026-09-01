@@ -351,14 +351,32 @@ class BrokerBase:
             max_retired=args.max_retired_requests,
             owner_weights=args.client_weights,
         )
-        self.admission_lock = threading.Lock()
         self.sequence_lock = threading.Lock()
-        # One transition lock orders pipe write -> durable forwarded record ->
-        # terminal record.  It is never held while waiting for a Host result.
+        # This lock protects the shared upstream byte stream only.  It may be
+        # held while a bounded write waits for pipe space, but no broker
+        # metadata/transition lock is held at that point; unrelated request
+        # lifecycle and terminal paths therefore remain serviceable.
+        self.upstream_write_lock = threading.Lock()
+        # The broker-wide transition lock is metadata-only.  In particular it
+        # must never span process/pipe I/O or audit fsync; per-request locks in
+        # ``Request`` preserve the write -> forwarded -> terminal order.
         self.transition_lock = threading.RLock()
         self.stopping = threading.Event()
         self.upstream_uncertain = threading.Event()
         self.unknown_lock = threading.Lock()
+        # A single uncertainty transition drains the mux.  Other failure
+        # paths wait for that drain to finish instead of returning while a
+        # pending terminalization still holds an ordering key.
+        self.unknown_convergence_complete = threading.Event()
+        self.unknown_convergence_complete.set()
+        # A restart replay of an older unresolved binding briefly fences new
+        # admissions while its terminal audit append is made durable.  This
+        # temporary fence is distinct from ``upstream_uncertain``: a
+        # successful replay clears it, while an append failure leaves it set
+        # and converges the whole broker conservatively.
+        self.admission_fence = threading.Event()
+        self.admission_fence_lock = threading.Lock()
+        self._admission_fence_count = 0
         self.upstream_stderr = bytearray()
         self.upstream_stderr_lock = threading.Lock()
         self.upstream_argv = [str(args.upstream), *args.upstream_arg]

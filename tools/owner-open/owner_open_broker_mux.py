@@ -61,6 +61,41 @@ _IDENTITY_FIELDS = frozenset(
         "attachment_id",
     }
 )
+_ORDERING_KEY_VERSION = "v1"
+
+
+def _length_delimited_key(parts: Iterable[str]) -> str:
+    """Encode an effect lineage as an unambiguous versioned tuple.
+
+    A fixed schema plus UTF-8 byte-length-delimited members avoids collisions
+    from separators, escaping and future field aliases.  Hex encoding keeps
+    the scheduler key printable while preserving the exact byte tuple.
+    """
+
+    encoded = bytearray()
+    for part in parts:
+        try:
+            raw = part.encode("utf-8")
+        except UnicodeEncodeError as error:
+            raise MuxError("ordering identity contains non-UTF-8 text") from error
+        encoded.extend(len(raw).to_bytes(8, "big"))
+        encoded.extend(raw)
+    return encoded.hex()
+
+
+def _effect_key(
+    family: str,
+    scope: dict[str, str],
+    extras: tuple[tuple[str, str], ...],
+) -> str:
+    """Build the versioned key for one complete protocol-family lineage."""
+
+    parts: list[str] = ["effect-lineage", family]
+    for name in _IDENTITY_SCOPE_FIELDS:
+        parts.extend((name, scope[name]))
+    for name, value in extras:
+        parts.extend((name, value))
+    return f"effect:{_ORDERING_KEY_VERSION}:" + _length_delimited_key(parts)
 
 
 class MuxError(RuntimeError):
@@ -81,28 +116,25 @@ def _upstream_sequence(frame: dict[str, Any]) -> int | None:
     """Resolve the immutable broker sequence from an upstream frame.
 
     ``seq`` is the Host response-stream sequence and may be allocated from a
-    different domain.  Once the broker envelope is present,
-    ``broker_request_upstream_seq`` is authoritative; the legacy ``seq``
-    fallback is retained for pre-envelope compatibility only.
+    different domain.  It is never an ownership key.  Only the broker-owned
+    ``broker_request_upstream_seq`` can select an accepted request; a host-only
+    frame is explicitly unsequenced and remains unowned.
     """
 
+    has_broker_seq = "broker_request_upstream_seq" in frame
     broker_seq = frame.get("broker_request_upstream_seq")
     host_seq = frame.get("seq")
-    if broker_seq is not None:
-        if isinstance(broker_seq, bool) or not isinstance(broker_seq, int) or broker_seq < 0:
-            raise MuxError(
-                "upstream broker_request_upstream_seq must be a nonnegative integer"
-            )
-        if host_seq is not None and (
-            isinstance(host_seq, bool) or not isinstance(host_seq, int) or host_seq < 0
-        ):
-            raise MuxError("upstream frame seq must be a nonnegative integer")
-        return broker_seq
-    if host_seq is None:
-        return None
-    if isinstance(host_seq, bool) or not isinstance(host_seq, int) or host_seq < 0:
+    if host_seq is not None and (
+        isinstance(host_seq, bool) or not isinstance(host_seq, int) or host_seq < 0
+    ):
         raise MuxError("upstream frame seq must be a nonnegative integer")
-    return host_seq
+    if not has_broker_seq:
+        return None
+    if isinstance(broker_seq, bool) or not isinstance(broker_seq, int) or broker_seq < 0:
+        raise MuxError(
+            "upstream broker_request_upstream_seq must be a nonnegative integer"
+        )
+    return broker_seq
 
 
 def _optional_string(mapping: dict[str, Any], name: str, location: str) -> str | None:
@@ -177,23 +209,20 @@ def ordering_key_for_frame(frame: dict[str, Any], owner_id: str) -> str:
             raise MuxError(f"{kind} ordering identity requires operation_id")
         if kind in _JOB_ATTACHMENT_KINDS and values.get("attachment_id") is None:
             raise MuxError(f"{kind} ordering identity requires attachment_id")
-        identity = {"family": "job", **scope, "job_id": job_id}
-        return "effect:" + canonical(identity).decode("utf-8")
+        return _effect_key("job", scope, (("job_id", job_id),))
 
     if kind in _TURN_KINDS:
         scope = _complete_scope(values, "turn")
         if values.get("turn_id") is None:
             raise MuxError("turn ordering identity requires turn_id")
-        identity = {"family": "turn", **scope}
-        return "effect:" + canonical(identity).decode("utf-8")
+        return _effect_key("turn", scope, ())
 
     if kind in _CALL_KINDS:
         scope = _complete_scope(values, "call")
         call_id = values.get("call_id")
         if call_id is None:
             raise MuxError("call ordering identity requires call_id")
-        identity = {"family": "call", **scope, "call_id": call_id}
-        return "effect:" + canonical(identity).decode("utf-8")
+        return _effect_key("call", scope, (("call_id", call_id),))
 
     supplied = {name: value for name, value in values.items() if value is not None}
     if supplied:
@@ -240,6 +269,14 @@ class WeightedFairMux:
             self._weights[owner] = self._validated_weight(weight)
         self._active: dict[int, Any] = {}
         self._active_keys: dict[str, int] = {}
+        # A pending request that is being terminalized must keep its exact
+        # ordering key unavailable until the durable terminal append and
+        # owner-queue publication finish.  This is a *transient* hold (unlike
+        # ``_fenced_keys``, which survives for the broker epoch after an
+        # uncertain effect), and is counted so two independent timeout workers
+        # cannot accidentally release one another's hold when a key has more
+        # than one pending request.
+        self._held_keys: dict[str, int] = {}
         self._retired: OrderedDict[int, RetiredRequest] = OrderedDict()
         # An active timeout is not proof that an effect stopped.  Fence its
         # ordering key for the rest of this broker epoch so a later request on
@@ -286,7 +323,12 @@ class WeightedFairMux:
                 raise MuxError(
                     f"ordering key is fenced after unresolved effect: {fenced_reason}"
                 )
-            if self._pending_count + len(self._active) >= self.max_pending:
+            if (
+                self._pending_count
+                + len(self._active)
+                + sum(self._held_keys.values())
+                >= self.max_pending
+            ):
                 raise MuxError("scheduler capacity is exhausted")
             seq = request.upstream_seq
             if seq in self._active or seq in self._retired:
@@ -308,9 +350,17 @@ class WeightedFairMux:
             self._condition.notify_all()
 
     @staticmethod
-    def _pop_dispatchable(queue: deque[Any], active_keys: dict[str, int]) -> Any | None:
+    def _pop_dispatchable(
+        queue: deque[Any],
+        active_keys: dict[str, int],
+        held_keys: dict[str, int] | None = None,
+    ) -> Any | None:
+        held_keys = held_keys or {}
         for index, request in enumerate(queue):
-            if request.ordering_key not in active_keys:
+            if (
+                request.ordering_key not in active_keys
+                and request.ordering_key not in held_keys
+            ):
                 if index == 0:
                     return queue.popleft()
                 queue.rotate(-index)
@@ -353,7 +403,11 @@ class WeightedFairMux:
                             self._credits[owner] = self._weight(owner)
                             self._owners.rotate(-1)
                             continue
-                        request = self._pop_dispatchable(queue, self._active_keys)
+                        request = self._pop_dispatchable(
+                            queue,
+                            self._active_keys,
+                            self._held_keys,
+                        )
                         if request is None:
                             self._owners.rotate(-1)
                             continue
@@ -386,6 +440,21 @@ class WeightedFairMux:
     def active_snapshot(self) -> list[Any]:
         with self._condition:
             return list(self._active.values())
+
+    def active_for_frame(self, frame: dict[str, Any]) -> Any | None:
+        """Return the active request selected by the broker sequence, if any.
+
+        Non-terminal observations intentionally do not satisfy ``match``.
+        Their publication nevertheless needs the exact request-local lifecycle
+        lock so a concurrent timeout cannot publish an observation after the
+        sequence has been retired.
+        """
+
+        seq = _upstream_sequence(frame)
+        if seq is None:
+            return None
+        with self._condition:
+            return self._active.get(seq)
 
     def pending_snapshot(self) -> list[Any]:
         with self._condition:
@@ -430,6 +499,55 @@ class WeightedFairMux:
             self._pending_count -= 1
             self._remove_owner_if_empty(request.owner_id)
             self._remember_retired(request, reason)
+            self._condition.notify_all()
+            return True
+
+    def hold_pending(self, request: Any, *, reason: str) -> bool:
+        """Remove one pending request while retaining its ordering-key hold.
+
+        Timeout/disconnect convergence must append a terminal audit record
+        before another request on the same effect lineage can be dispatched.
+        Removing a pending entry with :meth:`remove_pending` alone would make
+        the key immediately eligible while that append (and its fsync) is in
+        flight.  This operation performs the removal and hold publication in
+        one condition-lock critical section; callers then do the slow durable
+        work without holding the broker-wide scheduler lock and finally call
+        :meth:`release_ordering_hold` after owner delivery.
+
+        The request is already retired for correlation purposes, so a stale
+        upstream sequence cannot resolve it while its terminal transition is
+        pending.  The transient key hold is independent of that bounded
+        retired tombstone.
+        """
+
+        with self._condition:
+            queue = self._pending.get(request.owner_id)
+            if queue is None:
+                return False
+            try:
+                queue.remove(request)
+            except ValueError:
+                return False
+            self._pending_count -= 1
+            self._remove_owner_if_empty(request.owner_id)
+            self._held_keys[request.ordering_key] = (
+                self._held_keys.get(request.ordering_key, 0) + 1
+            )
+            self._remember_retired(request, reason)
+            self._condition.notify_all()
+            return True
+
+    def release_ordering_hold(self, ordering_key: str) -> bool:
+        """Release one transient pending-terminalization hold."""
+
+        with self._condition:
+            count = self._held_keys.get(ordering_key)
+            if count is None:
+                return False
+            if count <= 1:
+                self._held_keys.pop(ordering_key, None)
+            else:
+                self._held_keys[ordering_key] = count - 1
             self._condition.notify_all()
             return True
 
@@ -573,10 +691,32 @@ class WeightedFairMux:
                 self._remember_retired(request, reason)
             self._active.clear()
             self._active_keys.clear()
+            # A holder may still be completing a terminal audit outside this
+            # condition lock.  Keep its transient key count until that owner
+            # calls `release_ordering_hold`; the scheduler is closed, so the
+            # retained hold cannot admit new work, and clearing it here would
+            # make the holder's later release silently lose lifecycle state.
             self._pending.clear()
             self._owners.clear()
             self._credits.clear()
             self._pending_count = 0
+            self._condition.notify_all()
+            return requests
+
+    def close_and_snapshot(self) -> list[Any]:
+        """Stop admission/dispatch and return all unresolved requests.
+
+        Unlike :meth:`drain`, this leaves the active and pending entries in
+        place so callers can retire each request under its own transition lock
+        before doing a durable terminal append.  The close and snapshot share
+        one condition-lock critical section; therefore no dispatcher can
+        activate a pending request after the returned set is captured.
+        """
+
+        with self._condition:
+            self._closed = True
+            requests = list(self._active.values())
+            requests.extend(request for queue in self._pending.values() for request in queue)
             self._condition.notify_all()
             return requests
 
@@ -608,6 +748,13 @@ class WeightedFairMux:
     def fenced_count(self) -> int:
         with self._condition:
             return len(self._fenced_keys)
+
+    @property
+    def held_count(self) -> int:
+        """Number of transient ordering-key holds currently in progress."""
+
+        with self._condition:
+            return sum(self._held_keys.values())
 
     def fenced_snapshot(self) -> dict[str, str]:
         with self._condition:

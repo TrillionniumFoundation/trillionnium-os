@@ -152,13 +152,22 @@ class BrokerAuditJournal:
             self._fd = os.open(path, flags)
             self._created = False
         try:
-            _validate_opened_path_identity(path, identity_before, self._fd, "broker audit")
+            opened_metadata, _ = _validate_opened_path_identity(
+                path, identity_before, self._fd, "broker audit"
+            )
+            # Keep the identity of the descriptor that won initialization.
+            # Comparing only the live pathname and descriptor would miss a
+            # coordinated pathname replacement plus descriptor substitution.
+            self._opened_identity = (
+                opened_metadata.st_dev,
+                opened_metadata.st_ino,
+            )
             fcntl.flock(self._fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             self._validate_metadata()
             # Re-check after acquiring the lease.  A pathname replacement
             # while flock was being acquired must not leave the journal
             # believing its lease protects the current pathname.
-            _validate_opened_path_identity(path, identity_before, self._fd, "broker audit")
+            self._require_path_fd_identity("after acquiring the journal lease")
             self._load()
             if self._created:
                 directory = os.open(
@@ -169,12 +178,53 @@ class BrokerAuditJournal:
                     | getattr(os, "O_NOFOLLOW", 0),
                 )
                 try:
-                    os.fsync(directory)
+                    self._require_path_fd_identity(
+                        "before synchronizing the journal directory"
+                    )
+                    try:
+                        os.fsync(directory)
+                    finally:
+                        self._require_path_fd_identity(
+                            "after synchronizing the journal directory"
+                        )
                 finally:
                     os.close(directory)
         except Exception:
             os.close(self._fd)
             raise
+
+    def _require_path_fd_identity(self, phase: str) -> None:
+        """Fail closed if the journal pathname no longer names its opened FD."""
+        if self._poisoned is not None:
+            raise BrokerError(f"broker audit is poisoned: {self._poisoned}")
+        try:
+            opened, current = _validate_opened_path_identity(
+                self.path,
+                None,
+                self._fd,
+                "broker audit",
+            )
+        except (BrokerError, OSError) as error:
+            reason = f"{phase}: pathname/descriptor validation failed: {error}"
+            self._poisoned = reason
+            raise BrokerError(
+                f"broker audit identity drift poisoned the journal: {reason}"
+            ) from error
+        opened_identity = (opened.st_dev, opened.st_ino)
+        current_identity = (current.st_dev, current.st_ino)
+        if (
+            opened_identity != self._opened_identity
+            or current_identity != self._opened_identity
+        ):
+            reason = (
+                f"{phase}: expected device/inode {self._opened_identity}, "
+                f"observed descriptor {opened_identity} and pathname "
+                f"{current_identity}"
+            )
+            self._poisoned = reason
+            raise BrokerError(
+                f"broker audit identity drift poisoned the journal: {reason}"
+            )
 
     def _validate_metadata(self) -> None:
         metadata = os.fstat(self._fd)
@@ -196,54 +246,60 @@ class BrokerAuditJournal:
         return hashlib.sha256(canonical(preimage)).hexdigest()
 
     def _load(self) -> None:
-        os.lseek(self._fd, 0, os.SEEK_SET)
-        chunks: list[bytes] = []
-        remaining = self.maximum_bytes + 1
-        while remaining > 0:
-            chunk = os.read(self._fd, min(1024 * 1024, remaining))
-            if not chunk:
-                break
-            chunks.append(chunk)
-            remaining -= len(chunk)
-        raw = b"".join(chunks)
-        if len(raw) > self.maximum_bytes:
-            raise BrokerError("broker audit exceeds its configured byte bound")
-        self._bytes = len(raw)
-        if not raw:
+        self._require_path_fd_identity("before loading the journal")
+        try:
+            os.lseek(self._fd, 0, os.SEEK_SET)
+            chunks: list[bytes] = []
+            remaining = self.maximum_bytes + 1
+            while remaining > 0:
+                chunk = os.read(self._fd, min(1024 * 1024, remaining))
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            raw = b"".join(chunks)
+            if len(raw) > self.maximum_bytes:
+                raise BrokerError("broker audit exceeds its configured byte bound")
+            self._bytes = len(raw)
+            if not raw:
+                os.lseek(self._fd, 0, os.SEEK_END)
+                return
+            if not raw.endswith(b"\n"):
+                raise BrokerError("broker audit has an unterminated final record")
+            lines = raw.splitlines()
+            if len(lines) > self.maximum_records:
+                raise BrokerError("broker audit exceeds its configured record bound")
+            previous = ZERO_SHA256
+            for expected_seq, line in enumerate(lines):
+                if not line or len(line) > MAX_AUDIT_LINE_BYTES:
+                    raise BrokerError("broker audit contains an empty or oversized record")
+                value = strict_json(
+                    line,
+                    label=f"broker audit record {expected_seq}",
+                    maximum=MAX_AUDIT_LINE_BYTES,
+                )
+                if not isinstance(value, dict):
+                    raise BrokerError("broker audit record is not an object")
+                if value.get("schema") != SCHEMA:
+                    raise BrokerError("broker audit schema is unsupported")
+                if value.get("seq") != expected_seq:
+                    raise BrokerError("broker audit sequence is not contiguous")
+                if value.get("broker_id") != self.broker_id:
+                    raise BrokerError(
+                        "broker audit broker_id conflicts with configuration"
+                    )
+                if value.get("previous_record_sha256") != previous:
+                    raise BrokerError("broker audit previous-record digest mismatch")
+                observed = value.get("record_sha256")
+                if not isinstance(observed, str) or observed != self._record_sha256(value):
+                    raise BrokerError("broker audit record digest mismatch")
+                self._apply_recovered(value)
+                previous = observed
+            self._next_seq = len(lines)
+            self._previous_sha256 = previous
             os.lseek(self._fd, 0, os.SEEK_END)
-            return
-        if not raw.endswith(b"\n"):
-            raise BrokerError("broker audit has an unterminated final record")
-        lines = raw.splitlines()
-        if len(lines) > self.maximum_records:
-            raise BrokerError("broker audit exceeds its configured record bound")
-        previous = ZERO_SHA256
-        for expected_seq, line in enumerate(lines):
-            if not line or len(line) > MAX_AUDIT_LINE_BYTES:
-                raise BrokerError("broker audit contains an empty or oversized record")
-            value = strict_json(
-                line,
-                label=f"broker audit record {expected_seq}",
-                maximum=MAX_AUDIT_LINE_BYTES,
-            )
-            if not isinstance(value, dict):
-                raise BrokerError("broker audit record is not an object")
-            if value.get("schema") != SCHEMA:
-                raise BrokerError("broker audit schema is unsupported")
-            if value.get("seq") != expected_seq:
-                raise BrokerError("broker audit sequence is not contiguous")
-            if value.get("broker_id") != self.broker_id:
-                raise BrokerError("broker audit broker_id conflicts with configuration")
-            if value.get("previous_record_sha256") != previous:
-                raise BrokerError("broker audit previous-record digest mismatch")
-            observed = value.get("record_sha256")
-            if not isinstance(observed, str) or observed != self._record_sha256(value):
-                raise BrokerError("broker audit record digest mismatch")
-            self._apply_recovered(value)
-            previous = observed
-        self._next_seq = len(lines)
-        self._previous_sha256 = previous
-        os.lseek(self._fd, 0, os.SEEK_END)
+        finally:
+            self._require_path_fd_identity("after loading the journal")
 
     def _binding_fields(self, record: dict[str, Any]) -> tuple[Any, ...]:
         return (
@@ -332,6 +388,7 @@ class BrokerAuditJournal:
     ) -> dict[str, Any]:
         if self._poisoned is not None:
             raise BrokerError(f"broker audit is poisoned: {self._poisoned}")
+        self._require_path_fd_identity("before appending a journal record")
         if self._next_seq >= self.maximum_records:
             raise BrokerError("broker audit record capacity is exhausted")
         record: dict[str, Any] = {
@@ -367,10 +424,28 @@ class BrokerAuditJournal:
                 if written <= 0:
                     raise OSError("broker audit write made no progress")
                 offset += written
-            os.fsync(self._fd)
+            self._require_path_fd_identity(
+                "before synchronizing an appended journal record"
+            )
+            try:
+                os.fsync(self._fd)
+            finally:
+                self._require_path_fd_identity(
+                    "after synchronizing an appended journal record"
+                )
+        except BrokerError:
+            # Identity validation already poisoned the journal with an
+            # operation-specific reason.  Preserve that diagnosis verbatim.
+            raise
         except OSError as error:
+            # Even an OSError leaves the operation boundary uncertain.  Check
+            # the pathname once more before poisoning with the I/O diagnosis;
+            # a simultaneous replacement must retain the stronger identity
+            # drift reason.
+            self._require_path_fd_identity("after a failed journal append")
             self._poisoned = str(error)
             raise BrokerError(f"broker audit append became uncertain: {error}") from error
+        self._require_path_fd_identity("after appending a journal record")
         self._next_seq += 1
         self._previous_sha256 = record["record_sha256"]
         self._bytes += len(encoded)

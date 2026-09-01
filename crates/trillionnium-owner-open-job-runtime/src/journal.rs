@@ -993,7 +993,12 @@ fn open_segmented_job_store(
     legacy_path: Option<&Path>,
 ) -> trillionnium_owner_open_event_store::Result<SegmentedEventStore> {
     let config = SegmentedEventStoreConfig::default();
-    let Some(legacy_path) = legacy_path.filter(|path| path.exists()) else {
+    // Pass an explicitly supplied source through to the event-store layer
+    // even when its pathname is concurrently removed.  That layer performs
+    // the lstat/open identity check and fails closed; filtering with
+    // `Path::exists()` here could silently downgrade a migration race into a
+    // fresh empty journal.
+    let Some(legacy_path) = legacy_path else {
         return SegmentedEventStore::open(root, config);
     };
 

@@ -148,11 +148,23 @@ class BrokerServerMixin:
             path.unlink()
 
     def _start_workers(self) -> None:
-        for name, target in (
+        workers: list[tuple[str, object]] = [
             ("broker-upstream-reader", self._upstream_reader),
-            ("broker-request-dispatcher", self._request_worker),
             ("broker-timeout-monitor", self._timeout_worker),
-        ):
+        ]
+        # Let independent mux keys reach the byte-stream writer gate from
+        # separate workers.  A stalled write on one active request must not
+        # prevent timeout/terminal convergence for another key.  The writer
+        # gate itself still serializes bytes on the one upstream pipe so line
+        # framing cannot interleave.
+        for index in range(max(1, self.args.max_inflight_requests)):
+            name = (
+                "broker-request-dispatcher"
+                if index == 0
+                else f"broker-request-dispatcher-{index}"
+            )
+            workers.append((name, self._request_worker))
+        for name, target in workers:
             worker = threading.Thread(target=target, daemon=True, name=name)
             worker.start()
             self.worker_threads.append(worker)

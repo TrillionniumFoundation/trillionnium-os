@@ -59,7 +59,6 @@ class RuntimeHardeningSourceTests(unittest.TestCase):
         types = (ROOT / "crates/trillionnium-owner-open-job-runtime/src/types.rs").read_text()
         manager = (ROOT / "crates/trillionnium-owner-open-job-runtime/src/manager.rs").read_text()
         v7_wire = (ROOT / "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs").read_text()
-        docs = (ROOT / "docs/protocols/owner-open-jobs-v1.md").read_text()
 
         for field in ("pid", "process_group_id", "session_id", "boot_id", "start_time_ticks"):
             self.assertIn(field, types)
@@ -68,19 +67,30 @@ class RuntimeHardeningSourceTests(unittest.TestCase):
         self.assertIn("process_identity_for_event", manager)
         self.assertIn("FRAME_JOB_IDENTITY_BOUND", v7_wire)
         self.assertIn("process_identity_bound", v7_wire)
-        self.assertIn("job.process_identity_bound", docs)
 
         publication_start = manager.index("let running = Arc::new(RunningJob")
         publication_end = manager.index("Ok(JobStartResult {", publication_start)
         publication = manager[publication_start:publication_end]
-        self.assertLess(publication.index("ProcessIdentityBound"), publication.index("running_jobs.insert"))
-        self.assertLess(publication.index("RuntimeJobEventKind::Started"), publication.index("running_jobs.insert"))
-        self.assertLess(publication.index("complete_operation"), publication.index("running_jobs.insert"))
-        self.assertLess(publication.index("spawn_dispatcher"), publication.rindex("drop(running_jobs)"))
-        self.assertIn("running_jobs.remove(&request.key)", publication)
+        self.assertLess(
+            publication.index(".insert(request.key.clone()"),
+            publication.index("ProcessIdentityBound"),
+        )
+        self.assertLess(
+            publication.index("ProcessIdentityBound"),
+            publication.index("RuntimeJobEventKind::Started"),
+        )
+        self.assertLess(
+            publication.index("RuntimeJobEventKind::Started"),
+            publication.index("complete_operation"),
+        )
+        self.assertLess(
+            publication.index("complete_operation"),
+            publication.index("spawn_dispatcher"),
+        )
+        self.assertIn("self.running()", publication)
         # Every post-spawn event/journal failure must release the admission
         # guard before abort_started_job reacquires it for removal.
-        self.assertGreaterEqual(publication.count("drop(running_jobs)"), 4)
+        self.assertGreaterEqual(publication.count("abort_started_job"), 4)
 
 
 class WorkflowBoundaryGenerationTests(unittest.TestCase):

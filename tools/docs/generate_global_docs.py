@@ -94,15 +94,34 @@ def module_status() -> str:
         "",
         "<!-- GENERATED. DO NOT EDIT. -->",
         "",
-        "| Module | Name | Plane | Primary | Backup | Maturity | Dependencies | State owned |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Module | Version | Name | Plane | Primary | Backup | Maturity | API | State schema | Concurrency | Resource budget | SLO | Dependencies | State owned | Open gaps |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for module in data["modules"]:
+        resource = module["resource_contract"]
+        slo = module["slo"]
+        resource_summary = (
+            f"mem={resource['memory_bytes']};fd={resource['fd_count']};"
+            f"threads={resource['thread_count']};queue={resource['queue_items']}"
+        )
+        slo_summary = (
+            f"p99={slo['latency_p99_ms']}ms;throughput={slo['throughput_per_sec']}/s;"
+            f"availability={slo['availability_percent']}%"
+        )
+        concurrency = module["concurrency_contract"]
+        concurrency_summary = (
+            f"key={concurrency['ordering_key']};max={concurrency['max_concurrency']};"
+            f"lock={concurrency['lock_scope']}"
+        )
         lines.append(
-            f"| `{module['id']}` | {cell(module['name'])} | `{module['plane']}` | "
+            f"| `{module['id']}` | `{module['module_version']}` | {cell(module['name'])} | `{module['plane']}` | "
             f"`{module['owner_team']}` | `{module['backup_team']}` | `{module['maturity']}` | "
+            f"`{module['api_contract']['version']}` | `{module['state_contract']['schema']}` | "
+            f"`{cell(concurrency_summary)}` | "
+            f"`{cell(resource_summary)}` | `{cell(slo_summary)}` | "
             f"{cell(', '.join(module['dependencies']) or 'none')} | "
-            f"{cell(', '.join(module['state_owned']) or 'none')} |"
+            f"{cell(', '.join(module['state_owned']) or 'none')} | "
+            f"{cell(', '.join(module['open_gaps']) or 'none')} |"
         )
     return "\n".join(lines) + "\n"
 

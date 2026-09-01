@@ -1,1 +1,2484 @@
-{"schema":"org.trillionnium.module-catalog.v1","program_revision":"2026-08-31-g1","module_definition":"Stable responsibility, API, state, resource, SLO, evidence and two-team ownership.","modules":[{"id":"MOD-PROTOCOL","name":"protocol and identity","plane":"shared-contract","owner_team":"team-protocol","backup_team":"team-architecture","paths":["crates/trillionnium-owner-open-types"],"responsibilities":["canonical envelopes"],"non_goals":["semantic policy"],"dependencies":[],"state_owned":[],"ordering_keys":["protocol-specific"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"L1_SOURCE"},{"id":"MOD-BROKER","name":"connection broker and ingress","plane":"execution","owner_team":"team-broker","backup_team":"team-transport","paths":["tools/owner-open"],"responsibilities":["peer admission"],"non_goals":["intent interpretation"],"dependencies":["MOD-PROTOCOL"],"state_owned":["broker request audit"],"ordering_keys":["client_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":false},"maturity":"SOURCE_MUX_PENDING_EVIDENCE"},{"id":"MOD-TRANSPORT","name":"bounded transport carrier","plane":"execution","owner_team":"team-transport","backup_team":"team-execution-core","paths":["apps/trillionnium-owner-open-host/src/bin/r5_transport_host"],"responsibilities":["frame forwarding"],"non_goals":["semantic cancellation"],"dependencies":["MOD-PROTOCOL","MOD-STREAM"],"state_owned":["transport delivery journal"],"ordering_keys":["connection_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"SOURCE_BOUNDED_SEGMENTED_PENDING_EVIDENCE"},{"id":"MOD-EXECUTION-CORE","name":"execution core","plane":"execution","owner_team":"team-execution-core","backup_team":"team-runtime","paths":["apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7"],"responsibilities":["turn, call and job routing"],"non_goals":["plan reconstruction"],"dependencies":["MOD-PROTOCOL","MOD-TURN-ENGINE","MOD-JOB-RUNTIME","MOD-EVENT-STORE"],"state_owned":["host correlation state"],"ordering_keys":["turn_stream_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"L1_SOURCE"},{"id":"MOD-PROVIDER","name":"provider process and session","plane":"semantic-adapter","owner_team":"team-provider","backup_team":"team-turn-engine","paths":["crates/trillionnium-owner-open-provider-jsonl"],"responsibilities":["provider process lifecycle"],"non_goals":["OS semantic policy"],"dependencies":["MOD-PROTOCOL","MOD-TURN-ENGINE","MOD-TOOL-RUNTIME"],"state_owned":["provider session epoch"],"ordering_keys":["turn_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":false},"maturity":"L1_SOURCE"},{"id":"MOD-TURN-ENGINE","name":"same-turn engine","plane":"semantic-adapter","owner_team":"team-turn-engine","backup_team":"team-provider","paths":["crates/trillionnium-owner-open-turn-loop"],"responsibilities":["turn lifecycle"],"non_goals":["global resource allocation"],"dependencies":["MOD-PROTOCOL","MOD-TOOL-RUNTIME"],"state_owned":["live turn state"],"ordering_keys":["turn_stream_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"SOURCE_EVENT_DRIVEN_CANCEL_PENDING_EVIDENCE"},{"id":"MOD-TOOL-RUNTIME","name":"direct tool and process runtime","plane":"execution","owner_team":"team-runtime","backup_team":"team-job-runtime","paths":["crates/trillionnium-owner-open-tool-bridge"],"responsibilities":["exact shell and ADB process mechanics"],"non_goals":["command allowlist"],"dependencies":["MOD-PROTOCOL"],"state_owned":["live direct-call handles"],"ordering_keys":["call_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"L1_SOURCE"},{"id":"MOD-JOB-RUNTIME","name":"durable long-running jobs","plane":"execution","owner_team":"team-job-runtime","backup_team":"team-runtime","paths":["crates/trillionnium-owner-open-job-registry","crates/trillionnium-owner-open-job-runtime"],"responsibilities":["job admission"],"non_goals":["semantic scheduling"],"dependencies":["MOD-PROTOCOL","MOD-EVENT-STORE"],"state_owned":["job registry; job operation journal; live job handles"],"ordering_keys":["job_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"SOURCE_SHARDED_START_PENDING_EVIDENCE"},{"id":"MOD-EVENT-STORE","name":"event durability and replay","plane":"state","owner_team":"team-state-recovery","backup_team":"team-job-runtime","paths":["crates/trillionnium-owner-open-event-store"],"responsibilities":["append-only observations"],"non_goals":["effect authorization"],"dependencies":["MOD-PROTOCOL"],"state_owned":["turn event log; event indexes; record hash chain"],"ordering_keys":["store_partition"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"SOURCE_SEGMENTED_INDEXED_PENDING_EVIDENCE"},{"id":"MOD-STREAM","name":"stream flow control","plane":"execution","owner_team":"team-stream","backup_team":"team-transport","paths":["crates/trillionnium-owner-open-stream-window"],"responsibilities":["byte credit"],"non_goals":["effect cancellation"],"dependencies":["MOD-PROTOCOL"],"state_owned":["delivery window state"],"ordering_keys":["connection_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"L1_SOURCE"},{"id":"MOD-GLOBAL-CONTROL","name":"global mechanical control plane","plane":"control","owner_team":"team-global-control","backup_team":"team-architecture","paths":["planned/crates/trillionnium-global-control-plane"],"responsibilities":["budgets"],"non_goals":["intent interpretation"],"dependencies":["MOD-PROTOCOL","MOD-TELEMETRY"],"state_owned":["control epoch; module leases; placement plan"],"ordering_keys":["module_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"PLANNED_SHADOW_SOURCE_COMPLETE_PENDING_CI"},{"id":"MOD-TELEMETRY","name":"telemetry and objective projection","plane":"state","owner_team":"team-telemetry","backup_team":"team-performance","paths":["planned/crates/trillionnium-telemetry"],"responsibilities":["SLI collection"],"non_goals":["command-content logging by default"],"dependencies":["MOD-PROTOCOL"],"state_owned":["metric windows; objective projections"],"ordering_keys":["module_instance_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"PLANNED_READ_MODEL_COST_CURVE_SOURCE_COMPLETE_PENDING_CI"},{"id":"MOD-ROOTLINUX","name":"Root Linux integration","plane":"platform","owner_team":"team-rootlinux","backup_team":"team-android","paths":["packaging/root-linux"],"responsibilities":["runtime image"],"non_goals":["semantic policy"],"dependencies":["MOD-EXECUTION-CORE","MOD-PROVIDER","MOD-GLOBAL-CONTROL"],"state_owned":["install manifest projection; service runtime state"],"ordering_keys":["service_epoch"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"SOURCE_PROFILE_L2_PENDING"},{"id":"MOD-ANDROID","name":"Android product and SELinux integration","plane":"platform","owner_team":"team-android","backup_team":"team-rootlinux","paths":["android-integration/working-tree/vendor/trillionnium/owner-open"],"responsibilities":["Soong graph"],"non_goals":["second semantic authority"],"dependencies":["MOD-ROOTLINUX","MOD-BROKER","MOD-TRANSPORT"],"state_owned":["Android service graph; SELinux policy projection"],"ordering_keys":["boot_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":false},"maturity":"SOURCE_OVERLAY_L3_PENDING"},{"id":"MOD-ADB","name":"ordinary ADB transport","plane":"platform","owner_team":"team-adb","backup_team":"team-runtime","paths":["packaging/owner-open-adb"],"responsibilities":["byte-transparent ADB path"],"non_goals":["serial injection"],"dependencies":["MOD-TOOL-RUNTIME","MOD-ROOTLINUX"],"state_owned":["ADB relay epoch; transport observations"],"ordering_keys":["target_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"L1_SOURCE_L4_PENDING"},{"id":"MOD-EVIDENCE","name":"qualification and release evidence","plane":"evidence","owner_team":"team-evidence","backup_team":"team-security-release","paths":["docs/machine/evidence-index.v1.json"],"responsibilities":["L0-L6 evidence schemas"],"non_goals":["synthetic target evidence"],"dependencies":["MOD-PROTOCOL"],"state_owned":["evidence index; promotion records"],"ordering_keys":["evidence_id"],"resource_contract":{"policy":"finite"},"slo":{"policy":"profiled"},"compatibility":{"api":"semver","state":"versioned","rolling":true},"maturity":"L1_SOURCE"}],"default_source_closure":["apps/trillionnium-owner-open-host","crates/trillionnium-owner-open-call-registry","crates/trillionnium-owner-open-event-store","crates/trillionnium-owner-open-job-registry","crates/trillionnium-owner-open-job-runtime","crates/trillionnium-owner-open-provider-jsonl","crates/trillionnium-owner-open-stream-window","crates/trillionnium-owner-open-tool-bridge","crates/trillionnium-owner-open-turn-loop","crates/trillionnium-owner-open-types","crates/trillionnium-owner-open-runtime"]}
+{
+  "schema": "org.trillionnium.module-catalog.v1",
+  "program_revision": "2026-08-31-g1",
+  "module_definition": "Stable responsibility, API, state, resource, SLO, evidence and two-team ownership.",
+  "contract_schema": {
+    "schema": "org.trillionnium.module-contract.v1",
+    "version": "1",
+    "required_module_fields": [
+      "id",
+      "module_version",
+      "name",
+      "plane",
+      "owner_team",
+      "backup_team",
+      "paths",
+      "responsibilities",
+      "non_goals",
+      "dependencies",
+      "state_owned",
+      "ordering_keys",
+      "concurrency_contract",
+      "api_contract",
+      "state_contract",
+      "resource_contract",
+      "slo",
+      "fault_contract",
+      "evidence_contract",
+      "compatibility",
+      "migration",
+      "rollback",
+      "maturity",
+      "open_gaps"
+    ],
+    "resource_fields": [
+      "cpu_weight",
+      "memory_bytes",
+      "fd_count",
+      "process_count",
+      "thread_count",
+      "io_bytes_per_sec",
+      "queue_items",
+      "queue_bytes",
+      "store_bytes",
+      "timeout_ms",
+      "recovery_ms"
+    ],
+    "slo_fields": [
+      "latency_p99_ms",
+      "throughput_per_sec",
+      "availability_percent",
+      "recovery_ms",
+      "measurement_window_sec"
+    ]
+  },
+  "modules": [
+    {
+      "id": "MOD-PROTOCOL",
+      "name": "protocol and identity",
+      "plane": "shared-contract",
+      "owner_team": "team-protocol",
+      "backup_team": "team-architecture",
+      "paths": [
+        "crates/trillionnium-owner-open-types"
+      ],
+      "responsibilities": [
+        "canonical envelopes"
+      ],
+      "non_goals": [
+        "semantic policy"
+      ],
+      "dependencies": [],
+      "state_owned": [],
+      "ordering_keys": [
+        "protocol-specific"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "protocol-specific",
+        "max_concurrency": 16,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_protocol.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "L1_SOURCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_protocol.api.v1",
+        "inputs": [
+          "protocol_envelope_v1"
+        ],
+        "outputs": [
+          "protocol_identity_v1"
+        ],
+        "errors": [
+          "protocol_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_protocol.state.v1",
+        "authoritative": false,
+        "partition": "protocol-specific",
+        "durability": "none",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": false,
+        "procedure": "not_applicable_for_stateless_module",
+        "fail_closed": true
+      },
+      "open_gaps": []
+    },
+    {
+      "id": "MOD-BROKER",
+      "name": "connection broker and ingress",
+      "plane": "execution",
+      "owner_team": "team-broker",
+      "backup_team": "team-transport",
+      "paths": [
+        "tools/owner-open"
+      ],
+      "responsibilities": [
+        "peer admission"
+      ],
+      "non_goals": [
+        "intent interpretation"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "state_owned": [
+        "broker request audit"
+      ],
+      "ordering_keys": [
+        "client_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "client_id",
+        "max_concurrency": 64,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_broker.state.v1",
+        "rolling": false,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "SOURCE_MUX_PENDING_EVIDENCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_broker.api.v1",
+        "inputs": [
+          "broker_request_v2"
+        ],
+        "outputs": [
+          "broker_response_v2"
+        ],
+        "errors": [
+          "broker_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_broker.state.v1",
+        "authoritative": true,
+        "partition": "client_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-BROKER-CORRELATION-001",
+        "GAP-CONC-BROKER-MUX-001",
+        "GAP-FAULT-MATRIX-001"
+      ]
+    },
+    {
+      "id": "MOD-TRANSPORT",
+      "name": "bounded transport carrier",
+      "plane": "execution",
+      "owner_team": "team-transport",
+      "backup_team": "team-execution-core",
+      "paths": [
+        "apps/trillionnium-owner-open-host/src/bin/r5_transport_host"
+      ],
+      "responsibilities": [
+        "frame forwarding"
+      ],
+      "non_goals": [
+        "semantic cancellation"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-STREAM"
+      ],
+      "state_owned": [
+        "transport delivery journal"
+      ],
+      "ordering_keys": [
+        "connection_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "connection_id",
+        "max_concurrency": 64,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_transport.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "SOURCE_BOUNDED_SEGMENTED_PENDING_EVIDENCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_transport.api.v1",
+        "inputs": [
+          "transport_frame_v1"
+        ],
+        "outputs": [
+          "transport_delivery_v1"
+        ],
+        "errors": [
+          "transport_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_transport.state.v1",
+        "authoritative": true,
+        "partition": "connection_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [
+          "v1"
+        ],
+        "to_version": "v2",
+        "strategy": "fenced_prefix_reconcile",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-STREAM-RECOVERY-001",
+        "GAP-BROKER-CORRELATION-001",
+        "GAP-PRODUCT-ENTRYPOINT-001",
+        "GAP-CONC-BROKER-MUX-001",
+        "GAP-FAULT-MATRIX-001"
+      ]
+    },
+    {
+      "id": "MOD-EXECUTION-CORE",
+      "name": "execution core",
+      "plane": "execution",
+      "owner_team": "team-execution-core",
+      "backup_team": "team-runtime",
+      "paths": [
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7"
+      ],
+      "responsibilities": [
+        "turn, call and job routing"
+      ],
+      "non_goals": [
+        "plan reconstruction"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-TURN-ENGINE",
+        "MOD-JOB-RUNTIME",
+        "MOD-EVENT-STORE"
+      ],
+      "state_owned": [
+        "host correlation state"
+      ],
+      "ordering_keys": [
+        "turn_stream_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "turn_stream_id",
+        "max_concurrency": 64,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_execution_core.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "L1_SOURCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_execution_core.api.v1",
+        "inputs": [
+          "execution_request_v1"
+        ],
+        "outputs": [
+          "execution_event_v1"
+        ],
+        "errors": [
+          "execution_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_execution_core.state.v1",
+        "authoritative": true,
+        "partition": "turn_stream_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PRODUCT-ENTRYPOINT-001",
+        "GAP-CONC-REGISTRY-001"
+      ]
+    },
+    {
+      "id": "MOD-PROVIDER",
+      "name": "provider process and session",
+      "plane": "semantic-adapter",
+      "owner_team": "team-provider",
+      "backup_team": "team-turn-engine",
+      "paths": [
+        "crates/trillionnium-owner-open-provider-jsonl"
+      ],
+      "responsibilities": [
+        "provider process lifecycle"
+      ],
+      "non_goals": [
+        "OS semantic policy"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-TURN-ENGINE",
+        "MOD-TOOL-RUNTIME"
+      ],
+      "state_owned": [
+        "provider session epoch"
+      ],
+      "ordering_keys": [
+        "turn_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "turn_id",
+        "max_concurrency": 32,
+        "lease_source": "module_instance_lease",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_provider.state.v1",
+        "rolling": false,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "L1_SOURCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_provider.api.v1",
+        "inputs": [
+          "provider_request_v1"
+        ],
+        "outputs": [
+          "provider_event_v1"
+        ],
+        "errors": [
+          "provider_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_provider.state.v1",
+        "authoritative": true,
+        "partition": "turn_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PROCESS-LIFECYCLE-001",
+        "GAP-CONC-TURN-CANCEL-001",
+        "GAP-INSTALLED-CODEX-001"
+      ]
+    },
+    {
+      "id": "MOD-TURN-ENGINE",
+      "name": "same-turn engine",
+      "plane": "semantic-adapter",
+      "owner_team": "team-turn-engine",
+      "backup_team": "team-provider",
+      "paths": [
+        "crates/trillionnium-owner-open-turn-loop"
+      ],
+      "responsibilities": [
+        "turn lifecycle"
+      ],
+      "non_goals": [
+        "global resource allocation"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-TOOL-RUNTIME"
+      ],
+      "state_owned": [
+        "live turn state"
+      ],
+      "ordering_keys": [
+        "turn_stream_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "turn_stream_id",
+        "max_concurrency": 32,
+        "lease_source": "module_instance_lease",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_turn_engine.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "SOURCE_EVENT_DRIVEN_CANCEL_PENDING_EVIDENCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_turn_engine.api.v1",
+        "inputs": [
+          "turn_request_v1"
+        ],
+        "outputs": [
+          "turn_event_v1"
+        ],
+        "errors": [
+          "turn_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_turn_engine.state.v1",
+        "authoritative": true,
+        "partition": "turn_stream_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-CONC-TURN-CANCEL-001"
+      ]
+    },
+    {
+      "id": "MOD-TOOL-RUNTIME",
+      "name": "direct tool and process runtime",
+      "plane": "execution",
+      "owner_team": "team-runtime",
+      "backup_team": "team-job-runtime",
+      "paths": [
+        "crates/trillionnium-owner-open-tool-bridge"
+      ],
+      "responsibilities": [
+        "exact shell and ADB process mechanics"
+      ],
+      "non_goals": [
+        "command allowlist"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "state_owned": [
+        "live direct-call handles"
+      ],
+      "ordering_keys": [
+        "call_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "call_id",
+        "max_concurrency": 32,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_tool_runtime.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "L1_SOURCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_tool_runtime.api.v1",
+        "inputs": [
+          "tool_call_v1"
+        ],
+        "outputs": [
+          "tool_result_v1"
+        ],
+        "errors": [
+          "tool_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_tool_runtime.state.v1",
+        "authoritative": true,
+        "partition": "call_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PROCESS-LIFECYCLE-001"
+      ]
+    },
+    {
+      "id": "MOD-JOB-RUNTIME",
+      "name": "durable long-running jobs",
+      "plane": "execution",
+      "owner_team": "team-job-runtime",
+      "backup_team": "team-runtime",
+      "paths": [
+        "crates/trillionnium-owner-open-job-registry",
+        "crates/trillionnium-owner-open-job-runtime"
+      ],
+      "responsibilities": [
+        "job admission"
+      ],
+      "non_goals": [
+        "semantic scheduling"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-EVENT-STORE"
+      ],
+      "state_owned": [
+        "job registry; job operation journal; live job handles"
+      ],
+      "ordering_keys": [
+        "job_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "job_id",
+        "max_concurrency": 64,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_job_runtime.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "SOURCE_SHARDED_START_PENDING_EVIDENCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_job_runtime.api.v1",
+        "inputs": [
+          "job_operation_v2"
+        ],
+        "outputs": [
+          "job_event_v2"
+        ],
+        "errors": [
+          "job_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_job_runtime.state.v1",
+        "authoritative": true,
+        "partition": "job_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [
+          "v1"
+        ],
+        "to_version": "v2",
+        "strategy": "fenced_prefix_reconcile",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PROCESS-LIFECYCLE-001",
+        "GAP-STREAM-RECOVERY-001",
+        "GAP-JOURNAL-CONVERGENCE-001",
+        "GAP-CONC-JOB-START-HOTLOCK-001",
+        "GAP-CONC-REGISTRY-001",
+        "GAP-PERF-SYSTEM-BASELINE-001",
+        "GAP-FAULT-MATRIX-001"
+      ]
+    },
+    {
+      "id": "MOD-EVENT-STORE",
+      "name": "event durability and replay",
+      "plane": "state",
+      "owner_team": "team-state-recovery",
+      "backup_team": "team-job-runtime",
+      "paths": [
+        "crates/trillionnium-owner-open-event-store"
+      ],
+      "responsibilities": [
+        "append-only observations"
+      ],
+      "non_goals": [
+        "effect authorization"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "state_owned": [
+        "turn event log; event indexes; record hash chain"
+      ],
+      "ordering_keys": [
+        "store_partition"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "store_partition",
+        "max_concurrency": 64,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_event_store.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "SOURCE_SEGMENTED_INDEXED_PENDING_EVIDENCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_event_store.api.v1",
+        "inputs": [
+          "event_append_v2"
+        ],
+        "outputs": [
+          "event_query_v2"
+        ],
+        "errors": [
+          "event_store_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_event_store.state.v1",
+        "authoritative": true,
+        "partition": "store_partition",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [
+          "v1"
+        ],
+        "to_version": "v2",
+        "strategy": "fenced_prefix_reconcile",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-JOURNAL-CONVERGENCE-001",
+        "GAP-CONC-EVENT-STORE-001",
+        "GAP-PERF-SYSTEM-BASELINE-001",
+        "GAP-FAULT-MATRIX-001"
+      ]
+    },
+    {
+      "id": "MOD-STREAM",
+      "name": "stream flow control",
+      "plane": "execution",
+      "owner_team": "team-stream",
+      "backup_team": "team-transport",
+      "paths": [
+        "crates/trillionnium-owner-open-stream-window"
+      ],
+      "responsibilities": [
+        "byte credit"
+      ],
+      "non_goals": [
+        "effect cancellation"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "state_owned": [
+        "delivery window state"
+      ],
+      "ordering_keys": [
+        "connection_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "connection_id",
+        "max_concurrency": 16,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_stream.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "L1_SOURCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_stream.api.v1",
+        "inputs": [
+          "stream_control_v1"
+        ],
+        "outputs": [
+          "stream_window_v1"
+        ],
+        "errors": [
+          "stream_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_stream.state.v1",
+        "authoritative": true,
+        "partition": "connection_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-STREAM-RECOVERY-001"
+      ]
+    },
+    {
+      "id": "MOD-GLOBAL-CONTROL",
+      "name": "global mechanical control plane",
+      "plane": "control",
+      "owner_team": "team-global-control",
+      "backup_team": "team-architecture",
+      "paths": [
+        "planned/crates/trillionnium-global-control-plane"
+      ],
+      "responsibilities": [
+        "budgets"
+      ],
+      "non_goals": [
+        "intent interpretation"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-TELEMETRY"
+      ],
+      "state_owned": [
+        "control epoch; module leases; placement plan"
+      ],
+      "ordering_keys": [
+        "module_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "module_id",
+        "max_concurrency": 16,
+        "lease_source": "control_epoch_lease",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_global_control.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "PLANNED_SHADOW_SOURCE_COMPLETE_PENDING_CI",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_global_control.api.v1",
+        "inputs": [
+          "control_request_v1"
+        ],
+        "outputs": [
+          "control_decision_v1"
+        ],
+        "errors": [
+          "control_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_global_control.state.v1",
+        "authoritative": true,
+        "partition": "module_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PERF-SYSTEM-BASELINE-001",
+        "GAP-CONTROL-PLANE-SHADOW-001"
+      ]
+    },
+    {
+      "id": "MOD-TELEMETRY",
+      "name": "telemetry and objective projection",
+      "plane": "state",
+      "owner_team": "team-telemetry",
+      "backup_team": "team-performance",
+      "paths": [
+        "planned/crates/trillionnium-telemetry"
+      ],
+      "responsibilities": [
+        "SLI collection"
+      ],
+      "non_goals": [
+        "command-content logging by default"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "state_owned": [
+        "metric windows; objective projections"
+      ],
+      "ordering_keys": [
+        "module_instance_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "module_instance_id",
+        "max_concurrency": 16,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_telemetry.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "PLANNED_READ_MODEL_COST_CURVE_SOURCE_COMPLETE_PENDING_CI",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_telemetry.api.v1",
+        "inputs": [
+          "telemetry_sample_v1"
+        ],
+        "outputs": [
+          "objective_projection_v1"
+        ],
+        "errors": [
+          "telemetry_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_telemetry.state.v1",
+        "authoritative": true,
+        "partition": "module_instance_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PERF-SYSTEM-BASELINE-001",
+        "GAP-CONTROL-PLANE-SHADOW-001"
+      ]
+    },
+    {
+      "id": "MOD-ROOTLINUX",
+      "name": "Root Linux integration",
+      "plane": "platform",
+      "owner_team": "team-rootlinux",
+      "backup_team": "team-android",
+      "paths": [
+        "packaging/root-linux"
+      ],
+      "responsibilities": [
+        "runtime image"
+      ],
+      "non_goals": [
+        "semantic policy"
+      ],
+      "dependencies": [
+        "MOD-EXECUTION-CORE",
+        "MOD-PROVIDER",
+        "MOD-GLOBAL-CONTROL"
+      ],
+      "state_owned": [
+        "install manifest projection; service runtime state"
+      ],
+      "ordering_keys": [
+        "service_epoch"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "service_epoch",
+        "max_concurrency": 16,
+        "lease_source": "module_instance_lease",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_rootlinux.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "SOURCE_PROFILE_L2_PENDING",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_rootlinux.api.v1",
+        "inputs": [
+          "rootlinux_service_request_v1"
+        ],
+        "outputs": [
+          "rootlinux_service_state_v1"
+        ],
+        "errors": [
+          "rootlinux_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_rootlinux.state.v1",
+        "authoritative": true,
+        "partition": "service_epoch",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PRODUCT-ENTRYPOINT-001",
+        "GAP-INSTALLED-CODEX-001",
+        "GAP-ROOTLINUX-PLACEMENT-001",
+        "GAP-ANDROID-GRAPH-001",
+        "GAP-RELEASE-001"
+      ]
+    },
+    {
+      "id": "MOD-ANDROID",
+      "name": "Android product and SELinux integration",
+      "plane": "platform",
+      "owner_team": "team-android",
+      "backup_team": "team-rootlinux",
+      "paths": [
+        "android-integration/working-tree/vendor/trillionnium/owner-open"
+      ],
+      "responsibilities": [
+        "Soong graph"
+      ],
+      "non_goals": [
+        "second semantic authority"
+      ],
+      "dependencies": [
+        "MOD-ROOTLINUX",
+        "MOD-BROKER",
+        "MOD-TRANSPORT"
+      ],
+      "state_owned": [
+        "Android service graph; SELinux policy projection"
+      ],
+      "ordering_keys": [
+        "boot_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "boot_id",
+        "max_concurrency": 16,
+        "lease_source": "module_instance_lease",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_android.state.v1",
+        "rolling": false,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "SOURCE_OVERLAY_L3_PENDING",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_android.api.v1",
+        "inputs": [
+          "android_product_request_v1"
+        ],
+        "outputs": [
+          "android_graph_state_v1"
+        ],
+        "errors": [
+          "android_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_android.state.v1",
+        "authoritative": true,
+        "partition": "boot_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PRODUCT-ENTRYPOINT-001",
+        "GAP-ANDROID-GRAPH-001",
+        "GAP-PHYSICAL-ADB-001",
+        "GAP-RELEASE-001"
+      ]
+    },
+    {
+      "id": "MOD-ADB",
+      "name": "ordinary ADB transport",
+      "plane": "platform",
+      "owner_team": "team-adb",
+      "backup_team": "team-runtime",
+      "paths": [
+        "packaging/owner-open-adb"
+      ],
+      "responsibilities": [
+        "byte-transparent ADB path"
+      ],
+      "non_goals": [
+        "serial injection"
+      ],
+      "dependencies": [
+        "MOD-TOOL-RUNTIME",
+        "MOD-ROOTLINUX"
+      ],
+      "state_owned": [
+        "ADB relay epoch; transport observations"
+      ],
+      "ordering_keys": [
+        "target_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "target_id",
+        "max_concurrency": 16,
+        "lease_source": "module_instance_lease",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_adb.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "L1_SOURCE_L4_PENDING",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_adb.api.v1",
+        "inputs": [
+          "adb_request_v1"
+        ],
+        "outputs": [
+          "adb_observation_v1"
+        ],
+        "errors": [
+          "adb_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_adb.state.v1",
+        "authoritative": true,
+        "partition": "target_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-PHYSICAL-ADB-001",
+        "GAP-FAULT-MATRIX-001"
+      ]
+    },
+    {
+      "id": "MOD-EVIDENCE",
+      "name": "qualification and release evidence",
+      "plane": "evidence",
+      "owner_team": "team-evidence",
+      "backup_team": "team-security-release",
+      "paths": [
+        "docs/machine/evidence-index.v1.json"
+      ],
+      "responsibilities": [
+        "L0-L6 evidence schemas"
+      ],
+      "non_goals": [
+        "synthetic target evidence"
+      ],
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "state_owned": [
+        "evidence index; promotion records"
+      ],
+      "ordering_keys": [
+        "evidence_id"
+      ],
+      "concurrency_contract": {
+        "admission_resource": "resource_contract.queue_items",
+        "ordering_key": "evidence_id",
+        "max_concurrency": 16,
+        "lease_source": "local_bounded_budget",
+        "lock_scope": "module-local per-key metadata guard",
+        "slow_paths": [
+          "process_spawn",
+          "external_io",
+          "fsync",
+          "provider_wait"
+        ],
+        "timeout_ms": 30000,
+        "cancellation": "targeted_event_or_signal",
+        "backpressure": "reject_at_capacity",
+        "lease_expiry": "stop_new_admission_and_fence_authoritative_writes",
+        "duplicate_conflict": "idempotent_duplicate_or_explicit_conflict"
+      },
+      "resource_contract": {
+        "cpu_weight": 100,
+        "memory_bytes": 67108864,
+        "fd_count": 256,
+        "process_count": 16,
+        "thread_count": 64,
+        "io_bytes_per_sec": 10485760,
+        "queue_items": 4096,
+        "queue_bytes": 67108864,
+        "store_bytes": 536870912,
+        "timeout_ms": 30000,
+        "recovery_ms": 60000
+      },
+      "slo": {
+        "latency_p99_ms": 1000,
+        "throughput_per_sec": 100,
+        "availability_percent": 99.0,
+        "recovery_ms": 60000,
+        "measurement_window_sec": 60
+      },
+      "compatibility": {
+        "api_semver": "1.0.0",
+        "state_schema": "org.trillionnium.mod_evidence.state.v1",
+        "rolling": true,
+        "read_write_matrix": {
+          "read": [
+            "v1"
+          ],
+          "write": [
+            "v1"
+          ]
+        },
+        "unknown_fields": "reject"
+      },
+      "maturity": "L1_SOURCE",
+      "module_version": "1.0.0",
+      "api_contract": {
+        "version": "1.0.0",
+        "schema": "org.trillionnium.mod_evidence.api.v1",
+        "inputs": [
+          "evidence_package_v1"
+        ],
+        "outputs": [
+          "evidence_index_v1"
+        ],
+        "errors": [
+          "evidence_error_v1"
+        ]
+      },
+      "state_contract": {
+        "version": "1",
+        "schema": "org.trillionnium.mod_evidence.state.v1",
+        "authoritative": true,
+        "partition": "evidence_id",
+        "durability": "journaled",
+        "retention": {
+          "max_items": 4096,
+          "max_bytes": 67108864
+        },
+        "terminal_states": [
+          "closed",
+          "unknown"
+        ]
+      },
+      "fault_contract": {
+        "failure_modes": [
+          "timeout",
+          "io_error",
+          "process_exit",
+          "corrupt_state"
+        ],
+        "degraded_state": "fail_closed",
+        "recovery": "reconcile_before_resume",
+        "uncertain_effect": "no_automatic_redispatch"
+      },
+      "evidence_contract": {
+        "minimum_level": "L1",
+        "required_artifacts": [
+          "unit_tests",
+          "concurrency_tests",
+          "migration_tests",
+          "negative_tests"
+        ],
+        "raw_observations": true,
+        "claim_ceiling": "SOURCE_ONLY_UNTIL_EXACT_HEAD_CI",
+        "negative_claims": [
+          "no_installed_target_claim",
+          "no_automatic_redispatch"
+        ]
+      },
+      "migration": {
+        "from_versions": [],
+        "to_version": "v1",
+        "strategy": "none",
+        "dual_read": false,
+        "dual_write": false
+      },
+      "rollback": {
+        "supported": true,
+        "procedure": "restore_last_durable_state_then_fence",
+        "fail_closed": true
+      },
+      "open_gaps": [
+        "GAP-DOC-SINGLE-TRUTH-001",
+        "GAP-GOVERNANCE-001",
+        "GAP-FAULT-MATRIX-001",
+        "GAP-RELEASE-001"
+      ]
+    }
+  ],
+  "default_source_closure": [
+    "apps/trillionnium-owner-open-host",
+    "crates/trillionnium-owner-open-call-registry",
+    "crates/trillionnium-owner-open-event-store",
+    "crates/trillionnium-owner-open-job-registry",
+    "crates/trillionnium-owner-open-job-runtime",
+    "crates/trillionnium-owner-open-provider-jsonl",
+    "crates/trillionnium-owner-open-stream-window",
+    "crates/trillionnium-owner-open-tool-bridge",
+    "crates/trillionnium-owner-open-turn-loop",
+    "crates/trillionnium-owner-open-types",
+    "crates/trillionnium-owner-open-runtime"
+  ]
+}

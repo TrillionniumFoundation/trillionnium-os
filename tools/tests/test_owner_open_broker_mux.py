@@ -31,18 +31,19 @@ class OrderingKeyTest(unittest.TestCase):
             "turn_id": "turn-a",
             "turn_stream_id": "stream-a",
         }
-        self.assertEqual(
-            ordering_key_for_frame(
-                {
-                    "kind": "job.inspect",
-                    **scope,
-                    "job_id": "job-a",
-                    "payload": {**scope, "job_id": "job-a"},
-                },
-                "client-a",
-            ),
-            'effect:{"family":"job","job_id":"job-a","profile_id":"profile-a","session_id":"session-a","task_id":"task-a","turn_id":"turn-a","turn_stream_id":"stream-a"}',
+        key = ordering_key_for_frame(
+            {
+                "kind": "job.inspect",
+                **scope,
+                "job_id": "job-a",
+                "payload": {**scope, "job_id": "job-a"},
+            },
+            "client-a",
         )
+        self.assertTrue(key.startswith("effect:v1:"))
+        # The key is a length-delimited tuple, not a first-present label or a
+        # JSON insertion-order rendering.
+        self.assertNotIn('"job-a"', key)
 
     def test_partial_or_inconsistent_lineage_fails_closed(self) -> None:
         with self.assertRaisesRegex(MuxError, "complete scope"):
@@ -162,8 +163,15 @@ class WeightedFairMuxTest(unittest.TestCase):
         self.assertIs(mux.acquire(0), old)
         self.assertIs(mux.acquire(0), new)
         self.assertTrue(mux.complete(old, reason="unknown_after_timeout"))
-        self.assertIsNone(mux.match({"seq": 7}, lambda _request, _frame: True))
-        self.assertIs(mux.match({"seq": 8}, lambda _request, _frame: True), new)
+        self.assertIsNone(
+            mux.match({"broker_request_upstream_seq": 7}, lambda _request, _frame: True)
+        )
+        self.assertIs(
+            mux.match(
+                {"broker_request_upstream_seq": 8}, lambda _request, _frame: True
+            ),
+            new,
+        )
 
     def test_ambiguous_unsequenced_terminal_fails_closed(self) -> None:
         mux = WeightedFairMux(max_pending=4, max_inflight=2, max_retired=4)
@@ -223,7 +231,20 @@ class WeightedFairMuxTest(unittest.TestCase):
         current = Request("a", "current", "job:current", 11)
         mux.enqueue(current)
         self.assertIs(mux.acquire(0), current)
-        self.assertIsNone(mux.match({"seq": 999}, lambda _request, _frame: True))
+        self.assertIsNone(
+            mux.match(
+                {"seq": 999, "broker_request_upstream_seq": 999},
+                lambda _request, _frame: True,
+            )
+        )
+
+    def test_host_only_sequence_is_unsequenced_and_never_binds(self) -> None:
+        mux = WeightedFairMux(max_pending=4, max_inflight=1, max_retired=4)
+        current = Request("a", "current", "job:current", 11)
+        mux.enqueue(current)
+        self.assertIs(mux.acquire(0), current)
+        self.assertEqual(mux.sequence_state({"seq": 11}), "unsequenced")
+        self.assertIsNone(mux.match({"seq": 11}, lambda _request, _frame: True))
 
     def test_echoed_broker_binding_must_match_sequence_owner(self) -> None:
         mux = WeightedFairMux(max_pending=4, max_inflight=1, max_retired=4)
@@ -234,7 +255,11 @@ class WeightedFairMuxTest(unittest.TestCase):
         self.assertIs(mux.acquire(0), current)
         with self.assertRaisesRegex(MuxError, "broker_request_id"):
             mux.match(
-                {"seq": 11, "broker_request_id": "other"},
+                {
+                    "seq": 11,
+                    "broker_request_upstream_seq": 11,
+                    "broker_request_id": "other",
+                },
                 lambda _request, _frame: True,
             )
 
@@ -295,6 +320,43 @@ class WeightedFairMuxTest(unittest.TestCase):
         mux.complete(first, reason="terminal")
         waiter.join(1)
         self.assertEqual(observed, [second])
+
+    def test_pending_terminal_hold_blocks_only_its_exact_ordering_key(self) -> None:
+        mux = WeightedFairMux(max_pending=4, max_inflight=2, max_retired=4)
+        terminalizing = Request("a", "old", "job:one", 1)
+        blocked = Request("b", "waiting", "job:one", 2)
+        parallel = Request("b", "parallel", "job:two", 3)
+        for request in (terminalizing, blocked, parallel):
+            mux.enqueue(request)
+
+        self.assertTrue(
+            mux.hold_pending(terminalizing, reason="timeout_before_forward")
+        )
+        self.assertEqual(mux.held_count, 1)
+        self.assertEqual(mux.pending_count, 2)
+        self.assertIs(mux.acquire(0), parallel)
+        self.assertIsNone(mux.acquire(0.01))
+
+        self.assertTrue(mux.release_ordering_hold("job:one"))
+        self.assertEqual(mux.held_count, 0)
+        self.assertIs(mux.acquire(0), blocked)
+
+    def test_counted_pending_holds_cannot_release_each_other(self) -> None:
+        mux = WeightedFairMux(max_pending=4, max_inflight=1, max_retired=4)
+        first = Request("a", "old-a", "job:one", 1)
+        second = Request("b", "old-b", "job:one", 2)
+        waiter = Request("c", "waiting", "job:one", 3)
+        for request in (first, second, waiter):
+            mux.enqueue(request)
+
+        self.assertTrue(mux.hold_pending(first, reason="timeout"))
+        self.assertTrue(mux.hold_pending(second, reason="timeout"))
+        self.assertEqual(mux.held_count, 2)
+        self.assertTrue(mux.release_ordering_hold("job:one"))
+        self.assertEqual(mux.held_count, 1)
+        self.assertIsNone(mux.acquire(0.01))
+        self.assertTrue(mux.release_ordering_hold("job:one"))
+        self.assertIs(mux.acquire(0), waiter)
 
 
 if __name__ == "__main__":

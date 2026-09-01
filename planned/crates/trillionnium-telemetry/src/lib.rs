@@ -28,6 +28,7 @@ pub const MAX_DROPPED_SAMPLES: u64 = 1_048_576;
 pub const MAX_BASELINE_WORKLOADS: usize = REQUIRED_WORKLOADS.len();
 pub const MAX_OBJECTIVE_SUMMARIES: usize = 4096;
 pub const MAX_ENVIRONMENT_MODULE_VERSIONS: usize = 4096;
+pub const MAX_ENVIRONMENT_FIELD_BYTES: usize = 256;
 pub const MAX_COST_CONCURRENCY: u32 = 1_048_576;
 pub const MAX_COST_RESOURCE_BYTES: u64 = 1_u64 << 40; // 1 TiB.
 
@@ -177,8 +178,20 @@ impl MetricWindow {
     pub fn push(&mut self, sample: MetricSample) -> Result<()> {
         sample.validate()?;
         if self.samples.len() == self.capacity {
+            // Validate the accounting transition before evicting the oldest
+            // row.  A rejected push must not silently discard retained
+            // evidence or let the public drop count exceed its hard bound.
+            let next_dropped = self
+                .dropped
+                .checked_add(1)
+                .filter(|value| *value <= MAX_DROPPED_SAMPLES)
+                .ok_or_else(|| {
+                    TelemetryError::Invalid(
+                        "metric window dropped sample count exceeds hard bound".into(),
+                    )
+                })?;
             self.samples.pop_front();
-            self.dropped = self.dropped.saturating_add(1);
+            self.dropped = next_dropped;
         }
         self.samples.push_back(sample);
         Ok(())
@@ -263,16 +276,48 @@ impl WorkloadSummary {
             ));
         }
         let mut repetitions = BTreeSet::new();
+        let retained = u32::try_from(samples.len())
+            .map_err(|_| TelemetryError::Invalid("workload summary has too many samples".into()))?;
+        let total = retained
+            .checked_add(u32::try_from(dropped_samples).map_err(|_| {
+                TelemetryError::Invalid("workload summary sample accounting overflows".into())
+            })?)
+            .ok_or_else(|| {
+                TelemetryError::Invalid("workload summary sample accounting overflows".into())
+            })?;
+        if total == 0 || total > MAX_BASELINE_REPETITIONS {
+            return Err(TelemetryError::Invalid(
+                "workload summary sample accounting exceeds hard bound".into(),
+            ));
+        }
         for sample in samples {
             sample.validate()?;
+            if sample.repetition >= total {
+                return Err(TelemetryError::Invalid(
+                    "workload summary repetition is outside accounted sample set".into(),
+                ));
+            }
             if !repetitions.insert(sample.repetition) {
                 return Err(TelemetryError::Invalid(
                     "workload summary contains duplicate repetitions".into(),
                 ));
             }
         }
-        let sample_count = u32::try_from(samples.len())
-            .map_err(|_| TelemetryError::Invalid("workload summary has too many samples".into()))?;
+        // With no evictions, the repetition set must be exactly the ordinal
+        // run represented by the retained rows.  Otherwise a producer could
+        // claim a complete baseline while silently omitting one repetition
+        // and replacing it with an arbitrary high number.
+        if dropped_samples == 0
+            && repetitions
+                .iter()
+                .enumerate()
+                .any(|(index, repetition)| *repetition != index as u32)
+        {
+            return Err(TelemetryError::Invalid(
+                "workload summary repetitions are not an exact ordinal set".into(),
+            ));
+        }
+        let sample_count = retained;
         let mean = |value: fn(&MetricSample) -> f64| -> Result<f64> {
             let mut total = 0.0_f64;
             for sample in samples {
@@ -631,9 +676,9 @@ impl EnvironmentIdentity {
             ("durability_policy", &self.durability_policy),
             ("control_configuration", &self.control_configuration),
         ] {
-            if value.trim().is_empty() {
+            if value.trim().is_empty() || value.len() > MAX_ENVIRONMENT_FIELD_BYTES {
                 return Err(TelemetryError::Invalid(format!(
-                    "environment field {name} is empty"
+                    "environment field {name} is empty or exceeds hard bound"
                 )));
             }
         }
@@ -1042,6 +1087,11 @@ impl ModuleReadModel {
                 "module read model sample count is zero".into(),
             ));
         }
+        if self.sample_count > MAX_READ_MODEL_ENTRIES as u64 {
+            return Err(TelemetryError::Invalid(
+                "module read model sample count exceeds hard bound".into(),
+            ));
+        }
         for (name, value) in [
             ("latency_p99_ms", self.latency_p99_ms),
             ("unknown_rate", self.unknown_rate),
@@ -1145,11 +1195,17 @@ impl ModuleReadModelStore {
                     "module telemetry timestamp collision".into(),
                 ));
             }
-            model.observed_at_ms = sample.observed_at_ms;
-            model.sample_count = model
+            let next_sample_count = model
                 .sample_count
                 .checked_add(1)
                 .ok_or_else(|| TelemetryError::Invalid("module sample count overflow".into()))?;
+            if next_sample_count > MAX_READ_MODEL_ENTRIES as u64 {
+                return Err(TelemetryError::Invalid(
+                    "module read model sample count exceeds hard bound".into(),
+                ));
+            }
+            model.observed_at_ms = sample.observed_at_ms;
+            model.sample_count = next_sample_count;
             model.queue_depth = sample.queue_depth;
             model.active_count = sample.active_count;
             model.cpu_millis = sample.cpu_millis;
@@ -1290,6 +1346,12 @@ pub struct CostCurve {
     pub module_id: String,
     pub module_instance_id: String,
     pub partition: String,
+    /// Monotonic producer timestamp for this curve revision.  A zero value is
+    /// retained for backwards-compatible v1 artifacts; once a producer emits
+    /// a nonzero timestamp, stale or same-time conflicting replacements are
+    /// rejected by [`CostCurveStore`].
+    #[serde(default)]
+    pub observed_at_ms: u64,
     pub max_points: usize,
     pub points: Vec<CostPoint>,
 }
@@ -1311,11 +1373,22 @@ impl CostCurve {
             module_id: module_id.into(),
             module_instance_id: module_instance_id.into(),
             partition: partition.into(),
+            observed_at_ms: 0,
             max_points,
             points: Vec::new(),
         };
         curve.validate()?;
         Ok(curve)
+    }
+
+    /// Set the producer timestamp used for monotonic store updates.
+    pub fn with_observed_at_ms(mut self, observed_at_ms: u64) -> Self {
+        self.observed_at_ms = observed_at_ms;
+        self
+    }
+
+    pub fn set_observed_at_ms(&mut self, observed_at_ms: u64) {
+        self.observed_at_ms = observed_at_ms;
     }
 
     pub fn key(&self) -> ModuleKey {
@@ -1482,7 +1555,21 @@ impl CostCurveStore {
             .inner
             .lock()
             .map_err(|_| TelemetryError::Invalid("cost curve store lock poisoned".into()))?;
-        if !state.curves.contains_key(&key) && state.curves.len() >= state.max_curves {
+        if let Some(existing) = state.curves.get(&key) {
+            if curve.observed_at_ms < existing.observed_at_ms {
+                return Err(TelemetryError::Invalid(
+                    "cost curve timestamp regressed".into(),
+                ));
+            }
+            if curve.observed_at_ms == existing.observed_at_ms {
+                if curve == *existing {
+                    return Ok(());
+                }
+                return Err(TelemetryError::Invalid(
+                    "cost curve timestamp collision".into(),
+                ));
+            }
+        } else if state.curves.len() >= state.max_curves {
             return Err(TelemetryError::Invalid(
                 "cost curve store capacity exceeded".into(),
             ));
@@ -1565,6 +1652,24 @@ mod tests {
         assert_eq!(window.len(), 2);
         assert_eq!(window.dropped(), 1);
         assert_eq!(window.samples().next().unwrap().repetition, 1);
+    }
+
+    #[test]
+    fn ring_drop_bound_rejects_without_evicting() {
+        let retained = sample("WL-01", 0, 2.0);
+        let mut window = MetricWindow::new(1).unwrap();
+        window.push(retained.clone()).unwrap();
+        window.dropped = MAX_DROPPED_SAMPLES;
+
+        assert!(matches!(
+            window.push(sample("WL-01", 1, 3.0)),
+            Err(TelemetryError::Invalid(message)) if message.contains("hard bound")
+        ));
+        assert_eq!(window.dropped(), MAX_DROPPED_SAMPLES);
+        assert_eq!(
+            window.samples().cloned().collect::<Vec<_>>(),
+            vec![retained]
+        );
     }
 
     #[test]
@@ -1651,6 +1756,16 @@ mod tests {
 
         let rows = vec![sample("WL-01", 0, 1.0), sample("WL-01", 0, 1.0)];
         assert!(WorkloadSummary::from_samples("WL-01", &rows, 0).is_err());
+
+        // A complete (non-evicted) workload must account for exactly the
+        // ordinal repetition set; a sparse set would hide a missing run.
+        let sparse = vec![sample("WL-01", 0, 1.0), sample("WL-01", 2, 1.0)];
+        assert!(WorkloadSummary::from_samples("WL-01", &sparse, 0).is_err());
+
+        // Once rows have been evicted, retained repetition IDs still must fit
+        // the accounted total and cannot be fabricated beyond it.
+        let out_of_range = vec![sample("WL-01", 3, 1.0)];
+        assert!(WorkloadSummary::from_samples("WL-01", &out_of_range, 2).is_err());
     }
 
     #[test]
@@ -1812,6 +1927,9 @@ mod tests {
         identity.source_commit = "a".repeat(40);
         identity.module_versions.insert(" ".into(), "v1".into());
         assert!(identity.validate().is_err());
+        identity.module_versions.clear();
+        identity.toolchain = "x".repeat(MAX_ENVIRONMENT_FIELD_BYTES + 1);
+        assert!(identity.validate().is_err());
     }
 
     fn module_sample(instance: &str, timestamp: u64, health: f64) -> ModuleTelemetrySample {
@@ -1854,6 +1972,26 @@ mod tests {
             .unwrap()
             .unwrap();
         assert_eq!(model.sample_count, 1);
+    }
+
+    #[test]
+    fn read_model_sample_count_is_hard_bounded_without_partial_update() {
+        let store = ModuleReadModelStore::new(1).unwrap();
+        let first = module_sample("b-1", 10, 1.0);
+        store.upsert(first.clone()).unwrap();
+        {
+            let mut state = store.inner.lock().unwrap();
+            state.models.get_mut(&first.key()).unwrap().sample_count =
+                MAX_READ_MODEL_ENTRIES as u64;
+        }
+        let mut next = first;
+        next.observed_at_ms = 11;
+        assert!(store.upsert(next).is_err());
+        assert_eq!(
+            store.snapshot().unwrap()[0].sample_count,
+            MAX_READ_MODEL_ENTRIES as u64
+        );
+        assert_eq!(store.snapshot().unwrap()[0].observed_at_ms, 10);
     }
 
     #[test]
@@ -1964,5 +2102,36 @@ mod tests {
         assert_eq!(store.len(), 1);
         let other = CostCurve::new("broker", "b-2", "p0", 1).unwrap();
         assert!(store.upsert(other).is_err());
+    }
+
+    #[test]
+    fn cost_curve_store_rejects_stale_and_conflicting_timestamps() {
+        let store = CostCurveStore::new(1).unwrap();
+        let base = CostCurve::new("broker", "b-1", "p0", 1)
+            .unwrap()
+            .with_observed_at_ms(10);
+        store.upsert(base.clone()).unwrap();
+        store.upsert(base.clone()).unwrap();
+
+        let stale = CostCurve::new("broker", "b-1", "p0", 1)
+            .unwrap()
+            .with_observed_at_ms(9);
+        assert!(matches!(
+            store.upsert(stale),
+            Err(TelemetryError::Invalid(message)) if message.contains("regressed")
+        ));
+
+        let mut collision = base.clone();
+        collision.max_points = 2;
+        assert!(matches!(
+            store.upsert(collision),
+            Err(TelemetryError::Invalid(message)) if message.contains("collision")
+        ));
+
+        let replacement = CostCurve::new("broker", "b-1", "p0", 2)
+            .unwrap()
+            .with_observed_at_ms(11);
+        store.upsert(replacement.clone()).unwrap();
+        assert_eq!(store.get(&replacement.key()).unwrap(), Some(replacement));
     }
 }

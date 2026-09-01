@@ -114,6 +114,17 @@
           ],
           "workflow": ".github/workflows/g1-exact-head-source.yml",
           "workflow_job": "docs-graph"
+        },
+        {
+          "kind": "source",
+          "path": "tools/docs/verify_global_docs.py",
+          "target": "tools/docs/verify_global_docs.py",
+          "command": [
+            "python3",
+            "tools/docs/verify_global_docs.py"
+          ],
+          "workflow": ".github/workflows/g1-synthetic-merge.yml",
+          "workflow_job": "synthetic-merge"
         }
       ],
       "evidence": [
@@ -392,6 +403,43 @@
         "docs/OPERATIONS_AND_ROLLOUT.md"
       ],
       "tests": [
+        {
+          "kind": "source",
+          "path": "tools/verify-owner-open-android-source-closure-v2.py",
+          "target": "tools/verify-owner-open-android-source-closure-v2.py",
+          "command": [
+            "python3",
+            "tools/verify-owner-open-android-source-closure-v2.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
+        {
+          "kind": "source",
+          "path": "tools/verify-owner-open-android-profile-v3.py",
+          "target": "tools/verify-owner-open-android-profile-v3.py",
+          "command": [
+            "python3",
+            "tools/verify-owner-open-android-profile-v3.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_verify_owner_open_android_source_closure.py",
+          "target": "tools.tests.test_verify_owner_open_android_source_closure",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "tools.tests.test_verify_owner_open_android_source_closure",
+            "tools.tests.test_verify_owner_open_android_profile",
+            "-v"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
         {
           "kind": "external",
           "path": "android-integration",

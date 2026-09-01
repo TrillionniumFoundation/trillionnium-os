@@ -338,6 +338,20 @@ impl BridgeLimits {
         }
         Ok(())
     }
+
+    /// Return the runtime limits after applying the bridge's cancellation
+    /// responsiveness bound.
+    ///
+    /// `MechanicalLimits::poll_interval` is the process-runtime wait between
+    /// cancellation checks.  Keep the caller's runtime setting when it is
+    /// already more responsive, but never let it exceed the bridge-level
+    /// cancellation bound.  The returned value is owned so the borrowed
+    /// [`BridgeLimits`] remains immutable for the duration of a call.
+    fn effective_runtime(&self) -> MechanicalLimits {
+        let mut runtime = self.runtime.clone();
+        runtime.poll_interval = runtime.poll_interval.min(self.cancellation_poll);
+        runtime
+    }
 }
 
 fn canonical_pty_dimension(
@@ -431,7 +445,8 @@ impl DirectToolBridge {
     {
         limits.validate()?;
         call.validate()?;
-        validate_runtime_request(&call.request, call.pty, &limits.runtime)?;
+        let runtime_limits = limits.effective_runtime();
+        validate_runtime_request(&call.request, call.pty, &runtime_limits)?;
         // Materialize the caller-owned flags once.  Besides avoiding a
         // second iterator traversal, this lets us publish an already-set
         // enclosing cancellation into the registry before spawn admission.
@@ -511,11 +526,19 @@ impl DirectToolBridge {
         );
         let mut registry_observation_error = None::<RegistryError>;
         let mut sink_failure = None::<SinkFailure>;
+        let mut observation_sequence_exhausted = false;
         let sink_cancellation = runtime_cancellation.clone();
         let key = call.key.clone();
         let registry = Arc::clone(&self.registry);
         let mut observe = |event: ExecutionEvent| {
-            digest.update(&event);
+            // The ordinal is part of the authenticated observation stream.
+            // If it cannot advance, stop accepting events and cancel the
+            // owned process rather than hashing a duplicate MAX ordinal.
+            if digest.update(&event).is_err() {
+                observation_sequence_exhausted = true;
+                sink_cancellation.cancel();
+                return;
+            }
             if let ExecutionEventKind::Started { pid } = &event.kind
                 && let Err(error) = registry.record_pid(&key, generation, *pid)
                 && registry_observation_error.is_none()
@@ -541,26 +564,26 @@ impl DirectToolBridge {
             (DirectToolRequest::Shell(request), Some(size)) => execute_shell_pty(
                 request,
                 size,
-                &limits.runtime,
+                &runtime_limits,
                 &runtime_cancellation,
                 &mut observe,
             ),
             (DirectToolRequest::Adb(request), Some(size)) => execute_adb_pty(
                 request,
                 size,
-                &limits.runtime,
+                &runtime_limits,
                 &runtime_cancellation,
                 &mut observe,
             ),
             (DirectToolRequest::Shell(request), None) => execute_shell(
                 request,
-                &limits.runtime,
+                &runtime_limits,
                 &runtime_cancellation,
                 &mut observe,
             ),
             (DirectToolRequest::Adb(request), None) => execute_adb(
                 request,
-                &limits.runtime,
+                &runtime_limits,
                 &runtime_cancellation,
                 &mut observe,
             ),
@@ -597,6 +620,9 @@ impl DirectToolBridge {
 
         if let Some(error) = registry_observation_error {
             return Err(BridgeError::RegistryObservation(error));
+        }
+        if observation_sequence_exhausted {
+            return Err(invalid("observation sequence exhausted"));
         }
         if let Some(failure) = sink_failure {
             return Err(match failure {
@@ -651,12 +677,13 @@ impl ObservationDigest {
         }
     }
 
-    fn update(&mut self, event: &ExecutionEvent) {
+    fn update(&mut self, event: &ExecutionEvent) -> std::result::Result<(), ()> {
         let Some(hasher) = self.hasher.as_mut() else {
-            return;
+            return Err(());
         };
+        let next_ordinal = self.next_ordinal.checked_add(1).ok_or(())?;
         field(hasher, b"event_ordinal", &self.next_ordinal.to_be_bytes());
-        self.next_ordinal = self.next_ordinal.saturating_add(1);
+        self.next_ordinal = next_ordinal;
         match &event.kind {
             ExecutionEventKind::Accepted => field(hasher, b"kind", b"accepted"),
             ExecutionEventKind::Started { pid } => {
@@ -712,6 +739,7 @@ impl ObservationDigest {
                 );
             }
         }
+        Ok(())
     }
 
     fn finish(&mut self) -> String {
@@ -961,4 +989,44 @@ fn require_sha256(value: &str, label: &str) -> Result<()> {
 
 fn invalid(message: impl Into<String>) -> BridgeError {
     BridgeError::InvalidRequest(message.into())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn cancellation_poll_caps_runtime_wait_without_widening_a_faster_setting() {
+        let mut limits = BridgeLimits::default();
+        limits.runtime.poll_interval = Duration::from_secs(1);
+        limits.cancellation_poll = Duration::from_millis(2);
+        assert_eq!(
+            limits.effective_runtime().poll_interval,
+            Duration::from_millis(2)
+        );
+
+        limits.runtime.poll_interval = Duration::from_millis(1);
+        assert_eq!(
+            limits.effective_runtime().poll_interval,
+            Duration::from_millis(1)
+        );
+    }
+
+    #[test]
+    fn observation_digest_rejects_ordinal_overflow() {
+        let mut digest = ObservationDigest::new("call", "shell.exec", None, 1);
+        digest.next_ordinal = u64::MAX;
+        let event = ExecutionEvent {
+            call_id: "call".to_string(),
+            target_id: None,
+            tool: ToolKind::ShellExec,
+            seq: 0,
+            elapsed_ms: 0,
+            kind: ExecutionEventKind::Accepted,
+        };
+
+        assert!(digest.update(&event).is_err());
+        assert_eq!(digest.next_ordinal, u64::MAX);
+        assert!(digest.update(&event).is_err());
+    }
 }

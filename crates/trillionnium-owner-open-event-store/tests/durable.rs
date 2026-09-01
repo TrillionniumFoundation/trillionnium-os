@@ -191,3 +191,42 @@ fn record_and_store_capacity_are_enforced_before_append() {
         .unwrap_err();
     assert!(matches!(error, EventStoreError::CapacityExhausted));
 }
+
+#[test]
+fn parent_directory_replacement_is_rejected_without_redirecting_v1_writes() {
+    let directory = secure_tempdir();
+    let parent = directory.path().join("store-parent");
+    fs::create_dir(&parent).unwrap();
+    fs::set_permissions(&parent, fs::Permissions::from_mode(0o700)).unwrap();
+    let store_path = parent.join("events.jsonl");
+    let store = DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::None)
+        .unwrap();
+    store
+        .append(input("turn-a", "event-0", "turn.accepted", 1))
+        .unwrap();
+
+    // Replace the parent pathname while retaining the original directory
+    // (and the store's pinned descriptor) under a different name.  A later
+    // append must fail closed instead of creating a fresh file in the
+    // replacement directory.
+    let original_parent = directory.path().join("store-parent-original");
+    fs::rename(&parent, &original_parent).unwrap();
+    fs::create_dir(&parent).unwrap();
+    fs::set_permissions(&parent, fs::Permissions::from_mode(0o700)).unwrap();
+
+    let error = store
+        .append(input("turn-a", "event-1", "model.delta", 2))
+        .unwrap_err();
+    assert!(matches!(error, EventStoreError::UnsafePath(_)));
+    assert!(!parent.join("events.jsonl").exists());
+    assert!(matches!(
+        store.append(input("turn-a", "event-2", "model.delta", 3)),
+        Err(EventStoreError::Poisoned)
+    ));
+
+    // Restore the original pathname before the temporary directory is
+    // dropped so the test leaves no detached directory behind.
+    drop(store);
+    fs::remove_dir(&parent).unwrap();
+    fs::rename(original_parent, parent).unwrap();
+}

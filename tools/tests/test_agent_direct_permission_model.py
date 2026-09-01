@@ -431,6 +431,10 @@ class AgentDirectPermissionModelTest(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 self.assert_semantics(mutated)
 
+    @unittest.skipUnless(
+        BOUNDARY_PATH.is_file(),
+        "G1 retired the historical product-boundary document; this legacy binding check is not active evidence",
+    )
     def test_superseded_model_stays_bound_only_to_typed_policy_surfaces(self) -> None:
         rust_model = RUST_MODEL_PATH.read_text(encoding="utf-8")
         rust_model_product = rust_model.split("\n#[cfg(test)]\nmod tests", 1)[0]

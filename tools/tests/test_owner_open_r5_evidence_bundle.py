@@ -395,20 +395,37 @@ class EvidenceBundleTest(unittest.TestCase):
                 observed, fixture._harness(), kind=fixture.kind
             )
 
-    def test_target_capture_workflow_is_immutable_and_exact(self) -> None:
-        workflow = (
-            TOOLS.parent
-            / ".github/workflows/owner-open-r5-target-evidence-capture.yml"
-        ).read_text(encoding="utf-8")
+    def test_g1_workflows_are_immutable_and_exact(self) -> None:
+        root = TOOLS.parent
+        workflows = (
+            root / ".github/workflows/g1-exact-head-source.yml",
+            root / ".github/workflows/g1-synthetic-merge.yml",
+        )
         checkout = "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
         upload = "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02"
-        self.assertEqual(workflow.count(checkout), 6)
-        self.assertEqual(workflow.count(upload), 6)
-        self.assertNotIn("actions/checkout@v4", workflow)
-        self.assertNotIn("actions/upload-artifact@v4", workflow)
-        self.assertNotIn("--untracked-files=no", workflow)
-        self.assertEqual(workflow.count("--untracked-files=all"), 6)
-        self.assertIn('PYTHONDONTWRITEBYTECODE: "1"', workflow)
+        for path in workflows:
+            workflow = path.read_text(encoding="utf-8")
+            self.assertIn(checkout, workflow)
+            self.assertIn(upload, workflow)
+            self.assertNotRegex(
+                workflow, r"uses:\s+[^\s@]+@v\d+", msg=path.name
+            )
+            self.assertNotIn("--untracked-files=no", workflow)
+            self.assertIn("--untracked-files=all", workflow)
+            self.assertIn("persist-credentials: false", workflow)
+            self.assertIn("git --no-replace-objects", workflow)
+            self.assertIn("python3 tools/docs/verify_global_docs.py", workflow)
+
+        exact = (workflows[0]).read_text(encoding="utf-8")
+        self.assertIn("SOURCE_HEAD_SHA", exact)
+        self.assertIn("ref: ${{ env.SOURCE_HEAD_SHA }}", exact)
+        self.assertIn("rev-parse HEAD", exact)
+
+        synthetic = (workflows[1]).read_text(encoding="utf-8")
+        self.assertIn("EVENT_BASE_SHA", synthetic)
+        self.assertIn("EVENT_HEAD_SHA", synthetic)
+        self.assertIn("rev-parse HEAD^1", synthetic)
+        self.assertIn("rev-parse HEAD^2", synthetic)
 
     def test_raw_artifact_tamper_is_detected(self) -> None:
         fixture = BundleFixture(self.root)

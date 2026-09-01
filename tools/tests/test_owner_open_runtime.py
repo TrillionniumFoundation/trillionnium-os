@@ -91,28 +91,48 @@ class OwnerOpenRuntimeContractTest(unittest.TestCase):
         self.assertIn("assert_eq!(terminal_count(&events), 1)", tests)
 
     def test_machine_status_does_not_promote_unexecuted_source(self) -> None:
-        status = json.loads(
-            (ROOT / "docs/status/owner-open-r4-w2-w3-source-slice.json").read_text(
+        baseline = json.loads(
+            (ROOT / "docs/machine/current-baseline.v1.json").read_text(
                 encoding="utf-8"
             )
         )
-        self.assertEqual(status["overall_status"], "SOURCE_AUTHORED_VALIDATION_PENDING")
-        self.assertEqual(
-            status["claim_ceiling"], "L1_SOURCE_REVIEW_PENDING_L2_HOST_EXECUTION"
+        program = json.loads(
+            (ROOT / "docs/machine/program-state.v1.json").read_text(
+                encoding="utf-8"
+            )
         )
-        for field in (
-            "rust_1_93_compile_passed",
-            "host_tests_passed",
-            "live_codex_provider",
-            "same_turn_tool_result_continuation",
-            "owner_open_host_integration",
-            "rootlinux_namespace_integration",
-            "android_image_inclusion",
-            "real_arm64_adb_or_transparent_relay",
-            "physical_device_effect",
-            "public_release",
+        evidence = json.loads(
+            (ROOT / "docs/machine/evidence-index.v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+
+        candidate = baseline["documentation_candidate"]
+        self.assertIsNone(candidate["commit"])
+        self.assertIsNone(candidate["tree"])
+        self.assertNotEqual(candidate["ci_status"], "PASSED")
+        self.assertEqual(
+            candidate["claim_ceiling"], "DOCUMENTATION_AND_GOVERNANCE_CANDIDATE_ONLY"
+        )
+        self.assertFalse(program["zero_gap"])
+        self.assertFalse(program["public_release"])
+        self.assertFalse(program["automatic_redispatch"])
+        self.assertEqual(
+            program["status"], "G1_DOCUMENTATION_AND_MODULARIZATION_CANDIDATE"
+        )
+        for milestone in program["capability_milestones"]:
+            if milestone["required_level"] != "L1":
+                self.assertEqual(milestone["status"], "EXTERNAL_HOLD")
+        self.assertTrue(evidence["records"])
+        self.assertTrue(all(not record["promotable"] for record in evidence["records"]))
+        for claim in (
+            "installed Root Linux Codex qualification",
+            "clean Android image or target-files qualification",
+            "physical shell, job or ordinary ADB effect",
+            "destructive crash, storage, USB, reboot or power-loss qualification",
+            "signed public release",
         ):
-            self.assertFalse(status["negative_claims"][field], field)
+            self.assertIn(claim, baseline["non_claims"])
 
 
 if __name__ == "__main__":
