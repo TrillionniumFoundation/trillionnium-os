@@ -68,11 +68,17 @@ for line in sys.stdin:
 SAME_KEY = "#!/usr/bin/env python3\n" + COMMON + r'''
 handshake()
 first=True
+release=Path(os.environ["UPSTREAM_RELEASE"])
 for line in sys.stdin:
     frame=json.loads(line); remember(frame)
     if first:
         first=False
-        time.sleep(0.20)
+        # Publish the first frame before waiting for the test.  This gives
+        # the assertion a deterministic observation point while keeping the
+        # upstream terminal pending, so a second same-key write cannot be
+        # hidden by scheduler/process timing.
+        while not release.exists():
+            time.sleep(0.005)
     emit(frame)
 '''
 
@@ -164,10 +170,13 @@ class Harness:
         self.upstream.write_text(self.upstream_source)
         self.upstream.chmod(0o700)
         self.record=self.root/"upstream.jsonl"
+        self.upstream_release=self.root/"upstream.release"
         self.socket_path=self.root/"broker.sock"
         self.descriptor=self.root/"broker.json"
         self.token=self.root/"broker.token"
-        env=os.environ.copy(); env["UPSTREAM_RECORD"]=str(self.record)
+        env=os.environ.copy()
+        env["UPSTREAM_RECORD"]=str(self.record)
+        env["UPSTREAM_RELEASE"]=str(self.upstream_release)
         self.process=subprocess.Popen([
             sys.executable,str(BROKER),
             "--socket",str(self.socket_path),
@@ -286,6 +295,16 @@ class Harness:
             return []
         return [json.loads(line) for line in self.record.read_text().splitlines()]
 
+    def wait_for_records(self, count: int, timeout: float = 2.0) -> list[dict]:
+        deadline=time.monotonic()+timeout
+        while time.monotonic()<deadline:
+            records=self.records()
+            if len(records)>=count:
+                return records
+            time.sleep(0.005)
+        self.fail(f"upstream did not record {count} frames: {self.records()}")
+        return []
+
 
 class CrossKeyMuxTest(Harness, unittest.TestCase):
     upstream_source = CROSS_KEY
@@ -317,9 +336,10 @@ class SameKeySerializationTest(Harness, unittest.TestCase):
         try:
             self.request(first,"request-a",0,"same-job")
             self.request(second,"request-b",0,"same-job")
-            time.sleep(0.08)
-            frames=[record["frame"] for record in self.records()]
+            records=self.wait_for_records(2)
+            frames=[record["frame"] for record in records]
             self.assertEqual([frame["kind"] for frame in frames],["hello","job.inspect"])
+            self.upstream_release.touch()
             self.terminal(first,"request-a")
             self.terminal(second,"request-b")
         finally:
