@@ -1,32 +1,15 @@
 # Trillionnium OS
 
-Trillionnium OS is developed through one active, machine-verified documentation corpus.
+Canonical source for the Trillionnium OS owner-open control plane, Root Linux packaging, Android integration overlays, and evidence-qualified release program.
 
-Start at [`docs/START_HERE.md`](docs/START_HERE.md).
+The active development and qualification entrypoint is [`docs/START_HERE.md`](docs/START_HERE.md). Source tests establish source properties only; installed Root Linux, Android images, physical-device effects, destructive faults, signing, and public release require their own exact evidence receipts.
 
-Current truth is split into:
+Current non-negotiable boundaries:
 
-- `docs/machine/` — baseline, program, modules, requirements, gaps, global objective and evidence;
-- `docs/generated/` — generated current-state, module, gap, traceability and performance views;
-- the remaining top-level files under `docs/` — the only active normative development documents.
+- the provider is the sole semantic principal;
+- Hosts, brokers, registries, schedulers, and controllers remain mechanism-only;
+- accepted effects with uncertain outcomes are never automatically redispatched;
+- source-head, synthetic-merge, build, installed-target, device, fault, and release evidence are separate and non-inheritable;
+- `public_release` remains false until the complete authorized release chain exists.
 
-Earlier plans, status snapshots, audit narratives, batch documents and duplicated evidence prose have been removed from the working tree. They remain recoverable from Git history for research, but they are not current development authority and must not be copied back as active guidance.
-
-Core invariants:
-
-- Codex/provider is the sole semantic principal;
-- substrate and global control are mechanical only;
-- uncertain effects are never automatically redispatched;
-- source, installed-target, Android-image, physical-device, destructive-fault and public-release claims remain separate evidence levels.
-
-Validate the active corpus with:
-
-```sh
-python3 tools/docs/generate_global_docs.py --check
-python3 tools/docs/verify_global_docs.py
-cargo fmt --all -- --check
-cargo test --locked --all-targets
-cargo clippy --locked --all-targets -- -D warnings
-```
-
-The exact current state is generated in [`docs/generated/CURRENT_STATE.md`](docs/generated/CURRENT_STATE.md).
+Start with `docs/START_HERE.md`, then use the machine authority objects under `docs/machine/` and generated views under `docs/generated/`.
