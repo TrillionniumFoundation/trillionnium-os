@@ -23,6 +23,19 @@ module = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
+ANDROID_SCRIPT = (
+    Path(__file__).resolve().parents[1]
+    / ".."
+    / "android-integration/working-tree/vendor/trillionnium/owner-open/tools"
+    / "verify_owner_open_materialized_payload.py"
+).resolve()
+android_spec = importlib.util.spec_from_file_location(
+    "verify_owner_open_materialized_payload_android", ANDROID_SCRIPT
+)
+assert android_spec is not None and android_spec.loader is not None
+android_module = importlib.util.module_from_spec(android_spec)
+android_spec.loader.exec_module(android_module)
+
 
 class VerifyOwnerOpenMaterializedPayloadTest(unittest.TestCase):
     def setUp(self) -> None:
@@ -184,6 +197,67 @@ class VerifyOwnerOpenMaterializedPayloadTest(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             module.materialize("digest", output, [self.image, self.manifest])
         self.assertEqual(output.read_text(encoding="utf-8"), "do not replace")
+
+    def test_sbox_relative_output_is_resolved_below_the_sandbox(self) -> None:
+        sandbox = self.root / "sandbox"
+        output_dir = sandbox / "out"
+        output_dir.mkdir(parents=True, mode=0o700)
+        previous = Path.cwd()
+        try:
+            os.chdir(sandbox)
+            report = module.materialize(
+                "digest", "./out/sbox-output.sha256", self.inputs_list()
+            )
+        finally:
+            os.chdir(previous)
+        output = output_dir / "sbox-output.sha256"
+        self.assertEqual(report["output"], str(output))
+        self.assertEqual(
+            output.read_text(encoding="ascii"),
+            hashlib.sha256(self.image_bytes).hexdigest() + "\n",
+        )
+
+    def test_relative_output_traversal_is_rejected(self) -> None:
+        previous = Path.cwd()
+        try:
+            os.chdir(self.outputs)
+            for raw in ("../escaped.sha256", "out/../escaped.sha256"):
+                with self.subTest(raw=raw), self.assertRaisesRegex(
+                    module.MaterializationError, "normalized|traversal"
+                ):
+                    module.materialize("digest", raw, self.inputs_list())
+        finally:
+            os.chdir(previous)
+
+    def test_noncanonical_output_spellings_are_rejected(self) -> None:
+        previous = Path.cwd()
+        try:
+            os.chdir(self.outputs)
+            for raw in ("out//escaped.sha256", "out/./escaped.sha256", ".", ""):
+                with self.subTest(raw=raw), self.assertRaisesRegex(
+                    module.MaterializationError, "normalized|empty"
+                ):
+                    module.materialize("digest", raw, self.inputs_list())
+        finally:
+            os.chdir(previous)
+
+    def test_output_parent_symlink_is_rejected(self) -> None:
+        link = self.root / "output-link"
+        link.symlink_to(self.outputs, target_is_directory=True)
+        with self.assertRaisesRegex(module.MaterializationError, "symlink"):
+            module.materialize("digest", link / "out.sha256", self.inputs_list())
+
+    def test_android_copy_accepts_sbox_relative_output(self) -> None:
+        sandbox = self.root / "android-sandbox"
+        output_dir = sandbox / "out"
+        output_dir.mkdir(parents=True, mode=0o700)
+        previous = Path.cwd()
+        try:
+            os.chdir(sandbox)
+            output = android_module.normalize_output_path("./out/result")
+        finally:
+            os.chdir(previous)
+        self.assertEqual(output, output_dir / "result")
 
 
 if __name__ == "__main__":

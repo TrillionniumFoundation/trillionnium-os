@@ -253,9 +253,70 @@ def validate(image: Path, manifest_path: Path) -> tuple[dict[str, Any], bytes, s
     return manifest, raw, digest, count
 
 
-def open_output(path: Path) -> int:
-    if not path.is_absolute() or path.parent.is_symlink() or not path.parent.is_dir():
-        raise MaterializationError("Soong output must be an absolute path below a real directory")
+def normalize_output_path(path: Path | str) -> Path:
+    """Resolve a direct or RuleBuilder/sbox output path safely.
+
+    Soong's RuleBuilder runs commands from an isolated sbox directory and
+    rewrites ``$(out)`` to a sandbox-relative ``./out/...`` path.  The
+    materializer still keeps the original create-only boundary: relative
+    paths may not contain traversal components, and every parent component
+    must already resolve to a real, non-symlink directory.  Absolute paths
+    remain supported for the host-side materializer and are subject to the
+    same parent checks.
+    """
+    try:
+        raw = os.fspath(path)
+    except TypeError as error:
+        raise MaterializationError("Soong output path is not path-like") from error
+    if isinstance(raw, bytes):
+        raise MaterializationError("Soong output path must be text")
+    if "\x00" in raw or not raw or raw == ".":
+        raise MaterializationError("Soong output path is empty or contains NUL")
+    if not os.path.isabs(raw):
+        # RuleBuilder's sbox emits a single ``./`` prefix.  Keep accepting a
+        # bare relative path for direct host callers, but reject every other
+        # non-canonical spelling before Path can fold it away.
+        if raw.startswith("./"):
+            raw = raw[2:]
+        if (
+            not raw
+            or raw == "."
+            or os.path.normpath(raw) != raw
+            or ".." in PurePosixPath(raw).parts
+        ):
+            raise MaterializationError("Soong output relative path is not normalized")
+        path = Path(raw)
+        try:
+            path = Path.cwd().resolve(strict=True) / path
+        except OSError as error:
+            raise MaterializationError("Soong output working directory is unavailable") from error
+    else:
+        if raw.startswith("//") or os.path.normpath(raw) != raw:
+            raise MaterializationError("Soong output absolute path is not normalized")
+        path = Path(raw)
+
+    # ``absolute()`` makes the lexical pathname explicit without silently
+    # following a symlink in the output filename itself.  Resolve only the
+    # existing parent, then require that its canonical spelling is unchanged;
+    # this rejects symlinked ancestors as well as a symlink at the immediate
+    # parent, while allowing the final file to be created atomically.
+    path = path.absolute()
+    parent = path.parent
+    if parent.is_symlink():
+        raise MaterializationError("Soong output parent must not be a symlink")
+    if not parent.is_dir():
+        raise MaterializationError("Soong output must be below a real directory")
+    try:
+        resolved_parent = parent.resolve(strict=True)
+    except OSError as error:
+        raise MaterializationError("Soong output parent cannot be resolved") from error
+    if resolved_parent != parent:
+        raise MaterializationError("Soong output parent must not contain symlinks")
+    return path
+
+
+def open_output(path: Path | str) -> int:
+    path = normalize_output_path(path)
     descriptor = os.open(
         path,
         os.O_WRONLY
@@ -335,7 +396,8 @@ def publish_image(source: Path, output: Path, expected_digest: str, expected_byt
         os.close(output_fd)
 
 
-def materialize(kind: str, output: Path, inputs: list[Path]) -> dict[str, Any]:
+def materialize(kind: str, output: Path | str, inputs: list[Path]) -> dict[str, Any]:
+    output = normalize_output_path(output)
     image, manifest_path = locate(inputs)
     _manifest, manifest_raw, digest, count = validate(image, manifest_path)
     if kind == "image":
@@ -359,7 +421,9 @@ def materialize(kind: str, output: Path, inputs: list[Path]) -> dict[str, Any]:
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--kind", choices=("image", "manifest", "digest"), required=True)
-    parser.add_argument("--output", type=Path, required=True)
+    # Keep the lexical spelling so normalize_output_path can reject traversal
+    # and duplicate-separator forms before pathlib canonicalizes them.
+    parser.add_argument("--output", required=True)
     parser.add_argument("inputs", nargs="+", type=Path)
     return parser.parse_args(argv)
 
