@@ -112,7 +112,9 @@ jobs:
             local remote="$1"
             shift
             if [[ -n "${G1_GIT_TOKEN:-}" ]]; then
-              git -c "http.extraheader=AUTHORIZATION: bearer ${G1_GIT_TOKEN}" \
+              local auth_header
+              auth_header="$(printf 'x-access-token:%s' "$G1_GIT_TOKEN" | base64 -w0)"
+              git -c "http.extraheader=AUTHORIZATION: basic ${auth_header}" \
                 fetch --no-tags "$remote" "$@"
             else
               git fetch --no-tags "$remote" "$@"
@@ -177,7 +179,9 @@ jobs:
           base_remote_url="${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY}.git"
           git_ls_remote() {
             if [[ -n "${G1_GIT_TOKEN:-}" ]]; then
-              git -c "http.extraheader=AUTHORIZATION: bearer ${G1_GIT_TOKEN}" \
+              local auth_header
+              auth_header="$(printf 'x-access-token:%s' "$G1_GIT_TOKEN" | base64 -w0)"
+              git -c "http.extraheader=AUTHORIZATION: basic ${auth_header}" \
                 ls-remote "$@"
             else
               git ls-remote "$@"
