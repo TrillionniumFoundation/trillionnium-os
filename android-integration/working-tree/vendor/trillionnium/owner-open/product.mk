@@ -43,6 +43,20 @@ PRODUCT_PACKAGES += \
     trillionnium-owner-open-profile-config \
     TrillionniumOwnerOpenShell
 
+# The Android 16 adbd in this checkout consults Lineage's ADBRoot Binder
+# service before accepting `adb root`.  Keep that service strictly inside the
+# explicitly authorised fogos dogfood lane: owner-open user/release products
+# and every product without the opt-in remain unable to start it.  The
+# matching SELinux fragment is added below only for the same build variants.
+ifeq ($(TRILLINNIUM_DOGFOOD_USERDEBUG_ADB_ROOT),true)
+ifneq ($(filter userdebug eng,$(TARGET_BUILD_VARIANT)),)
+PRODUCT_PACKAGES += \
+    adb_root
+SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += \
+    vendor/trillionnium/owner-open/sepolicy/adbroot
+endif
+endif
+
 PRODUCT_SYSTEM_EXT_PROPERTIES += \
     ro.trillionnium.owner_open.enabled=true
 

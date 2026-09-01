@@ -184,6 +184,41 @@
     {
       "role": "android_selinux_seapp_contexts",
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/seapp_contexts"
+    },
+    {
+      "role": "android_adbroot_daemon_policy",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/adbroot.te"
+    },
+    {
+      "role": "android_adbroot_adbd_policy",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/adbd.te"
+    },
+    {
+      "role": "android_adbroot_file_policy",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/file.te"
+    },
+    {
+      "role": "android_adbroot_file_contexts",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/file_contexts"
+    },
+    {
+      "role": "android_adbroot_service_policy",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/service.te"
+    },
+    {
+      "role": "android_adbroot_service_contexts",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/service_contexts"
+    },
+    {
+      "role": "android_adbroot_system_server_policy",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/system_server.te"
+    }
+  ],
+  "optional_dogfood_product_modules": [
+    {
+      "name": "adb_root",
+      "guard": "TRILLINNIUM_DOGFOOD_USERDEBUG_ADB_ROOT=true && TARGET_BUILD_VARIANT in {userdebug,eng}",
+      "materialization": "UNBOUND_SOONG_MODULE"
     }
   ],
   "required_product_modules": [
