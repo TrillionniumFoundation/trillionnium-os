@@ -3,7 +3,8 @@ name: G1 source snapshot bootstrap
 on:
   push:
     branches:
-      - codex/g1-gap-closure-r1-20260831
+      - "codex/g1-*"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -40,7 +41,7 @@ jobs:
         with:
           name: g1-source-snapshot-${{ github.sha }}
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7
           path: |
             ${{ runner.temp }}/trillionnium-os-${{ github.sha }}.tar.gz
             ${{ runner.temp }}/trillionnium-os-${{ github.sha }}.sha256
