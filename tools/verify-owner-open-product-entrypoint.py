@@ -13,7 +13,10 @@ import sys
 import tomllib
 from typing import Any
 
-CONTRACT = Path("docs/contracts/owner-open-product-entrypoint-v1.json")
+# This is a live packaging contract, not a historical document.  Keep it
+# beside the install-manifest template so the G1 documentation purge cannot
+# silently delete the input used by this verifier.
+CONTRACT = Path("packaging/owner-open-product/product-entrypoint.contract.json")
 EXPECTED_SCHEMA = "org.trillionnium.owner-open.product-entrypoint.v1"
 EXPECTED_REVISION = "2026-08-29-r6"
 EXPECTED_INSTALL_SCHEMA = "org.trillionnium.owner-open.install-manifest.v1"
