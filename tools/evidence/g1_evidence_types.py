@@ -39,6 +39,15 @@ class PackageAssessment:
     promotable_for_current_source: bool
 
 
+@dataclass(frozen=True)
+class TrustedAttestation:
+    """A receipt whose raw bytes were supplied and digest-checked out of band."""
+
+    path: Path
+    digest: str
+    receipt: dict[str, Any]
+
+
 def _reject_duplicate_members(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for key, value in pairs:
@@ -304,5 +313,4 @@ def load_gap_specs(path: Path) -> dict[str, GapSpec]:
         )
     _require(set(result) == set(GAP_EVIDENCE_CLASS), "gap evidence-class map drifted from register")
     return result
-
 

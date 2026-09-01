@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import subprocess
 from typing import Any, Mapping
 
 from g1_evidence_contract import *  # noqa: F403,F401
@@ -12,7 +13,9 @@ from g1_evidence_types import (
     EvidenceError,
     GapSpec,
     PackageAssessment,
+    TrustedAttestation,
     _exact_keys,
+    _identifier,
     _git_sha,
     _mapping,
     _nonnegative_int,
@@ -35,6 +38,224 @@ from g1_evidence_types import (
     strict_json_bytes,
     strict_json_file,
 )
+
+
+def _validate_attestation_receipt(receipt: Mapping[str, Any]) -> tuple[list[str], str, Any, Any]:
+    """Validate the shape of an out-of-band attestation receipt.
+
+    The receipt is deliberately not accepted as proof by itself.  Callers must
+    provide the expected raw-byte digest separately (for example from an
+    independently administered secret or review system).
+    """
+
+    _exact_keys(receipt, ATTESTATION_KEYS, "trusted attestation")
+    _require(receipt["schema"] == ATTESTATION_SCHEMA, "trusted attestation schema is unsupported")
+    _require(receipt["version"] == ATTESTATION_VERSION, "trusted attestation version is unsupported")
+    _require(
+        receipt["signature_algorithm"] == ATTESTATION_SIGNATURE_ALGORITHM,
+        "trusted attestation signature_algorithm is unsupported",
+    )
+    package_ids = _string_list(receipt["package_ids"], "trusted attestation.package_ids")
+    for index, value in enumerate(package_ids):
+        _require(
+            PACKAGE_ID_RE.fullmatch(value) is not None,
+            f"trusted attestation.package_ids[{index}] is malformed",
+        )
+    source_commit = _git_sha(receipt["source_commit"], "trusted attestation.source_commit")
+    _identifier(receipt["authority"], "trusted attestation.authority")
+    _identifier(receipt["verification_method"], "trusted attestation.verification_method")
+    _identifier(receipt["trust_root"], "trusted attestation.trust_root")
+    _require(
+        receipt["trust_root"] == ATTESTATION_TRUST_ROOT_ID,
+        "trusted attestation trust_root is not the configured root",
+    )
+    _require(
+        receipt["independent_verification"] is True,
+        "trusted attestation.independent_verification must be true",
+    )
+    verified_at = _timestamp(receipt["verified_at"], "trusted attestation.verified_at")
+    expires_at = _timestamp(receipt["expires_at"], "trusted attestation.expires_at")
+    _require(verified_at < expires_at, "trusted attestation expires_at must be later than verified_at")
+    evidence_ids = _string_list(receipt["evidence_ids"], "trusted attestation.evidence_ids")
+    for index, value in enumerate(evidence_ids):
+        _require(
+            IDENTIFIER_RE.fullmatch(value) is not None,
+            f"trusted attestation.evidence_ids[{index}] is malformed",
+        )
+    return package_ids, source_commit, verified_at, expires_at
+
+
+def load_trusted_attestation(
+    path: Path,
+    expected_sha256: str,
+    *,
+    repository_root: Path | None = None,
+) -> TrustedAttestation:
+    """Load a receipt only when its raw bytes match an out-of-band digest.
+
+    A receipt inside the repository is rejected: repository-controlled JSON
+    must never be able to make its own COMPLETE evidence trusted.  The core
+    remains network-free; obtaining and independently checking the digest is a
+    caller/operations boundary.
+    """
+
+    _sha256(expected_sha256, "trusted attestation expected_sha256")
+    try:
+        if path.is_symlink():
+            raise EvidenceError("trusted attestation path must not be a symlink")
+        lexical = path.absolute()
+        resolved = path.resolve(strict=True)
+        if not resolved.is_file():
+            raise EvidenceError("trusted attestation path is not a regular file")
+        if repository_root is not None:
+            root = repository_root.resolve(strict=True)
+            _require(
+                not lexical.is_relative_to(root),
+                "trusted attestation must be outside the repository root",
+            )
+            _require(
+                not resolved.is_relative_to(root),
+                "trusted attestation resolves inside the repository root",
+            )
+        content = resolved.read_bytes()
+    except EvidenceError:
+        raise
+    except (OSError, RuntimeError) as error:
+        raise EvidenceError(f"cannot read trusted attestation: {error}") from error
+    actual_sha256 = sha256_bytes(content)
+    _require(
+        actual_sha256 == expected_sha256,
+        "trusted attestation raw-byte digest does not match the out-of-band digest",
+    )
+    receipt = strict_json_bytes(content, str(resolved))
+    _validate_attestation_receipt(receipt)
+    return TrustedAttestation(path=resolved, digest=actual_sha256, receipt=receipt)
+
+
+def _read_external_trust_file(
+    path: Path,
+    *,
+    label: str,
+    repository_root: Path | None,
+    evidence_dir: Path,
+) -> bytes:
+    """Read a detached trust input only from outside repository evidence."""
+
+    try:
+        if path.is_symlink():
+            raise EvidenceError(f"{label} path must not be a symlink")
+        lexical = path.absolute()
+        resolved = path.resolve(strict=True)
+        if not resolved.is_file():
+            raise EvidenceError(f"{label} path is not a regular file")
+        evidence_root = evidence_dir.resolve(strict=True)
+        _require(
+            not lexical.is_relative_to(evidence_root)
+            and not resolved.is_relative_to(evidence_root),
+            f"{label} must be outside the evidence directory",
+        )
+        if repository_root is not None:
+            root = repository_root.resolve(strict=True)
+            _require(
+                not lexical.is_relative_to(root)
+                and not resolved.is_relative_to(root),
+                f"{label} must be outside the repository root",
+            )
+        return resolved.read_bytes()
+    except EvidenceError:
+        raise
+    except (OSError, RuntimeError) as error:
+        raise EvidenceError(f"cannot read {label}: {error}") from error
+
+
+def verify_attestation_signature(
+    attestation: TrustedAttestation,
+    *,
+    signature_path: Path,
+    public_key_path: Path,
+    public_key_sha256: str,
+    repository_root: Path | None,
+    evidence_dir: Path,
+) -> dict[str, str]:
+    """Verify a detached RSA-SHA256 signature under an out-of-band key.
+
+    The public key and signature must be supplied outside repository-controlled
+    paths.  The caller additionally pins the public-key bytes by digest; the
+    core performs no network access and does not infer trust from receipt
+    fields alone.
+    """
+
+    _sha256(public_key_sha256, "trusted attestation public_key_sha256")
+    signature = _read_external_trust_file(
+        signature_path,
+        label="trusted attestation signature",
+        repository_root=repository_root,
+        evidence_dir=evidence_dir,
+    )
+    public_key = _read_external_trust_file(
+        public_key_path,
+        label="trusted attestation public key",
+        repository_root=repository_root,
+        evidence_dir=evidence_dir,
+    )
+    actual_public_key_sha256 = sha256_bytes(public_key)
+    _require(
+        actual_public_key_sha256 == public_key_sha256,
+        "trusted attestation public-key digest does not match the out-of-band digest",
+    )
+    public_key_resolved = public_key_path.resolve(strict=True)
+    try:
+        key_info = subprocess.run(
+            [
+                "openssl",
+                "pkey",
+                "-pubin",
+                "-in",
+                str(public_key_resolved),
+                "-text",
+                "-noout",
+            ],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise EvidenceError(f"trusted attestation public-key type check failed: {error}") from error
+    _require(
+        key_info.returncode == 0
+        and b"Modulus:" in key_info.stdout
+        and b"Exponent:" in key_info.stdout,
+        "trusted attestation public key is not an RSA key",
+    )
+    try:
+        result = subprocess.run(
+            [
+                "openssl",
+                "dgst",
+                "-sha256",
+                "-verify",
+                str(public_key_resolved),
+                "-signature",
+                str(signature_path.resolve(strict=True)),
+                str(attestation.path),
+            ],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise EvidenceError(f"trusted attestation signature verification failed: {error}") from error
+    _require(
+        result.returncode == 0,
+        "trusted attestation detached signature is invalid",
+    )
+    return {
+        "algorithm": ATTESTATION_SIGNATURE_ALGORITHM,
+        "signature_sha256": sha256_bytes(signature),
+        "public_key_sha256": actual_public_key_sha256,
+    }
 
 def validate_package(
     package: dict[str, Any],
@@ -145,17 +366,142 @@ def validate_package(
     )
 
 
+def _require_trusted_attestation_for_promotions(
+    assessments: list[PackageAssessment],
+    packages: Mapping[str, dict[str, Any]],
+    *,
+    current_source_commit: str | None,
+    now: datetime,
+    attestation_path: Path | None,
+    attestation_sha256: str | None,
+    attestation_signature_path: Path | None,
+    attestation_public_key_path: Path | None,
+    attestation_public_key_sha256: str | None,
+    repository_root: Path | None,
+    evidence_dir: Path,
+) -> dict[str, Any] | None:
+    """Require an out-of-band binding before any COMPLETE package can promote.
+
+    Historical/stale and HOLD receipts remain inspectable without an
+    attestation because they cannot produce a current promotion.  Every live
+    COMPLETE package that could influence a promotion (including parents) is
+    bound as an exact set in one trusted receipt.
+    """
+
+    promotable_ids = sorted(
+        assessment.package_id
+        for assessment in assessments
+        if assessment.promotable_for_current_source
+    )
+    if not promotable_ids:
+        _require(
+            attestation_path is None
+            and attestation_sha256 is None
+            and attestation_signature_path is None
+            and attestation_public_key_path is None
+            and attestation_public_key_sha256 is None,
+            "trusted attestation supplied but no current COMPLETE package requires it",
+        )
+        return None
+    _require(
+        attestation_path is not None and attestation_sha256 is not None,
+        "current-source COMPLETE evidence requires an out-of-band trusted attestation",
+    )
+    _require(
+        attestation_signature_path is not None
+        and attestation_public_key_path is not None
+        and attestation_public_key_sha256 is not None,
+        "current-source COMPLETE evidence requires a detached trusted signature and public key",
+    )
+    _require(
+        repository_root is not None,
+        "repository_root is required when promoting evidence with a trusted attestation",
+    )
+    trusted = load_trusted_attestation(
+        attestation_path,
+        attestation_sha256,
+        repository_root=repository_root,
+    )
+    evidence_root = evidence_dir.resolve(strict=True)
+    _require(
+        not trusted.path.is_relative_to(evidence_root),
+        "trusted attestation must be outside the evidence directory",
+    )
+    signature_metadata = verify_attestation_signature(
+        trusted,
+        signature_path=attestation_signature_path,
+        public_key_path=attestation_public_key_path,
+        public_key_sha256=attestation_public_key_sha256,
+        repository_root=repository_root,
+        evidence_dir=evidence_dir,
+    )
+    receipt = trusted.receipt
+    package_ids, source_commit, verified_at, expires_at = _validate_attestation_receipt(receipt)
+    _require(
+        set(package_ids) == set(promotable_ids),
+        "trusted attestation package_ids do not exactly match current COMPLETE evidence",
+    )
+    if current_source_commit is not None:
+        _require(
+            source_commit == current_source_commit,
+            "trusted attestation source_commit does not match current source",
+        )
+    else:
+        source_commits = {
+            assessment.source_commit
+            for assessment in assessments
+            if assessment.package_id in promotable_ids
+        }
+        _require(
+            len(source_commits) == 1 and source_commit in source_commits,
+            "trusted attestation source_commit does not match COMPLETE evidence",
+        )
+    _require(verified_at <= now, "trusted attestation was created in the future")
+    _require(expires_at > now, "trusted attestation has expired")
+    for package_id_value in promotable_ids:
+        package = packages[package_id_value]
+        package_expires = _timestamp(package["expires_at"], "expires_at")
+        _require(
+            expires_at >= package_expires,
+            f"trusted attestation expires before package {package_id_value}",
+        )
+    return {
+        "sha256": trusted.digest,
+        "path": str(trusted.path),
+        "authority": receipt["authority"],
+        "verification_method": receipt["verification_method"],
+        "trust_root": receipt["trust_root"],
+        "package_ids": package_ids,
+        "source_commit": source_commit,
+        "verified_at": receipt["verified_at"],
+        "expires_at": receipt["expires_at"],
+        **signature_metadata,
+    }
+
+
 def verify_evidence_directory(
     evidence_dir: Path,
     gap_register: Path,
     *,
     current_source_commit: str | None = None,
     now: datetime | None = None,
+    attestation_path: Path | None = None,
+    attestation_sha256: str | None = None,
+    attestation_signature_path: Path | None = None,
+    attestation_public_key_path: Path | None = None,
+    attestation_public_key_sha256: str | None = None,
+    repository_root: Path | None = None,
 ) -> dict[str, Any]:
+    reference_now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     gap_specs = load_gap_specs(gap_register)
     _require(evidence_dir.is_dir(), f"evidence directory does not exist: {evidence_dir}")
-    paths = sorted(path for path in evidence_dir.glob("*.json") if path.is_file())
-    _require(bool(paths), f"evidence directory contains no JSON packages: {evidence_dir}")
+    candidates = sorted(evidence_dir.glob("*.json"))
+    _require(bool(candidates), f"evidence directory contains no JSON packages: {evidence_dir}")
+    _require(
+        all(not path.is_symlink() and path.is_file() for path in candidates),
+        "evidence directory contains a symlink or non-regular JSON entry",
+    )
+    paths = candidates
     assessments: list[PackageAssessment] = []
     package_ids: set[str] = set()
     packages: dict[str, dict[str, Any]] = {}
@@ -165,7 +511,7 @@ def verify_evidence_directory(
             package,
             gap_specs,
             current_source_commit=current_source_commit,
-            now=now,
+            now=reference_now,
         )
         _require(assessment.package_id not in package_ids, "duplicate package_id across evidence files")
         package_ids.add(assessment.package_id)
@@ -185,6 +531,20 @@ def verify_evidence_directory(
                 parent["source"]["commit"] == package["source"]["commit"],
                 f"{assessment.package_id} parent {parent_id} uses another source commit",
             )
+
+    trusted_attestation = _require_trusted_attestation_for_promotions(
+        assessments,
+        packages,
+        current_source_commit=current_source_commit,
+        now=reference_now,
+        attestation_path=attestation_path,
+        attestation_sha256=attestation_sha256,
+        attestation_signature_path=attestation_signature_path,
+        attestation_public_key_path=attestation_public_key_path,
+        attestation_public_key_sha256=attestation_public_key_sha256,
+        repository_root=repository_root,
+        evidence_dir=evidence_dir,
+    )
 
     promotable_gaps: dict[str, str] = {}
     for assessment in assessments:
@@ -223,6 +583,7 @@ def verify_evidence_directory(
         "all_gaps_promotable": not unresolved,
         "public_release": False,
         "automatic_redispatch": False,
+        "trusted_attestation": trusted_attestation,
     }
 
 

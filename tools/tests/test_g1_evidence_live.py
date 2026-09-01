@@ -6,6 +6,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
+ROOT = Path(__file__).resolve().parents[2]
+
 from tools.tests.test_g1_evidence import (
     CANDIDATE,
     GAP_REGISTER,
@@ -45,11 +47,26 @@ class G1EvidenceLiveHardeningTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
             write_json(directory / "package.json", package)
+            (
+                attestation_path,
+                attestation_sha256,
+                attestation_signature_path,
+                attestation_public_key_path,
+                attestation_public_key_sha256,
+            ) = G1EvidenceTest.write_trusted_attestation(
+                directory.parent / "g1-live-attestation.json", [package]
+            )
             return verify_evidence_directory(
                 directory,
                 GAP_REGISTER,
                 current_source_commit=SOURCE_COMMIT,
                 now=now,
+                attestation_path=attestation_path,
+                attestation_sha256=attestation_sha256,
+                attestation_signature_path=attestation_signature_path,
+                attestation_public_key_path=attestation_public_key_path,
+                attestation_public_key_sha256=attestation_public_key_sha256,
+                repository_root=ROOT,
             )
 
     def test_package_cannot_outlive_authorization(self) -> None:
@@ -119,12 +136,27 @@ class G1EvidenceLiveHardeningTest(unittest.TestCase):
             directory = Path(temp)
             write_json(directory / "l1-hold.json", parent)
             write_json(directory / "l2.json", child)
+            (
+                attestation_path,
+                attestation_sha256,
+                attestation_signature_path,
+                attestation_public_key_path,
+                attestation_public_key_sha256,
+            ) = G1EvidenceTest.write_trusted_attestation(
+                directory.parent / "g1-live-attestation.json", [child]
+            )
             with self.assertRaisesRegex(EvidenceError, "parent .* is not COMPLETE"):
                 verify_evidence_directory(
                     directory,
                     GAP_REGISTER,
                     current_source_commit=SOURCE_COMMIT,
                     now=NOW,
+                    attestation_path=attestation_path,
+                    attestation_sha256=attestation_sha256,
+                    attestation_signature_path=attestation_signature_path,
+                    attestation_public_key_path=attestation_public_key_path,
+                    attestation_public_key_sha256=attestation_public_key_sha256,
+                    repository_root=ROOT,
                 )
 
     def test_current_source_mismatch_yields_no_promotion(self) -> None:

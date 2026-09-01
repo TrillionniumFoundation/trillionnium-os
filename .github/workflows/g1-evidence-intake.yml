@@ -47,10 +47,12 @@ jobs:
             tools/evidence/g1_evidence_types.py \
             tools/evidence/g1_evidence_core.py \
             tools/evidence/g1_evidence.py \
-            tools/verify-g1-evidence.py
+            tools/verify-g1-evidence.py \
+            tools/verify-g1-evidence-live.py
           python3 -m unittest \
             tools.tests.test_g1_evidence \
-            tools.tests.test_g1_evidence_live -v
+            tools.tests.test_g1_evidence_live \
+            tools.tests.test_g1_evidence_live_binding -v
           python3 tools/verify-g1-evidence.py \
             --current-source-commit "$SOURCE_HEAD_SHA" \
             --report "${RUNNER_TEMP}/g1-evidence-report.json" \
@@ -134,9 +136,11 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git --no-replace-objects rev-parse HEAD)" = "${{ steps.merge.outputs.commit }}"
+          python3 -m py_compile tools/verify-g1-evidence-live.py
           python3 -m unittest \
             tools.tests.test_g1_evidence \
-            tools.tests.test_g1_evidence_live -v
+            tools.tests.test_g1_evidence_live \
+            tools.tests.test_g1_evidence_live_binding -v
           python3 tools/verify-g1-evidence.py \
             --current-source-commit "$SOURCE_HEAD_SHA" \
             --report "${RUNNER_TEMP}/g1-evidence-merge-report.json" \

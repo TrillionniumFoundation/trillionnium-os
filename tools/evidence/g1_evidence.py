@@ -26,6 +26,12 @@ def verify_evidence_directory(
     *,
     current_source_commit: str | None = None,
     now: datetime | None = None,
+    attestation_path: Path | None = None,
+    attestation_sha256: str | None = None,
+    attestation_signature_path: Path | None = None,
+    attestation_public_key_path: Path | None = None,
+    attestation_public_key_sha256: str | None = None,
+    repository_root: Path | None = None,
 ) -> dict[str, Any]:
     """Validate receipts and return only live, continuously rooted promotions.
 
@@ -41,9 +47,21 @@ def verify_evidence_directory(
         gap_register,
         current_source_commit=current_source_commit,
         now=reference_now,
+        attestation_path=attestation_path,
+        attestation_sha256=attestation_sha256,
+        attestation_signature_path=attestation_signature_path,
+        attestation_public_key_path=attestation_public_key_path,
+        attestation_public_key_sha256=attestation_public_key_sha256,
+        repository_root=repository_root,
     )
     gap_specs = load_gap_specs(gap_register)  # noqa: F405
-    paths = sorted(path for path in evidence_dir.glob("*.json") if path.is_file())
+    candidates = sorted(evidence_dir.glob("*.json"))
+    _require_live(bool(candidates), f"evidence directory contains no JSON packages: {evidence_dir}")
+    _require_live(
+        all(not path.is_symlink() and path.is_file() for path in candidates),
+        "evidence directory contains a symlink or non-regular JSON entry",
+    )
+    paths = candidates
     packages: dict[str, dict[str, Any]] = {}
     assessments: dict[str, PackageAssessment] = {}  # noqa: F405
     for path in paths:

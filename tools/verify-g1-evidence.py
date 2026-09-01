@@ -26,6 +26,29 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--evidence-dir", type=Path)
     parser.add_argument("--gap-register", type=Path)
     parser.add_argument("--current-source-commit")
+    parser.add_argument(
+        "--attestation",
+        type=Path,
+        help="out-of-band trusted attestation receipt (required for current COMPLETE packages)",
+    )
+    parser.add_argument(
+        "--attestation-sha256",
+        help="raw-byte SHA-256 supplied independently for --attestation",
+    )
+    parser.add_argument(
+        "--attestation-signature",
+        type=Path,
+        help="detached RSA-SHA256 signature for --attestation",
+    )
+    parser.add_argument(
+        "--attestation-public-key",
+        type=Path,
+        help="trusted public key for --attestation-signature",
+    )
+    parser.add_argument(
+        "--attestation-public-key-sha256",
+        help="raw-byte SHA-256 pin for --attestation-public-key (configured trust root)",
+    )
     parser.add_argument("--report", type=Path)
     parser.add_argument("--promotion-plan", type=Path)
     return parser.parse_args(argv)
@@ -41,6 +64,12 @@ def main(argv: list[str]) -> int:
             evidence_dir,
             gap_register,
             current_source_commit=args.current_source_commit,
+            attestation_path=args.attestation,
+            attestation_sha256=args.attestation_sha256,
+            attestation_signature_path=args.attestation_signature,
+            attestation_public_key_path=args.attestation_public_key,
+            attestation_public_key_sha256=args.attestation_public_key_sha256,
+            repository_root=root,
         )
         plan = promotion_plan(report, gap_register)
     except EvidenceError as error:

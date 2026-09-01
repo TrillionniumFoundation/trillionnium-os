@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
 
@@ -21,6 +22,7 @@ from g1_evidence import (  # noqa: E402
     load_gap_specs,
     package_id,
     promotion_plan,
+    sha256_bytes,
     strict_json_bytes,
     validate_package,
     verify_evidence_directory,
@@ -77,6 +79,82 @@ class G1EvidenceTest(unittest.TestCase):
         }
         return self.resign(package)
 
+    @staticmethod
+    def write_trusted_attestation(
+        path: Path, packages: list[dict]
+    ) -> tuple[Path, str, Path, Path, str]:
+        """Create a test-only signed receipt and return its pinned inputs."""
+        receipt = {
+            "schema": "org.trillionnium.g1.evidence-attestation.v1",
+            "version": "1",
+            "package_ids": sorted(package["package_id"] for package in packages),
+            "source_commit": SOURCE_COMMIT,
+            "authority": "test-independent-review",
+            "verification_method": "test-rsa-signature",
+            "trust_root": "g1-attestation-root-20260902",
+            "signature_algorithm": "rsa-sha256",
+            "independent_verification": True,
+            "verified_at": "2026-09-01T00:00:00Z",
+            "expires_at": "2026-12-31T00:00:00Z",
+            "evidence_ids": ["test-attestation-1"],
+        }
+        content = json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8") + b"\n"
+        path.write_bytes(content)
+        private_key_path = path.with_suffix(".private.pem")
+        public_key_path = path.with_suffix(".public.pem")
+        signature_path = path.with_suffix(".sig")
+        subprocess.run(
+            [
+                "openssl",
+                "genpkey",
+                "-algorithm",
+                "RSA",
+                "-pkeyopt",
+                "rsa_keygen_bits:2048",
+                "-out",
+                str(private_key_path),
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        subprocess.run(
+            [
+                "openssl",
+                "rsa",
+                "-in",
+                str(private_key_path),
+                "-pubout",
+                "-out",
+                str(public_key_path),
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        subprocess.run(
+            [
+                "openssl",
+                "dgst",
+                "-sha256",
+                "-sign",
+                str(private_key_path),
+                "-out",
+                str(signature_path),
+                str(path),
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        return (
+            path,
+            sha256_bytes(content),
+            signature_path,
+            public_key_path,
+            sha256_bytes(public_key_path.read_bytes()),
+        )
+
     def test_checked_in_l1_package_is_valid_and_promotable_for_bound_source(self) -> None:
         assessment = validate_package(
             deepcopy(self.base),
@@ -100,6 +178,133 @@ class G1EvidenceTest(unittest.TestCase):
         )
         self.assertTrue(assessment.structurally_valid)
         self.assertFalse(assessment.promotable_for_current_source)
+
+    def test_current_complete_package_requires_out_of_band_attestation(self) -> None:
+        package = deepcopy(self.base)
+        current_head = "a" * 40
+        package["source"]["commit"] = current_head
+        self.resign(package)
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            write_json(path / "forged-current.json", package)
+            with self.assertRaisesRegex(EvidenceError, "out-of-band trusted attestation"):
+                verify_evidence_directory(
+                    path,
+                    GAP_REGISTER,
+                    current_source_commit=current_head,
+                    now=NOW,
+                )
+
+    def test_current_complete_package_requires_detached_signature(self) -> None:
+        package = deepcopy(self.base)
+        current_head = "b" * 40
+        package["source"]["commit"] = current_head
+        self.resign(package)
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            write_json(path / "current.json", package)
+            receipt = {
+                "schema": "org.trillionnium.g1.evidence-attestation.v1",
+                "version": "1",
+                "package_ids": [package["package_id"]],
+                "source_commit": current_head,
+                "authority": "test-independent-review",
+                "verification_method": "test-rsa-signature",
+                "trust_root": "g1-attestation-root-20260902",
+                "signature_algorithm": "rsa-sha256",
+                "independent_verification": True,
+                "verified_at": "2026-09-01T00:00:00Z",
+                "expires_at": "2026-12-31T00:00:00Z",
+                "evidence_ids": ["test-attestation-1"],
+            }
+            attestation_path = Path(temp).parent / "g1-attestation-no-signature.json"
+            raw = json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+            attestation_path.write_bytes(raw)
+            with self.assertRaisesRegex(EvidenceError, "detached trusted signature"):
+                verify_evidence_directory(
+                    path,
+                    GAP_REGISTER,
+                    current_source_commit=current_head,
+                    now=NOW,
+                    attestation_path=attestation_path,
+                    attestation_sha256=sha256_bytes(raw),
+                )
+
+    def test_attestation_digest_mismatch_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            write_json(path / "l1.json", self.base)
+            attestation_path, _, attestation_signature_path, attestation_public_key_path, attestation_public_key_sha256 = self.write_trusted_attestation(
+                Path(temp).parent / "g1-attestation-digest.json", [self.base]
+            )
+            with self.assertRaisesRegex(EvidenceError, "raw-byte digest"):
+                verify_evidence_directory(
+                    path,
+                    GAP_REGISTER,
+                    current_source_commit=SOURCE_COMMIT,
+                    now=NOW,
+                    attestation_path=attestation_path,
+                    attestation_sha256="0" * 64,
+                    attestation_signature_path=attestation_signature_path,
+                    attestation_public_key_path=attestation_public_key_path,
+                    attestation_public_key_sha256=attestation_public_key_sha256,
+                    repository_root=ROOT,
+                )
+
+    def test_attestation_signature_tampering_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            write_json(path / "l1.json", self.base)
+            (
+                attestation_path,
+                _,
+                attestation_signature_path,
+                attestation_public_key_path,
+                attestation_public_key_sha256,
+            ) = self.write_trusted_attestation(
+                Path(temp).parent / "g1-attestation-signature.json", [self.base]
+            )
+            attestation_path.write_bytes(attestation_path.read_bytes() + b" \n")
+            with self.assertRaisesRegex(EvidenceError, "detached signature is invalid"):
+                verify_evidence_directory(
+                    path,
+                    GAP_REGISTER,
+                    current_source_commit=SOURCE_COMMIT,
+                    now=NOW,
+                    attestation_path=attestation_path,
+                    attestation_sha256=sha256_bytes(attestation_path.read_bytes()),
+                    attestation_signature_path=attestation_signature_path,
+                    attestation_public_key_path=attestation_public_key_path,
+                    attestation_public_key_sha256=attestation_public_key_sha256,
+                    repository_root=ROOT,
+                )
+
+    def test_attestation_public_key_pin_is_required(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            write_json(path / "l1.json", self.base)
+            (
+                attestation_path,
+                attestation_sha256,
+                attestation_signature_path,
+                attestation_public_key_path,
+                _,
+            ) = self.write_trusted_attestation(
+                Path(temp).parent / "g1-attestation-key-pin.json", [self.base]
+            )
+            with self.assertRaisesRegex(EvidenceError, "public-key digest"):
+                verify_evidence_directory(
+                    path,
+                    GAP_REGISTER,
+                    current_source_commit=SOURCE_COMMIT,
+                    now=NOW,
+                    attestation_path=attestation_path,
+                    attestation_sha256=attestation_sha256,
+                    attestation_signature_path=attestation_signature_path,
+                    attestation_public_key_path=attestation_public_key_path,
+                    attestation_public_key_sha256="0" * 64,
+                    repository_root=ROOT,
+                )
 
     def test_duplicate_json_member_is_rejected_recursively(self) -> None:
         with self.assertRaisesRegex(EvidenceError, "duplicate JSON member"):
@@ -167,11 +372,20 @@ class G1EvidenceTest(unittest.TestCase):
             write_json(path / "l1.json", self.base)
             l2 = self.l2_package()
             write_json(path / "l2.json", l2)
+            attestation_path, attestation_sha256, attestation_signature_path, attestation_public_key_path, attestation_public_key_sha256 = self.write_trusted_attestation(
+                Path(temp).parent / "g1-attestation.json", [self.base, l2]
+            )
             report = verify_evidence_directory(
                 path,
                 GAP_REGISTER,
                 current_source_commit=SOURCE_COMMIT,
                 now=NOW,
+                attestation_path=attestation_path,
+                attestation_sha256=attestation_sha256,
+                attestation_signature_path=attestation_signature_path,
+                attestation_public_key_path=attestation_public_key_path,
+                attestation_public_key_sha256=attestation_public_key_sha256,
+                repository_root=ROOT,
             )
             self.assertEqual(report["package_count"], 2)
             self.assertEqual(
@@ -184,11 +398,20 @@ class G1EvidenceTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp)
             write_json(path / "l1.json", self.base)
+            attestation_path, attestation_sha256, attestation_signature_path, attestation_public_key_path, attestation_public_key_sha256 = self.write_trusted_attestation(
+                Path(temp).parent / "g1-attestation.json", [self.base]
+            )
             report = verify_evidence_directory(
                 path,
                 GAP_REGISTER,
                 current_source_commit=SOURCE_COMMIT,
                 now=NOW,
+                attestation_path=attestation_path,
+                attestation_sha256=attestation_sha256,
+                attestation_signature_path=attestation_signature_path,
+                attestation_public_key_path=attestation_public_key_path,
+                attestation_public_key_sha256=attestation_public_key_sha256,
+                repository_root=ROOT,
             )
             plan = promotion_plan(report, GAP_REGISTER)
             self.assertFalse(plan["zero_gap_after_plan"])

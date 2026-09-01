@@ -5,6 +5,10 @@ import re
 
 PACKAGE_SCHEMA = "org.trillionnium.g1.evidence-package.v1"
 PACKAGE_VERSION = "1"
+ATTESTATION_SCHEMA = "org.trillionnium.g1.evidence-attestation.v1"
+ATTESTATION_VERSION = "1"
+ATTESTATION_SIGNATURE_ALGORITHM = "rsa-sha256"
+ATTESTATION_TRUST_ROOT_ID = "g1-attestation-root-20260902"
 GAP_REGISTER_SCHEMA = "org.trillionnium.gap-register.v2"
 PROGRAM_REVISION = "2026-08-31-g1"
 COMPLETE = "COMPLETE"
@@ -209,3 +213,17 @@ WORKFLOW_RUN_KEYS = {
     "artifact_sha256",
 }
 HOLD_KEYS = {"field", "status", "reason"}
+ATTESTATION_KEYS = {
+    "schema",
+    "version",
+    "package_ids",
+    "source_commit",
+    "authority",
+    "verification_method",
+    "trust_root",
+    "signature_algorithm",
+    "independent_verification",
+    "verified_at",
+    "expires_at",
+    "evidence_ids",
+}
