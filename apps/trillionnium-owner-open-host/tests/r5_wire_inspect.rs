@@ -15,7 +15,7 @@ use trillionnium_owner_open_types::{PROTOCOL, PROTOCOL_VERSION, RunTurnFrame, Ru
 
 mod support;
 
-use support::secure_tempdir;
+use support::{read_event_store_bytes, secure_tempdir};
 
 fn request(session: &str, task: &str, turn: &str, input: &str) -> RunTurnRequest {
     RunTurnRequest {
@@ -132,7 +132,7 @@ fn completed_turn_and_call_inspection_are_read_only_and_do_not_spawn_provider() 
             assert!(persistence.append_frame(&scope, &digest, frame));
         }
     }
-    let before = fs::read(&event_store).unwrap();
+    let before = read_event_store_bytes(&event_store);
 
     let mut child = Command::new(env!("CARGO_BIN_EXE_trillionnium-owner-open-r5-host"))
         .args(["--provider"])
@@ -203,7 +203,7 @@ fn completed_turn_and_call_inspection_are_read_only_and_do_not_spawn_provider() 
         "read-only inspection must never start the provider"
     );
     assert_eq!(
-        fs::read(&event_store).unwrap(),
+        read_event_store_bytes(&event_store),
         before,
         "wire inspection mutated the durable event store"
     );

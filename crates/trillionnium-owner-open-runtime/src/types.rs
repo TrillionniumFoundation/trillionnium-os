@@ -20,6 +20,35 @@ pub type Result<T> = std::result::Result<T, RuntimeError>;
 
 /// Mechanical liveness bounds. None of these fields classifies the meaning of
 /// a command or ADB subcommand.
+///
+/// The schema ceilings below are intentionally independent of the defaults.
+/// A deployment may lower a limit for its available capacity, but a caller
+/// cannot use a configuration object to turn a bounded reader/channel or a
+/// finite timeout into an effectively unbounded allocation or wait.
+pub const MAX_RUNTIME_CALL_ID_BYTES: usize = 4 * 1024;
+pub const MAX_RUNTIME_TARGET_ID_BYTES: usize = 1024 * 1024;
+pub const MAX_RUNTIME_ARGV_ITEMS: usize = 65_536;
+pub const MAX_RUNTIME_ARGUMENT_BYTES: usize = 1024 * 1024;
+pub const MAX_RUNTIME_TOTAL_ARGUMENT_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_RUNTIME_ENVIRONMENT_ITEMS: usize = 65_536;
+pub const MAX_RUNTIME_ENVIRONMENT_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_RUNTIME_CWD_BYTES: usize = 1024 * 1024;
+pub const MAX_RUNTIME_STDIN_BYTES: usize = 256 * 1024 * 1024;
+pub const MAX_RUNTIME_OUTPUT_BYTES: usize = 1024 * 1024 * 1024;
+pub const MAX_RUNTIME_STREAM_CHUNK_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_RUNTIME_READER_QUEUE_DEPTH: usize = 65_536;
+/// The queue is bounded by the product of its depth and one reader chunk.
+/// There are two readers in pipe mode, so this still leaves a finite, explicit
+/// two-stream resident-memory ceiling rather than relying on allocator luck.
+pub const MAX_RUNTIME_READER_BUFFER_BYTES: usize = 1024 * 1024 * 1024;
+pub const MAX_RUNTIME_DEFAULT_TIMEOUT: Duration = Duration::from_secs(24 * 60 * 60);
+/// Ceiling for a caller-selected non-zero timeout. This remains separate from
+/// the owner's default so changing a profile default cannot widen request
+/// liveness implicitly.
+pub const MAX_RUNTIME_REQUEST_TIMEOUT: Duration = Duration::from_secs(24 * 60 * 60);
+pub const MAX_RUNTIME_POLL_INTERVAL: Duration = Duration::from_secs(1);
+pub const MAX_RUNTIME_TERMINATE_GRACE: Duration = Duration::from_secs(60);
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MechanicalLimits {
     pub max_call_id_bytes: usize,
@@ -83,19 +112,262 @@ impl MechanicalLimits {
                 "mechanical limits must be non-zero".to_string(),
             ));
         }
+
+        for (name, value, maximum) in [
+            (
+                "max_call_id_bytes",
+                self.max_call_id_bytes,
+                MAX_RUNTIME_CALL_ID_BYTES,
+            ),
+            (
+                "max_target_id_bytes",
+                self.max_target_id_bytes,
+                MAX_RUNTIME_TARGET_ID_BYTES,
+            ),
+            (
+                "max_argv_items",
+                self.max_argv_items,
+                MAX_RUNTIME_ARGV_ITEMS,
+            ),
+            (
+                "max_argument_bytes",
+                self.max_argument_bytes,
+                MAX_RUNTIME_ARGUMENT_BYTES,
+            ),
+            (
+                "max_total_argument_bytes",
+                self.max_total_argument_bytes,
+                MAX_RUNTIME_TOTAL_ARGUMENT_BYTES,
+            ),
+            (
+                "max_environment_items",
+                self.max_environment_items,
+                MAX_RUNTIME_ENVIRONMENT_ITEMS,
+            ),
+            (
+                "max_environment_bytes",
+                self.max_environment_bytes,
+                MAX_RUNTIME_ENVIRONMENT_BYTES,
+            ),
+            ("max_cwd_bytes", self.max_cwd_bytes, MAX_RUNTIME_CWD_BYTES),
+            (
+                "max_stdin_bytes",
+                self.max_stdin_bytes,
+                MAX_RUNTIME_STDIN_BYTES,
+            ),
+            (
+                "max_output_bytes",
+                self.max_output_bytes,
+                MAX_RUNTIME_OUTPUT_BYTES,
+            ),
+            (
+                "stream_chunk_bytes",
+                self.stream_chunk_bytes,
+                MAX_RUNTIME_STREAM_CHUNK_BYTES,
+            ),
+            (
+                "reader_queue_depth",
+                self.reader_queue_depth,
+                MAX_RUNTIME_READER_QUEUE_DEPTH,
+            ),
+        ] {
+            if value > maximum {
+                return Err(RuntimeError::InvalidRequest(format!(
+                    "{name} exceeds hard bound {maximum}"
+                )));
+            }
+        }
+
+        for (name, value, maximum) in [
+            (
+                "default_timeout",
+                self.default_timeout,
+                MAX_RUNTIME_DEFAULT_TIMEOUT,
+            ),
+            (
+                "poll_interval",
+                self.poll_interval,
+                MAX_RUNTIME_POLL_INTERVAL,
+            ),
+            (
+                "terminate_grace",
+                self.terminate_grace,
+                MAX_RUNTIME_TERMINATE_GRACE,
+            ),
+        ] {
+            if value > maximum {
+                return Err(RuntimeError::InvalidRequest(format!(
+                    "{name} exceeds hard bound {maximum:?}"
+                )));
+            }
+        }
+
+        if self.max_argument_bytes > self.max_total_argument_bytes {
+            return Err(RuntimeError::InvalidRequest(
+                "max_argument_bytes cannot exceed max_total_argument_bytes".to_string(),
+            ));
+        }
+        if self.stream_chunk_bytes > self.max_output_bytes {
+            return Err(RuntimeError::InvalidRequest(
+                "stream_chunk_bytes cannot exceed max_output_bytes".to_string(),
+            ));
+        }
+        let reader_buffer_bytes = self
+            .stream_chunk_bytes
+            .checked_mul(self.reader_queue_depth)
+            .ok_or_else(|| {
+                RuntimeError::InvalidRequest(
+                    "stream_chunk_bytes and reader_queue_depth overflow the reader buffer bound"
+                        .to_string(),
+                )
+            })?;
+        if reader_buffer_bytes > MAX_RUNTIME_READER_BUFFER_BYTES {
+            return Err(RuntimeError::InvalidRequest(format!(
+                "stream_chunk_bytes * reader_queue_depth exceeds hard bound {MAX_RUNTIME_READER_BUFFER_BYTES}"
+            )));
+        }
         Ok(())
     }
 }
 
+#[cfg(test)]
+mod mechanical_limit_tests {
+    use super::*;
+
+    #[test]
+    fn default_mechanical_limits_validate() {
+        MechanicalLimits::default()
+            .validate()
+            .expect("default mechanical limits are valid");
+    }
+
+    #[test]
+    fn usize_schema_ceilings_are_enforced() {
+        macro_rules! assert_oversized {
+            ($field:ident, $maximum:ident) => {{
+                let mut limits = MechanicalLimits::default();
+                limits.$field = $maximum + 1;
+                let error = limits
+                    .validate()
+                    .expect_err("oversized mechanical limit must fail closed");
+                assert!(
+                    error.to_string().contains(stringify!($field)),
+                    "unexpected error for {}: {error}",
+                    stringify!($field)
+                );
+            }};
+        }
+
+        assert_oversized!(max_call_id_bytes, MAX_RUNTIME_CALL_ID_BYTES);
+        assert_oversized!(max_target_id_bytes, MAX_RUNTIME_TARGET_ID_BYTES);
+        assert_oversized!(max_argv_items, MAX_RUNTIME_ARGV_ITEMS);
+        assert_oversized!(max_argument_bytes, MAX_RUNTIME_ARGUMENT_BYTES);
+        assert_oversized!(max_total_argument_bytes, MAX_RUNTIME_TOTAL_ARGUMENT_BYTES);
+        assert_oversized!(max_environment_items, MAX_RUNTIME_ENVIRONMENT_ITEMS);
+        assert_oversized!(max_environment_bytes, MAX_RUNTIME_ENVIRONMENT_BYTES);
+        assert_oversized!(max_cwd_bytes, MAX_RUNTIME_CWD_BYTES);
+        assert_oversized!(max_stdin_bytes, MAX_RUNTIME_STDIN_BYTES);
+        assert_oversized!(max_output_bytes, MAX_RUNTIME_OUTPUT_BYTES);
+        assert_oversized!(stream_chunk_bytes, MAX_RUNTIME_STREAM_CHUNK_BYTES);
+        assert_oversized!(reader_queue_depth, MAX_RUNTIME_READER_QUEUE_DEPTH);
+    }
+
+    #[test]
+    fn duration_schema_ceilings_are_enforced() {
+        macro_rules! assert_oversized {
+            ($field:ident, $maximum:ident) => {{
+                let mut limits = MechanicalLimits::default();
+                limits.$field = $maximum + Duration::from_nanos(1);
+                let error = limits
+                    .validate()
+                    .expect_err("oversized duration must fail closed");
+                assert!(
+                    error.to_string().contains(stringify!($field)),
+                    "unexpected error for {}: {error}",
+                    stringify!($field)
+                );
+            }};
+        }
+
+        assert_oversized!(default_timeout, MAX_RUNTIME_DEFAULT_TIMEOUT);
+        assert_oversized!(poll_interval, MAX_RUNTIME_POLL_INTERVAL);
+        assert_oversized!(terminate_grace, MAX_RUNTIME_TERMINATE_GRACE);
+    }
+
+    #[test]
+    fn derived_reader_and_argument_bounds_are_enforced() {
+        let mut limits = MechanicalLimits::default();
+        limits.max_argument_bytes = limits.max_total_argument_bytes + 1;
+        let error = limits
+            .validate()
+            .expect_err("argument relationship must fail");
+        assert!(error.to_string().contains("max_argument_bytes"));
+
+        let limits = MechanicalLimits {
+            max_output_bytes: 512 * 1024,
+            stream_chunk_bytes: 1024 * 1024,
+            ..MechanicalLimits::default()
+        };
+        let error = limits
+            .validate()
+            .expect_err("output relationship must fail");
+        assert!(error.to_string().contains("stream_chunk_bytes"));
+
+        let stream_chunk_bytes = MAX_RUNTIME_STREAM_CHUNK_BYTES;
+        let reader_queue_depth = MAX_RUNTIME_READER_BUFFER_BYTES
+            .checked_div(stream_chunk_bytes)
+            .and_then(|depth| depth.checked_add(1))
+            .expect("test bound arithmetic must fit");
+        let limits = MechanicalLimits {
+            max_output_bytes: MAX_RUNTIME_OUTPUT_BYTES,
+            stream_chunk_bytes,
+            reader_queue_depth,
+            ..MechanicalLimits::default()
+        };
+        let error = limits.validate().expect_err("reader product must fail");
+        assert!(error.to_string().contains("reader_queue_depth"));
+    }
+}
+
+/// A cheap, cloneable cancellation token for one runtime operation.
+///
+/// The token owns one local flag and may observe additional flags belonging to
+/// an enclosing owner (for example a turn cancellation) without spawning a
+/// forwarding thread.  The linked flags are immutable after construction and
+/// are scoped to this operation, so cancellation cannot accidentally fan out
+/// to an unrelated call.
 #[derive(Debug, Clone, Default)]
 pub struct CancellationToken {
     cancelled: Arc<AtomicBool>,
+    linked: Arc<Vec<Arc<AtomicBool>>>,
 }
 
 impl CancellationToken {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Build a token that observes the supplied per-operation flags in
+    /// addition to its own local flag.  This is intentionally a flags-only
+    /// interface: semantic cancellation ownership remains with the caller,
+    /// while the process runtime only observes a bounded mechanical signal.
+    #[must_use]
+    pub fn from_shared_flags<I>(flags: I) -> Self
+    where
+        I: IntoIterator<Item = Arc<AtomicBool>>,
+    {
+        Self {
+            cancelled: Arc::new(AtomicBool::new(false)),
+            linked: Arc::new(flags.into_iter().collect()),
+        }
+    }
+
+    /// Return the locally-owned flag so an enclosing operation can link this
+    /// token without exposing its internal state representation.
+    #[must_use]
+    pub fn shared_flag(&self) -> Arc<AtomicBool> {
+        Arc::clone(&self.cancelled)
     }
 
     pub fn cancel(&self) {
@@ -105,6 +377,7 @@ impl CancellationToken {
     #[must_use]
     pub fn is_cancelled(&self) -> bool {
         self.cancelled.load(Ordering::SeqCst)
+            || self.linked.iter().any(|flag| flag.load(Ordering::SeqCst))
     }
 }
 

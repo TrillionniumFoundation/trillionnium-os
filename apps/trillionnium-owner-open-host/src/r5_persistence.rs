@@ -3,7 +3,8 @@ use std::path::Path;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_event_store::{
-    DurableEventStore, EventInput, EventStoreLimits, SyncPolicy, TurnScope,
+    DurableEventStore, EventInput, EventRecord, EventStoreLimits, SegmentedEventStore,
+    SegmentedEventStoreConfig, SyncPolicy, TurnScope,
 };
 use trillionnium_owner_open_types::{RunTurnFrame, RunTurnRequest};
 
@@ -41,9 +42,40 @@ pub enum StoredInspection {
 
 #[derive(Debug)]
 pub struct Persistence {
-    store: Option<DurableEventStore>,
+    store: Option<EventStoreBackend>,
     configured: bool,
     error: Option<String>,
+}
+
+#[derive(Debug)]
+enum EventStoreBackend {
+    Legacy(Box<DurableEventStore>),
+    Segmented(Box<SegmentedEventStore>),
+}
+
+impl EventStoreBackend {
+    fn replay(
+        &self,
+        scope: &TurnScope,
+    ) -> trillionnium_owner_open_event_store::Result<Vec<EventRecord>> {
+        match self {
+            Self::Legacy(store) => store.replay(scope, 0),
+            Self::Segmented(store) => store.replay(scope, 0),
+        }
+    }
+
+    fn append(
+        &self,
+        input: EventInput,
+        durable: bool,
+    ) -> trillionnium_owner_open_event_store::Result<()> {
+        match self {
+            Self::Legacy(store) => store.append(input),
+            Self::Segmented(store) if durable => store.append_durable(input),
+            Self::Segmented(store) => store.append(input),
+        }?;
+        Ok(())
+    }
 }
 
 impl Persistence {
@@ -63,7 +95,7 @@ impl Persistence {
         };
         match DurableEventStore::open(path, EventStoreLimits::default(), SyncPolicy::Full) {
             Ok(store) => Self {
-                store: Some(store),
+                store: Some(EventStoreBackend::Legacy(Box::new(store))),
                 configured: true,
                 error: None,
             },
@@ -73,6 +105,63 @@ impl Persistence {
                 error: Some(error.to_string()),
             },
         }
+    }
+
+    /// Return the sibling directory used by the v2 segmented turn store when
+    /// a caller supplies the long-standing v1 JSONL path. The source path is
+    /// retained solely for one-time/idempotent migration; the selected v7
+    /// product path writes its authority to numbered segments under this
+    /// directory.
+    #[must_use]
+    pub fn segmented_root_for(path: &Path) -> std::path::PathBuf {
+        let mut value = path.as_os_str().to_os_string();
+        value.push(".segments");
+        std::path::PathBuf::from(value)
+    }
+
+    /// Open the v2 segmented turn store. `root` must be a dedicated
+    /// directory; `legacy_path` is an optional v1 source imported exactly once
+    /// (and rechecked on subsequent opens). The v1-only
+    /// [`Self::open_best_effort`] constructor remains unchanged for older
+    /// entrypoints.
+    #[must_use]
+    pub fn open_best_effort_segmented(root: Option<&Path>, legacy_path: Option<&Path>) -> Self {
+        let Some(root) = root else {
+            return Self::memory_only();
+        };
+        let result = open_segmented_store(root, legacy_path);
+        let segmented = match result {
+            Ok(store) => store,
+            Err(error) => {
+                return Self {
+                    store: None,
+                    configured: true,
+                    error: Some(error.to_string()),
+                };
+            }
+        };
+
+        // The optional v1 source has only been consulted for an exact-prefix
+        // migration. Do not retain or append to that file: the v2 segmented
+        // store is the sole authoritative writer on the product path,
+        // avoiding a reintroduced single-file write hotspot.
+        Self {
+            store: Some(EventStoreBackend::Segmented(Box::new(segmented))),
+            configured: true,
+            error: None,
+        }
+    }
+
+    /// Convenience form for the CLI contract, deriving
+    /// `<event_store>.segments` as the v2 root while treating the supplied
+    /// path as an optional v1 migration source (never as a v2 write target).
+    #[must_use]
+    pub fn open_best_effort_segmented_path(path: Option<&Path>) -> Self {
+        let Some(path) = path else {
+            return Self::memory_only();
+        };
+        let root = Self::segmented_root_for(path);
+        Self::open_best_effort_segmented(Some(&root), Some(path))
     }
 
     #[must_use]
@@ -98,7 +187,7 @@ impl Persistence {
         let Some(store) = &self.store else {
             return StoredTurn::Empty;
         };
-        let records = match store.replay(scope, 0) {
+        let records = match store.replay(scope) {
             Ok(records) => records,
             Err(error) => return StoredTurn::Conflict(error.to_string()),
         };
@@ -258,23 +347,25 @@ impl Persistence {
             "request_sha256": request_sha256,
             "frame": frame_value
         });
-        let result = self
-            .store
-            .as_ref()
-            .expect("store presence checked")
-            .append(EventInput {
-                scope: scope.clone(),
-                event_id,
-                kind: frame.kind.clone(),
-                payload,
-            });
-        match result {
-            Ok(_) => true,
-            Err(error) => {
-                self.disable(error.to_string());
-                false
-            }
+        let input = EventInput {
+            scope: scope.clone(),
+            event_id,
+            kind: frame.kind.clone(),
+            payload,
+        };
+        let durable = is_authority_frame(&frame.kind);
+        match self.store.as_ref() {
+            Some(store) => match store.append(input, durable) {
+                Ok(()) => {}
+                Err(error) => {
+                    self.disable(error.to_string());
+                    return false;
+                }
+            },
+            None => return false,
         }
+
+        true
     }
 
     fn disable(&mut self, error: String) {
@@ -282,6 +373,47 @@ impl Persistence {
         self.configured = true;
         self.error = Some(error);
     }
+}
+
+/// Open the segmented authority and perform a convergent v1 import when
+/// needed. The event-store helper fences the v1 writer across the complete
+/// snapshot/copy window. Once a v2 root contains records, the legacy file is
+/// treated as a historical prefix rather than a live mirror: new v2 records
+/// intentionally make the destination longer than the source. A prefix
+/// digest mismatch is still rejected so a stale path cannot silently create a
+/// split-brain turn history. If the root is only a partial migration, the
+/// helper resumes it from the validated prefix.
+fn open_segmented_store(
+    root: &Path,
+    legacy_path: Option<&Path>,
+) -> trillionnium_owner_open_event_store::Result<SegmentedEventStore> {
+    let config = SegmentedEventStoreConfig::default();
+    let Some(legacy_path) = legacy_path.filter(|path| path.exists()) else {
+        return SegmentedEventStore::open(root, config);
+    };
+
+    // Keep the source writer fenced through the v2 open/prefix check and any
+    // tail copy.  A retained v1 file may be shorter once v2 is authoritative,
+    // but a competing legacy append can never fall into an unobserved gap
+    // during this migration boundary.
+    SegmentedEventStore::open_or_migrate_with_legacy_prefix(root, legacy_path, config)
+}
+
+/// Acceptance and terminal frames are authority boundaries. On v2 they force
+/// the segmented WAL's configured sync barrier before being exposed to the
+/// caller; ordinary model/tool observations remain on bounded group commit.
+/// Cancellation/rejection terminals are included so a failed turn cannot be
+/// mistaken for an incomplete one after restart.
+fn is_authority_frame(kind: &str) -> bool {
+    matches!(
+        kind,
+        "turn.accepted"
+            | "turn.end"
+            | "turn.cancel.accepted"
+            | "turn.cancelled"
+            | "turn.rejected"
+            | "turn.failed"
+    )
 }
 
 #[must_use]

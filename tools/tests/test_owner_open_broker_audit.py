@@ -11,8 +11,13 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "owner-open"))
 
-from owner_open_broker_audit import BrokerAuditJournal
+from owner_open_broker_audit import (
+    MAX_AUDIT_BYTES,
+    MAX_AUDIT_RECORDS,
+    BrokerAuditJournal,
+)
 from owner_open_broker_common import BrokerError
+from owner_open_broker_common import canonical, strict_json
 
 
 class BrokerAuditTest(unittest.TestCase):
@@ -146,6 +151,45 @@ class BrokerAuditTest(unittest.TestCase):
         os.chmod(self.path, 0o600)
         with self.assertRaisesRegex(BrokerError, "digest mismatch"):
             BrokerAuditJournal(self.path, broker_id="broker")
+
+    def test_create_replacement_between_open_and_identity_check_fails_closed(self) -> None:
+        real_open = os.open
+        moved = self.root / "audit.original"
+
+        def racing_open(target, flags, *args):
+            descriptor = real_open(target, flags, *args)
+            if Path(target) == self.path and flags & getattr(os, "O_EXCL", 0):
+                os.rename(self.path, moved)
+                self.path.write_bytes(b"replacement")
+                os.chmod(self.path, 0o600)
+            return descriptor
+
+        with mock.patch("owner_open_broker_audit.os.open", side_effect=racing_open):
+            with self.assertRaisesRegex(BrokerError, "inode|pathname"):
+                BrokerAuditJournal(self.path, broker_id="broker")
+
+    def test_protocol_json_rejects_nonfinite_numbers(self) -> None:
+        with self.assertRaisesRegex(BrokerError, "non-finite"):
+            strict_json(b'{"value":NaN}', label="test frame")
+        with self.assertRaisesRegex(ValueError, "Out of range float"):
+            canonical({"value": float("inf")})
+
+    def test_audit_limits_are_finite_and_configurable_downward(self) -> None:
+        for kwargs in (
+            {"maximum_bytes": 0},
+            {"maximum_bytes": MAX_AUDIT_BYTES + 1},
+            {"maximum_records": 0},
+            {"maximum_records": MAX_AUDIT_RECORDS + 1},
+        ):
+            with self.assertRaises(BrokerError):
+                BrokerAuditJournal(self.path, broker_id="broker", **kwargs)
+        journal = BrokerAuditJournal(
+            self.path,
+            broker_id="broker",
+            maximum_bytes=4096,
+            maximum_records=4,
+        )
+        journal.close()
 
 
 if __name__ == "__main__":

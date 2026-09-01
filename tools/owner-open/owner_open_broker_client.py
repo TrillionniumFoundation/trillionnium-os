@@ -19,6 +19,11 @@ from owner_open_broker_common import (
     strict_json,
     validate_descriptor,
 )
+from owner_open_broker_runtime import (
+    BROKER_WRITE_TIMEOUT_SECONDS,
+    send_all_bounded,
+    write_all_bounded,
+)
 
 WIRE_SCHEMA = "org.trillionnium.owner-open.connection-broker-wire.v1"
 MAX_TIMEOUT_MS = 600_000
@@ -52,8 +57,15 @@ def expected_for(frame: dict[str, Any]) -> tuple[list[str], str | None]:
 
 
 def write_frame(value: dict[str, Any]) -> None:
-    sys.stdout.buffer.write(canonical(value) + b"\n")
-    sys.stdout.buffer.flush()
+    # The client stdout is itself a pipe in the normal MCP/stdio topology.
+    # Keep response delivery finite just like upstream pipe/socket writes; a
+    # stalled consumer must not leave the broker process wedged forever.
+    write_all_bounded(
+        sys.stdout.buffer,
+        canonical(value) + b"\n",
+        timeout_seconds=BROKER_WRITE_TIMEOUT_SECONDS,
+        label="broker client stdout",
+    )
 
 
 class Client:
@@ -73,7 +85,8 @@ class Client:
         self.connection = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.connection.connect(descriptor["socket_path"])
         self.stream = self.connection.makefile("rb", buffering=0)
-        self.connection.sendall(
+        send_all_bounded(
+            self.connection,
             canonical(
                 {
                     "schema": WIRE_SCHEMA,
@@ -83,7 +96,9 @@ class Client:
                     "token": token,
                 }
             )
-            + b"\n"
+            + b"\n",
+            timeout_seconds=BROKER_WRITE_TIMEOUT_SECONDS,
+            label="broker client hello",
         )
         raw = read_line(self.stream, label="broker hello ack")
         if raw is None:
@@ -129,7 +144,8 @@ class Client:
         expected, job_id = expected_for(frame)
         request_id = f"{self.client_id}-{self.broker_epoch}-{self.next_request}"
         self.next_request += 1
-        self.connection.sendall(
+        send_all_bounded(
+            self.connection,
             canonical(
                 {
                     "schema": WIRE_SCHEMA,
@@ -141,7 +157,9 @@ class Client:
                     "timeout_ms": self.timeout_ms,
                 }
             )
-            + b"\n"
+            + b"\n",
+            timeout_seconds=BROKER_WRITE_TIMEOUT_SECONDS,
+            label="broker client request",
         )
         while True:
             raw = read_line(self.stream, label="broker response")

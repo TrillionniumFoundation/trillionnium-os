@@ -7,22 +7,124 @@ from pathlib import Path
 import signal
 import socket
 import stat
-import subprocess
 import threading
 
+from owner_open_broker_base_v2 import terminate_upstream_bounded
 from owner_open_broker_common import BrokerError, atomic_write_private, validate_socket_path
 
 
 class BrokerServerMixin:
     @staticmethod
     def _path_identity(path: Path, *, socket_path: bool = False) -> tuple[int, int]:
-        metadata = path.lstat()
+        try:
+            metadata = path.lstat()
+        except OSError as error:
+            raise BrokerError(f"broker bound path cannot be inspected: {error}") from error
         if socket_path:
             if not stat.S_ISSOCK(metadata.st_mode):
                 raise BrokerError("bound broker path is not a Unix socket")
         elif not stat.S_ISREG(metadata.st_mode):
             raise BrokerError("broker descriptor path is not a regular file")
         return metadata.st_dev, metadata.st_ino
+
+    @staticmethod
+    def _fd_identity(fd: int, *, socket_path: bool = False) -> tuple[int, int]:
+        """Return the identity of an opened descriptor after type validation."""
+
+        try:
+            metadata = os.fstat(fd)
+        except OSError as error:
+            raise BrokerError("bound broker descriptor cannot be inspected") from error
+        if socket_path and not stat.S_ISSOCK(metadata.st_mode):
+            raise BrokerError("bound broker descriptor is not a Unix socket")
+        if not socket_path and not stat.S_ISREG(metadata.st_mode):
+            raise BrokerError("broker descriptor is not a regular file")
+        return metadata.st_dev, metadata.st_ino
+
+    @classmethod
+    def _bind_private_listener(
+        cls,
+        path: Path,
+    ) -> tuple[socket.socket, tuple[int, int], tuple[int, int]]:
+        """Bind a private filesystem socket while pinning its inode identity.
+
+        A Unix socket's pathname mode is set at ``bind`` time.  Use a narrow
+        umask for that creation, then apply the authoritative mode through the
+        opened listener FD.  The pathname is only inspected (never chmod'ed),
+        and its ``st_dev``/``st_ino`` identity is checked on both sides of the
+        FD operation so a same-UID unlink/recreate cannot receive a chmod or
+        cleanup intended for this listener.
+        """
+
+        listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        bound_identity: tuple[int, int] | None = None
+        try:
+            # AF_UNIX bind derives the initial pathname mode from umask.  The
+            # broker has not started worker threads yet, so the short-lived
+            # process umask transition cannot race broker work.
+            previous_umask = os.umask(0o177)
+            try:
+                listener.bind(str(path))
+            finally:
+                os.umask(previous_umask)
+
+            # Linux exposes different ``st_dev/st_ino`` pairs for an opened
+            # AF_UNIX socket FD and its filesystem dentry.  Keep both
+            # identities separately: the FD pair proves that the listener
+            # itself did not change, while the pathname pair detects an
+            # unlink/recreate race around permission setup.
+            fd_identity = cls._fd_identity(listener.fileno(), socket_path=True)
+            pathname_before = cls._path_identity(path, socket_path=True)
+            bound_identity = pathname_before
+            if pathname_before != cls._path_identity(path, socket_path=True):
+                raise BrokerError("bound broker socket changed before permission setup")
+
+            try:
+                os.fchmod(listener.fileno(), 0o600)
+            except (AttributeError, OSError) as error:
+                raise BrokerError("bound broker socket FD cannot be made private") from error
+
+            descriptor_after = os.fstat(listener.fileno())
+            if (
+                not stat.S_ISSOCK(descriptor_after.st_mode)
+                or (descriptor_after.st_dev, descriptor_after.st_ino) != fd_identity
+                or stat.S_IMODE(descriptor_after.st_mode) != 0o600
+            ):
+                raise BrokerError("bound broker socket FD changed during permission setup")
+            pathname_after = cls._path_identity(path, socket_path=True)
+            if pathname_after != bound_identity:
+                raise BrokerError("bound broker socket pathname changed during permission setup")
+            try:
+                pathname_metadata = path.lstat()
+            except OSError as error:
+                raise BrokerError("bound broker socket pathname disappeared") from error
+            if stat.S_IMODE(pathname_metadata.st_mode) != 0o600:
+                raise BrokerError("bound broker socket pathname is not mode 0600")
+            return listener, bound_identity, fd_identity
+        except Exception:
+            try:
+                listener.close()
+            finally:
+                # Only remove the inode we actually bound.  If an attacker
+                # replaced the pathname, this identity check leaves the
+                # replacement untouched.
+                cls._remove_proven_path(path, bound_identity, socket_path=True)
+            raise
+
+    @classmethod
+    def _verify_bound_listener(
+        cls,
+        listener: socket.socket,
+        pathname_identity: tuple[int, int],
+        fd_identity: tuple[int, int],
+        path: Path,
+    ) -> None:
+        """Re-check listener and pathname identity before publication."""
+
+        if cls._fd_identity(listener.fileno(), socket_path=True) != fd_identity:
+            raise BrokerError("bound broker socket FD identity changed")
+        if cls._path_identity(path, socket_path=True) != pathname_identity:
+            raise BrokerError("bound broker socket pathname identity changed")
 
     @staticmethod
     def _remove_proven_path(
@@ -64,12 +166,19 @@ class BrokerServerMixin:
         try:
             self._start_upstream()
             self.descriptor = self._build_descriptor()
-            listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            listener, socket_identity, socket_fd_identity = self._bind_private_listener(
+                self.args.socket
+            )
             self.listener = listener
-            listener.bind(str(self.args.socket))
-            os.chmod(self.args.socket, 0o600)
-            self.socket_identity = self._path_identity(self.args.socket, socket_path=True)
+            self.socket_identity = socket_identity
+            self.socket_fd_identity = socket_fd_identity
             listener.listen(self.args.max_clients)
+            self._verify_bound_listener(
+                listener,
+                socket_identity,
+                socket_fd_identity,
+                self.args.socket,
+            )
             listener.settimeout(0.2)
             atomic_write_private(
                 self.args.descriptor,
@@ -130,22 +239,9 @@ class BrokerServerMixin:
         upstream = self.upstream
         if upstream is None:
             return
-        if upstream.poll() is None:
-            for sig in (signal.SIGTERM, signal.SIGKILL):
-                try:
-                    os.killpg(upstream.pid, sig)
-                except ProcessLookupError:
-                    break
-                try:
-                    upstream.wait(timeout=1)
-                    break
-                except subprocess.TimeoutExpired:
-                    continue
-        else:
-            try:
-                upstream.wait(timeout=0)
-            except subprocess.TimeoutExpired:
-                pass
+        terminate_upstream_bounded(upstream, self.upstream_process_identity)
+        self.upstream = None
+        self.upstream_process_identity = None
         for pipe in (upstream.stdin, upstream.stdout, upstream.stderr):
             if pipe is None:
                 continue

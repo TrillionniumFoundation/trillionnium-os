@@ -141,7 +141,9 @@ exit 99
     assert_eq!(terminal["payload"]["automatic_redispatch"], false);
     assert_eq!(terminal["payload"]["reconciliation"], true);
 
-    let persistence = Persistence::open_best_effort(Some(&event_store));
+    // The v7 host promotes the legacy source into its segmented authority;
+    // inspect that same authority rather than the intentionally stale v1 file.
+    let persistence = Persistence::open_best_effort_segmented_path(Some(&event_store));
     match persistence.load(&scope, &digest) {
         StoredTurn::Complete(stored) => {
             assert_eq!(stored.len(), 2);

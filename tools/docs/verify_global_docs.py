@@ -18,14 +18,38 @@ MACHINE = DOCS / "machine"
 class VerificationError(Exception):
     pass
 
+
+class DuplicateJsonMember(ValueError):
+    """Raised when an authority document repeats an object member."""
+
+
+def _reject_duplicate_members(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, member in pairs:
+        if key in value:
+            raise DuplicateJsonMember(f"duplicate JSON member {key!r}")
+        value[key] = member
+    return value
+
+
+def _reject_nonfinite(value: str) -> None:
+    raise ValueError(f"non-finite JSON number {value}")
+
 def fail(message: str) -> None:
     raise VerificationError(message)
 
 def load(name: str) -> dict[str, Any]:
     path = MACHINE / name
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
+        value = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=_reject_duplicate_members,
+            parse_constant=_reject_nonfinite,
+        )
+        if not isinstance(value, dict):
+            raise ValueError("authority document root must be an object")
+        return value
+    except (OSError, ValueError) as error:
         fail(f"{path.relative_to(ROOT)} is not valid JSON: {error}")
 
 def require(condition: bool, message: str) -> None:
@@ -136,6 +160,82 @@ def verify_requirements(graph: dict[str, Any], module_ids: set[str], gap_ids: se
         for evidence in req["evidence"]:
             require(evidence in evidence_ids, f"{req['id']} references unknown evidence {evidence}")
         require(req["source"] and req["tests"], f"{req['id']} lacks source or tests")
+        verify_test_references(req["id"], req["tests"])
+
+
+TEST_REF_KINDS = {"source", "planned", "external"}
+TEST_REF_REQUIRED = {"kind", "path", "target"}
+
+
+def _repository_path(value: Any, label: str) -> Path:
+    require(isinstance(value, str) and value, f"{label} must be a non-empty relative path")
+    candidate = Path(value)
+    require(not candidate.is_absolute(), f"{label} must be repository-relative")
+    require(".." not in candidate.parts, f"{label} must not escape the repository")
+    resolved = (ROOT / candidate).resolve()
+    try:
+        resolved.relative_to(ROOT.resolve())
+    except ValueError:
+        fail(f"{label} resolves outside the repository")
+    require(resolved.exists(), f"{label} does not exist: {value}")
+    return resolved
+
+
+def _command_tokens(value: Any, label: str) -> list[str]:
+    require(isinstance(value, list) and value, f"{label} must be a non-empty command array")
+    tokens: list[str] = []
+    for index, token in enumerate(value):
+        require(isinstance(token, str) and token and "\x00" not in token,
+                f"{label}[{index}] must be a non-empty string")
+        tokens.append(token)
+    return tokens
+
+
+def verify_test_references(requirement_id: str, references: Any) -> None:
+    """Validate typed, reachable test declarations in the machine graph.
+
+    A prose label is not executable evidence.  Source/planned references bind
+    a repository path, command, target and workflow job.  External references
+    remain explicit holds and cannot masquerade as a local test command.
+    """
+
+    require(isinstance(references, list), f"{requirement_id} tests must be an array")
+    for index, reference in enumerate(references):
+        label = f"{requirement_id} tests[{index}]"
+        require(isinstance(reference, dict), f"{label} must be a typed object")
+        missing = TEST_REF_REQUIRED - set(reference)
+        require(not missing, f"{label} missing fields: {sorted(missing)}")
+        kind = reference["kind"]
+        require(isinstance(kind, str) and kind in TEST_REF_KINDS,
+                f"{label} has unknown kind {kind!r}")
+        _repository_path(reference["path"], f"{label}.path")
+        target = reference["target"]
+        require(isinstance(target, str) and target.strip() and "\x00" not in target,
+                f"{label}.target must be a non-empty string")
+        if kind == "external":
+            require("command" not in reference and "workflow" not in reference,
+                    f"{label} external references must not claim an executable workflow")
+            continue
+
+        command = _command_tokens(reference.get("command"), f"{label}.command")
+        workflow = reference.get("workflow")
+        workflow_path = _repository_path(workflow, f"{label}.workflow")
+        require(str(workflow).startswith(".github/workflows/"),
+                f"{label}.workflow must be under .github/workflows")
+        workflow_job = reference.get("workflow_job")
+        require(isinstance(workflow_job, str) and re.fullmatch(r"[A-Za-z0-9_-]+", workflow_job),
+                f"{label}.workflow_job is malformed")
+        workflow_text = workflow_path.read_text(encoding="utf-8")
+        require(re.search(rf"(?m)^\s{{2}}{re.escape(workflow_job)}:", workflow_text) is not None,
+                f"{label} workflow job is not declared: {workflow_job}")
+        # Bind the declared target to the actual shell stanza.  This prevents
+        # a machine graph from pointing at a test that no workflow executes.
+        require(target in workflow_text or str(reference["path"]) in workflow_text,
+                f"{label} path/target is not reachable from {workflow_job}")
+        # Keep command identity machine-readable and bounded.  A command may
+        # use a tool name or a repository script, but never shell fragments.
+        require(all("\n" not in token and "\r" not in token for token in command),
+                f"{label}.command contains a line break")
 
 def verify_baseline(base: dict[str, Any], evidence_ids: set[str]) -> None:
     require(base["exact_head_evidence_must_be_ci_generated"] is True, "exact-head evidence policy must be true")

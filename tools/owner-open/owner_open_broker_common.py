@@ -30,6 +30,12 @@ class BrokerError(ValueError):
     pass
 
 
+def _reject_nonfinite_json(value: str) -> None:
+    """Keep protocol JSON in the RFC-8259 finite-number subset."""
+
+    raise ValueError(f"non-finite JSON number {value}")
+
+
 def _pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for key, value in pairs:
@@ -43,8 +49,12 @@ def strict_json(raw: bytes, *, label: str, maximum: int = MAX_LINE_BYTES) -> Any
     if not raw or len(raw) > maximum:
         raise BrokerError(f"{label} is empty or exceeds {maximum} bytes")
     try:
-        return json.loads(raw.decode("utf-8"), object_pairs_hook=_pairs)
-    except (UnicodeDecodeError, json.JSONDecodeError, DuplicateMember) as error:
+        return json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=_pairs,
+            parse_constant=_reject_nonfinite_json,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
         raise BrokerError(f"invalid {label}: {error}") from error
 
 
@@ -54,6 +64,7 @@ def canonical(value: Any) -> bytes:
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
+        allow_nan=False,
     ).encode("utf-8")
 
 
@@ -89,23 +100,10 @@ def read_line(stream: BinaryIO, *, label: str, maximum: int = MAX_LINE_BYTES) ->
     return raw
 
 
-def validate_executable(path: Path, label: str) -> dict[str, Any]:
-    if not path.is_absolute():
-        raise BrokerError(f"{label} must be absolute")
-    metadata = path.lstat()
-    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
-        raise BrokerError(f"{label} must be a non-symlink regular file")
-    if (
-        metadata.st_nlink != 1
-        or metadata.st_size == 0
-        or metadata.st_size > MAX_EXECUTABLE_BYTES
-    ):
-        raise BrokerError(f"{label} must be one non-empty file within the executable byte bound")
-    if metadata.st_mode & 0o022:
-        raise BrokerError(f"{label} must not be group/world writable")
-    if metadata.st_mode & 0o111 == 0 or not os.access(path, os.X_OK):
-        raise BrokerError(f"{label} is not executable")
-    before = (
+def _executable_stat_tuple(metadata: os.stat_result) -> tuple[int, ...]:
+    """Return the metadata that must remain stable while hashing an executable."""
+
+    return (
         metadata.st_dev,
         metadata.st_ino,
         metadata.st_uid,
@@ -116,11 +114,62 @@ def validate_executable(path: Path, label: str) -> dict[str, Any]:
         metadata.st_mtime_ns,
         metadata.st_ctime_ns,
     )
-    digest = hashlib.sha256()
-    read = 0
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
-    descriptor = os.open(path, flags)
+
+
+def _validate_executable_metadata(metadata: os.stat_result, label: str) -> None:
+    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
+        raise BrokerError(f"{label} must be a non-symlink regular file")
+    if (
+        metadata.st_nlink != 1
+        or metadata.st_size == 0
+        or metadata.st_size > MAX_EXECUTABLE_BYTES
+    ):
+        raise BrokerError(f"{label} must be one non-empty file within the executable byte bound")
+    if metadata.st_mode & 0o022:
+        raise BrokerError(f"{label} must not be group/world writable")
+    # Checking the mode bits on the opened inode avoids an additional path
+    # lookup (and therefore another pathname race) during startup.
+    if metadata.st_mode & 0o111 == 0:
+        raise BrokerError(f"{label} is not executable")
+
+
+def open_validated_executable(
+    path: Path,
+    label: str,
+    *,
+    expected_identity: dict[str, Any] | None = None,
+) -> tuple[int, dict[str, Any]]:
+    """Open and validate an executable, returning a pinned descriptor.
+
+    The descriptor is intentionally returned to the caller instead of being
+    closed here.  A broker can then execute ``/proc/self/fd/<descriptor>``
+    while passing that descriptor to the child, so a replacement or symlink
+    swap of ``path`` between validation and ``Popen`` cannot redirect startup
+    to another inode.  ``expected_identity`` binds a later startup validation
+    to the identity captured when the broker was constructed.
+    """
+
+    if not path.is_absolute():
+        raise BrokerError(f"{label} must be absolute")
     try:
+        metadata = path.lstat()
+    except OSError as error:
+        raise BrokerError(f"{label} cannot be inspected: {error}") from error
+    _validate_executable_metadata(metadata, label)
+    before = _executable_stat_tuple(metadata)
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise BrokerError(f"{label} cannot be opened: {error}") from error
+
+    try:
+        opened = os.fstat(descriptor)
+        _validate_executable_metadata(opened, label)
+        if _executable_stat_tuple(opened) != before:
+            raise BrokerError(f"{label} changed before open")
+        digest = hashlib.sha256()
+        read = 0
         while True:
             chunk = os.read(descriptor, 1024 * 1024)
             if not chunk:
@@ -129,32 +178,41 @@ def validate_executable(path: Path, label: str) -> dict[str, Any]:
             read += len(chunk)
             if read > MAX_EXECUTABLE_BYTES:
                 raise BrokerError(f"{label} exceeds the executable byte bound")
-        after_stat = os.fstat(descriptor)
-    finally:
+        after = os.fstat(descriptor)
+        if _executable_stat_tuple(after) != before or read != metadata.st_size:
+            raise BrokerError(f"{label} changed while being measured")
+        identity = {
+            "path": str(path),
+            "sha256": digest.hexdigest(),
+            "bytes": read,
+            "uid": after.st_uid,
+            "gid": after.st_gid,
+            "mode": f"{stat.S_IMODE(after.st_mode):04o}",
+            "device": after.st_dev,
+            "inode": after.st_ino,
+        }
+        if expected_identity is not None:
+            identity_fields = (
+                "sha256",
+                "bytes",
+                "uid",
+                "gid",
+                "mode",
+                "device",
+                "inode",
+            )
+            if any(identity.get(field) != expected_identity.get(field) for field in identity_fields):
+                raise BrokerError(f"{label} changed since initial validation")
+        return descriptor, identity
+    except Exception:
         os.close(descriptor)
-    after = (
-        after_stat.st_dev,
-        after_stat.st_ino,
-        after_stat.st_uid,
-        after_stat.st_gid,
-        after_stat.st_mode,
-        after_stat.st_nlink,
-        after_stat.st_size,
-        after_stat.st_mtime_ns,
-        after_stat.st_ctime_ns,
-    )
-    if before != after or read != metadata.st_size:
-        raise BrokerError(f"{label} changed while being measured")
-    return {
-        "path": str(path),
-        "sha256": digest.hexdigest(),
-        "bytes": read,
-        "uid": metadata.st_uid,
-        "gid": metadata.st_gid,
-        "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
-        "device": metadata.st_dev,
-        "inode": metadata.st_ino,
-    }
+        raise
+
+
+def validate_executable(path: Path, label: str) -> dict[str, Any]:
+    descriptor, identity = open_validated_executable(path, label)
+    os.close(descriptor)
+    return identity
 
 
 

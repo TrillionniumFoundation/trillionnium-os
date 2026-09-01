@@ -57,6 +57,11 @@ class BrokerMuxSourceContractTest(unittest.TestCase):
         self.assertIn("return None", match_body)
         self.assertNotIn("if seq in self._retired", match_body)
 
+    def test_production_reader_rejects_host_only_sequence(self) -> None:
+        convergence = self.read("owner_open_broker_convergence_v2.py")
+        self.assertIn('elif "seq" in frame:', convergence)
+        self.assertIn("production reader must discard a", convergence)
+
     def test_canonical_lineage_requires_complete_scope(self) -> None:
         mux = self.read("owner_open_broker_mux.py")
         self.assertIn("_IDENTITY_SCOPE_FIELDS", mux)

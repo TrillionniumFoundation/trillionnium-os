@@ -2,7 +2,7 @@
 
 ## Supported scope
 
-The repository currently supports an owner-open dogfood development lane. Source and L1 tests are not claims of installed Root Linux, Android image, physical-device, destructive-fault or public-release security.
+The repository currently supports an owner-open dogfood development lane. Source and L1 tests are not claims of installed Root Linux, Android image, physical-device, destructive-fault or public-release security. Source changes must not promote an L2-L6 claim without the corresponding target, device, fault or release evidence.
 
 ## Reporting
 

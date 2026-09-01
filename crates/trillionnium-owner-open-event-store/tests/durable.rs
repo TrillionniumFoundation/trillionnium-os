@@ -11,6 +11,12 @@ fn path(directory: &tempfile::TempDir) -> std::path::PathBuf {
     directory.path().join("events.jsonl")
 }
 
+fn secure_tempdir() -> tempfile::TempDir {
+    let directory = tempfile::tempdir().unwrap();
+    fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700)).unwrap();
+    directory
+}
+
 fn scope(turn: &str) -> TurnScope {
     TurnScope::new(
         "session-1",
@@ -32,7 +38,7 @@ fn input(turn: &str, event_id: &str, kind: &str, value: i64) -> EventInput {
 
 #[test]
 fn append_reopen_and_inclusive_replay_preserve_exact_records() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let store_path = path(&directory);
     let store = DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Full)
         .unwrap();
@@ -64,7 +70,7 @@ fn append_reopen_and_inclusive_replay_preserve_exact_records() {
 
 #[test]
 fn exact_duplicate_is_idempotent_and_drift_conflicts() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let store = DurableEventStore::open(
         path(&directory),
         EventStoreLimits::default(),
@@ -87,7 +93,7 @@ fn exact_duplicate_is_idempotent_and_drift_conflicts() {
 
 #[test]
 fn the_same_event_id_is_independent_in_another_turn_scope() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let store = DurableEventStore::open(
         path(&directory),
         EventStoreLimits::default(),
@@ -105,7 +111,7 @@ fn the_same_event_id_is_independent_in_another_turn_scope() {
 
 #[test]
 fn a_second_writer_is_rejected_without_mutating_the_store() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let store_path = path(&directory);
     let first = DurableEventStore::open(&store_path, EventStoreLimits::default(), SyncPolicy::Data)
         .unwrap();
@@ -118,7 +124,7 @@ fn a_second_writer_is_rejected_without_mutating_the_store() {
 
 #[test]
 fn truncated_or_tampered_records_fail_closed_on_reopen() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let store_path = path(&directory);
     {
         let store =
@@ -147,7 +153,7 @@ fn truncated_or_tampered_records_fail_closed_on_reopen() {
 
 #[test]
 fn duplicate_json_members_and_unsafe_modes_are_rejected() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let store_path = path(&directory);
     fs::write(&store_path, b"{\"schema\":\"x\",\"schema\":\"y\"}\n").unwrap();
     fs::set_permissions(&store_path, fs::Permissions::from_mode(0o600)).unwrap();
@@ -165,7 +171,7 @@ fn duplicate_json_members_and_unsafe_modes_are_rejected() {
 
 #[test]
 fn record_and_store_capacity_are_enforced_before_append() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let store = DurableEventStore::open(
         path(&directory),
         EventStoreLimits {

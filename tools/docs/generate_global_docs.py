@@ -17,6 +17,23 @@ def load(name: str) -> dict[str, Any]:
 def cell(value: Any) -> str:
     return str(value).replace("|", r"\|").replace("\n", " ")
 
+
+def test_reference_cell(references: list[dict[str, Any]]) -> str:
+    """Render typed machine test references without losing their identity."""
+    rendered: list[str] = []
+    for reference in references:
+        kind = reference.get("kind", "unknown")
+        path = reference.get("path", "")
+        target = reference.get("target", "")
+        if kind == "external":
+            rendered.append(f"external:{path}:{target}")
+        else:
+            command = " ".join(reference.get("command", []))
+            workflow = reference.get("workflow", "")
+            job = reference.get("workflow_job", "")
+            rendered.append(f"{kind}:{path}:{command}:{workflow}#{job}")
+    return ";".join(rendered)
+
 def current_state() -> str:
     base = load("current-baseline.v1.json")
     program = load("program-state.v1.json")
@@ -128,7 +145,7 @@ def traceability() -> str:
             ";".join(req["modules"]),
             ";".join(req["gaps"]),
             ";".join(req["source"]),
-            ";".join(req["tests"]),
+            test_reference_cell(req["tests"]),
             ";".join(req["evidence"]),
             req["status"],
         ]))

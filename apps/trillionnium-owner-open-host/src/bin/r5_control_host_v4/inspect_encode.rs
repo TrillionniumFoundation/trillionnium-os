@@ -91,6 +91,7 @@ fn encode_effective_state(state: &EffectiveState) -> Value {
 fn encode_call_event(event: &CallEvent) -> Value {
     let kind = match &event.kind {
         CallEventKind::Accepted => json!({"kind": "accepted"}),
+        CallEventKind::SpawnInhibited => json!({"kind": "spawn_inhibited"}),
         CallEventKind::SpawnClaimed { generation } => json!({
             "kind": "spawn_claimed",
             "generation": generation

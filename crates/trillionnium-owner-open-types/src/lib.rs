@@ -38,8 +38,24 @@ pub const FRAME_STREAM_WINDOW_UPDATE: &str = "stream.window_update";
 pub const FRAME_STREAM_PAUSE: &str = "stream.pause";
 pub const FRAME_STREAM_RESUME: &str = "stream.resume";
 
-/// Finite parser and process ceilings. These are liveness constraints, not
-/// semantic permissions. An owner profile may select other finite values.
+/// Schema ceilings for parser and process-facing wire limits. These are
+/// liveness constraints, not semantic permissions. An owner profile may select
+/// smaller finite values, but cannot use a malformed profile to request
+/// effectively unbounded frame, argument or environment storage.
+pub const MAX_CODEC_FRAME_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_CODEC_LABEL_BYTES: usize = 64 * 1024;
+pub const MAX_CODEC_ID_BYTES: usize = 4 * 1024;
+pub const MAX_CODEC_USER_INPUT_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_CODEC_COMMAND_BYTES: usize = 4 * 1024 * 1024;
+pub const MAX_CODEC_ARGV_ITEMS: usize = 65_536;
+pub const MAX_CODEC_ARGUMENT_BYTES: usize = 1024 * 1024;
+pub const MAX_CODEC_TOTAL_ARGV_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_CODEC_ENV_ITEMS: usize = 65_536;
+pub const MAX_CODEC_ENV_KEY_BYTES: usize = 16 * 1024;
+pub const MAX_CODEC_ENV_VALUE_BYTES: usize = 1024 * 1024;
+pub const MAX_CODEC_TOTAL_ENV_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_CODEC_TIMEOUT_MS: i64 = 24 * 60 * 60 * 1000;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MechanicalLimits {
     pub max_frame_bytes: usize,
@@ -70,6 +86,80 @@ impl Default for MechanicalLimits {
             max_env_key_bytes: 4096,
             max_env_value_bytes: 64 * 1024,
         }
+    }
+}
+
+impl MechanicalLimits {
+    pub fn validate(&self) -> Result<()> {
+        if self.max_frame_bytes == 0
+            || self.max_label_bytes == 0
+            || self.max_id_bytes == 0
+            || self.max_user_input_bytes == 0
+            || self.max_command_bytes == 0
+            || self.max_argv_items == 0
+            || self.max_argument_bytes == 0
+            || self.max_total_argv_bytes == 0
+            || self.max_env_items == 0
+            || self.max_env_key_bytes == 0
+            || self.max_env_value_bytes == 0
+        {
+            return Err(invalid("mechanical limits must be non-zero"));
+        }
+        for (name, value, maximum) in [
+            (
+                "max_frame_bytes",
+                self.max_frame_bytes,
+                MAX_CODEC_FRAME_BYTES,
+            ),
+            (
+                "max_label_bytes",
+                self.max_label_bytes,
+                MAX_CODEC_LABEL_BYTES,
+            ),
+            ("max_id_bytes", self.max_id_bytes, MAX_CODEC_ID_BYTES),
+            (
+                "max_user_input_bytes",
+                self.max_user_input_bytes,
+                MAX_CODEC_USER_INPUT_BYTES,
+            ),
+            (
+                "max_command_bytes",
+                self.max_command_bytes,
+                MAX_CODEC_COMMAND_BYTES,
+            ),
+            ("max_argv_items", self.max_argv_items, MAX_CODEC_ARGV_ITEMS),
+            (
+                "max_argument_bytes",
+                self.max_argument_bytes,
+                MAX_CODEC_ARGUMENT_BYTES,
+            ),
+            (
+                "max_total_argv_bytes",
+                self.max_total_argv_bytes,
+                MAX_CODEC_TOTAL_ARGV_BYTES,
+            ),
+            ("max_env_items", self.max_env_items, MAX_CODEC_ENV_ITEMS),
+            (
+                "max_env_key_bytes",
+                self.max_env_key_bytes,
+                MAX_CODEC_ENV_KEY_BYTES,
+            ),
+            (
+                "max_env_value_bytes",
+                self.max_env_value_bytes,
+                MAX_CODEC_ENV_VALUE_BYTES,
+            ),
+        ] {
+            if value > maximum {
+                return Err(invalid(format!("{name} exceeds hard bound {maximum}")));
+            }
+        }
+        if self.max_argument_bytes > self.max_total_argv_bytes {
+            return Err(invalid(
+                "max_argument_bytes cannot exceed max_total_argv_bytes",
+            ));
+        }
+        Ok(())
     }
 }
 
@@ -134,6 +224,7 @@ impl RunTurnFrame {
     }
 
     pub fn validate_mechanical(&self, limits: &MechanicalLimits) -> Result<()> {
+        limits.validate()?;
         validate_label("kind", &self.kind, limits.max_label_bytes)?;
         if !self.payload.is_object() {
             return Err(invalid("payload must be a JSON object"));
@@ -185,6 +276,7 @@ impl RunTurnFrame {
     }
 
     pub fn turn_request(&self, limits: &MechanicalLimits) -> Result<RunTurnRequest> {
+        self.validate_mechanical(limits)?;
         if self.kind != FRAME_TURN_START {
             return Err(invalid("frame kind is not turn.start"));
         }
@@ -209,6 +301,7 @@ impl RunTurnFrame {
     }
 
     pub fn turn_cancel(&self, limits: &MechanicalLimits) -> Result<TurnCancelRequest> {
+        self.validate_mechanical(limits)?;
         if self.kind != FRAME_TURN_CANCEL {
             return Err(invalid("frame kind is not turn.cancel"));
         }
@@ -241,6 +334,7 @@ impl RunTurnFrame {
     }
 
     pub fn tool_call(&self, limits: &MechanicalLimits) -> Result<ToolCall> {
+        self.validate_mechanical(limits)?;
         if self.kind != FRAME_TOOL_CALL {
             return Err(invalid("frame kind is not tool.call"));
         }
@@ -289,6 +383,7 @@ pub struct RunTurnRequest {
 
 impl RunTurnRequest {
     pub fn validate_mechanical(&self, limits: &MechanicalLimits) -> Result<()> {
+        limits.validate()?;
         if self.protocol != PROTOCOL {
             return Err(invalid("unsupported turn protocol"));
         }
@@ -356,6 +451,7 @@ pub struct TurnCancelRequest {
 
 impl TurnCancelRequest {
     pub fn validate_mechanical(&self, limits: &MechanicalLimits) -> Result<()> {
+        limits.validate()?;
         validate_id("session_id", &self.session_id, limits.max_id_bytes)?;
         validate_id("turn_id", &self.turn_id, limits.max_id_bytes)?;
         for (name, value) in [
@@ -419,6 +515,7 @@ pub struct ToolCall {
 
 impl ToolCall {
     pub fn validate_mechanical(&self, limits: &MechanicalLimits) -> Result<()> {
+        limits.validate()?;
         validate_id("call_id", &self.call_id, limits.max_id_bytes)?;
         validate_label("tool", &self.tool, limits.max_label_bytes)?;
         for (name, value) in [
@@ -449,8 +546,15 @@ impl ToolCall {
             "target_id",
             self.target_id.as_deref(),
         )?;
-        if self.timeout_ms.is_some_and(|value| value < 0) {
-            return Err(invalid("timeout_ms must be nonnegative"));
+        if let Some(timeout_ms) = self.timeout_ms {
+            if timeout_ms < 0 {
+                return Err(invalid("timeout_ms must be nonnegative"));
+            }
+            if timeout_ms > MAX_CODEC_TIMEOUT_MS {
+                return Err(invalid(format!(
+                    "timeout_ms exceeds hard bound {MAX_CODEC_TIMEOUT_MS}"
+                )));
+            }
         }
         if let Some(cwd) = self.cwd.as_deref()
             && cwd.contains('\0')
@@ -505,6 +609,7 @@ impl ToolCall {
 /// envelope after frame-level validation fails can inspect this value before
 /// deserializing the semantic `RunTurnFrame`.
 pub fn decode_strict_value(encoded: &[u8], limits: &MechanicalLimits) -> Result<Value> {
+    limits.validate()?;
     if encoded.is_empty() {
         return Err(ProtocolError::FrameBoundary("frame is empty"));
     }
@@ -639,6 +744,7 @@ fn validate_env(env: &BTreeMap<String, Option<String>>, limits: &MechanicalLimit
     if env.len() > limits.max_env_items {
         return Err(invalid("env exceeds the configured item bound"));
     }
+    let mut total = 0usize;
     for (key, value) in env {
         if key.is_empty()
             || key.len() > limits.max_env_key_bytes
@@ -653,6 +759,13 @@ fn validate_env(env: &BTreeMap<String, Option<String>>, limits: &MechanicalLimit
         {
             return Err(invalid("env value is not mechanically representable"));
         }
+        total = total
+            .checked_add(key.len())
+            .and_then(|total| total.checked_add(value.as_deref().map_or(0, str::len)))
+            .ok_or_else(|| invalid("env byte count overflow"))?;
+    }
+    if total > MAX_CODEC_TOTAL_ENV_BYTES {
+        return Err(invalid("env exceeds the hard total byte bound"));
     }
     Ok(())
 }
@@ -917,13 +1030,93 @@ mod tests {
     #[test]
     fn resource_limits_are_mechanical_not_semantic() {
         let limits = MechanicalLimits {
+            max_argument_bytes: 3,
             max_total_argv_bytes: 3,
             ..MechanicalLimits::default()
         };
         let mut call = base_tool_call();
-        call.argv = Some(vec!["abcd".to_string()]);
+        call.argv = Some(vec!["ab".to_string(), "cd".to_string()]);
         let error = call.validate_shell_exec(&limits).unwrap_err();
         assert!(error.to_string().contains("argv exceeds"));
+    }
+
+    #[test]
+    fn mechanical_limit_schema_ceilings_fail_closed() {
+        let oversized = [
+            MechanicalLimits {
+                max_frame_bytes: MAX_CODEC_FRAME_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_label_bytes: MAX_CODEC_LABEL_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_id_bytes: MAX_CODEC_ID_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_user_input_bytes: MAX_CODEC_USER_INPUT_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_command_bytes: MAX_CODEC_COMMAND_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_argv_items: MAX_CODEC_ARGV_ITEMS + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_argument_bytes: MAX_CODEC_ARGUMENT_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_total_argv_bytes: MAX_CODEC_TOTAL_ARGV_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_env_items: MAX_CODEC_ENV_ITEMS + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_env_key_bytes: MAX_CODEC_ENV_KEY_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+            MechanicalLimits {
+                max_env_value_bytes: MAX_CODEC_ENV_VALUE_BYTES + 1,
+                ..MechanicalLimits::default()
+            },
+        ];
+        for limits in oversized {
+            assert!(
+                limits.validate().is_err(),
+                "codec limit above schema ceiling must fail closed"
+            );
+        }
+        MechanicalLimits::default()
+            .validate()
+            .expect("default codec limits remain valid");
+
+        let inconsistent = MechanicalLimits {
+            max_argument_bytes: 1024,
+            max_total_argv_bytes: 512,
+            ..MechanicalLimits::default()
+        };
+        assert!(
+            inconsistent.validate().is_err(),
+            "per-argument bound cannot exceed aggregate argv bound"
+        );
+    }
+
+    #[test]
+    fn tool_timeout_schema_ceiling_is_enforced() {
+        let mut call = base_tool_call();
+        call.timeout_ms = Some(MAX_CODEC_TIMEOUT_MS + 1);
+        let error = call
+            .validate_mechanical(&MechanicalLimits::default())
+            .expect_err("oversized request timeout must fail closed");
+        assert!(error.to_string().contains("timeout_ms"));
     }
 
     #[test]

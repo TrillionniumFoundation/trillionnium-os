@@ -1186,6 +1186,13 @@ fn process_core_frame_body<W: Write>(
 
     if frame.kind == FRAME_TURN_END {
         let retired_turn = active.clone();
+        // Keep the exact broker identity before the terminal is emitted.  A
+        // core revision may omit the request digest on `turn.end`, in which
+        // case normal semantic routing cannot select the active intent.  The
+        // handshake retains this tuple through acceptance so we can both
+        // preserve the terminal's upstream ownership and retire only the
+        // generation that actually ended.
+        let terminal_binding = handshake.turn_binding().cloned();
         let resync_already_announced = flow.gap.is_some();
         if let Some(gap) = flow.terminal_gap() {
             if !resync_already_announced {
@@ -1194,7 +1201,22 @@ fn process_core_frame_body<W: Write>(
             attach_gap_to_payload(&mut frame.payload, &gap);
         }
         attach_delivery_status(&mut frame.payload, delivery);
-        delivery.send(&frame)?;
+        let send_result = if let Some(binding) = terminal_binding.as_ref() {
+            // Explicit binding is required for a digest-less terminal.  It
+            // also prevents a stale same-lineage intent earlier in the FIFO
+            // from claiming a digest-bearing terminal that belongs to this
+            // generation.
+            delivery.send_with_binding(&frame, Some(binding))
+        } else {
+            delivery.send(&frame)
+        };
+        // Retire the exact generation even when writing the terminal fails;
+        // otherwise a detached client can leave a stale active intent that
+        // shadows a later retry on the same semantic scope.
+        if let Some(binding) = terminal_binding.as_ref() {
+            delivery.clear_turn_binding(binding);
+        }
+        send_result?;
         if let Some(context) = active.as_ref() {
             journal.append(
                 context,

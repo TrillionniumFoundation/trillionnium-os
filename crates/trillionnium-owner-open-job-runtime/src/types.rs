@@ -35,6 +35,20 @@ pub enum JobRuntimeError {
 
 pub type Result<T> = std::result::Result<T, JobRuntimeError>;
 
+/// Hard mechanical ceilings for one owner-open job runtime.
+///
+/// Deployments may choose lower values, but accepting an arbitrary
+/// `usize` from configuration would let a malformed profile turn admission,
+/// input, or resident observation state into an effectively unbounded
+/// allocation.  These values are deliberately generous operational limits;
+/// they are not claims about the host's available capacity.
+pub const MAX_JOB_RUNTIME_JOBS: usize = 65_536;
+pub const MAX_JOB_RUNTIME_OPERATION_ID_BYTES: usize = 4_096;
+pub const MAX_JOB_RUNTIME_INPUT_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_JOB_RUNTIME_OUTPUT_CHUNK_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_JOB_RUNTIME_OBSERVATIONS_PER_JOB: usize = 1_048_576;
+pub const MAX_JOB_RUNTIME_OBSERVATION_BYTES_PER_JOB: usize = 1 << 30;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct JobRuntimeConfig {
     pub max_jobs: usize,
@@ -72,6 +86,40 @@ impl JobRuntimeConfig {
     }
 
     pub fn validate(&self) -> Result<()> {
+        for (name, value, maximum) in [
+            ("max_jobs", self.max_jobs, MAX_JOB_RUNTIME_JOBS),
+            (
+                "max_operation_id_bytes",
+                self.max_operation_id_bytes,
+                MAX_JOB_RUNTIME_OPERATION_ID_BYTES,
+            ),
+            (
+                "max_input_bytes",
+                self.max_input_bytes,
+                MAX_JOB_RUNTIME_INPUT_BYTES,
+            ),
+            (
+                "max_output_chunk_bytes",
+                self.max_output_chunk_bytes,
+                MAX_JOB_RUNTIME_OUTPUT_CHUNK_BYTES,
+            ),
+            (
+                "max_observations_per_job",
+                self.max_observations_per_job,
+                MAX_JOB_RUNTIME_OBSERVATIONS_PER_JOB,
+            ),
+            (
+                "max_observation_bytes_per_job",
+                self.max_observation_bytes_per_job,
+                MAX_JOB_RUNTIME_OBSERVATION_BYTES_PER_JOB,
+            ),
+        ] {
+            if value > maximum {
+                return Err(JobRuntimeError::InvalidRequest(format!(
+                    "{name} exceeds hard bound {maximum}"
+                )));
+            }
+        }
         if self.max_jobs == 0
             || self.max_operation_id_bytes == 0
             || self.max_input_bytes == 0
@@ -85,6 +133,61 @@ impl JobRuntimeConfig {
             ));
         }
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_runtime_bounds_validate() {
+        JobRuntimeConfig::default()
+            .validate()
+            .expect("default runtime bounds are valid");
+    }
+
+    #[test]
+    fn oversized_runtime_bounds_fail_closed() {
+        macro_rules! assert_oversized {
+            ($name:literal, $field:ident, $maximum:ident) => {{
+                let mut config = JobRuntimeConfig::default();
+                config.$field = $maximum + 1;
+                let error = config
+                    .validate()
+                    .expect_err("oversized bound must be rejected");
+                assert!(
+                    error.to_string().contains($name),
+                    "unexpected error: {error}"
+                );
+            }};
+        }
+        assert_oversized!("max_jobs", max_jobs, MAX_JOB_RUNTIME_JOBS);
+        assert_oversized!(
+            "max_operation_id_bytes",
+            max_operation_id_bytes,
+            MAX_JOB_RUNTIME_OPERATION_ID_BYTES
+        );
+        assert_oversized!(
+            "max_input_bytes",
+            max_input_bytes,
+            MAX_JOB_RUNTIME_INPUT_BYTES
+        );
+        assert_oversized!(
+            "max_output_chunk_bytes",
+            max_output_chunk_bytes,
+            MAX_JOB_RUNTIME_OUTPUT_CHUNK_BYTES
+        );
+        assert_oversized!(
+            "max_observations_per_job",
+            max_observations_per_job,
+            MAX_JOB_RUNTIME_OBSERVATIONS_PER_JOB
+        );
+        assert_oversized!(
+            "max_observation_bytes_per_job",
+            max_observation_bytes_per_job,
+            MAX_JOB_RUNTIME_OBSERVATION_BYTES_PER_JOB
+        );
     }
 }
 

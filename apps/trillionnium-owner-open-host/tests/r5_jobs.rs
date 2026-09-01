@@ -1,7 +1,7 @@
 use std::fs;
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 
 use serde_json::Value;
@@ -20,6 +20,31 @@ fn provider_fixture(path: &Path, marker: &Path) {
     )
     .unwrap();
     fs::set_permissions(path, fs::Permissions::from_mode(0o700)).unwrap();
+}
+
+fn segmented_job_store_root(path: &Path) -> PathBuf {
+    let mut root = path.as_os_str().to_os_string();
+    root.push(".segments");
+    root.into()
+}
+
+fn read_segmented_job_store(path: &Path) -> String {
+    let root = segmented_job_store_root(path);
+    let mut segments = fs::read_dir(root)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .filter(|candidate| {
+            candidate
+                .file_name()
+                .and_then(|name| name.to_str())
+                .is_some_and(|name| name.starts_with("segment-") && name.ends_with(".jsonl"))
+        })
+        .collect::<Vec<_>>();
+    segments.sort();
+    segments
+        .into_iter()
+        .map(|segment| fs::read_to_string(segment).unwrap())
+        .collect()
 }
 
 fn job_start(command: &str) -> String {
@@ -257,11 +282,7 @@ fn pipe_job_runs_on_the_same_carrier_without_starting_the_provider() {
     assert!(frames.iter().any(|frame| {
         frame["kind"] == "job.result" && frame["payload"]["terminal_kind"] == "exited"
     }));
-    assert!(
-        fs::read_to_string(job_store)
-            .unwrap()
-            .contains("job.terminal")
-    );
+    assert!(read_segmented_job_store(&job_store).contains("job.terminal"));
 }
 
 #[test]

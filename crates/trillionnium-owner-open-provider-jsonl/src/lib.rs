@@ -12,6 +12,7 @@ mod strict_json;
 use std::collections::BTreeMap;
 use std::env;
 use std::io::Write;
+use std::os::fd::AsRawFd;
 use std::os::unix::ffi::OsStrExt;
 use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
@@ -32,7 +33,7 @@ use trillionnium_owner_open_turn_loop::{
 
 use process::{
     ProviderChildGuard, ProviderOutput, allow_natural_exit_grace, capture_process_identity,
-    spawn_stderr_reader, spawn_stdout_reader,
+    join_provider_workers_bounded, spawn_stderr_reader, spawn_stdout_reader,
 };
 use protocol::{
     decode_bound_tool_call, encode_tool_error, encode_tool_outcome, handle_provider_event,
@@ -40,7 +41,26 @@ use protocol::{
 };
 
 pub const PROVIDER_PROTOCOL: &str = "trillionnium.owner-open.provider-jsonl.v1";
+/// Schema ceilings for provider process liveness and resident buffering.
+/// Deployments may lower these values, but a malformed provider profile cannot
+/// request an unbounded line, queue, output retention or wait interval.
+pub const MAX_JSONL_PROVIDER_TIMEOUT: Duration = Duration::from_secs(24 * 60 * 60);
+pub const MAX_JSONL_PROVIDER_POLL_INTERVAL: Duration = Duration::from_secs(1);
+pub const MAX_JSONL_PROVIDER_TERMINATE_GRACE: Duration = Duration::from_secs(60);
+pub const MAX_JSONL_PROVIDER_LINE_BYTES: usize = 64 * 1024 * 1024;
+pub const MAX_JSONL_PROVIDER_STDOUT_BYTES: usize = 256 * 1024 * 1024;
+pub const MAX_JSONL_PROVIDER_EVENT_COUNT: usize = 1_048_576;
+pub const MAX_JSONL_PROVIDER_STDERR_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_JSONL_PROVIDER_OUTPUT_QUEUE_DEPTH: usize = 4_096;
+/// Worst-case bytes queued as complete stdout lines before the provider loop
+/// drains them. Two reader-side allocations remain finite under this ceiling.
+pub const MAX_JSONL_PROVIDER_QUEUE_BYTES: usize = 2 * 1024 * 1024 * 1024;
 const PROVIDER_OUTPUT_DRAIN_GRACE_MINIMUM: Duration = Duration::from_secs(2);
+// Provider callbacks are mechanism-only, but a child that stops reading its
+// stdin must not be able to wedge the Host loop in `Write::write_all`.  Keep
+// each outbound JSONL frame on one finite deadline; the surrounding turn
+// timeout remains the higher-level semantic bound.
+const PROVIDER_WRITE_TIMEOUT: Duration = Duration::from_secs(2);
 // Provider credentials and host-local state are not implicit request input.
 // Preserve only the mechanical runtime settings needed to resolve the
 // configured executable and ordinary shell/ADB tools; all other values must
@@ -137,7 +157,6 @@ impl JsonlProviderConfig {
             || self.poll_interval.is_zero()
             || self.terminate_grace.is_zero()
             || self.max_line_bytes == 0
-            || self.max_stdout_bytes < self.max_line_bytes
             || self.max_event_count == 0
             || self.max_stderr_bytes == 0
             || self.output_queue_depth == 0
@@ -145,6 +164,72 @@ impl JsonlProviderConfig {
             return Err(invalid_config(
                 "provider duration/count/byte limits are invalid",
             ));
+        }
+        for (name, value, maximum) in [
+            ("timeout", self.timeout, MAX_JSONL_PROVIDER_TIMEOUT),
+            (
+                "poll_interval",
+                self.poll_interval,
+                MAX_JSONL_PROVIDER_POLL_INTERVAL,
+            ),
+            (
+                "terminate_grace",
+                self.terminate_grace,
+                MAX_JSONL_PROVIDER_TERMINATE_GRACE,
+            ),
+        ] {
+            if value > maximum {
+                return Err(invalid_config(format!(
+                    "provider {name} exceeds hard bound {maximum:?}"
+                )));
+            }
+        }
+        for (name, value, maximum) in [
+            (
+                "max_line_bytes",
+                self.max_line_bytes,
+                MAX_JSONL_PROVIDER_LINE_BYTES,
+            ),
+            (
+                "max_stdout_bytes",
+                self.max_stdout_bytes,
+                MAX_JSONL_PROVIDER_STDOUT_BYTES,
+            ),
+            (
+                "max_event_count",
+                self.max_event_count,
+                MAX_JSONL_PROVIDER_EVENT_COUNT,
+            ),
+            (
+                "max_stderr_bytes",
+                self.max_stderr_bytes,
+                MAX_JSONL_PROVIDER_STDERR_BYTES,
+            ),
+            (
+                "output_queue_depth",
+                self.output_queue_depth,
+                MAX_JSONL_PROVIDER_OUTPUT_QUEUE_DEPTH,
+            ),
+        ] {
+            if value > maximum {
+                return Err(invalid_config(format!(
+                    "provider {name} exceeds hard bound {maximum}"
+                )));
+            }
+        }
+        if self.max_stdout_bytes < self.max_line_bytes {
+            return Err(invalid_config(
+                "provider duration/count/byte limits are invalid",
+            ));
+        }
+        let queued_bytes = self
+            .max_line_bytes
+            .checked_mul(self.output_queue_depth)
+            .ok_or_else(|| invalid_config("provider output queue byte bound overflow"))?;
+        if queued_bytes > MAX_JSONL_PROVIDER_QUEUE_BYTES {
+            return Err(invalid_config(format!(
+                "provider max_line_bytes * output_queue_depth exceeds hard bound {MAX_JSONL_PROVIDER_QUEUE_BYTES}"
+            )));
         }
         validate_environment(&self.env)?;
         if let Some(generation) = &self.config_generation {
@@ -519,8 +604,7 @@ impl JsonlProvider {
         };
         let cleanup = child.finish().map_err(JsonlProviderError::Cleanup);
         drop(receiver);
-        let stdout_join = stdout_thread.join();
-        let stderr_join = stderr_thread.join();
+        let worker_errors = join_provider_workers_bounded(vec![stdout_thread, stderr_thread]);
         let stderr = stderr_capture
             .lock()
             .map_err(|_| JsonlProviderError::Cleanup("stderr capture was poisoned".to_string()))?
@@ -530,10 +614,8 @@ impl JsonlProvider {
         // close the process tree, not to rewrite the semantic observation.
         let terminal = result?;
         natural_exit_wait?;
-        if stdout_join.is_err() || stderr_join.is_err() {
-            return Err(JsonlProviderError::Cleanup(
-                "provider reader thread panicked".to_string(),
-            ));
+        if !worker_errors.is_empty() {
+            return Err(JsonlProviderError::Cleanup(worker_errors.join("; ")));
         }
         let status = cleanup?;
         if stderr_overflow.load(Ordering::SeqCst) {
@@ -563,19 +645,129 @@ impl SameTurnProvider for JsonlProvider {
     }
 }
 
-fn write_json_line(writer: &mut impl Write, value: &impl Serialize, maximum: usize) -> Result<()> {
+fn write_json_line<W: Write + AsRawFd>(
+    writer: &mut W,
+    value: &impl Serialize,
+    maximum: usize,
+) -> Result<()> {
     let encoded =
         serde_json::to_vec(value).map_err(|error| JsonlProviderError::Io(error.to_string()))?;
-    if encoded.is_empty() || encoded.len() > maximum {
+    // `max_line_bytes` bounds the complete JSONL frame, including its
+    // newline delimiter.  Check with a subtraction rather than `len() + 1`
+    // so a caller-provided maximum cannot wrap on an oversized value.
+    if encoded.is_empty() || maximum == 0 || encoded.len() >= maximum {
         return Err(JsonlProviderError::Io(
             "provider outbound JSONL record exceeds its bound".to_string(),
         ));
     }
-    writer
-        .write_all(&encoded)
-        .and_then(|_| writer.write_all(b"\n"))
-        .and_then(|_| writer.flush())
-        .map_err(|error| JsonlProviderError::Io(error.to_string()))
+    let mut framed = encoded;
+    framed.push(b'\n');
+    write_nonblocking(writer, &framed, PROVIDER_WRITE_TIMEOUT)
+}
+
+/// Write one provider frame without an unbounded blocking syscall.  The
+/// descriptor's original flags are restored before returning so a caller that
+/// reuses the handle observes the same ownership semantics.  `ChildStdin` is
+/// intentionally the only production writer, but keeping the helper generic
+/// makes the invariant directly testable with an ordinary pipe.
+fn write_nonblocking<W: Write + AsRawFd>(
+    writer: &mut W,
+    bytes: &[u8],
+    timeout: Duration,
+) -> Result<()> {
+    let fd = writer.as_raw_fd();
+    let original_flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };
+    if original_flags < 0 {
+        return Err(JsonlProviderError::Io(
+            std::io::Error::last_os_error().to_string(),
+        ));
+    }
+    if unsafe { libc::fcntl(fd, libc::F_SETFL, original_flags | libc::O_NONBLOCK) } < 0 {
+        return Err(JsonlProviderError::Io(
+            std::io::Error::last_os_error().to_string(),
+        ));
+    }
+
+    let write_result = write_nonblocking_loop(writer, fd, bytes, timeout);
+    let restore_result = unsafe { libc::fcntl(fd, libc::F_SETFL, original_flags) };
+    if restore_result < 0 {
+        let restore_error = std::io::Error::last_os_error();
+        return match write_result {
+            Ok(()) => Err(JsonlProviderError::Io(format!(
+                "failed to restore provider stdin descriptor flags: {restore_error}"
+            ))),
+            Err(error) => Err(JsonlProviderError::Io(format!(
+                "{error}; failed to restore provider stdin descriptor flags: {restore_error}"
+            ))),
+        };
+    }
+    write_result
+}
+
+fn write_nonblocking_loop<W: Write>(
+    writer: &mut W,
+    fd: i32,
+    bytes: &[u8],
+    timeout: Duration,
+) -> Result<()> {
+    let deadline = Instant::now()
+        .checked_add(timeout)
+        .unwrap_or_else(Instant::now);
+    let mut offset = 0usize;
+    while offset < bytes.len() {
+        match writer.write(&bytes[offset..]) {
+            Ok(0) => {
+                return Err(JsonlProviderError::Io(
+                    "provider stdin write returned zero bytes".to_string(),
+                ));
+            }
+            Ok(written) if written <= bytes.len() - offset => {
+                offset += written;
+            }
+            Ok(_) => {
+                return Err(JsonlProviderError::Io(
+                    "provider stdin writer reported more bytes than requested".to_string(),
+                ));
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
+            Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {}
+            Err(error) => return Err(JsonlProviderError::Io(error.to_string())),
+        }
+        if offset >= bytes.len() {
+            break;
+        }
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() {
+            return Err(JsonlProviderError::Io(
+                "provider stdin write timed out while the child was not reading".to_string(),
+            ));
+        }
+        let timeout_ms = remaining.as_millis().clamp(1, i32::MAX as u128) as libc::c_int;
+        let mut poll_fd = libc::pollfd {
+            fd,
+            events: libc::POLLOUT,
+            revents: 0,
+        };
+        let polled = unsafe { libc::poll(&mut poll_fd, 1, timeout_ms) };
+        if polled < 0 {
+            let error = std::io::Error::last_os_error();
+            if error.raw_os_error() == Some(libc::EINTR) {
+                continue;
+            }
+            return Err(JsonlProviderError::Io(error.to_string()));
+        }
+        if polled == 0 {
+            return Err(JsonlProviderError::Io(
+                "provider stdin write timed out while the child was not reading".to_string(),
+            ));
+        }
+        if poll_fd.revents & (libc::POLLNVAL | libc::POLLERR | libc::POLLHUP) != 0 {
+            return Err(JsonlProviderError::Io(
+                "provider stdin descriptor became unavailable while writing".to_string(),
+            ));
+        }
+    }
+    Ok(())
 }
 
 fn validate_os_value(path: &Path, label: &str, maximum: usize) -> Result<()> {
@@ -624,4 +816,128 @@ fn validate_config_generation(value: &Value) -> Result<()> {
 
 fn invalid_config(message: impl Into<String>) -> JsonlProviderError {
     JsonlProviderError::InvalidConfiguration(message.into())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs::File;
+    use std::os::fd::FromRawFd;
+    use std::time::Instant;
+
+    use super::*;
+
+    #[test]
+    fn provider_stdin_write_is_bounded_when_the_child_stops_reading() {
+        let mut descriptors = [0_i32; 2];
+        assert_eq!(unsafe { libc::pipe(descriptors.as_mut_ptr()) }, 0);
+        // Keep the read end open but deliberately do not drain it.  Once the
+        // kernel pipe fills, the bounded writer must return instead of
+        // blocking the provider turn forever.
+        let _reader = unsafe { File::from_raw_fd(descriptors[0]) };
+        let mut writer = unsafe { File::from_raw_fd(descriptors[1]) };
+        let original_flags = unsafe { libc::fcntl(writer.as_raw_fd(), libc::F_GETFL) };
+        assert!(original_flags >= 0);
+        let payload = vec![b'x'; 2 * 1024 * 1024];
+        let started = Instant::now();
+        let error = write_nonblocking(&mut writer, &payload, Duration::from_millis(25))
+            .expect_err("a stalled pipe must hit the finite write deadline");
+        assert!(error.to_string().contains("timed out"));
+        assert!(started.elapsed() < Duration::from_secs(1));
+        let restored_flags = unsafe { libc::fcntl(writer.as_raw_fd(), libc::F_GETFL) };
+        assert_eq!(restored_flags, original_flags);
+    }
+
+    #[test]
+    fn provider_outbound_bound_includes_the_jsonl_delimiter() {
+        let mut descriptors = [0_i32; 2];
+        assert_eq!(unsafe { libc::pipe(descriptors.as_mut_ptr()) }, 0);
+        let _reader = unsafe { File::from_raw_fd(descriptors[0]) };
+        let mut writer = unsafe { File::from_raw_fd(descriptors[1]) };
+        let value = json!({"kind": "turn.complete"});
+        let encoded = serde_json::to_vec(&value).unwrap();
+        write_json_line(&mut writer, &value, encoded.len() + 1)
+            .expect("the exact framed length must fit");
+        let error = write_json_line(&mut writer, &value, encoded.len())
+            .expect_err("the delimiter must count against the frame bound");
+        assert!(error.to_string().contains("exceeds its bound"));
+    }
+
+    #[test]
+    fn default_provider_resource_bounds_validate() {
+        JsonlProviderConfig::default()
+            .validate()
+            .expect("default provider configuration is valid");
+    }
+
+    #[test]
+    fn provider_resource_schema_ceilings_fail_closed() {
+        macro_rules! assert_oversized {
+            ($field:ident, $maximum:ident) => {{
+                let mut config = JsonlProviderConfig::default();
+                config.$field = $maximum + 1;
+                let error = config
+                    .validate()
+                    .expect_err("oversized provider bound must fail closed");
+                assert!(
+                    error.to_string().contains(stringify!($field)),
+                    "unexpected error for {}: {error}",
+                    stringify!($field)
+                );
+            }};
+        }
+
+        assert_oversized!(max_line_bytes, MAX_JSONL_PROVIDER_LINE_BYTES);
+        assert_oversized!(max_stdout_bytes, MAX_JSONL_PROVIDER_STDOUT_BYTES);
+        assert_oversized!(max_event_count, MAX_JSONL_PROVIDER_EVENT_COUNT);
+        assert_oversized!(max_stderr_bytes, MAX_JSONL_PROVIDER_STDERR_BYTES);
+        assert_oversized!(output_queue_depth, MAX_JSONL_PROVIDER_OUTPUT_QUEUE_DEPTH);
+
+        let config = JsonlProviderConfig {
+            timeout: MAX_JSONL_PROVIDER_TIMEOUT + Duration::from_nanos(1),
+            ..JsonlProviderConfig::default()
+        };
+        assert!(
+            config
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("timeout")
+        );
+        let config = JsonlProviderConfig {
+            poll_interval: MAX_JSONL_PROVIDER_POLL_INTERVAL + Duration::from_nanos(1),
+            ..JsonlProviderConfig::default()
+        };
+        assert!(
+            config
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("poll_interval")
+        );
+        let config = JsonlProviderConfig {
+            terminate_grace: MAX_JSONL_PROVIDER_TERMINATE_GRACE + Duration::from_nanos(1),
+            ..JsonlProviderConfig::default()
+        };
+        assert!(
+            config
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("terminate_grace")
+        );
+
+        let config = JsonlProviderConfig {
+            max_line_bytes: MAX_JSONL_PROVIDER_LINE_BYTES,
+            max_stdout_bytes: MAX_JSONL_PROVIDER_STDOUT_BYTES,
+            output_queue_depth: MAX_JSONL_PROVIDER_QUEUE_BYTES
+                .checked_div(MAX_JSONL_PROVIDER_LINE_BYTES)
+                .and_then(|depth| depth.checked_add(1))
+                .expect("provider queue test arithmetic fits"),
+            ..JsonlProviderConfig::default()
+        };
+        let error = config
+            .validate()
+            .expect_err("provider queue product must fail closed");
+        assert!(error.to_string().contains("output_queue_depth"));
+    }
 }

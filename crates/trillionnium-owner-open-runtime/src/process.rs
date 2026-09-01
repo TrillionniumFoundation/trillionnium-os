@@ -901,7 +901,7 @@ fn terminate_process_group(
         }
     };
     if group_alive {
-        if let Err(error) = send_process_group_signal(identity.process_group, libc::SIGTERM) {
+        if let Err(error) = send_bound_process_group_signal(identity, libc::SIGTERM) {
             return Err(with_direct_fallback(
                 child,
                 error,
@@ -952,7 +952,7 @@ fn terminate_process_group(
             }
         };
         if group_alive {
-            match send_process_group_signal(identity.process_group, libc::SIGKILL) {
+            match send_bound_process_group_signal(identity, libc::SIGKILL) {
                 Ok(()) => {}
                 Err(error) => {
                     return Err(with_direct_fallback(
@@ -1067,6 +1067,19 @@ fn send_process_group_signal(process_group: u32, signal: i32) -> std::result::Re
     } else {
         Err(format!("process_group_signal_{signal}_failed: {error}"))
     }
+}
+
+/// Revalidate the captured generation, process group and session immediately
+/// before the group syscall.  `kill(2)` accepts only a numeric PGID, so this
+/// cannot eliminate the final POSIX check/use race atomically; centralizing the
+/// check keeps the residual window minimal and makes the safe, fail-closed
+/// behavior explicit at every call site.
+fn send_bound_process_group_signal(
+    identity: &ProcessIdentity,
+    signal: i32,
+) -> std::result::Result<(), String> {
+    ensure_bound_process_group(identity)?;
+    send_process_group_signal(identity.process_group, signal)
 }
 
 #[allow(clippy::needless_return)]
@@ -1374,8 +1387,8 @@ fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Re
         if pid == identity.pid {
             continue;
         }
-        match read_proc_stat_identity(pid) {
-            Ok(Some((_start, process_group, session_id)))
+        match read_proc_group_identity(pid) {
+            Ok(Some((process_group, session_id)))
                 if process_group == identity.process_group && session_id == identity.session_id =>
             {
                 return Ok(true);
@@ -1389,6 +1402,42 @@ fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Re
         }
     }
     Ok(false)
+}
+
+/// Read only the process-group/session fields needed while proving that a
+/// bound group still has a member after its leader has exited.  `/proc`
+/// exposes kernel worker threads whose stat records use zero for these fields;
+/// those are not userspace group members and must be ignored rather than
+/// turning an otherwise valid cleanup scan into an uncertainty.
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn read_proc_group_identity(pid: u32) -> std::io::Result<Option<(u32, u32)>> {
+    let stat = match fs::read_to_string(format!("/proc/{pid}/stat")) {
+        Ok(stat) => stat,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    let command_end = stat
+        .rfind(')')
+        .ok_or_else(|| std::io::Error::other("proc stat omitted command terminator"))?;
+    let fields = stat
+        .get(command_end + 1..)
+        .ok_or_else(|| std::io::Error::other("proc stat is truncated"))?
+        .split_ascii_whitespace()
+        .collect::<Vec<_>>();
+    let process_group = fields
+        .get(2)
+        .ok_or_else(|| std::io::Error::other("proc stat omitted process group"))?
+        .parse::<u32>()
+        .map_err(|_| std::io::Error::other("proc stat process group is invalid"))?;
+    let session_id = fields
+        .get(3)
+        .ok_or_else(|| std::io::Error::other("proc stat omitted session id"))?
+        .parse::<u32>()
+        .map_err(|_| std::io::Error::other("proc stat session id is invalid"))?;
+    if process_group == 0 || session_id == 0 {
+        return Ok(None);
+    }
+    Ok(Some((process_group, session_id)))
 }
 
 #[cfg(not(any(target_os = "linux", target_os = "android")))]

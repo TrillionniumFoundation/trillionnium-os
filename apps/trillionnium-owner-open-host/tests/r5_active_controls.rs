@@ -5,6 +5,10 @@ use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 
 use serde_json::Value;
 
+mod support;
+
+use support::{read_event_store, secure_tempdir};
+
 struct RunningHost {
     child: Child,
     stdin: ChildStdin,
@@ -79,7 +83,7 @@ fn finish(mut running: RunningHost, mut frames: Vec<Value>) -> Vec<Value> {
 
 #[test]
 fn turn_cancel_is_serviceable_while_a_tool_is_running() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let event_store = directory.path().join("events.jsonl");
     fs::write(
@@ -128,14 +132,14 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     assert_eq!(terminal["kind"], "turn.end");
     assert_eq!(terminal["payload"]["status"], "cancelled");
     assert_eq!(terminal["payload"]["summary"], "turn cancel acknowledged");
-    let stored = fs::read_to_string(event_store).unwrap();
+    let stored = read_event_store(&event_store);
     assert!(stored.contains("turn.cancel.accepted"));
     assert!(stored.contains("client_cancelled"));
 }
 
 #[test]
 fn tool_cancel_terminates_only_the_target_call_and_the_turn_continues() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let event_store = directory.path().join("events.jsonl");
     fs::write(
@@ -184,7 +188,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     assert_eq!(terminal["kind"], "turn.end");
     assert_eq!(terminal["payload"]["status"], "completed");
     assert_eq!(terminal["payload"]["summary"], "targeted call cancelled");
-    let stored = fs::read_to_string(event_store).unwrap();
+    let stored = read_event_store(&event_store);
     assert!(stored.contains("tool.cancel.accepted"));
     assert!(stored.contains("continued after targeted cancel"));
 }

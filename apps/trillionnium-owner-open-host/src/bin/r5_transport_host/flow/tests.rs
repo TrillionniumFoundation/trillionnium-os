@@ -113,7 +113,7 @@ mod flow_tests {
 
     #[test]
     fn opaque_job_event_id_uses_explicit_durable_cursor_for_gap_recovery() {
-        let mut flow = StreamDelivery::new(&options(128));
+        let mut flow = StreamDelivery::new(&options(2048));
         flow.apply_control(&control(0, StreamControl::Pause, "pause"))
             .unwrap();
         let mut frame = job_output(7, 512);
@@ -121,6 +121,10 @@ mod flow_tests {
         frame
             .extensions
             .insert("durable_cursor".to_string(), json!(41));
+        frame.extensions.insert(
+            "cursor_domain".to_string(),
+            json!(RUNTIME_CURSOR_DOMAIN),
+        );
         let result = flow.submit(frame).unwrap();
         let gap = match result {
             SubmitResult::GapStarted(gap) => gap,
@@ -143,6 +147,95 @@ mod flow_tests {
             .insert("durable_cursor".to_string(), json!("not-a-cursor"));
         let error = flow.submit(frame).expect_err("malformed cursor must be rejected");
         assert!(error.to_string().contains("durable_cursor"));
+    }
+
+    #[test]
+    fn durable_cursor_without_domain_fails_closed() {
+        let mut flow = StreamDelivery::new(&options(4096));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let mut frame = job_output(1, 16);
+        frame
+            .extensions
+            .insert("durable_cursor".to_string(), json!(1));
+        let error = flow.submit(frame).expect_err("cursor domain is mandatory");
+        assert!(error.to_string().contains("cursor_domain"));
+    }
+
+    #[test]
+    fn explicit_runtime_domain_never_derives_cursor_from_transport_event_id() {
+        let mut flow = StreamDelivery::new(&options(128));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let mut frame = job_output(7, 512);
+        frame.extensions.insert(
+            "cursor_domain".to_string(),
+            json!(RUNTIME_CURSOR_DOMAIN),
+        );
+        let gap = match flow.submit(frame).unwrap() {
+            SubmitResult::GapStarted(gap) => gap,
+            other => panic!("unexpected submit result: {other:?}"),
+        };
+        assert_eq!(gap.cursor_domain.as_deref(), Some(RUNTIME_CURSOR_DOMAIN));
+        assert_eq!(gap.first_cursor, None);
+        assert_eq!(gap.last_cursor, None);
+        assert!(!gap.cursor_range_complete);
+        assert_eq!(gap.required_resume_cursor(), None);
+    }
+
+    #[test]
+    fn invalid_explicit_cursor_domain_fails_without_durable_cursor() {
+        let mut flow = StreamDelivery::new(&options(4096));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let mut frame = job_output(1, 16);
+        frame
+            .extensions
+            .insert("cursor_domain".to_string(), json!("untrusted-domain"));
+        let error = flow
+            .submit(frame)
+            .expect_err("unsupported explicit cursor domain must be rejected");
+        assert!(error.to_string().contains("unsupported cursor domain"));
+    }
+
+    #[test]
+    fn explicit_transport_domain_may_derive_legacy_event_cursor() {
+        let mut frame = data(9, 16);
+        frame.extensions.insert(
+            "cursor_domain".to_string(),
+            json!(TRANSPORT_CURSOR_DOMAIN),
+        );
+        let buffered = BufferedFrame::new(frame).expect("valid transport cursor");
+        assert_eq!(buffered.cursor, Some(9));
+        assert_eq!(
+            buffered.cursor_domain.as_deref(),
+            Some(TRANSPORT_CURSOR_DOMAIN)
+        );
+    }
+
+    #[test]
+    fn mixed_cursor_domains_never_create_a_numeric_resume_range() {
+        let mut flow = StreamDelivery::new(&options(2048));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        let first = data(1, 8);
+        assert!(matches!(flow.submit(first).unwrap(), SubmitResult::Queued));
+        let mut second = job_output(2, 512);
+        second
+            .extensions
+            .insert("durable_cursor".to_string(), json!(42));
+        second.extensions.insert(
+            "cursor_domain".to_string(),
+            json!(RUNTIME_CURSOR_DOMAIN),
+        );
+        let gap = match flow.submit(second).unwrap() {
+            SubmitResult::GapStarted(gap) => gap,
+            other => panic!("unexpected submit result: {other:?}"),
+        };
+        assert!(gap.mixed_cursor_domains);
+        assert_eq!(gap.cursor_domain, None);
+        assert_eq!(gap.required_resume_cursor(), None);
+        assert_eq!(gap.payload()["mixed_cursor_domains"], Value::Bool(true));
     }
 
     #[test]

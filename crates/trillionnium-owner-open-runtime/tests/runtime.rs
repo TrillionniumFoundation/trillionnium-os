@@ -3,9 +3,9 @@ use std::thread;
 use std::time::Duration;
 
 use trillionnium_owner_open_runtime::{
-    AdbExecRequest, CancellationToken, ExecutionEvent, ExecutionEventKind, MechanicalLimits,
-    PtySize, ShellExecRequest, StreamKind, TerminalKind, execute_adb, execute_shell,
-    execute_shell_pty, unconfigured_adb_request,
+    AdbExecRequest, CancellationToken, ExecutionEvent, ExecutionEventKind,
+    MAX_RUNTIME_REQUEST_TIMEOUT, MechanicalLimits, PtySize, ShellExecRequest, StreamKind,
+    TerminalKind, execute_adb, execute_shell, execute_shell_pty, unconfigured_adb_request,
 };
 
 fn output(events: &[ExecutionEvent], stream: StreamKind) -> Vec<u8> {
@@ -281,6 +281,37 @@ fn malformed_adb_request_is_rejected_before_any_process_event() {
 
     assert!(error.to_string().contains("must not be empty"));
     assert!(events.is_empty());
+}
+
+#[test]
+fn oversized_explicit_timeouts_are_rejected_before_any_process_event() {
+    let oversized = MAX_RUNTIME_REQUEST_TIMEOUT + Duration::from_nanos(1);
+
+    let mut shell = ShellExecRequest::command("call-shell-timeout-bound", "true");
+    shell.timeout = Some(oversized);
+    let mut shell_events = Vec::new();
+    let shell_error = execute_shell(
+        shell,
+        &MechanicalLimits::default(),
+        &CancellationToken::new(),
+        |event| shell_events.push(event),
+    )
+    .expect_err("oversized shell timeout must fail closed");
+    assert!(shell_error.to_string().contains("timeout"));
+    assert!(shell_events.is_empty());
+
+    let mut adb = AdbExecRequest::new("call-adb-timeout-bound", vec!["version".to_string()]);
+    adb.timeout = Some(oversized);
+    let mut adb_events = Vec::new();
+    let adb_error = execute_adb(
+        adb,
+        &MechanicalLimits::default(),
+        &CancellationToken::new(),
+        |event| adb_events.push(event),
+    )
+    .expect_err("oversized adb timeout must fail closed");
+    assert!(adb_error.to_string().contains("timeout"));
+    assert!(adb_events.is_empty());
 }
 
 #[test]

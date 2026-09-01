@@ -9,8 +9,8 @@ use serde_json::{Map, Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_call_registry::{CallKey, CallSnapshot};
 use trillionnium_owner_open_runtime::{
-    AdbExecRequest, ExecutionEvent, ExecutionEventKind, ExecutionTerminal, PtySize,
-    ShellExecRequest, ShellInvocation, StreamKind,
+    AdbExecRequest, ExecutionEvent, ExecutionEventKind, ExecutionTerminal,
+    MAX_RUNTIME_REQUEST_TIMEOUT, PtySize, ShellExecRequest, ShellInvocation, StreamKind,
 };
 use trillionnium_owner_open_tool_bridge::{BoundToolCall, DirectToolRequest};
 use trillionnium_owner_open_turn_loop::{ProviderEvent, ProviderHost, ToolOutcome, TurnRequest};
@@ -700,9 +700,17 @@ fn canonical_request_bytes(call: &ToolCall, raw_object: &Map<String, Value>) -> 
 fn decode_timeout(value: Option<i64>) -> Result<Option<Duration>> {
     match value {
         None | Some(0) => Ok(None),
-        Some(value) if value > 0 => Ok(Some(Duration::from_millis(u64::try_from(value).map_err(
-            |_| JsonlProviderError::Protocol("timeout_ms is out of range".to_string()),
-        )?))),
+        Some(value) if value > 0 => {
+            let timeout = Duration::from_millis(u64::try_from(value).map_err(|_| {
+                JsonlProviderError::Protocol("timeout_ms is out of range".to_string())
+            })?);
+            if timeout > MAX_RUNTIME_REQUEST_TIMEOUT {
+                return Err(JsonlProviderError::Protocol(format!(
+                    "timeout_ms exceeds runtime hard bound {MAX_RUNTIME_REQUEST_TIMEOUT:?}"
+                )));
+            }
+            Ok(Some(timeout))
+        }
         Some(_) => Err(JsonlProviderError::Protocol(
             "timeout_ms must be nonnegative".to_string(),
         )),
@@ -885,5 +893,19 @@ mod tests {
         let canonical: Value = serde_json::from_slice(&bound.canonical_request).unwrap();
         assert_eq!(canonical["target_id"], Value::Null);
         assert!(canonical.get("target").is_none());
+    }
+
+    #[test]
+    fn request_timeout_decode_enforces_the_runtime_hard_bound() {
+        let maximum_millis = i64::try_from(MAX_RUNTIME_REQUEST_TIMEOUT.as_millis())
+            .expect("runtime timeout bound fits the provider protocol integer");
+        assert_eq!(
+            decode_timeout(Some(maximum_millis)).unwrap(),
+            Some(MAX_RUNTIME_REQUEST_TIMEOUT)
+        );
+        let error = decode_timeout(Some(maximum_millis + 1))
+            .expect_err("provider timeout above the runtime bound must fail closed");
+        assert!(error.to_string().contains("timeout_ms"));
+        assert_eq!(decode_timeout(Some(0)).unwrap(), None);
     }
 }

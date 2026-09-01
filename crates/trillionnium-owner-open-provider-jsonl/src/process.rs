@@ -1,9 +1,10 @@
 use std::fs;
-use std::io::{BufRead, BufReader, Read};
+use std::io::{self, BufRead, BufReader, Read};
 use std::ops::{Deref, DerefMut};
+use std::os::fd::{AsRawFd, RawFd};
 use std::process::{Child, ExitStatus};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::SyncSender;
+use std::sync::mpsc::{SyncSender, TrySendError};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
@@ -17,8 +18,47 @@ pub(crate) enum ProviderOutput {
     Error(String),
 }
 
+/// Owns one provider I/O reader and exposes a cooperative stop flag for
+/// cleanup. Reader syscalls are wrapped in bounded poll waits, so a
+/// descendant that inherits a provider pipe cannot strand the turn forever.
+pub(crate) struct ProviderWorker {
+    handle: Option<JoinHandle<()>>,
+    stop: Arc<AtomicBool>,
+}
+
+impl ProviderWorker {
+    fn is_finished(&self) -> bool {
+        self.handle.as_ref().is_none_or(JoinHandle::is_finished)
+    }
+
+    fn join(mut self) -> thread::Result<()> {
+        self.handle
+            .take()
+            .expect("provider worker handle is present before join")
+            .join()
+    }
+
+    fn request_stop(&self) {
+        self.stop.store(true, Ordering::Release);
+    }
+}
+
+impl Drop for ProviderWorker {
+    fn drop(&mut self) {
+        // A worker can be dropped on an early setup error before the normal
+        // join path is reached. Request shutdown; the polling reader will
+        // observe it within one interval and release its descriptor.
+        self.request_stop();
+    }
+}
+
 const SPAWN_GUARD_REAP_GRACE: Duration = Duration::from_millis(500);
 const PROCESS_GROUP_SCAN_BUDGET: Duration = Duration::from_millis(500);
+const PROCESS_GROUP_PROOF_RETRY_BUDGET: Duration = Duration::from_secs(1);
+const PROCESS_GROUP_PROOF_RETRY_DELAY: Duration = Duration::from_millis(5);
+const READER_POLL_INTERVAL: Duration = Duration::from_millis(50);
+const WORKER_NATURAL_JOIN_GRACE: Duration = Duration::from_millis(250);
+const WORKER_CANCEL_JOIN_GRACE: Duration = Duration::from_secs(2);
 
 /// Kernel-observed identity for a provider leader and its process namespace.
 ///
@@ -140,15 +180,19 @@ impl Drop for ProviderChildGuard {
 }
 
 pub(crate) fn spawn_stdout_reader(
-    stdout: impl Read + Send + 'static,
+    stdout: impl Read + AsRawFd + Send + 'static,
     max_line_bytes: usize,
     max_stdout_bytes: usize,
     sender: SyncSender<ProviderOutput>,
-) -> std::io::Result<JoinHandle<()>> {
-    thread::Builder::new()
+) -> std::io::Result<ProviderWorker> {
+    let stop = Arc::new(AtomicBool::new(false));
+    let worker_stop = Arc::clone(&stop);
+    let handle = thread::Builder::new()
         .name("owner-open-provider-stdout".to_string())
         .spawn(move || {
-            let mut reader = BufReader::new(stdout);
+            let fd = stdout.as_raw_fd();
+            let mut reader =
+                BufReader::new(PollingReader::new(stdout, fd, Arc::clone(&worker_stop)));
             let mut total = 0usize;
             loop {
                 match read_bounded_line(&mut reader, max_line_bytes) {
@@ -156,40 +200,65 @@ pub(crate) fn spawn_stdout_reader(
                         total = match total.checked_add(line.len().saturating_add(1)) {
                             Some(total) if total <= max_stdout_bytes => total,
                             _ => {
-                                let _ = sender.send(ProviderOutput::Error(
-                                    "provider aggregate stdout exceeds its bound".to_string(),
-                                ));
+                                let _ = send_provider_output(
+                                    &sender,
+                                    ProviderOutput::Error(
+                                        "provider aggregate stdout exceeds its bound".to_string(),
+                                    ),
+                                    &worker_stop,
+                                );
                                 return;
                             }
                         };
-                        if sender.send(ProviderOutput::Line(line)).is_err() {
+                        if !send_provider_output(&sender, ProviderOutput::Line(line), &worker_stop)
+                        {
                             return;
                         }
                     }
                     Ok(None) => {
-                        let _ = sender.send(ProviderOutput::Eof);
+                        if !worker_stop.load(Ordering::Acquire) {
+                            let _ =
+                                send_provider_output(&sender, ProviderOutput::Eof, &worker_stop);
+                        }
                         return;
                     }
                     Err(error) => {
-                        let _ = sender.send(ProviderOutput::Error(error));
+                        if !worker_stop.load(Ordering::Acquire) {
+                            let _ = send_provider_output(
+                                &sender,
+                                ProviderOutput::Error(error),
+                                &worker_stop,
+                            );
+                        }
                         return;
                     }
                 }
             }
-        })
+        })?;
+    Ok(ProviderWorker {
+        handle: Some(handle),
+        stop,
+    })
 }
 
 pub(crate) fn spawn_stderr_reader(
-    mut stderr: impl Read + Send + 'static,
+    stderr: impl Read + AsRawFd + Send + 'static,
     maximum: usize,
     capture: Arc<Mutex<Vec<u8>>>,
     overflow: Arc<AtomicBool>,
-) -> std::io::Result<JoinHandle<()>> {
-    thread::Builder::new()
+) -> std::io::Result<ProviderWorker> {
+    let stop = Arc::new(AtomicBool::new(false));
+    let worker_stop = Arc::clone(&stop);
+    let handle = thread::Builder::new()
         .name("owner-open-provider-stderr".to_string())
         .spawn(move || {
+            let fd = stderr.as_raw_fd();
+            let mut stderr = PollingReader::new(stderr, fd, Arc::clone(&worker_stop));
             let mut buffer = [0_u8; 16 * 1024];
             loop {
+                if worker_stop.load(Ordering::Acquire) {
+                    return;
+                }
                 match stderr.read(&mut buffer) {
                     Ok(0) => return,
                     Ok(count) => {
@@ -206,7 +275,89 @@ pub(crate) fn spawn_stderr_reader(
                     Err(_) => return,
                 }
             }
-        })
+        })?;
+    Ok(ProviderWorker {
+        handle: Some(handle),
+        stop,
+    })
+}
+
+/// Wrap a child-pipe reader with a bounded readiness wait and cooperative
+/// cancellation. `read_bounded_line` may need several underlying reads for a
+/// partial JSONL record; putting the poll in this wrapper covers that case too.
+struct PollingReader<R> {
+    inner: R,
+    fd: RawFd,
+    stop: Arc<AtomicBool>,
+}
+
+impl<R> PollingReader<R> {
+    fn new(inner: R, fd: RawFd, stop: Arc<AtomicBool>) -> Self {
+        Self { inner, fd, stop }
+    }
+}
+
+impl<R: Read> Read for PollingReader<R> {
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        if buffer.is_empty() {
+            return Ok(0);
+        }
+        loop {
+            if self.stop.load(Ordering::Acquire) {
+                return Ok(0);
+            }
+            let timeout_ms =
+                READER_POLL_INTERVAL.as_millis().clamp(1, i32::MAX as u128) as libc::c_int;
+            let mut poll_fd = libc::pollfd {
+                fd: self.fd,
+                events: libc::POLLIN | libc::POLLHUP | libc::POLLERR,
+                revents: 0,
+            };
+            let polled = unsafe { libc::poll(&mut poll_fd, 1, timeout_ms) };
+            if polled < 0 {
+                let error = io::Error::last_os_error();
+                if error.raw_os_error() == Some(libc::EINTR) {
+                    continue;
+                }
+                return Err(error);
+            }
+            if self.stop.load(Ordering::Acquire) {
+                return Ok(0);
+            }
+            if polled == 0 {
+                continue;
+            }
+            if poll_fd.revents & libc::POLLNVAL != 0 {
+                return Err(io::Error::other(
+                    "provider output descriptor became invalid",
+                ));
+            }
+            return self.inner.read(buffer);
+        }
+    }
+}
+
+/// Send an output event while remaining cancellable when the turn receiver is
+/// no longer draining a bounded queue. `SyncSender::send` can block forever;
+/// retrying `try_send` gives the stop flag a chance to interrupt that wait.
+fn send_provider_output(
+    sender: &SyncSender<ProviderOutput>,
+    mut output: ProviderOutput,
+    stop: &AtomicBool,
+) -> bool {
+    loop {
+        match sender.try_send(output) {
+            Ok(()) => return true,
+            Err(TrySendError::Disconnected(_)) => return false,
+            Err(TrySendError::Full(returned)) => {
+                output = returned;
+                if stop.load(Ordering::Acquire) {
+                    return false;
+                }
+                thread::sleep(Duration::from_millis(5));
+            }
+        }
+    }
 }
 
 fn read_bounded_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option<Vec<u8>>, String> {
@@ -226,6 +377,73 @@ fn read_bounded_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option
         return Err("provider JSONL record is empty or oversized".to_string());
     }
     Ok(Some(line))
+}
+
+/// Join provider reader workers within finite natural and cancellation
+/// windows. A descendant that escaped the bound process group must not keep a
+/// turn's cleanup path blocked on an inherited pipe forever.
+pub(crate) fn join_provider_workers_bounded(mut workers: Vec<ProviderWorker>) -> Vec<String> {
+    let mut errors = Vec::new();
+    let natural_deadline = Instant::now()
+        .checked_add(WORKER_NATURAL_JOIN_GRACE)
+        .unwrap_or_else(Instant::now);
+    let mut pending = Vec::new();
+    for worker in workers.drain(..) {
+        if worker.is_finished() {
+            if worker.join().is_err() {
+                errors.push("provider reader thread panicked".to_string());
+            }
+        } else {
+            pending.push(worker);
+        }
+    }
+    while !pending.is_empty() && Instant::now() < natural_deadline {
+        let mut still_pending = Vec::with_capacity(pending.len());
+        for worker in pending {
+            if worker.is_finished() {
+                if worker.join().is_err() {
+                    errors.push("provider reader thread panicked".to_string());
+                }
+            } else {
+                still_pending.push(worker);
+            }
+        }
+        pending = still_pending;
+        if !pending.is_empty() {
+            thread::sleep(Duration::from_millis(5));
+        }
+    }
+    if pending.is_empty() {
+        return errors;
+    }
+
+    for worker in &pending {
+        worker.request_stop();
+    }
+    let cancel_deadline = Instant::now()
+        .checked_add(WORKER_CANCEL_JOIN_GRACE)
+        .unwrap_or_else(Instant::now);
+    while !pending.is_empty() && Instant::now() < cancel_deadline {
+        let mut still_pending = Vec::with_capacity(pending.len());
+        for worker in pending {
+            if worker.is_finished() {
+                if worker.join().is_err() {
+                    errors.push("provider reader thread panicked".to_string());
+                }
+            } else {
+                still_pending.push(worker);
+            }
+        }
+        pending = still_pending;
+        if !pending.is_empty() {
+            thread::sleep(Duration::from_millis(10));
+        }
+    }
+    for worker in pending {
+        errors.push("provider reader did not stop within bounded cleanup grace".to_string());
+        drop(worker);
+    }
+    errors
 }
 
 /// Allow a provider that emitted a valid completed terminal to perform its
@@ -288,7 +506,7 @@ pub(crate) fn finish_child(
         }
     };
     if group_alive {
-        if let Err(error) = send_group_signal(identity.process_group, libc::SIGTERM) {
+        if let Err(error) = send_bound_group_signal(identity, libc::SIGTERM) {
             return Err(with_direct_fallback(
                 child,
                 error,
@@ -340,7 +558,7 @@ pub(crate) fn finish_child(
             }
         };
         if group_alive {
-            match send_group_signal(identity.process_group, libc::SIGKILL) {
+            match send_bound_group_signal(identity, libc::SIGKILL) {
                 Ok(()) => {}
                 Err(error) => {
                     return Err(with_direct_fallback(
@@ -455,6 +673,15 @@ fn send_group_signal(process_group: u32, signal: i32) -> Result<(), String> {
             "provider process-group signal {signal} failed: {error}"
         ))
     }
+}
+
+/// Revalidate the provider leader generation, PGID and SID immediately before
+/// issuing the group syscall. POSIX exposes only a numeric PGID to `kill(2)`,
+/// so the final check/use pair cannot be made kernel-atomic; keeping it in one
+/// helper minimizes the window and fails closed if identity is uncertain.
+fn send_bound_group_signal(identity: &ProcessIdentity, signal: i32) -> Result<(), String> {
+    ensure_bound_process_group(identity)?;
+    send_group_signal(identity.process_group, signal)
 }
 
 /// Capture the child identity immediately after spawn.  The caller must bind
@@ -628,12 +855,26 @@ fn identity_matches(expected: &ProcessIdentity, observed: &ProcessIdentity) -> b
 fn ensure_bound_process_group(identity: &ProcessIdentity) -> Result<(), String> {
     let observed = observe_process_identity(identity.pid).map_err(|error| error.to_string())?;
     let Some(observed) = observed else {
-        if process_group_exists(identity.process_group)?
-            && !bound_process_group_has_member(identity)?
-        {
-            return Err(
-                "provider process-group identity cannot be proven after leader exit".to_string(),
-            );
+        if process_group_exists(identity.process_group)? {
+            let deadline = Instant::now()
+                .checked_add(PROCESS_GROUP_PROOF_RETRY_BUDGET)
+                .unwrap_or_else(Instant::now);
+            let mut last_error =
+                "provider process-group identity cannot be proven after leader exit".to_string();
+            loop {
+                match bound_process_group_has_member(identity) {
+                    Ok(true) => return Ok(()),
+                    Ok(false) => {}
+                    Err(error) => last_error = error,
+                }
+                if Instant::now() >= deadline {
+                    return Err(last_error);
+                }
+                thread::sleep(PROCESS_GROUP_PROOF_RETRY_DELAY);
+                if !process_group_exists(identity.process_group)? {
+                    return Ok(());
+                }
+            }
         }
         return Ok(());
     };
@@ -652,7 +893,13 @@ fn bound_process_group_exists(identity: &ProcessIdentity) -> Result<bool, String
             ensure_bound_process_group(identity)?;
             Ok(true)
         }
-        None => bound_process_group_has_member(identity),
+        None => {
+            // Reuse the bounded proof/retry path for a reaped leader.  A
+            // one-shot `/proc` scan can race descendant setup and otherwise
+            // turn a still-owned group into a false cleanup failure.
+            ensure_bound_process_group(identity)?;
+            Ok(true)
+        }
     }
 }
 
@@ -679,8 +926,8 @@ fn bound_process_group_has_member(identity: &ProcessIdentity) -> Result<bool, St
         if pid == identity.pid {
             continue;
         }
-        match read_proc_stat_identity(pid) {
-            Ok(Some((_start, process_group, session_id)))
+        match read_proc_group_identity(pid) {
+            Ok(Some((process_group, session_id)))
                 if process_group == identity.process_group && session_id == identity.session_id =>
             {
                 return Ok(true);
@@ -694,6 +941,41 @@ fn bound_process_group_has_member(identity: &ProcessIdentity) -> Result<bool, St
         }
     }
     Ok(false)
+}
+
+/// Read only process-group/session fields while proving a group after its
+/// leader exits. Kernel worker threads expose zero pgrp/session values in
+/// `/proc/<pid>/stat`; those are not valid userspace candidates and must not
+/// abort the scan. Leader generation checks continue to use the strict parser.
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn read_proc_group_identity(pid: u32) -> std::io::Result<Option<(u32, u32)>> {
+    let stat = match fs::read_to_string(format!("/proc/{pid}/stat")) {
+        Ok(stat) => stat,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    let command_end = stat
+        .rfind(')')
+        .ok_or_else(|| std::io::Error::other("provider proc stat omitted command terminator"))?;
+    let fields = stat
+        .get(command_end + 1..)
+        .ok_or_else(|| std::io::Error::other("provider proc stat is truncated"))?
+        .split_ascii_whitespace()
+        .collect::<Vec<_>>();
+    let process_group = fields
+        .get(2)
+        .ok_or_else(|| std::io::Error::other("provider proc stat omitted process group"))?
+        .parse::<u32>()
+        .map_err(|_| std::io::Error::other("provider proc stat process group is invalid"))?;
+    let session_id = fields
+        .get(3)
+        .ok_or_else(|| std::io::Error::other("provider proc stat omitted session id"))?
+        .parse::<u32>()
+        .map_err(|_| std::io::Error::other("provider proc stat session id is invalid"))?;
+    if process_group == 0 || session_id == 0 {
+        return Ok(None);
+    }
+    Ok(Some((process_group, session_id)))
 }
 
 #[cfg(not(any(target_os = "linux", target_os = "android")))]
@@ -725,8 +1007,10 @@ fn reap_child_bounded(mut child: Child, timeout: Duration) {
 mod tests {
     use super::*;
     use std::fs;
+    use std::os::fd::FromRawFd;
     use std::os::unix::process::CommandExt;
     use std::process::{Command, Stdio};
+    use std::sync::mpsc::sync_channel;
 
     #[test]
     fn leader_exit_does_not_leave_reader_pipes_owned_by_a_descendant() {
@@ -784,6 +1068,30 @@ mod tests {
                 "provider descendant survived cleanup"
             );
             thread::sleep(Duration::from_millis(10));
+        }
+    }
+
+    #[test]
+    fn reader_worker_stop_is_bounded_when_writer_remains_open() {
+        let mut descriptors = [-1_i32; 2];
+        assert_eq!(unsafe { libc::pipe(descriptors.as_mut_ptr()) }, 0);
+        let reader = unsafe { std::fs::File::from_raw_fd(descriptors[0]) };
+        let writer_fd = descriptors[1];
+        let (sender, receiver) = sync_channel(1);
+        let worker = spawn_stdout_reader(reader, 1024, 4096, sender).unwrap();
+        let started = Instant::now();
+        let errors = join_provider_workers_bounded(vec![worker]);
+        assert!(
+            started.elapsed() < Duration::from_secs(1),
+            "reader cleanup exceeded its bounded stop window"
+        );
+        assert!(
+            errors.is_empty(),
+            "reader worker reported errors: {errors:?}"
+        );
+        drop(receiver);
+        unsafe {
+            libc::close(writer_fd);
         }
     }
 

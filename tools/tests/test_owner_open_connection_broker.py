@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import socket
+import stat
 import subprocess
 import sys
 import tempfile
@@ -145,6 +146,9 @@ class BrokerHarness:
         self.fail(f"no result for {request_id}: {values}")
 
 class BrokerTest(BrokerHarness, unittest.TestCase):
+    def test_bound_socket_is_private(self) -> None:
+        self.assertEqual(stat.S_IMODE(self.socket.stat().st_mode), 0o600)
+
     def test_two_clients_share_one_upstream_with_owner_results_and_broadcast_observations(self) -> None:
         first=self.connect("client-a"); second=self.connect("client-b")
         try:
@@ -211,6 +215,33 @@ class BrokerTest(BrokerHarness, unittest.TestCase):
             self.request(client,"same-request",second,["job.inspect.result"])
             values=self.collect_until(client,"same-request")
             error=next(v for v in values if v.get("kind")=="error")
+            self.assertEqual(error["code"],"request_id_conflict")
+        finally:
+            client.close()
+        frames=[json.loads(x) for x in self.record.read_text().splitlines()]
+        self.assertEqual(sum(f["kind"]=="job.inspect" for f in frames),1)
+
+    def test_duplicate_id_with_changed_job_request_digest_never_replays_terminal(self) -> None:
+        client=self.connect("digest-conflict-client")
+        first={
+            "kind":"job.inspect",
+            "seq":0,
+            "direction":"client_to_host",
+            "payload":{"job_id":"job-bound","request_sha256":"a"*64},
+        }
+        changed={
+            "kind":"job.inspect",
+            "seq":1,
+            "direction":"client_to_host",
+            "payload":{"job_id":"job-bound","request_sha256":"b"*64},
+        }
+        try:
+            self.request(client,"digest-bound-request",first,["job.inspect.result"])
+            first_values=self.collect_until(client,"digest-bound-request")
+            self.assertTrue(any(v.get("kind")=="result" for v in first_values))
+            self.request(client,"digest-bound-request",changed,["job.inspect.result"])
+            second_values=self.collect_until(client,"digest-bound-request")
+            error=next(v for v in second_values if v.get("kind")=="error")
             self.assertEqual(error["code"],"request_id_conflict")
         finally:
             client.close()
@@ -403,6 +434,149 @@ class BrokerTerminalTransitionRaceTest(BrokerHarness, unittest.TestCase):
         selected=[r for r in records if r["request_id"]=="barrier-request"]
         self.assertEqual([r["stage"] for r in selected], ["broker.accepted","broker.forwarded","broker.terminal"])
         self.assertEqual(selected[-1]["details"]["status"], "host_terminal_observed")
+
+
+class BrokerUncertaintyWriteBoundaryTest(BrokerHarness, unittest.TestCase):
+    """An uncertainty transition raised at the write boundary has no effect."""
+
+    def broker_command(self) -> list[str]:
+        wrapper = self.root / "broker_uncertainty_wrapper.py"
+        boundary = self.root / "uncertainty-boundary-entered"
+        wrapper.write_text(
+            textwrap.dedent(
+                f"""\
+                import runpy
+                import sys
+                from pathlib import Path
+
+                sys.path.insert(0, {str(ROOT / "owner-open")!r})
+                from owner_open_broker_base_v2 import BrokerBase
+                from owner_open_broker_mux import WeightedFairMux
+
+                _boundary = Path({str(boundary)!r})
+                _brokers = []
+                _init = BrokerBase.__init__
+                _is_active = WeightedFairMux.is_active
+
+                def _capture(self, args):
+                    _init(self, args)
+                    _brokers.append(self)
+
+                def _raise_uncertainty(self, request):
+                    active = _is_active(self, request)
+                    if (
+                        active
+                        and request.frame.get("kind") == "job.inspect"
+                        and not _boundary.exists()
+                    ):
+                        _boundary.write_text("entered")
+                        # Model a disconnect/error observed after the worker
+                        # passed its preflight check but immediately before
+                        # the exact Host write boundary.
+                        _brokers[0].upstream_uncertain.set()
+                    return active
+
+                BrokerBase.__init__ = _capture
+                WeightedFairMux.is_active = _raise_uncertainty
+                sys.argv = [{str(BROKER)!r}, *sys.argv[1:]]
+                runpy.run_path({str(BROKER)!r}, run_name="__main__")
+                """
+            ),
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o700)
+        return [sys.executable, str(wrapper)]
+
+    def test_uncertainty_recheck_prevents_host_write(self) -> None:
+        client = self.connect("uncertainty-client")
+        try:
+            self.request(
+                client,
+                "uncertainty-request",
+                {
+                    "kind": "job.inspect",
+                    "seq": 0,
+                    "direction": "client_to_host",
+                    "payload": {"job_id": "job-uncertain"},
+                },
+                ["job.inspect.result"],
+            )
+            values = self.collect_until(client, "uncertainty-request")
+            terminal = next(
+                value
+                for value in values
+                if value.get("kind") in {"result", "error"}
+            )
+            self.assertEqual(terminal["kind"], "error")
+            self.assertEqual(terminal["code"], "upstream_uncertain")
+        finally:
+            client.close()
+        self.assertTrue((self.root / "uncertainty-boundary-entered").exists())
+        frames = [json.loads(x) for x in self.record.read_text().splitlines()]
+        self.assertEqual([frame["kind"] for frame in frames], ["hello"])
+
+
+class BrokerAdmissionRollbackTest(BrokerHarness, unittest.TestCase):
+    """A post-publication hello failure must not poison the client ID."""
+
+    def broker_command(self) -> list[str]:
+        wrapper = self.root / "broker_admission_rollback_wrapper.py"
+        wrapper.write_text(
+            textwrap.dedent(
+                f"""\
+                import runpy
+                import sys
+
+                sys.path.insert(0, {str(ROOT / "owner-open")!r})
+                from owner_open_broker_runtime import Client
+
+                _enqueue = Client.enqueue
+                _failed_once = False
+
+                def _fail_first_ack(self, value):
+                    global _failed_once
+                    if value.get("kind") == "broker.hello.ack" and not _failed_once:
+                        _failed_once = True
+                        return False
+                    return _enqueue(self, value)
+
+                Client.enqueue = _fail_first_ack
+                sys.argv = [{str(BROKER)!r}, *sys.argv[1:]]
+                runpy.run_path({str(BROKER)!r}, run_name="__main__")
+                """
+            ),
+            encoding="utf-8",
+        )
+        wrapper.chmod(0o700)
+        return [sys.executable, str(wrapper)]
+
+    def test_failed_hello_ack_allows_same_client_id_to_reconnect(self) -> None:
+        first = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        first.settimeout(2)
+        first.connect(str(self.socket))
+        send(
+            first,
+            {
+                "kind": "broker.hello",
+                "broker_epoch": self.descriptor_value["broker_epoch"],
+                "client_id": "rollback-client",
+                "token": self.token_value,
+            },
+        )
+        try:
+            # Depending on scheduling, rollback closes the socket before the
+            # unauthenticated error can be written.  Either an error frame or
+            # EOF is expected; the important boundary is that the writer has
+            # been stopped before the ID is retried below.
+            while True:
+                line(first)
+        except (EOFError, OSError, socket.timeout):
+            pass
+        finally:
+            first.close()
+
+        second = self.connect("rollback-client")
+        second.close()
 
 
 if __name__=="__main__": unittest.main()

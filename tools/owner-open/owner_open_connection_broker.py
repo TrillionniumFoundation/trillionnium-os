@@ -5,6 +5,10 @@ from __future__ import annotations
 import sys
 
 from owner_open_connection_broker_v2 import main
+from owner_open_connection_broker_v2 import Broker
+
+# Re-export ``Broker`` for read-only contract/audit consumers.  The stable
+# executable entrypoint continues to delegate to the v2 ``main`` below.
 
 # Language-boundary contract markers consumed by the Android ingress source
 # audit.  The implementation emits the same canonical fields from v2.

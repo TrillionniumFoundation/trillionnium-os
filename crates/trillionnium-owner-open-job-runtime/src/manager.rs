@@ -1,6 +1,7 @@
 use std::collections::{HashMap, VecDeque};
-use std::path::Path;
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::{Arc, Condvar, Mutex, MutexGuard};
 use std::thread;
 
 use serde_json::{Value, json};
@@ -19,11 +20,161 @@ use crate::{
     StartDisposition,
 };
 
+const START_SHARD_COUNT: usize = 64;
+const START_SHARD_HASH_VERSION: u8 = 1;
+const START_SHARD_DOMAIN: &[u8] = b"owner-open-job-manager-start";
+const FNV_OFFSET_BASIS: u64 = 0xcbf29ce484222325;
+const FNV_PRIME: u64 = 0x00000100000001b3;
+
+struct AdmissionPool {
+    active: AtomicUsize,
+    maximum: usize,
+}
+
+impl AdmissionPool {
+    fn new(maximum: usize) -> Self {
+        Self {
+            active: AtomicUsize::new(0),
+            maximum,
+        }
+    }
+
+    fn try_acquire(self: &Arc<Self>) -> Result<AdmissionPermit> {
+        let mut current = self.active.load(Ordering::Acquire);
+        loop {
+            if current >= self.maximum {
+                return Err(JobRuntimeError::InvalidRequest(
+                    "job runtime capacity is exhausted before acceptance".to_string(),
+                ));
+            }
+            match self.active.compare_exchange_weak(
+                current,
+                current + 1,
+                Ordering::AcqRel,
+                Ordering::Acquire,
+            ) {
+                Ok(_) => {
+                    return Ok(AdmissionPermit {
+                        pool: Arc::clone(self),
+                    });
+                }
+                Err(observed) => current = observed,
+            }
+        }
+    }
+}
+
+struct AdmissionPermit {
+    pool: Arc<AdmissionPool>,
+}
+
+impl Drop for AdmissionPermit {
+    fn drop(&mut self) {
+        let previous = self.pool.active.fetch_sub(1, Ordering::AcqRel);
+        debug_assert!(previous > 0, "job admission permit underflow");
+    }
+}
+
 struct RunningJob {
     control: Arc<ProcessControl>,
     request: JobRequest,
+    generation: u64,
+    _admission_permit: AdmissionPermit,
+    startup: Arc<StartupGate>,
+    lifecycle: Mutex<()>,
     stdout_bytes: Mutex<u64>,
     stderr_bytes: Mutex<u64>,
+}
+
+/// Barrier between publishing a locally-owned process and authorizing live
+/// controls against it.  The running-map entry is intentionally installed
+/// before the identity/started observations so a child that exits immediately
+/// can still be reaped by the dispatcher; controls must nevertheless wait
+/// until those facts and the durable start terminal have been committed.
+struct StartupGate {
+    state: Mutex<StartupState>,
+    changed: Condvar,
+}
+
+enum StartupState {
+    Pending,
+    Ready,
+    Failed(String),
+    Terminal,
+}
+
+impl StartupGate {
+    fn new() -> Self {
+        Self {
+            state: Mutex::new(StartupState::Pending),
+            changed: Condvar::new(),
+        }
+    }
+
+    fn wait(&self) -> Result<()> {
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        loop {
+            match &*state {
+                StartupState::Pending => {
+                    state = self
+                        .changed
+                        .wait(state)
+                        .map_err(|_| JobRuntimeError::StatePoisoned)?;
+                }
+                StartupState::Ready => return Ok(()),
+                StartupState::Failed(error) => {
+                    return Err(JobRuntimeError::Io(format!(
+                        "job startup did not become live: {error}"
+                    )));
+                }
+                StartupState::Terminal => return Err(JobRuntimeError::NotLive),
+            }
+        }
+    }
+
+    fn ready(&self) -> Result<()> {
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        if matches!(*state, StartupState::Pending) {
+            *state = StartupState::Ready;
+            self.changed.notify_all();
+        }
+        Ok(())
+    }
+
+    fn fail(&self, error: impl Into<String>) -> Result<()> {
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        if matches!(*state, StartupState::Pending) {
+            *state = StartupState::Failed(error.into());
+            self.changed.notify_all();
+        }
+        Ok(())
+    }
+
+    /// Close the startup window when the child reaches its terminal event
+    /// before the start caller has had a chance to mark the gate ready.  A
+    /// terminal state is distinct from an internal startup failure: the
+    /// start operation did become effectful, but no control captured during
+    /// the pending window may run against the now-terminal process.
+    fn terminal(&self) -> Result<()> {
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        if matches!(*state, StartupState::Pending) {
+            *state = StartupState::Terminal;
+            self.changed.notify_all();
+        }
+        Ok(())
+    }
 }
 
 #[derive(Default)]
@@ -39,6 +190,8 @@ struct Inner {
     registry: Arc<JobRegistry>,
     journal: Arc<JobJournal>,
     running: Mutex<HashMap<JobKey, Arc<RunningJob>>>,
+    admission: Arc<AdmissionPool>,
+    start_shards: Vec<Mutex<()>>,
     observations: Mutex<HashMap<JobKey, ObservationState>>,
     durability_error: Mutex<Option<String>>,
 }
@@ -51,12 +204,15 @@ pub struct JobManager {
 impl JobManager {
     pub fn new(config: JobRuntimeConfig, journal: JobJournal) -> Result<Self> {
         config.validate()?;
+        let max_jobs = config.max_jobs;
         Ok(Self {
             inner: Arc::new(Inner {
                 config,
                 registry: Arc::new(JobRegistry::default()),
                 journal: Arc::new(journal),
                 running: Mutex::new(HashMap::new()),
+                admission: Arc::new(AdmissionPool::new(max_jobs)),
+                start_shards: (0..START_SHARD_COUNT).map(|_| Mutex::new(())).collect(),
                 observations: Mutex::new(HashMap::new()),
                 durability_error: Mutex::new(None),
             }),
@@ -65,6 +221,24 @@ impl JobManager {
 
     pub fn open(config: JobRuntimeConfig, journal_path: Option<&Path>) -> Result<Self> {
         Self::new(config, JobJournal::open_best_effort(journal_path))
+    }
+
+    /// Open the segmented v2 job journal used by the G1 runtime path. The
+    /// legacy JSONL path is imported once into a sibling `<path>.segments`
+    /// directory when present. Appending the suffix to the complete path is
+    /// intentional: a turn store at `events.jsonl` and its derived job store
+    /// at `events.jsonl.jobs` must never share one segmented root. Callers
+    /// that still need the v1 file API can continue using [`Self::open`].
+    pub fn open_segmented(config: JobRuntimeConfig, journal_path: Option<&Path>) -> Result<Self> {
+        let root: Option<PathBuf> = journal_path.map(|path| {
+            let mut root = path.as_os_str().to_os_string();
+            root.push(".segments");
+            root.into()
+        });
+        Self::new(
+            config,
+            JobJournal::open_best_effort_segmented(root.as_deref(), journal_path),
+        )
     }
 
     #[must_use]
@@ -79,16 +253,19 @@ impl JobManager {
 
     pub fn start(&self, request: JobStartRequest) -> Result<JobStartResult> {
         validate_start_request(&request, &self.inner.config)?;
-        // Hold the running-map lock across the capacity check, registry begin,
-        // spawn, lifecycle observations, durable start completion and
-        // publication. A new key must be rejected before
-        // `registry.begin`, otherwise a full runtime leaves an Accepted entry
-        // that falsely occupies the key and prevents a later retry.
-        let mut running_jobs = self.running()?;
-        if let Some(running) = running_jobs.get(&request.key) {
+        // Serialize only the exact start shard. The running map is never held
+        // across journal I/O, process spawn, or dispatcher creation, so
+        // unrelated keys can start concurrently while one key remains
+        // linearizable.
+        let _start_guard = self.start_guard(&request.key)?;
+        if let Some(running) = self.running()?.get(&request.key).cloned() {
             if running.request != request.request {
                 return Err(JobRuntimeError::JobConflict);
             }
+            // A locally-owned entry is published before its identity and
+            // durable start terminal.  Duplicate starts must not observe it
+            // as live until that startup barrier has opened.
+            running.startup.wait()?;
             return Ok(JobStartResult {
                 disposition: StartDisposition::ExistingLive,
                 snapshot: self.inner.registry.snapshot(&request.key).ok(),
@@ -105,13 +282,28 @@ impl JobManager {
             if recovered.request != request.request {
                 return Err(JobRuntimeError::JobConflict);
             }
+            // A recovered record is authoritative only for the durable
+            // operation outcome.  If this manager also has a registry entry
+            // but no owned RunningJob, fence that entry before returning: a
+            // stale Accepted/Starting/Running state must never remain
+            // redispatchable through the public registry API.
+            let snapshot = match self.inner.registry.snapshot(&request.key) {
+                Ok(_) => Some(
+                    self.inner
+                        .registry
+                        .mark_restart_uncertain(&request.key)
+                        .map_err(registry_error)?,
+                ),
+                Err(JobRegistryError::NotFound) => None,
+                Err(error) => return Err(registry_error(error)),
+            };
             return Ok(JobStartResult {
                 disposition: if recovered.terminal.is_some() {
                     StartDisposition::ExistingTerminal
                 } else {
                     StartDisposition::UnknownAfterRestart
                 },
-                snapshot: None,
+                snapshot,
                 replay_status: if recovered.terminal.is_some() {
                     self.replay_status(false)?
                 } else {
@@ -125,32 +317,6 @@ impl JobManager {
             Err(JobRegistryError::NotFound) => false,
             Err(error) => return Err(registry_error(error)),
         };
-        let active_running_jobs = running_jobs
-            .keys()
-            .filter(|key| {
-                self.inner
-                    .registry
-                    .snapshot(key)
-                    .map(|snapshot| {
-                        matches!(
-                            snapshot.state,
-                            JobEffectiveState::Accepted
-                                | JobEffectiveState::Starting { .. }
-                                | JobEffectiveState::Running { .. }
-                        )
-                    })
-                    // A registry read failure is conservatively counted as
-                    // occupied.  Admission must not turn an uncertain state
-                    // into an additional child process.
-                    .unwrap_or(true)
-            })
-            .count();
-        if !registry_entry_exists && active_running_jobs >= self.inner.config.max_jobs {
-            return Err(JobRuntimeError::InvalidRequest(
-                "job runtime capacity is exhausted before acceptance".to_string(),
-            ));
-        }
-
         // Compute the exact operation identity before the registry accepts the
         // key.  A serialization/digest failure must not leave an Accepted
         // entry that has no corresponding journal operation.
@@ -165,10 +331,29 @@ impl JobManager {
         {
             let reason = journal_status_reason(&journal_status);
             let _ = self.note_journal_degraded_for_job(&request.key, reason);
+            if registry_entry_exists {
+                // A pre-existing registry marker must not remain an
+                // unowned, redispatchable Accepted state while persistence
+                // is unavailable. The live-map check above already ruled
+                // out a locally owned process, so fence the entry now.
+                self.inner
+                    .registry
+                    .mark_restart_uncertain(&request.key)
+                    .map_err(registry_error)?;
+            }
             return Err(JobRuntimeError::Journal(
                 "job journal is unavailable and unjournaled effects are disabled".to_string(),
             ));
         }
+
+        // Reserve finite process capacity before the registry can accept a
+        // new key. The permit is RAII-owned and transferred into RunningJob
+        // only after spawn succeeds; every pre-spawn error releases it.
+        let admission_permit = if registry_entry_exists {
+            None
+        } else {
+            Some(self.inner.admission.try_acquire()?)
+        };
 
         let begin = self
             .inner
@@ -176,17 +361,39 @@ impl JobManager {
             .begin(request.key.clone(), request.request.clone())
             .map_err(registry_error)?;
         if begin.disposition == BeginDisposition::Existing {
+            let (disposition, snapshot, replay_status) = match begin.snapshot.state {
+                JobEffectiveState::Terminal { .. } => (
+                    StartDisposition::ExistingTerminal,
+                    begin.snapshot,
+                    self.replay_status(false)?,
+                ),
+                JobEffectiveState::UnknownAfterRestart { .. }
+                | JobEffectiveState::ProvenNotStartedAfterRestart
+                | JobEffectiveState::Accepted
+                | JobEffectiveState::Starting { .. }
+                | JobEffectiveState::Running { .. } => {
+                    // `BeginDisposition::Existing` does not imply that a
+                    // process is live.  Accepted and claimed/running states
+                    // without a matching in-process owner are stale or
+                    // recovery remnants; fence them before exposing the
+                    // idempotent result so a later claim cannot redispatch
+                    // an effect whose boundary is unknown.
+                    let snapshot = self
+                        .inner
+                        .registry
+                        .mark_restart_uncertain(&request.key)
+                        .map_err(registry_error)?;
+                    (
+                        StartDisposition::UnknownAfterRestart,
+                        snapshot,
+                        ReplayStatus::UnknownAfterRestart,
+                    )
+                }
+            };
             return Ok(JobStartResult {
-                disposition: match &begin.snapshot.state {
-                    JobEffectiveState::Terminal { .. } => StartDisposition::ExistingTerminal,
-                    JobEffectiveState::UnknownAfterRestart { .. }
-                    | JobEffectiveState::ProvenNotStartedAfterRestart => {
-                        StartDisposition::UnknownAfterRestart
-                    }
-                    _ => StartDisposition::ExistingLive,
-                },
-                snapshot: Some(begin.snapshot),
-                replay_status: self.replay_status(false)?,
+                disposition,
+                snapshot: Some(snapshot),
+                replay_status,
             });
         }
         if matches!(&journal_status, JournalStatus::Unavailable { .. }) {
@@ -242,9 +449,28 @@ impl JobManager {
         let unjournaled = matches!(journal_begin, OperationBegin::Unjournaled);
         match journal_begin {
             OperationBegin::ExistingTerminal(_) => {
+                // `registry.begin` may have created a fresh Accepted entry
+                // while a retained journal already contained this terminal
+                // operation (for example after an in-memory registry was
+                // reconstructed from a partial snapshot).  Reconcile that
+                // untouched entry before returning; otherwise a later retry
+                // would observe a redispatchable Accepted state even though
+                // the durable truth is terminal.
+                if let Err(rollback_error) = self
+                    .inner
+                    .registry
+                    .rollback_accept(&request.key, &request.request)
+                    .map(|_| ())
+                    .map_err(registry_error)
+                {
+                    let _ = self.inner.registry.mark_restart_uncertain(&request.key);
+                    return Err(JobRuntimeError::Journal(format!(
+                        "durable terminal exists but registry reconciliation failed: {rollback_error}"
+                    )));
+                }
                 return Ok(JobStartResult {
                     disposition: StartDisposition::ExistingTerminal,
-                    snapshot: Some(begin.snapshot),
+                    snapshot: None,
                     replay_status: self.replay_status(false)?,
                 });
             }
@@ -308,6 +534,12 @@ impl JobManager {
                 }
             }
         }
+
+        let admission_permit = admission_permit.ok_or_else(|| {
+            JobRuntimeError::Registry(
+                "new job registry entry was created without an admission permit".to_string(),
+            )
+        })?;
 
         let generation = match self
             .inner
@@ -393,11 +625,8 @@ impl JobManager {
             .record_started(&request.key, generation, control.pid, control.pty)
             .map_err(registry_error)
         {
-            // record_started failed after the child was spawned. Release the
-            // admission reservation before the rollback path tries to remove
-            // the running entry; otherwise abort_started_job would attempt to
-            // lock this same mutex and deadlock forever.
-            drop(running_jobs);
+            // record_started failed after the child was spawned. The admission
+            // permit is dropped when this start path returns.
             let cleanup_error = control
                 .kill(libc::SIGKILL)
                 .err()
@@ -433,9 +662,19 @@ impl JobManager {
         let running = Arc::new(RunningJob {
             control,
             request: request.request.clone(),
+            generation,
+            _admission_permit: admission_permit,
+            startup: Arc::new(StartupGate::new()),
+            lifecycle: Mutex::new(()),
             stdout_bytes: Mutex::new(0),
             stderr_bytes: Mutex::new(0),
         });
+
+        // Publish the control entry before lifecycle events or dispatcher
+        // creation. A fast child may exit immediately; inserting first lets
+        // its terminal path remove an entry that is already visible.
+        self.running()?
+            .insert(request.key.clone(), Arc::clone(&running));
 
         // Publish the kernel-observed identity before announcing `started`.
         // This event is the immutable process-generation binding that a
@@ -446,7 +685,6 @@ impl JobManager {
         let identity = match process_identity_for_event(&running.control) {
             Ok(identity) => identity,
             Err(error) => {
-                drop(running_jobs);
                 self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
                 return Err(error);
             }
@@ -457,7 +695,6 @@ impl JobManager {
         };
         if let Err(error) = self.push_runtime_event(&request.key, &request.request, identity_bound)
         {
-            drop(running_jobs);
             self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
             return Err(error);
         }
@@ -468,7 +705,6 @@ impl JobManager {
             pty: running.control.pty,
         };
         if let Err(error) = self.push_runtime_event(&request.key, &request.request, started) {
-            drop(running_jobs);
             self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
             return Err(error);
         }
@@ -498,16 +734,10 @@ impl JobManager {
             }),
         ) {
             let _ = self.note_journal_failure_for_job(&request.key, error.to_string());
-            drop(running_jobs);
             self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
             return Err(error);
         }
 
-        // The dispatcher may immediately observe a fast-exiting child. Insert
-        // the control entry before creating that thread so its terminal path
-        // cannot remove a key that has not yet been published. The guard stays
-        // held until the spawn call returns, closing the publication window.
-        running_jobs.insert(request.key.clone(), Arc::clone(&running));
         if let Err(error) = self.spawn_dispatcher(
             request.key.clone(),
             request.request.clone(),
@@ -515,12 +745,16 @@ impl JobManager {
             Arc::clone(&running),
             spawned.events,
         ) {
-            running_jobs.remove(&request.key);
-            drop(running_jobs);
             self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
             return Err(error);
         }
-        drop(running_jobs);
+        // Only now are identity/started observations, the durable start
+        // terminal, and the dispatcher all in place.  Controls that found the
+        // early running-map entry are released together after this point.
+        if let Err(error) = running.startup.ready() {
+            self.abort_started_job(&request, &operation_sha256, &running, &error.to_string());
+            return Err(error);
+        }
         Ok(JobStartResult {
             disposition: StartDisposition::Started,
             snapshot: self.inner.registry.snapshot(&request.key).ok(),
@@ -540,6 +774,11 @@ impl JobManager {
             ));
         }
         let running = self.running_job(key)?;
+        let _lifecycle_guard = running
+            .lifecycle
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        self.ensure_running_generation(key, &running)?;
         let digest = control_sha256(
             "write",
             key,
@@ -616,6 +855,11 @@ impl JobManager {
             ));
         }
         let running = self.running_job(key)?;
+        let _lifecycle_guard = running
+            .lifecycle
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        self.ensure_running_generation(key, &running)?;
         let details = json!({"rows": size.rows, "cols": size.cols});
         let digest = control_sha256("resize", key, &details)?;
         if let Some(disposition) = self.begin_control(
@@ -672,6 +916,11 @@ impl JobManager {
 
     pub fn close_stdin(&self, key: &JobKey, operation_id: &str) -> Result<ControlDisposition> {
         let running = self.running_job(key)?;
+        let _lifecycle_guard = running
+            .lifecycle
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        self.ensure_running_generation(key, &running)?;
         let details = json!({
             "mode": if running.control.pty {
                 "pty_eot"
@@ -753,6 +1002,11 @@ impl JobManager {
             ));
         }
         let running = self.running_job(key)?;
+        let _lifecycle_guard = running
+            .lifecycle
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        self.ensure_running_generation(key, &running)?;
         let details = json!({"signal": signal});
         let digest = control_sha256("kill", key, &details)?;
         if let Some(disposition) = self.begin_control(
@@ -1074,10 +1328,32 @@ impl JobManager {
     }
 
     fn running_job(&self, key: &JobKey) -> Result<Arc<RunningJob>> {
-        self.running()?
+        let running = self
+            .running()?
             .get(key)
             .cloned()
-            .ok_or(JobRuntimeError::NotLive)
+            .ok_or(JobRuntimeError::NotLive)?;
+        // Do not hold the running-map mutex while waiting: the dispatcher may
+        // need it to remove a child that exits during startup.
+        running.startup.wait()?;
+        Ok(running)
+    }
+
+    /// Recheck the registry while holding the per-job lifecycle mutex.  The
+    /// dispatcher takes the same mutex before committing a terminal state, so
+    /// a control that passed the startup gate cannot perform a process effect
+    /// after that terminal transition wins the race.
+    fn ensure_running_generation(&self, key: &JobKey, running: &RunningJob) -> Result<()> {
+        let snapshot = self.inner.registry.snapshot(key).map_err(registry_error)?;
+        match snapshot.state {
+            JobEffectiveState::Running { generation, .. } if generation == running.generation => {
+                Ok(())
+            }
+            JobEffectiveState::UnknownAfterRestart { .. } => {
+                Err(JobRuntimeError::UnknownAfterRestart)
+            }
+            _ => Err(JobRuntimeError::NotLive),
+        }
     }
 
     fn abort_started_job(
@@ -1087,6 +1363,11 @@ impl JobManager {
         running: &Arc<RunningJob>,
         failure: &str,
     ) {
+        // Wake any controls that captured the early running-map entry before
+        // removing it.  They must fail closed rather than race a process that
+        // is being torn down or a start operation whose terminal could not be
+        // committed.
+        let _ = running.startup.fail(failure.to_string());
         let cleanup_error = running
             .control
             .kill(libc::SIGKILL)
@@ -1248,6 +1529,66 @@ impl JobManager {
                             signal,
                             cleanup_error,
                         } => {
+                            // The child may exit before the start caller
+                            // returns from dispatcher creation.  Close the
+                            // pending startup gate first so a control that
+                            // captured the early running-map entry cannot be
+                            // released against a terminal process.
+                            if running.startup.terminal().is_err() {
+                                // A poisoned startup gate means a waiter may
+                                // no longer have a trustworthy view of the
+                                // process lifecycle.  Preserve the explicit
+                                // unknown state instead of publishing a
+                                // terminal result that could authorize a
+                                // follow-up control.
+                                let diagnostic =
+                                    "job startup gate was poisoned during terminal handling";
+                                let _ = manager.inner.registry.mark_restart_uncertain(&key);
+                                let _ = manager.push_runtime_event(
+                                    &key,
+                                    &request,
+                                    RuntimeJobEventKind::ProcessFault {
+                                        phase: "startup_gate_terminal".to_string(),
+                                        error: diagnostic.to_string(),
+                                    },
+                                );
+                                if let Ok(mut jobs) = manager.running() {
+                                    jobs.remove(&key);
+                                }
+                                return;
+                            }
+                            // Serialize terminal publication with every
+                            // effectful control.  A control that already owns
+                            // this lock completes (or durably fails) before
+                            // the registry becomes terminal; a later control
+                            // rechecks the generation and is rejected before
+                            // touching the process.
+                            let _lifecycle_guard = match running.lifecycle.lock() {
+                                Ok(guard) => guard,
+                                Err(_) => {
+                                    // Never silently continue without the
+                                    // per-job lifecycle barrier.  A poisoned
+                                    // mutex means we cannot prove that a
+                                    // control did not overlap terminal
+                                    // publication, so keep the job explicitly
+                                    // uncertain and inhibit future effects.
+                                    let diagnostic =
+                                        "job lifecycle lock was poisoned during terminal handling";
+                                    let _ = manager.inner.registry.mark_restart_uncertain(&key);
+                                    let _ = manager.push_runtime_event(
+                                        &key,
+                                        &request,
+                                        RuntimeJobEventKind::ProcessFault {
+                                            phase: "lifecycle_lock".to_string(),
+                                            error: diagnostic.to_string(),
+                                        },
+                                    );
+                                    if let Ok(mut jobs) = manager.running() {
+                                        jobs.remove(&key);
+                                    }
+                                    return;
+                                }
+                            };
                             if let Some(error) = cleanup_error {
                                 let _ = manager.push_runtime_event(
                                     &key,
@@ -1258,10 +1599,52 @@ impl JobManager {
                                     },
                                 );
                             }
-                            let stdout_bytes =
-                                running.stdout_bytes.lock().map(|value| *value).unwrap_or(0);
-                            let stderr_bytes =
-                                running.stderr_bytes.lock().map(|value| *value).unwrap_or(0);
+                            let stdout_bytes = match running.stdout_bytes.lock() {
+                                Ok(value) => *value,
+                                Err(_) => {
+                                    // A poisoned counter cannot be replaced
+                                    // with zero: doing so would turn an
+                                    // incomplete output observation into a
+                                    // false terminal fact.  Keep the registry
+                                    // in the explicit unknown state and leave
+                                    // a bounded diagnostic for reconciliation.
+                                    let diagnostic =
+                                        "stdout byte counter was poisoned during terminal handling";
+                                    let _ = manager.inner.registry.mark_restart_uncertain(&key);
+                                    let _ = manager.push_runtime_event(
+                                        &key,
+                                        &request,
+                                        RuntimeJobEventKind::ProcessFault {
+                                            phase: "stdout_counter".to_string(),
+                                            error: diagnostic.to_string(),
+                                        },
+                                    );
+                                    if let Ok(mut jobs) = manager.running() {
+                                        jobs.remove(&key);
+                                    }
+                                    return;
+                                }
+                            };
+                            let stderr_bytes = match running.stderr_bytes.lock() {
+                                Ok(value) => *value,
+                                Err(_) => {
+                                    let diagnostic =
+                                        "stderr byte counter was poisoned during terminal handling";
+                                    let _ = manager.inner.registry.mark_restart_uncertain(&key);
+                                    let _ = manager.push_runtime_event(
+                                        &key,
+                                        &request,
+                                        RuntimeJobEventKind::ProcessFault {
+                                            phase: "stderr_counter".to_string(),
+                                            error: diagnostic.to_string(),
+                                        },
+                                    );
+                                    if let Ok(mut jobs) = manager.running() {
+                                        jobs.remove(&key);
+                                    }
+                                    return;
+                                }
+                            };
                             let observation_sha256 = terminal_digest(
                                 &key,
                                 generation,
@@ -1344,6 +1727,44 @@ impl JobManager {
                             return;
                         }
                     }
+                }
+
+                // A process event channel is expected to close only after
+                // the reaper has published `Exited`.  If every sender drops
+                // without that terminal event, treating the clean receive
+                // error as normal would leak the RunningJob entry (and its
+                // admission permit) indefinitely while leaving the registry
+                // looking live.  Fail closed: make the lifecycle explicitly
+                // uncertain, terminate the still-owned process group, expose
+                // a bounded diagnostic, and release the running marker.  The
+                // normal `Exited` arm returns before reaching this path, so a
+                // terminal observation is never duplicated.
+                let diagnostic = "process event channel closed before exited";
+                let _ = running.startup.fail(diagnostic);
+                let kill_error = running
+                    .control
+                    .kill(libc::SIGKILL)
+                    .err()
+                    .map(|error| error.to_string());
+                let mut diagnostic = diagnostic.to_string();
+                if let Some(error) = kill_error {
+                    diagnostic.push_str("; process-group termination failed: ");
+                    diagnostic.push_str(&error);
+                }
+                let _ = manager.inner.registry.mark_restart_uncertain(&key);
+                let diagnostic = bound_journal_error(diagnostic);
+                if let Err(error) = manager.push_runtime_event(
+                    &key,
+                    &request,
+                    RuntimeJobEventKind::ProcessFault {
+                        phase: "dispatcher_channel_closed".to_string(),
+                        error: diagnostic,
+                    },
+                ) {
+                    let _ = manager.note_journal_failure_for_job(&key, error.to_string());
+                }
+                if let Ok(mut jobs) = manager.running() {
+                    jobs.remove(&key);
                 }
             })
             .map(|_| ())
@@ -1508,6 +1929,21 @@ impl JobManager {
             .map_err(|_| JobRuntimeError::StatePoisoned)
     }
 
+    fn start_shard_index(&self, key: &JobKey) -> usize {
+        // Keep the admission serialization lane stable across process
+        // restarts.  `DefaultHasher` is an implementation detail of the
+        // standard library and is not a persistence/benchmark contract; a
+        // deterministic, length-delimited FNV layout makes a key's lane
+        // reproducible while retaining the fixed shard topology.
+        stable_start_shard_index(key, self.inner.start_shards.len())
+    }
+
+    fn start_guard(&self, key: &JobKey) -> Result<MutexGuard<'_, ()>> {
+        self.inner.start_shards[self.start_shard_index(key)]
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)
+    }
+
     /// Returns true while a locally owned child is live or its terminal
     /// observation is still being committed.  The latter state is deliberately
     /// kept separate from registry admission capacity: a terminal registry
@@ -1523,6 +1959,38 @@ impl JobManager {
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)
     }
+}
+
+fn stable_start_shard_index(key: &JobKey, shard_count: usize) -> usize {
+    debug_assert!(shard_count > 0);
+    fn feed(hash: &mut u64, bytes: &[u8]) {
+        for byte in bytes {
+            *hash ^= u64::from(*byte);
+            *hash = hash.wrapping_mul(FNV_PRIME);
+        }
+    }
+    fn feed_len(hash: &mut u64, length: usize) {
+        feed(hash, &(length as u64).to_be_bytes());
+    }
+
+    let fields = [
+        key.scope.session_id.as_str(),
+        key.scope.profile_id.as_str(),
+        key.scope.task_id.as_str(),
+        key.scope.turn_id.as_str(),
+        key.scope.turn_stream_id.as_str(),
+        key.job_id.as_str(),
+    ];
+    let mut hash = FNV_OFFSET_BASIS;
+    feed(&mut hash, &[START_SHARD_HASH_VERSION]);
+    feed_len(&mut hash, shard_count);
+    feed_len(&mut hash, START_SHARD_DOMAIN.len());
+    feed(&mut hash, START_SHARD_DOMAIN);
+    for field in fields {
+        feed_len(&mut hash, field.len());
+        feed(&mut hash, field.as_bytes());
+    }
+    (hash % shard_count as u64) as usize
 }
 
 fn retain_runtime_event(
@@ -1714,7 +2182,7 @@ mod tests {
     use std::path::PathBuf;
 
     use tempfile::tempdir;
-    use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
+    use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope, JobTerminal};
 
     use super::*;
     use crate::{JobInvocation, JobJournal};
@@ -1734,6 +2202,26 @@ mod tests {
             "pipe",
             Some("rootlinux".to_string()),
         )
+    }
+
+    fn stale_start_request(
+        key: JobKey,
+        request: JobRequest,
+        operation_id: &str,
+    ) -> JobStartRequest {
+        JobStartRequest {
+            key,
+            request,
+            operation_id: operation_id.to_string(),
+            invocation: JobInvocation::Command {
+                command: ":".to_string(),
+            },
+            shell_executable: PathBuf::from("/bin/sh"),
+            cwd: None,
+            env: BTreeMap::new(),
+            initial_stdin: Vec::new(),
+            pty: None,
+        }
     }
 
     #[test]
@@ -1789,6 +2277,93 @@ mod tests {
                 .iter()
                 .any(|event| matches!(event.event, RuntimeJobEventKind::JournalUnavailable { .. }))
         );
+    }
+
+    #[test]
+    fn stale_accepted_registry_entry_is_fenced_before_existing_mapping() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .expect("development manager");
+        let key = rollback_test_key();
+        let request = rollback_test_request();
+        manager
+            .registry()
+            .begin(key.clone(), request.clone())
+            .expect("seed stale accepted registry entry");
+
+        // The registry entry has no matching RunningJob and no journal
+        // operation.  Treating BeginDisposition::Existing as ExistingLive
+        // would let a caller mistake an unowned Accepted marker for a live
+        // effect and would leave claim_spawn redispatchable.
+        let result = manager
+            .start(stale_start_request(
+                key.clone(),
+                request.clone(),
+                "stale-accepted",
+            ))
+            .expect("stale state is an explicit unknown result");
+        assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);
+        assert_eq!(result.replay_status, ReplayStatus::UnknownAfterRestart);
+        assert!(matches!(
+            result.snapshot.as_ref().map(|snapshot| &snapshot.state),
+            Some(JobEffectiveState::ProvenNotStartedAfterRestart)
+        ));
+        assert!(matches!(
+            manager
+                .registry()
+                .claim_spawn(&key, &request.request_sha256)
+                .expect("fenced registry entry"),
+            SpawnClaim::Inhibited(_)
+        ));
+    }
+
+    #[test]
+    fn recovered_accepted_entry_also_fences_same_process_registry_state() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .expect("development manager");
+        let key = rollback_test_key();
+        let request = rollback_test_request();
+        manager
+            .journal()
+            .begin_operation(
+                &key,
+                &request,
+                "recovered-accepted",
+                "start",
+                &"c".repeat(64),
+                json!({"status": "accepted"}),
+            )
+            .expect("seed recovered accepted operation");
+        manager
+            .registry()
+            .begin(key.clone(), request.clone())
+            .expect("seed matching registry entry");
+
+        let result = manager
+            .start(stale_start_request(
+                key.clone(),
+                request.clone(),
+                "different-retry",
+            ))
+            .expect("recovered accepted state is explicit unknown");
+        assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);
+        assert_eq!(result.replay_status, ReplayStatus::UnknownAfterRestart);
+        assert!(matches!(
+            result.snapshot.as_ref().map(|snapshot| &snapshot.state),
+            Some(JobEffectiveState::ProvenNotStartedAfterRestart)
+        ));
+        assert!(matches!(
+            manager
+                .registry()
+                .claim_spawn(&key, &request.request_sha256)
+                .expect("recovered entry remains fenced"),
+            SpawnClaim::Inhibited(_)
+        ));
     }
 
     #[test]
@@ -1885,5 +2460,179 @@ mod tests {
             std::thread::sleep(std::time::Duration::from_millis(10));
         }
         assert!(!manager.has_live_or_pending_jobs());
+    }
+
+    #[test]
+    fn control_rechecks_terminal_generation_before_process_effect() {
+        let directory = tempdir().expect("temporary directory");
+        let marker = directory.path().join("post-terminal-write");
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .expect("memory-only manager");
+        let key = rollback_test_key();
+        manager
+            .start(JobStartRequest {
+                key: key.clone(),
+                request: rollback_test_request(),
+                operation_id: "start-terminal-race".to_string(),
+                invocation: JobInvocation::Command {
+                    command: format!("IFS= read -r _ && touch '{}' ; sleep 30", marker.display()),
+                },
+                shell_executable: PathBuf::from("/bin/sh"),
+                cwd: None,
+                env: BTreeMap::new(),
+                initial_stdin: Vec::new(),
+                pty: None,
+            })
+            .expect("start live job");
+        let running = manager
+            .running()
+            .expect("running map")
+            .get(&key)
+            .cloned()
+            .expect("live running job");
+        manager
+            .registry()
+            .complete(
+                &key,
+                running.generation,
+                JobTerminal {
+                    terminal_kind: "exit".to_string(),
+                    exit_code: Some(0),
+                    signal: None,
+                    observation_sha256: "c".repeat(64),
+                    stdout_bytes: 0,
+                    stderr_bytes: 0,
+                },
+            )
+            .expect("simulate terminal transition winning lifecycle race");
+
+        assert!(matches!(
+            manager.write(&key, "write-after-terminal", b"must-not-cross\n"),
+            Err(JobRuntimeError::NotLive)
+        ));
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        assert!(!marker.exists(), "post-terminal bytes reached the child");
+
+        let _ = running.control.kill(libc::SIGKILL);
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        while manager.has_live_or_pending_jobs() && std::time::Instant::now() < deadline {
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+        assert!(!manager.has_live_or_pending_jobs());
+    }
+}
+
+#[cfg(test)]
+mod concurrency_tests {
+    use std::sync::mpsc;
+    use std::time::Duration;
+
+    use trillionnium_owner_open_job_registry::{JobKey, JobScope};
+
+    use super::{AdmissionPool, JobManager, JobRuntimeConfig, StartupGate};
+
+    fn key(job_id: &str) -> JobKey {
+        JobKey::new(
+            JobScope::new("session", "profile", "task", "turn", "stream"),
+            job_id,
+        )
+    }
+
+    #[test]
+    fn admission_permit_releases_capacity_on_every_drop_path() {
+        let pool = std::sync::Arc::new(AdmissionPool::new(1));
+        let first = pool.try_acquire().expect("first permit");
+        assert!(pool.try_acquire().is_err());
+        drop(first);
+        let second = pool.try_acquire().expect("capacity released");
+        drop(second);
+    }
+
+    #[test]
+    fn unrelated_start_shards_can_progress_concurrently() {
+        let manager = JobManager::open(JobRuntimeConfig::development_unsafe(), None)
+            .expect("development manager");
+        let blocked = key("blocked");
+        let blocked_index = manager.start_shard_index(&blocked);
+        let independent = (0..10_000)
+            .map(|index| key(&format!("independent-{index}")))
+            .find(|candidate| manager.start_shard_index(candidate) != blocked_index)
+            .expect("an independent shard");
+
+        let guard = manager.start_guard(&blocked).expect("blocked shard guard");
+        let clone = manager.clone();
+        let (sender, receiver) = mpsc::sync_channel(1);
+        let worker = std::thread::spawn(move || {
+            let _independent_guard = clone
+                .start_guard(&independent)
+                .expect("independent shard guard");
+            sender.send(()).expect("signal independent progress");
+        });
+
+        receiver
+            .recv_timeout(Duration::from_secs(1))
+            .expect("independent shard must not wait for unrelated key");
+        drop(guard);
+        worker.join().expect("start shard worker");
+    }
+
+    #[test]
+    fn startup_gate_blocks_controls_until_ready_and_wakes_all_waiters() {
+        let gate = std::sync::Arc::new(StartupGate::new());
+        let (sender, receiver) = mpsc::sync_channel(2);
+        let first_gate = std::sync::Arc::clone(&gate);
+        let first = std::thread::spawn(move || {
+            first_gate.wait().expect("startup gate opens");
+            sender.send(()).expect("first waiter signal");
+        });
+        let second_gate = std::sync::Arc::clone(&gate);
+        let (second_sender, second_receiver) = mpsc::sync_channel(1);
+        let second = std::thread::spawn(move || {
+            second_gate.wait().expect("startup gate opens");
+            second_sender.send(()).expect("second waiter signal");
+        });
+
+        assert!(receiver.recv_timeout(Duration::from_millis(50)).is_err());
+        assert!(
+            second_receiver
+                .recv_timeout(Duration::from_millis(50))
+                .is_err()
+        );
+        gate.ready().expect("mark startup ready");
+        receiver
+            .recv_timeout(Duration::from_secs(1))
+            .expect("first waiter wakes");
+        second_receiver
+            .recv_timeout(Duration::from_secs(1))
+            .expect("second waiter wakes");
+        first.join().expect("first waiter exits");
+        second.join().expect("second waiter exits");
+    }
+
+    #[test]
+    fn startup_gate_failure_wakes_waiters_fail_closed() {
+        let gate = std::sync::Arc::new(StartupGate::new());
+        let waiter_gate = std::sync::Arc::clone(&gate);
+        let waiter = std::thread::spawn(move || waiter_gate.wait());
+        gate.fail("identity binding failed")
+            .expect("mark startup failed");
+        let error = waiter
+            .join()
+            .expect("waiter exits")
+            .expect_err("failed startup cannot authorize controls");
+        assert!(
+            matches!(error, super::JobRuntimeError::Io(message) if message.contains("identity binding failed"))
+        );
+    }
+
+    #[test]
+    fn terminal_startup_gate_cannot_be_reopened_by_late_ready() {
+        let gate = StartupGate::new();
+        gate.terminal().expect("mark terminal");
+        gate.ready().expect("late ready is a harmless no-op");
+        assert!(matches!(gate.wait(), Err(super::JobRuntimeError::NotLive)));
     }
 }

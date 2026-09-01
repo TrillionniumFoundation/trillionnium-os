@@ -6,20 +6,30 @@
 //! one terminal result. The loop imports no plan, Authority, approval, risk,
 //! typed-ADB, or sealed shell-broker graph.
 
+use std::mem::size_of;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::thread;
-use std::time::Duration;
 
 use thiserror::Error;
-use trillionnium_owner_open_call_registry::{CallRegistry, CallSnapshot, RegistryError, TurnScope};
-use trillionnium_owner_open_runtime::{ExecutionEvent, ExecutionTerminal};
+use trillionnium_owner_open_call_registry::{
+    CallRegistry, CallSnapshot, EffectiveState, TerminalRecord, TurnScope,
+};
+use trillionnium_owner_open_runtime::{ExecutionEvent, ExecutionEventKind, ExecutionTerminal};
 use trillionnium_owner_open_tool_bridge::{
     BoundToolCall, BridgeError, BridgeLimits, DirectToolBridge, DispatchResult,
 };
 
-const CANCELLATION_POLL: Duration = Duration::from_millis(5);
+// Keep the provider-facing retention bound finite even when a provider emits
+// a very large stream of deltas or runtime observations. Delivery sinks still
+// receive every event; only the returned in-memory run is a bounded diagnostic
+// tail (with the initial acceptance event retained). The byte values are a
+// conservative estimate of the owned String/Vec capacities plus fixed Rust
+// value layouts; they are not a wire-serialization limit.
+pub const MAX_RETAINED_TURN_EVENTS: usize = 4096;
+pub const MAX_RETAINED_TURN_EVENT_BYTES: usize = 64 * 1024 * 1024;
+pub const MAX_RETAINED_TOOL_EVENTS: usize = 4096;
+pub const MAX_RETAINED_TOOL_EVENT_BYTES: usize = 64 * 1024 * 1024;
 
 #[derive(Debug, Error, Clone, PartialEq, Eq)]
 pub enum TurnLoopError {
@@ -33,8 +43,6 @@ pub enum TurnLoopError {
     EventSink(String),
     #[error("owner-open turn was cancelled before the tool call could start")]
     TurnCancelled,
-    #[error("owner-open turn cancellation monitor failed: {0}")]
-    CancellationMonitor(String),
 }
 
 #[derive(Debug, Clone, Default)]
@@ -50,6 +58,14 @@ impl TurnCancellation {
 
     pub fn cancel(&self) -> bool {
         !self.cancelled.swap(true, Ordering::SeqCst)
+    }
+
+    /// Expose the turn-local cancellation flag for direct tool execution.
+    /// The bridge observes it as an additional, targeted flag and does not
+    /// create a forwarding worker per tool invocation.
+    #[must_use]
+    pub fn shared_flag(&self) -> Arc<AtomicBool> {
+        Arc::clone(&self.cancelled)
     }
 
     #[must_use]
@@ -223,6 +239,7 @@ pub struct ProviderHost<'a> {
     registry: Arc<CallRegistry>,
     limits: &'a BridgeLimits,
     events: &'a mut Vec<TurnEvent>,
+    retained_event_bytes: &'a mut usize,
     next_seq: &'a mut u64,
     sink: &'a mut dyn TurnEventSink,
     cancellation: TurnCancellation,
@@ -233,6 +250,7 @@ impl ProviderHost<'_> {
         validate_provider_event(&event)?;
         push_event(
             self.events,
+            self.retained_event_bytes,
             self.next_seq,
             self.sink,
             TurnEventKind::Provider(event),
@@ -247,51 +265,31 @@ impl ProviderHost<'_> {
             return Err(TurnLoopError::TurnCancelled);
         }
 
-        let key = call.key.clone();
-        let monitor_registry = Arc::clone(&self.registry);
-        let monitor_cancellation = self.cancellation.clone();
-        let monitor_finished = Arc::new(AtomicBool::new(false));
-        let monitor_finished_child = Arc::clone(&monitor_finished);
-        let monitor = thread::Builder::new()
-            .name(format!("owner-open-turn-cancel-{}", key.call_id))
-            .spawn(move || -> std::result::Result<(), String> {
-                while !monitor_finished_child.load(Ordering::SeqCst) {
-                    if monitor_cancellation.is_cancelled() {
-                        match monitor_registry.request_cancel(&key) {
-                            Ok(_) => return Ok(()),
-                            Err(RegistryError::NotFound) => {}
-                            Err(error) => return Err(error.to_string()),
-                        }
-                    }
-                    thread::sleep(CANCELLATION_POLL);
-                }
-                Ok(())
-            })
-            .map_err(|error| TurnLoopError::CancellationMonitor(error.to_string()))?;
-
         let bridge = DirectToolBridge::new(Arc::clone(&self.registry));
         let mut runtime_events = Vec::new();
+        let mut runtime_event_bytes = 0_usize;
         let result = {
             let events = &mut *self.events;
+            let retained_event_bytes = &mut *self.retained_event_bytes;
             let next_seq = &mut *self.next_seq;
             let sink = &mut *self.sink;
-            bridge.execute_fallible(call, self.limits, |event| {
-                runtime_events.push(event.clone());
-                push_event(events, next_seq, sink, TurnEventKind::ToolRuntime(event))
+            bridge.execute_fallible_with_external_flags(
+                call,
+                self.limits,
+                std::iter::once(self.cancellation.shared_flag()),
+                |event| {
+                    retain_tool_event(&mut runtime_events, &mut runtime_event_bytes, event.clone());
+                    push_event(
+                        events,
+                        retained_event_bytes,
+                        next_seq,
+                        sink,
+                        TurnEventKind::ToolRuntime(event),
+                    )
                     .map_err(|error| error.to_string())
-            })
+                },
+            )
         };
-
-        monitor_finished.store(true, Ordering::SeqCst);
-        match monitor.join() {
-            Ok(Ok(())) => {}
-            Ok(Err(error)) => return Err(TurnLoopError::CancellationMonitor(error)),
-            Err(_) => {
-                return Err(TurnLoopError::CancellationMonitor(
-                    "cancellation monitor panicked".to_string(),
-                ));
-            }
-        }
 
         match result.map_err(map_bridge_error)? {
             DispatchResult::Executed {
@@ -309,6 +307,7 @@ impl ProviderHost<'_> {
             DispatchResult::Existing(snapshot) => {
                 push_event(
                     self.events,
+                    self.retained_event_bytes,
                     self.next_seq,
                     self.sink,
                     TurnEventKind::ToolExisting(snapshot.clone()),
@@ -318,6 +317,7 @@ impl ProviderHost<'_> {
             DispatchResult::Inhibited(snapshot) => {
                 push_event(
                     self.events,
+                    self.retained_event_bytes,
                     self.next_seq,
                     self.sink,
                     TurnEventKind::ToolInhibited(snapshot.clone()),
@@ -410,9 +410,11 @@ impl TurnRunner {
             .map_err(|error| invalid(error.to_string()))?;
 
         let mut events = Vec::new();
+        let mut retained_event_bytes = 0_usize;
         let mut next_seq = 0_u64;
         push_event(
             &mut events,
+            &mut retained_event_bytes,
             &mut next_seq,
             sink,
             TurnEventKind::TurnAccepted,
@@ -427,6 +429,7 @@ impl TurnRunner {
                 registry: Arc::clone(&self.registry),
                 limits: &self.bridge_limits,
                 events: &mut events,
+                retained_event_bytes: &mut retained_event_bytes,
                 next_seq: &mut next_seq,
                 sink,
                 cancellation: cancellation.clone(),
@@ -453,6 +456,7 @@ impl TurnRunner {
         validate_terminal(&terminal)?;
         push_event(
             &mut events,
+            &mut retained_event_bytes,
             &mut next_seq,
             sink,
             TurnEventKind::TurnTerminal(terminal.clone()),
@@ -467,14 +471,17 @@ impl TurnRunner {
 
 fn push_event(
     events: &mut Vec<TurnEvent>,
+    retained_bytes: &mut usize,
     next_seq: &mut u64,
     sink: &mut dyn TurnEventSink,
     kind: TurnEventKind,
 ) -> Result<(), TurnLoopError> {
     let seq = *next_seq;
-    *next_seq = (*next_seq).saturating_add(1);
+    *next_seq = next_seq
+        .checked_add(1)
+        .ok_or_else(|| invalid("turn event sequence exhausted"))?;
     let event = TurnEvent { seq, kind };
-    events.push(event.clone());
+    retain_turn_event(events, retained_bytes, event.clone());
     match catch_unwind(AssertUnwindSafe(|| sink.on_event(&event))) {
         Ok(Ok(())) => Ok(()),
         Ok(Err(error)) => Err(TurnLoopError::EventSink(error)),
@@ -482,6 +489,269 @@ fn push_event(
             "turn event sink panicked".to_string(),
         )),
     }
+}
+
+fn retain_turn_event(events: &mut Vec<TurnEvent>, retained_bytes: &mut usize, event: TurnEvent) {
+    let Some(incoming_bytes) = turn_event_weight(&event) else {
+        // A size calculation overflow is itself an invalid retention request.
+        // The event is still delivered to the sink by the caller, but never
+        // allowed into the returned diagnostic vector.
+        return;
+    };
+    if incoming_bytes > MAX_RETAINED_TURN_EVENT_BYTES {
+        return;
+    }
+
+    while events.len() >= MAX_RETAINED_TURN_EVENTS
+        || retained_bytes
+            .checked_add(incoming_bytes)
+            .is_none_or(|total| total > MAX_RETAINED_TURN_EVENT_BYTES)
+    {
+        // Keep the acceptance marker as a stable prefix when possible. The
+        // sequence numbers remain authoritative, so a consumer can detect a
+        // retention gap from the first retained sequence without mistaking it
+        // for a contiguous replay.
+        let remove_at = if events
+            .first()
+            .is_some_and(|candidate| matches!(candidate.kind, TurnEventKind::TurnAccepted))
+            && events.len() > 1
+        {
+            1
+        } else if events
+            .first()
+            .is_some_and(|candidate| matches!(candidate.kind, TurnEventKind::TurnAccepted))
+        {
+            // Never evict the acceptance marker merely to fit an unusually
+            // large diagnostic item. The sink still receives that item; the
+            // returned tail simply omits it when no legal eviction remains.
+            break;
+        } else if events.is_empty() {
+            break;
+        } else {
+            0
+        };
+        let removed = events.remove(remove_at);
+        let Some(removed_bytes) = turn_event_weight(&removed) else {
+            // Rebuild from an empty diagnostic tail if accounting overflows.
+            // This preserves the sink/terminal semantics while failing closed
+            // for the in-memory retention path.
+            events.clear();
+            *retained_bytes = 0;
+            break;
+        };
+        if let Some(total) = retained_bytes.checked_sub(removed_bytes) {
+            *retained_bytes = total;
+        } else {
+            events.clear();
+            *retained_bytes = 0;
+            break;
+        }
+    }
+
+    if events.len() < MAX_RETAINED_TURN_EVENTS
+        && retained_bytes
+            .checked_add(incoming_bytes)
+            .is_some_and(|total| total <= MAX_RETAINED_TURN_EVENT_BYTES)
+    {
+        events.push(event);
+        // The checked fit above makes this addition infallible. Keep the
+        // checked form anyway so the accounting remains fail-closed if the
+        // implementation changes later.
+        if let Some(total) = retained_bytes.checked_add(incoming_bytes) {
+            *retained_bytes = total;
+        } else {
+            let _ = events.pop();
+        }
+    }
+}
+
+fn retain_tool_event(
+    events: &mut Vec<ExecutionEvent>,
+    retained_bytes: &mut usize,
+    event: ExecutionEvent,
+) {
+    let Some(incoming_bytes) = execution_event_weight(&event) else {
+        return;
+    };
+    if incoming_bytes > MAX_RETAINED_TOOL_EVENT_BYTES {
+        return;
+    }
+    while events.len() >= MAX_RETAINED_TOOL_EVENTS
+        || retained_bytes
+            .checked_add(incoming_bytes)
+            .is_none_or(|total| total > MAX_RETAINED_TOOL_EVENT_BYTES)
+    {
+        let Some(removed) = events.first() else {
+            break;
+        };
+        let Some(removed_bytes) = execution_event_weight(removed) else {
+            events.clear();
+            *retained_bytes = 0;
+            break;
+        };
+        events.remove(0);
+        if let Some(total) = retained_bytes.checked_sub(removed_bytes) {
+            *retained_bytes = total;
+        } else {
+            events.clear();
+            *retained_bytes = 0;
+            break;
+        }
+    }
+    if events.len() < MAX_RETAINED_TOOL_EVENTS
+        && retained_bytes
+            .checked_add(incoming_bytes)
+            .is_some_and(|total| total <= MAX_RETAINED_TOOL_EVENT_BYTES)
+    {
+        events.push(event);
+        if let Some(total) = retained_bytes.checked_add(incoming_bytes) {
+            *retained_bytes = total;
+        } else {
+            let _ = events.pop();
+        }
+    }
+}
+
+/// Add one owned allocation's capacity to a checked diagnostic-size total.
+///
+/// The event types are intentionally not required to implement `Serialize`.
+/// Counting the actual `String`/`Vec` capacities (rather than only their
+/// lengths) is conservative for the cloned values retained by this crate and
+/// avoids introducing a second wire schema solely for accounting.
+fn add_capacity(total: &mut usize, capacity: usize) -> Option<()> {
+    *total = total.checked_add(capacity)?;
+    Some(())
+}
+
+fn add_string_capacity(total: &mut usize, value: &String) -> Option<()> {
+    add_capacity(total, value.capacity())
+}
+
+fn add_optional_string_capacity(total: &mut usize, value: Option<&String>) -> Option<()> {
+    if let Some(value) = value {
+        add_string_capacity(total, value)?;
+    }
+    Some(())
+}
+
+fn provider_event_weight(event: &ProviderEvent) -> Option<usize> {
+    let mut total = size_of::<ProviderEvent>();
+    match event {
+        ProviderEvent::Status { status, detail } => {
+            add_string_capacity(&mut total, status)?;
+            add_optional_string_capacity(&mut total, detail.as_ref())?;
+        }
+        ProviderEvent::ModelDelta(value) | ProviderEvent::ModelMessage(value) => {
+            add_string_capacity(&mut total, value)?;
+        }
+        ProviderEvent::Opaque { kind, payload } => {
+            add_string_capacity(&mut total, kind)?;
+            add_string_capacity(&mut total, payload)?;
+        }
+    }
+    Some(total)
+}
+
+fn provider_terminal_weight(terminal: &ProviderTerminal) -> Option<usize> {
+    let mut total = size_of::<ProviderTerminal>();
+    add_optional_string_capacity(&mut total, terminal.summary.as_ref())?;
+    add_optional_string_capacity(&mut total, terminal.error.as_ref())?;
+    Some(total)
+}
+
+fn execution_terminal_weight(terminal: &ExecutionTerminal) -> Option<usize> {
+    let mut total = size_of::<ExecutionTerminal>();
+    add_optional_string_capacity(&mut total, terminal.error.as_ref())?;
+    Some(total)
+}
+
+fn execution_event_weight(event: &ExecutionEvent) -> Option<usize> {
+    let mut total = size_of::<ExecutionEvent>();
+    add_string_capacity(&mut total, &event.call_id)?;
+    add_optional_string_capacity(&mut total, event.target_id.as_ref())?;
+    match &event.kind {
+        ExecutionEventKind::Accepted | ExecutionEventKind::Started { .. } => {}
+        ExecutionEventKind::Output { bytes, .. } => add_capacity(&mut total, bytes.capacity())?,
+        ExecutionEventKind::Terminal(terminal) => {
+            total = total.checked_add(execution_terminal_weight(terminal)?)?;
+        }
+    }
+    Some(total)
+}
+
+fn turn_scope_weight(scope: &TurnScope) -> Option<usize> {
+    let mut total = size_of::<TurnScope>();
+    for value in [
+        &scope.session_id,
+        &scope.profile_id,
+        &scope.task_id,
+        &scope.turn_id,
+        &scope.turn_stream_id,
+    ] {
+        add_string_capacity(&mut total, value)?;
+    }
+    Some(total)
+}
+
+fn call_snapshot_weight(snapshot: &CallSnapshot) -> Option<usize> {
+    let mut total = size_of::<CallSnapshot>();
+    total = total.checked_add(call_key_weight(&snapshot.key)?)?;
+    total = total.checked_add(call_request_weight(&snapshot.request)?)?;
+    total = total.checked_add(effective_state_weight(&snapshot.state)?)?;
+    Some(total)
+}
+
+fn call_key_weight(key: &trillionnium_owner_open_call_registry::CallKey) -> Option<usize> {
+    let mut total = size_of::<trillionnium_owner_open_call_registry::CallKey>();
+    total = total.checked_add(turn_scope_weight(&key.scope)?)?;
+    add_string_capacity(&mut total, &key.call_id)?;
+    Some(total)
+}
+
+fn call_request_weight(
+    request: &trillionnium_owner_open_call_registry::CallRequest,
+) -> Option<usize> {
+    let mut total = size_of::<trillionnium_owner_open_call_registry::CallRequest>();
+    add_string_capacity(&mut total, &request.request_sha256)?;
+    add_string_capacity(&mut total, &request.binding_fingerprint)?;
+    add_string_capacity(&mut total, &request.tool)?;
+    add_optional_string_capacity(&mut total, request.target_id.as_ref())?;
+    Some(total)
+}
+
+fn effective_state_weight(state: &EffectiveState) -> Option<usize> {
+    let mut total = size_of::<EffectiveState>();
+    if let EffectiveState::Terminal { terminal, .. } = state {
+        total = total.checked_add(terminal_record_weight(terminal)?)?;
+    }
+    Some(total)
+}
+
+fn terminal_record_weight(record: &TerminalRecord) -> Option<usize> {
+    let mut total = size_of::<TerminalRecord>();
+    add_string_capacity(&mut total, &record.terminal_kind)?;
+    add_string_capacity(&mut total, &record.observation_sha256)?;
+    Some(total)
+}
+
+fn turn_event_weight(event: &TurnEvent) -> Option<usize> {
+    let mut total = size_of::<TurnEvent>();
+    match &event.kind {
+        TurnEventKind::TurnAccepted => {}
+        TurnEventKind::Provider(provider) => {
+            total = total.checked_add(provider_event_weight(provider)?)?;
+        }
+        TurnEventKind::ToolRuntime(runtime) => {
+            total = total.checked_add(execution_event_weight(runtime)?)?;
+        }
+        TurnEventKind::ToolExisting(snapshot) | TurnEventKind::ToolInhibited(snapshot) => {
+            total = total.checked_add(call_snapshot_weight(snapshot)?)?;
+        }
+        TurnEventKind::TurnTerminal(terminal) => {
+            total = total.checked_add(provider_terminal_weight(terminal)?)?;
+        }
+    }
+    Some(total)
 }
 
 fn validate_id(label: &str, value: &str) -> Result<(), TurnLoopError> {
@@ -540,4 +810,121 @@ fn map_bridge_error(error: BridgeError) -> TurnLoopError {
 
 fn invalid(message: impl Into<String>) -> TurnLoopError {
     TurnLoopError::InvalidRequest(message.into())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use trillionnium_owner_open_runtime::{StreamKind, ToolKind};
+
+    fn accepted_event() -> TurnEvent {
+        TurnEvent {
+            seq: 0,
+            kind: TurnEventKind::TurnAccepted,
+        }
+    }
+
+    #[test]
+    fn turn_and_tool_retention_are_bounded_by_checked_bytes() {
+        let mut turn_events = Vec::new();
+        let mut turn_bytes = 0_usize;
+        retain_turn_event(&mut turn_events, &mut turn_bytes, accepted_event());
+
+        // More than the 64 MiB turn budget, while staying within the
+        // provider's one-item validation bound only matters at the public
+        // boundary; this direct retention fixture exercises aggregate
+        // accounting independently of that per-event check.
+        let provider_payload = "p".repeat(5 * 1024 * 1024);
+        for seq in 1..=14 {
+            retain_turn_event(
+                &mut turn_events,
+                &mut turn_bytes,
+                TurnEvent {
+                    seq,
+                    kind: TurnEventKind::Provider(ProviderEvent::ModelMessage(
+                        provider_payload.clone(),
+                    )),
+                },
+            );
+        }
+        let terminal = ProviderTerminal::completed("terminal survives diagnostic eviction");
+        retain_turn_event(
+            &mut turn_events,
+            &mut turn_bytes,
+            TurnEvent {
+                seq: 15,
+                kind: TurnEventKind::TurnTerminal(terminal),
+            },
+        );
+        assert!(turn_bytes <= MAX_RETAINED_TURN_EVENT_BYTES);
+        assert!(turn_events.len() < 15);
+        let recomputed_turn_bytes = turn_events
+            .iter()
+            .try_fold(0_usize, |total, event| {
+                total.checked_add(turn_event_weight(event)?)
+            })
+            .unwrap();
+        assert_eq!(turn_bytes, recomputed_turn_bytes);
+        assert!(matches!(
+            turn_events.first().map(|event| &event.kind),
+            Some(TurnEventKind::TurnAccepted)
+        ));
+        assert!(matches!(
+            turn_events.last().map(|event| &event.kind),
+            Some(TurnEventKind::TurnTerminal(_))
+        ));
+
+        let mut tool_events = Vec::new();
+        let mut tool_bytes = 0_usize;
+        let output = vec![b'x'; 8 * 1024 * 1024];
+        for seq in 0..10 {
+            retain_tool_event(
+                &mut tool_events,
+                &mut tool_bytes,
+                ExecutionEvent {
+                    call_id: "bounded-call".to_string(),
+                    target_id: None,
+                    tool: ToolKind::ShellExec,
+                    seq,
+                    elapsed_ms: 0,
+                    kind: ExecutionEventKind::Output {
+                        stream: StreamKind::Stdout,
+                        bytes: output.clone(),
+                    },
+                },
+            );
+        }
+        assert!(tool_bytes <= MAX_RETAINED_TOOL_EVENT_BYTES);
+        assert!(tool_events.len() < 10);
+        let recomputed_tool_bytes = tool_events
+            .iter()
+            .try_fold(0_usize, |total, event| {
+                total.checked_add(execution_event_weight(event)?)
+            })
+            .unwrap();
+        assert_eq!(tool_bytes, recomputed_tool_bytes);
+    }
+
+    #[test]
+    fn retention_drops_an_item_that_cannot_fit_without_changing_accounting() {
+        let mut events = Vec::new();
+        let mut retained_bytes = 0_usize;
+        retain_turn_event(&mut events, &mut retained_bytes, accepted_event());
+
+        // Reserve a capacity just over the schema budget without populating
+        // it. Accounting uses capacity deliberately, so this item is rejected
+        // and the stable acceptance marker remains available for diagnostics.
+        let oversized = String::with_capacity(MAX_RETAINED_TURN_EVENT_BYTES);
+        retain_turn_event(
+            &mut events,
+            &mut retained_bytes,
+            TurnEvent {
+                seq: 1,
+                kind: TurnEventKind::Provider(ProviderEvent::ModelMessage(oversized)),
+            },
+        );
+        assert_eq!(events.len(), 1);
+        assert!(matches!(events[0].kind, TurnEventKind::TurnAccepted));
+        assert_eq!(retained_bytes, turn_event_weight(&events[0]).unwrap());
+    }
 }

@@ -4,7 +4,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::{Duration, Instant};
 
-use trillionnium_owner_open_call_registry::{CallKey, CallRegistry};
+use trillionnium_owner_open_call_registry::{CallEventKind, CallKey, CallRegistry};
 use trillionnium_owner_open_runtime::{ShellExecRequest, TerminalKind};
 use trillionnium_owner_open_tool_bridge::{BoundToolCall, DirectToolRequest};
 use trillionnium_owner_open_turn_loop::{
@@ -169,8 +169,10 @@ fn turn_cancellation_reaches_an_active_tool_process_group() {
     let sink_started = started.clone();
     let cancellation = TurnCancellation::new();
     let worker_cancellation = cancellation.clone();
+    let registry = Arc::new(CallRegistry::default());
+    let worker_registry = Arc::clone(&registry);
     let worker = thread::spawn(move || {
-        let runner = TurnRunner::new(Arc::new(CallRegistry::default()));
+        let runner = TurnRunner::new(worker_registry);
         let mut provider = LongRunningTool;
         let mut sink = move |event: &TurnEvent| -> Result<(), String> {
             if matches!(
@@ -216,4 +218,68 @@ fn turn_cancellation_reaches_an_active_tool_process_group() {
                 )
         )
     }));
+    let call_key = CallKey::new(request().scope(), "call-turn-cancel");
+    let snapshot = registry.snapshot(&call_key).unwrap();
+    assert!(snapshot.cancellation_requested);
+    assert!(
+        registry
+            .history_from(&call_key, 0)
+            .unwrap()
+            .iter()
+            .any(|event| matches!(event.kind, CallEventKind::CancelRequested))
+    );
+}
+
+struct LargeEventProvider;
+
+impl SameTurnProvider for LargeEventProvider {
+    fn run_turn(
+        &mut self,
+        _request: &TurnRequest,
+        host: &mut ProviderHost<'_>,
+    ) -> Result<ProviderTerminal, String> {
+        for index in 0..5000 {
+            host.emit(ProviderEvent::Status {
+                status: format!("status-{index}"),
+                detail: None,
+            })
+            .map_err(|error| error.to_string())?;
+        }
+        Ok(ProviderTerminal::completed("large event stream completed"))
+    }
+}
+
+#[test]
+fn large_provider_event_stream_retains_a_bounded_tail_and_one_terminal() {
+    let runner = TurnRunner::new(Arc::new(CallRegistry::default()));
+    let mut provider = LargeEventProvider;
+    let run = runner.run(request(), &mut provider).unwrap();
+
+    assert!(
+        run.events.len() <= 4096,
+        "retained turn diagnostics exceeded their bound: {}",
+        run.events.len()
+    );
+    assert!(matches!(
+        run.events.first().map(|event| &event.kind),
+        Some(TurnEventKind::TurnAccepted)
+    ));
+    assert!(
+        run.events
+            .windows(2)
+            .any(|pair| pair[1].seq > pair[0].seq.saturating_add(1)),
+        "retained sequence numbers must expose the evicted middle gap"
+    );
+
+    let terminal_count = run
+        .events
+        .iter()
+        .filter(|event| matches!(event.kind, TurnEventKind::TurnTerminal(_)))
+        .count();
+    assert_eq!(terminal_count, 1);
+    assert!(matches!(
+        run.events.last().map(|event| &event.kind),
+        Some(TurnEventKind::TurnTerminal(terminal))
+            if terminal.status == ProviderTerminalStatus::Completed
+    ));
 }

@@ -35,6 +35,13 @@ pub enum StreamWindowError {
 
 pub type Result<T> = std::result::Result<T, StreamWindowError>;
 
+/// Schema ceilings for stream credit and retained control history. A caller
+/// may select smaller windows, but cannot turn a credit/history profile into
+/// an unbounded counter or `VecDeque`.
+pub const MAX_STREAM_CREDIT_BYTES: u64 = 1024 * 1024 * 1024;
+pub const MAX_STREAM_CHUNK_BYTES: u64 = 16 * 1024 * 1024;
+pub const MAX_STREAM_CONTROL_HISTORY: usize = 65_536;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StreamWindowConfig {
     pub initial_credit_bytes: u64,
@@ -65,6 +72,21 @@ impl StreamWindowConfig {
             return Err(StreamWindowError::InvalidConfiguration(
                 "credit, chunk and history bounds are inconsistent".to_string(),
             ));
+        }
+        if self.max_credit_bytes > MAX_STREAM_CREDIT_BYTES {
+            return Err(StreamWindowError::InvalidConfiguration(format!(
+                "max_credit_bytes exceeds hard bound {MAX_STREAM_CREDIT_BYTES}"
+            )));
+        }
+        if self.max_chunk_bytes > MAX_STREAM_CHUNK_BYTES {
+            return Err(StreamWindowError::InvalidConfiguration(format!(
+                "max_chunk_bytes exceeds hard bound {MAX_STREAM_CHUNK_BYTES}"
+            )));
+        }
+        if self.max_control_history > MAX_STREAM_CONTROL_HISTORY {
+            return Err(StreamWindowError::InvalidConfiguration(format!(
+                "max_control_history exceeds hard bound {MAX_STREAM_CONTROL_HISTORY}"
+            )));
         }
         Ok(())
     }
@@ -499,5 +521,32 @@ mod tests {
             StreamWindowError::CreditOverflow
         );
         assert_eq!(window.snapshot().unwrap().next_control_seq, 0);
+    }
+
+    #[test]
+    fn schema_ceilings_reject_unbounded_stream_profiles() {
+        let oversized = [
+            StreamWindowConfig {
+                max_credit_bytes: MAX_STREAM_CREDIT_BYTES + 1,
+                ..StreamWindowConfig::default()
+            },
+            StreamWindowConfig {
+                max_chunk_bytes: MAX_STREAM_CHUNK_BYTES + 1,
+                ..StreamWindowConfig::default()
+            },
+            StreamWindowConfig {
+                max_control_history: MAX_STREAM_CONTROL_HISTORY + 1,
+                ..StreamWindowConfig::default()
+            },
+        ];
+        for config in oversized {
+            assert!(
+                StreamWindow::new(config).is_err(),
+                "stream profile above schema ceiling must fail closed"
+            );
+        }
+        StreamWindowConfig::default()
+            .validate()
+            .expect("default stream profile remains valid");
     }
 }

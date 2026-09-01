@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from typing import Any
 
 from owner_open_broker_common import BrokerError, canonical, read_line, strict_json
@@ -12,14 +13,62 @@ from owner_open_broker_base_v2 import (
 )
 from owner_open_broker_mux import MuxError
 from owner_open_broker_runtime import (
+    BROKER_WRITE_TIMEOUT_SECONDS,
     Request,
     correlation_matches,
     frame_correlation,
+    response_envelope_matches,
     response_matches,
+    validate_upstream_frame,
+    write_all_bounded,
 )
 
 
 class BrokerConvergenceMixin:
+    def _request_for_upstream_frame(self, frame: dict[str, Any]) -> Request | None:
+        """Return the unique live request owning a broker response envelope.
+
+        The v2 scheduler stores ownership in ``WeightedFairMux``.  A small
+        compatibility path is retained for older contract probes that build a
+        broker test double with ``pending_requests``; both paths apply the
+        same immutable envelope check and fail closed on ambiguity, retired
+        requests, or an uncertain upstream transition.
+        """
+
+        uncertain = getattr(self, "upstream_uncertain", None)
+        if uncertain is not None and uncertain.is_set():
+            return None
+        try:
+            validate_upstream_frame(frame)
+        except BrokerError:
+            return None
+
+        pending = getattr(self, "pending_requests", None)
+        pending_lock = getattr(self, "pending_requests_lock", None)
+        if pending is not None and pending_lock is not None:
+            with pending_lock:
+                matches = tuple(
+                    request
+                    for request in pending.values()
+                    if not getattr(request, "terminalized", False)
+                    and response_envelope_matches(request, frame)
+                )
+            return matches[0] if len(matches) == 1 else None
+
+        # Production v2 ownership is keyed by the broker-assigned upstream
+        # sequence in the mux.  Keep this fallback defensive for source
+        # contract probes that exercise the helper on a minimally initialized
+        # object rather than a running BrokerBase instance.
+        mux = getattr(self, "mux", None)
+        transition_lock = getattr(self, "transition_lock", None)
+        if mux is None or transition_lock is None:
+            return None
+        with transition_lock:
+            try:
+                return mux.match(frame, self._terminal_matches)
+            except (BrokerError, MuxError):
+                return None
+
     def _finish_active(
         self,
         request: Request,
@@ -114,7 +163,9 @@ class BrokerConvergenceMixin:
     def _terminal_matches(request: Request, frame: dict[str, Any]) -> bool:
         direct_error = frame.get("kind") in _DIRECT_ERROR_KINDS
         return response_matches(request, frame) or (
-            direct_error and correlation_matches(request, frame)
+            direct_error
+            and response_envelope_matches(request, frame)
+            and correlation_matches(request, frame)
         )
 
     def _upstream_reader(self) -> None:
@@ -130,6 +181,31 @@ class BrokerConvergenceMixin:
                 frame = strict_json(raw, label="upstream frame")
                 if not isinstance(frame, dict) or not isinstance(frame.get("kind"), str):
                     raise BrokerError("upstream frame has no valid kind")
+                # Host observations from older providers may be completely
+                # unbound; they are never eligible to resolve a request, but
+                # can still be discarded/handled by the sequence gate.  Once
+                # any broker envelope member appears, however, require the
+                # complete strict envelope before it can reach observers.
+                envelope_fields = (
+                    "broker_request_id",
+                    "broker_request_sha256",
+                    "broker_request_upstream_seq",
+                )
+                envelope_present = sum(name in frame for name in envelope_fields)
+                if envelope_present == len(envelope_fields):
+                    validate_upstream_frame(frame)
+                elif envelope_present:
+                    # A partial envelope is an unowned/stale line.  It must
+                    # not poison the whole upstream epoch, but it also must
+                    # never be guessed into ownership by semantic fields.
+                    continue
+                elif "seq" in frame:
+                    # Host ``seq`` belongs to the response stream, not to the
+                    # broker's immutable request namespace.  The low-level
+                    # mux keeps a legacy fallback for isolated pre-envelope
+                    # callers, but the production reader must discard a
+                    # host-only sequence before it can reach that API.
+                    continue
                 # Conflicting mirrored fields are invalid before any observer
                 # can receive the frame.  A supplied sequence is authoritative:
                 # retired or unknown sequences are never exposed as raw Host
@@ -206,14 +282,20 @@ class BrokerConvergenceMixin:
         *,
         code: str = "unknown_after_disconnect",
     ) -> None:
+        # Publish the uncertainty boundary before waiting for the transition
+        # lock, so a dispatcher that is queued at the write boundary cannot
+        # cross into the Host after this failure is observed.  Release
+        # unknown_lock before acquiring transition_lock: holding both in this
+        # order would deadlock a terminal-audit failure that is reported by a
+        # worker already inside transition_lock.
         with self.unknown_lock:
             if self.upstream_uncertain.is_set():
                 return
             self.upstream_uncertain.set()
             self.stopping.set()
-            with self.transition_lock:
-                unresolved = self.mux.drain(reason=code)
-                deliveries = self._terminalize_drained(unresolved, error, code)
+        with self.transition_lock:
+            unresolved = self.mux.drain(reason=code)
+            deliveries = self._terminalize_drained(unresolved, error, code)
         for _request in unresolved:
             self.request_slots.release()
         for owner_id, message in deliveries:
@@ -278,21 +360,71 @@ class BrokerConvergenceMixin:
                 client_seq=request.client_seq,
                 direction="client_to_host",
                 broker_request_id=request.request_id,
+                # Host ``seq`` belongs to its response stream and may be
+                # rewritten independently.  Carry the broker's immutable
+                # sequence explicitly so the reader can bind a response
+                # without guessing from the Host sequence.
+                broker_request_upstream_seq=request.upstream_seq,
                 broker_request_sha256=request.request_sha256,
                 broker_ordering_key=request.ordering_key,
             )
             encoded = canonical(frame) + b"\n"
             try:
+                reject_before_forward: str | None = None
                 with self.transition_lock:
                     if not self.mux.is_active(request):
                         continue
-                    upstream.stdin.write(encoded)
-                    upstream.stdin.flush()
-                    self.audit.forwarded(
-                        request.audit_binding,
-                        frame_sha256=hashlib.sha256(encoded).hexdigest(),
-                        frame_bytes=len(encoded),
+                    # The uncertainty/stop flag can be raised after the
+                    # preflight above but before this worker acquires the
+                    # transition lock.  Recheck at the exact write boundary;
+                    # once global convergence has started, no newly accepted
+                    # request may cross into the Host.  Retire the request
+                    # with an explicit no-effect terminal so its slot and
+                    # ownership are not leaked.
+                    if self.upstream_uncertain.is_set() or self.stopping.is_set():
+                        reject_before_forward = (
+                            "upstream_uncertain_before_forward"
+                            if self.upstream_uncertain.is_set()
+                            else "broker_stopping_before_forward"
+                        )
+                    else:
+                        write_all_bounded(
+                            upstream.stdin,
+                            encoded,
+                            timeout_seconds=min(
+                                BROKER_WRITE_TIMEOUT_SECONDS,
+                                max(
+                                    0.001,
+                                    request.deadline_monotonic - time.monotonic(),
+                                ),
+                            ),
+                            label=f"upstream request {request.upstream_seq}",
+                        )
+                        self.audit.forwarded(
+                            request.audit_binding,
+                            frame_sha256=hashlib.sha256(encoded).hexdigest(),
+                            frame_bytes=len(encoded),
+                        )
+                # `_finish_active` takes `transition_lock` itself.  Keep the
+                # rejection terminal outside the lock to avoid recursively
+                # acquiring the non-reentrant lock at the write boundary.
+                if reject_before_forward is not None:
+                    self._finish_active(
+                        request,
+                        self._request_error(
+                            request,
+                            "upstream_uncertain"
+                            if reject_before_forward == "upstream_uncertain_before_forward"
+                            else "broker_stopping",
+                            "broker refuses dispatch after the upstream transition boundary",
+                        ),
+                        details={
+                            "status": reject_before_forward,
+                            "effect_may_have_started": False,
+                        },
+                        retire_reason=reject_before_forward,
                     )
+                    continue
             except (OSError, BrokerError) as error:
                 # A pipe write or its durable forwarded transition may be
                 # ambiguous for every in-flight request sharing the process.

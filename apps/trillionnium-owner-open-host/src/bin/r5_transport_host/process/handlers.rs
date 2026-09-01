@@ -598,29 +598,16 @@ impl BrokerBindingRouter {
         unique
     }
 
-    fn clear_turn(&mut self, frame: &RunTurnFrame) {
-        let Ok(lineage) = BrokerLineage::from_frame(frame) else {
-            return;
-        };
-        let terminal_digest = response_digest(frame);
-        self.active.retain(|intent| {
-            if intent.request_kind != "turn.start" || !intent.lineage.matches_lineage(&lineage) {
-                return true;
-            }
-            // A terminal from an older retry must not erase a newer retry
-            // that was admitted with the same semantic scope.  When both
-            // sides carry a digest, only the matching lineage is cleared.
-            match (intent.request_digest.as_deref(), terminal_digest) {
-                (Some(expected), Some(actual)) => expected != actual,
-                // A missing digest cannot prove that this terminal belongs to
-                // the retry currently held in the router.  Retain the intent
-                // until an exact digest-bearing terminal arrives.
-                (Some(_), None) => true,
-                // A legacy request with no digest has no stronger identity
-                // available; its matching lineage is the complete contract.
-                (None, _) => false,
-            }
-        });
+    /// Retire exactly one admitted turn generation.
+    ///
+    /// A terminal frame may omit the semantic request digest.  Lineage is
+    /// therefore insufficient to identify its owner: an identical retry can
+    /// already be resident in `active`.  The transport handshake retains the
+    /// immutable broker tuple for the current generation and supplies it
+    /// here, so cleanup cannot consume a same-scope retry (or any unrelated
+    /// request that happens to share the lineage).
+    fn clear_turn_binding(&mut self, binding: &BrokerRequestBinding) {
+        self.discard_binding(binding);
     }
 }
 
@@ -922,8 +909,8 @@ impl<W: Write> ClientDelivery<W> {
         self.broker_router.mark_forwarded(binding);
     }
 
-    fn clear_turn_binding(&mut self, frame: &RunTurnFrame) {
-        self.broker_router.clear_turn(frame);
+    fn clear_turn_binding(&mut self, binding: &BrokerRequestBinding) {
+        self.broker_router.clear_turn_binding(binding);
     }
 
     fn discard_broker_binding(&mut self, binding: &BrokerRequestBinding) {
@@ -1142,6 +1129,57 @@ mod tests {
     }
 
     #[test]
+    fn missing_digest_terminal_clears_exact_turn_before_same_scope_retry() {
+        let mut delivery = ClientDelivery::new(Vec::new(), 1024 * 1024);
+        let start = turn_start("turn-terminal-retry", "same-request");
+        let digest = request_digest(&start).unwrap();
+        let current_binding = binding("current-turn", 12);
+        delivery
+            .register_broker_request(&start, Some(current_binding.clone()))
+            .unwrap();
+        delivery.mark_broker_forwarded(Some(&current_binding));
+
+        let mut accepted = core_frame(FRAME_TURN_ACCEPTED, "turn-terminal-retry", &digest);
+        delivery.observe_core_frame(&mut accepted);
+        delivery.send(&accepted).unwrap();
+
+        // Model a retry admitted before the old terminal's cleanup callback
+        // runs.  It intentionally has the same semantic lineage and digest;
+        // only the immutable broker tuple distinguishes the generations.
+        let retry = turn_start("turn-terminal-retry", "same-request");
+        let retry_binding = binding("same-scope-retry", 13);
+        delivery
+            .register_broker_request(&retry, Some(retry_binding.clone()))
+            .unwrap();
+        delivery.mark_broker_forwarded(Some(&retry_binding));
+
+        // This legacy terminal carries the turn lineage but no request
+        // digest.  Generic routing must leave it unowned until the caller
+        // supplies the exact current binding.
+        let mut terminal = core_frame(FRAME_TURN_END, "turn-terminal-retry", "");
+        terminal.payload = json!({"status": "completed"});
+        delivery.observe_core_frame(&mut terminal);
+        delivery.send(&terminal).unwrap();
+        delivery.clear_turn_binding(&current_binding);
+
+        let mut accepted_retry =
+            core_frame(FRAME_TURN_ACCEPTED, "turn-terminal-retry", &digest);
+        delivery.observe_core_frame(&mut accepted_retry);
+        delivery.send(&accepted_retry).unwrap();
+
+        let frames = encoded_frames(&delivery);
+        assert_eq!(frames[0]["broker_request_id"], "current-turn");
+        assert!(frames[1].get("broker_request_id").is_none());
+        assert_eq!(frames[2]["broker_request_id"], "same-scope-retry");
+        assert_eq!(delivery.broker_router.active.len(), 1);
+        assert_eq!(
+            delivery.broker_router.active[0].binding,
+            retry_binding,
+            "exact terminal cleanup must not erase the same-scope retry"
+        );
+    }
+
+    #[test]
     fn control_ack_uses_control_binding_not_active_turn_binding() {
         let mut delivery = ClientDelivery::new(Vec::new(), 1024 * 1024);
         let start = turn_start("turn-control-router", "request");
@@ -1191,7 +1229,7 @@ mod tests {
         });
         let cancel_binding = binding("cancel-request", 202);
         delivery
-            .register_broker_request(&cancel, Some(cancel_binding))
+            .register_broker_request(&cancel, Some(cancel_binding.clone()))
             .unwrap();
 
         // No cancel bytes have crossed the core boundary yet.  A generic
@@ -1205,7 +1243,12 @@ mod tests {
         assert_eq!(frames[0]["broker_request_id"], "turn-request");
         assert_eq!(frames[1]["broker_request_id"], "turn-request");
 
-        // The pending cancel remains available for its own acknowledgement.
+        // Once the simulated write path reports that the cancel crossed the
+        // core boundary, its late acknowledgement may claim the pending
+        // envelope.  Without this proof the fail-closed router must leave an
+        // otherwise identical acknowledgement unowned (see the dedicated
+        // unforwarded-pending test below).
+        delivery.mark_broker_forwarded(Some(&cancel_binding));
         let mut ack = core_frame("turn.cancel.accepted", "turn-error-route", "");
         delivery.observe_core_frame(&mut ack);
         delivery.send(&ack).unwrap();

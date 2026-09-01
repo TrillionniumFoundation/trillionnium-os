@@ -9,7 +9,7 @@ use serde_json::{Value, json};
 
 mod support;
 
-use support::secure_tempdir;
+use support::{read_event_store, secure_tempdir};
 
 struct RunningHost {
     child: Child,
@@ -186,11 +186,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
 
     let deadline = Instant::now() + Duration::from_secs(5);
     loop {
-        if event_store.exists()
-            && fs::read_to_string(&event_store)
-                .unwrap_or_default()
-                .contains("held-by-flow-window")
-        {
+        if read_event_store(&event_store).contains("held-by-flow-window") {
             break;
         }
         assert!(

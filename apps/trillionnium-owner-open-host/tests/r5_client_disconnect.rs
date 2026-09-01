@@ -3,6 +3,10 @@ use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 use std::process::{Command, Stdio};
 
+use trillionnium_owner_open_event_store::{
+    SegmentedEventStore, SegmentedEventStoreConfig, SyncPolicy,
+};
+
 mod support;
 
 use support::secure_tempdir;
@@ -13,7 +17,8 @@ fn client_output_disconnect_does_not_cancel_an_accepted_turn() {
     let provider = directory.path().join("provider.sh");
     let counter = directory.path().join("provider-starts");
     let event_store = directory.path().join("events.jsonl");
-    let transport_store = std::path::PathBuf::from(format!("{}.transport", event_store.display()));
+    let transport_store =
+        std::path::PathBuf::from(format!("{}.transport.segments", event_store.display()));
     fs::write(
         &provider,
         r#"#!/bin/sh
@@ -61,13 +66,45 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     );
     assert_eq!(fs::read(&counter).unwrap(), b"x");
 
-    let stored = fs::read_to_string(&event_store).unwrap();
+    let stored = read_event_store(&event_store);
     assert!(stored.contains("completed-with-detached-client"));
     assert!(stored.contains("\"kind\":\"turn.end\""));
     assert!(stored.contains("\"status\":\"completed\""));
 
-    let transport = fs::read_to_string(&transport_store).unwrap();
-    assert!(transport.contains("transport.delivery.terminal"));
-    assert!(transport.contains("\"client_delivery_status\":\"detached\""));
-    assert!(transport.contains("\"automatic_redispatch\":false"));
+    let transport = SegmentedEventStore::open(
+        &transport_store,
+        SegmentedEventStoreConfig {
+            sync_policy: SyncPolicy::Full,
+            ..SegmentedEventStoreConfig::default()
+        },
+    )
+    .unwrap();
+    let records = serde_json::to_string(&transport.all_records().unwrap()).unwrap();
+    assert!(records.contains("transport.delivery.terminal"));
+    assert!(records.contains("\"client_delivery_status\":\"detached\""));
+    assert!(records.contains("\"automatic_redispatch\":false"));
+}
+
+/// v7 writes the authoritative turn sequence to `<path>.segments`; older
+/// entrypoints may still leave a v1 JSONL file at `path`.
+fn read_event_store(path: &std::path::Path) -> String {
+    if path.is_file() {
+        return fs::read_to_string(path).unwrap();
+    }
+    let root = std::path::PathBuf::from(format!("{}.segments", path.display()));
+    let mut segments = fs::read_dir(root)
+        .unwrap()
+        .map(|entry| entry.unwrap().path())
+        .filter(|candidate| {
+            candidate
+                .file_name()
+                .is_some_and(|name| name.to_string_lossy().starts_with("segment-"))
+        })
+        .collect::<Vec<_>>();
+    segments.sort();
+    let mut contents = String::new();
+    for segment in segments {
+        contents.push_str(&fs::read_to_string(segment).unwrap());
+    }
+    contents
 }

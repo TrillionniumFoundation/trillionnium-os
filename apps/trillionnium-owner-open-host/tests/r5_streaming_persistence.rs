@@ -9,7 +9,7 @@ use serde_json::Value;
 
 mod support;
 
-use support::secure_tempdir;
+use support::{read_event_store, secure_tempdir};
 
 #[test]
 fn provider_event_is_persisted_while_the_turn_is_still_running() {
@@ -68,7 +68,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
 
     let persisted_deadline = Instant::now() + Duration::from_secs(5);
     loop {
-        let contents = fs::read_to_string(&event_store).unwrap_or_default();
+        let contents = read_event_store(&event_store);
         if contents.contains("persisted-before-terminal")
             && contents.contains("\"kind\":\"model.delta\"")
         {

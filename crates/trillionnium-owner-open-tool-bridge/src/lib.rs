@@ -13,12 +13,12 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::thread;
 use std::time::Duration;
 
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_call_registry::{
-    CallKey, CallRegistry, CallRequest, CallSnapshot, RegistryError, SpawnClaim, TerminalRecord,
+    BeginDisposition, CallKey, CallRegistry, CallRequest, CallSnapshot, RegistryError, SpawnClaim,
+    TerminalRecord,
 };
 use trillionnium_owner_open_runtime::{
     AdbExecRequest, CancellationToken as RuntimeCancellationToken, ExecutionEvent,
@@ -35,8 +35,6 @@ pub enum BridgeError {
     RegistryObservation(RegistryError),
     EventSinkFailed(String),
     EventSinkPanicked,
-    CancellationMonitorSpawnFailed(String),
-    CancellationMonitorPanicked,
     RuntimeRejected(String),
 }
 
@@ -60,13 +58,6 @@ impl Display for BridgeError {
             }
             Self::EventSinkPanicked => formatter.write_str(
                 "owner-open tool event sink panicked; the process group was cancelled and the registry was closed",
-            ),
-            Self::CancellationMonitorSpawnFailed(message) => write!(
-                formatter,
-                "owner-open cancellation monitor could not start: {message}",
-            ),
-            Self::CancellationMonitorPanicked => formatter.write_str(
-                "owner-open cancellation monitor panicked after the runtime terminal was recorded",
             ),
             Self::RuntimeRejected(message) => write!(
                 formatter,
@@ -414,18 +405,76 @@ impl DirectToolBridge {
         &self,
         call: BoundToolCall,
         limits: &BridgeLimits,
-        mut event_sink: impl FnMut(ExecutionEvent) -> std::result::Result<(), E>,
+        event_sink: impl FnMut(ExecutionEvent) -> std::result::Result<(), E>,
     ) -> Result<DispatchResult>
     where
         E: Display,
     {
+        self.execute_fallible_with_external_flags(call, limits, [], event_sink)
+    }
+
+    /// Execute one direct call while observing additional caller-owned
+    /// cancellation flags.  The flags are linked directly into the runtime
+    /// token; no per-call forwarding/polling thread is created.  Each flag is
+    /// expected to belong to this call's enclosing scope (normally one turn),
+    /// never to a process-global cancellation source.
+    pub fn execute_fallible_with_external_flags<E, I>(
+        &self,
+        call: BoundToolCall,
+        limits: &BridgeLimits,
+        external_flags: I,
+        mut event_sink: impl FnMut(ExecutionEvent) -> std::result::Result<(), E>,
+    ) -> Result<DispatchResult>
+    where
+        E: Display,
+        I: IntoIterator<Item = Arc<AtomicBool>>,
+    {
         limits.validate()?;
         call.validate()?;
         validate_runtime_request(&call.request, call.pty, &limits.runtime)?;
-        self.registry
-            .begin(call.key.clone(), call.registry_request())?;
-        let (generation, cancellation) =
-            match self.registry.claim_spawn(&call.key, &call.request_sha256)? {
+        // Materialize the caller-owned flags once.  Besides avoiding a
+        // second iterator traversal, this lets us publish an already-set
+        // enclosing cancellation into the registry before spawn admission.
+        // Without that step an already-cancelled turn could still win the
+        // claim race and appear uncancelled in registry history.
+        let external_flags = external_flags.into_iter().collect::<Vec<_>>();
+        let registry_request = call.registry_request();
+        let begin = self
+            .registry
+            .begin(call.key.clone(), registry_request.clone())?;
+        let began_new = begin.disposition == BeginDisposition::New;
+        if external_flags
+            .iter()
+            .any(|flag| flag.load(Ordering::SeqCst))
+            && !matches!(
+                begin.snapshot.state,
+                trillionnium_owner_open_call_registry::EffectiveState::Terminal { .. }
+            )
+        {
+            self.registry.request_cancel(&call.key)?;
+        }
+        let (generation, cancellation) = match self
+            .registry
+            .claim_spawn(&call.key, &call.request_sha256)
+        {
+            Err(error) => {
+                // A fresh `begin` leaves an Accepted marker until the spawn
+                // generation is claimed.  If claim fails before that boundary
+                // (for example, generation exhaustion), remove only the exact
+                // untouched entry.  If another caller raced the lifecycle, or
+                // this was an Existing acceptance, fence Accepted state so a
+                // retry cannot turn a local failure into a redispatch.
+                let rollback = if began_new {
+                    self.registry.rollback_accept(&call.key, &registry_request)
+                } else {
+                    Ok(false)
+                };
+                if !matches!(rollback, Ok(true) | Ok(false)) || !began_new {
+                    let _ = self.registry.inhibit_spawn(&call.key);
+                }
+                return Err(BridgeError::Registry(error));
+            }
+            Ok(claim) => match claim {
                 SpawnClaim::Granted {
                     generation,
                     cancellation,
@@ -433,13 +482,26 @@ impl DirectToolBridge {
                 } => (generation, cancellation),
                 SpawnClaim::Existing(snapshot) => return Ok(DispatchResult::Existing(snapshot)),
                 SpawnClaim::Inhibited(snapshot) => return Ok(DispatchResult::Inhibited(snapshot)),
-            };
+            },
+        };
 
-        let runtime_cancellation = RuntimeCancellationToken::new();
-        let monitor_cancellation = runtime_cancellation.clone();
-        let monitor_finished = Arc::new(AtomicBool::new(false));
-        let monitor_finished_child = Arc::clone(&monitor_finished);
-        let poll = limits.cancellation_poll;
+        // Close the small race between the pre-claim check and claim_spawn.
+        // The runtime token will also observe this flag, while this registry
+        // mutation preserves causal cancellation history for the call.
+        if external_flags
+            .iter()
+            .any(|flag| flag.load(Ordering::SeqCst))
+        {
+            self.registry.request_cancel(&call.key)?;
+        }
+
+        // The registry signal is the authoritative per-call cancellation
+        // source.  Enclosing flags (such as a turn cancellation) are observed
+        // alongside it by the runtime token, so cancellation remains targeted
+        // without a forwarding monitor thread.
+        let runtime_cancellation = RuntimeCancellationToken::from_shared_flags(
+            std::iter::once(cancellation.shared_flag()).chain(external_flags),
+        );
 
         let mut digest = ObservationDigest::new(
             &call.key.call_id,
@@ -475,36 +537,6 @@ impl DirectToolBridge {
             }
         };
 
-        let monitor = match thread::Builder::new()
-            .name(format!("owner-open-cancel-{generation}"))
-            .spawn(move || {
-                while !monitor_finished_child.load(Ordering::SeqCst) {
-                    if cancellation.is_cancelled() {
-                        monitor_cancellation.cancel();
-                        break;
-                    }
-                    thread::sleep(poll);
-                }
-            }) {
-            Ok(monitor) => monitor,
-            Err(error) => {
-                let terminal = synthetic_terminal(
-                    TerminalKind::IoError,
-                    format!("cancellation_monitor_spawn_failed: {error}"),
-                );
-                emit_synthetic_terminal(&call, &terminal, &mut observe);
-                let observation_sha256 = digest.finish();
-                self.registry.complete(
-                    &call.key,
-                    generation,
-                    terminal_record(&terminal, observation_sha256)?,
-                )?;
-                return Err(BridgeError::CancellationMonitorSpawnFailed(
-                    error.to_string(),
-                ));
-            }
-        };
-
         let runtime_result = match (call.request.clone(), call.pty) {
             (DirectToolRequest::Shell(request), Some(size)) => execute_shell_pty(
                 request,
@@ -533,8 +565,6 @@ impl DirectToolBridge {
                 &mut observe,
             ),
         };
-        monitor_finished.store(true, Ordering::SeqCst);
-        let monitor_panicked = monitor.join().is_err();
 
         let (terminal, runtime_rejection) = match runtime_result {
             Ok(terminal) => (terminal, None),
@@ -549,7 +579,15 @@ impl DirectToolBridge {
             }
         };
 
+        // A sink-triggered cancellation, the registry signal, or an enclosing
+        // turn flag may have fired while the process was running.  Reflect it
+        // in the call registry before recording the terminal so snapshots and
+        // history carry the same causality as the runtime result.
+        let cancellation_observed = runtime_cancellation.is_cancelled();
         let observation_sha256 = digest.finish();
+        if cancellation_observed {
+            self.registry.request_cancel(&call.key)?;
+        }
         self.registry.complete(
             &call.key,
             generation,
@@ -565,9 +603,6 @@ impl DirectToolBridge {
                 SinkFailure::Failed(message) => BridgeError::EventSinkFailed(message),
                 SinkFailure::Panicked => BridgeError::EventSinkPanicked,
             });
-        }
-        if monitor_panicked {
-            return Err(BridgeError::CancellationMonitorPanicked);
         }
         if let Some(message) = runtime_rejection {
             return Err(BridgeError::RuntimeRejected(message));

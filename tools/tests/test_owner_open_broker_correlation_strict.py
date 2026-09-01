@@ -212,10 +212,40 @@ class BrokerCorrelationStrictTest(unittest.TestCase):
             "direction": "client_to_host",
             "connection_id": "connection-b",
             "server_request_id": "server-b",
+            "request_sha256": "a" * 64,
             "turn_stream_id": "stream-a",
             "payload": {"job_id": "job-a", "stream_id": "stream-a"},
         }
         self.assertEqual(canonical_request_frame(first), canonical_request_frame(replay))
+
+    def test_semantic_job_request_digest_is_part_of_replay_identity(self) -> None:
+        first = {
+            "kind": "job.inspect",
+            "seq": 1,
+            "payload": {
+                "session_id": "session",
+                "profile_id": "profile",
+                "task_id": "task",
+                "turn_id": "turn",
+                "turn_stream_id": "stream",
+                "job_id": "job",
+                "request_sha256": "a" * 64,
+            },
+        }
+        changed = {
+            **first,
+            "payload": {**first["payload"], "request_sha256": "b" * 64},
+        }
+        omitted = {
+            **first,
+            "payload": {
+                key: value
+                for key, value in first["payload"].items()
+                if key != "request_sha256"
+            },
+        }
+        self.assertNotEqual(canonical_request_frame(first), canonical_request_frame(changed))
+        self.assertNotEqual(canonical_request_frame(first), canonical_request_frame(omitted))
 
     def test_request_digest_rejects_conflicting_transport_mirror(self) -> None:
         with self.assertRaisesRegex(
@@ -229,6 +259,31 @@ class BrokerCorrelationStrictTest(unittest.TestCase):
                     "payload": {"seq": 2, "job_id": "job"},
                 }
             )
+
+    def test_request_rejects_broker_owned_metadata_at_both_envelope_levels(self) -> None:
+        broker_owned = (
+            "broker_epoch",
+            "broker_response_connection_id",
+            "broker_request_id",
+            "broker_request_upstream_seq",
+            "broker_request_downstream_seq",
+            "broker_request_kind",
+            "broker_request_sha256",
+            "broker_ordering_key",
+        )
+        for location in ("frame", "payload"):
+            for field in broker_owned:
+                frame = {
+                    "kind": "job.inspect",
+                    "seq": 1,
+                    "direction": "client_to_host",
+                    "payload": {"job_id": "job"},
+                }
+                target = frame if location == "frame" else frame["payload"]
+                target[field] = "caller-controlled"
+                with self.subTest(location=location, field=field):
+                    with self.assertRaisesRegex(BrokerError, "broker-owned"):
+                        canonical_request_frame(frame)
 
 
 if __name__ == "__main__":

@@ -1,11 +1,12 @@
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Barrier, Mutex};
 use std::thread;
 use std::time::{Duration, Instant};
 
 use trillionnium_owner_open_call_registry::{
-    CallKey, CallRegistry, EffectiveState, RegistryError, TurnScope,
+    CallEventKind, CallKey, CallRegistry, EffectiveState, RegistryError, TurnScope,
 };
 use trillionnium_owner_open_runtime::{
     AdbExecRequest, ExecutionEvent, ExecutionEventKind, PtySize, ShellExecRequest, StreamKind,
@@ -377,6 +378,97 @@ fn registry_cancel_after_spawn_reaches_the_runtime_process_group() {
         registry.snapshot(&call_key).unwrap().state,
         EffectiveState::Terminal { .. }
     ));
+}
+
+#[test]
+fn external_cancellation_is_published_to_registry_causality() {
+    let registry = Arc::new(CallRegistry::default());
+    let bridge = Arc::new(DirectToolBridge::new(Arc::clone(&registry)));
+    let external = Arc::new(AtomicBool::new(false));
+    let call = shell_call(
+        "call-external-cancel",
+        br#"{"tool":"shell.exec","command":"sleep 30"}"#,
+        "sleep 30",
+    );
+    let call_key = call.key.clone();
+    let worker_bridge = Arc::clone(&bridge);
+    let worker_external = Arc::clone(&external);
+    let worker = thread::spawn(move || {
+        worker_bridge
+            .execute_fallible_with_external_flags(
+                call,
+                &BridgeLimits {
+                    cancellation_poll: Duration::from_millis(2),
+                    ..BridgeLimits::default()
+                },
+                [worker_external],
+                |_| Ok::<(), String>(()),
+            )
+            .unwrap()
+    });
+
+    let deadline = Instant::now() + Duration::from_secs(2);
+    loop {
+        if registry
+            .snapshot(&call_key)
+            .is_ok_and(|snapshot| matches!(snapshot.state, EffectiveState::Started { .. }))
+        {
+            break;
+        }
+        assert!(Instant::now() < deadline, "call never reached Started");
+        thread::sleep(Duration::from_millis(2));
+    }
+    external.store(true, Ordering::SeqCst);
+
+    match worker.join().unwrap() {
+        DispatchResult::Executed { terminal, .. } => {
+            assert_eq!(terminal.kind, TerminalKind::Cancelled)
+        }
+        other => panic!("unexpected externally cancelled dispatch result: {other:?}"),
+    }
+    let snapshot = registry.snapshot(&call_key).unwrap();
+    assert!(snapshot.cancellation_requested);
+    assert!(
+        registry
+            .history_from(&call_key, 0)
+            .unwrap()
+            .iter()
+            .any(|event| matches!(event.kind, CallEventKind::CancelRequested))
+    );
+}
+
+#[test]
+fn already_cancelled_external_scope_inhibits_spawn_and_records_history() {
+    let registry = Arc::new(CallRegistry::default());
+    let bridge = DirectToolBridge::new(Arc::clone(&registry));
+    let external = Arc::new(AtomicBool::new(true));
+    let call = shell_call(
+        "call-pre-cancelled",
+        br#"{"tool":"shell.exec","command":"printf must-not-run"}"#,
+        "printf must-not-run",
+    );
+    let key = call.key.clone();
+    let result = bridge
+        .execute_fallible_with_external_flags(call, &BridgeLimits::default(), [external], |_| {
+            Ok::<(), String>(())
+        })
+        .unwrap();
+    let snapshot = match result {
+        DispatchResult::Inhibited(snapshot) => snapshot,
+        other => panic!("unexpected pre-cancelled dispatch result: {other:?}"),
+    };
+    assert!(snapshot.cancellation_requested);
+    assert!(matches!(
+        snapshot.state,
+        EffectiveState::CancelledBeforeSpawn
+    ));
+    assert!(
+        registry
+            .history_from(&key, 0)
+            .unwrap()
+            .iter()
+            .any(|event| matches!(event.kind, CallEventKind::CancelRequested))
+    );
 }
 
 #[test]

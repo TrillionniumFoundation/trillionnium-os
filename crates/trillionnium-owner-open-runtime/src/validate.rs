@@ -4,8 +4,8 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use crate::types::{
-    AdbExecRequest, EnvironmentDelta, MechanicalLimits, ProcessIoMode, ProcessSpec, Result,
-    RuntimeError, ShellExecRequest, ShellInvocation, ToolKind,
+    AdbExecRequest, EnvironmentDelta, MAX_RUNTIME_REQUEST_TIMEOUT, MechanicalLimits, ProcessIoMode,
+    ProcessSpec, Result, RuntimeError, ShellExecRequest, ShellInvocation, ToolKind,
 };
 
 pub(crate) fn shell_spec(
@@ -59,7 +59,7 @@ pub(crate) fn shell_spec(
         cwd: request.cwd,
         env: request.env,
         stdin: request.stdin,
-        timeout: normalized_timeout(request.timeout, limits),
+        timeout: normalized_timeout(request.timeout, limits)?,
         io_mode: ProcessIoMode::Pipe,
     })
 }
@@ -96,15 +96,19 @@ pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Re
         cwd: request.cwd,
         env: request.env,
         stdin: request.stdin,
-        timeout: normalized_timeout(request.timeout, limits),
+        timeout: normalized_timeout(request.timeout, limits)?,
         io_mode: ProcessIoMode::Pipe,
     })
 }
 
-fn normalized_timeout(timeout: Option<Duration>, limits: &MechanicalLimits) -> Duration {
-    timeout
-        .filter(|value| !value.is_zero())
-        .unwrap_or(limits.default_timeout)
+fn normalized_timeout(timeout: Option<Duration>, limits: &MechanicalLimits) -> Result<Duration> {
+    match timeout {
+        None | Some(Duration::ZERO) => Ok(limits.default_timeout),
+        Some(timeout) if timeout > MAX_RUNTIME_REQUEST_TIMEOUT => Err(invalid(format!(
+            "request timeout exceeds hard bound {MAX_RUNTIME_REQUEST_TIMEOUT:?}"
+        ))),
+        Some(timeout) => Ok(timeout),
+    }
 }
 
 fn validate_common_request(
@@ -229,7 +233,7 @@ mod tests {
     fn zero_request_timeout_uses_owner_default() {
         let limits = MechanicalLimits::default();
         assert_eq!(
-            normalized_timeout(Some(Duration::ZERO), &limits),
+            normalized_timeout(Some(Duration::ZERO), &limits).unwrap(),
             limits.default_timeout
         );
     }

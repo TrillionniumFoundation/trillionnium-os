@@ -190,3 +190,57 @@ fn scope_mismatch_disables_durable_use_instead_of_writing_ambiguous_bytes() {
     assert_eq!(persistence.status(), "unavailable");
     assert!(persistence.error().is_some());
 }
+
+#[test]
+fn segmented_turn_store_migrates_legacy_and_reopens_exactly() {
+    let directory = secure_tempdir();
+    let legacy_path = directory.path().join("events.jsonl");
+    let segmented_root = Persistence::segmented_root_for(&legacy_path);
+    let request = request();
+    let stream = stable_turn_stream_id(&request).unwrap();
+    let digest = request_sha256(&request).unwrap();
+    let scope = event_scope(&request, &stream);
+    let accepted = frame(&request, &stream, "turn.accepted", 0);
+    let terminal = frame(&request, &stream, "turn.end", 1);
+
+    // Seed the v1 file, then select the v7 constructor. Migration must retain
+    // exact event bytes while publishing the indexed segmented root.
+    {
+        let mut legacy = Persistence::open_best_effort(Some(&legacy_path));
+        assert!(legacy.append_frame(&scope, &digest, &accepted));
+    }
+    {
+        let mut segmented =
+            Persistence::open_best_effort_segmented(Some(&segmented_root), Some(&legacy_path));
+        assert!(segmented.is_durable());
+        assert!(segmented_root.is_dir());
+        assert!(
+            segmented_root
+                .join("segment-00000000000000000001.jsonl")
+                .is_file()
+        );
+        assert!(matches!(
+            segmented.load(&scope, &digest),
+            StoredTurn::Incomplete(ref frames) if frames == &vec![accepted.clone()]
+        ));
+        // New v7 records are written only to the segmented authority; the v1
+        // source intentionally remains a stale, valid prefix.
+        assert!(segmented.append_frame(&scope, &digest, &terminal));
+    }
+
+    // Re-opening through the path convenience API exercises the same
+    // migration path used by the v7 CLI. It must accept the stale legacy
+    // prefix after the segmented authority has advanced.
+    let reopened = Persistence::open_best_effort_segmented_path(Some(&legacy_path));
+    assert!(reopened.is_durable());
+    assert!(matches!(
+        reopened.load(&scope, &digest),
+        StoredTurn::Complete(ref frames) if frames == &vec![accepted, terminal]
+    ));
+
+    let legacy = Persistence::open_best_effort(Some(&legacy_path));
+    assert!(matches!(
+        legacy.load(&scope, &digest),
+        StoredTurn::Incomplete(_)
+    ));
+}

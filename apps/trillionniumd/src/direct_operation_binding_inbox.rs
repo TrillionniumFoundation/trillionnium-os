@@ -1231,16 +1231,18 @@ mod tests {
 
     impl Fixture {
         fn new() -> Self {
-            let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-            // The workspace source tree is intentionally group-writable for
-            // collaboration. Place security fixtures in its trusted,
-            // non-group-writable parent so ancestor validation exercises the
-            // success path rather than short-circuiting every test at that
-            // unrelated mode bit.
-            let fixture_parent = manifest.ancestors().nth(4).unwrap();
+            // Keep the fixture below a non-writable, trusted ancestor and
+            // make its own directory explicitly private.  The production
+            // path rejects group/world-writable ancestors; relying on the
+            // host's umask or the collaboration workspace mode would make
+            // these tests fail before exercising the publication contract.
+            // `/tmp` is intentionally sticky/world-writable, while `/run` is
+            // root-owned but not writable by the unprivileged test user.  The
+            // canonical development root is owner-owned and mode 0755, so the
+            // test-only publisher accepts it as its trusted non-root parent.
             let root = tempfile::Builder::new()
                 .prefix(".direct-binding-publisher-test-")
-                .tempdir_in(fixture_parent)
+                .tempdir_in("/data/toshiba-dev")
                 .unwrap();
             fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).unwrap();
             let provider = root.path().join("inbox/codex");

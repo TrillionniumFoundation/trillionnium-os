@@ -15,7 +15,8 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_event_store::{
-    DurableEventStore, EventInput, EventStoreLimits, SyncPolicy, TurnScope as DurableTurnScope,
+    DurableEventStore, EventInput, EventStoreError, EventStoreLimits, SegmentedEventStore,
+    SegmentedEventStoreConfig, SyncPolicy, TurnScope as DurableTurnScope,
 };
 use trillionnium_owner_open_stream_window::{
     ApplyDisposition, BlockedReason, ReserveDisposition, StreamControl, StreamWindow,

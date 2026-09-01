@@ -25,11 +25,14 @@ from owner_open_broker_common import (
 )
 from owner_open_broker_mux import MuxError, ordering_key_for_frame
 from owner_open_broker_runtime import (
+    BROKER_WRITE_TIMEOUT_SECONDS,
     Client,
     Request,
+    canonical_request_frame,
     frame_correlation,
     frame_job_id,
     peer_credentials,
+    send_all_bounded,
 )
 
 
@@ -50,48 +53,73 @@ class BrokerAdmissionMixin:
         supplied_epoch = value.get("broker_epoch")
         if supplied_epoch is not None and supplied_epoch != self.broker_epoch:
             raise BrokerError("broker descriptor epoch is stale")
-        with self.clients_lock:
-            if client_id in self.clients:
-                raise BrokerError("client_id is already connected")
-            if len(self.clients) >= self.args.max_clients:
-                raise BrokerError("broker client limit reached")
-            client = Client(
-                client_id,
-                connection,
-                pid,
-                uid,
-                gid,
-                self.args.client_queue_bytes,
-                self.args.client_queue_frames,
+        client: Client | None = None
+        inserted = False
+        try:
+            with self.clients_lock:
+                if client_id in self.clients:
+                    raise BrokerError("client_id is already connected")
+                if len(self.clients) >= self.args.max_clients:
+                    raise BrokerError("broker client limit reached")
+                client = Client(
+                    client_id,
+                    connection,
+                    pid,
+                    uid,
+                    gid,
+                    self.args.client_queue_bytes,
+                    self.args.client_queue_frames,
+                )
+                self.clients[client_id] = client
+                inserted = True
+
+            # Everything after publication in ``self.clients`` is part of one
+            # admission transaction.  In particular, a scheduler, writer,
+            # descriptor or hello-ack failure must not leave a ghost client
+            # occupying the ID (or a writer holding the socket) forever.
+            if client_id in getattr(self.args, "client_weights", {}):
+                self.mux.set_weight(client_id, self.args.client_weights[client_id])
+            writer = threading.Thread(
+                target=client.writer,
+                daemon=True,
+                name=f"broker-writer-{client_id}",
             )
-            self.clients[client_id] = client
-        if client_id in self.args.client_weights:
-            self.mux.set_weight(client_id, self.args.client_weights[client_id])
-        writer = threading.Thread(
-            target=client.writer,
-            daemon=True,
-            name=f"broker-writer-{client_id}",
-        )
-        writer.start()
-        self.worker_threads.append(writer)
-        if self.descriptor is None or self.host_hello_ack is None:
-            raise BrokerError("broker descriptor is unavailable")
-        client.enqueue(
-            {
+            writer.start()
+            self.worker_threads.append(writer)
+            descriptor = self.descriptor
+            host_hello_ack = self.host_hello_ack
+            if descriptor is None or host_hello_ack is None:
+                raise BrokerError("broker descriptor is unavailable")
+            descriptor_sha256 = descriptor.get("descriptor_sha256")
+            if not isinstance(descriptor_sha256, str) or not descriptor_sha256:
+                raise BrokerError("broker descriptor digest is unavailable")
+            ack = {
                 "schema": WIRE,
                 "kind": "broker.hello.ack",
                 "broker_id": self.args.broker_id,
                 "broker_epoch": self.broker_epoch,
                 "token_epoch": self.token_epoch,
                 "client_id": client_id,
-                "descriptor_sha256": self.descriptor["descriptor_sha256"],
-                "host_hello_ack": self.host_hello_ack,
+                "descriptor_sha256": descriptor_sha256,
+                "host_hello_ack": host_hello_ack,
                 "peer": {"pid": pid, "uid": uid, "gid": gid},
                 "max_inflight_requests": self.args.max_inflight_requests,
                 "automatic_redispatch": False,
             }
-        )
-        return client
+            if not client.enqueue(ack):
+                raise BrokerError("client closed before broker hello ack")
+            return client
+        except BaseException:
+            # ``_client_reader`` cannot see a client when this method raises,
+            # so rollback must happen here.  The identity-aware removal also
+            # prevents a late cleanup from evicting a newer connection that
+            # reused the same client ID.
+            if client is not None:
+                if inserted:
+                    self._remove_client(client)
+                else:
+                    client.close()
+            raise
 
     @staticmethod
     def _request_preimage(
@@ -102,7 +130,11 @@ class BrokerAdmissionMixin:
         ordering_key: str,
     ) -> dict[str, Any]:
         return {
-            "frame": frame,
+            # Hash only reconnect-stable semantic bytes.  Connection-local
+            # cursors/IDs and caller-supplied digests are separately bound by
+            # the accepted audit record and must not turn an exact replay into
+            # a second effect.
+            "frame": canonical_request_frame(frame),
             "expected_kinds": sorted(expected),
             "expected_job_id": expected_job,
             "timeout_ms": timeout_ms,
@@ -322,8 +354,13 @@ class BrokerAdmissionMixin:
                 time.sleep(0.01)
             else:
                 try:
-                    connection.sendall(canonical(failure) + b"\n")
-                except OSError:
+                    send_all_bounded(
+                        connection,
+                        canonical(failure) + b"\n",
+                        timeout_seconds=BROKER_WRITE_TIMEOUT_SECONDS,
+                        label="unauthenticated client error",
+                    )
+                except (OSError, TimeoutError):
                     pass
         finally:
             try:
@@ -331,7 +368,7 @@ class BrokerAdmissionMixin:
             except OSError:
                 pass
             if client:
-                self._remove(client.client_id)
+                self._remove_client(client)
             else:
                 try:
                     connection.close()

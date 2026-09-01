@@ -426,6 +426,12 @@ struct JobDeliveryState {
     announced_gap: Option<(u64, u64)>,
 }
 
+// A source failure may contain filesystem/provider detail that is much larger
+// than a bounded Host frame. Keep the diagnostic finite and retain one
+// fingerprint per job so a polling loop cannot turn a persistent failure into
+// an unbounded stream of duplicate status frames.
+const MAX_SOURCE_ERROR_BYTES: usize = 512;
+
 /// A read-only `job.wait` request that is being serviced by the Host loop.
 ///
 /// Waits deliberately live outside `JobDeliveryState`: the latter tracks the
@@ -489,6 +495,10 @@ fn process_job_host<W: IoWrite>(
     let mut delivery_attached = true;
     let mut delivery_error = None::<String>;
     let mut jobs = HashMap::<JobKey, JobDeliveryState>::new();
+    // Polling failures are state, too: retain only a bounded fingerprint per
+    // job so a persistent registry/journal outage produces one actionable
+    // status frame instead of an unbounded duplicate stream.
+    let mut source_error_fingerprints = HashMap::<JobKey, String>::new();
     let mut pending_waits = VecDeque::<PendingJobWait>::new();
     let mut hello_barrier = HelloJobBarrier::default();
     hello_barrier.configure_control_seq(control_seq, connection_id);
@@ -810,6 +820,7 @@ fn process_job_host<W: IoWrite>(
             poll_job_events(
                 &manager,
                 &mut jobs,
+                &mut source_error_fingerprints,
                 &mut writer,
                 limits.max_frame_bytes,
                 &mut delivery_attached,
@@ -1403,6 +1414,7 @@ fn handle_job_frame<W: IoWrite>(
 fn poll_job_events<W: IoWrite>(
     manager: &JobManager,
     jobs: &mut HashMap<JobKey, JobDeliveryState>,
+    source_error_fingerprints: &mut HashMap<JobKey, String>,
     writer: &mut W,
     max_frame_bytes: usize,
     delivery_attached: &mut bool,
@@ -1419,7 +1431,30 @@ fn poll_job_events<W: IoWrite>(
     for key in keys {
         let snapshot = match manager.registry().snapshot(&key) {
             Ok(snapshot) => snapshot,
-            Err(_) => continue,
+            Err(error) => {
+                let state = jobs.entry(key.clone()).or_insert_with(|| JobDeliveryState {
+                    context: JobContext {
+                        stream_id: job_stream_id(&key),
+                        key: key.clone(),
+                        request_sha256: None,
+                    },
+                    next_wire_seq: 0,
+                    next_runtime_cursor: 0,
+                    announced_gap: None,
+                });
+                announce_source_unavailable(
+                    state,
+                    source_error_fingerprints,
+                    &key,
+                    "registry.snapshot",
+                    &error.to_string(),
+                    writer,
+                    max_frame_bytes,
+                    delivery_attached,
+                    delivery_error,
+                );
+                continue;
+            }
         };
         let state = jobs.entry(key.clone()).or_insert_with(|| JobDeliveryState {
             context: JobContext {
@@ -1433,8 +1468,24 @@ fn poll_job_events<W: IoWrite>(
         });
         let inspection = match manager.inspect(&key, state.next_runtime_cursor, 128) {
             Ok(inspection) => inspection,
-            Err(_) => continue,
+            Err(error) => {
+                announce_source_unavailable(
+                    state,
+                    source_error_fingerprints,
+                    &key,
+                    "manager.inspect",
+                    &error.to_string(),
+                    writer,
+                    max_frame_bytes,
+                    delivery_attached,
+                    delivery_error,
+                );
+                continue;
+            }
         };
+        // A successful read clears the prior diagnostic. If the source fails
+        // again later, a fresh status is useful and will be emitted once.
+        source_error_fingerprints.remove(&key);
         // A retained-observation prefix may have been evicted while the Host
         // was disconnected or back-pressured.  Never emit the first retained
         // event as if it followed the caller's cursor: announce the exact
@@ -1477,6 +1528,105 @@ fn poll_job_events<W: IoWrite>(
         }
         state.next_runtime_cursor = inspection.next_cursor;
     }
+}
+
+/// Emit one bounded, correlated diagnostic when the live job observation
+/// source cannot be read. Polling is intentionally best-effort, but silently
+/// dropping a registry/journal failure makes a client mistake missing data
+/// for an idle job. The fingerprint map is capped and stores only a digest,
+/// so a persistent failure cannot grow Host memory or output without bound.
+#[allow(clippy::too_many_arguments)]
+fn announce_source_unavailable<W: IoWrite>(
+    state: &mut JobDeliveryState,
+    fingerprints: &mut HashMap<JobKey, String>,
+    key: &JobKey,
+    source: &str,
+    error: &str,
+    writer: &mut W,
+    max_frame_bytes: usize,
+    delivery_attached: &mut bool,
+    delivery_error: &mut Option<String>,
+) {
+    let fingerprint = format!("{source}:{}", sha256_hex(error.as_bytes()));
+    if fingerprints.get(key) == Some(&fingerprint) {
+        return;
+    }
+
+    // Keep at most one diagnostic fingerprint per bounded job population. A
+    // deterministic lexical eviction avoids making output/order depend on
+    // HashMap iteration randomization if a pathological registry exceeds the
+    // diagnostic budget.
+    const MAX_SOURCE_ERROR_FINGERPRINTS: usize = 256;
+    if !fingerprints.contains_key(key) && fingerprints.len() >= MAX_SOURCE_ERROR_FINGERPRINTS {
+        let evicted = fingerprints
+            .keys()
+            .min_by_key(|candidate| {
+                (
+                    candidate.scope.session_id.as_str(),
+                    candidate.scope.profile_id.as_str(),
+                    candidate.scope.task_id.as_str(),
+                    candidate.scope.turn_id.as_str(),
+                    candidate.scope.turn_stream_id.as_str(),
+                    candidate.job_id.as_str(),
+                )
+            })
+            .cloned();
+        if let Some(evicted) = evicted {
+            fingerprints.remove(&evicted);
+        }
+    }
+    fingerprints.insert(key.clone(), fingerprint);
+
+    let bounded_error = bounded_source_error(error);
+    let discriminator = format!(
+        "source-unavailable-{source}-{}",
+        sha256_hex(error.as_bytes())
+    );
+    let frame = response_frame(
+        state,
+        FRAME_JOB_STATUS,
+        &discriminator,
+        json!({
+            "status": "source_unavailable",
+            "source": source,
+            "error": bounded_error.clone(),
+            "degraded": true,
+            "runtime_cursor_domain": RUNTIME_CURSOR_DOMAIN,
+            "requested_inclusive_cursor": state.next_runtime_cursor,
+            "next_cursor": state.next_runtime_cursor,
+            // The source could not be verified, so advertise the conservative
+            // non-durable state. Consumers (including the transport
+            // readiness gate) must not infer replayability from an absent
+            // journal error field.
+            "event_log_status": "unavailable",
+            "durable_fallback_available": false,
+            "journal_error": bounded_error,
+            "read_only": true,
+            "side_effects": false,
+            "automatic_redispatch": false
+        }),
+    );
+    deliver_job_frame(
+        writer,
+        &frame,
+        max_frame_bytes,
+        delivery_attached,
+        delivery_error,
+    );
+}
+
+fn bounded_source_error(error: &str) -> String {
+    if error.len() <= MAX_SOURCE_ERROR_BYTES {
+        return error.to_string();
+    }
+    // Reserve room for an ASCII truncation marker and cut only at a UTF-8
+    // boundary. Error text is diagnostic, never an input to authorization.
+    const MARKER: &str = "...";
+    let mut end = MAX_SOURCE_ERROR_BYTES.saturating_sub(MARKER.len());
+    while end > 0 && !error.is_char_boundary(end) {
+        end -= 1;
+    }
+    format!("{}{}", &error[..end], MARKER)
 }
 
 /// Poll all admitted `job.wait` requests without blocking the multiplexed
@@ -1685,16 +1835,13 @@ fn classify_wait_status(
     if terminal_event || terminal_snapshot || recovered_terminal {
         return Some("terminal_observed");
     }
-    // A caller should still receive newly observed in-memory events when the
-    // durable journal is degraded. The response carries the exact
-    // `event_log_status`, so the caller can distinguish an event observation
-    // from a replayable one without losing useful runtime truth.
-    if inspection.resync_required
-        || inspection.gap.is_some()
-        || !inspection.runtime_events.is_empty()
-    {
-        return Some("event_observed");
-    }
+    // `job.wait` is a terminal long-poll, not a replacement for the bounded
+    // event page returned by `job.inspect`.  Intermediate started/output
+    // observations must therefore be retained in `last_inspection` and
+    // polled again; otherwise a fast producer can wake the waiter before its
+    // terminal record is visible and make a request named "wait" return an
+    // arbitrarily early event.  Resync/degraded outcomes below remain
+    // explicit bounded wake-ups because replay truth cannot be obtained.
     let degraded_snapshot = inspection.snapshot.as_ref().is_some_and(|snapshot| {
         matches!(
             snapshot.state,
@@ -2593,6 +2740,76 @@ mod process_tests {
         assert_eq!(frame.kind, "job.error");
         assert_eq!(frame.payload["code"], "hello_ack_unavailable");
         assert_eq!(frame.payload["automatic_redispatch"], false);
+    }
+
+    #[test]
+    fn source_unavailable_status_is_bounded_and_deduplicated() {
+        let context = test_context("job-source-error");
+        let key = context.key.clone();
+        let mut state = JobDeliveryState {
+            context,
+            next_wire_seq: 0,
+            next_runtime_cursor: 17,
+            announced_gap: None,
+        };
+        let mut fingerprints = HashMap::new();
+        let mut writer = CaptureWriter(Vec::new());
+        let mut attached = true;
+        let mut delivery_error = None;
+        let long_error = "界".repeat(MAX_SOURCE_ERROR_BYTES);
+
+        announce_source_unavailable(
+            &mut state,
+            &mut fingerprints,
+            &key,
+            "manager.inspect",
+            &long_error,
+            &mut writer,
+            1024 * 1024,
+            &mut attached,
+            &mut delivery_error,
+        );
+        // Repeating the same source/error must not wake the client again.
+        announce_source_unavailable(
+            &mut state,
+            &mut fingerprints,
+            &key,
+            "manager.inspect",
+            &long_error,
+            &mut writer,
+            1024 * 1024,
+            &mut attached,
+            &mut delivery_error,
+        );
+        assert!(attached);
+        assert!(delivery_error.is_none());
+        assert_eq!(state.next_wire_seq, 1);
+        assert_eq!(fingerprints.len(), 1);
+        let line = writer.0.strip_suffix(b"\n").expect("status newline");
+        let frame: RunTurnFrame = serde_json::from_slice(line).expect("status frame");
+        assert_eq!(frame.kind, FRAME_JOB_STATUS);
+        assert_eq!(frame.payload["status"], "source_unavailable");
+        assert_eq!(frame.payload["source"], "manager.inspect");
+        assert_eq!(frame.payload["degraded"], true);
+        assert_eq!(frame.payload["requested_inclusive_cursor"], 17);
+        assert_eq!(frame.payload["event_log_status"], "unavailable");
+        assert_eq!(frame.payload["durable_fallback_available"], false);
+        assert!(frame.payload["error"].as_str().unwrap().len() <= MAX_SOURCE_ERROR_BYTES);
+
+        // A changed source error is a new diagnostic, but still one frame.
+        announce_source_unavailable(
+            &mut state,
+            &mut fingerprints,
+            &key,
+            "registry.snapshot",
+            "different bounded error",
+            &mut writer,
+            1024 * 1024,
+            &mut attached,
+            &mut delivery_error,
+        );
+        assert_eq!(state.next_wire_seq, 2);
+        assert_eq!(writer.0.iter().filter(|byte| **byte == b'\n').count(), 2);
     }
 
     fn test_context(job_id: &str) -> JobContext {

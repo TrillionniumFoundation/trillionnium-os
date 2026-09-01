@@ -463,13 +463,14 @@ struct TransportHandshake {
     /// duplicated/late acceptance instead of allocating a second wire
     /// sequence or reopening broker routing.
     turn_accepted_seen: bool,
-    /// Broker envelopes for requests whose core acknowledgement has not yet
-    /// crossed the transport barrier.  The normal router can discover these
-    /// bindings from correlated core frames, but EOF, malformed core bytes,
-    /// and bounded-queue overflow have no frame for the router to inspect.
-    /// Retaining the envelopes here lets those terminal errors still resolve
+    /// Broker envelopes retained across the handshake and turn lifecycles.
+    /// The normal router can discover these bindings from correlated core
+    /// frames, but EOF, malformed core bytes, bounded-queue overflow, and a
+    /// digest-less `turn.end` have no sufficient frame identity to inspect.
+    /// Retaining the envelopes here lets those terminal paths still resolve
     /// the exact upstream request instead of becoming an uncorrelated stream
-    /// error.
+    /// error. `turn_binding` is released by `finish_turn` after the terminal
+    /// generation is retired.
     hello_binding: Option<BrokerRequestBinding>,
     turn_binding: Option<BrokerRequestBinding>,
     /// A negative pre-accept turn resolver closes that turn generation.  Core
@@ -745,7 +746,10 @@ impl TransportHandshake {
         self.turn_accepted_seen = true;
         self.turn_pending = false;
         self.state = TransportHandshakeState::Open;
-        self.turn_binding = None;
+        // Keep the immutable broker tuple for the lifetime of the accepted
+        // turn.  A legacy core may omit `request_sha256` on `turn.end`; the
+        // terminal path then needs this exact identity to retire the active
+        // router intent without deleting an identical same-scope retry.
         self.drop_late_turn_core = false;
         self.take_deferred()
     }
@@ -1374,6 +1378,29 @@ mod handshake_tests {
         // actions; callers must snapshot them before emitting the failure.
         let _ = handshake.fail();
         assert!(handshake.hello_binding().is_none());
+        assert!(handshake.turn_binding().is_none());
+    }
+
+    #[test]
+    fn accepted_turn_retains_binding_until_terminal_cleanup() {
+        let turn = BrokerRequestBinding {
+            request_id: "accepted-turn".to_string(),
+            request_sha256: "c".repeat(64),
+            upstream_seq: 9,
+        };
+        let mut handshake = TransportHandshake::default();
+        handshake.begin_turn().expect("turn gate opens");
+        handshake.retain_turn_binding(Some(turn.clone()));
+
+        let released = handshake.release_after_turn_accept();
+        assert!(released.is_empty());
+        assert_eq!(
+            handshake.turn_binding(),
+            Some(&turn),
+            "accepted turns need the exact tuple for a digest-less terminal"
+        );
+
+        handshake.finish_turn(None);
         assert!(handshake.turn_binding().is_none());
     }
 

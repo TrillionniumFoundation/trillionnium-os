@@ -30,6 +30,7 @@ _JOB_KINDS = frozenset(
     {
         "job.start",
         "job.inspect",
+        "job.wait",
         "job.attach",
         "job.detach",
         "job.write",

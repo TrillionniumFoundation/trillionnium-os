@@ -84,6 +84,30 @@ class OrderingKeyTest(unittest.TestCase):
         )
         self.assertEqual(first, second)
 
+    def test_job_wait_uses_the_same_job_scope_as_inspect(self) -> None:
+        # ``job.wait`` is a read-only job operation (the stdio client maps its
+        # terminal to ``job.inspect.result``), so it must share the complete
+        # job fence without requiring an operation_id.  Leaving it out of the
+        # mux's known job family would fail closed as an unsupported partial
+        # lineage and make the client mapping unusable.
+        scope = {
+            "session_id": "session-a",
+            "profile_id": "profile-a",
+            "task_id": "task-a",
+            "turn_id": "turn-a",
+            "turn_stream_id": "stream-a",
+            "job_id": "job-a",
+        }
+        wait_key = ordering_key_for_frame(
+            {"kind": "job.wait", "payload": scope},
+            "client-a",
+        )
+        inspect_key = ordering_key_for_frame(
+            {"kind": "job.inspect", "payload": scope},
+            "client-b",
+        )
+        self.assertEqual(wait_key, inspect_key)
+
     def test_conflicting_mirror_fails_closed(self) -> None:
         with self.assertRaises(MuxError):
             ordering_key_for_frame(

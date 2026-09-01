@@ -26,6 +26,47 @@ MAX_AUDIT_LINE_BYTES = 2 * 1024 * 1024
 STAGES = {"broker.accepted", "broker.forwarded", "broker.terminal"}
 
 
+def _regular_path_metadata(path: Path, label: str) -> os.stat_result | None:
+    """Inspect a journal pathname without following a symlink."""
+    try:
+        metadata = path.lstat()
+    except FileNotFoundError:
+        return None
+    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISREG(metadata.st_mode):
+        raise BrokerError(f"{label} path must be a regular non-symlink file")
+    return metadata
+
+
+def _validate_opened_path_identity(
+    path: Path,
+    before: os.stat_result | None,
+    descriptor: int,
+    label: str,
+) -> tuple[os.stat_result, os.stat_result]:
+    """Require the opened FD and pathname to identify the same inode.
+
+    ``O_NOFOLLOW`` handles symlinks, but a same-UID rename/recreate can still
+    substitute an ordinary file between an ``lstat`` and ``open``.  Checking
+    ``st_dev``/``st_ino`` both before and after opening makes that transition
+    fail closed.
+    """
+    opened = os.fstat(descriptor)
+    if before is not None and (opened.st_dev, opened.st_ino) != (
+        before.st_dev,
+        before.st_ino,
+    ):
+        raise BrokerError(f"{label} inode changed between pathname validation and open")
+    try:
+        current = path.lstat()
+    except FileNotFoundError as error:
+        raise BrokerError(f"{label} pathname disappeared while opening") from error
+    if stat.S_ISLNK(current.st_mode) or not stat.S_ISREG(current.st_mode):
+        raise BrokerError(f"{label} pathname is not a regular non-symlink file")
+    if (current.st_dev, current.st_ino) != (opened.st_dev, opened.st_ino):
+        raise BrokerError(f"{label} pathname does not identify the opened inode")
+    return opened, current
+
+
 @dataclass
 class AuditBinding:
     client_id: str
@@ -60,6 +101,22 @@ class BrokerAuditJournal:
         maximum_records: int = MAX_AUDIT_RECORDS,
     ) -> None:
         validate_private_parent(path, "broker audit")
+        if (
+            isinstance(maximum_bytes, bool)
+            or not isinstance(maximum_bytes, int)
+            or not 1 <= maximum_bytes <= MAX_AUDIT_BYTES
+        ):
+            raise BrokerError(
+                f"broker audit byte bound must be between 1 and {MAX_AUDIT_BYTES}"
+            )
+        if (
+            isinstance(maximum_records, bool)
+            or not isinstance(maximum_records, int)
+            or not 1 <= maximum_records <= MAX_AUDIT_RECORDS
+        ):
+            raise BrokerError(
+                f"broker audit record bound must be between 1 and {MAX_AUDIT_RECORDS}"
+            )
         self.path = path
         self.broker_id = broker_id
         self.maximum_bytes = maximum_bytes
@@ -71,25 +128,45 @@ class BrokerAuditJournal:
         self._previous_sha256 = ZERO_SHA256
         self._bytes = 0
         self._highest_upstream_seq = 0
-        self._created = not path.exists()
-        flags = (
-            os.O_RDWR
-            | os.O_APPEND
-            | os.O_CREAT
-            | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0)
+        path_before = _regular_path_metadata(path, "broker audit")
+        flags = os.O_RDWR | os.O_APPEND | getattr(os, "O_CLOEXEC", 0) | getattr(
+            os, "O_NOFOLLOW", 0
         )
-        self._fd = os.open(path, flags, 0o600)
         try:
+            opened = os.open(path, flags | os.O_CREAT | os.O_EXCL, 0o600)
+            try:
+                os.fchmod(opened, 0o600)
+            except OSError:
+                os.close(opened)
+                raise
+            self._fd = opened
+            self._created = True
+            identity_before: os.stat_result | None = None
+        except FileExistsError:
+            # A concurrent opener may win the create race.  Snapshot the inode
+            # immediately before reopening it and require the descriptor to
+            # identify that exact inode below.
+            identity_before = path_before or _regular_path_metadata(path, "broker audit")
+            if identity_before is None:
+                raise BrokerError("broker audit disappeared after create race")
+            self._fd = os.open(path, flags)
+            self._created = False
+        try:
+            _validate_opened_path_identity(path, identity_before, self._fd, "broker audit")
             fcntl.flock(self._fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             self._validate_metadata()
+            # Re-check after acquiring the lease.  A pathname replacement
+            # while flock was being acquired must not leave the journal
+            # believing its lease protects the current pathname.
+            _validate_opened_path_identity(path, identity_before, self._fd, "broker audit")
             self._load()
             if self._created:
                 directory = os.open(
                     path.parent,
                     os.O_RDONLY
                     | getattr(os, "O_DIRECTORY", 0)
-                    | getattr(os, "O_CLOEXEC", 0),
+                    | getattr(os, "O_CLOEXEC", 0)
+                    | getattr(os, "O_NOFOLLOW", 0),
                 )
                 try:
                     os.fsync(directory)

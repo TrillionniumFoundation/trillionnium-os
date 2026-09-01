@@ -35,7 +35,11 @@ pub(crate) fn run() -> Result<(), String> {
     })
     .map_err(|error| error.to_string())?;
 
-    let mut persistence = Persistence::open_best_effort(parsed.base.event_store.as_deref());
+    // G1's selected v7 product path uses the indexed segmented turn journal.
+    // The historical JSONL path is accepted only as an idempotent migration
+    // source; all new authority records go to the sibling segmented root.
+    let mut persistence =
+        Persistence::open_best_effort_segmented_path(parsed.base.event_store.as_deref());
     let derived_job_store = parsed.job_store.or_else(|| {
         parsed.base.event_store.as_ref().map(|path| {
             let mut derived = path.clone();
@@ -47,7 +51,11 @@ pub(crate) fn run() -> Result<(), String> {
             derived
         })
     });
-    let manager = JobManager::open(
+    // The v7 product path is the G1 segmented/indexed journal path.  Keep the
+    // explicit v1 constructor available for rolling compatibility in older
+    // binaries, but do not silently route the selected product entrypoint
+    // back through the single-file global writer hotspot.
+    let manager = JobManager::open_segmented(
         JobRuntimeConfig {
             allow_unjournaled_effects: parsed.allow_unjournaled_effects,
             ..JobRuntimeConfig::default()

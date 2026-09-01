@@ -6,7 +6,7 @@ use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::path::Path;
 use std::process::{Child, ChildStdin, Command, ExitStatus, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::mpsc::{Receiver, SyncSender, sync_channel};
+use std::sync::mpsc::{Receiver, SyncSender, TrySendError, sync_channel};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
@@ -22,6 +22,11 @@ const DESCENDANT_TERM_GRACE: Duration = Duration::from_millis(100);
 const DESCENDANT_KILL_GRACE: Duration = Duration::from_millis(100);
 const SPAWN_GUARD_REAP_GRACE: Duration = Duration::from_millis(500);
 const PROCESS_GROUP_SCAN_BUDGET: Duration = Duration::from_millis(500);
+const PROCESS_GROUP_PROOF_RETRY_BUDGET: Duration = Duration::from_secs(1);
+const PROCESS_GROUP_PROOF_RETRY_DELAY: Duration = Duration::from_millis(5);
+const READER_POLL_INTERVAL: Duration = Duration::from_millis(50);
+const WORKER_NATURAL_JOIN_GRACE: Duration = Duration::from_millis(250);
+const WORKER_CANCEL_JOIN_GRACE: Duration = Duration::from_secs(2);
 // Only pass through the small set of mechanical process settings that the
 // owner-open contract names.  Credentials, agent tokens and arbitrary host
 // state must never leak into a durable job merely because the Host inherited
@@ -94,6 +99,42 @@ pub(crate) struct SpawnedProcess {
     pub events: Receiver<InternalProcessEvent>,
 }
 
+/// A process-I/O worker together with a cooperative stop flag.  Reader
+/// workers poll their descriptor, so setting the flag is sufficient to
+/// unblock a worker even when an untrusted descendant kept the inherited pipe
+/// open after cleanup could not be proven.  The initial-stdin worker also
+/// observes the flag before entering its bounded write helper.
+struct ProcessWorker {
+    handle: Option<JoinHandle<()>>,
+    stop: Arc<AtomicBool>,
+}
+
+impl ProcessWorker {
+    fn is_finished(&self) -> bool {
+        self.handle.as_ref().is_none_or(JoinHandle::is_finished)
+    }
+
+    fn join(mut self) -> thread::Result<()> {
+        self.handle
+            .take()
+            .expect("job worker handle is present before join")
+            .join()
+    }
+
+    fn request_stop(&self) {
+        self.stop.store(true, Ordering::Release);
+    }
+}
+
+impl Drop for ProcessWorker {
+    fn drop(&mut self) {
+        // Early setup failures can drop a worker before the reaper owns the
+        // full worker set. Request cooperative shutdown so a polling reader
+        // does not remain detached with an inherited descriptor.
+        self.request_stop();
+    }
+}
+
 struct SpawnGuard {
     child: Option<Child>,
     pid: u32,
@@ -144,8 +185,14 @@ impl Drop for SpawnGuard {
         // identity capture itself failed.  A PID is not proof of its current
         // process group and may have been recycled; in that state the exact
         // `Child` handle below is the only safe cleanup primitive.
-        if let Some(process_group) = guarded_group_signal_target(self.identity.as_ref()) {
-            let _ = send_process_group_signal(process_group, libc::SIGKILL);
+        if guarded_group_signal_target(self.identity.as_ref()).is_some()
+            && let Some(identity) = self.identity.as_ref()
+        {
+            // The target probe above is only a cheap preflight.  Revalidate
+            // the complete generation/PGID/SID binding in the helper directly
+            // before the group syscall so a delayed Drop cannot broadcast to
+            // a recycled process group.
+            let _ = send_bound_process_group_signal(identity, libc::SIGKILL);
         }
         let _ = child.kill();
 
@@ -268,7 +315,7 @@ impl ProcessControl {
                 }
             }
         }
-        send_process_group_signal(identity.process_group, signal).map_err(JobRuntimeError::Control)
+        send_bound_process_group_signal(&identity, signal).map_err(JobRuntimeError::Control)
     }
 
     pub(crate) fn identity(&self) -> ProcessIdentity {
@@ -688,13 +735,18 @@ fn spawn_initial_writer(
     input: Arc<Mutex<Option<InputHandle>>>,
     bytes: Vec<u8>,
     sender: SyncSender<InternalProcessEvent>,
-) -> Result<Option<JoinHandle<()>>> {
+) -> Result<Option<ProcessWorker>> {
     if bytes.is_empty() {
         return Ok(None);
     }
-    thread::Builder::new()
+    let stop = Arc::new(AtomicBool::new(false));
+    let worker_stop = Arc::clone(&stop);
+    let handle = thread::Builder::new()
         .name("owner-open-job-initial-stdin".to_string())
         .spawn(move || {
+            if worker_stop.load(Ordering::Acquire) {
+                return;
+            }
             let result = match input.lock() {
                 Ok(mut guard) => match guard.as_mut() {
                     Some(handle) => write_input(handle, &bytes),
@@ -703,15 +755,22 @@ fn spawn_initial_writer(
                 Err(_) => Err(JobRuntimeError::StatePoisoned),
             };
             if let Err(error) = result {
-                let _ = sender.send(InternalProcessEvent::InputFailed {
-                    error: error.to_string(),
-                });
+                let _ = send_process_event(
+                    &sender,
+                    InternalProcessEvent::InputFailed {
+                        error: error.to_string(),
+                    },
+                    &worker_stop,
+                );
             }
         })
-        .map(Some)
         .map_err(|error| {
             JobRuntimeError::Io(format!("failed to spawn initial stdin writer: {error}"))
-        })
+        })?;
+    Ok(Some(ProcessWorker {
+        handle: Some(handle),
+        stop,
+    }))
 }
 
 fn open_pty(size: PtySize) -> Result<(File, File)> {
@@ -952,10 +1011,29 @@ fn ensure_bound_process_group(identity: &ProcessIdentity) -> std::result::Result
         // observable.  If a recycled PGID has no such member, refuse the
         // broadcast and report cleanup uncertainty instead of risking an
         // unrelated process group.
-        if process_group_exists(identity.process_group)?
-            && !bound_process_group_has_member(identity)?
-        {
-            return Err("process-group identity cannot be proven after leader exit".to_string());
+        if process_group_exists(identity.process_group)? {
+            let deadline = Instant::now()
+                .checked_add(PROCESS_GROUP_PROOF_RETRY_BUDGET)
+                .unwrap_or_else(Instant::now);
+            let mut last_error =
+                "process-group identity cannot be proven after leader exit".to_string();
+            loop {
+                match bound_process_group_has_member(identity) {
+                    Ok(true) => return Ok(()),
+                    Ok(false) => {}
+                    Err(error) => last_error = error,
+                }
+                if Instant::now() >= deadline {
+                    return Err(last_error);
+                }
+                thread::sleep(PROCESS_GROUP_PROOF_RETRY_DELAY);
+                // A group can disappear while the scan is in progress.  In
+                // that case there is nothing left to signal and the cleanup
+                // proof succeeds idempotently.
+                if !process_group_exists(identity.process_group)? {
+                    return Ok(());
+                }
+            }
         }
         return Ok(());
     };
@@ -989,8 +1067,8 @@ fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Re
         if pid == identity.pid {
             continue;
         }
-        match read_proc_stat_identity(pid) {
-            Ok(Some((_start_time, process_group, session_id)))
+        match read_proc_group_identity(pid) {
+            Ok(Some((process_group, session_id)))
                 if process_group == identity.process_group && session_id == identity.session_id =>
             {
                 return Ok(true);
@@ -1010,6 +1088,46 @@ fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Re
     Ok(false)
 }
 
+/// Read only the process-group/session fields needed while proving that a
+/// bound group still has a member after its leader has exited.
+///
+/// `/proc` also exposes kernel worker threads.  Their stat records use zero
+/// for both pgrp and session, which is not a valid userspace process-group
+/// identity and must not abort an otherwise valid scan.  Keep the strict
+/// [`read_proc_stat_identity`] parser for the leader-generation checks; this
+/// tolerant projection skips those known non-candidates while still
+/// propagating malformed records for real processes.
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn read_proc_group_identity(pid: u32) -> std::io::Result<Option<(u32, u32)>> {
+    let stat = match fs::read_to_string(format!("/proc/{pid}/stat")) {
+        Ok(stat) => stat,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    let command_end = stat
+        .rfind(')')
+        .ok_or_else(|| std::io::Error::other("proc stat omitted command terminator"))?;
+    let fields = stat
+        .get(command_end + 1..)
+        .ok_or_else(|| std::io::Error::other("proc stat is truncated"))?
+        .split_ascii_whitespace()
+        .collect::<Vec<_>>();
+    let process_group = fields
+        .get(2)
+        .ok_or_else(|| std::io::Error::other("proc stat omitted process group"))?
+        .parse::<u32>()
+        .map_err(|_| std::io::Error::other("proc stat process group is invalid"))?;
+    let session_id = fields
+        .get(3)
+        .ok_or_else(|| std::io::Error::other("proc stat omitted session id"))?
+        .parse::<u32>()
+        .map_err(|_| std::io::Error::other("proc stat session id is invalid"))?;
+    if process_group == 0 || session_id == 0 {
+        return Ok(None);
+    }
+    Ok(Some((process_group, session_id)))
+}
+
 #[cfg(not(any(target_os = "linux", target_os = "android")))]
 fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Result<bool, String> {
     process_group_exists(identity.process_group)
@@ -1020,25 +1138,75 @@ fn spawn_reader<R>(
     stream: &'static str,
     maximum_chunk: usize,
     sender: SyncSender<InternalProcessEvent>,
-) -> Result<JoinHandle<()>>
+) -> Result<ProcessWorker>
 where
-    R: Read + Send + 'static,
+    R: Read + AsRawFd + Send + 'static,
 {
-    thread::Builder::new()
+    let stop = Arc::new(AtomicBool::new(false));
+    let worker_stop = Arc::clone(&stop);
+    let handle = thread::Builder::new()
         .name(format!("owner-open-job-{stream}"))
         .spawn(move || {
             let mut buffer = vec![0_u8; maximum_chunk];
             loop {
+                if worker_stop.load(Ordering::Acquire) {
+                    return;
+                }
+                // Do not block forever in Read::read when a descendant keeps
+                // an inherited output descriptor open.  Polling with a short
+                // bound lets the reaper request cooperative shutdown and
+                // still drains normal output as it arrives.
+                let mut poll_fd = libc::pollfd {
+                    fd: reader.as_raw_fd(),
+                    events: libc::POLLIN | libc::POLLHUP | libc::POLLERR,
+                    revents: 0,
+                };
+                let timeout_ms =
+                    READER_POLL_INTERVAL.as_millis().clamp(1, i32::MAX as u128) as libc::c_int;
+                let polled = unsafe { libc::poll(&mut poll_fd, 1, timeout_ms) };
+                if polled < 0 {
+                    let error = std::io::Error::last_os_error();
+                    if error.raw_os_error() == Some(libc::EINTR) {
+                        continue;
+                    }
+                    let _ = send_process_event(
+                        &sender,
+                        InternalProcessEvent::ReaderFailed {
+                            stream: stream.to_string(),
+                            error: error.to_string(),
+                        },
+                        &worker_stop,
+                    );
+                    return;
+                }
+                if polled == 0 {
+                    continue;
+                }
+                if worker_stop.load(Ordering::Acquire) {
+                    return;
+                }
+                if poll_fd.revents & libc::POLLNVAL != 0 {
+                    let _ = send_process_event(
+                        &sender,
+                        InternalProcessEvent::ReaderFailed {
+                            stream: stream.to_string(),
+                            error: "output descriptor became invalid".to_string(),
+                        },
+                        &worker_stop,
+                    );
+                    return;
+                }
                 match reader.read(&mut buffer) {
                     Ok(0) => return,
                     Ok(read) => {
-                        if sender
-                            .send(InternalProcessEvent::Output {
+                        if !send_process_event(
+                            &sender,
+                            InternalProcessEvent::Output {
                                 stream: stream.to_string(),
                                 bytes: buffer[..read].to_vec(),
-                            })
-                            .is_err()
-                        {
+                            },
+                            &worker_stop,
+                        ) {
                             return;
                         }
                     }
@@ -1047,21 +1215,54 @@ where
                         return;
                     }
                     Err(error) => {
-                        let _ = sender.send(InternalProcessEvent::ReaderFailed {
-                            stream: stream.to_string(),
-                            error: error.to_string(),
-                        });
+                        let _ = send_process_event(
+                            &sender,
+                            InternalProcessEvent::ReaderFailed {
+                                stream: stream.to_string(),
+                                error: error.to_string(),
+                            },
+                            &worker_stop,
+                        );
                         return;
                     }
                 }
             }
         })
-        .map_err(|error| JobRuntimeError::Io(format!("failed to spawn {stream} reader: {error}")))
+        .map_err(|error| {
+            JobRuntimeError::Io(format!("failed to spawn {stream} reader: {error}"))
+        })?;
+    Ok(ProcessWorker {
+        handle: Some(handle),
+        stop,
+    })
+}
+
+/// Send a process event without allowing a full bounded queue to strand the
+/// reader. The stop flag is checked between finite `try_send` attempts so the
+/// reaper can always release workers during cleanup.
+fn send_process_event(
+    sender: &SyncSender<InternalProcessEvent>,
+    mut event: InternalProcessEvent,
+    stop: &AtomicBool,
+) -> bool {
+    loop {
+        match sender.try_send(event) {
+            Ok(()) => return true,
+            Err(TrySendError::Disconnected(_)) => return false,
+            Err(TrySendError::Full(returned)) => {
+                event = returned;
+                if stop.load(Ordering::Acquire) {
+                    return false;
+                }
+                thread::sleep(Duration::from_millis(5));
+            }
+        }
+    }
 }
 
 fn spawn_reaper(
     guard: SpawnGuard,
-    workers: Vec<JoinHandle<()>>,
+    workers: Vec<ProcessWorker>,
     sender: SyncSender<InternalProcessEvent>,
 ) -> Result<()> {
     let pid = guard.pid;
@@ -1077,16 +1278,17 @@ fn spawn_reaper(
             if let Err(error) = cleanup_process_group(&identity) {
                 cleanup_errors.push(error);
             }
-            for worker in workers {
-                if worker.join().is_err() {
-                    cleanup_errors.push("job I/O worker panicked".to_string());
-                }
-            }
+            cleanup_errors.extend(join_workers_bounded(workers));
             let cleanup_error = (!cleanup_errors.is_empty()).then(|| cleanup_errors.join("; "));
             let event = match status {
                 Ok(status) => InternalProcessEvent::Exited {
                     terminal_kind: if cleanup_error.is_some() {
-                        "cleanup_uncertain".to_string()
+                        // Keep the effect outcome (`exited`/`signaled`) and
+                        // cleanup uncertainty in the normative terminal
+                        // vocabulary.  The cleanup detail remains in the
+                        // separate `cleanup_error` field and must not be
+                        // hidden behind an implementation-specific label.
+                        "unknown_after_cleanup_failure".to_string()
                     } else if status.signal().is_some() {
                         "signaled".to_string()
                     } else {
@@ -1112,12 +1314,84 @@ fn spawn_reaper(
         .map_err(|error| JobRuntimeError::Io(format!("failed to spawn job reaper: {error}")))
 }
 
+/// Join process-I/O workers without allowing a descendant-owned descriptor to
+/// wedge the lifecycle forever.  Workers first get a short natural-drain
+/// window; anything still running is asked to stop and gets a bounded second
+/// window.  A worker that ignores cancellation is detached and the terminal
+/// event carries an explicit cleanup error, preserving truthful uncertainty.
+fn join_workers_bounded(mut workers: Vec<ProcessWorker>) -> Vec<String> {
+    let mut errors = Vec::new();
+    let natural_deadline = Instant::now()
+        .checked_add(WORKER_NATURAL_JOIN_GRACE)
+        .unwrap_or_else(Instant::now);
+    let mut pending = Vec::new();
+    for worker in workers.drain(..) {
+        if worker.is_finished() {
+            if worker.join().is_err() {
+                errors.push("job I/O worker panicked".to_string());
+            }
+        } else {
+            pending.push(worker);
+        }
+    }
+    while !pending.is_empty() && Instant::now() < natural_deadline {
+        let mut still_pending = Vec::with_capacity(pending.len());
+        for worker in pending {
+            if worker.is_finished() {
+                if worker.join().is_err() {
+                    errors.push("job I/O worker panicked".to_string());
+                }
+            } else {
+                still_pending.push(worker);
+            }
+        }
+        pending = still_pending;
+        if !pending.is_empty() {
+            thread::sleep(Duration::from_millis(5));
+        }
+    }
+    if pending.is_empty() {
+        return errors;
+    }
+
+    for worker in &pending {
+        worker.request_stop();
+    }
+    let cancel_deadline = Instant::now()
+        .checked_add(WORKER_CANCEL_JOIN_GRACE)
+        .unwrap_or_else(Instant::now);
+    while !pending.is_empty() && Instant::now() < cancel_deadline {
+        let mut still_pending = Vec::with_capacity(pending.len());
+        for worker in pending {
+            if worker.is_finished() {
+                if worker.join().is_err() {
+                    errors.push("job I/O worker panicked".to_string());
+                }
+            } else {
+                still_pending.push(worker);
+            }
+        }
+        pending = still_pending;
+        if !pending.is_empty() {
+            thread::sleep(Duration::from_millis(10));
+        }
+    }
+    for worker in pending {
+        // Dropping the handle detaches only after the finite cancellation
+        // window.  The worker's stop flag remains set; readers poll their fd,
+        // and the initial writer's write helper has its own finite timeout.
+        errors.push("job I/O worker did not stop within bounded cleanup grace".to_string());
+        drop(worker);
+    }
+    errors
+}
+
 fn cleanup_process_group(identity: &ProcessIdentity) -> std::result::Result<(), String> {
     ensure_bound_process_group(identity)?;
     if !process_group_exists(identity.process_group)? {
         return Ok(());
     }
-    send_process_group_signal(identity.process_group, libc::SIGTERM)?;
+    send_bound_process_group_signal(identity, libc::SIGTERM)?;
     let term_deadline = Instant::now()
         .checked_add(DESCENDANT_TERM_GRACE)
         .unwrap_or_else(Instant::now);
@@ -1131,7 +1405,7 @@ fn cleanup_process_group(identity: &ProcessIdentity) -> std::result::Result<(), 
     // escalation.  A bare PGID probe here would permit a recycled group to be
     // killed after the original descendants had already disappeared.
     ensure_bound_process_group(identity)?;
-    send_process_group_signal(identity.process_group, libc::SIGKILL)?;
+    send_bound_process_group_signal(identity, libc::SIGKILL)?;
     let kill_deadline = Instant::now()
         .checked_add(DESCENDANT_KILL_GRACE)
         .unwrap_or_else(Instant::now);
@@ -1176,6 +1450,20 @@ fn send_process_group_signal(process_group: u32, signal: i32) -> std::result::Re
     } else {
         Err(format!("process group signal {signal} failed: {error}"))
     }
+}
+
+/// Recheck the complete bound process identity immediately before issuing a
+/// process-group signal.  POSIX exposes only a numeric PGID for `kill(2)`, so
+/// the check and syscall cannot be made one kernel-atomic operation; keeping
+/// them in one helper makes every owner-open group signal take the narrowest
+/// possible, fail-closed path and avoids callers accidentally skipping the
+/// final generation check.
+fn send_bound_process_group_signal(
+    identity: &ProcessIdentity,
+    signal: i32,
+) -> std::result::Result<(), String> {
+    ensure_bound_process_group(identity)?;
+    send_process_group_signal(identity.process_group, signal)
 }
 
 #[cfg(test)]
