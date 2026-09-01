@@ -230,6 +230,13 @@ jobs:
           set -euo pipefail
           python3 tools/verify-owner-open-android-source-closure-v2.py
           python3 tools/verify-owner-open-android-profile-v3.py
+          SOURCE_HEAD="$(git --no-replace-objects rev-parse HEAD)"
+          python3 tools/verify-owner-open-adbroot-evaluated-graph.py \
+            --repo-root . \
+            --source-commit "$SOURCE_HEAD" \
+            --evaluation-kind source_head \
+            --output /tmp/owner-open-adbroot-evaluated-graph.json
+          python3 -m json.tool /tmp/owner-open-adbroot-evaluated-graph.json >/dev/null
           python3 tools/verify-owner-open-product-entrypoint.py --json > /tmp/owner-open-product-entrypoint-report.json
           python3 tools/verify-owner-open-rootfs-payload-selection.py --json > /tmp/owner-open-rootfs-payload-selection-report.json
           python3 -m json.tool packaging/owner-open-product/product-entrypoint.contract.json >/dev/null
