@@ -38,6 +38,8 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
             module.COMMON_OWNER_OPEN,
             module.SUPERVISOR_CONFIG,
         }
+        for field_name in ("semantic_contract", "architecture_decision"):
+            paths.add(Path(profile[field_name]))
         for item in profile["required_source_artifacts"]:
             paths.add(Path(item["path"]))
         for relative in sorted(paths):
@@ -62,6 +64,35 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
         self.assertFalse(report.facts["physical_device_observed"])
         self.assertFalse(report.facts["public_release"])
         self.assertFalse(report.facts["automatic_effect_redispatch"])
+        self.assertEqual(
+            report.facts["semantic_contract"],
+            "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
+        )
+        self.assertEqual(
+            report.facts["architecture_decision"],
+            "docs/GLOBAL_ARCHITECTURE.md",
+        )
+
+    def test_missing_profile_reference_fails_closed(self) -> None:
+        (self.root / "docs/GLOBAL_ARCHITECTURE.md").unlink()
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("profile architecture_decision" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_profile_reference_traversal_fails_closed(self) -> None:
+        path = self.root / module.PROFILE
+        value = json.loads(path.read_text(encoding="utf-8"))
+        value["semantic_contract"] = "../docs/GLOBAL_DEVELOPMENT_PROGRAM.md"
+        path.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("semantic_contract is not canonical" in error for error in report.errors),
+            report.errors,
+        )
 
     def test_missing_android_runtime_profile_fails_closed(self) -> None:
         (self.root / module.ANDROID_ROOT / "config/profile-v3.json").unlink()

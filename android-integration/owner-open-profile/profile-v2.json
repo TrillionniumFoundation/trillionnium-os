@@ -2,8 +2,8 @@
   "schema": "org.trillionnium.owner-open.android-profile.v2",
   "revision": "2026-08-29-r5-android-source-closure",
   "profile_id": "owner-open-dogfood-v2",
-  "semantic_contract": "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md",
-  "architecture_decision": "docs/architecture/2026-08-28-owner-open-rootlinux-payload-packaging.md",
+  "semantic_contract": "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
+  "architecture_decision": "docs/GLOBAL_ARCHITECTURE.md",
   "activation": {
     "selected_in_current_product": false,
     "product_make_fragment": "android-integration/owner-open-profile/generated/owner_open_packages_v2.mk",

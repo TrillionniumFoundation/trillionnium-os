@@ -12,6 +12,7 @@ import argparse
 from dataclasses import dataclass, field
 import json
 from pathlib import Path
+from pathlib import PurePosixPath
 import re
 import stat
 import sys
@@ -116,9 +117,32 @@ def safe_source(root: Path, relative: str, label: str, report: Report) -> Path |
             return None
         bounded_file(path, MAX_TEXT_BYTES, label)
     except (OSError, ValueError) as error:
-        report.errors.append(str(error))
+        report.errors.append(f"{label}: {error}")
         return None
     return path
+
+
+def profile_reference(
+    root: Path, value: Any, field_name: str, report: Report
+) -> str | None:
+    """Validate a profile document reference and bind it to a real source file.
+
+    Profile references are part of the source-closure evidence chain.  A
+    dangling or traversal-shaped reference would leave the profile apparently
+    self-consistent while severing the normative plan/architecture link.
+    Keep the check strict and POSIX-canonical so the same bytes resolve on
+    Linux and in the exact-head CI checkout.
+    """
+    if not isinstance(value, str) or not value or value.startswith("/") or "\x00" in value:
+        report.errors.append(f"profile {field_name} must be a relative NUL-free path")
+        return None
+    path = PurePosixPath(value)
+    if ".." in path.parts or str(path) != value:
+        report.errors.append(f"profile {field_name} is not canonical: {value!r}")
+        return None
+    if safe_source(root, value, f"profile {field_name}", report) is None:
+        return None
+    return value
 
 
 def string_set(value: Any, label: str, report: Report) -> set[str]:
@@ -187,6 +211,12 @@ def verify(root: Path) -> Report:
         return report
     if profile.get("schema") != PROFILE_SCHEMA:
         report.errors.append(f"profile schema must be {PROFILE_SCHEMA}")
+
+    profile_references: dict[str, str] = {}
+    for field_name in ("semantic_contract", "architecture_decision"):
+        reference = profile_reference(root, profile.get(field_name), field_name, report)
+        if reference is not None:
+            profile_references[field_name] = reference
 
     activation = profile.get("activation")
     claims = profile.get("claims")
@@ -493,6 +523,8 @@ def verify(root: Path) -> Report:
     report.facts = {
         "revision": profile.get("revision"),
         "profile_id": profile.get("profile_id"),
+        "semantic_contract": profile_references.get("semantic_contract"),
+        "architecture_decision": profile_references.get("architecture_decision"),
         "enabled_property": runtime_profile.get("enabled_property"),
         "data_ready_property": runtime_profile.get("data_ready_property"),
         "ready_property": runtime_profile.get("ready_property"),

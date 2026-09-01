@@ -2,7 +2,7 @@
   "schema": "org.trillionnium.owner-open.android-profile.v1",
   "revision": "2026-08-28-r5-batch-e",
   "profile_id": "owner-open-dogfood",
-  "semantic_contract": "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md",
+  "semantic_contract": "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
   "activation": {
     "selected_in_current_product": false,
     "product_make_fragment": "android-integration/owner-open-profile/generated/owner_open_packages.mk",
