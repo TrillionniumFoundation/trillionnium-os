@@ -3,7 +3,7 @@
 <!-- GENERATED. DO NOT EDIT. -->
 
 - Objective mode: `SPECIFIED_BASELINE_NOT_MEASURED`
-- Baseline gap: `OPEN`
+- Baseline gap: `SOURCE_CLOSED_PENDING_EVIDENCE`
 - Optimization claim: globally coordinated constrained optimization; no claim of unconditional mathematical global optimum
 
 ## Hard constraints

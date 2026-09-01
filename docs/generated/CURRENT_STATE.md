@@ -15,8 +15,8 @@
 | Role | Branch | Commit | Tree | CI | Review | Claim ceiling |
 | --- | --- | --- | --- | --- | --- | --- |
 | Protected trunk | `main` | `bb0f85e63b251b99a6fb490dfe6406a992d95f45` | `e4fe8fd1dc4a19d19868ecefbb731099b4772407` | `PROTECTED_TRUNK_LAGGING_ACTIVE_PROGRAM` | `n/a` | `n/a` |
-| Latest source CI | `codex/owner-open-r5-tool-loop-20260827` | `7ca4d64de1d5acee65a1592b0903a1b4c5bc11b0` | `714a483582906b5c2750ec069e1237f0337d26a5` | `PASSED` | `APPROVAL_NOT_BOUND` | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_TARGET` |
-| Latest source parent | `codex/owner-open-r15-runtime-hardening-20260831` | `eb1aa598cf466120200b064b8ebfbb3763935688` | `cc137c5a79d36167cb38bfb145fc9a43adcc821c` | `NOT_OBSERVED` | `NO_PR_BOUND` | `SOURCE_CANDIDATE_ONLY` |
+| Latest source CI | `codex/g1-gap-closure-r1-20260831` | `4cb69895101872770b975d8ab988136e05eb989e` | `88f2d904739749c94e201c10cc00ee27b3bc0c23` | `PASSED` | `CHANGES_REQUESTED` | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_TARGET` |
+| Latest source parent | `codex/local-g1-r15-gap-closure-20260901` | `5f3a02c5d5fc8e2d19e1a425213ef84a1cc430ab` | `cb2a1dd1e6935084063457ff090138bcc3ac01fb` | `NOT_OBSERVED` | `NO_PR_BOUND` | `SOURCE_CANDIDATE_ONLY` |
 | G1 documentation candidate | `codex/global-modular-docs-g1-20260831` | `CI_GENERATED` | `CI_GENERATED` | `PENDING_EXACT_HEAD_WORKFLOW` | `PENDING_INDEPENDENT_REVIEW` | `DOCUMENTATION_AND_GOVERNANCE_CANDIDATE_ONLY` |
 
 ## Capability milestones
@@ -33,12 +33,11 @@
 ## Critical path
 
 1. qualify and independently review this exact G1 documentation head
-2. merge the R15 source parent through the protected integration chain without losing G1 machine truth
-3. implement broker multiplexing with per-ordering-key serialization
-4. remove job-start global slow-path locking
-5. replace the event-store global write hotspot with segmented indexed durability
-6. introduce module budgets, epochs and fencing in shadow mode
-7. collect L2 through L5 target evidence before any product-complete claim
+2. run the exact-head source workflow and bind retained L1 evidence to the reviewed head
+3. merge the source parent through the protected integration chain without losing G1 machine truth
+4. qualify the installed Root Linux/Android graph and process placement at L2-L3
+5. execute authorized physical and destructive fault qualification at L4-L5
+6. keep signing and public release gated on independent authorization at L6
 
 ## Explicit non-claims
 

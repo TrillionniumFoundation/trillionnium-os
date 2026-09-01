@@ -3,9 +3,36 @@
   "program_revision": "2026-08-31-g1",
   "public_release": false,
   "records": [
-    {"id":"EVID-L1-7CA4D64","level":"L1","source_commit":"7ca4d64de1d5acee65a1592b0903a1b4c5bc11b0","source_tree":"714a483582906b5c2750ec069e1237f0337d26a5","result":"SOURCE_CI_PASSED","review":"APPROVAL_NOT_BOUND","promotable":false,"claim_ceiling":"EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_TARGET"},
-    {"id":"EVID-R15-PARENT-NOT-QUALIFIED","level":"L0","source_commit":"eb1aa598cf466120200b064b8ebfbb3763935688","source_tree":"cc137c5a79d36167cb38bfb145fc9a43adcc821c","result":"NO_EXACT_HEAD_WORKFLOW_OBSERVED","review":"NO_PR_BOUND","promotable":false,"claim_ceiling":"SOURCE_CANDIDATE_ONLY"},
-    {"id":"EVID-G1-HEAD-PENDING","level":"L0","source_commit":null,"source_tree":null,"result":"PENDING_EXACT_HEAD_WORKFLOW","review":"PENDING_INDEPENDENT_REVIEW","promotable":false,"claim_ceiling":"DOCUMENTATION_AND_GOVERNANCE_CANDIDATE_ONLY"}
+    {
+      "id": "EVID-L1-7CA4D64",
+      "level": "L1",
+      "source_commit": "7ca4d64de1d5acee65a1592b0903a1b4c5bc11b0",
+      "source_tree": "714a483582906b5c2750ec069e1237f0337d26a5",
+      "result": "SOURCE_CI_PASSED",
+      "review": "APPROVAL_NOT_BOUND",
+      "promotable": false,
+      "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_TARGET"
+    },
+    {
+      "id": "EVID-R15-PARENT-NOT-QUALIFIED",
+      "level": "L0",
+      "source_commit": "eb1aa598cf466120200b064b8ebfbb3763935688",
+      "source_tree": "cc137c5a79d36167cb38bfb145fc9a43adcc821c",
+      "result": "NO_EXACT_HEAD_WORKFLOW_OBSERVED",
+      "review": "NO_PR_BOUND",
+      "promotable": false,
+      "claim_ceiling": "SOURCE_CANDIDATE_ONLY"
+    },
+    {
+      "id": "EVID-G1-HEAD-PENDING",
+      "level": "L1",
+      "source_commit": "5f3a02c5d5fc8e2d19e1a425213ef84a1cc430ab",
+      "source_tree": "cb2a1dd1e6935084063457ff090138bcc3ac01fb",
+      "result": "LOCAL_SOURCE_VALIDATION_PENDING_EXACT_HEAD_CI",
+      "review": "NO_PR_BOUND",
+      "promotable": false,
+      "claim_ceiling": "SOURCE_CANDIDATE_ONLY"
+    }
   ],
   "external_levels": {
     "L2": "installed Root Linux, provider, broker, host and process placement",
