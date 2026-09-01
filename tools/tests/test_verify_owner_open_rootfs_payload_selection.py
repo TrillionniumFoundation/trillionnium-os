@@ -111,6 +111,13 @@ class VerifyOwnerOpenRootfsPayloadSelectionTest(unittest.TestCase):
                     selected["workflow"],
                 ],
                 "forbidden_release_reference_tokens": ["stager-draft.py"],
+                "external_dependencies": {
+                    "provider_adapter": {
+                        "missing_required_roles": ["provider_adapter"],
+                        "status": "EXTERNAL_HOLD",
+                        "claim_ceiling": module.EXPECTED_PROVIDER_HOLD,
+                    }
+                },
                 "claim_ceiling": "SOURCE_IMPLEMENTED_L0",
             }
         )
@@ -152,6 +159,13 @@ class VerifyOwnerOpenRootfsPayloadSelectionTest(unittest.TestCase):
         path.symlink_to(target.name)
         report = module.verify(self.root)
         self.assertTrue(any("not a real file" in item for item in report.errors))
+
+    def test_provider_hold_is_immutable(self) -> None:
+        value = self.contract()
+        value["external_dependencies"]["provider_adapter"]["status"] = "READY"
+        self.write_contract(value)
+        report = module.verify(self.root)
+        self.assertTrue(any("EXTERNAL_HOLD" in item for item in report.errors))
 
 
 if __name__ == "__main__":

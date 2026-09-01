@@ -1,0 +1,60 @@
+{
+  "schema": "org.trillionnium.owner-open.rootfs-payload-selection.v1",
+  "revision": "2026-09-01-g1",
+  "description": "Current source selection for the owner-open Root Linux payload staging and deterministic image tools.",
+  "selected": {
+    "stager": "tools/owner-open/stage_owner_open_rootfs_payload_release.py",
+    "image_builder": "tools/owner-open/build_owner_open_rootfs_image_release_v2.py",
+    "staging_test": "tools/tests/test_stage_owner_open_rootfs_payload_release.py",
+    "image_test": "tools/tests/test_build_owner_open_rootfs_image_release_v2.py",
+    "tool_readme": "tools/owner-open/README.md",
+    "architecture": "docs/GLOBAL_ARCHITECTURE.md",
+    "program": "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
+    "workflow": ".github/workflows/g1-exact-head-source.yml"
+  },
+  "implementation_helpers": [
+    "tools/owner-open/build_owner_open_rootfs_image_release.py"
+  ],
+  "superseded_drafts": [
+    "tools/owner-open/stage_owner_open_rootfs_payload.py",
+    "tools/owner-open/prepare-adb-reverse.sh"
+  ],
+  "required_markers": {
+    "tools/owner-open/stage_owner_open_rootfs_payload_release.py": [
+      "ROOTFS_PAYLOAD_STAGED_NOT_IMAGE",
+      "payload source changed between inspection and copy",
+      "payload staging changed its output parent mode",
+      "rootfs_image_built"
+    ],
+    "tools/owner-open/build_owner_open_rootfs_image_release_v2.py": [
+      "image tool process group could not be reaped",
+      "command timed out and was reaped",
+      "normalized staging copy drifted"
+    ],
+    "tools/owner-open/README.md": [
+      "prepare-adb-reverse-v1.sh",
+      "The unversioned",
+      "`prepare-adb-reverse.sh`"
+    ]
+  },
+  "release_reference_roots": [
+    "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
+    "docs/GLOBAL_ARCHITECTURE.md",
+    ".github/workflows/g1-exact-head-source.yml"
+  ],
+  "forbidden_release_reference_tokens": [
+    "stage_owner_open_rootfs_payload.py",
+    "build_owner_open_rootfs_image_release.py --execute",
+    "prepare-adb-reverse.sh"
+  ],
+  "external_dependencies": {
+    "provider_adapter": {
+      "missing_required_roles": [
+        "provider_adapter"
+      ],
+      "status": "EXTERNAL_HOLD",
+      "claim_ceiling": "ROOTFS_PAYLOAD_CANDIDATE_MISSING_PROVIDER_ADAPTER"
+    }
+  },
+  "claim_ceiling": "SOURCE_IMPLEMENTED_L0_ROOTFS_SELECTION"
+}

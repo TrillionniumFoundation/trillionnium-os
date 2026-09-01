@@ -231,12 +231,15 @@ jobs:
           python3 tools/verify-owner-open-android-source-closure-v2.py
           python3 tools/verify-owner-open-android-profile-v3.py
           python3 tools/verify-owner-open-product-entrypoint.py --json > /tmp/owner-open-product-entrypoint-report.json
+          python3 tools/verify-owner-open-rootfs-payload-selection.py --json > /tmp/owner-open-rootfs-payload-selection-report.json
           python3 -m json.tool packaging/owner-open-product/product-entrypoint.contract.json >/dev/null
           python3 -m json.tool packaging/owner-open-product/install-manifest.template.json >/dev/null
+          python3 -m json.tool packaging/owner-open-rootfs/payload-selection.contract.json >/dev/null
           python3 -m unittest \
             tools.tests.test_verify_owner_open_android_source_closure \
             tools.tests.test_verify_owner_open_android_profile \
-            tools.tests.test_verify_owner_open_product_entrypoint -v
+            tools.tests.test_verify_owner_open_product_entrypoint \
+            tools.tests.test_verify_owner_open_rootfs_payload_selection -v
           # Packaging checks are host-only metadata/source contracts.  They do
           # not build, sign, install or flash an Android image.
           for test_file in \

@@ -10,8 +10,9 @@ import stat
 import sys
 from typing import Any
 
-CONTRACT = Path("docs/contracts/owner-open-r5-rootfs-payload-selection-v1.json")
+CONTRACT = Path("packaging/owner-open-rootfs/payload-selection.contract.json")
 EXPECTED_SCHEMA = "org.trillionnium.owner-open.rootfs-payload-selection.v1"
+EXPECTED_PROVIDER_HOLD = "ROOTFS_PAYLOAD_CANDIDATE_MISSING_PROVIDER_ADAPTER"
 MAX_BYTES = 16 * 1024 * 1024
 
 
@@ -137,6 +138,33 @@ def verify(root: Path) -> Report:
         "forbidden_release_reference_tokens",
         report,
     )
+
+    external_dependencies = contract.get("external_dependencies")
+    if not isinstance(external_dependencies, dict):
+        report.errors.append("external_dependencies must be an object")
+        external_dependencies = {}
+    provider = external_dependencies.get("provider_adapter")
+    if not isinstance(provider, dict):
+        report.errors.append("external_dependencies.provider_adapter must be an object")
+    else:
+        if provider.get("status") != "EXTERNAL_HOLD":
+            report.errors.append(
+                "provider_adapter status must remain EXTERNAL_HOLD"
+            )
+        if provider.get("claim_ceiling") != EXPECTED_PROVIDER_HOLD:
+            report.errors.append(
+                "provider_adapter claim ceiling must remain "
+                f"{EXPECTED_PROVIDER_HOLD}"
+            )
+        missing_roles = string_list(
+            provider.get("missing_required_roles"),
+            "external_dependencies.provider_adapter.missing_required_roles",
+            report,
+        )
+        if "provider_adapter" not in missing_roles:
+            report.errors.append(
+                "provider_adapter must remain in missing_required_roles"
+            )
     overlap = sorted(set(paths) & set(drafts))
     if overlap:
         report.errors.append(f"selected payload paths are also superseded: {overlap}")
