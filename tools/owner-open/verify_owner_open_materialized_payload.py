@@ -257,8 +257,9 @@ def normalize_output_path(path: Path | str) -> Path:
     """Resolve a direct or RuleBuilder/sbox output path safely.
 
     Soong's RuleBuilder runs commands from an isolated sbox directory and
-    rewrites ``$(out)`` to a sandbox-relative ``./out/...`` path.  The
-    materializer still keeps the original create-only boundary: relative
+    rewrites ``$(out)`` to a sandbox-relative ``out/...`` path (the generated
+    spelling may include one leading ``./``).  The materializer still keeps
+    the original create-only boundary: relative
     paths may not contain traversal components, and every parent component
     must already resolve to a real, non-symlink directory.  Absolute paths
     remain supported for the host-side materializer and are subject to the
@@ -288,7 +289,7 @@ def normalize_output_path(path: Path | str) -> Path:
         path = Path(raw)
         try:
             path = Path.cwd().resolve(strict=True) / path
-        except OSError as error:
+        except (OSError, RuntimeError) as error:
             raise MaterializationError("Soong output working directory is unavailable") from error
     else:
         if raw.startswith("//") or os.path.normpath(raw) != raw:
@@ -308,7 +309,7 @@ def normalize_output_path(path: Path | str) -> Path:
         raise MaterializationError("Soong output must be below a real directory")
     try:
         resolved_parent = parent.resolve(strict=True)
-    except OSError as error:
+    except (OSError, RuntimeError) as error:
         raise MaterializationError("Soong output parent cannot be resolved") from error
     if resolved_parent != parent:
         raise MaterializationError("Soong output parent must not contain symlinks")
@@ -361,7 +362,11 @@ def publish_bytes(path: Path, value: bytes) -> None:
 
 def publish_image(source: Path, output: Path, expected_digest: str, expected_bytes: int) -> None:
     source_fd = os.open(source, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | os.O_CLOEXEC)
-    output_fd = open_output(output)
+    try:
+        output_fd = open_output(output)
+    except Exception:
+        os.close(source_fd)
+        raise
     digest = hashlib.sha256()
     count = 0
     try:
