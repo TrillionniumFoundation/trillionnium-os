@@ -334,8 +334,11 @@ class SameKeySerializationTest(Harness, unittest.TestCase):
     def test_second_same_key_is_not_written_before_first_terminal(self) -> None:
         first=self.connect("client-a"); second=self.connect("client-b")
         try:
-            self.request(first,"request-a",0,"same-job")
-            self.request(second,"request-b",0,"same-job")
+            # Leave ample room for the bounded observation wait and slow
+            # journal fsyncs; this test is about ordering, not timeout
+            # convergence.
+            self.request(first,"request-a",0,"same-job",timeout_ms=10_000)
+            self.request(second,"request-b",0,"same-job",timeout_ms=10_000)
             records=self.wait_for_records(2)
             frames=[record["frame"] for record in records]
             self.assertEqual([frame["kind"] for frame in frames],["hello","job.inspect"])
