@@ -30,3 +30,7 @@
 /android-integration/ @ProfHepta @Tomasrgbsf
 /packaging/ @ProfHepta @Tomasrgbsf
 /evidence/ @ProfHepta @Franksudoman
+/evidence/g1/ @ProfHepta @Franksudoman
+/tools/evidence/ @ProfHepta @Franksudoman
+/tools/verify-g1-evidence.py @ProfHepta @Franksudoman
+/schemas/g1-evidence-package.v1.schema.json @ProfHepta @Franksudoman

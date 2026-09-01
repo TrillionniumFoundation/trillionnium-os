@@ -1,0 +1,129 @@
+{
+  "artifacts": [
+    {
+      "bytes": 569,
+      "kind": "github_actions_artifact",
+      "name": "g1-exact-head-3f8fc683a90804ba39c731ad6790717758da381b",
+      "retention_expires_at": "2026-10-01T10:28:10Z",
+      "sha256": "777f0fd153c57e71de80832210fde9640b37c2ba80c50131da06bd6f8b8c5371",
+      "uri": "github-actions://TrillionniumFoundation/trillionnium-os/runs/33497446629/artifacts/9796339175"
+    },
+    {
+      "bytes": 111427,
+      "kind": "github_actions_artifact",
+      "name": "g1-locked-source-graph-3f8fc683a90804ba39c731ad6790717758da381b",
+      "retention_expires_at": "2026-10-01T10:27:58Z",
+      "sha256": "5c0409c5f9c4ae2db45a0241a36252f8de598e2fcb1accecae8d54a2d78ce83a",
+      "uri": "github-actions://TrillionniumFoundation/trillionnium-os/runs/33497446629/artifacts/9796333166"
+    },
+    {
+      "bytes": 3022,
+      "kind": "github_actions_artifact",
+      "name": "g1-synthetic-merge-29b1a4955b869b24b1f10f85344f46fbc8d49de5",
+      "retention_expires_at": "2026-10-01T10:30:02Z",
+      "sha256": "75cdc7ef68affbac37d8aefa123356e3d51c0dae36ebb7da705075bdc053d14d",
+      "uri": "github-actions://TrillionniumFoundation/trillionnium-os/runs/33497446824/artifacts/9796400291"
+    }
+  ],
+  "authorization": {
+    "authority": "github_pull_request_review",
+    "evidence_id": "pull-request-review-5077337902",
+    "expires_at": "2026-10-01T10:27:58Z",
+    "revoked": false,
+    "scope": "PR-34 source=3f8fc683a90804ba39c731ad6790717758da381b github_merge=8af6e096aa57daadc8404d430549218e4961b48f synthetic_merge=29b1a4955b869b24b1f10f85344f46fbc8d49de5 L1-only",
+    "status": "APPROVED"
+  },
+  "automatic_redispatch": false,
+  "claim_ceiling": "EXACT_SOURCE_AND_SYNTHETIC_MERGE_QUALIFIED_NOT_INSTALLED_TARGET",
+  "created_at": "2026-09-01T11:18:52Z",
+  "evidence_class": "source_qualification",
+  "expires_at": "2026-10-01T10:27:58Z",
+  "gaps": [
+    "GAP-DOC-SINGLE-TRUTH-001",
+    "GAP-GOVERNANCE-001"
+  ],
+  "holds": [],
+  "level": "L1",
+  "lineage": {
+    "parent_package_ids": [],
+    "predecessor_source_commit": "4142fe2864f05ac2a35037b4b025f4f1f0a5d35f"
+  },
+  "negative_claims": [
+    "installed_target_not_observed",
+    "android_image_not_observed",
+    "physical_device_not_observed",
+    "destructive_faults_not_observed",
+    "public_release_not_authorized"
+  ],
+  "observations": {
+    "automatic_redispatch_count": 0,
+    "exact_head_checks_passed": true,
+    "github_merge_candidate": "8af6e096aa57daadc8404d430549218e4961b48f",
+    "independent_non_author_approval": true,
+    "review_commit": "3f8fc683a90804ba39c731ad6790717758da381b",
+    "review_id": 5077337902,
+    "review_state": "APPROVED",
+    "source_merge_identity_bound": true,
+    "source_workflow_run_id": 33497446629,
+    "synthetic_merge_checks_passed": true,
+    "synthetic_merge_commit": "29b1a4955b869b24b1f10f85344f46fbc8d49de5",
+    "synthetic_merge_workflow_run_id": 33497446824
+  },
+  "package_id": "sha256:f0042ce9b6ead24e9ecd21dd64c6f2f039d055d9944c2a54c6e3c3c5cdd52b4a",
+  "program_revision": "2026-08-31-g1",
+  "public_release": false,
+  "retention_days": 30,
+  "roles": {
+    "authorizer": {
+      "evidence_id": "pull-request-review-5077337902",
+      "identity_provider": "github.com",
+      "principal": "Franksudoman"
+    },
+    "operator": {
+      "evidence_id": "workflow-runs-33497446629-33497446824",
+      "identity_provider": "github.com",
+      "principal": "github-actions[bot]"
+    },
+    "producer": {
+      "evidence_id": "pull-request-34-author",
+      "identity_provider": "github.com",
+      "principal": "ProfHepta"
+    },
+    "reviewer": {
+      "evidence_id": "pull-request-review-5077337902",
+      "identity_provider": "github.com",
+      "principal": "Franksudoman"
+    }
+  },
+  "schema": "org.trillionnium.g1.evidence-package.v1",
+  "source": {
+    "branch": "codex/g1-full-gap-closure-r2-20260901",
+    "cargo_lock_sha256": "f89204bac622ef09ffb04a0482d02ef720b3ce83bc7c64e057c5cb798988f107",
+    "commit": "3f8fc683a90804ba39c731ad6790717758da381b",
+    "pull_request": 34,
+    "repository": "TrillionniumFoundation/trillionnium-os",
+    "tree": "dfdeab5dae6d53f0f1c9a844d837a3cf0efeb652",
+    "workflow_runs": [
+      {
+        "artifact_id": 9796339175,
+        "artifact_name": "g1-exact-head-3f8fc683a90804ba39c731ad6790717758da381b",
+        "artifact_sha256": "777f0fd153c57e71de80832210fde9640b37c2ba80c50131da06bd6f8b8c5371",
+        "attempt": 1,
+        "name": "G1 exact-head source qualification",
+        "result": "success",
+        "run_id": 33497446629
+      },
+      {
+        "artifact_id": 9796400291,
+        "artifact_name": "g1-synthetic-merge-29b1a4955b869b24b1f10f85344f46fbc8d49de5",
+        "artifact_sha256": "75cdc7ef68affbac37d8aefa123356e3d51c0dae36ebb7da705075bdc053d14d",
+        "attempt": 1,
+        "name": "G1 synthetic-merge qualification",
+        "result": "success",
+        "run_id": 33497446824
+      }
+    ]
+  },
+  "status": "COMPLETE",
+  "version": "1"
+}
