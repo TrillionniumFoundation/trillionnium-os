@@ -117,6 +117,26 @@ class _MuxRejecting:
         raise MuxError("injected scheduler rejection")
 
 
+class _FenceDuringEnqueueMux:
+    """Publish an exact-key fence in the enqueue check-to-call window."""
+
+    def __init__(self) -> None:
+        self.fenced_key: str | None = None
+
+    def fenced_reason(self, ordering_key: str):
+        if ordering_key == self.fenced_key:
+            return "unknown_after_timeout"
+        return None
+
+    def enqueue(self, request) -> None:
+        # The admission preflight has already observed no fence.  Model the
+        # timeout worker winning immediately before the scheduler's own
+        # insertion, which is the production race that must preserve the
+        # ordering-key-specific terminal code.
+        self.fenced_key = request.ordering_key
+        raise MuxError("ordering key is fenced after unresolved effect")
+
+
 class _TerminalFailingAudit:
     """Existing binding whose restart terminal cannot be made durable."""
 
@@ -409,6 +429,30 @@ class BrokerAdmissionConcurrencyTest(unittest.TestCase):
         self.assertEqual(binding.stage, "broker.terminal")
         self.assertEqual(binding.terminal_message["code"], "broker_acceptance_failed")
         # A failed mux admission must not consume capacity permanently.
+        self.assertTrue(broker.request_slots.acquire(blocking=False))
+        broker.request_slots.release()
+
+    def test_mux_fence_race_reports_ordering_key_uncertain(self) -> None:
+        audit = _BlockingAudit()
+        mux = _FenceDuringEnqueueMux()
+        broker = _AdmissionBroker(audit, mux=mux, slots=1)
+        client = _Client("client")
+
+        broker._admit_request(
+            client,
+            "request",
+            _frame("job", 0),
+            frozenset({"job.inspect.result"}),
+            "job",
+            5_000,
+        )
+
+        self.assertEqual(len(client.messages), 1)
+        self.assertEqual(client.messages[0]["code"], "ordering_key_uncertain")
+        self.assertIn("unknown_after_timeout", client.messages[0]["message"])
+        binding = audit.bindings[("client", "request")]
+        self.assertEqual(binding.stage, "broker.terminal")
+        self.assertEqual(binding.terminal_message["code"], "ordering_key_uncertain")
         self.assertTrue(broker.request_slots.acquire(blocking=False))
         broker.request_slots.release()
 

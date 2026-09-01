@@ -661,13 +661,33 @@ class BrokerAdmissionMixin:
         try:
             self.mux.enqueue(request)
         except Exception as error:
+            # A same-key timeout can publish the mux fence after the
+            # admission preflight (and even after the durable audit append)
+            # but before this enqueue reaches the scheduler.  ``enqueue``
+            # then rejects the already-accepted request with ``MuxError``.
+            # Preserve the exact ordering-key decision instead of reporting a
+            # generic acceptance failure; the latter obscures the fail-closed
+            # fence and made the result timing-dependent under audit/fsync
+            # contention.
+            fenced_reason = None
+            if isinstance(error, MuxError):
+                fenced_reason = self.mux.fenced_reason(ordering_key)
+            if fenced_reason is not None:
+                rejection_code = "ordering_key_uncertain"
+                rejection_message = (
+                    "ordering key is fenced after unresolved effect: "
+                    + str(fenced_reason)
+                )
+            else:
+                rejection_code = "broker_acceptance_failed"
+                rejection_message = str(error)
             self._terminalize_unenqueued_request(
                 client,
                 request,
                 binding=admission.binding,
                 request_id=request_id,
-                code="broker_acceptance_failed",
-                message=str(error),
+                code=rejection_code,
+                message=rejection_message,
                 details_status="rejected_after_acceptance_before_forward",
             )
 
