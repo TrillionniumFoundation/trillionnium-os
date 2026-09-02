@@ -44,10 +44,11 @@ non-symlink executable path. The `android-real-device` environment should be
 configured with required reviewers before enabling automatic runs on a
 protected `main` branch.
 
-The workflow has no `pull_request` or `pull_request_target` trigger. A
-maintainer can use **Run workflow** for a trusted branch; `main` runs
-automatically. This boundary is important because the repository is public and
-self-hosted jobs execute on a persistent machine.
+The workflow has no `pull_request` or `pull_request_target` trigger. The
+hosted package job can be dispatched for a trusted branch, but the
+self-hosted device job runs only for `main` (either after a protected push or a
+manual dispatch from `main`). This boundary is important because the
+repository is public and self-hosted jobs execute on a persistent machine.
 
 ## Local runner contract
 

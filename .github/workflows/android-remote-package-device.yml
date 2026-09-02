@@ -2,8 +2,8 @@ name: Android remote package and real-device smoke
 
 # This workflow intentionally has no pull_request trigger.  The repository is
 # public and a self-hosted device must never execute code from an untrusted PR.
-# Maintainers may dispatch it for a trusted branch, while protected main runs
-# it automatically after a merge.
+# Maintainers may dispatch the package job from a trusted branch, while the
+# physical-device job is restricted to protected main after a merge.
 on:
   push:
     branches:
@@ -113,7 +113,7 @@ jobs:
   device-smoke:
     name: Verify package and read-only Android device smoke
     needs: package-source
-    if: ${{ needs.package-source.result == 'success' && github.repository == 'TrillionniumFoundation/trillionnium-os' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main') }}
+    if: ${{ needs.package-source.result == 'success' && github.repository == 'TrillionniumFoundation/trillionnium-os' && github.ref == 'refs/heads/main' }}
     # The environment can be configured with required reviewers before this
     # job is allowed to touch the physical device.
     environment:
