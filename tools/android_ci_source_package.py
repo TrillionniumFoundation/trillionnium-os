@@ -419,8 +419,9 @@ def _verify(args: argparse.Namespace) -> int:
         _regular_path(archive_input, "archive")
         archive_path = archive_input.resolve(strict=True)
     else:
-        archive_path = (manifest_path.parent / archive_name).resolve(strict=True)
-        _regular_path(archive_path, "archive")
+        archive_input = manifest_path.parent / archive_name
+        _regular_path(archive_input, "archive")
+        archive_path = archive_input.resolve(strict=True)
     if archive_path.name != archive_name:
         raise PackageError("archive filename does not match manifest")
     archive_bytes, archive_sha256 = _sha256(archive_path)
