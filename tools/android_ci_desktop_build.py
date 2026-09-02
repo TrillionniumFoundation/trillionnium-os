@@ -920,8 +920,11 @@ def _materialize(ctx: SourceContext) -> dict[str, Any]:
 
 
 def _limited_log(path: Path) -> tuple[Any, list[int], Any]:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    stream = path.open("wb")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        stream = path.open("wb")
+    except OSError as error:
+        raise CiError(f"cannot create bounded build log: {path}: {error}") from error
     state = [0]
 
     def write(data: bytes) -> None:
@@ -929,7 +932,10 @@ def _limited_log(path: Path) -> tuple[Any, list[int], Any]:
             return
         remaining = MAX_LOG_BYTES - state[0]
         chunk = data[:remaining]
-        stream.write(chunk)
+        try:
+            stream.write(chunk)
+        except OSError as error:
+            raise CiError(f"cannot write bounded build log: {path}: {error}") from error
         state[0] += len(chunk)
 
     return (stream, state, write)
@@ -1079,13 +1085,27 @@ def _run_build(ctx: SourceContext, adb_path: Path, jobs: int, timeout_minutes: i
                         break
                     consume(pending)
                 returncode = process.wait()
+    except CiError:
+        # A full/detached external disk can make log writes fail while the
+        # compiler is still running.  Terminate the process group before
+        # propagating the fail-closed error so no build survives the lane.
+        if process.poll() is None:
+            _terminate_process_group(process)
+        raise
     finally:
         selector.close()
         if process.stdout is not None:
             process.stdout.close()
-        log_stream.flush()
-        os.fsync(log_stream.fileno())
-        log_stream.close()
+        try:
+            log_stream.flush()
+            os.fsync(log_stream.fileno())
+        except OSError as error:
+            raise CiError(f"cannot finalize bounded build log: {log_path}: {error}") from error
+        finally:
+            try:
+                log_stream.close()
+            except OSError:
+                pass
     if returncode != 0:
         raise CiError(f"Android build failed with exit code {returncode}")
     # The build subprocess is untrusted with respect to output paths.  Check
