@@ -253,7 +253,9 @@ jobs:
             tools.tests.test_verify_owner_open_rootfs_payload_selection -v
           python3 -m unittest \
             tools.tests.test_verify_owner_open_materialized_payload \
-            tools.tests.test_owner_open_bootstrap_manifest_contract -v
+            tools.tests.test_owner_open_bootstrap_manifest_contract \
+            tools.tests.test_android_ci_source_package \
+            tools.tests.test_android_ci_device_smoke -v
           # Packaging checks are host-only metadata/source contracts.  They do
           # not build, sign, install or flash an Android image.
           for test_file in \
