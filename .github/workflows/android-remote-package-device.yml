@@ -1,0 +1,215 @@
+name: Android remote package and real-device smoke
+
+# This workflow intentionally has no pull_request trigger.  The repository is
+# public and a self-hosted device must never execute code from an untrusted PR.
+# Maintainers may dispatch it for a trusted branch, while protected main runs
+# it automatically after a merge.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  # ADB is a single-device resource.  Never run two jobs against it at once.
+  group: android-real-device-${{ github.repository }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  # These are repository Variables, not secrets.  The serial is an explicit
+  # allowlist entry; an unset variable fails closed in the device job.
+  ANDROID_DEVICE_SERIAL: ${{ vars.TRILLINNIUM_DEVICE_SERIAL }}
+  ANDROID_ADB_PATH: ${{ vars.TRILLINNIUM_ADB_PATH || '/opt/android-sdk/platform-tools/adb' }}
+  ANDROID_EXPECTED_PRODUCT_DEVICE: fogos
+  ANDROID_EXPECTED_BUILD_TYPE: userdebug
+  ANDROID_EXPECTED_SDK: "36"
+
+jobs:
+  package-source:
+    name: Package exact tracked source
+    if: ${{ github.repository == 'TrillionniumFoundation/trillionnium-os' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      source_sha: ${{ steps.metadata.outputs.source_sha }}
+      source_tree: ${{ steps.metadata.outputs.source_tree }}
+      archive_sha256: ${{ steps.metadata.outputs.archive_sha256 }}
+      artifact_name: ${{ steps.metadata.outputs.artifact_name }}
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Create exact source package and manifest
+        id: metadata
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          output_dir="${RUNNER_TEMP}/android-ci-source-package"
+          mkdir -p "$output_dir"
+          python3 tools/android_ci_source_package.py create \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --output-dir "$output_dir" \
+            --repository "$REPOSITORY" \
+            --expected-commit "$EXPECTED_SOURCE_SHA"
+          manifest="$output_dir/trillionnium-os-source.json"
+          test -f "$manifest"
+          readarray -t metadata < <(python3 - "$manifest" <<'PY'
+          import json
+          import sys
+
+          with open(sys.argv[1], encoding="utf-8") as stream:
+              document = json.load(stream)
+          print(document["source_commit"])
+          print(document["source_tree"])
+          print(document["archive"]["sha256"])
+          PY
+          )
+          test "${#metadata[@]}" -eq 3
+          source_sha="${metadata[0]}"
+          source_tree="${metadata[1]}"
+          archive_sha256="${metadata[2]}"
+          [[ "$source_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$source_tree" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$archive_sha256" =~ ^[0-9a-f]{64}$ ]]
+          test "$source_sha" = "$EXPECTED_SOURCE_SHA"
+          {
+            echo "source_sha=$source_sha"
+            echo "source_tree=$source_tree"
+            echo "archive_sha256=$archive_sha256"
+            echo "artifact_name=android-source-$source_sha"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upload immutable source package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: android-source-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 3
+          path: |
+            ${{ runner.temp }}/android-ci-source-package/trillionnium-os-source.tar.gz
+            ${{ runner.temp }}/android-ci-source-package/trillionnium-os-source.tar.gz.sha256
+            ${{ runner.temp }}/android-ci-source-package/trillionnium-os-source.json
+
+  device-smoke:
+    name: Verify package and read-only Android device smoke
+    needs: package-source
+    if: ${{ needs.package-source.result == 'success' && github.repository == 'TrillionniumFoundation/trillionnium-os' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main') }}
+    # The environment can be configured with required reviewers before this
+    # job is allowed to touch the physical device.
+    environment:
+      name: android-real-device
+    runs-on:
+      group: trillionnium-real-devices
+      labels:
+        - self-hosted
+        - linux
+        - x64
+        - real-device
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source head for the verifier
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          ref: ${{ needs.package-source.outputs.source_sha }}
+          persist-credentials: false
+
+      - name: Download exact source package
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: ${{ needs.package-source.outputs.artifact_name }}
+          path: ${{ runner.temp }}/android-ci-incoming
+
+      - name: Verify package identity before device access
+        env:
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          EXPECTED_SOURCE_SHA: ${{ needs.package-source.outputs.source_sha }}
+          EXPECTED_SOURCE_TREE: ${{ needs.package-source.outputs.source_tree }}
+          EXPECTED_ARCHIVE_SHA256: ${{ needs.package-source.outputs.archive_sha256 }}
+        run: |
+          set -euo pipefail
+          incoming="${RUNNER_TEMP}/android-ci-incoming"
+          manifest="$incoming/trillionnium-os-source.json"
+          archive="$incoming/trillionnium-os-source.tar.gz"
+          sidecar="$incoming/trillionnium-os-source.tar.gz.sha256"
+          test -f "$manifest"
+          test -f "$archive"
+          test -f "$sidecar"
+          test "$(find "$incoming" -maxdepth 1 -type f -printf '%f\n' | sort | wc -l)" -eq 3
+          python3 tools/android_ci_source_package.py verify \
+            --manifest "$manifest" \
+            --archive "$archive" \
+            --expected-repository "$EXPECTED_REPOSITORY" \
+            --expected-commit "$EXPECTED_SOURCE_SHA" \
+            --expected-tree "$EXPECTED_SOURCE_TREE"
+          actual_archive_sha256="$(sha256sum "$archive" | awk '{print $1}')"
+          test "$actual_archive_sha256" = "$EXPECTED_ARCHIVE_SHA256"
+
+      - name: Require the configured runner and allowlisted device
+        run: |
+          set -euo pipefail
+          adb_path="$ANDROID_ADB_PATH"
+          case "$adb_path" in
+            /*) ;;
+            *) echo "ANDROID_ADB_PATH must be absolute" >&2; exit 2 ;;
+          esac
+          test -f "$adb_path"
+          test ! -L "$adb_path"
+          test -x "$adb_path"
+          test -n "$ANDROID_DEVICE_SERIAL"
+          [[ "$ANDROID_DEVICE_SERIAL" =~ ^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$ ]]
+
+      - name: Collect read-only Android device receipt
+        id: smoke
+        env:
+          SOURCE_SHA: ${{ needs.package-source.outputs.source_sha }}
+          SOURCE_TREE: ${{ needs.package-source.outputs.source_tree }}
+          ARCHIVE_SHA256: ${{ needs.package-source.outputs.archive_sha256 }}
+        run: |
+          set -euo pipefail
+          receipt="${RUNNER_TEMP}/android-device-smoke.json"
+          set +e
+          python3 tools/android_ci_device_smoke.py \
+            --adb "$ANDROID_ADB_PATH" \
+            --serial "$ANDROID_DEVICE_SERIAL" \
+            --repository "$GITHUB_REPOSITORY" \
+            --source-commit "$SOURCE_SHA" \
+            --source-tree "$SOURCE_TREE" \
+            --source-package-sha256 "$ARCHIVE_SHA256" \
+            --expected-product-device "$ANDROID_EXPECTED_PRODUCT_DEVICE" \
+            --expected-build-type "$ANDROID_EXPECTED_BUILD_TYPE" \
+            --expected-sdk "$ANDROID_EXPECTED_SDK" \
+            --output "$receipt"
+          status=$?
+          set -e
+          echo "receipt=$receipt" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Upload read-only device receipt
+        if: ${{ always() && steps.smoke.outputs.receipt != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: android-device-smoke-${{ needs.package-source.outputs.source_sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: ${{ steps.smoke.outputs.receipt }}

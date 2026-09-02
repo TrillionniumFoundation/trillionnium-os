@@ -8,5 +8,7 @@ self-hosted-runner:
     - owner-open-r5-l4
     - owner-open-r5-l5
     - owner-open-r5-l6
+    - real-device
+    - desktop
 
 config-variables: null
