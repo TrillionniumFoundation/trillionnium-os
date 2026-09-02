@@ -14,12 +14,12 @@
       "repository": "TrillionniumFoundation/trillionnium-os",
       "ref": "codex/g1-full-gap-closure-r2-20260901",
       "commit": "be6e681c02996ee8c0fd25c29943aad21c66292e",
-      "tree": "a686aa24e4a3afc6527511022d2374e1d1c27fdc"
+      "tree": "a686aa24b969557cb6b46d4477a3a03df1216a33"
     },
-    "github_merge_object": "91c28f34e0601a00bfe832232cd8be0fc3e7ac7e",
+    "github_merge_object": "91c28bd23a04537183d993b04a66b7a3b1209934",
     "deterministic_ordered_merge": {
-      "commit": "MUST_BE_COPIED_FROM_VERIFIED_RUN_33596149634_RECEIPT",
-      "tree": "MUST_BE_COPIED_FROM_VERIFIED_RUN_33596149634_RECEIPT",
+      "commit": "8ff66504ed9d19dc620c5bdf19025aede75b30a7",
+      "tree": "a686aa24b969557cb6b46d4477a3a03df1216a33",
       "ordered_parents": [
         "4142fe2864f05ac2a35037b4b025f4f1f0a5d35f",
         "be6e681c02996ee8c0fd25c29943aad21c66292e"
@@ -27,13 +27,92 @@
     }
   },
   "qualified_workflows": {
-    "exact_source": 33596149698,
-    "ordered_merge": 33596149634,
-    "android_evaluated_matrix": 33596149715,
-    "evidence_intake": 33596149679
+    "exact_source": {
+      "run_id": 33596149698,
+      "run_attempt": 3,
+      "result": "L1_SOURCE_CLOSURE_PASSED"
+    },
+    "ordered_merge": {
+      "run_id": 33596149656,
+      "run_attempt": 2,
+      "result": "L1_SYNTHETIC_MERGE_SOURCE_CLOSURE_PASSED"
+    },
+    "android_evaluated_matrix": {
+      "run_id": 33596149688,
+      "run_attempt": 2,
+      "result": "TERMINAL_SUCCESS_EVALUATED_SOURCE_GRAPH_ONLY"
+    },
+    "evidence_intake": {
+      "run_id": 33596149679,
+      "run_attempt": 2,
+      "result": "TERMINAL_SUCCESS_NO_PROMOTION_WITHOUT_EXTERNAL_ATTESTATION"
+    }
+  },
+  "qualified_artifacts": {
+    "protected_exact_head_aggregate": {
+      "id": 9834572132,
+      "name": "g1-exact-head-be6e681c02996ee8c0fd25c29943aad21c66292e",
+      "sha256": "11027c973971c78f666ed26e88026446a9dc3009ecb71dab695167cf0dede186",
+      "size_in_bytes": 4198,
+      "expires_at": "2026-10-02T06:33:54Z",
+      "embedded_report_sha256": "2d12e482a1eb11c88ef783662580ee259927298a0050c0bdb63c9f6091d04fce"
+    },
+    "locked_source_graph": {
+      "id": 9834561669,
+      "name": "g1-locked-source-graph-be6e681c02996ee8c0fd25c29943aad21c66292e",
+      "sha256": "112c02cdfbf5dfdc83ab2d16420b00b6847efb8d982d006763d937019a558e90",
+      "size_in_bytes": 111427,
+      "expires_at": "2026-10-02T06:33:32Z"
+    },
+    "ordered_merge": {
+      "id": 9834387463,
+      "name": "g1-synthetic-merge-8ff66504ed9d19dc620c5bdf19025aede75b30a7",
+      "sha256": "acac9a78201f6d45c5c700a0414da710099a41d0f986e813d2a6aec311a2ca60",
+      "size_in_bytes": 3072,
+      "expires_at": "2026-10-02T06:27:05Z"
+    },
+    "android_source_matrix": {
+      "id": 9834275640,
+      "name": "g1-adbroot-source-matrix-be6e681c02996ee8c0fd25c29943aad21c66292e",
+      "sha256": "9daf669b9040300db0df0bf4b3fecce0b1585c2d94aaa0b0fb86de793c4644f3",
+      "size_in_bytes": 2519,
+      "expires_at": "2026-10-02T06:22:49Z"
+    },
+    "android_merge_matrix": {
+      "id": 9834295174,
+      "name": "g1-adbroot-merge-matrix-62b8286078ae6d1bb2ff8b1c3a29dc0559c50939",
+      "sha256": "363a6ed4bb7eddd416ff7e93b0a23c2edeb1522326d1a5a909f8ab5a9c3650c4",
+      "size_in_bytes": 2575,
+      "expires_at": "2026-10-02T06:23:35Z"
+    },
+    "evidence_source": {
+      "id": 9834284626,
+      "name": "g1-evidence-source-be6e681c02996ee8c0fd25c29943aad21c66292e",
+      "sha256": "67dfbc667bda9ab694d55d7bf99995a33bf7b62ec61d3112b098a9f3011e4f12",
+      "size_in_bytes": 1495,
+      "expires_at": "2026-10-02T06:23:10Z"
+    },
+    "evidence_merge": {
+      "id": 9834276975,
+      "name": "g1-evidence-merge-4c7a5f396a39a91f8022f61fbebbebdd828b4b0f",
+      "sha256": "61e79f5cb7701b1d7c7705f9e75570bacbed5eec5a8ddb64799c267e2b395edb",
+      "size_in_bytes": 1517,
+      "expires_at": "2026-10-02T06:22:52Z"
+    }
+  },
+  "protected_aggregate": {
+    "result": "L1_EXACT_PR_WORKFLOW_AGGREGATE_PASSED",
+    "claim_ceiling": "PROTECTED_EXACT_SOURCE_AND_REPOSITORY_WORKFLOW_FAMILIES_PASSED_NOT_SIGNED_OR_INSTALLED_TARGET",
+    "base_protected": true,
+    "required_contexts": [
+      "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+      "L1 exact-source-head aggregate candidate",
+      "L1 graph, documentation, broker and MCP source closure",
+      "L1 protected-main and exact-head independent-review readiness"
+    ]
   },
   "required_preconditions": {
-    "fresh_eligible_exact_head_approval": "NOT_YET_EMBEDDED",
+    "fresh_eligible_exact_head_approval": "NOT_YET_OBSERVED",
     "protected_aggregate_report": "MUST_BE_DOWNLOADED_AND_REHASHED",
     "support_receipts": "MUST_BE_DOWNLOADED_AND_REHASHED",
     "trust_root": "MUST_BE_INDEPENDENTLY_ADMINISTERED_AND_PINNED",
@@ -51,7 +130,7 @@
   "non_claims": [
     "This file is repository-controlled request metadata, not evidence provenance.",
     "A content hash of this file is not an authorization signature.",
-    "The placeholders must never be signed or accepted.",
+    "Every listed artifact must be downloaded and independently rehashed before signing.",
     "This request grants no merge, deployment, target, device, fault, signing-custody or release authority.",
     "zero_gap remains false.",
     "public_release remains false.",
