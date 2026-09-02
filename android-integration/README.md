@@ -21,6 +21,11 @@ checkout, builds `trillionnium_fogos-bp4a-userdebug`, and performs the bounded
 APK/device smoke described in `GITHUB_DEVICE_CI.md`. A new overlay path or
 project revision must update `PROJECT_STATUS.tsv` and the pinned manifest in
 the same reviewed change, otherwise the desktop preflight fails closed.
+The lane validates the frozen manifest and the declared overlay projects; the
+remaining base projects are trusted pre-provisioned inputs rather than
+re-cloned on every run.
+The desktop runner's removable-disk systemd guard is recorded in
+[`desktop-runner-external-disk.conf`](desktop-runner-external-disk.conf).
 
 The supported GitHub-hosted package to local self-hosted-device workflow is
 documented in [`GITHUB_DEVICE_CI.md`](GITHUB_DEVICE_CI.md).

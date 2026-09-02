@@ -8,8 +8,8 @@ device identity is not exactly what the workflow expects.
 
 The ``run`` command performs one serialized transaction:
 
-1. validate the GitHub control checkout and the pinned 1,172-project Android
-   manifest;
+1. validate the GitHub control checkout, the pinned 1,172-project Android
+   manifest, and the reviewed overlay project identities;
 2. validate and materialize the checked-in ``android-integration/working-tree``
    overlay, retaining recoverable backups of files that would change;
 3. build the fixed ``trillionnium_fogos-bp4a-userdebug`` target and its four
@@ -39,6 +39,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import selectors
 import shutil
 import signal
 import stat
@@ -78,8 +79,11 @@ DEFAULT_ADB = Path("/opt/android-sdk/platform-tools/adb")
 MIN_FREE_GIB = 400
 MAX_CAPTURE_BYTES = 2 * 1024 * 1024
 MAX_LOG_BYTES = 128 * 1024 * 1024
+MAX_CONSOLE_LOG_BYTES = 8 * 1024 * 1024
 MAX_APK_BYTES = 512 * 1024 * 1024
 MAX_TARGET_FILES_BYTES = 32 * 1024 * 1024 * 1024
+MAX_TARGET_FILES_UNCOMPRESSED_BYTES = 128 * 1024 * 1024 * 1024
+CCACHE_MAX_SIZE = "64G"
 SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 COMMIT_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
@@ -228,6 +232,14 @@ def _assert_under(parent: Path, child: Path, label: str) -> None:
         child_abs.relative_to(parent_abs)
     except ValueError as error:
         raise CiError(f"{label} escapes the external project root: {child_abs}") from error
+
+
+def _assert_directory(path: Path, label: str) -> None:
+    """Require a directory path whose existing components are not symlinks."""
+
+    _assert_no_symlink_components(path)
+    if path.exists() and not path.is_dir():
+        raise CiError(f"{label} is not a directory: {path}")
 
 
 def _regular_file(path: Path, label: str, *, maximum: int | None = None) -> os.stat_result:
@@ -476,6 +488,18 @@ def _mounted_uuid(path: Path) -> str:
     if not value:
         raise CiError(f"findmnt returned no UUID for {path}")
     return value
+
+
+def _external_storage_still_available(external_root: Path, run_root: Path) -> bool:
+    """Return true only while both the mount and run path resolve externally."""
+
+    try:
+        return (
+            _mounted_uuid(external_root).lower() == EXTERNAL_UUID
+            and _mounted_uuid(run_root).lower() == EXTERNAL_UUID
+        )
+    except CiError:
+        return False
 
 
 def _free_bytes(path: Path) -> int:
@@ -935,25 +959,37 @@ def _run_build(ctx: SourceContext, adb_path: Path, jobs: int, timeout_minutes: i
     if timeout_minutes < 1 or timeout_minutes > 72 * 60:
         raise CiError("build timeout must be between 1 minute and 72 hours")
     log_path = ctx.run_root / "build.log"
+    _assert_under(ctx.external_root, log_path, "build log")
+    _assert_no_symlink_components(log_path)
     log_stream, log_state, write_log = _limited_log(log_path)
-    build_started = time.time_ns()
     product_out = ctx.android_root / "out/target/product" / PRODUCT_DEVICE
     target_dir = product_out / "obj/PACKAGING/target_files_intermediates"
-    before: dict[str, tuple[int, int, int]] = {}
+    _assert_under(ctx.external_root, target_dir, "target-files output")
+    _assert_directory(ctx.android_root / "out", "Android OUT_DIR")
+    _assert_directory(target_dir.parent, "target-files parent")
+    _assert_directory(target_dir, "target-files directory")
+    before: dict[str, tuple[int, ...]] = {}
     if target_dir.is_dir():
         for candidate in target_dir.iterdir():
             if candidate.name.endswith(".zip") and "target_files" in candidate.name:
-                if candidate.is_symlink() or not candidate.is_file():
-                    raise CiError(f"unsafe pre-existing target-files candidate: {candidate}")
-                metadata = candidate.stat()
-                before[candidate.name] = (metadata.st_ino, metadata.st_size, metadata.st_mtime_ns)
+                metadata = _regular_file(
+                    candidate,
+                    f"pre-existing target-files archive {candidate.name}",
+                    maximum=MAX_TARGET_FILES_BYTES,
+                )
+                before[candidate.name] = _identity(metadata)
     run_root = ctx.run_root
     tmp_root = run_root / "tmp"
     home_root = run_root / "home"
     cache_root = run_root / "cache"
-    ccache_root = run_root / "ccache"
+    ccache_root = ctx.external_root / ".android-ci-ccache"
+    _assert_under(ctx.external_root, ccache_root, "ccache root")
+    _assert_no_symlink_components(ccache_root)
+    if ccache_root.exists() and not ccache_root.is_dir():
+        raise CiError(f"ccache root is not a directory: {ccache_root}")
     for directory in (tmp_root, home_root, cache_root, ccache_root):
         directory.mkdir(parents=True, exist_ok=True)
+        _assert_directory(directory, "build workspace directory")
     environment = os.environ.copy()
     environment.update(
         {
@@ -963,6 +999,7 @@ def _run_build(ctx: SourceContext, adb_path: Path, jobs: int, timeout_minutes: i
             "TEMP": str(tmp_root),
             "XDG_CACHE_HOME": str(cache_root),
             "CCACHE_DIR": str(ccache_root),
+            "CCACHE_MAXSIZE": CCACHE_MAX_SIZE,
             "ANDROID_BUILD_TOP": str(ctx.android_root),
             "OUT_DIR": str(ctx.android_root / "out"),
             "ANDROID_ROOT": str(ctx.android_root),
@@ -988,29 +1025,76 @@ def _run_build(ctx: SourceContext, adb_path: Path, jobs: int, timeout_minutes: i
         start_new_session=True,
     )
     deadline = time.monotonic() + timeout_minutes * 60
-    try:
-        assert process.stdout is not None
-        while True:
-            line = process.stdout.readline()
-            if line:
-                write_log(line)
+    selector = selectors.DefaultSelector()
+    console_state = [0]
+
+    def consume(events: Sequence[tuple[Any, int]]) -> None:
+        for key, _ in events:
+            stream = key.fileobj
+            try:
+                chunk = os.read(stream.fileno(), 64 * 1024)
+            except BlockingIOError:
+                continue
+            if not chunk:
                 try:
-                    sys.stdout.buffer.write(line)
+                    selector.unregister(stream)
+                except KeyError:
+                    pass
+                continue
+            write_log(chunk)
+            if console_state[0] < MAX_CONSOLE_LOG_BYTES:
+                visible = chunk[: MAX_CONSOLE_LOG_BYTES - console_state[0]]
+                try:
+                    sys.stdout.buffer.write(visible)
                     sys.stdout.buffer.flush()
                 except (BrokenPipeError, OSError):
                     pass
-            elif process.poll() is not None:
-                break
-            elif time.monotonic() >= deadline:
+                console_state[0] += len(visible)
+                if console_state[0] >= MAX_CONSOLE_LOG_BYTES:
+                    try:
+                        sys.stdout.write("\n[build console output truncated; see build.log artifact]\n")
+                        sys.stdout.flush()
+                    except (BrokenPipeError, OSError):
+                        pass
+
+    try:
+        assert process.stdout is not None
+        os.set_blocking(process.stdout.fileno(), False)
+        selector.register(process.stdout, selectors.EVENT_READ)
+        returncode: int | None = None
+        while returncode is None:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
                 _terminate_process_group(process)
                 raise CiError("Android build timed out; process group was terminated")
-        returncode = process.wait()
+            events = selector.select(min(remaining, 1.0))
+            if events:
+                consume(events)
+            if process.poll() is not None:
+                # Drain bytes already buffered in the pipe without waiting for
+                # a descendant that accidentally inherited stdout.
+                while selector.get_map():
+                    pending = selector.select(0)
+                    if not pending:
+                        break
+                    consume(pending)
+                returncode = process.wait()
     finally:
+        selector.close()
+        if process.stdout is not None:
+            process.stdout.close()
         log_stream.flush()
         os.fsync(log_stream.fileno())
         log_stream.close()
     if returncode != 0:
         raise CiError(f"Android build failed with exit code {returncode}")
+    # The build subprocess is untrusted with respect to output paths.  Check
+    # the external containment and non-symlink contract again before opening
+    # any archive produced by it.
+    _assert_directory(ctx.android_root / "out", "Android OUT_DIR")
+    _assert_directory(target_dir.parent, "target-files parent")
+    _assert_directory(target_dir, "target-files directory")
+    _assert_no_symlink_components(log_path)
     if not target_dir.is_dir():
         raise CiError(f"target-files output directory is missing: {target_dir}")
     candidates = sorted(
@@ -1023,11 +1107,7 @@ def _run_build(ctx: SourceContext, adb_path: Path, jobs: int, timeout_minutes: i
     target = candidates[0]
     metadata = _regular_file(target, "target-files archive", maximum=MAX_TARGET_FILES_BYTES)
     previous = before.get(target.name)
-    if previous is not None and (
-        previous[0] == metadata.st_ino
-        and previous[1] == metadata.st_size
-        and previous[2] >= build_started
-    ):
+    if previous is not None and _identity(metadata) == previous:
         raise CiError("target-files archive was not refreshed by this build")
     target_sha = sha256_file(target, "target-files archive", maximum=MAX_TARGET_FILES_BYTES)
     zip_members = _verify_target_files_zip(target)
@@ -1057,6 +1137,10 @@ def _run_build(ctx: SourceContext, adb_path: Path, jobs: int, timeout_minutes: i
             "sha256": target_sha,
             "zip_member_count": len(zip_members),
         },
+        "cache": {
+            "path": str(ccache_root),
+            "max_size": CCACHE_MAX_SIZE,
+        },
         "apks": apks,
         "log": {"path": str(log_path), "bytes_retained": log_state[0]},
         "claim_ceiling": "UNSIGNED_USERDEBUG_TARGET_FILES_AND_APK_METADATA_VERIFIED",
@@ -1078,6 +1162,7 @@ def _verify_target_files_zip(path: Path) -> tuple[zipfile.ZipInfo, ...]:
             if not infos or len(infos) > 1_000_000:
                 raise CiError("target-files ZIP member count is outside the safe range")
             names: set[str] = set()
+            uncompressed_bytes = 0
             for info in infos:
                 name = info.filename
                 if name in names:
@@ -1093,6 +1178,9 @@ def _verify_target_files_zip(path: Path) -> tuple[zipfile.ZipInfo, ...]:
                     raise CiError(f"symlink target-files ZIP member: {name}")
                 if info.flag_bits & 0x1:
                     raise CiError(f"encrypted target-files ZIP member: {name}")
+                uncompressed_bytes += info.file_size
+                if uncompressed_bytes > MAX_TARGET_FILES_UNCOMPRESSED_BYTES:
+                    raise CiError("target-files ZIP expands beyond the safe size ceiling")
             for required in ("META/misc_info.txt", "META/apkcerts.txt"):
                 if required not in names:
                     raise CiError(f"target-files ZIP is missing {required}")
@@ -1171,7 +1259,11 @@ def _extract_and_verify_apks(
     aapt2 = _locate_tool(ctx.android_root, ("aapt2",))
     apksigner = _locate_tool(ctx.android_root, ("apksigner",))
     output_root = ctx.run_root / "apks"
+    _assert_under(ctx.external_root, output_root, "APK output root")
+    _assert_directory(output_root.parent, "APK output parent")
+    _assert_directory(output_root, "APK output root")
     output_root.mkdir(parents=True, exist_ok=True)
+    _assert_directory(output_root, "APK output root")
     results: list[dict[str, Any]] = []
     try:
         archive = zipfile.ZipFile(target, "r")
@@ -1193,16 +1285,35 @@ def _extract_and_verify_apks(
             destination = output_root / f"{module}.apk"
             if destination.exists() or destination.is_symlink():
                 raise CiError(f"refusing to overwrite extracted APK: {destination}")
-            with archive.open(info, "r") as source, destination.open("xb") as output:
-                remaining = info.file_size
-                while remaining:
-                    block = source.read(min(1024 * 1024, remaining))
-                    if not block:
-                        raise CiError(f"short ZIP member while extracting {member}")
-                    output.write(block)
-                    remaining -= len(block)
-                output.flush()
-                os.fsync(output.fileno())
+            _assert_no_symlink_components(destination.parent)
+            descriptor: int | None = None
+            try:
+                descriptor = os.open(
+                    destination,
+                    os.O_WRONLY
+                    | os.O_CREAT
+                    | os.O_EXCL
+                    | os.O_NOFOLLOW
+                    | getattr(os, "O_CLOEXEC", 0),
+                    0o600,
+                )
+                with archive.open(info, "r") as source, os.fdopen(
+                    descriptor, "wb"
+                ) as output:
+                    descriptor = None
+                    remaining = info.file_size
+                    while remaining:
+                        block = source.read(min(1024 * 1024, remaining))
+                        if not block:
+                            raise CiError(f"short ZIP member while extracting {member}")
+                        output.write(block)
+                        remaining -= len(block)
+                    output.flush()
+                    os.fsync(output.fileno())
+            finally:
+                if descriptor is not None:
+                    os.close(descriptor)
+            _regular_file(destination, f"extracted {module} APK", maximum=MAX_APK_BYTES)
             package, version_code = _apk_badging(aapt2, destination)
             if package != spec["package"] or PACKAGE_RE.fullmatch(package) is None:
                 raise CiError(
@@ -1403,6 +1514,13 @@ def _device_install_and_test(
         observations.append(dump_after)
         if not _adb_ok(dump_after) or package not in dump_after["stdout"]:
             raise CiError(f"package dump readback failed for {package}")
+        expected_version = record.get("version_code")
+        if expected_version:
+            version_match = re.search(
+                r"\bversionCode=(\d+)", dump_after["stdout"]
+            )
+            if version_match is None or version_match.group(1) != expected_version:
+                raise CiError(f"installed package version readback failed for {package}")
         installed.append(
             {
                 "package": package,
@@ -1433,6 +1551,8 @@ def _device_install_and_test(
     pid["operation"] = "launcher_pid_read"
     pid["package"] = shell_package
     observations.append(pid)
+    if not _adb_ok(pid) or not pid["stdout"].strip():
+        raise CiError("AiShell launcher did not remain running after start")
     final_logcat = _run_adb(adb, serial, ["shell", "logcat", "-d", "-t", "300"])
     final_logcat["operation"] = "post_test_logcat"
     observations.append(final_logcat)
@@ -1510,7 +1630,10 @@ def _source_receipt(ctx: SourceContext) -> dict[str, Any]:
             "free_bytes_at_preflight": ctx.free_bytes,
         },
         "machine": _machine_snapshot(),
-        "claim_ceiling": "EXACT_CONTROL_COMMIT_AND_PINNED_ANDROID_OVERLAY_VALIDATED",
+        "claim_ceiling": (
+            "EXACT_CONTROL_COMMIT_AND_PINNED_MANIFEST_PLUS_DECLARED_OVERLAY_PROJECTS_VALIDATED; "
+            "UNMODIFIED_BASE_PROJECTS_ARE_TRUSTED_PREPROVISIONED_INPUT"
+        ),
     }
 
 
@@ -1535,6 +1658,9 @@ def _run_transaction(args: argparse.Namespace) -> int:
         _assert_under(external_root, run_root, "run root")
         _assert_under(external_root, Path(args.lock_path).absolute(), "lock path")
         _assert_no_symlink_components(run_root.parent)
+        _assert_no_symlink_components(run_root)
+        if run_root.exists() and not run_root.is_dir():
+            raise CiError(f"run root is not a directory: {run_root}")
         storage_verified = True
         run_root.mkdir(parents=True, exist_ok=True)
         _assert_no_symlink_components(run_root)
@@ -1553,6 +1679,35 @@ def _run_transaction(args: argparse.Namespace) -> int:
             skip_mount_check=args.skip_mount_check,
         )
         _write_exclusive(run_root / "source-receipt.json", _source_receipt(context))
+        phase = "device-preflight"
+        preflight_observations, preflight_properties = _device_preflight(
+            adb, args.serial
+        )
+        _write_exclusive(
+            run_root / "device-preflight.json",
+            {
+                "schema": "org.trillionnium.android-ci.desktop-device-preflight.v1",
+                "version": 1,
+                "captured_at_utc": now_utc(),
+                "source": {
+                    "commit": context.source_commit,
+                    "tree": context.source_tree,
+                    "manifest_sha256": context.manifest_sha256,
+                    "overlay_sha256": context.overlay_digest,
+                },
+                "device": {
+                    "serial": args.serial,
+                    "properties": preflight_properties,
+                },
+                "observations": preflight_observations,
+                "mutation": {
+                    "install_performed": False,
+                    "reboot_performed": False,
+                    "flash_or_fastboot_performed": False,
+                },
+                "result": "PASS_READ_ONLY_DEVICE_PREFLIGHT",
+            },
+        )
         phase = "materialize"
         _materialize(context)
         phase = "build"
@@ -1599,7 +1754,13 @@ def _run_transaction(args: argparse.Namespace) -> int:
                 "flash_or_fastboot_performed": False,
             },
         }
-        if storage_verified:
+        # A removable mount can disappear between the initial gate and an
+        # exception.  Never write a failure receipt through the now-unmounted
+        # mount point, where it would land on the system filesystem.
+        receipt_storage_ok = args.skip_mount_check or _external_storage_still_available(
+            external_root, run_root
+        )
+        if storage_verified and receipt_storage_ok:
             try:
                 _write_exclusive(run_root / "failure.json", failure)
             except CiError:

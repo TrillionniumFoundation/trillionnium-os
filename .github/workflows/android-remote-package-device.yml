@@ -28,8 +28,8 @@ env:
   # small default workspace is deliberately not used for source or builds.
   TRILLINNIUM_EXTERNAL_ROOT: /data/toshiba-dev/TrillionniumOS
   TRILLINNIUM_ANDROID_ROOT: /data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/android/lineage-fogos
-  TRILLINNIUM_RUN_ROOT: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}
-  TRILLINNIUM_CONTROL_ROOT: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}/control
+  TRILLINNIUM_RUN_ROOT: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}
+  TRILLINNIUM_CONTROL_ROOT: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/control
   TRILLINNIUM_LOCK: /data/toshiba-dev/TrillionniumOS/.android-ci-desktop.lock
   TRILLINNIUM_DEVICE_SERIAL: ${{ vars.TRILLINNIUM_DEVICE_SERIAL }}
   TRILLINNIUM_ADB_PATH: ${{ vars.TRILLINNIUM_ADB_PATH || '/opt/android-sdk/platform-tools/adb' }}
@@ -58,6 +58,14 @@ jobs:
         run: |
           set -Eeuo pipefail
           umask 077
+          check_no_symlink_components() {
+            local path="$1"
+            while [ "$path" != "/" ]; do
+              test ! -L "$path"
+              path="${path%/*}"
+              [ -n "$path" ] || path="/"
+            done
+          }
           export HOME="$TRILLINNIUM_RUN_ROOT/home"
           export TMPDIR="$TRILLINNIUM_RUN_ROOT/tmp"
           export TMP="$TMPDIR"
@@ -65,41 +73,88 @@ jobs:
           export XDG_CACHE_HOME="$TRILLINNIUM_RUN_ROOT/cache"
           test "$(findmnt -no UUID -T "$TRILLINNIUM_EXTERNAL_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
           test "$(findmnt -no UUID -T "$TRILLINNIUM_ANDROID_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          # The runner itself is installed on the host disk, but its job
+          # workspace and temp area must resolve through the external _work
+          # mount.  This prevents actions infrastructure from placing a
+          # checkout, archive, or temporary project file on the system disk.
+          test "$(findmnt -no UUID -T "$GITHUB_WORKSPACE")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          test "$(findmnt -no UUID -T "$RUNNER_WORKSPACE")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          test "$(findmnt -no UUID -T "$RUNNER_TEMP")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          test "$(findmnt -no UUID -T "$RUNNER_TOOL_CACHE")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          # Check the floor before creating the run directory or cloning the
+          # control checkout.  This keeps a nearly-full external disk from
+          # receiving even a partial CI checkout.
+          available_bytes="$(df --output=avail -B1 "$TRILLINNIUM_EXTERNAL_ROOT" | tail -n 1 | tr -d '[:space:]')"
+          case "$available_bytes" in
+            ''|*[!0-9]*) exit 1 ;;
+          esac
+          test "$available_bytes" -ge 429496729600
           # Do not create even a temporary directory until both paths have
           # proved they are on the canonical external mount.  If the disk is
           # absent, the job must fail without writing to the system disk.
+          check_no_symlink_components "$TRILLINNIUM_EXTERNAL_ROOT"
+          check_no_symlink_components "$TRILLINNIUM_RUN_ROOT"
+          check_no_symlink_components "$TRILLINNIUM_CONTROL_ROOT"
+          test ! -L "$TRILLINNIUM_EXTERNAL_ROOT/.android-ci-runs"
+          test ! -e "$TRILLINNIUM_EXTERNAL_ROOT/.android-ci-runs" || \
+            test -d "$TRILLINNIUM_EXTERNAL_ROOT/.android-ci-runs"
+          test ! -e "$TRILLINNIUM_RUN_ROOT"
+          test ! -L "$TRILLINNIUM_RUN_ROOT"
           mkdir -p "$TRILLINNIUM_RUN_ROOT" "$TMPDIR" "$HOME" "$XDG_CACHE_HOME"
+          test "$(findmnt -no UUID -T "$TRILLINNIUM_RUN_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
           test ! -e "$TRILLINNIUM_CONTROL_ROOT"
+          test ! -L "$TRILLINNIUM_CONTROL_ROOT"
           export GIT_CONFIG_NOSYSTEM=1
           export GIT_CONFIG_COUNT=1
           export GIT_CONFIG_KEY_0=http.extraHeader
           export GIT_CONFIG_VALUE_0="Authorization: Bearer ${GITHUB_TOKEN}"
           git clone --no-checkout --no-tags --filter=blob:none \
             "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" "$TRILLINNIUM_CONTROL_ROOT"
+          check_no_symlink_components "$TRILLINNIUM_CONTROL_ROOT"
+          test "$(findmnt -no UUID -T "$TRILLINNIUM_CONTROL_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
           git -C "$TRILLINNIUM_CONTROL_ROOT" fetch --depth=1 origin "$GITHUB_SHA"
           git -C "$TRILLINNIUM_CONTROL_ROOT" checkout --detach "$GITHUB_SHA"
           test "$(git -C "$TRILLINNIUM_CONTROL_ROOT" rev-parse HEAD)" = "$GITHUB_SHA"
           test -z "$(git -C "$TRILLINNIUM_CONTROL_ROOT" status --porcelain=v1 --untracked-files=all)"
+          CONTROL_HELPER="$TRILLINNIUM_CONTROL_ROOT/tools/android_ci_desktop_build.py"
+          check_no_symlink_components "$CONTROL_HELPER"
+          test -f "$CONTROL_HELPER"
+          test ! -L "$CONTROL_HELPER"
           {
             printf 'source_commit=%s\n' "$(git -C "$TRILLINNIUM_CONTROL_ROOT" rev-parse HEAD)"
-            printf 'source_tree=%s\n' "$(git -C "$TRILLINNIUM_CONTROL_ROOT" rev-parse HEAD^{tree})"
+            printf 'source_tree=%s\n' "$(git -C "$TRILLINNIUM_CONTROL_ROOT" rev-parse 'HEAD^{tree}')"
             printf 'control_root=%s\n' "$TRILLINNIUM_CONTROL_ROOT"
             printf 'android_root=%s\n' "$TRILLINNIUM_ANDROID_ROOT"
             printf 'external_uuid=%s\n' "$(findmnt -no UUID -T "$TRILLINNIUM_EXTERNAL_ROOT")"
+            printf 'run_id=%s\n' "$GITHUB_RUN_ID"
+            printf 'run_attempt=%s\n' "$GITHUB_RUN_ATTEMPT"
           } | tee "$TRILLINNIUM_RUN_ROOT/bootstrap.txt"
 
       - name: Build, verify, install, and function-test on the desktop
         run: |
           set -Eeuo pipefail
           umask 077
+          check_no_symlink_components() {
+            local path="$1"
+            while [ "$path" != "/" ]; do
+              test ! -L "$path"
+              path="${path%/*}"
+              [ -n "$path" ] || path="/"
+            done
+          }
           export HOME="$TRILLINNIUM_RUN_ROOT/home"
           export TMPDIR="$TRILLINNIUM_RUN_ROOT/tmp"
           export TMP="$TMPDIR"
           export TEMP="$TMPDIR"
           export XDG_CACHE_HOME="$TRILLINNIUM_RUN_ROOT/cache"
-          export CCACHE_DIR="$TRILLINNIUM_RUN_ROOT/ccache"
-          mkdir -p "$HOME" "$TMPDIR" "$XDG_CACHE_HOME" "$CCACHE_DIR"
-          python3 "$TRILLINNIUM_CONTROL_ROOT/tools/android_ci_desktop_build.py" run \
+          test ! -L "$TRILLINNIUM_RUN_ROOT"
+          test "$(findmnt -no UUID -T "$TRILLINNIUM_RUN_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          mkdir -p "$HOME" "$TMPDIR" "$XDG_CACHE_HOME"
+          CONTROL_HELPER="$TRILLINNIUM_CONTROL_ROOT/tools/android_ci_desktop_build.py"
+          check_no_symlink_components "$CONTROL_HELPER"
+          test -f "$CONTROL_HELPER"
+          test ! -L "$CONTROL_HELPER"
+          python3 "$CONTROL_HELPER" run \
             --external-root "$TRILLINNIUM_EXTERNAL_ROOT" \
             --android-root "$TRILLINNIUM_ANDROID_ROOT" \
             --control-root "$TRILLINNIUM_CONTROL_ROOT" \
@@ -110,13 +165,22 @@ jobs:
             --source-commit "$GITHUB_SHA" \
             --min-free-gib 400 \
             --jobs 8 \
-            --build-timeout-minutes 2160
+            --build-timeout-minutes 2100
 
       - name: Upload external-disk receipts and bounded logs
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: android-desktop-build-device-${{ github.run_id }}
-          path: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}/
+          name: android-desktop-build-device-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/bootstrap.txt
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/source-receipt.json
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/materialization.json
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/device-preflight.json
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/build-receipt.json
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/device-receipt.json
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/final-receipt.json
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/failure.json
+            /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}-${{ github.run_attempt }}/build.log
           if-no-files-found: warn
           retention-days: 14
