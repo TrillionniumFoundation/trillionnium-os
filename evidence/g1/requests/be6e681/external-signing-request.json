@@ -1,0 +1,60 @@
+{
+  "schema": "org.trillionnium.g1.external-signing-request.v1",
+  "request_state": "UNSIGNED_TEMPLATE_NOT_PROMOTABLE",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "pull_request": 34,
+  "integration_subject": {
+    "base": {
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "codex/global-modular-docs-g1-20260831",
+      "commit": "4142fe2864f05ac2a35037b4b025f4f1f0a5d35f",
+      "tree": "ce143d2d6865622a75e88aee0878927fb1bebeb5"
+    },
+    "head": {
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "codex/g1-full-gap-closure-r2-20260901",
+      "commit": "be6e681c02996ee8c0fd25c29943aad21c66292e",
+      "tree": "a686aa24e4a3afc6527511022d2374e1d1c27fdc"
+    },
+    "github_merge_object": "91c28f34e0601a00bfe832232cd8be0fc3e7ac7e",
+    "deterministic_ordered_merge": {
+      "commit": "MUST_BE_COPIED_FROM_VERIFIED_RUN_33596149634_RECEIPT",
+      "tree": "MUST_BE_COPIED_FROM_VERIFIED_RUN_33596149634_RECEIPT",
+      "ordered_parents": [
+        "4142fe2864f05ac2a35037b4b025f4f1f0a5d35f",
+        "be6e681c02996ee8c0fd25c29943aad21c66292e"
+      ]
+    }
+  },
+  "qualified_workflows": {
+    "exact_source": 33596149698,
+    "ordered_merge": 33596149634,
+    "android_evaluated_matrix": 33596149715,
+    "evidence_intake": 33596149679
+  },
+  "required_preconditions": {
+    "fresh_eligible_exact_head_approval": "NOT_YET_EMBEDDED",
+    "protected_aggregate_report": "MUST_BE_DOWNLOADED_AND_REHASHED",
+    "support_receipts": "MUST_BE_DOWNLOADED_AND_REHASHED",
+    "trust_root": "MUST_BE_INDEPENDENTLY_ADMINISTERED_AND_PINNED",
+    "key_validity_and_revocation": "MUST_BE_VERIFIED_AT_SIGNING_AND_VERIFICATION_TIME",
+    "role_separation": "SIGNER_MUST_NOT_BE_PR_AUTHOR_OR_CURRENT_COMMIT_AUTHOR"
+  },
+  "signing_output_requirements": {
+    "location": "OUTSIDE_THIS_REPOSITORY",
+    "subject": "COMPLETE_V2_INTEGRATION_SUBJECT",
+    "signature": "DETACHED_CRYPTOGRAPHIC_SIGNATURE_OR_ACCEPTED_EXTERNAL_BUNDLE",
+    "verification_material": "PINNED_OUT_OF_BAND",
+    "signed": false,
+    "promotable": false
+  },
+  "non_claims": [
+    "This file is repository-controlled request metadata, not evidence provenance.",
+    "A content hash of this file is not an authorization signature.",
+    "The placeholders must never be signed or accepted.",
+    "This request grants no merge, deployment, target, device, fault, signing-custody or release authority.",
+    "zero_gap remains false.",
+    "public_release remains false.",
+    "automatic_redispatch remains false."
+  ]
+}
