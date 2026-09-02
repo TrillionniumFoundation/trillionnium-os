@@ -15,6 +15,7 @@ pub use upstream::{
     EventInput, EventRecord, EventStoreError, EventStoreLimits, SegmentedEventStoreConfig,
     SyncPolicy, TurnScope,
 };
+#[cfg(test)]
 pub const EVENT_RECORD_SCHEMA: &str = upstream::EVENT_RECORD_SCHEMA;
 pub type Result<T> = upstream::Result<T>;
 
