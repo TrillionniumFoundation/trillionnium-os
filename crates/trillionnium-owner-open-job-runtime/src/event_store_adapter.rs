@@ -54,11 +54,7 @@ impl DurableEventStore {
         self.0.append(input)
     }
 
-    pub fn replay(
-        &self,
-        scope: &TurnScope,
-        inclusive_turn_seq: u64,
-    ) -> Result<Vec<EventRecord>> {
+    pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
         self.0.replay(scope, inclusive_turn_seq)
     }
 
@@ -103,11 +99,7 @@ impl SegmentedEventStore {
         self.0.append_durable(input)
     }
 
-    pub fn replay(
-        &self,
-        scope: &TurnScope,
-        inclusive_turn_seq: u64,
-    ) -> Result<Vec<EventRecord>> {
+    pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
         self.0.replay(scope, inclusive_turn_seq)
     }
 
@@ -135,12 +127,8 @@ mod tests {
             .expect("secure temporary directory");
         let path = directory.path().join("events.jsonl");
 
-        let store = DurableEventStore::open(
-            &path,
-            EventStoreLimits::default(),
-            SyncPolicy::Full,
-        )
-        .expect("initial event store");
+        let store = DurableEventStore::open(&path, EventStoreLimits::default(), SyncPolicy::Full)
+            .expect("initial event store");
         drop(store);
 
         let inherited = OpenOptions::new()
@@ -148,24 +136,16 @@ mod tests {
             .append(true)
             .open(&path)
             .expect("open inherited descriptor fixture");
-        let locked = unsafe {
-            libc::flock(
-                inherited.as_raw_fd(),
-                libc::LOCK_EX | libc::LOCK_NB,
-            )
-        };
+        let locked = unsafe { libc::flock(inherited.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) };
         assert_eq!(locked, 0);
         let release = std::thread::spawn(move || {
             std::thread::sleep(Duration::from_millis(25));
             drop(inherited);
         });
 
-        let reopened = DurableEventStore::open(
-            &path,
-            EventStoreLimits::default(),
-            SyncPolicy::Full,
-        )
-        .expect("reopen after inherited writer handoff");
+        let reopened =
+            DurableEventStore::open(&path, EventStoreLimits::default(), SyncPolicy::Full)
+                .expect("reopen after inherited writer handoff");
         release.join().expect("descriptor release thread");
         assert!(reopened.all_records().expect("replayed records").is_empty());
     }
