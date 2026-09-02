@@ -49,6 +49,27 @@ raw observations, artifacts, environment/target/device identity, and review
 bindings remain in the producing CI or qualification artifact.  An index row
 alone never promotes a claim or closes a higher-level gap.
 
+### 2.2 Protected L1 pull-request aggregate
+
+The server-required `L1 exact-source-head aggregate candidate` context is the
+repository-controlled L1 integration gate.  On a pull request it must not pass
+from its own source jobs alone.  It also reads the live pull request and
+protected integration branch, selects the newest exact-subject run of each
+ordered-merge, Android evaluated-matrix, and strict evidence-intake workflow,
+and requires every declared job to finish successfully.
+
+The aggregate downloads every retained artifact, compares its byte count and
+GitHub SHA-256 metadata with the downloaded archive, rejects unsafe or ambiguous
+ZIP members, and validates the embedded base/head/parent order, merge tree,
+Android claim ceiling, evidence source identity, and no-redispatch/no-release
+boundaries.  It then re-reads the pull request, branch protection, and newest
+workflow-run identities.  Movement, retargeting, a newer run, an older green
+run, a digest mismatch, or a widened claim fails the required context.
+
+This transitive source gate is not an external signature and cannot promote a
+gap.  A current complete-subject attestation still requires a detached signature
+under an independently administered out-of-repository trust root.
+
 ## 3. Module evidence
 
 Each module supplies evidence for:
@@ -120,7 +141,13 @@ explicit human authorization.
 
 ## 8. Current boundary
 
-The retained source-CI identity and unqualified R15 parent are recorded in
-`machine/evidence-index.v1.json`. This G1 document reset remains a candidate
-until an exact-head workflow produces its evidence and a non-author review is
-bound. No text in this document promotes L2–L6.
+The canonical G1 pull request retains separate exact-source, ordered-merge,
+Android evaluated-graph, and evidence-intake packets.  The protected L1
+aggregate binds those repository-controlled packets to one unchanged live
+base/head subject, while independent review and detached-attestation rules bind
+human and signing authority.
+
+Passing that aggregate proves neither installed Root Linux/Codex nor compiled
+Soong/SELinux, target-files, a physical device, destructive recovery, signing
+custody, or public release.  Those L2–L6 facts remain external until genuine
+independently reviewed packages satisfy their declared exits.

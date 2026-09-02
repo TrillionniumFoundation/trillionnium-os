@@ -9,7 +9,9 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
+  pull-requests: read
 
 concurrency:
   group: g1-source-${{ github.workflow }}-${{ github.ref }}
@@ -17,6 +19,8 @@ concurrency:
 
 env:
   SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  EVENT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
   CARGO_TERM_COLOR: always
   PYTHONDONTWRITEBYTECODE: "1"
 
@@ -276,7 +280,7 @@ jobs:
       - android-packaging-source
     if: ${{ always() }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - name: Require all source jobs
         env:
@@ -298,6 +302,31 @@ jobs:
           fetch-depth: 0
           ref: ${{ env.SOURCE_HEAD_SHA }}
           persist-credentials: false
+      - name: Set up Python 3.13 for live aggregate binding
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Bind ordered-merge, Android and evidence workflow families
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          python3 -m py_compile tools/verify-g1-pr-aggregate.py
+          python3 -m unittest tools.tests.test_g1_pr_aggregate -v
+          python3 tools/verify-g1-pr-aggregate.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --pr-number "$EVENT_PR_NUMBER" \
+            --base-commit "$EVENT_BASE_SHA" \
+            --head-commit "$SOURCE_HEAD_SHA" \
+            --repo-root . \
+            --timeout-seconds 1200 \
+            --poll-seconds 10 \
+            --output "${RUNNER_TEMP}/g1-pr-workflow-aggregate.json"
+          python3 -m json.tool "${RUNNER_TEMP}/g1-pr-workflow-aggregate.json" >/dev/null
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Emit exact-head evidence manifest
         run: |
           set -euo pipefail
@@ -326,4 +355,6 @@ jobs:
           name: g1-exact-head-${{ env.SOURCE_HEAD_SHA }}
           if-no-files-found: error
           retention-days: 30
-          path: g1-exact-head-evidence.json
+          path: |
+            g1-exact-head-evidence.json
+            ${{ runner.temp }}/g1-pr-workflow-aggregate.json
