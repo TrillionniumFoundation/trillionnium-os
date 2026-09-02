@@ -895,7 +895,7 @@ def _materialize(ctx: SourceContext) -> dict[str, Any]:
     return receipt
 
 
-def _limited_log(path: Path) -> tuple[Any, list[int]]:
+def _limited_log(path: Path) -> tuple[Any, list[int], Any]:
     path.parent.mkdir(parents=True, exist_ok=True)
     stream = path.open("wb")
     state = [0]
@@ -1519,12 +1519,26 @@ def _run_transaction(args: argparse.Namespace) -> int:
     android_root = Path(args.android_root).absolute()
     control_root = Path(args.control_root).absolute()
     run_root = Path(args.run_root).absolute()
-    _assert_under(external_root, run_root, "run root")
-    run_root.mkdir(parents=True, exist_ok=True)
-    (run_root / "logs").mkdir(exist_ok=True)
     phase = "startup"
     lock_descriptor: int | None = None
+    storage_verified = False
     try:
+        # Check the mount before creating the run directory or lock.  Otherwise
+        # a missing external mount could make those paths on the system
+        # filesystem, violating the desktop lane's no-main-disk contract.
+        _assert_no_symlink_components(external_root)
+        if not args.skip_mount_check:
+            if _mounted_uuid(external_root).lower() != EXTERNAL_UUID:
+                raise CiError("external root is not mounted from the canonical UUID")
+            if _mounted_uuid(android_root).lower() != EXTERNAL_UUID:
+                raise CiError("Android root is not on the canonical external UUID")
+        _assert_under(external_root, run_root, "run root")
+        _assert_under(external_root, Path(args.lock_path).absolute(), "lock path")
+        _assert_no_symlink_components(run_root.parent)
+        storage_verified = True
+        run_root.mkdir(parents=True, exist_ok=True)
+        _assert_no_symlink_components(run_root)
+        (run_root / "logs").mkdir(exist_ok=True)
         lock_descriptor = _acquire_lock(Path(args.lock_path).absolute())
         phase = "preflight"
         adb = _validate_adb_path(Path(args.adb))
@@ -1585,10 +1599,11 @@ def _run_transaction(args: argparse.Namespace) -> int:
                 "flash_or_fastboot_performed": False,
             },
         }
-        try:
-            _write_exclusive(run_root / "failure.json", failure)
-        except CiError:
-            pass
+        if storage_verified:
+            try:
+                _write_exclusive(run_root / "failure.json", failure)
+            except CiError:
+                pass
         print(f"android-ci-desktop-build: {error}", file=sys.stderr)
         return 2
     finally:
@@ -1630,14 +1645,30 @@ def main(argv: Iterable[str] | None = None) -> int:
     android_root = Path(args.android_root).absolute()
     control_root = Path(args.control_root).absolute()
     run_root = Path(args.run_root).absolute()
-    run_root.mkdir(parents=True, exist_ok=True)
     try:
         lock: int | None = None
         if args.command == "materialize":
+            # The mount and containment checks in _preflight run before this
+            # directory is created; keep even materialize-only invocations
+            # from placing a run directory on the system filesystem.
+            _assert_no_symlink_components(external_root)
+            _assert_under(external_root, android_root, "Android root")
+            _assert_under(external_root, control_root, "control root")
+            _assert_under(external_root, run_root, "run root")
+            if not args.skip_mount_check:
+                if _mounted_uuid(external_root).lower() != EXTERNAL_UUID:
+                    raise CiError("external root is not mounted from the canonical UUID")
+                if _mounted_uuid(android_root).lower() != EXTERNAL_UUID:
+                    raise CiError("Android root is not on the canonical external UUID")
+            _assert_no_symlink_components(run_root.parent)
+            run_root.mkdir(parents=True, exist_ok=True)
+            _assert_no_symlink_components(run_root)
             # Hold the same exclusive lock while validating and copying.  A
             # preflight performed before the lock could race another local
             # materializer and invalidate its hashes.
-            lock = _acquire_lock(Path(args.lock_path).absolute())
+            lock_path = Path(args.lock_path).absolute()
+            _assert_under(external_root, lock_path, "lock path")
+            lock = _acquire_lock(lock_path)
         try:
             context = _preflight(
                 control_root=control_root,

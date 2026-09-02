@@ -63,9 +63,12 @@ jobs:
           export TMP="$TMPDIR"
           export TEMP="$TMPDIR"
           export XDG_CACHE_HOME="$TRILLINNIUM_RUN_ROOT/cache"
-          mkdir -p "$TRILLINNIUM_RUN_ROOT" "$TMPDIR" "$HOME" "$XDG_CACHE_HOME"
           test "$(findmnt -no UUID -T "$TRILLINNIUM_EXTERNAL_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
           test "$(findmnt -no UUID -T "$TRILLINNIUM_ANDROID_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          # Do not create even a temporary directory until both paths have
+          # proved they are on the canonical external mount.  If the disk is
+          # absent, the job must fail without writing to the system disk.
+          mkdir -p "$TRILLINNIUM_RUN_ROOT" "$TMPDIR" "$HOME" "$XDG_CACHE_HOME"
           test ! -e "$TRILLINNIUM_CONTROL_ROOT"
           export GIT_CONFIG_NOSYSTEM=1
           export GIT_CONFIG_COUNT=1

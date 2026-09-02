@@ -188,6 +188,38 @@ class DesktopBuildTests(unittest.TestCase):
             with self.assertRaises(tool.CiError):
                 tool._copy_regular(source, destination, "fixture")
 
+    def test_run_mount_failure_creates_no_run_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            external = root / "external"
+            android = external / "android"
+            control = external / "control"
+            run = external / "run"
+            android.mkdir(parents=True)
+            control.mkdir()
+            with mock.patch.object(
+                tool,
+                "_mounted_uuid",
+                side_effect=tool.CiError("external mount unavailable"),
+            ):
+                result = tool.main(
+                    [
+                        "run",
+                        "--external-root",
+                        str(external),
+                        "--android-root",
+                        str(android),
+                        "--control-root",
+                        str(control),
+                        "--run-root",
+                        str(run),
+                        "--source-commit",
+                        "a" * 40,
+                    ]
+                )
+            self.assertEqual(result, 2)
+            self.assertFalse(run.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
