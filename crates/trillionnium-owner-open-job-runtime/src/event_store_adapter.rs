@@ -12,9 +12,10 @@ use std::time::{Duration, Instant};
 use ::trillionnium_owner_open_event_store as upstream;
 
 pub use upstream::{
-    EVENT_RECORD_SCHEMA, EventInput, EventRecord, EventStoreError, EventStoreLimits,
-    SegmentedEventStoreConfig, SyncPolicy, TurnScope,
+    EventInput, EventRecord, EventStoreError, EventStoreLimits, SegmentedEventStoreConfig,
+    SyncPolicy, TurnScope,
 };
+pub const EVENT_RECORD_SCHEMA: &str = upstream::EVENT_RECORD_SCHEMA;
 pub type Result<T> = upstream::Result<T>;
 
 const WRITER_HANDOFF_WAIT: Duration = Duration::from_secs(1);
