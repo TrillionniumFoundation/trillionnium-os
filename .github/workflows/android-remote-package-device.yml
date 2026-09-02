@@ -1,9 +1,9 @@
-name: Android remote package and real-device smoke
+name: Android desktop build and real-device test
 
-# This workflow intentionally has no pull_request trigger.  The repository is
-# public and a self-hosted device must never execute code from an untrusted PR.
-# Maintainers may dispatch it for a trusted branch, while protected main runs
-# it automatically after a merge.
+# This repository is public.  A persistent self-hosted machine must never
+# execute source from a pull request.  The only automatic trigger is a commit
+# already merged into protected main; workflow_dispatch is intentionally
+# admitted only when the selected ref is main (see the job condition below).
 on:
   push:
     branches:
@@ -11,12 +11,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
   contents: read
 
 concurrency:
-  # ADB is a single-device resource.  Never run two jobs against it at once.
-  group: android-real-device-${{ github.repository }}
+  # The handset and the external Android checkout are single-writer resources.
+  group: android-desktop-build-device-${{ github.repository }}
   cancel-in-progress: false
 
 defaults:
@@ -24,192 +23,97 @@ defaults:
     shell: bash
 
 env:
+  # The control checkout, Android checkout, OUT_DIR, cache, temporary files,
+  # APKs, receipts, and logs all live below this external mount.  The runner's
+  # small default workspace is deliberately not used for source or builds.
+  TRILLINNIUM_EXTERNAL_ROOT: /data/toshiba-dev/TrillionniumOS
+  TRILLINNIUM_ANDROID_ROOT: /data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/android/lineage-fogos
+  TRILLINNIUM_RUN_ROOT: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}
+  TRILLINNIUM_CONTROL_ROOT: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}/control
+  TRILLINNIUM_LOCK: /data/toshiba-dev/TrillionniumOS/.android-ci-desktop.lock
+  TRILLINNIUM_DEVICE_SERIAL: ${{ vars.TRILLINNIUM_DEVICE_SERIAL }}
+  TRILLINNIUM_ADB_PATH: ${{ vars.TRILLINNIUM_ADB_PATH || '/opt/android-sdk/platform-tools/adb' }}
   PYTHONDONTWRITEBYTECODE: "1"
-  # These are repository Variables, not secrets.  The serial is an explicit
-  # allowlist entry; an unset variable fails closed in the device job.
-  ANDROID_DEVICE_SERIAL: ${{ vars.TRILLINNIUM_DEVICE_SERIAL }}
-  ANDROID_ADB_PATH: ${{ vars.TRILLINNIUM_ADB_PATH || '/opt/android-sdk/platform-tools/adb' }}
-  ANDROID_EXPECTED_PRODUCT_DEVICE: fogos
-  ANDROID_EXPECTED_BUILD_TYPE: userdebug
-  ANDROID_EXPECTED_SDK: "36"
 
 jobs:
-  package-source:
-    name: Package exact tracked source
-    if: ${{ github.repository == 'TrillionniumFoundation/trillionnium-os' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main') }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    outputs:
-      source_sha: ${{ steps.metadata.outputs.source_sha }}
-      source_tree: ${{ steps.metadata.outputs.source_tree }}
-      archive_sha256: ${{ steps.metadata.outputs.archive_sha256 }}
-      artifact_name: ${{ steps.metadata.outputs.artifact_name }}
-    steps:
-      - name: Check out exact source head
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          fetch-depth: 0
-          ref: ${{ github.sha }}
-          persist-credentials: false
-
-      - name: Set up Python 3.13
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
-        with:
-          python-version: "3.13"
-
-      - name: Create exact source package and manifest
-        id: metadata
-        env:
-          EXPECTED_SOURCE_SHA: ${{ github.sha }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          output_dir="${RUNNER_TEMP}/android-ci-source-package"
-          mkdir -p "$output_dir"
-          python3 tools/android_ci_source_package.py create \
-            --repo-root "$GITHUB_WORKSPACE" \
-            --output-dir "$output_dir" \
-            --repository "$REPOSITORY" \
-            --expected-commit "$EXPECTED_SOURCE_SHA"
-          manifest="$output_dir/trillionnium-os-source.json"
-          test -f "$manifest"
-          readarray -t metadata < <(python3 - "$manifest" <<'PY'
-          import json
-          import sys
-
-          with open(sys.argv[1], encoding="utf-8") as stream:
-              document = json.load(stream)
-          print(document["source_commit"])
-          print(document["source_tree"])
-          print(document["archive"]["sha256"])
-          PY
-          )
-          test "${#metadata[@]}" -eq 3
-          source_sha="${metadata[0]}"
-          source_tree="${metadata[1]}"
-          archive_sha256="${metadata[2]}"
-          [[ "$source_sha" =~ ^[0-9a-f]{40}$ ]]
-          [[ "$source_tree" =~ ^[0-9a-f]{40}$ ]]
-          [[ "$archive_sha256" =~ ^[0-9a-f]{64}$ ]]
-          test "$source_sha" = "$EXPECTED_SOURCE_SHA"
-          {
-            echo "source_sha=$source_sha"
-            echo "source_tree=$source_tree"
-            echo "archive_sha256=$archive_sha256"
-            echo "artifact_name=android-source-$source_sha"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Upload immutable source package
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: android-source-${{ github.sha }}
-          if-no-files-found: error
-          retention-days: 3
-          path: |
-            ${{ runner.temp }}/android-ci-source-package/trillionnium-os-source.tar.gz
-            ${{ runner.temp }}/android-ci-source-package/trillionnium-os-source.tar.gz.sha256
-            ${{ runner.temp }}/android-ci-source-package/trillionnium-os-source.json
-
-  device-smoke:
-    name: Verify package and read-only Android device smoke
-    needs: package-source
-    if: ${{ needs.package-source.result == 'success' && github.repository == 'TrillionniumFoundation/trillionnium-os' && (github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main') }}
-    # The environment can be configured with required reviewers before this
-    # job is allowed to touch the physical device.
-    environment:
-      name: android-real-device
+  desktop-build-device-test:
+    name: External-disk Android build → APK → device test
+    if: ${{ github.repository == 'TrillionniumFoundation/trillionnium-os' && github.ref == 'refs/heads/main' }}
+    # The desktop label is intentionally required.  Do not replace it with
+    # generic real-device: ROG is in the same runner group but has no adb/phone.
     runs-on:
       group: trillionnium-real-devices
       labels:
         - self-hosted
         - linux
         - x64
-        - real-device
-    timeout-minutes: 20
+        - desktop
+    environment:
+      name: android-real-device
+    timeout-minutes: 2160
     steps:
-      - name: Check out exact source head for the verifier
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          fetch-depth: 1
-          ref: ${{ needs.package-source.outputs.source_sha }}
-          persist-credentials: false
-
-      - name: Download exact source package
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
-        with:
-          name: ${{ needs.package-source.outputs.artifact_name }}
-          path: ${{ runner.temp }}/android-ci-incoming
-
-      - name: Verify package identity before device access
+      - name: Prepare exact control commit on the external disk
         env:
-          EXPECTED_REPOSITORY: ${{ github.repository }}
-          EXPECTED_SOURCE_SHA: ${{ needs.package-source.outputs.source_sha }}
-          EXPECTED_SOURCE_TREE: ${{ needs.package-source.outputs.source_tree }}
-          EXPECTED_ARCHIVE_SHA256: ${{ needs.package-source.outputs.archive_sha256 }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
-          incoming="${RUNNER_TEMP}/android-ci-incoming"
-          manifest="$incoming/trillionnium-os-source.json"
-          archive="$incoming/trillionnium-os-source.tar.gz"
-          sidecar="$incoming/trillionnium-os-source.tar.gz.sha256"
-          test -f "$manifest"
-          test -f "$archive"
-          test -f "$sidecar"
-          test "$(find "$incoming" -maxdepth 1 -type f -printf '%f\n' | sort | wc -l)" -eq 3
-          python3 tools/android_ci_source_package.py verify \
-            --manifest "$manifest" \
-            --archive "$archive" \
-            --expected-repository "$EXPECTED_REPOSITORY" \
-            --expected-commit "$EXPECTED_SOURCE_SHA" \
-            --expected-tree "$EXPECTED_SOURCE_TREE"
-          actual_archive_sha256="$(sha256sum "$archive" | awk '{print $1}')"
-          test "$actual_archive_sha256" = "$EXPECTED_ARCHIVE_SHA256"
+          set -Eeuo pipefail
+          umask 077
+          export HOME="$TRILLINNIUM_RUN_ROOT/home"
+          export TMPDIR="$TRILLINNIUM_RUN_ROOT/tmp"
+          export TMP="$TMPDIR"
+          export TEMP="$TMPDIR"
+          export XDG_CACHE_HOME="$TRILLINNIUM_RUN_ROOT/cache"
+          mkdir -p "$TRILLINNIUM_RUN_ROOT" "$TMPDIR" "$HOME" "$XDG_CACHE_HOME"
+          test "$(findmnt -no UUID -T "$TRILLINNIUM_EXTERNAL_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          test "$(findmnt -no UUID -T "$TRILLINNIUM_ANDROID_ROOT")" = "63df6e1a-baf3-4680-8bbb-8019fb025341"
+          test ! -e "$TRILLINNIUM_CONTROL_ROOT"
+          export GIT_CONFIG_NOSYSTEM=1
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0=http.extraHeader
+          export GIT_CONFIG_VALUE_0="Authorization: Bearer ${GITHUB_TOKEN}"
+          git clone --no-checkout --no-tags --filter=blob:none \
+            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git" "$TRILLINNIUM_CONTROL_ROOT"
+          git -C "$TRILLINNIUM_CONTROL_ROOT" fetch --depth=1 origin "$GITHUB_SHA"
+          git -C "$TRILLINNIUM_CONTROL_ROOT" checkout --detach "$GITHUB_SHA"
+          test "$(git -C "$TRILLINNIUM_CONTROL_ROOT" rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git -C "$TRILLINNIUM_CONTROL_ROOT" status --porcelain=v1 --untracked-files=all)"
+          {
+            printf 'source_commit=%s\n' "$(git -C "$TRILLINNIUM_CONTROL_ROOT" rev-parse HEAD)"
+            printf 'source_tree=%s\n' "$(git -C "$TRILLINNIUM_CONTROL_ROOT" rev-parse HEAD^{tree})"
+            printf 'control_root=%s\n' "$TRILLINNIUM_CONTROL_ROOT"
+            printf 'android_root=%s\n' "$TRILLINNIUM_ANDROID_ROOT"
+            printf 'external_uuid=%s\n' "$(findmnt -no UUID -T "$TRILLINNIUM_EXTERNAL_ROOT")"
+          } | tee "$TRILLINNIUM_RUN_ROOT/bootstrap.txt"
 
-      - name: Require the configured runner and allowlisted device
+      - name: Build, verify, install, and function-test on the desktop
         run: |
-          set -euo pipefail
-          adb_path="$ANDROID_ADB_PATH"
-          case "$adb_path" in
-            /*) ;;
-            *) echo "ANDROID_ADB_PATH must be absolute" >&2; exit 2 ;;
-          esac
-          test -f "$adb_path"
-          test ! -L "$adb_path"
-          test -x "$adb_path"
-          test -n "$ANDROID_DEVICE_SERIAL"
-          [[ "$ANDROID_DEVICE_SERIAL" =~ ^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$ ]]
+          set -Eeuo pipefail
+          umask 077
+          export HOME="$TRILLINNIUM_RUN_ROOT/home"
+          export TMPDIR="$TRILLINNIUM_RUN_ROOT/tmp"
+          export TMP="$TMPDIR"
+          export TEMP="$TMPDIR"
+          export XDG_CACHE_HOME="$TRILLINNIUM_RUN_ROOT/cache"
+          export CCACHE_DIR="$TRILLINNIUM_RUN_ROOT/ccache"
+          mkdir -p "$HOME" "$TMPDIR" "$XDG_CACHE_HOME" "$CCACHE_DIR"
+          python3 "$TRILLINNIUM_CONTROL_ROOT/tools/android_ci_desktop_build.py" run \
+            --external-root "$TRILLINNIUM_EXTERNAL_ROOT" \
+            --android-root "$TRILLINNIUM_ANDROID_ROOT" \
+            --control-root "$TRILLINNIUM_CONTROL_ROOT" \
+            --run-root "$TRILLINNIUM_RUN_ROOT" \
+            --lock-path "$TRILLINNIUM_LOCK" \
+            --adb "$TRILLINNIUM_ADB_PATH" \
+            --serial "$TRILLINNIUM_DEVICE_SERIAL" \
+            --source-commit "$GITHUB_SHA" \
+            --min-free-gib 400 \
+            --jobs 8 \
+            --build-timeout-minutes 2160
 
-      - name: Collect read-only Android device receipt
-        id: smoke
-        env:
-          SOURCE_SHA: ${{ needs.package-source.outputs.source_sha }}
-          SOURCE_TREE: ${{ needs.package-source.outputs.source_tree }}
-          ARCHIVE_SHA256: ${{ needs.package-source.outputs.archive_sha256 }}
-        run: |
-          set -euo pipefail
-          receipt="${RUNNER_TEMP}/android-device-smoke.json"
-          set +e
-          python3 tools/android_ci_device_smoke.py \
-            --adb "$ANDROID_ADB_PATH" \
-            --serial "$ANDROID_DEVICE_SERIAL" \
-            --repository "$GITHUB_REPOSITORY" \
-            --source-commit "$SOURCE_SHA" \
-            --source-tree "$SOURCE_TREE" \
-            --source-package-sha256 "$ARCHIVE_SHA256" \
-            --expected-product-device "$ANDROID_EXPECTED_PRODUCT_DEVICE" \
-            --expected-build-type "$ANDROID_EXPECTED_BUILD_TYPE" \
-            --expected-sdk "$ANDROID_EXPECTED_SDK" \
-            --output "$receipt"
-          status=$?
-          set -e
-          echo "receipt=$receipt" >> "$GITHUB_OUTPUT"
-          exit "$status"
-
-      - name: Upload read-only device receipt
-        if: ${{ always() && steps.smoke.outputs.receipt != '' }}
+      - name: Upload external-disk receipts and bounded logs
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: android-device-smoke-${{ needs.package-source.outputs.source_sha }}
-          if-no-files-found: error
+          name: android-desktop-build-device-${{ github.run_id }}
+          path: /data/toshiba-dev/TrillionniumOS/.android-ci-runs/${{ github.run_id }}/
+          if-no-files-found: warn
           retention-days: 14
-          path: ${{ steps.smoke.outputs.receipt }}

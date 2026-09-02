@@ -13,7 +13,14 @@ with generated `__pycache__` files excluded. `PROJECT_STATUS.tsv` records each
 overlay path, its project HEAD, worktree status, and content SHA-256.
 
 This overlay is evidence for external audit and is not an approval gate. It
-does not claim that a live Android build, device effect, or OTA has passed.
+does not claim that a live Android build, device effect, or OTA has passed by
+itself. The checked-in overlay is consumed by the protected-main desktop
+workflow in `.github/workflows/android-remote-package-device.yml`; the
+workflow verifies its hashes, materializes it on the canonical external
+checkout, builds `trillionnium_fogos-bp4a-userdebug`, and performs the bounded
+APK/device smoke described in `GITHUB_DEVICE_CI.md`. A new overlay path or
+project revision must update `PROJECT_STATUS.tsv` and the pinned manifest in
+the same reviewed change, otherwise the desktop preflight fails closed.
 
 The supported GitHub-hosted package to local self-hosted-device workflow is
 documented in [`GITHUB_DEVICE_CI.md`](GITHUB_DEVICE_CI.md).

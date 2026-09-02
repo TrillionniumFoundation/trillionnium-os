@@ -1,14 +1,10 @@
 self-hosted-runner:
-  # The target-evidence workflow deliberately uses organization-managed
-  # labels for L2-L6 lanes.  Keep them explicit so actionlint validates the
-  # workflow expressions without treating the labels as typos.
+  # Keep the desktop label explicit so the build/device lane cannot be routed
+  # to the ROG runner in the same organization runner group.
   labels:
-    - owner-open-r5-l2
-    - owner-open-r5-l3
-    - owner-open-r5-l4
-    - owner-open-r5-l5
-    - owner-open-r5-l6
-    - real-device
+    - self-hosted
+    - linux
+    - x64
     - desktop
 
 config-variables: null

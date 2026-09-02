@@ -1,84 +1,116 @@
-# GitHub package → local Android device CI
+# GitHub → desktop external-disk Android build → real-device test
 
-The workflow at `.github/workflows/android-remote-package-device.yml` is the
-supported path for development that is hosted on GitHub and checked against a
-physical Android device attached to the self-hosted runner.
+`.github/workflows/android-remote-package-device.yml` is now the single
+desktop lane. GitHub supplies the exact protected-`main` commit; the Linux
+`desktop` self-hosted runner performs the Android build and the bounded APK
+install/function smoke against the approved handset.
 
-## What the workflow does
+## What runs where
 
-1. A GitHub-hosted job checks out the exact triggering commit and refuses a
-   dirty checkout.
-2. `tools/android_ci_source_package.py` creates a `git archive` containing all
-   tracked files in this repository, plus a strict manifest and SHA-256
-   sidecar. The manifest says explicitly that this is a control-repository
-   source package, not an Android checkout or a built image.
-3. A self-hosted job is admitted only after the package has been downloaded and
-   its repository, commit, tree, size, digest, sidecar and tar member set have
-   been verified. It then runs the fixed, read-only ADB vocabulary in
-   `tools/android_ci_device_smoke.py`.
-4. The device job uploads a bounded JSON receipt. The receipt's claim ceiling
-   is package integrity and device connectivity/environment; it does **not**
-   claim that the packaged source was compiled, installed, flashed, or tested
-   as a newly built APK.
+The job is admitted only on `main` and uses the runner group
+`trillionnium-real-devices` with all four labels `self-hosted`, `linux`, `x64`,
+and `desktop`. The `desktop` label is deliberate: the ROG runner is in the
+same group but has no Android USB device, and the Mac runner is not a Linux
+Android host.
 
-The device job uses the runner group `trillionnium-real-devices` and labels
-`self-hosted`, `linux`, `x64`, `real-device`. The old
-`owner-open-r5-l2` label is intentionally not used: it is absent from the
-current runner and causes an indefinitely queued job.
+The workflow does **not** use `actions/checkout`. It clones the exact
+`GITHUB_SHA` into
+`/data/toshiba-dev/TrillionniumOS/.android-ci-runs/<run-id>/control`, so the
+control source, Android checkout, `OUT_DIR`, ccache, temporary files, APKs,
+receipts, and logs stay on the canonical external filesystem. The job fails if
+that path is not backed by UUID
+`63df6e1a-baf3-4680-8bbb-8019fb025341`. The normal runner `_work` directory is
+not a source or build directory; hosts that require zero project bytes on the
+system disk should move the runner work folder to the same external mount
+before enabling the workflow.
 
-## One-time repository setup
+## Build and source contract
 
-Set a repository Variable containing the exact USB serial that this workflow
-is allowed to address. Do not put a serial in a workflow command or accept a
-serial from an untrusted pull request.
+`tools/android_ci_desktop_build.py` holds one exclusive external lock for the
+whole transaction. Before any copy it checks:
+
+- the exact Git commit and tree cloned by the workflow;
+- the frozen `trillionnium-fogos.xml` SHA-256 and its 1,172 project entries;
+- every overlay file in `PROJECT_STATUS.tsv`, including its SHA-256 and project
+  HEAD;
+- absence of undeclared dirty files in the Android projects;
+- the external mount and a 400-GiB free-space floor; and
+- absence of another Android `ninja`/Soong build.
+
+The checked-in `android-integration/working-tree` overlay is then copied to the
+canonical Android tree. Existing files are backed up below the run directory;
+no automatic cleanup or destructive reset is performed. A post-copy status and
+digest check must pass before the build starts.
+
+The fixed host command is equivalent to:
+
+```sh
+source build/envsetup.sh
+lunch trillionnium_fogos-bp4a-userdebug
+m -j8 \
+  TrillionniumAiShell \
+  TrillionniumAiAuthority \
+  TrillionniumCapabilityLeaseIssuer \
+  TrillionniumAgentAccessibility \
+  TrillionniumAiShellAgentProviderSecurityContractTest \
+  TrillionniumAiAuthoritySecurityContractsTest \
+  TrillionniumCapabilityLeaseIssuerContractTest \
+  TrillionniumAgentAccessibilityContractTest \
+  target-files-package
+```
+
+The resulting target-files ZIP must be a newly refreshed, non-symlink regular
+file with a valid ZIP/CRC and the required `META/` metadata. The four APKs are
+extracted only from that ZIP, checked with `aapt2`, and verified with
+`apksigner`; their package names and SHA-256 values are bound into the build
+receipt.
+
+## Device operation boundary
+
+The device phase is behind the `android-real-device` environment, whose
+required reviewer must remain enabled. `TRILLINNIUM_DEVICE_SERIAL` is a
+repository Variable and must equal the fixed allowlist entry `ZY32JLVHGN`.
+The preflight requires `fogos`, `userdebug`, SDK 36, completed boot, and a
+usable ADB transport. Commands are always issued as `adb -s ZY32JLVHGN`.
+
+The only write/launch operations in this lane are:
+
+1. `adb install -r -d --no-streaming` for the four APKs extracted from the
+   current target-files archive;
+2. package-manager readback for each package; and
+3. `am force-stop` followed by the fixed exported AiShell activity launch.
+
+The receipt records the APK digest, package paths, device properties, and
+bounded before/after logcat. There is no `adb root`, `push`, `remount`,
+`setprop`, reboot, fastboot, flash, sideload, OTA, partition, or arbitrary
+shell command. Because Authority, CapabilityLeaseIssuer, and Accessibility
+are system-ext applications, an install failure is reported rather than being
+worked around with a remount or image write.
+
+This is an APK install/launcher smoke, not proof of a new system image. Changes
+to framework, APEX, kernel, init, SELinux policy, vendor binaries, or other
+system-image inputs require a separately reviewed OTA/image lane and are not
+silently represented as APK success.
+
+## One-time host setup
+
+Set the serial variable and keep environment review enabled:
 
 ```sh
 gh variable set TRILLINNIUM_DEVICE_SERIAL \
   --repo TrillionniumFoundation/trillionnium-os \
   --body ZY32JLVHGN
+gh variable set TRILLINNIUM_ADB_PATH \
+  --repo TrillionniumFoundation/trillionnium-os \
+  --body /opt/android-sdk/platform-tools/adb
 ```
 
-The default ADB path is `/opt/android-sdk/platform-tools/adb`. If the runner
-uses another fixed executable, set `TRILLINNIUM_ADB_PATH` to an absolute,
-non-symlink executable path. The `android-real-device` environment should be
-configured with required reviewers before enabling automatic runs on a
-protected `main` branch.
+The desktop runner must be online with the `desktop` label. Before the first
+run, drain any manually running Android build and ensure the external disk has
+at least 400 GiB free. The current disk has only about 200 GiB free, so the
+workflow is expected to fail closed until space is reclaimed or the external
+disk is replaced; it will not delete old outputs automatically.
 
-The workflow has no `pull_request` or `pull_request_target` trigger. A
-maintainer can use **Run workflow** for a trusted branch; `main` runs
-automatically. This boundary is important because the repository is public and
-self-hosted jobs execute on a persistent machine.
-
-## Local runner contract
-
-The runner host must provide:
-
-- the `real-device` label in the `trillionnium-real-devices` group;
-- an executable ordinary `adb` client;
-- the allowlisted device in `device` state; and
-- no requirement for `sudo`, `adb root`, USB flashing, or a reboot.
-
-The smoke helper samples `get-state`, reads a small fixed set of properties,
-checks SELinux mode and shell UID, and checks the expected package paths. It
-never calls `adb install`, `push`, `root`, `reboot`, `shell setprop`,
-`fastboot`, or any service/activity mutation. A failing check still produces a
-receipt when the helper reached the output step, and the job remains failed.
-
-## Why this is not yet a full remote Android build
-
-`android-integration/` contains a pinned repo-manifest and the Trillionnium
-overlay; it does not contain the roughly 1,172 independent LineageOS projects.
-The complete local Android checkout is hundreds of gigabytes. A normal
-GitHub-hosted runner and standard artifact storage are therefore not a viable
-place to archive or transfer the whole tree. A target-files archive is also
-multi-gigabyte and is not a suitable ordinary GitHub artifact for this repo.
-
-To test newly built code, add a separately provisioned, trusted Android
-builder (a large-disk runner or an external object-storage-backed build
-service). That builder must consume the pinned manifest and overlay, emit an
-APK/target-files artifact with its own source/tree/tool digests, and expose a
-workflow-call or run-ID artifact contract. The existing device job is the
-consumer boundary for that future artifact; it must remain behind the same
-environment approval and must add an explicit, separately reviewed install
-operation. Until that contract exists, this workflow deliberately performs no
-install or image mutation.
+The prior package-only/read-only workflow was intentionally replaced. It is
+not valid evidence of a newly built APK and must not be reintroduced with the
+generic `real-device` selector.
