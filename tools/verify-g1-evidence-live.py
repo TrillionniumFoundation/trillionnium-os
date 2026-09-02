@@ -15,6 +15,7 @@ import base64
 import binascii
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import io
 import json
 import os
 from pathlib import Path
@@ -25,6 +26,7 @@ from typing import Any, Iterable, Mapping
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
 from urllib.request import Request, build_opener, HTTPRedirectHandler
+import zipfile
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 EVIDENCE_TOOLS = SCRIPT_DIR / "evidence"
@@ -43,7 +45,9 @@ from g1_evidence_types import (  # noqa: E402
     EvidenceError,
     _git_sha,
     _identifier,
+    _sha256,
     _timestamp,
+    _validate_subject,
     package_id,
     sha256_bytes,
     strict_json_file,
@@ -292,12 +296,20 @@ def _verify_pull_request(api: GitHubApi, repo: str, pr_number: int, source_commi
     base_sha = base.get("sha")
     _require(isinstance(head_ref, str) and head_ref, "pull request head branch is missing")
     _require(isinstance(base_ref, str) and base_ref, "pull request base branch is missing")
+    _identifier(head_ref, "pull request head branch")
+    _identifier(base_ref, "pull request base branch")
     _require(isinstance(base_sha, str) and base_sha, "pull request base commit is missing")
+    _git_sha(base_sha, "pull request base commit")
     _require(pr.get("draft") is False, "pull request is still a draft")
+    head_repository = head_repo.get("full_name")
     _require(
-        head_repo.get("full_name") == repo,
-        "pull request head repository differs from requested repository",
+        isinstance(head_repository, str)
+        and "/" in head_repository
+        and head_repository != ""
+        and ".." not in head_repository,
+        "pull request head repository is malformed",
     )
+    _identifier(head_repository, "pull request head repository")
     _require(
         base_repo.get("full_name") == repo,
         "pull request base repository differs from requested repository",
@@ -306,10 +318,11 @@ def _verify_pull_request(api: GitHubApi, repo: str, pr_number: int, source_commi
         "number": pr_number,
         "head_sha": source_commit,
         "head_ref": head_ref,
-        "head_repository": head_repo["full_name"],
+        "head_repository": head_repository,
         "base_ref": base_ref,
         "base_sha": base_sha,
         "base_repository": base_repo["full_name"],
+        "merge_commit_sha": pr.get("merge_commit_sha"),
         "author": author,
         "state": pr.get("state"),
         "draft": pr.get("draft"),
@@ -388,6 +401,45 @@ def _verify_commit_tree(api: GitHubApi, repo: str, source_commit: str, expected_
     return {"commit": source_commit, "tree": tree, "response_sha256": sha256_bytes(response.raw)}
 
 
+def _verify_commit_identity(
+    api: GitHubApi,
+    repo: str,
+    commit_sha: str,
+    *,
+    expected_tree: str | None = None,
+    expected_parents: list[str] | None = None,
+) -> dict[str, Any]:
+    """Read a commit's tree and ordered parents from the live GitHub API."""
+
+    _git_sha(commit_sha, "commit_sha")
+    response = api.get_json(f"repos/{repo}/commits/{commit_sha}")
+    value = _mapping(response.value, "commit response")
+    _require(value.get("sha") == commit_sha, "GitHub commit identity does not match requested commit")
+    commit = _mapping(value.get("commit"), "GitHub commit.commit")
+    tree_object = _mapping(commit.get("tree"), "GitHub commit.tree")
+    tree = tree_object.get("sha")
+    _require(isinstance(tree, str) and tree, "GitHub commit tree is missing")
+    _git_sha(tree, "GitHub commit tree")
+    parent_objects = value.get("parents")
+    _require(isinstance(parent_objects, list), "GitHub commit parents are missing")
+    parents: list[str] = []
+    for index, parent in enumerate(parent_objects):
+        parent_mapping = _mapping(parent, f"GitHub commit parent[{index}]")
+        parent_sha = parent_mapping.get("sha")
+        _git_sha(parent_sha, f"GitHub commit parent[{index}].sha")
+        parents.append(parent_sha)
+    if expected_tree is not None:
+        _require(tree == expected_tree, "GitHub commit tree does not match expected tree")
+    if expected_parents is not None:
+        _require(parents == expected_parents, "GitHub commit parents do not match expected ordered parents")
+    return {
+        "commit": commit_sha,
+        "tree": tree,
+        "parents": parents,
+        "response_sha256": sha256_bytes(response.raw),
+    }
+
+
 def _verify_cargo_lock(
     api: GitHubApi,
     repo: str,
@@ -425,13 +477,117 @@ def _parse_artifact_uri(uri: str, label: str) -> tuple[str, int, int]:
     return match.group("repo"), int(match.group("run_id")), int(match.group("artifact_id"))
 
 
+SYNTHETIC_MERGE_SCHEMA = "org.trillionnium.g1-synthetic-merge-evidence.v1"
+SYNTHETIC_MERGE_KEYS = {
+    "schema",
+    "program_revision",
+    "repository",
+    "head_repository",
+    "event_name",
+    "pull_request_number",
+    "base_ref",
+    "head_ref",
+    "base_commit",
+    "base_tree",
+    "head_commit",
+    "head_tree",
+    "parent_commits",
+    "merge_commit",
+    "merge_tree",
+    "cargo_lock_sha256",
+    "workflow_run_id",
+    "workflow_attempt",
+    "result",
+    "claim_ceiling",
+    "automatic_redispatch",
+    "public_release",
+}
+
+
+def _positive_decimal(value: Any, label: str) -> int:
+    """Accept the stringly-typed IDs emitted by GitHub Actions receipts."""
+
+    if type(value) is int:
+        _require(value > 0, f"{label} must be positive")
+        return value
+    _require(isinstance(value, str) and re.fullmatch(r"[1-9][0-9]*", value) is not None, f"{label} is invalid")
+    return int(value)
+
+
+def _validate_synthetic_merge_receipt(value: Any, label: str) -> dict[str, Any]:
+    """Validate the JSON *inside* a synthetic-merge artifact archive.
+
+    Checking only the archive's outer SHA permits an old, validly retained ZIP
+    to be replayed after a PR base moves.  Every provenance field is therefore
+    checked before it can contribute to the signed subject.
+    """
+
+    receipt = _mapping(value, label)
+    _require(set(receipt) == SYNTHETIC_MERGE_KEYS, f"{label} keys drift")
+    _require(receipt["schema"] == SYNTHETIC_MERGE_SCHEMA, f"{label}.schema is unsupported")
+    _require(receipt["program_revision"] == "2026-08-31-g1", f"{label}.program_revision drifted")
+    for field in ("repository", "head_repository"):
+        repository = receipt[field]
+        _require(isinstance(repository, str) and "/" in repository, f"{label}.{field} is invalid")
+        _identifier(repository, f"{label}.{field}")
+    _require(receipt["event_name"] in {"pull_request", "workflow_dispatch"}, f"{label}.event_name is unsupported")
+    pr_number = receipt["pull_request_number"]
+    if pr_number is not None:
+        pr_number = _positive_decimal(pr_number, f"{label}.pull_request_number")
+    for field in ("base_ref", "head_ref"):
+        ref = receipt[field]
+        if ref is not None:
+            _identifier(ref, f"{label}.{field}")
+    for field in ("base_commit", "base_tree", "head_commit", "head_tree", "merge_commit", "merge_tree"):
+        _git_sha(receipt[field], f"{label}.{field}")
+    parents = receipt["parent_commits"]
+    _require(isinstance(parents, list) and len(parents) == 2, f"{label}.parent_commits must contain two parents")
+    for index, parent in enumerate(parents):
+        _git_sha(parent, f"{label}.parent_commits[{index}]")
+    _require(parents == [receipt["base_commit"], receipt["head_commit"]], f"{label}.parent_commits are not ordered base then head")
+    _require(receipt["merge_commit"] not in parents, f"{label}.merge_commit must differ from parents")
+    _sha256(receipt["cargo_lock_sha256"], f"{label}.cargo_lock_sha256")
+    _positive_decimal(receipt["workflow_run_id"], f"{label}.workflow_run_id")
+    _positive_decimal(receipt["workflow_attempt"], f"{label}.workflow_attempt")
+    _require(receipt["result"] == "L1_SYNTHETIC_MERGE_SOURCE_CLOSURE_PASSED", f"{label}.result is not a pass")
+    _require(receipt["claim_ceiling"] == "EXACT_TWO_PARENT_SOURCE_MERGE_GATES_PASSED_NOT_INSTALLED_TARGET", f"{label}.claim_ceiling drifted")
+    _require(receipt["automatic_redispatch"] is False, f"{label}.automatic_redispatch must be false")
+    _require(receipt["public_release"] is False, f"{label}.public_release must be false")
+    normalized = dict(receipt)
+    normalized["pull_request_number"] = pr_number
+    normalized["workflow_run_id"] = _positive_decimal(receipt["workflow_run_id"], f"{label}.workflow_run_id")
+    normalized["workflow_attempt"] = _positive_decimal(receipt["workflow_attempt"], f"{label}.workflow_attempt")
+    return normalized
+
+
+def _extract_synthetic_merge_receipt(raw: bytes, label: str) -> dict[str, Any]:
+    """Extract exactly one bounded synthetic receipt from a GitHub artifact ZIP."""
+
+    _require(len(raw) <= 256 * 1024 * 1024, f"{label} archive is unexpectedly large")
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as archive:
+            members = [info for info in archive.infolist() if info.filename == "g1-synthetic-merge-evidence.json"]
+            _require(len(members) == 1, f"{label} must contain exactly one synthetic merge receipt")
+            member = members[0]
+            _require(member.file_size <= 1024 * 1024, f"{label} synthetic receipt is too large")
+            _require(member.compress_type in {zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED}, f"{label} uses unsupported compression")
+            _require((member.flag_bits & 0x1) == 0, f"{label} synthetic receipt is encrypted")
+            mode = (member.external_attr >> 16) & 0o170000
+            _require(mode != 0o120000, f"{label} synthetic receipt must not be a symlink")
+            content = archive.read(member)
+    except (zipfile.BadZipFile, zipfile.LargeZipFile, OSError, RuntimeError) as error:
+        raise LiveBindingError(f"{label} is not a readable artifact ZIP: {error}") from error
+    value = _strict_json_any(content, f"{label}/g1-synthetic-merge-evidence.json")
+    return _validate_synthetic_merge_receipt(value, f"{label} synthetic merge receipt")
+
+
 def _verify_workflows_and_artifacts(
     api: GitHubApi,
     repo: str,
     packages: Iterable[dict[str, Any]],
     source_commit: str,
     now: datetime,
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[str], list[dict[str, Any]]]:
     """Bind every package artifact to an exact successful GitHub run.
 
     The package has two independently retained references (workflow-run refs and
@@ -510,6 +666,7 @@ def _verify_workflows_and_artifacts(
         evidence_ids.append(f"workflow-run-{run_id}")
 
     artifacts: list[dict[str, Any]] = []
+    synthetic_receipts: list[dict[str, Any]] = []
     for key in sorted(artifact_refs):
         run_id, artifact_id = key
         package, declared = artifact_refs[key]
@@ -541,6 +698,23 @@ def _verify_workflows_and_artifacts(
         _require(type(api_size) is int and api_size > 0, f"artifact {artifact_id} size is invalid")
         _require(api_size == len(archive.raw), f"artifact {artifact_id} API size differs from downloaded bytes")
         _require(declared["bytes"] == api_size, f"artifact {artifact_id} package byte count differs from GitHub")
+        if declared["name"].startswith("g1-synthetic-merge-"):
+            synthetic_receipt = _extract_synthetic_merge_receipt(
+                archive.raw, f"artifact {artifact_id} ({declared['name']})"
+            )
+            _require(
+                declared["name"] == f"g1-synthetic-merge-{synthetic_receipt['merge_commit']}",
+                f"artifact {artifact_id} name is not bound to its synthetic merge commit",
+            )
+            _require(
+                synthetic_receipt["workflow_run_id"] == run_id,
+                f"artifact {artifact_id} synthetic receipt workflow run is not exact",
+            )
+            _require(
+                synthetic_receipt["workflow_attempt"] == run_ref["attempt"],
+                f"artifact {artifact_id} synthetic receipt workflow attempt is not exact",
+            )
+            synthetic_receipts.append(synthetic_receipt)
         artifacts.append(
             {
                 "id": artifact_id,
@@ -555,7 +729,7 @@ def _verify_workflows_and_artifacts(
             }
         )
         evidence_ids.append(f"artifact-{artifact_id}")
-    return runs, artifacts, evidence_ids
+    return runs, artifacts, evidence_ids, synthetic_receipts
 
 
 def verify_live_binding(
@@ -590,7 +764,10 @@ def verify_live_binding(
         )
     for package in packages:
         source = package["source"]
-        _require(source["repository"] == repo, f"{package['package_id']} source repository differs from pull request")
+        _require(
+            source["repository"] == pull_request["head_repository"],
+            f"{package['package_id']} source repository differs from pull-request head",
+        )
         _require(source["pull_request"] == pr_number, f"{package['package_id']} source pull request differs from request")
         _require(source["branch"] == pull_request["head_ref"], f"{package['package_id']} source branch differs from pull request head")
     review = _verify_review(api, repo, pr_number, source_commit, pull_request["author"])
@@ -616,11 +793,87 @@ def verify_live_binding(
                 and observations.get("review_state") == "APPROVED",
                 f"{package['package_id']} review observations are not bound to the live approval",
             )
-    commit = _verify_commit_tree(api, repo, source_commit, source_tree)
+    commit = _verify_commit_identity(
+        api,
+        repo,
+        source_commit,
+        expected_tree=source_tree,
+    )
+    base_commit = _verify_commit_identity(api, repo, pull_request["base_sha"])
     cargo_lock = _verify_cargo_lock(api, repo, source_commit, cargo_lock_sha256)
-    workflows, artifacts, evidence_ids = _verify_workflows_and_artifacts(
+    workflows, artifacts, evidence_ids, synthetic_receipts = _verify_workflows_and_artifacts(
         api, repo, packages, source_commit, reference_now
     )
+    _require(
+        len(synthetic_receipts) == 1,
+        "live source qualification requires exactly one current synthetic-merge receipt",
+    )
+    synthetic = synthetic_receipts[0]
+    _require(synthetic["event_name"] == "pull_request", "synthetic merge receipt is not PR-bound")
+    _require(synthetic["pull_request_number"] == pr_number, "synthetic merge receipt PR number is not exact")
+    _require(synthetic["repository"] == pull_request["base_repository"], "synthetic merge base repository differs from live PR")
+    _require(synthetic["head_repository"] == pull_request["head_repository"], "synthetic merge head repository differs from live PR")
+    _require(synthetic["base_ref"] == pull_request["base_ref"], "synthetic merge base ref differs from live PR")
+    _require(synthetic["head_ref"] == pull_request["head_ref"], "synthetic merge head ref differs from live PR")
+    _require(synthetic["base_commit"] == pull_request["base_sha"], "synthetic merge base commit differs from live PR")
+    _require(synthetic["head_commit"] == source_commit, "synthetic merge head commit differs from live PR")
+    _require(synthetic["base_tree"] == base_commit["tree"], "synthetic merge base tree differs from live GitHub commit")
+    _require(synthetic["head_tree"] == source_tree, "synthetic merge head tree differs from live source commit")
+    _require(synthetic["cargo_lock_sha256"] == cargo_lock_sha256, "synthetic merge Cargo.lock digest differs from source package")
+    # Re-read the PR after downloading and inspecting the archive.  This
+    # closes the API-level TOCTOU window in which a base/head/ref could move
+    # between the first PR response and subject construction.
+    pull_request_final = _verify_pull_request(api, repo, pr_number, source_commit)
+    identity_fields = (
+        "head_sha",
+        "head_ref",
+        "head_repository",
+        "base_ref",
+        "base_sha",
+        "base_repository",
+        "merge_commit_sha",
+    )
+    _require(
+        all(pull_request_final[field] == pull_request[field] for field in identity_fields),
+        "pull request base/head identity changed during live binding",
+    )
+    subject = {
+        "base": {
+            "repository": pull_request["base_repository"],
+            "ref": pull_request["base_ref"],
+            "commit": pull_request["base_sha"],
+            "tree": synthetic["base_tree"],
+        },
+        "head": {
+            "repository": pull_request["head_repository"],
+            "ref": pull_request["head_ref"],
+            "commit": source_commit,
+            "tree": source_tree,
+        },
+        "merge": {
+            "kind": "deterministic_synthetic",
+            "commit": synthetic["merge_commit"],
+            "tree": synthetic["merge_tree"],
+            "parents": list(synthetic["parent_commits"]),
+        },
+    }
+    _validate_subject(subject)
+    for package in packages:
+        _require(
+            package["subject"] == subject,
+            f"{package['package_id']} subject does not match the current live base/head/merge",
+        )
+    github_merge: dict[str, Any] | None = None
+    prospective_sha = pull_request.get("merge_commit_sha")
+    if prospective_sha is not None:
+        _git_sha(prospective_sha, "pull request merge_commit_sha")
+        github_merge = _verify_commit_identity(
+            api,
+            repo,
+            prospective_sha,
+            expected_tree=synthetic["merge_tree"],
+            expected_parents=[pull_request["base_sha"], source_commit],
+        )
     artifact_expiries: list[datetime] = [
         _timestamp(item["expires_at"], "GitHub artifact.expires_at") for item in artifacts
     ]
@@ -634,6 +887,7 @@ def verify_live_binding(
         "version": ATTESTATION_VERSION,
         "package_ids": package_ids,
         "source_commit": source_commit,
+        "subject": subject,
         "authority": f"github-live-pr-{pr_number}",
         "verification_method": "github-api-review-run-artifact-digest",
         "trust_root": ATTESTATION_TRUST_ROOT_ID,
@@ -644,12 +898,16 @@ def verify_live_binding(
         "evidence_ids": sorted(set(evidence_ids + [f"review-{review['id']}", f"commit-{source_commit}"])),
     }
     report = {
-        "schema": "org.trillionnium.g1.live-binding-report.v1",
+        "schema": "org.trillionnium.g1.live-binding-report.v2",
         "repo": repo,
         "pull_request": pull_request,
         "review": review,
         "commit": commit,
+        "base_commit": base_commit,
         "cargo_lock": cargo_lock,
+        "subject": subject,
+        "synthetic_merge": synthetic,
+        "github_prospective_merge": github_merge,
         "source_binding": {
             "repository": repo,
             "pull_request": pr_number,

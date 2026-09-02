@@ -69,7 +69,7 @@
     "synthetic_merge_commit": "29b1a4955b869b24b1f10f85344f46fbc8d49de5",
     "synthetic_merge_workflow_run_id": 33497446824
   },
-  "package_id": "sha256:f0042ce9b6ead24e9ecd21dd64c6f2f039d055d9944c2a54c6e3c3c5cdd52b4a",
+  "package_id": "sha256:e0c03f4a4b3ec8f54b6a02757c7ab5bdddff376cec0f66345c211c9ca87fa07c",
   "program_revision": "2026-08-31-g1",
   "public_release": false,
   "retention_days": 30,
@@ -95,7 +95,7 @@
       "principal": "Franksudoman"
     }
   },
-  "schema": "org.trillionnium.g1.evidence-package.v1",
+  "schema": "org.trillionnium.g1.evidence-package.v2",
   "source": {
     "branch": "codex/g1-full-gap-closure-r2-20260901",
     "cargo_lock_sha256": "f89204bac622ef09ffb04a0482d02ef720b3ce83bc7c64e057c5cb798988f107",
@@ -124,6 +124,29 @@
       }
     ]
   },
+  "subject": {
+    "base": {
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "codex/global-modular-docs-g1-20260831",
+      "commit": "4142fe2864f05ac2a35037b4b025f4f1f0a5d35f",
+      "tree": "ce143d2d6865622a75e88aee0878927fb1bebeb5"
+    },
+    "head": {
+      "repository": "TrillionniumFoundation/trillionnium-os",
+      "ref": "codex/g1-full-gap-closure-r2-20260901",
+      "commit": "3f8fc683a90804ba39c731ad6790717758da381b",
+      "tree": "dfdeab5dae6d53f0f1c9a844d837a3cf0efeb652"
+    },
+    "merge": {
+      "kind": "deterministic_synthetic",
+      "commit": "29b1a4955b869b24b1f10f85344f46fbc8d49de5",
+      "tree": "dfdeab5dae6d53f0f1c9a844d837a3cf0efeb652",
+      "parents": [
+        "4142fe2864f05ac2a35037b4b025f4f1f0a5d35f",
+        "3f8fc683a90804ba39c731ad6790717758da381b"
+      ]
+    }
+  },
   "status": "COMPLETE",
-  "version": "1"
+  "version": "2"
 }

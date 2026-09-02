@@ -18,6 +18,7 @@ from g1_evidence import (  # noqa: E402
     verify_evidence_directory,
     write_json,
 )
+from g1_evidence_types import strict_json_file  # noqa: E402
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -26,6 +27,14 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--evidence-dir", type=Path)
     parser.add_argument("--gap-register", type=Path)
     parser.add_argument("--current-source-commit")
+    parser.add_argument(
+        "--expected-subject",
+        type=Path,
+        help=(
+            "detached current base/head/merge subject JSON (or a live report "
+            "containing a subject); required for current COMPLETE promotion"
+        ),
+    )
     parser.add_argument(
         "--attestation",
         type=Path,
@@ -60,10 +69,22 @@ def main(argv: list[str]) -> int:
     evidence_dir = (args.evidence_dir or root / "evidence/g1/candidates").resolve()
     gap_register = (args.gap_register or root / "docs/machine/gap-register.v2.json").resolve()
     try:
+        expected_subject = None
+        if args.expected_subject is not None:
+            subject_path = args.expected_subject
+            if subject_path.is_symlink():
+                raise EvidenceError("expected subject must not be a symlink")
+            subject_resolved = subject_path.resolve(strict=True)
+            _require_subject_external(subject_path, subject_resolved, root, evidence_dir)
+            subject_document = strict_json_file(subject_resolved, "expected subject")
+            expected_subject = subject_document.get("subject", subject_document)
+            if not isinstance(expected_subject, dict):
+                raise EvidenceError("expected subject document must contain an object subject")
         report = verify_evidence_directory(
             evidence_dir,
             gap_register,
             current_source_commit=args.current_source_commit,
+            expected_subject=expected_subject,
             attestation_path=args.attestation,
             attestation_sha256=args.attestation_sha256,
             attestation_signature_path=args.attestation_signature,
@@ -72,7 +93,7 @@ def main(argv: list[str]) -> int:
             repository_root=root,
         )
         plan = promotion_plan(report, gap_register)
-    except EvidenceError as error:
+    except (EvidenceError, OSError, ValueError) as error:
         print(f"G1 evidence verification failed: {error}", file=sys.stderr)
         return 2
     if args.report:
@@ -81,6 +102,28 @@ def main(argv: list[str]) -> int:
         write_json(args.promotion_plan, plan)
     print(json.dumps(report, sort_keys=True, separators=(",", ":")))
     return 0
+
+
+def _require_subject_external(
+    lexical: Path,
+    resolved: Path,
+    repository_root: Path,
+    evidence_dir: Path,
+) -> None:
+    """Keep the live subject input outside repository-controlled JSON."""
+
+    try:
+        root = repository_root.resolve(strict=True)
+        evidence_root = evidence_dir.resolve(strict=True)
+        if (
+            lexical.absolute().is_relative_to(root)
+            or resolved.is_relative_to(root)
+            or lexical.absolute().is_relative_to(evidence_root)
+            or resolved.is_relative_to(evidence_root)
+        ):
+            raise EvidenceError("expected subject must be outside repository and evidence directories")
+    except (OSError, RuntimeError) as error:
+        raise EvidenceError(f"cannot validate expected subject path: {error}") from error
 
 
 if __name__ == "__main__":

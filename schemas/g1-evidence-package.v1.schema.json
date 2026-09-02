@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://trillionnium.org/schemas/g1-evidence-package.v1.schema.json",
-  "title": "Trillionnium G1 Evidence Package v1",
+  "$id": "https://trillionnium.org/schemas/g1-evidence-package.v2.schema.json",
+  "title": "Trillionnium G1 Evidence Package v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -13,6 +13,7 @@
     "evidence_class",
     "status",
     "source",
+    "subject",
     "lineage",
     "gaps",
     "artifacts",
@@ -29,8 +30,8 @@
     "holds"
   ],
   "properties": {
-    "schema": {"const": "org.trillionnium.g1.evidence-package.v1"},
-    "version": {"const": "1"},
+    "schema": {"const": "org.trillionnium.g1.evidence-package.v2"},
+    "version": {"const": "2"},
     "package_id": {"pattern": "^sha256:[0-9a-f]{64}$"},
     "program_revision": {"const": "2026-08-31-g1"},
     "level": {"enum": ["L1", "L2", "L3", "L4", "L5", "L6"]},
@@ -46,6 +47,7 @@
     },
     "status": {"enum": ["COMPLETE", "HOLD"]},
     "source": {"$ref": "#/$defs/source"},
+    "subject": {"$ref": "#/$defs/subject"},
     "lineage": {"$ref": "#/$defs/lineage"},
     "gaps": {
       "type": "array",
@@ -126,6 +128,46 @@
           "type": "array",
           "minItems": 1,
           "items": {"$ref": "#/$defs/workflow_run"}
+        }
+      }
+    },
+    "subject_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "ref", "commit", "tree"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+        "ref": {"type": "string", "minLength": 1},
+        "commit": {"$ref": "#/$defs/git_sha"},
+        "tree": {"$ref": "#/$defs/git_sha"}
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base", "head", "merge"],
+      "properties": {
+        "base": {"$ref": "#/$defs/subject_ref"},
+        "head": {"$ref": "#/$defs/subject_ref"},
+        "merge": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "commit", "tree", "parents"],
+          "properties": {
+            "kind": {"enum": ["deterministic_synthetic", "github_prospective"]},
+            "commit": {"$ref": "#/$defs/git_sha"},
+            "tree": {"$ref": "#/$defs/git_sha"},
+            "parents": {
+              "type": "array",
+              "prefixItems": [
+                {"$ref": "#/$defs/git_sha"},
+                {"$ref": "#/$defs/git_sha"}
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
         }
       }
     },

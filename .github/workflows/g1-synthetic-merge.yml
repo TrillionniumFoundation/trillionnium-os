@@ -289,6 +289,10 @@ jobs:
               "base_tree": os.environ["MERGE_BASE_TREE"],
               "head_commit": os.environ["EVENT_HEAD_SHA"],
               "head_tree": os.environ["MERGE_HEAD_TREE"],
+              "parent_commits": [
+                  os.environ["EVENT_BASE_SHA"],
+                  os.environ["EVENT_HEAD_SHA"],
+              ],
               "merge_commit": os.environ["MERGE_COMMIT"],
               "merge_tree": os.environ["MERGE_TREE"],
               "cargo_lock_sha256": os.environ["LOCK_SHA"],

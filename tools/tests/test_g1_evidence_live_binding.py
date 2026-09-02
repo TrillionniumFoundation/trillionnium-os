@@ -3,12 +3,14 @@ from __future__ import annotations
 from copy import deepcopy
 import base64
 from datetime import datetime, timezone
+import io
 import importlib.util
 import json
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_TOOLS = ROOT / "tools" / "evidence"
@@ -29,6 +31,10 @@ CANDIDATE = ROOT / "evidence" / "g1" / "candidates" / "pr34-l1-source-qualificat
 NOW = datetime(2026, 9, 2, tzinfo=timezone.utc)
 SOURCE_COMMIT = "a" * 40
 SOURCE_TREE = "b" * 40
+BASE_COMMIT = "c" * 40
+BASE_TREE = "d" * 40
+MERGE_COMMIT = "e" * 40
+MERGE_TREE = "f" * 40
 
 
 class FakeApi:
@@ -74,6 +80,26 @@ class LiveBindingTest(unittest.TestCase):
         self.package["source"]["pull_request"] = 34
         self.cargo_lock = b"[package]\nname = \"test\"\n"
         self.package["source"]["cargo_lock_sha256"] = sha256_bytes(self.cargo_lock)
+        self.package["subject"] = {
+            "base": {
+                "repository": "example/repo",
+                "ref": "main",
+                "commit": BASE_COMMIT,
+                "tree": BASE_TREE,
+            },
+            "head": {
+                "repository": "example/repo",
+                "ref": "feature/test",
+                "commit": SOURCE_COMMIT,
+                "tree": SOURCE_TREE,
+            },
+            "merge": {
+                "kind": "deterministic_synthetic",
+                "commit": MERGE_COMMIT,
+                "tree": MERGE_TREE,
+                "parents": [BASE_COMMIT, SOURCE_COMMIT],
+            },
+        }
         self.package["source"]["workflow_runs"] = [
             {
                 "name": "G1 exact-head source qualification",
@@ -83,6 +109,15 @@ class LiveBindingTest(unittest.TestCase):
                 "artifact_id": 2001,
                 "artifact_name": "g1-exact-head-test",
                 "artifact_sha256": sha256_bytes(b"artifact-bytes"),
+            },
+            {
+                "name": "G1 synthetic-merge qualification",
+                "run_id": 1002,
+                "attempt": 1,
+                "result": "success",
+                "artifact_id": 2002,
+                "artifact_name": f"g1-synthetic-merge-{MERGE_COMMIT}",
+                "artifact_sha256": sha256_bytes(self.synthetic_archive()),
             }
         ]
         self.package["artifacts"] = [
@@ -93,7 +128,15 @@ class LiveBindingTest(unittest.TestCase):
                 "bytes": len(b"artifact-bytes"),
                 "uri": "github-actions://example/repo/runs/1001/artifacts/2001",
                 "retention_expires_at": "2026-12-31T00:00:00Z",
-            }
+            },
+            {
+                "name": f"g1-synthetic-merge-{MERGE_COMMIT}",
+                "kind": "github_actions_artifact",
+                "sha256": sha256_bytes(self.synthetic_archive()),
+                "bytes": len(self.synthetic_archive()),
+                "uri": "github-actions://example/repo/runs/1002/artifacts/2002",
+                "retention_expires_at": "2026-12-31T00:00:00Z",
+            },
         ]
         self.package["roles"]["producer"]["principal"] = "author"
         self.package["roles"]["producer"]["evidence_id"] = "pull-request-34-author"
@@ -106,6 +149,45 @@ class LiveBindingTest(unittest.TestCase):
         self.package["observations"]["review_state"] = "APPROVED"
         self.package["package_id"] = ""
         self.package["package_id"] = package_id(self.package)
+
+    def synthetic_receipt(self) -> dict[str, object]:
+        return {
+            "schema": "org.trillionnium.g1-synthetic-merge-evidence.v1",
+            "program_revision": "2026-08-31-g1",
+            "repository": "example/repo",
+            "head_repository": "example/repo",
+            "event_name": "pull_request",
+            "pull_request_number": "34",
+            "base_ref": "main",
+            "head_ref": "feature/test",
+            "base_commit": BASE_COMMIT,
+            "base_tree": BASE_TREE,
+            "head_commit": SOURCE_COMMIT,
+            "head_tree": SOURCE_TREE,
+            "parent_commits": [BASE_COMMIT, SOURCE_COMMIT],
+            "merge_commit": MERGE_COMMIT,
+            "merge_tree": MERGE_TREE,
+            "cargo_lock_sha256": sha256_bytes(self.cargo_lock),
+            "workflow_run_id": "1002",
+            "workflow_attempt": "1",
+            "result": "L1_SYNTHETIC_MERGE_SOURCE_CLOSURE_PASSED",
+            "claim_ceiling": "EXACT_TWO_PARENT_SOURCE_MERGE_GATES_PASSED_NOT_INSTALLED_TARGET",
+            "automatic_redispatch": False,
+            "public_release": False,
+        }
+
+    def synthetic_archive(self) -> bytes:
+        output = io.BytesIO()
+        with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr("g1-synthetic-merge-evidence.json", json.dumps(self.synthetic_receipt(), sort_keys=True))
+        return output.getvalue()
+
+    @staticmethod
+    def archive_for_receipt(receipt: dict[str, object]) -> bytes:
+        output = io.BytesIO()
+        with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr("g1-synthetic-merge-evidence.json", json.dumps(receipt, sort_keys=True))
+        return output.getvalue()
 
     def fake_api(self, *, review_state: str = "APPROVED", artifact_bytes: bytes = b"artifact-bytes") -> FakeApi:
         artifact_url = "https://objects.example/artifact.zip"
@@ -134,6 +216,12 @@ class LiveBindingTest(unittest.TestCase):
             f"repos/example/repo/commits/{SOURCE_COMMIT}": {
                 "sha": SOURCE_COMMIT,
                 "commit": {"tree": {"sha": SOURCE_TREE}},
+                "parents": [],
+            },
+            f"repos/example/repo/commits/{BASE_COMMIT}": {
+                "sha": BASE_COMMIT,
+                "commit": {"tree": {"sha": BASE_TREE}},
+                "parents": [],
             },
             f"repos/example/repo/contents/Cargo.lock?ref={SOURCE_COMMIT}": {
                 "path": "Cargo.lock",
@@ -157,8 +245,31 @@ class LiveBindingTest(unittest.TestCase):
                 "workflow_run": {"id": 1001},
                 "archive_download_url": artifact_url,
             },
+            "repos/example/repo/actions/runs/1002": {
+                "id": 1002,
+                "name": "G1 synthetic-merge qualification",
+                "head_sha": SOURCE_COMMIT,
+                "run_attempt": 1,
+                "status": "completed",
+                "conclusion": "success",
+            },
+            "repos/example/repo/actions/artifacts/2002": {
+                "id": 2002,
+                "name": f"g1-synthetic-merge-{MERGE_COMMIT}",
+                "expired": False,
+                "size_in_bytes": len(self.synthetic_archive()),
+                "expires_at": "2026-12-31T00:00:00Z",
+                "workflow_run": {"id": 1002},
+                "archive_download_url": "https://objects.example/synthetic.zip",
+            },
         }
-        return FakeApi(values, {artifact_url: artifact_bytes})
+        return FakeApi(
+            values,
+            {
+                artifact_url: artifact_bytes,
+                "https://objects.example/synthetic.zip": self.synthetic_archive(),
+            },
+        )
 
     def with_package_dir(self):
         temp = tempfile.TemporaryDirectory()
@@ -304,7 +415,7 @@ class LiveBindingTest(unittest.TestCase):
         path = Path(temp.name)
         write_json(path / "package.json", package)
         try:
-            with self.assertRaisesRegex(LIVE.LiveBindingError, "unexpected fake GitHub JSON"):
+            with self.assertRaisesRegex(LIVE.LiveBindingError, "package name mismatch|unexpected fake GitHub JSON"):
                 LIVE.verify_live_binding(
                     repo="example/repo",
                     pr_number=34,
@@ -331,6 +442,92 @@ class LiveBindingTest(unittest.TestCase):
                     source_commit=SOURCE_COMMIT,
                     evidence_dir=path,
                     api=self.fake_api(),
+                    now=NOW,
+                )
+        finally:
+            temp.cleanup()
+
+    def test_live_binding_rejects_base_advance_with_head_unchanged(self) -> None:
+        api = self.fake_api()
+        api.values["repos/example/repo/pulls/34"]["base"]["sha"] = "0" * 40  # type: ignore[index]
+        api.values["repos/example/repo/commits/" + "0" * 40] = {
+            "sha": "0" * 40,
+            "commit": {"tree": {"sha": "1" * 40}},
+            "parents": [],
+        }
+        temp, path = self.with_package_dir()
+        try:
+            with self.assertRaisesRegex(LIVE.LiveBindingError, "synthetic merge base commit"):
+                LIVE.verify_live_binding(
+                    repo="example/repo",
+                    pr_number=34,
+                    source_commit=SOURCE_COMMIT,
+                    evidence_dir=path,
+                    api=api,
+                    now=NOW,
+                )
+        finally:
+            temp.cleanup()
+
+    def test_live_binding_rejects_pr_retargeting(self) -> None:
+        api = self.fake_api()
+        api.values["repos/example/repo/pulls/34"]["base"]["ref"] = "other"  # type: ignore[index]
+        temp, path = self.with_package_dir()
+        try:
+            with self.assertRaisesRegex(LIVE.LiveBindingError, "synthetic merge base ref"):
+                LIVE.verify_live_binding(
+                    repo="example/repo",
+                    pr_number=34,
+                    source_commit=SOURCE_COMMIT,
+                    evidence_dir=path,
+                    api=api,
+                    now=NOW,
+                )
+        finally:
+            temp.cleanup()
+
+    def test_live_binding_rejects_old_approval_replayed_on_new_head(self) -> None:
+        api = self.fake_api()
+        api.values["repos/example/repo/pulls/34/reviews"][0]["commit_id"] = "0" * 40  # type: ignore[index]
+        temp, path = self.with_package_dir()
+        try:
+            with self.assertRaisesRegex(LIVE.LiveBindingError, "APPROVED review"):
+                LIVE.verify_live_binding(
+                    repo="example/repo",
+                    pr_number=34,
+                    source_commit=SOURCE_COMMIT,
+                    evidence_dir=path,
+                    api=api,
+                    now=NOW,
+                )
+        finally:
+            temp.cleanup()
+
+    def test_live_binding_rejects_old_merge_archive_even_when_digest_is_updated(self) -> None:
+        api = self.fake_api()
+        old_receipt = self.synthetic_receipt()
+        old_receipt["base_commit"] = "0" * 40
+        old_receipt["base_tree"] = "1" * 40
+        old_receipt["parent_commits"] = ["0" * 40, SOURCE_COMMIT]
+        old_archive = self.archive_for_receipt(old_receipt)
+        api.blobs["https://objects.example/synthetic.zip"] = old_archive
+        api.values["repos/example/repo/actions/artifacts/2002"]["size_in_bytes"] = len(old_archive)  # type: ignore[index]
+        package = deepcopy(self.package)
+        package["source"]["workflow_runs"][1]["artifact_sha256"] = sha256_bytes(old_archive)
+        package["artifacts"][1]["sha256"] = sha256_bytes(old_archive)
+        package["artifacts"][1]["bytes"] = len(old_archive)
+        self.resign(package)
+        temp = tempfile.TemporaryDirectory()
+        path = Path(temp.name)
+        write_json(path / "package.json", package)
+        try:
+            with self.assertRaisesRegex(LIVE.LiveBindingError, "synthetic merge base commit"):
+                LIVE.verify_live_binding(
+                    repo="example/repo",
+                    pr_number=34,
+                    source_commit=SOURCE_COMMIT,
+                    evidence_dir=path,
+                    api=api,
                     now=NOW,
                 )
         finally:

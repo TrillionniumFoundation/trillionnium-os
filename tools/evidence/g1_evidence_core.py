@@ -25,6 +25,7 @@ from g1_evidence_types import (
     _string,
     _string_list,
     _timestamp,
+    _validate_subject,
     _validate_artifacts,
     _validate_authorization,
     _validate_holds,
@@ -40,7 +41,9 @@ from g1_evidence_types import (
 )
 
 
-def _validate_attestation_receipt(receipt: Mapping[str, Any]) -> tuple[list[str], str, Any, Any]:
+def _validate_attestation_receipt(
+    receipt: Mapping[str, Any],
+) -> tuple[list[str], str, dict[str, Any], Any, Any]:
     """Validate the shape of an out-of-band attestation receipt.
 
     The receipt is deliberately not accepted as proof by itself.  Callers must
@@ -62,6 +65,11 @@ def _validate_attestation_receipt(receipt: Mapping[str, Any]) -> tuple[list[str]
             f"trusted attestation.package_ids[{index}] is malformed",
         )
     source_commit = _git_sha(receipt["source_commit"], "trusted attestation.source_commit")
+    subject = _validate_subject(receipt["subject"], "trusted attestation.subject")
+    _require(
+        subject["head"]["commit"] == source_commit,
+        "trusted attestation subject.head.commit does not match source_commit",
+    )
     _identifier(receipt["authority"], "trusted attestation.authority")
     _identifier(receipt["verification_method"], "trusted attestation.verification_method")
     _identifier(receipt["trust_root"], "trusted attestation.trust_root")
@@ -82,7 +90,7 @@ def _validate_attestation_receipt(receipt: Mapping[str, Any]) -> tuple[list[str]
             IDENTIFIER_RE.fullmatch(value) is not None,
             f"trusted attestation.evidence_ids[{index}] is malformed",
         )
-    return package_ids, source_commit, verified_at, expires_at
+    return package_ids, source_commit, subject, verified_at, expires_at
 
 
 def load_trusted_attestation(
@@ -284,6 +292,23 @@ def validate_package(
     _require(package["claim_ceiling"] == expected_ceiling, "claim_ceiling exceeds or drifts from class")
 
     source = _validate_source(package["source"])
+    subject = _validate_subject(package["subject"])
+    _require(
+        subject["head"]["repository"] == source["repository"],
+        "subject.head.repository does not match source.repository",
+    )
+    _require(
+        subject["head"]["ref"] == source["branch"],
+        "subject.head.ref does not match source.branch",
+    )
+    _require(
+        subject["head"]["commit"] == source["commit"],
+        "subject.head.commit does not match source.commit",
+    )
+    _require(
+        subject["head"]["tree"] == source["tree"],
+        "subject.head.tree does not match source.tree",
+    )
     lineage = _mapping(package["lineage"], "lineage")
     _exact_keys(lineage, LINEAGE_KEYS, "lineage")
     parent_ids = _string_list(lineage["parent_package_ids"], "lineage.parent_package_ids", allow_empty=True)
@@ -371,6 +396,7 @@ def _require_trusted_attestation_for_promotions(
     packages: Mapping[str, dict[str, Any]],
     *,
     current_source_commit: str | None,
+    expected_subject: Mapping[str, Any] | None,
     now: datetime,
     attestation_path: Path | None,
     attestation_sha256: str | None,
@@ -417,6 +443,11 @@ def _require_trusted_attestation_for_promotions(
         repository_root is not None,
         "repository_root is required when promoting evidence with a trusted attestation",
     )
+    _require(
+        expected_subject is not None,
+        "current-source COMPLETE evidence requires an independently supplied current subject",
+    )
+    expected_subject_value = _validate_subject(expected_subject, "expected subject")
     trusted = load_trusted_attestation(
         attestation_path,
         attestation_sha256,
@@ -436,7 +467,7 @@ def _require_trusted_attestation_for_promotions(
         evidence_dir=evidence_dir,
     )
     receipt = trusted.receipt
-    package_ids, source_commit, verified_at, expires_at = _validate_attestation_receipt(receipt)
+    package_ids, source_commit, subject, verified_at, expires_at = _validate_attestation_receipt(receipt)
     _require(
         set(package_ids) == set(promotable_ids),
         "trusted attestation package_ids do not exactly match current COMPLETE evidence",
@@ -456,6 +487,19 @@ def _require_trusted_attestation_for_promotions(
             len(source_commits) == 1 and source_commit in source_commits,
             "trusted attestation source_commit does not match COMPLETE evidence",
         )
+    for package_id_value in promotable_ids:
+        _require(
+            packages[package_id_value]["subject"] == subject,
+            f"trusted attestation subject does not match package {package_id_value}",
+        )
+        _require(
+            packages[package_id_value]["subject"] == expected_subject_value,
+            f"package {package_id_value} subject does not match the current expected subject",
+        )
+    _require(
+        subject == expected_subject_value,
+        "trusted attestation subject does not match the current expected subject",
+    )
     _require(verified_at <= now, "trusted attestation was created in the future")
     _require(expires_at > now, "trusted attestation has expired")
     for package_id_value in promotable_ids:
@@ -473,6 +517,7 @@ def _require_trusted_attestation_for_promotions(
         "trust_root": receipt["trust_root"],
         "package_ids": package_ids,
         "source_commit": source_commit,
+        "subject": subject,
         "verified_at": receipt["verified_at"],
         "expires_at": receipt["expires_at"],
         **signature_metadata,
@@ -484,6 +529,7 @@ def verify_evidence_directory(
     gap_register: Path,
     *,
     current_source_commit: str | None = None,
+    expected_subject: Mapping[str, Any] | None = None,
     now: datetime | None = None,
     attestation_path: Path | None = None,
     attestation_sha256: str | None = None,
@@ -531,11 +577,16 @@ def verify_evidence_directory(
                 parent["source"]["commit"] == package["source"]["commit"],
                 f"{assessment.package_id} parent {parent_id} uses another source commit",
             )
+            _require(
+                parent["subject"] == package["subject"],
+                f"{assessment.package_id} parent {parent_id} uses another integration subject",
+            )
 
     trusted_attestation = _require_trusted_attestation_for_promotions(
         assessments,
         packages,
         current_source_commit=current_source_commit,
+        expected_subject=expected_subject,
         now=reference_now,
         attestation_path=attestation_path,
         attestation_sha256=attestation_sha256,

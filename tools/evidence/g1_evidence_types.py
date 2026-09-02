@@ -221,6 +221,53 @@ def _validate_source(source_value: Any) -> dict[str, Any]:
     return source
 
 
+def _validate_subject(subject_value: Any, label: str = "subject") -> dict[str, Any]:
+    """Validate the exact integration subject shared by packages/receipts.
+
+    The ordered parent tuple is part of the signed subject.  Merely recording
+    a merge ZIP digest is insufficient because an old archive can be replayed
+    after the PR base moves or is retargeted.
+    """
+
+    subject = _mapping(subject_value, label)
+    _exact_keys(subject, SUBJECT_KEYS, label)
+
+    def validate_ref(value: Any, ref_label: str) -> dict[str, Any]:
+        ref = _mapping(value, ref_label)
+        _exact_keys(ref, SUBJECT_REF_KEYS, ref_label)
+        repository = _string(ref["repository"], f"{ref_label}.repository")
+        _require(
+            "/" in repository and ".." not in repository,
+            f"{ref_label}.repository must use a safe owner/repository form",
+        )
+        _identifier(ref["ref"], f"{ref_label}.ref")
+        _git_sha(ref["commit"], f"{ref_label}.commit")
+        _git_sha(ref["tree"], f"{ref_label}.tree")
+        return ref
+
+    base = validate_ref(subject["base"], f"{label}.base")
+    head = validate_ref(subject["head"], f"{label}.head")
+    merge = _mapping(subject["merge"], f"{label}.merge")
+    _exact_keys(merge, SUBJECT_MERGE_KEYS, f"{label}.merge")
+    kind = _string(merge["kind"], f"{label}.merge.kind")
+    _require(kind in SUBJECT_MERGE_KINDS, f"{label}.merge.kind is unsupported")
+    merge_commit = _git_sha(merge["commit"], f"{label}.merge.commit")
+    _git_sha(merge["tree"], f"{label}.merge.tree")
+    parents = merge["parents"]
+    _require(isinstance(parents, list), f"{label}.merge.parents must be an array")
+    _require(len(parents) == 2, f"{label}.merge.parents must contain exactly two ordered parents")
+    parent_values = [
+        _git_sha(value, f"{label}.merge.parents[{index}]")
+        for index, value in enumerate(parents)
+    ]
+    _require(
+        parent_values == [base["commit"], head["commit"]],
+        f"{label}.merge.parents must be ordered base then head",
+    )
+    _require(merge_commit not in parent_values, f"{label}.merge.commit must differ from both parents")
+    return subject
+
+
 def _validate_artifacts(value: Any, *, required: bool) -> None:
     _require(isinstance(value, list), "artifacts must be an array")
     if required:
@@ -313,4 +360,3 @@ def load_gap_specs(path: Path) -> dict[str, GapSpec]:
         )
     _require(set(result) == set(GAP_EVIDENCE_CLASS), "gap evidence-class map drifted from register")
     return result
-

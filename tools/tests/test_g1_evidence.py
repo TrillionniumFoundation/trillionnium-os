@@ -28,6 +28,7 @@ from g1_evidence import (  # noqa: E402
     verify_evidence_directory,
     write_json,
 )
+from g1_evidence_contract import ATTESTATION_SCHEMA, ATTESTATION_VERSION  # noqa: E402
 
 GAP_REGISTER = ROOT / "docs" / "machine" / "gap-register.v2.json"
 CANDIDATE = ROOT / "evidence" / "g1" / "candidates" / "pr34-l1-source-qualification.json"
@@ -42,6 +43,12 @@ class G1EvidenceTest(unittest.TestCase):
 
     @staticmethod
     def resign(package: dict) -> dict:
+        # Keep the test subject aligned when a fixture intentionally moves its
+        # source head; production callers must regenerate the whole subject.
+        if "subject" in package and "source" in package:
+            package["subject"]["head"]["commit"] = package["source"]["commit"]
+            package["subject"]["head"]["tree"] = package["source"]["tree"]
+            package["subject"]["merge"]["parents"][1] = package["source"]["commit"]
         package["package_id"] = ""
         package["package_id"] = package_id(package)
         return package
@@ -85,10 +92,11 @@ class G1EvidenceTest(unittest.TestCase):
     ) -> tuple[Path, str, Path, Path, str]:
         """Create a test-only signed receipt and return its pinned inputs."""
         receipt = {
-            "schema": "org.trillionnium.g1.evidence-attestation.v1",
-            "version": "1",
+            "schema": ATTESTATION_SCHEMA,
+            "version": ATTESTATION_VERSION,
             "package_ids": sorted(package["package_id"] for package in packages),
             "source_commit": SOURCE_COMMIT,
+            "subject": packages[0]["subject"],
             "authority": "test-independent-review",
             "verification_method": "test-rsa-signature",
             "trust_root": "g1-attestation-root-20260902",
@@ -192,6 +200,7 @@ class G1EvidenceTest(unittest.TestCase):
                     path,
                     GAP_REGISTER,
                     current_source_commit=current_head,
+                    expected_subject=package["subject"],
                     now=NOW,
                 )
 
@@ -204,10 +213,11 @@ class G1EvidenceTest(unittest.TestCase):
             path = Path(temp)
             write_json(path / "current.json", package)
             receipt = {
-                "schema": "org.trillionnium.g1.evidence-attestation.v1",
-                "version": "1",
+                "schema": ATTESTATION_SCHEMA,
+                "version": ATTESTATION_VERSION,
                 "package_ids": [package["package_id"]],
                 "source_commit": current_head,
+                "subject": package["subject"],
                 "authority": "test-independent-review",
                 "verification_method": "test-rsa-signature",
                 "trust_root": "g1-attestation-root-20260902",
@@ -225,6 +235,7 @@ class G1EvidenceTest(unittest.TestCase):
                     path,
                     GAP_REGISTER,
                     current_source_commit=current_head,
+                    expected_subject=package["subject"],
                     now=NOW,
                     attestation_path=attestation_path,
                     attestation_sha256=sha256_bytes(raw),
@@ -242,6 +253,7 @@ class G1EvidenceTest(unittest.TestCase):
                     path,
                     GAP_REGISTER,
                     current_source_commit=SOURCE_COMMIT,
+                    expected_subject=self.base["subject"],
                     now=NOW,
                     attestation_path=attestation_path,
                     attestation_sha256="0" * 64,
@@ -270,6 +282,7 @@ class G1EvidenceTest(unittest.TestCase):
                     path,
                     GAP_REGISTER,
                     current_source_commit=SOURCE_COMMIT,
+                    expected_subject=self.base["subject"],
                     now=NOW,
                     attestation_path=attestation_path,
                     attestation_sha256=sha256_bytes(attestation_path.read_bytes()),
@@ -297,6 +310,7 @@ class G1EvidenceTest(unittest.TestCase):
                     path,
                     GAP_REGISTER,
                     current_source_commit=SOURCE_COMMIT,
+                    expected_subject=self.base["subject"],
                     now=NOW,
                     attestation_path=attestation_path,
                     attestation_sha256=attestation_sha256,
@@ -313,6 +327,7 @@ class G1EvidenceTest(unittest.TestCase):
     def test_package_digest_mismatch_is_rejected(self) -> None:
         package = deepcopy(self.base)
         package["source"]["tree"] = "f" * 40
+        package["subject"]["head"]["tree"] = "f" * 40
         with self.assertRaisesRegex(EvidenceError, "package_id does not match"):
             validate_package(package, self.gaps, now=NOW)
 
@@ -379,6 +394,7 @@ class G1EvidenceTest(unittest.TestCase):
                 path,
                 GAP_REGISTER,
                 current_source_commit=SOURCE_COMMIT,
+                expected_subject=self.base["subject"],
                 now=NOW,
                 attestation_path=attestation_path,
                 attestation_sha256=attestation_sha256,
@@ -405,6 +421,7 @@ class G1EvidenceTest(unittest.TestCase):
                 path,
                 GAP_REGISTER,
                 current_source_commit=SOURCE_COMMIT,
+                expected_subject=self.base["subject"],
                 now=NOW,
                 attestation_path=attestation_path,
                 attestation_sha256=attestation_sha256,
@@ -417,6 +434,39 @@ class G1EvidenceTest(unittest.TestCase):
             self.assertFalse(plan["zero_gap_after_plan"])
             self.assertFalse(plan["public_release_after_plan"])
             self.assertFalse(plan["automatic_redispatch"])
+
+    def test_still_valid_attestation_cannot_be_replayed_for_new_subject(self) -> None:
+        """A fresh externally observed subject is mandatory for promotion."""
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            write_json(path / "l1.json", self.base)
+            (
+                attestation_path,
+                attestation_sha256,
+                attestation_signature_path,
+                attestation_public_key_path,
+                attestation_public_key_sha256,
+            ) = self.write_trusted_attestation(
+                Path(temp).parent / "g1-attestation-replay.json", [self.base]
+            )
+            advanced = deepcopy(self.base["subject"])
+            advanced["base"]["commit"] = "0" * 40
+            advanced["base"]["tree"] = "1" * 40
+            advanced["merge"]["parents"] = ["0" * 40, advanced["head"]["commit"]]
+            with self.assertRaisesRegex(EvidenceError, "current expected subject"):
+                verify_evidence_directory(
+                    path,
+                    GAP_REGISTER,
+                    current_source_commit=SOURCE_COMMIT,
+                    expected_subject=advanced,
+                    now=NOW,
+                    attestation_path=attestation_path,
+                    attestation_sha256=attestation_sha256,
+                    attestation_signature_path=attestation_signature_path,
+                    attestation_public_key_path=attestation_public_key_path,
+                    attestation_public_key_sha256=attestation_public_key_sha256,
+                    repository_root=ROOT,
+                )
 
     def test_hold_package_cannot_promote(self) -> None:
         package = deepcopy(self.base)

@@ -3,10 +3,13 @@ from __future__ import annotations
 
 import re
 
-PACKAGE_SCHEMA = "org.trillionnium.g1.evidence-package.v1"
-PACKAGE_VERSION = "1"
-ATTESTATION_SCHEMA = "org.trillionnium.g1.evidence-attestation.v1"
-ATTESTATION_VERSION = "1"
+# v2 adds a signed, exact integration subject.  Keeping the version break
+# explicit is important: an unexpired v1 receipt has no way to detect a
+# moving/retargeted base and must never remain promotable after this fix.
+PACKAGE_SCHEMA = "org.trillionnium.g1.evidence-package.v2"
+PACKAGE_VERSION = "2"
+ATTESTATION_SCHEMA = "org.trillionnium.g1.evidence-attestation.v2"
+ATTESTATION_VERSION = "2"
 ATTESTATION_SIGNATURE_ALGORITHM = "rsa-sha256"
 ATTESTATION_TRUST_ROOT_ID = "g1-attestation-root-20260902"
 GAP_REGISTER_SCHEMA = "org.trillionnium.gap-register.v2"
@@ -160,6 +163,7 @@ PACKAGE_KEYS = {
     "evidence_class",
     "status",
     "source",
+    "subject",
     "lineage",
     "gaps",
     "artifacts",
@@ -218,6 +222,7 @@ ATTESTATION_KEYS = {
     "version",
     "package_ids",
     "source_commit",
+    "subject",
     "authority",
     "verification_method",
     "trust_root",
@@ -227,3 +232,13 @@ ATTESTATION_KEYS = {
     "expires_at",
     "evidence_ids",
 }
+
+# The subject is deliberately shared by packages and detached attestations.
+# It identifies both immutable parents, their trees, and the exact two-parent
+# merge object used for qualification.  A deterministic synthetic merge is
+# currently the canonical merge kind; the validator keeps the kind explicit so
+# a future GitHub-prospective implementation cannot silently change semantics.
+SUBJECT_KEYS = {"base", "head", "merge"}
+SUBJECT_REF_KEYS = {"repository", "ref", "commit", "tree"}
+SUBJECT_MERGE_KEYS = {"kind", "commit", "tree", "parents"}
+SUBJECT_MERGE_KINDS = {"deterministic_synthetic", "github_prospective"}

@@ -38,6 +38,7 @@ attestation channel:
 ```sh
 python3 tools/verify-g1-evidence.py \
   --current-source-commit "$(git rev-parse HEAD)" \
+  --expected-subject /secure/intake/g1-live-report.json \
   --attestation /secure/intake/g1-attestation.json \
   --attestation-sha256 "$(cat /secure/intake/g1-attestation.sha256)" \
   --attestation-signature /secure/intake/g1-attestation.sig \
@@ -47,9 +48,12 @@ python3 tools/verify-g1-evidence.py \
   --promotion-plan /tmp/g1-promotion-plan.json
 ```
 
-`schemas/g1-evidence-attestation.v1.schema.json` defines the strict receipt.
-The receipt must bind the exact set of current `COMPLETE` package IDs and
-source commit, declare the configured `g1-attestation-root-20260902` trust-root
+`schemas/g1-evidence-attestation.v1.schema.json` (retained at this path for
+compatibility) defines the v2 strict receipt.  The receipt must bind the exact
+set of current `COMPLETE` package IDs, source commit, and an exact integration
+subject containing base/head repository, ref, commit/tree and ordered
+two-parent merge identity.  It must declare the configured
+`g1-attestation-root-20260902` trust-root
 identifier and `rsa-sha256` algorithm, and be accompanied by a detached
 signature.  The receipt, signature and public-key paths must be outside both
 the repository and evidence directory; the public-key bytes are pinned by an
@@ -91,3 +95,9 @@ until the attestation expires.  Promotion therefore requires a fresh run of
 the live verifier (or an independently maintained revocation/status service)
 within the receipt validity window; a signature alone must never be treated as
 continuous approval.
+
+The `--expected-subject` input is an independently retained live-binding report
+(or a JSON document containing its `subject`).  It is mandatory whenever a
+current `COMPLETE` package could promote a gap.  This prevents replay of an
+unexpired attestation after the pull-request base advances or is retargeted;
+v1 receipts and packages without this subject are rejected by the v2 core.
