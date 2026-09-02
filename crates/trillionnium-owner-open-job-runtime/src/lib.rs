@@ -5,7 +5,14 @@
 //! available. A pre-existing nonterminal operation is never redispatched after
 //! restart; it is reported as uncertain for explicit inspection.
 
-mod journal;
+mod event_store_adapter;
+mod journal {
+    // Bind the journal implementation to the narrow reopen adapter without
+    // changing its public surface or the event-store contract used elsewhere.
+    use crate::event_store_adapter as trillionnium_owner_open_event_store;
+
+    include!("journal.rs");
+}
 mod manager;
 mod process;
 mod types;
