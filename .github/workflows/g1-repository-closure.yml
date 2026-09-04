@@ -52,13 +52,17 @@ jobs:
           python3 -m py_compile \
             tools/verify_g1_repository_closure.py \
             tools/verify_g1_pr_subject.py \
-            tools/tests/test_verify_g1_repository_closure.py
+            tools/verify_g1_review_index.py \
+            tools/tests/test_verify_g1_repository_closure.py \
+            tools/tests/test_verify_g1_review_index.py
           python3 tools/docs/generate_global_docs.py --check
           python3 tools/docs/verify_global_docs.py
           python3 tools/docs/verify_module_documentation.py
           python3 tools/verify_g1_repository_closure.py --json \
             > "${RUNNER_TEMP}/g1-repository-closure/repository-closure.json"
-          python3 -m unittest tools.tests.test_verify_g1_repository_closure -v
+          python3 -m unittest \
+            tools.tests.test_verify_g1_repository_closure \
+            tools.tests.test_verify_g1_review_index -v
           python3 -m json.tool \
             "${RUNNER_TEMP}/g1-repository-closure/repository-closure.json" >/dev/null
       - name: Bind live PR API, event payload, checkout and PR prose
@@ -75,11 +79,27 @@ jobs:
             --output "${RUNNER_TEMP}/g1-repository-closure/pr-subject.json"
           python3 -m json.tool \
             "${RUNNER_TEMP}/g1-repository-closure/pr-subject.json" >/dev/null
+      - name: Observe and verify the closed-world cumulative review index
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 tools/verify_g1_review_index.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --pr-number "$EVENT_PR_NUMBER" \
+            --base-commit "$EVENT_BASE_SHA" \
+            --head-commit "$SOURCE_HEAD_SHA" \
+            --observation-output "${RUNNER_TEMP}/g1-repository-closure/review-index-observation.json" \
+            --output "${RUNNER_TEMP}/g1-repository-closure/review-index-report.json"
+          python3 -m json.tool \
+            "${RUNNER_TEMP}/g1-repository-closure/review-index-report.json" >/dev/null
       - name: Prove verification left the checkout unchanged
         run: |
           set -euo pipefail
           test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Upload repository-controlled closure observations
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: g1-repository-closure-${{ env.SOURCE_HEAD_SHA }}
