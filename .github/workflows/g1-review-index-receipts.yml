@@ -1,0 +1,104 @@
+name: G1 exact-head and synthetic-merge review-index receipts
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Open pull request to bind
+        required: true
+        type: string
+      base_commit:
+        description: Exact pull-request base commit
+        required: true
+        type: string
+      head_commit:
+        description: Exact pull-request head commit
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: g1-review-index-receipts-${{ github.event.pull_request.number || inputs.pr_number }}-${{ github.event.pull_request.head.sha || inputs.head_commit }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || inputs.head_commit }}
+  EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_commit }}
+  EVENT_PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  review-index-receipts:
+    name: L1 exact-head and synthetic-merge closed-world receipt binding
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact pull-request head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_HEAD_SHA }}
+          persist-credentials: false
+      - name: Assert exact clean source subject
+        run: |
+          set -euo pipefail
+          [[ "$EVENT_PR_NUMBER" =~ ^[1-9][0-9]{0,8}$ ]]
+          [[ "$EVENT_BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          git --no-replace-objects merge-base --is-ancestor "$EVENT_BASE_SHA" "$SOURCE_HEAD_SHA"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Verify live closed-world inventory and hostile regressions
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/g1-review-index"
+          install -d -m 0700 "$out"
+          python3 -m py_compile \
+            tools/verify_g1_review_index.py \
+            tools/emit_g1_review_index_receipts.py \
+            tools/g1_pr_aggregate_review_receipts.py
+          python3 -m unittest \
+            tools.tests.test_verify_g1_review_index \
+            tools.tests.test_g1_pr_aggregate \
+            tools.tests.test_g1_review_index_aggregate -v
+          python3 tools/verify_g1_review_index.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --pr-number "$EVENT_PR_NUMBER" \
+            --base-commit "$EVENT_BASE_SHA" \
+            --head-commit "$SOURCE_HEAD_SHA" \
+            --observation-output "$out/live-observation.json" \
+            --output "$out/live-report.json"
+          base_tree="$(git --no-replace-objects rev-parse "$EVENT_BASE_SHA^{tree}")"
+          head_tree="$(git --no-replace-objects rev-parse "$SOURCE_HEAD_SHA^{tree}")"
+          receipts="$out/receipts"
+          python3 tools/emit_g1_review_index_receipts.py \
+            --root . \
+            --repository "$GITHUB_REPOSITORY" \
+            --pr-number "$EVENT_PR_NUMBER" \
+            --base-commit "$EVENT_BASE_SHA" \
+            --base-tree "$base_tree" \
+            --head-commit "$SOURCE_HEAD_SHA" \
+            --head-tree "$head_tree" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --workflow-attempt "$GITHUB_RUN_ATTEMPT" \
+            --output-dir "$receipts"
+          python3 -m json.tool "$receipts/g1-exact-head-review-index-receipt.json" >/dev/null
+          python3 -m json.tool "$receipts/g1-synthetic-merge-review-index-receipt.json" >/dev/null
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Upload exact-subject review-index receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-review-index-receipts-${{ env.SOURCE_HEAD_SHA }}
+          if-no-files-found: error
+          retention-days: 30
+          path: ${{ runner.temp }}/g1-review-index/receipts/

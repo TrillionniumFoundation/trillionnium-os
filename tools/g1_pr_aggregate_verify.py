@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import subprocess
 import time
-from typing import Any, Callable
+from typing import Any, Callable, Mapping
 
 from tools.g1_pr_aggregate_api import GitHubApi
 from tools.g1_pr_aggregate_archive import _RepoApi
@@ -17,9 +17,12 @@ from tools.g1_pr_aggregate_common import (
     _canonical,
     _digest,
     _git_sha,
+    _mapping,
     _positive_int,
     _repo,
     _require,
+    _sha256,
+    _strict_json,
 )
 from tools.g1_pr_aggregate_live import (
     _latest_run,
@@ -29,10 +32,15 @@ from tools.g1_pr_aggregate_live import (
 from tools.g1_pr_aggregate_model import REQUIREMENTS, Subject
 from tools.g1_pr_aggregate_workflow import _verify_workflow
 
-def _local_source_binding(repo_root: Path, subject: Subject, expected_cargo_lock_sha256: str) -> dict[str, Any]:
+def _local_source_binding(
+    repo_root: Path,
+    subject: Subject,
+    synthetic_state: Mapping[str, Any],
+) -> dict[str, Any]:
     resolved = repo_root.resolve()
     _require((resolved / ".git").exists(), f"repository root has no .git directory: {resolved}")
     env = {"PATH": os.environ.get("PATH", ""), "LC_ALL": "C", "LANG": "C"}
+
     def git(*args: str) -> str:
         completed = subprocess.run(
             ["git", "--no-replace-objects", "-C", str(resolved), *args],
@@ -45,19 +53,100 @@ def _local_source_binding(repo_root: Path, subject: Subject, expected_cargo_lock
         if completed.returncode != 0:
             raise AggregateError(f"git {' '.join(args)} failed: {completed.stderr.strip()}")
         return completed.stdout.strip()
+
     _require(git("rev-parse", "HEAD^{commit}") == subject.head_commit, "local checkout is not the exact PR head")
     _require(git("rev-parse", "HEAD^{tree}") == subject.head_tree, "local checkout tree differs from live head tree")
     _require(git("merge-base", "--is-ancestor", subject.base_commit, subject.head_commit) == "", "canonical G1 base is not an ancestor of the source head")
     _require(git("status", "--porcelain=v1", "--untracked-files=all") == "", "local checkout is not clean")
+
     lock = resolved / "Cargo.lock"
     _require(lock.is_file() and not lock.is_symlink(), "Cargo.lock is unavailable or is a symlink")
     lock_digest = _digest(lock.read_bytes())
-    _require(lock_digest == expected_cargo_lock_sha256, "synthetic receipt Cargo.lock digest differs from exact checkout")
+    _require(
+        lock_digest == synthetic_state["cargo_lock_sha256"],
+        "synthetic receipt Cargo.lock digest differs from exact checkout",
+    )
+
+    review_path_text = synthetic_state["review_index_path"]
+    _require(
+        review_path_text == "governance/pr41-review-index.v1.json",
+        "synthetic receipt review-index path is not canonical",
+    )
+    review_path = resolved / review_path_text
+    _require(
+        review_path.is_file() and not review_path.is_symlink(),
+        "review index is unavailable or is a symlink",
+    )
+    review_raw = review_path.read_bytes()
+    review_digest = _digest(review_raw)
+    _require(
+        review_digest == synthetic_state["review_index_sha256"],
+        "synthetic receipt review-index digest differs from exact checkout",
+    )
+    review = _mapping(_strict_json(review_raw, "review index"), "review index")
+    _require(
+        review.get("schema") == "org.trillionnium.g1-pr-review-index.v1",
+        "review-index schema drifted",
+    )
+    _require(review.get("program_revision") == PROGRAM_REVISION, "review-index program revision drifted")
+    _require(review.get("repository") == subject.repository, "review-index repository differs from PR subject")
+    _require(str(review.get("pull_request")) == str(subject.pr_number), "review-index PR differs from PR subject")
+    base = _mapping(review.get("base"), "review-index base")
+    _require(
+        base.get("commit") == subject.base_commit and base.get("tree") == subject.base_tree,
+        "review-index base identity differs from PR subject",
+    )
+    _require(
+        review.get("head_binding") == "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
+        "review-index head binding is unsafe",
+    )
+    expected = _mapping(review.get("expected"), "review-index expected inventory")
+    expected_path_count = _positive_int(expected.get("path_count"), "review-index path count")
+    expected_change_count = _positive_int(expected.get("change_count"), "review-index change count")
+    expected_paths_sha256 = _sha256(expected.get("paths_sha256"), "review-index paths digest")
+    expected_changes_sha256 = _sha256(expected.get("changes_sha256"), "review-index changes digest")
+    _require(
+        expected_path_count == synthetic_state["review_index_path_count"],
+        "synthetic receipt review-index path count differs from exact checkout",
+    )
+    _require(
+        expected_change_count == synthetic_state["review_index_change_count"],
+        "synthetic receipt review-index change count differs from exact checkout",
+    )
+    _require(
+        expected_paths_sha256 == synthetic_state["review_index_paths_sha256"],
+        "synthetic receipt review-index path-set digest differs from exact checkout",
+    )
+    _require(
+        expected_changes_sha256 == synthetic_state["review_index_changes_sha256"],
+        "synthetic receipt review-index change-set digest differs from exact checkout",
+    )
+    _require(
+        review.get("claim_ceiling")
+        == "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
+        "review-index claim ceiling widened",
+    )
+    for field in (
+        "automatic_redispatch",
+        "integration_authorized",
+        "promotion_authorized",
+        "public_release",
+    ):
+        _require(review.get(field) is False, f"review-index {field} must remain false")
+
     return {
         "root": str(resolved),
         "commit": subject.head_commit,
         "tree": subject.head_tree,
         "cargo_lock_sha256": lock_digest,
+        "review_index": {
+            "path": review_path_text,
+            "sha256": review_digest,
+            "path_count": expected_path_count,
+            "paths_sha256": expected_paths_sha256,
+            "change_count": expected_change_count,
+            "changes_sha256": expected_changes_sha256,
+        },
         "base_is_ancestor": True,
         "clean": True,
     }
@@ -92,7 +181,7 @@ def verify_pr_aggregate(
     verified: dict[str, dict[str, Any]] = {}
     selected_run_ids: dict[str, int] = {}
     list_response_digests: dict[str, str] = {}
-    synthetic_state: dict[str, str] = {}
+    synthetic_state: dict[str, Any] = {}
 
     while len(verified) < len(REQUIREMENTS):
         pending: list[str] = []
@@ -124,7 +213,7 @@ def verify_pr_aggregate(
             raise AggregateError(f"timed out waiting for exact-subject workflows: {pending}")
         sleep(min(poll_seconds, remaining))
 
-    local = _local_source_binding(repo_root, subject, synthetic_state["cargo_lock_sha256"])
+    local = _local_source_binding(repo_root, subject, synthetic_state)
 
     # Re-read all mutable live objects after artifact downloads.  A base/head
     # movement, PR retarget, protection change, or newer workflow run makes the

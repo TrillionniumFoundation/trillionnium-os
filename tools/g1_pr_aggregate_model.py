@@ -36,6 +36,14 @@ REQUIREMENTS = (
         artifact_kind="synthetic",
     ),
     WorkflowRequirement(
+        filename="g1-review-index-receipts.yml",
+        workflow_name="G1 exact-head and synthetic-merge review-index receipts",
+        job_names=frozenset(
+            {"L1 exact-head and synthetic-merge closed-world receipt binding"}
+        ),
+        artifact_kind="review_index",
+    ),
+    WorkflowRequirement(
         filename="g1-android-privilege-matrix.yml",
         workflow_name="G1 Android privileged-lane evaluated matrix",
         job_names=frozenset(
@@ -58,5 +66,3 @@ REQUIREMENTS = (
         artifact_kind="evidence",
     ),
 )
-
-

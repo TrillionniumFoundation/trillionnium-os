@@ -19,6 +19,10 @@ from tools.g1_pr_aggregate_receipts import (
     _validate_evidence_pair,
     _validate_synthetic_receipt,
 )
+from tools.g1_pr_aggregate_review_receipts import (
+    select_review_artifact,
+    validate_review_receipts,
+)
 
 def _verify_workflow(
     api: _RepoApi,
@@ -26,19 +30,42 @@ def _verify_workflow(
     run: Mapping[str, Any],
     subject: Subject,
     now: datetime,
-    synthetic_state: dict[str, str],
+    synthetic_state: dict[str, Any],
 ) -> dict[str, Any]:
     run_id = _positive_int(run.get("id"), "workflow run id")
     _require(run.get("status") == "completed" and run.get("conclusion") == "success", f"latest {requirement.workflow_name} run is not terminal success")
     attempt = _positive_int(run.get("run_attempt"), f"workflow run {run_id} attempt")
     jobs = _verify_jobs(api, run_id, requirement.job_names)
     artifacts, artifact_list_digest = _artifact_metadata(api, run, now)
-    selected = _select_artifacts(artifacts, requirement, subject)
+    selected = (
+        select_review_artifact(artifacts, subject)
+        if requirement.artifact_kind == "review_index"
+        else _select_artifacts(artifacts, requirement, subject)
+    )
     artifact_reports: list[dict[str, Any]] = []
     semantic: dict[str, Any] = {}
     for name, artifact in sorted(selected.items()):
         raw, metadata = _download_artifact(api, artifact)
-        if requirement.artifact_kind == "synthetic":
+        if requirement.artifact_kind == "review_index":
+            members = _zip_json_members(
+                raw,
+                frozenset(
+                    {
+                        "g1-exact-head-review-index-receipt.json",
+                        "g1-synthetic-merge-review-index-receipt.json",
+                    }
+                ),
+                name,
+            )
+            receipt = validate_review_receipts(
+                members["g1-exact-head-review-index-receipt.json"],
+                members["g1-synthetic-merge-review-index-receipt.json"],
+                subject,
+                run,
+            )
+            synthetic_state.update(receipt)
+            semantic = receipt
+        elif requirement.artifact_kind == "synthetic":
             members = _zip_json_members(
                 raw,
                 frozenset({"g1-synthetic-merge-evidence.json", "g1-merge-baseline.json"}),
@@ -50,9 +77,7 @@ def _verify_workflow(
             _require(baseline.get("qualification") == "SOURCE_EVIDENCE_ONLY", "synthetic baseline claim widened")
             gate = _mapping(baseline.get("gate"), "synthetic baseline gate")
             _require(gate.get("passed") is False, "host synthetic baseline cannot claim target qualification")
-            synthetic_state["merge_commit"] = synthetic["merge_commit"]
-            synthetic_state["merge_tree"] = synthetic["merge_tree"]
-            synthetic_state["cargo_lock_sha256"] = synthetic["cargo_lock_sha256"]
+            synthetic_state.update(synthetic)
             semantic = synthetic
         elif requirement.artifact_kind == "android":
             members = _zip_json_members(
@@ -116,5 +141,3 @@ def _verify_workflow(
         "artifacts": artifact_reports,
         "artifact_list_response_sha256": artifact_list_digest,
     }
-
-
