@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          ref: 4e8597d6d8d5fae89e67ee7693bfe833d337e9cb
+          ref: 661aeff7286b1346251be006a7dec31723a51bb2
           path: source
           fetch-depth: 0
           persist-credentials: false
@@ -31,7 +31,7 @@ jobs:
           ref: ${{ github.sha }}
           path: inputs
           persist-credentials: false
-      - name: Decode inert, hash-bound patch outside candidate code
+      - name: Decode inert hash-bound plan-binding patch
         working-directory: ${{ runner.temp }}
         shell: bash
         run: |
@@ -40,27 +40,27 @@ jobs:
           env -i PATH=/usr/bin:/bin RUNNER_TEMP="$RUNNER_TEMP" GITHUB_WORKSPACE="$GITHUB_WORKSPACE" /usr/bin/python3 -I - <<'PY'
           from pathlib import Path
           import hashlib, lzma, os
-          encoded = (Path(os.environ['GITHUB_WORKSPACE'])/'inputs/repair-inputs/evidence-byte-binding.patch.xz').read_bytes()
-          assert len(encoded) == 10632
+          compressed = (Path(os.environ['GITHUB_WORKSPACE'])/'inputs/repair-inputs/evidence-byte-binding.patch.xz').read_bytes()
+          assert len(compressed) == 3644
           decoder = lzma.LZMADecompressor(memlimit=128*1024*1024)
-          raw = decoder.decompress(encoded, max_length=43205)
-          assert decoder.eof and not decoder.unused_data and len(raw) == 43204
-          assert hashlib.sha256(raw).hexdigest() == 'a1b98e3384647756e8e34ec7fdca27267a8b5974b8b61624b94bed116c441eb3'
+          raw = decoder.decompress(compressed, max_length=11843)
+          assert decoder.eof and not decoder.unused_data and len(raw) == 11842
+          assert hashlib.sha256(raw).hexdigest() == '16c834291fad1f5be34d28cd657a86531f8007dd1c31748594646ba530b20665'
           (Path(os.environ['RUNNER_TEMP'])/'g1-byte-binding/source.patch').write_bytes(raw)
           PY
-      - name: Build exact candidate objects without changing a remote ref
+      - name: Build exact source candidate without remote mutation
         id: subject
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = 4e8597d6d8d5fae89e67ee7693bfe833d337e9cb
+          test "$(git --no-replace-objects rev-parse HEAD)" = 661aeff7286b1346251be006a7dec31723a51bb2
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
           git apply --index "$RUNNER_TEMP/g1-byte-binding/source.patch"
-          test "$(git write-tree)" = 5d2a4d28881cea3d9dcc8d1cd76ffd47fb3bbc80
+          test "$(git write-tree)" = bc24675ffe4a5a3969c958b22e519202c6bc0d2e
           test "$(git diff --cached --name-only | wc -l)" = 8
           test -z "$(git diff --cached --name-only -- .github docs/machine/gap-register.v2.json docs/machine/evidence-index.v1.json)"
           git config user.name 'OpenAI Codex'
           git config user.email 'noreply@openai.com'
-          git -c commit.gpgsign=false commit -m 'fix(evidence): bind signatures and promotion checks to immutable input snapshots' -m 'Close verified-path substitution and inter-layer package/gap reread races. Add 18 deterministic byte-binding and bounded-input regressions. Preserve every independent review, installed-target, device, destructive-fault and release gate.' -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          git -c commit.gpgsign=false commit -m 'fix(evidence): bind final promotion plans to verified gap definitions' -m 'Reject gap-state movement after intake and unbound detached reports. Require matching report/plan snapshot digests, unresolved sets and closure flags in the exact-head aggregate. Preserve independent review, trust roots and all external qualification gates.' -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
           printf 'candidate=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/g1-byte-binding/subject.txt"
           git bundle create "$RUNNER_TEMP/g1-byte-binding/candidate.bundle" HEAD
@@ -68,7 +68,7 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.13'
-      - name: Validate cryptographic snapshot, retention and live-binding regressions
+      - name: Validate complete evidence snapshot and final-plan tests
         run: |
           set -euo pipefail
           {
@@ -85,11 +85,11 @@ jobs:
                   else:
                       yield item.id()
           all_ids = list(ids(unittest.defaultTestLoader.loadTestsFromNames(names)))
-          assert len(all_ids) == 80 and len(set(all_ids)) == 61
-          print('80 test executions; 61 unique test IDs; 18 new regression methods.')
+          assert len(all_ids) == 83 and len(set(all_ids)) == 64
+          print('83 executions; 64 unique evidence test IDs; 21 new byte/plan-binding methods.')
           PY
           } 2>&1 | tee "$RUNNER_TEMP/g1-byte-binding/evidence-tests.log"
-      - name: Validate module contracts, complete review inventory and aggregate boundaries
+      - name: Validate source contracts, aggregate binding and no-promotion result
         run: |
           set -euo pipefail
           {
@@ -104,19 +104,20 @@ jobs:
           python3 - <<'PY'
           import json, os
           from pathlib import Path
-          root=Path(os.environ['RUNNER_TEMP'])/'g1-byte-binding'
-          report=json.loads((root/'evidence-report.json').read_text())
-          plan=json.loads((root/'promotion-plan.json').read_text())
+          root = Path(os.environ['RUNNER_TEMP'])/'g1-byte-binding'
+          report = json.loads((root/'evidence-report.json').read_text())
+          plan = json.loads((root/'promotion-plan.json').read_text())
           assert report['all_gaps_promotable'] is False
           assert plan['transitions'] == [] and plan['zero_gap_after_plan'] is False
+          assert report['gap_specs_sha256'] == plan['gap_specs_sha256']
           assert plan['public_release_after_plan'] is False and plan['automatic_redispatch'] is False
-          (root/'result.txt').write_text('PASS_ISOLATED_INPUT_BINDING_TESTS\nNO_INDEPENDENT_APPROVAL\nNO_TARGET_CAPTURE\nNO_L2_L6_PROMOTION\npublic_release=false\n')
+          (root/'result.txt').write_text('PASS_ISOLATED_INPUT_AND_PLAN_BINDING_TESTS\nNO_INDEPENDENT_APPROVAL\nNO_TARGET_CAPTURE\nNO_L2_L6_PROMOTION\npublic_release=false\n')
           PY
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: g1-evidence-byte-binding-repair
+          name: g1-evidence-plan-binding-repair
           path: ${{ runner.temp }}/g1-byte-binding/
           if-no-files-found: error
           retention-days: 30
@@ -129,27 +130,27 @@ jobs:
     steps:
       - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
         with:
-          name: g1-evidence-byte-binding-repair
+          name: g1-evidence-plan-binding-repair
           path: ${{ runner.temp }}/g1-byte-binding
-      - name: Publish verified inert objects only to a new source branch
+      - name: Publish inert verified objects only to a new candidate ref
         shell: bash
         env:
           CANDIDATE: ${{ needs.validate.outputs.candidate }}
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          grep -qx PASS_ISOLATED_INPUT_BINDING_TESTS "$RUNNER_TEMP/g1-byte-binding/result.txt"
-          mkdir "$RUNNER_TEMP/g1-byte-binding-publisher"
-          cd "$RUNNER_TEMP/g1-byte-binding-publisher"
+          grep -qx PASS_ISOLATED_INPUT_AND_PLAN_BINDING_TESTS "$RUNNER_TEMP/g1-byte-binding/result.txt"
+          mkdir "$RUNNER_TEMP/g1-plan-binding-publisher"
+          cd "$RUNNER_TEMP/g1-plan-binding-publisher"
           git init --bare
           git fetch "$RUNNER_TEMP/g1-byte-binding/candidate.bundle" HEAD:refs/heads/candidate
           test "$(git rev-parse candidate)" = "$CANDIDATE"
-          test "$(git rev-parse candidate^{tree})" = 5d2a4d28881cea3d9dcc8d1cd76ffd47fb3bbc80
-          test "$(git rev-parse candidate^)" = 4e8597d6d8d5fae89e67ee7693bfe833d337e9cb
+          test "$(git rev-parse candidate^{tree})" = bc24675ffe4a5a3969c958b22e519202c6bc0d2e
+          test "$(git rev-parse candidate^)" = 661aeff7286b1346251be006a7dec31723a51bb2
           test "$(git diff candidate^ candidate --name-only | wc -l)" = 8
           test -z "$(git diff candidate^ candidate --name-only -- .github docs/machine/gap-register.v2.json docs/machine/evidence-index.v1.json)"
           git remote add origin https://github.com/TrillionniumFoundation/trillionnium-os.git
           git config credential.helper '!f() { printf "username=x-access-token\npassword=%s\n" "$GH_TOKEN"; }; f'
-          test -z "$(git ls-remote --heads origin refs/heads/codex/g1-evidence-byte-binding-20260905)"
-          git push origin refs/heads/candidate:refs/heads/codex/g1-evidence-byte-binding-20260905
-          printf 'Published %s; protected main and the PR ref were not changed by this job.\n' "$CANDIDATE"
+          test -z "$(git ls-remote --heads origin refs/heads/codex/g1-evidence-plan-binding-20260905)"
+          git push origin refs/heads/candidate:refs/heads/codex/g1-evidence-plan-binding-20260905
+          printf 'Published %s; no protected ref or PR ref was changed by this job.\n' "$CANDIDATE"
