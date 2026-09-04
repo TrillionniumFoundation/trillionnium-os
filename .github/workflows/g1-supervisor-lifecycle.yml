@@ -1,0 +1,122 @@
+name: G1 supervisor lifecycle repair validation
+on:
+  push:
+    branches: [ops/g1-supervisor-lifecycle-build-20260905]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      candidate: ${{ steps.subject.outputs.candidate }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    defaults:
+      run:
+        working-directory: source
+        shell: bash
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 7ed0475bdea8efd55caa9bf26edcf2b6799dbffd
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: inputs
+          persist-credentials: false
+      - name: Decode exact inert repair input
+        working-directory: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/g1-supervisor"
+          env -i PATH=/usr/bin:/bin RUNNER_TEMP="$RUNNER_TEMP" GITHUB_WORKSPACE="$GITHUB_WORKSPACE" /usr/bin/python3 -I - <<'PY'
+          from pathlib import Path
+          import hashlib, lzma, os
+          data=(Path(os.environ['GITHUB_WORKSPACE'])/'inputs/repair-inputs/supervisor-lifecycle.patch.xz').read_bytes()
+          assert len(data)==9284
+          decoder=lzma.LZMADecompressor(memlimit=128*1024*1024)
+          patch=decoder.decompress(data,max_length=36412)
+          assert decoder.eof and not decoder.unused_data and len(patch)==36411
+          assert hashlib.sha256(patch).hexdigest()=='e8280b8ae11ee7314be2f5a5f2e820ad4a1e976ce4c782b1e67ea51dda5c0b74'
+          (Path(os.environ['RUNNER_TEMP'])/'g1-supervisor/source.patch').write_bytes(patch)
+          PY
+      - name: Form exact candidate
+        id: subject
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 7ed0475bdea8efd55caa9bf26edcf2b6799dbffd
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git apply --index "$RUNNER_TEMP/g1-supervisor/source.patch"
+          test "$(git write-tree)" = 4445b6dc0684f896933207e395f74eeedbdf7fd0
+          test "$(git diff --cached --name-only | wc -l)" = 6
+          test -z "$(git diff --cached --name-only -- docs/machine/gap-register.v2.json docs/machine/evidence-index.v1.json .github/workflows/owner-open-r5-target-evidence-capture.yml)"
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git -c commit.gpgsign=false commit -m 'fix(rootlinux): retire original process groups before carrier replacement' -m 'Retain the session leader with waitid/WNOWAIT until bounded TERM/KILL group observations finish. Fail closed on unconfirmed cleanup, inhibit-path aliases and unsafe emergency state. Add real fork/exit regressions and explicit source/merge suite routing. Preserve all installed-target and release holds.' -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          printf 'candidate=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/g1-supervisor/subject.txt"
+          git bundle create "$RUNNER_TEMP/g1-supervisor/candidate.bundle" HEAD
+          git diff HEAD^ HEAD --stat > "$RUNNER_TEMP/g1-supervisor/change-stat.txt"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Verify real local lifecycle and contract regressions
+        run: |
+          set -euo pipefail
+          {
+            python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor tools.tests.test_owner_open_broker_module_documentation tools.tests.test_verify_global_docs_contracts tools.tests.test_verify_g1_review_index tools.tests.test_verify_g1_repository_closure -v
+            python3 tools/docs/generate_global_docs.py --check
+            python3 tools/docs/verify_global_docs.py
+            python3 tools/docs/verify_module_documentation.py
+            python3 tools/verify_g1_repository_closure.py --root .
+            for repetition in $(seq 1 20); do
+              printf '\n=== lifecycle repetition %s ===\n' "$repetition"
+              python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -q
+            done
+          } 2>&1 | tee "$RUNNER_TEMP/g1-supervisor/lifecycle-tests.log"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          printf '%s\n' PASS_LOCAL_GROUP_LIFECYCLE_REGRESSIONS 'qualification=L1_SOURCE_TESTS_ONLY' 'escaped_descendants_absence_proven=false' 'independent_approval=false' 'target_capture=false' 'public_release=false' > "$RUNNER_TEMP/g1-supervisor/result.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: g1-supervisor-lifecycle-repair
+          path: ${{ runner.temp }}/g1-supervisor/
+          if-no-files-found: error
+          retention-days: 30
+  publish-candidate:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: g1-supervisor-lifecycle-repair
+          path: ${{ runner.temp }}/g1-supervisor
+      - name: Publish inert verified Git objects to a new candidate ref only
+        shell: bash
+        env:
+          CANDIDATE: ${{ needs.validate.outputs.candidate }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          grep -qx PASS_LOCAL_GROUP_LIFECYCLE_REGRESSIONS "$RUNNER_TEMP/g1-supervisor/result.txt"
+          mkdir "$RUNNER_TEMP/g1-supervisor-publisher"
+          cd "$RUNNER_TEMP/g1-supervisor-publisher"
+          git init --bare
+          git fetch "$RUNNER_TEMP/g1-supervisor/candidate.bundle" HEAD:refs/heads/candidate
+          test "$(git rev-parse candidate)" = "$CANDIDATE"
+          test "$(git rev-parse candidate^{tree})" = 4445b6dc0684f896933207e395f74eeedbdf7fd0
+          test "$(git rev-parse candidate^)" = 7ed0475bdea8efd55caa9bf26edcf2b6799dbffd
+          test "$(git diff candidate^ candidate --name-only | wc -l)" = 6
+          test -z "$(git diff candidate^ candidate --name-only -- docs/machine/gap-register.v2.json docs/machine/evidence-index.v1.json .github/workflows/owner-open-r5-target-evidence-capture.yml)"
+          git remote add origin https://github.com/TrillionniumFoundation/trillionnium-os.git
+          git config credential.helper '!f() { printf "username=x-access-token\npassword=%s\n" "$GH_TOKEN"; }; f'
+          test -z "$(git ls-remote --heads origin refs/heads/ops/g1-supervisor-lifecycle-candidate-20260905)"
+          git push origin refs/heads/candidate:refs/heads/ops/g1-supervisor-lifecycle-candidate-20260905
+          printf 'Published candidate %s; protected main and PR ref unchanged by this job.\n' "$CANDIDATE"
