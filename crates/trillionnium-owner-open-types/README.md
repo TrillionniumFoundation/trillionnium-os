@@ -35,3 +35,16 @@ Passing source tests does not establish installed-target interoperability. An in
 ## Change checklist
 
 Update the formal module document and machine contracts in the same exact-head change whenever a public type, field, version, identity domain, canonical encoding rule, error or compatibility behavior changes. Preserve fail-closed decoding and no automatic redispatch across every version boundary.
+
+## Detailed contracts and local verification
+
+- [MOD-PROTOCOL](../../docs/modules/MOD-PROTOCOL.md)
+
+From the repository root (source tests only):
+
+```sh
+cargo test --locked -p trillionnium-owner-open-types --all-targets
+```
+
+Use the linked module runbook for state ownership and recovery. This command
+does not establish installed-target, device, fault or release qualification.

@@ -285,6 +285,19 @@ def observe_live(
             break
         page += 1
 
+    declared_count = positive_int(pull.get("changed_files"), "pull_request.changed_files")
+    require(len(raw_changes) == declared_count, "live file inventory is truncated or incomplete")
+    # File pagination is not an immutable snapshot. Re-read the subject after
+    # all pages and reject a push, retarget or close during the observation.
+    current = _api_get(repository, f"/pulls/{pull_request}", token)
+    require(isinstance(current, dict), "final pull request response is not an object")
+    require(current.get("state") == "open", "pull request closed during observation")
+    require((current.get("base") or {}).get("sha") == expected_base,
+            "pull request base moved during observation")
+    require((current.get("head") or {}).get("sha") == expected_head,
+            "pull request head moved during observation")
+    require(current.get("changed_files") == declared_count,
+            "pull request file count moved during observation")
     head_tree = git(root, "rev-parse", f"{expected_head}^{{tree}}")
     base_tree = git(root, "rev-parse", f"{expected_base}^{{tree}}")
     return observation_from_changes(
@@ -297,6 +310,91 @@ def observe_live(
         pages=page,
         raw_changes=raw_changes,
     )
+
+
+def propose_index(
+    observation: dict[str, Any],
+    *,
+    predecessor_commit: str,
+    predecessor_tree: str,
+    accountable_owner: str,
+    runtime_reviewer: str,
+    evidence_reviewer: str,
+) -> dict[str, Any]:
+    """Build an unsigned review assignment proposal, never an approval.
+
+    The input may be an exact live observation or a locally staged inventory.
+    A staged proposal MUST pass the live verifier after it is committed. No
+    source/head result can be inherited from the input or from this function.
+    """
+    git_sha(predecessor_commit, "predecessor_commit")
+    git_sha(predecessor_tree, "predecessor_tree")
+    for role, value in (("accountable_owner", accountable_owner),
+                        ("runtime_reviewer", runtime_reviewer),
+                        ("evidence_reviewer", evidence_reviewer)):
+        require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,38}", value) is not None,
+                f"{role} must be an explicit GitHub login")
+    require(accountable_owner not in {runtime_reviewer, evidence_reviewer},
+            "proposal cannot assign the accountable owner as an independent reviewer")
+    raw_changes = observation["changes"]
+    records = [normalize_change(value, "proposal change") for value in raw_changes]
+    records.sort(key=lambda value: value["path"])
+    paths = [value["path"] for value in records]
+    require(bool(paths) and len(paths) == len(set(paths)), "proposal requires a unique nonempty inventory")
+    groups: dict[str, list[str]] = {}
+    for path in paths:
+        if path.startswith((".github/", "governance/", "evidence/", "schemas/")):
+            domain = "ci-evidence-and-authority"
+        elif path.startswith("docs/"):
+            domain = "documentation-and-contracts"
+        elif path.startswith("android-integration/"):
+            domain = "android-composition-and-policy"
+        elif path.startswith(("packaging/", "platform/", "profile/")):
+            domain = "platform-and-payload"
+        elif path.startswith(("apps/", "crates/", "planned/", "foundations/")):
+            domain = "runtime-and-protocol"
+        elif path.startswith("tools/"):
+            domain = "source-tooling-and-verification"
+        else:
+            domain = "repository-and-retirement"
+        groups.setdefault(domain, []).append(path)
+    slices = []
+    for order, (domain, assigned) in enumerate(sorted(groups.items()), start=1):
+        reviewer = evidence_reviewer if domain in {
+            "ci-evidence-and-authority", "documentation-and-contracts",
+            "repository-and-retirement", "source-tooling-and-verification",
+        } else runtime_reviewer
+        slices.append({
+            "id": domain,
+            "security_domain": domain,
+            "accountable_owner": accountable_owner,
+            "independent_reviewers": [reviewer],
+            "review_order": order,
+            "paths": sorted(assigned),
+        })
+    return {
+        "schema": SCHEMA,
+        "program_revision": "2026-08-31-g1",
+        "repository": observation["repository"],
+        "pull_request": observation["pull_request"],
+        "base": {"commit": observation["base_commit"], "tree": observation["base_tree"]},
+        "review_predecessor": {"commit": predecessor_commit, "tree": predecessor_tree},
+        "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
+        "expected": {
+            "path_count": len(paths),
+            "paths_sha256": canonical_paths_digest(paths),
+            "change_count": len(records),
+            "changes_sha256": canonical_changes_digest(records),
+        },
+        "changed_paths": paths,
+        "changes": records,
+        "slices": slices,
+        "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
+        "automatic_redispatch": False,
+        "integration_authorized": False,
+        "promotion_authorized": False,
+        "public_release": False,
+    }
 
 
 def validate_index(index: Any, observation: dict[str, Any], *, index_sha256: str) -> dict[str, Any]:

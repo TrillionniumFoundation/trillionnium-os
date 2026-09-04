@@ -86,6 +86,11 @@ Each operation declares:
 Locks across process spawn, network/device I/O, provider waits or fsync require a
 written exception, lock-hold measurement and fault proof.
 
+The current `resource_contract.queue_items` is the module resident admission
+ceiling, including running work; declared `max_concurrency` cannot exceed it.
+A future separate waiting-queue/worker model requires an explicit contract
+revision rather than comparison against a global schema maximum.
+
 ## 6. Resource contract
 
 At minimum:

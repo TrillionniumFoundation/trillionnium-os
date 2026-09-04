@@ -4,6 +4,9 @@ from __future__ import annotations
 from copy import deepcopy
 import hashlib
 import unittest
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 
 from tools import verify_g1_review_index as review
 
@@ -82,6 +85,69 @@ class ReviewIndexTest(unittest.TestCase):
             observation() if observed is None else observed,
             index_sha256=hashlib.sha256(b"fixture-index").hexdigest(),
         )
+
+    def test_proposal_covers_every_path_and_preserves_rename_removal(self) -> None:
+        observed = observation()
+        value = review.propose_index(
+            observed, predecessor_commit="e" * 40, predecessor_tree="f" * 40,
+            accountable_owner="author", runtime_reviewer="runtime-reviewer",
+            evidence_reviewer="evidence-reviewer",
+        )
+        result = self.validate(value, observed)
+        self.assertEqual(result["path_count"], 4)
+        self.assertEqual(result["rename_count"], 1)
+        self.assertEqual(result["removal_count"], 1)
+        self.assertFalse(result["integration_authorized"])
+        self.assertFalse(result["promotion_authorized"])
+        self.assertFalse(result["public_release"])
+
+    def test_proposal_rejects_self_review(self) -> None:
+        with self.assertRaisesRegex(review.ReviewIndexError, "independent reviewer"):
+            review.propose_index(
+                observation(), predecessor_commit="e" * 40, predecessor_tree="f" * 40,
+                accountable_owner="author", runtime_reviewer="author",
+                evidence_reviewer="evidence-reviewer",
+            )
+
+    def _observe(self, declared_count: int = 4, moved: str | None = None):
+        pull = {"state": "open", "base": {"sha": "a" * 40},
+                "head": {"sha": "c" * 40}, "changed_files": declared_count}
+        final = deepcopy(pull)
+        if moved == "head":
+            final["head"]["sha"] = "f" * 40
+        elif moved == "base":
+            final["base"]["sha"] = "f" * 40
+        elif moved == "count":
+            final["changed_files"] += 1
+        elif moved == "closed":
+            final["state"] = "closed"
+        files = [{"filename": item["path"], "status": item["status"],
+                  "previous_filename": item["previous_path"]} for item in changes()]
+        def git_result(root, *args, **kwargs):
+            return {("rev-parse", "HEAD^{commit}"): "c" * 40,
+                    ("status", "--porcelain=v1", "--untracked-files=all"): "",
+                    ("rev-parse", "c" * 40 + "^{tree}"): "d" * 40,
+                    ("rev-parse", "a" * 40 + "^{tree}"): "b" * 40}[args]
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / ".git").mkdir()
+            with patch.object(review, "git", side_effect=git_result), \
+                 patch.object(review, "_api_get", side_effect=[pull, files, final]):
+                return review.observe_live(root=root, repository=review.REPOSITORY,
+                                           pull_request=41, expected_base="a" * 40,
+                                           expected_head="c" * 40, token="fixture")
+
+    def test_complete_live_observation_requires_stable_subject(self) -> None:
+        self.assertEqual(self._observe()["path_count"], 4)
+
+    def test_live_pagination_must_match_pr_declared_count(self) -> None:
+        with self.assertRaisesRegex(review.ReviewIndexError, "truncated or incomplete"):
+            self._observe(declared_count=5)
+
+    def test_live_subject_movement_or_closure_invalidates_observation(self) -> None:
+        for moved in ("head", "base", "count", "closed"):
+            with self.subTest(moved=moved), self.assertRaisesRegex(review.ReviewIndexError, "during observation"):
+                self._observe(moved=moved)
 
     def test_complete_index_passes_and_retains_no_authority(self) -> None:
         result = self.validate(index_for(observation()))

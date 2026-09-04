@@ -110,3 +110,20 @@ This policy closes only the repository's ability to prove that every catalog mod
 - production signing custody, AVB, OTA or public release authority.
 
 Those statements remain governed by `docs/QUALIFICATION_AND_EVIDENCE.md`, the gap register and independently administered evidence packages.
+
+## 8. Value binding and implementation navigation
+
+The verifier compares visible, section-local identity, catalog API labels,
+state ownership/durability/retention, dependency lists, concurrency fields,
+every documented resource/SLO number and gap lists to the machine catalog.
+Required headings or values hidden in a code example or HTML comment do not
+satisfy the contract. Documentation/provenance program revisions must agree.
+
+Every detailed module document resolves at least one named implementation
+declaration and one test source. Python declarations are inspected with the
+AST without executing code; Rust declaration navigation is checked statically.
+These links prove discoverability only, not field-level codec compatibility.
+Actual build, codec, concurrency and lifecycle tests remain required.
+Every default Cargo member links a detailed module contract and carries its
+exact locked package-test command. Source checks never prove target resource
+enforcement or turn provisional SLOs into measured results.

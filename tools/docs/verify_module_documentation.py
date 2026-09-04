@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import sys
@@ -25,6 +26,8 @@ PROVENANCE_ENTRY_KEYS = {
     "id", "classification", "measured", "sample_count", "evidence_id",
     "measurement_environment", "last_calibrated_at", "activation",
 }
+REQUIRED_SECTIONS = ('## 1. Identity and maturity', '## 2. Responsibilities', '## 3. Non-goals and authority boundary', '## 4. Context, dependencies and data flow', '## 5. API and protocol contract', '## 6. State model and ownership', '## 7. Ordering, concurrency and backpressure', '## 8. Effect, cancellation and uncertainty semantics', '## 9. Resource budget and SLO status', '## 10. Persistence, recovery and reconciliation', '## 11. Security and trust boundaries', '## 12. Failure matrix and degraded behavior', '## 13. Compatibility, migration and rollback', '## 14. Observability', '## 15. Verification and evidence', '## 16. Deployment and runbook', '## 17. Open gaps and exit criteria')
+
 EDITORIAL = re.compile(r"\b(?:TODO|TBD|FIXME|PLACEHOLDER)\b|same\s+as\s+above", re.I)
 
 
@@ -115,12 +118,143 @@ def catalog_modules(catalog: dict[str, Any]) -> tuple[list[str], dict[str, dict[
     return order, mapped
 
 
+def visible_prose(text: str) -> str:
+    """Do not accept required contract text hidden in comments or examples."""
+    text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
+    lines: list[str] = []
+    fence: str | None = None
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        marker = "`" if stripped.startswith("```") else "~" if stripped.startswith("~~~") else None
+        if marker:
+            if fence is None:
+                fence = marker
+            elif fence == marker:
+                fence = None
+            continue
+        if fence is None:
+            lines.append(line)
+    require(fence is None, "module document contains an unterminated code fence")
+    return "\n".join(lines)
+
+
 def verify_headings(text: str, headings: list[str], module_id: str) -> None:
-    positions = []
-    for heading in headings:
-        require(text.count(heading) == 1, f"{module_id} must contain {heading!r} exactly once")
-        positions.append(text.index(heading))
-    require(positions == sorted(positions), f"{module_id} section order drifted")
+    actual = re.findall(r"^## .*", visible_prose(text), re.M)
+    require(actual == headings, f"{module_id} sections are missing, duplicated or out of order")
+
+
+def verify_contract_prose(text: str, module: dict[str, Any]) -> None:
+    """Bind human-readable fields to values, not merely a nearby schema name.
+
+    This proves documentation/catalog consistency only. It does not prove
+    enforcement of the budgets in a target process, nor a measured SLO.
+    """
+    module_id = module["id"]
+    prose = visible_prose(text)
+    sections: dict[int, str] = {}
+    matches = list(re.finditer(r"^## ([0-9]+)\. .*", prose, re.M))
+    for index, match in enumerate(matches):
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(prose)
+        sections[int(match.group(1))] = prose[match.end():end]
+
+    def line(section: int, prefix: str, expected: str) -> None:
+        actual = [item.strip() for item in sections[section].splitlines()
+                  if item.strip().startswith(prefix)]
+        require(actual == [expected], f"{module_id} section {section} contract drift: {prefix}")
+
+    def field(section: int, label: str, value: Any) -> None:
+        prefix = f"- {label}:"
+        line(section, prefix, f"{prefix} `{value}`")
+
+    for label, key in (("Module ID", "id"), ("Module version", "module_version"),
+                       ("Plane", "plane"), ("Primary owner", "owner_team"),
+                       ("Backup owner", "backup_team"), ("Maturity", "maturity")):
+        field(1, label, module[key])
+    dependencies = ", ".join(f"`{value}`" for value in module["dependencies"]) or "none"
+    line(4, "Direct dependencies:", f"Direct dependencies: {dependencies}.")
+    api = module["api_contract"]
+    field(5, "API schema", api["schema"])
+    for label, key in (("Catalog input labels", "inputs"), ("Catalog output labels", "outputs"),
+                       ("Catalog error labels", "errors")):
+        value = ", ".join(f"`{item}`" for item in api[key])
+        line(5, f"- {label}:", f"- {label}: {value}")
+    policy = module["compatibility"]["unknown_fields"]
+    wording = "rejected" if policy == "reject" else "preserved"
+    line(5, "- Unknown fields:", f"- Unknown fields: {wording} unless a future compatibility revision explicitly changes the rule.")
+    line(5, "- Versioning:", f"- Versioning: semantic version `{api['version']}`; incompatible changes require a new version and migration evidence.")
+    state = module["state_contract"]
+    for label, key in (("State schema", "schema"), ("Partition key", "partition"), ("Durability class", "durability")):
+        field(6, label, state[key])
+    authority = "authoritative" if state["authoritative"] else "non-authoritative"
+    line(6, "- State authority:", f"- State authority: **{authority}**")
+    owned = "`" + "; ".join(module["state_owned"]) + "`" if module["state_owned"] else "none"
+    line(6, "- State owned:", f"- State owned: {owned}")
+    retention = state["retention"]
+    line(6, "- Retention ceiling:", f"- Retention ceiling: {retention['max_items']} items and {retention['max_bytes']} bytes per declared bounded in-memory window.")
+    terminal = " and ".join(f"`{value}`" for value in state["terminal_states"])
+    line(6, "- Terminal vocabulary:", f"- Terminal vocabulary: {terminal}; implementation-specific intermediate states must converge to one of those classifications or a versioned extension.")
+    concurrency = module["concurrency_contract"]
+    for label, key in (("Ordering key", "ordering_key"), ("Maximum declared concurrency", "max_concurrency"),
+                       ("Admission resource", "admission_resource"), ("Lease source", "lease_source"),
+                       ("Lock scope", "lock_scope"), ("Backpressure", "backpressure"),
+                       ("Lease expiry", "lease_expiry"), ("Duplicate/conflict rule", "duplicate_conflict")):
+        field(7, label, concurrency[key])
+    line(7, "- Timeout ceiling:", f"- Timeout ceiling: `{concurrency['timeout_ms']}` milliseconds")
+    resources, slo = module["resource_contract"], module["slo"]
+    rows = [("CPU weight", resources['cpu_weight'], ""),
+            ("Memory", resources['memory_bytes'], " bytes"),
+            ("File descriptors", resources['fd_count'], ""),
+            ("Processes", resources['process_count'], ""),
+            ("Threads", resources['thread_count'], ""),
+            ("I/O rate", resources['io_bytes_per_sec'], " bytes/s"),
+            ("Queue items", resources['queue_items'], ""),
+            ("Queue bytes", resources['queue_bytes'], ""),
+            ("Store bytes", resources['store_bytes'], ""),
+            ("Operation timeout", resources['timeout_ms'], " ms"),
+            ("Recovery target", resources['recovery_ms'], " ms"),
+            ("Provisional P99 target", slo['latency_p99_ms'], " ms"),
+            ("Provisional throughput target", slo['throughput_per_sec'], "/s"),
+            ("Provisional availability target", slo['availability_percent'], "%"),
+            ("SLO recovery target", slo['recovery_ms'], " ms"),
+            ("SLO measurement window", slo['measurement_window_sec'], " s")]
+    for label, value, unit in rows:
+        line(9, f"| {label} |", f"| {label} | {value}{unit} |")
+    gaps = ", ".join(f"`{value}`" for value in module["open_gaps"]) or "none"
+    line(17, "Open machine gaps:", f"Open machine gaps: {gaps}.")
+
+
+def verify_implementation_links(root: Path, text: str, module_id: str) -> None:
+    """Resolve explicit implementation declarations without executing source.
+
+    Declaration existence and test-file links are source navigation checks,
+    not a proof of wire compatibility or an installed-target claim.
+    """
+    prose = visible_prose(text)
+    sources = re.findall(r"^- Implementation source: `([^`]+)` — `([A-Za-z_][A-Za-z0-9_]*)`$", prose, re.M)
+    tests = re.findall(r"^- Verification source: `([^`]+)`$", prose, re.M)
+    require(bool(sources) and bool(tests), f"{module_id} lacks concrete source/test bindings")
+    for relative, symbol in sources:
+        path = repo_path(root, relative, f"{module_id} implementation source")
+        require(path.is_file(), f"{module_id} implementation file missing: {relative}")
+        source = path.read_text(encoding="utf-8")
+        if path.suffix == ".py":
+            try:
+                tree = ast.parse(source, filename=relative)
+            except SyntaxError as error:
+                raise VerificationError(f"{module_id} invalid Python binding: {error}") from error
+            found = any(isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef))
+                        and node.name == symbol for node in ast.walk(tree))
+        elif path.suffix == ".rs":
+            found = re.search(r"^\s*(?:pub(?:\([^)]*\))?\s+)?(?:async\s+)?(?:unsafe\s+)?(?:fn|struct|enum|trait|type|const)\s+"
+                              + re.escape(symbol) + r"\b", source, re.M) is not None
+        else:
+            raise VerificationError(f"{module_id} unsupported declaration language: {relative}")
+        require(found, f"{module_id} implementation declaration missing: {relative}::{symbol}")
+    for relative in tests:
+        path = repo_path(root, relative, f"{module_id} verification source")
+        require(path.is_file(), f"{module_id} verification file missing: {relative}")
+        require(path.suffix in {".rs", ".py"}, f"{module_id} verification source must be code")
+
 
 
 def verify_provenance(path: Path, module_order: list[str]) -> None:
@@ -176,6 +310,21 @@ def verify_component_readmes(root: Path, catalog: dict[str, Any]) -> None:
         require(directory.is_dir(), f"default member directory missing: {member}")
         require(readme.is_file() and not readme.is_symlink(), f"default member README missing: {member}")
         require(len(readme.read_bytes()) >= 256, f"default member README truncated: {member}")
+        text = readme.read_text(encoding="utf-8")
+        try:
+            package = tomllib.loads((directory / "Cargo.toml").read_text(encoding="utf-8"))["package"]["name"]
+        except (OSError, KeyError, tomllib.TOMLDecodeError) as error:
+            raise VerificationError(f"component package manifest missing: {member}") from error
+        require(f"cargo test --locked -p {package} --all-targets" in text,
+                f"default member lacks exact local test command: {member}")
+        links = re.findall(r"\]\(([^)]+docs/modules/(MOD-[A-Z-]+)\.md)\)", text)
+        known = {module["id"] for module in catalog["modules"]}
+        require(bool(links), f"default member lacks a detailed module link: {member}")
+        for target, module_id in links:
+            require(module_id in known, f"default member links an unknown module: {member}")
+            require((directory / target).resolve() == (root / f"docs/modules/{module_id}.md").resolve(),
+                    f"default member module link escapes its contract: {member}")
+
 
 
 def verify_index_and_documents(root: Path) -> None:
@@ -192,7 +341,8 @@ def verify_index_and_documents(root: Path) -> None:
         "provenance path drifted",
     )
     headings = strings(index["required_sections"], "required_sections")
-    require(len(headings) >= 15, "required section set is too small")
+    require(tuple(headings) == REQUIRED_SECTIONS, "required section set drifted")
+    require(index["program_revision"] == catalog["program_revision"], "index program revision drifted")
     minimum = index["minimum_document_bytes"]
     require(type(minimum) is int and minimum >= 4096, "minimum_document_bytes is too small")
 
@@ -229,6 +379,8 @@ def verify_index_and_documents(root: Path) -> None:
         require(len(raw) >= minimum, f"{module_id} document truncated")
         text = raw.decode("utf-8")
         verify_headings(text, headings, module_id)
+        verify_contract_prose(text, module)
+        verify_implementation_links(root, text, module_id)
         require(EDITORIAL.search(text) is None, f"{module_id} contains editorial marker")
         required = [
             f"# {module_id} — {module.get('name')}",
@@ -265,7 +417,9 @@ def verify_index_and_documents(root: Path) -> None:
         if path.is_file()
     }
     require(actual == set(paths), "unregistered or missing module documents exist")
-    verify_provenance(repo_path(root, index["budget_provenance_path"], "provenance path"), order)
+    provenance_path = repo_path(root, index["budget_provenance_path"], "provenance path")
+    require(load_json(provenance_path)["program_revision"] == catalog["program_revision"], "budget program revision drifted")
+    verify_provenance(provenance_path, order)
     verify_component_readmes(root, catalog)
 
 

@@ -31,3 +31,16 @@ changing event IDs, sequence numbers, payloads or hash-chain digests, and is
 idempotent when the destination already contains the same sequence.
 
 Its durability and scalability work is tracked by `GAP-JOURNAL-CONVERGENCE-001` and `GAP-CONC-EVENT-STORE-001`. Historical source-status prose has been removed; current state is generated under `docs/generated/`.
+
+## Detailed contracts and local verification
+
+- [MOD-EVENT-STORE](../../docs/modules/MOD-EVENT-STORE.md)
+
+From the repository root (source tests only):
+
+```sh
+cargo test --locked -p trillionnium-owner-open-event-store --all-targets
+```
+
+Use the linked module runbook for state ownership and recovery. This command
+does not establish installed-target, device, fault or release qualification.

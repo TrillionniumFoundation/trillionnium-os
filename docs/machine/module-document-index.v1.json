@@ -1,6 +1,6 @@
 {
   "schema": "org.trillionnium.module-document-index.v1",
-  "program_revision": "2026-09-02-g1-module-doc-closure",
+  "program_revision": "2026-08-31-g1",
   "status": "ACTIVE_CANDIDATE_SOURCE_DOCUMENTATION",
   "catalog_path": "docs/machine/module-catalog.v1.json",
   "budget_provenance_path": "docs/machine/resource-budget-provenance.v1.json",

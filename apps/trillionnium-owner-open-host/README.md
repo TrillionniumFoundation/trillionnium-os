@@ -46,3 +46,17 @@ The exact clean checkout, lockfile and generated documentation graph are also re
 A change to a host binary must update every affected module contract, protocol or state version, migration rule, finite budget, negative test, product-entrypoint manifest and evidence expectation. The exact source must stop moving before independent review and attestation are bound.
 
 Automatic redispatch is forbidden. `public_release` remains false until the complete L1–L6 chain is independently authorized.
+
+## Detailed contracts and local verification
+
+- [MOD-EXECUTION-CORE](../../docs/modules/MOD-EXECUTION-CORE.md)
+- [MOD-TRANSPORT](../../docs/modules/MOD-TRANSPORT.md)
+
+From the repository root (source tests only):
+
+```sh
+cargo test --locked -p trillionnium-owner-open-host --all-targets
+```
+
+Use the linked module runbook for state ownership and recovery. This command
+does not establish installed-target, device, fault or release qualification.

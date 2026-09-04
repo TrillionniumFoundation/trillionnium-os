@@ -57,6 +57,21 @@ class ModuleContractVerificationTests(unittest.TestCase):
         with self.assertRaises(verifier.VerificationError):
             verifier.verify_modules(value)
 
+    def test_concurrency_is_bounded_by_module_budget_not_schema_ceiling(self) -> None:
+        value = catalog()
+        module = value["modules"][0]
+        module["resource_contract"]["queue_items"] = 1
+        module["concurrency_contract"]["max_concurrency"] = 2
+        with self.assertRaisesRegex(verifier.VerificationError, "queue item budget"):
+            verifier.verify_modules(value)
+
+    def test_concurrency_equal_to_actual_admission_budget_is_allowed(self) -> None:
+        value = catalog()
+        module = value["modules"][0]
+        module["resource_contract"]["queue_items"] = 16
+        module["concurrency_contract"]["max_concurrency"] = 16
+        verifier.verify_modules(value)
+
     def test_placeholder_api_type_fails_closed(self) -> None:
         value = catalog()
         value["modules"][0]["api_contract"]["inputs"] = ["typed_request"]

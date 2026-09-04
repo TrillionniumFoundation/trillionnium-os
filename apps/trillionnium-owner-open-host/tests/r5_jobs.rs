@@ -482,8 +482,27 @@ fn completed_job_is_not_redispatched_after_a_new_core_process() {
     provider_fixture(&provider, &provider_marker);
     let command = format!("printf x >> '{}'; printf completed", counter.display());
 
-    let first = decoded(&run_core(&provider, &job_store, &[job_start(&command)]));
+    // Keep the protocol busy until an observed terminal, rather than racing
+    // immediate client EOF against the new job's completion. job.wait is
+    // read-only and cannot create a replacement job or manufacture success.
+    let first = decoded(&run_core(
+        &provider,
+        &job_store,
+        &[
+            job_start(&command),
+            job_wait(0, "wait-before-restart", 5000),
+        ],
+    ));
+    let waited = first
+        .iter()
+        .find(|frame| {
+            frame["kind"] == "job.inspect.result"
+                && frame["payload"]["operation_id"] == "wait-before-restart"
+        })
+        .expect("bounded terminal observation before shutting down the first core");
+    assert_eq!(waited["payload"]["wait_status"], "terminal_observed");
     assert!(first.iter().any(|frame| frame["kind"] == "job.result"));
+    assert!(read_segmented_job_store(&job_store).contains("job.terminal"));
     assert_eq!(fs::read(&counter).unwrap(), b"x");
 
     let second = decoded(&run_core(&provider, &job_store, &[job_start(&command)]));
@@ -495,6 +514,51 @@ fn completed_job_is_not_redispatched_after_a_new_core_process() {
         .unwrap();
     assert_eq!(start["payload"]["status"], "existing_terminal");
     assert_eq!(start["payload"]["automatic_redispatch"], false);
+}
+
+#[test]
+fn delayed_job_terminal_barrier_preserves_no_redispatch_after_restart() {
+    let directory = secure_tempdir();
+    let provider = directory.path().join("provider.sh");
+    let provider_marker = directory.path().join("provider-started");
+    let job_store = directory.path().join("jobs.jsonl");
+    let counter = directory.path().join("delayed-counter");
+    provider_fixture(&provider, &provider_marker);
+    let command = format!(
+        "sleep 0.1; printf x >> '{}'; printf completed",
+        counter.display()
+    );
+    let first = decoded(&run_core(
+        &provider,
+        &job_store,
+        &[
+            job_start(&command),
+            job_wait(0, "wait-delayed-terminal", 5000),
+        ],
+    ));
+    let waited = first
+        .iter()
+        .find(|frame| {
+            frame["kind"] == "job.inspect.result"
+                && frame["payload"]["operation_id"] == "wait-delayed-terminal"
+        })
+        .expect("delayed terminal observation");
+    assert_eq!(waited["payload"]["wait_status"], "terminal_observed");
+    assert!(first.iter().any(|frame| {
+        frame["kind"] == "job.result" && frame["payload"]["terminal_kind"] == "exited"
+    }));
+    assert!(read_segmented_job_store(&job_store).contains("job.terminal"));
+    assert_eq!(fs::read(&counter).unwrap(), b"x");
+
+    let second = decoded(&run_core(&provider, &job_store, &[job_start(&command)]));
+    let start = second
+        .iter()
+        .find(|frame| frame["kind"] == "job.start.result")
+        .expect("recovered start result");
+    assert_eq!(start["payload"]["status"], "existing_terminal");
+    assert_eq!(start["payload"]["automatic_redispatch"], false);
+    assert_eq!(fs::read(&counter).unwrap(), b"x");
+    assert!(!provider_marker.exists());
 }
 
 #[test]

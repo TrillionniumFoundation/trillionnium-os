@@ -335,7 +335,11 @@ def verify_module_contract(module: dict[str, Any], ordering_keys: list[str], sta
     max_concurrency = require_positive_int(
         concurrency["max_concurrency"], f"{module_id}.concurrency_contract.max_concurrency", 1 << 20
     )
-    require(max_concurrency <= RESOURCE_MAX["queue_items"],
+    queue_items = require_positive_int(
+        module["resource_contract"]["queue_items"],
+        f"{module_id}.resource_contract.queue_items", RESOURCE_MAX["queue_items"],
+    )
+    require(max_concurrency <= queue_items,
             f"{module_id} concurrency exceeds queue item budget")
     require_string(concurrency["lease_source"], f"{module_id}.concurrency_contract.lease_source")
     require_string(concurrency["lock_scope"], f"{module_id}.concurrency_contract.lock_scope")

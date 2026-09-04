@@ -1,6 +1,6 @@
 {
   "schema": "org.trillionnium.resource-budget-provenance.v1",
-  "program_revision": "2026-09-02-g1-module-doc-closure",
+  "program_revision": "2026-08-31-g1",
   "status": "PROVISIONAL_SOURCE_CEILINGS_UNMEASURED",
   "activation_mode": "OBSERVE_ONLY",
   "measured": false,

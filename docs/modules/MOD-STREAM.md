@@ -55,14 +55,25 @@ Dependencies are consumed through their declared APIs. A dependency outage canno
 ## 5. API and protocol contract
 
 - API schema: `org.trillionnium.mod_stream.api.v1`
-- Input wire types: `stream_control_v1`
-- Output wire types: `stream_window_v1`
-- Error wire types: `stream_error_v1`
+- Catalog input labels: `stream_control_v1`
+- Catalog output labels: `stream_window_v1`
+- Catalog error labels: `stream_error_v1`
 - Unknown fields: rejected unless a future compatibility revision explicitly changes the rule.
 - Versioning: semantic version `1.0.0`; incompatible changes require a new version and migration evidence.
 - Size and count limits: bounded by the resource contract and validated before allocation or durable mutation.
 
 Each request must include its version, request identity, ordering identity and payload digest where applicable. Responses preserve the same correlation identity. Duplicate requests with identical identity and digest are idempotent only where the module contract declares an existing result; identity reuse with different content is an explicit conflict.
+
+### Concrete implementation binding
+
+- Implementation source: `crates/trillionnium-owner-open-stream-window/src/lib.rs` — `StreamWindow`
+
+The catalog input/output/error names above are versioned logical contract labels,
+not a claim that identically named Rust declarations or JSON Schema files exist.
+The bound implementation declaration and its codec tests define concrete fields;
+source navigation alone does not prove wire compatibility.
+
+`StreamControl` has WindowUpdate, Pause, Resume and Close. `apply_control` returns Applied or Existing and rejects stale, gapped or conflicting control sequences. `try_reserve` returns Granted or a typed Blocked reason without waiting under the state mutex.
 
 ## 6. State model and ownership
 
@@ -70,7 +81,7 @@ Each request must include its version, request identity, ordering identity and p
 - State authority: **authoritative**
 - Partition key: `connection_id`
 - State owned: `delivery window state`
-- Durability class: `journaled`
+- Durability class: `memory`
 - Retention ceiling: 4096 items and 67108864 bytes per declared bounded in-memory window.
 - Terminal vocabulary: `closed` and `unknown`; implementation-specific intermediate states must converge to one of those classifications or a versioned extension.
 
@@ -118,6 +129,8 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 | Provisional P99 target | 1000 ms |
 | Provisional throughput target | 100/s |
 | Provisional availability target | 99.0% |
+| SLO recovery target | 60000 ms |
+| SLO measurement window | 60 s |
 
 Measurement status: **unmeasured until qualified evidence**.
 
@@ -125,9 +138,25 @@ These values are finite source-admission ceilings and provisional objectives, no
 
 ## 10. Persistence, recovery and reconciliation
 
-Reconnect compares durable cursors and emits an exact missing interval. If either endpoint cannot prove the range, the stream remains gapped and the effect outcome remains separately classified.
+`StreamWindow` owns only volatile per-connection credit, pause/closed flags,
+control sequence and bounded `VecDeque<ControlRecord>` history. The crate has
+no journal writer or restart loader. A newly constructed window starts from
+`StreamWindowConfig`; its control sequence starts at zero. Callers must bind a
+fresh connection epoch and must not feed an old epoch's control sequence into
+a newly initialised window or grant retained credit twice.
 
-Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
+`MOD-TRANSPORT` owns the durable delivery journal and maps transport/runtime
+cursor domains. `MOD-EVENT-STORE` supplies durable replay. Reconnect must first
+reconcile those cursors and report the exact missing interval, then create a
+new window with explicitly negotiated credit. Restoring delivery is never
+permission to repeat an effect. If either endpoint cannot prove continuity,
+the carrier reports a gap while preserving the independently classified
+operation outcome. Installed cross-module reconnect remains an L2 gap.
+
+Recovery checks must exercise zero-credit control progress, duplicate control,
+credit overflow, exhausted or stale sequence history, a new connection epoch,
+and durable replay with no effect redispatch. Only the delivery journal owner
+may claim an fsync or a durable cursor; an in-memory window snapshot cannot.
 
 ## 11. Security and trust boundaries
 
@@ -173,6 +202,20 @@ Source qualification must include unit, concurrency, migration and negative test
 Evidence ceiling: **SOURCE_ONLY_UNTIL_EXACT_HEAD_CI**.
 
 The module documentation verifier checks this document against the machine catalog, verifies required sections and source paths, binds the API and state schema identifiers, checks the provisional budget record and rejects unregistered or misleading documentation.
+
+### Reproduction entrypoint
+
+- Verification source: `crates/trillionnium-owner-open-stream-window/src/lib.rs`
+
+Run from the repository root in an isolated host source-test environment:
+
+```sh
+cargo test --locked -p trillionnium-owner-open-stream-window --all-targets
+```
+
+This command qualifies only the source behavior that its assertions exercise.
+It neither installs the product nor grants L2-L6 evidence. Reproduce the specific
+failure before changing a timeout, disabling an assertion or modifying a budget.
 
 ## 16. Deployment and runbook
 

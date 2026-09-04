@@ -56,14 +56,25 @@ Dependencies are consumed through their declared APIs. A dependency outage canno
 ## 5. API and protocol contract
 
 - API schema: `org.trillionnium.mod_job_runtime.api.v1`
-- Input wire types: `job_operation_v2`
-- Output wire types: `job_event_v2`
-- Error wire types: `job_error_v1`
+- Catalog input labels: `job_operation_v2`
+- Catalog output labels: `job_event_v2`
+- Catalog error labels: `job_error_v1`
 - Unknown fields: rejected unless a future compatibility revision explicitly changes the rule.
 - Versioning: semantic version `1.0.0`; incompatible changes require a new version and migration evidence.
 - Size and count limits: bounded by the resource contract and validated before allocation or durable mutation.
 
 Each request must include its version, request identity, ordering identity and payload digest where applicable. Responses preserve the same correlation identity. Duplicate requests with identical identity and digest are idempotent only where the module contract declares an existing result; identity reuse with different content is an explicit conflict.
+
+### Concrete implementation binding
+
+- Implementation source: `crates/trillionnium-owner-open-job-runtime/src/manager.rs` — `JobManager`
+
+The catalog input/output/error names above are versioned logical contract labels,
+not a claim that identically named Rust declarations or JSON Schema files exist.
+The bound implementation declaration and its codec tests define concrete fields;
+source navigation alone does not prove wire compatibility.
+
+`JobManager` admits a job under an `AdmissionPermit`, journals acceptance, and publishes process identity. `JobJournal` distinguishes accepted operations from terminal observations; its durable records must be committed before replay can return an existing terminal without a new process.
 
 ## 6. State model and ownership
 
@@ -119,6 +130,8 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 | Provisional P99 target | 1000 ms |
 | Provisional throughput target | 100/s |
 | Provisional availability target | 99.0% |
+| SLO recovery target | 60000 ms |
+| SLO measurement window | 60 s |
 
 Measurement status: **unmeasured until qualified evidence**.
 
@@ -174,6 +187,20 @@ Source qualification must include unit, concurrency, migration and negative test
 Evidence ceiling: **SOURCE_ONLY_UNTIL_EXACT_HEAD_CI**.
 
 The module documentation verifier checks this document against the machine catalog, verifies required sections and source paths, binds the API and state schema identifiers, checks the provisional budget record and rejects unregistered or misleading documentation.
+
+### Reproduction entrypoint
+
+- Verification source: `crates/trillionnium-owner-open-job-runtime/tests/runtime.rs`
+
+Run from the repository root in an isolated host source-test environment:
+
+```sh
+cargo test --locked -p trillionnium-owner-open-job-runtime --all-targets
+```
+
+This command qualifies only the source behavior that its assertions exercise.
+It neither installs the product nor grants L2-L6 evidence. Reproduce the specific
+failure before changing a timeout, disabling an assertion or modifying a budget.
 
 ## 16. Deployment and runbook
 

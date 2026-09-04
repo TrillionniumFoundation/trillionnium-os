@@ -1508,7 +1508,7 @@
         "schema": "org.trillionnium.mod_stream.state.v1",
         "authoritative": true,
         "partition": "connection_id",
-        "durability": "journaled",
+        "durability": "memory",
         "retention": {
           "max_items": 4096,
           "max_bytes": 67108864

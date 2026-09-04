@@ -22,3 +22,16 @@ runtime output that cannot fit is still delivered to the event sink; it is
 omitted only from the returned diagnostic tail. Eviction preserves the initial
 `TurnAccepted` marker and the final `TurnTerminal` event, so retention never
 changes provider or terminal semantics.
+
+## Detailed contracts and local verification
+
+- [MOD-TURN-ENGINE](../../docs/modules/MOD-TURN-ENGINE.md)
+
+From the repository root (source tests only):
+
+```sh
+cargo test --locked -p trillionnium-owner-open-turn-loop --all-targets
+```
+
+Use the linked module runbook for state ownership and recovery. This command
+does not establish installed-target, device, fault or release qualification.
