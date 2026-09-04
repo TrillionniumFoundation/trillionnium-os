@@ -1,0 +1,29 @@
+{
+  "schema": "org.trillionnium.g1-pr-review-index.v1",
+  "program_revision": "2026-08-31-g1",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "pull_request": 41,
+  "base": {
+    "commit": "bb0f85e63b251b99a6fb490dfe6406a992d95f45",
+    "tree": "e4fe8fd1dc4a19d19868ecefbb731099b4772407"
+  },
+  "review_predecessor": {
+    "commit": "813ba86c5735a7b501f32e21f39cd162ee685fad",
+    "tree": "be04cd7d21edddfd658cb562cb56954c5598e150"
+  },
+  "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
+  "expected": {
+    "path_count": 0,
+    "paths_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "change_count": 0,
+    "changes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "changed_paths": [],
+  "changes": [],
+  "slices": [],
+  "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
+  "automatic_redispatch": false,
+  "integration_authorized": false,
+  "promotion_authorized": false,
+  "public_release": false
+}
