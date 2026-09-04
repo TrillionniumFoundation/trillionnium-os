@@ -15,128 +15,200 @@ on:
 permissions:
   contents: read
   actions: read
+  checks: read
   pull-requests: read
 
 concurrency:
-  group: owner-open-r5-governance-${{ github.event.pull_request.number || github.event.review.pull_request_url || inputs.pr_number || github.run_id }}
+  group: owner-open-r5-governance-${{ github.event.pull_request.number || inputs.pr_number || github.run_id }}
   cancel-in-progress: true
 
 env:
   GOVERNANCE_POSTURE: OBSERVE_ONLY
   EVENT_PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number || '' }}
+  WORKFLOW_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
 
 jobs:
   observe-governance:
-    name: Observe exact-head review and protected-main readiness
+    name: Observe exact-head governance facts without authorizing integration
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Read current PR, reviews and protected branch state
+      - name: Check out exact workflow source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.WORKFLOW_SOURCE_SHA }}
+          persist-credentials: false
+      - name: Assert exact clean workflow source
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$WORKFLOW_SOURCE_SHA"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Capture paginated read-only governance snapshots
         env:
           GITHUB_TOKEN: ${{ github.token }}
           REPOSITORY: ${{ github.repository }}
-          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           test "$GOVERNANCE_POSTURE" = OBSERVE_ONLY
-          python3 - <<'PY'
+          snapshot_dir="${RUNNER_TEMP}/owner-open-governance-snapshots"
+          install -d -m 0700 "$snapshot_dir"
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
           import json
           import os
-          import urllib.error
-          import urllib.request
           from pathlib import Path
+          import re
+          import urllib.error
+          import urllib.parse
+          import urllib.request
 
           repository = os.environ["REPOSITORY"]
           token = os.environ["GITHUB_TOKEN"]
-          event_path = Path(os.environ["GITHUB_EVENT_PATH"])
-          event = json.loads(event_path.read_text(encoding="utf-8"))
           pr_number = os.environ.get("EVENT_PR_NUMBER", "").strip()
-          if not pr_number and isinstance(event.get("review"), dict):
-              url = str(event["review"].get("pull_request_url", ""))
-              pr_number = url.rstrip("/").rsplit("/", 1)[-1]
-          if not pr_number.isdigit() or int(pr_number) <= 0:
+          if re.fullmatch(r"[1-9][0-9]{0,8}", pr_number) is None:
               raise SystemExit("a positive PR number is required")
+          if re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository) is None:
+              raise SystemExit("repository identity is malformed")
 
+          api = os.environ.get("GITHUB_API_URL", "https://api.github.com").rstrip("/")
           headers = {
               "Accept": "application/vnd.github+json",
               "Authorization": f"Bearer {token}",
               "X-GitHub-Api-Version": "2022-11-28",
-              "User-Agent": "trillionnium-governance-observer",
+              "User-Agent": "trillionnium-governance-observer-v2",
           }
 
-          def get(path):
-              request = urllib.request.Request(
-                  f"https://api.github.com/repos/{repository}{path}", headers=headers
-              )
-              with urllib.request.urlopen(request, timeout=30) as response:
-                  return json.load(response)
-
-          pull = get(f"/pulls/{pr_number}")
-          reviews = get(f"/pulls/{pr_number}/reviews?per_page=100")
-          protection_observed = False
-          protection = None
-          try:
-              protection = get(f"/branches/{pull['base']['ref']}/protection")
-              protection_observed = True
-          except urllib.error.HTTPError as error:
-              if error.code not in (403, 404):
+          def request_json(path, *, tolerate=()):
+              request = urllib.request.Request(f"{api}/repos/{repository}{path}", headers=headers)
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as error:
+                  if error.code in tolerate:
+                      return None
                   raise
 
-          head_sha = pull["head"]["sha"]
-          latest_by_author = {}
-          for review in reviews:
-              if review.get("commit_id") != head_sha:
-                  continue
-              login = (review.get("user") or {}).get("login")
-              if login:
-                  latest_by_author[login] = review
-          author = (pull.get("user") or {}).get("login")
-          approvals = sorted(
-              login for login, review in latest_by_author.items()
-              if login != author and review.get("state") == "APPROVED"
-          )
-          change_requests = sorted(
-              login for login, review in latest_by_author.items()
-              if review.get("state") == "CHANGES_REQUESTED"
-          )
-          required_contexts = []
-          if isinstance(protection, dict):
-              checks = protection.get("required_status_checks") or {}
-              required_contexts = sorted(
-                  item.get("context")
-                  for item in checks.get("checks", [])
-                  if isinstance(item, dict) and isinstance(item.get("context"), str)
-              )
-          ready = bool(
-              pull.get("state") == "open"
-              and not pull.get("draft")
-              and approvals
-              and not change_requests
-              and protection_observed
-          )
-          report = {
-              "schema": "org.trillionnium.governance-observation.v1",
-              "posture": "OBSERVE_ONLY",
-              "repository": repository,
-              "pr_number": int(pr_number),
-              "base_ref": pull["base"]["ref"],
-              "base_sha": pull["base"]["sha"],
-              "head_ref": pull["head"]["ref"],
-              "head_sha": head_sha,
-              "draft": bool(pull.get("draft")),
-              "non_author_approvals_on_head": approvals,
-              "change_requests_on_head": change_requests,
-              "protection_observed": protection_observed,
-              "required_contexts": required_contexts,
-              "ready_for_protected_integration": ready,
-              "attestation_observed": False,
-              "promotion_authorized": False,
-              "public_release": False,
+          def paged(path):
+              values = []
+              for page in range(1, 101):
+                  separator = "&" if "?" in path else "?"
+                  value = request_json(f"{path}{separator}per_page=100&page={page}")
+                  if not isinstance(value, list):
+                      raise SystemExit(f"paginated endpoint did not return a list: {path}")
+                  values.extend(value)
+                  if len(value) < 100:
+                      return values
+              raise SystemExit(f"pagination exceeded 100 pages: {path}")
+
+          def paged_collection(path, key):
+              values = []
+              for page in range(1, 101):
+                  separator = "&" if "?" in path else "?"
+                  value = request_json(f"{path}{separator}per_page=100&page={page}")
+                  if not isinstance(value, dict) or not isinstance(value.get(key), list):
+                      raise SystemExit(f"paginated endpoint omitted {key}: {path}")
+                  page_values = value[key]
+                  values.extend(page_values)
+                  if len(page_values) < 100:
+                      return values
+              raise SystemExit(f"pagination exceeded 100 pages: {path}")
+
+          pull = request_json(f"/pulls/{pr_number}")
+          if not isinstance(pull, dict):
+              raise SystemExit("pull request snapshot is unavailable")
+          head = pull.get("head", {}).get("sha")
+          base_ref = pull.get("base", {}).get("ref")
+          base_sha = pull.get("base", {}).get("sha")
+          if not isinstance(head, str) or re.fullmatch(r"[0-9a-f]{40}", head) is None:
+              raise SystemExit("pull request head is malformed")
+          if not isinstance(base_ref, str) or not base_ref:
+              raise SystemExit("pull request base ref is absent")
+
+          branch = request_json(f"/branches/{urllib.parse.quote(base_ref, safe='')}")
+          protection = request_json(
+              f"/branches/{urllib.parse.quote(base_ref, safe='')}/protection",
+              tolerate=(403, 404),
+          ) or {}
+          rulesets = request_json(
+              f"/rules/branches/{urllib.parse.quote(base_ref, safe='')}",
+              tolerate=(403, 404),
+          ) or []
+          reviews = paged(f"/pulls/{pr_number}/reviews")
+          check_runs = paged_collection(f"/commits/{head}/check-runs", "check_runs")
+          commit = request_json(f"/commits/{head}")
+          comparison = request_json(
+              f"/compare/{urllib.parse.quote(str(base_sha), safe='')}...{head}",
+              tolerate=(404,),
+          ) or {}
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "owner-open-governance-snapshots"
+          objects = {
+              "branch.json": branch,
+              "protection.json": protection,
+              "rulesets.json": rulesets,
+              "pull.json": pull,
+              "reviews.json": reviews,
+              "checks.json": {"check_runs": check_runs},
+              "threads.json": None,
+              "commit.json": commit,
+              "comparison.json": comparison,
+              "policy.json": {
+                  "required_checks": [],
+                  "minimum_approvals": 1,
+                  "require_conversation_resolution": True,
+                  "require_signed_commit": True,
+              },
           }
-          output = Path(os.environ["RUNNER_TEMP"]) / "owner-open-governance-observation.json"
-          output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
-          print(json.dumps(report, sort_keys=True))
+          for name, value in objects.items():
+              (root / name).write_text(
+                  json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+              )
+          (root / "subject.env").write_text(
+              f"SUBJECT_HEAD={head}\n", encoding="utf-8"
+          )
           PY
+          cat "$snapshot_dir/subject.env" >> "$GITHUB_ENV"
+      - name: Evaluate observations with no integration authority
+        run: |
+          set -euo pipefail
+          snapshot_dir="${RUNNER_TEMP}/owner-open-governance-snapshots"
+          report="${RUNNER_TEMP}/owner-open-governance-observation.json"
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I \
+            "$GITHUB_WORKSPACE/tools/verify-owner-open-r5-governance-readiness.py" \
+            --policy "$snapshot_dir/policy.json" \
+            --branch "$snapshot_dir/branch.json" \
+            --protection "$snapshot_dir/protection.json" \
+            --rulesets "$snapshot_dir/rulesets.json" \
+            --pull-request "$snapshot_dir/pull.json" \
+            --reviews "$snapshot_dir/reviews.json" \
+            --check-runs "$snapshot_dir/checks.json" \
+            --threads "$snapshot_dir/threads.json" \
+            --commit "$snapshot_dir/commit.json" \
+            --comparison "$snapshot_dir/comparison.json" \
+            --expected-head "$SUBJECT_HEAD" \
+            --output "$report"
+          /usr/bin/python3 -I - "$report" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert report["posture"] == "OBSERVE_ONLY"
+          assert report["decision"] == "NO_INTEGRATION_AUTHORITY"
+          assert report["readiness_claimed"] is False
+          assert report["ready_for_protected_integration"] is False
+          assert report["promotion_authorized"] is False
+          assert report["public_release"] is False
+          PY
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
       - name: Upload observation only
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

@@ -1,173 +1,152 @@
 # Owner-Open R5 / G1 target-evidence operator contract
 
-Status: **repository-controlled handoff; no target evidence is embedded here**.
+Status: **repository route only; external admission and target execution required**.
 
-This document defines the external side of
-`.github/workflows/owner-open-r5-target-evidence-capture.yml`.  The workflow is
-manual-only, read-only with respect to the repository, and routes exactly one
-capture to one independently administered environment.  Merely registering a
-runner, installing a harness or uploading an artifact cannot close a gap.
+The tracked workflow `.github/workflows/owner-open-r5-target-evidence-capture.yml`
+no longer allocates a self-hosted runner and never checks out or executes the
+selected source commit. It performs read-only lineage checks on a GitHub-hosted
+runner and emits a non-authorizing admission request. Target contact occurs only
+outside repository-controlled workflow execution, after an independently
+administered admission service validates that request and the target custodian
+accepts it.
 
-## 1. Fixed lanes
+## 1. Fixed evidence lanes
 
-| Evidence kind | Level | Required runner label and environment | Purpose |
+| Evidence kind | Level | External lane | Purpose |
 |---|---:|---|---|
 | `installed_root_linux_process_matrix` | L2 | `owner-open-r5-l2` | Installed UID/GID, namespaces, cgroups, mounts, limits, restart and emergency inhibit |
-| `installed_codex_same_turn` | L2 | `owner-open-r5-l2` | Exact installed Codex identity, authenticated provider session, same-turn shell/job observations and no hidden retry |
+| `installed_codex_same_turn` | L2 | `owner-open-r5-l2` | Installed Codex identity, authenticated provider session, same-turn shell/job observations and no hidden retry |
 | `clean_android_target_files` | L3 | `owner-open-r5-l3` | Clean manifest, Soong/init/SELinux/package graph, target-files and installed identity agreement |
 | `physical_android_adb` | L4 | `owner-open-r5-l4` | Authorized physical target, ordinary ADB, raw error modes, visible mutation and continued turn |
 | `destructive_fault_matrix` | L5 | `owner-open-r5-l5` | Process, storage, USB, reboot and power-loss cuts with bound pre-state and post-restart reconciliation |
 | `signed_public_release` | L6 | `owner-open-r5-l6` | Signing custody, transparency, AVB, OTA, anti-rollback and explicit human release authorization |
 
-The environment must require reviewers who are independent of the source
-change author.  Repository administrators must not reuse a general-purpose
-runner label as one of these fixed labels.
+No repository workflow may select or execute these external lanes. Runner groups,
+targets, harnesses, admission state and signing boundaries remain independently
+administered.
 
-## 2. Immutable runner inputs
+## 2. Repository route request
 
-For evidence kind `<kind>`, the runner provides:
+The route workflow accepts an exact evidence kind, source commit, source tree,
+merged promotion PR, authorization ticket, bounded UTC expiry and one-use nonce.
+Before emitting a request it verifies:
+
+- execution is from the repository default branch;
+- the source commit and tree exist and the commit is signature verified;
+- the source commit is in protected-main ancestry;
+- the named PR is merged to the default branch and binds the exact merge commit;
+- at least one non-author approval is bound to the promoted PR head and there is
+  no exact-head change request;
+- the promoted commit has a successful exact-source aggregate check;
+- the route nonce has not appeared in an earlier request run;
+- L5 and L6 tickets use their required authorization prefixes and expire within
+  24 hours.
+
+The emitted object must retain all of these negative claims:
+
+```json
+{
+  "status": "ROUTE_ONLY_PENDING_EXTERNAL_ADMISSION",
+  "candidate_checkout_performed": false,
+  "candidate_code_executed": false,
+  "external_runner_allocated": false,
+  "capture_scheduled": false,
+  "promotion_authorized": false,
+  "public_release": false
+}
+```
+
+The request is not target evidence, admission, promotion or release authority.
+A correctly prefixed ticket is only a routing fact.
+
+## 3. Independent admission
+
+An external admission service must consume immutable request bytes and verify a
+detached authorization under a trust root that is not writable by the source
+author or repository workflow. The signed admission record binds, at minimum:
+
+```text
+repository
+source_commit
+source_tree
+promotion_pr_number
+promotion_pr_head
+evidence_kind
+evidence_level
+external_lane
+request_artifact_digest
+requester
+operator/custodian
+authorization_ticket
+authorization_expiry
+one-use nonce
+issued_at
+issuer and key identity
+```
+
+The admission service rejects expired, replayed, revoked, cross-spliced,
+unsigned, non-main-lineage, stale-review, failed-check or actor-mismatched
+requests. It persists nonce consumption before target contact. Repository
+environment approval alone is insufficient.
+
+## 4. Fixed target inputs
+
+For evidence kind `<kind>`, the independently administered target provides:
 
 ```text
 /opt/owner-open-r5/harnesses/<kind>
 /etc/owner-open-r5/attestations/<kind>.json
 ```
 
-Both paths must be regular, non-symlink, single-link files owned by root and
-not writable by group or other.  The harness must be executable.  The target
-attestation must be strict JSON and identify the real device, image, runner,
-operator/custodian and relevant hardware or signing boundary.  Repository
-checkout content may not supply either file.
+Every path component and leaf is descriptor-validated. The leaf is a regular,
+non-symlink, single-link file owned by root and not writable by group or other.
+The harness is executable; the attestation is not. Its bytes and metadata match
+the detached admission. Candidate checkout content never supplies an executable,
+Python module, shell library, configuration file, target identity or output path.
 
-The runner administrator, target custodian and source author must not all be the
-same principal.  L5 fault injection and L6 release custody require separate
-human authorization.  The workflow enforces `DESTRUCTIVE-*` and `RELEASE-*`
-authorization-reference prefixes, but an appropriately prefixed string is only
-a routing prerequisite; it is not proof that the named authority exists.
+The trusted executor starts in an independently owned empty working directory,
+uses a fixed non-inheriting environment, clears language and loader search paths,
+and invokes the fixed harness by descriptor-bound identity. The candidate source
+is inert content-addressed data only and is never the interpreter working
+directory.
 
-## 3. Harness command contract
+## 5. Evidence production
 
-The workflow invokes exactly one fixed harness process:
+The harness writes a new private bundle with strict JSON manifests, raw bounded
+observations, content digests, source/tree identity, target identity, timestamps,
+command or operation identity, stdout/stderr or structured results, and explicit
+negative claims. Capture does not promote its own result.
 
-```text
-<fixed-harness>
-  --repository <owner/name>
-  --evidence-kind <closed choice>
-  --evidence-level <L2..L6>
-  --source-commit <40 lowercase hex>
-  --source-tree <40 lowercase hex>
-  --target-attestation <fixed absolute path>
-  --authorization-ticket <external reference>
-  --synthetic=false
-  --output <new private file under RUNNER_TEMP>
-```
+The lane-specific minimum observations remain:
 
-The harness must not accept an alternative executable, checkout, target,
-attestation or output through environment variables, repository files or model
-content.  It must fail before target contact when source identity, target
-identity, custody, authorization, storage capacity or observation prerequisites
-are missing or ambiguous.
-
-A harness may invoke ADB, system tools, controlled power equipment or signing
-tools only when those operations are part of its fixed reviewed lane.  It may
-not push changes to GitHub, edit the checkout, change branch protection, merge,
-create a release or mutate the gap register.
-
-## 4. Raw capture object
-
-The new output file is one strict JSON object with at least these fields:
-
-```json
-{
-  "schema": "org.trillionnium.target-evidence-observation.v1",
-  "repository": "TrillionniumFoundation/trillionnium-os",
-  "evidence_kind": "physical_android_adb",
-  "evidence_level": "L4",
-  "source_commit": "0000000000000000000000000000000000000000",
-  "source_tree": "0000000000000000000000000000000000000000",
-  "synthetic": false,
-  "promotion_authorized": false,
-  "public_release": false,
-  "raw_observations": []
-}
-```
-
-The zero values and empty observation list above are shape examples only and
-would be rejected as evidence.  Real output must bind the exact workflow input
-commit/tree and contain non-empty raw observations.  Each observation carries
-its source, timestamp or monotonic order, command/method, bounded stdout/stderr
-or structured result, exit/transport status, target identity and artifact
-hashes where applicable.  Secrets and private signing bytes are never copied
-into the capture.
-
-The workflow wraps the raw object in a content-addressed capture envelope and
-sets `CAPTURED_PENDING_INDEPENDENT_REVIEW`.  It deliberately requires
-`promotion_authorized=false` and `public_release=false`; authorization is a
-later independently administered evidence-intake decision.
-
-## 5. Lane-specific minimum observations
-
-### L2 installed Root Linux process matrix
-
-Retain install manifest and artifact hashes; live executable hash and signer;
-UID/GID; SELinux domain where applicable; mount, namespace and cgroup identity;
-resource ceilings; process tree; restart with a new epoch; emergency inhibit;
-and negative checks for legacy product nodes.  Host-only process simulations
-are not installed evidence.
-
-### L2 installed Codex same-turn
-
-Retain provider and executable identity; authenticated session establishment;
-one turn that executes a successful shell command, a deliberate failure and a
-continued command; exact tool-call/observation correlation; cancellation; and
-proof that no substrate layer silently rewrote or redispatched the operation.
-Provider text without raw tool events is insufficient.
-
-### L3 clean Android target-files
-
-Bind the resolved manifest, every dirty-state decision, build variant, Soong
-module graph, init services, SELinux policy and contexts, package inventory,
-target-files digest, image digests and installed identities.  The build must be
-reconstructed from the pinned source subject; a copied working-tree overlay or
-historical target-files archive is insufficient.
-
-### L4 physical Android ADB
-
-Identify the owner-authorized physical device and transport.  Retain
-`adb devices -l`, explicit target selection, successful command output,
-unauthorized/offline/disconnect behavior, one visible bounded mutation and the
-same turn continuing after observation.  Never inject or substitute a serial.
-A simulator, host mock or typed `BackendUnavailable` adapter is not L4.
-
-### L5 destructive fault matrix
-
-Bind pre-cut durable state and an independently controlled fault method.  Cover
-process leader/descendant death, provider loss, storage `ENOSPC`, write/fsync
-ambiguity, corrupt record or segment, USB disconnect, target reboot and a real
-power-loss cut where the target permits.  Retain post-restart reconciliation,
-unknown classifications and a redispatch count of zero.  Cleanup success may
-not be inferred from leader exit alone.
-
-### L6 signed public release
-
-Bind production key custody without exporting private material; signer and
-certificate lineage; transparency record; complete AVB chain; rollback indices
-and hardware behavior; signed target-files and OTA hashes; install/update and
-rollback-negative observations; release approvers; and explicit public-release
-enablement.  Userdebug, test keys, an unsigned BOM, a dry-run or a newly created
-unproven key set is not L6.
+- **L2 Root Linux:** installed executable and signer hashes, UID/GID, namespace,
+  mount and cgroup identity, finite limits, process tree, restart epoch,
+  emergency inhibit and absence of legacy product nodes.
+- **L2 Codex:** authenticated provider session, successful and failed same-turn
+  tool calls, continued execution, exact correlation, cancellation and zero
+  hidden retry or automatic redispatch.
+- **L3 Android:** pinned resolved manifest, clean-state decision, Soong graph,
+  init, SELinux, package inventory, target-files and image digests, and installed
+  identity agreement.
+- **L4 ADB:** authorized physical serial and transport, explicit target selection,
+  ordinary success, unauthorized/offline/disconnect output, one bounded visible
+  mutation and same-turn continuation.
+- **L5 faults:** bound pre-cut durable state, independently controlled process,
+  storage, corruption, USB, reboot and real power-loss cuts, post-restart
+  reconciliation, explicit unknown states and redispatch count zero.
+- **L6 release:** production key custody without key export, signer and
+  certificate lineage, transparency, complete AVB chain, rollback indices,
+  signed target-files/OTA identities, install/update observations and explicit
+  independent public-release authorization.
 
 ## 6. Review and gap transition
 
-After capture, an independent verifier must:
+A separate independent verifier downloads immutable bundle bytes, validates the
+admission chain, source, target, harness and artifact digests, rejects synthetic
+or incomplete evidence, and issues a detached review attestation. A protected
+PR may then propose a gap transition. Capture, route, repository administration
+or source authorship never changes gap state by itself.
 
-1. download immutable artifacts and verify their digests;
-2. validate source, tree, workflow, runner, target and authorization identity;
-3. reject stale, revoked, synthetic, cross-spliced or incomplete evidence;
-4. confirm the evidence level meets every named gap exit criterion;
-5. issue a detached attestation under an independently administered trust root;
-6. propose a gap transition without rewriting historical evidence;
-7. run the normal protected integration path with no administrative bypass.
-
-A changed source commit, tree, target image, harness, attestation, review or
-trust root requires a new capture.  Evidence is non-inheritable across those
-movements.
+Any movement in source commit, tree, promotion PR, target image, harness,
+attestation, authorization, reviewer, trust root or evidence bytes invalidates
+the chain and requires a new request and capture.

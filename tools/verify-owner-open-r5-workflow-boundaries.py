@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed on transient/self-modifying Owner-Open R5 workflows.
-
-The R5 evidence program separates capture, independent review, and promotion.
-Tracked CI must therefore be read-only with respect to repository contents,
-checkout the exact PR head rather than GitHub's synthetic merge commit, and
-must not retain bootstrap/converger executors after migration.
-"""
+"""Fail closed on transient, self-modifying, or authority-inflating R5 workflows."""
 from __future__ import annotations
 
 import argparse
@@ -28,7 +22,8 @@ EXACT_REF_TOKENS = (
     "github.event.pull_request.head.sha",
     "env.EXPECTED_SHA",
     "env.EXPECTED_HEAD",
-    "inputs.source_commit",
+    "env.WORKFLOW_SOURCE_SHA",
+    "env.SOURCE_HEAD_SHA",
 )
 WRITE_PERMISSION = re.compile(
     r"(?im)^\s*(?:(?:contents|actions|pull-requests|issues|checks|deployments|statuses)"
@@ -46,6 +41,23 @@ STEP_START = re.compile(r"^(?P<indent>\s*)-\s+[A-Za-z_][A-Za-z0-9_-]*\s*:")
 CHECKOUT = re.compile(r"(?m)^\s*(?:-\s*)?uses:\s*actions/checkout@")
 EXACT_HEAD_ASSERTION = re.compile(
     r"\bgit\s+(?:--no-replace-objects\s+)?rev-parse\s+HEAD\b"
+)
+TARGET_WORKFLOW = "owner-open-r5-target-evidence-capture.yml"
+GOVERNANCE_WORKFLOW = "owner-open-r5-governance-readiness.yml"
+TARGET_ROUTE_MARKERS = (
+    '"status": "ROUTE_ONLY_PENDING_EXTERNAL_ADMISSION"',
+    '"candidate_checkout_performed": False',
+    '"candidate_code_executed": False',
+    '"external_runner_allocated": False',
+    '"capture_scheduled": False',
+    '"promotion_authorized": False',
+    '"public_release": False',
+)
+GOVERNANCE_NO_AUTHORITY_MARKERS = (
+    'report["readiness_claimed"] is False',
+    'report["ready_for_protected_integration"] is False',
+    'report["promotion_authorized"] is False',
+    'report["public_release"] is False',
 )
 
 
@@ -89,17 +101,34 @@ def _checkout_blocks(lines: list[str]) -> list[tuple[int, str]]:
 
 
 def _workflow_paths(workflow_dir: Path) -> list[Path]:
-    """Enumerate both YAML extensions in the owner-open namespace.
-
-    A security boundary that only scans ``.yml`` can be bypassed by adding a
-    sibling ``.yaml`` workflow; keep the scope narrow enough that unrelated
-    repository workflows do not become an implicit part of the R5 contract.
-    """
-
     return sorted(
         set(workflow_dir.glob("owner-open*.yml"))
         | set(workflow_dir.glob("owner-open*.yaml"))
     )
+
+
+def _verify_target_route_only(path: Path, text: str, errors: list[str]) -> None:
+    if re.search(r"(?i)\bself-hosted\b", text):
+        errors.append(f"target evidence workflow allocates a self-hosted runner: {path.name}")
+    if CHECKOUT.search(text):
+        errors.append(f"target evidence workflow checks out candidate code: {path.name}")
+    if "$GITHUB_WORKSPACE" in text:
+        errors.append(f"target evidence workflow references candidate workspace: {path.name}")
+    if re.search(r"(?im)^\s*working-directory\s*:.*GITHUB_WORKSPACE", text):
+        errors.append(f"target evidence workflow enters candidate workspace: {path.name}")
+    if "runs-on: ubuntu-24.04" not in text:
+        errors.append(f"target evidence route is not GitHub-hosted: {path.name}")
+    for marker in TARGET_ROUTE_MARKERS:
+        if marker not in text:
+            errors.append(f"target evidence route omits fail-closed marker {marker}: {path.name}")
+
+
+def _verify_governance_observation(path: Path, text: str, errors: list[str]) -> None:
+    if re.search(r"ready_for_protected_integration\s*['\"]?\s*:\s*true", text, re.I):
+        errors.append(f"governance workflow can claim readiness true: {path.name}")
+    for marker in GOVERNANCE_NO_AUTHORITY_MARKERS:
+        if marker not in text:
+            errors.append(f"governance workflow omits no-authority marker {marker}: {path.name}")
 
 
 def verify(root: Path) -> dict[str, Any]:
@@ -110,8 +139,8 @@ def verify(root: Path) -> dict[str, Any]:
 
     required = {
         "owner-open-r5-tool-loop.yml",
-        "owner-open-r5-target-evidence-capture.yml",
-        "owner-open-r5-governance-readiness.yml",
+        TARGET_WORKFLOW,
+        GOVERNANCE_WORKFLOW,
     }
     workflow_paths = _workflow_paths(workflow_dir)
     observed = {path.name for path in workflow_paths}
@@ -140,6 +169,11 @@ def verify(root: Path) -> dict[str, Any]:
             and ("api.github.com" in text or "GITHUB_API_URL" in text)
         ):
             errors.append(f"workflow can mutate GitHub repository controls: {path.name}")
+
+        if path.name == TARGET_WORKFLOW:
+            _verify_target_route_only(path, text, errors)
+        if path.name == GOVERNANCE_WORKFLOW:
+            _verify_governance_observation(path, text, errors)
 
         has_pull_request = bool(re.search(r"(?m)^\s{2}pull_request\s*:", text))
         if not has_pull_request:
@@ -189,6 +223,12 @@ def verify(root: Path) -> dict[str, Any]:
         "facts": {
             "checked_workflows": checked,
             "workflow_count": len(checked),
+            "target_capture_is_route_only": not any(
+                "target evidence" in error for error in errors
+            ),
+            "governance_claims_readiness": any(
+                "claim readiness true" in error for error in errors
+            ),
             "repository_write_workflows": 0 if not any(
                 "write permission" in error or "push repository" in error
                 for error in errors

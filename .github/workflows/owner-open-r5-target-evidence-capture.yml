@@ -1,4 +1,5 @@
-name: Owner-open R5 independently administered target evidence capture
+name: Owner-open R5 target evidence admission request
+run-name: owner-open-r5-route-${{ inputs.evidence_kind }}-${{ inputs.source_commit }}-${{ inputs.authorization_nonce }}
 
 on:
   workflow_dispatch:
@@ -15,213 +16,287 @@ on:
           - destructive_fault_matrix
           - signed_public_release
       source_commit:
-        description: Exact 40-character promoted source commit
+        description: Exact promoted commit reachable from protected main
         required: true
         type: string
       source_tree:
-        description: Exact 40-character source tree
+        description: Exact Git tree of source_commit
+        required: true
+        type: string
+      promotion_pr_number:
+        description: Merged protected-main PR whose merge commit is source_commit
         required: true
         type: string
       authorization_ticket:
-        description: External authorization reference; L5 must start DESTRUCTIVE-, L6 must start RELEASE-
+        description: External authorization reference; L5 starts DESTRUCTIVE-, L6 starts RELEASE-
+        required: true
+        type: string
+      authorization_expires_at:
+        description: UTC RFC3339 expiry no more than 24 hours in the future
+        required: true
+        type: string
+      authorization_nonce:
+        description: One-use lowercase 32-64 hex route nonce
         required: true
         type: string
 
 permissions:
   contents: read
   actions: read
+  checks: read
+  pull-requests: read
 
 concurrency:
-  group: owner-open-r5-target-${{ inputs.evidence_kind }}-${{ inputs.source_commit }}
+  group: owner-open-r5-route-${{ inputs.evidence_kind }}-${{ inputs.source_commit }}-${{ inputs.authorization_nonce }}
   cancel-in-progress: false
 
-jobs:
-  route:
-    name: Validate closed-choice evidence route
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    outputs:
-      level: ${{ steps.route.outputs.level }}
-      runner_label: ${{ steps.route.outputs.runner_label }}
-      environment: ${{ steps.route.outputs.environment }}
-      harness: ${{ steps.route.outputs.harness }}
-      attestation: ${{ steps.route.outputs.attestation }}
-    steps:
-      - name: Bind kind to one fixed level, runner, environment and root-owned input
-        id: route
-        env:
-          KIND: ${{ inputs.evidence_kind }}
-          SOURCE_COMMIT: ${{ inputs.source_commit }}
-          SOURCE_TREE: ${{ inputs.source_tree }}
-          AUTHORIZATION_TICKET: ${{ inputs.authorization_ticket }}
-        run: |
-          set -euo pipefail
-          [[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
-          [[ "$SOURCE_TREE" =~ ^[0-9a-f]{40}$ ]]
-          test -n "$AUTHORIZATION_TICKET"
-          case "$KIND" in
-            installed_root_linux_process_matrix|installed_codex_same_turn)
-              level=L2
-              runner_label=owner-open-r5-l2
-              environment=owner-open-r5-l2
-              ;;
-            clean_android_target_files)
-              level=L3
-              runner_label=owner-open-r5-l3
-              environment=owner-open-r5-l3
-              ;;
-            physical_android_adb)
-              level=L4
-              runner_label=owner-open-r5-l4
-              environment=owner-open-r5-l4
-              ;;
-            destructive_fault_matrix)
-              level=L5
-              runner_label=owner-open-r5-l5
-              environment=owner-open-r5-l5
-              [[ "$AUTHORIZATION_TICKET" == DESTRUCTIVE-* ]]
-              ;;
-            signed_public_release)
-              level=L6
-              runner_label=owner-open-r5-l6
-              environment=owner-open-r5-l6
-              [[ "$AUTHORIZATION_TICKET" == RELEASE-* ]]
-              ;;
-            *) exit 64 ;;
-          esac
-          harness="/opt/owner-open-r5/harnesses/$KIND"
-          attestation="/etc/owner-open-r5/attestations/$KIND.json"
-          {
-            echo "level=$level"
-            echo "runner_label=$runner_label"
-            echo "environment=$environment"
-            echo "harness=$harness"
-            echo "attestation=$attestation"
-          } >> "$GITHUB_OUTPUT"
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
 
-  capture:
-    name: Capture ${{ needs.route.outputs.level }} ${{ inputs.evidence_kind }}
-    needs: route
-    runs-on:
-      - self-hosted
-      - linux
-      - x64
-      - ${{ needs.route.outputs.runner_label }}
-    environment:
-      name: ${{ needs.route.outputs.environment }}
-    timeout-minutes: 180
+jobs:
+  route-only:
+    name: Validate source lineage and emit a non-authorizing external admission request
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - name: Check out the exact promoted source commit
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          fetch-depth: 0
-          ref: ${{ inputs.source_commit }}
-          persist-credentials: false
-      - name: Revalidate source commit and tree before target contact
+      - name: Validate route without allocating a target runner or checking out candidate code
         env:
-          SOURCE_COMMIT: ${{ inputs.source_commit }}
-          SOURCE_TREE: ${{ inputs.source_tree }}
-        run: |
-          set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_COMMIT"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
-      - name: Validate immutable independently administered harness and target attestation
-        env:
-          HARNESS: ${{ needs.route.outputs.harness }}
-          ATTESTATION: ${{ needs.route.outputs.attestation }}
-        run: |
-          set -euo pipefail
-          test -f "$HARNESS" && test ! -L "$HARNESS" && test -x "$HARNESS"
-          test -f "$ATTESTATION" && test ! -L "$ATTESTATION"
-          test "$(stat -c %u "$HARNESS")" = 0
-          test "$(stat -c %u "$ATTESTATION")" = 0
-          test "$(stat -c %h "$HARNESS")" = 1
-          test "$(stat -c %h "$ATTESTATION")" = 1
-          harness_mode=$(stat -c %a "$HARNESS")
-          attestation_mode=$(stat -c %a "$ATTESTATION")
-          test $((8#$harness_mode & 8#022)) -eq 0
-          test $((8#$attestation_mode & 8#022)) -eq 0
-          python3 -m json.tool "$ATTESTATION" >/dev/null
-      - name: Execute the fixed external harness once
-        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
           KIND: ${{ inputs.evidence_kind }}
-          LEVEL: ${{ needs.route.outputs.level }}
-          HARNESS: ${{ needs.route.outputs.harness }}
-          ATTESTATION: ${{ needs.route.outputs.attestation }}
           SOURCE_COMMIT: ${{ inputs.source_commit }}
           SOURCE_TREE: ${{ inputs.source_tree }}
+          PROMOTION_PR_NUMBER: ${{ inputs.promotion_pr_number }}
           AUTHORIZATION_TICKET: ${{ inputs.authorization_ticket }}
+          AUTHORIZATION_EXPIRES_AT: ${{ inputs.authorization_expires_at }}
+          AUTHORIZATION_NONCE: ${{ inputs.authorization_nonce }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+          CURRENT_RUN_NAME: owner-open-r5-route-${{ inputs.evidence_kind }}-${{ inputs.source_commit }}-${{ inputs.authorization_nonce }}
         run: |
           set -euo pipefail
-          evidence_dir="${RUNNER_TEMP}/owner-open-target-evidence"
-          install -d -m 0700 "$evidence_dir"
-          output="$evidence_dir/raw-capture.json"
-          "$HARNESS" \
-            --repository "$GITHUB_REPOSITORY" \
-            --evidence-kind "$KIND" \
-            --evidence-level "$LEVEL" \
-            --source-commit "$SOURCE_COMMIT" \
-            --source-tree "$SOURCE_TREE" \
-            --target-attestation "$ATTESTATION" \
-            --authorization-ticket "$AUTHORIZATION_TICKET" \
-            --synthetic=false \
-            --output "$output"
-          test -s "$output" && test ! -L "$output"
-          chmod 0600 "$output"
-      - name: Fail closed on synthetic, under-bound or inflated capture output
-        env:
-          KIND: ${{ inputs.evidence_kind }}
-          LEVEL: ${{ needs.route.outputs.level }}
-          SOURCE_COMMIT: ${{ inputs.source_commit }}
-          SOURCE_TREE: ${{ inputs.source_tree }}
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import hashlib
+          route_dir="${RUNNER_TEMP}/owner-open-target-route"
+          install -d -m 0700 "$route_dir"
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          from datetime import datetime, timedelta, timezone
           import json
           import os
           from pathlib import Path
+          import re
+          import urllib.error
+          import urllib.parse
+          import urllib.request
 
-          root = Path(os.environ["RUNNER_TEMP"]) / "owner-open-target-evidence"
-          raw_path = root / "raw-capture.json"
-          raw = raw_path.read_bytes()
-          value = json.loads(raw)
-          assert isinstance(value, dict)
-          assert value.get("synthetic") is False
-          assert value.get("repository") == os.environ["GITHUB_REPOSITORY"]
-          assert value.get("evidence_kind") == os.environ["KIND"]
-          assert value.get("evidence_level") == os.environ["LEVEL"]
-          assert value.get("source_commit") == os.environ["SOURCE_COMMIT"]
-          assert value.get("source_tree") == os.environ["SOURCE_TREE"]
-          assert value.get("promotion_authorized") is False
-          assert value.get("public_release") is False
-          assert value.get("raw_observations")
-          manifest = {
-              "schema": "org.trillionnium.target-capture-envelope.v1",
-              "status": "CAPTURED_PENDING_INDEPENDENT_REVIEW",
-              "repository": os.environ["GITHUB_REPOSITORY"],
-              "evidence_kind": os.environ["KIND"],
-              "evidence_level": os.environ["LEVEL"],
-              "source_commit": os.environ["SOURCE_COMMIT"],
-              "source_tree": os.environ["SOURCE_TREE"],
-              "raw_capture_sha256": hashlib.sha256(raw).hexdigest(),
-              "raw_capture_bytes": len(raw),
+          policies = {
+              "installed_root_linux_process_matrix": ("L2", "owner-open-r5-l2"),
+              "installed_codex_same_turn": ("L2", "owner-open-r5-l2"),
+              "clean_android_target_files": ("L3", "owner-open-r5-l3"),
+              "physical_android_adb": ("L4", "owner-open-r5-l4"),
+              "destructive_fault_matrix": ("L5", "owner-open-r5-l5"),
+              "signed_public_release": ("L6", "owner-open-r5-l6"),
+          }
+          repository = os.environ["REPOSITORY"]
+          kind = os.environ["KIND"]
+          source_commit = os.environ["SOURCE_COMMIT"]
+          source_tree = os.environ["SOURCE_TREE"]
+          pr_number = os.environ["PROMOTION_PR_NUMBER"]
+          ticket = os.environ["AUTHORIZATION_TICKET"]
+          expiry_text = os.environ["AUTHORIZATION_EXPIRES_AT"]
+          nonce = os.environ["AUTHORIZATION_NONCE"]
+          current_run_id = int(os.environ["CURRENT_RUN_ID"])
+          current_run_name = os.environ["CURRENT_RUN_NAME"]
+
+          def require(condition, message):
+              if not condition:
+                  raise SystemExit(message)
+
+          require(kind in policies, "unknown evidence kind")
+          require(re.fullmatch(r"[0-9a-f]{40}", source_commit) is not None, "bad source commit")
+          require(re.fullmatch(r"[0-9a-f]{40}", source_tree) is not None, "bad source tree")
+          require(re.fullmatch(r"[1-9][0-9]{0,8}", pr_number) is not None, "bad PR number")
+          require(re.fullmatch(r"[0-9a-f]{32,64}", nonce) is not None, "bad route nonce")
+          require(
+              re.fullmatch(r"[A-Z0-9][A-Z0-9._:/-]{7,127}", ticket) is not None,
+              "bad authorization ticket",
+          )
+          if kind == "destructive_fault_matrix":
+              require(ticket.startswith("DESTRUCTIVE-"), "L5 ticket prefix is required")
+          if kind == "signed_public_release":
+              require(ticket.startswith("RELEASE-"), "L6 ticket prefix is required")
+
+          expiry = datetime.fromisoformat(expiry_text.replace("Z", "+00:00"))
+          require(expiry.tzinfo is not None, "authorization expiry must include timezone")
+          now = datetime.now(timezone.utc)
+          expiry = expiry.astimezone(timezone.utc)
+          require(now < expiry <= now + timedelta(hours=24), "authorization expiry is stale or too distant")
+
+          api = os.environ.get("GITHUB_API_URL", "https://api.github.com").rstrip("/")
+          token = os.environ["GITHUB_TOKEN"]
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {token}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "trillionnium-target-route-v2",
+          }
+
+          def get(path):
+              request = urllib.request.Request(f"{api}/repos/{repository}{path}", headers=headers)
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          def paged(path):
+              values = []
+              for page in range(1, 101):
+                  separator = "&" if "?" in path else "?"
+                  value = get(f"{path}{separator}per_page=100&page={page}")
+                  require(isinstance(value, list), f"expected list from {path}")
+                  values.extend(value)
+                  if len(value) < 100:
+                      return values
+              raise SystemExit(f"pagination exceeded 100 pages: {path}")
+
+          def paged_collection(path, key):
+              values = []
+              for page in range(1, 101):
+                  separator = "&" if "?" in path else "?"
+                  value = get(f"{path}{separator}per_page=100&page={page}")
+                  require(isinstance(value, dict), f"expected object from {path}")
+                  page_values = value.get(key)
+                  require(isinstance(page_values, list), f"expected {key} from {path}")
+                  values.extend(page_values)
+                  if len(page_values) < 100:
+                      return values
+              raise SystemExit(f"pagination exceeded 100 pages: {path}")
+
+          repo = get("")
+          default_branch = repo.get("default_branch")
+          require(isinstance(default_branch, str) and default_branch, "default branch unavailable")
+          require(os.environ.get("GITHUB_REF") == f"refs/heads/{default_branch}", "route must run from default branch")
+
+          branch = get(f"/branches/{urllib.parse.quote(default_branch, safe='')}")
+          main_tip = branch.get("commit", {}).get("sha")
+          require(re.fullmatch(r"[0-9a-f]{40}", str(main_tip)) is not None, "main tip unavailable")
+          commit = get(f"/git/commits/{source_commit}")
+          require(commit.get("tree", {}).get("sha") == source_tree, "source tree mismatch")
+          verification = commit.get("verification") or {}
+          require(verification.get("verified") is True, "source commit is not signature verified")
+
+          comparison = get(f"/compare/{source_commit}...{main_tip}")
+          require(
+              comparison.get("merge_base_commit", {}).get("sha") == source_commit,
+              "source commit is not in protected-main ancestry",
+          )
+
+          pull = get(f"/pulls/{pr_number}")
+          require(pull.get("merged_at") is not None, "promotion PR is not merged")
+          require(pull.get("base", {}).get("ref") == default_branch, "promotion PR targets another base")
+          require(pull.get("merge_commit_sha") == source_commit, "promotion PR does not bind source commit")
+          author = pull.get("user", {}).get("login")
+          pull_head = pull.get("head", {}).get("sha")
+          reviews = paged(f"/pulls/{pr_number}/reviews")
+          latest = {}
+          for review in reviews:
+              login = (review.get("user") or {}).get("login")
+              if not login:
+                  continue
+              marker = (str(review.get("submitted_at") or ""), int(review.get("id") or 0))
+              previous = latest.get(login)
+              previous_marker = (
+                  str(previous.get("submitted_at") or ""),
+                  int(previous.get("id") or 0),
+              ) if previous else ("", 0)
+              if marker >= previous_marker:
+                  latest[login] = review
+          approvals = sorted(
+              login for login, review in latest.items()
+              if login != author
+              and not login.lower().endswith("[bot]")
+              and review.get("state") == "APPROVED"
+              and review.get("commit_id") == pull_head
+          )
+          changes_requested = sorted(
+              login for login, review in latest.items()
+              if review.get("state") == "CHANGES_REQUESTED"
+              and review.get("commit_id") == pull_head
+          )
+          require(bool(approvals), "no independent exact-head approval on promotion PR")
+          require(not changes_requested, "promotion PR has a current-head changes request")
+
+          checks = paged_collection(f"/commits/{source_commit}/check-runs", "check_runs")
+          aggregate = [
+              item for item in checks
+              if item.get("name") == "L1 exact-source-head aggregate candidate"
+              and item.get("head_sha") == source_commit
+              and item.get("status") == "completed"
+              and item.get("conclusion") == "success"
+          ]
+          require(bool(aggregate), "promoted commit lacks successful exact-source aggregate")
+
+          runs = paged_collection("/actions/workflows/owner-open-r5-target-evidence-capture.yml/runs?event=workflow_dispatch", "workflow_runs")
+          replayed = any(
+              item.get("id") != current_run_id
+              and item.get("display_title") == current_run_name
+              for item in runs
+          )
+          require(not replayed, "authorization nonce was already routed")
+
+          level, external_lane = policies[kind]
+          request = {
+              "schema": "org.trillionnium.target-evidence-admission-request.v2",
+              "status": "ROUTE_ONLY_PENDING_EXTERNAL_ADMISSION",
+              "repository": repository,
+              "evidence_kind": kind,
+              "evidence_level": level,
+              "source_commit": source_commit,
+              "source_tree": source_tree,
+              "protected_main_tip_observed": main_tip,
+              "promotion_pr_number": int(pr_number),
+              "promotion_pr_head": pull_head,
+              "independent_approvals": approvals,
+              "authorization_ticket": ticket,
+              "authorization_expires_at": expiry.isoformat().replace("+00:00", "Z"),
+              "authorization_nonce": nonce,
+              "requested_by": os.environ.get("GITHUB_ACTOR"),
+              "external_lane": external_lane,
+              "candidate_checkout_performed": False,
+              "candidate_code_executed": False,
+              "external_runner_allocated": False,
+              "capture_scheduled": False,
               "synthetic": False,
+              "automatic_redispatch": False,
               "promotion_authorized": False,
               "public_release": False,
           }
-          (root / "capture-envelope.json").write_text(
-              json.dumps(manifest, sort_keys=True, indent=2) + "\n", encoding="utf-8"
-          )
+          output = Path(os.environ["RUNNER_TEMP"]) / "owner-open-target-route" / "request.json"
+          output.write_text(json.dumps(request, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(request, sort_keys=True))
           PY
-          sha256sum "${RUNNER_TEMP}/owner-open-target-evidence/"*.json \
-            > "${RUNNER_TEMP}/owner-open-target-evidence/SHA256SUMS"
-          chmod 0600 "${RUNNER_TEMP}/owner-open-target-evidence/"*
-      - name: Upload capture for independent review; never promote from this workflow
+      - name: Prove the repository workflow stayed route-only
+        run: |
+          set -euo pipefail
+          request="${RUNNER_TEMP}/owner-open-target-route/request.json"
+          test -s "$request" && test ! -L "$request"
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - "$request" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+          value = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert value["status"] == "ROUTE_ONLY_PENDING_EXTERNAL_ADMISSION"
+          assert value["candidate_checkout_performed"] is False
+          assert value["candidate_code_executed"] is False
+          assert value["external_runner_allocated"] is False
+          assert value["capture_scheduled"] is False
+          assert value["promotion_authorized"] is False
+          assert value["public_release"] is False
+          PY
+          chmod 0600 "$request"
+      - name: Upload non-authorizing admission request
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: owner-open-${{ needs.route.outputs.level }}-${{ inputs.evidence_kind }}-${{ inputs.source_commit }}
+          name: owner-open-route-${{ inputs.evidence_kind }}-${{ inputs.source_commit }}-${{ inputs.authorization_nonce }}
           if-no-files-found: error
-          retention-days: 30
-          path: ${{ runner.temp }}/owner-open-target-evidence/
+          retention-days: 7
+          path: ${{ runner.temp }}/owner-open-target-route/request.json

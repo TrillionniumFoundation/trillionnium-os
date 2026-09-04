@@ -13,16 +13,18 @@ sys.modules[spec.name] = module
 spec.loader.exec_module(module)
 
 HEAD = "a" * 40
+BASE = "b" * 40
 POLICY = {
     "required_checks": ["check-a", "check-b"],
     "minimum_approvals": 1,
     "require_conversation_resolution": True,
+    "require_signed_commit": True,
 }
 
 
 class GovernanceReadinessTest(unittest.TestCase):
     def base(self):
-        branch = {"protected": True}
+        branch = {"protected": True, "commit": {"sha": BASE}}
         protection = {
             "required_status_checks": {"contexts": ["check-a", "check-b"]},
             "required_pull_request_reviews": {"required_approving_review_count": 1},
@@ -30,9 +32,18 @@ class GovernanceReadinessTest(unittest.TestCase):
             "allow_force_pushes": {"enabled": False},
             "allow_deletions": {"enabled": False},
         }
-        pull = {"head": {"sha": HEAD}, "user": {"login": "author"}}
+        pull = {
+            "state": "open",
+            "draft": False,
+            "mergeable": True,
+            "mergeable_state": "clean",
+            "head": {"sha": HEAD},
+            "base": {"sha": BASE},
+            "user": {"login": "author"},
+        }
         reviews = [
             {
+                "id": 1,
                 "user": {"login": "reviewer"},
                 "state": "APPROVED",
                 "commit_id": HEAD,
@@ -41,46 +52,138 @@ class GovernanceReadinessTest(unittest.TestCase):
         ]
         checks = {
             "check_runs": [
-                {"name": "check-a", "head_sha": HEAD, "status": "completed", "conclusion": "success"},
-                {"name": "check-b", "head_sha": HEAD, "status": "completed", "conclusion": "success"},
+                {
+                    "id": 1,
+                    "name": "check-a",
+                    "head_sha": HEAD,
+                    "status": "completed",
+                    "conclusion": "success",
+                    "completed_at": "2026-08-30T00:00:00Z",
+                },
+                {
+                    "id": 2,
+                    "name": "check-b",
+                    "head_sha": HEAD,
+                    "status": "completed",
+                    "conclusion": "success",
+                    "completed_at": "2026-08-30T00:00:00Z",
+                },
             ]
         }
-        return branch, protection, pull, reviews, checks
+        threads = [{"isResolved": True}]
+        commit = {"verification": {"verified": True}}
+        comparison = {"status": "ahead"}
+        return branch, protection, pull, reviews, checks, threads, commit, comparison
 
-    def test_complete_controls_are_ready(self):
-        branch, protection, pull, reviews, checks = self.base()
-        result = module.evaluate(POLICY, branch, protection, [], pull, reviews, checks, HEAD)
-        self.assertTrue(result["ready"])
-        self.assertTrue(result["observations"]["independent_exact_head_approval"])
-
-    def test_unprotected_main_fails_closed(self):
-        branch, protection, pull, reviews, checks = self.base()
-        branch["protected"] = False
-        result = module.evaluate(POLICY, branch, {}, [], pull, reviews, checks, HEAD)
-        self.assertFalse(result["ready"])
-        self.assertFalse(result["observations"]["main_protected"])
-
-    def test_stale_or_author_review_is_not_independent(self):
-        branch, protection, pull, reviews, checks = self.base()
-        reviews[0]["commit_id"] = "b" * 40
-        reviews.append(
-            {
-                "user": {"login": "author"},
-                "state": "APPROVED",
-                "commit_id": HEAD,
-                "submitted_at": "2026-08-30T00:01:00Z",
-            }
+    def evaluate(self, *, policy=POLICY, mutate=None):
+        values = list(self.base())
+        if mutate is not None:
+            mutate(values)
+        branch, protection, pull, reviews, checks, threads, commit, comparison = values
+        return module.evaluate(
+            policy,
+            branch,
+            protection,
+            [],
+            pull,
+            reviews,
+            checks,
+            HEAD,
+            threads=threads,
+            commit=commit,
+            comparison=comparison,
         )
-        result = module.evaluate(POLICY, branch, protection, [], pull, reviews, checks, HEAD)
-        self.assertFalse(result["ready"])
-        self.assertFalse(result["observations"]["independent_exact_head_approval"])
 
-    def test_missing_exact_head_check_fails(self):
-        branch, protection, pull, reviews, checks = self.base()
-        checks["check_runs"][1]["conclusion"] = "failure"
-        result = module.evaluate(POLICY, branch, protection, [], pull, reviews, checks, HEAD)
-        self.assertFalse(result["ready"])
-        self.assertFalse(result["observations"]["required_checks_enforced"])
+    def test_complete_observations_never_claim_integration_authority(self):
+        result = self.evaluate()
+        self.assertFalse(result["readiness_claimed"])
+        self.assertFalse(result["ready_for_protected_integration"])
+        self.assertFalse(result["promotion_authorized"])
+        self.assertEqual(result["blockers"], [])
+
+    def test_unprotected_or_unobservable_main_fails_closed(self):
+        result = self.evaluate(mutate=lambda values: values.__setitem__(0, {}))
+        self.assertIn("UNOBSERVED:protected_base", result["blockers"])
+        self.assertFalse(result["ready_for_protected_integration"])
+
+    def test_latest_failed_or_queued_check_cannot_reuse_older_success(self):
+        def mutate(values):
+            checks = values[4]["check_runs"]
+            checks.append(
+                {
+                    "id": 9,
+                    "name": "check-b",
+                    "head_sha": HEAD,
+                    "status": "completed",
+                    "conclusion": "failure",
+                    "completed_at": "2026-08-30T00:01:00Z",
+                }
+            )
+        result = self.evaluate(mutate=mutate)
+        self.assertIn(
+            "UNSATISFIED:required_checks_successful_on_exact_head",
+            result["blockers"],
+        )
+
+    def test_required_approval_count_and_stale_reviews_are_observed(self):
+        def mutate(values):
+            values[1]["required_pull_request_reviews"]["required_approving_review_count"] = 2
+            values[3][0]["commit_id"] = "c" * 40
+        result = self.evaluate(mutate=mutate)
+        self.assertEqual(result["facts"]["approvals_required"], 2)
+        self.assertIn(
+            "UNSATISFIED:independent_exact_head_approvals", result["blockers"]
+        )
+
+    def test_current_head_change_request_blocks_observed_subset(self):
+        def mutate(values):
+            values[3].append(
+                {
+                    "id": 2,
+                    "user": {"login": "security-reviewer"},
+                    "state": "CHANGES_REQUESTED",
+                    "commit_id": HEAD,
+                    "submitted_at": "2026-08-30T00:02:00Z",
+                }
+            )
+        result = self.evaluate(mutate=mutate)
+        self.assertIn(
+            "UNSATISFIED:independent_exact_head_approvals", result["blockers"]
+        )
+
+    def test_unresolved_thread_unsigned_commit_conflict_and_stale_base_are_explicit(self):
+        def mutate(values):
+            values[2]["mergeable"] = False
+            values[2]["mergeable_state"] = "dirty"
+            values[2]["base"]["sha"] = "d" * 40
+            values[5][0]["isResolved"] = False
+            values[6]["verification"]["verified"] = False
+        result = self.evaluate(mutate=mutate)
+        expected = {
+            "UNSATISFIED:no_unresolved_review_threads",
+            "UNSATISFIED:signed_exact_head",
+            "UNSATISFIED:mergeable_clean_exact_head",
+            "UNSATISFIED:base_tip_matches_pull_snapshot",
+        }
+        self.assertTrue(expected <= set(result["blockers"]))
+
+    def test_missing_thread_and_signature_snapshots_are_unknown_not_success(self):
+        branch, protection, pull, reviews, checks, _, _, comparison = self.base()
+        result = module.evaluate(
+            POLICY,
+            branch,
+            protection,
+            [],
+            pull,
+            reviews,
+            checks,
+            HEAD,
+            threads=None,
+            commit=None,
+            comparison=comparison,
+        )
+        self.assertIn("UNOBSERVED:no_unresolved_review_threads", result["blockers"])
+        self.assertIn("UNOBSERVED:signed_exact_head", result["blockers"])
 
 
 if __name__ == "__main__":
