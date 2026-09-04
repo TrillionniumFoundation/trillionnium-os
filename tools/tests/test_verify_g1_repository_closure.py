@@ -1,7 +1,6 @@
 """Regression coverage for repository topology and live PR-subject parsing."""
 from __future__ import annotations
 
-import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -14,13 +13,57 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class RepositoryClosureTests(unittest.TestCase):
+    @staticmethod
+    def route_only_target() -> str:
+        lanes = "\n".join(f"owner-open-r5-l{level}" for level in range(2, 7))
+        return f"""name: target admission route
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  route-only:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          request = {{
+              \"status\": \"ROUTE_ONLY_PENDING_EXTERNAL_ADMISSION\",
+              \"candidate_checkout_performed\": False,
+              \"candidate_code_executed\": False,
+              \"external_runner_allocated\": False,
+              \"capture_scheduled\": False,
+              \"synthetic\": False,
+              \"promotion_authorized\": False,
+              \"public_release\": False,
+          }}
+          PY
+          printf '%s\\n' '{lanes}'
+"""
+
+    @staticmethod
+    def operator_contract() -> str:
+        return """The independently administered executor uses
+`/opt/owner-open-r5/harnesses/<kind>` and
+`/etc/owner-open-r5/attestations/<kind>.json`.
+Candidate checkout content is inert content-addressed data only.
+"""
+
     def test_checked_in_repository_closure_passes(self) -> None:
         report = closure.verify(ROOT)
-        self.assertEqual(report["status"], "PASS_REPOSITORY_CONTROLLED_TOPOLOGY_ONLY")
+        self.assertEqual(
+            report["status"], "PASS_REPOSITORY_CONTROLLED_TOPOLOGY_ONLY"
+        )
         self.assertEqual(report["workspace_members"], 24)
         self.assertEqual(report["default_members"], 11)
         self.assertEqual(report["non_product_members"], 13)
         self.assertEqual(report["catalog_modules"], 16)
+        self.assertEqual(
+            report["target_evidence_posture"],
+            "ROUTE_ONLY_EXTERNAL_ADMISSION_REQUIRED",
+        )
         self.assertFalse(report["synthetic"])
         self.assertFalse(report["zero_gap"])
         self.assertFalse(report["public_release"])
@@ -58,9 +101,59 @@ class RepositoryClosureTests(unittest.TestCase):
 
     def test_lifecycle_covers_exact_non_default_workspace_set(self) -> None:
         members, defaults = closure.parse_workspace(ROOT)
-        lifecycle = closure.load_json(ROOT / "governance/component-lifecycle.v1.json")
+        lifecycle = closure.load_json(
+            ROOT / "governance/component-lifecycle.v1.json"
+        )
         excluded = [entry["path"] for entry in lifecycle["non_product_members"]]
-        self.assertEqual(excluded, [member for member in members if member not in set(defaults)])
+        self.assertEqual(
+            excluded,
+            [member for member in members if member not in set(defaults)],
+        )
+
+    def test_route_only_target_boundary_passes(self) -> None:
+        closure.verify_target_evidence_boundary(
+            self.route_only_target(), self.operator_contract()
+        )
+
+    def test_target_boundary_rejects_self_hosted_allocation(self) -> None:
+        target = self.route_only_target().replace(
+            "runs-on: ubuntu-24.04", "runs-on: self-hosted"
+        )
+        with self.assertRaisesRegex(
+            closure.VerificationError, "GitHub-hosted runner"
+        ):
+            closure.verify_target_evidence_boundary(
+                target, self.operator_contract()
+            )
+
+    def test_target_boundary_rejects_candidate_checkout(self) -> None:
+        target = self.route_only_target() + "\n- uses: actions/checkout@deadbeef\n"
+        with self.assertRaisesRegex(
+            closure.VerificationError, "must not check out candidate code"
+        ):
+            closure.verify_target_evidence_boundary(
+                target, self.operator_contract()
+            )
+
+    def test_target_boundary_rejects_candidate_workspace_reference(self) -> None:
+        target = self.route_only_target() + '\n- run: cd "$GITHUB_WORKSPACE"\n'
+        with self.assertRaisesRegex(
+            closure.VerificationError, "candidate workspace"
+        ):
+            closure.verify_target_evidence_boundary(
+                target, self.operator_contract()
+            )
+
+    def test_fixed_harness_identity_belongs_to_external_operator_contract(self) -> None:
+        operator = self.operator_contract().replace(
+            "/opt/owner-open-r5/harnesses/<kind>", "/tmp/candidate/harness"
+        )
+        with self.assertRaisesRegex(
+            closure.VerificationError, "external harness root"
+        ):
+            closure.verify_target_evidence_boundary(
+                self.route_only_target(), operator
+            )
 
 
 if __name__ == "__main__":
