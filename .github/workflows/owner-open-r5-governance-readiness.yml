@@ -1,0 +1,146 @@
+name: Owner-open R5 governance readiness observation
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
+  pull_request_review:
+    types: [submitted, dismissed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to observe
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: owner-open-r5-governance-${{ github.event.pull_request.number || github.event.review.pull_request_url || inputs.pr_number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  GOVERNANCE_POSTURE: OBSERVE_ONLY
+  EVENT_PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number || '' }}
+
+jobs:
+  observe-governance:
+    name: Observe exact-head review and protected-main readiness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Read current PR, reviews and protected branch state
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          test "$GOVERNANCE_POSTURE" = OBSERVE_ONLY
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          repository = os.environ["REPOSITORY"]
+          token = os.environ["GITHUB_TOKEN"]
+          event_path = Path(os.environ["GITHUB_EVENT_PATH"])
+          event = json.loads(event_path.read_text(encoding="utf-8"))
+          pr_number = os.environ.get("EVENT_PR_NUMBER", "").strip()
+          if not pr_number and isinstance(event.get("review"), dict):
+              url = str(event["review"].get("pull_request_url", ""))
+              pr_number = url.rstrip("/").rsplit("/", 1)[-1]
+          if not pr_number.isdigit() or int(pr_number) <= 0:
+              raise SystemExit("a positive PR number is required")
+
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {token}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "trillionnium-governance-observer",
+          }
+
+          def get(path):
+              request = urllib.request.Request(
+                  f"https://api.github.com/repos/{repository}{path}", headers=headers
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          pull = get(f"/pulls/{pr_number}")
+          reviews = get(f"/pulls/{pr_number}/reviews?per_page=100")
+          protection_observed = False
+          protection = None
+          try:
+              protection = get(f"/branches/{pull['base']['ref']}/protection")
+              protection_observed = True
+          except urllib.error.HTTPError as error:
+              if error.code not in (403, 404):
+                  raise
+
+          head_sha = pull["head"]["sha"]
+          latest_by_author = {}
+          for review in reviews:
+              if review.get("commit_id") != head_sha:
+                  continue
+              login = (review.get("user") or {}).get("login")
+              if login:
+                  latest_by_author[login] = review
+          author = (pull.get("user") or {}).get("login")
+          approvals = sorted(
+              login for login, review in latest_by_author.items()
+              if login != author and review.get("state") == "APPROVED"
+          )
+          change_requests = sorted(
+              login for login, review in latest_by_author.items()
+              if review.get("state") == "CHANGES_REQUESTED"
+          )
+          required_contexts = []
+          if isinstance(protection, dict):
+              checks = protection.get("required_status_checks") or {}
+              required_contexts = sorted(
+                  item.get("context")
+                  for item in checks.get("checks", [])
+                  if isinstance(item, dict) and isinstance(item.get("context"), str)
+              )
+          ready = bool(
+              pull.get("state") == "open"
+              and not pull.get("draft")
+              and approvals
+              and not change_requests
+              and protection_observed
+          )
+          report = {
+              "schema": "org.trillionnium.governance-observation.v1",
+              "posture": "OBSERVE_ONLY",
+              "repository": repository,
+              "pr_number": int(pr_number),
+              "base_ref": pull["base"]["ref"],
+              "base_sha": pull["base"]["sha"],
+              "head_ref": pull["head"]["ref"],
+              "head_sha": head_sha,
+              "draft": bool(pull.get("draft")),
+              "non_author_approvals_on_head": approvals,
+              "change_requests_on_head": change_requests,
+              "protection_observed": protection_observed,
+              "required_contexts": required_contexts,
+              "ready_for_protected_integration": ready,
+              "attestation_observed": False,
+              "promotion_authorized": False,
+              "public_release": False,
+          }
+          output = Path(os.environ["RUNNER_TEMP"]) / "owner-open-governance-observation.json"
+          output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps(report, sort_keys=True))
+          PY
+      - name: Upload observation only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: owner-open-governance-observation-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 7
+          path: ${{ runner.temp }}/owner-open-governance-observation.json
