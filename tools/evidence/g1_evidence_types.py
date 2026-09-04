@@ -46,6 +46,7 @@ class TrustedAttestation:
     path: Path
     digest: str
     receipt: dict[str, Any]
+    raw_bytes: bytes
 
 
 def _reject_duplicate_members(pairs: list[tuple[str, Any]]) -> dict[str, Any]:

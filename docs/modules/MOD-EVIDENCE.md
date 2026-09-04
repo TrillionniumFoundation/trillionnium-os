@@ -142,6 +142,22 @@ Evidence is immutable. Revocation, expiry, subject movement or ambiguous externa
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
+### Immutable intake implementation
+
+`tools/evidence/g1_evidence_core.py::_verify_evidence_snapshot` owns the single
+package/gap snapshot. `tools/evidence/g1_evidence.py::verify_evidence_directory`
+uses that same snapshot for retention and continuous-lineage checks, without
+reopening package files after signature verification. The original report API
+and v2 evidence/attestation schemas are unchanged.
+
+`load_trusted_attestation` retains digest-bound raw bytes. Signature verification
+uses sealed Linux memfds for key/signature input and sends the retained receipt
+to OpenSSL over stdin, from a neutral working directory and finite environment.
+Original paths are provenance only, not verification inputs. Missing memfd,
+sealing, procfs or the system OpenSSL fails closed. Input size ceilings and
+single-link/no-symlink rules are defined in
+`docs/QUALIFICATION_AND_EVIDENCE.md`, section 2.3; they do not assert target RSS.
+
 ## 11. Security and trust boundaries
 
 A self-hash is integrity metadata, not external authorization. Repository writers cannot mint independent review, installed-target facts, destructive-fault results, signing custody or release authority.

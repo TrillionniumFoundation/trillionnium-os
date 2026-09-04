@@ -9,10 +9,10 @@ from g1_evidence_core import *  # noqa: F401,F403
 from g1_evidence_core import (
     promotion_plan,
     validate_package,
-    verify_evidence_directory as _verify_structural_directory,
+    _verify_evidence_snapshot as _verify_structural_directory,
 )
 from g1_evidence_contract import COMPLETE, LEVEL_ORDER, PROGRAM_REVISION
-from g1_evidence_types import EvidenceError, _timestamp, strict_json_file
+from g1_evidence_types import EvidenceError, _timestamp
 
 
 def _require_live(condition: bool, message: str) -> None:
@@ -43,7 +43,7 @@ def verify_evidence_directory(
     """
 
     reference_now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
-    structural = _verify_structural_directory(
+    structural, gap_specs, packages = _verify_structural_directory(
         evidence_dir,
         gap_register,
         current_source_commit=current_source_commit,
@@ -56,25 +56,15 @@ def verify_evidence_directory(
         attestation_public_key_sha256=attestation_public_key_sha256,
         repository_root=repository_root,
     )
-    gap_specs = load_gap_specs(gap_register)  # noqa: F405
-    candidates = sorted(evidence_dir.glob("*.json"))
-    _require_live(bool(candidates), f"evidence directory contains no JSON packages: {evidence_dir}")
-    _require_live(
-        all(not path.is_symlink() and path.is_file() for path in candidates),
-        "evidence directory contains a symlink or non-regular JSON entry",
-    )
-    paths = candidates
-    packages: dict[str, dict[str, Any]] = {}
+    # Continue with exactly the packages and gap definitions validated above.
+    # Re-opening the directory here can introduce unattested packages or a new
+    # gap register between structural/signature and live-retention validation.
     assessments: dict[str, PackageAssessment] = {}  # noqa: F405
-    for path in paths:
-        package = strict_json_file(path, str(path))
+    for package in packages.values():
         assessment = validate_package(
-            package,
-            gap_specs,
-            current_source_commit=current_source_commit,
-            now=reference_now,
+            package, gap_specs,
+            current_source_commit=current_source_commit, now=reference_now,
         )
-        packages[assessment.package_id] = package
         assessments[assessment.package_id] = assessment
 
     live_ids: set[str] = set()

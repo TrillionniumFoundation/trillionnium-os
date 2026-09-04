@@ -70,6 +70,37 @@ This transitive source gate is not an external signature and cannot promote a
 gap.  A current complete-subject attestation still requires a detached signature
 under an independently administered out-of-repository trust root.
 
+### 2.3 Immutable input snapshots
+
+Offline intake reads each package and the gap definitions once. Structural,
+signature, retention and lineage validation operate on the same in-memory
+snapshot; a later pathname edit, removal or new package is not incorporated
+into that report. A report identifies the observed snapshot, not an ongoing
+watch of the input directory. Re-run verification for any intentionally changed
+input set and never apply a report to a different source or gap register.
+
+The detached receipt retains the exact raw bytes checked by its out-of-band
+SHA-256. OpenSSL verifies those bytes from stdin and reads the pinned public key
+and detached signature from immutable, sealed descriptors. It never reopens
+their original paths. The parsed receipt must equal the retained signed bytes.
+The Linux verifier requires `memfd_create`, file sealing, `/proc/self/fd` and
+an independently installed `/usr/bin/openssl`; absence fails closed, with no
+mutable-path fallback. It runs from `/` with a finite environment and disables
+inherited loader/provider/config search settings. This is RSA-SHA256 input
+binding, not a claim of production key custody or FIPS qualification.
+
+Inputs are regular single-link files opened component-by-component without
+following symlinks. FIFOs/devices, noncanonical paths, changing files and oversized
+inputs are rejected before verification. Limits are 1 MiB per receipt/package,
+64 KiB per public key, 16 KiB per signature, 4096 packages and 64 MiB aggregate
+package input. These are parser ceilings, not measured resident-memory limits.
+
+`tools/tests/test_g1_evidence.py::G1EvidenceByteBindingTest` exercises replacement
+of key/receipt/signature, inter-layer package and gap changes, a newly inserted
+L2 fixture with only an L1 signature, descriptor sealing/cleanup, unsafe paths
+and finite inputs. Keys and observations in those tests are ephemeral fixtures;
+no test receipt supplies an independent approval or promotes a real gap.
+
 ## 3. Module evidence
 
 Each module supplies evidence for:

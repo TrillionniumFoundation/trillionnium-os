@@ -3,11 +3,13 @@ from __future__ import annotations
 from copy import deepcopy
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import sys
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_TOOLS = ROOT / "tools" / "evidence"
@@ -503,6 +505,270 @@ class G1EvidenceTest(unittest.TestCase):
         )
         self.assertEqual(assessment.status, "HOLD")
         self.assertFalse(assessment.promotable_for_current_source)
+
+
+class G1EvidenceByteBindingTest(unittest.TestCase):
+    """Real signatures over ephemeral fixtures; never target/release evidence."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.key_directory = tempfile.TemporaryDirectory(prefix="g1-test-keys-")
+        cls.addClassCleanup(cls.key_directory.cleanup)
+        root = Path(cls.key_directory.name)
+        base = json.loads(CANDIDATE.read_text(encoding="utf-8"))
+        cls.valid = G1EvidenceTest.write_trusted_attestation(root / "valid.json", [base])
+        cls.other = G1EvidenceTest.write_trusted_attestation(root / "other.json", [base])
+        cls.original_run = staticmethod(subprocess.run)
+
+    def setUp(self) -> None:
+        import g1_evidence_core
+        self.core = g1_evidence_core
+        self.directory = tempfile.TemporaryDirectory(prefix="g1-byte-binding-")
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.evidence = self.root / "evidence"
+        self.evidence.mkdir()
+        self.base = json.loads(CANDIDATE.read_text(encoding="utf-8"))
+        self.receipt, self.receipt_digest, self.signature, self.key, self.key_digest = (
+            self.root / "receipt.json", self.valid[1], self.root / "receipt.sig",
+            self.root / "public.pem", self.valid[4],
+        )
+        for target, source in ((self.receipt, self.valid[0]),
+                               (self.signature, self.valid[2]), (self.key, self.valid[3])):
+            target.write_bytes(source.read_bytes())
+        self.gap_register = self.root / "gaps.json"
+        self.gap_register.write_bytes(GAP_REGISTER.read_bytes())
+        write_json(self.evidence / "l1.json", self.base)
+
+    def verify_signature(self):
+        trusted = self.core.load_trusted_attestation(
+            self.receipt, self.receipt_digest, repository_root=ROOT,
+        )
+        return self.core.verify_attestation_signature(
+            trusted, signature_path=self.signature, public_key_path=self.key,
+            public_key_sha256=self.key_digest, repository_root=ROOT,
+            evidence_dir=self.evidence,
+        )
+
+    def verify_directory(self):
+        return verify_evidence_directory(
+            self.evidence, self.gap_register, current_source_commit=SOURCE_COMMIT,
+            expected_subject=self.base["subject"], now=NOW,
+            attestation_path=self.receipt, attestation_sha256=self.receipt_digest,
+            attestation_signature_path=self.signature, attestation_public_key_path=self.key,
+            attestation_public_key_sha256=self.key_digest, repository_root=ROOT,
+        )
+
+    def swap_before_openssl(self, change):
+        def invoke(command, **kwargs):
+            if command[1] == "pkey":
+                change()
+            return self.original_run(command, **kwargs)
+        return mock.patch.object(self.core.subprocess, "run", side_effect=invoke)
+
+    def test_key_replacement_cannot_accept_signature_from_unpinned_key(self) -> None:
+        # The signature is invalid under the pinned key. Replacing that pathname
+        # after its digest check must not turn the signature into a valid one.
+        self.signature.write_bytes(self.other[2].read_bytes())
+        with self.swap_before_openssl(lambda: self.key.write_bytes(self.other[3].read_bytes())):
+            with self.assertRaisesRegex(EvidenceError, "detached signature is invalid"):
+                self.verify_signature()
+
+    def test_receipt_replacement_cannot_verify_different_signed_bytes(self) -> None:
+        original = self.receipt.read_bytes()
+        different = original.replace(b"test-attestation-1", b"test-attestation-2")
+        alternate = self.root / "different.json"
+        alternate.write_bytes(different)
+        self.original_run(
+            ["openssl", "dgst", "-sha256", "-sign",
+             str(self.valid[0].with_suffix(".private.pem")), "-out", str(self.signature),
+             str(alternate)], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        with self.swap_before_openssl(lambda: self.receipt.write_bytes(different)):
+            with self.assertRaisesRegex(EvidenceError, "detached signature is invalid"):
+                self.verify_signature()
+
+    def test_signature_replacement_cannot_upgrade_the_read_snapshot(self) -> None:
+        valid_signature = self.signature.read_bytes()
+        self.signature.write_bytes(b"\0" * len(valid_signature))
+        with self.swap_before_openssl(lambda: self.signature.write_bytes(valid_signature)):
+            with self.assertRaisesRegex(EvidenceError, "detached signature is invalid"):
+                self.verify_signature()
+
+    def mutate_after_signature(self, change):
+        original = self.core._require_trusted_attestation_for_promotions
+        def invoke(*args, **kwargs):
+            result = original(*args, **kwargs)
+            change()
+            return result
+        return mock.patch.object(
+            self.core, "_require_trusted_attestation_for_promotions", side_effect=invoke,
+        )
+
+    def test_package_replacement_cannot_escape_attested_ids(self) -> None:
+        changed = deepcopy(self.base)
+        changed["roles"]["reviewer"]["principal"] = "unattested-replacement-reviewer"
+        G1EvidenceTest.resign(changed)
+        with self.mutate_after_signature(lambda: write_json(self.evidence / "l1.json", changed)):
+            report = self.verify_directory()
+        self.assertEqual(set(report["promotable_gaps"].values()), {self.base["package_id"]})
+        self.assertEqual(report["trusted_attestation"]["package_ids"], [self.base["package_id"]])
+
+    def test_added_l2_package_is_not_promoted_by_l1_only_attestation(self) -> None:
+        helper = G1EvidenceTest(methodName="runTest")
+        helper.setUp()
+        l2 = helper.l2_package()
+        with self.mutate_after_signature(lambda: write_json(self.evidence / "l2.json", l2)):
+            report = self.verify_directory()
+        self.assertNotIn("GAP-INSTALLED-CODEX-001", report["promotable_gaps"])
+        self.assertIn("GAP-INSTALLED-CODEX-001", report["unresolved_gaps"])
+        self.assertEqual(report["package_count"], 1)
+
+    def test_gap_replacement_cannot_change_the_verified_snapshot(self) -> None:
+        def close_gaps():
+            value = json.loads(self.gap_register.read_bytes())
+            for gap in value["gaps"]:
+                gap["status"] = "CLOSED"
+            write_json(self.gap_register, value)
+        with self.mutate_after_signature(close_gaps):
+            report = self.verify_directory()
+        self.assertIn("GAP-RELEASE-001", report["unresolved_gaps"])
+        self.assertFalse(report["all_gaps_promotable"])
+
+
+    def test_valid_snapshot_survives_later_input_path_removal(self) -> None:
+        signature_digest = sha256_bytes(self.signature.read_bytes())
+        def remove_paths():
+            for path in (self.receipt, self.key, self.signature):
+                path.unlink()
+        with self.swap_before_openssl(remove_paths):
+            metadata = self.verify_signature()
+        self.assertEqual(metadata["public_key_sha256"], self.key_digest)
+        self.assertEqual(metadata["signature_sha256"], signature_digest)
+
+    def test_openssl_uses_sealed_descriptors_and_a_clean_environment(self) -> None:
+        import errno
+        observed = []
+        def invoke(command, **kwargs):
+            self.assertEqual(command[0], "/usr/bin/openssl")
+            self.assertEqual(kwargs["cwd"], "/")
+            self.assertNotIn("LD_PRELOAD", kwargs["env"])
+            self.assertNotIn("OPENSSL_MODULES", kwargs["env"])
+            self.assertEqual(kwargs["env"]["OPENSSL_CONF"], os.devnull)
+            for descriptor in kwargs["pass_fds"]:
+                observed.append(descriptor)
+                with self.assertRaises(OSError) as write_error:
+                    os.pwrite(descriptor, b"changed", 0)
+                self.assertEqual(write_error.exception.errno, errno.EPERM)
+                with self.assertRaises(OSError):
+                    os.ftruncate(descriptor, 0)
+            self.assertFalse({str(self.receipt), str(self.key), str(self.signature)} & set(command))
+            if command[1] == "dgst":
+                self.assertEqual(kwargs["input"], self.receipt.read_bytes())
+            return self.original_run(command, **kwargs)
+        with mock.patch.dict(os.environ, {"LD_PRELOAD": "/untrusted/no-library", "OPENSSL_MODULES": "/untrusted"}):
+            with mock.patch.object(self.core.subprocess, "run", side_effect=invoke):
+                self.verify_signature()
+        self.assertEqual(len(observed), 3)
+        for descriptor in set(observed):
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
+
+    def test_verifier_timeout_closes_all_sealed_descriptors(self) -> None:
+        descriptors = []
+        def fail(command, **kwargs):
+            descriptors.extend(kwargs["pass_fds"])
+            raise subprocess.TimeoutExpired(command, 10)
+        before = len(list(Path("/proc/self/fd").iterdir()))
+        with mock.patch.object(self.core.subprocess, "run", side_effect=fail):
+            with self.assertRaisesRegex(EvidenceError, "type check failed"):
+                self.verify_signature()
+        self.assertEqual(len(list(Path("/proc/self/fd").iterdir())), before)
+        for descriptor in descriptors:
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
+
+    def test_unavailable_sealing_has_no_pathname_fallback(self) -> None:
+        with mock.patch.object(self.core.os, "memfd_create", side_effect=OSError("not supported")):
+            with mock.patch.object(self.core.subprocess, "run") as openssl:
+                with self.assertRaisesRegex(EvidenceError, "cannot seal"):
+                    self.verify_signature()
+                openssl.assert_not_called()
+
+    def test_modified_parsed_receipt_cannot_diverge_from_signed_bytes(self) -> None:
+        trusted = self.core.load_trusted_attestation(self.receipt, self.receipt_digest, repository_root=ROOT)
+        trusted.receipt["authority"] = "not-in-signed-bytes"
+        with self.assertRaisesRegex(EvidenceError, "parsed receipt differs"):
+            self.core.verify_attestation_signature(
+                trusted, signature_path=self.signature, public_key_path=self.key,
+                public_key_sha256=self.key_digest, repository_root=ROOT, evidence_dir=self.evidence,
+            )
+
+    def test_trust_input_symlink_and_hardlink_are_rejected(self) -> None:
+        alias = self.root / "alias.json"
+        alias.symlink_to(self.receipt)
+        with self.assertRaisesRegex(EvidenceError, "symlink"):
+            self.core.load_trusted_attestation(alias, self.receipt_digest)
+        alias.unlink()
+        os.link(self.receipt, alias)
+        with self.assertRaisesRegex(EvidenceError, "single-link"):
+            self.core.load_trusted_attestation(alias, self.receipt_digest)
+
+    def test_parent_symlink_is_rejected(self) -> None:
+        alias = self.root / "alias-directory"
+        alias.symlink_to(self.evidence, target_is_directory=True)
+        with self.assertRaisesRegex(EvidenceError, "symlink"):
+            self.core._read_regular_snapshot(alias / "l1.json", label="package", maximum=1024*1024)
+
+    def test_fifo_and_directory_are_rejected_before_reading(self) -> None:
+        fifo = self.root / "fifo"
+        os.mkfifo(fifo)
+        for path in (fifo, self.evidence):
+            with self.subTest(path=path):
+                with self.assertRaisesRegex(EvidenceError, "regular file"):
+                    self.core._read_regular_snapshot(path, label="input", maximum=1024)
+
+    def test_input_byte_limit_accepts_boundary_and_rejects_empty_or_excess(self) -> None:
+        path = self.root / "bounded"
+        path.write_bytes(b"abc")
+        self.assertEqual(self.core._read_regular_snapshot(path, label="input", maximum=3), b"abc")
+        for raw in (b"", b"abcd"):
+            path.write_bytes(raw)
+            with self.assertRaisesRegex(EvidenceError, "byte limit"):
+                self.core._read_regular_snapshot(path, label="input", maximum=3)
+
+    def test_in_place_change_during_snapshot_read_is_rejected(self) -> None:
+        original_read = os.read
+        called = False
+        def mutate(descriptor, count):
+            nonlocal called
+            raw = original_read(descriptor, count)
+            if not called:
+                called = True
+                self.receipt.write_bytes(self.receipt.read_bytes() + b" ")
+            return raw
+        with mock.patch.object(self.core.os, "read", side_effect=mutate):
+            with self.assertRaisesRegex(EvidenceError, "changed while reading"):
+                self.core.load_trusted_attestation(self.receipt, self.receipt_digest)
+
+    def test_package_count_and_total_input_bytes_are_bounded(self) -> None:
+        write_json(self.evidence / "second.json", self.base)
+        with mock.patch.object(self.core, "MAX_PACKAGE_COUNT", 1):
+            with self.assertRaisesRegex(EvidenceError, "package count"):
+                self.verify_directory()
+        (self.evidence / "second.json").unlink()
+        with mock.patch.object(self.core, "MAX_EVIDENCE_INPUT_BYTES", 1):
+            with self.assertRaisesRegex(EvidenceError, "input bytes"):
+                self.verify_directory()
+        with mock.patch.object(self.core, "MAX_PACKAGE_BYTES", 1):
+            with self.assertRaisesRegex(EvidenceError, "byte limit"):
+                self.verify_directory()
+
+
+    def test_noncanonical_double_root_is_rejected(self) -> None:
+        alias = Path("//" + str(self.receipt).lstrip("/"))
+        with self.assertRaisesRegex(EvidenceError, "canonical absolute POSIX"):
+            self.core.load_trusted_attestation(alias, self.receipt_digest)
 
 
 if __name__ == "__main__":

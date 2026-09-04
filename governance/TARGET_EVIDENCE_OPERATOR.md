@@ -150,3 +150,18 @@ or source authorship never changes gap state by itself.
 Any movement in source commit, tree, promotion PR, target image, harness,
 attestation, authorization, reviewer, trust root or evidence bytes invalidates
 the chain and requires a new request and capture.
+
+### Verifier byte-identity requirement
+
+The independent verifier must verify the exact bytes that it digest-checked,
+not reopen a mutable key, signature or receipt pathname afterward. Repository
+intake implements this with retained receipt bytes and sealed Linux descriptors;
+its structural and live-retention layers share one package/gap snapshot.
+The required backend and finite parser ceilings are specified in
+`docs/QUALIFICATION_AND_EVIDENCE.md` section 2.3. Fixture signatures test these
+mechanics only and cannot establish the external trust root or operator identity.
+
+A custodian intentionally replacing a key, receipt, signature, evidence package
+or target object must restart intake with the new independently bound subject.
+It must not mix an old structural report with a newly read directory, nor treat
+an input snapshot as evidence of later filesystem or device state.

@@ -1,11 +1,15 @@
 """G1 evidence package validation and non-mutating gap-promotion planning."""
 from __future__ import annotations
 
+from contextlib import ExitStack, contextmanager
 from datetime import datetime, timezone
+import fcntl
+import os
+import stat
 import json
 from pathlib import Path
 import subprocess
-from typing import Any, Mapping
+from typing import Any, Iterator, Mapping
 
 from g1_evidence_contract import *  # noqa: F403,F401
 from g1_evidence_types import (
@@ -93,51 +97,108 @@ def _validate_attestation_receipt(
     return package_ids, source_commit, subject, verified_at, expires_at
 
 
+# Finite input limits, not claims about target RSS or performance.
+MAX_ATTESTATION_BYTES = 1024 * 1024
+MAX_PUBLIC_KEY_BYTES = 64 * 1024
+MAX_SIGNATURE_BYTES = 16 * 1024
+MAX_PACKAGE_BYTES = 1024 * 1024
+MAX_PACKAGE_COUNT = 4096
+MAX_EVIDENCE_INPUT_BYTES = 64 * 1024 * 1024
+
+
+def _read_regular_snapshot(path: Path, *, label: str, maximum: int) -> bytes:
+    """Read once through no-follow descriptors; never block on a FIFO/device.
+
+    Component descriptors prevent a renamed parent or a substituted symlink
+    from redirecting a later open. Digests/signatures bind the returned bytes,
+    not the pathname, which is allowed to change after this snapshot is read.
+    """
+    directory_fd: int | None = None
+    file_fd: int | None = None
+    try:
+        absolute = path.absolute()
+        _require(absolute.anchor == "/", f"{label} requires a canonical absolute POSIX path")
+        _require(".." not in absolute.parts, f"{label} path must be normalized")
+        flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
+        directory_fd = os.open(absolute.anchor, flags | os.O_DIRECTORY)
+        for component in absolute.parts[1:-1]:
+            next_fd = os.open(component, flags | os.O_DIRECTORY, dir_fd=directory_fd)
+            os.close(directory_fd)
+            directory_fd = next_fd
+        file_fd = os.open(
+            absolute.name, flags | os.O_NONBLOCK, dir_fd=directory_fd,
+        )
+        before = os.fstat(file_fd)
+        _require(stat.S_ISREG(before.st_mode), f"{label} is not a regular file")
+        _require(before.st_nlink == 1, f"{label} must be a single-link file")
+        _require(0 < before.st_size <= maximum, f"{label} exceeds its byte limit or is empty")
+        chunks: list[bytes] = []
+        count = 0
+        while count <= maximum:
+            chunk = os.read(file_fd, min(64 * 1024, maximum + 1 - count))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            count += len(chunk)
+        after = os.fstat(file_fd)
+        fields = ("st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_gid",
+                  "st_size", "st_mtime_ns", "st_ctime_ns")
+        _require(
+            count == before.st_size <= maximum
+            and all(getattr(before, field) == getattr(after, field) for field in fields),
+            f"{label} changed while reading or exceeds its byte limit",
+        )
+        return b"".join(chunks)
+    except EvidenceError:
+        raise
+    except (OSError, RuntimeError, AttributeError) as error:
+        raise EvidenceError(f"cannot read {label} without following symlinks: {error}") from error
+    finally:
+        if file_fd is not None:
+            os.close(file_fd)
+        if directory_fd is not None:
+            os.close(directory_fd)
+
+
+def _outside_roots(path: Path, roots: list[tuple[Path, str]], *, label: str) -> None:
+    lexical = path.absolute()
+    _require(lexical.anchor == "/", f"{label} requires a canonical absolute POSIX path")
+    _require(".." not in lexical.parts, f"{label} path must be normalized")
+    for root, description in roots:
+        _require(
+            not lexical.is_relative_to(root.absolute())
+            and not lexical.is_relative_to(root.resolve(strict=True)),
+            f"{label} must be outside the {description}",
+        )
+
+
 def load_trusted_attestation(
     path: Path,
     expected_sha256: str,
     *,
     repository_root: Path | None = None,
 ) -> TrustedAttestation:
-    """Load a receipt only when its raw bytes match an out-of-band digest.
+    """Snapshot and digest-check externally supplied receipt bytes exactly once.
 
-    A receipt inside the repository is rejected: repository-controlled JSON
-    must never be able to make its own COMPLETE evidence trusted.  The core
-    remains network-free; obtaining and independently checking the digest is a
-    caller/operations boundary.
+    The detached signature later verifies these same retained bytes. The source
+    author cannot establish the external digest or key's independence here.
     """
-
     _sha256(expected_sha256, "trusted attestation expected_sha256")
-    try:
-        if path.is_symlink():
-            raise EvidenceError("trusted attestation path must not be a symlink")
-        lexical = path.absolute()
-        resolved = path.resolve(strict=True)
-        if not resolved.is_file():
-            raise EvidenceError("trusted attestation path is not a regular file")
-        if repository_root is not None:
-            root = repository_root.resolve(strict=True)
-            _require(
-                not lexical.is_relative_to(root),
-                "trusted attestation must be outside the repository root",
-            )
-            _require(
-                not resolved.is_relative_to(root),
-                "trusted attestation resolves inside the repository root",
-            )
-        content = resolved.read_bytes()
-    except EvidenceError:
-        raise
-    except (OSError, RuntimeError) as error:
-        raise EvidenceError(f"cannot read trusted attestation: {error}") from error
+    if repository_root is not None:
+        _outside_roots(path, [(repository_root, "repository root")], label="trusted attestation")
+    content = _read_regular_snapshot(
+        path, label="trusted attestation", maximum=MAX_ATTESTATION_BYTES,
+    )
     actual_sha256 = sha256_bytes(content)
     _require(
         actual_sha256 == expected_sha256,
         "trusted attestation raw-byte digest does not match the out-of-band digest",
     )
-    receipt = strict_json_bytes(content, str(resolved))
+    receipt = strict_json_bytes(content, str(path))
     _validate_attestation_receipt(receipt)
-    return TrustedAttestation(path=resolved, digest=actual_sha256, receipt=receipt)
+    return TrustedAttestation(
+        path=path.absolute(), digest=actual_sha256, receipt=receipt, raw_bytes=content,
+    )
 
 
 def _read_external_trust_file(
@@ -146,34 +207,39 @@ def _read_external_trust_file(
     label: str,
     repository_root: Path | None,
     evidence_dir: Path,
+    maximum: int,
 ) -> bytes:
-    """Read a detached trust input only from outside repository evidence."""
+    roots = [(evidence_dir, "evidence directory")]
+    if repository_root is not None:
+        roots.append((repository_root, "repository root"))
+    _outside_roots(path, roots, label=label)
+    return _read_regular_snapshot(path, label=label, maximum=maximum)
 
+
+@contextmanager
+def _sealed_input(raw: bytes, *, label: str) -> Iterator[int]:
+    """Give OpenSSL an immutable Linux memfd, not a re-openable input path."""
+    descriptor: int | None = None
     try:
-        if path.is_symlink():
-            raise EvidenceError(f"{label} path must not be a symlink")
-        lexical = path.absolute()
-        resolved = path.resolve(strict=True)
-        if not resolved.is_file():
-            raise EvidenceError(f"{label} path is not a regular file")
-        evidence_root = evidence_dir.resolve(strict=True)
-        _require(
-            not lexical.is_relative_to(evidence_root)
-            and not resolved.is_relative_to(evidence_root),
-            f"{label} must be outside the evidence directory",
+        descriptor = os.memfd_create(
+            "g1-verified-input", os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING,
         )
-        if repository_root is not None:
-            root = repository_root.resolve(strict=True)
-            _require(
-                not lexical.is_relative_to(root)
-                and not resolved.is_relative_to(root),
-                f"{label} must be outside the repository root",
-            )
-        return resolved.read_bytes()
-    except EvidenceError:
-        raise
-    except (OSError, RuntimeError) as error:
-        raise EvidenceError(f"cannot read {label}: {error}") from error
+        offset = 0
+        while offset < len(raw):
+            written = os.write(descriptor, raw[offset:])
+            _require(written > 0, f"short write while sealing {label}")
+            offset += written
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        seals = fcntl.F_SEAL_WRITE | fcntl.F_SEAL_GROW | fcntl.F_SEAL_SHRINK | fcntl.F_SEAL_SEAL
+        fcntl.fcntl(descriptor, fcntl.F_ADD_SEALS, seals)
+        _require(fcntl.fcntl(descriptor, fcntl.F_GET_SEALS) & seals == seals,
+                 f"{label} is not immutable")
+        yield descriptor
+    except (OSError, AttributeError) as error:
+        raise EvidenceError(f"cannot seal {label}; Linux memfd/procfs support is required: {error}") from error
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
 
 
 def verify_attestation_signature(
@@ -185,80 +251,66 @@ def verify_attestation_signature(
     repository_root: Path | None,
     evidence_dir: Path,
 ) -> dict[str, str]:
-    """Verify a detached RSA-SHA256 signature under an out-of-band key.
+    """Verify the digest-bound receipt and key snapshots with detached RSA-SHA256.
 
-    The public key and signature must be supplied outside repository-controlled
-    paths.  The caller additionally pins the public-key bytes by digest; the
-    core performs no network access and does not infer trust from receipt
-    fields alone.
+    Original input paths are never passed to OpenSSL. Its key and signature
+    descriptors are sealed against both replacement and in-place writes. The
+    receipt is passed as immutable input bytes. Missing sealing support fails
+    closed; there is no pathname-based fallback or signature/authority change.
     """
-
     _sha256(public_key_sha256, "trusted attestation public_key_sha256")
+    _require(
+        type(attestation.raw_bytes) is bytes
+        and 0 < len(attestation.raw_bytes) <= MAX_ATTESTATION_BYTES
+        and sha256_bytes(attestation.raw_bytes) == attestation.digest,
+        "trusted attestation retained bytes differ from its pinned digest",
+    )
+    _require(
+        strict_json_bytes(attestation.raw_bytes, "retained attestation") == attestation.receipt,
+        "trusted attestation parsed receipt differs from retained bytes",
+    )
     signature = _read_external_trust_file(
-        signature_path,
-        label="trusted attestation signature",
-        repository_root=repository_root,
-        evidence_dir=evidence_dir,
+        signature_path, label="trusted attestation signature",
+        repository_root=repository_root, evidence_dir=evidence_dir,
+        maximum=MAX_SIGNATURE_BYTES,
     )
     public_key = _read_external_trust_file(
-        public_key_path,
-        label="trusted attestation public key",
-        repository_root=repository_root,
-        evidence_dir=evidence_dir,
+        public_key_path, label="trusted attestation public key",
+        repository_root=repository_root, evidence_dir=evidence_dir,
+        maximum=MAX_PUBLIC_KEY_BYTES,
     )
     actual_public_key_sha256 = sha256_bytes(public_key)
     _require(
         actual_public_key_sha256 == public_key_sha256,
         "trusted attestation public-key digest does not match the out-of-band digest",
     )
-    public_key_resolved = public_key_path.resolve(strict=True)
-    try:
-        key_info = subprocess.run(
-            [
-                "openssl",
-                "pkey",
-                "-pubin",
-                "-in",
-                str(public_key_resolved),
-                "-text",
-                "-noout",
-            ],
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=10,
+    environment = {"PATH": os.defpath, "LC_ALL": "C", "LANG": "C", "OPENSSL_CONF": os.devnull}
+    with ExitStack() as stack:
+        key_fd = stack.enter_context(_sealed_input(public_key, label="public key"))
+        signature_fd = stack.enter_context(_sealed_input(signature, label="signature"))
+        key_path = f"/proc/self/fd/{key_fd}"
+        try:
+            key_info = subprocess.run(
+                ["/usr/bin/openssl", "pkey", "-pubin", "-in", key_path, "-text", "-noout"],
+                stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                check=False, timeout=10, pass_fds=(key_fd,), cwd="/", env=environment,
+            )
+        except (OSError, subprocess.SubprocessError) as error:
+            raise EvidenceError(f"trusted attestation public-key type check failed: {error}") from error
+        _require(
+            key_info.returncode == 0 and b"Modulus:" in key_info.stdout and b"Exponent:" in key_info.stdout,
+            "trusted attestation public key is not an RSA key",
         )
-    except (OSError, subprocess.SubprocessError) as error:
-        raise EvidenceError(f"trusted attestation public-key type check failed: {error}") from error
-    _require(
-        key_info.returncode == 0
-        and b"Modulus:" in key_info.stdout
-        and b"Exponent:" in key_info.stdout,
-        "trusted attestation public key is not an RSA key",
-    )
-    try:
-        result = subprocess.run(
-            [
-                "openssl",
-                "dgst",
-                "-sha256",
-                "-verify",
-                str(public_key_resolved),
-                "-signature",
-                str(signature_path.resolve(strict=True)),
-                str(attestation.path),
-            ],
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            timeout=10,
-        )
-    except (OSError, subprocess.SubprocessError) as error:
-        raise EvidenceError(f"trusted attestation signature verification failed: {error}") from error
-    _require(
-        result.returncode == 0,
-        "trusted attestation detached signature is invalid",
-    )
+        try:
+            result = subprocess.run(
+                ["/usr/bin/openssl", "dgst", "-sha256", "-verify", key_path,
+                 "-signature", f"/proc/self/fd/{signature_fd}"],
+                input=attestation.raw_bytes, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                check=False, timeout=10, pass_fds=(key_fd, signature_fd), cwd="/", env=environment,
+            )
+        except (OSError, subprocess.SubprocessError) as error:
+            raise EvidenceError(f"trusted attestation signature verification failed: {error}") from error
+        _require(result.returncode == 0, "trusted attestation detached signature is invalid")
     return {
         "algorithm": ATTESTATION_SIGNATURE_ALGORITHM,
         "signature_sha256": sha256_bytes(signature),
@@ -524,7 +576,7 @@ def _require_trusted_attestation_for_promotions(
     }
 
 
-def verify_evidence_directory(
+def _verify_evidence_snapshot(
     evidence_dir: Path,
     gap_register: Path,
     *,
@@ -537,22 +589,25 @@ def verify_evidence_directory(
     attestation_public_key_path: Path | None = None,
     attestation_public_key_sha256: str | None = None,
     repository_root: Path | None = None,
-) -> dict[str, Any]:
+) -> tuple[dict[str, Any], Mapping[str, GapSpec], dict[str, dict[str, Any]]]:
     reference_now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     gap_specs = load_gap_specs(gap_register)
     _require(evidence_dir.is_dir(), f"evidence directory does not exist: {evidence_dir}")
-    candidates = sorted(evidence_dir.glob("*.json"))
-    _require(bool(candidates), f"evidence directory contains no JSON packages: {evidence_dir}")
-    _require(
-        all(not path.is_symlink() and path.is_file() for path in candidates),
-        "evidence directory contains a symlink or non-regular JSON entry",
-    )
-    paths = candidates
+    paths = []
+    for path in evidence_dir.glob("*.json"):
+        _require(len(paths) < MAX_PACKAGE_COUNT, "evidence package count exceeds its limit")
+        paths.append(path)
+    paths.sort()
+    _require(bool(paths), f"evidence directory contains no JSON packages: {evidence_dir}")
+    input_bytes = 0
     assessments: list[PackageAssessment] = []
     package_ids: set[str] = set()
     packages: dict[str, dict[str, Any]] = {}
     for path in paths:
-        package = strict_json_file(path, str(path))
+        raw = _read_regular_snapshot(path, label=str(path), maximum=MAX_PACKAGE_BYTES)
+        input_bytes += len(raw)
+        _require(input_bytes <= MAX_EVIDENCE_INPUT_BYTES, "evidence input bytes exceed their limit")
+        package = strict_json_bytes(raw, str(path))
         assessment = validate_package(
             package,
             gap_specs,
@@ -611,7 +666,7 @@ def verify_evidence_directory(
         for gap_id, spec in gap_specs.items()
         if spec.status != "CLOSED" and gap_id not in promotable_gaps
     )
-    return {
+    report = {
         "schema": "org.trillionnium.g1.evidence-verification-report.v1",
         "program_revision": PROGRAM_REVISION,
         "current_source_commit": current_source_commit,
@@ -636,6 +691,34 @@ def verify_evidence_directory(
         "automatic_redispatch": False,
         "trusted_attestation": trusted_attestation,
     }
+
+    return report, gap_specs, packages
+
+def verify_evidence_directory(
+    evidence_dir: Path,
+    gap_register: Path,
+    *,
+    current_source_commit: str | None = None,
+    expected_subject: Mapping[str, Any] | None = None,
+    now: datetime | None = None,
+    attestation_path: Path | None = None,
+    attestation_sha256: str | None = None,
+    attestation_signature_path: Path | None = None,
+    attestation_public_key_path: Path | None = None,
+    attestation_public_key_sha256: str | None = None,
+    repository_root: Path | None = None,
+) -> dict[str, Any]:
+    """Return the structural report; private consumers also retain its snapshot."""
+    report, _, _ = _verify_evidence_snapshot(
+        evidence_dir, gap_register,
+        current_source_commit=current_source_commit, expected_subject=expected_subject,
+        now=now, attestation_path=attestation_path, attestation_sha256=attestation_sha256,
+        attestation_signature_path=attestation_signature_path,
+        attestation_public_key_path=attestation_public_key_path,
+        attestation_public_key_sha256=attestation_public_key_sha256,
+        repository_root=repository_root,
+    )
+    return report
 
 
 def promotion_plan(
