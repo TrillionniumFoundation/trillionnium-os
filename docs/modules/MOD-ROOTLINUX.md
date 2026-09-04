@@ -142,6 +142,48 @@ Service restart validates the live install manifest and state ownership before a
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
+### Supervisor group-retirement barrier
+
+The deployed helper is `tools/owner-open/owner_open_rootlinux_supervisor.py`.
+`Supervisor.observe_exit` uses Linux `waitid(WNOWAIT)` and never calls
+`Popen.poll()` while a process group is owned. The unreaped session leader pins
+its numeric PID/PGID until group signalling has finished; an external reaper or
+ignored SIGCHLD is unsupported and fails closed. Status reads do not reap it.
+
+`Supervisor.cleanup_groups` sends TERM, then always sends KILL to the original
+group before reaping the leader. Two bounded same-namespace procfs observations
+must find the leader exited and no live original-group members. Zombies cannot
+execute; the installed init/subreaper is responsible for reaping adopted zombies.
+Noncritical exit, critical restart and final shutdown all use this barrier.
+An unavailable/truncated procfs view, exhausted scan budget, signal error or
+cleanup deadline stops replacement and reports cleanup as unconfirmed. Limits
+are 65,536 directory entries, 8,192 bytes per stat read and one second per scan;
+these are finite observation ceilings, not measured device performance.
+
+The status exposes `cleanup_scope=original_process_group_only`, a per-child
+`group_cleanup` observation and `escaped_descendants_absence_proven=false`.
+A process group is not a containment boundary for `setsid`/`setpgid` escape.
+Installed L2 evidence must additionally establish the service cgroup/namespace
+boundary, cgroup-wide cleanup, supervisor-death behaviour and a complete procfs
+view. Local fork tests do not close those installed-target requirements.
+
+Any emergency marker, including a dangling symlink or unreadable marker state,
+inhibits startup/restart. Inhibit, status and event-log leaves must be distinct
+and cannot contain each other. Stop/inhibit is checked between initial child
+starts and again before a replacement; already accepted effects are not retried.
+
+Reproduce the local lifecycle boundary from the repository root:
+
+```sh
+python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
+```
+
+The fixture creates real local descendants with a pipe readiness handshake,
+including TERM-resistant children; no timing-only assumption establishes their
+existence. Test-only subreaping collects fixture orphans. Both exact-head and
+synthetic-merge source lanes explicitly run this suite. No fixture is evidence
+of a physical device, target installation or external-effect rollback.
+
 ## 11. Security and trust boundaries
 
 Root capability is minimized and mechanically scoped. Packaging cannot add semantic policy, substitute unpinned provider bytes, broaden namespaces or silently select a legacy authority path.

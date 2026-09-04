@@ -233,6 +233,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/verify-owner-open-android-source-closure-v2.py
+          # Real local process groups; not installed-target qualification.
+          python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
           python3 tools/verify-owner-open-android-profile-v3.py
           SOURCE_HEAD="$(git --no-replace-objects rev-parse HEAD)"
           python3 tools/verify-owner-open-adbroot-evaluated-graph.py \

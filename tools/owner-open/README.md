@@ -115,3 +115,28 @@ Every utility has a machine status/evidence boundary. A help probe, MCP fixture,
 trace, launch prefix, fake provider, reverse mapping or qualified ELF may never
 be promoted to a physical-device or release claim without the later acceptance
 gates.
+
+## Root Linux supervisor lifecycle
+
+`owner_open_rootlinux_supervisor.py --execute --config /absolute/private/config.json`
+starts the manifest-selected mechanical carriers, not semantic commands. The
+configuration requires canonical absolute paths, a private state root and
+separate inhibit/status/event-log leaves. Any existing emergency marker, even
+a dangling symlink, inhibits spawn; unreadable inhibit state fails closed.
+
+Linux `waitid(WNOWAIT)`, default SIGCHLD handling and exclusive reaping of the
+supervisor's direct children are required. The leader is retained until TERM,
+KILL and bounded original-process-group observations finish. Only then can a
+critical carrier be replaced or a noncritical carrier forgotten. An unconfirmed
+cleanup leaves the supervisor failed rather than authorizing a replacement.
+
+Status records are observations of the original group, not a proof about
+processes escaping via setsid/setpgid. The installed cgroup/namespace and init
+must enforce and demonstrate whole-service cleanup, including supervisor death;
+this remains an external L2 gate. Follow
+[`MOD-ROOTLINUX`](../../docs/modules/MOD-ROOTLINUX.md) for the barrier, limits,
+status fields and operator obligations. Source-only reproduction:
+
+```sh
+python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
+```

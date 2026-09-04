@@ -230,6 +230,8 @@ jobs:
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_connection_broker.py' -v
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_ingress_contract.py' -v
           python3 -m unittest tools.tests.test_run_global_baseline -v
+          # Real local process groups; not installed-target qualification.
+          python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
 
           cargo fmt --all -- --check
           cargo test --locked --all-targets
