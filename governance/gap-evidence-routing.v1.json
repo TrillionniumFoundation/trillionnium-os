@@ -1,0 +1,184 @@
+{
+  "schema": "org.trillionnium.gap-evidence-routing.v1",
+  "program_revision": "2026-09-04-g1-closure",
+  "gap_authority": "docs/machine/gap-register.v2.json",
+  "capture_workflow": ".github/workflows/owner-open-r5-target-evidence-capture.yml",
+  "global_negative_claims": [
+    "no_synthetic_evidence",
+    "capture_cannot_change_gap_status",
+    "capture_cannot_authorize_promotion",
+    "source_checks_cannot_claim_installed_target",
+    "no_automatic_redispatch",
+    "no_public_release_without_independent_l6_authorization"
+  ],
+  "routes": [
+    {
+      "gap_id": "GAP-DOC-SINGLE-TRUTH-001",
+      "exit_level": "L1",
+      "route_kind": "repository_and_governance",
+      "evidence_kinds": ["exact_head_source", "independent_review_attestation"],
+      "required_roles": ["source_author", "independent_reviewer", "protected_integrator"],
+      "closure_rule": "Generated views, machine truth and the real checkout agree on one unchanged exact head, then an eligible non-author review and protected integration confirm it."
+    },
+    {
+      "gap_id": "GAP-GOVERNANCE-001",
+      "exit_level": "L1",
+      "route_kind": "governance",
+      "evidence_kinds": ["exact_head_source", "independent_review_attestation", "protected_integration"],
+      "required_roles": ["source_author", "independent_reviewer", "attestation_signer", "protected_integrator"],
+      "closure_rule": "Required checks, non-author approval, detached attestation and protected-main readback bind the same unchanged subject without bypass."
+    },
+    {
+      "gap_id": "GAP-JOB-ADMISSION-001",
+      "exit_level": "L1",
+      "route_kind": "repository_source",
+      "evidence_kinds": ["exact_head_source"],
+      "required_roles": ["source_author", "independent_reviewer"],
+      "closure_rule": "Exact-head source tests prove reservation before spawn, bounded concurrency and convergence without redispatch."
+    },
+    {
+      "gap_id": "GAP-PROCESS-LIFECYCLE-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_root_linux_process_matrix"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed process identity, parent/descendant lifecycle and cleanup ambiguity are observed on the exact installed target."
+    },
+    {
+      "gap_id": "GAP-STREAM-RECOVERY-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_root_linux_process_matrix", "installed_codex_same_turn"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Bounded stream credit, cursor gaps, reconnect and same-turn continuation are observed without effect redispatch."
+    },
+    {
+      "gap_id": "GAP-JOURNAL-CONVERGENCE-001",
+      "exit_level": "L5",
+      "route_kind": "independent_destructive_target",
+      "evidence_kinds": ["destructive_fault_matrix"],
+      "required_roles": ["producer", "fault_operator", "independent_reviewer", "destructive_authorizer"],
+      "closure_rule": "ENOSPC, fsync ambiguity and corruption cuts retain pre-state, fail closed and reconcile with zero blind redispatch."
+    },
+    {
+      "gap_id": "GAP-BROKER-CORRELATION-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_codex_same_turn"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed multi-request observations prove exact request ownership, late-result isolation and upstream cleanup."
+    },
+    {
+      "gap_id": "GAP-PRODUCT-ENTRYPOINT-001",
+      "exit_level": "L3",
+      "route_kind": "independent_android_image",
+      "evidence_kinds": ["clean_android_target_files"],
+      "required_roles": ["producer", "android_builder", "independent_reviewer"],
+      "closure_rule": "Clean target-files and installed inventory select one entrypoint and exclude foundation or legacy product nodes."
+    },
+    {
+      "gap_id": "GAP-CONC-BROKER-MUX-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_codex_same_turn"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed concurrent calls demonstrate per-key order, cross-key progress, fairness and exact late-result isolation."
+    },
+    {
+      "gap_id": "GAP-CONC-JOB-START-HOTLOCK-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_root_linux_process_matrix"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed concurrent starts demonstrate atomic capacity, per-key linearity, unrelated progress and reservation release under faults."
+    },
+    {
+      "gap_id": "GAP-CONC-EVENT-STORE-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_root_linux_process_matrix"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed segmented durability demonstrates bounded group commit, indexed replay, bounded recovery and migration."
+    },
+    {
+      "gap_id": "GAP-CONC-REGISTRY-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_codex_same_turn"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed contention evidence demonstrates a stable shard function, per-key linearity and finite capacity."
+    },
+    {
+      "gap_id": "GAP-CONC-TURN-CANCEL-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_codex_same_turn"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed turns demonstrate event-driven targeted cancellation, bounded storage and exactly one terminal outcome."
+    },
+    {
+      "gap_id": "GAP-PERF-SYSTEM-BASELINE-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_root_linux_process_matrix", "installed_codex_same_turn"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "WL-01 through WL-12 retain workload, environment, raw samples, percentiles and CPU/RSS/FD/thread/process/I/O measurements."
+    },
+    {
+      "gap_id": "GAP-CONTROL-PLANE-SHADOW-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_root_linux_process_matrix"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed observe/shadow decisions are reproducible, fenced and survive controller outage without semantic authority."
+    },
+    {
+      "gap_id": "GAP-INSTALLED-CODEX-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_codex_same_turn"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Installed executable and signer, authenticated provider session and same-turn tool callbacks are retained with no hidden retry."
+    },
+    {
+      "gap_id": "GAP-ROOTLINUX-PLACEMENT-001",
+      "exit_level": "L2",
+      "route_kind": "independent_target",
+      "evidence_kinds": ["installed_root_linux_process_matrix"],
+      "required_roles": ["producer", "target_operator", "independent_reviewer"],
+      "closure_rule": "Live UID/GID, namespaces, cgroups, mounts, stores, limits, restart and emergency inhibit match the install manifest."
+    },
+    {
+      "gap_id": "GAP-ANDROID-GRAPH-001",
+      "exit_level": "L3",
+      "route_kind": "independent_android_image",
+      "evidence_kinds": ["clean_android_target_files"],
+      "required_roles": ["producer", "android_builder", "independent_reviewer"],
+      "closure_rule": "A clean pinned Android build binds Soong, init, SELinux, packages, target-files, images and installed identities with no legacy semantic nodes."
+    },
+    {
+      "gap_id": "GAP-PHYSICAL-ADB-001",
+      "exit_level": "L4",
+      "route_kind": "independent_physical_target",
+      "evidence_kinds": ["physical_android_adb"],
+      "required_roles": ["producer", "device_custodian", "independent_reviewer"],
+      "closure_rule": "An owner-authorized physical device retains ordinary ADB enumeration, explicit targeting, raw failures, visible mutation and continued same-turn observation."
+    },
+    {
+      "gap_id": "GAP-FAULT-MATRIX-001",
+      "exit_level": "L5",
+      "route_kind": "independent_destructive_target",
+      "evidence_kinds": ["destructive_fault_matrix"],
+      "required_roles": ["producer", "fault_operator", "independent_reviewer", "destructive_authorizer"],
+      "closure_rule": "Independently controlled crash, storage, USB, reboot and power-loss cuts bind pre-state and post-restart reconciliation with zero redispatch."
+    },
+    {
+      "gap_id": "GAP-RELEASE-001",
+      "exit_level": "L6",
+      "route_kind": "independent_release",
+      "evidence_kinds": ["signed_public_release"],
+      "required_roles": ["producer", "signing_custodian", "independent_reviewer", "release_authorizer"],
+      "closure_rule": "Production signing lineage, transparency, AVB, rollback, OTA and a distinct human release decision bind exact artifacts after every lower gap is closed."
+    }
+  ]
+}
