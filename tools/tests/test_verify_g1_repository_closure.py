@@ -99,6 +99,24 @@ Candidate checkout content is inert content-addressed data only.
             {".github/workflows/owner-open-r5-tool-loop.yml"},
         )
 
+    def test_open_draft_is_a_valid_source_subject_without_merge_claim(self) -> None:
+        observed = subject.observe_pull_lifecycle(
+            {"state": "open", "draft": True}
+        )
+        self.assertTrue(observed["draft"])
+        self.assertTrue(observed["source_subject_valid"])
+        self.assertFalse(observed["integration_eligibility_evaluated"])
+
+    def test_closed_pr_is_not_a_live_source_subject(self) -> None:
+        with self.assertRaisesRegex(subject.SubjectError, "not open"):
+            subject.observe_pull_lifecycle(
+                {"state": "closed", "draft": False}
+            )
+
+    def test_unobservable_draft_state_fails_closed(self) -> None:
+        with self.assertRaisesRegex(subject.SubjectError, "not observable"):
+            subject.observe_pull_lifecycle({"state": "open", "draft": None})
+
     def test_lifecycle_covers_exact_non_default_workspace_set(self) -> None:
         members, defaults = closure.parse_workspace(ROOT)
         lifecycle = closure.load_json(
