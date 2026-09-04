@@ -53,6 +53,18 @@ jobs:
           (Path(os.environ['RUNNER_TEMP'])/'g1-repair/source.patch').write_bytes(raw)
           PY
           git apply --index "$RUNNER_TEMP/g1-repair/source.patch"
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('apps/trillionnium-owner-open-host/tests/r5_jobs.rs')
+          source = path.read_text()
+          for operation in ['wait-before-restart', 'wait-delayed-terminal']:
+              old = '        &[job_start(&command), job_wait(0, "'+operation+'", 5000)],'
+              new = '        &[\n            job_start(&command),\n            job_wait(0, "'+operation+'", 5000),\n        ],'
+              assert source.count(old) == 1
+              source = source.replace(old, new)
+          path.write_text(source)
+          PY
+          git add apps/trillionnium-owner-open-host/tests/r5_jobs.rs
       - name: Generate complete non-self-referential review inventory
         run: |
           set -euo pipefail
@@ -85,7 +97,7 @@ jobs:
           print(proposal['expected'])
           PY
           git add governance/pr41-review-index.v1.json
-          test "$(git write-tree)" = 1e5dbcd93a9396b3cf19859cfe40205e83402289
+          test "$(git write-tree)" = 088ad917918ca3540314839123589222b1ed23e7
           test -z "$(git diff --cached --name-only -- .github docs/machine/gap-register.v2.json docs/machine/evidence-index.v1.json)"
       - name: Commit the exact source candidate without qualification claims
         id: subject
@@ -133,7 +145,7 @@ jobs:
               cargo test --locked -p trillionnium-owner-open-host --test r5_jobs -- --test-threads=8
             done
           } 2>&1 | tee "$RUNNER_TEMP/g1-repair/rust.log"
-      - name: Check independent planned workspaces and baseline harness
+      - name: Check independent planned workspaces and broker regressions
         run: |
           set -euo pipefail
           {
@@ -173,7 +185,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          test "$TREE" = 1e5dbcd93a9396b3cf19859cfe40205e83402289
+          test "$TREE" = 088ad917918ca3540314839123589222b1ed23e7
           grep -qx PASS_ISOLATED_SOURCE_TESTS_ONLY "$RUNNER_TEMP/g1-repair/result.txt"
           mkdir "$RUNNER_TEMP/g1-publish"
           cd "$RUNNER_TEMP/g1-publish"
