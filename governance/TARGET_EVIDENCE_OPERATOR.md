@@ -165,3 +165,8 @@ A custodian intentionally replacing a key, receipt, signature, evidence package
 or target object must restart intake with the new independently bound subject.
 It must not mix an old structural report with a newly read directory, nor treat
 an input snapshot as evidence of later filesystem or device state.
+
+The final non-mutating plan must carry the same `gap_specs_sha256` as its
+verification report. If current gap definitions differ, or the digest is absent,
+regenerate intake instead of applying a stale plan. The required source aggregate
+also rejects divergent unresolved sets or zero-gap claims between report and plan.

@@ -79,6 +79,17 @@ into that report. A report identifies the observed snapshot, not an ongoing
 watch of the input directory. Re-run verification for any intentionally changed
 input set and never apply a report to a different source or gap register.
 
+The report and non-mutating promotion plan carry `gap_specs_sha256`: SHA-256
+of canonical JSON `{schema: org.trillionnium.g1.gap-definition-snapshot.v1,
+gaps: [...]}` with entries sorted by ID, each containing `id`, `status`,
+`exit_level` and `evidence_class`. Planning checks these same normalized inputs
+before deriving transitions. Missing or changed bindings fail closed. Prose and
+acceptance rules remain bound by the source tree, not this normalized digest.
+The aggregate requires report/plan digest, unresolved set and closure flags to
+agree. Existing report/plan schema identifiers are retained with this additional
+binding; older reports without it must be regenerated before planning or intake
+aggregation. This digest is not a signature or independent authorization.
+
 The detached receipt retains the exact raw bytes checked by its out-of-band
 SHA-256. OpenSSL verifies those bytes from stdin and reads the pinned public key
 and detached signature from immutable, sealed descriptors. It never reopens

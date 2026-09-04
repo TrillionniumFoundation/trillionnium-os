@@ -213,6 +213,7 @@ class AggregateFixtureBase(unittest.TestCase):
     def _evidence_report(self) -> dict[str, object]:
         return {
             "schema": "org.trillionnium.g1.evidence-verification-report.v2",
+            "gap_specs_sha256": "7" * 64,
             "program_revision": AGG.PROGRAM_REVISION,
             "current_source_commit": self.head_commit,
             "package_count": 0,
@@ -228,6 +229,7 @@ class AggregateFixtureBase(unittest.TestCase):
     def _promotion_plan(self) -> dict[str, object]:
         return {
             "schema": "org.trillionnium.g1.gap-promotion-plan.v1",
+            "gap_specs_sha256": "7" * 64,
             "program_revision": AGG.PROGRAM_REVISION,
             "current_source_commit": self.head_commit,
             "transitions": [],

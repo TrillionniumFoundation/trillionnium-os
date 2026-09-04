@@ -121,6 +121,34 @@ class AggregateTest(AggregateFixture):
         with self.assertRaisesRegex(AGG.AggregateError, "report source mismatch"):
             self.verify()
 
+    def test_evidence_report_plan_gap_binding_is_mandatory_and_equal(self) -> None:
+        for mode in ("missing", "mismatched"):
+            with self.subTest(mode=mode):
+                report, plan = self._evidence_report(), self._promotion_plan()
+                if mode == "missing":
+                    plan.pop("gap_specs_sha256")
+                else:
+                    plan["gap_specs_sha256"] = "8" * 64
+                self._replace_artifact_blob(1003, 0, self._zip({
+                    "g1-evidence-report.json": report, "g1-promotion-plan.json": plan,
+                }))
+                with self.assertRaisesRegex(AGG.AggregateError, "gap_specs_sha256|snapshot mismatch"):
+                    self.verify()
+
+    def test_evidence_report_plan_closure_claims_cannot_diverge(self) -> None:
+        for mode in ("unresolved", "zero_gap"):
+            with self.subTest(mode=mode):
+                report, plan = self._evidence_report(), self._promotion_plan()
+                if mode == "unresolved":
+                    plan["unresolved_gaps"] = []
+                else:
+                    plan["zero_gap_after_plan"] = True
+                self._replace_artifact_blob(1003, 0, self._zip({
+                    "g1-evidence-report.json": report, "g1-promotion-plan.json": plan,
+                }))
+                with self.assertRaisesRegex(AGG.AggregateError, "unresolved gaps mismatch|closure flags contradict"):
+                    self.verify()
+
     def test_newer_run_during_final_recheck_invalidates_aggregate(self) -> None:
         path = self._run_list_path("g1-evidence-intake.yml")
         initial = deepcopy(self.values[path])

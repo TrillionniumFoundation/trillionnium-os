@@ -576,6 +576,24 @@ def _require_trusted_attestation_for_promotions(
     }
 
 
+def _gap_specs_digest(gap_specs: Mapping[str, GapSpec]) -> str:
+    """Bind the exact normalized gap properties used by verification/planning.
+
+    The source subject separately binds normative prose and acceptance rules;
+    this digest protects ID, status, required level and evidence-class inputs.
+    It is an identity binding, not independent authorization.
+    """
+    value = {
+        "schema": "org.trillionnium.g1.gap-definition-snapshot.v1",
+        "gaps": [
+            {"id": spec.gap_id, "status": spec.status,
+             "exit_level": spec.exit_level, "evidence_class": spec.evidence_class}
+            for _, spec in sorted(gap_specs.items())
+        ],
+    }
+    return sha256_bytes(canonical_bytes(value))
+
+
 def _verify_evidence_snapshot(
     evidence_dir: Path,
     gap_register: Path,
@@ -669,6 +687,7 @@ def _verify_evidence_snapshot(
     report = {
         "schema": "org.trillionnium.g1.evidence-verification-report.v1",
         "program_revision": PROGRAM_REVISION,
+        "gap_specs_sha256": _gap_specs_digest(gap_specs),
         "current_source_commit": current_source_commit,
         "package_count": len(assessments),
         "packages": [
@@ -726,6 +745,11 @@ def promotion_plan(
     gap_register: Path,
 ) -> dict[str, Any]:
     gap_specs = load_gap_specs(gap_register)
+    snapshot_digest = _sha256(report.get("gap_specs_sha256"), "report.gap_specs_sha256")
+    _require(
+        _gap_specs_digest(gap_specs) == snapshot_digest,
+        "gap definition snapshot differs from the verified report; re-run intake",
+    )
     promotable = _mapping(report.get("promotable_gaps"), "report.promotable_gaps")
     transitions = []
     for gap_id in sorted(gap_specs):
@@ -743,6 +767,7 @@ def promotion_plan(
     return {
         "schema": "org.trillionnium.g1.gap-promotion-plan.v1",
         "program_revision": PROGRAM_REVISION,
+        "gap_specs_sha256": snapshot_digest,
         "current_source_commit": report.get("current_source_commit"),
         "transitions": transitions,
         "unresolved_gaps": list(report.get("unresolved_gaps", [])),

@@ -636,6 +636,32 @@ class G1EvidenceByteBindingTest(unittest.TestCase):
         self.assertFalse(report["all_gaps_promotable"])
 
 
+    def test_plan_rejects_gap_changes_after_report_verification(self) -> None:
+        report = self.verify_directory()
+        value = json.loads(self.gap_register.read_bytes())
+        for gap in value["gaps"]:
+            if gap["id"] == "GAP-DOC-SINGLE-TRUTH-001":
+                gap["status"] = "OPEN"
+        write_json(self.gap_register, value)
+        with self.assertRaisesRegex(EvidenceError, "gap definition snapshot differs"):
+            promotion_plan(report, self.gap_register)
+
+    def test_plan_rejects_unbound_detached_report(self) -> None:
+        report = self.verify_directory()
+        report.pop("gap_specs_sha256", None)
+        with self.assertRaisesRegex(EvidenceError, "gap_specs_sha256"):
+            promotion_plan(report, self.gap_register)
+
+    def test_plan_roundtrip_preserves_semantic_gap_snapshot(self) -> None:
+        report = json.loads(json.dumps(self.verify_directory()))
+        value = json.loads(self.gap_register.read_bytes())
+        self.gap_register.write_text(json.dumps(value, indent=4))
+        plan = promotion_plan(report, self.gap_register)
+        self.assertEqual(plan["gap_specs_sha256"], report["gap_specs_sha256"])
+        self.assertEqual(len(plan["transitions"]), 2)
+        self.assertFalse(plan["zero_gap_after_plan"])
+        self.assertFalse(plan["public_release_after_plan"])
+
     def test_valid_snapshot_survives_later_input_path_removal(self) -> None:
         signature_digest = sha256_bytes(self.signature.read_bytes())
         def remove_paths():

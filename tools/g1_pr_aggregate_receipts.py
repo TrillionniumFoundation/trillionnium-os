@@ -105,7 +105,16 @@ def _validate_evidence_pair(report_value: Any, plan_value: Any, subject: Subject
     _require(isinstance(plan.get("transitions"), list) and isinstance(plan.get("unresolved_gaps"), list), f"{label} plan arrays are invalid")
     _require(type(plan.get("zero_gap_after_plan")) is bool, f"{label} plan zero_gap_after_plan is invalid")
     _require(plan.get("automatic_redispatch") is False and plan.get("public_release_after_plan") is False, f"{label} plan widened authority")
+    gap_digest = _sha256(report.get("gap_specs_sha256"), f"{label} report gap_specs_sha256")
+    _require(_sha256(plan.get("gap_specs_sha256"), f"{label} plan gap_specs_sha256") == gap_digest,
+             f"{label} report/plan gap snapshot mismatch")
+    _require(plan["unresolved_gaps"] == report["unresolved_gaps"],
+             f"{label} report/plan unresolved gaps mismatch")
+    _require(plan["zero_gap_after_plan"] == report["all_gaps_promotable"]
+             == (not report["unresolved_gaps"]),
+             f"{label} report/plan closure flags contradict unresolved gaps")
     return {
+        "gap_specs_sha256": gap_digest,
         "package_count": report["package_count"],
         "all_gaps_promotable": report["all_gaps_promotable"],
         "transition_count": len(plan["transitions"]),
