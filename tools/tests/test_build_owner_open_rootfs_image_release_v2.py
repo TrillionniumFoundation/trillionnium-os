@@ -10,6 +10,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import textwrap
 import time
 import unittest
 from unittest import mock
@@ -408,6 +409,292 @@ time.sleep(60)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn(b"undeclared file", result.stderr)
         self.assertFalse(output.exists())
+
+
+    def mutate_on_last_build(self, mutation: str, name: str):
+        source = deterministic_tool().replace(
+            'output.chmod(0o644)',
+            'output.chmod(0o644)\nif output.name == "run-2.squashfs":\n'
+            + textwrap.indent(mutation, '    '),
+        )
+        output = self.output_parent / name
+        result = self.run_command(self.command(self.tool(source), output))
+        return result, output
+
+    def test_later_build_cannot_change_first_image_bytes(self):
+        result, output = self.mutate_on_last_build(
+            '(output.parent / "run-1.squashfs").write_bytes(b"changed after first measurement")',
+            'stale-first-image',
+        )
+        self.assertNotEqual(result.returncode, 0, "stale image digest must not qualify")
+        self.assertFalse((output / "owner-open-rootfs.image-manifest.json").exists())
+
+    def test_later_build_cannot_change_first_image_mode(self):
+        result, output = self.mutate_on_last_build(
+            '(output.parent / "run-1.squashfs").chmod(0o600)', 'stale-first-mode',
+        )
+        self.assertNotEqual(result.returncode, 0, "earlier image mode drift must be observed")
+        self.assertFalse((output / "owner-open-rootfs.image-manifest.json").exists())
+
+    def test_tool_created_final_image_is_not_silently_overwritten(self):
+        result, output = self.mutate_on_last_build(
+            '(output.parent / "owner-open-rootfs.squashfs").write_bytes(b"unexpected final image")',
+            'foreign-final-image',
+        )
+        self.assertNotEqual(result.returncode, 0, "unexpected publication path must not be adopted")
+
+    def test_tool_created_final_manifest_is_not_silently_overwritten(self):
+        result, output = self.mutate_on_last_build(
+            '(output.parent / "owner-open-rootfs.image-manifest.json").write_bytes(b"unexpected receipt")',
+            'foreign-final-receipt',
+        )
+        self.assertNotEqual(result.returncode, 0, "unexpected publication path must not be adopted")
+
+
+
+    def local_builder(self):
+        import importlib
+        sys.path.insert(0, str(TOOLS))
+        try:
+            return importlib.import_module("build_owner_open_rootfs_image_release_v2").base
+        finally:
+            sys.path.remove(str(TOOLS))
+
+    def test_selected_image_sync_failure_retains_uncertain_output(self):
+        builder = self.local_builder()
+        output = self.output_parent / 'image-sync-failure'
+        args = builder.parse_args(self.command(self.tool(deterministic_tool()), output)[2:])
+        original = os.fsync
+        def sync(fd):
+            if os.readlink(f'/proc/self/fd/{fd}').endswith('/owner-open-rootfs.squashfs'):
+                raise OSError('injected image durability failure')
+            return original(fd)
+        with mock.patch.object(builder.os, 'fsync', side_effect=sync):
+            with self.assertRaisesRegex(builder.ImageError, 'publication incomplete'):
+                builder.build(args)
+        self.assertTrue((output / 'owner-open-rootfs.squashfs').exists())
+        self.assertFalse((output / 'owner-open-rootfs.image-manifest.json').exists())
+
+    def test_manifest_directory_sync_failure_preserves_visible_pair(self):
+        builder = self.local_builder()
+        output = self.output_parent / 'manifest-sync-failure'
+        args = builder.parse_args(self.command(self.tool(deterministic_tool()), output)[2:])
+        original = os.fsync
+        def sync(fd):
+            if stat.S_ISDIR(os.fstat(fd).st_mode) and (output / 'owner-open-rootfs.image-manifest.json').exists():
+                raise OSError('injected manifest directory durability failure')
+            return original(fd)
+        with mock.patch.object(builder.os, 'fsync', side_effect=sync):
+            with self.assertRaisesRegex(builder.ImageError, 'output retained'):
+                builder.build(args)
+        self.assertTrue((output / 'owner-open-rootfs.squashfs').exists())
+        self.assertTrue((output / 'owner-open-rootfs.image-manifest.json').exists())
+
+    def test_image_change_during_manifest_commit_cannot_return_success(self):
+        builder = self.local_builder()
+        output = self.output_parent / 'late-image-change'
+        args = builder.parse_args(self.command(self.tool(deterministic_tool()), output)[2:])
+        original = builder.atomic_json
+        def publish(path, value, mode):
+            original(path, value, mode)
+            image = output / 'owner-open-rootfs.squashfs'
+            image.chmod(0o644)
+            image.write_bytes(b'late mutation')
+            image.chmod(0o444)
+        with mock.patch.object(builder, 'atomic_json', side_effect=publish):
+            with self.assertRaisesRegex(builder.ImageError, 'publication incomplete'):
+                builder.build(args)
+        self.assertEqual((output / 'owner-open-rootfs.squashfs').read_bytes(), b'late mutation')
+        self.assertTrue((output / 'owner-open-rootfs.image-manifest.json').exists())
+
+    def test_library_run_count_is_bounded_before_tools_execute(self):
+        builder = self.local_builder()
+        args = builder.parse_args(self.command(self.tool(deterministic_tool()), self.output_parent / 'invalid-runs')[2:])
+        for value in (0, 1, 5, True, 2.5):
+            args.runs = value
+            with self.subTest(value=value), mock.patch.object(builder, 'probe_tool') as probe:
+                with self.assertRaises(builder.ImageError):
+                    builder.build(args)
+                probe.assert_not_called()
+
+
+class ImagePublicationBoundaryTest(unittest.TestCase):
+    """Host storage fault injection; no installed or power-loss qualification."""
+    @classmethod
+    def setUpClass(cls):
+        import importlib
+        sys.path.insert(0, str(TOOLS))
+        try:
+            cls.builder = importlib.import_module('build_owner_open_rootfs_image_release')
+        finally:
+            sys.path.remove(str(TOOLS))
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.image = self.root / 'image'
+        self.image.write_bytes(b'fixture image bytes')
+        self.image.chmod(0o644)
+        self.manifest = self.root / 'manifest.json'
+
+    def test_image_snapshot_exact_bytes_and_mode(self):
+        record = self.builder.image_snapshot(self.image)
+        self.assertEqual(record['image_sha256'], digest(self.image))
+        self.assertEqual(record['image_bytes'], self.image.stat().st_size)
+        self.assertEqual(record['image_mode'], '0644')
+
+    def test_image_hash_completes_short_reads(self):
+        original = os.read
+        with mock.patch.object(self.builder.os, 'read', side_effect=lambda fd, n: original(fd, min(n, 3))):
+            record = self.builder.image_snapshot(self.image)
+        self.assertEqual(record['image_sha256'], digest(self.image))
+
+    def test_image_drift_rejected_against_captured_record(self):
+        record = self.builder.image_snapshot(self.image)
+        for key, value in (('image_sha256', '0' * 64), ('image_bytes', 1), ('image_mode', '0600')):
+            with self.subTest(key=key), self.assertRaises(self.builder.ImageError):
+                self.builder.image_snapshot(self.image, dict(record, **{key: value}))
+
+    def test_nonregular_and_multiply_linked_images_rejected(self):
+        for kind in ('symlink', 'fifo', 'directory', 'hardlink'):
+            leaf = self.root / kind
+            if kind == 'symlink': leaf.symlink_to(self.image)
+            elif kind == 'fifo': os.mkfifo(leaf, 0o600)
+            elif kind == 'directory': leaf.mkdir()
+            else: os.link(self.image, leaf)
+            with self.subTest(kind=kind), self.assertRaises((OSError, self.builder.ImageError)):
+                self.builder.image_snapshot(leaf)
+            leaf.rmdir() if kind == 'directory' else leaf.unlink()
+
+    def test_empty_and_insecure_images_rejected(self):
+        self.image.write_bytes(b'')
+        with self.assertRaises(self.builder.ImageError): self.builder.image_snapshot(self.image)
+        self.image.write_bytes(b'bytes')
+        for mode in (0o666, 0o4644):
+            self.image.chmod(mode)
+            with self.subTest(mode=mode), self.assertRaises(self.builder.ImageError):
+                self.builder.image_snapshot(self.image)
+
+    def test_image_replacement_during_hash_is_rejected(self):
+        original, changed = os.read, [False]
+        def read(fd, size):
+            if not changed[0]:
+                changed[0] = True
+                self.image.rename(self.root / 'retained-image')
+                self.image.write_bytes(b'fixture image bytes')
+                self.image.chmod(0o644)
+            return original(fd, size)
+        with mock.patch.object(self.builder.os, 'read', side_effect=read):
+            with self.assertRaisesRegex(self.builder.ImageError, 'changed while'):
+                self.builder.image_snapshot(self.image)
+
+    def test_growing_image_reads_at_most_limit_plus_one(self):
+        self.image.write_bytes(b'1234')
+        original, changed, sizes = os.read, [False], []
+        def read(fd, size):
+            sizes.append(size)
+            if not changed[0]:
+                changed[0] = True
+                with self.image.open('ab') as out: out.write(b'x' * 100)
+            return original(fd, size)
+        with mock.patch.object(self.builder, 'MAX_IMAGE_BYTES', 4), mock.patch.object(self.builder.os, 'read', side_effect=read):
+            with self.assertRaisesRegex(self.builder.ImageError, 'byte bound'):
+                self.builder.image_snapshot(self.image)
+        self.assertEqual(sizes, [5])
+
+    def test_sealing_syncs_image_then_parent_and_preserves_digest(self):
+        record = self.builder.image_snapshot(self.image)
+        original, seen = os.fsync, []
+        def sync(fd):
+            seen.append('directory' if stat.S_ISDIR(os.fstat(fd).st_mode) else 'file')
+            self.assertFalse(os.get_inheritable(fd))
+            return original(fd)
+        with mock.patch.object(self.builder.os, 'fsync', side_effect=sync):
+            sealed = self.builder.image_snapshot(self.image, record, seal=True)
+        self.assertEqual(seen, ['file', 'directory'])
+        self.assertEqual(sealed['image_mode'], '0444')
+        self.assertEqual(sealed['image_sha256'], record['image_sha256'])
+
+    def test_manifest_sync_order_and_private_creation(self):
+        original_sync, original_link, observed = os.fsync, os.link, []
+        def sync(fd):
+            if stat.S_ISDIR(os.fstat(fd).st_mode): observed.append('directory')
+            else:
+                observed.append('file')
+                self.assertEqual(stat.S_IMODE(os.fstat(fd).st_mode), 0o600)
+            return original_sync(fd)
+        def link(*args, **kwargs):
+            observed.append('publish')
+            return original_link(*args, **kwargs)
+        with mock.patch.object(self.builder.os, 'fsync', side_effect=sync), mock.patch.object(self.builder.os, 'link', side_effect=link):
+            self.builder.atomic_json(self.manifest, {'test_only': True}, 0o600)
+        self.assertEqual(observed, ['file', 'publish', 'directory'])
+        self.assertEqual(self.manifest.stat().st_nlink, 1)
+        self.assertEqual(list(self.root.glob('.*.tmp-*')), [])
+
+    def test_manifest_short_writes_complete(self):
+        original = os.write
+        with mock.patch.object(self.builder.os, 'write', side_effect=lambda fd, raw: original(fd, raw[:3])):
+            self.builder.atomic_json(self.manifest, {'x': 'fixture'}, 0o600)
+        self.assertEqual(json.loads(self.manifest.read_bytes()), {'x': 'fixture'})
+
+    def test_manifest_invalid_write_progress_fails_without_partial_target(self):
+        for count in (0, -1, 99999):
+            with self.subTest(count=count), mock.patch.object(self.builder.os, 'write', return_value=count):
+                with self.assertRaises(self.builder.ImageError):
+                    self.builder.atomic_json(self.manifest, {}, 0o600)
+            self.assertFalse(self.manifest.exists())
+            self.assertEqual(list(self.root.glob('.*.tmp-*')), [])
+
+    def test_existing_manifest_is_never_overwritten(self):
+        self.manifest.write_bytes(b'previous receipt')
+        with self.assertRaises(FileExistsError):
+            self.builder.atomic_json(self.manifest, {}, 0o600)
+        self.assertEqual(self.manifest.read_bytes(), b'previous receipt')
+        self.assertEqual(list(self.root.glob('.*.tmp-*')), [])
+
+    def test_temporary_collision_does_not_unlink_foreign_file(self):
+        name = f'.{self.manifest.name}.tmp-{os.getpid()}-collision'
+        other = self.root / name
+        other.write_bytes(b'foreign temporary')
+        with mock.patch.object(self.builder.secrets, 'token_hex', return_value='collision'):
+            with self.assertRaises(FileExistsError):
+                self.builder.atomic_json(self.manifest, {}, 0o600)
+        self.assertEqual(other.read_bytes(), b'foreign temporary')
+        self.assertFalse(self.manifest.exists())
+
+    def test_manifest_file_sync_failure_cleans_own_temp_only(self):
+        with mock.patch.object(self.builder.os, 'fsync', side_effect=OSError('injected file sync')):
+            with self.assertRaises(OSError): self.builder.atomic_json(self.manifest, {}, 0o600)
+        self.assertFalse(self.manifest.exists())
+        self.assertEqual(list(self.root.glob('.*.tmp-*')), [])
+
+    def test_manifest_directory_sync_failure_preserves_visible_target(self):
+        original = os.fsync
+        def sync(fd):
+            if stat.S_ISDIR(os.fstat(fd).st_mode): raise OSError('injected directory sync')
+            return original(fd)
+        with mock.patch.object(self.builder.os, 'fsync', side_effect=sync):
+            with self.assertRaises(OSError): self.builder.atomic_json(self.manifest, {}, 0o600)
+        self.assertEqual(self.manifest.read_bytes(), b'{}\n')
+        self.assertEqual(list(self.root.glob('.*.tmp-*')), [])
+
+    def test_manifest_nonfinite_oversize_and_mode_fail_before_file_creation(self):
+        with self.assertRaises(ValueError): self.builder.atomic_json(self.manifest, {'x': float('nan')}, 0o600)
+        with mock.patch.object(self.builder, 'MAX_MANIFEST_BYTES', 2):
+            with self.assertRaises(self.builder.ImageError): self.builder.atomic_json(self.manifest, {}, 0o600)
+        with self.assertRaises(self.builder.ImageError): self.builder.atomic_json(self.manifest, {}, 0o644)
+        self.assertFalse(self.manifest.exists())
+        self.assertEqual(list(self.root.glob('.*.tmp-*')), [])
+
+    def test_descriptor_count_stable_on_success_and_error(self):
+        before = len(os.listdir('/proc/self/fd'))
+        for index in range(10):
+            self.builder.image_snapshot(self.image)
+            self.builder.atomic_json(self.root / f'{index}.json', {}, 0o600)
+            with self.assertRaises(FileExistsError): self.builder.atomic_json(self.root / f'{index}.json', {}, 0o600)
+        self.assertEqual(len(os.listdir('/proc/self/fd')), before)
 
 
 @unittest.skipUnless(sys.platform == "linux" and hasattr(os, "WNOWAIT"), "Linux process retirement")

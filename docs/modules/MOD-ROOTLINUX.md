@@ -335,6 +335,57 @@ Exact-head Android-packaging CI explicitly runs this suite; synthetic-merge full
 test discovery also includes it. Local fork/fault fixtures and deterministic fake
 image tools establish only source behavior, never an actual Android image.
 
+### Final image identity and publication boundary
+
+Reproduction records alone do not establish the identity of the retained image.
+The shared builder now remeasures **every run image after all tool invocations**
+against its original digest, byte count and mode before comparing reproduction
+records. A later run that changes an earlier image cannot receive a successful
+receipt using the earlier digest. The library, like the CLI, requires 2..4 runs;
+a single build is not reproducibility evidence.
+
+`image_snapshot` opens an image relative to a retained immediate-parent descriptor
+with no-follow/nonblocking/close-on-exec flags. It requires one nonempty bounded
+regular file, an allowed owner, one link, no special or group/world-write bits,
+and stable descriptor/name metadata across hashing. Capture is streaming, at most
+1 MiB per read and at most the existing 8 GiB limit plus one overflow sentinel;
+image bytes are not accumulated in memory. Observed growth, replacement, mode,
+size or digest drift fails closed. This is interval validation under the existing
+trusted-tool/private-namespace assumptions, not immutability against privileged
+writers or squashfs format/content verification.
+
+Final image publication uses a create-only hard link followed by removal of the
+run name. It cannot overwrite an unexpected existing selected-image name. An
+unexpected final manifest is also rejected. The selected image is verified again,
+set to mode 0444 using its open descriptor, fsynced, and its parent is fsynced
+**before** the manifest is published. Every image/manifest link is within the same
+output directory/filesystem; a filesystem without the required hard-link or sync
+operations fails rather than falling back to a weaker copy/overwrite protocol.
+
+The manifest uses an exclusively created private temporary file, exact short-write
+completion, file fsync, create-only final link, temporary unlink and parent fsync.
+It refuses nonfinite JSON, manifests above 16 MiB and modes other than 0600. It
+never overwrites an existing manifest, and cleanup removes only a temporary whose
+inode still matches this attempt. A second final-image check after manifest
+publication must still match before the command may return success.
+
+Image and manifest are **separate durable operations**, not an atomic pair.
+Before the publication phase, build errors retain the existing removal behavior.
+Once final publication is attempted, an error leaves the output directory intact
+and reports `image publication incomplete; output retained`. This includes image
+sync failure, final-name collision, manifest sync failure and late image drift.
+A visible manifest or image alone is not successful qualification; consumers must
+require a successful command result and independently verify the image digest.
+Preserve and reconcile retained partial output instead of rerunning the build into
+that directory, deleting uncertain receipts or claiming rollback. No new marker
+or file-existence test grants installed, Android, fault or release authority.
+
+The existing selected-builder suite includes later-run tampering, no-clobber final
+names, short reads/writes, concurrent file replacement, capture limits, descriptor
+cleanup, and pre/post-publication sync failures. These injected faults do not prove
+power-loss durability. Extra hash/sync passes have unmeasured I/O cost and do not
+establish an installed performance baseline or independently authorized custody.
+
 ## 11. Security and trust boundaries
 
 Root capability is minimized and mechanically scoped. Packaging cannot add semantic policy, substitute unpinned provider bytes, broaden namespaces or silently select a legacy authority path.

@@ -346,6 +346,66 @@ def sort_file(path: Path, relative_paths: list[str]) -> None:
     path.chmod(0o600)
 
 
+
+def _file_version(metadata: os.stat_result) -> tuple[int, ...]:
+    return (metadata.st_dev, metadata.st_ino, metadata.st_size, metadata.st_mode,
+            metadata.st_mtime_ns, metadata.st_ctime_ns, metadata.st_nlink,
+            metadata.st_uid, metadata.st_gid)
+
+
+def image_snapshot(path: Path, expected: dict[str, Any] | None = None,
+                   *, seal: bool = False) -> dict[str, Any]:
+    """Measure one bounded, stable image descriptor, not a reopened pathname.
+
+    The private build namespace and tool are trusted; these interval checks do
+    not isolate a hostile same-UID writer or verify squashfs semantic contents.
+    """
+    parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    descriptor = None
+    try:
+        descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+                             | os.O_CLOEXEC, dir_fd=parent)
+        before = os.fstat(descriptor)
+        if (not stat.S_ISREG(before.st_mode) or before.st_nlink != 1
+                or before.st_uid not in {0, os.geteuid()} or before.st_mode & 0o7022
+                or not 0 < before.st_size <= MAX_IMAGE_BYTES):
+            raise ImageError("built image is not one bounded owner-controlled regular file")
+        if expected is not None and f"{stat.S_IMODE(before.st_mode):04o}" != expected["image_mode"]:
+            raise ImageError("built image mode drifted after measurement")
+        if seal:
+            os.fchmod(descriptor, 0o444)
+            before = os.fstat(descriptor)
+        digest, count = hashlib.sha256(), 0
+        while count <= MAX_IMAGE_BYTES:
+            chunk = os.read(descriptor, min(1024 * 1024, MAX_IMAGE_BYTES - count + 1))
+            if not chunk:
+                break
+            count += len(chunk)
+            if count > MAX_IMAGE_BYTES:
+                raise ImageError("built image exceeds byte bound")
+            digest.update(chunk)
+        result = {"image_sha256": digest.hexdigest(), "image_bytes": count,
+                  "image_mode": f"{stat.S_IMODE(before.st_mode):04o}"}
+        if expected is not None and any(result[key] != expected[key]
+                                         for key in ("image_sha256", "image_bytes")):
+            raise ImageError("built image digest or byte count drifted after measurement")
+        if seal:
+            os.fsync(descriptor)
+        after = os.fstat(descriptor)
+        named = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        if (count != before.st_size or _file_version(before) != _file_version(after)
+                or _file_version(after) != _file_version(named)):
+            raise ImageError("built image changed while being measured")
+        if seal:
+            # The selected image bytes/mode/name precede the manifest commit.
+            os.fsync(parent)
+        return result
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        os.close(parent)
+
+
 def build_once(
     tool: Path,
     source_root: Path,
@@ -367,43 +427,65 @@ def build_once(
             "mksquashfs failed: "
             + result["stderr"][-2048:].decode("utf-8", errors="replace")
         )
-    metadata = stable_file(image, "built rootfs image", MAX_IMAGE_BYTES)
-    digest, count = sha256_path(image, MAX_IMAGE_BYTES)
+    snapshot = image_snapshot(image)
     return {
         "argv_options": list(IMAGE_OPTIONS) + ["-sort", "<generated-sort-file>"],
         "returncode": result["returncode"],
         "elapsed_ms": result["elapsed_ms"],
         "stdout_sha256": result["stdout_sha256"],
         "stderr_sha256": result["stderr_sha256"],
-        "image_sha256": digest,
-        "image_bytes": count,
-        "image_mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
+        **snapshot,
     }
 
 
 def atomic_json(path: Path, value: Any, mode: int) -> None:
-    raw = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2).encode("utf-8") + b"\n"
-    temporary = path.parent / f".{path.name}.tmp-{os.getpid()}-{secrets.token_hex(8)}"
-    descriptor = os.open(
-        temporary,
-        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0),
-        mode,
-    )
+    """Publish a new manifest after file sync; never overwrite another receipt."""
+    raw = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2,
+                     allow_nan=False).encode("utf-8") + b"\n"
+    if len(raw) > MAX_MANIFEST_BYTES or type(mode) is not int or mode != 0o600:
+        raise ImageError("image manifest size or mode is invalid")
+    parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    temporary = f".{path.name}.tmp-{os.getpid()}-{secrets.token_hex(8)}"
+    descriptor = identity = None
     try:
-        offset = 0
-        while offset < len(raw):
-            written = os.write(descriptor, raw[offset:])
-            if written <= 0:
-                raise ImageError("image manifest write made no progress")
-            offset += written
+        descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                             | os.O_NOFOLLOW | os.O_CLOEXEC, mode, dir_fd=parent)
+        metadata = os.fstat(descriptor)
+        identity = (metadata.st_dev, metadata.st_ino)
+        os.fchmod(descriptor, mode)
+        remaining = memoryview(raw)
+        while remaining:
+            written = os.write(descriptor, remaining)
+            if written <= 0 or written > len(remaining):
+                raise ImageError("image manifest write made no valid progress")
+            remaining = remaining[written:]
         os.fsync(descriptor)
+        current = os.stat(temporary, dir_fd=parent, follow_symlinks=False)
+        if identity != (current.st_dev, current.st_ino) or current.st_nlink != 1:
+            raise ImageError("image manifest temporary identity changed")
+        # link is create-only: a concurrent/pre-existing final name is preserved.
+        os.link(temporary, path.name, src_dir_fd=parent, dst_dir_fd=parent, follow_symlinks=False)
+        os.unlink(temporary, dir_fd=parent)
+        os.fsync(parent)
     finally:
-        os.close(descriptor)
-    os.replace(temporary, path)
-    os.chmod(path, mode)
+        try:
+            if identity is not None:
+                try:
+                    current = os.stat(temporary, dir_fd=parent, follow_symlinks=False)
+                except FileNotFoundError:
+                    pass
+                else:
+                    if identity == (current.st_dev, current.st_ino):
+                        os.unlink(temporary, dir_fd=parent)
+        finally:
+            if descriptor is not None:
+                os.close(descriptor)
+            os.close(parent)
 
 
 def build(args: argparse.Namespace) -> dict[str, Any]:
+    if type(args.runs) is not int or not 2 <= args.runs <= 4:
+        raise ImageError("independent image builds require 2..4 runs")
     staging = private_directory(args.staging, "staging output")
     manifest, manifest_raw, staging_root, observed = validate_staging(staging)
     tool = Path(args.mksquashfs)
@@ -412,6 +494,7 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
     new_output(args.output)
     args.output.mkdir(mode=0o700)
     runs: list[dict[str, Any]] = []
+    publication_started = False
     try:
         for index in range(args.runs):
             run_root = args.output / f"run-{index + 1}-root"
@@ -429,13 +512,23 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
             )
             validate_root_snapshot(run_root, manifest, manifest_raw)
         measure_tool(tool, args.expected_mksquashfs_sha256)
+        # Later commands can change earlier outputs. Recheck every retained
+        # artifact, not just the historical per-command measurement records.
+        for index, record in enumerate(runs, 1):
+            image_snapshot(args.output / f"run-{index}.squashfs", record)
         digests = {item["image_sha256"] for item in runs}
         sizes = {item["image_bytes"] for item in runs}
         if len(digests) != 1 or len(sizes) != 1:
             raise ImageError("independent rootfs image builds are not byte-identical")
         selected_image = args.output / "owner-open-rootfs.squashfs"
-        os.replace(args.output / "run-1.squashfs", selected_image)
-        os.chmod(selected_image, 0o444)
+        publication_started = True
+        manifest_path = args.output / "owner-open-rootfs.image-manifest.json"
+        if os.path.lexists(manifest_path):
+            raise ImageError("unexpected existing final image manifest")
+        first_image = args.output / "run-1.squashfs"
+        os.link(first_image, selected_image, follow_symlinks=False)
+        first_image.unlink()
+        sealed = image_snapshot(selected_image, runs[0], seal=True)
         for index in range(args.runs):
             shutil.rmtree(args.output / f"run-{index + 1}-root", ignore_errors=True)
             (args.output / f"run-{index + 1}.sort").unlink(missing_ok=True)
@@ -475,12 +568,17 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
             "claim_ceiling": "ROOTFS_IMAGE_BUILT_NOT_ANDROID_INCLUDED",
         }
         atomic_json(
-            args.output / "owner-open-rootfs.image-manifest.json",
+            manifest_path,
             image_manifest,
             0o600,
         )
+        image_snapshot(selected_image, sealed)
         return image_manifest
-    except Exception:
+    except Exception as error:
+        if publication_started:
+            # Image and manifest are separate commits. Preserve partial/visible
+            # results on publication uncertainty; never report rollback or retry.
+            raise ImageError(f"image publication incomplete; output retained at {args.output}: {error}") from error
         shutil.rmtree(args.output, ignore_errors=True)
         raise
 
