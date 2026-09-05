@@ -1,0 +1,182 @@
+name: G1 signature observation repair validation
+
+on:
+  push:
+    branches: [ops/g1-integrity-repair-builder-20260905]
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out immutable patch driver
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: driver
+          persist-credentials: false
+      - name: Check out exact published parent
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: c66a36eeea10a1d11ba1ffa47e91d4a1c74f32b3
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify patch bytes and candidate tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -I - <<'PY'
+          import base64, gzip, hashlib, os
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE']) / 'driver/build-support/g1-signature-patch'
+          encoded = ''.join((root / f'part-{i}.b64').read_text().strip() for i in range(2))
+          packed = base64.b64decode(encoded, validate=True)
+          assert hashlib.sha256(packed).hexdigest() == 'ccf8a1f04a092b536f840571121643bbcf5203f6ac1fef1406cd2d66fc21679c'
+          patch = gzip.decompress(packed)
+          assert hashlib.sha256(patch).hexdigest() == '09c6f3dd918fb84e43b3467476145fad17be9e107adbce9c5d56d948c9a8645b'
+          (Path(os.environ['RUNNER_TEMP']) / 'signature.patch').write_bytes(patch)
+          PY
+          cd "$GITHUB_WORKSPACE/candidate"
+          actual="$(git --no-replace-objects rev-parse HEAD)"
+          test "$actual" = c66a36eeea10a1d11ba1ffa47e91d4a1c74f32b3
+          git apply --unidiff-zero --check --index "$RUNNER_TEMP/signature.patch"
+          git apply --unidiff-zero --index "$RUNNER_TEMP/signature.patch"
+          git diff --cached --check
+          actual="$(git --no-replace-objects write-tree)"
+          test "$actual" = 4e6dcc49789766f176fa2318c5ba4a684ebb0c97
+          git -c user.name=g1-source-validation -c user.email=g1-source-validation@invalid commit -m 'Temporary signature-observation source validation'
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Run 130 focused regressions and document gates
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest \
+            tools.tests.test_owner_open_workflow_exact_head \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+            tools.tests.test_verify_g1_repository_closure \
+            tools.tests.test_verify_g1_gap_routing \
+            tools.tests.test_owner_open_broker_module_documentation \
+            tools.tests.test_repository_governance_baseline \
+            tools.tests.test_verify_g1_review_index \
+            tools.tests.test_verify_owner_open_r5_governance_readiness -v 2>&1 | tee "$RUNNER_TEMP/signature-validation.log"
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_module_documentation.py
+          python3 tools/verify_g1_repository_closure.py
+          python3 tools/verify_g1_gap_routing.py
+          actual="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$actual" = 4e6dcc49789766f176fa2318c5ba4a684ebb0c97
+          state="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          test -z "$state"
+      - name: Export bound source blobs without credentials
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -I - <<'PY'
+          import base64, json, os, subprocess
+          from pathlib import Path
+          tree = '4e6dcc49789766f176fa2318c5ba4a684ebb0c97'
+          paths = ['docs/modules/MOD-EVIDENCE.md', 'tools/tests/test_verify_owner_open_r5_governance_readiness.py', 'tools/verify-owner-open-r5-governance-readiness.py']
+          entries = []
+          for path in paths:
+              raw = subprocess.check_output(['/usr/bin/git', '--no-replace-objects', 'ls-tree', '-z', tree, '--', path])
+              metadata, name = raw[:-1].split(b'\t', 1)
+              mode, kind, sha = metadata.decode().split()
+              assert name.decode() == path and kind == 'blob'
+              data = subprocess.check_output(['/usr/bin/git', '--no-replace-objects', 'cat-file', 'blob', sha])
+              entries.append({'path': path, 'mode': mode, 'sha': sha, 'content': base64.b64encode(data).decode()})
+          (Path(os.environ['RUNNER_TEMP']) / 'signature-objects.json').write_text(json.dumps(entries) + '\n')
+          PY
+      - name: Retain validation log and source object data
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-signature-source-artifacts
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/signature-validation.log
+            ${{ runner.temp }}/signature-objects.json
+
+  stage-objects:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download same-run source data without checking out or executing candidate code
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: g1-signature-source-artifacts
+          path: ${{ runner.temp }}/signature-data
+      - name: Verify fixed blob hashes and stage only the expected Git tree
+        env:
+          OBJECT_STAGING_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          import base64, hashlib, json, os, urllib.request
+          from pathlib import Path
+          expected = {
+              'docs/modules/MOD-EVIDENCE.md': ('100644', '549d2280045290747347e2582ed12255529cd355'),
+              'tools/tests/test_verify_owner_open_r5_governance_readiness.py': ('100644', 'ea262d55a25b4f7c968702de8ca18fa848eed0a9'),
+              'tools/verify-owner-open-r5-governance-readiness.py': ('100755', 'a60907fc634532603040676c11a6d4c92c6232de'),
+          }
+          raw = (Path(os.environ['RUNNER_TEMP']) / 'signature-data/signature-objects.json').read_bytes()
+          assert len(raw) < 1000000
+          data = json.loads(raw)
+          assert isinstance(data, list) and len(data) == 3
+          assert {item['path'] for item in data} == set(expected)
+          def post(kind, payload):
+              assert kind in {'blobs', 'trees'}
+              request = urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/git/' + kind,
+                  data=json.dumps(payload).encode(), method='POST', headers={
+                  'Authorization': 'Bearer ' + os.environ['OBJECT_STAGING_TOKEN'],
+                  'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json',
+                  'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+          entries = []
+          for item in data:
+              mode, sha = expected[item['path']]
+              assert item['mode'] == mode and item['sha'] == sha
+              content = base64.b64decode(item['content'], validate=True)
+              assert hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest() == sha
+              result = post('blobs', {'content': item['content'], 'encoding': 'base64'})
+              assert result['sha'] == sha
+              entries.append({'path': item['path'], 'mode': mode, 'type': 'blob', 'sha': sha})
+          result = post('trees', {'base_tree': 'd201342b00d8cdb457078583e91c6d0f0cb2e74e', 'tree': entries})
+          assert result['sha'] == '4e6dcc49789766f176fa2318c5ba4a684ebb0c97'
+          report = {'base_commit': 'c66a36eeea10a1d11ba1ffa47e91d4a1c74f32b3', 'tree': result['sha'],
+              'focused_tests_passed': 130, 'new_signature_tests': 12, 'independent_review': False,
+              'target_evidence': False, 'integration_authorized': False, 'public_release': False,
+              'ref_updated': False, 'commit_created': False}
+          (Path(os.environ['RUNNER_TEMP']) / 'signature-staged-tree.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, indent=2))
+          PY
+      - name: Retain source-only staging result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-signature-staged-tree
+          retention-days: 7
+          if-no-files-found: error
+          path: ${{ runner.temp }}/signature-staged-tree.json
