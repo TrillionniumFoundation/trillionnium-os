@@ -1,0 +1,27 @@
+name: G1 isolated Ubuntu 22.04 runner allocation probe
+
+on:
+  push:
+    branches: [ops/g1-job-startup-validation-20260905]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-runner-pool-probe-22
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    steps:
+      - name: Record runner allocation only
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'G1_RUNNER_POOL_PROBE=ALLOCATED\n'
+          printf 'repository=%s\n' "$GITHUB_REPOSITORY"
+          printf 'sha=%s\n' "$GITHUB_SHA"
+          test "$GITHUB_REPOSITORY" = 'TrillionniumFoundation/trillionnium-os'
+          test "$GITHUB_REF_NAME" = 'ops/g1-job-startup-validation-20260905'
