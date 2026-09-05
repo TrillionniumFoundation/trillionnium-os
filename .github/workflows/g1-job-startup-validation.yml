@@ -1,0 +1,177 @@
+name: G1 job startup blocker validation
+
+on:
+  push:
+    branches: [ops/g1-job-startup-validation-20260905]
+
+permissions:
+  contents: read
+
+env:
+  BASE: c962f77116b1e973a583dde37a56e242451b1481
+  BASE_TREE: a8eff8627e239353e29e061ceba5ba9bd75caac7
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Prepare exact base and paired regression subjects
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" != 0
+          test "$(git --no-replace-objects rev-parse "$BASE^{tree}")" = "$BASE_TREE"
+          echo '8673d2fb2c6435daf40e37a31278cfc9837959c71afd0297a5e69251332b7c34  repair/job-startup.patch' | sha256sum --check
+          mkdir -m 0700 "$RUNNER_TEMP/job-startup-results"
+          git worktree add --detach "$RUNNER_TEMP/job-fixed" "$BASE"
+          git worktree add --detach "$RUNNER_TEMP/job-baseline" "$BASE"
+          git -C "$RUNNER_TEMP/job-fixed" apply --check "$GITHUB_WORKSPACE/repair/job-startup.patch"
+          git -C "$RUNNER_TEMP/job-fixed" apply "$GITHUB_WORKSPACE/repair/job-startup.patch"
+          python3 -I - <<'PY'
+          import os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          relative = 'crates/trillionnium-owner-open-job-runtime/src/manager.rs'
+          fixed = (root / 'job-fixed' / relative).read_text()
+          begin = '    // BEGIN duplicate-start lock-scope regression\n'
+          end = '    // END duplicate-start lock-scope regression\n'
+          assert fixed.count(begin) == fixed.count(end) == 1
+          regression = begin + fixed.split(begin, 1)[1].split(end, 1)[0] + end + '\n'
+          path = root / 'job-baseline' / relative
+          baseline = path.read_text()
+          needle = '    #[test]\n    fn runtime_observation_sequence_exhaustion_fails_closed_without_a_phantom_event()'
+          assert baseline.count(needle) == 1
+          path.write_text(baseline.replace(needle, regression + needle, 1))
+          PY
+          rustc -Vv | tee "$RUNNER_TEMP/job-startup-results/toolchain.txt"
+          cargo -V | tee -a "$RUNNER_TEMP/job-startup-results/toolchain.txt"
+      - name: Require the original implementation to fail the lock regression
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/job-startup-target
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/job-baseline"
+          set +e
+          timeout 600 cargo test --locked -p trillionnium-owner-open-job-runtime --lib manager::tests::duplicate_start_releases_running_map_before_startup_wait -- --exact --nocapture > "$RUNNER_TEMP/job-startup-results/baseline.log" 2>&1
+          code=$?
+          set -e
+          cat "$RUNNER_TEMP/job-startup-results/baseline.log"
+          test "$code" = 101
+          grep -F 'duplicate start held the global map across its startup wait' "$RUNNER_TEMP/job-startup-results/baseline.log"
+          grep -F 'test result: FAILED. 0 passed; 1 failed;' "$RUNNER_TEMP/job-startup-results/baseline.log"
+      - name: Format and validate the patched product source
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/job-startup-target
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/job-fixed"
+          rustfmt --edition 2024 crates/trillionnium-owner-open-job-runtime/src/manager.rs
+          rustfmt --edition 2024 --check crates/trillionnium-owner-open-job-runtime/src/manager.rs
+          cargo test --locked -p trillionnium-owner-open-job-runtime --all-targets 2>&1 | tee "$RUNNER_TEMP/job-startup-results/job-runtime.log"
+          cargo test --locked --all-targets 2>&1 | tee "$RUNNER_TEMP/job-startup-results/product-source.log"
+          cargo clippy --locked --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/job-startup-results/clippy.log"
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_module_documentation.py
+          python3 tools/verify_g1_repository_closure.py --json > "$RUNNER_TEMP/job-startup-results/topology.json"
+          python3 -m unittest tools.tests.test_owner_open_broker_module_documentation -v 2>&1 | tee "$RUNNER_TEMP/job-startup-results/module-docs.log"
+          git diff --exit-code -- Cargo.lock planned/Cargo.lock docs/machine docs/generated .github
+          git diff --check
+          git diff --binary > "$RUNNER_TEMP/job-startup-results/final.patch"
+          git add crates/trillionnium-owner-open-job-runtime/src/manager.rs docs/modules/MOD-JOB-RUNTIME.md
+          python3 -I - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          paths = ['crates/trillionnium-owner-open-job-runtime/src/manager.rs', 'docs/modules/MOD-JOB-RUNTIME.md']
+          changed = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()
+          assert changed == paths, changed
+          files = []
+          for path in paths:
+              data = Path(path).read_bytes()
+              files.append({'path': path, 'content': data.decode('utf-8'), 'sha256': hashlib.sha256(data).hexdigest()})
+          value = {'base': os.environ['BASE'], 'base_tree': os.environ['BASE_TREE'], 'tree': subprocess.check_output(['git','write-tree'], text=True).strip(), 'files': files}
+          (Path(os.environ['RUNNER_TEMP']) / 'job-startup-results' / 'source-files.json').write_text(json.dumps(value))
+          PY
+      - name: Retain all source diagnostics, including red baseline
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: job-startup-source
+          path: ${{ runner.temp }}/job-startup-results
+          if-no-files-found: error
+          retention-days: 7
+
+  materialize:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download this run's validated bytes without a candidate checkout
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: job-startup-source
+          path: ${{ runner.temp }}/validated-source
+      - name: Create immutable Git objects only; never update a ref
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib, json, os, urllib.request
+          from pathlib import Path
+          repository = 'TrillionniumFoundation/trillionnium-os'
+          assert os.environ['GITHUB_REPOSITORY'] == repository
+          path = Path(os.environ['RUNNER_TEMP']) / 'validated-source' / 'source-files.json'
+          raw = path.read_bytes()
+          assert len(raw) <= 1024 * 1024
+          value = json.loads(raw)
+          assert value['base'] == os.environ['BASE']
+          assert value['base_tree'] == os.environ['BASE_TREE']
+          paths = ['crates/trillionnium-owner-open-job-runtime/src/manager.rs', 'docs/modules/MOD-JOB-RUNTIME.md']
+          assert [entry['path'] for entry in value['files']] == paths
+          def post(endpoint, payload):
+              request = urllib.request.Request('https://api.github.com/repos/' + repository + '/git/' + endpoint, data=json.dumps(payload).encode(), headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'}, method='POST')
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+          elements = []
+          for entry in value['files']:
+              data = entry['content'].encode('utf-8')
+              assert hashlib.sha256(data).hexdigest() == entry['sha256']
+              blob = post('blobs', {'content': entry['content'], 'encoding': 'utf-8'})
+              assert blob['sha'] == hashlib.sha1(('blob ' + str(len(data)) + '\0').encode() + data).hexdigest()
+              elements.append({'path': entry['path'], 'mode': '100644', 'type': 'blob', 'sha': blob['sha']})
+          tree = post('trees', {'base_tree': value['base_tree'], 'tree': elements})
+          assert tree['sha'] == value['tree']
+          message = 'fix(job-runtime): bound startup waits and release duplicate-start map lock\n\nPreserve accepted-job ownership on observation timeout. Add a real-child lock-scope regression and pending/notification/terminal tests. The original base fails the specific lock regression; patched product tests, strict Clippy and module documentation checks pass in workflow run ' + os.environ['GITHUB_RUN_ID'] + '.\n\nNo gap promotion, target evidence, main integration, independent approval or release claim. Full exact-head qualification remains required.\n\nSigned-off-by: OpenAI Codex <noreply@openai.com>'
+          commit = post('commits', {'message': message, 'tree': tree['sha'], 'parents': [value['base']]})
+          output = {'commit': commit['sha'], 'tree': tree['sha'], 'parent': value['base'], 'run': os.environ['GITHUB_RUN_ID'], 'ref_updated': False, 'zero_gap': False, 'public_release': False}
+          Path('job-startup-commit.json').write_text(json.dumps(output, indent=2) + '\n')
+          print(json.dumps(output))
+          PY
+      - name: Retain materialized object identity
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: job-startup-commit
+          path: ${{ runner.temp }}/job-startup-commit.json
+          if-no-files-found: error
+          retention-days: 7

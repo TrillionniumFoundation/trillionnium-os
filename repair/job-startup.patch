@@ -1,0 +1,273 @@
+diff --git a/crates/trillionnium-owner-open-job-runtime/src/manager.rs b/crates/trillionnium-owner-open-job-runtime/src/manager.rs
+index d17e8f1..9cc64a3 100644
+--- a/crates/trillionnium-owner-open-job-runtime/src/manager.rs
++++ b/crates/trillionnium-owner-open-job-runtime/src/manager.rs
+@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
+ use std::sync::atomic::{AtomicUsize, Ordering};
+ use std::sync::{Arc, Condvar, Mutex, MutexGuard};
+ use std::thread;
++use std::time::{Duration, Instant};
+ 
+ use serde_json::{Value, json};
+ use sha2::{Digest, Sha256};
+@@ -20,6 +21,8 @@ use crate::{
+     StartDisposition,
+ };
+ 
++// One startup observation wait is finite. Expiry does not cancel or restart a job.
++const STARTUP_WAIT_TIMEOUT: Duration = Duration::from_secs(30);
+ const START_SHARD_COUNT: usize = 64;
+ const START_SHARD_HASH_VERSION: u8 = 1;
+ const START_SHARD_DOMAIN: &[u8] = b"owner-open-job-manager-start";
+@@ -112,6 +115,14 @@ impl StartupGate {
+     }
+ 
+     fn wait(&self) -> Result<()> {
++        self.wait_for(STARTUP_WAIT_TIMEOUT)
++    }
++
++    fn wait_for(&self, timeout: Duration) -> Result<()> {
++        // Start the budget before mutex acquisition. Spurious notifications do
++        // not refresh it. Like all std mutex/condvar waits, this cannot preempt
++        // a stalled mutex owner, OS scheduling or a blocked kernel operation.
++        let started = Instant::now();
+         let mut state = self
+             .state
+             .lock()
+@@ -119,10 +130,20 @@ impl StartupGate {
+         loop {
+             match &*state {
+                 StartupState::Pending => {
++                    let remaining = timeout.saturating_sub(started.elapsed());
++                    if remaining.is_zero() {
++                        // Only this observer stops waiting. The accepted job,
++                        // capacity permit and startup state retain their owner;
++                        // no signal, terminal, retry or redispatch is inferred.
++                        return Err(JobRuntimeError::Control(
++                            "job startup wait expired; startup outcome remains uncertain".to_string(),
++                        ));
++                    }
+                     state = self
+                         .changed
+-                        .wait(state)
+-                        .map_err(|_| JobRuntimeError::StatePoisoned)?;
++                        .wait_timeout(state, remaining)
++                        .map_err(|_| JobRuntimeError::StatePoisoned)?
++                        .0;
+                 }
+                 StartupState::Ready => return Ok(()),
+                 StartupState::Failed(error) => {
+@@ -258,7 +279,11 @@ impl JobManager {
+         // unrelated keys can start concurrently while one key remains
+         // linearizable.
+         let _start_guard = self.start_guard(&request.key)?;
+-        if let Some(running) = self.running()?.get(&request.key).cloned() {
++        // A successful if-let arm retains scrutinee temporaries even in
++        // edition 2024. Drop the map guard in its own statement, before the
++        // startup barrier or any registry/journal observation below.
++        let existing_running = self.running()?.get(&request.key).cloned();
++        if let Some(running) = existing_running {
+             if running.request != request.request {
+                 return Err(JobRuntimeError::JobConflict);
+             }
+@@ -2536,6 +2561,91 @@ mod tests {
+         assert!(!manager.has_live_or_pending_jobs());
+     }
+ 
++    // BEGIN duplicate-start lock-scope regression
++    #[test]
++    fn duplicate_start_releases_running_map_before_startup_wait() {
++        use std::sync::mpsc;
++        use std::time::{Duration, Instant};
++
++        let manager = JobManager::new(
++            JobRuntimeConfig::development_unsafe(),
++            JobJournal::memory_only(),
++        )
++        .expect("fixture manager");
++        let key = rollback_test_key();
++        let mut request = stale_start_request(
++            key.clone(),
++            rollback_test_request(),
++            "duplicate-start-lock-scope",
++        );
++        // A real local child remains alive on stdin; no timing-only sleep is
++        // used to infer that the start operation has published its owner.
++        request.invocation = JobInvocation::Command {
++            command: "IFS= read -r _".to_string(),
++        };
++        manager.start(request.clone()).expect("start fixture job");
++        let running = manager
++            .running()
++            .expect("running map")
++            .get(&key)
++            .cloned()
++            .expect("fixture running owner");
++        struct Cleanup(Arc<ProcessControl>);
++        impl Drop for Cleanup {
++            fn drop(&mut self) {
++                let _ = self.0.kill(libc::SIGKILL);
++            }
++        }
++        let cleanup = Cleanup(Arc::clone(&running.control));
++        let startup_guard = running.startup.state.lock().expect("hold startup gate");
++        let original_owners = Arc::strong_count(&running);
++        let clone = manager.clone();
++        let (sender, receiver) = mpsc::sync_channel(1);
++        let worker = std::thread::spawn(move || {
++            let result = clone.start(request);
++            let _ = sender.send(result);
++        });
++
++        // The extra Arc acknowledges that duplicate start cloned the live
++        // owner; until we release the gate, it cannot finish waiting. This
++        // avoids a false pass from probing the map before the worker arrives.
++        let deadline = Instant::now() + Duration::from_secs(2);
++        while Arc::strong_count(&running) <= original_owners && Instant::now() < deadline {
++            std::thread::yield_now();
++        }
++        let duplicate_observed = Arc::strong_count(&running) > original_owners;
++        let deadline = Instant::now() + Duration::from_secs(1);
++        let mut map_available = false;
++        while Instant::now() < deadline {
++            if let Ok(map) = manager.inner.running.try_lock() {
++                map_available = map.contains_key(&key);
++                break;
++            }
++            std::thread::yield_now();
++        }
++
++        // Always release both barriers and collect the child before asserting,
++        // including when replaying this regression against the defective base.
++        drop(startup_guard);
++        let result = receiver.recv_timeout(Duration::from_secs(2));
++        if result.is_ok() {
++            worker.join().expect("duplicate worker exits");
++        }
++        drop(cleanup);
++        let deadline = Instant::now() + Duration::from_secs(3);
++        while manager.has_live_or_pending_jobs() && Instant::now() < deadline {
++            std::thread::sleep(Duration::from_millis(5));
++        }
++        assert!(duplicate_observed, "duplicate never reached the live-owner branch");
++        assert!(map_available, "duplicate start held the global map across its startup wait");
++        assert_eq!(
++            result.expect("bounded duplicate result").expect("existing live job").disposition,
++            StartDisposition::ExistingLive
++        );
++        assert!(!manager.has_live_or_pending_jobs(), "fixture cleanup did not converge");
++    }
++    // END duplicate-start lock-scope regression
++
+     #[test]
+     fn runtime_observation_sequence_exhaustion_fails_closed_without_a_phantom_event() {
+         let manager = JobManager::new(
+@@ -2712,4 +2822,67 @@ mod concurrency_tests {
+         gate.ready().expect("late ready is a harmless no-op");
+         assert!(matches!(gate.wait(), Err(super::JobRuntimeError::NotLive)));
+     }
++
++    #[test]
++    fn startup_wait_expiry_preserves_owner_and_allows_later_ready() {
++        let gate = StartupGate::new();
++        assert!(matches!(
++            gate.wait_for(Duration::ZERO),
++            Err(super::JobRuntimeError::Control(message))
++                if message.contains("startup outcome remains uncertain")
++        ));
++        assert!(matches!(
++            *gate.state.lock().expect("startup state"),
++            super::StartupState::Pending
++        ));
++        gate.ready().expect("actual startup completes later");
++        gate.wait_for(Duration::ZERO).expect("ready is not a timeout");
++    }
++
++    #[test]
++    fn repeated_startup_notifications_do_not_renew_wait_budget() {
++        let gate = std::sync::Arc::new(StartupGate::new());
++        let clone = std::sync::Arc::clone(&gate);
++        let (sender, receiver) = mpsc::sync_channel(1);
++        let worker = std::thread::spawn(move || {
++            let _ = sender.send(clone.wait_for(Duration::from_millis(20)));
++        });
++        let deadline = std::time::Instant::now() + Duration::from_secs(2);
++        let result = loop {
++            gate.changed.notify_all();
++            match receiver.recv_timeout(Duration::from_millis(1)) {
++                Ok(result) => break Some(result),
++                Err(mpsc::RecvTimeoutError::Timeout)
++                    if std::time::Instant::now() < deadline => {}
++                Err(_) => break None,
++            }
++        };
++        // Release a faulty waiter too, so a failed regression cannot leak it.
++        gate.ready().expect("release any remaining waiter");
++        worker.join().expect("waiter exits");
++        assert!(matches!(
++            result,
++            Some(Err(super::JobRuntimeError::Control(message)))
++                if message.contains("startup wait expired")
++        ));
++    }
++
++    #[test]
++    fn startup_wait_expiry_does_not_hide_later_failure_or_terminal() {
++        let failed = StartupGate::new();
++        assert!(failed.wait_for(Duration::ZERO).is_err());
++        failed.fail("durable start failed").expect("record real failure");
++        assert!(matches!(
++            failed.wait_for(Duration::ZERO),
++            Err(super::JobRuntimeError::Io(message)) if message.contains("durable start failed")
++        ));
++        let terminal = StartupGate::new();
++        assert!(terminal.wait_for(Duration::ZERO).is_err());
++        terminal.terminal().expect("record actual terminal");
++        terminal.ready().expect("late ready remains a no-op");
++        assert!(matches!(
++            terminal.wait_for(Duration::ZERO),
++            Err(super::JobRuntimeError::NotLive)
++        ));
++    }
+ }
+diff --git a/docs/modules/MOD-JOB-RUNTIME.md b/docs/modules/MOD-JOB-RUNTIME.md
+index 6ed21dc..0ff21f0 100644
+--- a/docs/modules/MOD-JOB-RUNTIME.md
++++ b/docs/modules/MOD-JOB-RUNTIME.md
+@@ -102,6 +102,36 @@ Only this module may perform authoritative writes for its state families. Read m
+ 
+ Per-key operations are linearized while unrelated keys may progress concurrently. Process spawn, external I/O, fsync and provider waits are slow paths and must not execute under a global registry lock. At capacity, admission is rejected before starting a process or publishing an accepted effect.
+ 
++
++### Startup observation and global-lock scope
++
++`JobManager::start` copies an existing `RunningJob` owner in a separate statement
++before it waits on `StartupGate` or consults the registry/journal. A temporary
++running-map guard in a successful `if let` arm would otherwise survive across
++those operations, including in Rust edition 2024. The global map protects only
++lookup/publication/removal; per-start-shard and per-job lifecycle ordering remain
++unchanged. This change does not increase capacity or make a shard lock timed.
++
++Each startup observation wait has one monotonic 30-second budget. Condition
++variable notifications recheck the actual state and use the remaining budget;
++repeated or spurious notifications cannot renew it. A still-pending gate returns
++`JobRuntimeError::Control` with an explicit uncertain-startup diagnostic. The
++waiter does not change the gate, release the job's admission permit, append a
++terminal, signal a process, cancel a start or authorize a retry. A later genuine
++Ready, Failed or Terminal transition retains its existing meaning. For effectful
++controls this wait precedes `begin_control`, so expiry admits no control effect.
++
++This is a bound on condition-variable waiting, not a hard real-time bound on the
++whole API. Mutex ownership, start-shard/lifecycle locks, filesystem operations and
++OS scheduling are not preempted by this change. Installed cancellation latency,
++contention and recovery remain L2/L5 qualification requirements.
++
++The manager's permanent tests cover global-map availability while a duplicate
++waits, finite pending waits, repeated notifications, and real failure/terminal
++transitions after an observer expires. The map regression uses a real local
++stdin-blocked child and an observed owner reference, releases its barriers and
++cleans up the child before asserting, including on the defective base.
++
+ ## 8. Effect, cancellation and uncertainty semantics
+ 
+ Automatic redispatch: **forbidden**.
