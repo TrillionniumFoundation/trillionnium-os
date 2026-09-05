@@ -63,6 +63,38 @@ def bool_field(value: Any, *path: str) -> bool | None:
     return current if isinstance(current, bool) else None
 
 
+def commit_verification(commit: Any, expected_head: str) -> bool | None:
+    """Observe only a strictly typed verification bound to the exact commit.
+
+    REST /commits/{sha} nests verification under ``commit``; the Git Database
+    /git/commits/{sha} response puts it at the top level. Both envelopes carry
+    ``sha``. Missing identity, malformed fields or contradictory representations
+    are unknown, never a successful signed-head observation.
+    """
+    if not isinstance(commit, dict) or commit.get("sha") != expected_head:
+        return None
+    representations: list[Any] = []
+    if "verification" in commit:
+        representations.append(commit["verification"])
+    if "commit" in commit:
+        nested = commit["commit"]
+        if not isinstance(nested, dict):
+            return None
+        if "verification" in nested:
+            representations.append(nested["verification"])
+    if not representations:
+        return None
+    values: list[bool] = []
+    for verification in representations:
+        if not isinstance(verification, dict):
+            return None
+        verified = verification.get("verified")
+        if not isinstance(verified, bool):
+            return None
+        values.append(verified)
+    return values[0] if all(value == values[0] for value in values) else None
+
+
 def latest_reviews(reviews: Any) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     if not isinstance(reviews, list):
@@ -258,10 +290,7 @@ def evaluate(
         unresolved_threads = None
 
     require_signed = policy.get("require_signed_commit") is True
-    if isinstance(commit, dict):
-        verified = bool_field(commit, "verification", "verified")
-    else:
-        verified = None
+    verified = commit_verification(commit, expected_head)
     signed_ok: bool | None = verified if require_signed else True
 
     merge_state = pull.get("mergeable_state")

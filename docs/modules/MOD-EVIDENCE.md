@@ -248,6 +248,12 @@ Standard deployment sequence:
 6. Drain, fence and retain terminal observations during shutdown.
 7. Preserve the exact evidence subject for every promotion decision.
 
+Signature observations accept both GitHub REST commit envelopes and Git
+Database commit envelopes only when their top-level `sha` equals the expected
+head. A strict `verified: false` is observed-but-unsatisfied; missing identity,
+malformed booleans or contradictory envelope representations are unobserved,
+never successful. This normalization grants no integration or release authority.
+
 ## 17. Open gaps and exit criteria
 
 Open machine gaps: `GAP-DOC-SINGLE-TRUTH-001`, `GAP-GOVERNANCE-001`, `GAP-FAULT-MATRIX-001`, `GAP-RELEASE-001`.

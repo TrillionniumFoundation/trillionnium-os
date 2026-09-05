@@ -71,7 +71,7 @@ class GovernanceReadinessTest(unittest.TestCase):
             ]
         }
         threads = [{"isResolved": True}]
-        commit = {"verification": {"verified": True}}
+        commit = {"sha": HEAD, "verification": {"verified": True}}
         comparison = {"status": "ahead"}
         return branch, protection, pull, reviews, checks, threads, commit, comparison
 
@@ -184,6 +184,91 @@ class GovernanceReadinessTest(unittest.TestCase):
         )
         self.assertIn("UNOBSERVED:no_unresolved_review_threads", result["blockers"])
         self.assertIn("UNOBSERVED:signed_exact_head", result["blockers"])
+
+
+    def observe_commit(self, snapshot):
+        result = self.evaluate(mutate=lambda values: values.__setitem__(6, snapshot))
+        for key in ("readiness_claimed", "ready_for_protected_integration",
+                    "promotion_authorized", "public_release"):
+            self.assertIs(result[key], False)
+        self.assertEqual(result["decision"], "NO_INTEGRATION_AUTHORITY")
+        return result
+
+    def test_rest_commit_response_observes_nested_verification(self):
+        result = self.observe_commit({"sha": HEAD, "commit": {
+            "verification": {"verified": True, "reason": "valid"}}})
+        self.assertIs(result["facts"]["commit_signature_verified"], True)
+        self.assertEqual(result["blockers"], [])
+
+    def test_rest_unsigned_response_is_unsatisfied_not_unobserved(self):
+        result = self.observe_commit({"sha": HEAD, "commit": {
+            "verification": {"verified": False, "reason": "unsigned"}}})
+        self.assertIs(result["facts"]["commit_signature_verified"], False)
+        self.assertIn("UNSATISFIED:signed_exact_head", result["blockers"])
+        self.assertNotIn("UNOBSERVED:signed_exact_head", result["blockers"])
+
+    def test_git_database_response_observes_flat_verification(self):
+        result = self.observe_commit({"sha": HEAD, "verification": {"verified": True}})
+        self.assertIs(result["facts"]["commit_signature_verified"], True)
+
+    def test_verification_for_another_commit_cannot_qualify_head(self):
+        for value in ({"verification": {"verified": True}},
+                      {"commit": {"verification": {"verified": True}}}):
+            with self.subTest(value=value):
+                result = self.observe_commit({"sha": BASE, **value})
+                self.assertIsNone(result["facts"]["commit_signature_verified"])
+                self.assertIn("UNOBSERVED:signed_exact_head", result["blockers"])
+
+    def test_verification_without_commit_identity_is_unknown(self):
+        result = self.observe_commit({"verification": {"verified": True}})
+        self.assertIsNone(result["facts"]["commit_signature_verified"])
+        self.assertIn("UNOBSERVED:signed_exact_head", result["blockers"])
+
+    def test_malformed_commit_identity_cannot_be_coerced(self):
+        for sha in (None, 1, [], HEAD.upper(), HEAD + "\n", "a" * 39):
+            with self.subTest(sha=sha):
+                result = self.observe_commit({"sha": sha, "verification": {"verified": True}})
+                self.assertIsNone(result["facts"]["commit_signature_verified"])
+
+    def test_conflicting_verification_representations_are_unknown(self):
+        for flat, nested in ((True, False), (False, True)):
+            result = self.observe_commit({"sha": HEAD, "verification": {"verified": flat},
+                "commit": {"verification": {"verified": nested}}})
+            self.assertIsNone(result["facts"]["commit_signature_verified"])
+            self.assertIn("UNOBSERVED:signed_exact_head", result["blockers"])
+
+    def test_matching_representations_preserve_boolean_observation(self):
+        for verified in (True, False):
+            result = self.observe_commit({"sha": HEAD, "verification": {"verified": verified},
+                "commit": {"verification": {"verified": verified}}})
+            self.assertIs(result["facts"]["commit_signature_verified"], verified)
+
+    def test_non_boolean_verification_is_not_truthy_success(self):
+        for verified in (1, 0, "true", "false", [], None, {"enabled": True}):
+            for nested in (False, True):
+                with self.subTest(verified=verified, nested=nested):
+                    value = {"verification": {"verified": verified}}
+                    result = self.observe_commit({"sha": HEAD, **({"commit": value} if nested else value)})
+                    self.assertIsNone(result["facts"]["commit_signature_verified"])
+
+    def test_malformed_duplicate_representation_cannot_fall_back_to_true(self):
+        for nested in (None, [], "bad", {"verification": None},
+                       {"verification": {"verified": "true"}}):
+            with self.subTest(nested=nested):
+                result = self.observe_commit({"sha": HEAD, "verification": {"verified": True},
+                    "commit": nested})
+                self.assertIsNone(result["facts"]["commit_signature_verified"])
+
+    def test_missing_verification_is_unknown(self):
+        for snapshot in ({"sha": HEAD}, {"sha": HEAD, "commit": {}}, None, []):
+            with self.subTest(snapshot=snapshot):
+                result = self.observe_commit(snapshot)
+                self.assertIn("UNOBSERVED:signed_exact_head", result["blockers"])
+
+    def test_malformed_flat_representation_cannot_fall_back_to_nested_true(self):
+        result = self.observe_commit({"sha": HEAD, "verification": None,
+            "commit": {"verification": {"verified": True}}})
+        self.assertIsNone(result["facts"]["commit_signature_verified"])
 
 
 if __name__ == "__main__":
