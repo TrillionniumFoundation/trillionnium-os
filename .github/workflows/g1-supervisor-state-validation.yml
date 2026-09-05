@@ -1,0 +1,40 @@
+name: G1 Supervisor state source validation
+
+on:
+  push:
+    branches: [ops/g1-supervisor-state-validation-20260905]
+
+permissions:
+  contents: read
+
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the pinned source without persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: beb13f9b9ba1c2823fdcfe7710bd4f68915757bf
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export Git objects only
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git --no-replace-objects rev-parse HEAD)"
+          test "$actual" = beb13f9b9ba1c2823fdcfe7710bd4f68915757bf
+          state="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          test -z "$state"
+          git bundle create "$RUNNER_TEMP/g1-source-beb13f9b.bundle" --all HEAD
+          git bundle verify "$RUNNER_TEMP/g1-source-beb13f9b.bundle"
+          sha256sum "$RUNNER_TEMP/g1-source-beb13f9b.bundle" > "$RUNNER_TEMP/g1-source-beb13f9b.sha256"
+      - name: Retain source-only snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-source-beb13f9b
+          retention-days: 3
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/g1-source-beb13f9b.bundle
+            ${{ runner.temp }}/g1-source-beb13f9b.sha256
