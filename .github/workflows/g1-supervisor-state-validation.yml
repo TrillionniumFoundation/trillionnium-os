@@ -44,6 +44,9 @@ jobs:
           patch = gzip.decompress(packed)
           assert hashlib.sha256(patch).hexdigest() == '9461358c1d39f190f917eb98f06053eff1e2b7dbc72448c4c5ec6258ebde64a6'
           (Path(os.environ['RUNNER_TEMP']) / 'supervisor.patch').write_bytes(patch)
+          fix = (root / 'fixture-fix.patch').read_bytes()
+          assert hashlib.sha256(fix).hexdigest() == 'a6f1c1bba6c073ab3cc7610610ad10c6c82c1188657ed6ca238f3949e44825d0'
+          (Path(os.environ['RUNNER_TEMP']) / 'fixture-fix.patch').write_bytes(fix)
           PY
           cd "$GITHUB_WORKSPACE/candidate"
           actual="$(git --no-replace-objects rev-parse HEAD)"
@@ -52,9 +55,13 @@ jobs:
           test -z "$state"
           git apply --unidiff-zero --check --index "$RUNNER_TEMP/supervisor.patch"
           git apply --unidiff-zero --index "$RUNNER_TEMP/supervisor.patch"
-          git diff --cached --check
           actual="$(git --no-replace-objects write-tree)"
           test "$actual" = 5da7c498f95647f7afd343d6c3a28bb199f3260e
+          git apply --unidiff-zero --check --index "$RUNNER_TEMP/fixture-fix.patch"
+          git apply --unidiff-zero --index "$RUNNER_TEMP/fixture-fix.patch"
+          git diff --cached --check
+          actual="$(git --no-replace-objects write-tree)"
+          test "$actual" = 599a89e3c5cd6df5ad46b0998893bb7ae6e86247
           git -c user.name=g1-source-validation -c user.email=g1-source-validation@invalid commit -m 'Temporary Supervisor source-only validation subject'
       - name: Set up Python 3.13
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -65,6 +72,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test "$(id -u)" != 0
           {
             python3 -m unittest \
               tools.tests.test_owner_open_workflow_exact_head \
@@ -91,7 +99,7 @@ jobs:
             python3 tools/verify_g1_gap_routing.py
           } 2>&1 | tee "$RUNNER_TEMP/supervisor-validation.log"
           actual="$(git --no-replace-objects rev-parse HEAD^{tree})"
-          test "$actual" = 5da7c498f95647f7afd343d6c3a28bb199f3260e
+          test "$actual" = 599a89e3c5cd6df5ad46b0998893bb7ae6e86247
           state="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
           test -z "$state"
       - name: Repeat crash-session and Supervisor tests ten times
@@ -112,7 +120,7 @@ jobs:
           from pathlib import Path
           def git(*args):
               return subprocess.check_output(['/usr/bin/git', '--no-replace-objects', *args])
-          tree = '5da7c498f95647f7afd343d6c3a28bb199f3260e'
+          tree = '599a89e3c5cd6df5ad46b0998893bb7ae6e86247'
           assert git('rev-parse', 'HEAD^{tree}').decode().strip() == tree
           assert not git('status', '--porcelain=v1', '--untracked-files=all').strip()
           paths = [p.decode() for p in git('diff', '--name-only', '-z', 'beb13f9b9ba1c2823fdcfe7710bd4f68915757bf', 'HEAD').split(b'\0') if p]
@@ -168,7 +176,7 @@ jobs:
               'docs/modules/MOD-ROOTLINUX.md': ('100644', '673cb12d4946e837b22bdc754735ae6432ed9ee4'),
               'tools/owner-open/README.md': ('100644', '59a2d042d90531624c0128b7853a5c809ad0ff61'),
               'tools/owner-open/owner_open_rootlinux_supervisor.py': ('100755', '63f0bf829518597a6ebc6a790d37acfc7e60e3f0'),
-              'tools/tests/test_owner_open_rootlinux_supervisor.py': ('100644', 'e4b02978b8b9caa7845cd92b85fe839de659f120'),
+              'tools/tests/test_owner_open_rootlinux_supervisor.py': ('100644', '9b4ae147110070155503e31eb1097be9e033345d'),
           }
           source = Path(os.environ['RUNNER_TEMP']) / 'source-data/supervisor-objects.json'
           assert source.stat().st_size < 2000000
@@ -194,7 +202,7 @@ jobs:
               assert result['sha'] == sha
               entries.append({'path': item['path'], 'mode': mode, 'type': 'blob', 'sha': sha})
           result = post('trees', {'base_tree': '8c8226719496f986a8ec761e905ab15e422e41f0', 'tree': entries})
-          assert result['sha'] == '5da7c498f95647f7afd343d6c3a28bb199f3260e'
+          assert result['sha'] == '599a89e3c5cd6df5ad46b0998893bb7ae6e86247'
           report = {'base_commit': 'beb13f9b9ba1c2823fdcfe7710bd4f68915757bf', 'tree': result['sha'],
               'focused_tests_passed': 421, 'supervisor_suite_repetitions': 10,
               'source_only': True, 'independent_review': False, 'target_evidence': False,
