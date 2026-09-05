@@ -561,7 +561,8 @@ mod tests {
 
     #[test]
     fn direct_inbox_producer_binds_codex_without_authority() {
-        for descriptor in [&CODEX] {
+        {
+            let descriptor = &CODEX;
             let inbox = fixture_inbox(descriptor);
             let registration =
                 derive_system_api_open_uri_root_task_registration(&inbox, publisher(), task())

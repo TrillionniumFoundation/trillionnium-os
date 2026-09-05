@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trillionnium.org/schemas/owner-open-adb-arm64-artifact-v1.json",
+  "title": "Trillionnium owner-open Linux ARM64 adb artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "artifact",
+    "source",
+    "runtime_observation",
+    "claims"
+  ],
+  "properties": {
+    "schema": {
+      "const": "org.trillionnium.owner-open.adb-arm64-artifact.v1"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "bytes",
+        "architecture",
+        "os",
+        "format",
+        "install_path",
+        "install_mode"
+      ],
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 134217728
+        },
+        "architecture": {
+          "const": "linux-arm64"
+        },
+        "os": {
+          "const": "linux"
+        },
+        "format": {
+          "const": "ELF64-AArch64"
+        },
+        "install_path": {
+          "const": "/usr/bin/adb"
+        },
+        "install_mode": {
+          "const": "0755"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "name",
+        "revision_or_version",
+        "provenance",
+        "license",
+        "build_or_package_command",
+        "toolchain_or_repository"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "aosp-reproducible-build",
+            "distribution-package"
+          ]
+        },
+        "name": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "revision_or_version": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "provenance": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "license": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "build_or_package_command": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "toolchain_or_repository": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "runtime_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adb_version_output_sha256",
+        "observed_on"
+      ],
+      "properties": {
+        "adb_version_output_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "observed_on": {
+          "$ref": "#/$defs/nonEmptyString"
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ordinary_adb_client",
+        "typed_trillionnium_adapter",
+        "image_inclusion",
+        "integrated_codex_turn",
+        "physical_device_effect",
+        "release_qualified"
+      ],
+      "properties": {
+        "ordinary_adb_client": {
+          "const": true
+        },
+        "typed_trillionnium_adapter": {
+          "const": false
+        },
+        "image_inclusion": {
+          "const": false
+        },
+        "integrated_codex_turn": {
+          "const": false
+        },
+        "physical_device_effect": {
+          "const": false
+        },
+        "release_qualified": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16384,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
+    }
+  }
+}

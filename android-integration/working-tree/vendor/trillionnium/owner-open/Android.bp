@@ -1,0 +1,120 @@
+package {
+    default_applicable_licenses: ["Android-Apache-2.0"],
+}
+
+python_binary_host {
+    name: "trillionnium-owner-open-materialized-payload-verifier",
+    main: "tools/verify_owner_open_materialized_payload.py",
+    srcs: ["tools/verify_owner_open_materialized_payload.py"],
+}
+
+genrule {
+    name: "trillionnium-owner-open-rootfs-image-verified",
+    srcs: ["payload/materialized/**/*"],
+    tools: ["trillionnium-owner-open-materialized-payload-verifier"],
+    out: ["owner-open-rootfs.squashfs"],
+    cmd: "$(location trillionnium-owner-open-materialized-payload-verifier) --kind image --output $(out) $(in)",
+}
+
+genrule {
+    name: "trillionnium-owner-open-rootfs-manifest-verified",
+    srcs: ["payload/materialized/**/*"],
+    tools: ["trillionnium-owner-open-materialized-payload-verifier"],
+    out: ["owner-open-rootfs.image-manifest.json"],
+    cmd: "$(location trillionnium-owner-open-materialized-payload-verifier) --kind manifest --output $(out) $(in)",
+}
+
+genrule {
+    name: "trillionnium-owner-open-rootfs-digest-verified",
+    srcs: ["payload/materialized/**/*"],
+    tools: ["trillionnium-owner-open-materialized-payload-verifier"],
+    out: ["owner-open-rootfs.squashfs.sha256"],
+    cmd: "$(location trillionnium-owner-open-materialized-payload-verifier) --kind digest --output $(out) $(in)",
+}
+
+prebuilt_etc {
+    name: "trillionnium-owner-open-rootfs-image",
+    src: ":trillionnium-owner-open-rootfs-image-verified",
+    filename: "owner-open-rootfs.squashfs",
+    sub_dir: "trillionnium/rootlinux",
+    system_ext_specific: true,
+}
+
+prebuilt_etc {
+    name: "trillionnium-owner-open-rootfs-manifest",
+    src: ":trillionnium-owner-open-rootfs-manifest-verified",
+    filename: "owner-open-rootfs.image-manifest.json",
+    sub_dir: "trillionnium/rootlinux",
+    system_ext_specific: true,
+}
+
+prebuilt_etc {
+    name: "trillionnium-owner-open-rootfs-digest",
+    src: ":trillionnium-owner-open-rootfs-digest-verified",
+    filename: "owner-open-rootfs.squashfs.sha256",
+    sub_dir: "trillionnium/rootlinux",
+    system_ext_specific: true,
+}
+
+cc_binary {
+    name: "trillionnium-owner-open-bootstrap",
+    srcs: ["native/owner_open_bootstrap.cpp"],
+    shared_libs: ["libcrypto", "libjsoncpp"],
+    cpp_std: "c++20",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    system_ext_specific: true,
+    required: [
+        "trillionnium-owner-open-rootfs-image",
+        "trillionnium-owner-open-rootfs-manifest",
+        "trillionnium-owner-open-rootfs-digest",
+        "trillionnium-owner-open-profile-config",
+    ],
+}
+
+cc_binary {
+    name: "trillionnium-owner-open-emergency-stop",
+    srcs: ["native/owner_open_emergency_stop.cpp"],
+    cpp_std: "c++20",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    system_ext_specific: true,
+}
+
+cc_binary {
+    name: "trillionnium-owner-open-ingress",
+    srcs: ["native/owner_open_ingress_proxy.cpp"],
+    shared_libs: ["libjsoncpp"],
+    cpp_std: "c++20",
+    cflags: ["-Wall", "-Wextra", "-Werror"],
+    system_ext_specific: true,
+}
+
+prebuilt_etc {
+    name: "trillionnium-owner-open-init-rc",
+    src: "init/trillionnium-owner-open.rc",
+    filename: "trillionnium-owner-open.rc",
+    sub_dir: "init",
+    system_ext_specific: true,
+}
+
+prebuilt_etc {
+    name: "trillionnium-owner-open-profile-config",
+    src: "config/profile-v3.json",
+    filename: "profile-v3.json",
+    sub_dir: "trillionnium/owner-open",
+    system_ext_specific: true,
+}
+
+android_app {
+    name: "TrillionniumOwnerOpenShell",
+    manifest: "client/AndroidManifest.xml",
+    srcs: ["client/src/**/*.java"],
+    resource_dirs: ["client/res"],
+    platform_apis: true,
+    // The ingress admits this package by its platform SELinux identity.  A
+    // shared-cert APK is not mapped to seinfo=platform and would therefore
+    // fail the SO_PEERSEC boundary closed at runtime.
+    certificate: "platform",
+    system_ext_specific: true,
+    privileged: false,
+    min_sdk_version: "36",
+}

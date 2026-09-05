@@ -1479,12 +1479,14 @@ mod tests {
     #[test]
     fn embedded_contract_and_source_holds_are_exact() {
         assert!(embedded_contract_measurement_is_exact());
-        assert!(SOURCE_PROTOCOL_IMPLEMENTED);
-        assert!(PURE_DURABLE_STATE_MACHINE_IMPLEMENTED);
-        assert!(PRODUCT_LISTENER_WIRED);
-        assert!(PRODUCT_BACKEND_WIRED);
-        assert!(!PRODUCT_EFFECT_AUTHORITY_AVAILABLE);
-        assert!(!CONFERS_EFFECT_AUTHORITY);
+        const {
+            assert!(SOURCE_PROTOCOL_IMPLEMENTED);
+            assert!(PURE_DURABLE_STATE_MACHINE_IMPLEMENTED);
+            assert!(PRODUCT_LISTENER_WIRED);
+            assert!(PRODUCT_BACKEND_WIRED);
+            assert!(!PRODUCT_EFFECT_AUTHORITY_AVAILABLE);
+            assert!(!CONFERS_EFFECT_AUTHORITY);
+        }
     }
 
     #[test]

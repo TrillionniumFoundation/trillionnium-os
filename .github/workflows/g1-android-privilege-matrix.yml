@@ -1,0 +1,194 @@
+name: G1 Android privileged-lane evaluated matrix
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-android-privilege-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  EVENT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  source-matrix:
+    name: L1 Android adbroot source-head evaluated matrix
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_HEAD_SHA }}
+          persist-credentials: false
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Evaluate the complete privileged-lane source matrix
+        env:
+          RECEIPT: ${{ runner.temp }}/g1-adbroot-source-matrix.json
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          python3 -m py_compile tools/verify-owner-open-adbroot-evaluated-graph.py
+          python3 -m unittest tools.tests.test_verify_owner_open_adbroot_evaluated_graph -v
+          python3 tools/verify-owner-open-adbroot-evaluated-graph.py \
+            --source-commit "$SOURCE_HEAD_SHA" \
+            --evaluation-kind source_head \
+            --output "$RECEIPT"
+          python3 - "$RECEIPT" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          receipt = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert receipt["matrix_case_count"] == 12
+          assert receipt["negative_case_count"] == 10
+          assert receipt["negative_cases_passed"] is True
+          assert receipt["service_policy_property_coupled"] is True
+          assert receipt["source_inputs_complete"] is True
+          assert receipt["soong_compiled"] is False
+          assert receipt["selinux_compiled"] is False
+          assert receipt["installed"] is False
+          assert receipt["public_release"] is False
+          PY
+          test -s "$RECEIPT"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Upload source-head matrix receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-adbroot-source-matrix-${{ env.SOURCE_HEAD_SHA }}
+          if-no-files-found: error
+          retention-days: 30
+          path: ${{ runner.temp }}/g1-adbroot-source-matrix.json
+
+  synthetic-merge-matrix:
+    name: L1 Android adbroot synthetic-merge evaluated matrix
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact pull-request source parent
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          fetch-depth: 0
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          persist-credentials: false
+      - name: Construct and bind the ordered two-parent merge
+        id: merge
+        env:
+          G1_GIT_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha_re='^[0-9a-f]{40}$'
+          [[ "$SOURCE_HEAD_SHA" =~ $sha_re ]]
+          [[ "$EVENT_BASE_SHA" =~ $sha_re ]]
+          [[ "$EVENT_PR_NUMBER" =~ ^[1-9][0-9]{0,8}$ ]]
+          test "$SOURCE_HEAD_SHA" != "$EVENT_BASE_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+
+          auth_header="$(printf 'x-access-token:%s' "$G1_GIT_TOKEN" | base64 -w0)"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth_header}" \
+            fetch --no-tags origin "+$EVENT_BASE_SHA:refs/g1-android/base"
+          unset G1_GIT_TOKEN auth_header
+          git update-ref refs/g1-android/head "$SOURCE_HEAD_SHA"
+          test "$(git --no-replace-objects rev-parse refs/g1-android/base^{commit})" = "$EVENT_BASE_SHA"
+          test "$(git --no-replace-objects rev-parse refs/g1-android/head^{commit})" = "$SOURCE_HEAD_SHA"
+
+          merge_dir="${RUNNER_TEMP}/g1-android-privilege-merge"
+          if [[ -e "$merge_dir" || -L "$merge_dir" ]]; then
+            echo "refusing to reuse merge worktree: $merge_dir" >&2
+            exit 1
+          fi
+          git worktree add --detach "$merge_dir" refs/g1-android/base
+          git -C "$merge_dir" config user.name g1-android-privilege-matrix
+          git -C "$merge_dir" config user.email g1-android-privilege-matrix@invalid
+          if ! git -C "$merge_dir" merge --no-commit --no-ff refs/g1-android/head; then
+            git -C "$merge_dir" merge --abort || true
+            echo "base/head Android privilege matrix merge conflicts" >&2
+            exit 1
+          fi
+          merge_tree="$(git -C "$merge_dir" --no-replace-objects write-tree)"
+          merge_commit="$(printf 'G1 Android privilege matrix %s + %s\n' "$EVENT_BASE_SHA" "$SOURCE_HEAD_SHA" | git -C "$merge_dir" --no-replace-objects commit-tree "$merge_tree" -p "$EVENT_BASE_SHA" -p "$SOURCE_HEAD_SHA")"
+          git -C "$merge_dir" --no-replace-objects reset --hard "$merge_commit"
+          test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD)" = "$merge_commit"
+          test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^1)" = "$EVENT_BASE_SHA"
+          test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^2)" = "$SOURCE_HEAD_SHA"
+          test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^{tree})" = "$merge_tree"
+          if ! worktree_status="$(git --no-replace-objects -C "${merge_dir:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+          {
+            echo "commit=$merge_commit"
+            echo "tree=$merge_tree"
+          } >> "$GITHUB_OUTPUT"
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Evaluate the complete privileged-lane merge matrix
+        working-directory: ${{ runner.temp }}/g1-android-privilege-merge
+        env:
+          RECEIPT: ${{ runner.temp }}/g1-adbroot-merge-matrix.json
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "${{ steps.merge.outputs.commit }}"
+          python3 -m py_compile tools/verify-owner-open-adbroot-evaluated-graph.py
+          python3 -m unittest tools.tests.test_verify_owner_open_adbroot_evaluated_graph -v
+          python3 tools/verify-owner-open-adbroot-evaluated-graph.py \
+            --source-commit "$SOURCE_HEAD_SHA" \
+            --base-commit "$EVENT_BASE_SHA" \
+            --evaluation-kind synthetic_merge \
+            --output "$RECEIPT"
+          python3 - "$RECEIPT" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          receipt = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert receipt["evaluation_kind"] == "synthetic_merge"
+          assert receipt["parent_commits"] == [
+              receipt["base_commit"], receipt["source_commit"]
+          ]
+          assert receipt["matrix_case_count"] == 12
+          assert receipt["negative_case_count"] == 10
+          assert receipt["negative_cases_passed"] is True
+          assert receipt["soong_compiled"] is False
+          assert receipt["selinux_compiled"] is False
+          assert receipt["public_release"] is False
+          PY
+          test -s "$RECEIPT"
+          if ! worktree_status="$(git --no-replace-objects -C "${RUNNER_TEMP:?}/g1-android-privilege-merge" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Upload synthetic-merge matrix receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-adbroot-merge-matrix-${{ steps.merge.outputs.commit }}
+          if-no-files-found: error
+          retention-days: 30
+          path: ${{ runner.temp }}/g1-adbroot-merge-matrix.json

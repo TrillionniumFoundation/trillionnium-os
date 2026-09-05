@@ -14,3 +14,6 @@ overlay path, its project HEAD, worktree status, and content SHA-256.
 
 This overlay is evidence for external audit and is not an approval gate. It
 does not claim that a live Android build, device effect, or OTA has passed.
+
+The supported GitHub-hosted package to local self-hosted-device workflow is
+documented in [`GITHUB_DEVICE_CI.md`](GITHUB_DEVICE_CI.md).

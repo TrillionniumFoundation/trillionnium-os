@@ -104,7 +104,9 @@ impl FileIdentity {
         let identity = Self {
             dev: metadata.dev(),
             ino: metadata.ino(),
-            size: metadata.len(),
+            // Directory size changes as ceremony entries are created or renamed;
+            // it is not part of the stable custody identity (see identity_digest).
+            size: 0,
             mode: metadata.mode(),
             uid: metadata.uid(),
             gid: metadata.gid(),

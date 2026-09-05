@@ -1,0 +1,49 @@
+{
+  "schema": "org.trillionnium.current-baseline.v1",
+  "observed_at": "2026-09-01",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "exact_head_evidence_must_be_ci_generated": true,
+  "trunk": {
+    "branch": "main",
+    "commit": "bb0f85e63b251b99a6fb490dfe6406a992d95f45",
+    "tree": "e4fe8fd1dc4a19d19868ecefbb731099b4772407",
+    "protection_observed": true,
+    "state": "PROTECTED_TRUNK_LAGGING_ACTIVE_PROGRAM"
+  },
+  "latest_source_ci": {
+    "branch": "codex/g1-gap-closure-r1-20260831",
+    "commit": "4cb69895101872770b975d8ab988136e05eb989e",
+    "tree": "88f2d904739749c94e201c10cc00ee27b3bc0c23",
+    "ci_status": "PASSED",
+    "review_status": "CHANGES_REQUESTED",
+    "evidence_level": "L1",
+    "claim_ceiling": "EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_TARGET"
+  },
+  "latest_candidate_parent": {
+    "branch": "codex/local-g1-r15-gap-closure-20260901",
+    "commit": "5f3a02c5d5fc8e2d19e1a425213ef84a1cc430ab",
+    "tree": "cb2a1dd1e6935084063457ff090138bcc3ac01fb",
+    "ci_status": "NOT_OBSERVED",
+    "review_status": "NO_PR_BOUND",
+    "evidence_level": "UNQUALIFIED",
+    "claim_ceiling": "SOURCE_CANDIDATE_ONLY"
+  },
+  "documentation_candidate": {
+    "branch": "codex/global-modular-docs-g1-20260831",
+    "commit": null,
+    "tree": null,
+    "ci_status": "PENDING_EXACT_HEAD_WORKFLOW",
+    "review_status": "PENDING_INDEPENDENT_REVIEW",
+    "source_parent_commit": "5f3a02c5d5fc8e2d19e1a425213ef84a1cc430ab",
+    "source_parent_tree": "cb2a1dd1e6935084063457ff090138bcc3ac01fb",
+    "claim_ceiling": "DOCUMENTATION_AND_GOVERNANCE_CANDIDATE_ONLY"
+  },
+  "non_claims": [
+    "installed Root Linux Codex qualification",
+    "clean Android image or target-files qualification",
+    "physical shell, job or ordinary ADB effect",
+    "destructive crash, storage, USB, reboot or power-loss qualification",
+    "signed public release",
+    "mathematical guarantee of absolute global optimality"
+  ]
+}

@@ -1,0 +1,63 @@
+# Android-native owner-open lifecycle boundary. The bootstrap stays outside the
+# Root Linux payload, verifies the immutable image, creates a private mount
+# namespace, binds only the writable state directory, chroots and execs the
+# finite Root Linux supervisor. No Authority/lease/P01 service participates.
+
+on early-init
+    # Keep the readiness barrier false until post-fs-data has created and
+    # relabeled every private state directory.
+    setprop trillionnium.owner_open.data_ready 0
+
+on post-fs-data
+    mkdir /data/trillionnium 0700 root root
+    mkdir /data/trillionnium/owner-open 0700 root root
+    mkdir /data/trillionnium/owner-open/root 0700 root root
+    mkdir /data/trillionnium/owner-open/state 0700 root root
+    mkdir /data/trillionnium/owner-open/state/broker 0700 root root
+    restorecon_recursive /data/trillionnium/owner-open
+    # The combined property trigger below can fire in either property order,
+    # but only after this action has completed its mkdir/restorecon sequence.
+    setprop trillionnium.owner_open.data_ready 1
+
+on property:ro.trillionnium.owner_open.enabled=true && property:trillionnium.owner_open.data_ready=1
+    start trillionnium_owner_open_bootstrap
+
+on property:trillionnium.owner_open.ready=1
+    start trillionnium_owner_open_ingress
+
+on property:trillionnium.owner_open.ready=0
+    stop trillionnium_owner_open_ingress
+
+on property:sys.trillionnium.owner_open.stop=1
+    stop trillionnium_owner_open_ingress
+    start trillionnium_owner_open_emergency_stop
+    stop trillionnium_owner_open_bootstrap
+    setprop sys.trillionnium.owner_open.stop 0
+
+service trillionnium_owner_open_bootstrap /system_ext/bin/trillionnium-owner-open-bootstrap
+    class core
+    user root
+    group root system
+    disabled
+    oneshot
+    seclabel u:r:trillionnium_owner_open_bootstrap:s0
+    capabilities SYS_ADMIN SYS_CHROOT KILL
+
+# Ingress runs as root only to satisfy the broker's same-UID and 0600-token
+# boundary. SELinux admits only the dedicated unprivileged app domain, and the
+# token is consumed here rather than exposed to the app process.
+service trillionnium_owner_open_ingress /system_ext/bin/trillionnium-owner-open-ingress
+    class core
+    user root
+    group root system
+    disabled
+    seclabel u:r:trillionnium_owner_open_ingress:s0
+
+service trillionnium_owner_open_emergency_stop /system_ext/bin/trillionnium-owner-open-emergency-stop
+    class core
+    user root
+    group root system
+    disabled
+    oneshot
+    seclabel u:r:trillionnium_owner_open_emergency_stop:s0
+    capabilities KILL

@@ -122,7 +122,7 @@ CAPABILITY_SOURCE_ROOT = CAPABILITY_ROOT_SOURCE.parent
 P01_DIRECT_TOOLS_SOURCE_ROOT = (
     REPOSITORY / "crates/trillionnium-agent-direct-tools/src"
 )
-CONTROL_REPOSITORY = REPOSITORY.parent
+CONTROL_REPOSITORY = REPOSITORY
 AUTHORITY_SOURCE_GIT = Path("/usr/bin/git")
 AUTHORITY_SOURCE_CLOSURE_SCHEMA = (
     "org.trillionnium.p01-authority-source-control-head-closure.v1"

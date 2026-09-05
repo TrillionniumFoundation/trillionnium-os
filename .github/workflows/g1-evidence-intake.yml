@@ -1,0 +1,165 @@
+name: G1 evidence intake qualification
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-evidence-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  EVENT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  source-evidence:
+    name: L1 strict evidence intake on exact source head
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_HEAD_SHA }}
+          persist-credentials: false
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Verify strict receipts, live retention and non-mutating promotion
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          python3 -m py_compile \
+            tools/evidence/g1_evidence_contract.py \
+            tools/evidence/g1_evidence_types.py \
+            tools/evidence/g1_evidence_core.py \
+            tools/evidence/g1_evidence.py \
+            tools/verify-g1-evidence.py \
+            tools/verify-g1-evidence-live.py
+          python3 -m unittest \
+            tools.tests.test_g1_evidence \
+            tools.tests.test_g1_evidence_live \
+            tools.tests.test_g1_evidence_live_binding -v
+          python3 tools/verify-g1-evidence.py \
+            --current-source-commit "$SOURCE_HEAD_SHA" \
+            --report "${RUNNER_TEMP}/g1-evidence-report.json" \
+            --promotion-plan "${RUNNER_TEMP}/g1-promotion-plan.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads(Path(os.environ["RUNNER_TEMP"], "g1-evidence-report.json").read_text())
+          plan = json.loads(Path(os.environ["RUNNER_TEMP"], "g1-promotion-plan.json").read_text())
+          assert report["schema"] == "org.trillionnium.g1.evidence-verification-report.v2"
+          assert report["current_source_commit"] == os.environ["SOURCE_HEAD_SHA"]
+          assert report["public_release"] is False
+          assert report["automatic_redispatch"] is False
+          assert plan["public_release_after_plan"] is False
+          assert plan["automatic_redispatch"] is False
+          PY
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Upload source evidence report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-evidence-source-${{ env.SOURCE_HEAD_SHA }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/g1-evidence-report.json
+            ${{ runner.temp }}/g1-promotion-plan.json
+
+  merge-evidence:
+    name: L1 strict evidence intake on ordered synthetic merge
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out exact source parent
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ github.repository }}
+          fetch-depth: 0
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          persist-credentials: false
+      - name: Construct exact ordered two-parent merge
+        id: merge
+        env:
+          G1_GIT_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha_re='^[0-9a-f]{40}$'
+          [[ "$SOURCE_HEAD_SHA" =~ $sha_re ]]
+          [[ "$EVENT_BASE_SHA" =~ $sha_re ]]
+          [[ "$EVENT_PR_NUMBER" =~ ^[1-9][0-9]{0,8}$ ]]
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          auth_header="$(printf 'x-access-token:%s' "$G1_GIT_TOKEN" | base64 -w0)"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth_header}" \
+            fetch --no-tags origin "+$EVENT_BASE_SHA:refs/g1-evidence/base"
+          unset G1_GIT_TOKEN auth_header
+          git update-ref refs/g1-evidence/head "$SOURCE_HEAD_SHA"
+          merge_dir="${RUNNER_TEMP}/g1-evidence-merge"
+          test ! -e "$merge_dir"
+          git worktree add --detach "$merge_dir" refs/g1-evidence/base
+          git -C "$merge_dir" config user.name g1-evidence-intake
+          git -C "$merge_dir" config user.email g1-evidence-intake@invalid
+          git -C "$merge_dir" merge --no-commit --no-ff refs/g1-evidence/head
+          tree="$(git -C "$merge_dir" --no-replace-objects write-tree)"
+          commit="$(printf 'G1 evidence intake %s + %s\n' "$EVENT_BASE_SHA" "$SOURCE_HEAD_SHA" | git -C "$merge_dir" --no-replace-objects commit-tree "$tree" -p "$EVENT_BASE_SHA" -p "$SOURCE_HEAD_SHA")"
+          git -C "$merge_dir" --no-replace-objects reset --hard "$commit"
+          test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^1)" = "$EVENT_BASE_SHA"
+          test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^2)" = "$SOURCE_HEAD_SHA"
+          test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^{tree})" = "$tree"
+          {
+            echo "commit=$commit"
+            echo "tree=$tree"
+          } >> "$GITHUB_OUTPUT"
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Verify evidence intake on merge object
+        working-directory: ${{ runner.temp }}/g1-evidence-merge
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "${{ steps.merge.outputs.commit }}"
+          python3 -m py_compile tools/verify-g1-evidence-live.py
+          python3 -m unittest \
+            tools.tests.test_g1_evidence \
+            tools.tests.test_g1_evidence_live \
+            tools.tests.test_g1_evidence_live_binding -v
+          python3 tools/verify-g1-evidence.py \
+            --current-source-commit "$SOURCE_HEAD_SHA" \
+            --report "${RUNNER_TEMP}/g1-evidence-merge-report.json" \
+            --promotion-plan "${RUNNER_TEMP}/g1-evidence-merge-plan.json"
+          if ! worktree_status="$(git --no-replace-objects -C "${RUNNER_TEMP:?}/g1-evidence-merge" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Upload merge evidence report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-evidence-merge-${{ steps.merge.outputs.commit }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/g1-evidence-merge-report.json
+            ${{ runner.temp }}/g1-evidence-merge-plan.json

@@ -1,0 +1,6 @@
+/system_ext/bin/trillionnium-owner-open-bootstrap          u:object_r:trillionnium_owner_open_bootstrap_exec:s0
+/system_ext/bin/trillionnium-owner-open-ingress            u:object_r:trillionnium_owner_open_ingress_exec:s0
+/system_ext/bin/trillionnium-owner-open-emergency-stop     u:object_r:trillionnium_owner_open_emergency_stop_exec:s0
+/system_ext/etc/trillionnium/rootlinux(/.*)?               u:object_r:trillionnium_owner_open_payload_file:s0
+/system_ext/etc/trillionnium/owner-open(/.*)?              u:object_r:trillionnium_owner_open_payload_file:s0
+/data/trillionnium/owner-open(/.*)?                        u:object_r:trillionnium_owner_open_state_file:s0

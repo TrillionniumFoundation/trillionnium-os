@@ -1,0 +1,113 @@
+{
+  "schema": "org.trillionnium.documentation-set.v1",
+  "documentation_revision": "1.1.0",
+  "program_revision": "2026-08-31-g1",
+  "semantic_revision": "owner-open-semantic-v1",
+  "architecture_revision": "modular-control-plane-v1",
+  "status": "ACTIVE_CANDIDATE",
+  "machine_truth_root": "docs/machine",
+  "generated_view_root": "docs/generated",
+  "historical_document_policy": {
+    "retained_in_working_tree": false,
+    "recovery_source": "git_history",
+    "historical_documents_are_authoritative": false
+  },
+  "required_files": [
+    "docs/START_HERE.md",
+    "docs/PRODUCT_SEMANTICS.md",
+    "docs/GLOBAL_ARCHITECTURE.md",
+    "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
+    "docs/MODULE_DEVELOPMENT_STANDARD.md",
+    "docs/EFFECT_AND_PROTOCOL_STANDARD.md",
+    "docs/PERFORMANCE_AND_OPTIMIZATION.md",
+    "docs/TEAM_AND_DELIVERY_MODEL.md",
+    "docs/OPERATIONS_AND_ROLLOUT.md",
+    "docs/QUALIFICATION_AND_EVIDENCE.md",
+    "docs/GLOBAL_DEFINITION_OF_DONE.md",
+    "docs/MODULE_DOCUMENTATION_POLICY.md",
+    "docs/machine/doc-set.v1.json",
+    "docs/machine/current-baseline.v1.json",
+    "docs/machine/program-state.v1.json",
+    "docs/machine/module-catalog.v1.json",
+    "docs/machine/requirement-graph.v1.json",
+    "docs/machine/module-document-index.v1.json",
+    "docs/machine/resource-budget-provenance.v1.json",
+    "docs/machine/gap-register.v2.json",
+    "docs/machine/global-objective.v1.json",
+    "docs/machine/evidence-index.v1.json",
+    "docs/modules/MOD-PROTOCOL.md",
+    "docs/modules/MOD-BROKER.md",
+    "docs/modules/MOD-TRANSPORT.md",
+    "docs/modules/MOD-EXECUTION-CORE.md",
+    "docs/modules/MOD-PROVIDER.md",
+    "docs/modules/MOD-TURN-ENGINE.md",
+    "docs/modules/MOD-TOOL-RUNTIME.md",
+    "docs/modules/MOD-JOB-RUNTIME.md",
+    "docs/modules/MOD-EVENT-STORE.md",
+    "docs/modules/MOD-STREAM.md",
+    "docs/modules/MOD-GLOBAL-CONTROL.md",
+    "docs/modules/MOD-TELEMETRY.md",
+    "docs/modules/MOD-ROOTLINUX.md",
+    "docs/modules/MOD-ANDROID.md",
+    "docs/modules/MOD-ADB.md",
+    "docs/modules/MOD-EVIDENCE.md",
+    "docs/generated/CURRENT_STATE.md",
+    "docs/generated/MODULE_STATUS.md",
+    "docs/generated/GAP_STATUS.md",
+    "docs/generated/TRACEABILITY.tsv",
+    "docs/generated/PERFORMANCE_STATUS.md"
+  ],
+  "forbidden_paths": [
+    "docs/archive",
+    "docs/audits",
+    "docs/evidence",
+    "docs/plan",
+    "docs/status",
+    "docs/OWNER_OPEN_R5_START_HERE.md",
+    "docs/OWNER_OPEN_R5_BATCH_E_START_HERE.md",
+    "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md",
+    "docs/TRILLIONNIUM_OWNER_OPEN_R4_EXECUTION_PLAN.md",
+    "docs/TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN.md",
+    "docs/CURRENT_STATE.md"
+  ],
+  "forbidden_content_markers": [
+    "TRILLIONNIUM_OWNER_OPEN_R5_EXECUTION_PLAN",
+    "OWNER_OPEN_R5_START_HERE",
+    "OWNER_OPEN_R5_BATCH",
+    "owner-open-r5-status.json",
+    "owner-open-r5-gap-closure.json",
+    "owner-open-r5-current-cut.json",
+    "owner-open-r5-traceability.tsv"
+  ],
+  "authority_order": [
+    "docs/PRODUCT_SEMANTICS.md",
+    "docs/GLOBAL_ARCHITECTURE.md",
+    "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
+    "docs/MODULE_DEVELOPMENT_STANDARD.md",
+    "docs/MODULE_DOCUMENTATION_POLICY.md",
+    "docs/machine/program-state.v1.json",
+    "docs/machine/gap-register.v2.json",
+    "docs/machine/module-catalog.v1.json",
+    "docs/machine/module-document-index.v1.json",
+    "docs/machine/resource-budget-provenance.v1.json",
+    "docs/machine/requirement-graph.v1.json",
+    "docs/machine/evidence-index.v1.json"
+  ],
+  "owners": {
+    "semantic": [
+      "ProfHepta"
+    ],
+    "architecture": [
+      "ProfHepta",
+      "Tomasrgbsf"
+    ],
+    "machine_truth": [
+      "ProfHepta",
+      "Franksudoman"
+    ],
+    "implementation": [
+      "Tomasrgbsf",
+      "ProfHepta"
+    ]
+  }
+}

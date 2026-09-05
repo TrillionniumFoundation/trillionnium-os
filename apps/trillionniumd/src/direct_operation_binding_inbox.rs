@@ -262,6 +262,13 @@ pub(crate) struct DirectOperationInboxPublication {
     _test_serial_guard: Option<MutexGuard<'static, ()>>,
 }
 
+// The custody projection is consumed by the device-conformance/product
+// handoff lane (and by tests); the default daemon intentionally keeps it
+// opaque until that lane is enabled.
+#[cfg_attr(
+    not(any(test, feature = "p0-launch-package-device-conformance")),
+    allow(dead_code)
+)]
 #[derive(Debug)]
 pub(crate) struct DirectOperationInboxCustodySeed {
     pub(crate) binding_inbox: DirectOperationBindingInbox,
@@ -1224,16 +1231,18 @@ mod tests {
 
     impl Fixture {
         fn new() -> Self {
-            let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-            // The workspace source tree is intentionally group-writable for
-            // collaboration. Place security fixtures in its trusted,
-            // non-group-writable parent so ancestor validation exercises the
-            // success path rather than short-circuiting every test at that
-            // unrelated mode bit.
-            let fixture_parent = manifest.ancestors().nth(4).unwrap();
+            // Keep the fixture below a non-writable, trusted ancestor and
+            // make its own directory explicitly private.  The production
+            // path rejects group/world-writable ancestors; relying on the
+            // host's umask or the collaboration workspace mode would make
+            // these tests fail before exercising the publication contract.
+            // `/tmp` is intentionally sticky/world-writable, while `/run` is
+            // root-owned but not writable by the unprivileged test user.  The
+            // canonical development root is owner-owned and mode 0755, so the
+            // test-only publisher accepts it as its trusted non-root parent.
             let root = tempfile::Builder::new()
                 .prefix(".direct-binding-publisher-test-")
-                .tempdir_in(fixture_parent)
+                .tempdir_in("/data/toshiba-dev")
                 .unwrap();
             fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).unwrap();
             let provider = root.path().join("inbox/codex");
@@ -1833,7 +1842,7 @@ mod tests {
 
     #[test]
     fn product_paths_are_fixed_to_the_chroot_visible_bind_target() {
-        for (provider, directory, gid) in [(
+        let (provider, directory, gid) = (
             ProviderSpecification {
                 provider_id: CODEX_PROVIDER_ID,
                 agent_id: CODEX_AGENT_ID,
@@ -1843,18 +1852,17 @@ mod tests {
             },
             "codex",
             CODEX_UID_GID,
-        )] {
-            let leaf = PublisherLayout::product().p0_system_api_leaf(&provider);
-            assert_eq!(
-                leaf.path,
-                Path::new("/var/lib/trillionnium/agent-tools/inbox")
-                    .join(directory)
-                    .join("system-api")
-            );
-            assert_eq!(leaf.owner_uid, ROOT_UID);
-            assert_eq!(leaf.group_gid, gid);
-            assert!(!leaf.path.starts_with("/data/trillionnium"));
-        }
+        );
+        let leaf = PublisherLayout::product().p0_system_api_leaf(&provider);
+        assert_eq!(
+            leaf.path,
+            Path::new("/var/lib/trillionnium/agent-tools/inbox")
+                .join(directory)
+                .join("system-api")
+        );
+        assert_eq!(leaf.owner_uid, ROOT_UID);
+        assert_eq!(leaf.group_gid, gid);
+        assert!(!leaf.path.starts_with("/data/trillionnium"));
     }
 
     #[test]

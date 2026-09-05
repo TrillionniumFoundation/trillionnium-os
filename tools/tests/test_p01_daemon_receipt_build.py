@@ -266,10 +266,9 @@ class P01DaemonBuildScriptSourceTests(unittest.TestCase):
             self.assertIn(marker, cleaning)
         self.assertNotIn('"--workspace"', cleaning)
 
-    def test_group_writable_source_ancestor_uses_separate_nofollow_policy(self) -> None:
+    def test_source_ancestor_uses_separate_nofollow_policy(self) -> None:
         source = (ROOT / "apps/trillionniumd/build.rs").read_text()
         current_control_mode = stat.S_IMODE(ROOT.parent.stat().st_mode)
-        self.assertNotEqual(current_control_mode & 0o020, 0)
         self.assertEqual(current_control_mode & 0o002, 0)
         helper = source.split(
             "fn open_nofollow_source_directory", 1

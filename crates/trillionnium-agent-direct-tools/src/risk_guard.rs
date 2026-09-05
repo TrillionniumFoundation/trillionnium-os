@@ -1229,7 +1229,8 @@ mod tests {
 
     #[test]
     fn product_default_set_is_closed_for_codex() {
-        for agent in [AgentIdentity::Codex] {
+        {
+            let agent = AgentIdentity::Codex;
             for action in [
                 AccessibilityAction::Snapshot {
                     window_id: None,
@@ -1752,7 +1753,8 @@ mod tests {
 
     #[test]
     fn open_uri_is_external_transfer_and_confused_shapes_are_hard_denied() {
-        for agent in [AgentIdentity::Codex] {
+        {
+            let agent = AgentIdentity::Codex;
             let safe_shape = guard().assess_system(
                 agent,
                 SystemAction::OpenUri {

@@ -101,11 +101,21 @@ fn codex_provider(
     };
     // The device-conformance feature selects the bounded tool action and
     // evidence lane only; it must never replace production provider admission.
-    codex_adapter::CodexAdapter::new_bound(
+    let adapter = codex_adapter::CodexAdapter::new_bound(
         codex_adapter::config_from_env()?,
         secret,
         capability_identity,
-    )
+    )?;
+    let adapter_registration = provider_contract::AgentAdapter::register(&adapter);
+    if adapter_registration.api_version != registration.api_version
+        || adapter_registration.agent_id != registration.agent_id
+        || adapter_registration.adapter != registration.adapter
+        || adapter_registration.adapter_version != registration.adapter_version
+        || adapter_registration.network_policy != registration.network_policy
+    {
+        bail!("bound Codex adapter registration differs from OS-owned AgentRegistration");
+    }
+    Ok(adapter)
 }
 
 const DEFAULT_AGENT_MANIFEST_DIR: &str = "/system_ext/etc/trillionnium/agents";
@@ -1109,25 +1119,24 @@ impl Drop for SocketEntryCleanup {
 }
 
 fn require_android_builtin_manifests(service: &AgentService) -> Result<()> {
-    for (descriptor, adapter_version) in [(&CODEX, codex_adapter::CODEX_ADAPTER_VERSION)] {
-        let agent_id = descriptor.agent_id;
-        let registration = service
-            .get_agent_local(agent_id)
-            .map_err(anyhow::Error::msg)?
-            .with_context(|| {
-                format!("Android built-in provider {agent_id} requires an OS-owned AgentManifest")
-            })?;
-        if !registration.enabled
-            || registration.api_version != AGENT_API_VERSION
-            || registration.adapter_version != adapter_version
-            || !builtin_provider_identity::matches_stable_registration(descriptor, &registration)
-            || registration.network_policy != trillionnium_os_types::AgentNetworkPolicy::PerRequest
-            || registration.health != trillionnium_os_types::AgentHealth::Ready
-            || registration.registered_at_unix_ms == 0
-            || registration.updated_at_unix_ms < registration.registered_at_unix_ms
-        {
-            bail!("Android built-in provider AgentManifest is disabled or incompatible");
-        }
+    let (descriptor, adapter_version) = (&CODEX, codex_adapter::CODEX_ADAPTER_VERSION);
+    let agent_id = descriptor.agent_id;
+    let registration = service
+        .get_agent_local(agent_id)
+        .map_err(anyhow::Error::msg)?
+        .with_context(|| {
+            format!("Android built-in provider {agent_id} requires an OS-owned AgentManifest")
+        })?;
+    if !registration.enabled
+        || registration.api_version != AGENT_API_VERSION
+        || registration.adapter_version != adapter_version
+        || !builtin_provider_identity::matches_stable_registration(descriptor, &registration)
+        || registration.network_policy != trillionnium_os_types::AgentNetworkPolicy::PerRequest
+        || registration.health != trillionnium_os_types::AgentHealth::Ready
+        || registration.registered_at_unix_ms == 0
+        || registration.updated_at_unix_ms < registration.registered_at_unix_ms
+    {
+        bail!("Android built-in provider AgentManifest is disabled or incompatible");
     }
     Ok(())
 }

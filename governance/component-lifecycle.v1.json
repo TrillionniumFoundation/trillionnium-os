@@ -1,0 +1,86 @@
+{
+  "schema": "org.trillionnium.component-lifecycle.v1",
+  "program_revision": "2026-09-04-g1-closure",
+  "authority": "docs/machine/module-catalog.v1.json",
+  "rule": "Every root Cargo workspace member is either in the catalog default_source_closure or appears exactly once below as an excluded non-product component.",
+  "non_product_members": [
+    {
+      "path": "apps/trillionniumd",
+      "classification": "sealed_legacy_monolith",
+      "replacement": ["apps/trillionnium-owner-open-host"],
+      "reason": "The G1 default graph uses the bounded owner-open host; the pre-G1 monolith remains buildable only for explicit compatibility and source archaeology."
+    },
+    {
+      "path": "crates/trillionnium-os-types",
+      "classification": "sealed_legacy_contracts",
+      "replacement": ["crates/trillionnium-owner-open-types"],
+      "reason": "The G1 owner-open protocol crate is the active default contract surface."
+    },
+    {
+      "path": "crates/trillionnium-agent-api-uds",
+      "classification": "sealed_legacy_transport",
+      "replacement": ["apps/trillionnium-owner-open-host", "crates/trillionnium-owner-open-types"],
+      "reason": "The selected host and versioned owner-open protocol own the active transport boundary."
+    },
+    {
+      "path": "crates/trillionnium-task-registry",
+      "classification": "sealed_legacy_registry",
+      "replacement": ["crates/trillionnium-owner-open-call-registry", "crates/trillionnium-owner-open-job-registry"],
+      "reason": "The active graph separates bounded call and job ownership instead of retaining one legacy registry."
+    },
+    {
+      "path": "crates/trillionnium-policy-system",
+      "classification": "sealed_semantic_policy",
+      "replacement": [],
+      "reason": "The provider is the sole semantic principal; a second semantic policy plane is forbidden in the owner-open default graph."
+    },
+    {
+      "path": "crates/trillionnium-audit-sqlite",
+      "classification": "sealed_legacy_store",
+      "replacement": ["crates/trillionnium-owner-open-event-store"],
+      "reason": "The active event store owns bounded correlation and recovery records."
+    },
+    {
+      "path": "crates/trillionnium-privilege-broker-protocol",
+      "classification": "sealed_authority_protocol",
+      "replacement": [],
+      "reason": "A privilege/Authority hop is not part of the owner-open default graph."
+    },
+    {
+      "path": "crates/trillionnium-tool-runtime",
+      "classification": "sealed_legacy_tool_runtime",
+      "replacement": ["crates/trillionnium-owner-open-tool-bridge", "crates/trillionnium-owner-open-runtime"],
+      "reason": "The G1 graph separates byte-preserving tool bridging from lifecycle mechanics."
+    },
+    {
+      "path": "crates/trillionnium-agent-direct-tools",
+      "classification": "sealed_pre_r3_direct_tools",
+      "replacement": ["crates/trillionnium-owner-open-tool-bridge", "packaging/owner-open-adb"],
+      "reason": "The retained typed and guarded pre-r3 adapters must not substitute for raw owner-open shell or ordinary ADB."
+    },
+    {
+      "path": "crates/trillionnium-shell-exec",
+      "classification": "sealed_typed_shell",
+      "replacement": ["crates/trillionnium-owner-open-job-runtime", "crates/trillionnium-owner-open-tool-bridge"],
+      "reason": "The active graph preserves exact shell bytes and process observations without a typed semantic broker."
+    },
+    {
+      "path": "crates/trillionnium-dbus",
+      "classification": "sealed_retired_platform_integration",
+      "replacement": [],
+      "reason": "Desktop and alternate distro integration are outside the Android-managed headless Root Linux product."
+    },
+    {
+      "path": "apps/trillionnium-agent-privilege-broker",
+      "classification": "sealed_authority_binary",
+      "replacement": [],
+      "reason": "The former Authority binary is retained only for an explicitly selected sealed compatibility target."
+    },
+    {
+      "path": "apps/trillionnium-agent-stdio-proxy",
+      "classification": "sealed_fixed_fd_proxy",
+      "replacement": ["apps/trillionnium-owner-open-host"],
+      "reason": "The fixed-control-FD proxy is excluded from the selected owner-open product entrypoint."
+    }
+  ]
+}

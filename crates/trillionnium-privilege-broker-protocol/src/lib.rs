@@ -2500,7 +2500,8 @@ mod tests {
     #[test]
     fn lifecycle_rejects_generation_rollback_and_concurrent_codex_invocations() {
         let mut lifecycle = LifecycleState::new();
-        for provider in [Provider::Codex] {
+        {
+            let provider = Provider::Codex;
             let request = install(provider, 2, 6);
             lifecycle
                 .apply_success(

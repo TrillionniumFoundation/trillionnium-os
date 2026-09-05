@@ -1,0 +1,121 @@
+{
+  "schema": "org.trillionnium.global-program-state.v1",
+  "program_revision": "2026-08-31-g1",
+  "documentation_revision": "1.0.0",
+  "semantic_revision": "owner-open-semantic-v1",
+  "architecture_revision": "modular-control-plane-v1",
+  "status": "G1_DOCUMENTATION_AND_MODULARIZATION_CANDIDATE",
+  "zero_gap": false,
+  "public_release": false,
+  "automatic_redispatch": false,
+  "active_release_train": "owner-open-dogfood",
+  "capability_milestones": [
+    {
+      "id": "CAP-L1-MODULAR-SOURCE",
+      "name": "modular source and governance",
+      "required_level": "L1",
+      "status": "IN_PROGRESS",
+      "exit": "single machine truth, module contracts, exact-head CI and independent review"
+    },
+    {
+      "id": "CAP-L2-INSTALLED-ROOTLINUX",
+      "name": "installed Root Linux runtime",
+      "required_level": "L2",
+      "status": "EXTERNAL_HOLD",
+      "exit": "installed identities, paths, cgroups, namespaces, Codex and lifecycle evidence"
+    },
+    {
+      "id": "CAP-L3-ANDROID-IMAGE",
+      "name": "clean Android product image",
+      "required_level": "L3",
+      "status": "EXTERNAL_HOLD",
+      "exit": "clean Soong/init/SELinux/target-files and installed-manifest binding"
+    },
+    {
+      "id": "CAP-L4-PHYSICAL-DOGFOOD",
+      "name": "physical same-turn dogfood",
+      "required_level": "L4",
+      "status": "EXTERNAL_HOLD",
+      "exit": "authorized device shell, jobs and ordinary ADB effects"
+    },
+    {
+      "id": "CAP-L5-FAULT-QUALIFIED",
+      "name": "destructive fault qualification",
+      "required_level": "L5",
+      "status": "EXTERNAL_HOLD",
+      "exit": "crash, ENOSPC, corruption, USB loss, reboot and power-loss matrix"
+    },
+    {
+      "id": "CAP-L6-PUBLIC-RELEASE",
+      "name": "signed public release",
+      "required_level": "L6",
+      "status": "EXTERNAL_HOLD",
+      "exit": "signing, AVB, rollback, OTA and independent human release authorization"
+    }
+  ],
+  "phases": [
+    {
+      "id": "G1-P0",
+      "name": "truth convergence and legacy-document removal",
+      "status": "SOURCE_IMPLEMENTED_PENDING_CI",
+      "depends_on": []
+    },
+    {
+      "id": "G1-P1",
+      "name": "module contracts and ownership",
+      "status": "SOURCE_IMPLEMENTED_PENDING_CI",
+      "depends_on": [
+        "G1-P0"
+      ]
+    },
+    {
+      "id": "G1-P2",
+      "name": "concurrency and persistence scalability",
+      "status": "SOURCE_IMPLEMENTED_PENDING_CI",
+      "depends_on": [
+        "G1-P1"
+      ]
+    },
+    {
+      "id": "G1-P3",
+      "name": "global-control shadow mode",
+      "status": "SOURCE_IMPLEMENTED_PENDING_CI",
+      "depends_on": [
+        "G1-P1",
+        "G1-P2"
+      ]
+    },
+    {
+      "id": "G1-P4",
+      "name": "installed Root Linux and Android integration",
+      "status": "EXTERNAL_HOLD",
+      "depends_on": [
+        "G1-P2"
+      ]
+    },
+    {
+      "id": "G1-P5",
+      "name": "physical and fault qualification",
+      "status": "EXTERNAL_HOLD",
+      "depends_on": [
+        "G1-P4"
+      ]
+    },
+    {
+      "id": "G1-P6",
+      "name": "optional sealed and public release",
+      "status": "EXTERNAL_HOLD",
+      "depends_on": [
+        "G1-P5"
+      ]
+    }
+  ],
+  "critical_path": [
+    "qualify and independently review this exact G1 documentation head",
+    "run the exact-head source workflow and bind retained L1 evidence to the reviewed head",
+    "merge the source parent through the protected integration chain without losing G1 machine truth",
+    "qualify the installed Root Linux/Android graph and process placement at L2-L3",
+    "execute authorized physical and destructive fault qualification at L4-L5",
+    "keep signing and public release gated on independent authorization at L6"
+  ]
+}

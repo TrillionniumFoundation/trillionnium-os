@@ -12038,13 +12038,12 @@ mod tests {
                 && backend
                     .get(OS_CANONICAL_SEMANTIC_RESULT_SHA256_FIELD)
                     .is_none()
+                && let Ok(semantic_digest) = canonical_semantic_result_sha256(&backend)
             {
-                if let Ok(semantic_digest) = canonical_semantic_result_sha256(&backend) {
-                    backend.as_object_mut().unwrap().insert(
-                        OS_CANONICAL_SEMANTIC_RESULT_SHA256_FIELD.to_string(),
-                        Value::String(semantic_digest),
-                    );
-                }
+                backend.as_object_mut().unwrap().insert(
+                    OS_CANONICAL_SEMANTIC_RESULT_SHA256_FIELD.to_string(),
+                    Value::String(semantic_digest),
+                );
             }
             let structured_bytes = serde_json::to_vec(&backend).unwrap();
             let structured_sha256 = sha256_bytes(&structured_bytes);
@@ -12608,7 +12607,7 @@ mod tests {
             assert_eq!(receipt.direct_tool_calls.len(), lines.len());
         }
 
-        let effect_events = mirrored_direct_prefix(&[system.clone()], false);
+        let effect_events = mirrored_direct_prefix(std::slice::from_ref(&system), false);
         for error in [
             CodexProviderError::Cancelled,
             CodexProviderError::Timeout,

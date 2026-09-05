@@ -1,0 +1,83 @@
+name: G1 complete gap-to-evidence routing
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "codex/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: g1-gap-routing-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  route-every-gap:
+    name: L1 route every canonical gap to a level-correct independent lane
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_HEAD_SHA }}
+          persist-credentials: false
+      - name: Assert exact clean checkout
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Verify complete route set and role separation
+        run: |
+          set -euo pipefail
+          install -d -m 0700 "${RUNNER_TEMP}/g1-gap-routing"
+          python3 -m py_compile \
+            tools/verify_g1_gap_routing.py \
+            tools/tests/test_verify_g1_gap_routing.py
+          python3 tools/verify_g1_gap_routing.py --json \
+            > "${RUNNER_TEMP}/g1-gap-routing/report.json"
+          python3 -m json.tool "${RUNNER_TEMP}/g1-gap-routing/report.json" >/dev/null
+          python3 -m unittest tools.tests.test_verify_g1_gap_routing -v
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path(os.environ["RUNNER_TEMP"]) / "g1-gap-routing/report.json"
+          report = json.loads(path.read_text(encoding="utf-8"))
+          assert report["status"] == "PASS_COMPLETE_LEVEL_CORRECT_ROUTING"
+          assert report["gap_count"] == 21
+          assert report["claim_ceiling"] == "ROUTING_ONLY_NO_EVIDENCE"
+          assert report["capture_can_change_status"] is False
+          assert report["promotion_authorized"] is False
+          PY
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Upload non-authorizing route report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-gap-routing-${{ env.SOURCE_HEAD_SHA }}
+          if-no-files-found: error
+          retention-days: 30
+          path: ${{ runner.temp }}/g1-gap-routing/report.json

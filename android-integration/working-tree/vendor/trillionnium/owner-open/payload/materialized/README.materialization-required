@@ -1,0 +1,14 @@
+This directory is a create-only materialization boundary, not an artifact cache.
+
+Before an owner-open Android build, an external qualified pipeline must place
+exactly these two non-writable single-link files here:
+
+  owner-open-rootfs.squashfs
+  owner-open-rootfs.image-manifest.json
+
+The manifest must be emitted by build_owner_open_rootfs_image_release_v2.py and
+must still claim ROOTFS_IMAGE_BUILT_NOT_ANDROID_INCLUDED. Soong runs the checked
+in verifier, rehashes the full image, and produces the image, manifest and
+canonical digest modules. Missing, replaced, writable, duplicated, mismatched or
+overclaimed material is a hard build failure. Do not commit generated payload
+bytes to this source tree.

@@ -74,6 +74,30 @@ def sha256(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def stable_file_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    """Return file identity fields that are stable across a read.
+
+    Reading a regular file may legitimately update ``st_atime`` on mounts
+    without ``noatime``/``relatime``.  Treating the complete ``stat_result``
+    as an identity therefore turns a harmless read into a spurious mutation
+    report.  The fields below still cover inode replacement, type/mode,
+    ownership/link changes, size, and mtime/ctime content mutations.
+    """
+
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        stat.S_IFMT(metadata.st_mode),
+        stat.S_IMODE(metadata.st_mode),
+        metadata.st_uid,
+        metadata.st_gid,
+        metadata.st_nlink,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
 def _reject_symlink_parents(path: Path) -> None:
     if not path.is_absolute():
         raise ContractError(f"path must be absolute: {path}")
@@ -115,7 +139,7 @@ def read_regular(path: Path, *, label: str, maximum: int = MAX_SOURCE_BYTES) -> 
             chunks.append(block)
             total += len(block)
         after = os.fstat(fd)
-        if total != before.st_size or before != after:
+        if total != before.st_size or stable_file_identity(before) != stable_file_identity(after):
             raise ContractError(f"{label} changed while being read")
     finally:
         os.close(fd)
@@ -343,7 +367,10 @@ def inspect_target_files(path: Path) -> dict[str, Any]:
         after = os.lstat(path)
     except OSError as exc:
         raise ContractError("target-files ZIP disappeared after inspection") from exc
-    if after != before or stat.S_ISLNK(after.st_mode):
+    if (
+        stable_file_identity(after) != stable_file_identity(before)
+        or stat.S_ISLNK(after.st_mode)
+    ):
         raise ContractError("target-files ZIP changed while being inspected")
     observations["source_graph_is_not_live_proof"] = True
     return observations
