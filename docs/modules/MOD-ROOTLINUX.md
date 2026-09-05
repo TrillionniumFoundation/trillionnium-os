@@ -184,6 +184,97 @@ existence. Test-only subreaping collects fixture orphans. Both exact-head and
 synthetic-merge source lanes explicitly run this suite. No fixture is evidence
 of a physical device, target installation or external-effect rollback.
 
+### Supervisor state-directory and persistence contract
+
+The supervisor acquires a nonblocking exclusive `flock` on the opened state-root
+directory **before writing status/events or starting any carrier**. Every state
+root and output-parent component is opened with directory/no-follow semantics;
+new private parents are created relative to retained descriptors and their parent
+entries are synchronized. Existing non-private state directories are rejected,
+not silently chmodded. The same rule applies to nested emergency-marker parents.
+The directory lock is advisory, local to the inode and retained until final
+cleanup/reporting; a competing cooperating supervisor gets a startup error
+without changing the first instance's files or spawning children.
+
+State I/O uses the retained parent descriptors, not re-opened absolute output
+paths. Namespace checks detect replaced, missing, symlinked or permission-changed
+state directories before admission and on inhibit checks. An unavailable parent
+is an inhibit condition, **not** evidence that the marker is absent. Descriptors
+are close-on-exec and are released on successful, inhibited and failed exits.
+Config pathnames are limited to 4,096 UTF-8 bytes and 64 components; at most the
+three output-parent chains are retained. These are finite source bounds, not a
+measurement of installed descriptor use or filesystem latency.
+
+The two persistence protocols differ:
+
+| Operation/cut | Required source behavior |
+|---|---|
+| Event write returns a positive short count | Continue writing the remaining bounded bytes; no early success |
+| Event write returns zero or an invalid count | Fail immediately; do not spin |
+| Event write/file-fsync/directory-fsync fails | Fence further event appends and new carrier admission for this instance; preserve uncertain bytes |
+| Existing event tail lacks newline | Reject before first spawn; do not truncate, synthesize a terminal or concatenate another record |
+| Event file is symlinked, multiply linked, non-private or non-regular | Reject without writing; use nonblocking open so a FIFO cannot stall the check |
+| New event file is written | Synchronize file bytes and parent directory entry before returning success |
+| Status write or file-fsync fails before rename | Preserve prior status; remove this attempt's temporary leaf during handled failure |
+| Status publication succeeds | Complete write, fsync temporary file, descriptor-relative atomic replace, then fsync parent |
+| Parent fsync fails after status rename | Return failure: new bytes may be visible but durability is unknown; do not infer rollback |
+| Cleanup audit append fails | Reap all already-settled direct leaders first; storage failure cannot abandon later anchors |
+
+The startup `supervisor_starting` event is an observation and log-health check,
+not an acceptance record for a semantic job. Event-tail checking verifies the
+record delimiter only; it is not a complete journal-schema/history verifier.
+Supervisor events/status must never substitute for the Host's authoritative job
+acceptance and reconciliation protocol. No failure path authorizes effect replay.
+
+**Trust and failure limits:** this directory lock does not fence distributed
+writers, a renamed/replaced root inode, malicious same-UID/root actors or child
+processes surviving a supervisor crash. The installed service manager must keep
+the state namespace stable and enforce cgroup-wide cleanup before restarting a
+dead supervisor. Rechecking a pathname is not an atomic barrier against a marker
+created concurrently with process spawn. Filesystem fsync calls in local tests
+are not evidence of real power-loss durability. Those remain installed L2/L5
+qualification obligations; `escaped_descendants_absence_proven` remains false.
+
+### Supervisor crash-session fence
+
+The volatile directory lock and the durable session marker solve different
+problems. After acquiring the lock, `Supervisor.run` rejects **any** pre-existing
+`<state_root>/.supervisor-session.json` before changing event/status files or
+starting a carrier. Empty, torn, old-looking, symlink, FIFO and directory entries
+all mean reconciliation-required. It never decides a previous session is safe
+from a stored PID, PID absence, wall-clock age, readable terminal status or a
+released lock. The reserved marker and its descendants cannot be configured as
+inhibit, status or event-log paths.
+
+`begin_session` exclusively creates a private, non-inheritable marker containing
+schema `org.trillionnium.owner-open.rootlinux-supervisor-session.v1`, a random
+32-hex `session_id`, diagnostic `supervisor_pid`, `pid_is_recovery_authority=false`,
+`automatic_effect_redispatch=false`, and the original-process-group scope. It
+completes short writes, fsyncs the file, then fsyncs the pinned root **before the
+first spawn**. Even a failed/partial creation is retained; no age-based recovery
+or implicit repair exists. The marker has a fixed-size payload (under 1 KiB),
+not an unbounded process registry. Every spawn and loop iteration checks its
+inode, private regular-file properties and exact bounded bytes. Status/events
+carry the same session ID; pre-admission inhibited observations may carry null.
+
+After a normal stop or a handled emergency stop, `finish_session` requires all
+tracked original groups cleaned, direct leaders reaped and the terminal status
+and event already written. It checks ownership again, unlinks relative to the
+pinned root, then fsyncs that directory. The independent owner inhibit is never
+removed. Any failed run (including restart-budget exhaustion), terminal-storage
+failure, unconfirmed cleanup or process death leaves the marker for offline
+reconciliation. A post-unlink fsync error is a failed release with uncertain
+persistence, not success; the last terminal observation is not a release receipt.
+
+A real local regression kills the supervisor with SIGKILL, observes its carrier
+still alive, then verifies a second supervisor returns HOLD without starting a
+second carrier or using the recorded PID as authority. The test itself uses a
+subreaper to safely collect its own orphan. This source regression is not an
+installed-process matrix, power-loss test or cgroup containment proof. The fence
+blocks automatic takeover; it does **not** terminate surviving processes, resist
+a malicious root custodian, fence a replaced root inode or prove escaped children
+absent. L2 still requires independent whole-service reconciliation.
+
 ## 11. Security and trust boundaries
 
 Root capability is minimized and mechanically scoped. Packaging cannot add semantic policy, substitute unpinned provider bytes, broaden namespaces or silently select a legacy authority path.
@@ -212,6 +303,37 @@ Rolling compatibility is supported under the explicit compatibility and fencing 
 Image and service upgrades are manifest-bound. A new service epoch starts only after payload, ownership, mount and state-schema checks pass; rollback restores the last compatible immutable image and fences newer writers.
 
 Rollback is fail-closed. Stateful modules restore the last compatible durable state, fence newer writers and reconcile external effects before admission. A rollback may restore software and state compatibility; it cannot erase an effect already attempted outside the module.
+
+The supervisor configuration and output schema IDs remain `v1`; existing
+well-formed private paths and newline-terminated event files remain readable.
+Admission is intentionally stricter for non-private parents, symlinked ancestors,
+unsafe event leaves and competing owners. During an offline upgrade, stop the
+service through its independently administered inhibit, verify no old carriers
+remain, inspect owner/mode and every state path component, and explicitly prepare
+private directories. Never change permissions or replace a state-root directory
+under a running supervisor to make validation pass. Preserve torn event bytes
+for operator reconciliation; do not delete/truncate them as an automatic repair.
+A terminated process can leave its temporary status file; remove only verified
+inactive temporary artifacts during controlled maintenance, not while a writer
+holds the root. Rolling back to an older binary removes these new local checks
+and therefore needs renewed qualification rather than inherited assurance.
+
+The crash-session fence is a stricter restart contract. Existing v1 config remains
+valid except for the reserved `.supervisor-session.json` path. An init restart
+loop must not delete that file. To clear a retained marker, an independent
+operator must first inhibit and stop the entire service, verify cgroup-wide
+cleanup and old-writer absence, preserve the exact marker/status/event bytes,
+and reconcile authoritative Host/job state without replay. Only under exclusive
+state-root ownership may the operator remove the verified inactive marker and
+sync its parent, recording the authorization and reconciliation result outside
+the candidate process. PID liveness, a `terminal` string or elapsed time is not
+sufficient. A crash during this procedure remains HOLD. Rolling back to a
+binary that ignores session fences requires the same offline procedure and new
+qualification; do not regain availability by weakening admission.
+
+The additive `session_id` status/event field needs compatibility validation for
+consumers that reject unknown fields. The session schema is independent of the
+Host effect journal and grants no controller epoch or release authority.
 
 ## 14. Observability
 
@@ -288,6 +410,8 @@ Exit evidence must demonstrate:
 - install manifest matches the live target.
 - resource limits are observed.
 - restart and emergency inhibit work.
+- an unclean supervisor session blocks new carrier admission until independently reconciled.
+- state writes and parent-directory durability failures remain explicit; no torn log is automatically repaired.
 
 ### GAP-ANDROID-GRAPH-001 — exit L3
 

@@ -141,6 +141,48 @@ status fields and operator obligations. Source-only reproduction:
 python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
 ```
 
+### State storage and single-writer admission
+
+Before any carrier starts, the supervisor owns an exclusive advisory lock on the
+private state-root directory and has pinned all state/output/inhibit parents
+without following symlinks. The installer must provision stable, private,
+owner-controlled directories; existing permissive parents are rejected, not
+silently repaired. A second cooperating supervisor must not use the same root.
+This lock is not cgroup containment or a supervisor-crash recovery proof.
+
+Event writes complete partial writes, synchronize file and directory, and fence
+this instance after I/O/integrity failure. A torn newline tail blocks startup
+without automatic repair. Status writes complete a fresh temporary file, fsync,
+replace within the pinned parent, and fsync the directory; a post-rename fsync
+failure remains durability-unknown even if new status is readable. Handled
+pre-rename failures remove the attempt's temporary file. Settled leaders are all
+reaped before cleanup events are emitted, so log failure cannot abandon reaping.
+
+The existing supervisor test command above runs the state-I/O failure matrix,
+real competing-process lock test and bounded local lifecycle tests together.
+Local injected errors and ordinary fsync success do not close installed L2,
+physical L4 or destructive L5 gaps. Consult `MOD-ROOTLINUX` sections 10 and 13 for
+exact write boundaries, compatibility changes and offline migration procedure.
+
+### Crash-session reconciliation fence
+
+A private `.supervisor-session.json` is synchronized before the first carrier.
+Any retained marker from an earlier process blocks startup before status/event
+mutation, even when the advisory directory lock is now available. PIDs and age
+are diagnostic only: no implicit kill, adoption, marker deletion or effect replay
+is permitted. Normal and handled emergency stops clear only their own marker,
+after original-group cleanup and durable terminal observations. Failed runs,
+including exhausted restart budgets, retain the fence. The independent owner
+inhibit is never removed by the supervisor.
+
+This intentionally changes restart behavior: init must remain inhibited after an
+unclean session until an independent operator verifies whole-service cleanup,
+preserves state and authorizes offline reconciliation. Do not delete the marker
+in an init pre-start hook. The marker does not clean up escaped descendants or
+qualify installed behavior; see `MOD-ROOTLINUX` for release ordering, failure
+classification and migration requirements. The existing supervisor suite also
+covers real SIGKILL/orphan/restart behavior using test-only subreaping.
+
 ## Broker connection-resource ownership
 
 `owner_open_broker_connections.py` is a required broker runtime dependency, not

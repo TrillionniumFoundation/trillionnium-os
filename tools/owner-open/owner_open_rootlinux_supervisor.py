@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 from collections import deque
 from dataclasses import dataclass, field
+import fcntl
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -27,7 +28,11 @@ from typing import Any
 SCHEMA = "org.trillionnium.owner-open.rootlinux-supervisor.v1"
 MAX_CONFIG_BYTES = 1024 * 1024
 MAX_EVENT_BYTES = 16 * 1024 * 1024
+SESSION_FILE = ".supervisor-session.json"
+SESSION_SCHEMA = "org.trillionnium.owner-open.rootlinux-supervisor-session.v1"
 MAX_CHILDREN = 16
+MAX_PATH_BYTES = 4096
+MAX_PATH_COMPONENTS = 64
 MAX_PROC_ENTRIES = 65536
 MAX_PROC_STAT_BYTES = 8192
 MAX_PROC_SCAN_SECONDS = 1.0
@@ -64,7 +69,13 @@ def strict_object(value: Any, keys: set[str], label: str) -> dict[str, Any]:
 def absolute_path(value: Any, label: str) -> Path:
     if not isinstance(value, str) or not value.startswith("/") or "\x00" in value:
         raise SupervisorError(f"{label} must be an absolute NUL-free path")
+    try:
+        encoded = value.encode("utf-8")
+    except UnicodeEncodeError as error:
+        raise SupervisorError(f"{label} is not valid UTF-8") from error
     parsed = PurePosixPath(value)
+    if len(encoded) > MAX_PATH_BYTES or len(parsed.parts) > MAX_PATH_COMPONENTS:
+        raise SupervisorError(f"{label} exceeds the bounded path budget")
     if ".." in parsed.parts or str(parsed) != value:
         raise SupervisorError(f"{label} is not canonical")
     return Path(value)
@@ -105,6 +116,52 @@ def stable_executable(path: Path, label: str) -> None:
         or metadata.st_mode & 0o111 == 0
     ):
         raise SupervisorError(f"{label} is not one stable non-writable executable")
+
+
+def write_all(descriptor: int, data: bytes) -> None:
+    """Complete a finite regular-file write; never acknowledge a short write."""
+    remaining = memoryview(data)
+    while remaining:
+        written = os.write(descriptor, remaining)
+        if written <= 0 or written > len(remaining):
+            raise SupervisorError("state write made no valid progress")
+        remaining = remaining[written:]
+
+
+def private_directory(descriptor: int) -> None:
+    metadata = os.fstat(descriptor)
+    if (
+        not stat.S_ISDIR(metadata.st_mode)
+        or metadata.st_uid not in {0, os.geteuid()}
+        or stat.S_IMODE(metadata.st_mode) & 0o077
+    ):
+        raise SupervisorError("state directory must be private and owner-controlled")
+
+
+def open_directory_chain(path: Path) -> int:
+    """Pin an absolute directory without following any symlink component."""
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    descriptor = os.open("/", flags)
+    try:
+        for part in path.parts[1:]:
+            child = os.open(part, flags, dir_fd=descriptor)
+            os.close(descriptor)
+            descriptor = child
+        return descriptor
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
+def private_file(descriptor: int, label: str) -> os.stat_result:
+    metadata = os.fstat(descriptor)
+    if (
+        not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1
+        or metadata.st_uid not in {0, os.geteuid()}
+        or stat.S_IMODE(metadata.st_mode) & 0o077
+    ):
+        raise SupervisorError(f"{label} must be one private owner-controlled regular file")
+    return metadata
 
 
 @dataclass(frozen=True)
@@ -192,6 +249,9 @@ def load_config(path: Path) -> Config:
         except ValueError as error:
             raise SupervisorError(f"{label} must remain below state_root") from error
     outputs = (emergency_stop, status_path, event_log_path)
+    reserved = state_root / SESSION_FILE
+    if any(path == reserved or reserved in path.parents for path in outputs):
+        raise SupervisorError("state outputs must not use the reserved supervisor session path")
     if any(path == state_root for path in outputs) or any(
         left == right or left in right.parents or right in left.parents
         for index, left in enumerate(outputs) for right in outputs[index + 1:]
@@ -292,56 +352,211 @@ class Supervisor:
         self.children: dict[str, ManagedChild] = {}
         self.stop_reason: str | None = None
         self.failure_reason: str | None = None
+        self._state_directories: dict[Path, int] = {}
+        self._event_failed = False
+        self._session_id: str | None = None
+        self._session_identity: tuple[int, int] | None = None
+        self._session_bytes: bytes | None = None
+        self._session_ready = False
+        self._terminal_recorded = False
+
+    def close_state(self) -> None:
+        """Release only this instance's descriptors and advisory directory lock."""
+        for descriptor in self._state_directories.values():
+            os.close(descriptor)
+        self._state_directories.clear()
 
     def validate_state_root(self) -> None:
-        metadata = self.config.state_root.lstat()
-        if (
-            stat.S_ISLNK(metadata.st_mode)
-            or not stat.S_ISDIR(metadata.st_mode)
-            or metadata.st_uid not in {0, os.geteuid()}
-            or stat.S_IMODE(metadata.st_mode) & 0o077
-        ):
-            raise SupervisorError("state_root must be a private owner-controlled directory")
-        for path in (self.config.status_path.parent, self.config.event_log_path.parent):
-            path.mkdir(mode=0o700, parents=True, exist_ok=True)
-            current = path.lstat()
-            if stat.S_ISLNK(current.st_mode) or not stat.S_ISDIR(current.st_mode):
-                raise SupervisorError(f"state child path is unsafe: {path}")
-            os.chmod(path, 0o700)
+        if self._state_directories:
+            self.assert_state_namespace()
+            return
+        try:
+            root = open_directory_chain(self.config.state_root)
+            self._state_directories[self.config.state_root] = root
+            private_directory(root)
+            try:
+                fcntl.flock(root, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError as error:
+                raise SupervisorError("state_root is already owned or cannot be locked") from error
+            flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+            for path in (self.config.status_path, self.config.event_log_path, self.config.emergency_stop):
+                current = self.config.state_root
+                descriptor = root
+                for part in path.parent.relative_to(self.config.state_root).parts:
+                    current = current / part
+                    if current not in self._state_directories:
+                        try:
+                            os.mkdir(part, 0o700, dir_fd=descriptor)
+                        except FileExistsError:
+                            pass
+                        else:
+                            os.fsync(descriptor)
+                        child = os.open(part, flags, dir_fd=descriptor)
+                        self._state_directories[current] = child
+                        private_directory(child)
+                    descriptor = self._state_directories[current]
+            self.assert_state_namespace()
+        except BaseException:
+            self.close_state()
+            raise
+
+    def assert_state_namespace(self) -> None:
+        """Reject replacement of a pinned directory, including inhibit parents.
+
+        These checks do not defend against a malicious root/same-UID custodian.
+        Retained dirfds, not the rechecked pathnames, are used for actual I/O.
+        """
+        if not self._state_directories:
+            raise SupervisorError("state_root ownership has not been acquired")
+        root = self.config.state_root
+        current = open_directory_chain(root)
+        try:
+            pinned, observed = os.fstat(self._state_directories[root]), os.fstat(current)
+            if (pinned.st_dev, pinned.st_ino) != (observed.st_dev, observed.st_ino):
+                raise SupervisorError("state directory identity changed")
+        finally:
+            os.close(current)
+        # Every intermediate parent is pinned. Check each edge once rather than
+        # repeatedly traversing the whole prefix for every nested directory.
+        for path, descriptor in self._state_directories.items():
+            private_directory(descriptor)
+            if path == root:
+                continue
+            observed = os.stat(
+                path.name, dir_fd=self._state_directories[path.parent], follow_symlinks=False,
+            )
+            pinned = os.fstat(descriptor)
+            if not stat.S_ISDIR(observed.st_mode) or (
+                pinned.st_dev, pinned.st_ino
+            ) != (observed.st_dev, observed.st_ino):
+                raise SupervisorError("state directory identity changed")
+
+    def state_parent(self, path: Path) -> int:
+        self.assert_state_namespace()
+        try:
+            return self._state_directories[path.parent]
+        except KeyError as error:
+            raise SupervisorError("state output parent was not pinned") from error
+
+    def assert_session_clear(self) -> None:
+        """An absent process lock is not a receipt for an earlier session.
+
+        Any retained marker (even empty, stale-looking, or a special file)
+        requires offline reconciliation. Never inspect a stored PID to kill,
+        adopt, or automatically remove another session's record.
+        """
+        parent = self.state_parent(self.config.state_root / SESSION_FILE)
+        try:
+            os.stat(SESSION_FILE, dir_fd=parent, follow_symlinks=False)
+        except FileNotFoundError:
+            return
+        raise SupervisorError("prior supervisor session requires offline reconciliation")
+
+    def begin_session(self) -> None:
+        """Durably fence crash recovery before a new carrier may start."""
+        if self._session_id is not None:
+            raise SupervisorError("supervisor session admission was already attempted")
+        parent = self.state_parent(self.config.state_root / SESSION_FILE)
+        self._session_id = secrets.token_hex(16)
+        self._session_bytes = json.dumps({
+            "schema": SESSION_SCHEMA,
+            "session_id": self._session_id,
+            "supervisor_pid": os.getpid(),
+            "pid_is_recovery_authority": False,
+            "automatic_effect_redispatch": False,
+            "cleanup_scope": "original_process_group_only",
+            "recovery": "offline_reconciliation_required_if_retained",
+        }, sort_keys=True, separators=(",", ":")).encode("utf-8") + b"\n"
+        descriptor = os.open(
+            SESSION_FILE, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
+            | os.O_CLOEXEC | os.O_NONBLOCK, 0o600, dir_fd=parent,
+        )
+        try:
+            metadata = private_file(descriptor, "supervisor session")
+            self._session_identity = (metadata.st_dev, metadata.st_ino)
+            write_all(descriptor, self._session_bytes)
+            os.fsync(descriptor)
+            os.fsync(parent)
+        finally:
+            # Even a short/failed creation remains as a recovery fence. It is
+            # not removed just because the creating process knows it failed.
+            os.close(descriptor)
+        self._session_ready = True
+
+    def assert_session_owned(self) -> None:
+        if not self._session_ready or self._session_bytes is None:
+            raise SupervisorError("supervisor session admission is not durable")
+        parent = self.state_parent(self.config.state_root / SESSION_FILE)
+        descriptor = os.open(
+            SESSION_FILE, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+            dir_fd=parent,
+        )
+        try:
+            metadata = private_file(descriptor, "supervisor session")
+            if (metadata.st_dev, metadata.st_ino) != self._session_identity:
+                raise SupervisorError("supervisor session identity changed")
+            if metadata.st_size != len(self._session_bytes) or os.read(
+                descriptor, len(self._session_bytes) + 1,
+            ) != self._session_bytes:
+                raise SupervisorError("supervisor session contents changed")
+        finally:
+            os.close(descriptor)
+
+    def finish_session(self) -> None:
+        if any(not child.group_cleaned for child in self.children.values()):
+            raise SupervisorError("unconfirmed cleanup cannot release the supervisor session")
+        if not self._terminal_recorded:
+            raise SupervisorError("a durable terminal observation is required to release the session")
+        self.assert_session_owned()
+        parent = self.state_parent(self.config.state_root / SESSION_FILE)
+        os.unlink(SESSION_FILE, dir_fd=parent)
+        # If sync fails after unlink, removal is durability-unknown, not a
+        # successful terminal operation. The caller must return failure.
+        os.fsync(parent)
+        self._session_ready = False
 
     def append_event(self, kind: str, **fields: Any) -> None:
         value = {
             "schema": "org.trillionnium.owner-open.rootlinux-supervisor-event.v1",
             "kind": kind,
+            "session_id": self._session_id,
             "monotonic_ns": time.monotonic_ns(),
             "automatic_effect_redispatch": False,
             **fields,
         }
         encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8") + b"\n"
-        descriptor = os.open(
-            self.config.event_log_path,
-            os.O_WRONLY
-            | os.O_APPEND
-            | os.O_CREAT
-            | getattr(os, "O_NOFOLLOW", 0)
-            | os.O_CLOEXEC,
-            0o600,
-        )
+        if self._event_failed:
+            raise SupervisorError("event log is fenced after an I/O or integrity failure")
+        parent = self.state_parent(self.config.event_log_path)
+        descriptor = None
         try:
-            metadata = os.fstat(descriptor)
-            if not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1:
-                raise SupervisorError("event log is not one regular file")
+            descriptor = os.open(
+                self.config.event_log_path.name,
+                os.O_RDWR | os.O_APPEND | os.O_CREAT | os.O_NOFOLLOW
+                | os.O_CLOEXEC | os.O_NONBLOCK,
+                0o600, dir_fd=parent,
+            )
+            metadata = private_file(descriptor, "event log")
             if metadata.st_size + len(encoded) > MAX_EVENT_BYTES:
                 raise SupervisorError("event log capacity exhausted")
-            os.write(descriptor, encoded)
+            if metadata.st_size and os.pread(descriptor, 1, metadata.st_size - 1) != b"\n":
+                raise SupervisorError("event log has an unterminated tail; reconciliation required")
+            write_all(descriptor, encoded)
             os.fsync(descriptor)
+            # A new event file's name must survive independently of its bytes.
+            os.fsync(parent)
+        except BaseException:
+            self._event_failed = True
+            raise
         finally:
-            os.close(descriptor)
+            if descriptor is not None:
+                os.close(descriptor)
 
     def write_status(self, state: str, reason: str | None = None) -> None:
         value = {
             "schema": "org.trillionnium.owner-open.rootlinux-supervisor-status.v1",
             "state": state,
+            "session_id": self._session_id,
             "reason": reason,
             "children": {
                 name: {
@@ -358,25 +573,24 @@ class Supervisor:
             "escaped_descendants_absence_proven": False,
         }
         raw = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2).encode("utf-8") + b"\n"
-        temporary = self.config.status_path.parent / (
-            f".{self.config.status_path.name}.tmp-{os.getpid()}-{secrets.token_hex(8)}"
-        )
+        parent = self.state_parent(self.config.status_path)
+        temporary = f".{self.config.status_path.name}.tmp-{os.getpid()}-{secrets.token_hex(8)}"
         descriptor = os.open(
-            temporary,
-            os.O_WRONLY
-            | os.O_CREAT
-            | os.O_EXCL
-            | getattr(os, "O_NOFOLLOW", 0)
-            | os.O_CLOEXEC,
-            0o600,
+            temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+            0o600, dir_fd=parent,
         )
+        replaced = False
         try:
-            os.write(descriptor, raw)
+            write_all(descriptor, raw)
             os.fsync(descriptor)
+            os.replace(temporary, self.config.status_path.name, src_dir_fd=parent, dst_dir_fd=parent)
+            replaced = True
+            # Failure here means visible-but-durability-unknown, never success.
+            os.fsync(parent)
         finally:
             os.close(descriptor)
-        os.replace(temporary, self.config.status_path)
-        os.chmod(self.config.status_path, 0o600)
+            if not replaced:
+                os.unlink(temporary, dir_fd=parent)
 
     def child_environment(self, child: ChildConfig) -> dict[str, str]:
         result = {
@@ -390,6 +604,13 @@ class Supervisor:
         return result
 
     def spawn(self, child: ChildConfig, restart_times: deque[float] | None = None) -> ManagedChild:
+        if self._event_failed:
+            raise SupervisorError("event log failure prohibits new carrier admission")
+        if self.emergency_requested():
+            raise SupervisorError("carrier admission is inhibited")
+        if self._session_id is None:
+            self.begin_session()
+        self.assert_session_owned()
         process = subprocess.Popen(
             list(child.argv),
             stdin=subprocess.DEVNULL,
@@ -535,6 +756,8 @@ class Supervisor:
         for managed in pending:
             managed.process.wait(timeout=0)
             managed.group_cleaned = True
+        # Finish reaping every settled anchor even if audit storage has failed.
+        for managed in pending:
             self.append_event(
                 "child_group_cleaned", child=managed.config.name,
                 pgid=managed.process.pid, scope="original_process_group_only",
@@ -546,11 +769,15 @@ class Supervisor:
 
     def emergency_requested(self) -> bool:
         try:
-            self.config.emergency_stop.lstat()
+            parent = self.state_parent(self.config.emergency_stop)
+        except (OSError, SupervisorError):
+            return True
+        try:
+            os.stat(self.config.emergency_stop.name, dir_fd=parent, follow_symlinks=False)
             return True  # Any marker, including a dangling symlink, inhibits.
         except FileNotFoundError:
             return False
-        except OSError:
+        except (OSError, SupervisorError):
             return True  # An unreadable inhibit state is not permission to spawn.
 
     def request_stop(self, reason: str) -> None:
@@ -566,12 +793,22 @@ class Supervisor:
             time.sleep(min(self.config.poll_seconds, max(0.0, deadline - time.monotonic())))
 
     def run(self) -> int:
-        self.validate_state_root()
         if (
             not sys.platform.startswith("linux") or not callable(getattr(os, "waitid", None))
             or not hasattr(os, "WNOWAIT") or signal.getsignal(signal.SIGCHLD) != signal.SIG_DFL
         ):
             raise SupervisorError("Linux waitid/WNOWAIT and exclusive default-SIGCHLD reaping are required")
+        try:
+            self.validate_state_root()
+            self.assert_session_clear()
+            result = self.run_owned()
+            if result in (0, 75) and self._session_ready:
+                self.finish_session()
+            return result
+        finally:
+            self.close_state()
+
+    def run_owned(self) -> int:
         if self.emergency_requested():
             self.append_event("startup_inhibited", reason="emergency_stop")
             self.write_status("inhibited", "emergency_stop")
@@ -585,6 +822,10 @@ class Supervisor:
                 pass
         result = 0
         try:
+            self.begin_session()
+            # Detect an unsafe/full/torn event log before the first carrier.
+            # This is a supervisor observation, not durable job acceptance.
+            self.append_event("supervisor_starting")
             for child in self.config.children:
                 if self.emergency_requested():
                     self.request_stop("emergency_stop")
@@ -594,6 +835,7 @@ class Supervisor:
             self.append_event("supervisor_ready", child_count=len(self.children))
             self.write_status("running")
             while self.stop_reason is None and self.failure_reason is None:
+                self.assert_session_owned()
                 if self.emergency_requested():
                     self.request_stop("emergency_stop")
                     break
@@ -654,6 +896,7 @@ class Supervisor:
             try:
                 self.write_status("terminal", reason)
                 self.append_event("supervisor_terminal", reason=reason, returncode=result)
+                self._terminal_recorded = True
             except Exception:
                 result = 70
             for current, handler in previous_handlers.items():

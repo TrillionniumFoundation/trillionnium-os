@@ -392,13 +392,43 @@
         "GAP-ROOTLINUX-PLACEMENT-001"
       ],
       "source": [
-        "docs/OPERATIONS_AND_ROLLOUT.md"
+        "docs/OPERATIONS_AND_ROLLOUT.md",
+        "tools/owner-open/owner_open_rootlinux_supervisor.py",
+        "docs/modules/MOD-ROOTLINUX.md"
       ],
       "tests": [
         {
           "kind": "external",
           "path": "docs/OPERATIONS_AND_ROLLOUT.md",
           "target": "installed target qualification"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_rootlinux_supervisor.py",
+          "target": "tools.tests.test_owner_open_rootlinux_supervisor",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "tools.tests.test_owner_open_rootlinux_supervisor",
+            "-v"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_rootlinux_supervisor.py",
+          "target": "tools.tests.test_owner_open_rootlinux_supervisor",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "tools.tests.test_owner_open_rootlinux_supervisor",
+            "-v"
+          ],
+          "workflow": ".github/workflows/g1-synthetic-merge.yml",
+          "workflow_job": "synthetic-merge"
         }
       ],
       "evidence": [],
