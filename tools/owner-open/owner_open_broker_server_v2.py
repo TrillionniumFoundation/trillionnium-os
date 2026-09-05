@@ -204,15 +204,11 @@ class BrokerServerMixin:
                     connection, _ = listener.accept()
                 except socket.timeout:
                     continue
-                reader = threading.Thread(
-                    target=self._client_reader,
-                    args=(connection,),
-                    daemon=True,
-                    name="broker-client-reader",
-                )
-                reader.start()
-                self.worker_threads.append(reader)
+                # Reserve before Thread.start, including silent/unauthenticated peers.
+                self.connection_workers.start_reader(connection, self._client_reader)
         finally:
+            self.stopping.set()
+            self.connection_workers.close()
             if not self.upstream_uncertain.is_set():
                 self._mark_upstream_unknown(
                     BrokerError("broker stopped with accepted requests unresolved"),
@@ -240,11 +236,15 @@ class BrokerServerMixin:
                 self.descriptor_identity,
             )
             self._stop_upstream()
+            # One deadline for all client readers/writers, not per historical client.
+            client_workers_stopped = self.connection_workers.join(timeout=1.0)
             for worker in self.worker_threads:
                 if worker is threading.current_thread():
                     continue
                 worker.join(timeout=0.5)
             self.audit.close()
+        if not client_workers_stopped:
+            raise BrokerError("client worker cleanup is unconfirmed; no clean shutdown claim")
         return 0
 
     def _stop_upstream(self) -> None:

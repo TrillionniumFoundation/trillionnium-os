@@ -26,6 +26,7 @@ from owner_open_broker_common import (
     validate_argv,
     validate_executable,
 )
+from owner_open_broker_connections import ClientWorkers
 from owner_open_broker_mux import WeightedFairMux
 from owner_open_broker_runtime import (
     BROKER_WRITE_TIMEOUT_SECONDS,
@@ -392,7 +393,9 @@ class BrokerBase:
         self.socket_fd_identity: tuple[int, int] | None = None
         self.descriptor_identity: tuple[int, int] | None = None
         self.upstream_process_identity: _ProcessIdentity | None = None
+        # Static upstream/dispatcher workers only; client churn is separately bounded.
         self.worker_threads: list[threading.Thread] = []
+        self.connection_workers = ClientWorkers(args.max_clients)
 
     def _start_upstream(self) -> None:
         # Keep the validated inode pinned through exec.  Re-validating the

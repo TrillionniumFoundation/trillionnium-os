@@ -768,6 +768,7 @@
     "tools/owner-open/owner_open_broker_base_v2.py",
     "tools/owner-open/owner_open_broker_client.py",
     "tools/owner-open/owner_open_broker_common.py",
+    "tools/owner-open/owner_open_broker_connections.py",
     "tools/owner-open/owner_open_broker_convergence_v2.py",
     "tools/owner-open/owner_open_broker_mux.py",
     "tools/owner-open/owner_open_broker_runtime.py",
@@ -837,6 +838,7 @@
     "tools/tests/test_owner_open_bootstrap_manifest_contract.py",
     "tools/tests/test_owner_open_broker_admission_concurrency.py",
     "tools/tests/test_owner_open_broker_audit.py",
+    "tools/tests/test_owner_open_broker_connections.py",
     "tools/tests/test_owner_open_broker_convergence_race.py",
     "tools/tests/test_owner_open_broker_correlation_strict.py",
     "tools/tests/test_owner_open_broker_executable.py",
@@ -4750,6 +4752,11 @@
       "status": "added"
     },
     {
+      "path": "tools/owner-open/owner_open_broker_connections.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
       "path": "tools/owner-open/owner_open_broker_convergence_v2.py",
       "previous_path": null,
       "status": "added"
@@ -5091,6 +5098,11 @@
     },
     {
       "path": "tools/tests/test_owner_open_broker_audit.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/tests/test_owner_open_broker_connections.py",
       "previous_path": null,
       "status": "added"
     },
@@ -5572,10 +5584,10 @@
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 927,
-    "changes_sha256": "34bac520f30f2844db1803af52f809f6dde39957d2e58e074f4e70f43b6099f0",
-    "path_count": 927,
-    "paths_sha256": "86c231c2137767afc757e9f46ec486ccb7ac5f2dbcc0761442d101acd2d45238"
+    "change_count": 929,
+    "changes_sha256": "0dac12a73a5da33c8473531c450f5d1469fd120dab68a1c7f510b09e4545a293",
+    "path_count": 929,
+    "paths_sha256": "4f1ead9911cc80c4d4d805b5612e2c070737fa7131b24600d094b3c18d9c40bd"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
@@ -6426,6 +6438,7 @@
         "tools/owner-open/owner_open_broker_base_v2.py",
         "tools/owner-open/owner_open_broker_client.py",
         "tools/owner-open/owner_open_broker_common.py",
+        "tools/owner-open/owner_open_broker_connections.py",
         "tools/owner-open/owner_open_broker_convergence_v2.py",
         "tools/owner-open/owner_open_broker_mux.py",
         "tools/owner-open/owner_open_broker_runtime.py",
@@ -6495,6 +6508,7 @@
         "tools/tests/test_owner_open_bootstrap_manifest_contract.py",
         "tools/tests/test_owner_open_broker_admission_concurrency.py",
         "tools/tests/test_owner_open_broker_audit.py",
+        "tools/tests/test_owner_open_broker_connections.py",
         "tools/tests/test_owner_open_broker_convergence_race.py",
         "tools/tests/test_owner_open_broker_correlation_strict.py",
         "tools/tests/test_owner_open_broker_executable.py",

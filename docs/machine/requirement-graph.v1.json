@@ -235,6 +235,23 @@
           ],
           "workflow": ".github/workflows/g1-exact-head-source.yml",
           "workflow_job": "docs-graph"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_broker_connections.py",
+          "target": "test_owner_open_broker*.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-p",
+            "test_owner_open_broker*.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
         }
       ],
       "evidence": [

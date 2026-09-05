@@ -23,6 +23,7 @@ from owner_open_broker_common import (
     require_token,
     strict_json,
 )
+from owner_open_broker_connections import SocketLineReader
 from owner_open_broker_mux import MuxError, ordering_key_for_frame
 from owner_open_broker_runtime import (
     BROKER_WRITE_TIMEOUT_SECONDS,
@@ -163,13 +164,9 @@ class BrokerAdmissionMixin:
             # occupying the ID (or a writer holding the socket) forever.
             if client_id in getattr(self.args, "client_weights", {}):
                 self.mux.set_weight(client_id, self.args.client_weights[client_id])
-            writer = threading.Thread(
-                target=client.writer,
-                daemon=True,
-                name=f"broker-writer-{client_id}",
+            self.connection_workers.start_writer(
+                connection, client.writer, name=f"broker-writer-{client_id}"
             )
-            writer.start()
-            self.worker_threads.append(writer)
             descriptor = self.descriptor
             host_hello_ack = self.host_hello_ack
             if descriptor is None or host_hello_ack is None:
@@ -693,9 +690,12 @@ class BrokerAdmissionMixin:
 
     def _client_reader(self, connection: socket.socket) -> None:
         client: Client | None = None
-        stream = connection.makefile("rb", buffering=0)
+        stream: SocketLineReader | None = None
         try:
+            deadline = self.connection_workers.hello_deadline(connection)
+            stream = SocketLineReader(connection, deadline=deadline)
             client = self._authenticate(connection, stream)
+            stream.authenticated()
             while not self.stopping.is_set() and not client.closed.is_set():
                 raw = read_line(stream, label="broker request")
                 if raw is None:
@@ -752,10 +752,8 @@ class BrokerAdmissionMixin:
                 except (OSError, TimeoutError):
                     pass
         finally:
-            try:
+            if stream is not None:
                 stream.close()
-            except OSError:
-                pass
             if client:
                 self._remove_client(client)
             else:

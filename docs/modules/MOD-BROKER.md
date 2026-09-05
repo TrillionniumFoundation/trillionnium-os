@@ -101,6 +101,47 @@ Only this module may perform authoritative writes for its state families. Read m
 
 Per-key operations are linearized while unrelated keys may progress concurrently. Process spawn, external I/O, fsync and provider waits are slow paths and must not execute under a global registry lock. At capacity, admission is rejected before starting a process or publishing an accepted effect.
 
+### Connection lifetime admission and exact worker ownership
+
+`--max-clients` bounds accepted socket lifetimes, not only authenticated client
+IDs. `ClientWorkers.start_reader` reserves a slot under its metadata lock before
+creating a reader thread. A full or closed pool shuts down the new socket
+without creating a worker, authenticating a client, admitting a request, or
+forwarding an effect. The kernel listen backlog is separate from these slots.
+
+Each slot owns exactly one reader and at most one writer. A disconnected client
+ID becoming reusable does not free the connection slot: both threads must have
+actually terminated. Reaping occurs on admission and bounded snapshots/joins;
+completed clients never accumulate in the static `worker_threads` history.
+An interrupted thread start whose native identity is not yet observable retains
+its slot as unconfirmed rather than proving that no worker exists.
+
+The concrete worker bound is `2 * max_clients + max_inflight_requests + 3`,
+excluding the main thread and interpreter-internal threads. The three static
+workers are upstream stderr, upstream reader and timeout monitor. Defaults
+(`max_clients=16`, `max_inflight_requests=16`) therefore allow at most 51 broker
+workers. This formula is a source bound, not a measured RSS/CPU/FD result or a
+claim that every permitted non-default configuration fits a particular device.
+
+The hello receive deadline is five monotonic seconds from slot reservation,
+including reader scheduling delay. Byte trickling and interrupted readiness
+waits cannot extend it. After successful authentication, this hello deadline is
+removed; per-request timeouts and the existing line-byte bound still apply.
+`SocketLineReader` buffers at most the requested line bound, preserves bytes
+following the hello newline, and uses per-call nonblocking reads without
+changing the writer's socket mode. It retains a duplicate socket descriptor and
+one selector descriptor, both closed with the reader: closing the original
+socket cannot silently unregister the selected FD before shutdown wakes it.
+
+Shutdown fences admission, shuts down every registered socket (including
+unauthenticated peers), and joins client workers with one total one-second
+budget. An unconfirmed worker produces a nonzero broker shutdown result; it is
+never reported as a clean exit. Closing a connection does not cancel or replay
+an already accepted effect; existing durable convergence retains that authority.
+
+- Implementation source: `tools/owner-open/owner_open_broker_connections.py` — `ClientWorkers`
+- Implementation source: `tools/owner-open/owner_open_broker_connections.py` — `SocketLineReader`
+
 ## 8. Effect, cancellation and uncertainty semantics
 
 Automatic redispatch: **forbidden**.
@@ -190,11 +231,12 @@ The module documentation verifier checks this document against the machine catal
 ### Reproduction entrypoint
 
 - Verification source: `tools/tests/test_owner_open_broker_mux.py`
+- Verification source: `tools/tests/test_owner_open_broker_connections.py`
 
 Run from the repository root in an isolated host source-test environment:
 
 ```sh
-python3 -m unittest tools.tests.test_owner_open_broker_mux -v
+python3 -m unittest tools.tests.test_owner_open_broker_mux tools.tests.test_owner_open_broker_connections -v
 ```
 
 This command qualifies only the source behavior that its assertions exercise.

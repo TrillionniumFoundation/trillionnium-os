@@ -140,3 +140,20 @@ status fields and operator obligations. Source-only reproduction:
 ```sh
 python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
 ```
+
+## Broker connection-resource ownership
+
+`owner_open_broker_connections.py` is a required broker runtime dependency, not
+a test-only helper. Include it beside the existing broker Python modules when
+assembling an installed payload, and bind its exact bytes in that payload's
+manifest. `--max-clients` now includes silent pre-authentication sockets and
+teardown. Capacity is released only after the reader and optional writer have
+terminated; an over-limit socket is closed before worker creation. The hello
+receive deadline is five seconds from reservation and is not renewed by input.
+The detailed API, worker/descriptor accounting, interrupted-start behavior and
+shutdown contract are in `docs/modules/MOD-BROKER.md`.
+
+Run `python3 -m unittest tools.tests.test_owner_open_broker_connections -v` from
+the repository root. These unit/socket/subprocess regressions are source
+evidence only; installed limits, scheduling, descriptor behavior and recovery
+still need the level-correct evidence for `GAP-CONC-BROKER-MUX-001`.
