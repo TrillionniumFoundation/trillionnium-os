@@ -113,7 +113,9 @@ def _download_artifact(api: _RepoApi, artifact: Mapping[str, Any]) -> tuple[byte
         "size_in_bytes": size,
         "sha256": actual_digest,
         "expires_at": artifact["expires_at"],
-        "download_url": response.url,
+        # Transport URLs can be short-lived bearer capabilities, including in
+        # their paths. Retain only the repository-scoped API locator.
+        "archive_api_path": f"repos/{api.repository}/actions/artifacts/{artifact_id}/zip",
     }
 
 

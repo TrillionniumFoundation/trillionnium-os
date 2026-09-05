@@ -308,7 +308,19 @@ artifact requests may follow HTTPS storage redirects. API credentials are sent
 only to the initial same-origin request, never restored after any redirect,
 even one returning to that origin. HTTP errors close without consuming their
 bodies. Diagnostics do not echo response bodies, signed URL queries or network
-exception text; callers must still protect the returned artifact URL as before.
+exception text. Successful aggregate reports also exclude the initial and final
+transport URLs: a capability can occur in a URL path as well as its query. The
+artifact diagnostic field `download_url` is replaced by `archive_api_path`, a
+repository-relative `repos/<owner>/<repo>/actions/artifacts/<id>/zip` locator
+constructed from the validated repository and numeric artifact ID, not copied
+from a response. Artifact ID, name, byte count, SHA-256, expiry and semantic
+bindings remain unchanged. This is a report-diagnostic compatibility change,
+not a receipt-schema change or a weaker verification rule. Consumers of the old
+download field must use the repository-scoped locator with their own API access;
+reports do not retain a capability for unauthenticated artifact access. Holding
+all evidence and observation inputs fixed, redirect-URL rotation alone no longer
+changes the aggregate report hash. Low-level `ApiResponse.url` remains transient
+transport state and must not be logged or serialized by other callers.
 No network failure authorizes retries, source promotion or target dispatch.
 
 Each HTTP operation has a shared monotonic deadline across redirects and body
@@ -330,7 +342,11 @@ change receipt schemas or make self-hashes into signatures.
 The existing `tools.tests.test_g1_pr_aggregate` suite exercises bounded/short reads,
 Content-Length errors, real standard-library chunked-response decoding, redirect
 loops and hop limits, close ordering, credential stripping, deadlines and strict
-JSON. Its in-memory transports contain test-only bytes, not live GitHub results.
+JSON. Success-path regressions also exercise a signed storage redirect, query
+and path capability omission from all four workflow-family reports and persisted
+JSON, and report-hash stability under redirect-URL rotation. They retain exact
+archive-byte/digest checks and initial-request-only token behavior. Its in-memory
+transports contain test-only bytes, not live GitHub results.
 Run it with `python3 -m unittest tools.tests.test_g1_pr_aggregate -v`; existing
 exact-head and synthetic-merge complete discovery includes this suite. Local
 success cannot replace terminal hosted CI, independent approval or L2-L6 evidence.

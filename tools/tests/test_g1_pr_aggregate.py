@@ -14,7 +14,7 @@ from tools import g1_pr_aggregate_archive as ARCHIVE
 from tools import g1_pr_aggregate_common as COMMON
 import unittest
 
-from tools.tests.g1_pr_aggregate_fixture import AGG, FakeApi, AggregateFixture
+from tools.tests.g1_pr_aggregate_fixture import AGG, NOW, FakeApi, AggregateFixture
 
 
 class AggregateTest(AggregateFixture):
@@ -27,6 +27,58 @@ class AggregateTest(AggregateFixture):
         expected = clone["report_sha256"]
         clone["report_sha256"] = ""
         self.assertEqual(expected, hashlib.sha256(AGG._canonical(clone)).hexdigest())
+
+    def _verify_complete_report(self):
+        # Exercise the production four-family report without the legacy fixture's
+        # three-family presentation adapter.
+        return AGG.verify_pr_aggregate(
+            repository=self.repo, pr_number=self.pr_number,
+            expected_base_commit=self.base_commit, expected_head_commit=self.head_commit,
+            repo_root=self.repo_root, api=FakeApi(self.values, self.blobs),
+            timeout_seconds=0, poll_seconds=0, now=NOW,
+        )
+
+    def test_successful_report_does_not_publish_download_capabilities(self) -> None:
+        original = FakeApi.get_bytes
+        capabilities = (
+            "https://objects.example/archive.zip?sig=test-only-query-capability",
+            "https://objects.example/test-only-path-capability/archive.zip",
+        )
+        for final_url in capabilities:
+            with self.subTest(final_url=final_url):
+                def redirected(api, path):
+                    response = original(api, path)
+                    return AGG.ApiResponse(response.value, response.raw, final_url, {})
+
+                with mock.patch.object(FakeApi, "get_bytes", redirected):
+                    report = self._verify_complete_report()
+                self.assertEqual(len(report["workflows"]), 4)
+                output = self.repo_root.parent / "aggregate-report.json"
+                AGG._write_json(output, report)
+                self.assertEqual(json.loads(output.read_text()), report)
+                serialized = AGG._canonical(report).decode()
+                self.assertNotIn(final_url, serialized)
+                self.assertNotIn("test-only-", serialized)
+                for workflow in report["workflows"]:
+                    for artifact in workflow["artifacts"]:
+                        self.assertNotIn("download_url", artifact)
+                        self.assertEqual(
+                            artifact["archive_api_path"],
+                            f"repos/{self.repo}/actions/artifacts/{artifact['id']}/zip",
+                        )
+
+    def test_report_hash_does_not_depend_on_transport_url_rotation(self) -> None:
+        original = FakeApi.get_bytes
+        reports = []
+        for generation in range(2):
+            def rotated(api, path):
+                response = original(api, path)
+                url = f"https://objects.example/rotated-{generation}?sig=test-only-{generation}"
+                return AGG.ApiResponse(response.value, response.raw, url, {})
+
+            with mock.patch.object(FakeApi, "get_bytes", rotated):
+                reports.append(self._verify_complete_report())
+        self.assertEqual(reports[0], reports[1])
 
     def test_missing_required_protection_context_fails(self) -> None:
         path = f"repos/{self.repo}/branches/integration%2Fbase"
@@ -206,6 +258,7 @@ class AggregateTest(AggregateFixture):
 
 class AggregateHttpBoundaryTest(unittest.TestCase):
     """In-memory transports test budgets and credentials, not live GitHub CI."""
+
     class Response(io.BytesIO):
         def __init__(self, raw=b"{}", *, url="https://api.github.com/test", headers=()):
             super().__init__(raw)
@@ -460,6 +513,37 @@ class AggregateHttpBoundaryTest(unittest.TestCase):
             api.get_bytes('https://objects.example/artifact?sig=test-only-secret')
         self.assertNotIn('test-only-secret', str(caught.exception))
         self.assertEqual(api._no_redirect.open.call_count, 1)
+
+    def test_download_receipt_omits_both_initial_and_redirect_capabilities(self):
+        raw = b"test-only-archive-bytes"
+        initial = "https://api.github.com/test-only-initial-path?sig=test-only-initial-query"
+        final = "https://objects.example/test-only-final-path?sig=test-only-final-query"
+        error, error_body = self.redirect(final, url=initial)
+        response = self.Response(raw, url=final)
+        client = self.client(error, response)
+        artifact = dict(
+            id=7, name="fixture", size_in_bytes=len(raw),
+            digest="sha256:" + hashlib.sha256(raw).hexdigest(),
+            archive_download_url=initial, expires_at="2026-09-08T00:00:00Z",
+        )
+        received, receipt = ARCHIVE._download_artifact(
+            ARCHIVE._RepoApi(client, "example/repo"), artifact,
+        )
+        self.assertEqual(received, raw)
+        self.assertEqual(receipt, {
+            "id": 7, "name": "fixture", "size_in_bytes": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+            "expires_at": artifact["expires_at"],
+            "archive_api_path": "repos/example/repo/actions/artifacts/7/zip",
+        })
+        self.assertEqual(client._no_redirect.open.call_count, 2)
+        requests = client._no_redirect.open.call_args_list
+        self.assertEqual(requests[0].args[0].full_url, initial)
+        self.assertEqual(requests[1].args[0].full_url, final)
+        self.assertEqual(requests[0].args[0].get_header("Authorization"), "Bearer test-only-token")
+        self.assertIsNone(requests[1].args[0].get_header("Authorization"))
+        self.assertTrue(error_body.closed)
+        self.assertTrue(response.closed)
 
     def test_metadata_archive_size_rejected_before_download(self):
         api = mock.Mock()
