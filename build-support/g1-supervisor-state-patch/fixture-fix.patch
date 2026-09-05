@@ -1,9 +1,0 @@
-diff --git a/tools/tests/test_owner_open_rootlinux_supervisor.py b/tools/tests/test_owner_open_rootlinux_supervisor.py
-index e4b02978b8b9caa7845cd92b85fe839de659f120..9b4ae147110070155503e31eb1097be9e033345d 100644
---- a/tools/tests/test_owner_open_rootlinux_supervisor.py
-+++ b/tools/tests/test_owner_open_rootlinux_supervisor.py
-@@ -71,0 +72,4 @@ class SupervisorFixture(unittest.TestCase):
-+        # The fixture owns this path. Restore write access before replacing a
-+        # prior read-only config, then reapply the production input mode below.
-+        if self.config_path.exists():
-+            self.config_path.chmod(0o600)
