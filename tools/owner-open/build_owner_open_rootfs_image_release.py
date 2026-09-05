@@ -188,9 +188,22 @@ def validate_staging(staging: Path) -> tuple[dict[str, Any], bytes, Path, list[s
         raise ImageError(
             "staging manifest does not reserve the canonical writable state mountpoint"
         )
+    observed = validate_root_snapshot(root, manifest, manifest_raw)
+    return manifest, manifest_raw, root, observed
+
+
+def validate_root_snapshot(root: Path, manifest: dict[str, Any], manifest_raw: bytes) -> list[str]:
+    """Bind each observed build tree to the original validated manifest bytes.
+
+    Reproducibility is not provenance. Never replace this snapshot by a freshly
+    loaded manifest after executing a tool or copying mutable staging inputs.
+    This is interval validation, not isolation from a malicious build tool.
+    """
+    if root.is_symlink() or not root.is_dir():
+        raise ImageError("normalized staging copy root is not a real directory")
     entries = manifest_entries(manifest)
     embedded = root / "etc/trillionnium/owner-open/rootfs.manifest.json"
-    embedded_metadata = stable_file(embedded.resolve(), "embedded staging manifest", MAX_MANIFEST_BYTES)
+    stable_file(embedded, "embedded staging manifest", MAX_MANIFEST_BYTES)
     if embedded.read_bytes() != manifest_raw:
         raise ImageError("embedded and external staging manifests differ")
     expected_files = {
@@ -232,7 +245,7 @@ def validate_staging(staging: Path) -> tuple[dict[str, Any], bytes, Path, list[s
     if set(observed) != set(expected_files):
         missing = sorted(set(expected_files) - set(observed))
         raise ImageError(f"staging tree is missing manifest files: {missing}")
-    return manifest, manifest_raw, root, sorted(observed)
+    return sorted(observed)
 
 
 def measure_tool(path: Path, expected: str) -> dict[str, Any]:
@@ -403,14 +416,19 @@ def build(args: argparse.Namespace) -> dict[str, Any]:
         for index in range(args.runs):
             run_root = args.output / f"run-{index + 1}-root"
             paths = normalize_copy(staging_root, run_root)
+            validate_root_snapshot(run_root, manifest, manifest_raw)
             if paths != observed:
                 raise ImageError("normalized staging copy path set drifted")
             sort_path = args.output / f"run-{index + 1}.sort"
             sort_file(sort_path, paths)
             image = args.output / f"run-{index + 1}.squashfs"
+            # A changed tool or source must not acquire an old identity receipt.
+            measure_tool(tool, args.expected_mksquashfs_sha256)
             runs.append(
                 build_once(tool, run_root, image, sort_path, args.build_timeout)
             )
+            validate_root_snapshot(run_root, manifest, manifest_raw)
+        measure_tool(tool, args.expected_mksquashfs_sha256)
         digests = {item["image_sha256"] for item in runs}
         sizes = {item["image_bytes"] for item in runs}
         if len(digests) != 1 or len(sizes) != 1:

@@ -273,6 +273,7 @@ jobs:
           python3 tools/verify-owner-open-android-source-closure-v2.py
           # Real local process groups; not installed-target qualification.
           python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
+          python3 -m unittest tools.tests.test_stage_owner_open_rootfs_payload_release tools.tests.test_build_owner_open_rootfs_image_release_v2 -v
           python3 tools/verify-owner-open-android-profile-v3.py
           SOURCE_HEAD="$(git --no-replace-objects rev-parse HEAD)"
           python3 tools/verify-owner-open-adbroot-evaluated-graph.py \

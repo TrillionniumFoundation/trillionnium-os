@@ -275,6 +275,66 @@ blocks automatic takeover; it does **not** terminate surviving processes, resist
 a malicious root custodian, fence a replaced root inode or prove escaped children
 absent. L2 still requires independent whole-service reconciliation.
 
+### Selected image-builder subprocess and snapshot contract
+
+The selected builder is `tools/owner-open/build_owner_open_rootfs_image_release_v2.py`;
+its shared implementation is `build_owner_open_rootfs_image_release.py`.
+Both help probes and builds run through the same bounded raw-byte command pump.
+It requires Linux `waitid(WNOWAIT)`, default SIGCHLD handling, exclusive reaping
+of the direct child and a complete same-namespace procfs view. No `communicate()`
+or `poll()` consumes unbounded output or prematurely reaps the group anchor.
+
+Stdout and stderr share the existing 16 MiB capture ceiling. Reads are at most
+64 KiB, and remaining capacity plus one sentinel byte limits each read; excess
+output fails immediately rather than being checked only after process exit.
+Raw bytes, nonzero/signal exit status and their SHA-256 hashes retain the existing
+command-result format. The library timeout is finite, 0.001..1800 seconds; the
+CLI retains its stricter existing probe/build intervals. Booleans, NaN and
+infinite budgets are rejected before starting a process.
+
+Normal leader exit, execution deadline, output overflow, read/selector failure
+and setup failure all retire the original group. TERM (1 second) is followed by
+KILL (2 seconds) while the leader remains waitable. Two quiet procfs observations
+must agree before cleanup is confirmed; each scan is bounded by 65,536 entries,
+8,192 bytes per stat and one second within its phase deadline. Reaping has at
+most one additional 2-second interval. A lost/reaped anchor never authorizes
+another group signal. Signal, scan or reap errors prevent image qualification;
+reaping a leader alone cannot turn unconfirmed cleanup into success.
+
+After normal retirement, pipe draining has a separate 1-second ceiling. An
+escaped descendant holding a writer produces an explicit drain error and local
+pipes are closed, not an infinite wait. This does not terminate escaped children,
+prove cgroup containment or constrain synchronous kernel calls. A trusted tool,
+stable private namespace and independent build-service containment remain
+required. The helper does not retry a command or grant target/release authority.
+
+The original validated staging manifest and its exact bytes remain the authority
+for every reproduction run. Each normalized input tree is checked against that
+same snapshot **before and after** the image tool runs, including file set, bytes,
+hashes, modes, embedded manifest and the runtime-state mountpoint. Rewriting both
+external and embedded manifests after the help probe does not change the accepted
+snapshot. The tool's expected digest is rechecked before each build and again
+before image receipt publication. Equal output hashes from two runs are not
+sufficient when the inputs or recorded tool identity have drifted.
+
+These are interval checks, not atomic executable identity or protection from a
+malicious tool that changes and restores data between checks. They do not parse
+the resulting squashfs to prove its semantic contents. Real toolchain custody,
+filesystem durability, Android inclusion and installed inventory require the
+existing L2/L3/L5 evidence. No manifest schema or evidence ceiling is promoted.
+The extra hashing passes trade bounded I/O for provenance checks; no performance
+improvement or installed latency claim is made.
+
+Reproduce the selected staging/build tests with:
+
+```sh
+python3 -m unittest tools.tests.test_stage_owner_open_rootfs_payload_release tools.tests.test_build_owner_open_rootfs_image_release_v2 -v
+```
+
+Exact-head Android-packaging CI explicitly runs this suite; synthetic-merge full
+test discovery also includes it. Local fork/fault fixtures and deterministic fake
+image tools establish only source behavior, never an actual Android image.
+
 ## 11. Security and trust boundaries
 
 Root capability is minimized and mechanically scoped. Packaging cannot add semantic policy, substitute unpinned provider bytes, broaden namespaces or silently select a legacy authority path.
