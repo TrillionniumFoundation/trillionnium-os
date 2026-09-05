@@ -7,34 +7,206 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
 jobs:
-  source-snapshot:
+  validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
-      - name: Check out the pinned source without persistent credentials
+      - name: Check out immutable driver without persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: driver
+          persist-credentials: false
+      - name: Check out exact published parent
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           ref: beb13f9b9ba1c2823fdcfe7710bd4f68915757bf
+          path: candidate
           fetch-depth: 0
           persist-credentials: false
-      - name: Export Git objects only
+      - name: Verify patch bytes and exact candidate tree
         shell: bash
         run: |
           set -euo pipefail
+          /usr/bin/python3 -I - <<'PY'
+          import base64, gzip, hashlib, os
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE']) / 'driver/build-support/g1-supervisor-state-patch'
+          encoded = ''.join(''.join((root / f'part-{i}.b64').read_text().split()) for i in range(4))
+          packed = base64.b64decode(encoded, validate=True)
+          assert hashlib.sha256(packed).hexdigest() == 'a7e508d3c5caa7af5daf936ddb9e02f58355c6833388c94c848463bb0d4e3da5'
+          patch = gzip.decompress(packed)
+          assert hashlib.sha256(patch).hexdigest() == '9461358c1d39f190f917eb98f06053eff1e2b7dbc72448c4c5ec6258ebde64a6'
+          (Path(os.environ['RUNNER_TEMP']) / 'supervisor.patch').write_bytes(patch)
+          PY
+          cd "$GITHUB_WORKSPACE/candidate"
           actual="$(git --no-replace-objects rev-parse HEAD)"
           test "$actual" = beb13f9b9ba1c2823fdcfe7710bd4f68915757bf
           state="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
           test -z "$state"
-          git bundle create "$RUNNER_TEMP/g1-source-beb13f9b.bundle" --all HEAD
-          git bundle verify "$RUNNER_TEMP/g1-source-beb13f9b.bundle"
-          sha256sum "$RUNNER_TEMP/g1-source-beb13f9b.bundle" > "$RUNNER_TEMP/g1-source-beb13f9b.sha256"
-      - name: Retain source-only snapshot
+          git apply --unidiff-zero --check --index "$RUNNER_TEMP/supervisor.patch"
+          git apply --unidiff-zero --index "$RUNNER_TEMP/supervisor.patch"
+          git diff --cached --check
+          actual="$(git --no-replace-objects write-tree)"
+          test "$actual" = 5da7c498f95647f7afd343d6c3a28bb199f3260e
+          git -c user.name=g1-source-validation -c user.email=g1-source-validation@invalid commit -m 'Temporary Supervisor source-only validation subject'
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Run 421 focused source regressions and permanent gates
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            python3 -m unittest \
+              tools.tests.test_owner_open_workflow_exact_head \
+              tools.tests.test_verify_global_docs_contracts \
+              tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+              tools.tests.test_verify_g1_repository_closure \
+              tools.tests.test_verify_g1_gap_routing \
+              tools.tests.test_owner_open_broker_module_documentation \
+              tools.tests.test_repository_governance_baseline \
+              tools.tests.test_verify_g1_review_index \
+              tools.tests.test_verify_owner_open_r5_governance_readiness \
+              tools.tests.test_owner_open_rootlinux_supervisor -v
+            python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v
+            python3 -m unittest tools.tests.test_owner_open_connection_broker tools.tests.test_owner_open_ingress_contract -v
+            python3 -m unittest \
+              tools.tests.test_stage_owner_open_rootfs_payload_release \
+              tools.tests.test_verify_owner_open_materialized_payload \
+              tools.tests.test_verify_owner_open_rootfs_payload_selection \
+              tools.tests.test_build_owner_open_rootfs_image_release_v2 -v
+            python3 tools/docs/generate_global_docs.py --check
+            python3 tools/docs/verify_global_docs.py
+            python3 tools/docs/verify_module_documentation.py
+            python3 tools/verify_g1_repository_closure.py
+            python3 tools/verify_g1_gap_routing.py
+          } 2>&1 | tee "$RUNNER_TEMP/supervisor-validation.log"
+          actual="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$actual" = 5da7c498f95647f7afd343d6c3a28bb199f3260e
+          state="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          test -z "$state"
+      - name: Repeat crash-session and Supervisor tests ten times
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          for repetition in $(seq 1 10); do
+            python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v > "$RUNNER_TEMP/supervisor-repeat-$repetition.log" 2>&1
+          done
+      - name: Export verified source objects as inert data
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -I - <<'PY'
+          import base64, json, os, subprocess
+          from pathlib import Path
+          def git(*args):
+              return subprocess.check_output(['/usr/bin/git', '--no-replace-objects', *args])
+          tree = '5da7c498f95647f7afd343d6c3a28bb199f3260e'
+          assert git('rev-parse', 'HEAD^{tree}').decode().strip() == tree
+          assert not git('status', '--porcelain=v1', '--untracked-files=all').strip()
+          paths = [p.decode() for p in git('diff', '--name-only', '-z', 'beb13f9b9ba1c2823fdcfe7710bd4f68915757bf', 'HEAD').split(b'\0') if p]
+          assert len(paths) == len(set(paths)) == 7
+          entries = []
+          for path in paths:
+              metadata, name = git('ls-tree', '-z', tree, '--', path)[:-1].split(b'\t', 1)
+              mode, kind, sha = metadata.decode().split()
+              assert kind == 'blob' and name.decode() == path
+              entries.append({'path': path, 'mode': mode, 'sha': sha, 'content': base64.b64encode(git('cat-file', 'blob', sha)).decode()})
+          (Path(os.environ['RUNNER_TEMP']) / 'supervisor-objects.json').write_text(json.dumps(entries) + '\n')
+          PY
+      - name: Retain source-only validation artifacts
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: g1-source-beb13f9b
-          retention-days: 3
+          name: g1-supervisor-source-validation
           if-no-files-found: error
+          retention-days: 7
           path: |
-            ${{ runner.temp }}/g1-source-beb13f9b.bundle
-            ${{ runner.temp }}/g1-source-beb13f9b.sha256
+            ${{ runner.temp }}/supervisor-validation.log
+            ${{ runner.temp }}/supervisor-repeat-*.log
+            ${{ runner.temp }}/supervisor-objects.json
+
+  stage-objects:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download same-run inert data without candidate checkout
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: g1-supervisor-source-validation
+          path: ${{ runner.temp }}/source-data
+      - name: Stage fixed-hash source objects only without updating any ref
+        env:
+          OBJECT_STAGING_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          import base64, hashlib, json, os, urllib.request
+          from pathlib import Path
+          expected = {
+              'docs/generated/TRACEABILITY.tsv': ('100644', '4f97a6ab7e92a7c9ead212168559f210db77889a'),
+              'docs/machine/gap-register.v2.json': ('100644', '4394de34713df2a51032d89f194de2eccadd6cd6'),
+              'docs/machine/requirement-graph.v1.json': ('100644', 'afe108eff0f80fd310e7cc544e4ee63415b0a3cc'),
+              'docs/modules/MOD-ROOTLINUX.md': ('100644', '673cb12d4946e837b22bdc754735ae6432ed9ee4'),
+              'tools/owner-open/README.md': ('100644', '59a2d042d90531624c0128b7853a5c809ad0ff61'),
+              'tools/owner-open/owner_open_rootlinux_supervisor.py': ('100755', '63f0bf829518597a6ebc6a790d37acfc7e60e3f0'),
+              'tools/tests/test_owner_open_rootlinux_supervisor.py': ('100644', 'e4b02978b8b9caa7845cd92b85fe839de659f120'),
+          }
+          source = Path(os.environ['RUNNER_TEMP']) / 'source-data/supervisor-objects.json'
+          assert source.stat().st_size < 2000000
+          data = json.loads(source.read_bytes())
+          assert isinstance(data, list) and len(data) == 7
+          assert {item['path'] for item in data} == set(expected)
+          def post(kind, payload):
+              assert kind in {'blobs', 'trees'}
+              request = urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/git/' + kind,
+                  data=json.dumps(payload).encode(), method='POST', headers={
+                  'Authorization': 'Bearer ' + os.environ['OBJECT_STAGING_TOKEN'],
+                  'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json',
+                  'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+          entries = []
+          for item in data:
+              mode, sha = expected[item['path']]
+              assert item['mode'] == mode and item['sha'] == sha
+              content = base64.b64decode(item['content'], validate=True)
+              assert hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest() == sha
+              result = post('blobs', {'content': item['content'], 'encoding': 'base64'})
+              assert result['sha'] == sha
+              entries.append({'path': item['path'], 'mode': mode, 'type': 'blob', 'sha': sha})
+          result = post('trees', {'base_tree': '8c8226719496f986a8ec761e905ab15e422e41f0', 'tree': entries})
+          assert result['sha'] == '5da7c498f95647f7afd343d6c3a28bb199f3260e'
+          report = {'base_commit': 'beb13f9b9ba1c2823fdcfe7710bd4f68915757bf', 'tree': result['sha'],
+              'focused_tests_passed': 421, 'supervisor_suite_repetitions': 10,
+              'source_only': True, 'independent_review': False, 'target_evidence': False,
+              'gap_promotion': False, 'integration_authorized': False, 'public_release': False,
+              'ref_updated': False, 'commit_created': False, 'workflow_run_id': os.environ['GITHUB_RUN_ID']}
+          (Path(os.environ['RUNNER_TEMP']) / 'supervisor-staged-tree.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, indent=2))
+          PY
+      - name: Retain non-authorizing staging result
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-supervisor-staged-tree
+          if-no-files-found: error
+          retention-days: 7
+          path: ${{ runner.temp }}/supervisor-staged-tree.json
