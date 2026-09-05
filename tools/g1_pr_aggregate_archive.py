@@ -98,6 +98,7 @@ def _download_artifact(api: _RepoApi, artifact: Mapping[str, Any]) -> tuple[byte
     artifact_id = _positive_int(artifact.get("id"), "artifact id")
     name = _identifier(artifact.get("name"), f"artifact {artifact_id} name")
     size = _positive_int(artifact.get("size_in_bytes"), f"artifact {artifact_id} size")
+    _require(size <= MAX_ARCHIVE_BYTES, f"artifact {artifact_id} exceeds archive byte bound")
     digest_value = _identifier(artifact.get("digest"), f"artifact {artifact_id} digest")
     _require(digest_value.startswith("sha256:"), f"artifact {artifact_id} digest algorithm is unsupported")
     expected_digest = _sha256(digest_value.removeprefix("sha256:"), f"artifact {artifact_id} digest")

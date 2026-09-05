@@ -272,6 +272,58 @@ methods and class-setup skips separately; a skipped class setup is not included
 in unittest's `testsRun`. Installed performance and L2-L6 claims still require
 independent, level-correct evidence and are never inferred from these probes.
 
+### Bounded PR-aggregate HTTP and JSON intake
+
+`tools/g1_pr_aggregate_api.py::GitHubApi` is the read-only transport used by
+`verify-g1-pr-aggregate.py`; it does not run or rerun workflows. JSON responses
+are limited to 16 MiB and artifact downloads to the existing 256 MiB archive
+ceiling while reading, not after an unbounded download. Reads use at most 64 KiB
+or remaining capacity plus one overflow sentinel. Artifact metadata exceeding
+the archive ceiling is rejected before any download. The existing exact-size,
+SHA-256, ZIP member, source/run identity and final-currentness checks still apply.
+
+A declared Content-Length must be unique, well-formed, within the selected bound
+and equal the captured length. Conflicting length/transfer headers, unsupported
+encodings, partial HTTP status and duplicate redirect locations fail closed.
+The transport requests identity encoding; the standard HTTP layer handles
+chunked framing while the same capture ceiling applies to resulting body bytes.
+This does not add archive decompression formats or weaken ZIP expansion limits.
+
+Redirect handling is iterative, limited to five hops, rejects repeated URLs and
+closes each HTTP error response before following its location. URLs are bounded
+to 8,192 ASCII bytes and must remain HTTPS without userinfo, control characters,
+fragments or invalid ports. JSON requests remain on the configured API origin;
+artifact requests may follow HTTPS storage redirects. API credentials are sent
+only to the initial same-origin request, never restored after any redirect,
+even one returning to that origin. HTTP errors close without consuming their
+bodies. Diagnostics do not echo response bodies, signed URL queries or network
+exception text; callers must still protect the returned artifact URL as before.
+No network failure authorizes retries, source promotion or target dispatch.
+
+Each HTTP operation has a shared monotonic deadline across redirects and body
+reads. Its timeout defaults to 30 seconds and accepts only finite numeric values
+within 0.001..300 seconds. Checkpoints around open/read calls reject a completed
+response that arrives after expiry. These checks do not preempt synchronous
+DNS, TLS, HTTP-header parsing or blocked kernel I/O; the enclosing job timeout
+remains the outer execution bound. Body buffering and JSON parsing have finite
+limits but can consume more memory than the raw-byte ceiling; no measured RSS,
+throughput or installed SLO is claimed.
+
+The shared aggregate JSON decoder enforces the 16 MiB member limit and nesting
+of at most 64 before invoking the recursive decoder, preserves brackets inside
+quoted strings, and rejects duplicate members, nonfinite constants and floating
+point overflow. Integer-conversion/recursion failures are reported as aggregate
+errors, not unhandled decoder exceptions. These stricter admission rules do not
+change receipt schemas or make self-hashes into signatures.
+
+The existing `tools.tests.test_g1_pr_aggregate` suite exercises bounded/short reads,
+Content-Length errors, real standard-library chunked-response decoding, redirect
+loops and hop limits, close ordering, credential stripping, deadlines and strict
+JSON. Its in-memory transports contain test-only bytes, not live GitHub results.
+Run it with `python3 -m unittest tools.tests.test_g1_pr_aggregate -v`; existing
+exact-head and synthetic-merge complete discovery includes this suite. Local
+success cannot replace terminal hosted CI, independent approval or L2-L6 evidence.
+
 ## 16. Deployment and runbook
 
 On evidence mismatch, stop promotion, preserve packages and detached material, re-fetch authoritative objects, verify currentness and revocation, and require a new independently administered attestation for a changed subject.

@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import re
 from typing import Any, Mapping
 
@@ -86,15 +87,41 @@ def _reject_nonfinite(value: str) -> None:
     raise AggregateError(f"non-finite JSON number {value}")
 
 
+def _finite_json_float(text: str) -> float:
+    value = float(text)
+    _require(math.isfinite(value), "non-finite JSON floating-point value")
+    return value
+
+
 def _strict_json(raw: bytes, label: str) -> Any:
+    _require(isinstance(raw, bytes) and 0 < len(raw) <= MAX_MEMBER_BYTES,
+             f"{label} exceeds its JSON byte bound or is empty")
     try:
+        text = raw.decode("utf-8")
+        depth, quoted, escaped = 0, False, False
+        for char in text:
+            if quoted:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    quoted = False
+            elif char == '"':
+                quoted = True
+            elif char in "[{":
+                depth += 1
+                _require(depth <= 64, "JSON nesting exceeds 64")
+            elif char in "]}":
+                depth -= 1
         return json.loads(
-            raw.decode("utf-8"),
+            text,
             object_pairs_hook=_reject_duplicate_members,
             parse_constant=_reject_nonfinite,
+            parse_float=_finite_json_float,
         )
-    except (UnicodeDecodeError, json.JSONDecodeError, AggregateError) as error:
-        raise AggregateError(f"{label} is not strict JSON: {error}") from error
+    except (UnicodeDecodeError, ValueError, RecursionError, AggregateError) as error:
+        raise AggregateError(f"{label} is not strict JSON: {str(error)[:512]}") from error
 
 
 def _canonical(value: Any) -> bytes:
