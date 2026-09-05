@@ -67,6 +67,7 @@ jobs:
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_connection_broker.py' -v
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_ingress_contract.py' -v
+          python3 -m unittest tools.tests.test_jsonl_provider_runtime tools.tests.test_execute_codex_exec_plan -v
           if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
             printf '%s\n' 'Cannot verify repository worktree state' >&2
             exit 1

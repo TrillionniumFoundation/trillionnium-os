@@ -12,11 +12,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import math
 import os
 from pathlib import Path
 import selectors
 import signal
 import subprocess
+import sys
 import time
 from typing import Any, Callable, Literal
 
@@ -41,6 +43,8 @@ class ProcessLimits:
     timeout_seconds: float = 300.0
     poll_seconds: float = 0.02
     terminate_grace_seconds: float = 0.25
+    kill_grace_seconds: float = 1.0
+    drain_seconds: float = 1.0
 
     def validate(self) -> None:
         integer_fields = (
@@ -56,14 +60,19 @@ class ProcessLimits:
             self.max_event_count,
             self.read_chunk_bytes,
         )
-        if any(value <= 0 for value in integer_fields):
-            raise ProviderRuntimeError("provider mechanical byte/count limits must be positive")
-        if (
-            self.timeout_seconds <= 0
-            or self.poll_seconds <= 0
-            or self.terminate_grace_seconds < 0
+        if any(type(value) is not int or not 0 < value <= 2**31 for value in integer_fields):
+            raise ProviderRuntimeError("provider mechanical byte/count limits must be positive bounded integers")
+        for name, value, minimum, maximum in (
+            ("timeout", self.timeout_seconds, 0.001, 3600),
+            ("poll", self.poll_seconds, 0.001, 1),
+            ("terminate grace", self.terminate_grace_seconds, 0, 30),
+            ("kill grace", self.kill_grace_seconds, 0.01, 30),
+            ("drain", self.drain_seconds, 0.01, 30),
         ):
-            raise ProviderRuntimeError("provider lifecycle durations are invalid")
+            if type(value) not in (int, float) or not minimum <= value <= maximum:
+                raise ProviderRuntimeError(f"provider {name} duration must be finite within {minimum}..{maximum}")
+        if self.read_chunk_bytes > 1024 * 1024 or self.max_event_line_bytes > 16 * 1024 * 1024:
+            raise ProviderRuntimeError("provider read chunk or JSON line exceeds the hard allocation bound")
 
 
 class CancellationToken:
@@ -109,10 +118,14 @@ class ProviderTerminal:
     outbound_bytes: int
     elapsed_ms: int
     error: str | None
+    cleanup_confirmed: bool = False
+    leader_reaped: bool = False
+    process_id: int | None = None
 
     @property
     def success(self) -> bool:
-        return self.kind == "exited" and self.exit_code == 0 and self.error is None
+        return (self.kind == "exited" and self.exit_code == 0 and self.error is None
+                and self.cleanup_confirmed and self.leader_reaped)
 
 
 EventHandler = Callable[[ProviderEvent], bytes | str | None]
@@ -132,30 +145,63 @@ def _strict_object_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return value
 
 
+def _finite_float(text: str) -> float:
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError("non-finite JSON number")
+    return value
+
+
+def _reject_constant(text: str) -> None:
+    raise ValueError(f"non-finite JSON constant {text}")
+
+
 def decode_strict_event(raw: bytes) -> dict[str, Any]:
-    if not raw:
-        raise ProviderRuntimeError("provider JSONL record is empty")
+    if not raw or len(raw) > 16 * 1024 * 1024:
+        raise ProviderRuntimeError("provider JSONL record is empty or oversized")
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as error:
         raise ProviderRuntimeError("provider JSONL record is not UTF-8") from error
+    # Bound nesting before entering the recursive standard-library decoder.
+    depth, quoted, escaped = 0, False, False
+    for char in text:
+        if quoted:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                quoted = False
+        elif char == '"':
+            quoted = True
+        elif char in "[{":
+            depth += 1
+            if depth > 64:
+                raise ProviderRuntimeError("provider JSON nesting exceeds 64")
+        elif char in "]}":
+            depth -= 1
     try:
-        value = json.loads(text, object_pairs_hook=_strict_object_pairs)
-    except (_DuplicateMember, json.JSONDecodeError) as error:
-        raise ProviderRuntimeError(f"invalid provider JSONL record: {error}") from error
+        value = json.loads(text, object_pairs_hook=_strict_object_pairs,
+                           parse_constant=_reject_constant, parse_float=_finite_float)
+    except (ValueError, RecursionError) as error:
+        raise ProviderRuntimeError(f"invalid provider JSONL record: {str(error)[:512]}") from error
     if not isinstance(value, dict):
         raise ProviderRuntimeError("provider JSONL record must be an object")
     return value
 
 
 def validate_argv(argv: list[str], limits: ProcessLimits) -> None:
-    if not argv or len(argv) > limits.max_argv_items:
+    if not isinstance(argv, list) or not argv or len(argv) > limits.max_argv_items:
         raise ProviderRuntimeError("provider argv is empty or has too many elements")
     total = 0
     for argument in argv:
         if not isinstance(argument, str):
             raise ProviderRuntimeError("provider argv elements must be strings")
-        encoded = argument.encode("utf-8")
+        try:
+            encoded = argument.encode("utf-8")
+        except UnicodeEncodeError as error:
+            raise ProviderRuntimeError("provider argument is not UTF-8") from error
         if b"\x00" in encoded or len(encoded) > limits.max_argument_bytes:
             raise ProviderRuntimeError("provider argument contains NUL or exceeds the byte bound")
         total += len(encoded)
@@ -167,32 +213,99 @@ def _elapsed_ms(started: float) -> int:
     return max(0, int((time.monotonic() - started) * 1000))
 
 
-def _terminate_group(
-    process: subprocess.Popen[bytes], grace_seconds: float
-) -> tuple[int | None, int | None, str | None]:
-    if process.poll() is not None:
-        return _status(process.returncode)
+def _observe_exit(process: subprocess.Popen[bytes]) -> int | None:
+    """Observe without consuming the sole direct-child PID/PGID anchor."""
+    if process.returncode is not None:
+        raise ProviderRuntimeError("provider anchor was reaped before group retirement")
+    status = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    if status is None:
+        return None
+    if status.si_pid != process.pid:
+        raise ProviderRuntimeError("provider wait identity differs")
+    if status.si_code == os.CLD_EXITED:
+        return status.si_status
+    if status.si_code in (os.CLD_KILLED, os.CLD_DUMPED):
+        return -status.si_status
+    raise ProviderRuntimeError("provider wait did not observe an exit")
+
+
+def _group_quiet(pid: int, deadline: float) -> bool:
+    """Bounded same-namespace /proc observation; never proves escaped children absent."""
+    anchor, quiet = False, True
+    with os.scandir("/proc") as entries:
+        for count, entry in enumerate(entries, 1):
+            if count > 65536 or time.monotonic() >= deadline:
+                raise ProviderRuntimeError("provider procfs scan budget exceeded")
+            if not entry.name.isascii() or not entry.name.isdecimal():
+                continue
+            try:
+                with open(f"/proc/{entry.name}/stat", "rb") as source:
+                    raw = source.read(8193)
+            except (FileNotFoundError, ProcessLookupError):
+                continue
+            if len(raw) > 8192:
+                raise ProviderRuntimeError("provider procfs stat exceeds bound")
+            fields = raw.rsplit(b")", 1)[1].split()
+            group, session = int(fields[2]), int(fields[3])
+            if int(entry.name) == pid:
+                if group != pid or session != pid:
+                    raise ProviderRuntimeError("provider group anchor identity differs")
+                anchor = True
+            if group == pid and fields[0] not in (b"Z", b"X"):
+                quiet = False
+    if not anchor:
+        raise ProviderRuntimeError("provider group anchor is not observable")
+    return quiet
+
+
+def _retire_group(process: subprocess.Popen[bytes], limits: ProcessLimits):
+    """TERM then KILL while the leader is retained, then reap exactly once.
+
+    The caller must be the sole reaper. Scan/signalling errors remain errors
+    even when the leader can be reaped. There are no signals after reaping.
+    """
+    error = None
+    confirmed = reaped = False
+    code = None
     try:
-        os.killpg(process.pid, signal.SIGTERM)
-    except ProcessLookupError:
-        pass
-    except OSError as error:
-        return None, None, f"provider_sigterm_failed: {error}"
-    deadline = time.monotonic() + grace_seconds
-    while process.poll() is None and time.monotonic() < deadline:
-        time.sleep(min(0.01, max(0.0, deadline - time.monotonic())))
-    if process.poll() is None:
+        _observe_exit(process)
+    except Exception as failure:
+        return None, None, False, False, f"provider_anchor_unavailable: {failure}"
+    for sig, duration in ((signal.SIGTERM, limits.terminate_grace_seconds),
+                          (signal.SIGKILL, limits.kill_grace_seconds)):
         try:
-            os.killpg(process.pid, signal.SIGKILL)
+            _observe_exit(process)
+            os.killpg(process.pid, sig)
         except ProcessLookupError:
             pass
-        except OSError as error:
-            return None, None, f"provider_sigkill_failed: {error}"
+        except Exception as failure:
+            error = _join_error(error, f"provider_signal_failed: {failure}")
+        deadline = time.monotonic() + duration
+        quiet_once = False
+        while time.monotonic() < deadline:
+            try:
+                exited = _observe_exit(process) is not None
+                quiet = _group_quiet(process.pid, min(deadline, time.monotonic() + 1))
+            except Exception as failure:
+                error = _join_error(error, f"provider_cleanup_observation_failed: {failure}")
+                break
+            if exited and quiet and quiet_once:
+                if sig == signal.SIGKILL:
+                    confirmed = True
+                break
+            quiet_once = exited and quiet
+            time.sleep(min(0.005, max(0, deadline - time.monotonic())))
     try:
-        returncode = process.wait(timeout=max(1.0, grace_seconds + 1.0))
-    except (OSError, subprocess.TimeoutExpired) as error:
-        return None, None, f"provider_reap_failed: {error}"
-    return _status(returncode)
+        # Losing the anchor never grants permission to signal a recycled PID.
+        observed = _observe_exit(process)
+        code = process.wait(timeout=0 if observed is not None else limits.kill_grace_seconds)
+        reaped = True
+    except Exception as failure:
+        error = _join_error(error, f"provider_reap_failed: {failure}")
+    if not confirmed:
+        error = _join_error(error, "provider_original_group_cleanup_unconfirmed")
+    exit_code, terminal_signal, _ = _status(code)
+    return exit_code, terminal_signal, confirmed and error is None, reaped, error
 
 
 def _status(returncode: int | None) -> tuple[int | None, int | None, str | None]:
@@ -204,7 +317,7 @@ def _status(returncode: int | None) -> tuple[int | None, int | None, str | None]
 
 
 def _join_error(existing: str | None, next_error: str) -> str:
-    return f"{existing}; {next_error}" if existing else next_error
+    return (f"{existing}; {next_error}" if existing else next_error)[:4096]
 
 
 def run_provider(
@@ -223,71 +336,69 @@ def run_provider(
     limits.validate()
     cancellation = cancellation or CancellationToken()
     validate_argv(argv, limits)
-    if len(initial_stdin) > limits.max_initial_stdin_bytes:
-        raise ProviderRuntimeError("initial provider stdin exceeds the byte bound")
+    if not isinstance(initial_stdin, bytes) or len(initial_stdin) > min(
+        limits.max_initial_stdin_bytes, limits.max_outbound_bytes,
+    ):
+        raise ProviderRuntimeError("initial provider stdin exceeds the byte bound or is not bytes")
     if stdin_policy not in {"keep-open", "close-after-initial"}:
         raise ProviderRuntimeError("unknown provider stdin policy")
     if cwd is not None and (not cwd.exists() or not cwd.is_dir()):
         raise ProviderRuntimeError("provider cwd is absent or not a directory")
-
+    if (not sys.platform.startswith("linux") or not callable(getattr(os, "waitid", None))
+            or not hasattr(os, "WNOWAIT") or signal.getsignal(signal.SIGCHLD) != signal.SIG_DFL):
+        raise ProviderRuntimeError("Linux WNOWAIT and exclusive default-SIGCHLD reaping are required")
     started = time.monotonic()
+    if cancellation.cancelled:
+        return ProviderTerminal("client_cancelled", None, None, 0, 0, b"", 0, 0, None)
     try:
         process = subprocess.Popen(
-            argv,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            cwd=cwd,
-            env=environment,
-            shell=False,
-            start_new_session=True,
-            bufsize=0,
+            argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            cwd=cwd, env=environment, shell=False, close_fds=True,
+            start_new_session=True, bufsize=0,
         )
-    except OSError as error:
-        return ProviderTerminal(
-            kind="spawn_failed",
-            exit_code=None,
-            signal=None,
-            event_count=0,
-            stdout_bytes=0,
-            stderr=b"",
-            outbound_bytes=0,
-            elapsed_ms=_elapsed_ms(started),
-            error=str(error),
-        )
+    except OSError as failure:
+        return ProviderTerminal("spawn_failed", None, None, 0, 0, b"", 0,
+                                _elapsed_ms(started), str(failure)[:4096])
 
-    assert process.stdin is not None
-    assert process.stdout is not None
-    assert process.stderr is not None
-    stdin_fd = process.stdin.fileno()
-    stdout_fd = process.stdout.fileno()
-    stderr_fd = process.stderr.fileno()
-    for descriptor in (stdin_fd, stdout_fd, stderr_fd):
-        os.set_blocking(descriptor, False)
+    selector = None
+    stdout_buffer, stderr_buffer, outbound = bytearray(), bytearray(), bytearray(initial_stdin)
+    total_outbound, stdout_bytes, event_count = len(outbound), 0, 0
+    forced_kind = error = None
+    exit_code = terminal_signal = None
+    cleanup_confirmed = leader_reaped = retired = False
+    stdout_open = stderr_open = stdin_open = True
+    drain_deadline = None
 
-    selector = selectors.DefaultSelector()
-    selector.register(stdout_fd, selectors.EVENT_READ, "stdout")
-    selector.register(stderr_fd, selectors.EVENT_READ, "stderr")
+    def force(kind, detail=None):
+        nonlocal forced_kind, error
+        if forced_kind is None:
+            forced_kind = kind
+        if detail is not None:
+            error = _join_error(error, detail)
 
-    outbound = bytearray(initial_stdin)
-    total_outbound = len(outbound)
-    if outbound:
-        selector.register(stdin_fd, selectors.EVENT_WRITE, "stdin")
-    elif stdin_policy == "close-after-initial":
-        process.stdin.close()
-    stdout_buffer = bytearray()
-    stderr_buffer = bytearray()
-    stdout_bytes = 0
-    event_count = 0
-    forced_kind: TerminalKind | None = None
-    error: str | None = None
-    stdout_open = True
-    stderr_open = True
-    stdin_open = not process.stdin.closed
+    def checkpoint():
+        if forced_kind is None:
+            if cancellation.cancelled:
+                force("client_cancelled")
+            elif time.monotonic() - started >= limits.timeout_seconds:
+                force("timed_out")
+        return forced_kind is not None
 
-    def queue_response(response: bytes | str | None) -> None:
-        nonlocal total_outbound, stdin_open
-        if response is None:
+    def close_input():
+        nonlocal stdin_open
+        if stdin_open:
+            stdin_open = False
+            if selector is not None:
+                try:
+                    selector.unregister(process.stdin.fileno())
+                except KeyError:
+                    pass
+            process.stdin.close()
+        outbound.clear()
+
+    def queue_response(response):
+        nonlocal total_outbound
+        if response is None or checkpoint():
             return
         encoded = response.encode("utf-8") if isinstance(response, str) else response
         if not isinstance(encoded, bytes):
@@ -296,203 +407,164 @@ def run_provider(
             raise ProviderRuntimeError("provider handler response exceeds its byte bound")
         if total_outbound + len(encoded) > limits.max_outbound_bytes:
             raise ProviderRuntimeError("provider outbound stream exceeds its byte bound")
+        if not encoded:
+            return
+        if not stdin_open:
+            raise ProviderRuntimeError("provider stdin is closed; response not sent")
         total_outbound += len(encoded)
         outbound.extend(encoded)
-        if stdin_open:
-            try:
-                selector.get_key(stdin_fd)
-            except KeyError:
-                selector.register(stdin_fd, selectors.EVENT_WRITE, "stdin")
+        try:
+            selector.get_key(process.stdin.fileno())
+        except KeyError:
+            selector.register(process.stdin.fileno(), selectors.EVENT_WRITE, "stdin")
+
+    def retire():
+        nonlocal retired, exit_code, terminal_signal, cleanup_confirmed, leader_reaped, error, forced_kind, drain_deadline
+        if retired:
+            return
+        retired = True
+        exit_code, terminal_signal, cleanup_confirmed, leader_reaped, failure = _retire_group(process, limits)
+        drain_deadline = time.monotonic() + limits.drain_seconds
+        if failure:
+            forced_kind = "io_error"
+            error = _join_error(error, failure)
+        close_input()
 
     try:
+        # Initialization belongs inside the same lifetime guard as the pump.
+        for pipe in (process.stdin, process.stdout, process.stderr):
+            os.set_blocking(pipe.fileno(), False)
+        selector = selectors.DefaultSelector()
+        selector.register(process.stdout.fileno(), selectors.EVENT_READ, "stdout")
+        selector.register(process.stderr.fileno(), selectors.EVENT_READ, "stderr")
+        if outbound:
+            selector.register(process.stdin.fileno(), selectors.EVENT_WRITE, "stdin")
+        elif stdin_policy == "close-after-initial":
+            close_input()
         while True:
-            returncode = process.poll()
-            if returncode is not None and not stdout_open and not stderr_open:
+            checkpoint()
+            if not retired and (forced_kind is not None or _observe_exit(process) is not None):
+                retire()
+            if retired and not stdout_open and not stderr_open:
                 break
-
-            if forced_kind is None:
-                if cancellation.cancelled:
-                    forced_kind = "client_cancelled"
-                elif time.monotonic() - started >= limits.timeout_seconds:
-                    forced_kind = "timed_out"
-            if forced_kind is not None and process.poll() is None:
-                exit_code, terminal_signal, terminate_error = _terminate_group(
-                    process, limits.terminate_grace_seconds
-                )
-                if terminate_error:
-                    error = _join_error(error, terminate_error)
-                    forced_kind = "io_error"
-                # Continue draining the already-created pipe bytes.
-
-            selected = selector.select(limits.poll_seconds)
-            if not selected and process.poll() is not None:
-                # Ensure EOF notifications are consumed even when poll is already terminal.
-                selected = selector.select(0)
-
-            for key, mask in selected:
-                descriptor = key.fd
+            if drain_deadline is not None and time.monotonic() >= drain_deadline:
+                force("io_error", "provider_pipe_drain_deadline_exceeded")
+                break
+            wait = min(limits.poll_seconds, max(0, started + limits.timeout_seconds - time.monotonic()))
+            if retired:
+                wait = min(limits.poll_seconds, max(0, drain_deadline - time.monotonic()))
+            for key, mask in selector.select(wait):
+                checkpoint()
                 channel = key.data
-                if channel == "stdin" and mask & selectors.EVENT_WRITE:
+                if channel == "stdin":
+                    if forced_kind is not None or not stdin_open:
+                        close_input()
+                        continue
                     if not outbound:
-                        try:
-                            selector.unregister(stdin_fd)
-                        except KeyError:
-                            pass
-                        if stdin_policy == "close-after-initial" and stdin_open:
-                            process.stdin.close()
-                            stdin_open = False
+                        selector.unregister(key.fd)
+                        if stdin_policy == "close-after-initial":
+                            close_input()
                         continue
                     try:
-                        written = os.write(stdin_fd, outbound)
+                        written = os.write(key.fd, outbound)
+                        if written <= 0 or written > len(outbound):
+                            raise OSError("provider stdin write made no valid progress")
+                        del outbound[:written]
                     except BlockingIOError:
-                        continue
-                    except BrokenPipeError:
-                        outbound.clear()
-                        try:
-                            selector.unregister(stdin_fd)
-                        except KeyError:
-                            pass
-                        stdin_open = False
-                        continue
-                    except OSError as write_error:
-                        error = _join_error(error, f"provider_stdin_io_error: {write_error}")
-                        forced_kind = "io_error"
-                        outbound.clear()
-                        try:
-                            selector.unregister(stdin_fd)
-                        except KeyError:
-                            pass
-                        stdin_open = False
-                        continue
-                    del outbound[:written]
-                    continue
-
-                if channel not in {"stdout", "stderr"} or not mask & selectors.EVENT_READ:
+                        pass
+                    except OSError as failure:
+                        force("io_error", f"provider_stdin_io_error: {failure}")
+                        close_input()
                     continue
                 try:
-                    chunk = os.read(descriptor, limits.read_chunk_bytes)
+                    chunk = os.read(key.fd, limits.read_chunk_bytes)
                 except BlockingIOError:
                     continue
-                except OSError as read_error:
-                    error = _join_error(error, f"provider_{channel}_io_error: {read_error}")
-                    forced_kind = "io_error"
+                except OSError as failure:
+                    force("io_error", f"provider_{channel}_io_error: {failure}")
                     chunk = b""
-
                 if not chunk:
-                    try:
-                        selector.unregister(descriptor)
-                    except KeyError:
-                        pass
+                    selector.unregister(key.fd)
                     if channel == "stdout":
                         stdout_open = False
                     else:
                         stderr_open = False
                     continue
-
                 if channel == "stderr":
-                    if len(stderr_buffer) + len(chunk) > limits.max_stderr_bytes:
-                        remaining = max(0, limits.max_stderr_bytes - len(stderr_buffer))
-                        stderr_buffer.extend(chunk[:remaining])
-                        forced_kind = "resource_exhausted"
-                        error = _join_error(error, "provider_stderr_exceeds_byte_bound")
-                    else:
-                        stderr_buffer.extend(chunk)
+                    available = max(0, limits.max_stderr_bytes - len(stderr_buffer))
+                    stderr_buffer.extend(chunk[:available])
+                    if len(chunk) > available and forced_kind is None:
+                        force("resource_exhausted", "provider_stderr_exceeds_byte_bound")
                     continue
-
                 stdout_bytes += len(chunk)
+                if checkpoint():
+                    continue  # bounded drain, no callbacks after a forced terminal
                 if stdout_bytes > limits.max_stdout_bytes:
-                    forced_kind = "resource_exhausted"
-                    error = _join_error(error, "provider_stdout_exceeds_byte_bound")
+                    force("resource_exhausted", "provider_stdout_exceeds_byte_bound")
                     continue
                 stdout_buffer.extend(chunk)
-                if len(stdout_buffer) > limits.max_event_line_bytes and b"\n" not in stdout_buffer:
-                    forced_kind = "resource_exhausted"
-                    error = _join_error(error, "provider_jsonl_record_exceeds_byte_bound")
-                    continue
-
-                while True:
+                while not checkpoint():
                     newline = stdout_buffer.find(b"\n")
                     if newline < 0:
+                        if len(stdout_buffer) > limits.max_event_line_bytes:
+                            force("resource_exhausted", "provider_jsonl_record_exceeds_byte_bound")
+                        break
+                    if newline > limits.max_event_line_bytes:
+                        force("resource_exhausted", "provider_jsonl_record_exceeds_byte_bound")
                         break
                     raw = bytes(stdout_buffer[:newline])
-                    del stdout_buffer[: newline + 1]
-                    if len(raw) > limits.max_event_line_bytes:
-                        forced_kind = "resource_exhausted"
-                        error = _join_error(error, "provider_jsonl_record_exceeds_byte_bound")
-                        break
+                    del stdout_buffer[:newline + 1]
                     try:
                         value = decode_strict_event(raw)
-                    except ProviderRuntimeError as decode_error:
-                        forced_kind = "provider_protocol_error"
-                        error = _join_error(error, str(decode_error))
+                    except ProviderRuntimeError as failure:
+                        force("provider_protocol_error", str(failure))
                         break
                     if event_count >= limits.max_event_count:
-                        forced_kind = "resource_exhausted"
-                        error = _join_error(error, "provider_event_count_exceeds_bound")
+                        force("resource_exhausted", "provider_event_count_exceeds_bound")
                         break
-                    event = ProviderEvent(
-                        seq=event_count,
-                        raw=raw,
-                        value=value,
-                        elapsed_ms=_elapsed_ms(started),
-                    )
+                    event = ProviderEvent(event_count, raw, value, _elapsed_ms(started))
                     event_count += 1
                     if event_sink is not None:
                         try:
                             event_sink(event)
-                        except Exception as sink_error:  # noqa: BLE001 - boundary converts to terminal
-                            forced_kind = "io_error"
-                            error = _join_error(
-                                error, f"provider_event_sink_failed: {sink_error}"
-                            )
-                            break
+                        except Exception as failure:
+                            force("io_error", f"provider_event_sink_failed: {failure}")
+                    if checkpoint():
+                        break
                     if event_handler is not None:
                         try:
-                            queue_response(event_handler(event))
-                        except Exception as handler_error:  # noqa: BLE001 - boundary converts to terminal
-                            forced_kind = "provider_protocol_error"
-                            error = _join_error(
-                                error, f"provider_event_handler_failed: {handler_error}"
-                            )
-                            break
-                # A forced terminal closes the provider after this select batch.
-
-            if process.poll() is not None and not stdout_open and not stderr_open:
-                break
+                            response = event_handler(event)
+                            if not checkpoint():
+                                queue_response(response)
+                        except Exception as failure:
+                            force("provider_protocol_error", f"provider_event_handler_failed: {failure}")
+                if forced_kind is not None:
+                    stdout_buffer.clear()
+    except Exception as failure:
+        force("io_error", f"provider_runtime_io_error: {failure}")
     finally:
-        selector.close()
-        if process.poll() is None:
-            exit_code, terminal_signal, terminate_error = _terminate_group(
-                process, limits.terminate_grace_seconds
-            )
-            if terminate_error:
-                error = _join_error(error, terminate_error)
-                forced_kind = "io_error"
-        else:
-            exit_code, terminal_signal, _ = _status(process.returncode)
+        try:
+            retire()
+        except Exception as failure:
+            forced_kind = "io_error"
+            error = _join_error(error, f"provider_retirement_failed: {failure}")
+        if selector is not None:
+            try:
+                selector.close()
+            except Exception as failure:
+                force("io_error", f"provider_selector_close_failed: {failure}")
         for pipe in (process.stdin, process.stdout, process.stderr):
             try:
                 if pipe is not None and not pipe.closed:
                     pipe.close()
-            except OSError as close_error:
-                error = _join_error(error, f"provider_pipe_close_failed: {close_error}")
-                forced_kind = "io_error"
-
-    if stdout_buffer:
-        forced_kind = forced_kind or "provider_protocol_error"
-        error = _join_error(error, "provider_stdout_ended_with_truncated_jsonl_record")
-    if forced_kind is None:
-        kind: TerminalKind = "signaled" if terminal_signal is not None else "exited"
-    else:
-        kind = forced_kind
+            except OSError as failure:
+                force("io_error", f"provider_pipe_close_failed: {failure}")
+    if stdout_buffer and forced_kind is None:
+        force("provider_protocol_error", "provider_stdout_ended_with_truncated_jsonl_record")
     return ProviderTerminal(
-        kind=kind,
-        exit_code=exit_code,
-        signal=terminal_signal,
-        event_count=event_count,
-        stdout_bytes=stdout_bytes,
-        stderr=bytes(stderr_buffer),
-        outbound_bytes=total_outbound,
-        elapsed_ms=_elapsed_ms(started),
-        error=error,
+        kind=forced_kind or ("signaled" if terminal_signal is not None else "exited"),
+        exit_code=exit_code, signal=terminal_signal, event_count=event_count,
+        stdout_bytes=stdout_bytes, stderr=bytes(stderr_buffer), outbound_bytes=total_outbound,
+        elapsed_ms=_elapsed_ms(started), error=error, cleanup_confirmed=cleanup_confirmed,
+        leader_reaped=leader_reaped, process_id=process.pid,
     )

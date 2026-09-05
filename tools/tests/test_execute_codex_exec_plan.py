@@ -133,6 +133,12 @@ else:
             limits=EXECUTOR.RUNTIME.ProcessLimits(timeout_seconds=3),
         )
         self.assertTrue(terminal["success"], terminal)
+        self.assertTrue(terminal["process_cleanup"]["confirmed"])
+        self.assertTrue(terminal["process_cleanup"]["leader_reaped"])
+        self.assertEqual(terminal["process_cleanup"]["scope"], "original_process_group_only")
+        self.assertFalse(terminal["process_cleanup"]["escaped_descendants_absence_proven"])
+        self.assertFalse(terminal["process_cleanup"]["pid_is_recovery_authority"])
+        self.assertFalse(terminal["process_cleanup"]["automatic_redispatch"])
         self.assertEqual(terminal["claim_ceiling"], "VALIDATED_PROVIDER_PROCESS_EXECUTION_ONLY")
         self.assertTrue(terminal["claims"]["validated_plan_executed"])
         self.assertTrue(terminal["claims"]["fixture_provider"])

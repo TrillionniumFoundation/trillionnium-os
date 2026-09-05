@@ -142,6 +142,67 @@ A provider exit terminates the session epoch. Pending callbacks are classified f
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
+### Python JSONL launch adapter: process retirement and callback fencing
+
+`tools/owner-open/jsonl_provider_runtime.py` is the Python launch/bootstrap
+adapter used by `execute_codex_exec_plan.py`, not the Rust Provider runtime.
+It requires Linux `waitid(WNOWAIT)`, default SIGCHLD handling and exclusive
+reaping of its direct child. The returned `process_id` is diagnostic only.
+The child is created in a new session with closed inherited descriptors;
+stdio initialization, selector registration and the pump share one cleanup guard.
+
+The adapter never calls `Popen.poll()` while it owns the process-group anchor.
+Normal leader exit, cancellation, timeout, malformed output and initialization
+failure all enter retirement: send TERM, then KILL before reaping the leader,
+and require two bounded observations with no live original-group members.
+Observation errors are retained even when reaping succeeds. No signal is sent
+after reaping or after loss of the waitable anchor. An exhausted cleanup deadline
+returns an unconfirmed result, never an assurance that the process is absent.
+
+`ProviderTerminal` adds `cleanup_confirmed`, `leader_reaped` and `process_id`.
+Its `success` requires exit zero, no error, confirmed original-group retirement
+and leader reaping. The execution terminal's additive `process_cleanup` object
+exports these observations with `scope=original_process_group_only`,
+`pid_is_recovery_authority=false`, `escaped_descendants_absence_proven=false`
+and `automatic_redispatch=false`. Strict consumers of the v1 terminal schema
+must validate compatibility with this additive field before deployment.
+
+A pre-cancelled request does not spawn. Once cancellation, timeout or a forced
+terminal is observed, no new sink/handler callback or handler response is
+admitted, including later records in the same read batch. Checkpoints surround
+callbacks; an already-entered synchronous callback cannot be preempted and must
+itself return within the caller's budget. Natural-exit pipe draining can still
+emit previously buffered observations; it cannot send responses to closed stdin.
+Queued outbound byte counts are not delivery acknowledgements or effect receipts.
+
+Byte/count limits must be positive integers no greater than 2**31 (booleans and
+fractions are rejected). Read chunks cannot exceed 1 MiB and JSON lines 16 MiB.
+Initial stdin also consumes the total outbound budget. JSON nesting is checked
+before decoding and limited to 64; duplicate keys, non-finite constants and
+floating-point overflow are errors. Existing unknown object fields remain intact.
+Timeout is 0.001..3600 seconds, poll interval 0.001..1 second, TERM grace 0..30,
+KILL/reap and pipe-drain budgets 0.01..30 seconds. Defaults are 300, 0.02, 0.25,
+1 and 1 seconds respectively. One extra KILL-budget interval is available solely
+for final leader reaping after all signals. Procfs scans use at most 65,536 entries,
+8,192 bytes per stat and one second within the current observation deadline.
+Diagnostics retain at most 4,096 characters. These are source limits, not latency
+or power-loss guarantees; OS calls and synchronous callbacks are not preemptible.
+
+Pipe EOF is not assumed to follow leader exit. A finite drain deadline closes
+local pipes even when a setsid-escaped descendant still holds a writer; missing
+EOF returns an error. This helper cannot terminate such escaped descendants,
+provide cgroup containment, defend against another reaper, survive its own abrupt
+death or prove installed-target identity. A complete same-namespace procfs view
+and independently enforced installed service containment remain L2 obligations.
+No failure permits implicit replay, retry, PID-based adoption or target promotion.
+
+Run `python3 -m unittest tools.tests.test_jsonl_provider_runtime
+ tools.tests.test_execute_codex_exec_plan -v` on one line from the repository root.
+The exact-head source workflow explicitly runs both modules; the synthetic-merge
+workflow includes them in its complete `tools/tests/test*.py` discovery. Tests use
+only local fixture processes and test-only subreaping of their own orphan PIDs;
+they do not qualify installed Codex, Android, physical effects or destructive faults.
+
 ## 11. Security and trust boundaries
 
 The provider is the sole semantic principal, but the adapter itself is mechanical. The adapter cannot create new semantic instructions, conceal a retry, replace the selected operation or treat unauthenticated bytes as provider authority.

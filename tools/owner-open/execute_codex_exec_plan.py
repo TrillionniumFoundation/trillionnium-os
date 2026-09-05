@@ -217,6 +217,15 @@ def terminal_record(
         "elapsed_ms": terminal.elapsed_ms,
         "error": terminal.error,
         "success": terminal.success,
+        "process_cleanup": {
+            "scope": "original_process_group_only",
+            "confirmed": terminal.cleanup_confirmed,
+            "leader_reaped": terminal.leader_reaped,
+            "diagnostic_pid": terminal.process_id,
+            "pid_is_recovery_authority": False,
+            "escaped_descendants_absence_proven": False,
+            "automatic_redispatch": False,
+        },
         "claims": {
             "validated_plan_executed": True,
             "fixture_provider": provider_kind == "fixture",
