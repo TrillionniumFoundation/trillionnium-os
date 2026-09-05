@@ -1,0 +1,38 @@
+name: G1 pinned audit source snapshot
+
+on:
+  push:
+    branches: [ops/g1-audit-source-snapshot-20260905]
+
+permissions:
+  contents: read
+
+jobs:
+  export-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out pinned source without credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: c962f77116b1e973a583dde37a56e242451b1481
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export Git objects only, without configuration or credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git --no-replace-objects rev-parse HEAD)"
+          test "$actual" = c962f77116b1e973a583dde37a56e242451b1481
+          git bundle create "$RUNNER_TEMP/g1-audit-source.bundle" --all HEAD
+          git bundle verify "$RUNNER_TEMP/g1-audit-source.bundle"
+          sha256sum "$RUNNER_TEMP/g1-audit-source.bundle" > "$RUNNER_TEMP/g1-audit-source.sha256"
+      - name: Retain source-only snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-audit-source-c962f771
+          if-no-files-found: error
+          retention-days: 3
+          path: |
+            ${{ runner.temp }}/g1-audit-source.bundle
+            ${{ runner.temp }}/g1-audit-source.sha256
