@@ -35,7 +35,11 @@ jobs:
           sha256sum "$SNAPSHOT" > "$MANIFEST"
           test -s "$SNAPSHOT"
           test -s "$MANIFEST"
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
       - name: Upload exact-head source snapshot
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

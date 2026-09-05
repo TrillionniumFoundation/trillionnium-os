@@ -127,3 +127,16 @@ Actual build, codec, concurrency and lifecycle tests remain required.
 Every default Cargo member links a detailed module contract and carries its
 exact locked package-test command. Source checks never prove target resource
 enforcement or turn provisional SLOs into measured results.
+
+## Complete module-to-gap projection
+
+`gap-register.v2.json` owns each gap's status and affected module list. For every
+module, `module-catalog.v1.json.open_gaps` must equal all affecting gaps whose
+status is not `CLOSED`. This is an equality check, not a subset check: omitting
+an affected module's performance or external-evidence gap is a verification
+failure even when every remaining reference is valid. Duplicate IDs, unknown
+modules, unknown statuses and references to closed gaps also fail closed.
+
+Update the register, the catalog projection, the module's exit criteria and the
+generated views together. Do not remove an open relationship to hide an external
+hold; closure still requires evidence at the gap's declared exit level.

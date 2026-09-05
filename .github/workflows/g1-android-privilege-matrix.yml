@@ -67,7 +67,11 @@ jobs:
           assert receipt["public_release"] is False
           PY
           test -s "$RECEIPT"
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
       - name: Upload source-head matrix receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -131,7 +135,11 @@ jobs:
           test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^1)" = "$EVENT_BASE_SHA"
           test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^2)" = "$SOURCE_HEAD_SHA"
           test "$(git -C "$merge_dir" --no-replace-objects rev-parse HEAD^{tree})" = "$merge_tree"
-          test -z "$(git -C "$merge_dir" --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${merge_dir:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
           {
             echo "commit=$merge_commit"
             echo "tree=$merge_tree"
@@ -172,7 +180,11 @@ jobs:
           assert receipt["public_release"] is False
           PY
           test -s "$RECEIPT"
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${RUNNER_TEMP:?}/g1-android-privilege-merge" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
       - name: Upload synthetic-merge matrix receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

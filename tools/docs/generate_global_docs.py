@@ -50,16 +50,21 @@ def current_state() -> str:
         f"- Public release: `{str(program['public_release']).lower()}`",
         f"- Automatic redispatch: `{str(program['automatic_redispatch']).lower()}`",
         "",
-        "## Baselines",
+        "## Recorded baseline snapshot (not live PR status)",
+        "",
+        f"Snapshot observed at: `{base['observed_at']}`. The compatibility keys named "
+        "`latest_*` describe this recorded snapshot, not the current remote head.",
+        "Current candidate, CI, review and integration claims require a newly retained "
+        "exact-head report; none is inferred from the rows below.",
         "",
         "| Role | Branch | Commit | Tree | CI | Review | Claim ceiling |",
         "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     for label, key in [
-        ("Protected trunk", "trunk"),
-        ("Latest source CI", "latest_source_ci"),
-        ("Latest source parent", "latest_candidate_parent"),
-        ("G1 documentation candidate", "documentation_candidate"),
+        ("Recorded protected trunk", "trunk"),
+        ("Recorded source CI", "latest_source_ci"),
+        ("Recorded source parent", "latest_candidate_parent"),
+        ("Recorded documentation candidate", "documentation_candidate"),
     ]:
         item = base[key]
         lines.append(

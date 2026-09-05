@@ -157,7 +157,11 @@ jobs:
           test "$(git -C "$MERGE_DIR" --no-replace-objects rev-parse HEAD^{tree})" = "$merge_tree"
           test "$(git -C "$MERGE_DIR" --no-replace-objects rev-parse "$EVENT_BASE_SHA^{tree}")" = "$base_tree"
           test "$(git -C "$MERGE_DIR" --no-replace-objects rev-parse "$EVENT_HEAD_SHA^{tree}")" = "$head_tree"
-          test -z "$(git -C "$MERGE_DIR" --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${MERGE_DIR:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
           {
             echo "merge_commit=$merge_commit"
             echo "merge_tree=$merge_tree"
@@ -255,7 +259,11 @@ jobs:
           assert artifact['qualification'] == 'SOURCE_EVIDENCE_ONLY'
           assert artifact['gate']['passed'] is False
           PY
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${RUNNER_TEMP:?}/g1-synthetic-merge" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
 
       - name: Emit merge-bound evidence manifest
         shell: bash
@@ -311,7 +319,11 @@ jobs:
           )
           PY
           python3 -m json.tool "$receipt" >/dev/null
-          test -z "$(git -C "$MERGE_DIR" --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${MERGE_DIR:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
 
       - name: Upload merge-bound evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

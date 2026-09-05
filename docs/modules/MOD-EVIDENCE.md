@@ -193,6 +193,23 @@ Record verifier version, exact subject, API object identities, artifact digests 
 
 Every metric and log record is bounded and versioned. Required common dimensions are module ID, instance or service epoch, ordering-key digest, operation class and outcome. High-cardinality raw identifiers are hashed or retained only in access-controlled evidence. Readiness means the module can safely admit work; liveness alone is insufficient.
 
+### Worktree and graph-integrity checks
+
+Every workflow worktree assertion must address the intended checkout explicitly:
+`GITHUB_WORKSPACE` for the source checkout, the separately constructed merge
+directory for a synthetic merge. A step that changes to `RUNNER_TEMP` must still
+check the source checkout. Required path variables must be non-empty. Capture
+`git --no-replace-objects ... status` in a separately tested command and reject
+both a nonzero Git exit and nonempty porcelain output. Never nest that command
+inside `test -z`: an empty output after a Git failure is not proof of cleanliness.
+Keep untracked files and submodule changes visible to the assertion.
+
+`tools/tests/test_owner_open_workflow_exact_head.py` executes the actual workflow
+guards against temporary repositories, dirty indexes/worktrees, wrong working
+directories and failing Git commands. These are L1 tests only. The global graph
+verifier additionally requires the complete bidirectional module/open-gap
+projection, including external holds. Neither check grants integration authority.
+
 ## 15. Verification and evidence
 
 Minimum evidence level declared by the catalog: `L1`.

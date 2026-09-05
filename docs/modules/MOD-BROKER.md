@@ -217,7 +217,7 @@ Standard deployment sequence:
 
 ## 17. Open gaps and exit criteria
 
-Open machine gaps: `GAP-BROKER-CORRELATION-001`, `GAP-CONC-BROKER-MUX-001`, `GAP-FAULT-MATRIX-001`.
+Open machine gaps: `GAP-BROKER-CORRELATION-001`, `GAP-CONC-BROKER-MUX-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
 
 ### GAP-BROKER-CORRELATION-001 — exit L2
 
@@ -238,6 +238,16 @@ Exit evidence must demonstrate:
 - weighted fairness.
 - exact late-result isolation.
 - no automatic redispatch.
+
+### GAP-PERF-SYSTEM-BASELINE-001 — exit L2
+
+The Broker participates in the system baseline; source fairness and correlation
+tests do not establish installed throughput or latency. Run WL-01 through WL-12
+on the qualified installation and retain P50/P95/P99/max latency, CPU, RSS, file
+descriptors, threads, processes and I/O with the exact source and workload IDs.
+Record per-key queue delay, cross-key progress and cancellation/control latency
+under output backpressure. Compare system objective deltas before changing
+inflight capacity, weights or queue limits. This gap remains pending L2 evidence.
 
 ### GAP-FAULT-MATRIX-001 — exit L5
 

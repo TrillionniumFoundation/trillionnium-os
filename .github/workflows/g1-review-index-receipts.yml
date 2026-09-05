@@ -51,7 +51,11 @@ jobs:
           [[ "$SOURCE_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
           test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
           git --no-replace-objects merge-base --is-ancestor "$EVENT_BASE_SHA" "$SOURCE_HEAD_SHA"
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
       - name: Set up Python 3.13
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -94,7 +98,11 @@ jobs:
             --output-dir "$receipts"
           python3 -m json.tool "$receipts/g1-exact-head-review-index-receipt.json" >/dev/null
           python3 -m json.tool "$receipts/g1-synthetic-merge-review-index-receipt.json" >/dev/null
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all)"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
       - name: Upload exact-subject review-index receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

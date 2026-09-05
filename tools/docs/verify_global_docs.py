@@ -468,23 +468,48 @@ def verify_module_contract(module: dict[str, Any], ordering_keys: list[str], sta
 
 
 def verify_module_gap_refs(catalog: dict[str, Any], register: dict[str, Any]) -> None:
+    """Require both directions of every non-closed module/gap relationship.
+
+    The register owns gap status and affected modules. ``open_gaps`` is a
+    checked projection, not an independently editable subset: forward-only
+    validation silently accepted missing work such as the Broker baseline.
+    """
+    modules = catalog.get("modules")
+    require(isinstance(modules, list), "module catalog.modules must be an array")
+    require(all(isinstance(module, dict) for module in modules),
+            "every module entry must be an object")
+    module_ids = [require_string(module.get("id"), "module id") for module in modules]
+    unique(module_ids, "module id")
+    known_modules = set(module_ids)
     gaps = register.get("gaps")
     require(isinstance(gaps, list), "gap register.gaps must be an array")
     require(all(isinstance(gap, dict) for gap in gaps), "every gap entry must be an object")
     statuses: dict[str, str] = {}
     affected: dict[str, set[str]] = {}
+    expected: dict[str, set[str]] = {module_id: set() for module_id in module_ids}
     for gap in gaps:
         gap_id = require_string(gap.get("id"), "gap id")
+        require(gap_id not in statuses, f"duplicate gap id: {gap_id}")
         status = require_string(gap.get("status"), f"{gap_id}.status")
-        modules = require_string_list(gap.get("modules"), f"{gap_id}.modules")
+        require(status in {"OPEN", "SOURCE_CLOSED_PENDING_EVIDENCE", "EXTERNAL_HOLD", "CLOSED"},
+                f"{gap_id} has invalid status")
+        affected_modules = require_string_list(gap.get("modules"), f"{gap_id}.modules")
+        require(set(affected_modules) <= known_modules,
+                f"{gap_id} references unknown modules: {sorted(set(affected_modules)-known_modules)}")
         statuses[gap_id] = status
-        affected[gap_id] = set(modules)
-    for module in catalog["modules"]:
+        affected[gap_id] = set(affected_modules)
+        if status != "CLOSED":
+            for module_id in affected_modules:
+                expected[module_id].add(gap_id)
+    for module in modules:
         module_id = module["id"]
-        for gap_id in module["open_gaps"]:
+        actual = require_string_list(module.get("open_gaps"), f"{module_id}.open_gaps", allow_empty=True)
+        for gap_id in actual:
             require(gap_id in statuses, f"{module_id} references unknown open gap {gap_id}")
             require(module_id in affected[gap_id], f"{module_id} open gap {gap_id} does not affect the module")
             require(statuses[gap_id] != "CLOSED", f"{module_id} lists CLOSED gap {gap_id} as open")
+        missing = expected[module_id] - set(actual)
+        require(not missing, f"{module_id} is missing open gap references: {sorted(missing)}")
 
 def verify_gaps(register: dict[str, Any], module_ids: set[str]) -> set[str]:
     require(register.get("schema") == "org.trillionnium.gap-register.v2",

@@ -342,6 +342,7 @@
       "open_gaps": [
         "GAP-BROKER-CORRELATION-001",
         "GAP-CONC-BROKER-MUX-001",
+        "GAP-PERF-SYSTEM-BASELINE-001",
         "GAP-FAULT-MATRIX-001"
       ]
     },

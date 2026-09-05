@@ -10,14 +10,17 @@
 - Public release: `false`
 - Automatic redispatch: `false`
 
-## Baselines
+## Recorded baseline snapshot (not live PR status)
+
+Snapshot observed at: `2026-09-01`. The compatibility keys named `latest_*` describe this recorded snapshot, not the current remote head.
+Current candidate, CI, review and integration claims require a newly retained exact-head report; none is inferred from the rows below.
 
 | Role | Branch | Commit | Tree | CI | Review | Claim ceiling |
 | --- | --- | --- | --- | --- | --- | --- |
-| Protected trunk | `main` | `bb0f85e63b251b99a6fb490dfe6406a992d95f45` | `e4fe8fd1dc4a19d19868ecefbb731099b4772407` | `PROTECTED_TRUNK_LAGGING_ACTIVE_PROGRAM` | `n/a` | `n/a` |
-| Latest source CI | `codex/g1-gap-closure-r1-20260831` | `4cb69895101872770b975d8ab988136e05eb989e` | `88f2d904739749c94e201c10cc00ee27b3bc0c23` | `PASSED` | `CHANGES_REQUESTED` | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_TARGET` |
-| Latest source parent | `codex/local-g1-r15-gap-closure-20260901` | `5f3a02c5d5fc8e2d19e1a425213ef84a1cc430ab` | `cb2a1dd1e6935084063457ff090138bcc3ac01fb` | `NOT_OBSERVED` | `NO_PR_BOUND` | `SOURCE_CANDIDATE_ONLY` |
-| G1 documentation candidate | `codex/global-modular-docs-g1-20260831` | `CI_GENERATED` | `CI_GENERATED` | `PENDING_EXACT_HEAD_WORKFLOW` | `PENDING_INDEPENDENT_REVIEW` | `DOCUMENTATION_AND_GOVERNANCE_CANDIDATE_ONLY` |
+| Recorded protected trunk | `main` | `bb0f85e63b251b99a6fb490dfe6406a992d95f45` | `e4fe8fd1dc4a19d19868ecefbb731099b4772407` | `PROTECTED_TRUNK_LAGGING_ACTIVE_PROGRAM` | `n/a` | `n/a` |
+| Recorded source CI | `codex/g1-gap-closure-r1-20260831` | `4cb69895101872770b975d8ab988136e05eb989e` | `88f2d904739749c94e201c10cc00ee27b3bc0c23` | `PASSED` | `CHANGES_REQUESTED` | `EXACT_COMMIT_SOURCE_GATES_PASSED_NOT_INSTALLED_TARGET` |
+| Recorded source parent | `codex/local-g1-r15-gap-closure-20260901` | `5f3a02c5d5fc8e2d19e1a425213ef84a1cc430ab` | `cb2a1dd1e6935084063457ff090138bcc3ac01fb` | `NOT_OBSERVED` | `NO_PR_BOUND` | `SOURCE_CANDIDATE_ONLY` |
+| Recorded documentation candidate | `codex/global-modular-docs-g1-20260831` | `CI_GENERATED` | `CI_GENERATED` | `PENDING_EXACT_HEAD_WORKFLOW` | `PENDING_INDEPENDENT_REVIEW` | `DOCUMENTATION_AND_GOVERNANCE_CANDIDATE_ONLY` |
 
 ## Capability milestones
 
