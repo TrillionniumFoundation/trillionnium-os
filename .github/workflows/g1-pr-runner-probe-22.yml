@@ -1,0 +1,37 @@
+name: G1 pull-request Ubuntu 22.04 allocation probe
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: [ops/g1-job-startup-validation-20260905]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-pr-runner-probe-22-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    steps:
+      - name: Bind isolated trigger without checkout
+        env:
+          EVENT_REPOSITORY: ${{ github.repository }}
+          EVENT_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          EVENT_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          EVENT_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$EVENT_REPOSITORY" = 'TrillionniumFoundation/trillionnium-os'
+          test "$EVENT_HEAD_REPOSITORY" = 'TrillionniumFoundation/trillionnium-os'
+          test "$EVENT_HEAD_REF" = 'ops/g1-job-startup-prtarget-trigger-20260906'
+          test "$EVENT_BASE_REF" = 'ops/g1-job-startup-validation-20260905'
+          printf 'G1_PULL_REQUEST_RUNNER_PROBE=ALLOCATED\n'
+          printf 'candidate_checkout_performed=false\n'
+          printf 'product_ref_updated=false\n'
+          printf 'gap_promotion_authorized=false\n'
+          printf 'public_release=false\n'

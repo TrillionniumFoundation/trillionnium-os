@@ -1,0 +1,10 @@
+schema: org.trillionnium.g1-job-startup-prtarget-trigger.v1
+repository: TrillionniumFoundation/trillionnium-os
+trusted_base_branch: ops/g1-job-startup-validation-20260905
+requested_candidate: 9420aac7ec2a8c88416f00115031885f72227ccc
+requested_candidate_tree: 4cfb5fbbf9a38fd59c682fb1502aa95ba980e8da
+purpose: trigger base-owned pull_request_target validation without executing head content
+head_content_executable: false
+product_ref_update_authorized: false
+gap_promotion_authorized: false
+public_release: false
