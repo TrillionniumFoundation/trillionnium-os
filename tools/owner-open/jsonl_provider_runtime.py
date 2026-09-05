@@ -261,10 +261,13 @@ def _group_quiet(pid: int, deadline: float) -> bool:
 def _retire_group(process: subprocess.Popen[bytes], limits: ProcessLimits):
     """TERM then KILL while the leader is retained, then reap exactly once.
 
-    The caller must be the sole reaper. Scan/signalling errors remain errors
-    even when the leader can be reaped. There are no signals after reaping.
+    The caller must be the sole reaper. A TERM-phase procfs scan-budget expiry
+    may be superseded only by complete later SIGKILL-phase confirmation.
+    Signal, identity, other observation and reaping failures remain errors.
+    There are no signals after reaping.
     """
     error = None
+    final_budget_error = None
     confirmed = reaped = False
     code = None
     try:
@@ -282,12 +285,17 @@ def _retire_group(process: subprocess.Popen[bytes], limits: ProcessLimits):
             error = _join_error(error, f"provider_signal_failed: {failure}")
         deadline = time.monotonic() + duration
         quiet_once = False
+        phase_budget_error = None
         while time.monotonic() < deadline:
             try:
                 exited = _observe_exit(process) is not None
                 quiet = _group_quiet(process.pid, min(deadline, time.monotonic() + 1))
             except Exception as failure:
-                error = _join_error(error, f"provider_cleanup_observation_failed: {failure}")
+                detail = f"provider_cleanup_observation_failed: {failure}"
+                if str(failure) == "provider procfs scan budget exceeded":
+                    phase_budget_error = detail
+                else:
+                    error = _join_error(error, detail)
                 break
             if exited and quiet and quiet_once:
                 if sig == signal.SIGKILL:
@@ -295,6 +303,8 @@ def _retire_group(process: subprocess.Popen[bytes], limits: ProcessLimits):
                 break
             quiet_once = exited and quiet
             time.sleep(min(0.005, max(0, deadline - time.monotonic())))
+        if sig == signal.SIGKILL:
+            final_budget_error = phase_budget_error
     try:
         # Losing the anchor never grants permission to signal a recycled PID.
         observed = _observe_exit(process)
@@ -303,6 +313,8 @@ def _retire_group(process: subprocess.Popen[bytes], limits: ProcessLimits):
     except Exception as failure:
         error = _join_error(error, f"provider_reap_failed: {failure}")
     if not confirmed:
+        if final_budget_error is not None:
+            error = _join_error(error, final_budget_error)
         error = _join_error(error, "provider_original_group_cleanup_unconfirmed")
     exit_code, terminal_signal, _ = _status(code)
     return exit_code, terminal_signal, confirmed and error is None, reaped, error
