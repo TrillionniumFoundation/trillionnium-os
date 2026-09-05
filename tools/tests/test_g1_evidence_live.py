@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 import tempfile
+import threading
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -12,6 +15,7 @@ from tools.tests.test_g1_evidence import (
     CANDIDATE,
     GAP_REGISTER,
     G1EvidenceTest,
+    evidence_fixture_directory,
     NOW,
     SOURCE_COMMIT,
 )
@@ -44,7 +48,7 @@ class G1EvidenceLiveHardeningTest(unittest.TestCase):
         return package
 
     def verify_single(self, package: dict, *, now: datetime = NOW):
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             directory = Path(temp)
             write_json(directory / "package.json", package)
             (
@@ -133,7 +137,7 @@ class G1EvidenceLiveHardeningTest(unittest.TestCase):
         child["lineage"]["parent_package_ids"] = [parent["package_id"]]
         self.resign(child)
 
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             directory = Path(temp)
             write_json(directory / "l1-hold.json", parent)
             write_json(directory / "l2.json", child)
@@ -162,7 +166,7 @@ class G1EvidenceLiveHardeningTest(unittest.TestCase):
                 )
 
     def test_current_source_mismatch_yields_no_promotion(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             directory = Path(temp)
             write_json(directory / "historical.json", self.base)
             report = verify_evidence_directory(
@@ -175,6 +179,72 @@ class G1EvidenceLiveHardeningTest(unittest.TestCase):
             self.assertFalse(report["all_gaps_promotable"])
             self.assertFalse(report["public_release"])
             self.assertFalse(report["automatic_redispatch"])
+
+
+class G1EvidenceFixtureIsolationTest(unittest.TestCase):
+    """Real fixture signatures; no target qualification or verifier weakening."""
+
+    def setUp(self) -> None:
+        self.case = G1EvidenceLiveHardeningTest(methodName="runTest")
+        self.case.setUp()
+        # Contain deliberate old-code collision reproductions within this test.
+        storage = tempfile.TemporaryDirectory(prefix="g1-fixture-isolation-")
+        self.addCleanup(storage.cleanup)
+        patcher = mock.patch.object(tempfile, "tempdir", storage.name)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        self.storage = Path(storage.name)
+
+    def test_overlapping_verifications_keep_independent_signature_material(self) -> None:
+        first = deepcopy(self.case.base)
+        second = deepcopy(first)
+        second["authorization"]["scope"] += " second fixture"
+        self.case.resign(second)
+        first_written, second_written = threading.Event(), threading.Event()
+        writer = G1EvidenceTest.write_trusted_attestation
+        paths = []
+
+        def write(path, packages):
+            is_first = packages[0]["package_id"] == first["package_id"]
+            if not is_first and not first_written.wait(15):
+                raise AssertionError("first signing fixture never completed")
+            result = writer(path, packages)
+            paths.append(path)
+            if is_first:
+                first_written.set()
+                if not second_written.wait(15):
+                    raise AssertionError("second signing fixture never completed")
+            else:
+                second_written.set()
+            return result
+
+        with mock.patch.object(G1EvidenceTest, "write_trusted_attestation", side_effect=write):
+            with ThreadPoolExecutor(max_workers=2) as workers:
+                futures = [workers.submit(self.case.verify_single, package)
+                           for package in (first, second)]
+                reports = [future.result(timeout=30) for future in futures]
+        self.assertTrue(all(report["promotable_gaps"] for report in reports))
+        self.assertEqual(len({path.parent for path in paths}), 2)
+        self.assertEqual(list(self.storage.iterdir()), [])
+
+    def test_core_negative_case_cleans_receipt_signature_and_test_keys(self) -> None:
+        # The original signature-negative assertion must still execute and pass.
+        case = G1EvidenceTest(methodName="test_attestation_signature_tampering_is_rejected")
+        result = unittest.TestResult()
+        case.run(result)
+        self.assertTrue(result.wasSuccessful(), result.errors + result.failures)
+        self.assertEqual(result.testsRun, 1)
+        self.assertEqual(list(self.storage.iterdir()), [])
+
+    def test_signing_failure_cleans_partial_detached_material(self) -> None:
+        writer = G1EvidenceTest.write_trusted_attestation
+        def fail_after_signing(path, packages):
+            writer(path, packages)
+            raise OSError("injected fixture signing failure")
+        with mock.patch.object(G1EvidenceTest, "write_trusted_attestation", side_effect=fail_after_signing):
+            with self.assertRaisesRegex(OSError, "injected fixture signing failure"):
+                self.case.verify_single(self.case.base)
+        self.assertEqual(list(self.storage.iterdir()), [])
 
 
 if __name__ == "__main__":

@@ -272,6 +272,17 @@ methods and class-setup skips separately; a skipped class setup is not included
 in unittest's `testsRun`. Installed performance and L2-L6 claims still require
 independent, level-correct evidence and are never inferred from these probes.
 
+### Test-fixture signing material isolation
+
+The core and live evidence tests use a private, per-invocation temporary root.
+Only its `packages` child is scanned as candidate evidence; detached receipts,
+signatures and test-only keys remain outside that child but inside the same
+cleanup scope. Successful verification, expected rejection and signing errors
+all remove that invocation's material. Overlapping invocations do not reuse a
+fixed filename under the shared temporary-directory root. The regression forces
+two real fixture signatures to coexist before verification; it does not replace
+signature checks, create trusted target evidence or grant promotion authority.
+
 ### Bounded PR-aggregate HTTP and JSON intake
 
 `tools/g1_pr_aggregate_api.py::GitHubApi` is the read-only transport used by

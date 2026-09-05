@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from contextlib import contextmanager
+from collections.abc import Iterator
 from datetime import datetime, timezone
 import json
 import os
@@ -36,6 +38,16 @@ GAP_REGISTER = ROOT / "docs" / "machine" / "gap-register.v2.json"
 CANDIDATE = ROOT / "evidence" / "g1" / "candidates" / "pr34-l1-source-qualification.json"
 NOW = datetime(2026, 9, 2, tzinfo=timezone.utc)
 SOURCE_COMMIT = "3f8fc683a90804ba39c731ad6790717758da381b"
+
+
+@contextmanager
+def evidence_fixture_directory() -> Iterator[Path]:
+    """Own packages and detached signing material within one private lifetime."""
+    with tempfile.TemporaryDirectory(prefix="g1-evidence-fixture-") as temp:
+        packages = Path(temp) / "packages"
+        packages.mkdir(mode=0o700)
+        # Detached files may live in packages.parent, never in a shared TMPDIR.
+        yield packages
 
 
 class G1EvidenceTest(unittest.TestCase):
@@ -194,7 +206,7 @@ class G1EvidenceTest(unittest.TestCase):
         current_head = "a" * 40
         package["source"]["commit"] = current_head
         self.resign(package)
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "forged-current.json", package)
             with self.assertRaisesRegex(EvidenceError, "out-of-band trusted attestation"):
@@ -211,7 +223,7 @@ class G1EvidenceTest(unittest.TestCase):
         current_head = "b" * 40
         package["source"]["commit"] = current_head
         self.resign(package)
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "current.json", package)
             receipt = {
@@ -244,7 +256,7 @@ class G1EvidenceTest(unittest.TestCase):
                 )
 
     def test_attestation_digest_mismatch_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "l1.json", self.base)
             attestation_path, _, attestation_signature_path, attestation_public_key_path, attestation_public_key_sha256 = self.write_trusted_attestation(
@@ -266,7 +278,7 @@ class G1EvidenceTest(unittest.TestCase):
                 )
 
     def test_attestation_signature_tampering_is_rejected(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "l1.json", self.base)
             (
@@ -295,7 +307,7 @@ class G1EvidenceTest(unittest.TestCase):
                 )
 
     def test_attestation_public_key_pin_is_required(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "l1.json", self.base)
             (
@@ -372,7 +384,7 @@ class G1EvidenceTest(unittest.TestCase):
             validate_package(package, self.gaps, now=NOW)
 
     def test_directory_rejects_missing_parent_package(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "l2.json", self.l2_package())
             with self.assertRaisesRegex(EvidenceError, "references missing parent"):
@@ -384,7 +396,7 @@ class G1EvidenceTest(unittest.TestCase):
                 )
 
     def test_directory_accepts_exact_parent_chain(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "l1.json", self.base)
             l2 = self.l2_package()
@@ -413,7 +425,7 @@ class G1EvidenceTest(unittest.TestCase):
             self.assertNotIn("GAP-JOB-ADMISSION-001", report["unresolved_gaps"])
 
     def test_promotion_plan_never_enables_release_without_complete_chain(self) -> None:
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "l1.json", self.base)
             attestation_path, attestation_sha256, attestation_signature_path, attestation_public_key_path, attestation_public_key_sha256 = self.write_trusted_attestation(
@@ -439,7 +451,7 @@ class G1EvidenceTest(unittest.TestCase):
 
     def test_still_valid_attestation_cannot_be_replayed_for_new_subject(self) -> None:
         """A fresh externally observed subject is mandatory for promotion."""
-        with tempfile.TemporaryDirectory() as temp:
+        with evidence_fixture_directory() as temp:
             path = Path(temp)
             write_json(path / "l1.json", self.base)
             (
