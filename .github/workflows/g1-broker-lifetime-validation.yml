@@ -1,0 +1,200 @@
+name: G1 broker lifetime repair validation
+
+on:
+  push:
+    branches: [ops/g1-broker-lifetime-validation-20260905]
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  EXPECTED_TREE: 8c8226719496f986a8ec761e905ab15e422e41f0
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out immutable driver
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: driver
+          persist-credentials: false
+      - name: Check out exact published source parent
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 11787dae8cb83a430b2b25ba7bd54b43b281bb34
+          path: candidate
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify patch bytes and reconstructed tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -I - <<'PY'
+          import base64, gzip, hashlib, os
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE']) / 'driver/build-support/g1-broker-lifetime'
+          encoded = ''.join((root / f'part-{i}.b64').read_text().strip() for i in range(4))
+          assert len(encoded) == 17448
+          packed = base64.b64decode(encoded, validate=True)
+          assert hashlib.sha256(packed).hexdigest() == 'e291453c90557a4f12513126f4af2fc89f642e1b358eb7bf4a870d46cc6ddbb4'
+          patch = gzip.decompress(packed)
+          assert hashlib.sha256(patch).hexdigest() == 'd621cc2c0b41eff26caeb3fbf9345686f405c92c6d484f42123b6f2ebc6a2ec5'
+          (Path(os.environ['RUNNER_TEMP']) / 'broker.patch').write_bytes(patch)
+          PY
+          cd "$GITHUB_WORKSPACE/candidate"
+          actual="$(git --no-replace-objects rev-parse HEAD)"
+          test "$actual" = 11787dae8cb83a430b2b25ba7bd54b43b281bb34
+          git apply --unidiff-zero --check --index "$RUNNER_TEMP/broker.patch"
+          git apply --unidiff-zero --index "$RUNNER_TEMP/broker.patch"
+          git diff --cached --check
+          actual="$(git --no-replace-objects write-tree)"
+          test "$actual" = "$EXPECTED_TREE"
+          git -c user.name=source-validation -c user.email=source-validation@invalid commit -m 'Temporary bounded broker source validation subject'
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Run broker, compatibility and documentation regressions
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v 2>&1 | tee "$RUNNER_TEMP/broker-tests.log"
+          python3 -m unittest tools.tests.test_owner_open_connection_broker tools.tests.test_owner_open_ingress_contract -v 2>&1 | tee "$RUNNER_TEMP/compatibility-tests.log"
+          python3 -m unittest \
+            tools.tests.test_owner_open_workflow_exact_head \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_verify_owner_open_r5_workflow_boundaries \
+            tools.tests.test_verify_g1_repository_closure \
+            tools.tests.test_verify_g1_gap_routing \
+            tools.tests.test_owner_open_broker_module_documentation \
+            tools.tests.test_repository_governance_baseline \
+            tools.tests.test_verify_g1_review_index \
+            tools.tests.test_verify_owner_open_r5_governance_readiness -v 2>&1 | tee "$RUNNER_TEMP/document-tests.log"
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_module_documentation.py
+          python3 tools/verify_g1_repository_closure.py
+          python3 tools/verify_g1_gap_routing.py
+          actual="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$actual" = "$EXPECTED_TREE"
+          state="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          test -z "$state"
+      - name: Export validated source objects as inert data
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -I - <<'PY'
+          import base64, json, os, subprocess
+          from pathlib import Path
+          def git(*args):
+              return subprocess.check_output(['/usr/bin/git', '--no-replace-objects', *args])
+          tree = os.environ['EXPECTED_TREE']
+          paths = [p.decode() for p in git('diff', '--name-only', '-z', '11787dae8cb83a430b2b25ba7bd54b43b281bb34', 'HEAD').split(b'\0') if p]
+          assert len(paths) == 11 and len(set(paths)) == 11
+          entries = []
+          for path in paths:
+              metadata, actual_path = git('ls-tree', '-z', tree, '--', path)[:-1].split(b'\t', 1)
+              mode, kind, sha = metadata.decode().split()
+              assert kind == 'blob' and actual_path.decode() == path
+              entries.append({'path': path, 'mode': mode, 'sha': sha, 'content': base64.b64encode(git('cat-file', 'blob', sha)).decode()})
+          (Path(os.environ['RUNNER_TEMP']) / 'broker-objects.json').write_text(json.dumps(entries) + '\n')
+          PY
+      - name: Retain source-only validation data
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-broker-lifetime-source-data
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/broker-tests.log
+            ${{ runner.temp }}/compatibility-tests.log
+            ${{ runner.temp }}/document-tests.log
+            ${{ runner.temp }}/broker-objects.json
+
+  stage-objects:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download same-run inert source data without candidate checkout
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: g1-broker-lifetime-source-data
+          path: ${{ runner.temp }}/broker-data
+      - name: Verify fixed path and hash set then stage only Git objects
+        env:
+          OBJECT_STAGING_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          import base64, hashlib, json, os, urllib.request
+          from pathlib import Path
+          expected = {
+              'docs/generated/TRACEABILITY.tsv': '145fd8a226a235b0d6983fa76c7e1f2e16227833',
+              'docs/machine/gap-register.v2.json': '5dcaca86c9a7c3dddd2c29b6b52f4ffcf1a3a2f1',
+              'docs/machine/requirement-graph.v1.json': 'b626bf9bad3caa287a51564e6907b562732c5a18',
+              'docs/modules/MOD-BROKER.md': 'd9d2897bf3242a7f50ce1d9b06fcfb46bcabd1ec',
+              'governance/pr41-review-index.v1.json': '9cd6f2c61b0fb16a7cb749f9381c3d15e1080c35',
+              'tools/owner-open/README.md': '2c73e4b5e0caefc91b9416f98115b11fb5480538',
+              'tools/owner-open/owner_open_broker_admission_v2.py': '2eaff082c7617265844c1df25832eeb8991ff6c4',
+              'tools/owner-open/owner_open_broker_base_v2.py': '22aa5a08148528979f3f88d26bea4a415ba20923',
+              'tools/owner-open/owner_open_broker_connections.py': '4dc5981c24113da669e0194692d432431326461e',
+              'tools/owner-open/owner_open_broker_server_v2.py': 'bc098189b347cb6012020dfc277951ad461c6aa3',
+              'tools/tests/test_owner_open_broker_connections.py': '1b88220c61898682e547072919bb954071eeaf65',
+          }
+          raw = (Path(os.environ['RUNNER_TEMP']) / 'broker-data/broker-objects.json').read_bytes()
+          assert len(raw) < 2000000
+          data = json.loads(raw)
+          assert isinstance(data, list) and len(data) == len(expected)
+          assert {item['path'] for item in data} == set(expected)
+          def post(kind, payload):
+              assert kind in {'blobs', 'trees'}
+              request = urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/trillionnium-os/git/' + kind,
+                  data=json.dumps(payload).encode(), method='POST', headers={
+                  'Authorization': 'Bearer ' + os.environ['OBJECT_STAGING_TOKEN'],
+                  'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json',
+                  'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+          entries = []
+          for item in data:
+              sha = expected[item['path']]
+              assert item['mode'] == '100644' and item['sha'] == sha
+              content = base64.b64decode(item['content'], validate=True)
+              assert hashlib.sha1(b'blob ' + str(len(content)).encode() + b'\0' + content).hexdigest() == sha
+              result = post('blobs', {'content': item['content'], 'encoding': 'base64'})
+              assert result['sha'] == sha
+              entries.append({'path': item['path'], 'mode': '100644', 'type': 'blob', 'sha': sha})
+          result = post('trees', {'base_tree': '4e6dcc49789766f176fa2318c5ba4a684ebb0c97', 'tree': entries})
+          assert result['sha'] == '8c8226719496f986a8ec761e905ab15e422e41f0'
+          report = {'base_commit': '11787dae8cb83a430b2b25ba7bd54b43b281bb34', 'tree': result['sha'],
+              'broker_tests_passed': 152, 'compatibility_tests_passed': 21, 'document_tests_passed': 130,
+              'new_connection_tests': 33, 'changed_paths': sorted(expected),
+              'independent_review': False, 'target_evidence': False, 'gap_promotion': False,
+              'integration_authorized': False, 'public_release': False, 'ref_updated': False, 'commit_created': False}
+          output = Path(os.environ['RUNNER_TEMP']) / 'broker-staged-tree.json'
+          output.write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps(report, indent=2))
+          PY
+      - name: Retain source-only staging receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-broker-lifetime-staged-tree
+          retention-days: 7
+          if-no-files-found: error
+          path: ${{ runner.temp }}/broker-staged-tree.json
