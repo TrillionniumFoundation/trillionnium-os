@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import asyncio
 import sys
-import time
 
 import adb_smart_socket_relay_selected as base
 
@@ -17,100 +16,9 @@ SELECTED_ENTRY = "tools/owner-open/adb_smart_socket_relay_release.py"
 
 
 class ReleaseRelay(base.Relay):
-    async def accept(
-        self,
-        reader: asyncio.StreamReader,
-        writer: asyncio.StreamWriter,
-    ) -> None:
-        if self.semaphore.locked():
-            try:
-                await self.events.append("connection_rejected", reason="max_clients")
-            finally:
-                await base.close_writer(writer, self.limits.shutdown_grace)
-            return
-        await self.semaphore.acquire()
-        identifier = self.next_identifier
-        self.next_identifier += 1
-        current = asyncio.current_task()
-        if current is not None:
-            self.connections.add(current)
-        state = base.ConnectionState(identifier, time.monotonic())
-        upstream_writer: asyncio.StreamWriter | None = None
-        transfers: asyncio.Task[None] | None = None
-        watchdog: asyncio.Task[None] | None = None
-        started = time.monotonic()
-        try:
-            upstream_reader, upstream_writer = await asyncio.wait_for(
-                asyncio.open_connection(self.upstream_host, self.upstream_port),
-                timeout=self.limits.connect_timeout,
-            )
-            for output in (writer, upstream_writer):
-                output.transport.set_write_buffer_limits(
-                    high=self.limits.buffer_bytes,
-                    low=max(1, self.limits.buffer_bytes // 4),
-                )
-            await self.events.append("connection_started", connection_id=identifier)
-            transfers = asyncio.create_task(
-                base.transfer_pair(
-                    reader,
-                    writer,
-                    upstream_reader,
-                    upstream_writer,
-                    state,
-                ),
-                name=f"adb-relay-transfer-{identifier}",
-            )
-            watchdog = asyncio.create_task(
-                base.idle_watchdog(state, self.limits.idle_timeout),
-                name=f"adb-relay-watchdog-{identifier}",
-            )
-            done, _pending = await asyncio.wait(
-                {transfers, watchdog}, return_when=asyncio.FIRST_COMPLETED
-            )
-            if watchdog in done:
-                watchdog.result()
-            else:
-                await transfers
-        except asyncio.CancelledError:
-            state.terminal = "relay_shutdown"
-            raise
-        except Exception as error:
-            if state.terminal == "completed":
-                state.terminal = "transport_error"
-            state.error = f"{type(error).__name__}: {error}"
-        finally:
-            for task in (transfers, watchdog):
-                if task is not None and not task.done():
-                    task.cancel()
-            await asyncio.gather(
-                *(task for task in (transfers, watchdog) if task is not None),
-                return_exceptions=True,
-            )
-            await base.close_writer(writer, self.limits.shutdown_grace)
-            await base.close_writer(upstream_writer, self.limits.shutdown_grace)
-            try:
-                await self.events.append(
-                    "connection_terminal",
-                    connection_id=identifier,
-                    terminal=state.terminal,
-                    error=state.error,
-                    client_to_upstream_bytes=state.client_to_upstream,
-                    upstream_to_client_bytes=state.upstream_to_client,
-                    elapsed_ms=max(0, int((time.monotonic() - started) * 1000)),
-                    payload_logged=False,
-                    automatic_redispatch=False,
-                )
-            finally:
-                self.semaphore.release()
-                if current is not None:
-                    self.connections.discard(current)
-
-    async def start(self, descriptor):
-        result = await super().start(None)
-        result["selected_entry"] = SELECTED_ENTRY
-        if descriptor is not None:
-            base.atomic_private_json(descriptor, result)
-        return result
+    # The shared implementation owns lifecycle, failure fencing and publication.
+    # The release entry changes identity only, never the transport semantics.
+    selected_entry = SELECTED_ENTRY
 
 
 async def run(args) -> int:

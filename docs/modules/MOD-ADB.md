@@ -66,14 +66,15 @@ Each request must include its version, request identity, ordering identity and p
 
 ### Concrete implementation binding
 
-- Implementation source: `tools/owner-open/owner_open_adb_relay_v2.py` — `RelayServer`
+- Implementation source: `tools/owner-open/adb_smart_socket_relay_release.py` — `ReleaseRelay`
+- Implementation source: `tools/owner-open/adb_smart_socket_relay_selected.py` — `EventWriter`
 
 The catalog input/output/error names above are versioned logical contract labels,
 not a claim that identically named Rust declarations or JSON Schema files exist.
 The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
-`RelayServer`, `Limits` and `ConnectionState` manage finite relay transport. `packaging/owner-open-adb/verify_arm64_adb.py` validates artifact identity. Relay tests do not establish a physical target; unauthorized/offline states must remain raw observations and never trigger implicit serial selection.
+`ReleaseRelay` selects the product entry identity; the shared `Relay`, `EventWriter`, `Limits` and `ConnectionState` implement its finite transport and lifecycle. The historical `owner_open_adb_relay_v2.py` is not this product entry. `packaging/owner-open-adb/verify_arm64_adb.py` validates artifact identity. Relay tests do not establish a physical target; unauthorized/offline states must remain raw observations and never trigger implicit serial selection.
 
 ## 6. State model and ownership
 
@@ -142,6 +143,63 @@ USB loss, server restart or device reboot advances the relay epoch. Accepted ope
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
+
+### Selected relay lifecycle and journal failure
+
+The deployed entry is `tools/owner-open/adb_smart_socket_relay_release.py`.
+`ReleaseRelay` changes only `selected_entry`; its shared implementation in
+`adb_smart_socket_relay_selected.py` owns admission, task cleanup, publication
+and shutdown. Maintaining a second copied accept/start implementation is not
+required. Historical relay variants remain non-authoritative for this contract.
+
+`EventWriter` completes every positive short write before flushing and syncing
+one JSONL record. Zero, negative, non-integer or oversized write progress fails.
+The committed byte and sequence counters advance only after the whole record,
+flush and file fsync succeed. A write, flush, fsync or capacity failure fences
+that writer permanently; it retains any partial/visible bytes, does not truncate
+or append another record, and never manufactures a terminal for the lost event.
+No log is created when optional logging is disabled, and its zero counters are
+not evidence of durability. File fsync tests do not establish directory-entry
+persistence, actual power-loss recovery or independently authorized custody.
+
+A failed lifecycle event inhibits the whole relay instance, closes its listener,
+prevents further upstream connections/forwarding, and makes normal `serve`
+completion return nonzero. Connection cleanup and capacity release remain
+possible without another successful journal append. The lifecycle journal is
+not the Host's durable-before-effect acceptance log: an ADB connection record,
+byte counter or clean socket close does not prove a remote operation succeeded,
+was cancelled, or did not execute. Recovery never repeats an uncertain effect.
+
+The listener is bound but not serving while the descriptor and ready observation
+are prepared. Any startup failure closes it, including descriptor publication
+failure in the release entry. Descriptor publication and ready observation are
+separate operations: a retained descriptor alone is not proof of readiness,
+continued liveness or a successful qualification run. Preserve partial output
+for diagnosis instead of rerunning a semantic operation to obtain a receipt.
+
+The transfer pair owns both pump tasks through normal completion, an error and
+cancellation. One-direction EOF preserves the opposite half of the stream; an
+error cancels and collects its sibling before the pair returns. Transfer and
+watchdog owners are also collected before a connection releases its slot.
+A close that exceeds the configured grace aborts its local transport instead
+of retaining a backpressured socket. Aborting may discard undelivered buffered
+bytes; it is not an acknowledgement or remote-effect cancellation.
+
+Shutdown first stops admission and cancels connection owners, then waits for
+listener closure. Waiting for the server before closing active clients would
+make these operations wait on each other on current Python. A bounded initial
+cancellation wait, a bounded second cancellation wait when needed, and a bounded
+server-close wait each use `shutdown_grace`; an unconfirmed phase returns failure
+and never reports a zero-task success. These are cooperative asyncio budgets,
+not hard real-time bounds on synchronous filesystem I/O or OS scheduling.
+
+The selected relay tests use real local TCP peers and temporary files, plus
+explicit short-write, flush/fsync, task-error and descriptor-failure injection.
+They cover clean half-close, error ownership, shutdown with live clients, failed
+journal admission and cancellation. Release and qualification entrypoint suites
+remain required to detect entry-identity or byte/argv changes. No fixture is a
+physical-device, destructive-power-loss or installed-target observation.
+
 ## 11. Security and trust boundaries
 
 The relay never injects a serial, roots a device, changes transport class, hides unauthorized/offline states or retries a visible mutation after an ambiguous disconnect.
@@ -189,12 +247,13 @@ The module documentation verifier checks this document against the machine catal
 
 ### Reproduction entrypoint
 
-- Verification source: `tools/tests/test_owner_open_adb_relay.py`
+- Verification source: `tools/tests/test_adb_smart_socket_relay_selected.py`
+- Verification source: `tools/tests/test_release_qualification_paths_v2.py`
 
 Run from the repository root in an isolated host source-test environment:
 
 ```sh
-python3 -m unittest tools.tests.test_owner_open_adb_relay -v
+python3 -m unittest tools.tests.test_adb_smart_socket_relay_selected tools.tests.test_release_qualification_paths_v2 -v
 ```
 
 This command qualifies only the source behavior that its assertions exercise.

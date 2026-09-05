@@ -104,11 +104,14 @@ class EventWriter:
         self.sequence = 0
         self.started = time.monotonic()
         self.lock = asyncio.Lock()
+        self.failed = False
 
     async def append(self, kind: str, **fields: Any) -> None:
         if self.handle is None:
             return
         async with self.lock:
+            if self.failed:
+                raise RelayError("relay lifecycle journal is fenced after a prior failure")
             record = {
                 "schema": EVENT_SCHEMA,
                 "sequence": self.sequence,
@@ -117,11 +120,23 @@ class EventWriter:
                 **fields,
             }
             raw = canonical(record) + b"\n"
-            if self.written + len(raw) > self.maximum:
-                raise RelayError("relay lifecycle journal exceeds its byte bound")
-            self.handle.write(raw)
-            self.handle.flush()
-            os.fsync(self.handle.fileno())
+            try:
+                if self.written + len(raw) > self.maximum:
+                    raise RelayError("relay lifecycle journal exceeds its byte bound")
+                offset = 0
+                while offset < len(raw):
+                    remaining = memoryview(raw)[offset:]
+                    written = self.handle.write(remaining)
+                    if type(written) is not int or not 0 < written <= len(remaining):
+                        raise RelayError("relay lifecycle journal write made invalid progress")
+                    offset += written
+                self.handle.flush()
+                os.fsync(self.handle.fileno())
+            except BaseException:
+                # Preserve any partial/visible bytes. No later record may be
+                # concatenated onto an uncertain tail or reuse its sequence.
+                self.failed = True
+                raise
             self.written += len(raw)
             self.sequence += 1
 
@@ -198,10 +213,20 @@ async def transfer_pair(
     upstream_writer: asyncio.StreamWriter,
     state: ConnectionState,
 ) -> None:
-    await asyncio.gather(
-        pump(client_reader, upstream_writer, state, "client_to_upstream"),
-        pump(upstream_reader, client_writer, state, "upstream_to_client"),
-    )
+    # gather propagates the first error without cancelling its other child.
+    # Retain both owners until every normal/error/cancellation path collects
+    # them. A successful half-close still waits for the opposite direction.
+    children = [
+        asyncio.create_task(pump(client_reader, upstream_writer, state, "client_to_upstream")),
+        asyncio.create_task(pump(upstream_reader, client_writer, state, "upstream_to_client")),
+    ]
+    try:
+        await asyncio.gather(*children)
+    finally:
+        for child in children:
+            if not child.done():
+                child.cancel()
+        await asyncio.gather(*children, return_exceptions=True)
 
 
 async def idle_watchdog(state: ConnectionState, timeout: float) -> None:
@@ -220,10 +245,17 @@ async def close_writer(writer: asyncio.StreamWriter | None, timeout: float) -> N
     try:
         await asyncio.wait_for(writer.wait_closed(), timeout=timeout)
     except (asyncio.TimeoutError, ConnectionError, OSError, RuntimeError):
-        pass
+        # close() may retain buffered bytes and its socket indefinitely when
+        # the peer stops reading. Do not return that live transport's slot.
+        writer.transport.abort()
+    except asyncio.CancelledError:
+        writer.transport.abort()
+        raise
 
 
 class Relay:
+    selected_entry = "tools/owner-open/adb_smart_socket_relay_selected.py"
+
     def __init__(
         self,
         listen_host: str,
@@ -244,11 +276,26 @@ class Relay:
         self.server: asyncio.Server | None = None
         self.connections: set[asyncio.Task[None]] = set()
         self.next_identifier = 0
+        self.journal_failed = False
+
+    async def record_event(self, kind: str, **fields: Any) -> bool:
+        if self.journal_failed:
+            return False
+        try:
+            await self.events.append(kind, **fields)
+        except Exception:
+            # Journal failure is an instance-wide admission failure, not just
+            # a lost callback exception. Cleanup remains possible without I/O.
+            self.journal_failed = True
+            self.stop()
+            return False
+        return True
 
     async def accept(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
-        if self.semaphore.locked():
+        if self.stop_event.is_set() or self.semaphore.locked():
             try:
-                await self.events.append("connection_rejected", reason="max_clients")
+                if not self.stop_event.is_set():
+                    await self.record_event("connection_rejected", reason="max_clients")
             finally:
                 await close_writer(writer, self.limits.shutdown_grace)
             return
@@ -260,18 +307,25 @@ class Relay:
             self.connections.add(current)
         state = ConnectionState(identifier, time.monotonic())
         upstream_writer: asyncio.StreamWriter | None = None
+        transfers: asyncio.Task[None] | None = None
+        watchdog: asyncio.Task[None] | None = None
         started = time.monotonic()
         try:
             upstream_reader, upstream_writer = await asyncio.wait_for(
                 asyncio.open_connection(self.upstream_host, self.upstream_port),
                 timeout=self.limits.connect_timeout,
             )
+            if self.stop_event.is_set():
+                state.terminal = "relay_shutdown"
+                return
             for output in (writer, upstream_writer):
                 output.transport.set_write_buffer_limits(
                     high=self.limits.buffer_bytes,
                     low=max(1, self.limits.buffer_bytes // 4),
                 )
-            await self.events.append("connection_started", connection_id=identifier)
+            if not await self.record_event("connection_started", connection_id=identifier):
+                state.terminal = "transport_error"
+                return
             transfers = asyncio.create_task(
                 transfer_pair(reader, writer, upstream_reader, upstream_writer, state),
                 name=f"adb-relay-transfer-{identifier}",
@@ -284,13 +338,9 @@ class Relay:
                 {transfers, watchdog}, return_when=asyncio.FIRST_COMPLETED
             )
             if watchdog in done:
-                transfers.cancel()
-                await asyncio.gather(transfers, return_exceptions=True)
                 watchdog.result()
             else:
                 await transfers
-                watchdog.cancel()
-                await asyncio.gather(watchdog, return_exceptions=True)
         except asyncio.CancelledError:
             state.terminal = "relay_shutdown"
             raise
@@ -299,10 +349,17 @@ class Relay:
                 state.terminal = "transport_error"
             state.error = f"{type(error).__name__}: {error}"
         finally:
-            await close_writer(writer, self.limits.shutdown_grace)
-            await close_writer(upstream_writer, self.limits.shutdown_grace)
             try:
-                await self.events.append(
+                for task in (transfers, watchdog):
+                    if task is not None and not task.done():
+                        task.cancel()
+                await asyncio.gather(
+                    *(task for task in (transfers, watchdog) if task is not None),
+                    return_exceptions=True,
+                )
+                await close_writer(writer, self.limits.shutdown_grace)
+                await close_writer(upstream_writer, self.limits.shutdown_grace)
+                await self.record_event(
                     "connection_terminal",
                     connection_id=identifier,
                     terminal=state.terminal,
@@ -314,6 +371,12 @@ class Relay:
                     automatic_redispatch=False,
                 )
             finally:
+                # Even cancellation during cleanup cannot strand a permit.
+                # Closing/aborting writers is still required independently.
+                for output in (writer, upstream_writer):
+                    if output is not None and not output.is_closing():
+                        output.close()
+                        output.transport.abort()
                 self.semaphore.release()
                 if current is not None:
                     self.connections.discard(current)
@@ -324,7 +387,17 @@ class Relay:
             self.listen_host,
             self.listen_port,
             limit=READ_BYTES,
+            start_serving=False,
         )
+        try:
+            return await self._publish_start(descriptor)
+        except BaseException:
+            self.stop()
+            await self.server.wait_closed()
+            raise
+
+    async def _publish_start(self, descriptor: Path | None) -> dict[str, Any]:
+        assert self.server is not None
         sockets = self.server.sockets or []
         if len(sockets) != 1:
             raise RelayError("relay did not bind exactly one listener")
@@ -332,7 +405,7 @@ class Relay:
         host, port = str(address[0]), int(address[1])
         result = {
             "schema": DESCRIPTOR_SCHEMA,
-            "selected_entry": "tools/owner-open/adb_smart_socket_relay_selected.py",
+            "selected_entry": self.selected_entry,
             "pid": os.getpid(),
             "listen_host": host,
             "listen_port": port,
@@ -353,43 +426,67 @@ class Relay:
         }
         if descriptor is not None:
             atomic_private_json(descriptor, result)
-        await self.events.append(
+        if not await self.record_event(
             "relay_ready",
             listen_host=host,
             listen_port=port,
             upstream_host=self.upstream_host,
             upstream_port=self.upstream_port,
-        )
+        ):
+            raise RelayError("relay lifecycle journal failed before readiness")
+        if self.stop_event.is_set():
+            raise RelayError("relay startup was inhibited")
+        await self.server.start_serving()
         return result
 
     async def serve(self) -> int:
         assert self.server is not None
-        serving = asyncio.create_task(self.server.serve_forever())
-        await self.stop_event.wait()
-        self.server.close()
-        await self.server.wait_closed()
-        serving.cancel()
-        await asyncio.gather(serving, return_exceptions=True)
-        active = list(self.connections)
-        for task in active:
-            task.cancel()
-        if active:
-            _done, pending = await asyncio.wait(
-                active, timeout=self.limits.shutdown_grace
-            )
-            for task in pending:
+        incomplete = False
+        try:
+            # start_server already serves after the readiness barrier.
+            await self.stop_event.wait()
+        finally:
+            self.stop()
+            # Server.wait_closed also waits for active clients on current
+            # Python. Cancel their owners first, or shutdown waits on itself.
+            active = list(self.connections)
+            for task in active:
                 task.cancel()
-            await asyncio.gather(*active, return_exceptions=True)
-            if pending:
-                await self.events.append(
-                    "relay_shutdown_incomplete", active_connections=len(pending)
+            if active:
+                done, pending = await asyncio.wait(
+                    active, timeout=self.limits.shutdown_grace
                 )
-                return 1
-        await self.events.append("relay_terminal", active_connections=0)
-        return 0
+                if pending:
+                    incomplete = True
+                    for task in pending:
+                        task.cancel()
+                    settled, pending = await asyncio.wait(
+                        pending, timeout=self.limits.shutdown_grace
+                    )
+                    done |= settled
+                # Never gather an unconfirmed task without a deadline. Keep
+                # outstanding owners visible and return failure, not zero.
+                await asyncio.gather(*done, return_exceptions=True)
+                incomplete = incomplete or bool(pending)
+            try:
+                await asyncio.wait_for(
+                    self.server.wait_closed(), timeout=self.limits.shutdown_grace
+                )
+            except asyncio.TimeoutError:
+                incomplete = True
+        if incomplete:
+            await self.record_event(
+                "relay_shutdown_incomplete", active_connections=len(self.connections)
+            )
+            return 1
+        if self.journal_failed:
+            return 1
+        return 0 if await self.record_event("relay_terminal", active_connections=0) else 1
 
     def stop(self) -> None:
         self.stop_event.set()
+        if self.server is not None:
+            self.server.close()
 
 
 async def run(args: argparse.Namespace) -> int:
