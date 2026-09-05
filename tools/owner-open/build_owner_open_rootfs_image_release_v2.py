@@ -73,12 +73,16 @@ def terminate_group(process: subprocess.Popen[bytes]) -> None:
     Exclusive direct-child reaping and a complete same-namespace /proc are
     required. No signals follow loss or consumption of the waitable anchor.
     Cleanup failure must prevent the caller from publishing an image receipt.
+    A TERM-phase scan-budget expiry may be superseded only by complete later
+    SIGKILL-phase confirmation; signal, identity and other observation errors
+    remain terminal cleanup errors.
     """
     try:
         _observe_exit(process)
     except Exception as error:
         raise base.ImageError("image tool process-group anchor unavailable") from error
-    errors: list[str] = []
+    hard_errors: list[str] = []
+    final_budget_error: str | None = None
     settled = False
     for sig, grace in ((signal.SIGTERM, TERM_GRACE), (signal.SIGKILL, KILL_GRACE)):
         # A failed signal does not skip escalation; a lost anchor does.
@@ -91,15 +95,20 @@ def terminate_group(process: subprocess.Popen[bytes]) -> None:
         except ProcessLookupError:
             pass
         except OSError as error:
-            errors.append(f"signal {sig}: {str(error)[:256]}")
+            hard_errors.append(f"signal {sig}: {str(error)[:256]}")
         deadline = time.monotonic() + grace
         quiet_once = False
+        phase_budget_error: str | None = None
         while time.monotonic() < deadline:
             try:
                 exited = _observe_exit(process) is not None
                 quiet = _quiet_group(process.pid, min(deadline, time.monotonic() + 1.0))
             except Exception as error:
-                errors.append(f"observation: {str(error)[:256]}")
+                detail = f"observation: {str(error)[:256]}"
+                if str(error) == "image tool process observation budget exhausted":
+                    phase_budget_error = detail
+                else:
+                    hard_errors.append(detail)
                 break
             if exited and quiet and quiet_once:
                 if sig == signal.SIGKILL:
@@ -107,6 +116,8 @@ def terminate_group(process: subprocess.Popen[bytes]) -> None:
                 break
             quiet_once = exited and quiet
             time.sleep(min(0.005, max(0, deadline - time.monotonic())))
+        if sig == signal.SIGKILL:
+            final_budget_error = phase_budget_error
     try:
         # All group signals are over. Even unconfirmed cleanup still attempts
         # bounded reaping, but it can never become a successful build result.
@@ -114,9 +125,12 @@ def terminate_group(process: subprocess.Popen[bytes]) -> None:
         process.wait(timeout=0 if exited else KILL_GRACE)
     except Exception as error:
         raise base.ImageError("image tool process group could not be reaped") from error
-    if errors or not settled:
+    if hard_errors or not settled:
+        details = list(hard_errors)
+        if not settled:
+            details.append(final_budget_error or "deadline")
         raise base.ImageError("image tool original-group cleanup unconfirmed: "
-                              + "; ".join(errors or ["deadline"])[:1536])
+                              + "; ".join(details)[:1536])
 
 
 def bounded_command(argv: list[str], timeout: float):
