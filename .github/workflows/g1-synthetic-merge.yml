@@ -47,6 +47,18 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
+      - name: Install declared source-test system tools
+        working-directory: ${{ runner.temp }}
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fixed distribution tools only, before any candidate checkout.
+          # Do not run candidate scripts under sudo or silently skip ACL tests.
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+          /usr/bin/dpkg-query --show --showformat='${Package} ${Version}\n' acl | tee "${RUNNER_TEMP}/g1-source-tools.log"
+
       # A pull request's canonical hidden ref is served by the base repository
       # and remains fetchable even when the fork branch is renamed or private.
       # Keep the manual path separate so an explicitly supplied repository/SHA
@@ -213,6 +225,33 @@ jobs:
           toolchain: "1.93.0"
           components: rustfmt,clippy
 
+      - name: Verify source-test prerequisites
+        working-directory: ${{ runner.temp }}
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            source_uid="$(id -u)"
+            [[ "$source_uid" =~ ^[1-9][0-9]*$ ]]
+            for tool in python3 rustc cargo setfacl getfacl; do
+              command -v "$tool"
+            done
+            python3 -I -c 'import sys; assert sys.version_info[:2] == (3, 13), sys.version'
+            rust_version="$(rustc --version)"
+            cargo_version="$(cargo --version)"
+            [[ "$rust_version" == "rustc 1.93.0 "* ]]
+            [[ "$cargo_version" == "cargo 1.93.0 "* ]]
+            printf '%s\n' "$rust_version" "$cargo_version"
+            probe="$(mktemp "${RUNNER_TEMP:?}/g1-acl-XXXXXXXX")"
+            trap 'rm -f -- "$probe"' EXIT
+            chmod 600 "$probe"
+            setfacl -m u:0:r-- "$probe"
+            getfacl --absolute-names --numeric --omit-header "$probe" | grep -Fx 'user:0:r--'
+            setfacl -b "$probe"
+            printf '%s\n' 'SOURCE_TEST_PREREQUISITES_OK_NOT_QUALIFICATION'
+          } 2>&1 | tee "${RUNNER_TEMP:?}/g1-source-prerequisites.log"
+
       - name: Run the complete source and planned matrix on the merge object
         working-directory: ${{ runner.temp }}/g1-synthetic-merge
         shell: bash
@@ -228,7 +267,7 @@ jobs:
           # Run every repository-contained Python contract on the exact
           # synthetic merge object.  The focused invocations below retain
           # readable logs for the highest-risk broker/document boundaries.
-          python3 -m unittest discover -s tools/tests -p 'test*.py' -q
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v 2>&1 | tee "${RUNNER_TEMP}/g1-merge-python.log"
           python3 -m unittest discover -s tools/tests -p 'test_verify_global_docs_contracts.py' -v
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_connection_broker.py' -v
@@ -264,6 +303,18 @@ jobs:
             exit 1
           fi
           test -z "$worktree_status"
+
+      - name: Retain source-test diagnostics without qualification authority
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-merge-test-diagnostics-${{ env.EVENT_HEAD_SHA }}
+          if-no-files-found: warn
+          retention-days: 30
+          path: |
+            ${{ runner.temp }}/g1-source-tools.log
+            ${{ runner.temp }}/g1-source-prerequisites.log
+            ${{ runner.temp }}/g1-merge-python.log
 
       - name: Emit merge-bound evidence manifest
         shell: bash

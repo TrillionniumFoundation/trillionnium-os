@@ -99,7 +99,7 @@ class OwnerOpenWorkflowExactHeadTest(unittest.TestCase):
         self.assertIn("unset G1_GIT_TOKEN", workflow)
         self.assertIn('[[ -e "$MERGE_DIR" || -L "$MERGE_DIR" ]]', workflow)
         self.assertNotIn('rm -rf -- "$MERGE_DIR"', workflow)
-        self.assertIn("python3 -m unittest discover -s tools/tests -p 'test*.py' -q", workflow)
+        self.assertIn("python3 -m unittest discover -s tools/tests -p 'test*.py' -v", workflow)
         for field in (
             '"head_repository"',
             '"event_name"',
@@ -261,6 +261,191 @@ class WorktreeGuardExecutionTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0)
         self.assertIn("not a git repository", result.stderr)
+
+
+
+class SourcePrerequisiteWorkflowTests(unittest.TestCase):
+    """Exercise the checked-in Bash guards with explicit test-only tools.
+
+    Command doubles here test admission/error propagation, never qualify real
+    Rust or ACL availability for the complete source-discovery suite.
+    """
+    @staticmethod
+    def job_text(workflow: str, job: str) -> str:
+        match = re.search(r"(?ms)^  " + re.escape(job) + r":\n.*?(?=^  [a-z][a-z0-9-]*:\n|\Z)", workflow)
+        if match is None:
+            raise AssertionError(f"missing job {job}")
+        return match.group(0)
+
+    @staticmethod
+    def step_text(job: str, name: str) -> str:
+        match = re.search(r"(?ms)^      - name: " + re.escape(name) + r"\n.*?(?=^      - name: |\Z)", job)
+        if match is None:
+            raise AssertionError(f"missing step {name}")
+        return match.group(0)
+
+    @classmethod
+    def script(cls, job: str, name: str) -> str:
+        step = cls.step_text(job, name)
+        marker = "        run: |\n"
+        if marker not in step:
+            raise AssertionError(f"missing script in {name}")
+        return textwrap.dedent(step.split(marker, 1)[1]).strip() + "\n"
+
+    def setUp(self) -> None:
+        self.jobs = [self.job_text((WORKFLOW_ROOT / name).read_text(), job)
+                     for name, job in (("g1-exact-head-source.yml", "docs-graph"),
+                                       ("g1-synthetic-merge.yml", "synthetic-merge"))]
+        self.guards = [self.script(job, "Verify source-test prerequisites") for job in self.jobs]
+        self.temp = tempfile.TemporaryDirectory(prefix="g1-prerequisite-test-")
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.bin = self.root / "test-only-bin"
+        self.bin.mkdir()
+        self.runner = self.root / "runner"
+        self.runner.mkdir()
+        self.env = dict(os.environ, PATH=str(self.bin), RUNNER_TEMP=str(self.runner))
+        # The actual shell/core utilities run; only selected dependency commands
+        # are doubles. Nothing is installed into the system or source checkout.
+        for command in ("tee", "mktemp", "chmod", "grep", "rm"):
+            executable = shutil.which(command)
+            if executable is None:
+                raise RuntimeError(f"guard tests require real {command}")
+            (self.bin / command).symlink_to(executable)
+        self.bash = shutil.which("bash")
+        if self.bash is None:
+            raise RuntimeError("guard tests require bash")
+        self.tool("id", 'printf "%s\\n" "${TEST_UID-65534}"\nexit "${TEST_ID_STATUS:-0}"\n')
+        self.tool("python3", 'exit "${TEST_PYTHON_STATUS:-0}"\n')
+        self.tool("rustc", 'printf "%s\\n" "${TEST_RUST_VERSION:-rustc 1.93.0 (fixture)}"\nexit "${TEST_RUST_STATUS:-0}"\n')
+        self.tool("cargo", 'printf "%s\\n" "${TEST_CARGO_VERSION:-cargo 1.93.0 (fixture)}"\nexit "${TEST_CARGO_STATUS:-0}"\n')
+        self.tool("setfacl", 'exit "${TEST_ACL_STATUS:-0}"\n')
+        self.tool("getfacl", 'printf "%s\\n" "${TEST_ACL_RECORD:-user:0:r--}"\nexit "${TEST_ACL_READ_STATUS:-0}"\n')
+
+    def tool(self, name: str, body: str) -> None:
+        target = self.bin / name
+        target.write_text("#!/bin/sh\n" + body)
+        target.chmod(0o700)
+
+    def run_guards(self, *, success: bool, **environment: str) -> None:
+        for index, guard in enumerate(self.guards):
+            with self.subTest(lane=index):
+                result = subprocess.run([self.bash, "-c", guard], cwd=self.runner,
+                                        env=dict(self.env, **environment),
+                                        capture_output=True, text=True, timeout=10)
+                self.assertEqual(result.returncode == 0, success, result.stdout + result.stderr)
+                if not success:
+                    self.assertNotIn("SOURCE_TEST_PREREQUISITES_OK_NOT_QUALIFICATION", result.stdout)
+                self.assertEqual(list(self.runner.glob("g1-acl-*")), [])
+
+    def test_acl_installation_precedes_any_candidate_checkout(self) -> None:
+        for job in self.jobs:
+            install = self.step_text(job, "Install declared source-test system tools")
+            self.assertLess(job.index(install), job.index("uses: actions/checkout@"))
+            self.assertIn("working-directory: ${{ runner.temp }}", install)
+            self.assertIn("/usr/bin/sudo /usr/bin/apt-get", install)
+            self.assertIn("install --yes --no-install-recommends acl", install)
+            self.assertNotIn("continue-on-error", install)
+            self.assertNotIn("|| true", install)
+            self.assertNotIn("python3", install)
+
+    def test_both_lanes_pin_rust_and_python_before_preflight(self) -> None:
+        for job in self.jobs:
+            self.assertIn('python-version: "3.13"', job)
+            self.assertIn('toolchain: "1.93.0"', job)
+            self.assertLess(job.index('toolchain: "1.93.0"'), job.index("- name: Verify source-test prerequisites"))
+            step = self.step_text(job, "Verify source-test prerequisites")
+            self.assertIn("working-directory: ${{ runner.temp }}", step)
+            self.assertNotIn("sudo", step)
+
+    def test_complete_discovery_not_only_focused_suites(self) -> None:
+        for job in self.jobs:
+            self.assertIn("python3 -m unittest discover -s tools/tests -p 'test*.py' -v 2>&1 | tee", job)
+            self.assertLess(job.index("- name: Verify source-test prerequisites"),
+                            job.index("python3 -m unittest discover -s tools/tests -p 'test*.py'"))
+            self.assertNotIn("continue-on-error:", job)
+
+    def test_failure_diagnostics_have_no_qualification_authority(self) -> None:
+        for job in self.jobs:
+            step = self.step_text(job, "Retain source-test diagnostics without qualification authority")
+            self.assertIn("if: ${{ always() }}", step)
+            self.assertIn("g1-source-prerequisites.log", step)
+            self.assertIn("g1-source-tools.log", step)
+            self.assertIn("python.log", step)
+            self.assertNotIn("evidence.json", step)
+
+    def test_prerequisite_guards_are_identical(self) -> None:
+        self.assertEqual(self.guards[0], self.guards[1])
+
+    def test_all_changed_shell_blocks_parse(self) -> None:
+        for job in self.jobs:
+            for name in ("Install declared source-test system tools", "Verify source-test prerequisites"):
+                script = self.script(job, name)
+                result = subprocess.run([self.bash, "-n"], input=script, capture_output=True, text=True, timeout=5)
+                self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_test_only_valid_dependencies_pass_the_guard(self) -> None:
+        self.run_guards(success=True)
+
+    def test_root_execution_is_rejected(self) -> None:
+        self.run_guards(success=False, TEST_UID="0")
+
+    def test_failed_uid_command_is_rejected(self) -> None:
+        self.run_guards(success=False, TEST_ID_STATUS="25")
+
+    def test_missing_or_malformed_uid_is_rejected(self) -> None:
+        for value in ("", "unknown", "00", "-1"):
+            with self.subTest(uid=value):
+                self.run_guards(success=False, TEST_UID=value)
+
+    def test_wrong_python_is_rejected(self) -> None:
+        self.run_guards(success=False, TEST_PYTHON_STATUS="1")
+
+    def test_wrong_or_prerelease_rust_is_rejected(self) -> None:
+        for value in ("rustc 1.92.0 (fixture)", "rustc 1.93.0-nightly (fixture)", "rustc 1.93.00 (fixture)"):
+            with self.subTest(version=value):
+                self.run_guards(success=False, TEST_RUST_VERSION=value)
+
+    def test_wrong_cargo_is_rejected(self) -> None:
+        self.run_guards(success=False, TEST_CARGO_VERSION="cargo 1.94.0 (fixture)")
+
+    def test_failing_compiler_is_not_hidden_by_tee(self) -> None:
+        self.run_guards(success=False, TEST_RUST_STATUS="23")
+
+    def test_failing_cargo_is_not_hidden_by_tee(self) -> None:
+        self.run_guards(success=False, TEST_CARGO_STATUS="24")
+
+    def test_missing_required_tool_is_rejected(self) -> None:
+        for command in ("python3", "rustc", "cargo", "setfacl", "getfacl"):
+            target = self.bin / command
+            saved = target.read_text()
+            target.unlink()
+            try:
+                with self.subTest(command=command):
+                    self.run_guards(success=False)
+            finally:
+                target.write_text(saved)
+                target.chmod(0o700)
+
+    def test_acl_write_failure_is_rejected_and_probe_removed(self) -> None:
+        self.run_guards(success=False, TEST_ACL_STATUS="1")
+
+    def test_acl_read_failure_is_rejected_and_probe_removed(self) -> None:
+        self.run_guards(success=False, TEST_ACL_READ_STATUS="1")
+
+    def test_wrong_acl_readback_is_rejected(self) -> None:
+        self.run_guards(success=False, TEST_ACL_RECORD="user:0:---")
+
+    def test_empty_temp_directory_is_rejected(self) -> None:
+        self.run_guards(success=False, RUNNER_TEMP="")
+
+    def test_complete_source_failure_cannot_be_masked_by_tee(self) -> None:
+        self.tool("python3", 'printf "%s\\n" "test-only unittest failure"\nexit 23\n')
+        script = self.script(self.jobs[0], "Run the complete Python source matrix")
+        result = subprocess.run([self.bash, "-c", script], cwd=self.runner, env=self.env,
+                                capture_output=True, text=True, timeout=5)
+        self.assertEqual(result.returncode, 23)
+        self.assertIn("test-only unittest failure", (self.runner / "g1-source-python.log").read_text())
 
 
 if __name__ == "__main__":

@@ -234,6 +234,44 @@ This command qualifies only the source behavior that its assertions exercise.
 It neither installs the product nor grants L2-L6 evidence. Reproduce the specific
 failure before changing a timeout, disabling an assertion or modifying a budget.
 
+### Complete Python source validation and prerequisite observations
+
+Both exact-source-head `docs-graph` and synthetic-merge qualification run the
+complete `tools/tests/test*.py` Python discovery set, not only a hand-picked
+regression subset. Each job explicitly selects Python 3.13 and Rust/Cargo 1.93.0.
+The Rust identity is required by the Python performance-harness tests as well as
+by locked source metadata; the runner image's moving default is not the pin.
+
+Before candidate checkout, each lane installs the distribution `acl` package
+using fixed absolute system commands from `RUNNER_TEMP`. This privileged step
+executes no repository script. Repository tests run as the ordinary hosted user,
+never under sudo. The package repository remains the hosted environment's
+configured distribution source; its observed package version is retained, not
+misrepresented as a fully pinned package/image supply-chain attestation.
+
+A separate unprivileged prerequisite step runs outside the candidate checkout.
+It requires real `python3`, `rustc`, `cargo`, `setfacl` and `getfacl`, checks the
+selected Python/Rust/Cargo versions, and writes then reads a named-user ACL on
+its own disposable file in `RUNNER_TEMP`. The file is removed on success or
+handled failure. Missing tools, wrong versions, root execution or nonfunctional
+ACL support stop the lane; they do not convert required tests into skips.
+
+Verbose discovery output and prerequisite observations are uploaded even after
+failure as diagnostic artifacts bound by their workflow run and source head.
+`pipefail` preserves a nonzero unittest status through `tee`. A diagnostic upload
+or successful prerequisite probe is not a qualification receipt: the existing
+aggregate still requires every job and workflow family at the exact subject.
+No worktree, source/merge identity, independent-review or target gate is relaxed.
+
+Local execution needs the same real dependencies, an owner-controlled checkout
+and suitable HOME. A sandbox without Rust or ACL cannot claim complete green
+validation. Guard tests use clearly test-only command doubles solely to verify
+rejection and exit-code propagation; these are not substitute tools for the
+complete source suite. Report successful methods, failed/error methods, skipped
+methods and class-setup skips separately; a skipped class setup is not included
+in unittest's `testsRun`. Installed performance and L2-L6 claims still require
+independent, level-correct evidence and are never inferred from these probes.
+
 ## 16. Deployment and runbook
 
 On evidence mismatch, stop promotion, preserve packages and detached material, re-fetch authoritative objects, verify currentness and revocation, and require a new independently administered attestation for a changed subject.
