@@ -203,6 +203,72 @@ workflow includes them in its complete `tools/tests/test*.py` discovery. Tests u
 only local fixture processes and test-only subreaping of their own orphan PIDs;
 they do not qualify installed Codex, Android, physical effects or destructive faults.
 
+### Private input snapshots and execution receipts
+
+The Python `execute_codex_exec_plan.py` entrypoint reads plan and prompt bytes
+through no-follow directory traversal and one non-inheritable, nonblocking file
+descriptor. Inputs must be private, owner-controlled, single-link regular files.
+It checks descriptor metadata before/after the bounded read and verifies the
+named leaf still identifies that snapshot. Symlink components, special files,
+hardlinks, observed replacement, same-size metadata changes and growth beyond
+the byte budget fail closed. This is a checked local snapshot, not immutable
+filesystem custody or an executable attestation. The existing executable probe
+still does not atomically bind interpreter/transitive dependency bytes at exec.
+
+Plan JSON uses the runtime's strict UTF-8/object/duplicate/finite-number decoder
+and pre-decoder depth bound of 64. The plan remains limited to 4 MiB, prompt to
+256 KiB; empty prompt is allowed, empty plan is not. Input read requests are at
+most 64 KiB and total captured input at most its limit plus one sentinel byte.
+Claims must contain actual booleans with the exact expected keys and values:
+integer zero/one cannot impersonate false/true. A self-computed plan hash proves
+byte consistency only, not independent authorization or installed Codex identity.
+
+Before calling the provider, the CLI rejects overlapping plan/prompt/output
+leaves and requires **new** event and terminal output names. It prepares both
+output parents and reserves private temporary files before execution. Existing
+output evidence is preserved rather than overwritten. Every pathname is limited
+to 4,096 filesystem-encoded bytes and 64 components, with no parent traversal.
+Output parents must already be private and owner-controlled or be newly created
+with mode 0700; permissive existing parents are rejected, never silently chmodded.
+No output path component may be a symlink. These are source admission checks,
+not a guarantee of future free space, uninterruptible I/O or successful evidence
+publication after an effect has occurred.
+
+Each output keeps its parent descriptor through execution and publication.
+A randomly named temporary is exclusively created as mode 0600 **before any
+sensitive byte is written**. Its descriptor is close-on-exec. Partial writes are
+completed; zero/invalid progress fails. JSON encoding rejects non-finite numbers,
+and each serialized receipt has a 64 MiB output ceiling. Publication is one
+attempt: serialize, fsync the temporary, recheck parent/target/temporary identity,
+replace relative to the pinned parent, then fsync that parent. A collision never
+deletes another attempt's file. Handled errors remove only a still-owned temporary;
+a replacement temporary is neither published nor unlinked. An abrupt process
+crash may leave private temporaries for independently controlled cleanup.
+
+The `atomic_write_json` library helper still allows replacing an existing private
+regular target, provided its version is unchanged since preparation; the CLI
+uses the stricter new-target mode. This is not a distributed lock or an atomic
+compare-and-swap against malicious same-UID/root writers. Operators must provide
+a stable private namespace, unique invocation destinations and one writer.
+Namespace checks cannot exclude a last-instant privileged path substitution.
+
+Event and terminal files are **two separate commits**, not one transaction and
+not the Host's durable-before-effect journal. If the second publication fails,
+the event file may already exist. If parent fsync fails after replace, new bytes
+may be visible with uncertain durability. Neither case proves rollback or that
+no effect occurred. CLI errors distinguish pre-execution, uncertain execution
+and post-execution receipt publication, always with automatic retry disabled.
+Preserve partial output and reconcile independently; do not rerun a semantic
+operation solely to obtain missing receipt files. Production pair-consistency,
+crash/power-loss durability and independent custody remain L2/L5 obligations.
+
+A pre-cancelled request or spawn failure no longer sets `validated_plan_executed`
+to true; a diagnostic process ID establishes only local process creation, not
+provider/model contact. An unsuccessful terminal prints FAIL, never PASS.
+The existing execution-entrypoint suite covers the file/CLI boundary with local
+fixtures and fault injection; both existing exact-head and synthetic-merge
+source lanes already include it. No fixture closes the module's L2 gaps.
+
 ## 11. Security and trust boundaries
 
 The provider is the sole semantic principal, but the adapter itself is mechanical. The adapter cannot create new semantic instructions, conceal a retry, replace the selected operation or treat unauthenticated bytes as provider authority.

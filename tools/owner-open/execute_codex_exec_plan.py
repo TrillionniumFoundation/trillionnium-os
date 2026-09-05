@@ -15,6 +15,7 @@ import hashlib
 import importlib
 import json
 import os
+import secrets
 from pathlib import Path
 import stat
 import sys
@@ -34,51 +35,102 @@ EVENT_LOG_SCHEMA = "org.trillionnium.owner-open.provider-event-log.v1"
 TERMINAL_SCHEMA = "org.trillionnium.owner-open.provider-execution-terminal.v1"
 MAX_PLAN_BYTES = 4 * 1024 * 1024
 MAX_PROMPT_BYTES = 256 * 1024
+MAX_RECEIPT_BYTES = 64 * 1024 * 1024
+MAX_PATH_BYTES = 4096
+MAX_PATH_PARTS = 64
 
 
 class ExecutionPlanError(ValueError):
     pass
 
 
-class _DuplicateMember(ValueError):
-    pass
-
-
-def _strict_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    value: dict[str, Any] = {}
-    for key, item in pairs:
-        if key in value:
-            raise _DuplicateMember(f"duplicate key {key}")
-        value[key] = item
-    return value
-
-
 def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
-def load_private_json(path: Path, *, label: str, maximum: int) -> tuple[dict[str, Any], bytes]:
-    metadata = path.lstat()
-    if (
-        path.is_symlink()
-        or not path.is_file()
-        or metadata.st_nlink != 1
-        or metadata.st_size == 0
-        or metadata.st_size > maximum
-        or metadata.st_mode & 0o077
-    ):
-        raise ExecutionPlanError(
-            f"{label} must be one non-empty private regular file within its byte bound"
-        )
-    raw = path.read_bytes()
-    if len(raw) != metadata.st_size:
-        raise ExecutionPlanError(f"{label} changed while being read")
+def _canonical_path(path: Path) -> Path:
+    path = Path(path).absolute()
+    if (not path.name or ".." in path.parts or path.anchor != "/"
+            or len(path.parts) > MAX_PATH_PARTS
+            or len(os.fsencode(path)) > MAX_PATH_BYTES or "\x00" in str(path)):
+        raise ExecutionPlanError("file path is not canonical or exceeds its bound")
+    return path
+
+
+def _open_parent(path: Path, *, create: bool = False) -> int:
+    """Pin a directory by no-follow traversal; never resolve symlink aliases."""
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    descriptor = os.open("/", flags)
     try:
-        value = json.loads(raw.decode("utf-8"), object_pairs_hook=_strict_pairs)
-    except (UnicodeDecodeError, _DuplicateMember, json.JSONDecodeError) as error:
+        for part in path.parent.parts[1:]:
+            if create:
+                try:
+                    os.mkdir(part, 0o700, dir_fd=descriptor)
+                except FileExistsError:
+                    pass
+                else:
+                    os.fsync(descriptor)
+            child = os.open(part, flags, dir_fd=descriptor)
+            os.close(descriptor)
+            descriptor = child
+        return descriptor
+    except BaseException:
+        os.close(descriptor)
+        raise
+
+
+def _private_regular(metadata: os.stat_result, label: str) -> None:
+    if (not stat.S_ISREG(metadata.st_mode) or metadata.st_nlink != 1
+            or metadata.st_uid not in {0, os.geteuid()}
+            or metadata.st_mode & 0o7077):
+        raise ExecutionPlanError(f"{label} must be one private bounded regular file")
+
+
+def _version(metadata: os.stat_result) -> tuple[int, ...]:
+    return (metadata.st_dev, metadata.st_ino, metadata.st_size,
+            metadata.st_mtime_ns, metadata.st_ctime_ns, metadata.st_mode,
+            metadata.st_uid, metadata.st_nlink)
+
+
+def _read_private_bytes(path: Path, maximum: int, label: str) -> bytes:
+    path = _canonical_path(path)
+    parent = descriptor = None
+    try:
+        parent = _open_parent(path)
+        descriptor = os.open(path.name, os.O_RDONLY | os.O_NOFOLLOW
+                             | os.O_CLOEXEC | os.O_NONBLOCK, dir_fd=parent)
+        before = os.fstat(descriptor)
+        _private_regular(before, label)
+        if before.st_size > maximum:
+            raise ExecutionPlanError(f"{label} exceeds its byte bound")
+        raw = bytearray()
+        while len(raw) <= maximum:
+            chunk = os.read(descriptor, min(65536, maximum + 1 - len(raw)))
+            if not chunk:
+                break
+            raw.extend(chunk)
+        after = os.fstat(descriptor)
+        named = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+        if (len(raw) > maximum or len(raw) != before.st_size
+                or _version(before) != _version(after)
+                or _version(after) != _version(named)):
+            raise ExecutionPlanError(f"{label} changed while being read or exceeds its bound")
+        return bytes(raw)
+    except OSError as error:
+        raise ExecutionPlanError(f"{label} must be one private bounded regular file: {error}") from error
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        if parent is not None:
+            os.close(parent)
+
+
+def load_private_json(path: Path, *, label: str, maximum: int) -> tuple[dict[str, Any], bytes]:
+    raw = _read_private_bytes(path, maximum, label)
+    try:
+        value = RUNTIME.decode_strict_event(raw)
+    except RUNTIME.ProviderRuntimeError as error:
         raise ExecutionPlanError(f"invalid {label} JSON: {error}") from error
-    if not isinstance(value, dict):
-        raise ExecutionPlanError(f"{label} must contain a JSON object")
     return value, raw
 
 
@@ -91,7 +143,7 @@ def validate_plan(path: Path) -> dict[str, Any]:
     preimage = dict(plan)
     del preimage["plan_sha256"]
     canonical = json.dumps(
-        preimage, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        preimage, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
     ).encode("utf-8")
     if sha256_bytes(canonical) != supplied_hash:
         raise ExecutionPlanError("exec prefix plan SHA-256 does not bind its canonical preimage")
@@ -109,7 +161,8 @@ def validate_plan(path: Path) -> dict[str, Any]:
         "same_turn_tool_effect": False,
         "release_evidence": False,
     }
-    if claims != expected_claims:
+    if (not isinstance(claims, dict) or set(claims) != set(expected_claims)
+            or any(claims[key] is not value for key, value in expected_claims.items())):
         raise ExecutionPlanError("exec prefix plan contains promoted or incomplete claims")
     if plan.get("claim_ceiling") != "EXEC_PREFIX_GENERATED_NOT_EXECUTED":
         raise ExecutionPlanError("exec prefix plan has an incompatible claim ceiling")
@@ -135,18 +188,7 @@ def validate_plan(path: Path) -> dict[str, Any]:
 
 
 def load_prompt(path: Path) -> bytes:
-    metadata = path.lstat()
-    if (
-        path.is_symlink()
-        or not path.is_file()
-        or metadata.st_nlink != 1
-        or metadata.st_size > MAX_PROMPT_BYTES
-        or metadata.st_mode & 0o077
-    ):
-        raise ExecutionPlanError("prompt must be one private bounded regular file")
-    raw = path.read_bytes()
-    if len(raw) != metadata.st_size:
-        raise ExecutionPlanError("prompt changed while being read")
+    raw = _read_private_bytes(path, MAX_PROMPT_BYTES, "prompt")
     try:
         raw.decode("utf-8")
     except UnicodeDecodeError as error:
@@ -227,7 +269,7 @@ def terminal_record(
             "automatic_redispatch": False,
         },
         "claims": {
-            "validated_plan_executed": True,
+            "validated_plan_executed": terminal.process_id is not None,
             "fixture_provider": provider_kind == "fixture",
             "installed_codex_requested": provider_kind == "codex",
             "provider_contact_proven": False,
@@ -242,38 +284,138 @@ def terminal_record(
     }
 
 
-def atomic_write_json(path: Path, value: Any, *, jsonl: bool = False) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.parent / f".{path.name}.tmp-{os.getpid()}"
-    try:
-        with temporary.open("x", encoding="utf-8") as handle:
-            if jsonl:
-                for item in value:
-                    handle.write(
-                        json.dumps(
-                            item,
-                            ensure_ascii=False,
-                            sort_keys=True,
-                            separators=(",", ":"),
-                        )
-                        + "\n"
-                    )
-            else:
-                handle.write(
-                    json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2)
-                    + "\n"
-                )
-            handle.flush()
-            os.fsync(handle.fileno())
-        temporary.chmod(0o600)
-        os.replace(temporary, path)
-        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+class _ReceiptTarget:
+    """An owned private temporary file under a retained output parent.
+
+    Preflight is not a storage reservation or durable-before-effect journal.
+    The two CLI outputs remain separately committed files, not one transaction.
+    """
+    def __init__(self, path: Path, *, require_new: bool = False):
+        self.path = _canonical_path(path)
+        self.parent = self.descriptor = None
+        self.temporary = ".provider-receipt-" + secrets.token_hex(16) + ".tmp"
+        self.identity = None
+        self.published = False
+        self.attempted = False
+        self.written = 0
         try:
-            os.fsync(directory)
+            self.parent = _open_parent(self.path, create=True)
+            self._check_parent()
+            self.prior = self._target_version()
+            if require_new and self.prior is not None:
+                raise ExecutionPlanError("CLI receipt targets must be new; preserve existing evidence")
+            self.descriptor = os.open(
+                self.temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL
+                | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=self.parent,
+            )
+            current = os.fstat(self.descriptor)
+            self.identity = (current.st_dev, current.st_ino)
+            # A restrictive umask can remove owner access, never add group access.
+            os.fchmod(self.descriptor, 0o600)
+            os.fsync(self.descriptor)
+            os.fsync(self.parent)
+        except BaseException:
+            self.close()
+            raise
+
+    def _check_parent(self) -> None:
+        pinned = os.fstat(self.parent)
+        if pinned.st_uid not in {0, os.geteuid()} or pinned.st_mode & 0o7077:
+            raise ExecutionPlanError("receipt parent must be private and owner-controlled")
+        current = _open_parent(self.path)
+        try:
+            observed = os.fstat(current)
+            if (pinned.st_dev, pinned.st_ino) != (observed.st_dev, observed.st_ino):
+                raise ExecutionPlanError("receipt parent identity changed")
         finally:
-            os.close(directory)
-    finally:
-        temporary.unlink(missing_ok=True)
+            os.close(current)
+
+    def _target_version(self) -> tuple[int, ...] | None:
+        try:
+            current = os.stat(self.path.name, dir_fd=self.parent, follow_symlinks=False)
+        except FileNotFoundError:
+            return None
+        _private_regular(current, "receipt target")
+        return _version(current)
+
+    def _owned_temporary(self) -> bool:
+        if self.parent is None or self.identity is None:
+            return False
+        try:
+            current = os.stat(self.temporary, dir_fd=self.parent, follow_symlinks=False)
+        except FileNotFoundError:
+            return False
+        return (current.st_dev, current.st_ino) == self.identity
+
+    def _write(self, text: str) -> None:
+        raw = text.encode("utf-8")
+        if self.written + len(raw) > MAX_RECEIPT_BYTES:
+            raise ExecutionPlanError("receipt exceeds its serialized byte bound")
+        remaining = memoryview(raw)
+        while remaining:
+            count = os.write(self.descriptor, remaining)
+            if count <= 0 or count > len(remaining):
+                raise ExecutionPlanError("receipt write made no valid progress")
+            remaining = remaining[count:]
+        self.written += len(raw)
+
+    def publish(self, value: Any, *, jsonl: bool = False) -> None:
+        if self.attempted or self.descriptor is None:
+            raise ExecutionPlanError("receipt publication is single-attempt; no implicit retry")
+        self.attempted = True
+        encoder = json.JSONEncoder(ensure_ascii=False, sort_keys=True,
+                                   allow_nan=False, indent=None if jsonl else 2,
+                                   separators=(",", ":") if jsonl else None)
+        for item in value if jsonl else (value,):
+            for chunk in encoder.iterencode(item):
+                self._write(chunk)
+            self._write("\n")
+        os.fsync(self.descriptor)
+        self._check_parent()
+        if self._target_version() != self.prior:
+            raise ExecutionPlanError("receipt target changed after preflight")
+        if not self._owned_temporary():
+            raise ExecutionPlanError("receipt temporary identity changed")
+        _private_regular(os.fstat(self.descriptor), "receipt temporary")
+        os.replace(self.temporary, self.path.name,
+                   src_dir_fd=self.parent, dst_dir_fd=self.parent)
+        self.published = True
+        # Failure after replacement is visible-but-durability-unknown, not rollback.
+        os.fsync(self.parent)
+
+    def close(self) -> None:
+        try:
+            if not self.published and self._owned_temporary():
+                os.unlink(self.temporary, dir_fd=self.parent)
+        finally:
+            try:
+                if self.descriptor is not None:
+                    os.close(self.descriptor)
+            finally:
+                self.descriptor = None
+                if self.parent is not None:
+                    os.close(self.parent)
+                self.parent = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exception):
+        self.close()
+
+
+def atomic_write_json(path: Path, value: Any, *, jsonl: bool = False) -> None:
+    with _ReceiptTarget(path) as target:
+        target.publish(value, jsonl=jsonl)
+
+
+def _validate_output_paths(inputs: tuple[Path, ...], outputs: tuple[Path, ...]) -> None:
+    sources = tuple(_canonical_path(path) for path in inputs)
+    destinations = tuple(_canonical_path(path) for path in outputs)
+    for index, path in enumerate(destinations):
+        for other in sources + destinations[:index]:
+            if path == other or path in other.parents or other in path.parents:
+                raise ExecutionPlanError("input and receipt paths must be distinct non-overlapping leaves")
 
 
 def execute_plan(
@@ -340,22 +482,30 @@ def main(argv: list[str]) -> int:
     if not arguments.execute:
         print("HOLD: --execute is required to start the validated provider plan", file=sys.stderr)
         return 64
+    phase = "pre_execution"
     try:
-        records, terminal = execute_plan(
-            arguments.plan,
-            arguments.prompt_file,
-            prompt_mode=arguments.prompt_mode,
-            provider_kind=arguments.provider_kind,
-            environment_mode=arguments.environment_mode,
-            limits=RUNTIME.ProcessLimits(timeout_seconds=arguments.timeout_seconds),
-        )
-        atomic_write_json(arguments.events_output, records, jsonl=True)
-        atomic_write_json(arguments.terminal_output, terminal)
-    except (OSError, ExecutionPlanError, RUNTIME.ProviderRuntimeError) as error:
-        print(f"HOLD: {error}", file=sys.stderr)
+        _validate_output_paths((arguments.plan, arguments.prompt_file),
+                               (arguments.events_output, arguments.terminal_output))
+        with _ReceiptTarget(arguments.events_output, require_new=True) as events_target, \
+                _ReceiptTarget(arguments.terminal_output, require_new=True) as terminal_target:
+            phase = "execution_outcome_may_be_unknown"
+            records, terminal = execute_plan(
+                arguments.plan,
+                arguments.prompt_file,
+                prompt_mode=arguments.prompt_mode,
+                provider_kind=arguments.provider_kind,
+                environment_mode=arguments.environment_mode,
+                limits=RUNTIME.ProcessLimits(timeout_seconds=arguments.timeout_seconds),
+            )
+            phase = "receipt_publication_after_execution"
+            events_target.publish(records, jsonl=True)
+            terminal_target.publish(terminal)
+    except (OSError, ValueError, RecursionError) as error:
+        print(f"HOLD phase={phase}: {str(error)[:1024]}; automatic_retry=false", file=sys.stderr)
         return 1
+    result = "PASS" if terminal["success"] else "FAIL"
     print(
-        "PASS_VALIDATED_PROVIDER_PROCESS_EXECUTION_ONLY "
+        f"{result}_VALIDATED_PROVIDER_PROCESS_EXECUTION_ONLY "
         f"terminal={terminal['kind']} events={terminal['event_count']}"
     )
     return 0 if terminal["success"] else 1
