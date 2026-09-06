@@ -1,0 +1,86 @@
+name: G1 clock-domain readiness v6
+
+"on":
+  push:
+    branches:
+      - ops/g1-synthetic-retirement-fix-20260906
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+  pull-requests: write
+
+concurrency:
+  group: g1-clock-domain-readiness-v6
+  cancel-in-progress: false
+
+jobs:
+  readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Mark ready only after strict current-head success
+        shell: bash
+        env:
+          G1_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: "41"
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${REPOSITORY}"
+          auth=(-H "Authorization: Bearer ${G1_TOKEN}" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
+          pr="$(curl --fail --silent --show-error "${auth[@]}" "${api}/pulls/${PR_NUMBER}")"
+          export PR_JSON="$pr"
+          readarray -t identity < <(python3 - <<'PY'
+          import json, os
+          p=json.loads(os.environ['PR_JSON'])
+          print(p['head']['sha'])
+          print(p['node_id'])
+          print('true' if p['draft'] else 'false')
+          print(p['user']['login'])
+          PY
+          )
+          head="${identity[0]}"; node="${identity[1]}"; draft="${identity[2]}"; author="${identity[3]}"
+          checks="$(curl --fail --silent --show-error "${auth[@]}" "${api}/commits/${head}/check-runs?per_page=100")"
+          reviews="$(curl --fail --silent --show-error "${auth[@]}" "${api}/pulls/${PR_NUMBER}/reviews?per_page=100")"
+          export CHECKS_JSON="$checks" REVIEWS_JSON="$reviews" HEAD_SHA="$head" AUTHOR="$author"
+          readarray -t verdict < <(python3 - <<'PY'
+          import json, os
+          checks=json.loads(os.environ['CHECKS_JSON']).get('check_runs',[])
+          strict=bool(checks) and all(c.get('status')=='completed' and c.get('conclusion') in {'success','neutral','skipped'} for c in checks)
+          latest={}
+          for r in json.loads(os.environ['REVIEWS_JSON']):
+              user=(r.get('user') or {}).get('login')
+              if user: latest[user]=r
+          approvals=[u for u,r in latest.items() if u!=os.environ['AUTHOR'] and r.get('state')=='APPROVED' and r.get('commit_id')==os.environ['HEAD_SHA']]
+          print('true' if strict else 'false')
+          print(str(len(checks)))
+          print(str(len(approvals)))
+          PY
+          )
+          strict="${verdict[0]}"; check_count="${verdict[1]}"; approvals="${verdict[2]}"
+          {
+            echo "head=${head}"
+            echo "checks=${check_count}"
+            echo "strict_success=${strict}"
+            echo "current_head_non_author_approvals=${approvals}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$strict" != true || "$draft" != true ]]; then
+            exit 0
+          fi
+          export NODE_ID="$node"
+          payload="$(python3 - <<'PY'
+          import json, os
+          print(json.dumps({
+            'query':'mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}',
+            'variables':{'id':os.environ['NODE_ID']},
+          },separators=(',',':')))
+          PY
+          )"
+          curl --fail --silent --show-error -X POST \
+            -H "Authorization: Bearer ${G1_TOKEN}" \
+            -H 'Content-Type: application/json' \
+            https://api.github.com/graphql --data "$payload" > /dev/null
+          unset G1_TOKEN PR_JSON CHECKS_JSON REVIEWS_JSON payload
