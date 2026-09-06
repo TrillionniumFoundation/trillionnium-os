@@ -39,8 +39,8 @@ def main() -> int:
     android = root / "apps/trillionniumd/src/android_agent_api.rs"
     replacements = (
         (
-            '                "uid={uid}"\n',
-            '                "unexpected Android user-zero custody classification"\n',
+            '            assert_eq!(error, super::ANDROID_USER_ZERO_CUSTODY_ERROR, "uid={uid}");\n',
+            '            assert_eq!(\n                error,\n                super::ANDROID_USER_ZERO_CUSTODY_ERROR,\n                "unexpected Android user-zero custody classification"\n            );\n',
             "remove UID from assertion diagnostics",
         ),
         (
