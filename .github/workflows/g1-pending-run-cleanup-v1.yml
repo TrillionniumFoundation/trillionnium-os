@@ -1,0 +1,181 @@
+name: G1 stale pending-run cleanup v1
+
+on:
+  push:
+    branches:
+      - ops/g1-pending-run-cleanup-v1-20260906
+    paths:
+      - .github/workflows/g1-pending-run-cleanup-v1.yml
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  cancel-exactly-bound-stale-runs:
+    name: Cancel only verified duplicate or superseded pending runs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Verify immutable run identities before cancellation
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: TrillionniumFoundation/trillionnium-os
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -I - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          repository = os.environ["REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          api = f"https://api.github.com/repos/{repository}"
+          active = {"queued", "pending", "waiting", "requested", "in_progress"}
+          retained = 34010194778
+          targets = [
+              {
+                  "id": 34010193043,
+                  "name": "G1 exact-head source qualification",
+                  "head_sha": "4b9af095813df1a83b65d029d061d889b882d5e7",
+                  "head_branch": "codex/g1-all-gap-closure-20260904",
+                  "event": "push",
+                  "reason": "same-head duplicate; retain newer pull_request run 34010194778",
+              },
+              {
+                  "id": 34001162364,
+                  "name": "G1 exact-head source qualification",
+                  "head_sha": "5d9dbf863845ae7a29792ac0db91ef0686cbe3d4",
+                  "head_branch": "codex/g1-live-consolidation-20260906",
+                  "event": "push",
+                  "reason": "superseded consolidation branch",
+              },
+              {
+                  "id": 34001162411,
+                  "name": "G1 complete gap-to-evidence routing",
+                  "head_sha": "5d9dbf863845ae7a29792ac0db91ef0686cbe3d4",
+                  "head_branch": "codex/g1-live-consolidation-20260906",
+                  "event": "push",
+                  "reason": "superseded consolidation branch",
+              },
+              {
+                  "id": 34001162390,
+                  "name": "Owner-open R5 compatibility source routing",
+                  "head_sha": "5d9dbf863845ae7a29792ac0db91ef0686cbe3d4",
+                  "head_branch": "codex/g1-live-consolidation-20260906",
+                  "event": "push",
+                  "reason": "superseded consolidation branch",
+              },
+              {
+                  "id": 34001162367,
+                  "name": "G1 source snapshot bootstrap",
+                  "head_sha": "5d9dbf863845ae7a29792ac0db91ef0686cbe3d4",
+                  "head_branch": "codex/g1-live-consolidation-20260906",
+                  "event": "push",
+                  "reason": "superseded consolidation branch",
+              },
+              {
+                  "id": 33982028452,
+                  "name": "G1 exact-head source qualification",
+                  "head_sha": "876824c26ca988b4ff3bba8ab570ba34f4f7668c",
+                  "head_branch": "ops/g1-job-startup-prtarget-trigger-20260906",
+                  "event": "pull_request",
+                  "reason": "superseded one-shot runner allocation probe",
+              },
+              {
+                  "id": 33982028507,
+                  "name": "G1 complete gap-to-evidence routing",
+                  "head_sha": "876824c26ca988b4ff3bba8ab570ba34f4f7668c",
+                  "head_branch": "ops/g1-job-startup-prtarget-trigger-20260906",
+                  "event": "pull_request",
+                  "reason": "superseded one-shot runner allocation probe",
+              },
+          ]
+
+          def request(method, path):
+              req = urllib.request.Request(
+                  api + path,
+                  method=method,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Accept": "application/vnd.github+json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "trillionnium-g1-pending-run-cleanup-v1",
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      raw = response.read()
+                      return response.status, json.loads(raw) if raw else None
+              except urllib.error.HTTPError as error:
+                  raw = error.read(65536)
+                  raise RuntimeError(
+                      f"GitHub API {method} {path} failed: {error.code} "
+                      f"{raw.decode(errors='replace')}"
+                  ) from error
+
+          if any(item["id"] == retained for item in targets):
+              raise SystemExit("retained current PR run entered cancellation set")
+
+          observations = []
+          for expected in targets:
+              status, run = request("GET", f"/actions/runs/{expected['id']}")
+              assert status == 200 and isinstance(run, dict)
+              observed = {
+                  key: run.get(key)
+                  for key in ("id", "name", "head_sha", "head_branch", "event", "status", "conclusion")
+              }
+              for key in ("id", "name", "head_sha", "head_branch", "event"):
+                  if observed[key] != expected[key]:
+                      raise SystemExit(
+                          f"run identity drift for {expected['id']} field {key}: "
+                          f"expected {expected[key]!r}, got {observed[key]!r}"
+                      )
+              if run.get("status") in active:
+                  cancel_status, _ = request("POST", f"/actions/runs/{expected['id']}/cancel")
+                  if cancel_status != 202:
+                      raise SystemExit(
+                          f"unexpected cancellation status for {expected['id']}: {cancel_status}"
+                      )
+                  action = "cancel_requested"
+              else:
+                  action = "already_terminal"
+              observations.append({**observed, "action": action, "reason": expected["reason"]})
+
+          for attempt in range(30):
+              remaining = []
+              for expected in targets:
+                  _, run = request("GET", f"/actions/runs/{expected['id']}")
+                  if run.get("status") in active:
+                      remaining.append(expected["id"])
+              if not remaining:
+                  break
+              if attempt == 29:
+                  raise SystemExit(f"cancellation did not reach terminal state: {remaining}")
+              time.sleep(2)
+
+          _, retained_run = request("GET", f"/actions/runs/{retained}")
+          if (
+              retained_run.get("head_sha") != "4b9af095813df1a83b65d029d061d889b882d5e7"
+              or retained_run.get("event") != "pull_request"
+              or retained_run.get("name") != "G1 exact-head source qualification"
+          ):
+              raise SystemExit("retained current PR run identity changed")
+          print(json.dumps({
+              "schema": "org.trillionnium.g1.pending-run-cleanup.v1",
+              "administrator_bypass": False,
+              "retained_current_pr_run": {
+                  "id": retained,
+                  "status": retained_run.get("status"),
+                  "conclusion": retained_run.get("conclusion"),
+                  "head_sha": retained_run.get("head_sha"),
+              },
+              "targets": observations,
+          }, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
