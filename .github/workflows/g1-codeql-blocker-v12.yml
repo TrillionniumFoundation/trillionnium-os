@@ -1,0 +1,237 @@
+name: G1 CodeQL blocker closure v12
+
+on:
+  push:
+    branches:
+      - ops/g1-codeql-v12-20260906
+    paths:
+      - .github/workflows/g1-codeql-blocker-v12.yml
+      - .g1/g1_codeql_v12_apply.py
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: g1-codeql-v12
+  cancel-in-progress: false
+
+env:
+  TARGET_HEAD: bf8671a0ccc3d511e33a696f4406d7d06a0613de
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  MATERIALIZED_BRANCH: ops/g1-codeql-materialized-v12-20260906
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  validate:
+    name: Read-only exact-tree CodeQL blocker validation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+    outputs:
+      result_tree: ${{ steps.bind.outputs.result_tree }}
+      patch_sha256: ${{ steps.bind.outputs.patch_sha256 }}
+      paths_sha256: ${{ steps.bind.outputs.paths_sha256 }}
+    steps:
+      - name: Check out isolated control source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Check out exact PR head without credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ env.TARGET_HEAD }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: target
+
+      - name: Verify immutable inputs and construct repair
+        shell: bash
+        working-directory: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          target="$GITHUB_WORKSPACE/target"
+          test "$(git -C "$target" --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git -C "$target" hash-object tools/verify-owner-open-r5-workflow-boundaries.py)" = e9c05df18174526a1662f72e11d0087356072f06
+          test "$(git -C "$target" hash-object tools/tests/test_verify_owner_open_r5_workflow_boundaries.py)" = 21aefa12c6bc36c6fd16fdb221569a73a68834b1
+          test "$(git -C "$target" hash-object apps/trillionniumd/src/android_agent_api.rs)" = dbff9478244b8e7a3e868cd653a107da58d7ea28
+          test "$(git -C "$target" hash-object crates/trillionnium-agent-direct-tools/src/trusted_context.rs)" = 3152fee519e8511a44d37a3b61658b3a41e10b0b
+          python3 -I "$GITHUB_WORKSPACE/control/.g1/g1_codeql_v12_apply.py" --worktree "$target"
+          git -C "$target" diff --check
+          git -C "$target" status --porcelain=v1 --untracked-files=all \
+            | sed -E 's/^.. //; s/.* -> //' | LC_ALL=C sort > "$RUNNER_TEMP/actual-paths"
+          cat > "$RUNNER_TEMP/expected-paths" <<'EOF'
+          apps/trillionniumd/src/android_agent_api.rs
+          crates/trillionnium-agent-direct-tools/src/trusted_context.rs
+          tools/tests/test_verify_owner_open_r5_workflow_boundaries.py
+          tools/verify-owner-open-r5-workflow-boundaries.py
+          EOF
+          diff -u "$RUNNER_TEMP/expected-paths" "$RUNNER_TEMP/actual-paths"
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up fixed Rust 1.93.0 toolchain
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Verify boundary regression and sensitive diagnostic redaction
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/verify-owner-open-r5-workflow-boundaries.py \
+            tools/tests/test_verify_owner_open_r5_workflow_boundaries.py
+          python3 -m unittest tools.tests.test_verify_owner_open_r5_workflow_boundaries -v
+          python3 tools/verify-owner-open-r5-workflow-boundaries.py
+          python3 -I - <<'PY'
+          from pathlib import Path
+
+          verifier = Path("tools/verify-owner-open-r5-workflow-boundaries.py").read_text()
+          assert 'API_WRITE.search(text) and "/repos/" in text' in verifier
+          assert '"api.github.com" in text' not in verifier
+          android = Path("apps/trillionniumd/src/android_agent_api.rs").read_text()
+          forbidden = (
+              '"uid={uid}"',
+              'legacy provider state escaped quarantine: {other:?}',
+              'legacy terminal result disappeared after reopen: {other:?}',
+              'poisoned direct state escaped quarantine: {other:?}',
+              'malformed direct state escaped quarantine: {other:?}',
+              'same manifest reprovision did not recover: {other:?}',
+              'legacy v1 saga was not quarantined: {other:?}',
+              'v2 saga was blocked by legacy v1 record: {other:?}',
+              'provider pending was not fixed indeterminate: {other:?}',
+          )
+          assert all(item not in android for item in forbidden)
+          trusted = Path("crates/trillionnium-agent-direct-tools/src/trusted_context.rs").read_text()
+          assert 'expected ackable replay disposition, got {other:?}' not in trusted
+          PY
+
+      - name: Run affected Rust tests, formatting and strict Clippy
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked -p trillionniumd --all-targets
+          cargo test --locked -p trillionnium-agent-direct-tools --all-targets
+          cargo clippy --locked -p trillionniumd --all-targets -- -D warnings
+          cargo clippy --locked -p trillionnium-agent-direct-tools --all-targets -- -D warnings
+
+      - name: Bind exact tested patch, path set and result tree
+        id: bind
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git add -A -- .
+          test -z "$(git diff --name-only)"
+          git diff --cached --binary --full-index > "$RUNNER_TEMP/g1-codeql-v12.patch"
+          git diff --cached --name-only > "$RUNNER_TEMP/g1-codeql-v12.paths"
+          result_tree="$(git --no-replace-objects write-tree)"
+          patch_sha256="$(sha256sum "$RUNNER_TEMP/g1-codeql-v12.patch" | awk '{print $1}')"
+          paths_sha256="$(sha256sum "$RUNNER_TEMP/g1-codeql-v12.paths" | awk '{print $1}')"
+          {
+            echo "result_tree=$result_tree"
+            echo "patch_sha256=$patch_sha256"
+            echo "paths_sha256=$paths_sha256"
+          } >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Exact reconstruction without target execution
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      result_commit: ${{ steps.commit.outputs.result_commit }}
+    steps:
+      - name: Check out isolated control source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Check out exact PR head without credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ env.TARGET_HEAD }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: target
+
+      - name: Reconstruct and bind validated bytes
+        id: commit
+        working-directory: target
+        shell: bash
+        env:
+          EXPECTED_TREE: ${{ needs.validate.outputs.result_tree }}
+          EXPECTED_PATCH: ${{ needs.validate.outputs.patch_sha256 }}
+          EXPECTED_PATHS: ${{ needs.validate.outputs.paths_sha256 }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git hash-object tools/verify-owner-open-r5-workflow-boundaries.py)" = e9c05df18174526a1662f72e11d0087356072f06
+          test "$(git hash-object tools/tests/test_verify_owner_open_r5_workflow_boundaries.py)" = 21aefa12c6bc36c6fd16fdb221569a73a68834b1
+          test "$(git hash-object apps/trillionniumd/src/android_agent_api.rs)" = dbff9478244b8e7a3e868cd653a107da58d7ea28
+          test "$(git hash-object crates/trillionnium-agent-direct-tools/src/trusted_context.rs)" = 3152fee519e8511a44d37a3b61658b3a41e10b0b
+          python3 -I "$GITHUB_WORKSPACE/control/.g1/g1_codeql_v12_apply.py" --worktree "$GITHUB_WORKSPACE/target"
+          git diff --check
+          git add -A -- .
+          test -z "$(git diff --name-only)"
+          git diff --cached --binary --full-index > "$RUNNER_TEMP/g1-codeql-v12-publish.patch"
+          git diff --cached --name-only > "$RUNNER_TEMP/g1-codeql-v12-publish.paths"
+          test "$(sha256sum "$RUNNER_TEMP/g1-codeql-v12-publish.patch" | awk '{print $1}')" = "$EXPECTED_PATCH"
+          test "$(sha256sum "$RUNNER_TEMP/g1-codeql-v12-publish.paths" | awk '{print $1}')" = "$EXPECTED_PATHS"
+          test "$(git --no-replace-objects write-tree)" = "$EXPECTED_TREE"
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git commit \
+            -m 'fix(security): close CodeQL diagnostic disclosure blockers' \
+            -m 'Reject repository API writes by path instead of trusting a hostname substring, add a hostname-smuggling regression, and keep UID, secret-bearing recovery state, trusted paths and delivery bindings out of assertion diagnostics. Read-only validation ran the affected Python and Rust suites plus strict Clippy. No target, device, fault, signing, promotion or release evidence is claimed.' \
+            -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          result_commit="$(git --no-replace-objects rev-parse HEAD)"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          echo "result_commit=$result_commit" >> "$GITHUB_OUTPUT"
+          printf '{"schema":"org.trillionnium.g1.codeql-v12.v1","parent":"%s","result_commit":"%s","result_tree":"%s","patch_sha256":"%s","paths_sha256":"%s","target_execution_in_publish_job":false,"external_evidence_claimed":false}\n' \
+            "$TARGET_HEAD" "$result_commit" "$EXPECTED_TREE" "$EXPECTED_PATCH" "$EXPECTED_PATHS" \
+            > "$RUNNER_TEMP/g1-codeql-v12-result.json"
+
+      - name: Publish only to isolated materialized branch with exact lease
+        working-directory: target
+        shell: bash
+        env:
+          RESULT_COMMIT: ${{ steps.commit.outputs.result_commit }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$G1_TOKEN" | base64 -w0)"
+          observed="$(git -c "http.extraheader=AUTHORIZATION: basic ${auth}" ls-remote origin "refs/heads/${MATERIALIZED_BRANCH}" | awk 'NR==1 {print $1}')"
+          test "$observed" = "$TARGET_HEAD"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth}" push \
+            "--force-with-lease=refs/heads/${MATERIALIZED_BRANCH}:${TARGET_HEAD}" \
+            origin "${RESULT_COMMIT}:refs/heads/${MATERIALIZED_BRANCH}"
+          unset G1_TOKEN auth
+
+      - name: Upload exact materialization receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-codeql-v12-${{ steps.commit.outputs.result_commit }}
+          path: ${{ runner.temp }}/g1-codeql-v12-result.json
+          if-no-files-found: error
+          retention-days: 30
