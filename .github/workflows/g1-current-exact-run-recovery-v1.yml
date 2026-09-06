@@ -1,0 +1,194 @@
+name: G1 current exact-run recovery v1
+
+on:
+  push:
+    branches:
+      - ops/g1-pending-run-cleanup-v1-20260906
+    paths:
+      - .github/workflows/g1-current-exact-run-recovery-v1.yml
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  recover:
+    name: Recover only the exact current empty pending pull-request run
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      actions: write
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Verify, cancel empty pending attempt and rerun the same canonical run
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: TrillionniumFoundation/trillionnium-os
+          RUN_ID: "34010194778"
+          PR_NUMBER: "41"
+          EXPECTED_HEAD: 4b9af095813df1a83b65d029d061d889b882d5e7
+          EXPECTED_BASE: bb0f85e63b251b99a6fb490dfe6406a992d95f45
+          EXPECTED_BRANCH: codex/g1-all-gap-closure-20260904
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -I - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          repository = os.environ["REPOSITORY"]
+          run_id = int(os.environ["RUN_ID"])
+          pr_number = int(os.environ["PR_NUMBER"])
+          expected_head = os.environ["EXPECTED_HEAD"]
+          expected_base = os.environ["EXPECTED_BASE"]
+          expected_branch = os.environ["EXPECTED_BRANCH"]
+          token = os.environ["GH_TOKEN"]
+          root = f"https://api.github.com/repos/{repository}"
+
+          def request(method, path):
+              req = urllib.request.Request(
+                  root + path,
+                  method=method,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Accept": "application/vnd.github+json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "trillionnium-g1-current-exact-run-recovery-v1",
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      raw = response.read()
+                      return response.status, json.loads(raw) if raw else None
+              except urllib.error.HTTPError as error:
+                  raw = error.read(65536)
+                  raise RuntimeError(
+                      f"GitHub API {method} {path} failed: {error.code} "
+                      f"{raw.decode(errors='replace')}"
+                  ) from error
+
+          def get_run():
+              status, value = request("GET", f"/actions/runs/{run_id}")
+              assert status == 200 and isinstance(value, dict)
+              return value
+
+          _, pr = request("GET", f"/pulls/{pr_number}")
+          if not isinstance(pr, dict):
+              raise SystemExit("pull request response is not an object")
+          if (
+              pr.get("state") != "open"
+              or pr.get("draft") is not True
+              or (pr.get("head") or {}).get("sha") != expected_head
+              or (pr.get("head") or {}).get("ref") != expected_branch
+              or (pr.get("base") or {}).get("sha") != expected_base
+              or (pr.get("base") or {}).get("ref") != "main"
+          ):
+              raise SystemExit("pull request identity or guarded draft state changed")
+
+          run = get_run()
+          immutable = {
+              "id": run_id,
+              "name": "G1 exact-head source qualification",
+              "path": ".github/workflows/g1-exact-head-source.yml",
+              "event": "pull_request",
+              "head_sha": expected_head,
+              "head_branch": expected_branch,
+          }
+          for key, expected in immutable.items():
+              if run.get(key) != expected:
+                  raise SystemExit(
+                      f"canonical run identity drift for {key}: expected {expected!r}, got {run.get(key)!r}"
+                  )
+          pulls = run.get("pull_requests")
+          if not isinstance(pulls, list) or not any(
+              isinstance(item, dict)
+              and item.get("number") == pr_number
+              and (item.get("head") or {}).get("sha") == expected_head
+              and (item.get("base") or {}).get("sha") == expected_base
+              for item in pulls
+          ):
+              raise SystemExit("canonical run is not bound to the exact PR subject")
+
+          initial_attempt = run.get("run_attempt")
+          initial_status = run.get("status")
+          initial_conclusion = run.get("conclusion")
+          action = "none"
+
+          if initial_status == "pending":
+              _, jobs = request("GET", f"/actions/runs/{run_id}/jobs?filter=latest&per_page=100")
+              if not isinstance(jobs, dict) or jobs.get("total_count") != 0 or jobs.get("jobs") != []:
+                  raise SystemExit("pending canonical run unexpectedly owns jobs; refusing cancellation")
+              status, _ = request("POST", f"/actions/runs/{run_id}/cancel")
+              if status != 202:
+                  raise SystemExit(f"unexpected cancellation response {status}")
+              action = "cancel_empty_pending_attempt"
+              for attempt in range(60):
+                  run = get_run()
+                  if run.get("status") == "completed":
+                      break
+                  if attempt == 59:
+                      raise SystemExit("canonical run cancellation did not become terminal")
+                  time.sleep(2)
+              if run.get("conclusion") != "cancelled":
+                  if run.get("conclusion") == "success":
+                      action = "completed_success_during_recovery"
+                  else:
+                      raise SystemExit(
+                          f"empty pending run reached unexpected conclusion {run.get('conclusion')!r}"
+                      )
+
+          run = get_run()
+          if run.get("status") == "completed" and run.get("conclusion") == "success":
+              final = run
+          elif run.get("status") == "completed" and run.get("conclusion") == "cancelled":
+              status, _ = request("POST", f"/actions/runs/{run_id}/rerun")
+              if status != 201:
+                  raise SystemExit(f"unexpected rerun response {status}")
+              action = action + "+rerun_same_pull_request_run"
+              final = None
+              for attempt in range(90):
+                  candidate = get_run()
+                  if (
+                      isinstance(candidate.get("run_attempt"), int)
+                      and candidate["run_attempt"] > initial_attempt
+                  ):
+                      final = candidate
+                      if candidate.get("status") != "pending":
+                          break
+                  if attempt == 89:
+                      raise SystemExit("rerun did not create a new non-pending attempt")
+                  time.sleep(2)
+              assert final is not None
+          else:
+              raise SystemExit(
+                  f"canonical run is no longer safely recoverable: status={run.get('status')!r} "
+                  f"conclusion={run.get('conclusion')!r}"
+              )
+
+          for key, expected in immutable.items():
+              if final.get(key) != expected:
+                  raise SystemExit(f"rerun identity drift for {key}")
+          print(json.dumps({
+              "schema": "org.trillionnium.g1.current-exact-run-recovery.v1",
+              "administrator_bypass": False,
+              "self_approval": False,
+              "action": action,
+              "initial": {
+                  "run_attempt": initial_attempt,
+                  "status": initial_status,
+                  "conclusion": initial_conclusion,
+              },
+              "final": {
+                  "id": final.get("id"),
+                  "run_attempt": final.get("run_attempt"),
+                  "event": final.get("event"),
+                  "head_sha": final.get("head_sha"),
+                  "status": final.get("status"),
+                  "conclusion": final.get("conclusion"),
+              },
+          }, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
