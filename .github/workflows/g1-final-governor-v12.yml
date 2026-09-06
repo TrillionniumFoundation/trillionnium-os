@@ -1,0 +1,260 @@
+name: G1 final exact-head closure governor v12
+
+"on":
+  push:
+    branches:
+      - ops/g1-final-governor-v12-20260906
+    paths:
+      - .github/workflows/g1-final-governor-v12.yml
+      - .g1/g1_final_governor_v12.py
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: g1-final-governor-v12-pr41
+  cancel-in-progress: false
+
+env:
+  PR_NUMBER: "41"
+  EXTERNAL_EVIDENCE_ISSUE: "22"
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  qualify:
+    name: Read-only exact-head full source qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      head_sha: ${{ steps.subject.outputs.head_sha }}
+      base_sha: ${{ steps.subject.outputs.base_sha }}
+      head_tree: ${{ steps.subject.outputs.head_tree }}
+      head_ref: ${{ steps.subject.outputs.head_ref }}
+    steps:
+      - name: Check out isolated governor source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          path: governor
+
+      - name: Install fixed host prerequisites before candidate checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+          dpkg-query --show --showformat='${Package} ${Version}\n' acl
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up fixed Rust 1.93.0 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.93.0 --profile minimal --component rustfmt --component clippy --no-self-update
+          rustup default 1.93.0
+          rustc --version | grep -F 'rustc 1.93.0 '
+          cargo --version | grep -F 'cargo 1.93.0 '
+
+      - name: Read immutable live PR subject
+        id: subject
+        shell: bash
+        env:
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, urllib.request
+          repo = os.environ['GITHUB_REPOSITORY']
+          pr = os.environ['PR_NUMBER']
+          token = os.environ['G1_TOKEN']
+          headers = {
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'User-Agent': 'g1-v12-read-only-qualifier',
+          }
+          def get(path):
+              req = urllib.request.Request(f'https://api.github.com/repos/{repo}{path}', headers=headers)
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  return json.load(response)
+          value = get(f'/pulls/{pr}')
+          if value.get('state') != 'open':
+              raise SystemExit('PR #41 is not open')
+          head = value['head']['sha']
+          base = value['base']['sha']
+          head_ref = value['head']['ref']
+          commit = get(f'/git/commits/{head}')
+          tree = commit['tree']['sha']
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write(f'head_sha={head}\n')
+              output.write(f'base_sha={base}\n')
+              output.write(f'head_tree={tree}\n')
+              output.write(f'head_ref={head_ref}\n')
+          print(json.dumps({'head': head, 'base': base, 'tree': tree, 'head_ref': head_ref}, sort_keys=True))
+          PY
+
+      - name: Check out exact PR head without persisted credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ steps.subject.outputs.head_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: target
+
+      - name: Assert exact clean subject and removed probe artifacts
+        working-directory: target
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ steps.subject.outputs.head_sha }}
+          EXPECTED_TREE: ${{ steps.subject.outputs.head_tree }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test ! -e __probe_do_not_create__
+          test ! -L __probe_do_not_create__
+          test ! -e __schema_probe__
+          test ! -L __schema_probe__
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+      - name: Run generated documentation and repository topology gates
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 0700 "$RUNNER_TEMP/g1-v12"
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_module_documentation.py
+          python3 tools/verify_g1_repository_closure.py --json > "$RUNNER_TEMP/g1-v12/repository-closure.json"
+          python3 -m json.tool "$RUNNER_TEMP/g1-v12/repository-closure.json" >/dev/null
+
+      - name: Stress the former ADB descriptor visibility race
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest \
+            tools.tests.test_adb_smart_socket_relay_selected \
+            tools.tests.test_release_qualification_paths_v2.ReleaseAdbRelayV2Test -v
+          for repetition in $(seq 1 30); do
+            python3 -m unittest \
+              tools.tests.test_release_qualification_paths_v2.ReleaseAdbRelayV2Test.test_arbitrary_bytes_and_half_close_are_preserved
+          done
+
+      - name: Run complete Python source qualification
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+
+      - name: Run root Rust workspace qualification
+        working-directory: target
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/g1-v12-cargo-root
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Run planned Rust workspace qualification
+        working-directory: target
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/g1-v12-cargo-planned
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+
+      - name: Verify source-only performance receipt and unchanged tree
+        working-directory: target
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ steps.subject.outputs.head_sha }}
+          EXPECTED_TREE: ${{ steps.subject.outputs.head_tree }}
+        run: |
+          set -euo pipefail
+          python3 tools/perf/run_global_baseline.py --output "$RUNNER_TEMP/g1-v12/source-baseline.json" --repetitions 1
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          path = Path(os.environ['RUNNER_TEMP']) / 'g1-v12' / 'source-baseline.json'
+          value = json.loads(path.read_text())
+          clone = dict(value)
+          clone['artifact_digest'] = ''
+          encoded = json.dumps(clone, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode()
+          assert value['artifact_digest'] == hashlib.sha256(encoded).hexdigest()
+          assert value['qualification'] == 'SOURCE_EVIDENCE_ONLY'
+          assert value['gate']['passed'] is False
+          PY
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+  govern:
+    name: Fail-closed current-head governance and ordinary merge
+    needs: qualify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      actions: write
+      checks: write
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Check out isolated governor source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Compile governor before granting it the token
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile .g1/g1_final_governor_v12.py
+
+      - name: Run exact-head governor
+        shell: bash
+        env:
+          G1_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ needs.qualify.outputs.head_sha }}
+          EXPECTED_BASE: ${{ needs.qualify.outputs.base_sha }}
+          EXPECTED_TREE: ${{ needs.qualify.outputs.head_tree }}
+        run: |
+          set -euo pipefail
+          python3 .g1/g1_final_governor_v12.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --pr-number "$PR_NUMBER" \
+            --issue-number "$EXTERNAL_EVIDENCE_ISSUE" \
+            --expected-head "$EXPECTED_HEAD" \
+            --expected-base "$EXPECTED_BASE" \
+            --expected-tree "$EXPECTED_TREE" \
+            --qualification-run "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            --token-env G1_TOKEN \
+            --output "$RUNNER_TEMP/g1-v12-governor.json"
+
+      - name: Upload governor terminal state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-final-governor-v12-${{ needs.qualify.outputs.head_sha }}
+          path: ${{ runner.temp }}/g1-v12-governor.json
+          if-no-files-found: error
+          retention-days: 30
