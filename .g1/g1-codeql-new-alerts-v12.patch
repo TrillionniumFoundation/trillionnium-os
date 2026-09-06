@@ -1,0 +1,189 @@
+diff --git a/apps/trillionniumd/src/android_agent_api.rs b/apps/trillionniumd/src/android_agent_api.rs
+index dbff9478244b8e7a3e868cd653a107da58d7ea28..9a9d64b6cb6d08f5258010eab6763bb9367e3630 100644
+--- a/apps/trillionniumd/src/android_agent_api.rs
++++ b/apps/trillionniumd/src/android_agent_api.rs
+@@ -10441,7 +10441,7 @@ mod tests {
+             let error = super::authenticated_android_ui_subject(uid, domain)
+                 .unwrap_err()
+                 .to_string();
+-            assert_eq!(error, super::ANDROID_USER_ZERO_CUSTODY_ERROR, "uid={uid}");
++            assert_eq!(error, super::ANDROID_USER_ZERO_CUSTODY_ERROR);
+         }
+         assert_eq!(
+             super::authenticated_android_ui_subject(9_999, domain)
+@@ -13609,7 +13609,7 @@ mod tests {
+             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
+                 assert_eq!(reason, super::RETIRED_NON_DIRECT_WORKFLOW_REASON)
+             }
+-            other => panic!("legacy provider state escaped quarantine: {other:?}"),
++            _ => panic!("legacy provider state escaped quarantine"),
+         }
+         let legacy_plan_id = provider
+             .provider_result
+@@ -13641,7 +13641,7 @@ mod tests {
+             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
+                 assert_eq!(reason, super::RETIRED_NON_DIRECT_WORKFLOW_REASON)
+             }
+-            other => panic!("legacy terminal result disappeared after reopen: {other:?}"),
++            _ => panic!("legacy terminal result disappeared after reopen"),
+         }
+     }
+ 
+@@ -13864,7 +13864,7 @@ mod tests {
+             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
+                 assert_eq!(reason, "invalid_agent_direct_provider_ready_state")
+             }
+-            other => panic!("poisoned direct state escaped quarantine: {other:?}"),
++            _ => panic!("poisoned direct state escaped quarantine"),
+         }
+         assert!(
+             service
+@@ -13930,7 +13930,7 @@ mod tests {
+                 crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
+                     assert_eq!(reason, "invalid_agent_direct_provider_ready_state")
+                 }
+-                other => panic!("malformed direct state escaped quarantine: {other:?}"),
++                _ => panic!("malformed direct state escaped quarantine"),
+             }
+         }
+     }
+@@ -13995,7 +13995,7 @@ mod tests {
+             .unwrap()
+         {
+             crate::action_workflow::PlanWorkflowRecovery::Ready(_) => {}
+-            other => panic!("same manifest reprovision did not recover: {other:?}"),
++            _ => panic!("same manifest reprovision did not recover"),
+         }
+     }
+ 
+@@ -14067,7 +14067,7 @@ mod tests {
+             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
+                 assert_eq!(reason, super::LEGACY_LOCAL_PLAN_SAGA_INDETERMINATE_REASON)
+             }
+-            other => panic!("legacy v1 saga was not quarantined: {other:?}"),
++            _ => panic!("legacy v1 saga was not quarantined"),
+         }
+         match store
+             .lock()
+@@ -14082,7 +14082,7 @@ mod tests {
+             .unwrap()
+         {
+             crate::action_workflow::PlanWorkflowRecovery::Ready(_) => {}
+-            other => panic!("v2 saga was blocked by legacy v1 record: {other:?}"),
++            _ => panic!("v2 saga was blocked by legacy v1 record"),
+         }
+     }
+ 
+@@ -14172,7 +14172,7 @@ mod tests {
+             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
+                 assert_eq!(reason, "provider_outcome_unknown_no_network_reexecution")
+             }
+-            other => panic!("provider pending was not fixed indeterminate: {other:?}"),
++            _ => panic!("provider pending was not fixed indeterminate"),
+         }
+         // A second restart is stable and still cannot submit the stored plan.
+         drop(reopened);
+diff --git a/crates/trillionnium-agent-direct-tools/src/trusted_context.rs b/crates/trillionnium-agent-direct-tools/src/trusted_context.rs
+index 3152fee519e8511a44d37a3b61658b3a41e10b0b..b48d5306df8b8ecc7fe0634cf606d203f5090731 100644
+--- a/crates/trillionnium-agent-direct-tools/src/trusted_context.rs
++++ b/crates/trillionnium-agent-direct-tools/src/trusted_context.rs
+@@ -2446,7 +2446,7 @@ mod tests {
+             DirectOperationAdapterTerminalStateV1::Ackable {
+                 journal_evidence_snapshot,
+             } => journal_evidence_snapshot,
+-            other => panic!("expected ackable replay disposition, got {other:?}"),
++            _ => panic!("expected ackable replay disposition"),
+         };
+         let inbox = outer_ack_inbox_v3(adapter_context.binding(), snapshot);
+         let ack_intent = inbox.operation_replay_sync_ack_intent_sha256().unwrap();
+diff --git a/tools/tests/test_verify_owner_open_r5_workflow_boundaries.py b/tools/tests/test_verify_owner_open_r5_workflow_boundaries.py
+index 21aefa12c6bc36c6fd16fdb221569a73a68834b1..4e4e43f792b30e006c6cb040ec835f729cdb030b 100644
+--- a/tools/tests/test_verify_owner_open_r5_workflow_boundaries.py
++++ b/tools/tests/test_verify_owner_open_r5_workflow_boundaries.py
+@@ -128,6 +128,36 @@ jobs:
+         self.write("owner-open-r5-tool-loop.yml", value)
+         self.assertTrue(any("mutate GitHub repository" in item for item in self.errors()))
+ 
++    def test_github_api_hostname_must_be_exact_not_a_substring(self) -> None:
++        for url in (
++            "https://example.invalid/api.github.com/repos/x/y",
++            "https://api.github.com.attacker.invalid/repos/x/y",
++        ):
++            with self.subTest(url=url):
++                value = self.clean_pr_workflow() + (
++                    f'      - run: curl --request PATCH "{url}"\n'
++                )
++                self.write("owner-open-r5-tool-loop.yml", value)
++                self.assertFalse(
++                    any("mutate GitHub repository" in item for item in self.errors())
++                )
++
++    def test_github_api_symbolic_and_exact_literal_endpoints_are_rejected(self) -> None:
++        for endpoint in (
++            "https://api.github.com/repos/x/y",
++            "https://api.github.com:443/repos/x/y",
++            "$GITHUB_API_URL/repos/x/y",
++            "${{ github.api_url }}/repos/x/y",
++        ):
++            with self.subTest(endpoint=endpoint):
++                value = self.clean_pr_workflow() + (
++                    f'      - run: curl --request PATCH "{endpoint}"\n'
++                )
++                self.write("owner-open-r5-tool-loop.yml", value)
++                self.assertTrue(
++                    any("mutate GitHub repository" in item for item in self.errors())
++                )
++
+     def test_target_route_cannot_allocate_self_hosted_runner(self) -> None:
+         value = self.clean_target_route().replace("runs-on: ubuntu-24.04", "runs-on: self-hosted")
+         self.write("owner-open-r5-target-evidence-capture.yml", value)
+diff --git a/tools/verify-owner-open-r5-workflow-boundaries.py b/tools/verify-owner-open-r5-workflow-boundaries.py
+index e9c05df18174526a1662f72e11d0087356072f06..6bd028f1efd7ee4e28d1e5aa46a3ba909b8fb8fe 100755
+--- a/tools/verify-owner-open-r5-workflow-boundaries.py
++++ b/tools/verify-owner-open-r5-workflow-boundaries.py
+@@ -8,6 +8,7 @@ from pathlib import Path
+ import re
+ import sys
+ from typing import Any
++from urllib.parse import urlsplit
+ 
+ FORBIDDEN_NAME_PARTS = (
+     "one-shot",
+@@ -31,6 +32,8 @@ WRITE_PERMISSION = re.compile(
+     r"permissions\s*:\s*\{[^}\n]*\b(?:contents|actions|pull-requests|issues|checks|"
+     r"deployments|statuses)\s*:\s*['\"]?write['\"]?[^}\n]*\})\s*(?:#.*)?$"
+ )
++GITHUB_API_SYMBOL = re.compile(r"(?i)\b(?:GITHUB_API_URL|github\.api_url)\b")
++URL_CANDIDATE = re.compile(r"https://[^\s\'\"<>`]+", re.IGNORECASE)
+ API_WRITE = re.compile(
+     r"(?:--method(?:=|\s+)[\s'\"]*(?:POST|PUT|PATCH|DELETE)\b|"
+     r"(?:-X|--request)(?:=|\s+)[\s'\"]*(?:POST|PUT|PATCH|DELETE)\b|"
+@@ -107,6 +110,19 @@ def _workflow_paths(workflow_dir: Path) -> list[Path]:
+     )
+ 
+ 
++def _references_github_api(text: str) -> bool:
++    """Recognize symbolic endpoints or literal URLs with the exact API host."""
++    if GITHUB_API_SYMBOL.search(text):
++        return True
++    for candidate in URL_CANDIDATE.findall(text):
++        try:
++            if urlsplit(candidate).hostname == "api.github.com":
++                return True
++        except ValueError:
++            continue
++    return False
++
++
+ def _verify_target_route_only(path: Path, text: str, errors: list[str]) -> None:
+     if re.search(r"(?i)\bself-hosted\b", text):
+         errors.append(f"target evidence workflow allocates a self-hosted runner: {path.name}")
+@@ -166,7 +182,7 @@ def verify(root: Path) -> dict[str, Any]:
+         if (
+             API_WRITE.search(text)
+             and "repos/" in text
+-            and ("api.github.com" in text or "GITHUB_API_URL" in text)
++            and _references_github_api(text)
+         ):
+             errors.append(f"workflow can mutate GitHub repository controls: {path.name}")
+ 
