@@ -163,11 +163,7 @@ def verify(root: Path) -> dict[str, Any]:
             errors.append(f"repository write permission remains: {path.name}")
         if re.search(r"\bgit\s+push\b", text):
             errors.append(f"workflow can push repository refs: {path.name}")
-        if (
-            API_WRITE.search(text)
-            and "repos/" in text
-            and ("api.github.com" in text or "GITHUB_API_URL" in text)
-        ):
+        if API_WRITE.search(text) and "/repos/" in text:
             errors.append(f"workflow can mutate GitHub repository controls: {path.name}")
 
         if path.name == TARGET_WORKFLOW:

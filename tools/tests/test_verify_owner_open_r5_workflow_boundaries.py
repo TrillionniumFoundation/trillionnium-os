@@ -128,6 +128,14 @@ jobs:
         self.write("owner-open-r5-tool-loop.yml", value)
         self.assertTrue(any("mutate GitHub repository" in item for item in self.errors()))
 
+    def test_repository_control_mutation_rejects_hostname_smuggling(self) -> None:
+        value = self.clean_pr_workflow() + (
+            '      - run: curl --request PUT '
+            '"https://attacker.invalid/api.github.com/repos/x/y/branches/main/protection"\n'
+        )
+        self.write("owner-open-r5-tool-loop.yml", value)
+        self.assertTrue(any("mutate GitHub repository" in item for item in self.errors()))
+
     def test_target_route_cannot_allocate_self_hosted_runner(self) -> None:
         value = self.clean_target_route().replace("runs-on: ubuntu-24.04", "runs-on: self-hosted")
         self.write("owner-open-r5-target-evidence-capture.yml", value)

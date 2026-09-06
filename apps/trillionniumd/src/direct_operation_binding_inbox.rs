@@ -1225,6 +1225,7 @@ mod tests {
 
     struct Fixture {
         _root: TempDir,
+        _trusted_parent: TempDir,
         system_api: PathBuf,
         accessibility: PathBuf,
     }
@@ -1232,17 +1233,22 @@ mod tests {
     impl Fixture {
         fn new() -> Self {
             // Keep the fixture below a non-writable, trusted ancestor and
-            // make its own directory explicitly private.  The production
-            // path rejects group/world-writable ancestors; relying on the
-            // host's umask or the collaboration workspace mode would make
-            // these tests fail before exercising the publication contract.
-            // `/tmp` is intentionally sticky/world-writable, while `/run` is
-            // root-owned but not writable by the unprivileged test user.  The
-            // canonical development root is owner-owned and mode 0755, so the
-            // test-only publisher accepts it as its trusted non-root parent.
+            // make both test-created directories explicitly private. The
+            // production path rejects group/world-writable ancestors, so `/tmp`
+            // cannot be used. A per-run directory under the current account's
+            // home preserves the same ancestor contract without depending on a
+            // developer-machine-specific `/data/toshiba-dev` mount.
+            let home = std::env::var_os("HOME")
+                .map(PathBuf::from)
+                .expect("HOME must identify the trusted test parent");
+            let trusted_parent = tempfile::Builder::new()
+                .prefix(".direct-binding-publisher-parent-")
+                .tempdir_in(home)
+                .unwrap();
+            fs::set_permissions(trusted_parent.path(), fs::Permissions::from_mode(0o700)).unwrap();
             let root = tempfile::Builder::new()
                 .prefix(".direct-binding-publisher-test-")
-                .tempdir_in("/data/toshiba-dev")
+                .tempdir_in(trusted_parent.path())
                 .unwrap();
             fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).unwrap();
             let provider = root.path().join("inbox/codex");
@@ -1259,6 +1265,7 @@ mod tests {
             }
             Self {
                 _root: root,
+                _trusted_parent: trusted_parent,
                 system_api,
                 accessibility,
             }

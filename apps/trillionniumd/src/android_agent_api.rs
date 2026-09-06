@@ -10441,7 +10441,11 @@ mod tests {
             let error = super::authenticated_android_ui_subject(uid, domain)
                 .unwrap_err()
                 .to_string();
-            assert_eq!(error, super::ANDROID_USER_ZERO_CUSTODY_ERROR, "uid={uid}");
+            assert_eq!(
+                error,
+                super::ANDROID_USER_ZERO_CUSTODY_ERROR,
+                "unexpected Android user-zero custody classification"
+            );
         }
         assert_eq!(
             super::authenticated_android_ui_subject(9_999, domain)
@@ -13609,7 +13613,7 @@ mod tests {
             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
                 assert_eq!(reason, super::RETIRED_NON_DIRECT_WORKFLOW_REASON)
             }
-            other => panic!("legacy provider state escaped quarantine: {other:?}"),
+            _ => panic!("legacy provider state escaped quarantine"),
         }
         let legacy_plan_id = provider
             .provider_result
@@ -13641,7 +13645,7 @@ mod tests {
             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
                 assert_eq!(reason, super::RETIRED_NON_DIRECT_WORKFLOW_REASON)
             }
-            other => panic!("legacy terminal result disappeared after reopen: {other:?}"),
+            _ => panic!("legacy terminal result disappeared after reopen"),
         }
     }
 
@@ -13864,7 +13868,7 @@ mod tests {
             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
                 assert_eq!(reason, "invalid_agent_direct_provider_ready_state")
             }
-            other => panic!("poisoned direct state escaped quarantine: {other:?}"),
+            _ => panic!("poisoned direct state escaped quarantine"),
         }
         assert!(
             service
@@ -13930,7 +13934,7 @@ mod tests {
                 crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
                     assert_eq!(reason, "invalid_agent_direct_provider_ready_state")
                 }
-                other => panic!("malformed direct state escaped quarantine: {other:?}"),
+                _ => panic!("malformed direct state escaped quarantine"),
             }
         }
     }
@@ -13995,7 +13999,7 @@ mod tests {
             .unwrap()
         {
             crate::action_workflow::PlanWorkflowRecovery::Ready(_) => {}
-            other => panic!("same manifest reprovision did not recover: {other:?}"),
+            _ => panic!("same manifest reprovision did not recover"),
         }
     }
 
@@ -14067,7 +14071,7 @@ mod tests {
             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
                 assert_eq!(reason, super::LEGACY_LOCAL_PLAN_SAGA_INDETERMINATE_REASON)
             }
-            other => panic!("legacy v1 saga was not quarantined: {other:?}"),
+            _ => panic!("legacy v1 saga was not quarantined"),
         }
         match store
             .lock()
@@ -14082,7 +14086,7 @@ mod tests {
             .unwrap()
         {
             crate::action_workflow::PlanWorkflowRecovery::Ready(_) => {}
-            other => panic!("v2 saga was blocked by legacy v1 record: {other:?}"),
+            _ => panic!("v2 saga was blocked by legacy v1 record"),
         }
     }
 
@@ -14172,7 +14176,7 @@ mod tests {
             crate::action_workflow::PlanWorkflowRecovery::Indeterminate(reason) => {
                 assert_eq!(reason, "provider_outcome_unknown_no_network_reexecution")
             }
-            other => panic!("provider pending was not fixed indeterminate: {other:?}"),
+            _ => panic!("provider pending was not fixed indeterminate"),
         }
         // A second restart is stable and still cannot submit the stored plan.
         drop(reopened);
