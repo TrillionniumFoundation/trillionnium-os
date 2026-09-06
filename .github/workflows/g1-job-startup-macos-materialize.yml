@@ -1,0 +1,298 @@
+name: G1 Job Runtime macOS source materializer
+
+on:
+  push:
+    branches:
+      - ops/g1-job-startup-macos-20260906
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-job-startup-macos-materialize
+  cancel-in-progress: false
+
+env:
+  CANDIDATE: 509af5938727b2d7a60f1f3554496b0a922770db
+  CANDIDATE_TREE: 10232d72416a806aeef7f2eb44d0c5fd9aeeae09
+  PATCH_SHA256: 8673d2fb2c6435daf40e37a31278cfc9837959c71afd0297a5e69251332b7c34
+  EXPECTED_MANAGER_BLOB: 9cc64a363f45c0ad01d71e442953e80b7303f0d7
+  EXPECTED_DOC_BLOB: 0ff21f0f91d287f05d41fcf3a81a4590dc5611b5
+  MATERIALIZED_REF: ops/g1-job-startup-materialized-20260906
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  validate:
+    name: Validate exact Job Runtime bytes on macOS
+    runs-on: macos-14
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Check out trusted validation driver
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: driver
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Check out exact current G1 candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 509af5938727b2d7a60f1f3554496b0a922770db
+          path: candidate
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Apply fixed-hash patch and validate source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(id -u)" != 0
+          test "$(git -C candidate --no-replace-objects rev-parse HEAD)" = "$CANDIDATE"
+          test "$(git -C candidate --no-replace-objects rev-parse 'HEAD^{tree}')" = "$CANDIDATE_TREE"
+          printf '%s  %s\n' "$PATCH_SHA256" driver/repair/job-startup.patch | shasum -a 256 -c -
+          git -C candidate apply --check "$GITHUB_WORKSPACE/driver/repair/job-startup.patch"
+          git -C candidate apply "$GITHUB_WORKSPACE/driver/repair/job-startup.patch"
+          cd candidate
+          rustfmt --edition 2024 crates/trillionnium-owner-open-job-runtime/src/manager.rs
+          rustfmt --edition 2024 --check crates/trillionnium-owner-open-job-runtime/src/manager.rs
+          test "$(git hash-object crates/trillionnium-owner-open-job-runtime/src/manager.rs)" = "$EXPECTED_MANAGER_BLOB"
+          test "$(git hash-object docs/modules/MOD-JOB-RUNTIME.md)" = "$EXPECTED_DOC_BLOB"
+          cargo test --locked -p trillionnium-owner-open-job-runtime --all-targets
+          cargo clippy --locked -p trillionnium-owner-open-job-runtime --all-targets -- -D warnings
+          python3 -I tools/docs/generate_global_docs.py --check
+          python3 -I tools/docs/verify_global_docs.py
+          python3 -I tools/docs/verify_module_documentation.py
+          python3 -I tools/verify_g1_repository_closure.py --json > "$RUNNER_TEMP/job-startup-topology.json"
+          python3 -I -m unittest tools.tests.test_owner_open_broker_module_documentation -v
+          git diff --exit-code -- Cargo.lock planned/Cargo.lock docs/machine docs/generated .github
+          git diff --check
+          git add crates/trillionnium-owner-open-job-runtime/src/manager.rs docs/modules/MOD-JOB-RUNTIME.md
+          python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          paths = [
+              "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+              "docs/modules/MOD-JOB-RUNTIME.md",
+          ]
+          changed = subprocess.check_output(
+              ["git", "diff", "--cached", "--name-only"], text=True
+          ).splitlines()
+          if changed != paths:
+              raise SystemExit(f"unexpected changed paths: {changed!r}")
+          expected = {
+              paths[0]: os.environ["EXPECTED_MANAGER_BLOB"],
+              paths[1]: os.environ["EXPECTED_DOC_BLOB"],
+          }
+          files = []
+          for path in paths:
+              data = Path(path).read_bytes()
+              git_blob = hashlib.sha1(
+                  (f"blob {len(data)}\0").encode() + data
+              ).hexdigest()
+              if git_blob != expected[path]:
+                  raise SystemExit(f"blob mismatch for {path}: {git_blob}")
+              files.append({
+                  "path": path,
+                  "content": data.decode("utf-8"),
+                  "bytes": len(data),
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "git_blob": git_blob,
+              })
+          value = {
+              "schema": "org.trillionnium.g1-job-startup-source-materialization.v1",
+              "candidate": os.environ["CANDIDATE"],
+              "candidate_tree": os.environ["CANDIDATE_TREE"],
+              "patched_tree": subprocess.check_output(["git", "write-tree"], text=True).strip(),
+              "files": files,
+              "validation_run": os.environ["GITHUB_RUN_ID"],
+              "qualification_ceiling": "SOURCE_OBJECTS_ONLY_PENDING_EXACT_HEAD_CI_AND_REVIEW",
+              "zero_gap": False,
+              "public_release": False,
+              "automatic_redispatch": False,
+          }
+          output = Path(os.environ["RUNNER_TEMP"]) / "job-startup-source-files.json"
+          output.write_text(json.dumps(value, sort_keys=True, separators=(",", ":")))
+          PY
+
+      - name: Retain exact validated source bytes
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: job-startup-macos-source-files
+          path: ${{ runner.temp }}/job-startup-source-files.json
+          if-no-files-found: error
+          retention-days: 7
+
+  materialize:
+    name: Materialize immutable Git objects without candidate checkout
+    needs: validate
+    runs-on: macos-14
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download same-run validated source artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: job-startup-macos-source-files
+          path: ${{ runner.temp }}/validated
+
+      - name: Create exact blobs, tree, commit and isolated ref
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          python3 -I - <<'PY'
+          import hashlib
+          import json
+          import os
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          repository = "TrillionniumFoundation/trillionnium-os"
+          candidate_ref = "codex/g1-all-gap-closure-20260904"
+          candidate = os.environ["CANDIDATE"]
+          candidate_tree = os.environ["CANDIDATE_TREE"]
+          materialized_ref = os.environ["MATERIALIZED_REF"]
+          token = os.environ["GH_TOKEN"]
+          if os.environ["GITHUB_REPOSITORY"] != repository:
+              raise SystemExit("repository identity mismatch")
+          headers = {
+              "Authorization": "Bearer " + token,
+              "Accept": "application/vnd.github+json",
+              "Content-Type": "application/json",
+              "X-GitHub-Api-Version": "2022-11-28",
+          }
+
+          def request(method, path, payload=None, allow_404=False):
+              data = None if payload is None else json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  "https://api.github.com/repos/" + repository + "/" + path,
+                  data=data,
+                  headers=headers,
+                  method=method,
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      return json.load(response)
+              except urllib.error.HTTPError as error:
+                  if allow_404 and error.code == 404:
+                      return None
+                  body = error.read(4096).decode("utf-8", "replace")
+                  raise SystemExit(f"GitHub API {method} {path} failed: {error.code} {body}")
+
+          live = request("GET", "git/ref/heads/" + candidate_ref)
+          if live["object"]["sha"] != candidate:
+              raise SystemExit("candidate ref moved before materialization")
+          commit = request("GET", "git/commits/" + candidate)
+          if commit["tree"]["sha"] != candidate_tree:
+              raise SystemExit("candidate tree moved")
+
+          artifact = Path(os.environ["RUNNER_TEMP"]) / "validated" / "job-startup-source-files.json"
+          raw = artifact.read_bytes()
+          if not 0 < len(raw) <= 1024 * 1024:
+              raise SystemExit("validated source artifact size is invalid")
+          value = json.loads(raw)
+          if value.get("candidate") != candidate or value.get("candidate_tree") != candidate_tree:
+              raise SystemExit("validated source subject mismatch")
+          if value.get("zero_gap") is not False or value.get("public_release") is not False:
+              raise SystemExit("validated source artifact widened authority")
+          paths = [
+              "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+              "docs/modules/MOD-JOB-RUNTIME.md",
+          ]
+          expected = {
+              paths[0]: os.environ["EXPECTED_MANAGER_BLOB"],
+              paths[1]: os.environ["EXPECTED_DOC_BLOB"],
+          }
+          files = value.get("files")
+          if not isinstance(files, list) or [item.get("path") for item in files] != paths:
+              raise SystemExit("validated source path set mismatch")
+          elements = []
+          for item in files:
+              content = item.get("content")
+              if not isinstance(content, str):
+                  raise SystemExit("validated source content is not text")
+              data = content.encode("utf-8")
+              path = item["path"]
+              if len(data) != item.get("bytes") or hashlib.sha256(data).hexdigest() != item.get("sha256"):
+                  raise SystemExit(f"validated source digest mismatch: {path}")
+              git_blob = hashlib.sha1((f"blob {len(data)}\0").encode() + data).hexdigest()
+              if git_blob != item.get("git_blob") or git_blob != expected[path]:
+                  raise SystemExit(f"validated source Git blob mismatch: {path}")
+              blob = request("POST", "git/blobs", {"content": content, "encoding": "utf-8"})
+              if blob["sha"] != git_blob:
+                  raise SystemExit(f"remote Git blob mismatch: {path}")
+              elements.append({"path": path, "mode": "100644", "type": "blob", "sha": git_blob})
+
+          tree = request("POST", "git/trees", {"base_tree": candidate_tree, "tree": elements})
+          if tree["sha"] != value.get("patched_tree"):
+              raise SystemExit("remote patched tree differs from validated tree")
+          message = (
+              "fix(job-runtime): bound startup waits and release duplicate-start map lock\n\n"
+              "Release the global running-map guard before duplicate-start observation, use one monotonic "
+              "startup wait budget, and preserve accepted-job ownership on observation timeout. Exact Job Runtime "
+              "tests, strict Clippy and documentation gates passed on macOS in workflow run "
+              + os.environ["GITHUB_RUN_ID"]
+              + ".\n\nNo gap promotion, installed-target evidence, integration approval, automatic redispatch or release claim. "
+              "Fresh exact-head hosted qualification and eligible independent review remain required.\n\n"
+              "Signed-off-by: OpenAI Codex <noreply@openai.com>"
+          )
+          created = request("POST", "git/commits", {
+              "message": message,
+              "tree": tree["sha"],
+              "parents": [candidate],
+          })
+          existing = request("GET", "git/ref/heads/" + materialized_ref, allow_404=True)
+          if existing is None:
+              request("POST", "git/refs", {
+                  "ref": "refs/heads/" + materialized_ref,
+                  "sha": created["sha"],
+              })
+          elif existing["object"]["sha"] != created["sha"]:
+              raise SystemExit("isolated materialized ref already points elsewhere")
+
+          output = {
+              "schema": "org.trillionnium.g1-job-startup-materialized-commit.v1",
+              "parent": candidate,
+              "commit": created["sha"],
+              "tree": tree["sha"],
+              "ref": materialized_ref,
+              "validation_run": os.environ["GITHUB_RUN_ID"],
+              "product_ref_updated": False,
+              "zero_gap": False,
+              "public_release": False,
+              "automatic_redispatch": False,
+          }
+          Path("job-startup-materialized-commit.json").write_text(
+              json.dumps(output, sort_keys=True, indent=2) + "\n"
+          )
+          print(json.dumps(output, sort_keys=True))
+          PY
+
+      - name: Retain materialized commit identity
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: job-startup-macos-materialized-commit
+          path: ${{ runner.temp }}/job-startup-materialized-commit.json
+          if-no-files-found: error
+          retention-days: 7
