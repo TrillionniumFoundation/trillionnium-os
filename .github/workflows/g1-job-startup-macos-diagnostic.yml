@@ -1,0 +1,57 @@
+name: G1 Job Runtime macOS byte diagnostic
+
+on:
+  push:
+    branches:
+      - ops/g1-job-startup-macos-20260906
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g1-job-startup-macos-diagnostic
+  cancel-in-progress: true
+
+env:
+  CANDIDATE: 509af5938727b2d7a60f1f3554496b0a922770db
+  CANDIDATE_TREE: 10232d72416a806aeef7f2eb44d0c5fd9aeeae09
+
+jobs:
+  diagnose:
+    runs-on: macos-14
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          path: driver
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 509af5938727b2d7a60f1f3554496b0a922770db
+          path: candidate
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt
+      - name: Record every byte checkpoint
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test "$(git -C candidate --no-replace-objects rev-parse HEAD)" = "$CANDIDATE"
+          test "$(git -C candidate --no-replace-objects rev-parse 'HEAD^{tree}')" = "$CANDIDATE_TREE"
+          shasum -a 256 driver/repair/job-startup.patch
+          printf 'pre_manager=%s\n' "$(git -C candidate hash-object crates/trillionnium-owner-open-job-runtime/src/manager.rs)"
+          printf 'pre_doc=%s\n' "$(git -C candidate hash-object docs/modules/MOD-JOB-RUNTIME.md)"
+          git -C candidate apply --check "$GITHUB_WORKSPACE/driver/repair/job-startup.patch"
+          printf 'apply_check=success\n'
+          git -C candidate apply "$GITHUB_WORKSPACE/driver/repair/job-startup.patch"
+          printf 'applied_manager=%s\n' "$(git -C candidate hash-object crates/trillionnium-owner-open-job-runtime/src/manager.rs)"
+          printf 'applied_doc=%s\n' "$(git -C candidate hash-object docs/modules/MOD-JOB-RUNTIME.md)"
+          rustfmt --edition 2024 candidate/crates/trillionnium-owner-open-job-runtime/src/manager.rs
+          printf 'formatted_manager=%s\n' "$(git -C candidate hash-object crates/trillionnium-owner-open-job-runtime/src/manager.rs)"
+          printf 'formatted_doc=%s\n' "$(git -C candidate hash-object docs/modules/MOD-JOB-RUNTIME.md)"
+          git -C candidate diff --check
