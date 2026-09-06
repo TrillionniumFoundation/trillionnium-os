@@ -1,0 +1,12 @@
+name: G1 publisher push trigger
+on:
+  push:
+    branches:
+      - ops/g1-synthetic-retirement-fix-20260906
+permissions:
+  contents: read
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo isolated publisher trigger observed
