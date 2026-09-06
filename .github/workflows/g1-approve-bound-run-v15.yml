@@ -1,0 +1,115 @@
+name: G1 approve bound exact-source run v15
+
+on:
+  push:
+    branches: [ops/g1-exact-source-recover-v13-20260906]
+    paths: [.github/workflows/g1-approve-bound-run-v15.yml]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: g1-approve-bound-exact-source-v15
+  cancel-in-progress: false
+
+env:
+  REPOSITORY: TrillionniumFoundation/trillionnium-os
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  TARGET_HEAD: 4b9af095813df1a83b65d029d061d889b882d5e7
+  TARGET_RUN: "34013240406"
+  TARGET_WORKFLOW: "346486859"
+
+jobs:
+  approve:
+    name: Approve execution only for the fixed no-job exact-source run
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Bind run identity and submit workflow-run approval
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          api="https://api.github.com/repos/${REPOSITORY}"
+          headers=(
+            -H "Authorization: Bearer ${GH_TOKEN}"
+            -H 'Accept: application/vnd.github+json'
+            -H 'X-GitHub-Api-Version: 2022-11-28'
+          )
+          get() {
+            /usr/bin/curl --fail-with-body --silent --show-error --proto '=https' --tlsv1.2 \
+              "${headers[@]}" "$1"
+          }
+          get "${api}/git/ref/heads/${TARGET_BRANCH}" > "$RUNNER_TEMP/ref.json"
+          get "${api}/actions/runs/${TARGET_RUN}" > "$RUNNER_TEMP/run.json"
+          get "${api}/actions/runs/${TARGET_RUN}/jobs?filter=latest&per_page=100" > "$RUNNER_TEMP/jobs-before.json"
+          /usr/bin/python3 -I - "$RUNNER_TEMP/ref.json" "$RUNNER_TEMP/run.json" "$RUNNER_TEMP/jobs-before.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          ref, run, jobs = [json.loads(Path(p).read_text()) for p in sys.argv[1:]]
+          assert ref["object"]["sha"] == os.environ["TARGET_HEAD"]
+          assert str(run["id"]) == os.environ["TARGET_RUN"]
+          assert str(run["workflow_id"]) == os.environ["TARGET_WORKFLOW"]
+          assert run["head_sha"] == os.environ["TARGET_HEAD"]
+          assert run["head_branch"] == os.environ["TARGET_BRANCH"]
+          assert run["event"] == "pull_request"
+          assert run["status"] == "pending" and run["conclusion"] is None
+          assert jobs.get("total_count") == 0
+          PY
+          code="$(/usr/bin/curl --silent --show-error --proto '=https' --tlsv1.2 \
+            "${headers[@]}" --request POST --output "$RUNNER_TEMP/approve.json" \
+            --write-out '%{http_code}' "${api}/actions/runs/${TARGET_RUN}/approve")"
+          printf '%s' "$code" > "$RUNNER_TEMP/http-status"
+          if test "$code" != 201 && test "$code" != 202; then
+            cat "$RUNNER_TEMP/approve.json" >&2 || true
+            exit 1
+          fi
+          started=false
+          for _ in $(seq 1 60); do
+            get "${api}/actions/runs/${TARGET_RUN}" > "$RUNNER_TEMP/after.json"
+            get "${api}/actions/runs/${TARGET_RUN}/jobs?filter=latest&per_page=100" > "$RUNNER_TEMP/jobs-after.json"
+            count="$(/usr/bin/python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1])).get("total_count",0))' "$RUNNER_TEMP/jobs-after.json")"
+            if test "$count" -gt 0; then
+              started=true
+              break
+            fi
+            sleep 2
+          done
+          test "$started" = true
+          /usr/bin/python3 -I - "$RUNNER_TEMP/run.json" "$RUNNER_TEMP/after.json" "$RUNNER_TEMP/jobs-after.json" "$RUNNER_TEMP/http-status" > "$RUNNER_TEMP/receipt.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          before = json.loads(Path(sys.argv[1]).read_text())
+          after = json.loads(Path(sys.argv[2]).read_text())
+          jobs = json.loads(Path(sys.argv[3]).read_text())
+          code = int(Path(sys.argv[4]).read_text())
+          print(json.dumps({
+              "schema": "org.trillionnium.g1-bound-run-approval.v1",
+              "repository": os.environ["REPOSITORY"],
+              "run_id": before["id"],
+              "workflow_id": before["workflow_id"],
+              "target_head": before["head_sha"],
+              "approval_http_status": code,
+              "before_status": before["status"],
+              "after_status": after["status"],
+              "job_count": jobs["total_count"],
+              "approval_scope": "workflow_execution_only",
+              "source_qualification_claimed": False,
+              "pull_request_approval_claimed": False,
+              "administrator_merge_bypass": False,
+              "gap_promotion_authorized": False,
+              "public_release": False,
+          }, sort_keys=True))
+          PY
+          cat "$RUNNER_TEMP/receipt.json"
+
+      - name: Retain bounded approval receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-bound-run-approval-v15
+          path: ${{ runner.temp }}/receipt.json
+          if-no-files-found: error
+          retention-days: 7
