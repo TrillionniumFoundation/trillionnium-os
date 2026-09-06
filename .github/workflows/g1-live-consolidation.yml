@@ -1,0 +1,215 @@
+name: G1 live repository-blocker consolidation
+
+on:
+  push:
+    branches: [codex/g1-live-consolidation-20260906]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: g1-live-consolidation-20260906
+  cancel-in-progress: false
+
+env:
+  BASE_EXPECTED: 9420aac7ec2a8c88416f00115031885f72227ccc
+  BASE_TREE_EXPECTED: 4cfb5fbbf9a38fd59c682fb1502aa95ba980e8da
+  BRANCH: codex/g1-live-consolidation-20260906
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  consolidate:
+    if: ${{ !contains(github.event.head_commit.message, '[g1-consolidation-complete]') }}
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out isolated consolidation branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install exact validation prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends acl
+
+      - uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Bind exact source and fetch retained fix objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = 'TrillionniumFoundation/trillionnium-os'
+          test "$GITHUB_REF_NAME" = "$BRANCH"
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          test "$(git rev-parse "$BASE_EXPECTED^{tree}")" = "$BASE_TREE_EXPECTED"
+          test "$(git merge-base HEAD "$BASE_EXPECTED")" = "$BASE_EXPECTED"
+          mapfile -t bootstrap_changes < <(git diff --name-only "$BASE_EXPECTED"..HEAD)
+          test "${#bootstrap_changes[@]}" = 1
+          test "${bootstrap_changes[0]}" = '.github/workflows/g1-live-consolidation.yml'
+          mkdir -p "$RUNNER_TEMP/g1-consolidation"
+          printf 'base=%s\nbase_tree=%s\ninitial_head=%s\n' \
+            "$BASE_EXPECTED" "$BASE_TREE_EXPECTED" "$(git rev-parse HEAD)" \
+            > "$RUNNER_TEMP/g1-consolidation/identity.txt"
+
+      - name: Replay retained fixes path-by-path
+        shell: bash
+        run: |
+          set -euo pipefail
+          status="$RUNNER_TEMP/g1-consolidation/patch-status.tsv"
+          printf 'subject\tcommit\tstatus\n' > "$status"
+
+          resolve_commit() {
+            local prefix="$1" match
+            match=$(git rev-list --all | grep -E "^${prefix}[0-9a-f]*$" | head -n 1 || true)
+            test -n "$match"
+            test "$(git rev-parse "$match^{commit}")" = "$match"
+            printf '%s' "$match"
+          }
+
+          replay_commit() {
+            local prefix="$1" label="$2" commit patch
+            commit=$(resolve_commit "$prefix")
+            patch="$RUNNER_TEMP/g1-consolidation/${prefix}.patch"
+            git show --binary --format= "$commit" > "$patch"
+            test -s "$patch"
+            if git apply --reverse --check "$patch" >/dev/null 2>&1; then
+              printf '%s\t%s\talready-applied\n' "$label" "$commit" >> "$status"
+              return
+            fi
+            if git apply --check "$patch" >/dev/null 2>&1; then
+              git apply --index "$patch"
+              printf '%s\t%s\tapplied\n' "$label" "$commit" >> "$status"
+              return
+            fi
+            if git apply --3way --index "$patch"; then
+              test -z "$(git diff --name-only --diff-filter=U)"
+              printf '%s\t%s\tapplied-3way\n' "$label" "$commit" >> "$status"
+              return
+            fi
+            printf '%s\t%s\tconflict\n' "$label" "$commit" >> "$status"
+            exit 1
+          }
+
+          replay_commit 69b7fbd2 ci-prerequisites
+          replay_commit 7f1a6e3e aggregate-http-boundary
+          replay_commit c962f771 evidence-fixtures
+          replay_commit 9420adb adb-lifecycle
+          replay_commit c67a5b79 rootfs-publication
+          replay_commit 412169ed evidence-transport-capabilities
+
+          git show origin/ops/g1-job-startup-validation-20260905:repair/job-startup.patch \
+            > "$RUNNER_TEMP/g1-consolidation/job-startup.patch"
+          echo '8673d2fb2c6435daf40e37a31278cfc9837959c71afd0297a5e69251332b7c34  '"$RUNNER_TEMP/g1-consolidation/job-startup.patch" | sha256sum --check
+          if git apply --reverse --check "$RUNNER_TEMP/g1-consolidation/job-startup.patch" >/dev/null 2>&1; then
+            printf 'job-runtime-startup\tb4dff790830327d5fefdb8f8ea34b5ed59de05b2\talready-applied\n' >> "$status"
+          else
+            git apply --check "$RUNNER_TEMP/g1-consolidation/job-startup.patch"
+            git apply --index "$RUNNER_TEMP/g1-consolidation/job-startup.patch"
+            printf 'job-runtime-startup\tb4dff790830327d5fefdb8f8ea34b5ed59de05b2\tapplied\n' >> "$status"
+          fi
+
+          # The bootstrap workflow must not remain in the product tree.
+          git rm .github/workflows/g1-live-consolidation.yml
+          test -z "$(git diff --name-only --diff-filter=U)"
+          git diff --cached --name-only > "$RUNNER_TEMP/g1-consolidation/changed-paths.txt"
+          git diff --cached --check
+          git diff --cached --binary > "$RUNNER_TEMP/g1-consolidation/consolidated.patch"
+
+      - name: Verify generated documentation and governance authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_module_documentation.py
+          python3 tools/verify_g1_repository_closure.py --json \
+            > "$RUNNER_TEMP/g1-consolidation/repository-closure.json"
+          python3 tools/verify_g1_gap_routing.py
+          python3 -m unittest \
+            tools.tests.test_verify_g1_repository_closure \
+            tools.tests.test_verify_g1_gap_routing \
+            tools.tests.test_verify_g1_review_index \
+            tools.tests.test_repository_governance_baseline -v \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/governance-tests.log"
+
+      - name: Verify targeted blocker regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p trillionnium-owner-open-job-runtime --all-targets \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/job-runtime.log"
+          python3 -m unittest \
+            tools.tests.test_g1_pr_aggregate \
+            tools.tests.test_g1_review_index_aggregate \
+            tools.tests.test_build_owner_open_rootfs_image_release_v2 -v \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/targeted-python.log"
+          python3 -m unittest discover -s tools/tests -p 'test_*adb*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/adb-tests.log"
+          python3 -m unittest discover -s tools/tests -p 'test_*broker*.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/broker-tests.log"
+
+      - name: Verify complete Python and Rust source surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -v \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/python-full.log"
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets --locked \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/cargo-test.log"
+          cargo clippy --workspace --all-targets --locked -- -D warnings \
+            2>&1 | tee "$RUNNER_TEMP/g1-consolidation/cargo-clippy.log"
+          git diff --cached --check
+
+      - name: Materialize exact source commit and push isolated branch
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse origin/$TARGET_BRANCH)" = "$BASE_EXPECTED"
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git commit -m 'fix(g1): consolidate remaining repository-controlled blockers [g1-consolidation-complete]' \
+            -m 'Replay retained CI, evidence, ADB, Root Linux and Job Runtime fixes onto the exact PR #41 head. Full documentation, governance, Python and Rust gates pass on the resulting tree.' \
+            -m 'No gap promotion, target evidence, administrator bypass, automatic redispatch or public-release claim.' \
+            -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          commit=$(git rev-parse HEAD)
+          tree=$(git rev-parse 'HEAD^{tree}')
+          printf '{"base":"%s","commit":"%s","tree":"%s","zero_gap":false,"public_release":false}\n' \
+            "$BASE_EXPECTED" "$commit" "$tree" \
+            > "$RUNNER_TEMP/g1-consolidation/result.json"
+          git push --force-with-lease="refs/heads/$BRANCH:${{ github.event.before }}" \
+            origin "HEAD:refs/heads/$BRANCH"
+
+          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open \
+            --head "$BRANCH" --base "$TARGET_BRANCH" --json number --jq '.[0].number // empty')
+          if [ -z "$existing" ]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" \
+              --base "$TARGET_BRANCH" --head "$BRANCH" \
+              --title 'fix(g1): consolidate remaining repository-controlled blockers' \
+              --body $'## Scope\n\nReplays the retained repository-controlled CI, evidence, ADB, Root Linux and Job Runtime blocker fixes onto exact PR #41 head `9420aac7ec2a8c88416f00115031885f72227ccc`.\n\n## Qualification\n\nThe creating workflow requires generated-document, governance, targeted regression, full Python, full Rust test, formatting and strict Clippy success before pushing this commit.\n\n```text\nzero_gap=false\npublic_release=false\nadministrator_bypass=false\nautomatic_redispatch=false\n```\n\nThis sub-PR updates the source candidate only. L2-L6 evidence and independent final review remain separate gates.'
+          fi
+
+      - name: Retain complete diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-live-consolidation-${{ github.run_id }}
+          path: ${{ runner.temp }}/g1-consolidation
+          if-no-files-found: error
+          retention-days: 14
