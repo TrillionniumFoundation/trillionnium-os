@@ -1,0 +1,585 @@
+name: G1 final closure orchestrator v9
+
+"on":
+  push:
+    branches:
+      - ops/g1-synthetic-retirement-fix-20260906
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: g1-final-closure-orchestrator-v9
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  BASELINE_HEAD: 9420aac7ec2a8c88416f00115031885f72227ccc
+  PR_NUMBER: "41"
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  validate:
+    name: Read-only exact-tree qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    outputs:
+      target_head: ${{ steps.identity.outputs.target_head }}
+      result_tree: ${{ steps.identity.outputs.result_tree }}
+      patch_sha256: ${{ steps.identity.outputs.patch_sha256 }}
+      paths_sha256: ${{ steps.identity.outputs.paths_sha256 }}
+    steps:
+      - name: Checkout isolated control branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install fixed source-test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.93.0 --profile minimal --component rustfmt --component clippy --no-self-update
+          rustup default 1.93.0
+          rustc --version | grep -F 'rustc 1.93.0 '
+          cargo --version | grep -F 'cargo 1.93.0 '
+
+      - name: Construct canonical repair in an isolated target worktree
+        id: construct
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          target_head="$(git --no-replace-objects rev-parse "refs/remotes/origin/${TARGET_BRANCH}^{commit}")"
+          git --no-replace-objects merge-base --is-ancestor "$BASELINE_HEAD" "$target_head"
+          mapfile -t prior_paths < <(git --no-replace-objects diff --name-only "$BASELINE_HEAD..$target_head")
+          for path in "${prior_paths[@]}"; do
+            case "$path" in
+              __schema_probe__|tools/owner-open/build_owner_open_rootfs_image_release_v2.py|tools/owner-open/jsonl_provider_runtime.py) ;;
+              *) echo "unexpected target drift since baseline: $path" >&2; exit 1 ;;
+            esac
+          done
+          work="${RUNNER_TEMP}/g1-final-target"
+          test ! -e "$work"
+          git worktree add --detach "$work" "$target_head"
+          printf '%s\n' "$target_head" > "${RUNNER_TEMP}/g1-final-target-head"
+          cd "$work"
+          rm -f -- __schema_probe__
+          python3 - <<'PY'
+          from pathlib import Path
+
+          ALIAS = (
+              "from time import monotonic as _retirement_monotonic\n"
+              "from time import sleep as _retirement_sleep\n"
+          )
+
+          def isolate(path: Path, start_marker: str, end_marker: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              if ALIAS not in text:
+                  marker = "import time\n"
+                  if text.count(marker) != 1:
+                      raise SystemExit(f"unexpected time import shape: {path}")
+                  text = text.replace(marker, marker + ALIAS, 1)
+              start = text.index(start_marker)
+              end = text.index(end_marker, start)
+              region = text[start:end]
+              region = region.replace("time.monotonic()", "_retirement_monotonic()")
+              region = region.replace("time.sleep(", "_retirement_sleep(")
+              if "time.monotonic()" in region or "time.sleep(" in region:
+                  raise SystemExit(f"retirement clock remained coupled: {path}")
+              path.write_text(text[:start] + region + text[end:], encoding="utf-8")
+
+          isolate(
+              Path("tools/owner-open/build_owner_open_rootfs_image_release_v2.py"),
+              "def _quiet_group(",
+              "\n\ndef bounded_command(",
+          )
+          isolate(
+              Path("tools/owner-open/jsonl_provider_runtime.py"),
+              "def _group_quiet(",
+              "\n\ndef _status(",
+          )
+          PY
+          git diff --check
+          mapfile -t changed < <(git diff --name-only)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              __schema_probe__|tools/owner-open/build_owner_open_rootfs_image_release_v2.py|tools/owner-open/jsonl_provider_runtime.py) ;;
+              *) echo "unexpected constructed path: $path" >&2; exit 1 ;;
+            esac
+          done
+          for path in \
+            tools/owner-open/build_owner_open_rootfs_image_release_v2.py \
+            tools/owner-open/jsonl_provider_runtime.py
+          do
+            grep -F 'from time import monotonic as _retirement_monotonic' "$path"
+            grep -F 'from time import sleep as _retirement_sleep' "$path"
+          done
+
+      - name: Run exact regressions and complete affected lifecycle suites
+        working-directory: ${{ runner.temp }}/g1-final-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest tools.tests.test_build_owner_open_rootfs_image_release_v2.RootfsCommandBoundaryTest.test_timeout_after_descendant_readiness_retires_group -v
+          python3 -m unittest tools.tests.test_jsonl_provider_runtime.ProviderRetirementTest.test_handler_timeout_fences_its_response -v
+          python3 -m unittest tools.tests.test_build_owner_open_rootfs_image_release_v2.RootfsCommandBoundaryTest -v
+          python3 -m unittest tools.tests.test_jsonl_provider_runtime.ProviderRetirementTest -v
+
+      - name: Run generated-document and complete Python qualification
+        working-directory: ${{ runner.temp }}/g1-final-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+
+      - name: Run both Rust workspace qualification sets
+        working-directory: ${{ runner.temp }}/g1-final-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+
+      - name: Run source-only performance artifact self-verification
+        working-directory: ${{ runner.temp }}/g1-final-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/perf/run_global_baseline.py --output "${RUNNER_TEMP}/g1-final-baseline.json" --repetitions 1
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          artifact = json.loads((Path(os.environ['RUNNER_TEMP']) / 'g1-final-baseline.json').read_text())
+          clone = dict(artifact)
+          clone['artifact_digest'] = ''
+          encoded = json.dumps(clone, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode()
+          assert artifact['artifact_digest'] == hashlib.sha256(encoded).hexdigest()
+          assert artifact['qualification'] == 'SOURCE_EVIDENCE_ONLY'
+          assert artifact['gate']['passed'] is False
+          PY
+
+      - name: Bind exact post-test patch, path set and tree
+        id: identity
+        working-directory: ${{ runner.temp }}/g1-final-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_head="$(cat "${RUNNER_TEMP}/g1-final-target-head")"
+          git diff --check
+          mapfile -t status_paths < <(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //')
+          for path in "${status_paths[@]}"; do
+            case "$path" in
+              __schema_probe__|tools/owner-open/build_owner_open_rootfs_image_release_v2.py|tools/owner-open/jsonl_provider_runtime.py) ;;
+              *) echo "test mutated unexpected path: $path" >&2; exit 1 ;;
+            esac
+          done
+          git add -A -- __schema_probe__ tools/owner-open/build_owner_open_rootfs_image_release_v2.py tools/owner-open/jsonl_provider_runtime.py
+          git diff --cached --binary --full-index > "${RUNNER_TEMP}/g1-final.patch"
+          git diff --cached --name-only > "${RUNNER_TEMP}/g1-final.paths"
+          test -z "$(git diff --name-only)"
+          result_tree="$(git --no-replace-objects write-tree)"
+          patch_sha256="$(sha256sum "${RUNNER_TEMP}/g1-final.patch" | awk '{print $1}')"
+          paths_sha256="$(sha256sum "${RUNNER_TEMP}/g1-final.paths" | awk '{print $1}')"
+          {
+            echo "target_head=$target_head"
+            echo "result_tree=$result_tree"
+            echo "patch_sha256=$patch_sha256"
+            echo "paths_sha256=$paths_sha256"
+          } >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Reconstruct validated tree and exact-lease publish
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      result_commit: ${{ steps.reconstruct.outputs.result_commit }}
+    steps:
+      - name: Checkout isolated control branch without persistent credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reconstruct exact validated bytes without running candidate programs
+        id: reconstruct
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ needs.validate.outputs.target_head }}
+          EXPECTED_TREE: ${{ needs.validate.outputs.result_tree }}
+          EXPECTED_PATCH: ${{ needs.validate.outputs.patch_sha256 }}
+          EXPECTED_PATHS: ${{ needs.validate.outputs.paths_sha256 }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          current="$(git --no-replace-objects rev-parse "refs/remotes/origin/${TARGET_BRANCH}^{commit}")"
+          test "$current" = "$EXPECTED_HEAD"
+          work="${RUNNER_TEMP}/g1-final-publish"
+          test ! -e "$work"
+          git worktree add --detach "$work" "$current"
+          cd "$work"
+          rm -f -- __schema_probe__
+          python3 - <<'PY'
+          from pathlib import Path
+
+          ALIAS = "from time import monotonic as _retirement_monotonic\nfrom time import sleep as _retirement_sleep\n"
+
+          def isolate(path: Path, start_marker: str, end_marker: str) -> None:
+              text = path.read_text(encoding="utf-8")
+              if ALIAS not in text:
+                  marker = "import time\n"
+                  if text.count(marker) != 1:
+                      raise SystemExit(f"unexpected time import shape: {path}")
+                  text = text.replace(marker, marker + ALIAS, 1)
+              start = text.index(start_marker)
+              end = text.index(end_marker, start)
+              region = text[start:end].replace("time.monotonic()", "_retirement_monotonic()").replace("time.sleep(", "_retirement_sleep(")
+              if "time.monotonic()" in region or "time.sleep(" in region:
+                  raise SystemExit(f"retirement clock remained coupled: {path}")
+              path.write_text(text[:start] + region + text[end:], encoding="utf-8")
+
+          isolate(Path("tools/owner-open/build_owner_open_rootfs_image_release_v2.py"), "def _quiet_group(", "\n\ndef bounded_command(")
+          isolate(Path("tools/owner-open/jsonl_provider_runtime.py"), "def _group_quiet(", "\n\ndef _status(")
+          PY
+          git diff --check
+          git add -A -- __schema_probe__ tools/owner-open/build_owner_open_rootfs_image_release_v2.py tools/owner-open/jsonl_provider_runtime.py
+          git diff --cached --binary --full-index > "${RUNNER_TEMP}/g1-final-publish.patch"
+          git diff --cached --name-only > "${RUNNER_TEMP}/g1-final-publish.paths"
+          test "$(sha256sum "${RUNNER_TEMP}/g1-final-publish.patch" | awk '{print $1}')" = "$EXPECTED_PATCH"
+          test "$(sha256sum "${RUNNER_TEMP}/g1-final-publish.paths" | awk '{print $1}')" = "$EXPECTED_PATHS"
+          test "$(git --no-replace-objects write-tree)" = "$EXPECTED_TREE"
+          test -z "$(git diff --name-only)"
+          if git diff --cached --quiet; then
+            echo "result_commit=$current" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git commit \
+            -m 'fix(runtime): isolate execution and retirement clocks' \
+            -m 'Bind TERM/KILL observation to independent monotonic callables so deterministic execution-time jumps cannot expire cleanup confirmation. Cleanup remains fail-closed. Full Python and Rust source qualification passed in the read-only validation job; no target, device, fault, signing, promotion, or release claim is made.' \
+            -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          result="$(git --no-replace-objects rev-parse HEAD)"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$current"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          echo "result_commit=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Push once with an exact branch lease
+        working-directory: ${{ runner.temp }}/g1-final-publish
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ needs.validate.outputs.target_head }}
+          RESULT_COMMIT: ${{ steps.reconstruct.outputs.result_commit }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$RESULT_COMMIT" == "$EXPECTED_HEAD" ]]; then
+            echo 'validated tree already published'
+            exit 0
+          fi
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk 'NR==1 {print $1}')" = "$EXPECTED_HEAD"
+          auth="$(printf 'x-access-token:%s' "$G1_TOKEN" | base64 -w0)"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth}" push \
+            "--force-with-lease=refs/heads/${TARGET_BRANCH}:${EXPECTED_HEAD}" \
+            origin "${RESULT_COMMIT}:refs/heads/${TARGET_BRANCH}"
+          unset G1_TOKEN auth
+
+  qualify_and_govern:
+    name: Exact-head hosted gate, independent review and ordinary merge
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      actions: write
+      checks: read
+      pull-requests: write
+    steps:
+      - name: Checkout isolated control branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Dispatch and await the exact synthetic-merge source gate
+        id: gate
+        shell: bash
+        env:
+          RESULT_COMMIT: ${{ needs.publish.outputs.result_commit }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          auth=(-H "Authorization: Bearer ${G1_TOKEN}" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
+          target="$(curl --fail --silent --show-error "${auth[@]}" "${api}/git/ref/heads/${TARGET_BRANCH}" | python3 -c 'import json,sys;print(json.load(sys.stdin)["object"]["sha"])')"
+          test "$target" = "$RESULT_COMMIT"
+          base="$(curl --fail --silent --show-error "${auth[@]}" "${api}/git/ref/heads/main" | python3 -c 'import json,sys;print(json.load(sys.stdin)["object"]["sha"])')"
+          export TARGET_SHA="$target" BASE_SHA="$base"
+          current="$(curl --fail --silent --show-error "${auth[@]}" "${api}/actions/workflows/g1-synthetic-merge.yml/runs?branch=${TARGET_BRANCH}&per_page=100")"
+          export RUNS_JSON="$current"
+          decision="$(python3 - <<'PY'
+          import json, os
+          runs=[r for r in json.loads(os.environ['RUNS_JSON']).get('workflow_runs',[]) if r.get('head_sha')==os.environ['TARGET_SHA']]
+          good=[r for r in runs if r.get('status')=='completed' and r.get('conclusion')=='success']
+          active=[r for r in runs if r.get('status') in {'queued','in_progress','waiting','pending','requested'}]
+          if good: print('SUCCESS:'+str(max(good,key=lambda r:r['id'])['id']))
+          elif active: print('ACTIVE:'+str(max(active,key=lambda r:r['id'])['id']))
+          else: print('DISPATCH')
+          PY
+          )"
+          if [[ "$decision" == DISPATCH ]]; then
+            payload="$(python3 - <<'PY'
+          import json, os
+          print(json.dumps({
+            'ref': os.environ['TARGET_BRANCH'],
+            'inputs': {
+              'base_sha': os.environ['BASE_SHA'],
+              'head_sha': os.environ['TARGET_SHA'],
+              'head_repository': os.environ['GITHUB_REPOSITORY'],
+            },
+          },separators=(',',':')))
+          PY
+            )"
+            curl --fail --silent --show-error -X POST "${auth[@]}" \
+              -H 'Content-Type: application/json' \
+              "${api}/actions/workflows/g1-synthetic-merge.yml/dispatches" --data "$payload"
+            run_id=''
+          else
+            run_id="${decision#*:}"
+          fi
+          for attempt in $(seq 1 120); do
+            if [[ -z "$run_id" ]]; then
+              runs="$(curl --fail --silent --show-error "${auth[@]}" "${api}/actions/workflows/g1-synthetic-merge.yml/runs?branch=${TARGET_BRANCH}&per_page=100")"
+              export RUNS_JSON="$runs"
+              run_id="$(python3 - <<'PY'
+          import json, os
+          matches=[r for r in json.loads(os.environ['RUNS_JSON']).get('workflow_runs',[]) if r.get('head_sha')==os.environ['TARGET_SHA']]
+          print(max(matches,key=lambda r:r['id'])['id'] if matches else '')
+          PY
+              )"
+            fi
+            if [[ -n "$run_id" ]]; then
+              run="$(curl --fail --silent --show-error "${auth[@]}" "${api}/actions/runs/${run_id}")"
+              export RUN_JSON="$run"
+              readarray -t state < <(python3 - <<'PY'
+          import json, os
+          r=json.loads(os.environ['RUN_JSON'])
+          print(r.get('head_sha',''))
+          print(r.get('status',''))
+          print(r.get('conclusion') or '')
+          PY
+              )
+              test "${state[0]}" = "$target"
+              if [[ "${state[1]}" == completed ]]; then
+                test "${state[2]}" = success
+                break
+              fi
+            fi
+            test "$attempt" -lt 120
+            sleep 10
+          done
+          checks="$(curl --fail --silent --show-error "${auth[@]}" "${api}/commits/${target}/check-runs?per_page=100")"
+          statuses="$(curl --fail --silent --show-error "${auth[@]}" "${api}/commits/${target}/status")"
+          export CHECKS_JSON="$checks" STATUS_JSON="$statuses"
+          python3 - <<'PY'
+          import json, os
+          checks=json.loads(os.environ['CHECKS_JSON']).get('check_runs',[])
+          if not checks:
+              raise SystemExit('current target has no check runs')
+          bad=[(c.get('name'),c.get('status'),c.get('conclusion')) for c in checks if c.get('status')!='completed' or c.get('conclusion') not in {'success','neutral','skipped'}]
+          if bad:
+              raise SystemExit(f'current-head checks are not strictly successful: {bad}')
+          status=json.loads(os.environ['STATUS_JSON'])
+          if status.get('state') in {'failure','error','pending'}:
+              raise SystemExit(f'combined commit status is not successful: {status.get("state")}')
+          PY
+          {
+            echo "target=$target"
+            echo "base=$base"
+            echo "synthetic_run=$run_id"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Mark ready and request eligible independent CODEOWNER review
+        id: review
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.gate.outputs.target }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          auth=(-H "Authorization: Bearer ${G1_TOKEN}" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
+          pr="$(curl --fail --silent --show-error "${auth[@]}" "${api}/pulls/${PR_NUMBER}")"
+          export PR_JSON="$pr"
+          readarray -t identity < <(python3 - <<'PY'
+          import json, os
+          p=json.loads(os.environ['PR_JSON'])
+          print(p['head']['sha'])
+          print(p['node_id'])
+          print(p['user']['login'])
+          print(p['state'])
+          print('true' if p['draft'] else 'false')
+          PY
+          )
+          test "${identity[0]}" = "$TARGET_SHA"
+          test "${identity[3]}" = open
+          author="${identity[2]}"
+          if [[ "${identity[4]}" == true ]]; then
+            export NODE_ID="${identity[1]}"
+            payload="$(python3 - <<'PY'
+          import json, os
+          print(json.dumps({
+            'query':'mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}',
+            'variables':{'id':os.environ['NODE_ID']},
+          },separators=(',',':')))
+          PY
+            )"
+            result="$(curl --fail --silent --show-error -X POST \
+              -H "Authorization: Bearer ${G1_TOKEN}" -H 'Content-Type: application/json' \
+              https://api.github.com/graphql --data "$payload")"
+            export GRAPHQL_JSON="$result"
+            python3 - <<'PY'
+          import json, os
+          value=json.loads(os.environ['GRAPHQL_JSON'])
+          if value.get('errors'):
+              raise SystemExit(value['errors'])
+          if value['data']['markPullRequestReadyForReview']['pullRequest']['isDraft']:
+              raise SystemExit('pull request remained draft')
+          PY
+          fi
+          git fetch --no-tags origin "+${TARGET_SHA}:refs/g1/review-target"
+          export TARGET_SHA author
+          review_payload="$(python3 - <<'PY'
+          import json, os, re, subprocess
+          head=os.environ['TARGET_SHA']; author=os.environ['author'].lower()
+          raw=''
+          for path in ('.github/CODEOWNERS','CODEOWNERS','docs/CODEOWNERS'):
+              p=subprocess.run(['git','--no-replace-objects','show',f'{head}:{path}'],stdout=subprocess.PIPE,stderr=subprocess.DEVNULL)
+              if p.returncode==0:
+                  raw=p.stdout.decode('utf-8','replace'); break
+          users=[]; teams=[]
+          for line in raw.splitlines():
+              line=line.split('#',1)[0]
+              fields=line.split()
+              for token in fields[1:]:
+                  if not token.startswith('@'): continue
+                  owner=token[1:]
+                  if '/' in owner:
+                      org,slug=owner.split('/',1)
+                      if org.lower()=='trillionniumfoundation' and re.fullmatch(r'[A-Za-z0-9_.-]+',slug): teams.append(slug)
+                  elif owner.lower()!=author and not owner.lower().endswith('[bot]') and re.fullmatch(r'[A-Za-z0-9_.-]+',owner):
+                      users.append(owner)
+          print(json.dumps({'reviewers':sorted(set(users))[:15],'team_reviewers':sorted(set(teams))[:15]},separators=(',',':')))
+          PY
+          )"
+          export REVIEW_PAYLOAD="$review_payload"
+          request_count="$(python3 - <<'PY'
+          import json, os
+          p=json.loads(os.environ['REVIEW_PAYLOAD'])
+          print(len(p['reviewers'])+len(p['team_reviewers']))
+          PY
+          )"
+          if [[ "$request_count" -gt 0 ]]; then
+            curl --fail --silent --show-error -X POST "${auth[@]}" -H 'Content-Type: application/json' \
+              "${api}/pulls/${PR_NUMBER}/requested_reviewers" --data "$review_payload" > /dev/null
+          fi
+          {
+            echo "author=$author"
+            echo "requested_reviewers=$request_count"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Await exact-head non-author approval and perform an ordinary protected merge
+        shell: bash
+        env:
+          TARGET_SHA: ${{ steps.gate.outputs.target }}
+          AUTHOR: ${{ steps.review.outputs.author }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          auth=(-H "Authorization: Bearer ${G1_TOKEN}" -H 'Accept: application/vnd.github+json' -H 'X-GitHub-Api-Version: 2022-11-28')
+          approved=false
+          for attempt in $(seq 1 80); do
+            reviews="$(curl --fail --silent --show-error "${auth[@]}" "${api}/pulls/${PR_NUMBER}/reviews?per_page=100")"
+            export REVIEWS_JSON="$reviews"
+            approved="$(python3 - <<'PY'
+          import json, os
+          latest={}
+          for r in json.loads(os.environ['REVIEWS_JSON']):
+              login=(r.get('user') or {}).get('login')
+              if login: latest[login]=r
+          ok=any(
+              login.lower()!=os.environ['AUTHOR'].lower()
+              and not login.lower().endswith('[bot]')
+              and review.get('state')=='APPROVED'
+              and review.get('commit_id')==os.environ['TARGET_SHA']
+              for login,review in latest.items()
+          )
+          print('true' if ok else 'false')
+          PY
+            )"
+            if [[ "$approved" == true ]]; then break; fi
+            test "$attempt" -lt 80 || break
+            sleep 15
+          done
+          if [[ "$approved" != true ]]; then
+            body="Exact-head source qualification passed for ${TARGET_SHA}, but ordinary merge remains blocked pending an eligible non-author approval bound to this exact head. No self-approval or administrator bypass was used."
+            payload="$(python3 -c 'import json,sys; print(json.dumps({"body":sys.argv[1]}))' "$body")"
+            curl --fail --silent --show-error -X POST "${auth[@]}" -H 'Content-Type: application/json' \
+              "${api}/issues/${PR_NUMBER}/comments" --data "$payload" > /dev/null
+            echo "$body" >&2
+            exit 2
+          fi
+          current="$(curl --fail --silent --show-error "${auth[@]}" "${api}/pulls/${PR_NUMBER}")"
+          export CURRENT_PR_JSON="$current"
+          python3 - <<'PY'
+          import json, os
+          p=json.loads(os.environ['CURRENT_PR_JSON'])
+          assert p['state']=='open'
+          assert p['draft'] is False
+          assert p['head']['sha']==os.environ['TARGET_SHA']
+          PY
+          payload="$(python3 - <<'PY'
+          import json, os
+          print(json.dumps({
+            'sha':os.environ['TARGET_SHA'],
+            'merge_method':'merge',
+            'commit_title':'Merge PR #41: close repository-controlled G1 blockers',
+            'commit_message':'Ordinary protected merge of the exact qualified PR head. No administrator bypass, target-evidence, signing, promotion, or public-release claim is implied.',
+          },separators=(',',':')))
+          PY
+          )"
+          result="$(curl --fail --silent --show-error -X PUT "${auth[@]}" -H 'Content-Type: application/json' \
+            "${api}/pulls/${PR_NUMBER}/merge" --data "$payload")"
+          export MERGE_JSON="$result"
+          python3 - <<'PY'
+          import json, os
+          value=json.loads(os.environ['MERGE_JSON'])
+          if value.get('merged') is not True:
+              raise SystemExit(value)
+          print(value.get('sha',''))
+          PY
