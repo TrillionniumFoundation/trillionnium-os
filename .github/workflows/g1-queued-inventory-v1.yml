@@ -1,0 +1,75 @@
+name: G1 queued-run inventory v1
+
+on:
+  push:
+    branches:
+      - ops/g1-pending-run-cleanup-v1-20260906
+    paths:
+      - .github/workflows/g1-queued-inventory-v1.yml
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  inventory:
+    name: Read compact queued-run inventory
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Print bounded queued-run identities
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: TrillionniumFoundation/trillionnium-os
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 -I - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          repository = os.environ["REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          root = f"https://api.github.com/repos/{repository}"
+
+          def get(path):
+              request = urllib.request.Request(
+                  root + path,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Accept": "application/vnd.github+json",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "trillionnium-g1-queued-inventory-v1",
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          runs = []
+          for page in range(1, 11):
+              value = get(f"/actions/runs?status=queued&per_page=100&page={page}")
+              page_runs = value.get("workflow_runs", [])
+              if not isinstance(page_runs, list):
+                  raise SystemExit("malformed queued-run response")
+              for run in page_runs:
+                  runs.append({
+                      key: run.get(key)
+                      for key in (
+                          "id", "name", "path", "head_sha", "head_branch", "event",
+                          "status", "conclusion", "created_at", "run_attempt"
+                      )
+                  })
+              if len(page_runs) < 100:
+                  break
+          else:
+              raise SystemExit("queued-run inventory exceeded ten pages")
+          print(json.dumps({
+              "schema": "org.trillionnium.g1.queued-run-inventory.v1",
+              "count": len(runs),
+              "runs": sorted(runs, key=lambda item: item["id"]),
+          }, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
