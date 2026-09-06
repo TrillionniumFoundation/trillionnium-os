@@ -113,6 +113,57 @@ class AggregateTest(AggregateFixture):
         with self.assertRaisesRegex(AGG.AggregateError, "timed out waiting"):
             self.verify()
 
+    def test_synthetic_diagnostic_artifact_must_bind_exact_head(self) -> None:
+        path = f"repos/{self.repo}/actions/runs/1001/artifacts?per_page=100"
+        payload = deepcopy(self.values[path])
+        assert isinstance(payload, dict)
+        artifacts = payload["artifacts"]
+        assert isinstance(artifacts, list) and len(artifacts) == 2
+        diagnostic = artifacts[1]
+        assert isinstance(diagnostic, dict)
+        diagnostic["name"] = f"g1-merge-test-diagnostics-{'a' * 40}"
+        self.values[path] = payload
+        with self.assertRaisesRegex(AGG.AggregateError, "incomplete or ambiguous"):
+            self.verify()
+
+    def test_synthetic_artifact_set_rejects_a_third_artifact(self) -> None:
+        path = f"repos/{self.repo}/actions/runs/1001/artifacts?per_page=100"
+        payload = deepcopy(self.values[path])
+        assert isinstance(payload, dict)
+        artifacts = payload["artifacts"]
+        assert isinstance(artifacts, list) and len(artifacts) == 2
+        artifacts.append(
+            self._artifact(
+                2011,
+                1001,
+                "g1-unexpected-third-artifact",
+                self._zip({"unexpected.json": {}}),
+            )
+        )
+        self.values[path] = payload
+        with self.assertRaisesRegex(AGG.AggregateError, "incomplete or ambiguous"):
+            self.verify()
+
+    def test_synthetic_artifact_set_rejects_a_second_semantic_receipt(self) -> None:
+        path = f"repos/{self.repo}/actions/runs/1001/artifacts?per_page=100"
+        payload = deepcopy(self.values[path])
+        assert isinstance(payload, dict)
+        artifacts = payload["artifacts"]
+        assert isinstance(artifacts, list) and len(artifacts) == 2
+        artifacts.append(
+            self._artifact(
+                2012,
+                1001,
+                f"g1-synthetic-merge-{'e' * 40}",
+                self._zip({"not-consumed.json": {}}),
+            )
+        )
+        self.values[path] = payload
+        with self.assertRaisesRegex(
+            AGG.AggregateError, "exactly one semantic merge artifact"
+        ):
+            self.verify()
+
     def test_artifact_digest_mismatch_fails(self) -> None:
         url = "https://objects.example/2001.zip"
         self.blobs[url] += b"tamper"

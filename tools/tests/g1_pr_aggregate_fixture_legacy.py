@@ -76,7 +76,22 @@ class AggregateFixture(AggregateFixtureBase):
             }
         )
         synthetic_artifact = self._artifact(2001, 1001, f"g1-synthetic-merge-{'d' * 40}", synthetic_raw)
-        self.values[f"repos/{self.repo}/actions/runs/1001/artifacts?per_page=100"] = {"artifacts": [synthetic_artifact]}
+        diagnostic_raw = self._zip(
+            {
+                "g1-merge-test-diagnostics.json": {
+                    "qualification": "DIAGNOSTIC_ONLY_NO_SOURCE_OR_TARGET_AUTHORITY"
+                }
+            }
+        )
+        diagnostic_artifact = self._artifact(
+            2010,
+            1001,
+            f"g1-merge-test-diagnostics-{self.head_commit}",
+            diagnostic_raw,
+        )
+        self.values[f"repos/{self.repo}/actions/runs/1001/artifacts?per_page=100"] = {
+            "artifacts": [synthetic_artifact, diagnostic_artifact]
+        }
 
         source_android = self._android_receipt("source_head")
         merge_android = self._android_receipt("synthetic_merge")

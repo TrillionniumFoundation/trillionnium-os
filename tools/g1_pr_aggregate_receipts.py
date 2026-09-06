@@ -130,8 +130,21 @@ def _select_artifacts(
     by_name = {_identifier(item.get("name"), "artifact name"): item for item in artifacts}
     _require(len(by_name) == len(artifacts), "artifact names are not unique")
     if requirement.artifact_kind == "synthetic":
-        matches = {name: value for name, value in by_name.items() if name.startswith("g1-synthetic-merge-")}
-        _require(len(matches) == 1 and len(by_name) == 1, "synthetic workflow must emit exactly one merge artifact")
+        matches = {
+            name: value
+            for name, value in by_name.items()
+            if name.startswith("g1-synthetic-merge-")
+        }
+        _require(
+            len(matches) == 1,
+            "synthetic workflow must emit exactly one semantic merge artifact",
+        )
+        semantic_name = next(iter(matches))
+        diagnostic_name = f"g1-merge-test-diagnostics-{subject.head_commit}"
+        _require(
+            set(by_name) == {semantic_name, diagnostic_name},
+            "synthetic workflow artifact set is incomplete or ambiguous",
+        )
         return matches
     if requirement.artifact_kind == "android":
         source_name = f"g1-adbroot-source-matrix-{subject.head_commit}"
