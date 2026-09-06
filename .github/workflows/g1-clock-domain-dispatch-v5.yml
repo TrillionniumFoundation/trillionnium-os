@@ -1,0 +1,104 @@
+name: G1 clock-domain exact-head dispatch v5
+
+"on":
+  push:
+    branches:
+      - ops/g1-synthetic-retirement-fix-20260906
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: g1-clock-domain-dispatch-v5
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  TARGET_WORKFLOW: g1-synthetic-merge.yml
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify canonical target source without executing it
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}" "+refs/heads/main:refs/remotes/origin/main"
+          head="$(git --no-replace-objects rev-parse "refs/remotes/origin/${TARGET_BRANCH}^{commit}")"
+          base="$(git --no-replace-objects rev-parse 'refs/remotes/origin/main^{commit}')"
+          for path in \
+            tools/owner-open/build_owner_open_rootfs_image_release_v2.py \
+            tools/owner-open/jsonl_provider_runtime.py
+          do
+            git --no-replace-objects show "${head}:${path}" | grep -F 'from time import monotonic as _retirement_monotonic'
+            git --no-replace-objects show "${head}:${path}" | grep -F 'from time import sleep as _retirement_sleep'
+          done
+          test "$(git --no-replace-objects ls-tree -r --name-only "$head" -- __schema_probe__)" = ""
+          {
+            echo "head=$head"
+            echo "base=$base"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch exact synthetic merge unless current run already exists
+        shell: bash
+        env:
+          HEAD_SHA: ${{ steps.identity.outputs.head }}
+          BASE_SHA: ${{ steps.identity.outputs.base }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${GITHUB_REPOSITORY}"
+          existing="$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${G1_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "${api}/actions/workflows/${TARGET_WORKFLOW}/runs?branch=${TARGET_BRANCH}&per_page=100")"
+          export EXISTING_JSON="$existing"
+          decision="$(python3 - <<'PY'
+          import json, os
+          head = os.environ['HEAD_SHA']
+          runs = json.loads(os.environ['EXISTING_JSON']).get('workflow_runs', [])
+          current = [r for r in runs if r.get('head_sha') == head]
+          if any(r.get('status') in {'queued','in_progress','waiting','pending','requested'} for r in current):
+              print('SKIP_ACTIVE')
+          elif any(r.get('status') == 'completed' and r.get('conclusion') == 'success' for r in current):
+              print('SKIP_SUCCESS')
+          else:
+              print('DISPATCH')
+          PY
+          )"
+          if [[ "$decision" != DISPATCH ]]; then
+            echo "$decision"
+            exit 0
+          fi
+          payload="$(python3 - <<'PY'
+          import json, os
+          print(json.dumps({
+              'ref': os.environ['TARGET_BRANCH'],
+              'inputs': {
+                  'base_sha': os.environ['BASE_SHA'],
+                  'head_sha': os.environ['HEAD_SHA'],
+                  'head_repository': os.environ['GITHUB_REPOSITORY'],
+              },
+          }, separators=(',', ':')))
+          PY
+          )"
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${G1_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "${api}/actions/workflows/${TARGET_WORKFLOW}/dispatches" \
+            --data "$payload"
+          unset G1_TOKEN existing EXISTING_JSON payload
