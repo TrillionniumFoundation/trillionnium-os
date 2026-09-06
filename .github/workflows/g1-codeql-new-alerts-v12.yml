@@ -120,10 +120,16 @@ jobs:
             legacy_v1_saga_is_quarantined_without_blocking_v2_reconciliation \
             provider_pending_reopen_becomes_fixed_indeterminate_without_plan_or_dispatch
           do
-            cargo test -p trillionniumd --lib "$test_name" -- --exact
+            log="$RUNNER_TEMP/${test_name}.log"
+            cargo test -p trillionniumd --bin trillionniumd \
+              "android_agent_api::tests::${test_name}" -- --exact 2>&1 | tee "$log"
+            grep -Fq "test result: ok. 1 passed; 0 failed;" "$log"
           done
-          cargo test -p trillionnium-agent-direct-tools \
-            replay_sync_authoritative_dispositions_compact_and_reopen_idempotently
+          trusted_log="$RUNNER_TEMP/trusted-context.log"
+          cargo test -p trillionnium-agent-direct-tools --lib \
+            "trusted_context::tests::replay_sync_authoritative_dispositions_compact_and_reopen_idempotently" \
+            -- --exact 2>&1 | tee "$trusted_log"
+          grep -Fq "test result: ok. 1 passed; 0 failed;" "$trusted_log"
           cargo clippy -p trillionniumd -p trillionnium-agent-direct-tools \
             --all-targets -- -D warnings
 
