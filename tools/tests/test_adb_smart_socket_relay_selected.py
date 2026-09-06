@@ -564,6 +564,20 @@ class ReleaseRelayJournalFailureTest(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.relay.semaphore.locked())
         self.assertFalse(self.relay.connections)
 
+    async def test_prepublication_fence_prevents_an_upstream_connection(self):
+        other = fault_release.ReleaseRelay(
+            "127.0.0.1", 0, "127.0.0.1", self.upstream.sockets[0].getsockname()[1],
+            fault_base.Limits(1, 4096, 16384, 1, 30, 0.2), RecordingFaultEvents(),
+        )
+        writer = mock.Mock()
+        writer.wait_closed = mock.AsyncMock()
+        with mock.patch.object(
+            fault_base.asyncio, "open_connection", new_callable=mock.AsyncMock
+        ) as upstream:
+            await other.accept(asyncio.StreamReader(), writer)
+        upstream.assert_not_called()
+        writer.close.assert_called()
+
     async def test_stop_prevents_even_an_upstream_connection(self):
         self.relay.stop()
         writer = mock.Mock()
@@ -596,20 +610,63 @@ class ReleaseRelayJournalFailureTest(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.relay.connections)
         self.assertFalse(self.relay.semaphore.locked())
 
+    async def test_descriptor_visibility_follows_listener_start(self):
+        other = fault_release.ReleaseRelay(
+            "127.0.0.1", 0, "127.0.0.1", self.upstream.sockets[0].getsockname()[1],
+            fault_base.Limits(1, 4096, 16384, 1, 30, 0.2), RecordingFaultEvents(),
+        )
+        with tempfile.TemporaryDirectory(prefix="r5-relay-ready-") as directory:
+            root = Path(directory)
+            root.chmod(0o700)
+            descriptor = root / "descriptor.json"
+            original = fault_base.publish_private_json
+            observations = []
+
+            def publish(path, temporary):
+                observations.append(
+                    (other.server.is_serving(), path.exists(), other.admission_open)
+                )
+                return original(path, temporary)
+
+            try:
+                with mock.patch.object(fault_base, "publish_private_json", side_effect=publish):
+                    result = await other.start(descriptor)
+                self.assertEqual(observations, [(True, False, False)])
+                self.assertTrue(other.admission_open)
+                self.assertEqual(json.loads(descriptor.read_text()), result)
+                reader, writer = await asyncio.open_connection(
+                    result["listen_host"], result["listen_port"]
+                )
+                writer.close()
+                await writer.wait_closed()
+                del reader
+            finally:
+                if other.server is not None:
+                    other.server.close()
+                    await other.server.wait_closed()
+
     async def test_release_descriptor_failure_closes_its_listener(self):
         other = fault_release.ReleaseRelay(
             "127.0.0.1", 0, "127.0.0.1", self.upstream.sockets[0].getsockname()[1],
             fault_base.Limits(1, 4096, 16384, 1, 30, 0.2), RecordingFaultEvents(),
         )
-        try:
-            with mock.patch.object(fault_base, "atomic_private_json", side_effect=OSError("injected publication")):
-                with self.assertRaises(OSError):
-                    await other.start(Path("/unused/fixture-descriptor.json"))
-            self.assertFalse(other.server.is_serving(), "failed startup left a live listener")
-        finally:
-            if other.server is not None:
-                other.server.close()
-                await other.server.wait_closed()
+        with tempfile.TemporaryDirectory(prefix="r5-relay-publish-failure-") as directory:
+            root = Path(directory)
+            root.chmod(0o700)
+            descriptor = root / "descriptor.json"
+            try:
+                with mock.patch.object(
+                    fault_base, "publish_private_json", side_effect=OSError("injected publication")
+                ):
+                    with self.assertRaises(OSError):
+                        await other.start(descriptor)
+                self.assertFalse(other.server.is_serving(), "failed startup left a live listener")
+                self.assertFalse(descriptor.exists())
+                self.assertEqual(list(root.iterdir()), [])
+            finally:
+                if other.server is not None:
+                    other.server.close()
+                    await other.server.wait_closed()
 
 
 class SelectedRelayContractTest(unittest.TestCase):

@@ -170,10 +170,16 @@ not the Host's durable-before-effect acceptance log: an ADB connection record,
 byte counter or clean socket close does not prove a remote operation succeeded,
 was cancelled, or did not execute. Recovery never repeats an uncertain effect.
 
-The listener is bound but not serving while the descriptor and ready observation
-are prepared. Any startup failure closes it, including descriptor publication
-failure in the release entry. Descriptor publication and ready observation are
-separate operations: a retained descriptor alone is not proof of readiness,
+The listener is bound but not serving while descriptor bytes and the ready
+observation are prepared. After the durable ready observation succeeds, the
+accept callback is installed with an admission fence still closed. The already-
+synced descriptor is then atomically made visible and the fence is opened before
+the event loop can dispatch an accepted connection. Descriptor visibility is
+therefore the consumer connection barrier: a caller that first observes the file
+cannot race a not-yet-serving socket, while a local port scan cannot reach the
+upstream before publication. Any startup or final publication failure closes the
+listener and removes an unpublished temporary descriptor. A directory-sync
+ambiguity can still leave a descriptor, so a retained file alone is not proof of
 continued liveness or a successful qualification run. Preserve partial output
 for diagnosis instead of rerunning a semantic operation to obtain a receipt.
 

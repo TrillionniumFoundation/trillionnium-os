@@ -66,7 +66,8 @@ def open_private(path: Path, label: str) -> BinaryIO:
     return os.fdopen(descriptor, "wb", buffering=0)
 
 
-def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
+def prepare_private_json(path: Path, value: dict[str, Any]) -> Path:
+    """Write and sync a private descriptor without making it observable."""
     validate_new_private_path(path, "relay descriptor")
     temporary = path.parent / f".{path.name}.tmp-{os.getpid()}-{secrets.token_hex(8)}"
     raw = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2).encode("utf-8") + b"\n"
@@ -83,8 +84,19 @@ def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
                 raise RelayError("relay descriptor write made no progress")
             offset += written
         os.fsync(descriptor)
+    except BaseException:
+        temporary.unlink(missing_ok=True)
+        raise
     finally:
         os.close(descriptor)
+    return temporary
+
+
+def publish_private_json(path: Path, temporary: Path) -> None:
+    """Publish a prepared descriptor and sync its directory entry."""
+    if temporary.parent != path.parent or temporary.is_symlink():
+        raise RelayError("prepared relay descriptor identity changed")
+    validate_new_private_path(path, "relay descriptor")
     try:
         os.replace(temporary, path)
         directory = os.open(path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
@@ -92,6 +104,15 @@ def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
             os.fsync(directory)
         finally:
             os.close(directory)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
+    """Compatibility helper for one-step private JSON publication."""
+    temporary = prepare_private_json(path, value)
+    try:
+        publish_private_json(path, temporary)
     finally:
         temporary.unlink(missing_ok=True)
 
@@ -274,6 +295,7 @@ class Relay:
         self.semaphore = asyncio.Semaphore(limits.max_clients)
         self.stop_event = asyncio.Event()
         self.server: asyncio.Server | None = None
+        self.admission_open = False
         self.connections: set[asyncio.Task[None]] = set()
         self.next_identifier = 0
         self.journal_failed = False
@@ -292,9 +314,9 @@ class Relay:
         return True
 
     async def accept(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
-        if self.stop_event.is_set() or self.semaphore.locked():
+        if not self.admission_open or self.stop_event.is_set() or self.semaphore.locked():
             try:
-                if not self.stop_event.is_set():
+                if self.admission_open and not self.stop_event.is_set():
                     await self.record_event("connection_rejected", reason="max_clients")
             finally:
                 await close_writer(writer, self.limits.shutdown_grace)
@@ -424,20 +446,33 @@ class Relay:
             "payload_logged": False,
             "automatic_redispatch": False,
         }
-        if descriptor is not None:
-            atomic_private_json(descriptor, result)
-        if not await self.record_event(
-            "relay_ready",
-            listen_host=host,
-            listen_port=port,
-            upstream_host=self.upstream_host,
-            upstream_port=self.upstream_port,
-        ):
-            raise RelayError("relay lifecycle journal failed before readiness")
-        if self.stop_event.is_set():
-            raise RelayError("relay startup was inhibited")
-        await self.server.start_serving()
-        return result
+        temporary = prepare_private_json(descriptor, result) if descriptor is not None else None
+        try:
+            if not await self.record_event(
+                "relay_ready",
+                listen_host=host,
+                listen_port=port,
+                upstream_host=self.upstream_host,
+                upstream_port=self.upstream_port,
+            ):
+                raise RelayError("relay lifecycle journal failed before readiness")
+            if self.stop_event.is_set():
+                raise RelayError("relay startup was inhibited")
+            # A descriptor is the consumer's connection barrier. Install the
+            # accept callback before making the already-synced bytes visible.
+            await self.server.start_serving()
+            if descriptor is not None:
+                assert temporary is not None
+                publish_private_json(descriptor, temporary)
+                temporary = None
+            # publish_private_json is synchronous. Even if another process
+            # connects as the file appears, this loop cannot dispatch accept()
+            # until the admission fence is opened before the next await.
+            self.admission_open = True
+            return result
+        finally:
+            if temporary is not None:
+                temporary.unlink(missing_ok=True)
 
     async def serve(self) -> int:
         assert self.server is not None
@@ -484,6 +519,7 @@ class Relay:
         return 0 if await self.record_event("relay_terminal", active_connections=0) else 1
 
     def stop(self) -> None:
+        self.admission_open = False
         self.stop_event.set()
         if self.server is not None:
             self.server.close()
