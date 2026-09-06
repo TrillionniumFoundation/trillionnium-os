@@ -1,0 +1,122 @@
+name: G1 ADB readiness materialized publisher v11
+
+on:
+  push:
+    branches:
+      - ops/g1-adb-race-v11-20260906
+    paths:
+      - .github/workflows/g1-adb-race-v11-publish.yml
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: g1-adb-race-v11-publisher
+  cancel-in-progress: false
+
+env:
+  TARGET_HEAD: 768f058fe2ee91af667436336cd6059d3a3e4d3f
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  MATERIALIZED_BRANCH: ops/g1-adb-race-materialized-v11-20260906
+  PATCH_SHA256: a56f727e283bcdd22294077543968fb219c95d3770d6549e837163a68a99b08d
+
+jobs:
+  publish:
+    name: Reconstruct validated bytes without target execution
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out isolated control source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          path: control
+
+      - name: Check out exact target head without credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ env.TARGET_HEAD }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: target
+
+      - name: Reconstruct exact validated file set
+        id: commit
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch="$GITHUB_WORKSPACE/control/.g1/g1-adb-race-v11.patch"
+          test "$(sha256sum "$patch" | awk '{print $1}')" = "$PATCH_SHA256"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git hash-object tools/owner-open/adb_smart_socket_relay_selected.py)" = 4d89535408c5ae55747cb25995b585eb1ccc76bb
+          test "$(git hash-object tools/tests/test_adb_smart_socket_relay_selected.py)" = 0ca9bd5f3ea32e7fa1574544326ac9e4bed467ab
+          test "$(git hash-object docs/modules/MOD-ADB.md)" = fa2cf7657441cd73a3494da4ee0dced20ef62767
+          printf x | cmp - __probe_do_not_create__
+          printf probe | cmp - __schema_probe__
+          git apply --check "$patch"
+          git apply "$patch"
+          rm -- __probe_do_not_create__ __schema_probe__
+          git diff --check
+          test "$(git hash-object tools/owner-open/adb_smart_socket_relay_selected.py)" = 5bffbcb5a5fad09cad30f2b6d03d199e76550639
+          test "$(git hash-object tools/tests/test_adb_smart_socket_relay_selected.py)" = 794ad67ec92f95f1bcb37f10d5a7f05e0e51ecec
+          test "$(git hash-object docs/modules/MOD-ADB.md)" = a94359f48dc73c0a09f0b85a0285616306672d57
+          git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //' | LC_ALL=C sort > "$RUNNER_TEMP/actual-paths"
+          cat > "$RUNNER_TEMP/expected-paths" <<'EOF'
+          __probe_do_not_create__
+          __schema_probe__
+          docs/modules/MOD-ADB.md
+          tools/owner-open/adb_smart_socket_relay_selected.py
+          tools/tests/test_adb_smart_socket_relay_selected.py
+          EOF
+          diff -u "$RUNNER_TEMP/expected-paths" "$RUNNER_TEMP/actual-paths"
+          git add -A -- .
+          test -z "$(git diff --name-only)"
+          git diff --cached --binary --full-index > "$RUNNER_TEMP/g1-v11-materialized.patch"
+          git diff --cached --name-only > "$RUNNER_TEMP/g1-v11-materialized.paths"
+          result_tree="$(git --no-replace-objects write-tree)"
+          staged_patch_sha256="$(sha256sum "$RUNNER_TEMP/g1-v11-materialized.patch" | awk '{print $1}')"
+          paths_sha256="$(sha256sum "$RUNNER_TEMP/g1-v11-materialized.paths" | awk '{print $1}')"
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git commit \
+            -m 'fix(adb): publish only connect-ready relay descriptors' \
+            -m 'Prepare and fsync descriptor bytes while the listener is stopped, install serving with admission fenced, then atomically publish and open admission before the next event-loop dispatch. Remove two accidental schema probes. A separate read-only hosted job passed documentation checks, the complete selected relay/release class set and twenty repeated reproductions of the former connection-refused race. No target, device, fault, signing or release evidence is claimed.' \
+            -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          result_commit="$(git --no-replace-objects rev-parse HEAD)"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$result_tree"
+          echo "result_commit=$result_commit" >> "$GITHUB_OUTPUT"
+          printf '{"result_commit":"%s","result_tree":"%s","parent":"%s","source_patch_sha256":"%s","staged_patch_sha256":"%s","paths_sha256":"%s","target_execution":false}\n' \
+            "$result_commit" "$result_tree" "$TARGET_HEAD" "$PATCH_SHA256" "$staged_patch_sha256" "$paths_sha256" \
+            > "$RUNNER_TEMP/g1-v11-publisher-result.json"
+
+      - name: Publish to isolated materialized branch with exact target and output leases
+        working-directory: target
+        shell: bash
+        env:
+          RESULT_COMMIT: ${{ steps.commit.outputs.result_commit }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$G1_TOKEN" | base64 -w0)"
+          target_observed="$(git -c "http.extraheader=AUTHORIZATION: basic ${auth}" ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk 'NR==1 {print $1}')"
+          output_observed="$(git -c "http.extraheader=AUTHORIZATION: basic ${auth}" ls-remote origin "refs/heads/${MATERIALIZED_BRANCH}" | awk 'NR==1 {print $1}')"
+          test "$target_observed" = "$TARGET_HEAD"
+          test "$output_observed" = "$TARGET_HEAD"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth}" push \
+            "--force-with-lease=refs/heads/${MATERIALIZED_BRANCH}:${TARGET_HEAD}" \
+            origin "${RESULT_COMMIT}:refs/heads/${MATERIALIZED_BRANCH}"
+          unset G1_TOKEN auth
+
+      - name: Upload materialization receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-adb-race-v11-publisher-${{ steps.commit.outputs.result_commit }}
+          path: ${{ runner.temp }}/g1-v11-publisher-result.json
+          if-no-files-found: error
+          retention-days: 30
