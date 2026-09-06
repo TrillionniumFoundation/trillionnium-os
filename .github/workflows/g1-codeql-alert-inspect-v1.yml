@@ -1,0 +1,99 @@
+name: G1 CodeQL alert read-only inspection v1
+
+on:
+  push:
+    branches:
+      - ops/g1-adb-race-v11-20260906
+    paths:
+      - .github/workflows/g1-codeql-alert-inspect-v1.yml
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: g1-codeql-alert-inspect-v1
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    name: Read PR CodeQL alert metadata without candidate checkout
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      security-events: read
+    steps:
+      - name: Fetch and minimize open PR alert metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: "41"
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          out="${RUNNER_TEMP}/g1-codeql-alerts"
+          install -d -m 0700 "$out"
+          curl --fail-with-body --silent --show-error --location \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${REPOSITORY}/code-scanning/alerts?pr=${PR_NUMBER}&state=open&per_page=100" \
+            --output "$out/raw.json"
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - "$out/raw.json" "$out/minimized.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          raw = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          if not isinstance(raw, list):
+              raise SystemExit("code scanning API did not return a list")
+          minimized = []
+          for alert in raw:
+              rule = alert.get("rule") or {}
+              instance = alert.get("most_recent_instance") or {}
+              location = instance.get("location") or {}
+              message = instance.get("message") or {}
+              minimized.append({
+                  "number": alert.get("number"),
+                  "state": alert.get("state"),
+                  "rule_id": rule.get("id"),
+                  "rule_name": rule.get("name"),
+                  "security_severity_level": rule.get("security_severity_level"),
+                  "severity": rule.get("severity"),
+                  "description": rule.get("description"),
+                  "tool": (alert.get("tool") or {}).get("name"),
+                  "ref": instance.get("ref"),
+                  "commit_sha": instance.get("commit_sha"),
+                  "path": location.get("path"),
+                  "start_line": location.get("start_line"),
+                  "end_line": location.get("end_line"),
+                  "message": message.get("text"),
+                  "classifications": instance.get("classifications"),
+              })
+          value = {
+              "schema": "org.trillionnium.g1-codeql-alert-inspection.v1",
+              "repository": "TrillionniumFoundation/trillionnium-os",
+              "pull_request": 41,
+              "open_alert_count": len(minimized),
+              "alerts": minimized,
+              "read_only": True,
+              "candidate_checkout_performed": False,
+              "candidate_code_executed": False,
+          }
+          Path(sys.argv[2]).write_text(
+              json.dumps(value, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps(value, sort_keys=True))
+          PY
+          rm -f "$out/raw.json"
+
+      - name: Upload minimized inspection receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-codeql-alert-inspection-pr41-${{ github.run_id }}
+          path: ${{ runner.temp }}/g1-codeql-alerts/minimized.json
+          if-no-files-found: error
+          retention-days: 7
