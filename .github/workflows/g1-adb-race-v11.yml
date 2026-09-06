@@ -61,7 +61,7 @@ jobs:
           test "$(git hash-object tools/owner-open/adb_smart_socket_relay_selected.py)" = 4d89535408c5ae55747cb25995b585eb1ccc76bb
           test "$(git hash-object tools/tests/test_adb_smart_socket_relay_selected.py)" = 0ca9bd5f3ea32e7fa1574544326ac9e4bed467ab
           test "$(git hash-object docs/modules/MOD-ADB.md)" = fa2cf7657441cd73a3494da4ee0dced20ef62767
-          printf probe | cmp - __probe_do_not_create__
+          printf x | cmp - __probe_do_not_create__
           printf probe | cmp - __schema_probe__
           git apply --check "$patch"
           git apply "$patch"
@@ -162,7 +162,7 @@ jobs:
           test "$(git hash-object tools/owner-open/adb_smart_socket_relay_selected.py)" = 4d89535408c5ae55747cb25995b585eb1ccc76bb
           test "$(git hash-object tools/tests/test_adb_smart_socket_relay_selected.py)" = 0ca9bd5f3ea32e7fa1574544326ac9e4bed467ab
           test "$(git hash-object docs/modules/MOD-ADB.md)" = fa2cf7657441cd73a3494da4ee0dced20ef62767
-          printf probe | cmp - __probe_do_not_create__
+          printf x | cmp - __probe_do_not_create__
           printf probe | cmp - __schema_probe__
           git apply --check "$patch"
           git apply "$patch"
