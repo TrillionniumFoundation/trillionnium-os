@@ -2446,7 +2446,7 @@ mod tests {
             DirectOperationAdapterTerminalStateV1::Ackable {
                 journal_evidence_snapshot,
             } => journal_evidence_snapshot,
-            other => panic!("expected ackable replay disposition, got {other:?}"),
+            _ => panic!("expected ackable replay disposition"),
         };
         let inbox = outer_ack_inbox_v3(adapter_context.binding(), snapshot);
         let ack_intent = inbox.operation_replay_sync_ack_intent_sha256().unwrap();

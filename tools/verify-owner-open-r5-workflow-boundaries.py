@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import sys
 from typing import Any
+from urllib.parse import urlsplit
 
 FORBIDDEN_NAME_PARTS = (
     "one-shot",
@@ -31,6 +32,8 @@ WRITE_PERMISSION = re.compile(
     r"permissions\s*:\s*\{[^}\n]*\b(?:contents|actions|pull-requests|issues|checks|"
     r"deployments|statuses)\s*:\s*['\"]?write['\"]?[^}\n]*\})\s*(?:#.*)?$"
 )
+GITHUB_API_SYMBOL = re.compile(r"(?i)\b(?:GITHUB_API_URL|github\.api_url)\b")
+URL_CANDIDATE = re.compile(r"https://[^\s\'\"<>`]+", re.IGNORECASE)
 API_WRITE = re.compile(
     r"(?:--method(?:=|\s+)[\s'\"]*(?:POST|PUT|PATCH|DELETE)\b|"
     r"(?:-X|--request)(?:=|\s+)[\s'\"]*(?:POST|PUT|PATCH|DELETE)\b|"
@@ -107,6 +110,19 @@ def _workflow_paths(workflow_dir: Path) -> list[Path]:
     )
 
 
+def _references_github_api(text: str) -> bool:
+    """Recognize symbolic endpoints or literal URLs with the exact API host."""
+    if GITHUB_API_SYMBOL.search(text):
+        return True
+    for candidate in URL_CANDIDATE.findall(text):
+        try:
+            if urlsplit(candidate).hostname == "api.github.com":
+                return True
+        except ValueError:
+            continue
+    return False
+
+
 def _verify_target_route_only(path: Path, text: str, errors: list[str]) -> None:
     if re.search(r"(?i)\bself-hosted\b", text):
         errors.append(f"target evidence workflow allocates a self-hosted runner: {path.name}")
@@ -166,7 +182,7 @@ def verify(root: Path) -> dict[str, Any]:
         if (
             API_WRITE.search(text)
             and "repos/" in text
-            and ("api.github.com" in text or "GITHUB_API_URL" in text)
+            and _references_github_api(text)
         ):
             errors.append(f"workflow can mutate GitHub repository controls: {path.name}")
 

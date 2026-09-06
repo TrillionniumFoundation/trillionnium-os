@@ -128,6 +128,36 @@ jobs:
         self.write("owner-open-r5-tool-loop.yml", value)
         self.assertTrue(any("mutate GitHub repository" in item for item in self.errors()))
 
+    def test_github_api_hostname_must_be_exact_not_a_substring(self) -> None:
+        for url in (
+            "https://example.invalid/api.github.com/repos/x/y",
+            "https://api.github.com.attacker.invalid/repos/x/y",
+        ):
+            with self.subTest(url=url):
+                value = self.clean_pr_workflow() + (
+                    f'      - run: curl --request PATCH "{url}"\n'
+                )
+                self.write("owner-open-r5-tool-loop.yml", value)
+                self.assertFalse(
+                    any("mutate GitHub repository" in item for item in self.errors())
+                )
+
+    def test_github_api_symbolic_and_exact_literal_endpoints_are_rejected(self) -> None:
+        for endpoint in (
+            "https://api.github.com/repos/x/y",
+            "https://api.github.com:443/repos/x/y",
+            "$GITHUB_API_URL/repos/x/y",
+            "${{ github.api_url }}/repos/x/y",
+        ):
+            with self.subTest(endpoint=endpoint):
+                value = self.clean_pr_workflow() + (
+                    f'      - run: curl --request PATCH "{endpoint}"\n'
+                )
+                self.write("owner-open-r5-tool-loop.yml", value)
+                self.assertTrue(
+                    any("mutate GitHub repository" in item for item in self.errors())
+                )
+
     def test_target_route_cannot_allocate_self_hosted_runner(self) -> None:
         value = self.clean_target_route().replace("runs-on: ubuntu-24.04", "runs-on: self-hosted")
         self.write("owner-open-r5-target-evidence-capture.yml", value)
