@@ -1,0 +1,249 @@
+diff --git a/docs/modules/MOD-ADB.md b/docs/modules/MOD-ADB.md
+index fa2cf7657441cd73a3494da4ee0dced20ef62767..a94359f48dc73c0a09f0b85a0285616306672d57 100644
+--- a/docs/modules/MOD-ADB.md
++++ b/docs/modules/MOD-ADB.md
+@@ -170,10 +170,16 @@ not the Host's durable-before-effect acceptance log: an ADB connection record,
+ byte counter or clean socket close does not prove a remote operation succeeded,
+ was cancelled, or did not execute. Recovery never repeats an uncertain effect.
+ 
+-The listener is bound but not serving while the descriptor and ready observation
+-are prepared. Any startup failure closes it, including descriptor publication
+-failure in the release entry. Descriptor publication and ready observation are
+-separate operations: a retained descriptor alone is not proof of readiness,
++The listener is bound but not serving while descriptor bytes and the ready
++observation are prepared. After the durable ready observation succeeds, the
++accept callback is installed with an admission fence still closed. The already-
++synced descriptor is then atomically made visible and the fence is opened before
++the event loop can dispatch an accepted connection. Descriptor visibility is
++therefore the consumer connection barrier: a caller that first observes the file
++cannot race a not-yet-serving socket, while a local port scan cannot reach the
++upstream before publication. Any startup or final publication failure closes the
++listener and removes an unpublished temporary descriptor. A directory-sync
++ambiguity can still leave a descriptor, so a retained file alone is not proof of
+ continued liveness or a successful qualification run. Preserve partial output
+ for diagnosis instead of rerunning a semantic operation to obtain a receipt.
+ 
+diff --git a/tools/owner-open/adb_smart_socket_relay_selected.py b/tools/owner-open/adb_smart_socket_relay_selected.py
+index 4d89535408c5ae55747cb25995b585eb1ccc76bb..5bffbcb5a5fad09cad30f2b6d03d199e76550639 100644
+--- a/tools/owner-open/adb_smart_socket_relay_selected.py
++++ b/tools/owner-open/adb_smart_socket_relay_selected.py
+@@ -66,7 +66,8 @@ def open_private(path: Path, label: str) -> BinaryIO:
+     return os.fdopen(descriptor, "wb", buffering=0)
+ 
+ 
+-def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
++def prepare_private_json(path: Path, value: dict[str, Any]) -> Path:
++    """Write and sync a private descriptor without making it observable."""
+     validate_new_private_path(path, "relay descriptor")
+     temporary = path.parent / f".{path.name}.tmp-{os.getpid()}-{secrets.token_hex(8)}"
+     raw = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2).encode("utf-8") + b"\n"
+@@ -83,8 +84,19 @@ def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
+                 raise RelayError("relay descriptor write made no progress")
+             offset += written
+         os.fsync(descriptor)
++    except BaseException:
++        temporary.unlink(missing_ok=True)
++        raise
+     finally:
+         os.close(descriptor)
++    return temporary
++
++
++def publish_private_json(path: Path, temporary: Path) -> None:
++    """Publish a prepared descriptor and sync its directory entry."""
++    if temporary.parent != path.parent or temporary.is_symlink():
++        raise RelayError("prepared relay descriptor identity changed")
++    validate_new_private_path(path, "relay descriptor")
+     try:
+         os.replace(temporary, path)
+         directory = os.open(path.parent, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+@@ -96,6 +108,15 @@ def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
+         temporary.unlink(missing_ok=True)
+ 
+ 
++def atomic_private_json(path: Path, value: dict[str, Any]) -> None:
++    """Compatibility helper for one-step private JSON publication."""
++    temporary = prepare_private_json(path, value)
++    try:
++        publish_private_json(path, temporary)
++    finally:
++        temporary.unlink(missing_ok=True)
++
++
+ class EventWriter:
+     def __init__(self, handle: BinaryIO | None, maximum: int) -> None:
+         self.handle = handle
+@@ -274,6 +295,7 @@ class Relay:
+         self.semaphore = asyncio.Semaphore(limits.max_clients)
+         self.stop_event = asyncio.Event()
+         self.server: asyncio.Server | None = None
++        self.admission_open = False
+         self.connections: set[asyncio.Task[None]] = set()
+         self.next_identifier = 0
+         self.journal_failed = False
+@@ -292,9 +314,9 @@ class Relay:
+         return True
+ 
+     async def accept(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+-        if self.stop_event.is_set() or self.semaphore.locked():
++        if not self.admission_open or self.stop_event.is_set() or self.semaphore.locked():
+             try:
+-                if not self.stop_event.is_set():
++                if self.admission_open and not self.stop_event.is_set():
+                     await self.record_event("connection_rejected", reason="max_clients")
+             finally:
+                 await close_writer(writer, self.limits.shutdown_grace)
+@@ -424,20 +446,33 @@ class Relay:
+             "payload_logged": False,
+             "automatic_redispatch": False,
+         }
+-        if descriptor is not None:
+-            atomic_private_json(descriptor, result)
+-        if not await self.record_event(
+-            "relay_ready",
+-            listen_host=host,
+-            listen_port=port,
+-            upstream_host=self.upstream_host,
+-            upstream_port=self.upstream_port,
+-        ):
+-            raise RelayError("relay lifecycle journal failed before readiness")
+-        if self.stop_event.is_set():
+-            raise RelayError("relay startup was inhibited")
+-        await self.server.start_serving()
+-        return result
++        temporary = prepare_private_json(descriptor, result) if descriptor is not None else None
++        try:
++            if not await self.record_event(
++                "relay_ready",
++                listen_host=host,
++                listen_port=port,
++                upstream_host=self.upstream_host,
++                upstream_port=self.upstream_port,
++            ):
++                raise RelayError("relay lifecycle journal failed before readiness")
++            if self.stop_event.is_set():
++                raise RelayError("relay startup was inhibited")
++            # A descriptor is the consumer's connection barrier. Install the
++            # accept callback before making the already-synced bytes visible.
++            await self.server.start_serving()
++            if descriptor is not None:
++                assert temporary is not None
++                publish_private_json(descriptor, temporary)
++                temporary = None
++            # publish_private_json is synchronous. Even if another process
++            # connects as the file appears, this loop cannot dispatch accept()
++            # until the admission fence is opened before the next await.
++            self.admission_open = True
++            return result
++        finally:
++            if temporary is not None:
++                temporary.unlink(missing_ok=True)
+ 
+     async def serve(self) -> int:
+         assert self.server is not None
+@@ -484,6 +519,7 @@ class Relay:
+         return 0 if await self.record_event("relay_terminal", active_connections=0) else 1
+ 
+     def stop(self) -> None:
++        self.admission_open = False
+         self.stop_event.set()
+         if self.server is not None:
+             self.server.close()
+diff --git a/tools/tests/test_adb_smart_socket_relay_selected.py b/tools/tests/test_adb_smart_socket_relay_selected.py
+index 0ca9bd5f3ea32e7fa1574544326ac9e4bed467ab..794ad67ec92f95f1bcb37f10d5a7f05e0e51ecec 100644
+--- a/tools/tests/test_adb_smart_socket_relay_selected.py
++++ b/tools/tests/test_adb_smart_socket_relay_selected.py
+@@ -564,6 +564,20 @@ class ReleaseRelayJournalFailureTest(unittest.IsolatedAsyncioTestCase):
+         self.assertFalse(self.relay.semaphore.locked())
+         self.assertFalse(self.relay.connections)
+ 
++    async def test_prepublication_fence_prevents_an_upstream_connection(self):
++        other = fault_release.ReleaseRelay(
++            "127.0.0.1", 0, "127.0.0.1", self.upstream.sockets[0].getsockname()[1],
++            fault_base.Limits(1, 4096, 16384, 1, 30, 0.2), RecordingFaultEvents(),
++        )
++        writer = mock.Mock()
++        writer.wait_closed = mock.AsyncMock()
++        with mock.patch.object(
++            fault_base.asyncio, "open_connection", new_callable=mock.AsyncMock
++        ) as upstream:
++            await other.accept(asyncio.StreamReader(), writer)
++        upstream.assert_not_called()
++        writer.close.assert_called()
++
+     async def test_stop_prevents_even_an_upstream_connection(self):
+         self.relay.stop()
+         writer = mock.Mock()
+@@ -596,20 +610,63 @@ class ReleaseRelayJournalFailureTest(unittest.IsolatedAsyncioTestCase):
+         self.assertFalse(self.relay.connections)
+         self.assertFalse(self.relay.semaphore.locked())
+ 
++    async def test_descriptor_visibility_follows_listener_start(self):
++        other = fault_release.ReleaseRelay(
++            "127.0.0.1", 0, "127.0.0.1", self.upstream.sockets[0].getsockname()[1],
++            fault_base.Limits(1, 4096, 16384, 1, 30, 0.2), RecordingFaultEvents(),
++        )
++        with tempfile.TemporaryDirectory(prefix="r5-relay-ready-") as directory:
++            root = Path(directory)
++            root.chmod(0o700)
++            descriptor = root / "descriptor.json"
++            original = fault_base.publish_private_json
++            observations = []
++
++            def publish(path, temporary):
++                observations.append(
++                    (other.server.is_serving(), path.exists(), other.admission_open)
++                )
++                return original(path, temporary)
++
++            try:
++                with mock.patch.object(fault_base, "publish_private_json", side_effect=publish):
++                    result = await other.start(descriptor)
++                self.assertEqual(observations, [(True, False, False)])
++                self.assertTrue(other.admission_open)
++                self.assertEqual(json.loads(descriptor.read_text()), result)
++                reader, writer = await asyncio.open_connection(
++                    result["listen_host"], result["listen_port"]
++                )
++                writer.close()
++                await writer.wait_closed()
++                del reader
++            finally:
++                if other.server is not None:
++                    other.server.close()
++                    await other.server.wait_closed()
++
+     async def test_release_descriptor_failure_closes_its_listener(self):
+         other = fault_release.ReleaseRelay(
+             "127.0.0.1", 0, "127.0.0.1", self.upstream.sockets[0].getsockname()[1],
+             fault_base.Limits(1, 4096, 16384, 1, 30, 0.2), RecordingFaultEvents(),
+         )
+-        try:
+-            with mock.patch.object(fault_base, "atomic_private_json", side_effect=OSError("injected publication")):
+-                with self.assertRaises(OSError):
+-                    await other.start(Path("/unused/fixture-descriptor.json"))
+-            self.assertFalse(other.server.is_serving(), "failed startup left a live listener")
+-        finally:
+-            if other.server is not None:
+-                other.server.close()
+-                await other.server.wait_closed()
++        with tempfile.TemporaryDirectory(prefix="r5-relay-publish-failure-") as directory:
++            root = Path(directory)
++            root.chmod(0o700)
++            descriptor = root / "descriptor.json"
++            try:
++                with mock.patch.object(
++                    fault_base, "publish_private_json", side_effect=OSError("injected publication")
++                ):
++                    with self.assertRaises(OSError):
++                        await other.start(descriptor)
++                self.assertFalse(other.server.is_serving(), "failed startup left a live listener")
++                self.assertFalse(descriptor.exists())
++                self.assertEqual(list(root.iterdir()), [])
++            finally:
++                if other.server is not None:
++                    other.server.close()
++                    await other.server.wait_closed()
+ 
+ 
+ class SelectedRelayContractTest(unittest.TestCase):
