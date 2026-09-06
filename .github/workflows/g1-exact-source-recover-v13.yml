@@ -1,0 +1,161 @@
+name: G1 exact-source pending-run recovery v13
+
+on:
+  push:
+    branches: [ops/g1-exact-source-recover-v13-20260906]
+    paths: [.github/workflows/g1-exact-source-recover-v13.yml]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: g1-exact-source-recover-v13
+  cancel-in-progress: false
+
+env:
+  REPOSITORY: TrillionniumFoundation/trillionnium-os
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  TARGET_HEAD: 4b9af095813df1a83b65d029d061d889b882d5e7
+  TARGET_RUN: "34010194778"
+  TARGET_WORKFLOW: "346486859"
+  PRIOR_ATTEMPT: "2"
+
+jobs:
+  recover:
+    name: Cancel only the bound pending instance and rerun the same canonical workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Verify fixed identities, cancel the pending instance, and request one rerun
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          api="https://api.github.com/repos/${REPOSITORY}"
+          headers=(
+            -H "Authorization: Bearer ${GH_TOKEN}"
+            -H 'Accept: application/vnd.github+json'
+            -H 'X-GitHub-Api-Version: 2022-11-28'
+          )
+          get() {
+            /usr/bin/curl --fail-with-body --silent --show-error --proto '=https' --tlsv1.2 \
+              "${headers[@]}" "$1"
+          }
+          post_code() {
+            /usr/bin/curl --silent --show-error --proto '=https' --tlsv1.2 \
+              "${headers[@]}" --request POST --output "$2" --write-out '%{http_code}' "$1"
+          }
+
+          get "${api}/git/ref/heads/${TARGET_BRANCH}" > "$RUNNER_TEMP/ref.json"
+          get "${api}/actions/runs/${TARGET_RUN}" > "$RUNNER_TEMP/before.json"
+          /usr/bin/python3 -I - "$RUNNER_TEMP/ref.json" "$RUNNER_TEMP/before.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          ref = json.loads(Path(sys.argv[1]).read_text())
+          run = json.loads(Path(sys.argv[2]).read_text())
+          assert ref["object"]["sha"] == os.environ["TARGET_HEAD"]
+          assert str(run["id"]) == os.environ["TARGET_RUN"]
+          assert str(run["workflow_id"]) == os.environ["TARGET_WORKFLOW"]
+          assert run["head_sha"] == os.environ["TARGET_HEAD"]
+          assert run["head_branch"] == os.environ["TARGET_BRANCH"]
+          assert run["event"] == "pull_request"
+          assert str(run["run_attempt"]) == os.environ["PRIOR_ATTEMPT"]
+          assert run["status"] == "pending"
+          assert run["conclusion"] is None
+          PY
+
+          code="$(post_code "${api}/actions/runs/${TARGET_RUN}/cancel" "$RUNNER_TEMP/cancel.json")"
+          test "$code" = 202
+
+          terminal=false
+          for _ in $(seq 1 60); do
+            get "${api}/actions/runs/${TARGET_RUN}" > "$RUNNER_TEMP/cancel-state.json"
+            state="$(/usr/bin/python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["status"])' "$RUNNER_TEMP/cancel-state.json")"
+            if test "$state" = completed; then
+              terminal=true
+              break
+            fi
+            sleep 2
+          done
+          if test "$terminal" != true; then
+            code="$(post_code "${api}/actions/runs/${TARGET_RUN}/force-cancel" "$RUNNER_TEMP/force-cancel.json")"
+            test "$code" = 202
+            for _ in $(seq 1 30); do
+              get "${api}/actions/runs/${TARGET_RUN}" > "$RUNNER_TEMP/cancel-state.json"
+              state="$(/usr/bin/python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["status"])' "$RUNNER_TEMP/cancel-state.json")"
+              test "$state" = completed && { terminal=true; break; }
+              sleep 2
+            done
+          fi
+          test "$terminal" = true
+          /usr/bin/python3 -I - "$RUNNER_TEMP/cancel-state.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          run = json.loads(Path(sys.argv[1]).read_text())
+          assert run["head_sha"] == os.environ["TARGET_HEAD"]
+          assert run["status"] == "completed"
+          assert run["conclusion"] == "cancelled"
+          PY
+
+          code="$(post_code "${api}/actions/runs/${TARGET_RUN}/rerun" "$RUNNER_TEMP/rerun.json")"
+          test "$code" = 201
+
+          allocated=false
+          for _ in $(seq 1 60); do
+            get "${api}/actions/runs/${TARGET_RUN}" > "$RUNNER_TEMP/after.json"
+            get "${api}/actions/runs/${TARGET_RUN}/jobs?filter=latest&per_page=100" > "$RUNNER_TEMP/jobs.json"
+            if /usr/bin/python3 -I - "$RUNNER_TEMP/after.json" "$RUNNER_TEMP/jobs.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          run = json.loads(Path(sys.argv[1]).read_text())
+          jobs = json.loads(Path(sys.argv[2]).read_text())
+          assert run["head_sha"] == os.environ["TARGET_HEAD"]
+          assert str(run["workflow_id"]) == os.environ["TARGET_WORKFLOW"]
+          assert int(run["run_attempt"]) > int(os.environ["PRIOR_ATTEMPT"])
+          if int(jobs.get("total_count", 0)) < 1:
+              raise SystemExit(1)
+          PY
+            then
+              allocated=true
+              break
+            fi
+            sleep 2
+          done
+          test "$allocated" = true
+          /usr/bin/python3 -I - "$RUNNER_TEMP/before.json" "$RUNNER_TEMP/cancel-state.json" "$RUNNER_TEMP/after.json" "$RUNNER_TEMP/jobs.json" > "$RUNNER_TEMP/recovery.json" <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          before, cancelled, after, jobs = [json.loads(Path(p).read_text()) for p in sys.argv[1:]]
+          print(json.dumps({
+              "schema": "org.trillionnium.g1-exact-source-recovery.v1",
+              "repository": os.environ["REPOSITORY"],
+              "target_head": os.environ["TARGET_HEAD"],
+              "workflow_id": int(os.environ["TARGET_WORKFLOW"]),
+              "run_id": int(os.environ["TARGET_RUN"]),
+              "before_attempt": before["run_attempt"],
+              "before_status": before["status"],
+              "cancelled_status": cancelled["status"],
+              "cancelled_conclusion": cancelled["conclusion"],
+              "new_attempt": after["run_attempt"],
+              "new_status": after["status"],
+              "new_job_count": jobs["total_count"],
+              "candidate_checkout_performed": False,
+              "candidate_code_executed": False,
+              "product_ref_updated": False,
+              "gap_promotion_authorized": False,
+              "administrator_bypass": False,
+              "public_release": False,
+          }, sort_keys=True))
+          PY
+          cat "$RUNNER_TEMP/recovery.json"
+
+      - name: Retain bounded recovery receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-exact-source-recovery-v13
+          path: ${{ runner.temp }}/recovery.json
+          if-no-files-found: error
+          retention-days: 7
