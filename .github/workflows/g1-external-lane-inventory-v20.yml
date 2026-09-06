@@ -1,0 +1,121 @@
+name: G1 read-only external lane inventory v20
+
+on:
+  push:
+    branches: [ops/g1-exact-source-recover-v13-20260906]
+    paths: [.github/workflows/g1-external-lane-inventory-v20.yml]
+
+permissions:
+  actions: read
+  contents: read
+  deployments: read
+
+jobs:
+  inventory:
+    name: Observe repository-visible runners and environments without allocation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Query metadata only and retain explicit access failures
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: TrillionniumFoundation/trillionnium-os
+        run: |
+          set -euo pipefail
+          umask 077
+          headers=(
+            -H "Authorization: Bearer ${GH_TOKEN}"
+            -H 'Accept: application/vnd.github+json'
+            -H 'X-GitHub-Api-Version: 2022-11-28'
+          )
+          fetch() {
+            local url="$1" output="$2" status="$3"
+            code="$(/usr/bin/curl --silent --show-error --proto '=https' --tlsv1.2 \
+              "${headers[@]}" --output "$output" --write-out '%{http_code}' "$url")"
+            printf '%s' "$code" > "$status"
+          }
+          api="https://api.github.com/repos/${REPOSITORY}"
+          fetch "${api}/actions/runners?per_page=100" "$RUNNER_TEMP/runners.json" "$RUNNER_TEMP/runners.status"
+          fetch "${api}/environments?per_page=100" "$RUNNER_TEMP/environments.json" "$RUNNER_TEMP/environments.status"
+          /usr/bin/python3 -I - \
+            "$RUNNER_TEMP/runners.status" "$RUNNER_TEMP/runners.json" \
+            "$RUNNER_TEMP/environments.status" "$RUNNER_TEMP/environments.json" \
+            > "$RUNNER_TEMP/inventory.json" <<'PY'
+          import json, sys
+          from pathlib import Path
+
+          def load(status_path, body_path):
+              code = int(Path(status_path).read_text())
+              raw = Path(body_path).read_text(encoding="utf-8", errors="replace")
+              try:
+                  body = json.loads(raw)
+              except ValueError:
+                  body = {"unparsed_body_prefix": raw[:512]}
+              return code, body
+
+          runner_code, runner_body = load(sys.argv[1], sys.argv[2])
+          environment_code, environment_body = load(sys.argv[3], sys.argv[4])
+          runners = []
+          if runner_code == 200 and isinstance(runner_body, dict):
+              for item in runner_body.get("runners", []):
+                  if not isinstance(item, dict):
+                      continue
+                  runners.append({
+                      "id": item.get("id"),
+                      "name": item.get("name"),
+                      "os": item.get("os"),
+                      "status": item.get("status"),
+                      "busy": item.get("busy"),
+                      "labels": sorted(
+                          label.get("name")
+                          for label in item.get("labels", [])
+                          if isinstance(label, dict) and isinstance(label.get("name"), str)
+                      ),
+                  })
+          environments = []
+          if environment_code == 200 and isinstance(environment_body, dict):
+              for item in environment_body.get("environments", []):
+                  if isinstance(item, dict):
+                      environments.append({
+                          "id": item.get("id"),
+                          "name": item.get("name"),
+                          "protection_rules_count": len(item.get("protection_rules", []))
+                              if isinstance(item.get("protection_rules"), list) else None,
+                      })
+          required_labels = [f"owner-open-r5-l{level}" for level in range(2, 7)]
+          online_labels = sorted({
+              label
+              for runner in runners
+              if runner.get("status") == "online"
+              for label in runner.get("labels", [])
+          })
+          print(json.dumps({
+              "schema": "org.trillionnium.g1-external-lane-inventory.v1",
+              "runners_http_status": runner_code,
+              "environments_http_status": environment_code,
+              "runners": runners,
+              "environments": environments,
+              "required_labels": required_labels,
+              "required_labels_online": {
+                  label: label in online_labels for label in required_labels
+              },
+              "metadata_only": True,
+              "candidate_checkout_performed": False,
+              "candidate_code_executed": False,
+              "target_allocated": False,
+              "capture_scheduled": False,
+              "authorization_consumed": False,
+              "gap_promotion_authorized": False,
+              "public_release": False,
+          }, sort_keys=True))
+          PY
+          cat "$RUNNER_TEMP/inventory.json"
+
+      - name: Retain bounded metadata receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-external-lane-inventory-v20
+          path: ${{ runner.temp }}/inventory.json
+          if-no-files-found: error
+          retention-days: 7
