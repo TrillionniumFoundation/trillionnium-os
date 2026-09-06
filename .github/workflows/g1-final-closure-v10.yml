@@ -1,0 +1,302 @@
+name: G1 final closure v10
+
+"on":
+  push:
+    branches:
+      - ops/g1-final-closure-v10-20260906
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: g1-final-closure-v10
+  cancel-in-progress: false
+
+env:
+  TARGET_BRANCH: codex/g1-all-gap-closure-20260904
+  BASELINE_HEAD: 9420aac7ec2a8c88416f00115031885f72227ccc
+  PR_NUMBER: "41"
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  validate:
+    name: Read-only exact-tree qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    outputs:
+      target_head: ${{ steps.identity.outputs.target_head }}
+      result_tree: ${{ steps.identity.outputs.result_tree }}
+      patch_sha256: ${{ steps.identity.outputs.patch_sha256 }}
+      paths_sha256: ${{ steps.identity.outputs.paths_sha256 }}
+    steps:
+      - name: Checkout isolated v10 control branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install fixed source-test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up fixed Rust 1.93.0 toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.93.0 --profile minimal --component rustfmt --component clippy --no-self-update
+          rustup default 1.93.0
+          rustc --version | grep -F 'rustc 1.93.0 '
+          cargo --version | grep -F 'cargo 1.93.0 '
+
+      - name: Construct canonical repair in isolated target worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          target_head="$(git --no-replace-objects rev-parse "refs/remotes/origin/${TARGET_BRANCH}^{commit}")"
+          git --no-replace-objects merge-base --is-ancestor "$BASELINE_HEAD" "$target_head"
+          mapfile -t prior_paths < <(git --no-replace-objects diff --name-only "$BASELINE_HEAD..$target_head")
+          for path in "${prior_paths[@]}"; do
+            case "$path" in
+              __schema_probe__|tools/owner-open/build_owner_open_rootfs_image_release_v2.py|tools/owner-open/jsonl_provider_runtime.py) ;;
+              *) echo "unexpected target drift since baseline: $path" >&2; exit 1 ;;
+            esac
+          done
+          work="${RUNNER_TEMP}/g1-v10-target"
+          test ! -e "$work"
+          git worktree add --detach "$work" "$target_head"
+          printf '%s\n' "$target_head" > "${RUNNER_TEMP}/g1-v10-target-head"
+          python3 "$GITHUB_WORKSPACE/.g1/g1_v10_apply.py" --worktree "$work"
+          cd "$work"
+          git diff --check
+          mapfile -t paths < <(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //')
+          for path in "${paths[@]}"; do
+            case "$path" in
+              __schema_probe__|tools/owner-open/build_owner_open_rootfs_image_release_v2.py|tools/owner-open/jsonl_provider_runtime.py) ;;
+              *) echo "constructor changed unexpected path: $path" >&2; exit 1 ;;
+            esac
+          done
+
+      - name: Run exact regressions and complete affected lifecycle suites
+        working-directory: ${{ runner.temp }}/g1-v10-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest tools.tests.test_build_owner_open_rootfs_image_release_v2.RootfsCommandBoundaryTest.test_timeout_after_descendant_readiness_retires_group -v
+          python3 -m unittest tools.tests.test_jsonl_provider_runtime.ProviderRetirementTest.test_handler_timeout_fences_its_response -v
+          python3 -m unittest tools.tests.test_build_owner_open_rootfs_image_release_v2.RootfsCommandBoundaryTest -v
+          python3 -m unittest tools.tests.test_jsonl_provider_runtime.ProviderRetirementTest -v
+
+      - name: Run generated-document and complete Python qualification
+        working-directory: ${{ runner.temp }}/g1-v10-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+
+      - name: Run both Rust workspace qualification sets
+        working-directory: ${{ runner.temp }}/g1-v10-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+
+      - name: Verify source-only performance artifact
+        working-directory: ${{ runner.temp }}/g1-v10-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/perf/run_global_baseline.py --output "${RUNNER_TEMP}/g1-v10-baseline.json" --repetitions 1
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          artifact = json.loads((Path(os.environ['RUNNER_TEMP']) / 'g1-v10-baseline.json').read_text())
+          clone = dict(artifact)
+          clone['artifact_digest'] = ''
+          encoded = json.dumps(clone, sort_keys=True, separators=(',', ':'), ensure_ascii=True).encode()
+          assert artifact['artifact_digest'] == hashlib.sha256(encoded).hexdigest()
+          assert artifact['qualification'] == 'SOURCE_EVIDENCE_ONLY'
+          assert artifact['gate']['passed'] is False
+          PY
+
+      - name: Bind exact post-test patch, path set and result tree
+        id: identity
+        working-directory: ${{ runner.temp }}/g1-v10-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_head="$(cat "${RUNNER_TEMP}/g1-v10-target-head")"
+          git diff --check
+          mapfile -t paths < <(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //')
+          for path in "${paths[@]}"; do
+            case "$path" in
+              __schema_probe__|tools/owner-open/build_owner_open_rootfs_image_release_v2.py|tools/owner-open/jsonl_provider_runtime.py) ;;
+              *) echo "tests changed unexpected path: $path" >&2; exit 1 ;;
+            esac
+          done
+          git add -A -- .
+          test -z "$(git diff --name-only)"
+          git diff --cached --binary --full-index > "${RUNNER_TEMP}/g1-v10.patch"
+          git diff --cached --name-only > "${RUNNER_TEMP}/g1-v10.paths"
+          result_tree="$(git --no-replace-objects write-tree)"
+          patch_sha256="$(sha256sum "${RUNNER_TEMP}/g1-v10.patch" | awk '{print $1}')"
+          paths_sha256="$(sha256sum "${RUNNER_TEMP}/g1-v10.paths" | awk '{print $1}')"
+          {
+            echo "target_head=$target_head"
+            echo "result_tree=$result_tree"
+            echo "patch_sha256=$patch_sha256"
+            echo "paths_sha256=$paths_sha256"
+          } >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Exact reconstruction and lease-protected publish
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      result_commit: ${{ steps.reconstruct.outputs.result_commit }}
+    steps:
+      - name: Checkout isolated v10 control branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Reconstruct tested bytes without running target programs
+        id: reconstruct
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ needs.validate.outputs.target_head }}
+          EXPECTED_TREE: ${{ needs.validate.outputs.result_tree }}
+          EXPECTED_PATCH: ${{ needs.validate.outputs.patch_sha256 }}
+          EXPECTED_PATHS: ${{ needs.validate.outputs.paths_sha256 }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/heads/${TARGET_BRANCH}:refs/remotes/origin/${TARGET_BRANCH}"
+          current="$(git --no-replace-objects rev-parse "refs/remotes/origin/${TARGET_BRANCH}^{commit}")"
+          test "$current" = "$EXPECTED_HEAD"
+          work="${RUNNER_TEMP}/g1-v10-publish"
+          test ! -e "$work"
+          git worktree add --detach "$work" "$current"
+          python3 "$GITHUB_WORKSPACE/.g1/g1_v10_apply.py" --worktree "$work"
+          cd "$work"
+          git diff --check
+          mapfile -t paths < <(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //; s/.* -> //')
+          for path in "${paths[@]}"; do
+            case "$path" in
+              __schema_probe__|tools/owner-open/build_owner_open_rootfs_image_release_v2.py|tools/owner-open/jsonl_provider_runtime.py) ;;
+              *) echo "publisher changed unexpected path: $path" >&2; exit 1 ;;
+            esac
+          done
+          git add -A -- .
+          test -z "$(git diff --name-only)"
+          git diff --cached --binary --full-index > "${RUNNER_TEMP}/g1-v10-publish.patch"
+          git diff --cached --name-only > "${RUNNER_TEMP}/g1-v10-publish.paths"
+          test "$(sha256sum "${RUNNER_TEMP}/g1-v10-publish.patch" | awk '{print $1}')" = "$EXPECTED_PATCH"
+          test "$(sha256sum "${RUNNER_TEMP}/g1-v10-publish.paths" | awk '{print $1}')" = "$EXPECTED_PATHS"
+          test "$(git --no-replace-objects write-tree)" = "$EXPECTED_TREE"
+          if git diff --cached --quiet; then
+            echo "result_commit=$current" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name 'OpenAI Codex'
+          git config user.email 'noreply@openai.com'
+          git commit \
+            -m 'fix(runtime): isolate execution and retirement clocks' \
+            -m 'Bind process-group retirement to independent monotonic callables so deterministic execution-time jumps cannot expire cleanup confirmation. Cleanup remains fail-closed. Full Python and Rust source qualification passed in the read-only validation job; no target, device, fault, signing, promotion, or release claim is made.' \
+            -m 'Signed-off-by: OpenAI Codex <noreply@openai.com>'
+          result="$(git --no-replace-objects rev-parse HEAD)"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$current"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          echo "result_commit=$result" >> "$GITHUB_OUTPUT"
+
+      - name: Push once with exact branch lease
+        working-directory: ${{ runner.temp }}/g1-v10-publish
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ needs.validate.outputs.target_head }}
+          RESULT_COMMIT: ${{ steps.reconstruct.outputs.result_commit }}
+          G1_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$RESULT_COMMIT" == "$EXPECTED_HEAD" ]]; then
+            echo 'canonical tree already published'
+            exit 0
+          fi
+          test "$(git ls-remote origin "refs/heads/${TARGET_BRANCH}" | awk 'NR==1 {print $1}')" = "$EXPECTED_HEAD"
+          auth="$(printf 'x-access-token:%s' "$G1_TOKEN" | base64 -w0)"
+          git -c "http.extraheader=AUTHORIZATION: basic ${auth}" push \
+            "--force-with-lease=refs/heads/${TARGET_BRANCH}:${EXPECTED_HEAD}" \
+            origin "${RESULT_COMMIT}:refs/heads/${TARGET_BRANCH}"
+          unset G1_TOKEN auth
+
+  govern:
+    name: Hosted exact-head gate, independent review and ordinary merge
+    needs: publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      actions: write
+      checks: read
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout isolated v10 control branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch exact result commit for CODEOWNERS inspection
+        shell: bash
+        env:
+          RESULT_COMMIT: ${{ needs.publish.outputs.result_commit }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+${RESULT_COMMIT}:refs/g1/v10-target"
+          test "$(git --no-replace-objects rev-parse refs/g1/v10-target^{commit})" = "$RESULT_COMMIT"
+
+      - name: Run fail-closed governance controller
+        shell: bash
+        env:
+          G1_TOKEN: ${{ github.token }}
+          RESULT_COMMIT: ${{ needs.publish.outputs.result_commit }}
+        run: |
+          set -euo pipefail
+          python3 .g1/g1_v10_govern.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --target-branch "$TARGET_BRANCH" \
+            --target-sha "$RESULT_COMMIT" \
+            --pr-number "$PR_NUMBER" \
+            --token-env G1_TOKEN \
+            --output "${RUNNER_TEMP}/g1-v10-governance.json"
+
+      - name: Upload governance terminal state
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-v10-governance-${{ needs.publish.outputs.result_commit }}
+          path: ${{ runner.temp }}/g1-v10-governance.json
+          if-no-files-found: error
+          retention-days: 30
