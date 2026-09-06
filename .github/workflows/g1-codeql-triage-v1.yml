@@ -1,0 +1,59 @@
+name: G1 CodeQL annotation triage v1
+
+on:
+  push:
+    branches:
+      - ops/g1-adb-race-v11-20260906
+    paths:
+      - .github/workflows/g1-codeql-triage-v1.yml
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  annotations:
+    name: Read current PR CodeQL annotations without candidate checkout
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      checks: read
+      contents: read
+    env:
+      CHECK_RUN_ID: "101417158260"
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+    steps:
+      - name: Fetch and print bounded annotation fields
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          umask 077
+          url="https://api.github.com/repos/${REPOSITORY}/check-runs/${CHECK_RUN_ID}/annotations?per_page=100"
+          curl --fail-with-body --silent --show-error \
+            --proto '=https' --tlsv1.2 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "$url" > "$RUNNER_TEMP/annotations.json"
+          python3 -I - "$RUNNER_TEMP/annotations.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert isinstance(data, list)
+          assert 0 < len(data) <= 100
+          compact = []
+          for item in data:
+              compact.append({
+                  "path": item.get("path"),
+                  "start_line": item.get("start_line"),
+                  "end_line": item.get("end_line"),
+                  "annotation_level": item.get("annotation_level"),
+                  "title": item.get("title"),
+                  "message": item.get("message"),
+                  "raw_details": item.get("raw_details"),
+              })
+          print(json.dumps(compact, ensure_ascii=False, indent=2, sort_keys=True))
+          PY
