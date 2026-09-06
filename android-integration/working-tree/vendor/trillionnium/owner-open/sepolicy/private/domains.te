@@ -1,0 +1,109 @@
+# Android-native owner-open lifecycle rules. These rules provide only process,
+# file, local transport, mount and emergency-stop mechanics. They do not inspect
+# commands, assign risk, require leases, inject ADB routing or authorize retries.
+
+# Bootstrap verifies the immutable payload, then (once the platform-owned
+# mount handoff is qualified) chroots and supervises Root Linux children in the
+# same SELinux domain.  The source-only profile deliberately leaves the mount
+# lifecycle in a platform-policy hold; no vendor fragment may bypass AOSP's
+# filesystem/mount neverallows to make the current native mount code appear
+# buildable.
+allow trillionnium_owner_open_bootstrap self:capability {
+    kill
+    sys_admin
+    sys_chroot
+};
+allow trillionnium_owner_open_bootstrap self:process {
+    fork
+    getpgid
+    getsched
+    setpgid
+    setsched
+    signal
+    sigkill
+    sigstop
+};
+allow trillionnium_owner_open_bootstrap self:unix_stream_socket create_stream_socket_perms;
+allow trillionnium_owner_open_bootstrap self:tcp_socket create_stream_socket_perms;
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:file {
+    execute_no_trans
+    getattr
+    map
+    open
+    read
+};
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:dir {
+    getattr
+    open
+    read
+    search
+};
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:dir create_dir_perms;
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:file create_file_perms;
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:sock_file create_file_perms;
+# PLATFORM_POLICY_HOLD: AOSP's domain.te neverallows intentionally prevent a
+# vendor/private domain from mounting, remounting or relabeling a generic
+# filesystem.  Keep these operations absent rather than adding a local
+# exception.  The platform/init integration must mount the verified squashfs,
+# apply the contextmount label, bind the writable state and own teardown.  The
+# native BindState()/mount path consequently remains source-only and is
+# fail-closed until that reviewed handoff exists.
+allow trillionnium_owner_open_bootstrap loop_control_device:chr_file rw_file_perms;
+allow trillionnium_owner_open_bootstrap loop_device:blk_file rw_file_perms;
+allowxperm trillionnium_owner_open_bootstrap loop_device:blk_file ioctl {
+    LOOP_CLR_FD
+    LOOP_CTL_GET_FREE
+    LOOP_SET_FD
+    LOOP_SET_STATUS64
+};
+allow trillionnium_owner_open_bootstrap block_device:dir search;
+allow trillionnium_owner_open_bootstrap device:dir search;
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:dir mounton;
+allow trillionnium_owner_open_bootstrap proc:filesystem getattr;
+allow trillionnium_owner_open_bootstrap sysfs:filesystem getattr;
+net_domain(trillionnium_owner_open_bootstrap)
+set_prop(trillionnium_owner_open_bootstrap, trillionnium_owner_open_prop)
+get_prop(trillionnium_owner_open_bootstrap, trillionnium_owner_open_prop)
+
+# The ingress terminates Android peer identity and the private broker token. It
+# never exposes the token to the application and forwards only bounded bytes.
+allow trillionnium_owner_open_ingress self:unix_stream_socket create_stream_socket_perms;
+allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file:dir search;
+allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file:file r_file_perms;
+allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file:sock_file write;
+allow trillionnium_owner_open_ingress trillionnium_owner_open_bootstrap:unix_stream_socket connectto;
+get_prop(trillionnium_owner_open_ingress, trillionnium_owner_open_prop)
+
+# The unprivileged owner client can connect only to the dedicated Android
+# ingress domain; it cannot read Root Linux broker state or credentials.
+allow trillionnium_owner_open_client self:unix_stream_socket create_stream_socket_perms;
+allow trillionnium_owner_open_client trillionnium_owner_open_ingress:unix_stream_socket connectto;
+
+# Emergency stop is independent of Codex/provider liveness. It creates the
+# persistent inhibit marker, clears readiness and terminates the bootstrap
+# process group.
+# State files are owned and mode-controlled by the platform handoff, so the
+# emergency stopper needs only signal authority; never grant the generic
+# dac_override capability to a vendor/private domain.
+allow trillionnium_owner_open_emergency_stop self:capability { kill };
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:dir {
+    add_name
+    getattr
+    open
+    read
+    search
+    write
+};
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:file {
+    create
+    getattr
+    open
+    read
+    write
+};
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_bootstrap:process {
+    signal
+    sigkill
+};
+set_prop(trillionnium_owner_open_emergency_stop, trillionnium_owner_open_prop)
+get_prop(trillionnium_owner_open_emergency_stop, trillionnium_owner_open_prop)

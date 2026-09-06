@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Trillionnium Owner Open</string>
+    <string name="prompt_hint">Enter one owner-open turn prompt</string>
+    <string name="send">Send</string>
+    <string name="cancel">Cancel</string>
+    <string name="inspect">Inspect</string>
+    <string name="reconnect">Reconnect</string>
+</resources>

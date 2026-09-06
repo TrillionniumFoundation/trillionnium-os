@@ -1,6 +1,17 @@
 [workspace]
 members = [
+  "apps/trillionnium-owner-open-host",
   "apps/trillionniumd",
+  "crates/trillionnium-owner-open-call-registry",
+  "crates/trillionnium-owner-open-event-store",
+  "crates/trillionnium-owner-open-job-registry",
+  "crates/trillionnium-owner-open-job-runtime",
+  "crates/trillionnium-owner-open-provider-jsonl",
+  "crates/trillionnium-owner-open-stream-window",
+  "crates/trillionnium-owner-open-tool-bridge",
+  "crates/trillionnium-owner-open-turn-loop",
+  "crates/trillionnium-owner-open-types",
+  "crates/trillionnium-owner-open-runtime",
   "crates/trillionnium-os-types",
   "crates/trillionnium-agent-api-uds",
   "crates/trillionnium-task-registry",
@@ -14,13 +25,21 @@ members = [
   "apps/trillionnium-agent-privilege-broker",
   "apps/trillionnium-agent-stdio-proxy",
 ]
-# Keep an unqualified `cargo build`/`cargo test` on the current runtime
-# closure. Remaining libraries are pulled in through these product roots.
+# Keep unqualified cargo build/test on the complete isolated owner-open source
+# closure. Legacy plan/Authority/broker packages remain explicit workspace
+# targets and cannot enter this graph through feature unification.
 default-members = [
-  "apps/trillionniumd",
-  "apps/trillionnium-agent-privilege-broker",
-  "apps/trillionnium-agent-stdio-proxy",
-  "crates/trillionnium-agent-direct-tools",
+  "apps/trillionnium-owner-open-host",
+  "crates/trillionnium-owner-open-call-registry",
+  "crates/trillionnium-owner-open-event-store",
+  "crates/trillionnium-owner-open-job-registry",
+  "crates/trillionnium-owner-open-job-runtime",
+  "crates/trillionnium-owner-open-provider-jsonl",
+  "crates/trillionnium-owner-open-stream-window",
+  "crates/trillionnium-owner-open-tool-bridge",
+  "crates/trillionnium-owner-open-turn-loop",
+  "crates/trillionnium-owner-open-types",
+  "crates/trillionnium-owner-open-runtime",
 ]
 resolver = "3"
 
@@ -32,6 +51,16 @@ authors = ["Qianqi + Trillionnium OS contributors"]
 rust-version = "1.93"
 
 [workspace.dependencies]
+trillionnium-owner-open-call-registry = { path = "crates/trillionnium-owner-open-call-registry" }
+trillionnium-owner-open-event-store = { path = "crates/trillionnium-owner-open-event-store" }
+trillionnium-owner-open-job-registry = { path = "crates/trillionnium-owner-open-job-registry" }
+trillionnium-owner-open-job-runtime = { path = "crates/trillionnium-owner-open-job-runtime" }
+trillionnium-owner-open-provider-jsonl = { path = "crates/trillionnium-owner-open-provider-jsonl" }
+trillionnium-owner-open-stream-window = { path = "crates/trillionnium-owner-open-stream-window" }
+trillionnium-owner-open-tool-bridge = { path = "crates/trillionnium-owner-open-tool-bridge" }
+trillionnium-owner-open-turn-loop = { path = "crates/trillionnium-owner-open-turn-loop" }
+trillionnium-owner-open-types = { path = "crates/trillionnium-owner-open-types" }
+trillionnium-owner-open-runtime = { path = "crates/trillionnium-owner-open-runtime" }
 trillionnium-os-types = { path = "crates/trillionnium-os-types" }
 trillionnium-agent-api-uds = { path = "crates/trillionnium-agent-api-uds" }
 trillionnium-task-registry = { path = "crates/trillionnium-task-registry" }
@@ -53,6 +82,7 @@ rustix = { version = "1", features = ["thread"] }
 schemars = { version = "0.8", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+serde_jcs = "0.2"
 sha2 = "0.10"
 thiserror = "2"
 tempfile = "3"

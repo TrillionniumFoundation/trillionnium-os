@@ -1,4 +1,5 @@
 /target/
+/planned/target/
 /foundations/trillionnium-typed-exec-adb-broker/target/
 __pycache__/
 *.py[cod]

@@ -1,0 +1,116 @@
+name: G1 repository topology and exact-subject closure
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "codex/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: g1-repository-closure-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+  EVENT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  repository-closure:
+    name: L1 real workspace, workflow and PR-subject closure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_HEAD_SHA }}
+          persist-credentials: false
+      - name: Assert exact clean checkout
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test -n "$(git --no-replace-objects rev-parse HEAD^{tree})"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+      - name: Verify real repository topology and permanent workflow boundaries
+        run: |
+          set -euo pipefail
+          install -d -m 0700 "${RUNNER_TEMP}/g1-repository-closure"
+          python3 -m py_compile \
+            tools/verify_g1_repository_closure.py \
+            tools/verify_g1_pr_subject.py \
+            tools/verify_g1_review_index.py \
+            tools/tests/test_verify_g1_repository_closure.py \
+            tools/tests/test_verify_g1_review_index.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_module_documentation.py
+          python3 tools/verify_g1_repository_closure.py --json \
+            > "${RUNNER_TEMP}/g1-repository-closure/repository-closure.json"
+          python3 -m unittest \
+            tools.tests.test_verify_g1_repository_closure \
+            tools.tests.test_verify_g1_review_index -v
+          python3 -m json.tool \
+            "${RUNNER_TEMP}/g1-repository-closure/repository-closure.json" >/dev/null
+      - name: Bind live PR API, event payload, checkout and PR prose
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 tools/verify_g1_pr_subject.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --pr-number "$EVENT_PR_NUMBER" \
+            --event-head "$SOURCE_HEAD_SHA" \
+            --event-base "$EVENT_BASE_SHA" \
+            --output "${RUNNER_TEMP}/g1-repository-closure/pr-subject.json"
+          python3 -m json.tool \
+            "${RUNNER_TEMP}/g1-repository-closure/pr-subject.json" >/dev/null
+      - name: Observe and verify the closed-world cumulative review index
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 tools/verify_g1_review_index.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --pr-number "$EVENT_PR_NUMBER" \
+            --base-commit "$EVENT_BASE_SHA" \
+            --head-commit "$SOURCE_HEAD_SHA" \
+            --observation-output "${RUNNER_TEMP}/g1-repository-closure/review-index-observation.json" \
+            --output "${RUNNER_TEMP}/g1-repository-closure/review-index-report.json"
+          python3 -m json.tool \
+            "${RUNNER_TEMP}/g1-repository-closure/review-index-report.json" >/dev/null
+      - name: Prove verification left the checkout unchanged
+        run: |
+          set -euo pipefail
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+      - name: Upload repository-controlled closure observations
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: g1-repository-closure-${{ env.SOURCE_HEAD_SHA }}
+          if-no-files-found: error
+          retention-days: 30
+          path: ${{ runner.temp }}/g1-repository-closure/

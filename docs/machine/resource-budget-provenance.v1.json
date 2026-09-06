@@ -1,0 +1,188 @@
+{
+  "schema": "org.trillionnium.resource-budget-provenance.v1",
+  "program_revision": "2026-08-31-g1",
+  "status": "PROVISIONAL_SOURCE_CEILINGS_UNMEASURED",
+  "activation_mode": "OBSERVE_ONLY",
+  "measured": false,
+  "catalog_fields": [
+    "resource_contract",
+    "slo"
+  ],
+  "workload_profiles": [
+    "WL-01",
+    "WL-02",
+    "WL-03",
+    "WL-04",
+    "WL-05",
+    "WL-06",
+    "WL-07",
+    "WL-08",
+    "WL-09",
+    "WL-10",
+    "WL-11",
+    "WL-12"
+  ],
+  "qualification_rule": "Measured status requires an immutable package binding exact source, target, environment, workload, raw samples, statistics, reviewer and evidence ID.",
+  "modules": [
+    {
+      "id": "MOD-PROTOCOL",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-BROKER",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-TRANSPORT",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-EXECUTION-CORE",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-PROVIDER",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-TURN-ENGINE",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-TOOL-RUNTIME",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-JOB-RUNTIME",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-EVENT-STORE",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-STREAM",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-GLOBAL-CONTROL",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-TELEMETRY",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-ROOTLINUX",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-ANDROID",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-ADB",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    },
+    {
+      "id": "MOD-EVIDENCE",
+      "classification": "ADMISSION_CEILING_AND_PROVISIONAL_OBJECTIVE",
+      "measured": false,
+      "sample_count": 0,
+      "evidence_id": null,
+      "measurement_environment": null,
+      "last_calibrated_at": null,
+      "activation": "OBSERVE_ONLY"
+    }
+  ]
+}

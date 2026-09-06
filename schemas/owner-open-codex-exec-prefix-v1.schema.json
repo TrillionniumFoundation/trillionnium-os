@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trillionnium.org/schemas/owner-open-codex-exec-prefix-v1.json",
+  "title": "Trillionnium owner-open Codex exec prefix",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "probe_report_sha256",
+    "executable_path",
+    "executable_sha256",
+    "config_generation",
+    "requested_access_policy",
+    "selected_access_policy",
+    "argv_prefix",
+    "prompt_delivery",
+    "capabilities",
+    "claims",
+    "claim_ceiling",
+    "plan_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "org.trillionnium.owner-open.codex-exec-prefix.v1"
+    },
+    "probe_report_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "executable_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16384
+    },
+    "executable_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "config_generation": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "requested_access_policy": {
+      "enum": [
+        "auto-owner-open",
+        "bypass-approvals-and-sandbox",
+        "danger-full-access"
+      ]
+    },
+    "selected_access_policy": {
+      "enum": [
+        "bypass-approvals-and-sandbox",
+        "danger-full-access"
+      ]
+    },
+    "argv_prefix": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 16,
+      "items": {
+        "type": "string",
+        "maxLength": 16384
+      },
+      "prefixItems": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "const": "exec"
+        },
+        {
+          "const": "--json"
+        }
+      ]
+    },
+    "prompt_delivery": {
+      "const": "unselected_requires_W1_2_adapter_test"
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exec_subcommand_observed",
+        "json_event_flag_observed",
+        "sandbox_long_flag_observed",
+        "sandbox_short_flag_observed",
+        "danger_full_access_value_observed",
+        "bypass_approvals_and_sandbox_flag_observed",
+        "model_flag_observed",
+        "config_override_flag_observed"
+      ],
+      "properties": {
+        "exec_subcommand_observed": {
+          "type": "boolean"
+        },
+        "json_event_flag_observed": {
+          "type": "boolean"
+        },
+        "sandbox_long_flag_observed": {
+          "type": "boolean"
+        },
+        "sandbox_short_flag_observed": {
+          "type": "boolean"
+        },
+        "danger_full_access_value_observed": {
+          "type": "boolean"
+        },
+        "bypass_approvals_and_sandbox_flag_observed": {
+          "type": "boolean"
+        },
+        "model_flag_observed": {
+          "type": "boolean"
+        },
+        "config_override_flag_observed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generated_only",
+        "codex_executed",
+        "credentials_opened",
+        "provider_contacted",
+        "model_invoked",
+        "json_transport_executed",
+        "owner_open_mode_executed",
+        "host_integrated",
+        "same_turn_tool_effect",
+        "release_evidence"
+      ],
+      "properties": {
+        "generated_only": {
+          "const": true
+        },
+        "codex_executed": {
+          "const": false
+        },
+        "credentials_opened": {
+          "const": false
+        },
+        "provider_contacted": {
+          "const": false
+        },
+        "model_invoked": {
+          "const": false
+        },
+        "json_transport_executed": {
+          "const": false
+        },
+        "owner_open_mode_executed": {
+          "const": false
+        },
+        "host_integrated": {
+          "const": false
+        },
+        "same_turn_tool_effect": {
+          "const": false
+        },
+        "release_evidence": {
+          "const": false
+        }
+      }
+    },
+    "claim_ceiling": {
+      "const": "EXEC_PREFIX_GENERATED_NOT_EXECUTED"
+    },
+    "plan_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

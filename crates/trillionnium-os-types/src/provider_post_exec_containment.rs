@@ -3028,7 +3028,8 @@ mod tests {
 
     #[test]
     fn codex_complete_evidence_chain_validates_structurally() {
-        for provider in [agent_descriptor_registry::CODEX.provider_id] {
+        {
+            let provider = agent_descriptor_registry::CODEX.provider_id;
             let fixture = Fixture::new(provider, provider);
             fixture.validate().unwrap();
             assert_eq!(
@@ -3067,7 +3068,8 @@ mod tests {
 
     #[test]
     fn validated_complete_chain_binding_is_stable_data_not_authority() {
-        for provider in [agent_descriptor_registry::CODEX.provider_id] {
+        {
+            let provider = agent_descriptor_registry::CODEX.provider_id;
             let fixture = Fixture::new(provider, "validated-chain-binding");
             let binding =
                 ValidatedProviderPostExecContainmentChainBinding::validate_complete_chain(
@@ -3114,7 +3116,8 @@ mod tests {
 
     #[test]
     fn authenticated_affine_carrier_covers_codex_without_releasing_custody() {
-        for provider in [agent_descriptor_registry::CODEX.provider_id] {
+        {
+            let provider = agent_descriptor_registry::CODEX.provider_id;
             let fixture = Fixture::new(provider, provider);
             let binding = fixture.authority_binding();
             let producer = TestAuthenticatedProducer::new(binding.clone());
@@ -3432,10 +3435,11 @@ mod tests {
 
     #[test]
     fn built_in_runtime_topologies_require_distinct_launcher_and_final_images() {
-        for (provider_id, seed) in [(
-            agent_descriptor_registry::CODEX.provider_id,
-            "codex-topology",
-        )] {
+        {
+            let (provider_id, seed) = (
+                agent_descriptor_registry::CODEX.provider_id,
+                "codex-topology",
+            );
             let fixture = Fixture::new(provider_id, seed);
             assert_eq!(
                 fixture.policy.runtime_exec_topology,
@@ -3783,7 +3787,8 @@ mod tests {
             );
         }
 
-        for provider_id in [agent_descriptor_registry::CODEX.provider_id] {
+        {
+            let provider_id = agent_descriptor_registry::CODEX.provider_id;
             let mut aliased_two_image_event = Fixture::new(provider_id, "two-image-event-alias");
             aliased_two_image_event
                 .final_evidence

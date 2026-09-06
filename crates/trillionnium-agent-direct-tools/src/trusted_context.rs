@@ -280,6 +280,7 @@ pub struct TrustedAdapterContext {
     agent_id: &'static str,
     delivery_provider_attempt_id: String,
     binding_sha256: String,
+    #[cfg(feature = "device-launch-package-conformance")]
     binding_inbox_bytes_sha256: String,
     binding: DirectOperationBinding,
     journal_path: PathBuf,
@@ -912,6 +913,7 @@ impl TrustedAdapterContext {
             ));
         }
         let journal_path = specification.state_directory.join(JOURNAL_FILE_NAME);
+        #[cfg(feature = "device-launch-package-conformance")]
         let binding_inbox_bytes_sha256 = trillionnium_os_types::sha256_bytes(&inbox_value);
         Ok(Self {
             adapter: specification.adapter,
@@ -923,6 +925,7 @@ impl TrustedAdapterContext {
                 .delivery_provider_attempt_id
                 .clone(),
             binding_sha256: envelope.binding_sha256,
+            #[cfg(feature = "device-launch-package-conformance")]
             binding_inbox_bytes_sha256,
             binding: envelope.binding,
             journal_path,
@@ -2443,7 +2446,7 @@ mod tests {
             DirectOperationAdapterTerminalStateV1::Ackable {
                 journal_evidence_snapshot,
             } => journal_evidence_snapshot,
-            other => panic!("expected ackable replay disposition, got {other:?}"),
+            _ => panic!("expected ackable replay disposition"),
         };
         let inbox = outer_ack_inbox_v3(adapter_context.binding(), snapshot);
         let ack_intent = inbox.operation_replay_sync_ack_intent_sha256().unwrap();

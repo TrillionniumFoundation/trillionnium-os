@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "crates/trillionnium-global-control-plane",
+    "crates/trillionnium-telemetry",
+]
+resolver = "2"

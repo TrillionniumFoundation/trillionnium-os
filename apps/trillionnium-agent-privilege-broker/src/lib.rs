@@ -730,6 +730,7 @@ pub fn enable_per_frame_credentials(socket_fd: RawFd) -> Result<(), BrokerError>
     Ok(())
 }
 
+#[allow(clippy::useless_conversion)]
 pub fn receive_frame(socket_fd: RawFd) -> Result<ReceivedFrame, BrokerError> {
     let mut payload = [0_u8; MAX_FRAME_BYTES + 1];
     let mut control = ControlBuffer([0; 512]);

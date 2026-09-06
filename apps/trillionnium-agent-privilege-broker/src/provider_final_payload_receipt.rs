@@ -112,6 +112,14 @@ const ALLOWED_BUILDER_ENVIRONMENT_NAMES: &[&str] = &[
     "GIT_CONFIG_GLOBAL",
 ];
 
+// libc::nlink_t is u64 on x86-64 and u32 on AArch64. Keep the widening
+// conversion explicit on both targets; clippy otherwise flags the x86-64
+// instantiation as a useless conversion.
+#[allow(clippy::useless_conversion)]
+fn normalized_nlink(value: libc::nlink_t) -> u64 {
+    u64::from(value)
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct HashedArtifact {
@@ -858,7 +866,7 @@ fn retained_file_stat(fd: RawFd) -> Result<RetainedFileStat, ProviderFinalPayloa
         device: stat.st_dev,
         inode: stat.st_ino,
         mode: stat.st_mode,
-        links: u64::from(stat.st_nlink),
+        links: normalized_nlink(stat.st_nlink),
         uid: stat.st_uid,
         gid: stat.st_gid,
         size: u64::try_from(stat.st_size)

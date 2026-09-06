@@ -1,0 +1,574 @@
+{
+  "schema": "org.trillionnium.requirement-graph.v1",
+  "program_revision": "2026-08-31-g1",
+  "requirements": [
+    {
+      "id": "REQ-SEM-001",
+      "capability": "CAP-L1-MODULAR-SOURCE",
+      "modules": [
+        "MOD-PROTOCOL",
+        "MOD-PROVIDER"
+      ],
+      "gaps": [],
+      "source": [
+        "docs/PRODUCT_SEMANTICS.md"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "tools/docs/verify_global_docs.py",
+          "target": "tools/docs/verify_global_docs.py",
+          "command": [
+            "python3",
+            "tools/docs/verify_global_docs.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_IMPLEMENTED"
+    },
+    {
+      "id": "REQ-DOC-001",
+      "capability": "CAP-L1-MODULAR-SOURCE",
+      "modules": [
+        "MOD-EVIDENCE"
+      ],
+      "gaps": [
+        "GAP-DOC-SINGLE-TRUTH-001",
+        "GAP-GOVERNANCE-001"
+      ],
+      "source": [
+        "docs/machine/doc-set.v1.json",
+        "tools/docs/generate_global_docs.py"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "tools/docs/generate_global_docs.py",
+          "target": "tools/docs/generate_global_docs.py",
+          "command": [
+            "python3",
+            "tools/docs/generate_global_docs.py",
+            "--check"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        },
+        {
+          "kind": "source",
+          "path": "tools/docs/verify_global_docs.py",
+          "target": "tools/docs/verify_global_docs.py",
+          "command": [
+            "python3",
+            "tools/docs/verify_global_docs.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_IMPLEMENTED"
+    },
+    {
+      "id": "REQ-MOD-001",
+      "capability": "CAP-L1-MODULAR-SOURCE",
+      "modules": [
+        "MOD-PROTOCOL",
+        "MOD-BROKER",
+        "MOD-TRANSPORT",
+        "MOD-EXECUTION-CORE",
+        "MOD-PROVIDER",
+        "MOD-TURN-ENGINE",
+        "MOD-TOOL-RUNTIME",
+        "MOD-JOB-RUNTIME",
+        "MOD-EVENT-STORE",
+        "MOD-STREAM",
+        "MOD-GLOBAL-CONTROL",
+        "MOD-TELEMETRY",
+        "MOD-ROOTLINUX",
+        "MOD-ANDROID",
+        "MOD-ADB",
+        "MOD-EVIDENCE"
+      ],
+      "gaps": [
+        "GAP-DOC-SINGLE-TRUTH-001"
+      ],
+      "source": [
+        "docs/machine/module-catalog.v1.json",
+        "docs/MODULE_DEVELOPMENT_STANDARD.md"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "tools/docs/verify_global_docs.py",
+          "target": "tools/docs/verify_global_docs.py",
+          "command": [
+            "python3",
+            "tools/docs/verify_global_docs.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        },
+        {
+          "kind": "source",
+          "path": "tools/docs/verify_global_docs.py",
+          "target": "tools/docs/verify_global_docs.py",
+          "command": [
+            "python3",
+            "tools/docs/verify_global_docs.py"
+          ],
+          "workflow": ".github/workflows/g1-synthetic-merge.yml",
+          "workflow_job": "synthetic-merge"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_IMPLEMENTED"
+    },
+    {
+      "id": "REQ-EFFECT-001",
+      "capability": "CAP-L1-MODULAR-SOURCE",
+      "modules": [
+        "MOD-PROTOCOL",
+        "MOD-EXECUTION-CORE",
+        "MOD-JOB-RUNTIME",
+        "MOD-BROKER"
+      ],
+      "gaps": [
+        "GAP-JOURNAL-CONVERGENCE-001",
+        "GAP-CONC-TURN-CANCEL-001"
+      ],
+      "source": [
+        "docs/EFFECT_AND_PROTOCOL_STANDARD.md"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "crates/trillionnium-owner-open-runtime/src/lib.rs",
+          "target": "cargo test --locked --all-targets",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--all-targets"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "rust-runtime"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "REQ-BROKER-001",
+      "capability": "CAP-L2-INSTALLED-ROOTLINUX",
+      "modules": [
+        "MOD-BROKER",
+        "MOD-TRANSPORT"
+      ],
+      "gaps": [
+        "GAP-BROKER-CORRELATION-001",
+        "GAP-CONC-BROKER-MUX-001",
+        "GAP-STREAM-RECOVERY-001"
+      ],
+      "source": [
+        "tools/owner-open",
+        "docs/GLOBAL_ARCHITECTURE.md"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_broker_mux.py",
+          "target": "test_owner_open_broker*.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-p",
+            "test_owner_open_broker*.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_connection_broker.py",
+          "target": "test_owner_open_connection_broker.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-p",
+            "test_owner_open_connection_broker.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_ingress_contract.py",
+          "target": "test_owner_open_ingress_contract.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-p",
+            "test_owner_open_ingress_contract.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_broker_connections.py",
+          "target": "test_owner_open_broker*.py",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-p",
+            "test_owner_open_broker*.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "docs-graph"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "REQ-JOB-001",
+      "capability": "CAP-L2-INSTALLED-ROOTLINUX",
+      "modules": [
+        "MOD-JOB-RUNTIME"
+      ],
+      "gaps": [
+        "GAP-CONC-JOB-START-HOTLOCK-001",
+        "GAP-PROCESS-LIFECYCLE-001",
+        "GAP-JOB-ADMISSION-001",
+        "GAP-CONC-REGISTRY-001"
+      ],
+      "source": [
+        "crates/trillionnium-owner-open-job-runtime"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "crates/trillionnium-owner-open-job-runtime/src/lib.rs",
+          "target": "cargo test --locked --all-targets",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--all-targets"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "rust-runtime"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "REQ-STORE-001",
+      "capability": "CAP-L2-INSTALLED-ROOTLINUX",
+      "modules": [
+        "MOD-EVENT-STORE"
+      ],
+      "gaps": [
+        "GAP-CONC-EVENT-STORE-001",
+        "GAP-JOURNAL-CONVERGENCE-001"
+      ],
+      "source": [
+        "crates/trillionnium-owner-open-event-store"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "crates/trillionnium-owner-open-event-store/src/lib.rs",
+          "target": "cargo test --locked --all-targets",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--all-targets"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "rust-runtime"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "REQ-CTRL-001",
+      "capability": "CAP-L2-INSTALLED-ROOTLINUX",
+      "modules": [
+        "MOD-GLOBAL-CONTROL",
+        "MOD-TELEMETRY"
+      ],
+      "gaps": [
+        "GAP-CONTROL-PLANE-SHADOW-001",
+        "GAP-PERF-SYSTEM-BASELINE-001"
+      ],
+      "source": [
+        "docs/GLOBAL_ARCHITECTURE.md",
+        "docs/PERFORMANCE_AND_OPTIMIZATION.md"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "planned/crates/trillionnium-global-control-plane/src/lib.rs",
+          "target": "cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets",
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--manifest-path",
+            "planned/Cargo.toml",
+            "--workspace",
+            "--all-targets"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "planned-candidates"
+        },
+        {
+          "kind": "source",
+          "path": "tools/perf/run_global_baseline.py",
+          "target": "run_global_baseline.py",
+          "command": [
+            "python3",
+            "tools/perf/run_global_baseline.py",
+            "--output",
+            "$RUNNER_TEMP/g1-global-baseline.json",
+            "--repetitions",
+            "1"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "planned-candidates"
+        }
+      ],
+      "evidence": [
+        "EVID-G1-HEAD-PENDING"
+      ],
+      "status": "SOURCE_CLOSED_PENDING_EVIDENCE"
+    },
+    {
+      "id": "REQ-ROOT-001",
+      "capability": "CAP-L2-INSTALLED-ROOTLINUX",
+      "modules": [
+        "MOD-ROOTLINUX",
+        "MOD-PROVIDER"
+      ],
+      "gaps": [
+        "GAP-INSTALLED-CODEX-001",
+        "GAP-ROOTLINUX-PLACEMENT-001"
+      ],
+      "source": [
+        "docs/OPERATIONS_AND_ROLLOUT.md",
+        "tools/owner-open/owner_open_rootlinux_supervisor.py",
+        "docs/modules/MOD-ROOTLINUX.md"
+      ],
+      "tests": [
+        {
+          "kind": "external",
+          "path": "docs/OPERATIONS_AND_ROLLOUT.md",
+          "target": "installed target qualification"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_rootlinux_supervisor.py",
+          "target": "tools.tests.test_owner_open_rootlinux_supervisor",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "tools.tests.test_owner_open_rootlinux_supervisor",
+            "-v"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_owner_open_rootlinux_supervisor.py",
+          "target": "tools.tests.test_owner_open_rootlinux_supervisor",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "tools.tests.test_owner_open_rootlinux_supervisor",
+            "-v"
+          ],
+          "workflow": ".github/workflows/g1-synthetic-merge.yml",
+          "workflow_job": "synthetic-merge"
+        }
+      ],
+      "evidence": [],
+      "status": "EXTERNAL_HOLD"
+    },
+    {
+      "id": "REQ-ANDROID-001",
+      "capability": "CAP-L3-ANDROID-IMAGE",
+      "modules": [
+        "MOD-ANDROID",
+        "MOD-ROOTLINUX"
+      ],
+      "gaps": [
+        "GAP-ANDROID-GRAPH-001",
+        "GAP-PRODUCT-ENTRYPOINT-001"
+      ],
+      "source": [
+        "android-integration",
+        "docs/OPERATIONS_AND_ROLLOUT.md"
+      ],
+      "tests": [
+        {
+          "kind": "source",
+          "path": "tools/verify-owner-open-android-source-closure-v2.py",
+          "target": "tools/verify-owner-open-android-source-closure-v2.py",
+          "command": [
+            "python3",
+            "tools/verify-owner-open-android-source-closure-v2.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
+        {
+          "kind": "source",
+          "path": "tools/verify-owner-open-android-profile-v3.py",
+          "target": "tools/verify-owner-open-android-profile-v3.py",
+          "command": [
+            "python3",
+            "tools/verify-owner-open-android-profile-v3.py"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
+        {
+          "kind": "source",
+          "path": "tools/tests/test_verify_owner_open_android_source_closure.py",
+          "target": "tools.tests.test_verify_owner_open_android_source_closure",
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "tools.tests.test_verify_owner_open_android_source_closure",
+            "tools.tests.test_verify_owner_open_android_profile",
+            "-v"
+          ],
+          "workflow": ".github/workflows/g1-exact-head-source.yml",
+          "workflow_job": "android-packaging-source"
+        },
+        {
+          "kind": "external",
+          "path": "android-integration",
+          "target": "clean Android Soong/init/SELinux and target-files qualification"
+        }
+      ],
+      "evidence": [],
+      "status": "EXTERNAL_HOLD"
+    },
+    {
+      "id": "REQ-ADB-001",
+      "capability": "CAP-L4-PHYSICAL-DOGFOOD",
+      "modules": [
+        "MOD-ADB",
+        "MOD-ANDROID"
+      ],
+      "gaps": [
+        "GAP-PHYSICAL-ADB-001"
+      ],
+      "source": [
+        "packaging/owner-open-adb"
+      ],
+      "tests": [
+        {
+          "kind": "external",
+          "path": "packaging/owner-open-adb",
+          "target": "physical ordinary ADB qualification"
+        }
+      ],
+      "evidence": [],
+      "status": "EXTERNAL_HOLD"
+    },
+    {
+      "id": "REQ-FAULT-001",
+      "capability": "CAP-L5-FAULT-QUALIFIED",
+      "modules": [
+        "MOD-EVIDENCE",
+        "MOD-BROKER",
+        "MOD-TRANSPORT",
+        "MOD-JOB-RUNTIME",
+        "MOD-EVENT-STORE",
+        "MOD-ADB"
+      ],
+      "gaps": [
+        "GAP-FAULT-MATRIX-001"
+      ],
+      "source": [
+        "docs/QUALIFICATION_AND_EVIDENCE.md"
+      ],
+      "tests": [
+        {
+          "kind": "external",
+          "path": "docs/QUALIFICATION_AND_EVIDENCE.md",
+          "target": "destructive fault matrix"
+        }
+      ],
+      "evidence": [],
+      "status": "EXTERNAL_HOLD"
+    },
+    {
+      "id": "REQ-RELEASE-001",
+      "capability": "CAP-L6-PUBLIC-RELEASE",
+      "modules": [
+        "MOD-EVIDENCE",
+        "MOD-ANDROID",
+        "MOD-ROOTLINUX"
+      ],
+      "gaps": [
+        "GAP-RELEASE-001"
+      ],
+      "source": [
+        "docs/QUALIFICATION_AND_EVIDENCE.md"
+      ],
+      "tests": [
+        {
+          "kind": "external",
+          "path": "docs/QUALIFICATION_AND_EVIDENCE.md",
+          "target": "signature AVB rollback OTA and human authorization"
+        }
+      ],
+      "evidence": [],
+      "status": "EXTERNAL_HOLD"
+    }
+  ]
+}

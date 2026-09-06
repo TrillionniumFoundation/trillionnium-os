@@ -262,6 +262,13 @@ pub(crate) struct DirectOperationInboxPublication {
     _test_serial_guard: Option<MutexGuard<'static, ()>>,
 }
 
+// The custody projection is consumed by the device-conformance/product
+// handoff lane (and by tests); the default daemon intentionally keeps it
+// opaque until that lane is enabled.
+#[cfg_attr(
+    not(any(test, feature = "p0-launch-package-device-conformance")),
+    allow(dead_code)
+)]
 #[derive(Debug)]
 pub(crate) struct DirectOperationInboxCustodySeed {
     pub(crate) binding_inbox: DirectOperationBindingInbox,
@@ -1218,22 +1225,30 @@ mod tests {
 
     struct Fixture {
         _root: TempDir,
+        _trusted_parent: TempDir,
         system_api: PathBuf,
         accessibility: PathBuf,
     }
 
     impl Fixture {
         fn new() -> Self {
-            let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-            // The workspace source tree is intentionally group-writable for
-            // collaboration. Place security fixtures in its trusted,
-            // non-group-writable parent so ancestor validation exercises the
-            // success path rather than short-circuiting every test at that
-            // unrelated mode bit.
-            let fixture_parent = manifest.ancestors().nth(4).unwrap();
+            // Keep the fixture below a non-writable, trusted ancestor and
+            // make both test-created directories explicitly private. The
+            // production path rejects group/world-writable ancestors, so `/tmp`
+            // cannot be used. A per-run directory under the current account's
+            // home preserves the same ancestor contract without depending on a
+            // developer-machine-specific `/data/toshiba-dev` mount.
+            let home = std::env::var_os("HOME")
+                .map(PathBuf::from)
+                .expect("HOME must identify the trusted test parent");
+            let trusted_parent = tempfile::Builder::new()
+                .prefix(".direct-binding-publisher-parent-")
+                .tempdir_in(home)
+                .unwrap();
+            fs::set_permissions(trusted_parent.path(), fs::Permissions::from_mode(0o700)).unwrap();
             let root = tempfile::Builder::new()
                 .prefix(".direct-binding-publisher-test-")
-                .tempdir_in(fixture_parent)
+                .tempdir_in(trusted_parent.path())
                 .unwrap();
             fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).unwrap();
             let provider = root.path().join("inbox/codex");
@@ -1250,6 +1265,7 @@ mod tests {
             }
             Self {
                 _root: root,
+                _trusted_parent: trusted_parent,
                 system_api,
                 accessibility,
             }
@@ -1833,7 +1849,7 @@ mod tests {
 
     #[test]
     fn product_paths_are_fixed_to_the_chroot_visible_bind_target() {
-        for (provider, directory, gid) in [(
+        let (provider, directory, gid) = (
             ProviderSpecification {
                 provider_id: CODEX_PROVIDER_ID,
                 agent_id: CODEX_AGENT_ID,
@@ -1843,18 +1859,17 @@ mod tests {
             },
             "codex",
             CODEX_UID_GID,
-        )] {
-            let leaf = PublisherLayout::product().p0_system_api_leaf(&provider);
-            assert_eq!(
-                leaf.path,
-                Path::new("/var/lib/trillionnium/agent-tools/inbox")
-                    .join(directory)
-                    .join("system-api")
-            );
-            assert_eq!(leaf.owner_uid, ROOT_UID);
-            assert_eq!(leaf.group_gid, gid);
-            assert!(!leaf.path.starts_with("/data/trillionnium"));
-        }
+        );
+        let leaf = PublisherLayout::product().p0_system_api_leaf(&provider);
+        assert_eq!(
+            leaf.path,
+            Path::new("/var/lib/trillionnium/agent-tools/inbox")
+                .join(directory)
+                .join("system-api")
+        );
+        assert_eq!(leaf.owner_uid, ROOT_UID);
+        assert_eq!(leaf.group_gid, gid);
+        assert!(!leaf.path.starts_with("/data/trillionnium"));
     }
 
     #[test]

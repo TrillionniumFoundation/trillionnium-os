@@ -1,0 +1,93 @@
+{
+  "schema": "org.trillionnium.module-document-index.v1",
+  "program_revision": "2026-08-31-g1",
+  "status": "ACTIVE_CANDIDATE_SOURCE_DOCUMENTATION",
+  "catalog_path": "docs/machine/module-catalog.v1.json",
+  "budget_provenance_path": "docs/machine/resource-budget-provenance.v1.json",
+  "required_sections": [
+    "## 1. Identity and maturity",
+    "## 2. Responsibilities",
+    "## 3. Non-goals and authority boundary",
+    "## 4. Context, dependencies and data flow",
+    "## 5. API and protocol contract",
+    "## 6. State model and ownership",
+    "## 7. Ordering, concurrency and backpressure",
+    "## 8. Effect, cancellation and uncertainty semantics",
+    "## 9. Resource budget and SLO status",
+    "## 10. Persistence, recovery and reconciliation",
+    "## 11. Security and trust boundaries",
+    "## 12. Failure matrix and degraded behavior",
+    "## 13. Compatibility, migration and rollback",
+    "## 14. Observability",
+    "## 15. Verification and evidence",
+    "## 16. Deployment and runbook",
+    "## 17. Open gaps and exit criteria"
+  ],
+  "minimum_document_bytes": 6000,
+  "modules": [
+    {
+      "id": "MOD-PROTOCOL",
+      "doc_path": "docs/modules/MOD-PROTOCOL.md"
+    },
+    {
+      "id": "MOD-BROKER",
+      "doc_path": "docs/modules/MOD-BROKER.md"
+    },
+    {
+      "id": "MOD-TRANSPORT",
+      "doc_path": "docs/modules/MOD-TRANSPORT.md"
+    },
+    {
+      "id": "MOD-EXECUTION-CORE",
+      "doc_path": "docs/modules/MOD-EXECUTION-CORE.md"
+    },
+    {
+      "id": "MOD-PROVIDER",
+      "doc_path": "docs/modules/MOD-PROVIDER.md"
+    },
+    {
+      "id": "MOD-TURN-ENGINE",
+      "doc_path": "docs/modules/MOD-TURN-ENGINE.md"
+    },
+    {
+      "id": "MOD-TOOL-RUNTIME",
+      "doc_path": "docs/modules/MOD-TOOL-RUNTIME.md"
+    },
+    {
+      "id": "MOD-JOB-RUNTIME",
+      "doc_path": "docs/modules/MOD-JOB-RUNTIME.md"
+    },
+    {
+      "id": "MOD-EVENT-STORE",
+      "doc_path": "docs/modules/MOD-EVENT-STORE.md"
+    },
+    {
+      "id": "MOD-STREAM",
+      "doc_path": "docs/modules/MOD-STREAM.md"
+    },
+    {
+      "id": "MOD-GLOBAL-CONTROL",
+      "doc_path": "docs/modules/MOD-GLOBAL-CONTROL.md"
+    },
+    {
+      "id": "MOD-TELEMETRY",
+      "doc_path": "docs/modules/MOD-TELEMETRY.md"
+    },
+    {
+      "id": "MOD-ROOTLINUX",
+      "doc_path": "docs/modules/MOD-ROOTLINUX.md"
+    },
+    {
+      "id": "MOD-ANDROID",
+      "doc_path": "docs/modules/MOD-ANDROID.md"
+    },
+    {
+      "id": "MOD-ADB",
+      "doc_path": "docs/modules/MOD-ADB.md"
+    },
+    {
+      "id": "MOD-EVIDENCE",
+      "doc_path": "docs/modules/MOD-EVIDENCE.md"
+    }
+  ]
+}

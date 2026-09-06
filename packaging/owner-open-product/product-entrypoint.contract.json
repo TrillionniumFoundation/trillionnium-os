@@ -1,0 +1,66 @@
+{
+  "schema": "org.trillionnium.owner-open.product-entrypoint.v1",
+  "revision": "2026-08-29-r6",
+  "description": "Unambiguous source and deployment-role contract for the owner-open product entrypoint. It selects the v5 transport as the only product-facing executable, the v7 core as its internal child, and explicitly forbids the foundation UnavailableProvider binary from product installation.",
+  "source_manifest": "apps/trillionnium-owner-open-host/Cargo.toml",
+  "product_entrypoint": {
+    "cargo_bin": "trillionnium-owner-open-r5-host",
+    "source_path": "src/bin/r5_transport_host.rs",
+    "role": "product_entrypoint",
+    "install_name": "trillionnium-owner-open-r5-host",
+    "required_cli": [
+      "--provider"
+    ],
+    "transport_options": [
+      "--transport-core",
+      "--transport-buffer-bytes",
+      "--transport-max-credit-bytes",
+      "--transport-max-chunk-bytes",
+      "--transport-control-history",
+      "--event-store"
+    ],
+    "default_internal_child": "trillionnium-owner-open-r5-core"
+  },
+  "internal_children": [
+    {
+      "cargo_bin": "trillionnium-owner-open-r5-core",
+      "source_path": "src/bin/r5_control_host_v7.rs",
+      "role": "internal_execution_core",
+      "launch_flag": "--transport-core",
+      "default_sibling_binary": true,
+      "direct_product_install_entrypoint": false
+    }
+  ],
+  "non_product_binaries": [
+    {
+      "cargo_bin": "trillionnium-owner-open-host",
+      "source_path": "src/main.rs",
+      "role": "foundation_protocol_stub",
+      "expected_marker": "UnavailableProvider",
+      "forbidden_as_product_entrypoint": true,
+      "forbidden_android_product_package": true,
+      "reason": "The foundation binary intentionally reports provider_unavailable and is not the selected provider/tool/job product topology."
+    }
+  ],
+  "install_manifest_template": "packaging/owner-open-product/install-manifest.template.json",
+  "android": {
+    "required_module": "trillionnium-owner-open-r5-host",
+    "required_internal_module": "trillionnium-owner-open-r5-core",
+    "forbidden_modules": [
+      "trillionnium-owner-open-host"
+    ],
+    "target_files_evidence_required": true,
+    "status": "EXTERNAL_HOLD"
+  },
+  "source_acceptance": [
+    "Cargo autobin discovery is disabled.",
+    "The exact product and internal child bins exist at the contracted source paths.",
+    "The product entrypoint usage requires a provider path and forwards core options.",
+    "The default child path resolves to the contracted v7 core sibling.",
+    "The foundation UnavailableProvider binary is marked non-product and forbidden in product inventories.",
+    "The deployment manifest template binds paths, hashes, argv, identity, namespaces, cgroup, sockets, stores, SELinux, restart and emergency stop."
+  ],
+  "claim_ceiling": "SOURCE_ENTRYPOINT_SELECTED_TARGET_INSTALL_PENDING",
+  "automatic_redispatch": false,
+  "public_release": false
+}

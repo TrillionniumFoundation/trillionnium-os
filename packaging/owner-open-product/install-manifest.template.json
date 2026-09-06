@@ -1,0 +1,128 @@
+{
+  "schema": "org.trillionnium.owner-open.install-manifest.v1",
+  "status": "UNMATERIALIZED_TEMPLATE",
+  "plan_revision": "2026-08-29-r6",
+  "source": {
+    "repository": "TrillionniumFoundation/trillionnium-os",
+    "commit_sha": "${SOURCE_COMMIT_SHA}",
+    "tree_sha": "${SOURCE_TREE_SHA}",
+    "cargo_lock_sha256": "${CARGO_LOCK_SHA256}"
+  },
+  "product_entrypoint": {
+    "cargo_bin": "trillionnium-owner-open-r5-host",
+    "source_path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs",
+    "installed_path": "${OWNER_OPEN_PRODUCT_ENTRYPOINT_PATH}",
+    "sha256": "${OWNER_OPEN_PRODUCT_ENTRYPOINT_SHA256}",
+    "argv": [
+      "--transport-core",
+      "${OWNER_OPEN_CORE_PATH}",
+      "--event-store",
+      "${OWNER_OPEN_TURN_EVENT_STORE}",
+      "--provider",
+      "${OWNER_OPEN_PROVIDER_PATH}"
+    ]
+  },
+  "internal_children": [
+    {
+      "role": "internal_execution_core",
+      "cargo_bin": "trillionnium-owner-open-r5-core",
+      "source_path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs",
+      "installed_path": "${OWNER_OPEN_CORE_PATH}",
+      "sha256": "${OWNER_OPEN_CORE_SHA256}",
+      "direct_product_entrypoint": false
+    }
+  ],
+  "forbidden_installed_binaries": [
+    {
+      "cargo_bin": "trillionnium-owner-open-host",
+      "source_path": "apps/trillionnium-owner-open-host/src/main.rs",
+      "reason": "foundation UnavailableProvider stub"
+    }
+  ],
+  "provider": {
+    "installed_path": "${OWNER_OPEN_PROVIDER_PATH}",
+    "sha256": "${OWNER_OPEN_PROVIDER_SHA256}",
+    "release_archive_sha256": "${OWNER_OPEN_PROVIDER_ARCHIVE_SHA256}",
+    "release_member_sha256": "${OWNER_OPEN_PROVIDER_MEMBER_SHA256}",
+    "version": "${OWNER_OPEN_PROVIDER_VERSION}",
+    "help_sha256": "${OWNER_OPEN_PROVIDER_HELP_SHA256}",
+    "authenticated": false,
+    "cryptographic_release_identity_verified": false
+  },
+  "identity": {
+    "uid": "${OWNER_OPEN_UID}",
+    "gid": "${OWNER_OPEN_GID}",
+    "supplementary_groups": [],
+    "home": "${OWNER_OPEN_HOME}",
+    "no_new_privs": true
+  },
+  "namespaces": {
+    "mount": "${OWNER_OPEN_MOUNT_NAMESPACE}",
+    "pid": "${OWNER_OPEN_PID_NAMESPACE}",
+    "network": "${OWNER_OPEN_NETWORK_NAMESPACE}",
+    "user": "${OWNER_OPEN_USER_NAMESPACE}"
+  },
+  "cgroup": {
+    "path": "${OWNER_OPEN_CGROUP_PATH}",
+    "memory_max": "${OWNER_OPEN_MEMORY_MAX}",
+    "pids_max": "${OWNER_OPEN_PIDS_MAX}",
+    "cpu_weight": "${OWNER_OPEN_CPU_WEIGHT}"
+  },
+  "sockets": {
+    "carrier": "${OWNER_OPEN_SOCKET_CARRIER}",
+    "path_or_name": "${OWNER_OPEN_SOCKET}",
+    "owner_uid": "${OWNER_OPEN_UID}",
+    "owner_gid": "${OWNER_OPEN_GID}",
+    "mode": "${OWNER_OPEN_SOCKET_MODE}",
+    "selinux_type": "${OWNER_OPEN_SOCKET_SELINUX_TYPE}"
+  },
+  "stores": {
+    "turn_events": {
+      "path": "${OWNER_OPEN_TURN_EVENT_STORE}",
+      "max_bytes": "${OWNER_OPEN_TURN_EVENT_MAX_BYTES}",
+      "sync_policy": "full"
+    },
+    "job_events": {
+      "path": "${OWNER_OPEN_JOB_EVENT_STORE}",
+      "max_bytes": "${OWNER_OPEN_JOB_EVENT_MAX_BYTES}",
+      "sync_policy": "full"
+    },
+    "broker_audit": {
+      "path": "${OWNER_OPEN_BROKER_AUDIT_STORE}",
+      "max_bytes": "${OWNER_OPEN_BROKER_AUDIT_MAX_BYTES}",
+      "sync_policy": "full"
+    }
+  },
+  "selinux": {
+    "service_domain": "${OWNER_OPEN_SERVICE_DOMAIN}",
+    "provider_domain": "${OWNER_OPEN_PROVIDER_DOMAIN}",
+    "client_domains": [],
+    "file_context_receipt_sha256": "${OWNER_OPEN_FILE_CONTEXT_RECEIPT_SHA256}",
+    "allow_graph_sha256": "${OWNER_OPEN_ALLOW_GRAPH_SHA256}"
+  },
+  "restart": {
+    "policy": "${OWNER_OPEN_RESTART_POLICY}",
+    "backoff_ms": "${OWNER_OPEN_RESTART_BACKOFF_MS}",
+    "burst_limit": "${OWNER_OPEN_RESTART_BURST_LIMIT}",
+    "automatic_effect_redispatch": false
+  },
+  "emergency_stop": {
+    "inhibit_path": "${OWNER_OPEN_EMERGENCY_INHIBIT_PATH}",
+    "independent_of_provider": true,
+    "inhibits_respawn": true,
+    "preserves_evidence": true
+  },
+  "evidence": {
+    "level": "L0",
+    "android_target_files_sha256": "${ANDROID_TARGET_FILES_SHA256}",
+    "device_fingerprint": "${DEVICE_FINGERPRINT}",
+    "device_boot_id": "${DEVICE_BOOT_ID}",
+    "negative_claims": [
+      "This template is not an installed-target receipt.",
+      "Provider authentication and cryptographic release identity are not established by the template.",
+      "Android target-files and physical-device fields must be materialized from real evidence."
+    ]
+  },
+  "automatic_redispatch": false,
+  "public_release": false
+}

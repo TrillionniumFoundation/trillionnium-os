@@ -1,0 +1,36 @@
+# Default fallback. Branch protection must still require a non-author approval.
+* @ProfHepta @Tomasrgbsf
+
+# Global architecture, machine truth and generated views.
+/docs/ @ProfHepta @Tomasrgbsf
+/docs/machine/ @ProfHepta @Franksudoman
+/docs/generated/ @ProfHepta @Franksudoman
+/tools/docs/ @ProfHepta @Franksudoman
+/.github/workflows/ @ProfHepta
+/README.md @ProfHepta @Tomasrgbsf
+/CONTRIBUTING.md @ProfHepta
+/SECURITY.md @ProfHepta
+/.github/CODEOWNERS @ProfHepta
+
+# Owner-open implementation modules.
+/apps/trillionnium-owner-open-host/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-types/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-call-registry/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-event-store/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-job-registry/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-job-runtime/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-provider-jsonl/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-runtime/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-stream-window/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-tool-bridge/ @Tomasrgbsf @ProfHepta
+/crates/trillionnium-owner-open-turn-loop/ @Tomasrgbsf @ProfHepta
+/tools/owner-open/ @Tomasrgbsf @ProfHepta
+
+# Platform and evidence modules.
+/android-integration/ @ProfHepta @Tomasrgbsf
+/packaging/ @ProfHepta @Tomasrgbsf
+/evidence/ @ProfHepta @Franksudoman
+/evidence/g1/ @ProfHepta @Franksudoman
+/tools/evidence/ @ProfHepta @Franksudoman
+/tools/verify-g1-evidence.py @ProfHepta @Franksudoman
+/schemas/g1-evidence-package.v1.schema.json @ProfHepta @Franksudoman

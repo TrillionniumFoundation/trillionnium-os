@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://trillionnium.org/schemas/g1-evidence-package.v2.schema.json",
+  "title": "Trillionnium G1 Evidence Package v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "package_id",
+    "program_revision",
+    "level",
+    "evidence_class",
+    "status",
+    "source",
+    "subject",
+    "lineage",
+    "gaps",
+    "artifacts",
+    "observations",
+    "roles",
+    "authorization",
+    "created_at",
+    "expires_at",
+    "retention_days",
+    "claim_ceiling",
+    "negative_claims",
+    "automatic_redispatch",
+    "public_release",
+    "holds"
+  ],
+  "properties": {
+    "schema": {"const": "org.trillionnium.g1.evidence-package.v2"},
+    "version": {"const": "2"},
+    "package_id": {"pattern": "^sha256:[0-9a-f]{64}$"},
+    "program_revision": {"const": "2026-08-31-g1"},
+    "level": {"enum": ["L1", "L2", "L3", "L4", "L5", "L6"]},
+    "evidence_class": {
+      "enum": [
+        "source_qualification",
+        "installed_rootlinux",
+        "android_image",
+        "physical_device",
+        "destructive_fault",
+        "signed_release"
+      ]
+    },
+    "status": {"enum": ["COMPLETE", "HOLD"]},
+    "source": {"$ref": "#/$defs/source"},
+    "subject": {"$ref": "#/$defs/subject"},
+    "lineage": {"$ref": "#/$defs/lineage"},
+    "gaps": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "artifacts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/artifact"}
+    },
+    "observations": {"type": "object", "minProperties": 1},
+    "roles": {"$ref": "#/$defs/roles"},
+    "authorization": {"$ref": "#/$defs/authorization"},
+    "created_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "expires_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+    "retention_days": {"type": "integer", "minimum": 1, "maximum": 3650},
+    "claim_ceiling": {"type": "string", "minLength": 1},
+    "negative_claims": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "automatic_redispatch": {"const": false},
+    "public_release": {"type": "boolean"},
+    "holds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/hold"}
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "git_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "workflow_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "run_id",
+        "attempt",
+        "result",
+        "artifact_id",
+        "artifact_name",
+        "artifact_sha256"
+      ],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "run_id": {"type": "integer", "minimum": 1},
+        "attempt": {"type": "integer", "minimum": 1},
+        "result": {"const": "success"},
+        "artifact_id": {"type": "integer", "minimum": 1},
+        "artifact_name": {"type": "string", "minLength": 1},
+        "artifact_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "branch",
+        "commit",
+        "tree",
+        "cargo_lock_sha256",
+        "pull_request",
+        "workflow_runs"
+      ],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+        "branch": {"type": "string", "minLength": 1},
+        "commit": {"$ref": "#/$defs/git_sha"},
+        "tree": {"$ref": "#/$defs/git_sha"},
+        "cargo_lock_sha256": {"$ref": "#/$defs/sha256"},
+        "pull_request": {"type": "integer", "minimum": 1},
+        "workflow_runs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/workflow_run"}
+        }
+      }
+    },
+    "subject_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "ref", "commit", "tree"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+        "ref": {"type": "string", "minLength": 1},
+        "commit": {"$ref": "#/$defs/git_sha"},
+        "tree": {"$ref": "#/$defs/git_sha"}
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base", "head", "merge"],
+      "properties": {
+        "base": {"$ref": "#/$defs/subject_ref"},
+        "head": {"$ref": "#/$defs/subject_ref"},
+        "merge": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "commit", "tree", "parents"],
+          "properties": {
+            "kind": {"enum": ["deterministic_synthetic", "github_prospective"]},
+            "commit": {"$ref": "#/$defs/git_sha"},
+            "tree": {"$ref": "#/$defs/git_sha"},
+            "parents": {
+              "type": "array",
+              "prefixItems": [
+                {"$ref": "#/$defs/git_sha"},
+                {"$ref": "#/$defs/git_sha"}
+              ],
+              "items": false,
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parent_package_ids", "predecessor_source_commit"],
+      "properties": {
+        "parent_package_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+        },
+        "predecessor_source_commit": {
+          "oneOf": [{"$ref": "#/$defs/git_sha"}, {"type": "null"}]
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "kind",
+        "sha256",
+        "bytes",
+        "uri",
+        "retention_expires_at"
+      ],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "uri": {"type": "string", "minLength": 1},
+        "retention_expires_at": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "Z$"
+        }
+      }
+    },
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal", "identity_provider", "evidence_id"],
+      "properties": {
+        "principal": {"type": "string", "minLength": 1},
+        "identity_provider": {"type": "string", "minLength": 1},
+        "evidence_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "roles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer", "operator", "reviewer", "authorizer"],
+      "properties": {
+        "producer": {"oneOf": [{"$ref": "#/$defs/role"}, {"type": "null"}]},
+        "operator": {"oneOf": [{"$ref": "#/$defs/role"}, {"type": "null"}]},
+        "reviewer": {"oneOf": [{"$ref": "#/$defs/role"}, {"type": "null"}]},
+        "authorizer": {"oneOf": [{"$ref": "#/$defs/role"}, {"type": "null"}]}
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "authority",
+        "scope",
+        "expires_at",
+        "revoked",
+        "evidence_id"
+      ],
+      "properties": {
+        "status": {"enum": ["APPROVED", "PENDING"]},
+        "authority": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1},
+        "expires_at": {"type": "string", "format": "date-time", "pattern": "Z$"},
+        "revoked": {"type": "boolean"},
+        "evidence_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "hold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "status", "reason"],
+      "properties": {
+        "field": {"type": "string", "minLength": 1},
+        "status": {"const": "NOT_OBSERVED"},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
