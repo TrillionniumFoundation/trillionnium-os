@@ -1,5 +1,7 @@
 # Trillionnium Agent Privilege Broker
 
+Cargo package: `trillionnium-agent-privilege-broker`.
+
 > **Pre-r2 sealed/history only (2026-08-27):** This binary is the former
 > Authority, not an owner-open substrate service. The owner-open product must
 > not compile, link or start it, and must not use its
@@ -46,3 +48,15 @@ descendant cleanup, durable reservation/recovery, measured final payload,
 authenticated effect transport, reboot/replay/power-loss evidence, clean
 target-files, and signed-device conformance. Until then this crate is a
 fail-closed foundation, not a working privilege service.
+
+## Local source verification
+
+From the repository root:
+
+```sh
+cargo test --locked -p trillionnium-agent-privilege-broker --all-targets
+```
+
+This command qualifies only the source assertions it executes. It does not
+activate the sealed binary or grant installed-target, Android-image,
+physical-device, destructive-fault, signing or public-release authority.
