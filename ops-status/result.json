@@ -1,0 +1,11 @@
+{
+  "status": "NOT_MERGED_TIMEOUT_FAIL_CLOSED",
+  "attempt": 24,
+  "current_head_approvals": {
+    "Franksudoman": false,
+    "Tomasrgbsf": true
+  },
+  "current_head_changes_requested": 1,
+  "all_checks_terminal_green": true,
+  "required_contexts_green": true
+}
