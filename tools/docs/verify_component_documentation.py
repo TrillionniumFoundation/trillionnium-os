@@ -154,14 +154,34 @@ def strip_html_comments(source: str, label: str) -> str:
     return "".join(characters)
 
 
+def _find_exact_backtick_run(line: str, marker: str, start: int = 0) -> int:
+    """Find a maximal backtick run whose length exactly matches marker."""
+    cursor = start
+    marker_length = len(marker)
+    while cursor < len(line):
+        candidate = line.find(marker, cursor)
+        if candidate < 0:
+            return -1
+        run_start = candidate
+        while run_start > 0 and line[run_start - 1] == "`":
+            run_start -= 1
+        run_end = candidate + marker_length
+        while run_end < len(line) and line[run_end] == "`":
+            run_end += 1
+        if candidate == run_start and run_end - run_start == marker_length:
+            return candidate
+        cursor = run_end
+    return -1
+
+
 def strip_inline_code(line: str, open_marker: str | None) -> tuple[str, str | None]:
-    """Hide inline code spans, retaining a marker across physical lines."""
+    """Hide inline code spans, retaining an exact marker across physical lines."""
     characters = list(line)
     cursor = 0
     marker = open_marker
 
     if marker is not None:
-        close = line.find(marker)
+        close = _find_exact_backtick_run(line, marker)
         span_end = len(line) if close < 0 else close + len(marker)
         for index in range(span_end):
             characters[index] = " "
@@ -178,7 +198,7 @@ def strip_inline_code(line: str, open_marker: str | None) -> tuple[str, str | No
         while run_end < len(line) and line[run_end] == "`":
             run_end += 1
         marker = line[cursor:run_end]
-        close = line.find(marker, run_end)
+        close = _find_exact_backtick_run(line, marker, run_end)
         span_end = len(line) if close < 0 else close + len(marker)
         for index in range(cursor, span_end):
             characters[index] = " "
@@ -187,7 +207,6 @@ def strip_inline_code(line: str, open_marker: str | None) -> tuple[str, str | No
         cursor = span_end
         marker = None
     return "".join(characters), None
-
 
 def indentation_columns(line: str) -> int:
     """Return CommonMark-style leading indentation columns with tab stops."""

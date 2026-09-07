@@ -528,5 +528,43 @@ edition = "2024"
                 VERIFY.verify(root)
 
 
+    def test_unequal_backtick_run_cannot_supply_module_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+            prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+            prose += (
+                "\nExample: `` alpha ``` beta ` "
+                "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md) gamma ``\n"
+            )
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
+    def test_multiline_unequal_backtick_run_cannot_supply_module_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+            prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+            prose += (
+                "\nExample: `` alpha\n"
+                "middle ``` beta ` [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md) gamma\n"
+                "``\n"
+            )
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
+
 if __name__ == "__main__":
     unittest.main()
