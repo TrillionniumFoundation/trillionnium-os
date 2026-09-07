@@ -53,9 +53,7 @@ Review requirements are defined in `docs/TEAM_AND_DELIVERY_MODEL.md`.
 
 ## Branch and CI requirements
 
-Use short-lived branches and the protected integration path. Do not push
-directly to `main`, bypass required checks or reuse a historical green run for a
-changed head.
+Use short-lived branches and the protected integration path. Do not push directly to `main`, bypass required checks or reuse a historical green run for a changed head.
 
 Every behavior-affecting pull request must:
 
