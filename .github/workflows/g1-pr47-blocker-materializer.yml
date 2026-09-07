@@ -1,0 +1,80 @@
+name: G1 PR47 exact blocker materializer
+
+on:
+  push:
+    branches:
+      - codex/g1-full-gap-closure-20260907
+
+permissions:
+  contents: write
+
+concurrency:
+  group: g1-pr47-exact-blocker-materializer
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  apply:
+    name: Apply exact component-documentation blocker repair
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    if: >-
+      github.repository == 'TrillionniumFoundation/trillionnium-os' &&
+      github.ref_name == 'codex/g1-full-gap-closure-20260907'
+    steps:
+      - name: Check out bootstrap commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: true
+
+      - name: Verify exact bootstrap provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "d5675aba3fc7b4d10bef9025b8c150784d38c129"
+          test "$(git --no-replace-objects diff --name-only HEAD^ HEAD)" = ".github/workflows/g1-pr47-blocker-materializer.yml"
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Apply checksum-bound repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "${RUNNER_TEMP:?}/pr47.patch.gz.b64" <<'PATCH_B64'
+          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
+          PATCH_B64
+          base64 --decode "${RUNNER_TEMP:?}/pr47.patch.gz.b64" > "${RUNNER_TEMP:?}/pr47.patch.gz"
+          echo "10f4830f5cf6a42ad591490edcf45a0003e9c354a2076628bf97fe13763958b0  ${RUNNER_TEMP:?}/pr47.patch.gz" | sha256sum --check --strict
+          gzip --decompress --stdout "${RUNNER_TEMP:?}/pr47.patch.gz" > "${RUNNER_TEMP:?}/pr47.patch"
+          git apply --check "${RUNNER_TEMP:?}/pr47.patch"
+          git apply --index "${RUNNER_TEMP:?}/pr47.patch"
+
+      - name: Remove materializer and verify repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/g1-pr47-blocker-materializer.yml
+          git diff --cached --check
+          python3 tools/docs/verify_component_documentation.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest tools.tests.test_owner_open_broker_component_documentation -v
+          python3 -m unittest tools.tests.test_verify_g1_review_index -v
+          python3 -m json.tool governance/pr41-review-index.v1.json >/dev/null
+          test -z "$(git status --porcelain --untracked-files=all | grep '^??' || true)"
+
+      - name: Commit and push exact repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "fix(g1): close component documentation admission blockers"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
