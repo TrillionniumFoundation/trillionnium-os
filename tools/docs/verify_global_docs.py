@@ -870,6 +870,15 @@ def verify_objective(objective: dict[str, Any]) -> None:
     require(required <= set(objective["required_measurements"]), "required system measurements are incomplete")
     require(objective["control_phases"] == ["OBSERVE","SHADOW","ADVISORY","ACTIVE_CANARY","ACTIVE"], "control maturity sequence drift")
 
+def verify_documentation_revision(docset: dict[str, Any], program: dict[str, Any]) -> None:
+    revision = docset.get("documentation_revision")
+    require_semver(revision, "documentation revision")
+    require(program.get("documentation_revision") == revision, "documentation revision drift in program state")
+    start = (DOCS / "START_HERE.md").read_text(encoding="utf-8")
+    revisions = re.findall(r"^Documentation revision: \*\*([0-9.]+)\*\*$", start, re.M)
+    require(revisions == [revision], "documentation revision drift in START_HERE")
+
+
 def main() -> int:
     try:
         docset = load("doc-set.v1.json")
@@ -891,6 +900,8 @@ def main() -> int:
             evidence["program_revision"],
         }
         require(len(revisions) == 1, f"program revision drift: {sorted(revisions)}")
+        verify_documentation_revision(docset, program)
+
 
         evidence_ids = verify_evidence_index(evidence)
         module_ids = verify_modules(catalog)
@@ -901,6 +912,9 @@ def main() -> int:
         verify_baseline(base, evidence_ids)
         verify_objective(objective)
         verify_doc_set(docset)
+        for verifier in ("verify_component_documentation.py", "verify_module_documentation.py"):
+            result = subprocess.run([sys.executable, str(ROOT / "tools/docs" / verifier)], cwd=ROOT, check=False)
+            require(result.returncode == 0, f"{verifier} rejected documentation or component ownership")
 
         result = subprocess.run(
             [sys.executable, str(ROOT / "tools" / "docs" / "generate_global_docs.py"), "--check"],

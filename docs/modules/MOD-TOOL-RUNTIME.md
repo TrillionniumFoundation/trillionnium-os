@@ -18,6 +18,8 @@ This document is the detailed source-development, integration and qualification 
 
 Source ownership paths:
 
+- `crates/trillionnium-owner-open-call-registry`
+- `crates/trillionnium-owner-open-runtime`
 - `crates/trillionnium-owner-open-tool-bridge`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
@@ -80,12 +82,33 @@ source navigation alone does not prove wire compatibility.
 - State schema: `org.trillionnium.mod_tool_runtime.state.v1`
 - State authority: **authoritative**
 - Partition key: `call_id`
-- State owned: `live direct-call handles`
-- Durability class: `journaled`
+- State owned: `call registry; live direct-call handles`
+- Durability class: `memory`
 - Retention ceiling: 4096 items and 67108864 bytes per declared bounded in-memory window.
 - Terminal vocabulary: `closed` and `unknown`; implementation-specific intermediate states must converge to one of those classifications or a versioned extension.
 
 Only this module may perform authoritative writes for its state families. Read models may be rebuilt from retained authoritative records but cannot become an alternate writer. Every writer carries a module or service epoch; stale epochs fail closed.
+
+### Component ownership and volatile call state
+
+This module owns three lower-level components: `call-registry` stores call
+identity and transitions, `runtime` owns process/pipe/PTY mechanics, and
+`tool-bridge` binds the two. The registry has no dependency on the Host or turn
+engine. Consumers use its public API; it is not a subsystem of the composition
+root. The job registry remains separately owned by `MOD-JOB-RUNTIME`.
+
+| Registry state | Meaning for the consumer |
+|---|---|
+| `Accepted` | An in-memory identity reservation exists; this alone is not durable effect admission |
+| `CancelledBeforeSpawn` | No spawn claim may be issued for this call |
+| `Started { generation, pid }` | A generation has claimed spawn; a PID is an observation, not restart authority |
+| `ProvenNotStartedAfterDisconnect` | The registry's transition proof rules out its spawn claim |
+| `UnknownAfterDisconnect { generation, pid }` | Preserve uncertainty; do not retry or adopt a recorded PID |
+| `Terminal { generation, terminal }` | An observed result exists in this process; durable replay additionally requires the Host journal receipt |
+
+The registry, cancellation tokens and live handles are volatile. Host event-store
+receipts own restart evidence. A standalone library test or in-memory terminal
+cannot establish crash durability, installed containment or automatic recovery.
 
 ## 7. Ordering, concurrency and backpressure
 
@@ -113,7 +136,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,7 +157,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
@@ -217,7 +240,7 @@ Standard deployment sequence:
 
 ## 17. Open gaps and exit criteria
 
-Open machine gaps: `GAP-PROCESS-LIFECYCLE-001`.
+Open machine gaps: `GAP-PROCESS-LIFECYCLE-001`, `GAP-CONC-REGISTRY-001`.
 
 ### GAP-PROCESS-LIFECYCLE-001 — exit L2
 
@@ -229,3 +252,7 @@ Exit evidence must demonstrate:
 - cleanup uncertainty remains explicit.
 
 A source change may reduce implementation risk, but the status stays open or source-closed-pending-evidence until an immutable, current, independently authorized receipt reaches the declared exit level.
+
+### GAP-CONC-REGISTRY-001 — exit L2
+
+Call-registry ownership belongs to the low-level tool runtime. Exit evidence must demonstrate stable sharding, per-key linearity, bounded capacity and a contention benchmark. Source tests alone do not close this installed qualification gap.

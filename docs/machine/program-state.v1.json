@@ -1,7 +1,7 @@
 {
   "schema": "org.trillionnium.global-program-state.v1",
   "program_revision": "2026-08-31-g1",
-  "documentation_revision": "1.0.0",
+  "documentation_revision": "1.2.0",
   "semantic_revision": "owner-open-semantic-v1",
   "architecture_revision": "modular-control-plane-v1",
   "status": "G1_DOCUMENTATION_AND_MODULARIZATION_CANDIDATE",

@@ -123,7 +123,7 @@
             "v1"
           ]
         },
-        "unknown_fields": "reject"
+        "unknown_fields": "preserve"
       },
       "maturity": "L1_SOURCE",
       "module_version": "1.0.0",
@@ -202,7 +202,22 @@
       "owner_team": "team-broker",
       "backup_team": "team-transport",
       "paths": [
-        "tools/owner-open"
+        "tools/owner-open/owner_open_broker_admission_v2.py",
+        "tools/owner-open/owner_open_broker_audit.py",
+        "tools/owner-open/owner_open_broker_base_v2.py",
+        "tools/owner-open/owner_open_broker_client.py",
+        "tools/owner-open/owner_open_broker_common.py",
+        "tools/owner-open/owner_open_broker_connections.py",
+        "tools/owner-open/owner_open_broker_convergence_v2.py",
+        "tools/owner-open/owner_open_broker_mux.py",
+        "tools/owner-open/owner_open_broker_runtime.py",
+        "tools/owner-open/owner_open_broker_server_v2.py",
+        "tools/owner-open/owner_open_connection_broker.py",
+        "tools/owner-open/owner_open_connection_broker_v2.py",
+        "tools/owner-open/owner_open_mcp_jobs.py",
+        "tools/owner-open/codex_owner_open_mcp.py",
+        "tools/owner-open/owner_open_mcp_common.py",
+        "tools/owner-open/owner_open_mcp_host.py"
       ],
       "responsibilities": [
         "peer admission"
@@ -211,7 +226,9 @@
         "intent interpretation"
       ],
       "dependencies": [
-        "MOD-PROTOCOL"
+        "MOD-PROTOCOL",
+        "MOD-TRANSPORT",
+        "MOD-EXECUTION-CORE"
       ],
       "state_owned": [
         "broker request audit"
@@ -353,7 +370,9 @@
       "owner_team": "team-transport",
       "backup_team": "team-execution-core",
       "paths": [
-        "apps/trillionnium-owner-open-host/src/bin/r5_transport_host"
+        "apps/trillionnium-owner-open-host/src/bin/r5_transport_host",
+        "apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs",
+        "tools/owner-open/trace_mcp_stdio.py"
       ],
       "responsibilities": [
         "frame forwarding"
@@ -363,7 +382,9 @@
       ],
       "dependencies": [
         "MOD-PROTOCOL",
-        "MOD-STREAM"
+        "MOD-STREAM",
+        "MOD-EXECUTION-CORE",
+        "MOD-EVENT-STORE"
       ],
       "state_owned": [
         "transport delivery journal"
@@ -508,7 +529,21 @@
       "owner_team": "team-execution-core",
       "backup_team": "team-runtime",
       "paths": [
-        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7"
+        "apps/trillionnium-owner-open-host/src/lib.rs",
+        "apps/trillionnium-owner-open-host/src/main.rs",
+        "apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v3.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_host.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs",
+        "apps/trillionnium-owner-open-host/tests"
       ],
       "responsibilities": [
         "turn, call and job routing"
@@ -520,7 +555,9 @@
         "MOD-PROTOCOL",
         "MOD-TURN-ENGINE",
         "MOD-JOB-RUNTIME",
-        "MOD-EVENT-STORE"
+        "MOD-EVENT-STORE",
+        "MOD-PROVIDER",
+        "MOD-TOOL-RUNTIME"
       ],
       "state_owned": [
         "host correlation state"
@@ -660,7 +697,11 @@
       "owner_team": "team-provider",
       "backup_team": "team-turn-engine",
       "paths": [
-        "crates/trillionnium-owner-open-provider-jsonl"
+        "crates/trillionnium-owner-open-provider-jsonl",
+        "tools/owner-open/jsonl_provider_runtime.py",
+        "tools/owner-open/execute_codex_exec_plan.py",
+        "tools/owner-open/probe_codex_cli.py",
+        "tools/owner-open/build_codex_exec_prefix.py"
       ],
       "responsibilities": [
         "provider process lifecycle"
@@ -751,7 +792,7 @@
         "schema": "org.trillionnium.mod_provider.state.v1",
         "authoritative": true,
         "partition": "turn_id",
-        "durability": "journaled",
+        "durability": "memory",
         "retention": {
           "max_items": 4096,
           "max_bytes": 67108864
@@ -796,7 +837,7 @@
       },
       "rollback": {
         "supported": true,
-        "procedure": "restore_last_durable_state_then_fence",
+        "procedure": "fence_admission_then_reconcile_external_effects",
         "fail_closed": true
       },
       "open_gaps": [
@@ -902,7 +943,7 @@
         "schema": "org.trillionnium.mod_turn_engine.state.v1",
         "authoritative": true,
         "partition": "turn_stream_id",
-        "durability": "journaled",
+        "durability": "memory",
         "retention": {
           "max_items": 4096,
           "max_bytes": 67108864
@@ -947,7 +988,7 @@
       },
       "rollback": {
         "supported": true,
-        "procedure": "restore_last_durable_state_then_fence",
+        "procedure": "fence_admission_then_reconcile_external_effects",
         "fail_closed": true
       },
       "open_gaps": [
@@ -961,6 +1002,8 @@
       "owner_team": "team-runtime",
       "backup_team": "team-job-runtime",
       "paths": [
+        "crates/trillionnium-owner-open-call-registry",
+        "crates/trillionnium-owner-open-runtime",
         "crates/trillionnium-owner-open-tool-bridge"
       ],
       "responsibilities": [
@@ -973,7 +1016,7 @@
         "MOD-PROTOCOL"
       ],
       "state_owned": [
-        "live direct-call handles"
+        "call registry; live direct-call handles"
       ],
       "ordering_keys": [
         "call_id"
@@ -1050,7 +1093,7 @@
         "schema": "org.trillionnium.mod_tool_runtime.state.v1",
         "authoritative": true,
         "partition": "call_id",
-        "durability": "journaled",
+        "durability": "memory",
         "retention": {
           "max_items": 4096,
           "max_bytes": 67108864
@@ -1095,11 +1138,12 @@
       },
       "rollback": {
         "supported": true,
-        "procedure": "restore_last_durable_state_then_fence",
+        "procedure": "fence_admission_then_reconcile_external_effects",
         "fail_closed": true
       },
       "open_gaps": [
-        "GAP-PROCESS-LIFECYCLE-001"
+        "GAP-PROCESS-LIFECYCLE-001",
+        "GAP-CONC-REGISTRY-001"
       ]
     },
     {
@@ -1867,7 +1911,13 @@
       "owner_team": "team-rootlinux",
       "backup_team": "team-android",
       "paths": [
-        "packaging/root-linux"
+        "packaging/root-linux",
+        "tools/owner-open/build_owner_open_rootfs_image_release.py",
+        "tools/owner-open/build_owner_open_rootfs_image_release_v2.py",
+        "tools/owner-open/stage_owner_open_rootfs_payload.py",
+        "tools/owner-open/stage_owner_open_rootfs_payload_release.py",
+        "tools/owner-open/owner_open_rootlinux_supervisor.py",
+        "tools/owner-open/verify_owner_open_materialized_payload.py"
       ],
       "responsibilities": [
         "runtime image"
@@ -2021,7 +2071,8 @@
       "owner_team": "team-android",
       "backup_team": "team-rootlinux",
       "paths": [
-        "android-integration/working-tree/vendor/trillionnium/owner-open"
+        "android-integration/working-tree/vendor/trillionnium/owner-open",
+        "tools/verify-owner-open-android-source-closure-v2.py"
       ],
       "responsibilities": [
         "Soong graph"
@@ -2174,7 +2225,14 @@
       "owner_team": "team-adb",
       "backup_team": "team-runtime",
       "paths": [
-        "packaging/owner-open-adb"
+        "packaging/owner-open-adb",
+        "tools/owner-open/adb_smart_socket_relay.py",
+        "tools/owner-open/adb_smart_socket_relay_release.py",
+        "tools/owner-open/adb_smart_socket_relay_selected.py",
+        "tools/owner-open/prepare-adb-reverse-v1.sh",
+        "tools/owner-open/prepare-adb-reverse.sh",
+        "tools/owner-open/owner_open_adb_relay.py",
+        "tools/owner-open/owner_open_adb_relay_v2.py"
       ],
       "responsibilities": [
         "byte-transparent ADB path"
@@ -2324,7 +2382,20 @@
       "owner_team": "team-evidence",
       "backup_team": "team-security-release",
       "paths": [
-        "docs/machine/evidence-index.v1.json"
+        "docs/machine/evidence-index.v1.json",
+        "tools/evidence",
+        "tools/verify-g1-evidence.py",
+        "tools/verify-g1-evidence-live.py",
+        "tools/verify-g1-pr-aggregate.py",
+        "tools/g1_pr_aggregate_api.py",
+        "tools/owner-open/qualify_owner_open_adb_selected.py",
+        "tools/owner-open/supervise_codex_mcp_qualification_release.py",
+        "tools/owner-open/generate_owner_open_l1_candidate.py",
+        "tools/owner-open/qualify_owner_open_adb.py",
+        "tools/owner-open/qualify_owner_open_adb_release.py",
+        "tools/owner-open/supervise_codex_mcp_qualification.py",
+        "tools/owner-open/qualify_codex_mcp_jobs.py",
+        "tools/build"
       ],
       "responsibilities": [
         "L0-L6 evidence schemas"
@@ -2333,7 +2404,11 @@
         "synthetic target evidence"
       ],
       "dependencies": [
-        "MOD-PROTOCOL"
+        "MOD-PROTOCOL",
+        "MOD-BROKER",
+        "MOD-PROVIDER",
+        "MOD-ROOTLINUX",
+        "MOD-ADB"
       ],
       "state_owned": [
         "evidence index; promotion records"
@@ -2413,7 +2488,7 @@
         "schema": "org.trillionnium.mod_evidence.state.v1",
         "authoritative": true,
         "partition": "evidence_id",
-        "durability": "journaled",
+        "durability": "external",
         "retention": {
           "max_items": 4096,
           "max_bytes": 67108864

@@ -19,6 +19,10 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `crates/trillionnium-owner-open-provider-jsonl`
+- `tools/owner-open/jsonl_provider_runtime.py`
+- `tools/owner-open/execute_codex_exec_plan.py`
+- `tools/owner-open/probe_codex_cli.py`
+- `tools/owner-open/build_codex_exec_prefix.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -81,7 +85,7 @@ source navigation alone does not prove wire compatibility.
 - State authority: **authoritative**
 - Partition key: `turn_id`
 - State owned: `provider session epoch`
-- Durability class: `journaled`
+- Durability class: `memory`
 - Retention ceiling: 4096 items and 67108864 bytes per declared bounded in-memory window.
 - Terminal vocabulary: `closed` and `unknown`; implementation-specific intermediate states must converge to one of those classifications or a versioned extension.
 
@@ -113,7 +117,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,7 +138,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
@@ -268,6 +272,14 @@ provider/model contact. An unsuccessful terminal prints FAIL, never PASS.
 The existing execution-entrypoint suite covers the file/CLI boundary with local
 fixtures and fault injection; both existing exact-head and synthetic-merge
 source lanes already include it. No fixture closes the module's L2 gaps.
+
+### Session memory versus durable callback evidence
+
+The Rust provider adapter owns a live child session and bounded observations.
+Its owned session state is volatile. The Host and job/event journals retain
+accepted-effect and terminal receipts; the adapter does not durably restore a
+session or replay callbacks after restart. Python launch receipts are separate
+commits described above and cannot substitute for the Host acceptance barrier.
 
 ## 11. Security and trust boundaries
 

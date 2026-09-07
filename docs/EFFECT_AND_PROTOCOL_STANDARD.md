@@ -147,8 +147,12 @@ reconciles the existing operation without repeating it.
 ## 9. Extension and compatibility
 
 Protocol versions use explicit major/minor compatibility. Unknown extension
-fields are preserved when allowed. Required identity, digest, stage and error
-fields are never treated as optional extensions.
+fields in the current `RunTurnFrame`, `RunTurnRequest`, `TurnCancelRequest` and
+`ToolCall` codecs are preserved in flattened extension maps and round-trip as
+opaque data. Duplicate JSON members and malformed known fields are rejected.
+Preservation does not authorize a future tool or unsupported protocol version.
+Required identity, digest, stage and error fields are never treated as optional
+extensions. Closed durable schemas keep their own unknown-field rejection rule.
 
 Every major protocol change includes producer/consumer matrices, golden frames,
 mutation tests, upgrade order and rollback behavior.

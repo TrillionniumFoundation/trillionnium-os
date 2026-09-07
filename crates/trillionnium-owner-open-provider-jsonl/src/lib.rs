@@ -287,6 +287,9 @@ impl JsonlProvider {
     ) -> Result<ProviderTerminal> {
         self.config.validate()?;
         let started = Instant::now();
+        let deadline = started
+            .checked_add(self.config.timeout)
+            .ok_or_else(|| invalid_config("provider deadline cannot be represented"))?;
         let mut command = Command::new(&self.config.executable);
         command.env_clear();
         for &key in PROVIDER_INHERITED_ENV_ALLOWLIST {
@@ -313,8 +316,15 @@ impl JsonlProvider {
             }
         }
         let parent_pid = unsafe { libc::getpid() };
+        let spawn_cancellation = host.cancellation();
         unsafe {
             command.pre_exec(move || {
+                if spawn_cancellation.is_cancelled() {
+                    return Err(std::io::Error::from_raw_os_error(libc::ECANCELED));
+                }
+                if Instant::now() >= deadline {
+                    return Err(std::io::Error::from_raw_os_error(libc::ETIMEDOUT));
+                }
                 if libc::setpgid(0, 0) != 0 {
                     return Err(std::io::Error::last_os_error());
                 }
@@ -331,9 +341,26 @@ impl JsonlProvider {
             });
         }
 
-        let child = command
-            .spawn()
-            .map_err(|error| JsonlProviderError::Spawn(error.to_string()))?;
+        if host.is_cancelled() {
+            return Ok(ProviderTerminal::cancelled(
+                "turn cancelled before provider spawn",
+            ));
+        }
+        if Instant::now() >= deadline {
+            return Err(JsonlProviderError::TimedOut);
+        }
+        let child = match command.spawn() {
+            Ok(child) => child,
+            Err(error) if error.raw_os_error() == Some(libc::ETIMEDOUT) => {
+                return Err(JsonlProviderError::TimedOut);
+            }
+            Err(error) if error.raw_os_error() == Some(libc::ECANCELED) => {
+                return Ok(ProviderTerminal::cancelled(
+                    "turn cancelled before provider exec",
+                ));
+            }
+            Err(error) => return Err(JsonlProviderError::Spawn(error.to_string())),
+        };
         // Install the guard before touching any child-owned pipe.  Every
         // operation below can fail (including OS thread creation), and a bare
         // `Child` would otherwise leave the provider process/group alive on
@@ -399,6 +426,7 @@ impl JsonlProvider {
                     }
                 }),
                 self.config.max_line_bytes,
+                Some(deadline),
             )?;
             outbound_seq = outbound_seq.saturating_add(1);
 
@@ -408,7 +436,7 @@ impl JsonlProvider {
             let mut cancellation_deadline = None::<Instant>;
             let mut observed_exit = None::<(String, Instant)>;
             while terminal.is_none() {
-                if started.elapsed() >= self.config.timeout {
+                if Instant::now() >= deadline {
                     return Err(JsonlProviderError::TimedOut);
                 }
                 if host.is_cancelled() && !cancellation_sent {
@@ -427,6 +455,7 @@ impl JsonlProvider {
                             }
                         }),
                         self.config.max_line_bytes,
+                        Some(deadline),
                     )?;
                     outbound_seq = outbound_seq.saturating_add(1);
                     cancellation_sent = true;
@@ -439,8 +468,15 @@ impl JsonlProvider {
                     continue;
                 }
 
-                match receiver.recv_timeout(self.config.poll_interval) {
+                match receiver.recv_timeout(
+                    self.config
+                        .poll_interval
+                        .min(deadline.saturating_duration_since(Instant::now())),
+                ) {
                     Ok(ProviderOutput::Line(raw)) => {
+                        if Instant::now() >= deadline {
+                            return Err(JsonlProviderError::TimedOut);
+                        }
                         event_count = event_count.saturating_add(1);
                         if event_count > self.config.max_event_count {
                             return Err(JsonlProviderError::Protocol(
@@ -463,7 +499,9 @@ impl JsonlProvider {
                                     .to_string();
                                 let response =
                                     match decode_bound_tool_call(&value, request, &self.config) {
-                                        Ok(call) => match host.invoke_tool(call) {
+                                        Ok(call) => match host
+                                            .invoke_tool_with_deadline(call, Some(deadline))
+                                        {
                                             Ok(outcome) => {
                                                 encode_tool_outcome(outbound_seq, &call_id, outcome)
                                             }
@@ -481,10 +519,14 @@ impl JsonlProvider {
                                             &error.to_string(),
                                         ),
                                     };
+                                if Instant::now() >= deadline {
+                                    return Err(JsonlProviderError::TimedOut);
+                                }
                                 write_json_line(
                                     &mut provider_stdin,
                                     &response,
                                     self.config.max_line_bytes,
+                                    Some(deadline),
                                 )?;
                                 outbound_seq = outbound_seq.saturating_add(1);
                             }
@@ -649,6 +691,7 @@ fn write_json_line<W: Write + AsRawFd>(
     writer: &mut W,
     value: &impl Serialize,
     maximum: usize,
+    turn_deadline: Option<Instant>,
 ) -> Result<()> {
     let encoded =
         serde_json::to_vec(value).map_err(|error| JsonlProviderError::Io(error.to_string()))?;
@@ -662,7 +705,13 @@ fn write_json_line<W: Write + AsRawFd>(
     }
     let mut framed = encoded;
     framed.push(b'\n');
-    write_nonblocking(writer, &framed, PROVIDER_WRITE_TIMEOUT)
+    let io_deadline = Instant::now() + PROVIDER_WRITE_TIMEOUT;
+    let deadline = turn_deadline.map_or(io_deadline, |turn| turn.min(io_deadline));
+    let result = write_nonblocking(writer, &framed, deadline);
+    if turn_deadline.is_some_and(|turn| Instant::now() >= turn) {
+        return Err(JsonlProviderError::TimedOut);
+    }
+    result
 }
 
 /// Write one provider frame without an unbounded blocking syscall.  The
@@ -673,7 +722,7 @@ fn write_json_line<W: Write + AsRawFd>(
 fn write_nonblocking<W: Write + AsRawFd>(
     writer: &mut W,
     bytes: &[u8],
-    timeout: Duration,
+    deadline: Instant,
 ) -> Result<()> {
     let fd = writer.as_raw_fd();
     let original_flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };
@@ -688,7 +737,7 @@ fn write_nonblocking<W: Write + AsRawFd>(
         ));
     }
 
-    let write_result = write_nonblocking_loop(writer, fd, bytes, timeout);
+    let write_result = write_nonblocking_loop(writer, fd, bytes, deadline);
     let restore_result = unsafe { libc::fcntl(fd, libc::F_SETFL, original_flags) };
     if restore_result < 0 {
         let restore_error = std::io::Error::last_os_error();
@@ -708,13 +757,15 @@ fn write_nonblocking_loop<W: Write>(
     writer: &mut W,
     fd: i32,
     bytes: &[u8],
-    timeout: Duration,
+    deadline: Instant,
 ) -> Result<()> {
-    let deadline = Instant::now()
-        .checked_add(timeout)
-        .unwrap_or_else(Instant::now);
     let mut offset = 0usize;
     while offset < bytes.len() {
+        if Instant::now() >= deadline {
+            return Err(JsonlProviderError::Io(
+                "provider stdin write timed out".to_string(),
+            ));
+        }
         match writer.write(&bytes[offset..]) {
             Ok(0) => {
                 return Err(JsonlProviderError::Io(
@@ -757,9 +808,11 @@ fn write_nonblocking_loop<W: Write>(
             return Err(JsonlProviderError::Io(error.to_string()));
         }
         if polled == 0 {
-            return Err(JsonlProviderError::Io(
-                "provider stdin write timed out while the child was not reading".to_string(),
-            ));
+            // poll uses whole milliseconds. Its timeout may expire just
+            // before the absolute deadline because of truncation (or the
+            // i32 cap); recheck the monotonic clock in the loop before
+            // classifying this as an I/O or turn timeout.
+            continue;
         }
         if poll_fd.revents & (libc::POLLNVAL | libc::POLLERR | libc::POLLHUP) != 0 {
             return Err(JsonlProviderError::Io(
@@ -839,9 +892,11 @@ mod tests {
         assert!(original_flags >= 0);
         let payload = vec![b'x'; 2 * 1024 * 1024];
         let started = Instant::now();
-        let error = write_nonblocking(&mut writer, &payload, Duration::from_millis(25))
+        let deadline = started + Duration::from_millis(25);
+        let error = write_nonblocking(&mut writer, &payload, deadline)
             .expect_err("a stalled pipe must hit the finite write deadline");
         assert!(error.to_string().contains("timed out"));
+        assert!(Instant::now() >= deadline);
         assert!(started.elapsed() < Duration::from_secs(1));
         let restored_flags = unsafe { libc::fcntl(writer.as_raw_fd(), libc::F_GETFL) };
         assert_eq!(restored_flags, original_flags);
@@ -855,9 +910,9 @@ mod tests {
         let mut writer = unsafe { File::from_raw_fd(descriptors[1]) };
         let value = json!({"kind": "turn.complete"});
         let encoded = serde_json::to_vec(&value).unwrap();
-        write_json_line(&mut writer, &value, encoded.len() + 1)
+        write_json_line(&mut writer, &value, encoded.len() + 1, None)
             .expect("the exact framed length must fit");
-        let error = write_json_line(&mut writer, &value, encoded.len())
+        let error = write_json_line(&mut writer, &value, encoded.len(), None)
             .expect_err("the delimiter must count against the frame bound");
         assert!(error.to_string().contains("exceeds its bound"));
     }

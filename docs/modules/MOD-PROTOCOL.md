@@ -58,7 +58,7 @@ Dependencies are consumed through their declared APIs. A dependency outage canno
 - Catalog input labels: `protocol_envelope_v1`
 - Catalog output labels: `protocol_identity_v1`
 - Catalog error labels: `protocol_error_v1`
-- Unknown fields: rejected unless a future compatibility revision explicitly changes the rule.
+- Unknown fields: preserved unless a future compatibility revision explicitly changes the rule.
 - Versioning: semantic version `1.0.0`; incompatible changes require a new version and migration evidence.
 - Size and count limits: bounded by the resource contract and validated before allocation or durable mutation.
 
@@ -75,6 +75,30 @@ source navigation alone does not prove wire compatibility.
 
 `decode_strict_frame` validates bounded JSON and the envelope; `RunTurnRequest` and `ToolCall` define payload-level identities. Preserve session, task, turn and stream aliases and reject a contradictory mirror before routing.
 
+### Concrete v1 fields and extension policy
+
+| Codec surface | Required fields and relationships | Extension handling |
+|---|---|---|
+| `RunTurnFrame` | `kind`, unsigned `seq`, JSON `payload`; optional envelope identities and digests must agree with payload mirrors and aliases | Unknown object members are retained in `extensions` and re-encoded; they grant no authority |
+| `RunTurnRequest` | `protocol`, supported `protocol_version`, `session_id`, `task_id`, `turn_id`, bounded `user_input` | Unknown object members are retained; known fields remain strictly validated |
+| Resume | `resume_cursor` and `resume_token` are mutually exclusive; `prior_connection_id` requires exactly one | No inferred replay or replacement effect |
+| `TurnCancelRequest` | `session_id`, `turn_id`; optional profile/task/stream narrow the exact scope | Unknown members survive decoding but cannot widen cancellation scope |
+| `ToolCall` | `call_id`, `tool`; shell command versus argv, target aliases, environment and timeout follow the selected mechanical validator | Unknown members survive; unknown tool names are data until an explicit runtime supports them |
+
+`decode_strict_value` rejects duplicate JSON members and malformed JSON before
+`decode_strict_frame` validates the envelope. Preserving unknown fields is not
+permission to ignore malformed known fields or unsupported protocol versions.
+Other typed stores that declare `deny_unknown_fields` retain their own rejection
+policy; protocol extensibility does not change their durable schema.
+
+`MechanicalLimits` holds deployment-selected parser limits. Its defaults include
+1 MiB frames, 256-byte IDs, 256 KiB commands and 4,096 argv entries. The separate
+schema hard ceilings (`MAX_CODEC_*`) permit larger bounded profiles: for example
+16 MiB frames and 4 KiB IDs. The catalog's module allocation table is not a
+replacement for these per-field validators. The existing
+`frame_extensions_round_trip_without_becoming_policy` codec test is the
+compatibility witness for opaque extension round trips.
+
 ## 6. State model and ownership
 
 - State schema: `org.trillionnium.mod_protocol.state.v1`
@@ -85,7 +109,7 @@ source navigation alone does not prove wire compatibility.
 - Retention ceiling: 4096 items and 67108864 bytes per declared bounded in-memory window.
 - Terminal vocabulary: `closed` and `unknown`; implementation-specific intermediate states must converge to one of those classifications or a versioned extension.
 
-Only this module may perform authoritative writes for its state families. Read models may be rebuilt from retained authoritative records but cannot become an alternate writer. Every writer carries a module or service epoch; stale epochs fail closed.
+This stateless codec owns no writer, journal, lease or recovery epoch. Those contracts belong to the consuming stateful module.
 
 ## 7. Ordering, concurrency and backpressure
 
@@ -113,7 +137,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,13 +158,13 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
 Because the module owns no durable state, restart recovery consists of rejecting partial frames and requiring callers to resubmit a complete versioned envelope. A caller must reconcile any already accepted downstream effect separately.
 
-Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
+A valid decoded frame does not establish downstream acceptance or durability. The downstream state owner supplies those proofs.
 
 ## 11. Security and trust boundaries
 

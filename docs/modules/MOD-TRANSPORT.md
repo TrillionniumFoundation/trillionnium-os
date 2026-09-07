@@ -19,6 +19,8 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `apps/trillionnium-owner-open-host/src/bin/r5_transport_host`
+- `apps/trillionnium-owner-open-host/src/bin/r5_transport_host.rs`
+- `tools/owner-open/trace_mcp_stdio.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -46,7 +48,7 @@ The provider remains the sole semantic principal. This module may reject malform
 
 ## 4. Context, dependencies and data flow
 
-Direct dependencies: `MOD-PROTOCOL`, `MOD-STREAM`.
+Direct dependencies: `MOD-PROTOCOL`, `MOD-STREAM`, `MOD-EXECUTION-CORE`, `MOD-EVENT-STORE`.
 
 The normal data-flow boundary is: validate the versioned input; bind identity and ordering metadata; reserve finite capacity; make the minimal authoritative transition; execute or forward the exact mechanical action; retain bounded observations; publish one terminal or explicit unknown classification.
 
@@ -113,7 +115,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,7 +136,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
@@ -165,7 +167,7 @@ The degraded state is `fail_closed`. Recovery is `reconcile_before_resume`, and 
 
 ## 13. Compatibility, migration and rollback
 
-Rolling compatibility is supported under the explicit compatibility and fencing contract. Read/write compatibility currently accepts `v1` and writes `v1` unless the module-specific migration below states otherwise.
+Rolling compatibility is supported under the explicit compatibility and fencing contract. The catalog read/write matrix names the v1 logical state/record contract; it does not name the physical storage layout. The separately declared migration changes the v1 JSONL layout into v2 segmented storage while preserving record identities.
 
 v1 JSONL state migrates to v2 segmented state through fenced-prefix reconciliation; dual read and dual write are disabled.
 

@@ -113,7 +113,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,7 +134,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
@@ -165,11 +165,43 @@ The degraded state is `fail_closed`. Recovery is `reconcile_before_resume`, and 
 
 ## 13. Compatibility, migration and rollback
 
-Rolling compatibility is supported under the explicit compatibility and fencing contract. Read/write compatibility currently accepts `v1` and writes `v1` unless the module-specific migration below states otherwise.
+Rolling compatibility is supported under the explicit compatibility and fencing contract. The catalog read/write matrix names the v1 logical state/record contract; it does not name the physical storage layout. The separately declared migration changes the v1 JSONL layout into v2 segmented storage while preserving record identities.
 
 v1 JSONL state migrates to v2 segmented state through fenced-prefix reconciliation; dual read and dual write are disabled.
 
 Rollback is fail-closed. Stateful modules restore the last compatible durable state, fence newer writers and reconcile external effects before admission. A rollback may restore software and state compatibility; it cannot erase an effect already attempted outside the module.
+
+### Storage versions and operator sequence
+
+| Surface | Version / role |
+|---|---|
+| Logical catalog state contract | `org.trillionnium.mod_event_store.state.v1` |
+| Serialized event record | `trillionnium.owner-open.event-record.v1`; retained through migration |
+| Segmented disk layout | `trillionnium.owner-open.event-store.v2` |
+| Derived index / checkpoint | `index.v2.json` / `snapshot.v2.json`; validated against WAL identity |
+
+1. Inhibit new effects, drain admitted work and retain the source WAL and last
+   durable cursor. Keep one cooperating writer throughout the transition.
+2. Use `SegmentedEventStore::open_or_migrate_with_legacy_prefix` in the embedding
+   Host to lock the retained v1 source, validate its complete prefix, and open or
+   reconcile the v2 directory. A shorter retained v1 prefix after v2 takes
+   authority is different from a conflicting or missing source.
+3. Require successful sync/validation before reopening admission. Do not enable
+   simultaneous v1/v2 writers or infer successful migration from directory existence.
+4. For a software downgrade, inhibit and fence the v2 writer, call
+   `export_legacy` (or its `migrate_to_legacy` alias) to a dedicated retained v1
+   destination, validate its exact sequence and digests, then select the old
+   compatible binary. External effects still require reconciliation.
+
+These are library operations invoked by the Host, not a nonexistent standalone
+migration CLI. Source migration tests do not establish power-loss recovery.
+
+`EventStoreLimits` bounds store bytes, record bytes, record count and identifier
+sizes. Its default record count is 1,000,000 and schema maximum is 1,048,576;
+`SegmentedEventStoreConfig` separately bounds open segments and pending groups.
+Those finite source limits are not proof of the provisional 64 MiB module RSS
+objective. `flush` is an explicit barrier; the 10 ms default group interval is
+checked on the next append, not a background timer guaranteeing idle flush.
 
 ## 14. Observability
 

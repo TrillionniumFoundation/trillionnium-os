@@ -8,15 +8,13 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender, sync_channel};
+use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender, TrySendError, sync_channel};
 use std::thread::{self, JoinHandle};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
-use r5_persistence::{
-    Persistence, StoredTurn, event_scope, request_sha256, stable_turn_stream_id,
-};
+use r5_persistence::{Persistence, StoredTurn, event_scope, request_sha256, stable_turn_stream_id};
 use serde_json::{Value, json};
 use trillionnium_owner_open_call_registry::{
     CallKey, CallRegistry, RegistryError, TurnScope as RegistryTurnScope,
@@ -29,11 +27,10 @@ use trillionnium_owner_open_turn_loop::{
     TurnRequest as LoopTurnRequest, TurnRunner,
 };
 use trillionnium_owner_open_types::{
-    FRAME_HELLO, FRAME_HELLO_ACK, FRAME_MODEL_DELTA, FRAME_MODEL_MESSAGE,
-    FRAME_PROVIDER_STATUS, FRAME_TOOL_ACCEPTED, FRAME_TOOL_CANCEL, FRAME_TOOL_RESULT,
-    FRAME_TOOL_PTY, FRAME_TOOL_STARTED, FRAME_TOOL_STDERR, FRAME_TOOL_STDOUT, FRAME_TURN_ACCEPTED,
-    FRAME_TURN_CANCEL, FRAME_TURN_END, FRAME_TURN_START, MechanicalLimits, PROTOCOL,
-    PROTOCOL_VERSION, RunTurnFrame,
+    FRAME_HELLO, FRAME_HELLO_ACK, FRAME_MODEL_DELTA, FRAME_MODEL_MESSAGE, FRAME_PROVIDER_STATUS,
+    FRAME_TOOL_ACCEPTED, FRAME_TOOL_CANCEL, FRAME_TOOL_PTY, FRAME_TOOL_RESULT, FRAME_TOOL_STARTED,
+    FRAME_TOOL_STDERR, FRAME_TOOL_STDOUT, FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL, FRAME_TURN_END,
+    FRAME_TURN_START, MechanicalLimits, PROTOCOL, PROTOCOL_VERSION, RunTurnFrame,
 };
 
 const FRAME_HOST_ERROR: &str = "host.error";
@@ -343,7 +340,10 @@ enum HostMessage {
     Inbound(Vec<u8>),
     InputEof,
     InputError(String),
-    TurnEvent(Box<TurnEvent>),
+    TurnEvent {
+        event: Box<TurnEvent>,
+        receipt: SyncSender<Result<(), String>>,
+    },
     TurnComplete(Result<ProviderTerminal, String>),
 }
 
@@ -353,6 +353,45 @@ struct ActiveTurn {
     durable_scope: DurableTurnScope,
     cancellation: TurnCancellation,
     worker: Option<JoinHandle<()>>,
+}
+
+/// The producer cannot pass an effect acceptance until the owning Host has
+/// acknowledged persistence. A finite receipt wait also fails closed if the
+/// Host stops servicing its queue. Delivery to a client is not this barrier.
+fn send_turn_event(sender: &SyncSender<HostMessage>, event: &TurnEvent) -> Result<(), String> {
+    send_turn_event_with_timeout(sender, event, Duration::from_secs(30))
+}
+
+fn send_turn_event_with_timeout(
+    sender: &SyncSender<HostMessage>,
+    event: &TurnEvent,
+    timeout: Duration,
+) -> Result<(), String> {
+    let deadline = Instant::now() + timeout;
+    let expired = || "Host persistence receipt was not received; effect admission is fenced".to_string();
+    let (receipt, received) = sync_channel(1);
+    let mut message = HostMessage::TurnEvent {
+        event: Box::new(event.clone()),
+        receipt,
+    };
+    loop {
+        if Instant::now() >= deadline {
+            return Err(expired());
+        }
+        match sender.try_send(message) {
+            Ok(()) => break,
+            Err(TrySendError::Disconnected(_)) => {
+                return Err("Host event receiver disconnected".to_string());
+            }
+            Err(TrySendError::Full(pending)) => {
+                message = pending;
+                thread::sleep(Duration::from_millis(1).min(deadline.saturating_duration_since(Instant::now())));
+            }
+        }
+    }
+    received
+        .recv_timeout(deadline.saturating_duration_since(Instant::now()))
+        .map_err(|_| expired())?
 }
 
 fn spawn_stdin_reader(sender: SyncSender<HostMessage>, max_frame_bytes: usize) {
@@ -511,6 +550,19 @@ fn process_messages_with_control_seq<W: Write>(
                         let context = output.context(&request)?;
                         let digest = request_sha256(&request)?;
                         let durable_scope = event_scope(&request, &context.turn_stream_id);
+                        if let Some(error) = persistence.effect_admission_error() {
+                            deliver_unscoped_host_error_with_context(
+                                &mut writer,
+                                &mut output,
+                                &context,
+                                "turn_journal_unavailable",
+                                &error,
+                                limits.max_frame_bytes,
+                                &mut delivery_attached,
+                                &mut delivery_error,
+                            );
+                            continue;
+                        }
                         match persistence.load(&durable_scope, &digest) {
                             StoredTurn::Complete(frames) => {
                                 output.observe_replay(&frames);
@@ -531,7 +583,7 @@ fn process_messages_with_control_seq<W: Write>(
                                         "status": "unknown_after_disconnect",
                                         "summary": Value::Null,
                                         "error": "a prior durable turn has no terminal observation; automatic redispatch is denied",
-                                        "runtime_ready": true,
+                                        "runtime_ready": persistence.effect_admission_error().is_none(),
                                         "reconciliation": true,
                                         "automatic_redispatch": false,
                                         "event_log_status": persistence.status(),
@@ -556,7 +608,7 @@ fn process_messages_with_control_seq<W: Write>(
                                 );
                                 continue;
                             }
-                            StoredTurn::Conflict(error) => {
+                            StoredTurn::Conflict(error) | StoredTurn::Unavailable(error) => {
                                 // `context()` resets the per-turn cursor.  A
                                 // digest-conflicting retry is not a valid
                                 // continuation of that stream, so a scoped
@@ -591,12 +643,27 @@ fn process_messages_with_control_seq<W: Write>(
                             Some(&context),
                             EventCorrelation::default(),
                         );
-                        let accepted = persist_for_delivery(
+                        let accepted = match persist_before_effect(
                             persistence,
                             &durable_scope,
                             &digest,
                             accepted,
-                        );
+                        ) {
+                            Ok(frame) => frame,
+                            Err(error) => {
+                                deliver_unscoped_host_error_with_context(
+                                    &mut writer,
+                                    &mut output,
+                                    &context,
+                                    "turn_journal_unavailable",
+                                    &error,
+                                    limits.max_frame_bytes,
+                                    &mut delivery_attached,
+                                    &mut delivery_error,
+                                );
+                                continue;
+                            }
+                        };
                         deliver_frame(
                             &mut writer,
                             &accepted,
@@ -625,11 +692,7 @@ fn process_messages_with_control_seq<W: Write>(
                                     let runner = TurnRunner::new(worker_registry);
                                     let event_sender = worker_sender.clone();
                                     let mut sink = move |event: &TurnEvent| -> Result<(), String> {
-                                        event_sender
-                                            .send(HostMessage::TurnEvent(Box::new(event.clone())))
-                                            .map_err(|_| {
-                                                "Host event receiver disconnected".to_string()
-                                            })
+                                        send_turn_event(&event_sender, event)
                                     };
                                     runner
                                         .run_with_sink_and_cancellation(
@@ -641,12 +704,12 @@ fn process_messages_with_control_seq<W: Write>(
                                         .map(|run| run.terminal)
                                         .map_err(|error| error.to_string())
                                 }))
-                                .unwrap_or_else(|_| {
-                                    Err("active turn worker panicked".to_string())
-                                });
+                                .unwrap_or_else(|_| Err("active turn worker panicked".to_string()));
                                 let _ = worker_sender.send(HostMessage::TurnComplete(result));
                             })
-                            .map_err(|error| format!("failed to spawn active turn worker: {error}"))?;
+                            .map_err(|error| {
+                                format!("failed to spawn active turn worker: {error}")
+                            })?;
                         active = Some(ActiveTurn {
                             context,
                             request_digest: digest,
@@ -684,24 +747,41 @@ fn process_messages_with_control_seq<W: Write>(
                 input_open = false;
                 delivery_error.get_or_insert(error);
             }
-            Ok(HostMessage::TurnEvent(event)) => {
+            Ok(HostMessage::TurnEvent { event, receipt }) => {
                 let Some(active_turn) = active.as_ref() else {
+                    let _ = receipt.send(Err("turn is no longer active".to_string()));
                     continue;
                 };
                 if let Some(frame) = map_turn_event(&mut output, &active_turn.context, &event) {
-                    let frame = persist_for_delivery(
+                    match persist_before_effect(
                         persistence,
                         &active_turn.durable_scope,
                         &active_turn.request_digest,
                         frame,
-                    );
-                    deliver_frame(
-                        &mut writer,
-                        &frame,
-                        limits.max_frame_bytes,
-                        &mut delivery_attached,
-                        &mut delivery_error,
-                    );
+                    ) {
+                        Ok(frame) => {
+                            // Acknowledge journal custody before client delivery;
+                            // slow or detached clients do not authorize cancellation.
+                            let _ = receipt.send(Ok(()));
+                            deliver_frame(
+                                &mut writer,
+                                &frame,
+                                limits.max_frame_bytes,
+                                &mut delivery_attached,
+                                &mut delivery_error,
+                            );
+                        }
+                        Err(error) => {
+                            active_turn.cancellation.cancel();
+                            let _ = receipt.send(Err(error));
+                        }
+                    }
+                } else {
+                    let result = persistence.effect_admission_error().map_or(Ok(()), Err);
+                    if result.is_err() {
+                        active_turn.cancellation.cancel();
+                    }
+                    let _ = receipt.send(result);
                 }
             }
             Ok(HostMessage::TurnComplete(result)) => {
@@ -949,10 +1029,26 @@ fn handle_tool_cancel<W: Write>(
 
 fn validate_control_context(frame: &RunTurnFrame, context: &TurnContext) -> Result<(), String> {
     for (label, envelope, expected) in [
-        ("session_id", frame.session_id.as_deref(), context.session_id.as_str()),
-        ("profile_id", frame.profile_id.as_deref(), context.profile_id.as_str()),
-        ("task_id", frame.task_id.as_deref(), context.task_id.as_str()),
-        ("turn_id", frame.turn_id.as_deref(), context.turn_id.as_str()),
+        (
+            "session_id",
+            frame.session_id.as_deref(),
+            context.session_id.as_str(),
+        ),
+        (
+            "profile_id",
+            frame.profile_id.as_deref(),
+            context.profile_id.as_str(),
+        ),
+        (
+            "task_id",
+            frame.task_id.as_deref(),
+            context.task_id.as_str(),
+        ),
+        (
+            "turn_id",
+            frame.turn_id.as_deref(),
+            context.turn_id.as_str(),
+        ),
         (
             "turn_stream_id",
             frame
@@ -963,7 +1059,9 @@ fn validate_control_context(frame: &RunTurnFrame, context: &TurnContext) -> Resu
         ),
     ] {
         if envelope.is_some_and(|value| value != expected) {
-            return Err(format!("tool.cancel {label} does not match the active turn"));
+            return Err(format!(
+                "tool.cancel {label} does not match the active turn"
+            ));
         }
         if let Some(value) = frame.payload.get(label) {
             let value = value
@@ -1004,7 +1102,7 @@ fn finish_active_turn<W: Write>(
             "status": status,
             "summary": summary,
             "error": error,
-            "runtime_ready": true,
+            "runtime_ready": persistence.effect_admission_error().is_none(),
             "event_log_status": persistence.status(),
             "event_log_error": persistence.error(),
             "streaming_events": true,
@@ -1048,7 +1146,7 @@ fn write_hello<W: Write>(
             "connection_id": connection_id,
             "host_implementation": HOST_IMPLEMENTATION,
             "provider_status": "configured_external_jsonl",
-            "runtime_ready": true,
+            "runtime_ready": persistence.effect_admission_error().is_none(),
             "same_turn_tool_callback": true,
             "streaming_turn_events": true,
             "streaming_event_persistence": persistence.is_durable(),
@@ -1085,8 +1183,35 @@ fn persist_for_delivery(
     decorate_log_status(&mut frame.payload, persistence);
     if !persistence.append_frame(scope, request_digest, &frame) {
         decorate_log_status(&mut frame.payload, persistence);
+        if persistence.effect_admission_error().is_some()
+            && frame.kind == FRAME_TURN_END
+            && let Some(object) = frame.payload.as_object_mut()
+        {
+            if let Some(observed) =
+                object.insert("status".to_string(), json!("unknown_after_journal_failure"))
+            {
+                object.insert("observed_status".to_string(), observed);
+            }
+            object.insert("automatic_redispatch".to_string(), json!(false));
+        }
     }
     frame
+}
+
+fn persist_before_effect(
+    persistence: &mut Persistence,
+    scope: &DurableTurnScope,
+    request_digest: &str,
+    frame: RunTurnFrame,
+) -> Result<RunTurnFrame, String> {
+    if let Some(error) = persistence.effect_admission_error() {
+        return Err(error);
+    }
+    let frame = persist_for_delivery(persistence, scope, request_digest, frame);
+    if let Some(error) = persistence.effect_admission_error() {
+        return Err(error);
+    }
+    Ok(frame)
 }
 
 fn decorate_log_status(payload: &mut Value, persistence: &Persistence) {
@@ -1097,6 +1222,12 @@ fn decorate_log_status(payload: &mut Value, persistence: &Persistence) {
         "event_log_status".to_string(),
         Value::String(persistence.status().to_string()),
     );
+    if object.contains_key("runtime_ready") {
+        object.insert(
+            "runtime_ready".to_string(),
+            json!(persistence.effect_admission_error().is_none()),
+        );
+    }
     match persistence.error() {
         Some(error) => {
             object.insert(
@@ -1243,25 +1374,13 @@ fn map_turn_event(
                     json!({"provider_kind": kind, "raw": payload, "turn_event_seq": event.seq}),
                 ),
             };
-            Some(output.frame(
-                kind,
-                payload,
-                Some(context),
-                EventCorrelation::default(),
-            ))
+            Some(output.frame(kind, payload, Some(context), EventCorrelation::default()))
         }
-        TurnEventKind::ToolRuntime(runtime) => Some(map_runtime_event(
-            output,
-            context,
-            event.seq,
-            runtime,
-        )),
+        TurnEventKind::ToolRuntime(runtime) => {
+            Some(map_runtime_event(output, context, event.seq, runtime))
+        }
         TurnEventKind::ToolExisting(snapshot) => Some(map_snapshot(
-            output,
-            context,
-            event.seq,
-            "existing",
-            snapshot,
+            output, context, event.seq, "existing", snapshot,
         )),
         TurnEventKind::ToolInhibited(snapshot) => Some(map_snapshot(
             output,
@@ -1439,6 +1558,35 @@ fn new_connection_id() -> String {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn persistence_receipt_deadline_also_bounds_queue_admission() {
+        let (sender, _receiver) = super::sync_channel(1);
+        sender.send(super::HostMessage::InputEof).unwrap();
+        let event = super::TurnEvent { seq: 0, kind: super::TurnEventKind::TurnAccepted };
+        let started = super::Instant::now();
+        assert!(super::send_turn_event_with_timeout(&sender, &event, super::Duration::from_millis(20)).is_err());
+        assert!(started.elapsed() < super::Duration::from_secs(1));
+    }
+
+    #[test]
+    fn persistence_receipt_must_arrive_after_successful_queue_admission() {
+        let (sender, _receiver) = super::sync_channel(1);
+        let event = super::TurnEvent { seq: 0, kind: super::TurnEventKind::TurnAccepted };
+        assert!(super::send_turn_event_with_timeout(&sender, &event, super::Duration::from_millis(20)).is_err());
+    }
+
+    #[test]
+    fn persistence_receipt_preserves_the_host_error() {
+        let (sender, receiver) = super::sync_channel(1);
+        let worker = super::thread::spawn(move || {
+            let super::HostMessage::TurnEvent { receipt, .. } = receiver.recv().unwrap() else { panic!("expected event") };
+            receipt.send(Err("journal failed".to_string())).unwrap();
+        });
+        let event = super::TurnEvent { seq: 0, kind: super::TurnEventKind::TurnAccepted };
+        assert_eq!(super::send_turn_event_with_timeout(&sender, &event, super::Duration::from_secs(1)), Err("journal failed".to_string()));
+        worker.join().unwrap();
+    }
+
     use super::*;
 
     #[test]

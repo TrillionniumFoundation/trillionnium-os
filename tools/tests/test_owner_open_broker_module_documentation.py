@@ -77,6 +77,34 @@ class ModuleDocumentationContractTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         verifier.verify_index_and_documents(root)
 
+    def test_raw_html_block_cannot_wrap_required_module_contract(self) -> None:
+        text = (ROOT / "docs/modules/MOD-PROTOCOL.md").read_text()
+        for prefix in ("", "`unclosed inline marker\n"):
+            with self.subTest(prefix=prefix), self.assertRaisesRegex(verifier.VerificationError, "unsupported raw HTML block"):
+                verifier.verify_headings(prefix + "<div>\n" + text + "\n</div>", list(verifier.REQUIRED_SECTIONS), "MOD-PROTOCOL")
+
+    def test_source_ownership_cannot_be_replaced_by_unrelated_existing_path(self) -> None:
+        temporary, root = self._fixture()
+        self.addCleanup(temporary.cleanup)
+        path = root / "docs/machine/module-catalog.v1.json"
+        catalog = json.loads(path.read_text())
+        protocol = catalog["modules"][0]
+        protocol["paths"] = ["crates/trillionnium-owner-open-stream-window"]
+        _write_json(path, catalog)
+        document = root / "docs/modules/MOD-PROTOCOL.md"
+        document.write_text(document.read_text().replace(
+            "- `crates/trillionnium-owner-open-types`", "- `crates/trillionnium-owner-open-stream-window`"))
+        with self.assertRaisesRegex(verifier.VerificationError, "outside module ownership"):
+            verifier.verify_index_and_documents(root)
+
+    def test_unknown_field_policy_drift_is_rejected(self) -> None:
+        catalog = verifier.load_json(ROOT / "docs/machine/module-catalog.v1.json")
+        protocol = next(module for module in catalog["modules"] if module["id"] == "MOD-PROTOCOL")
+        self.assertEqual(protocol["compatibility"]["unknown_fields"], "preserve")
+        text = (ROOT / "docs/modules/MOD-PROTOCOL.md").read_text()
+        with self.assertRaisesRegex(verifier.VerificationError, "Unknown fields"):
+            verifier.verify_contract_prose(text.replace("- Unknown fields: preserved", "- Unknown fields: rejected"), protocol)
+
     def test_every_visible_resource_and_slo_value_is_bound(self) -> None:
         catalog = verifier.load_json(ROOT / "docs/machine/module-catalog.v1.json")
         module = catalog["modules"][0]

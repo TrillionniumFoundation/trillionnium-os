@@ -26,6 +26,17 @@ def evidence_index() -> dict:
 
 
 class ModuleContractVerificationTests(unittest.TestCase):
+    def test_documentation_revision_is_bound_to_program_and_entrypoint(self) -> None:
+        docset = verifier.load("doc-set.v1.json")
+        program = verifier.load("program-state.v1.json")
+        verifier.verify_documentation_revision(docset, program)
+        program["documentation_revision"] = "0.0.1"
+        with self.assertRaisesRegex(verifier.VerificationError, "documentation revision drift"):
+            verifier.verify_documentation_revision(docset, program)
+        docset["documentation_revision"] = "0.0.1"
+        with self.assertRaisesRegex(verifier.VerificationError, "START_HERE"):
+            verifier.verify_documentation_revision(docset, program)
+
     def test_checked_in_catalog_has_concrete_contracts(self) -> None:
         known = verifier.verify_modules(catalog())
         self.assertEqual(len(known), 16)

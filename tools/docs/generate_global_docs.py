@@ -5,7 +5,13 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import tomllib
 from typing import Any
+
+if __package__:
+    from . import verify_component_documentation as components
+else:
+    import verify_component_documentation as components
 
 ROOT = Path(__file__).resolve().parents[2]
 MACHINE = ROOT / "docs" / "machine"
@@ -130,6 +136,66 @@ def module_status() -> str:
         )
     return "\n".join(lines) + "\n"
 
+def component_status() -> str:
+    cargo = tomllib.loads((ROOT / "Cargo.toml").read_text(encoding="utf-8"))
+    workspace = cargo["workspace"]
+    members = workspace["members"]
+    defaults = set(workspace["default-members"])
+    lifecycle = json.loads(
+        (ROOT / "governance/component-lifecycle.v1.json").read_text(encoding="utf-8")
+    )
+    excluded = {entry["path"]: entry for entry in lifecycle["non_product_members"]}
+    catalog = load("module-catalog.v1.json")
+    _, ownership = components.module_contracts(ROOT, catalog, members)
+    edges = components.dependency_projection(ROOT, catalog, members, list(workspace["default-members"]), ownership)
+    lines = [
+        "# Component Status",
+        "",
+        "<!-- GENERATED. DO NOT EDIT. -->",
+        "",
+        f"- Workspace members: `{len(members)}`",
+        f"- Default source closure: `{len(defaults)}`",
+        f"- Sealed non-product members: `{len(members) - len(defaults)}`",
+        "",
+        "| Path | Package | Selection | Classification | Module ownership | Local source dependencies | Replacement | Documentation | Local source test | Rationale |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for member in members:
+        manifest = tomllib.loads(
+            (ROOT / member / "Cargo.toml").read_text(encoding="utf-8")
+        )
+        package = manifest["package"]["name"]
+        if member in defaults:
+            selection = "default-source-closure"
+            classification = "active_default_component"
+            replacement = "none"
+            rationale = (
+                "Selected by Cargo default-members and module-catalog "
+                "default_source_closure."
+            )
+        else:
+            entry = excluded[member]
+            selection = "sealed-explicit-only"
+            classification = entry["classification"]
+            replacement = ", ".join(entry["replacement"]) or "none"
+            rationale = entry["reason"]
+        lines.append(
+            f"| `{member}` | `{package}` | `{selection}` | `{classification}` | "
+            f"{cell(', '.join(Path(contract).stem for contract in ownership[member]) or 'sealed')} | "
+            f"{cell(', '.join(edges.get(member, [])) or 'none / outside product graph')} | "
+            f"{cell(replacement)} | `{member}/README.md` | "
+            f"`cargo test --locked -p {package} --all-targets` | "
+            f"{cell(rationale)} |"
+        )
+    lines += [
+        "",
+        "A successful source test does not activate a sealed component or establish",
+        "installed-target, Android-image, physical-device, destructive-fault or",
+        "public-release evidence.",
+        "",
+    ]
+    return "\n".join(lines)
+
 def gap_status() -> str:
     data = load("gap-register.v2.json")
     counts: dict[str, int] = {status: 0 for status in data["status_vocabulary"]}
@@ -216,6 +282,7 @@ def outputs() -> dict[Path, str]:
     return {
         GENERATED / "CURRENT_STATE.md": current_state(),
         GENERATED / "MODULE_STATUS.md": module_status(),
+        GENERATED / "COMPONENT_STATUS.md": component_status(),
         GENERATED / "GAP_STATUS.md": gap_status(),
         GENERATED / "TRACEABILITY.tsv": traceability(),
         GENERATED / "PERFORMANCE_STATUS.md": performance_status(),

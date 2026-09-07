@@ -12,6 +12,11 @@ from collections import Counter
 from pathlib import Path, PurePosixPath
 from typing import Any
 
+if __package__:
+    from . import verify_component_documentation as markdown_contract
+else:
+    import verify_component_documentation as markdown_contract
+
 INDEX_KEYS = {
     "schema", "program_revision", "status", "catalog_path",
     "budget_provenance_path", "required_sections",
@@ -119,23 +124,15 @@ def catalog_modules(catalog: dict[str, Any]) -> tuple[list[str], dict[str, dict[
 
 
 def visible_prose(text: str) -> str:
-    """Do not accept required contract text hidden in comments or examples."""
-    text = re.sub(r"<!--.*?-->", "", text, flags=re.S)
-    lines: list[str] = []
-    fence: str | None = None
-    for line in text.splitlines():
-        stripped = line.lstrip()
-        marker = "`" if stripped.startswith("```") else "~" if stripped.startswith("~~~") else None
-        if marker:
-            if fence is None:
-                fence = marker
-            elif fence == marker:
-                fence = None
-            continue
-        if fence is None:
-            lines.append(line)
-    require(fence is None, "module document contains an unterminated code fence")
-    return "\n".join(lines)
+    """Read the same restricted Markdown surface used by component navigation.
+
+    Preserve complete one-line inline values in normative field rows; examples,
+    comments and multiline code spans cannot supply section headings or fields.
+    """
+    try:
+        return markdown_contract.markdown_surfaces(text, "module document", preserve_inline=True)[0]
+    except markdown_contract.VerificationError as error:
+        raise VerificationError(str(error)) from error
 
 
 def verify_headings(text: str, headings: list[str], module_id: str) -> None:
@@ -170,6 +167,10 @@ def verify_contract_prose(text: str, module: dict[str, Any]) -> None:
                        ("Plane", "plane"), ("Primary owner", "owner_team"),
                        ("Backup owner", "backup_team"), ("Maturity", "maturity")):
         field(1, label, module[key])
+    path_block = re.search(r"Source ownership paths:\n\n((?:- `[^`]+`\n)+)", sections[1])
+    require(path_block is not None, f"{module_id} source ownership block missing")
+    paths = re.findall(r"^- `([^`]+)`$", path_block.group(1), re.M)
+    require(paths == module["paths"], f"{module_id} source ownership paths drift from catalog")
     dependencies = ", ".join(f"`{value}`" for value in module["dependencies"]) or "none"
     line(4, "Direct dependencies:", f"Direct dependencies: {dependencies}.")
     api = module["api_contract"]
@@ -381,6 +382,11 @@ def verify_index_and_documents(root: Path) -> None:
         verify_headings(text, headings, module_id)
         verify_contract_prose(text, module)
         verify_implementation_links(root, text, module_id)
+        owned = [(root / relative).resolve() for relative in module["paths"]]
+        for relative in re.findall(r"^- Implementation source: `([^`]+)`", text, re.M):
+            source = (root / relative).resolve()
+            require(any(source == owner or source.is_relative_to(owner) for owner in owned),
+                    f"{module_id} implementation source is outside module ownership: {relative}")
         require(EDITORIAL.search(text) is None, f"{module_id} contains editorial marker")
         required = [
             f"# {module_id} — {module.get('name')}",

@@ -34,6 +34,8 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     let mut child = Command::new(env!("CARGO_BIN_EXE_trillionnium-owner-open-r5-host"))
         .args(["--provider"])
         .arg(&provider)
+        .arg("--event-store")
+        .arg(directory.path().join("events.jsonl"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())

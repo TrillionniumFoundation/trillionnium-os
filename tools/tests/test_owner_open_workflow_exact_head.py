@@ -22,6 +22,20 @@ def workflow_paths() -> list[Path]:
 
 
 class OwnerOpenWorkflowExactHeadTest(unittest.TestCase):
+    def test_real_product_smoke_is_retained_without_changing_qualification_artifacts(self) -> None:
+        source = (WORKFLOW_ROOT / "g1-exact-head-source.yml").read_text(encoding="utf-8")
+        merge = (WORKFLOW_ROOT / "g1-synthetic-merge.yml").read_text(encoding="utf-8")
+        for workflow in (source, merge):
+            self.assertIn("python3 tools/perf/run_product_baseline.py", workflow)
+            self.assertIn("--build-profile debug --repetitions 1 --warmup 0 --require-clean-source", workflow)
+            self.assertIn("--bin trillionnium-owner-open-r5-host --bin trillionnium-owner-open-r5-core", workflow)
+        diagnostics = merge.split("- name: Retain source-test diagnostics without qualification authority", 1)[1].split("- name: Emit merge-bound evidence manifest", 1)[0]
+        semantic = merge.split("- name: Upload merge-bound evidence", 1)[1]
+        self.assertIn("g1-merge-product-baseline-smoke.json", diagnostics)
+        self.assertNotIn("g1-merge-product-baseline-smoke.json", semantic)
+        self.assertEqual(merge.count("uses: actions/upload-artifact@"), 2,
+                         "the aggregate admits exactly the semantic and diagnostic artifact sets")
+
     def test_direct_verifier_invocations_bind_checkout_pair(self) -> None:
         paths = workflow_paths()
         self.assertTrue(paths, f"no G1 workflows found under {WORKFLOW_ROOT}")

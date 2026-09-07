@@ -27,7 +27,7 @@
 | `GAP-PRODUCT-ENTRYPOINT-001` | `P0` | `integration` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L3` | MOD-TRANSPORT, MOD-EXECUTION-CORE, MOD-ROOTLINUX, MOD-ANDROID | One install manifest must select the product entrypoint and internal children. |
 | `GAP-ROOTLINUX-PLACEMENT-001` | `P0` | `integration` | `EXTERNAL_HOLD` | `L2` | MOD-ROOTLINUX | Bind installed UID, GID, namespaces, cgroups, mounts, stores and restart policy. |
 | `GAP-STREAM-RECOVERY-001` | `P0` | `correctness` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-STREAM, MOD-TRANSPORT, MOD-JOB-RUNTIME | Prove bounded output, exact cursor gaps and target reconnect behavior. |
-| `GAP-CONC-REGISTRY-001` | `P1` | `concurrency` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-EXECUTION-CORE, MOD-JOB-RUNTIME | Shard call and job registries without weakening per-key ordering. |
+| `GAP-CONC-REGISTRY-001` | `P1` | `concurrency` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-EXECUTION-CORE, MOD-JOB-RUNTIME, MOD-TOOL-RUNTIME | Shard call and job registries without weakening per-key ordering. |
 | `GAP-CONC-TURN-CANCEL-001` | `P1` | `concurrency` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-TURN-ENGINE, MOD-PROVIDER | Replace per-tool polling threads with event-driven cancellation and bounded event storage. |
 | `GAP-CONTROL-PLANE-SHADOW-001` | `P1` | `architecture` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-GLOBAL-CONTROL, MOD-TELEMETRY | Implement the mechanical global controller in observe and shadow modes before active control. |
 | `GAP-RELEASE-001` | `P2` | `release` | `EXTERNAL_HOLD` | `L6` | MOD-EVIDENCE, MOD-ANDROID, MOD-ROOTLINUX | Bind signing, transparency, AVB, rollback, OTA, key custody and human release authorization. |

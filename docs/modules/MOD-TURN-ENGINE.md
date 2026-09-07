@@ -81,7 +81,7 @@ source navigation alone does not prove wire compatibility.
 - State authority: **authoritative**
 - Partition key: `turn_stream_id`
 - State owned: `live turn state`
-- Durability class: `journaled`
+- Durability class: `memory`
 - Retention ceiling: 4096 items and 67108864 bytes per declared bounded in-memory window.
 - Terminal vocabulary: `closed` and `unknown`; implementation-specific intermediate states must converge to one of those classifications or a versioned extension.
 
@@ -113,7 +113,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,13 +134,24 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
 After restart, live in-memory cancellation handles are gone. Durable turn and call records determine whether a turn is terminal, interrupted or unknown; uncertain external effects are never replayed automatically.
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
+
+### Persistence is delegated to the composition root
+
+`TurnRun.events` is a bounded in-memory diagnostic tail; `TurnEventSink` is an
+embedding interface, not a journal. `TurnRunner` itself has no restart loader or
+fsync implementation. A product Host must synchronously acknowledge required
+acceptance/terminal persistence through its sink before downstream progress.
+Failed acknowledgement cancels the turn and inhibits subsequent effects. The
+Host's journal classifies restart uncertainty; a live cancellation handle or
+provider terminal cannot replace that journal. See `MOD-EXECUTION-CORE` for the
+configured-store failure and explicit development-mode boundary.
 
 ## 11. Security and trust boundaries
 

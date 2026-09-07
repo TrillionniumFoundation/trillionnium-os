@@ -19,6 +19,13 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `packaging/owner-open-adb`
+- `tools/owner-open/adb_smart_socket_relay.py`
+- `tools/owner-open/adb_smart_socket_relay_release.py`
+- `tools/owner-open/adb_smart_socket_relay_selected.py`
+- `tools/owner-open/prepare-adb-reverse-v1.sh`
+- `tools/owner-open/prepare-adb-reverse.sh`
+- `tools/owner-open/owner_open_adb_relay.py`
+- `tools/owner-open/owner_open_adb_relay_v2.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -33,6 +40,8 @@ Operationally, the required flow is:
 The provider supplies an explicit ordinary ADB operation and target identity. The relay preserves bytes and target selection, executes through the declared client/server path, and returns raw bounded stdout, stderr, exit and transport observations.
 
 Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
+
+Source ownership also names retained historical relay and reverse-setup helpers. Their presence is maintenance ownership, not product selection; the selected release relay remains the sole entry described below. Qualification commands are owned by MOD-EVIDENCE.
 
 ## 3. Non-goals and authority boundary
 
@@ -114,7 +123,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -135,7 +144,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 

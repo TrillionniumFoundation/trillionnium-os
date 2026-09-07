@@ -18,7 +18,21 @@ This document is the detailed source-development, integration and qualification 
 
 Source ownership paths:
 
+- `apps/trillionnium-owner-open-host/src/lib.rs`
+- `apps/trillionnium-owner-open-host/src/main.rs`
+- `apps/trillionnium-owner-open-host/src/r5_persistence.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v3.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v6.rs`
 - `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7`
+- `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_host.rs`
+- `apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs`
+- `apps/trillionnium-owner-open-host/tests`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -34,6 +48,8 @@ The host receives a validated execution request, binds it to turn, call and job 
 
 Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
 
+The Host integration-test harness has this composition owner, including tests that exercise the transport module. Test ownership is not a claim that transport delivery state has moved into the core.
+
 ## 3. Non-goals and authority boundary
 
 Explicit non-goals:
@@ -46,7 +62,7 @@ The provider remains the sole semantic principal. This module may reject malform
 
 ## 4. Context, dependencies and data flow
 
-Direct dependencies: `MOD-PROTOCOL`, `MOD-TURN-ENGINE`, `MOD-JOB-RUNTIME`, `MOD-EVENT-STORE`.
+Direct dependencies: `MOD-PROTOCOL`, `MOD-TURN-ENGINE`, `MOD-JOB-RUNTIME`, `MOD-EVENT-STORE`, `MOD-PROVIDER`, `MOD-TOOL-RUNTIME`.
 
 The normal data-flow boundary is: validate the versioned input; bind identity and ordering metadata; reserve finite capacity; make the minimal authoritative transition; execute or forward the exact mechanical action; retain bounded observations; publish one terminal or explicit unknown classification.
 
@@ -64,9 +80,14 @@ Dependencies are consumed through their declared APIs. A dependency outage canno
 
 Each request must include its version, request identity, ordering identity and payload digest where applicable. Responses preserve the same correlation identity. Duplicate requests with identical identity and digest are idempotent only where the module contract declares an existing result; identity reuse with different content is an explicit conflict.
 
+Retained foundation/older Host variants share this source owner; ownership does
+not select their binaries for product installation. The selected core remains
+`r5_control_host_v7`, including shared persistence and reused mechanical helpers.
+
 ### Concrete implementation binding
 
 - Implementation source: `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs` — `decode_job_start`
+- Implementation source: `apps/trillionnium-owner-open-host/src/r5_persistence.rs` — `Persistence`
 
 The catalog input/output/error names above are versioned logical contract labels,
 not a claim that identically named Rust declarations or JSON Schema files exist.
@@ -113,7 +134,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,13 +155,35 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
 The next host epoch replays durable correlation records, fences stale writers, reconnects only to explicitly recoverable mechanical state and leaves uncertain effects in unknown/reconciliation-required state.
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
+
+### Effect admission and journal failure
+
+Both direct turns and long-running jobs require a usable durable store by
+default. The explicit `--allow-unjournaled-effects-for-development` exception
+applies only when no store was configured. A configured store that cannot open,
+recover, append or sync never becomes an unjournaled development path.
+
+| Boundary | Required Host behavior |
+|---|---|
+| No configured store, normal mode | Reject effect admission |
+| Configured store unavailable during recovery | Keep recovery `Unavailable`, distinct from an empty history; retain an acquired writer lease while inhibited |
+| `tool.accepted` | Obtain the durable acceptance receipt before allowing its downstream effect |
+| Runtime event sink | Wait synchronously for the persistence result; a send into a queue is not a durable acknowledgement |
+| Store failure after an effect may have started | Cancel further progress, inhibit new effects and set `runtime_ready=false` |
+| `tool.result` or turn terminal cannot become durable | Retain the observed status separately; report `unknown_after_journal_failure`, never a replayable success |
+
+The development exception does not waive identity, capacity or process cleanup.
+After any configured-store failure, preserve the failed store and accepted-effect
+identities for independent reconciliation; do not delete evidence or rerun an
+operation to fill a missing terminal. `MOD-TOOL-RUNTIME` owns volatile registry
+mechanics; this Host composition owns the durable-before-effect coordination.
 
 ## 11. Security and trust boundaries
 
@@ -190,11 +233,12 @@ The module documentation verifier checks this document against the machine catal
 ### Reproduction entrypoint
 
 - Verification source: `apps/trillionnium-owner-open-host/tests/r5_jobs.rs`
+- Verification source: `apps/trillionnium-owner-open-host/tests/r5_effect_admission.rs`
 
 Run from the repository root in an isolated host source-test environment:
 
 ```sh
-cargo test --locked -p trillionnium-owner-open-host --test r5_jobs
+cargo test --locked -p trillionnium-owner-open-host --test r5_jobs --test r5_effect_admission
 ```
 
 This command qualifies only the source behavior that its assertions exercise.

@@ -18,7 +18,22 @@ This document is the detailed source-development, integration and qualification 
 
 Source ownership paths:
 
-- `tools/owner-open`
+- `tools/owner-open/owner_open_broker_admission_v2.py`
+- `tools/owner-open/owner_open_broker_audit.py`
+- `tools/owner-open/owner_open_broker_base_v2.py`
+- `tools/owner-open/owner_open_broker_client.py`
+- `tools/owner-open/owner_open_broker_common.py`
+- `tools/owner-open/owner_open_broker_connections.py`
+- `tools/owner-open/owner_open_broker_convergence_v2.py`
+- `tools/owner-open/owner_open_broker_mux.py`
+- `tools/owner-open/owner_open_broker_runtime.py`
+- `tools/owner-open/owner_open_broker_server_v2.py`
+- `tools/owner-open/owner_open_connection_broker.py`
+- `tools/owner-open/owner_open_connection_broker_v2.py`
+- `tools/owner-open/owner_open_mcp_jobs.py`
+- `tools/owner-open/codex_owner_open_mcp.py`
+- `tools/owner-open/owner_open_mcp_common.py`
+- `tools/owner-open/owner_open_mcp_host.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -34,6 +49,8 @@ A peer is authenticated and admitted, the broker assigns immutable request owner
 
 Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
 
+The same ingress owner maintains the Codex STDIO MCP bridge and its exact Host/job wire adapters. It routes explicit operations through the declared transport/core interfaces without becoming the semantic provider. The selected connection broker and MCP adapter are distinct entrypoints within this mechanical boundary.
+
 ## 3. Non-goals and authority boundary
 
 Explicit non-goals:
@@ -46,7 +63,7 @@ The provider remains the sole semantic principal. This module may reject malform
 
 ## 4. Context, dependencies and data flow
 
-Direct dependencies: `MOD-PROTOCOL`.
+Direct dependencies: `MOD-PROTOCOL`, `MOD-TRANSPORT`, `MOD-EXECUTION-CORE`.
 
 The normal data-flow boundary is: validate the versioned input; bind identity and ordering metadata; reserve finite capacity; make the minimal authoritative transition; execute or forward the exact mechanical action; retain bounded observations; publish one terminal or explicit unknown classification.
 
@@ -154,7 +171,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -175,7 +192,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 

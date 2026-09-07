@@ -19,6 +19,12 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `packaging/root-linux`
+- `tools/owner-open/build_owner_open_rootfs_image_release.py`
+- `tools/owner-open/build_owner_open_rootfs_image_release_v2.py`
+- `tools/owner-open/stage_owner_open_rootfs_payload.py`
+- `tools/owner-open/stage_owner_open_rootfs_payload_release.py`
+- `tools/owner-open/owner_open_rootlinux_supervisor.py`
+- `tools/owner-open/verify_owner_open_materialized_payload.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -113,7 +119,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,7 +140,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 

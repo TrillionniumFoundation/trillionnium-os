@@ -6,7 +6,7 @@ This policy makes detailed module documentation a fail-closed, machine-verifiabl
 
 The authoritative module inventory and engineering contracts remain in `docs/machine/module-catalog.v1.json`. The authoritative documentation mapping is `docs/machine/module-document-index.v1.json`. Provisional resource ceilings and their measurement status are recorded in `docs/machine/resource-budget-provenance.v1.json`.
 
-Every module present in the machine catalog must have exactly one detailed document under `docs/modules/`. Every Cargo default workspace member must have a colocated `README.md`. The documentation index must match catalog identity, ownership, source paths, maturity, API schema, state schema and evidence ceiling exactly.
+Every module present in the machine catalog must have exactly one detailed document under `docs/modules/`. Every Cargo default workspace member must have a colocated `README.md`. The documentation index binds each module ID to its document. The document must match catalog identity, ownership, source paths, maturity, API schema, state schema and evidence ceiling exactly.
 
 A document is explanatory evidence for source review. It is not installed-target, physical-device, destructive-fault, signing or release evidence.
 
@@ -65,11 +65,11 @@ A finite resource value is one of the following:
 2. a provisional objective awaiting measurement;
 3. a measured result bound to workload, environment, samples and evidence.
 
-The current G1 values are class 1 and class 2 only. The provenance object therefore remains `PROVISIONAL_SOURCE_CEILINGS_UNMEASURED`, `measured=false`, `sample_count=0`, `evidence_id=null` and `activation_mode=OBSERVE_ONLY`.
+The current G1 catalog allocation values are unmeasured objectives. Concrete source admission ceilings are enforced by separate constructors and service profiles; a catalog value is not itself an installed limiter. No value is class 3. The provenance object therefore remains `PROVISIONAL_SOURCE_CEILINGS_UNMEASURED`, `measured=false`, `sample_count=0`, `evidence_id=null` and `activation_mode=OBSERVE_ONLY`.
 
 ## 4. Physical component mapping
 
-The documentation index repeats each module's source paths and is checked against the catalog. A path must be relative, normalized, inside the repository and present in the exact checkout. Overlapping logical ownership continues to be governed by the catalog verifier.
+The documentation index maps IDs to documents; source paths are declared only in the module catalog and projected into each document's ownership section. A path must be relative, normalized, inside the repository and present in the exact checkout. Overlapping logical ownership continues to be governed by the catalog verifier.
 
 Every directory in Cargo `workspace.default-members` must contain a `README.md`. A component README names the logical module or modules implemented by that component, links to the formal module documents and states its local build/test boundary. Existing component READMEs remain useful implementation guides; the formal module document is the canonical cross-component contract.
 
@@ -140,3 +140,21 @@ modules, unknown statuses and references to closed gaps also fail closed.
 Update the register, the catalog projection, the module's exit criteria and the
 generated views together. Do not remove an open relationship to hide an external
 hold; closure still requires evidence at the gap's declared exit level.
+
+## Shared Markdown and component checks
+
+Module contracts and component README navigation use one accepted Markdown
+subset. Required commands are complete lines in `sh`, `bash`, `shell`, `zsh` or
+`console` fences; module navigation is a real repository-relative Markdown link.
+Comments, examples, indented code and multiline inline-code spans cannot supply
+required prose or links. Raw HTML block openers outside fences are rejected,
+including arbitrary element tags, declarations, processing instructions and
+CDATA. Write HTML examples inside fences. Ordinary inline HTML after prose is
+allowed. This restriction avoids claiming a complete CommonMark HTML parser.
+
+The module ownership path list must equal the catalog exactly. Every named
+implementation binding must lie within that module's owned paths. A component
+README link cannot substitute for missing machine ownership. The root command
+`python3 tools/docs/verify_global_docs.py` invokes both module and component
+verification, checks the documentation revision across entrypoint/program/doc-set,
+and compares generated views. Focused commands remain available for debugging.

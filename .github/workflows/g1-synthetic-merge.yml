@@ -284,6 +284,13 @@ jobs:
           cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
           cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
           python3 tools/perf/run_global_baseline.py --output "${RUNNER_TEMP}/g1-merge-baseline.json" --repetitions 1
+          cargo build --locked -p trillionnium-owner-open-host --bin trillionnium-owner-open-r5-host --bin trillionnium-owner-open-r5-core
+          python3 -m unittest tools.tests.test_run_product_baseline -v
+          python3 tools/perf/run_product_baseline.py \
+            --host "$PWD/target/debug/trillionnium-owner-open-r5-host" \
+            --core "$PWD/target/debug/trillionnium-owner-open-r5-core" \
+            --build-profile debug --repetitions 1 --warmup 0 --require-clean-source \
+            --output "${RUNNER_TEMP}/g1-merge-product-baseline-smoke.json"
           python3 - <<'PY'
           import hashlib
           import json
@@ -315,6 +322,7 @@ jobs:
             ${{ runner.temp }}/g1-source-tools.log
             ${{ runner.temp }}/g1-source-prerequisites.log
             ${{ runner.temp }}/g1-merge-python.log
+            ${{ runner.temp }}/g1-merge-product-baseline-smoke.json
 
       - name: Emit merge-bound evidence manifest
         shell: bash

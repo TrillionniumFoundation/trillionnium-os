@@ -35,6 +35,10 @@ fn start_host(
     }
     if let Some(path) = event_store {
         command.args(["--event-store"]).arg(path);
+    } else {
+        // This fixture deliberately tests flow-control rejection in the
+        // explicitly selected development-only memory mode.
+        command.arg("--allow-unjournaled-effects-for-development");
     }
     let mut child = command
         .stdin(Stdio::piped())

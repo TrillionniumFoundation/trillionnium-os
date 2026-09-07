@@ -635,3 +635,15 @@ that cannot begin with an option or contain `..`.
 Android UID/permission/SELinux policy, Accessibility authorization, socket
 service ownership, executable custody, and Android build type remain the OS
 enforcement boundaries and must be installed by the product integration.
+
+## Component-local source verification
+
+From the repository root:
+
+```sh
+cargo test --locked -p trillionnium-agent-direct-tools --all-targets
+```
+
+This exact package command exercises source tests only. It does not grant
+installed-target, Android-image, physical-device, destructive-fault, signing,
+deployment, OTA, rollback, transparency-log or public-release authority.

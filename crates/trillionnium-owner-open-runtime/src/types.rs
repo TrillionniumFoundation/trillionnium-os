@@ -3,7 +3,7 @@ use std::ffi::OsString;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use thiserror::Error;
 
@@ -340,6 +340,7 @@ mod mechanical_limit_tests {
 pub struct CancellationToken {
     cancelled: Arc<AtomicBool>,
     linked: Arc<Vec<Arc<AtomicBool>>>,
+    deadline: Option<Instant>,
 }
 
 impl CancellationToken {
@@ -360,7 +361,30 @@ impl CancellationToken {
         Self {
             cancelled: Arc::new(AtomicBool::new(false)),
             linked: Arc::new(flags.into_iter().collect()),
+            deadline: None,
         }
+    }
+
+    /// Attach an enclosing monotonic deadline without changing command bytes
+    /// or their request digest. A nested owner may shorten, never extend it.
+    #[must_use]
+    pub fn with_deadline(mut self, deadline: Option<Instant>) -> Self {
+        self.deadline = match (self.deadline, deadline) {
+            (Some(first), Some(second)) => Some(first.min(second)),
+            (first, second) => first.or(second),
+        };
+        self
+    }
+
+    #[must_use]
+    pub fn deadline(&self) -> Option<Instant> {
+        self.deadline
+    }
+
+    #[must_use]
+    pub fn deadline_expired(&self) -> bool {
+        self.deadline
+            .is_some_and(|deadline| Instant::now() >= deadline)
     }
 
     /// Return the locally-owned flag so an enclosing operation can link this

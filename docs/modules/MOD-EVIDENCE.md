@@ -19,6 +19,19 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `docs/machine/evidence-index.v1.json`
+- `tools/evidence`
+- `tools/verify-g1-evidence.py`
+- `tools/verify-g1-evidence-live.py`
+- `tools/verify-g1-pr-aggregate.py`
+- `tools/g1_pr_aggregate_api.py`
+- `tools/owner-open/qualify_owner_open_adb_selected.py`
+- `tools/owner-open/supervise_codex_mcp_qualification_release.py`
+- `tools/owner-open/generate_owner_open_l1_candidate.py`
+- `tools/owner-open/qualify_owner_open_adb.py`
+- `tools/owner-open/qualify_owner_open_adb_release.py`
+- `tools/owner-open/supervise_codex_mcp_qualification.py`
+- `tools/owner-open/qualify_codex_mcp_jobs.py`
+- `tools/build`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -34,6 +47,8 @@ A verifier binds a package to the exact repository, base, head, tree, ordered me
 
 Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
 
+The evidence owner also maintains candidate-manifest generation, installed-Codex/MCP and physical-ADB qualification harnesses. Those harnesses consume the declared module interfaces and still need independently authorized environments; checking their source does not create target observations.
+
 ## 3. Non-goals and authority boundary
 
 Explicit non-goals:
@@ -46,7 +61,7 @@ The provider remains the sole semantic principal. This module may reject malform
 
 ## 4. Context, dependencies and data flow
 
-Direct dependencies: `MOD-PROTOCOL`.
+Direct dependencies: `MOD-PROTOCOL`, `MOD-BROKER`, `MOD-PROVIDER`, `MOD-ROOTLINUX`, `MOD-ADB`.
 
 The normal data-flow boundary is: validate the versioned input; bind identity and ordering metadata; reserve finite capacity; make the minimal authoritative transition; execute or forward the exact mechanical action; retain bounded observations; publish one terminal or explicit unknown classification.
 
@@ -81,11 +96,20 @@ The CLI delegates to strict package verification; `verify-g1-evidence-live.py` b
 - State authority: **authoritative**
 - Partition key: `evidence_id`
 - State owned: `evidence index; promotion records`
-- Durability class: `journaled`
+- Durability class: `external`
 - Retention ceiling: 4096 items and 67108864 bytes per declared bounded in-memory window.
 - Terminal vocabulary: `closed` and `unknown`; implementation-specific intermediate states must converge to one of those classifications or a versioned extension.
 
 Only this module may perform authoritative writes for its state families. Read models may be rebuilt from retained authoritative records but cannot become an alternate writer. Every writer carries a module or service epoch; stale epochs fail closed.
+
+### Evidence storage authority
+
+The checked-in index is a versioned navigation projection. Signed packages,
+retention, revocation and promotion decisions live in independently administered
+external evidence custody. `external` describes that durability boundary; it does
+not claim that this verifier has a runtime WAL, a lease service or distributed
+storage. Local reports remain observations until their external subject and
+signatures have been independently validated.
 
 ## 7. Ordering, concurrency and backpressure
 
@@ -113,7 +137,7 @@ An accepted operation lacking authoritative terminal evidence is `unknown` or re
 
 Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
-| Contract item | Current source ceiling |
+| Contract item | Provisional module allocation / objective |
 |---|---:|
 | CPU weight | 100 |
 | Memory | 67108864 bytes |
@@ -134,7 +158,7 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 
 Measurement status: **unmeasured until qualified evidence**.
 
-These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+These catalog values are provisional module allocation objectives, not installed process limiters or benchmark results. Runtime constructors and service profiles enforce separate concrete source bounds; the table alone does not establish RSS, CPU, FD or concurrency enforcement. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
 ## 10. Persistence, recovery and reconciliation
 
@@ -350,6 +374,16 @@ transports contain test-only bytes, not live GitHub results.
 Run it with `python3 -m unittest tools.tests.test_g1_pr_aggregate -v`; existing
 exact-head and synthetic-merge complete discovery includes this suite. Local
 success cannot replace terminal hosted CI, independent approval or L2-L6 evidence.
+
+### Host build reproducibility source harness
+
+`tools/build/` belongs to this evidence module. Its Host reproducibility harness
+compares release artifacts from two independent target directories under the
+fixed Rust 1.93 toolchain and a clean source identity. Run only after the candidate
+source is fixed; a dirty development tree cannot supply the final source subject.
+Matching local artifact bytes establish the tested build's reproducibility only,
+not installed L2 evidence, signing custody or release authorization. The adjacent
+README defines the concrete command and retained observations.
 
 ## 16. Deployment and runbook
 

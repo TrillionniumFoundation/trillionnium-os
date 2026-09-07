@@ -1,12 +1,13 @@
 # Trillionnium OS — Global Modular Development Program G1
 
-Status: **ACTIVE CANDIDATE**  
-Program revision: **2026-08-31-g1**  
-Documentation revision: **1.1.0**
-Semantic authority: **owner-open-semantic-v1**  
-Architecture authority: **modular-control-plane-v1**  
-Machine truth root: [`machine/`](machine/)  
+Status: **ACTIVE CANDIDATE**
+Program revision: **2026-08-31-g1**
+Documentation revision: **1.2.0**
+Semantic authority: **owner-open-semantic-v1**
+Architecture authority: **modular-control-plane-v1**
+Machine truth root: [`machine/`](machine/)
 Generated current state: [`generated/CURRENT_STATE.md`](generated/CURRENT_STATE.md)
+Generated component inventory: [`generated/COMPONENT_STATUS.md`](generated/COMPONENT_STATUS.md)
 
 ## 1. Purpose
 
@@ -17,22 +18,23 @@ documents have no authority over current implementation, qualification or releas
 
 G1 turns the existing Owner-Open source closure into a modular engineering
 program suitable for dozens of engineers. It preserves the proven correctness
-principles while adding explicit module ownership, concurrency partitions,
-resource budgets, global mechanical coordination, performance evidence, rollout
-and compatibility rules.
+principles while adding explicit module ownership, concrete component lifecycle,
+concurrency partitions, resource budgets, global mechanical coordination,
+performance evidence, rollout and compatibility rules.
 
 ## 2. Read in this order
 
 1. [`PRODUCT_SEMANTICS.md`](PRODUCT_SEMANTICS.md) — immutable product meaning and authority boundary.
 2. [`GLOBAL_ARCHITECTURE.md`](GLOBAL_ARCHITECTURE.md) — four-plane architecture, module map and state ownership.
 3. [`GLOBAL_DEVELOPMENT_PROGRAM.md`](GLOBAL_DEVELOPMENT_PROGRAM.md) — current phases, critical path and delivery order.
-4. [`MODULE_DEVELOPMENT_STANDARD.md`](MODULE_DEVELOPMENT_STANDARD.md) — definition of a team-owned module.
-5. [`EFFECT_AND_PROTOCOL_STANDARD.md`](EFFECT_AND_PROTOCOL_STANDARD.md) — identity, durability and no-redispatch rules.
-6. [`PERFORMANCE_AND_OPTIMIZATION.md`](PERFORMANCE_AND_OPTIMIZATION.md) — global objective, SLOs and benchmark gates.
-7. [`TEAM_AND_DELIVERY_MODEL.md`](TEAM_AND_DELIVERY_MODEL.md) — ownership, review and merge-queue policy.
-8. [`OPERATIONS_AND_ROLLOUT.md`](OPERATIONS_AND_ROLLOUT.md) — deployment, leases, migrations, canary and rollback.
-9. [`QUALIFICATION_AND_EVIDENCE.md`](QUALIFICATION_AND_EVIDENCE.md) — L0–L6 evidence and fault qualification.
-10. [`GLOBAL_DEFINITION_OF_DONE.md`](GLOBAL_DEFINITION_OF_DONE.md) — exact completion criteria.
+4. [`MODULE_DEVELOPMENT_STANDARD.md`](MODULE_DEVELOPMENT_STANDARD.md) — definition of a team-owned logical module.
+5. [`COMPONENT_DEVELOPMENT_STANDARD.md`](COMPONENT_DEVELOPMENT_STANDARD.md) — concrete build units, local documentation and sealed-component rules.
+6. [`EFFECT_AND_PROTOCOL_STANDARD.md`](EFFECT_AND_PROTOCOL_STANDARD.md) — identity, durability and no-redispatch rules.
+7. [`PERFORMANCE_AND_OPTIMIZATION.md`](PERFORMANCE_AND_OPTIMIZATION.md) — global objective, SLOs and benchmark gates.
+8. [`TEAM_AND_DELIVERY_MODEL.md`](TEAM_AND_DELIVERY_MODEL.md) — ownership, review and merge-queue policy.
+9. [`OPERATIONS_AND_ROLLOUT.md`](OPERATIONS_AND_ROLLOUT.md) — deployment, leases, migrations, canary and rollback.
+10. [`QUALIFICATION_AND_EVIDENCE.md`](QUALIFICATION_AND_EVIDENCE.md) — L0–L6 evidence and fault qualification.
+11. [`GLOBAL_DEFINITION_OF_DONE.md`](GLOBAL_DEFINITION_OF_DONE.md) — exact completion criteria.
 
 ## 3. Truth rules
 
@@ -44,7 +46,8 @@ The source of truth is split by concern:
 
 - `machine/current-baseline.v1.json` — the dated, recorded trunk/source-CI/source-parent/documentation snapshot; its `latest_*` keys are not a live remote-status API;
 - `machine/program-state.v1.json` — active program, phases and capabilities;
-- `machine/module-catalog.v1.json` — module boundaries, dependencies, owners, state and SLO contracts;
+- `machine/module-catalog.v1.json` — logical module boundaries, dependencies, owners, state and SLO contracts;
+- `../Cargo.toml` plus `../governance/component-lifecycle.v1.json` — the exact active/default versus sealed root Cargo component inventory;
 - `machine/requirement-graph.v1.json` — requirement-to-module-to-gap-to-evidence graph;
 - `machine/gap-register.v2.json` — every open or closed gap and its exit level;
 - `machine/global-objective.v1.json` — hard constraints, soft objectives and workloads;
@@ -68,6 +71,8 @@ edited by hand.
 - Required durable acceptance happens before an effect attempt.
 - All frames, queues, stores, processes, descriptors and resource budgets are finite.
 - Every state partition has one authoritative writer epoch and fencing token.
+- Every root Cargo workspace member is either in the active default source
+  closure or explicitly classified as sealed non-product.
 - Source, installed target, Android image, physical device, destructive fault
   and public release claims remain separate evidence levels.
 
@@ -77,5 +82,5 @@ The baseline identities in `machine/current-baseline.v1.json` are a dated
 historical observation. They must not be substituted for the current PR head,
 its parent or its latest checks. Each changed G1 candidate remains unqualified
 until that exact unchanged head passes the permanent checks and receives an
-independent review. It does not claim installed Codex, Android
-image inclusion, physical effects, destructive-fault qualification or public release.
+independent review. It does not claim installed Codex, Android image inclusion,
+physical effects, destructive-fault qualification or public release.
