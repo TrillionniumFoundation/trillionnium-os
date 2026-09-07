@@ -12,6 +12,7 @@
     "apps/trillionnium-agent-stdio-proxy/README.md",
     "apps/trillionniumd/README.md",
     "crates/trillionnium-agent-api-uds/README.md",
+    "crates/trillionnium-agent-direct-tools/README.md",
     "crates/trillionnium-audit-sqlite/README.md",
     "crates/trillionnium-dbus/README.md",
     "crates/trillionnium-os-types/README.md",
@@ -65,6 +66,11 @@
       "path": "crates/trillionnium-agent-api-uds/README.md",
       "previous_path": null,
       "status": "added"
+    },
+    {
+      "path": "crates/trillionnium-agent-direct-tools/README.md",
+      "previous_path": null,
+      "status": "modified"
     },
     {
       "path": "crates/trillionnium-audit-sqlite/README.md",
@@ -154,10 +160,10 @@
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 24,
-    "changes_sha256": "36eb41741a78d6cfb1550d74d9402a7d6138b922ed1329841be5dfbe4d68548e",
-    "path_count": 24,
-    "paths_sha256": "51a237e438778b7a7ddb73c145051f9f9364abbb31bb17ebcf05e4198a3a9033"
+    "change_count": 25,
+    "changes_sha256": "138562760e6e145115017fb3db8f79841c2e021f748003098db8b4104e7d24e1",
+    "path_count": 25,
+    "paths_sha256": "fd91b7e87c3351988bbdd0dd2da9a3e526b3d291de712ff432f7f44d7dbee00e"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
@@ -167,8 +173,8 @@
   "pull_request": 47,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "15b284fa5b52083af73ea528d647632258a71ef9",
-    "tree": "68fa8b60c6e2c5356e79412f5943e8a3b7be01cc"
+    "commit": "d5675aba3fc7b4d10bef9025b8c150784d38c129",
+    "tree": "acaaaa3371ed874e9843c4de2c9945a8283db5bb"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -225,6 +231,7 @@
         "apps/trillionnium-agent-stdio-proxy/README.md",
         "apps/trillionniumd/README.md",
         "crates/trillionnium-agent-api-uds/README.md",
+        "crates/trillionnium-agent-direct-tools/README.md",
         "crates/trillionnium-audit-sqlite/README.md",
         "crates/trillionnium-dbus/README.md",
         "crates/trillionnium-os-types/README.md",

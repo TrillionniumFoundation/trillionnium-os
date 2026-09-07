@@ -149,8 +149,8 @@ edition = "2024"
             path = root / "active/README.md"
             path.write_text(
                 path.read_text(encoding="utf-8").replace(
-                    "docs/modules/MOD-FIXTURE.md",
-                    "docs/modules/OTHER.md",
+                    "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)",
+                    "MOD-FIXTURE",
                 ),
                 encoding="utf-8",
             )
@@ -271,6 +271,228 @@ edition = "2024"
             with self.assertRaisesRegex(
                 VERIFY.VerificationError,
                 "duplicate workspace package names",
+            ):
+                VERIFY.verify(root)
+
+    def test_html_comment_cannot_supply_exact_test_command(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            command = "cargo test --locked -p active-package --all-targets"
+            prose = path.read_text(encoding="utf-8").replace(command, "cargo test")
+            prose += f"\n<!-- {command} -->\n"
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing exact local test command",
+            ):
+                VERIFY.verify(root)
+
+    def test_plain_or_inline_code_cannot_supply_exact_test_command(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            command = "cargo test --locked -p active-package --all-targets"
+            prose = path.read_text(encoding="utf-8").replace(command, "cargo test")
+            prose += f"\nRun `{command}` from another document.\n"
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing exact local test command",
+            ):
+                VERIFY.verify(root)
+
+    def test_non_shell_code_block_cannot_supply_exact_test_command(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            command = "cargo test --locked -p active-package --all-targets"
+            prose = path.read_text(encoding="utf-8").replace("```sh", "```text", 1)
+            self.assertIn(command, prose)
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing exact local test command",
+            ):
+                VERIFY.verify(root)
+
+    def test_html_comment_cannot_supply_module_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+            prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+            prose += f"\n<!-- {link} -->\n"
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
+    def test_code_example_cannot_supply_module_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+            prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+            prose += f"\n```text\n{link}\n```\n"
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
+    def test_wrong_relative_module_target_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            wrong = root / "active/docs/modules"
+            wrong.mkdir(parents=True)
+            (wrong / "MOD-FIXTURE.md").write_text("wrong copy\n", encoding="utf-8")
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "../docs/modules/MOD-FIXTURE.md",
+                    "docs/modules/MOD-FIXTURE.md",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                r"does not resolve to a canonical docs/modules/MOD-\*\.md file",
+            ):
+                VERIFY.verify(root)
+
+    def test_module_link_suffix_cannot_satisfy_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "../docs/modules/MOD-FIXTURE.md)",
+                    "../docs/modules/MOD-FIXTURE.md.bak)",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                r"does not resolve to a canonical docs/modules/MOD-\*\.md file",
+            ):
+                VERIFY.verify(root)
+
+    def test_module_link_fragment_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "../docs/modules/MOD-FIXTURE.md)",
+                    "../docs/modules/MOD-FIXTURE.md#scope)",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "has query or fragment",
+            ):
+                VERIFY.verify(root)
+
+    def test_unterminated_html_comment_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8") + "\n<!-- hidden boundary\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "unterminated HTML comment",
+            ):
+                VERIFY.verify(root)
+
+    def test_reports_all_missing_component_commands(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            for directory, package in (
+                ("active", "active-package"),
+                ("sealed", "sealed-package"),
+            ):
+                path = root / directory / "README.md"
+                path.write_text(
+                    path.read_text(encoding="utf-8").replace(
+                        f"cargo test --locked -p {package} --all-targets",
+                        "cargo test",
+                    ),
+                    encoding="utf-8",
+                )
+            with self.assertRaises(VERIFY.VerificationError) as raised:
+                VERIFY.verify(root)
+            message = str(raised.exception)
+            self.assertIn("active-package", message)
+            self.assertIn("sealed-package", message)
+
+    def test_indented_code_cannot_supply_module_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+            prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+            prose += f"\n    {link}\n"
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
+    def test_escaped_markdown_link_cannot_supply_module_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+            prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+            prose += "\n\\[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)\n"
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
+    def test_module_link_symlink_traversal_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            alias = root / "alias"
+            try:
+                alias.symlink_to(root / "docs/modules", target_is_directory=True)
+            except OSError as error:
+                self.skipTest(f"symlink creation unavailable: {error}")
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "../docs/modules/MOD-FIXTURE.md",
+                    "../alias/MOD-FIXTURE.md",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "traverses symlink",
             ):
                 VERIFY.verify(root)
 

@@ -25,7 +25,15 @@ LIFECYCLE_KEYS = {
 }
 LIFECYCLE_ENTRY_KEYS = {"path", "classification", "replacement", "reason"}
 MODULE_ID = re.compile(r"^MOD-[A-Z0-9][A-Z0-9-]{0,126}$")
-MODULE_LINK = re.compile(r"docs/modules/(MOD-[A-Z0-9][A-Z0-9-]{0,126})\.md")
+MODULE_CONTRACT_PATH = re.compile(
+    r"^docs/modules/(MOD-[A-Z0-9][A-Z0-9-]{0,126})\.md$"
+)
+MARKDOWN_LINK = re.compile(
+    r"(?<!!)(?<!\\)\[[^\]\n]*\]\(\s*(?:<(?P<angle>[^<>\n]+)>|"
+    r"(?P<plain>[^()\s]+))\s*\)"
+)
+FENCE_OPEN = re.compile(r"^[ \t]{0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
+SHELL_FENCE_LANGUAGES = {"sh", "bash", "shell", "zsh", "console"}
 
 
 class VerificationError(Exception):
@@ -127,6 +135,151 @@ def package_name(manifest: Path, label: str) -> str:
     except (OSError, UnicodeError, KeyError, TypeError, tomllib.TOMLDecodeError) as error:
         raise VerificationError(f"{label} package manifest cannot be parsed: {error}") from error
     return text(package, f"{label}.package.name")
+
+
+def strip_html_comments(source: str, label: str) -> str:
+    """Remove HTML comments while preserving line and byte positions."""
+    characters = list(source)
+    cursor = 0
+    while True:
+        start = source.find("<!--", cursor)
+        if start < 0:
+            break
+        end = source.find("-->", start + 4)
+        require(end >= 0, f"{label} has an unterminated HTML comment")
+        for index in range(start, end + 3):
+            if characters[index] not in "\r\n":
+                characters[index] = " "
+        cursor = end + 3
+    return "".join(characters)
+
+
+def strip_inline_code(line: str) -> str:
+    """Hide inline code spans so examples cannot satisfy visible-link checks."""
+    characters = list(line)
+    cursor = 0
+    while cursor < len(line):
+        if line[cursor] != "`":
+            cursor += 1
+            continue
+        run_end = cursor
+        while run_end < len(line) and line[run_end] == "`":
+            run_end += 1
+        marker = line[cursor:run_end]
+        close = line.find(marker, run_end)
+        span_end = len(line) if close < 0 else close + len(marker)
+        for index in range(cursor, span_end):
+            characters[index] = " "
+        cursor = span_end
+    return "".join(characters)
+
+
+def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
+    """Return rendered prose, exact shell-fence lines, and comment-free source."""
+    source = strip_html_comments(prose, label)
+    visible_lines: list[str] = []
+    shell_lines: set[str] = set()
+    marker_character: str | None = None
+    marker_length = 0
+    language = ""
+    html_code_block: str | None = None
+
+    for line in source.splitlines():
+        lowered = line.lstrip().lower()
+        if html_code_block is not None:
+            if f"</{html_code_block}>" in lowered:
+                html_code_block = None
+            continue
+
+        if marker_character is None:
+            opened_html_block = False
+            for tag in ("pre", "code", "script", "style"):
+                if re.match(rf"^<{tag}(?:\s|>)", lowered):
+                    if f"</{tag}>" not in lowered:
+                        html_code_block = tag
+                    opened_html_block = True
+                    break
+            if opened_html_block:
+                continue
+
+            match = FENCE_OPEN.fullmatch(line)
+            if match is not None:
+                marker = match.group("marker")
+                marker_character = marker[0]
+                marker_length = len(marker)
+                info = match.group("info").strip()
+                language = info.split(None, 1)[0].lower() if info else ""
+                continue
+
+            # Four-space and tab-indented blocks are Markdown code, not links.
+            if line.startswith("\t") or len(line) - len(line.lstrip(" ")) >= 4:
+                continue
+            visible_lines.append(strip_inline_code(line))
+            continue
+
+        stripped = line.lstrip(" \t")
+        indentation = len(line) - len(stripped)
+        run_length = 0
+        while run_length < len(stripped) and stripped[run_length] == marker_character:
+            run_length += 1
+        if (
+            indentation <= 3
+            and run_length >= marker_length
+            and not stripped[run_length:].strip()
+        ):
+            marker_character = None
+            marker_length = 0
+            language = ""
+            continue
+        if language in SHELL_FENCE_LANGUAGES:
+            shell_lines.add(line.strip())
+
+    require(marker_character is None, f"{label} has an unterminated fenced code block")
+    require(html_code_block is None, f"{label} has an unterminated HTML code block")
+    return "\n".join(visible_lines), shell_lines, source
+
+
+def module_contract_links(root: Path, readme: Path, visible_prose: str) -> set[str]:
+    """Resolve visible Markdown module links to exact repository contract files."""
+    links: set[str] = set()
+    for line_number, line in enumerate(visible_prose.splitlines(), start=1):
+        for match in MARKDOWN_LINK.finditer(line):
+            target = match.group("angle") or match.group("plain")
+            if "MOD-" not in target and "MOD-" not in match.group(0):
+                continue
+            label = f"{readme}: line {line_number} module contract link"
+            require("\\" not in target, f"{label} uses a backslash")
+            require("%" not in target, f"{label} uses percent-encoding")
+            require("?" not in target and "#" not in target, f"{label} has query or fragment")
+            require("://" not in target, f"{label} is not repository-local")
+            pure = PurePosixPath(target)
+            require(not pure.is_absolute(), f"{label} must be relative")
+
+            cursor = readme.parent
+            for part in pure.parts:
+                if part in ("", "."):
+                    continue
+                if part == "..":
+                    cursor = cursor.parent
+                else:
+                    cursor /= part
+                    require(not cursor.is_symlink(), f"{label} traverses symlink {cursor}")
+                require(cursor.is_relative_to(root), f"{label} escapes repository")
+            candidate = cursor.resolve(strict=False)
+            require(candidate.is_relative_to(root), f"{label} escapes repository")
+            relative = candidate.relative_to(root).as_posix()
+            require(
+                MODULE_CONTRACT_PATH.fullmatch(relative) is not None,
+                f"{label} does not resolve to a canonical docs/modules/MOD-*.md file: {target}",
+            )
+
+            cursor = root
+            for part in PurePosixPath(relative).parts:
+                cursor /= part
+                require(not cursor.is_symlink(), f"{label} traverses symlink {cursor}")
+            require(candidate.is_file(), f"{label} target does not exist: {relative}")
+            links.add(relative)
+    return links
 
 
 def module_contracts(
@@ -240,6 +393,7 @@ def verify(root: Path) -> None:
     )
 
     seen_packages: list[str] = []
+    readme_errors: list[str] = []
     for index, member in enumerate(members):
         member_text, directory = normalized_path(
             root, member, f"workspace.members[{index}]"
@@ -267,47 +421,66 @@ def verify(root: Path) -> None:
             raise VerificationError(
                 f"workspace member README is not UTF-8: {member_text}: {error}"
             ) from error
-        require(
-            package in prose,
-            f"workspace member README does not identify package {package}: {member_text}",
-        )
+
+        try:
+            visible_prose, shell_lines, comment_free_source = markdown_surfaces(
+                prose,
+                f"workspace member README {member_text}",
+            )
+        except VerificationError as error:
+            readme_errors.append(str(error))
+            visible_prose, shell_lines, comment_free_source = "", set(), ""
+
+        if package not in comment_free_source:
+            readme_errors.append(
+                f"workspace member README does not identify package {package}: {member_text}"
+            )
 
         command = f"cargo test --locked -p {package} --all-targets"
-        require(
-            command in prose,
-            f"workspace member README missing exact local test command {command!r}: {member_text}",
-        )
+        if command not in shell_lines:
+            readme_errors.append(
+                "workspace member README missing exact local test command "
+                f"{command!r} in a visible shell code block: {member_text}"
+            )
 
         if member_text in default_set:
-            linked_contracts = sorted(
-                {f"docs/modules/{match.group(1)}.md" for match in MODULE_LINK.finditer(prose)}
-            )
+            try:
+                linked_contracts = sorted(
+                    module_contract_links(root, readme, visible_prose)
+                )
+            except VerificationError as error:
+                readme_errors.append(str(error))
+                linked_contracts = []
             physical_contracts = physical_contracts_by_member[member_text]
             for contract in physical_contracts:
-                require(
-                    contract in linked_contracts,
-                    "active workspace member README missing module contract link "
-                    f"{contract}: {member_text}",
+                if contract not in linked_contracts:
+                    readme_errors.append(
+                        "active workspace member README missing module contract link "
+                        f"{contract}: {member_text}"
+                    )
+            if not (physical_contracts or linked_contracts):
+                readme_errors.append(
+                    f"active workspace member has no module contract mapping: {member_text}"
                 )
-            require(
-                bool(physical_contracts or linked_contracts),
-                f"active workspace member has no module contract mapping: {member_text}",
-            )
             unknown_contracts = [
                 contract
                 for contract in linked_contracts
                 if contract not in valid_contracts
             ]
-            require(
-                not unknown_contracts,
-                "active workspace member README has unknown module contract links "
-                f"{unknown_contracts}: {member_text}",
-            )
+            if unknown_contracts:
+                readme_errors.append(
+                    "active workspace member README has unknown module contract links "
+                    f"{unknown_contracts}: {member_text}"
+                )
 
     duplicates = [
         package for package, count in Counter(seen_packages).items() if count > 1
     ]
     require(not duplicates, f"duplicate workspace package names: {duplicates}")
+    require(
+        not readme_errors,
+        "component README contract violations:\n- " + "\n- ".join(readme_errors),
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
