@@ -9,14 +9,17 @@ import sys
 import tempfile
 import time
 import unittest
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 BROKER = ROOT / "owner-open" / "owner_open_connection_broker.py"
+DIAGNOSTIC_BYTES = 64 * 1024
 
 COMMON = r'''
 import json, os, sys, time
 from pathlib import Path
 record = Path(os.environ["UPSTREAM_RECORD"])
+response_record = record.with_name("upstream-responses.jsonl")
 fields = (
     "session_id", "profile_id", "task_id", "turn_id", "turn_stream_id",
     "call_id", "job_id", "operation_id", "attachment_id", "request_sha256"
@@ -49,6 +52,8 @@ def emit(frame):
     for name in ("broker_request_id", "broker_request_sha256", "broker_request_upstream_seq"):
         if name in frame: value[name]=frame[name]
     print(json.dumps(value,separators=(",",":")),flush=True)
+    with response_record.open("a") as f:
+        f.write(json.dumps({"at":time.monotonic(),"frame":value},sort_keys=True)+"\n")
 def handshake():
     frame=json.loads(next(sys.stdin)); remember(frame)
     assert frame["kind"]=="hello"
@@ -147,7 +152,10 @@ def read_line(sock: socket.socket, timeout: float = 5.0) -> dict:
     sock.settimeout(timeout)
     data=bytearray()
     while True:
-        chunk=sock.recv(1)
+        try:
+            chunk=sock.recv(1)
+        except TimeoutError as error:
+            raise TimeoutError(f"socket read timed out with partial frame {bytes(data)!r}") from error
         if not chunk:
             raise EOFError("socket closed")
         if chunk==b"\n":
@@ -279,16 +287,56 @@ class Harness:
             "timeout_ms":timeout_ms,
         })
 
-    @staticmethod
-    def terminal(sock: socket.socket, request_id: str, timeout: float = 5.0) -> tuple[dict,list[dict]]:
+    def terminal(self, sock: socket.socket, request_id: str, timeout: float = 5.0) -> tuple[dict,list[dict]]:
         observed=[]
         deadline=time.monotonic()+timeout
         while time.monotonic()<deadline:
-            value=read_line(sock,max(0.05,deadline-time.monotonic()))
+            try:
+                value=read_line(sock,max(0.05,deadline-time.monotonic()))
+            except (TimeoutError, EOFError) as error:
+                self.fail(f"no terminal for {request_id}: {error}; diagnostics: {self.diagnostics(observed)}")
             observed.append(value)
             if value.get("kind") in {"result","error"} and value.get("request_id")==request_id:
                 return value,observed
-        raise AssertionError(f"no terminal for {request_id}: {observed}")
+        self.fail(f"no terminal for {request_id}; diagnostics: {self.diagnostics(observed)}")
+
+    def diagnostics(self, observed: list[dict]) -> str:
+        """Keep both upstream directions and durable transitions in failure logs."""
+        evidence={
+            "client_observed":observed,
+            "broker_pid":self.process.pid,
+            # None proves only that poll has not observed process exit.
+            "broker_exit_code":self.process.poll(),
+        }
+        for name in ("upstream.jsonl","upstream-responses.jsonl","broker.json.audit.jsonl"):
+            path=self.root/name
+            try:
+                with path.open("rb") as stream:
+                    data=stream.read(DIAGNOSTIC_BYTES+1)
+                evidence[name]={"text":data[:DIAGNOSTIC_BYTES].decode(errors="replace"),"truncated":len(data)>DIAGNOSTIC_BYTES}
+            except OSError as error:
+                evidence[name]={"read_error":str(error)}
+        stderr=bytearray()
+        pipe=self.process.stderr
+        if pipe is not None and not pipe.closed:
+            fd=pipe.fileno()
+            was_blocking=os.get_blocking(fd)
+            try:
+                # The broker may still be alive with stderr open and empty.
+                # Never use communicate/read-to-EOF on this failure path.
+                os.set_blocking(fd,False)
+                while len(stderr)<DIAGNOSTIC_BYTES:
+                    try:
+                        chunk=os.read(fd,DIAGNOSTIC_BYTES-len(stderr))
+                    except BlockingIOError:
+                        break
+                    if not chunk:
+                        break
+                    stderr.extend(chunk)
+            finally:
+                os.set_blocking(fd,was_blocking)
+        evidence["broker_stderr"]={"text":stderr.decode(errors="replace"),"limit_reached":len(stderr)==DIAGNOSTIC_BYTES}
+        return json.dumps(evidence,sort_keys=True)
 
     def records(self) -> list[dict]:
         if not self.record.exists():
@@ -326,6 +374,30 @@ class CrossKeyMuxTest(Harness, unittest.TestCase):
             first.close(); second.close()
         frames=[record["frame"] for record in self.records()]
         self.assertEqual([frame["kind"] for frame in frames],["hello","job.inspect","job.inspect"])
+
+
+class HarnessDiagnosticsTest(unittest.TestCase):
+    def test_diagnostics_preserve_both_directions_without_waiting_for_stderr_eof(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            for name in ("upstream.jsonl","upstream-responses.jsonl","broker.json.audit.jsonl"):
+                (root/name).write_text(name)
+            (root/"upstream.jsonl").write_bytes(b"x"*(DIAGNOSTIC_BYTES+1))
+            read_fd,write_fd=os.pipe()
+            with os.fdopen(read_fd,"rb") as reader,os.fdopen(write_fd,"wb") as writer:
+                writer.write(b"still running"); writer.flush()
+                case=SimpleNamespace(root=root,process=SimpleNamespace(pid=123,stderr=reader,poll=lambda:None))
+                observed=[{"kind":"accepted","request_id":"request-b"}]
+                started=time.monotonic()
+                evidence=json.loads(Harness.diagnostics(case,observed))
+                self.assertLess(time.monotonic()-started,0.5)
+                self.assertEqual(evidence["client_observed"],observed)
+                self.assertEqual(evidence["broker_stderr"]["text"],"still running")
+                self.assertEqual(evidence["upstream-responses.jsonl"]["text"],"upstream-responses.jsonl")
+                self.assertEqual(evidence["broker.json.audit.jsonl"]["text"],"broker.json.audit.jsonl")
+                self.assertTrue(evidence["upstream.jsonl"]["truncated"])
+                self.assertEqual(len(evidence["upstream.jsonl"]["text"]),DIAGNOSTIC_BYTES)
+                self.assertTrue(os.get_blocking(reader.fileno()))
 
 
 class SameKeySerializationTest(Harness, unittest.TestCase):
