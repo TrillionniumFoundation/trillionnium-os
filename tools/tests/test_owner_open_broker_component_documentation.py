@@ -349,6 +349,37 @@ edition = "2024"
             ):
                 VERIFY.verify(root)
 
+    def test_multiline_inline_code_cannot_supply_module_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+            prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+            prose += f"\n`literal span\n{link}\ncontinues here`\n"
+            path.write_text(prose, encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
+    def test_tab_indented_fence_cannot_supply_exact_test_command(self) -> None:
+        command = "cargo test --locked -p active-package --all-targets"
+        for prefix in ("\t", " \t", "  \t", "   \t"):
+            with self.subTest(prefix=repr(prefix)), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                self.write_fixture(root)
+                path = root / "active/README.md"
+                prose = path.read_text(encoding="utf-8").replace(command, "cargo test")
+                prose += f"\n{prefix}```sh\n{command}\n{prefix}```\n"
+                path.write_text(prose, encoding="utf-8")
+                with self.assertRaisesRegex(
+                    VERIFY.VerificationError,
+                    "README missing exact local test command",
+                ):
+                    VERIFY.verify(root)
+
     def test_wrong_relative_module_target_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

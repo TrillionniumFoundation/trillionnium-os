@@ -32,7 +32,7 @@ MARKDOWN_LINK = re.compile(
     r"(?<!!)(?<!\\)\[[^\]\n]*\]\(\s*(?:<(?P<angle>[^<>\n]+)>|"
     r"(?P<plain>[^()\s]+))\s*\)"
 )
-FENCE_OPEN = re.compile(r"^[ \t]{0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
+FENCE_OPEN = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
 SHELL_FENCE_LANGUAGES = {"sh", "bash", "shell", "zsh", "console"}
 
 
@@ -154,10 +154,22 @@ def strip_html_comments(source: str, label: str) -> str:
     return "".join(characters)
 
 
-def strip_inline_code(line: str) -> str:
-    """Hide inline code spans so examples cannot satisfy visible-link checks."""
+def strip_inline_code(line: str, open_marker: str | None) -> tuple[str, str | None]:
+    """Hide inline code spans, retaining a marker across physical lines."""
     characters = list(line)
     cursor = 0
+    marker = open_marker
+
+    if marker is not None:
+        close = line.find(marker)
+        span_end = len(line) if close < 0 else close + len(marker)
+        for index in range(span_end):
+            characters[index] = " "
+        if close < 0:
+            return "".join(characters), marker
+        cursor = span_end
+        marker = None
+
     while cursor < len(line):
         if line[cursor] != "`":
             cursor += 1
@@ -170,8 +182,24 @@ def strip_inline_code(line: str) -> str:
         span_end = len(line) if close < 0 else close + len(marker)
         for index in range(cursor, span_end):
             characters[index] = " "
+        if close < 0:
+            return "".join(characters), marker
         cursor = span_end
-    return "".join(characters)
+        marker = None
+    return "".join(characters), None
+
+
+def indentation_columns(line: str) -> int:
+    """Return CommonMark-style leading indentation columns with tab stops."""
+    columns = 0
+    for character in line:
+        if character == " ":
+            columns += 1
+        elif character == "\t":
+            columns += 4 - columns % 4
+        else:
+            break
+    return columns
 
 
 def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
@@ -183,6 +211,7 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
     marker_length = 0
     language = ""
     html_code_block: str | None = None
+    inline_marker: str | None = None
 
     for line in source.splitlines():
         lowered = line.lstrip().lower()
@@ -192,6 +221,11 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
             continue
 
         if marker_character is None:
+            if inline_marker is not None:
+                visible, inline_marker = strip_inline_code(line, inline_marker)
+                visible_lines.append(visible)
+                continue
+
             opened_html_block = False
             for tag in ("pre", "code", "script", "style"):
                 if re.match(rf"^<{tag}(?:\s|>)", lowered):
@@ -211,14 +245,15 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
                 language = info.split(None, 1)[0].lower() if info else ""
                 continue
 
-            # Four-space and tab-indented blocks are Markdown code, not links.
-            if line.startswith("\t") or len(line) - len(line.lstrip(" ")) >= 4:
+            # Four-column indentation is Markdown code, including mixed tabs.
+            if indentation_columns(line) >= 4:
                 continue
-            visible_lines.append(strip_inline_code(line))
+            visible, inline_marker = strip_inline_code(line, None)
+            visible_lines.append(visible)
             continue
 
         stripped = line.lstrip(" \t")
-        indentation = len(line) - len(stripped)
+        indentation = indentation_columns(line)
         run_length = 0
         while run_length < len(stripped) and stripped[run_length] == marker_character:
             run_length += 1
