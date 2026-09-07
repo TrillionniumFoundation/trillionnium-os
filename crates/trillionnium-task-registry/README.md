@@ -1,7 +1,9 @@
 # Trillionnium legacy task registry
 
-Lifecycle classification: **`sealed_legacy_registry`**  
-Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)  
+Lifecycle classification: **`sealed_legacy_registry`**
+
+Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)
+
 Default owner-open source closure: **not selected**
 
 ## Purpose

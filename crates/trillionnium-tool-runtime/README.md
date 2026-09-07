@@ -1,7 +1,9 @@
 # Trillionnium sealed legacy tool runtime
 
-Lifecycle classification: **`sealed_legacy_tool_runtime`**  
-Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)  
+Lifecycle classification: **`sealed_legacy_tool_runtime`**
+
+Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)
+
 Default owner-open source closure: **not selected**
 
 ## Purpose

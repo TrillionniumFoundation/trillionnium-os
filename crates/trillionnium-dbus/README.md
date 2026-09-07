@@ -1,7 +1,9 @@
 # Trillionnium retired D-Bus integration
 
-Lifecycle classification: **`sealed_retired_platform_integration`**  
-Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)  
+Lifecycle classification: **`sealed_retired_platform_integration`**
+
+Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)
+
 Default owner-open source closure: **not selected**
 
 ## Purpose

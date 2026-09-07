@@ -1,7 +1,9 @@
 # Trillionnium Agent API UDS compatibility transport
 
-Lifecycle classification: **`sealed_legacy_transport`**  
-Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)  
+Lifecycle classification: **`sealed_legacy_transport`**
+
+Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)
+
 Default owner-open source closure: **not selected**
 
 ## Purpose

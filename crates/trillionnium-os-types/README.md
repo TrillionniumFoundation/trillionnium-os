@@ -1,7 +1,9 @@
 # Trillionnium OS legacy types
 
-Lifecycle classification: **`sealed_legacy_contracts`**  
-Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)  
+Lifecycle classification: **`sealed_legacy_contracts`**
+
+Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)
+
 Default owner-open source closure: **not selected**
 
 ## Purpose
