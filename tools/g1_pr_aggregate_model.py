@@ -1,7 +1,14 @@
-"""Immutable G1 aggregate subject and workflow requirements."""
+"""Immutable G1 aggregate subject and workflow requirements.
+
+The protected pull-request aggregate is intentionally a source-correctness gate.
+Promotion, device, evidence, release, and other qualification workflows are not
+transitive prerequisites for ordinary pull requests; they run on their own
+promotion/release paths instead of recursively qualifying CI with more CI.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True)
 class Subject:
@@ -28,41 +35,11 @@ class WorkflowRequirement:
         return f".github/workflows/{self.filename}"
 
 
-REQUIREMENTS = (
-    WorkflowRequirement(
-        filename="g1-synthetic-merge.yml",
-        workflow_name="G1 synthetic-merge qualification",
-        job_names=frozenset({"L1 exact two-parent merge source qualification"}),
-        artifact_kind="synthetic",
-    ),
-    WorkflowRequirement(
-        filename="g1-review-index-receipts.yml",
-        workflow_name="G1 exact-head and synthetic-merge review-index receipts",
-        job_names=frozenset(
-            {"L1 exact-head and synthetic-merge closed-world receipt binding"}
-        ),
-        artifact_kind="review_index",
-    ),
-    WorkflowRequirement(
-        filename="g1-android-privilege-matrix.yml",
-        workflow_name="G1 Android privileged-lane evaluated matrix",
-        job_names=frozenset(
-            {
-                "L1 Android adbroot source-head evaluated matrix",
-                "L1 Android adbroot synthetic-merge evaluated matrix",
-            }
-        ),
-        artifact_kind="android",
-    ),
-    WorkflowRequirement(
-        filename="g1-evidence-intake.yml",
-        workflow_name="G1 evidence intake qualification",
-        job_names=frozenset(
-            {
-                "L1 strict evidence intake on exact source head",
-                "L1 strict evidence intake on ordered synthetic merge",
-            }
-        ),
-        artifact_kind="evidence",
-    ),
-)
+# Deliberately empty for ordinary pull requests.
+#
+# The aggregate still verifies the exact live PR subject and all source jobs in
+# its own workflow. Cross-workflow qualification (synthetic merge receipts,
+# Android evaluated matrices, evidence intake, release/signing evidence) is a
+# separate promotion concern and must not make CI itself a recursive admission
+# authority.
+REQUIREMENTS: tuple[WorkflowRequirement, ...] = ()
