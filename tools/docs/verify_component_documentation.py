@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Verify component-local documentation for the complete root Cargo workspace.
 
-This gate closes repository inventory/documentation defects only.  It does not
+This gate closes repository inventory/documentation defects only. It does not
 promote installed-target, Android-image, device, fault or release evidence.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import tomllib
 from collections import Counter
@@ -23,6 +24,7 @@ LIFECYCLE_KEYS = {
     "non_product_members",
 }
 LIFECYCLE_ENTRY_KEYS = {"path", "classification", "replacement", "reason"}
+MODULE_ID = re.compile(r"^MOD-[A-Z0-9][A-Z0-9-]{0,126}$")
 
 
 class VerificationError(Exception):
@@ -92,13 +94,15 @@ def normalized_path(root: Path, value: Any, label: str) -> tuple[str, Path]:
     require(not pure.is_absolute(), f"{label} must be relative")
     require(raw == pure.as_posix() and "\\" not in raw, f"{label} is not normalized")
     require("." not in pure.parts and ".." not in pure.parts, f"{label} traverses")
+
     candidate = root.joinpath(*pure.parts)
-    resolved = candidate.resolve(strict=False)
-    require(resolved.is_relative_to(root.resolve()), f"{label} escapes repository")
     cursor = candidate
-    while cursor != root and cursor.exists():
+    while cursor != root:
         require(not cursor.is_symlink(), f"{label} traverses symlink {cursor}")
         cursor = cursor.parent
+
+    resolved = candidate.resolve(strict=False)
+    require(resolved.is_relative_to(root), f"{label} escapes repository")
     return raw, candidate
 
 
@@ -124,6 +128,49 @@ def package_name(manifest: Path, label: str) -> str:
     return text(package, f"{label}.package.name")
 
 
+def module_contracts(
+    root: Path,
+    catalog: dict[str, Any],
+    members: list[str],
+) -> dict[str, list[str]]:
+    modules = catalog.get("modules")
+    require(
+        isinstance(modules, list) and bool(modules),
+        "module-catalog.modules must be a non-empty array",
+    )
+
+    member_parts = {member: PurePosixPath(member) for member in members}
+    result: dict[str, set[str]] = {member: set() for member in members}
+    seen_ids: set[str] = set()
+
+    for index, module in enumerate(modules):
+        require(isinstance(module, dict), f"module-catalog.modules[{index}] must be an object")
+        module_id = text(module.get("id"), f"module-catalog.modules[{index}].id")
+        require(MODULE_ID.fullmatch(module_id) is not None, f"invalid module id: {module_id}")
+        require(module_id not in seen_ids, f"duplicate module id: {module_id}")
+        seen_ids.add(module_id)
+
+        contract_text = f"docs/modules/{module_id}.md"
+        _, contract = normalized_path(root, contract_text, f"{module_id}.contract")
+        require(
+            contract.is_file() and not contract.is_symlink(),
+            f"module contract missing: {contract_text}",
+        )
+
+        for path_index, raw_path in enumerate(strings(module.get("paths"), f"{module_id}.paths")):
+            module_path_text, _ = normalized_path(
+                root,
+                raw_path,
+                f"{module_id}.paths[{path_index}]",
+            )
+            module_path = PurePosixPath(module_path_text)
+            for member, member_path in member_parts.items():
+                if module_path == member_path or member_path in module_path.parents:
+                    result[member].add(contract_text)
+
+    return {member: sorted(contracts) for member, contracts in result.items()}
+
+
 def verify(root: Path) -> None:
     root = root.resolve()
     members, defaults = parse_workspace(root)
@@ -136,6 +183,7 @@ def verify(root: Path) -> None:
         defaults == catalog_defaults,
         "Cargo default-members drift from module catalog default_source_closure",
     )
+    contracts_by_member = module_contracts(root, catalog, members)
 
     lifecycle = load_json(root / "governance/component-lifecycle.v1.json")
     exact_keys(lifecycle, LIFECYCLE_KEYS, "component lifecycle")
@@ -216,6 +264,25 @@ def verify(root: Path) -> None:
             package in prose,
             f"workspace member README does not identify package {package}: {member_text}",
         )
+
+        command = f"cargo test --locked -p {package} --all-targets"
+        require(
+            command in prose,
+            f"workspace member README missing exact local test command {command!r}: {member_text}",
+        )
+
+        if member_text in default_set:
+            contracts = contracts_by_member[member_text]
+            require(
+                bool(contracts),
+                f"active workspace member has no module contract mapping: {member_text}",
+            )
+            for contract in contracts:
+                require(
+                    contract in prose,
+                    "active workspace member README missing module contract link "
+                    f"{contract}: {member_text}",
+                )
 
     duplicates = [
         package for package, count in Counter(seen_packages).items() if count > 1

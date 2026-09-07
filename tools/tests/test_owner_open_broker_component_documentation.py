@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 
@@ -38,17 +39,39 @@ edition = "2024"
 """,
                 encoding="utf-8",
             )
+            contract = (
+                "\n\n[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+                if path == "active"
+                else ""
+            )
             (directory / "README.md").write_text(
-                f"# {package}\n\n{package}\n\n"
-                + "Source-only component documentation. " * 20,
+                f"# {package}\n\nCargo package: `{package}`.{contract}\n\n"
+                "```sh\n"
+                f"cargo test --locked -p {package} --all-targets\n"
+                "```\n\n"
+                + "Source-only bounded component documentation. " * 20,
                 encoding="utf-8",
             )
 
         machine = root / "docs/machine"
         machine.mkdir(parents=True)
+        modules = root / "docs/modules"
+        modules.mkdir()
+        (modules / "MOD-FIXTURE.md").write_text(
+            "# Fixture module\n\nBounded fixture contract.\n",
+            encoding="utf-8",
+        )
         (machine / "module-catalog.v1.json").write_text(
             json.dumps(
-                {"default_source_closure": ["active"]},
+                {
+                    "modules": [
+                        {
+                            "id": "MOD-FIXTURE",
+                            "paths": ["active/src/lib.rs"],
+                        }
+                    ],
+                    "default_source_closure": ["active"],
+                },
                 indent=2,
             )
             + "\n",
@@ -101,6 +124,42 @@ edition = "2024"
             ):
                 VERIFY.verify(root)
 
+    def test_missing_exact_test_command_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "cargo test --locked -p active-package --all-targets",
+                    "cargo test --locked --all-targets",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing exact local test command",
+            ):
+                VERIFY.verify(root)
+
+    def test_active_member_missing_module_contract_link_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "docs/modules/MOD-FIXTURE.md",
+                    "docs/modules/OTHER.md",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "README missing module contract link docs/modules/MOD-FIXTURE.md",
+            ):
+                VERIFY.verify(root)
+
     def test_lifecycle_omission_cannot_hide_a_workspace_member(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -129,6 +188,66 @@ edition = "2024"
             ):
                 VERIFY.verify(root)
 
+    def test_duplicate_json_member_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            (root / "docs/machine/module-catalog.v1.json").write_text(
+                '{"modules": [], "default_source_closure": ["active"], '
+                '"default_source_closure": ["active"]}\n',
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "duplicate JSON member 'default_source_closure'",
+            ):
+                VERIFY.verify(root)
+
+    def test_absolute_lifecycle_path_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "governance/component-lifecycle.v1.json"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["non_product_members"][0]["path"] = "/sealed"
+            path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "must be relative",
+            ):
+                VERIFY.verify(root)
+
+    def test_parent_traversal_lifecycle_path_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "governance/component-lifecycle.v1.json"
+            value = json.loads(path.read_text(encoding="utf-8"))
+            value["non_product_members"][0]["path"] = "../sealed"
+            path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "traverses",
+            ):
+                VERIFY.verify(root)
+
+    def test_workspace_member_symlink_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            source = root / "sealed"
+            target = root / "sealed-target"
+            source.rename(target)
+            try:
+                source.symlink_to(target.name, target_is_directory=True)
+            except OSError as error:
+                self.skipTest(f"symlink creation unavailable: {error}")
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "traverses symlink",
+            ):
+                VERIFY.verify(root)
+
     def test_duplicate_package_names_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -142,7 +261,11 @@ edition = "2024"
                 encoding="utf-8",
             )
             (root / "sealed/README.md").write_text(
-                "# active-package\n\nactive-package\n\n" + "bounded docs " * 40,
+                "# active-package\n\nCargo package: `active-package`.\n\n"
+                "```sh\n"
+                "cargo test --locked -p active-package --all-targets\n"
+                "```\n\n"
+                + "bounded source documentation " * 20,
                 encoding="utf-8",
             )
             with self.assertRaisesRegex(
