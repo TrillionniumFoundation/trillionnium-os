@@ -1,0 +1,96 @@
+name: PR47 exact merge controller
+
+on:
+  push:
+    branches:
+      - ops/pr47-exact-source-export-20260908
+    paths:
+      - .github/workflows/pr47-exact-merge-controller-20260908.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  merge:
+    name: Merge only exact reviewed green PR47
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ops/pr47-exact-source-export-20260908
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Evaluate exact-head admission and ordinary merge
+        id: evaluate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: TrillionniumFoundation/trillionnium-os
+          PR: "47"
+          EXPECTED_HEAD: b8e875d8d01893d894ae0666db9e4efdcc106d59
+          EXPECTED_BASE: 968968046d69d000f1f9fe03683e92aa7903cf99
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ops-status
+          api() {
+            curl --fail --silent --show-error --location \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" "$@"
+          }
+          api "https://api.github.com/repos/${REPO}/pulls/${PR}" >pr.json
+          state=$(jq -r .state pr.json)
+          actual_head=$(jq -r .head.sha pr.json)
+          actual_base=$(jq -r .base.sha pr.json)
+          if [[ "$state" == closed && "$(jq -r .merged pr.json)" == true ]]; then
+            jq '{status:"ALREADY_MERGED",state,merged,merged_at,merge_commit_sha,head:.head.sha,base:.base.sha}' pr.json >ops-status/pr47-merge-controller.json
+            exit 0
+          fi
+          test "$state" = open
+          test "$actual_head" = "$EXPECTED_HEAD"
+          test "$actual_base" = "$EXPECTED_BASE"
+          api "https://api.github.com/repos/${REPO}/pulls/${PR}/reviews?per_page=100" >reviews.json
+          api "https://api.github.com/repos/${REPO}/commits/${EXPECTED_HEAD}/check-runs?per_page=100" >checks.json
+          jq -e --arg head "$EXPECTED_HEAD" '
+            [ .[] | select(.user.login == "Franksudoman" and .commit_id == $head) ] | last | .state == "APPROVED"
+          ' reviews.json >/dev/null
+          jq -e --arg head "$EXPECTED_HEAD" '
+            [ .[] | select(.user.login == "Tomasrgbsf" and .commit_id == $head) ] | last | .state == "APPROVED"
+          ' reviews.json >/dev/null
+          jq -e --arg head "$EXPECTED_HEAD" '
+            [ .[] | select(.commit_id == $head and .state == "CHANGES_REQUESTED") ] | length == 0
+          ' reviews.json >/dev/null
+          jq -e '
+            (.total_count > 0) and
+            ([.check_runs[] | select(.status != "completed")] | length == 0) and
+            ([.check_runs[] | select((.conclusion | IN("success","neutral","skipped")) | not)] | length == 0)
+          ' checks.json >/dev/null
+          for required in \
+            'L1 graph, documentation, broker and MCP source closure' \
+            'L1 Rust 1.93 selected Host, job, flow and recovery closure' \
+            'L1 exact-source-head aggregate candidate' \
+            'L1 protected-main and exact-head independent-review readiness'; do
+            jq -e --arg required "$required" '[.check_runs[] | select(.name == $required and .status == "completed" and .conclusion == "success")] | length > 0' checks.json >/dev/null
+          done
+          payload=$(jq -n --arg sha "$EXPECTED_HEAD" '{sha:$sha,merge_method:"squash",commit_title:"docs(g1): close complete workspace component documentation coverage (#47)",commit_message:"Protected exact-head integration of complete component documentation coverage and parser hardening. No installed-target, device, destructive-fault, signing, deployment, promotion or public-release authority is granted."}')
+          api --request PUT --data "$payload" "https://api.github.com/repos/${REPO}/pulls/${PR}/merge" >merge.json
+          jq -e '.merged == true' merge.json >/dev/null
+          jq -n --slurpfile merge merge.json --arg head "$EXPECTED_HEAD" '{status:"MERGED_BY_ORDINARY_PROTECTED_PATH",head:$head,result:$merge[0]}' >ops-status/pr47-merge-controller.json
+      - name: Persist controller decision
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! -f ops-status/pr47-merge-controller.json ]]; then
+            jq -n --arg status "NOT_MERGED_FAIL_CLOSED" --arg run "$GITHUB_RUN_ID" '{status:$status,run_id:$run}' >ops-status/pr47-merge-controller.json
+          fi
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add ops-status/pr47-merge-controller.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'ops: record exact PR47 merge decision'
+          git push origin HEAD:refs/heads/ops/pr47-exact-source-export-20260908
