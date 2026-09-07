@@ -1,0 +1,41 @@
+name: PR47 exact source export
+
+on:
+  push:
+    branches:
+      - ops/pr47-exact-source-export-20260908
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    name: Export exact PR47 source without target authority
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact reviewed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: 7953e8521bd30d298919917094501e01e012df14
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify exact identity and archive tracked tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "7953e8521bd30d298919917094501e01e012df14"
+          test "$(git rev-parse 'HEAD^{tree}')" = "10beb7c5dba0675236329ffe499e38c83d5b23be"
+          git diff --quiet
+          git diff --cached --quiet
+          git archive --format=tar.gz --output="${RUNNER_TEMP}/trillionnium-os-pr47-7953e852.tar.gz" HEAD
+          sha256sum "${RUNNER_TEMP}/trillionnium-os-pr47-7953e852.tar.gz" > "${RUNNER_TEMP}/trillionnium-os-pr47-7953e852.tar.gz.sha256"
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: trillionnium-os-pr47-exact-source-7953e852
+          path: |
+            ${{ runner.temp }}/trillionnium-os-pr47-7953e852.tar.gz
+            ${{ runner.temp }}/trillionnium-os-pr47-7953e852.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1
