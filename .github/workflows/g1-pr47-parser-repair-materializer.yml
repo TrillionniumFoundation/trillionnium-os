@@ -1,0 +1,166 @@
+name: G1 PR47 parser repair materializer
+
+on:
+  push:
+    branches: [ops/pr47-parser-repair-20260908]
+    paths: [.github/workflows/g1-pr47-parser-repair-materializer.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      EXPECTED_TARGET_HEAD: b8e875d8d01893d894ae0666db9e4efdcc106d59
+      TARGET_BRANCH: codex/g1-full-gap-closure-20260907
+    steps:
+      - name: Checkout exact target branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Require exact target head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TARGET_HEAD"
+      - name: Apply exact CommonMark delimiter repair and hostile fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          verifier = Path('tools/docs/verify_component_documentation.py')
+          source = verifier.read_text(encoding='utf-8')
+          start = source.index('def strip_inline_code(')
+          end = source.index('\ndef indentation_columns(', start)
+          replacement = '''def _find_exact_backtick_run(line: str, marker: str, start: int = 0) -> int:
+              """Find a maximal backtick run whose length exactly matches marker."""
+              cursor = start
+              marker_length = len(marker)
+              while cursor < len(line):
+                  candidate = line.find(marker, cursor)
+                  if candidate < 0:
+                      return -1
+                  run_start = candidate
+                  while run_start > 0 and line[run_start - 1] == "`":
+                      run_start -= 1
+                  run_end = candidate + marker_length
+                  while run_end < len(line) and line[run_end] == "`":
+                      run_end += 1
+                  if candidate == run_start and run_end - run_start == marker_length:
+                      return candidate
+                  cursor = run_end
+              return -1
+
+
+          def strip_inline_code(line: str, open_marker: str | None) -> tuple[str, str | None]:
+              """Hide inline code spans, retaining an exact marker across physical lines."""
+              characters = list(line)
+              cursor = 0
+              marker = open_marker
+
+              if marker is not None:
+                  close = _find_exact_backtick_run(line, marker)
+                  span_end = len(line) if close < 0 else close + len(marker)
+                  for index in range(span_end):
+                      characters[index] = " "
+                  if close < 0:
+                      return "".join(characters), marker
+                  cursor = span_end
+                  marker = None
+
+              while cursor < len(line):
+                  if line[cursor] != "`":
+                      cursor += 1
+                      continue
+                  run_end = cursor
+                  while run_end < len(line) and line[run_end] == "`":
+                      run_end += 1
+                  marker = line[cursor:run_end]
+                  close = _find_exact_backtick_run(line, marker, run_end)
+                  span_end = len(line) if close < 0 else close + len(marker)
+                  for index in range(cursor, span_end):
+                      characters[index] = " "
+                  if close < 0:
+                      return "".join(characters), marker
+                  cursor = span_end
+                  marker = None
+              return "".join(characters), None
+
+'''
+          source = source[:start] + replacement + source[end + 1:]
+          verifier.write_text(source, encoding='utf-8')
+
+          tests = Path('tools/tests/test_owner_open_broker_component_documentation.py')
+          test_source = tests.read_text(encoding='utf-8')
+          anchor = '\n\nif __name__ == "__main__":\n    unittest.main()'
+          if anchor not in test_source:
+              raise SystemExit('test insertion anchor missing')
+          additions = r'''
+
+              def test_unequal_backtick_run_cannot_supply_module_contract_link(self) -> None:
+                  with tempfile.TemporaryDirectory() as temporary:
+                      root = Path(temporary)
+                      self.write_fixture(root)
+                      path = root / "active/README.md"
+                      link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+                      prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+                      prose += (
+                          "\nExample: `` alpha ``` beta ` "
+                          "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md) gamma ``\n"
+                      )
+                      path.write_text(prose, encoding="utf-8")
+                      with self.assertRaisesRegex(
+                          VERIFY.VerificationError,
+                          "README missing module contract link docs/modules/MOD-FIXTURE.md",
+                      ):
+                          VERIFY.verify(root)
+
+              def test_multiline_unequal_backtick_run_cannot_supply_module_contract_link(self) -> None:
+                  with tempfile.TemporaryDirectory() as temporary:
+                      root = Path(temporary)
+                      self.write_fixture(root)
+                      path = root / "active/README.md"
+                      link = "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)"
+                      prose = path.read_text(encoding="utf-8").replace(link, "MOD-FIXTURE")
+                      prose += (
+                          "\nExample: `` alpha\n"
+                          "middle ``` beta ` [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md) gamma\n"
+                          "``\n"
+                      )
+                      path.write_text(prose, encoding="utf-8")
+                      with self.assertRaisesRegex(
+                          VERIFY.VerificationError,
+                          "README missing module contract link docs/modules/MOD-FIXTURE.md",
+                      ):
+                          VERIFY.verify(root)
+          '''
+          test_source = test_source.replace(anchor, additions + anchor)
+          tests.write_text(test_source, encoding='utf-8')
+          PY
+          test "$(git diff --name-only | sort)" = $'tools/docs/verify_component_documentation.py\ntools/tests/test_owner_open_broker_component_documentation.py'
+          git diff --check
+      - name: Run focused fail-closed qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/docs/verify_component_documentation.py tools/tests/test_owner_open_broker_component_documentation.py
+          python3 -m unittest tools.tests.test_owner_open_broker_component_documentation -v
+          python3 tools/docs/verify_component_documentation.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          git diff --check
+      - name: Publish exact two-file repair with lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tools/docs/verify_component_documentation.py tools/tests/test_owner_open_broker_component_documentation.py
+          git commit -m 'fix(docs): require exact maximal inline-code delimiter runs'
+          git push origin HEAD:refs/heads/$TARGET_BRANCH --force-with-lease=refs/heads/$TARGET_BRANCH:$EXPECTED_TARGET_HEAD
