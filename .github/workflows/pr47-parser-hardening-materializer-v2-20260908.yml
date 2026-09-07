@@ -1,0 +1,73 @@
+name: PR47 parser hardening materializer v2
+
+on:
+  push:
+    branches:
+      - ops/pr47-exact-source-export-20260908
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    name: Apply exact two-file parser repair v2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out bounded patch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ops/pr47-exact-source-export-20260908
+          path: ops-source
+          persist-credentials: false
+      - name: Check out exact PR47 head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: codex/g1-full-gap-closure-20260907
+          fetch-depth: 0
+          path: target
+          persist-credentials: true
+      - name: Verify exact parent and patch
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=7953e8521bd30d298919917094501e01e012df14
+          expected_tree=10beb7c5dba0675236329ffe499e38c83d5b23be
+          patch=../ops-source/ops/pr47-parser-hardening.patch
+          test "$(git rev-parse HEAD)" = "$expected_head"
+          test "$(git rev-parse 'HEAD^{tree}')" = "$expected_tree"
+          remote_head="$(git ls-remote origin refs/heads/codex/g1-full-gap-closure-20260907 | cut -f1)"
+          test "$remote_head" = "$expected_head"
+          echo "4e5c6b5c2510bd05171f424b9428ae0870844c60967f01355eb0d9242772b2ef  $patch" | sha256sum --check
+          git apply --check "$patch"
+          git apply "$patch"
+          mapfile -t changed < <(git diff --name-only | sort)
+          test "${#changed[@]}" -eq 2
+          test "${changed[0]}" = tools/docs/verify_component_documentation.py
+          test "${changed[1]}" = tools/tests/test_owner_open_broker_component_documentation.py
+      - name: Run focused fail-closed qualification
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/docs/verify_component_documentation.py tools/tests/test_owner_open_broker_component_documentation.py
+          python3 -m unittest -v tools/tests/test_owner_open_broker_component_documentation.py
+          python3 tools/docs/verify_component_documentation.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          git diff --check
+      - name: Commit and push only the bounded repair
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected_head=7953e8521bd30d298919917094501e01e012df14
+          remote_head="$(git ls-remote origin refs/heads/codex/g1-full-gap-closure-20260907 | cut -f1)"
+          test "$remote_head" = "$expected_head"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add tools/docs/verify_component_documentation.py tools/tests/test_owner_open_broker_component_documentation.py
+          git diff --cached --check
+          git commit -m 'fix(docs): close multiline-code and tab-fence credit leaks'
+          git push origin HEAD:refs/heads/codex/g1-full-gap-closure-20260907
