@@ -25,6 +25,7 @@ LIFECYCLE_KEYS = {
 }
 LIFECYCLE_ENTRY_KEYS = {"path", "classification", "replacement", "reason"}
 MODULE_ID = re.compile(r"^MOD-[A-Z0-9][A-Z0-9-]{0,126}$")
+MODULE_LINK = re.compile(r"docs/modules/(MOD-[A-Z0-9][A-Z0-9-]{0,126})\.md")
 
 
 class VerificationError(Exception):
@@ -132,7 +133,7 @@ def module_contracts(
     root: Path,
     catalog: dict[str, Any],
     members: list[str],
-) -> dict[str, list[str]]:
+) -> tuple[set[str], dict[str, list[str]]]:
     modules = catalog.get("modules")
     require(
         isinstance(modules, list) and bool(modules),
@@ -140,7 +141,8 @@ def module_contracts(
     )
 
     member_parts = {member: PurePosixPath(member) for member in members}
-    result: dict[str, set[str]] = {member: set() for member in members}
+    physical: dict[str, set[str]] = {member: set() for member in members}
+    valid_contracts: set[str] = set()
     seen_ids: set[str] = set()
 
     for index, module in enumerate(modules):
@@ -156,6 +158,7 @@ def module_contracts(
             contract.is_file() and not contract.is_symlink(),
             f"module contract missing: {contract_text}",
         )
+        valid_contracts.add(contract_text)
 
         for path_index, raw_path in enumerate(strings(module.get("paths"), f"{module_id}.paths")):
             module_path_text, _ = normalized_path(
@@ -166,9 +169,11 @@ def module_contracts(
             module_path = PurePosixPath(module_path_text)
             for member, member_path in member_parts.items():
                 if module_path == member_path or member_path in module_path.parents:
-                    result[member].add(contract_text)
+                    physical[member].add(contract_text)
 
-    return {member: sorted(contracts) for member, contracts in result.items()}
+    return valid_contracts, {
+        member: sorted(contracts) for member, contracts in physical.items()
+    }
 
 
 def verify(root: Path) -> None:
@@ -183,7 +188,9 @@ def verify(root: Path) -> None:
         defaults == catalog_defaults,
         "Cargo default-members drift from module catalog default_source_closure",
     )
-    contracts_by_member = module_contracts(root, catalog, members)
+    valid_contracts, physical_contracts_by_member = module_contracts(
+        root, catalog, members
+    )
 
     lifecycle = load_json(root / "governance/component-lifecycle.v1.json")
     exact_keys(lifecycle, LIFECYCLE_KEYS, "component lifecycle")
@@ -272,17 +279,30 @@ def verify(root: Path) -> None:
         )
 
         if member_text in default_set:
-            contracts = contracts_by_member[member_text]
-            require(
-                bool(contracts),
-                f"active workspace member has no module contract mapping: {member_text}",
+            linked_contracts = sorted(
+                {f"docs/modules/{match.group(1)}.md" for match in MODULE_LINK.finditer(prose)}
             )
-            for contract in contracts:
+            physical_contracts = physical_contracts_by_member[member_text]
+            for contract in physical_contracts:
                 require(
-                    contract in prose,
+                    contract in linked_contracts,
                     "active workspace member README missing module contract link "
                     f"{contract}: {member_text}",
                 )
+            require(
+                bool(physical_contracts or linked_contracts),
+                f"active workspace member has no module contract mapping: {member_text}",
+            )
+            unknown_contracts = [
+                contract
+                for contract in linked_contracts
+                if contract not in valid_contracts
+            ]
+            require(
+                not unknown_contracts,
+                "active workspace member README has unknown module contract links "
+                f"{unknown_contracts}: {member_text}",
+            )
 
     duplicates = [
         package for package, count in Counter(seen_packages).items() if count > 1
