@@ -813,11 +813,18 @@ fn process_job_host<W: IoWrite>(
             }
         }
 
+        // Sample liveness before reading the event stream. A dispatcher can
+        // publish its terminal after this round's inspection and finish its
+        // journal commit before the exit check. In that case this snapshot
+        // keeps the carrier alive for one more poll to deliver the terminal.
+        let jobs_live_before_poll = jobs_are_live(&manager);
+        let mut job_events_pending = false;
+
         // Do not generate unsolicited job output while either handshake gate
         // is unresolved. This also covers jobs already running in no-hello
         // mode when a later turn.start establishes a new boundary.
         if !hello_barrier.pending() {
-            poll_job_events(
+            job_events_pending = poll_job_events(
                 &manager,
                 &mut jobs,
                 &mut source_error_fingerprints,
@@ -845,13 +852,10 @@ fn process_job_host<W: IoWrite>(
             pending_waits.clear();
         }
 
-        if !input_open && !core_open && !jobs_are_live(&manager) && pending_waits.is_empty() {
-            return Ok(());
-        }
-        if !delivery_attached
-            && !core_open
-            && !jobs_are_live(&manager)
+        if !core_open
+            && !jobs_live_before_poll
             && pending_waits.is_empty()
+            && ((!input_open && !job_events_pending) || !delivery_attached)
         {
             return Ok(());
         }
@@ -1419,7 +1423,8 @@ fn poll_job_events<W: IoWrite>(
     max_frame_bytes: usize,
     delivery_attached: &mut bool,
     delivery_error: &mut Option<String>,
-) {
+) -> bool {
+    let mut events_pending = false;
     let mut keys = manager.registry().keys().unwrap_or_default();
     keys.sort_by(|first, second| {
         first
@@ -1512,6 +1517,7 @@ fn poll_job_events<W: IoWrite>(
             // it here is intentional only because the preceding status frame
             // made the skipped range explicit; this is not a silent clamp.
             state.next_runtime_cursor = inspection.oldest_available_cursor;
+            events_pending = true;
             continue;
         }
         state.announced_gap = None;
@@ -1527,7 +1533,11 @@ fn poll_job_events<W: IoWrite>(
             );
         }
         state.next_runtime_cursor = inspection.next_cursor;
+        // Keep each poll bounded for control-frame fairness, but do not exit
+        // after only the first retained page of an already completed job.
+        events_pending |= inspection.has_more;
     }
+    events_pending
 }
 
 /// Emit one bounded, correlated diagnostic when the live job observation
@@ -2707,6 +2717,175 @@ mod process_tests {
 
         fn flush(&mut self) -> std::io::Result<()> {
             Ok(())
+        }
+    }
+
+    struct PollJobFixture {
+        manager: JobManager,
+        key: JobKey,
+    }
+
+    impl PollJobFixture {
+        fn start(command: String, config: JobRuntimeConfig) -> Self {
+            let manager = JobManager::new(
+                config,
+                trillionnium_owner_open_job_runtime::JobJournal::memory_only(),
+            )
+            .expect("explicit memory-only test manager");
+            let key = test_key("job-poll-exit");
+            manager
+                .start(JobStartRequest {
+                    key: key.clone(),
+                    request: metadata_request(),
+                    operation_id: "start-poll-exit".to_string(),
+                    invocation: JobInvocation::Command { command },
+                    shell_executable: PathBuf::from("/bin/sh"),
+                    cwd: None,
+                    env: BTreeMap::new(),
+                    initial_stdin: Vec::new(),
+                    pty: None,
+                })
+                .expect("start local poll fixture");
+            Self { manager, key }
+        }
+
+        fn wait_until(&self, condition: impl Fn() -> bool) {
+            let deadline = Instant::now() + Duration::from_secs(5);
+            while !condition() {
+                assert!(
+                    Instant::now() < deadline,
+                    "poll fixture did not become ready"
+                );
+                thread::sleep(Duration::from_millis(1));
+            }
+        }
+
+        fn run_closed_host(&self, writer: &mut impl IoWrite) {
+            let (sender, receiver) = std::sync::mpsc::sync_channel(1);
+            drop(sender);
+            let (core_sender, _core_receiver) = std::sync::mpsc::sync_channel(1);
+            process_job_host(
+                writer,
+                receiver,
+                core_sender,
+                self.manager.clone(),
+                PathBuf::from("/bin/sh"),
+                Arc::new(AtomicU64::new(0)),
+                "poll-exit-connection".to_string(),
+            )
+            .expect("closed carrier drains job events");
+        }
+    }
+
+    impl Drop for PollJobFixture {
+        fn drop(&mut self) {
+            if self.manager.has_live_or_pending_jobs() {
+                let _ = self
+                    .manager
+                    .kill(&self.key, "fixture-cleanup", libc::SIGKILL);
+                let deadline = Instant::now() + Duration::from_secs(5);
+                while self.manager.has_live_or_pending_jobs() && Instant::now() < deadline {
+                    thread::sleep(Duration::from_millis(1));
+                }
+            }
+        }
+    }
+
+    struct CompleteOnOutputWriter<'a> {
+        fixture: &'a PollJobFixture,
+        bytes: Vec<u8>,
+        released: bool,
+    }
+
+    impl IoWrite for CompleteOnOutputWriter<'_> {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.bytes.extend_from_slice(bytes);
+            if !self.released
+                && serde_json::from_slice::<Value>(bytes)
+                    .is_ok_and(|frame| frame["kind"] == FRAME_JOB_OUTPUT)
+            {
+                // Freeze Host delivery after its event inspection, let the
+                // real dispatcher publish and commit a terminal, then resume
+                // the same Host iteration. No scheduling luck is required.
+                self.released = true;
+                self.fixture
+                    .manager
+                    .close_stdin(&self.fixture.key, "release-terminal")
+                    .expect("release the child waiting for input EOF");
+                self.fixture
+                    .wait_until(|| !self.fixture.manager.has_live_or_pending_jobs());
+            }
+            Ok(bytes.len())
+        }
+
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+
+    fn captured_frames(bytes: &[u8]) -> Vec<Value> {
+        bytes
+            .split(|byte| *byte == b'\n')
+            .filter(|line| !line.is_empty())
+            .map(|line| serde_json::from_slice(line).expect("captured frame"))
+            .collect()
+    }
+
+    #[test]
+    fn completion_during_last_event_delivery_is_flushed_before_host_exit() {
+        let fixture = PollJobFixture::start(
+            "printf ready; IFS= read -r line; exit 0".to_string(),
+            JobRuntimeConfig::development_unsafe(),
+        );
+        fixture.wait_until(|| {
+            fixture
+                .manager
+                .inspect(&fixture.key, 0, 128)
+                .unwrap()
+                .runtime_events
+                .iter()
+                .any(|event| matches!(event.event, RuntimeJobEventKind::Output { .. }))
+        });
+        let mut writer = CompleteOnOutputWriter {
+            fixture: &fixture,
+            bytes: Vec::new(),
+            released: false,
+        };
+        fixture.run_closed_host(&mut writer);
+        assert!(writer.released, "terminal must occur during event delivery");
+        let frames = captured_frames(&writer.bytes);
+        let terminals: Vec<_> = frames
+            .iter()
+            .filter(|frame| frame["kind"] == FRAME_JOB_RESULT)
+            .collect();
+        assert_eq!(terminals.len(), 1, "complete frame trace: {frames:#?}");
+        assert_eq!(terminals[0]["payload"]["terminal_kind"], "exited");
+        assert_eq!(terminals[0]["payload"]["exit_code"], 0);
+    }
+
+    #[test]
+    fn closed_host_announces_gap_and_drains_all_retained_pages_before_exit() {
+        let fixture = PollJobFixture::start(
+            format!("printf '%s' '{}'", "x".repeat(300)),
+            JobRuntimeConfig {
+                max_output_chunk_bytes: 1,
+                max_observations_per_job: 256,
+                ..JobRuntimeConfig::development_unsafe()
+            },
+        );
+        fixture.wait_until(|| !fixture.manager.has_live_or_pending_jobs());
+        let inspection = fixture.manager.inspect(&fixture.key, 0, 256).unwrap();
+        assert!(inspection.resync_required);
+        assert_eq!(inspection.runtime_events.len(), 256);
+        let mut writer = CaptureWriter(Vec::new());
+        fixture.run_closed_host(&mut writer);
+        let frames = captured_frames(&writer.0);
+        assert_eq!(frames[0]["payload"]["status"], "resync_required");
+        assert_eq!(frames.len(), 257, "gap plus every retained observation");
+        assert_eq!(frames.last().unwrap()["kind"], FRAME_JOB_RESULT);
+        assert_eq!(frames.last().unwrap()["payload"]["terminal_kind"], "exited");
+        for (frame, event) in frames[1..].iter().zip(&inspection.runtime_events) {
+            assert_eq!(frame["durable_cursor"], event.seq);
         }
     }
 
