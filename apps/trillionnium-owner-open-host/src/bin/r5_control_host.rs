@@ -508,7 +508,7 @@ fn process_messages<W: Write>(
                                 );
                                 continue;
                             }
-                            StoredTurn::Conflict(error) => {
+                            StoredTurn::Conflict(error) | StoredTurn::Unavailable(error) => {
                                 deliver_host_error(
                                     &mut writer,
                                     &mut output,

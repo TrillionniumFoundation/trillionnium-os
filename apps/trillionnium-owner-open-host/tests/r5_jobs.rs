@@ -123,6 +123,8 @@ fn run_core(provider: &Path, job_store: &Path, frames: &[String]) -> Output {
         .arg(provider)
         .args(["--job-store"])
         .arg(job_store)
+        .args(["--event-store"])
+        .arg(job_store.with_extension("turn-events.jsonl"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -156,6 +158,8 @@ fn run_core_without_hello(provider: &Path, job_store: &Path, frames: &[String]) 
         .arg(provider)
         .args(["--job-store"])
         .arg(job_store)
+        .args(["--event-store"])
+        .arg(job_store.with_extension("turn-events.jsonl"))
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -544,9 +548,13 @@ fn delayed_job_terminal_barrier_preserves_no_redispatch_after_restart() {
         })
         .expect("delayed terminal observation");
     assert_eq!(waited["payload"]["wait_status"], "terminal_observed");
-    assert!(first.iter().any(|frame| {
-        frame["kind"] == "job.result" && frame["payload"]["terminal_kind"] == "exited"
-    }));
+    assert!(
+        first.iter().any(|frame| {
+            frame["kind"] == "job.result" && frame["payload"]["terminal_kind"] == "exited"
+        }),
+        "delayed job did not report a clean exit; complete frame trace: {}",
+        serde_json::to_string_pretty(&first).unwrap()
+    );
     assert!(read_segmented_job_store(&job_store).contains("job.terminal"));
     assert_eq!(fs::read(&counter).unwrap(), b"x");
 

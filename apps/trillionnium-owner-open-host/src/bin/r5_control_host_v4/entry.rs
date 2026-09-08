@@ -1,12 +1,12 @@
-use super::{
-    ActiveTurn, EventCorrelation, HOST_POLL_INTERVAL, HOST_QUEUE_DEPTH, HostMessage, Options,
-    OutputState, TurnContext, deliver_frame, deliver_host_error,
-    deliver_unscoped_host_error_with_context, deliver_replay,
-    finish_active_turn, handle_tool_cancel, handle_turn_cancel, map_turn_event,
-    new_connection_id, persist_for_delivery, spawn_stdin_reader, valid_id,
-};
 use super::r5_persistence::{
     Persistence, StoredInspection, StoredTurn, event_scope, request_sha256,
+};
+use super::{
+    ActiveTurn, EventCorrelation, HOST_POLL_INTERVAL, HOST_QUEUE_DEPTH, HostMessage, Options,
+    OutputState, TurnContext, deliver_frame, deliver_host_error, deliver_replay,
+    deliver_unscoped_host_error_with_context, finish_active_turn, handle_tool_cancel,
+    handle_turn_cancel, map_turn_event, new_connection_id, persist_before_effect,
+    persist_for_delivery, send_turn_event, spawn_stdin_reader, valid_id,
 };
 
 use std::env;
@@ -19,8 +19,7 @@ use std::thread::{self, JoinHandle};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_call_registry::{
-    CallEvent, CallEventKind, CallKey, CallRegistry, CallSnapshot, EffectiveState,
-    RegistryError,
+    CallEvent, CallEventKind, CallKey, CallRegistry, CallSnapshot, EffectiveState, RegistryError,
 };
 use trillionnium_owner_open_event_store::TurnScope as DurableTurnScope;
 use trillionnium_owner_open_provider_jsonl::{JsonlProvider, JsonlProviderConfig};
@@ -28,17 +27,15 @@ use trillionnium_owner_open_turn_loop::{
     TurnCancellation, TurnEvent, TurnRequest as LoopTurnRequest, TurnRunner,
 };
 use trillionnium_owner_open_types::{
-    FRAME_CALL_INSPECT, FRAME_CALL_INSPECT_RESULT, FRAME_HELLO, FRAME_HELLO_ACK,
-    FRAME_TOOL_CANCEL, FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL, FRAME_TURN_END,
-    FRAME_TURN_INSPECT,
-    FRAME_TURN_INSPECT_RESULT, FRAME_TURN_START, MechanicalLimits, PROTOCOL,
-    PROTOCOL_VERSION, RunTurnFrame,
+    FRAME_CALL_INSPECT, FRAME_CALL_INSPECT_RESULT, FRAME_HELLO, FRAME_HELLO_ACK, FRAME_TOOL_CANCEL,
+    FRAME_TURN_ACCEPTED, FRAME_TURN_CANCEL, FRAME_TURN_END, FRAME_TURN_INSPECT,
+    FRAME_TURN_INSPECT_RESULT, FRAME_TURN_START, MechanicalLimits, PROTOCOL, PROTOCOL_VERSION,
+    RunTurnFrame,
 };
 
 const MAX_WIRE_INSPECT_LIMIT: usize = 256;
 const MAX_DURABLE_CALL_SCAN: usize = 4096;
-const HOST_IMPLEMENTATION_V4: &str =
-    "trillionnium-owner-open-r5-inspect-control-host-source";
+const HOST_IMPLEMENTATION_V4: &str = "trillionnium-owner-open-r5-inspect-control-host-source";
 
 #[derive(Debug, Clone)]
 struct InspectRequest {

@@ -1,71 +1,124 @@
 {
   "automatic_redispatch": false,
   "base": {
-    "commit": "d7a4e2da36ab4423dcfd70f663be8f59f3f9823f",
-    "tree": "e7c77c540a989c6720575c163dd003a5949b06ae"
+    "commit": "d5ac9c11765f4119eab9fd82c7029c7f3686c7af",
+    "tree": "640ecf3447d09f3120e1a9e0c45e568e25a6272b"
   },
   "changed_paths": [
-    "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
-    "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
-    "crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
-    "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs",
-    "crates/trillionnium-owner-open-provider-jsonl/tests/deadline.rs",
-    "crates/trillionnium-owner-open-runtime/src/process.rs",
-    "crates/trillionnium-owner-open-runtime/src/types.rs",
-    "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
-    "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-    "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
-    "governance/pr41-review-index.v1.json",
-    "tools/tests/test_owner_open_provider_terminal_order.py"
+    "apps/trillionnium-owner-open-host/README.md",
+    "apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs",
+    "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs",
+    "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs",
+    "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs",
+    "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+    "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+    "apps/trillionnium-owner-open-host/src/bin/r5_host.rs",
+    "apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs",
+    "apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+    "apps/trillionnium-owner-open-host/tests/r5_effect_admission.rs",
+    "apps/trillionnium-owner-open-host/tests/r5_jobs.rs",
+    "apps/trillionnium-owner-open-host/tests/r5_persistence.rs",
+    "apps/trillionnium-owner-open-host/tests/r5_stdio_provider.rs",
+    "apps/trillionnium-owner-open-host/tests/r5_stream_flow_control.rs",
+    "apps/trillionnium-owner-open-host/tests/r5_terminal_receipt.rs",
+    "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
+    "crates/trillionnium-owner-open-runtime/src/lib.rs",
+    "crates/trillionnium-owner-open-runtime/src/validate.rs",
+    "governance/pr41-review-index.v1.json"
   ],
   "changes": [
     {
-      "path": "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+      "path": "apps/trillionnium-owner-open-host/README.md",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_host.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/tests/r5_effect_admission.rs",
       "previous_path": null,
       "status": "added"
     },
     {
-      "path": "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs",
+      "path": "apps/trillionnium-owner-open-host/tests/r5_jobs.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "crates/trillionnium-owner-open-provider-jsonl/tests/deadline.rs",
+      "path": "apps/trillionnium-owner-open-host/tests/r5_persistence.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/tests/r5_stdio_provider.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/tests/r5_stream_flow_control.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "apps/trillionnium-owner-open-host/tests/r5_terminal_receipt.rs",
       "previous_path": null,
       "status": "added"
     },
     {
-      "path": "crates/trillionnium-owner-open-runtime/src/process.rs",
+      "path": "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "crates/trillionnium-owner-open-runtime/src/types.rs",
+      "path": "crates/trillionnium-owner-open-runtime/src/lib.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-      "previous_path": null,
-      "status": "modified"
-    },
-    {
-      "path": "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+      "path": "crates/trillionnium-owner-open-runtime/src/validate.rs",
       "previous_path": null,
       "status": "modified"
     },
@@ -73,30 +126,25 @@
       "path": "governance/pr41-review-index.v1.json",
       "previous_path": null,
       "status": "modified"
-    },
-    {
-      "path": "tools/tests/test_owner_open_provider_terminal_order.py",
-      "previous_path": null,
-      "status": "modified"
     }
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 12,
-    "changes_sha256": "895abd3208ec95bcf2bfd1f6d858fea6c2f3e5029f457bddcbcef5a687556591",
-    "path_count": 12,
-    "paths_sha256": "83081d8111032e6da792d82badece977aca560ca9d56dfe7685e24aafd4f2235"
+    "change_count": 20,
+    "changes_sha256": "cf3ccf6ef47c9e8a57addea016900783c2e11d25ee79735c0e2a2da87e7847d8",
+    "path_count": 20,
+    "paths_sha256": "0d567bb820458fbabf5fffd0341bbe51dddc537f375ce16351a479234d4f14aa"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
   "program_revision": "2026-08-31-g1",
   "promotion_authorized": false,
   "public_release": false,
-  "pull_request": 65,
+  "pull_request": 66,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "23b3db326aeaf9c070f289a2a1bcb7cfbad6e5d9",
-    "tree": "44e248f843cd4b8a5153b4bda85d3bfff91c13d0"
+    "commit": "86bc1dedfa3d129eaf1b67569adc127fc5208980",
+    "tree": "d61ed458fce3a488ffe48db47e8ee400974c92cb"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -119,17 +167,25 @@
         "Tomasrgbsf"
       ],
       "paths": [
-        "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
-        "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
-        "crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
-        "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs",
-        "crates/trillionnium-owner-open-provider-jsonl/tests/deadline.rs",
-        "crates/trillionnium-owner-open-runtime/src/process.rs",
-        "crates/trillionnium-owner-open-runtime/src/types.rs",
-        "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
-        "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-        "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
-        "tools/tests/test_owner_open_provider_terminal_order.py"
+        "apps/trillionnium-owner-open-host/README.md",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v2.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/entry.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/inspect_encode.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v4/process.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_host.rs",
+        "apps/trillionnium-owner-open-host/src/bin/r5_streaming_host.rs",
+        "apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_effect_admission.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_jobs.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_persistence.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_stdio_provider.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_stream_flow_control.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_terminal_receipt.rs",
+        "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
+        "crates/trillionnium-owner-open-runtime/src/lib.rs",
+        "crates/trillionnium-owner-open-runtime/src/validate.rs"
       ],
       "review_order": 2,
       "security_domain": "runtime-and-protocol"
