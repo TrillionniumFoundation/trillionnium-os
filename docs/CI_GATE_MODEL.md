@@ -4,7 +4,8 @@ Status: **NORMATIVE FOR PULL-REQUEST, PROMOTION AND RELEASE GATING**
 
 This policy separates direct source correctness from promotion evidence and
 release authorization. It removes recursive receipt machinery from ordinary
-pull requests without weakening the exact prospective-merge source test.
+pull requests without weakening the exact canonical synthetic-merge source
+test.
 
 ## 1. Source correctness — blocking for ordinary pull requests
 
@@ -19,16 +20,23 @@ proposed source change:
 - deterministic generated-file and lockfile consistency;
 - exact checkout identity and fail-closed clean-worktree inspection;
 - exact base-to-head ancestry;
-- a real deterministic prospective merge of the live base and head, followed by
-  the applicable source, documentation, protocol and compatibility checks on
-  that merge object.
+- a real conflict-checked merge of the live base and head, followed by the
+  applicable source, documentation, protocol and compatibility checks on one
+  canonical two-parent synthetic commit.
 
-The prospective-merge result is a source/integration correctness property. The
-server-required exact-head aggregate must fail closed unless the newest run of
-`G1 synthetic-merge qualification` for the exact live base/head subject is
-complete and successful. The aggregate may consume that exact workflow result
-and its source-bound synthetic receipt; this is not target, device or release
-evidence.
+The canonical synthetic commit is a source/integration correctness property. Its
+identity is produced from the exact merge tree and ordered base/head parents
+with fixed author and committer names, email addresses, timestamps, timezone,
+message and Git configuration. Recomputing the same tuple must produce the same
+commit SHA. GitHub's hidden pull-request merge ref is a mutable service-side
+observation and is not the canonical decision object.
+
+The server-required exact-head aggregate must fail closed unless the newest run
+of `G1 synthetic-merge qualification` for the exact live base/head subject is
+complete and successful. The aggregate consumes that exact workflow attempt and
+its commit-bound source receipt; this is not target, device or release evidence.
+A failed merge, changed ordered parent, changed merge tree, changed canonical
+commit, rerun-attempt movement or artifact movement invalidates the aggregate.
 
 A source gate must report the failing source property directly. It must not
 require unrelated workflows to manufacture receipts merely to prove that those
@@ -89,8 +97,13 @@ A required-check context name must describe the guarantee it actually provides.
 Do not retain an old “synthetic merge” or “receipt binding” name for an
 identity-only shim. When branch-protection administration is unavailable, keep
 the existing required exact-head aggregate and make it consume the real
-prospective-merge result. Non-required legacy receipt workflows must be renamed,
-made manual-only or retired.
+canonical synthetic-merge result. Non-required legacy receipt workflows must be
+renamed, made manual-only or retired.
+
+The real synthetic-merge context should also be continuously enforced by branch
+protection so that a post-aggregate rerun immediately blocks mergeability. That
+administrative requirement is separate from canonicalizing the source-produced
+commit and cannot be claimed complete by a repository commit alone.
 
 Changes to required context names and branch protection must be atomic: the new
 source guarantee becomes enforceable before the old context is removed.
