@@ -427,3 +427,20 @@ jobs:
           path: |
             ${{ runner.temp }}/g1-synthetic-merge-evidence.json
             ${{ runner.temp }}/g1-merge-baseline.json
+
+  source-admission:
+    name: L1 exact-source-head aggregate candidate
+    needs:
+      - synthetic-merge
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Continuously bind the required context to this workflow attempt
+        env:
+          SYNTHETIC_RESULT: ${{ needs.synthetic-merge.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$SYNTHETIC_RESULT" = success
+          printf '%s\n' 'L1_EXACT_HEAD_AND_SYNTHETIC_SOURCE_PASSED'
