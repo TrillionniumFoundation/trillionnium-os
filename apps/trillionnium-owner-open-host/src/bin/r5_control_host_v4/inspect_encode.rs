@@ -136,8 +136,7 @@ fn hex_lower(value: &[u8]) -> String {
     use std::fmt::Write as _;
     let mut output = String::with_capacity(value.len() * 2);
     for byte in value {
-        write!(&mut output, "{byte:02x}")
-            .expect("writing to String cannot fail");
+        write!(&mut output, "{byte:02x}").expect("writing to String cannot fail");
     }
     output
 }
@@ -160,7 +159,7 @@ fn write_hello<W: Write>(
             "connection_id": connection_id,
             "host_implementation": HOST_IMPLEMENTATION_V4,
             "provider_status": "configured_external_jsonl",
-            "runtime_ready": true,
+            "runtime_ready": persistence.effect_admission_error().is_none(),
             "same_turn_tool_callback": true,
             "streaming_turn_events": true,
             "streaming_event_persistence": persistence.is_durable(),

@@ -124,6 +124,25 @@ mod tests {
 
     #[test]
     fn legacy_reopen_waits_for_a_short_lived_inherited_writer_lease() {
+        // Other process-spawning tests can temporarily inherit this test's
+        // lock between fork and exec. Create the fixture only in an isolated
+        // test process, so it measures the intended handoff rather than a
+        // process-global race with an unrelated test's fork window.
+        const ISOLATED: &str = "TRILLIONNIUM_TEST_ISOLATED_WRITER_HANDOFF";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "event_store_adapter::tests::legacy_reopen_waits_for_a_short_lived_inherited_writer_lease", "--nocapture"])
+                .env(ISOLATED, "1")
+                .output()
+                .expect("isolated writer handoff test");
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
         let directory = tempfile::tempdir().expect("temporary directory");
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))
             .expect("secure temporary directory");
