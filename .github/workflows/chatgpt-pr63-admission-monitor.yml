@@ -1,0 +1,185 @@
+name: ChatGPT PR63 exact admission monitor
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: chatgpt-pr63-exact-admission-monitor
+  cancel-in-progress: true
+
+jobs:
+  monitor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      PR_NUMBER: '63'
+      OLD_HEAD: 1419f6d09f4b6cf6aa4dce7cfdc1d1cdab0c9256
+    steps:
+      - name: Wait for one repaired exact head
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 900))
+          while (( SECONDS < deadline )); do
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.state')"
+            test "$state" = open
+            head="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+            if test "$head" != "$OLD_HEAD"; then
+              marker="$(gh api -H 'Accept: application/vnd.github.raw+json' "repos/${GITHUB_REPOSITORY}/contents/tools/perf/_run_product_baseline_core.py?ref=${head}" 2>/dev/null || true)"
+              if grep -q 'org.trillionnium.product-measurement-implementation.v1' <<<"$marker"; then
+                printf '%s\n' "$head" > "${RUNNER_TEMP}/head"
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          printf '%s\n' 'no repaired PR63 exact head appeared' >&2
+          exit 1
+
+      - name: Require all current-head checks terminal-success
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          head="$(cat "${RUNNER_TEMP}/head")"
+          deadline=$((SECONDS + 1200))
+          required=(
+            'L1 graph, documentation, broker and MCP source closure'
+            'L1 Rust 1.93 selected Host, job, flow and recovery closure'
+            'L1 exact-head direct-source aggregate'
+            'L1 exact two-parent merge source qualification'
+            'L1 exact-source-head aggregate candidate'
+            'L1 protected-main and exact-head independent-review readiness'
+          )
+          while (( SECONDS < deadline )); do
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+            test "$current" = "$head"
+            gh api --paginate -H 'Accept: application/vnd.github+json' \
+              "repos/${GITHUB_REPOSITORY}/commits/${head}/check-runs?per_page=100" \
+              --jq '.check_runs[] | [.name,.status,(.conclusion // ""),.id] | @tsv' \
+              > "${RUNNER_TEMP}/checks.tsv"
+            python3 - "${RUNNER_TEMP}/checks.tsv" "${RUNNER_TEMP}/check-result.json" "${required[@]}" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          lines = Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+          required = sys.argv[3:]
+          latest = {}
+          failures = []
+          pending = []
+          for line in lines:
+              name, status, conclusion, raw_id = line.split("\t")
+              check_id = int(raw_id)
+              if name not in latest or check_id > latest[name][0]:
+                  latest[name] = (check_id, status, conclusion)
+          missing = [name for name in required if name not in latest]
+          for name, (_, status, conclusion) in latest.items():
+              if status != "completed":
+                  pending.append(name)
+              elif conclusion not in {"success", "neutral", "skipped"}:
+                  failures.append({"name": name, "conclusion": conclusion})
+          required_bad = [
+              {"name": name, "value": latest.get(name)}
+              for name in required
+              if name not in latest or latest[name][1:] != ("completed", "success")
+          ]
+          result = {
+              "missing": missing,
+              "pending": pending,
+              "failures": failures,
+              "required_bad": required_bad,
+              "all_success": not missing and not pending and not failures and not required_bad,
+          }
+          Path(sys.argv[2]).write_text(json.dumps(result, sort_keys=True), encoding="utf-8")
+          PY
+            if jq -e '.failures|length>0' "${RUNNER_TEMP}/check-result.json" >/dev/null; then
+              cat "${RUNNER_TEMP}/check-result.json" >&2
+              exit 1
+            fi
+            if jq -e '.all_success == true' "${RUNNER_TEMP}/check-result.json" >/dev/null; then
+              exit 0
+            fi
+            sleep 15
+          done
+          cat "${RUNNER_TEMP}/check-result.json" >&2
+          exit 1
+
+      - name: Mark ready and request exact-head reviewers
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          head="$(cat "${RUNNER_TEMP}/head")"
+          test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')" = "$head"
+          node_id="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.node_id')"
+          if test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.draft')" = true; then
+            gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -f id="$node_id" >/dev/null
+          fi
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/requested_reviewers" \
+            -f reviewers[]='Tomasrgbsf' -f reviewers[]='Franksudoman' >/dev/null
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments" \
+            -f body="Exact-head review requested after complete terminal-success qualification. Subject: ${head}. Historical reviews do not transfer; no threshold weakening, administrator bypass, target/device/signing or release claim." >/dev/null
+
+      - name: Wait for two current-head approvals and merge through protection
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          head="$(cat "${RUNNER_TEMP}/head")"
+          deadline=$((SECONDS + 900))
+          while (( SECONDS < deadline )); do
+            pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+            test "$(jq -r '.state' <<<"$pr_json")" = open
+            test "$(jq -r '.head.sha' <<<"$pr_json")" = "$head"
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/reviews?per_page=100" > "${RUNNER_TEMP}/reviews-pages.jsonl"
+            python3 - "${RUNNER_TEMP}/reviews-pages.jsonl" "$head" > "${RUNNER_TEMP}/reviews.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          reviews = []
+          for line in Path(sys.argv[1]).read_text(encoding="utf-8").splitlines():
+              value = json.loads(line)
+              reviews.extend(value if isinstance(value, list) else [value])
+          head = sys.argv[2]
+          latest = {}
+          for review in reviews:
+              author = (review.get("user") or {}).get("login")
+              if author not in {"Tomasrgbsf", "Franksudoman"}:
+                  continue
+              if review.get("commit_id") != head:
+                  continue
+              latest[author] = review.get("state")
+          print(json.dumps(latest, sort_keys=True))
+          PY
+            if jq -e '.Tomasrgbsf == "APPROVED" and .Franksudoman == "APPROVED"' "${RUNNER_TEMP}/reviews.json" >/dev/null; then
+              unresolved="$(gh api graphql -f owner="${GITHUB_REPOSITORY_OWNER}" -f name="${GITHUB_REPOSITORY#*/}" -F number="$PR_NUMBER" -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}' --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)] | length')"
+              test "$unresolved" = 0
+              break
+            fi
+            sleep 15
+          done
+          jq -e '.Tomasrgbsf == "APPROVED" and .Franksudoman == "APPROVED"' "${RUNNER_TEMP}/reviews.json" >/dev/null
+
+          test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')" = "$head"
+          test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.ref')" = main
+          result="$(gh api --method PUT "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/merge" \
+            -f merge_method=squash \
+            -f sha="$head" \
+            -f commit_title='perf: bind Host/Core measurement methodology (#63)' \
+            -f commit_message='Bind all behavior-bearing measurement/reproducibility sources into closed manifests and make the reviewed regression threshold assertion-only. Preserve the retained PR #49 FAIL_REGRESSION and all L2-L6 non-claims.')"
+          jq -e '.merged == true' <<<"$result" >/dev/null
