@@ -1,8 +1,8 @@
 {
   "automatic_redispatch": false,
   "base": {
-    "commit": "3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba",
-    "tree": "ef7112bbb84588209b849666914eb63d6580da8b"
+    "commit": "d7a4e2da36ab4423dcfd70f663be8f59f3f9823f",
+    "tree": "e7c77c540a989c6720575c163dd003a5949b06ae"
   },
   "changed_paths": [
     "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
@@ -95,8 +95,8 @@
   "pull_request": 65,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "b4cda987d29580c1b2482cd6280db6288c937323",
-    "tree": "408adc13935e0347ab1ea991b6153b5280ee8bb5"
+    "commit": "23b3db326aeaf9c070f289a2a1bcb7cfbad6e5d9",
+    "tree": "44e248f843cd4b8a5153b4bda85d3bfff91c13d0"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
