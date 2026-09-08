@@ -81,7 +81,9 @@ def _git(root: Path, *args: str) -> str:
     return completed.stdout.strip()
 
 
-def _local_binding(root: Path, subject: Subject, synthetic: Mapping[str, Any]) -> dict[str, Any]:
+def _local_binding(
+    root: Path, subject: Subject, synthetic: Mapping[str, Any]
+) -> dict[str, Any]:
     resolved = root.resolve()
     _require((resolved / ".git").exists(), "repository root has no .git directory")
     _require(
@@ -94,13 +96,29 @@ def _local_binding(root: Path, subject: Subject, synthetic: Mapping[str, Any]) -
     )
     # A successful --is-ancestor has no stdout. A non-ancestor or Git failure is
     # rejected by _git rather than being confused with an empty clean result.
-    _git(resolved, "merge-base", "--is-ancestor", subject.base_commit, subject.head_commit)
+    _git(
+        resolved,
+        "merge-base",
+        "--is-ancestor",
+        subject.base_commit,
+        subject.head_commit,
+    )
     _require(
-        _git(resolved, "status", "--porcelain=v1", "--untracked-files=all", "--ignore-submodules=none") == "",
+        _git(
+            resolved,
+            "status",
+            "--porcelain=v1",
+            "--untracked-files=all",
+            "--ignore-submodules=none",
+        )
+        == "",
         "local checkout is not clean",
     )
     lock = resolved / "Cargo.lock"
-    _require(lock.is_file() and not lock.is_symlink(), "Cargo.lock is unavailable or symlinked")
+    _require(
+        lock.is_file() and not lock.is_symlink(),
+        "Cargo.lock is unavailable or symlinked",
+    )
     lock_sha = _digest(lock.read_bytes())
     _require(
         lock_sha == synthetic["cargo_lock_sha256"],
@@ -116,6 +134,22 @@ def _local_binding(root: Path, subject: Subject, synthetic: Mapping[str, Any]) -
     }
 
 
+def _run_identity(run: Mapping[str, Any]) -> dict[str, Any]:
+    """Freeze the mutable workflow-run subject, including rerun attempt."""
+    return {
+        "id": run.get("id"),
+        "run_attempt": run.get("run_attempt"),
+        "name": run.get("name"),
+        "path": run.get("path"),
+        "event": run.get("event"),
+        "head_sha": run.get("head_sha"),
+        "head_branch": run.get("head_branch"),
+        "pull_requests": run.get("pull_requests"),
+        "status": run.get("status"),
+        "conclusion": run.get("conclusion"),
+    }
+
+
 def _verify(
     *,
     repository: str,
@@ -127,10 +161,19 @@ def _verify(
     timeout_seconds: float,
     poll_seconds: float,
 ) -> dict[str, Any]:
-    _require(len(REQUIREMENTS) == 1, "source aggregate must have exactly one cross-workflow requirement")
+    _require(
+        len(REQUIREMENTS) == 1,
+        "source aggregate must have exactly one cross-workflow requirement",
+    )
     requirement = REQUIREMENTS[0]
-    _require(requirement.artifact_kind == "synthetic", "only the synthetic source workflow may gate ordinary PRs")
-    _require(timeout_seconds >= 0 and poll_seconds >= 0, "poll bounds must be non-negative")
+    _require(
+        requirement.artifact_kind == "synthetic",
+        "only the synthetic source workflow may gate ordinary PRs",
+    )
+    _require(
+        timeout_seconds >= 0 and poll_seconds >= 0,
+        "poll bounds must be non-negative",
+    )
 
     generated = datetime.now(timezone.utc).replace(microsecond=0)
     subject, initial_pr_sha = _verify_pull_request(
@@ -147,13 +190,16 @@ def _verify(
         if run is not None and run.get("status") == "completed":
             _require(
                 run.get("conclusion") == "success",
-                f"latest exact-subject synthetic merge concluded {run.get('conclusion')!r}",
+                "latest exact-subject synthetic merge concluded "
+                f"{run.get('conclusion')!r}",
             )
             selected_run = run
             break
         remaining = deadline - time.monotonic()
         if remaining <= 0:
-            raise AggregateError("timed out waiting for exact-subject synthetic merge")
+            raise AggregateError(
+                "timed out waiting for exact-subject synthetic merge"
+            )
         time.sleep(min(poll_seconds, remaining))
 
     synthetic_state: dict[str, Any] = {}
@@ -165,26 +211,61 @@ def _verify(
         generated,
         synthetic_state,
     )
+    selected_run_identity = _run_identity(selected_run)
     local = _local_binding(repo_root, subject, synthetic_state)
 
-    # Re-read mutable objects after artifact download. Any PR, protection or
-    # newest-run movement invalidates this report.
+    # Re-read every mutable decision object after artifact download. A rerun
+    # keeps the same run id but changes run_attempt, jobs and artifacts, so the
+    # decision is frozen to the complete run/attempt plus the independently
+    # normalized job, artifact and semantic-receipt identities. Re-verifying the
+    # workflow also catches in-place mutation within the same attempt.
     final_subject, final_pr_sha = _verify_pull_request(
         api, repository, pr_number, base_commit, head_commit
     )
-    _require(final_subject == subject, "pull-request subject changed during verification")
+    _require(
+        final_subject == subject,
+        "pull-request subject changed during verification",
+    )
     final_protection = _verify_branch_protection(api, subject)
     _require(
-        {key: value for key, value in final_protection.items() if key != "response_sha256"}
-        == {key: value for key, value in protection.items() if key != "response_sha256"},
+        {
+            key: value
+            for key, value in final_protection.items()
+            if key != "response_sha256"
+        }
+        == {
+            key: value
+            for key, value in protection.items()
+            if key != "response_sha256"
+        },
         "integration protection changed during verification",
     )
     latest, _ = _latest_run(api, requirement, subject)
-    _require(latest is not None, "synthetic workflow disappeared during final recheck")
-    _require(latest.get("id") == selected_run.get("id"), "a newer exact-subject synthetic run appeared")
     _require(
-        latest.get("status") == "completed" and latest.get("conclusion") == "success",
-        "synthetic workflow lost terminal success",
+        latest is not None,
+        "synthetic workflow disappeared during final recheck",
+    )
+    _require(
+        _run_identity(latest) == selected_run_identity,
+        "synthetic workflow run or rerun attempt changed during verification",
+    )
+
+    final_synthetic_state: dict[str, Any] = {}
+    final_workflow = _verify_workflow(
+        repo_api,
+        requirement,
+        latest,
+        subject,
+        generated,
+        final_synthetic_state,
+    )
+    _require(
+        _canonical(final_workflow) == _canonical(workflow),
+        "synthetic workflow jobs, artifacts or receipt changed during verification",
+    )
+    _require(
+        final_synthetic_state == synthetic_state,
+        "synthetic semantic receipt changed during verification",
     )
 
     report: dict[str, Any] = {
@@ -230,7 +311,9 @@ def _verify(
             "signing_and_release",
         ],
         "result": "L1_EXACT_HEAD_AND_SYNTHETIC_SOURCE_PASSED",
-        "claim_ceiling": "EXACT_SOURCE_AND_PROSPECTIVE_MERGE_ONLY_NOT_INSTALLED_TARGET",
+        "claim_ceiling": (
+            "EXACT_SOURCE_AND_PROSPECTIVE_MERGE_ONLY_NOT_INSTALLED_TARGET"
+        ),
         "automatic_redispatch": False,
         "public_release": False,
         "report_sha256": "",
@@ -243,7 +326,10 @@ def main(argv: Sequence[str]) -> int:
     args = _parse_args(argv)
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
-        print("G1 PR source aggregate failed: GITHUB_TOKEN is required", file=sys.stderr)
+        print(
+            "G1 PR source aggregate failed: GITHUB_TOKEN is required",
+            file=sys.stderr,
+        )
         return 2
     try:
         report = _verify(
@@ -259,7 +345,12 @@ def main(argv: Sequence[str]) -> int:
         _write_json(args.output, report)
         print(f"G1 PR source aggregate passed: {report['report_sha256']}")
         return 0
-    except (AggregateError, OSError, subprocess.SubprocessError, ValueError) as error:
+    except (
+        AggregateError,
+        OSError,
+        subprocess.SubprocessError,
+        ValueError,
+    ) as error:
         print(f"G1 PR source aggregate failed: {error}", file=sys.stderr)
         return 2
 
