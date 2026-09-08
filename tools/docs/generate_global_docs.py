@@ -186,6 +186,38 @@ def component_status() -> str:
     ]
     return "\n".join(lines)
 
+def product_profile_status() -> str:
+    data = load("product-profile-catalog.v1.json")
+    lines = [
+        "# Product Profile Status",
+        "",
+        "<!-- GENERATED. DO NOT EDIT. -->",
+        "",
+        f"- Default profile: `{data['default_profile']}`",
+        "",
+        "| Profile | Status | Default | Activation | Modules | Cargo components | Offered capabilities | Blocked capabilities | Claim ceiling |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for profile in data["profiles"]:
+        offered = ", ".join(item["id"] for item in profile["offered_capabilities"]) or "none"
+        blocked = ", ".join(item["id"] for item in profile["blocked_capabilities"]) or "none"
+        lines.append(
+            f"| `{profile['id']}` | `{profile['status']}` | "
+            f"`{str(profile['default']).lower()}` | "
+            f"`{str(profile['activation_allowed']).lower()}` | "
+            f"{cell(', '.join(profile['selected_modules']) or 'none')} | "
+            f"{cell(', '.join(profile['selected_cargo_components']) or 'none')} | "
+            f"{cell(offered)} | {cell(blocked)} | {cell(profile['claim_ceiling'])} |"
+        )
+    lines += [
+        "",
+        "A sealed profile contributes no current product capability. Source presence or",
+        "a successful build cannot activate it without a reviewed catalog transition and",
+        "the evidence named by its blockers.",
+        "",
+    ]
+    return "\n".join(lines)
+
 def gap_status() -> str:
     data = load("gap-register.v2.json")
     counts: dict[str, int] = {status: 0 for status in data["status_vocabulary"]}
@@ -273,6 +305,7 @@ def outputs() -> dict[Path, str]:
         GENERATED / "CURRENT_STATE.md": current_state(),
         GENERATED / "MODULE_STATUS.md": module_status(),
         GENERATED / "COMPONENT_STATUS.md": component_status(),
+        GENERATED / "PRODUCT_PROFILE_STATUS.md": product_profile_status(),
         GENERATED / "GAP_STATUS.md": gap_status(),
         GENERATED / "TRACEABILITY.tsv": traceability(),
         GENERATED / "PERFORMANCE_STATUS.md": performance_status(),

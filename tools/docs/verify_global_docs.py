@@ -876,6 +876,7 @@ def main() -> int:
         base = load("current-baseline.v1.json")
         program = load("program-state.v1.json")
         catalog = load("module-catalog.v1.json")
+        profiles = load("product-profile-catalog.v1.json")
         requirements = load("requirement-graph.v1.json")
         gaps = load("gap-register.v2.json")
         objective = load("global-objective.v1.json")
@@ -885,6 +886,7 @@ def main() -> int:
             docset["program_revision"],
             program["program_revision"],
             catalog["program_revision"],
+            profiles["program_revision"],
             requirements["program_revision"],
             gaps["program_revision"],
             objective["program_revision"],
@@ -908,6 +910,12 @@ def main() -> int:
             check=False,
         )
         require(result.returncode == 0, "generated documentation does not match machine truth")
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "docs" / "verify_repository_authority.py")],
+            cwd=ROOT,
+            check=False,
+        )
+        require(result.returncode == 0, "repository authority/profile verification failed")
     except VerificationError as error:
         print(f"G1 documentation verification failed: {error}", file=sys.stderr)
         return 1

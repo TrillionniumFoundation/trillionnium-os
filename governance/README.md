@@ -26,3 +26,5 @@ Repository-controlled source qualification ends at L1. L2 installed runtime,
 L3 Android image, L4 physical-device effect, L5 destructive recovery and L6
 release claims require observations produced by their real custodians and then
 independently reviewed against the exact unchanged source subject.
+
+- [`../docs/machine/product-profile-catalog.v1.json`](../docs/machine/product-profile-catalog.v1.json) selects the default and sealed product profiles.

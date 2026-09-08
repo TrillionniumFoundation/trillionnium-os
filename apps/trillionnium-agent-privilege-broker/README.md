@@ -1,5 +1,7 @@
 # Trillionnium Agent Privilege Broker
 
+> **HISTORICAL_NON_AUTHORITATIVE.** This component is excluded from the
+> `owner-open-core` default profile and cannot define current product behavior.
 Cargo package: `trillionnium-agent-privilege-broker`.
 
 > **Pre-r2 sealed/history only (2026-08-27):** This binary is the former
