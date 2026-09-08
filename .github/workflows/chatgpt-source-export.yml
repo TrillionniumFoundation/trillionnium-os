@@ -1,4 +1,4 @@
-name: ChatGPT effect-lifecycle candidate
+name: ChatGPT PR63 exact source export
 
 on:
   push:
@@ -6,97 +6,45 @@ on:
       - ops/chatgpt-source-export-20260908
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: chatgpt-effect-lifecycle-candidate
-  cancel-in-progress: false
+  group: chatgpt-pr63-exact-source-export
+  cancel-in-progress: true
 
 jobs:
-  build-candidate:
+  export:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 10
     env:
-      EXPECTED_BASE: fb196c36fbd6d1ca9978c229b3bd4fecd5f5783e
-      EXPECTED_BASE_TREE: 202f4509d4deda35db5d0a08528f76110fd183f0
-      TARGET_BRANCH: codex/effect-lifecycle-model-20260908
-      CONTROL_BRANCH: ops/chatgpt-source-export-20260908
-      PATCH_SHA256: e68a47bba9a2fb616725c3ea37108a8677e5fcf22f2dea5af65d07cbb4cb8bbd
-      PATCH_B64_SHA256: 2b934ffe1a7082e3a587ceb03333317655cc0a66b86804c9aa40e5a03e70e605
+      SOURCE_SHA: 1419f6d09f4b6cf6aa4dce7cfdc1d1cdab0c9256
+      SOURCE_TREE: 892b5ae0d6e670aef994c9e20621809142b5bb60
     steps:
-      - name: Check out exact lifecycle base
+      - name: Check out exact PR63 source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-          ref: ${{ env.TARGET_BRANCH }}
-          persist-credentials: true
-      - name: Assemble and apply byte-bound rebuilt lifecycle patch
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Bind and archive clean exact tree
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_BASE"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_BASE_TREE"
-          git config user.name 'Qian QI'
-          git config user.email '102159240+ProfHepta@users.noreply.github.com'
-          git fetch --no-tags origin "$CONTROL_BRANCH"
-
-          parts=(00 01 02 03 04 05)
-          hashes=(
-            8dfc65345807471f1df386cb5580958ab0ff941fcc407ba0b05d26cfe137468d
-            5e550decbddb5fff2285b1ebea1ec9e3306e33c969f41d918231fa910644f3c9
-            68d7e495bc464776b0797dfde589d0e5d2951f98ca5ff9979d0a78c9cba94cb9
-            9c80947a49f4ba2d9c891f95191121cdcb9b6599bdb56a73851bef2ea1e8bdd1
-            a5198ade8d122825083ea1789b14d1c5c12ac617d12272c8ea4428d82cfd2518
-            0ab0b668fabdc4f0bf93a7ce0eba3743cf8bcff64fe7f4ab91897853edbfdce7
-          )
-          assembled="${RUNNER_TEMP}/issue54-rebuilt.patch.gz.b64"
-          : > "$assembled"
-          for index in "${!parts[@]}"; do
-            part="${RUNNER_TEMP}/issue54-rebuilt.part${parts[$index]}"
-            git show "origin/$CONTROL_BRANCH:ops/issue54-rebuilt.part${parts[$index]}" > "$part"
-            echo "${hashes[$index]}  $part" | sha256sum --check -
-            cat "$part" >> "$assembled"
-          done
-          echo "$PATCH_B64_SHA256  $assembled" | sha256sum --check -
-          base64 --decode "$assembled" > "${RUNNER_TEMP}/issue54-rebuilt.patch.gz"
-          gzip --test "${RUNNER_TEMP}/issue54-rebuilt.patch.gz"
-          gzip --decompress --stdout "${RUNNER_TEMP}/issue54-rebuilt.patch.gz" > "${RUNNER_TEMP}/issue54-rebuilt.patch"
-          echo "$PATCH_SHA256  ${RUNNER_TEMP}/issue54-rebuilt.patch" | sha256sum --check -
-          git apply --check "${RUNNER_TEMP}/issue54-rebuilt.patch"
-          git apply "${RUNNER_TEMP}/issue54-rebuilt.patch"
-          git diff --check
-      - name: Verify machine lifecycle and formal projection
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m py_compile \
-            tools/docs/generate_global_docs.py \
-            tools/docs/verify_global_docs.py \
-            tools/docs/verify_effect_lifecycle.py
-          python3 tools/docs/generate_global_docs.py --check
-          python3 tools/docs/verify_effect_lifecycle.py --model-check --json
-          python3 tools/docs/verify_repository_authority.py
-          python3 tools/docs/verify_global_docs.py
-          python3 -m unittest \
-            tools.tests.test_effect_lifecycle \
-            tools.tests.test_repository_authority \
-            tools.tests.test_verify_global_docs_contracts \
-            tools.tests.test_owner_open_broker_module_documentation -v
-      - name: Commit and publish candidate
-        shell: bash
-        run: |
-          set -euo pipefail
-          git add \
-            docs/EFFECT_AND_PROTOCOL_STANDARD.md \
-            docs/START_HERE.md \
-            docs/formal/EffectLifecycle.cfg \
-            docs/formal/EffectLifecycle.tla \
-            docs/generated/EFFECT_LIFECYCLE.md \
-            docs/machine/doc-set.v1.json \
-            docs/machine/effect-lifecycle.v1.json \
-            tools/docs/generate_global_docs.py \
-            tools/docs/verify_effect_lifecycle.py \
-            tools/docs/verify_global_docs.py \
-            tools/tests/test_effect_lifecycle.py
-          git commit -m 'docs: machine-verify cross-module effect lifecycle'
-          git push origin "HEAD:$TARGET_BRANCH"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+          git --no-replace-objects archive --format=tar.gz --output="${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
+          sha256sum "${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz" > "${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz.sha256"
+      - name: Upload exact non-qualifying source export
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr63-source-${{ env.SOURCE_SHA }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz
+            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz.sha256
