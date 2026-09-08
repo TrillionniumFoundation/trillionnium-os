@@ -1,63 +1,13 @@
-name: ChatGPT exact-source export
+name: ChatGPT temporary control
 
 on:
-  push:
-    branches:
-      - ops/chatgpt-source-export-20260908
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: chatgpt-source-export-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  export:
-    name: Export ${{ matrix.name }} exact source archive
+  quiesced:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: pr50
-            commit: 2c34090389ed6e87f30515827128d17b0f30621d
-          - name: pr63
-            commit: febc7b132cf69d5a46e5b846c3671016e56d7a46
-          - name: pr66
-            commit: b4a17005e493892e6ad4020d75d82f1351bce834
     steps:
-      - name: Check out exact target commit
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          fetch-depth: 0
-          ref: ${{ matrix.commit }}
-          persist-credentials: false
-      - name: Assert clean exact checkout and create archive
-        shell: bash
-        env:
-          TARGET_NAME: ${{ matrix.name }}
-          TARGET_COMMIT: ${{ matrix.commit }}
-        run: |
-          set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_COMMIT"
-          if ! worktree_status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
-            printf '%s\n' 'Cannot verify repository worktree state' >&2
-            exit 1
-          fi
-          test -z "$worktree_status"
-          archive="${RUNNER_TEMP}/trillionnium-os-${TARGET_NAME}-${TARGET_COMMIT}.tar.gz"
-          git --no-replace-objects archive --format=tar.gz --output="$archive" "$TARGET_COMMIT"
-          test -s "$archive"
-          sha256sum "$archive" > "${archive}.sha256"
-      - name: Upload exact source archive
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: chatgpt-source-${{ matrix.name }}-${{ matrix.commit }}
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 0
-          path: |
-            ${{ runner.temp }}/trillionnium-os-${{ matrix.name }}-${{ matrix.commit }}.tar.gz
-            ${{ runner.temp }}/trillionnium-os-${{ matrix.name }}-${{ matrix.commit }}.tar.gz.sha256
+      - run: printf '%s\n' 'temporary control branch is quiesced'
