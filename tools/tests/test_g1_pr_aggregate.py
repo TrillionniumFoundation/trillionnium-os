@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from tools.g1_pr_aggregate_model import REQUIREMENTS
+from tools.g1_pr_aggregate_workflow import _verify_workflow
 
 
 class SourceGateBoundaryTest(unittest.TestCase):
@@ -24,6 +25,12 @@ class SourceGateBoundaryTest(unittest.TestCase):
             "g1-android-privilege-matrix.yml",
         }
         self.assertTrue(forbidden.isdisjoint({item.filename for item in REQUIREMENTS}))
+
+    def test_workflow_implementation_has_no_retired_receipt_import(self) -> None:
+        # Importing this module is part of the production aggregate path. This
+        # regression prevents deletion of a retired receipt helper from leaving
+        # a dormant top-level import that fails before any live verification.
+        self.assertTrue(callable(_verify_workflow))
 
 
 if __name__ == "__main__":
