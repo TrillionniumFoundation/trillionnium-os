@@ -36,12 +36,17 @@ FENCE_OPEN = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
 SHELL_FENCE_LANGUAGES = {"sh", "bash", "shell", "zsh", "console"}
 
 # The accepted documentation subset deliberately rejects a line-leading raw
-# HTML block outside a fenced example. Parsing only a few CommonMark HTML block
-# families is unsafe: content inside an unrecognised <div>, custom element,
-# declaration, processing instruction or CDATA block could otherwise receive
-# false Markdown-link or shell-fence credit.
+# HTML block outside a fenced example, including after nested blockquote/list
+# container markers. Parsing only a few CommonMark HTML block families is
+# unsafe: content inside an unrecognised <div>, custom element, declaration,
+# processing instruction or CDATA block could otherwise receive false
+# Markdown-link or shell-fence credit. Container nesting is explicitly bounded.
+CONTAINER_PREFIX = (
+    r"(?:(?: {0,3}>[ \t]?)|"
+    r"(?: {0,3}(?:[-+*]|[0-9]{1,9}[.)])[ \t]+)){0,32}"
+)
 RAW_HTML_BLOCK_OPEN = re.compile(
-    r"^ {0,3}(?:"
+    r"^" + CONTAINER_PREFIX + r" {0,3}(?:"
     r"</?[A-Za-z][A-Za-z0-9-]*(?:\s[^<>]*|/?)>"
     r"|<!"
     r"|<\?"
@@ -244,8 +249,9 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
     """Return visible prose, exact shell-fence lines and comment-free source.
 
     The accepted subset is intentionally smaller than CommonMark. Raw HTML block
-    openers at the start of a block are rejected rather than partially parsed.
-    Inline HTML following ordinary prose remains available.
+    openers at the start of a block or after bounded blockquote/list containers
+    are rejected rather than partially parsed. Inline HTML following ordinary
+    prose remains available.
     """
     source = strip_html_comments(prose, label)
     visible_lines: list[str] = []
