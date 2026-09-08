@@ -7,6 +7,7 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -15,7 +16,9 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = ROOT / "tools" / "verify-g1-pr-aggregate.py"
-SPEC = importlib.util.spec_from_file_location("verify_g1_pr_aggregate", MODULE_PATH)
+SPEC = importlib.util.spec_from_file_location(
+    "verify_g1_pr_aggregate", MODULE_PATH
+)
 assert SPEC and SPEC.loader
 AGG = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = AGG
@@ -25,32 +28,77 @@ NOW = datetime(2026, 9, 2, tzinfo=timezone.utc)
 
 
 class FakeApi:
-    def __init__(self, values: dict[str, object], blobs: dict[str, bytes]) -> None:
+    def __init__(
+        self, values: dict[str, object], blobs: dict[str, bytes]
+    ) -> None:
         self.values = values
         self.blobs = blobs
         self.calls: dict[str, int] = {}
 
     @staticmethod
     def _response(value: object, url: str) -> AGG.ApiResponse:
-        raw = json.dumps(value, sort_keys=True, separators=(",", ":")).encode()
+        raw = json.dumps(
+            value, sort_keys=True, separators=(",", ":")
+        ).encode()
         return AGG.ApiResponse(value, raw, url, {})
+
+    @staticmethod
+    def _legacy_jobs_alias(path: str) -> str | None:
+        """Map new attempt-specific requests to old fixture keys only.
+
+        Production code never uses this adapter. The existing broad fixture
+        corpus predates attempt-specific GitHub endpoints, so the test double
+        may serve its old in-memory payload under the exact new request while
+        focused tests independently assert the production path and fields.
+        """
+        match = re.fullmatch(
+            r"(repos/[^/]+/[^/]+/actions/runs/(?P<run_id>[1-9][0-9]*))"
+            r"/attempts/(?P<attempt>[1-9][0-9]*)/jobs\?per_page=100",
+            path,
+        )
+        if match is None:
+            return None
+        return (
+            f"{match.group(1)}/jobs?filter=latest&per_page=100"
+        )
 
     def get_json(self, path: str) -> AGG.ApiResponse:
         self.calls[path] = self.calls.get(path, 0) + 1
-        if path not in self.values:
-            raise AGG.AggregateError(f"unexpected fake JSON request: {path}")
-        value = self.values[path]
-        if isinstance(value, list) and value and isinstance(value[0], AGG.ApiResponse):
-            index = min(self.calls[path] - 1, len(value) - 1)
-            return value[index]
+        storage_path = path
+        if storage_path not in self.values:
+            alias = self._legacy_jobs_alias(path)
+            if alias is not None and alias in self.values:
+                storage_path = alias
+        if storage_path not in self.values:
+            raise AGG.AggregateError(
+                f"unexpected fake JSON request: {path}"
+            )
+        value = self.values[storage_path]
+        if (
+            isinstance(value, list)
+            and value
+            and isinstance(value[0], AGG.ApiResponse)
+        ):
+            index = min(
+                self.calls[path] - 1,
+                len(value) - 1,
+            )
+            selected = value[index]
+            return AGG.ApiResponse(
+                selected.value, selected.raw, path, selected.headers
+            )
         if callable(value):
             value = value(self.calls[path])
+        # Preserve the request URL even when an old fixture key supplied the
+        # value so path-sensitive assertions see the exact production route.
         return self._response(value, path)
 
     def get_bytes(self, path: str) -> AGG.ApiResponse:
         self.calls[path] = self.calls.get(path, 0) + 1
         if path not in self.blobs:
-            raise AGG.AggregateError(f"unexpected fake byte request: {path}")
+            raise AGG.AggregateError(
+                f"unexpected fake byte request: {path}"
+            )
         raw = self.blobs[path]
         return AGG.ApiResponse(raw, raw, path, {})
 
@@ -63,18 +111,26 @@ class AggregateFixtureBase(unittest.TestCase):
         self._git("init")
         self._git("config", "user.name", "aggregate-test")
         self._git("config", "user.email", "aggregate-test@invalid")
-        (self.repo_root / "Cargo.lock").write_text("# lock v1\n", encoding="utf-8")
-        (self.repo_root / "README.md").write_text("base\n", encoding="utf-8")
+        (self.repo_root / "Cargo.lock").write_text(
+            "# lock v1\n", encoding="utf-8"
+        )
+        (self.repo_root / "README.md").write_text(
+            "base\n", encoding="utf-8"
+        )
         self._git("add", ".")
         self._git("commit", "-m", "base")
         self.base_commit = self._git("rev-parse", "HEAD")
         self.base_tree = self._git("rev-parse", "HEAD^{tree}")
-        (self.repo_root / "README.md").write_text("head\n", encoding="utf-8")
+        (self.repo_root / "README.md").write_text(
+            "head\n", encoding="utf-8"
+        )
         self._git("add", "README.md")
         self._git("commit", "-m", "head")
         self.head_commit = self._git("rev-parse", "HEAD")
         self.head_tree = self._git("rev-parse", "HEAD^{tree}")
-        self.lock_sha = hashlib.sha256((self.repo_root / "Cargo.lock").read_bytes()).hexdigest()
+        self.lock_sha = hashlib.sha256(
+            (self.repo_root / "Cargo.lock").read_bytes()
+        ).hexdigest()
         self.repo = "example/repo"
         self.pr_number = 34
         self.base_ref = "integration/base"
@@ -98,12 +154,24 @@ class AggregateFixtureBase(unittest.TestCase):
     @staticmethod
     def _zip(files: dict[str, object]) -> bytes:
         output = io.BytesIO()
-        with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        with zipfile.ZipFile(
+            output, "w", compression=zipfile.ZIP_DEFLATED
+        ) as archive:
             for name, value in files.items():
-                archive.writestr(name, json.dumps(value, sort_keys=True, allow_nan=False))
+                archive.writestr(
+                    name,
+                    json.dumps(
+                        value, sort_keys=True, allow_nan=False
+                    ),
+                )
         return output.getvalue()
 
-    def _pr(self, *, base: str | None = None, head: str | None = None) -> dict[str, object]:
+    def _pr(
+        self,
+        *,
+        base: str | None = None,
+        head: str | None = None,
+    ) -> dict[str, object]:
         return {
             "number": self.pr_number,
             "state": "open",
@@ -120,14 +188,23 @@ class AggregateFixtureBase(unittest.TestCase):
             },
         }
 
-    def _commit(self, sha: str, tree: str, parents: list[str]) -> dict[str, object]:
+    def _commit(
+        self, sha: str, tree: str, parents: list[str]
+    ) -> dict[str, object]:
         return {
             "sha": sha,
             "commit": {"tree": {"sha": tree}},
             "parents": [{"sha": parent} for parent in parents],
         }
 
-    def _run(self, run_id: int, workflow_name: str, filename: str, *, conclusion: str = "success") -> dict[str, object]:
+    def _run(
+        self,
+        run_id: int,
+        workflow_name: str,
+        filename: str,
+        *,
+        conclusion: str = "success",
+    ) -> dict[str, object]:
         return {
             "id": run_id,
             "name": workflow_name,
@@ -147,12 +224,39 @@ class AggregateFixtureBase(unittest.TestCase):
             ],
         }
 
-    def _jobs(self, run_id: int, names: set[str]) -> dict[str, object]:
+    def _jobs(
+        self,
+        run_id: int,
+        names: set[str],
+        *,
+        run_attempt: int = 1,
+        workflow_name: str | None = None,
+        head_sha: str | None = None,
+        head_branch: str | None = None,
+    ) -> dict[str, object]:
+        if workflow_name is None:
+            requirement = getattr(self, "requirement", None)
+            if requirement is None:
+                requirement = next(
+                    (
+                        item
+                        for item in getattr(AGG, "REQUIREMENTS", ())
+                        if set(item.job_names) == names
+                    ),
+                    None,
+                )
+            workflow_name = getattr(
+                requirement, "workflow_name", "fixture workflow"
+            )
         return {
             "jobs": [
                 {
                     "id": run_id * 100 + index,
                     "run_id": run_id,
+                    "run_attempt": run_attempt,
+                    "workflow_name": workflow_name,
+                    "head_sha": head_sha or self.head_commit,
+                    "head_branch": head_branch or self.head_ref,
                     "name": name,
                     "status": "completed",
                     "conclusion": "success",
@@ -165,7 +269,13 @@ class AggregateFixtureBase(unittest.TestCase):
             ]
         }
 
-    def _artifact(self, artifact_id: int, run_id: int, name: str, raw: bytes) -> dict[str, object]:
+    def _artifact(
+        self,
+        artifact_id: int,
+        run_id: int,
+        name: str,
+        raw: bytes,
+    ) -> dict[str, object]:
         url = f"https://objects.example/{artifact_id}.zip"
         self.blobs[url] = raw
         return {
@@ -175,22 +285,36 @@ class AggregateFixtureBase(unittest.TestCase):
             "archive_download_url": url,
             "expired": False,
             "expires_at": "2026-12-31T00:00:00Z",
-            "digest": f"sha256:{hashlib.sha256(raw).hexdigest()}",
-            "workflow_run": {"id": run_id, "head_sha": self.head_commit},
+            "digest": (
+                f"sha256:{hashlib.sha256(raw).hexdigest()}"
+            ),
+            "workflow_run": {
+                "id": run_id,
+                "head_sha": self.head_commit,
+            },
         }
 
     def _android_receipt(self, kind: str) -> dict[str, object]:
         merge = kind == "synthetic_merge"
         receipt: dict[str, object] = {
-            "schema": "org.trillionnium.owner-open.adbroot-evaluated-graph.v1",
+            "schema": (
+                "org.trillionnium.owner-open."
+                "adbroot-evaluated-graph.v1"
+            ),
             "program_revision": AGG.PROGRAM_REVISION,
             "repository": self.repo,
             "source_commit": self.head_commit,
             "base_commit": self.base_commit if merge else None,
-            "evaluated_commit": ("e" * 40) if merge else self.head_commit,
+            "evaluated_commit": (
+                "e" * 40 if merge else self.head_commit
+            ),
             "evaluated_tree": self.head_tree,
             "evaluation_kind": kind,
-            "parent_commits": [self.base_commit, self.head_commit] if merge else [],
+            "parent_commits": (
+                [self.base_commit, self.head_commit]
+                if merge
+                else []
+            ),
             "matrix_case_count": 12,
             "negative_case_count": 10,
             "negative_cases_passed": True,
@@ -202,17 +326,25 @@ class AggregateFixtureBase(unittest.TestCase):
             "image_built": False,
             "installed": False,
             "physical_device_observed": False,
-            "claim_ceiling": "EVALUATED_SECURITY_ANDROID_GRAPH_ONLY_NOT_SOONG_OR_SELINUX_COMPILED",
+            "claim_ceiling": (
+                "EVALUATED_SECURITY_ANDROID_GRAPH_ONLY_"
+                "NOT_SOONG_OR_SELINUX_COMPILED"
+            ),
             "automatic_redispatch": False,
             "public_release": False,
             "receipt_sha256": "",
         }
-        receipt["receipt_sha256"] = hashlib.sha256(AGG._canonical(receipt)).hexdigest()
+        receipt["receipt_sha256"] = hashlib.sha256(
+            AGG._canonical(receipt)
+        ).hexdigest()
         return receipt
 
     def _evidence_report(self) -> dict[str, object]:
         return {
-            "schema": "org.trillionnium.g1.evidence-verification-report.v2",
+            "schema": (
+                "org.trillionnium.g1."
+                "evidence-verification-report.v2"
+            ),
             "gap_specs_sha256": "7" * 64,
             "program_revision": AGG.PROGRAM_REVISION,
             "current_source_commit": self.head_commit,
@@ -228,7 +360,9 @@ class AggregateFixtureBase(unittest.TestCase):
 
     def _promotion_plan(self) -> dict[str, object]:
         return {
-            "schema": "org.trillionnium.g1.gap-promotion-plan.v1",
+            "schema": (
+                "org.trillionnium.g1.gap-promotion-plan.v1"
+            ),
             "gap_specs_sha256": "7" * 64,
             "program_revision": AGG.PROGRAM_REVISION,
             "current_source_commit": self.head_commit,
@@ -238,4 +372,3 @@ class AggregateFixtureBase(unittest.TestCase):
             "automatic_redispatch": False,
             "public_release_after_plan": False,
         }
-

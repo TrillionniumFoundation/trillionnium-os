@@ -1,7 +1,14 @@
-"""Immutable G1 aggregate subject and workflow requirements."""
+"""Immutable G1 aggregate subject and direct source-workflow requirements.
+
+The protected aggregate is a source-correctness gate. It consumes the exact
+canonical synthetic-merge qualification because merge compatibility is a direct
+source property. Android target evidence, review-index receipts, evidence
+intake and release qualification remain separate promotion or release concerns.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 
 @dataclass(frozen=True)
 class Subject:
@@ -32,37 +39,12 @@ REQUIREMENTS = (
     WorkflowRequirement(
         filename="g1-synthetic-merge.yml",
         workflow_name="G1 synthetic-merge qualification",
-        job_names=frozenset({"L1 exact two-parent merge source qualification"}),
+        job_names=frozenset(
+            {
+                "L1 exact two-parent merge source qualification",
+                "L1 exact-source-head aggregate candidate",
+            }
+        ),
         artifact_kind="synthetic",
-    ),
-    WorkflowRequirement(
-        filename="g1-review-index-receipts.yml",
-        workflow_name="G1 exact-head and synthetic-merge review-index receipts",
-        job_names=frozenset(
-            {"L1 exact-head and synthetic-merge closed-world receipt binding"}
-        ),
-        artifact_kind="review_index",
-    ),
-    WorkflowRequirement(
-        filename="g1-android-privilege-matrix.yml",
-        workflow_name="G1 Android privileged-lane evaluated matrix",
-        job_names=frozenset(
-            {
-                "L1 Android adbroot source-head evaluated matrix",
-                "L1 Android adbroot synthetic-merge evaluated matrix",
-            }
-        ),
-        artifact_kind="android",
-    ),
-    WorkflowRequirement(
-        filename="g1-evidence-intake.yml",
-        workflow_name="G1 evidence intake qualification",
-        job_names=frozenset(
-            {
-                "L1 strict evidence intake on exact source head",
-                "L1 strict evidence intake on ordered synthetic merge",
-            }
-        ),
-        artifact_kind="evidence",
     ),
 )

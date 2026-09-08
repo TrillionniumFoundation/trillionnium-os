@@ -2,7 +2,7 @@
 
 Status: **ACTIVE CANDIDATE**  
 Program revision: **2026-08-31-g1**  
-Documentation revision: **1.1.0**
+Documentation revision: **1.1.1**
 Semantic authority: **owner-open-semantic-v1**  
 Architecture authority: **modular-control-plane-v1**  
 Machine truth root: [`machine/`](machine/)  
@@ -29,12 +29,13 @@ performance evidence, rollout and compatibility rules.
 3. [`GLOBAL_DEVELOPMENT_PROGRAM.md`](GLOBAL_DEVELOPMENT_PROGRAM.md) — current phases, critical path and delivery order.
 4. [`MODULE_DEVELOPMENT_STANDARD.md`](MODULE_DEVELOPMENT_STANDARD.md) — definition of a team-owned logical module.
 5. [`COMPONENT_DEVELOPMENT_STANDARD.md`](COMPONENT_DEVELOPMENT_STANDARD.md) — concrete build units, local documentation and sealed-component rules.
+6. [`CI_GATE_MODEL.md`](CI_GATE_MODEL.md) — source, promotion and release gate separation.
 6. [`EFFECT_AND_PROTOCOL_STANDARD.md`](EFFECT_AND_PROTOCOL_STANDARD.md) — identity, durability and no-redispatch rules.
-7. [`PERFORMANCE_AND_OPTIMIZATION.md`](PERFORMANCE_AND_OPTIMIZATION.md) — global objective, SLOs and benchmark gates.
-8. [`TEAM_AND_DELIVERY_MODEL.md`](TEAM_AND_DELIVERY_MODEL.md) — ownership, review and merge-queue policy.
-9. [`OPERATIONS_AND_ROLLOUT.md`](OPERATIONS_AND_ROLLOUT.md) — deployment, leases, migrations, canary and rollback.
-10. [`QUALIFICATION_AND_EVIDENCE.md`](QUALIFICATION_AND_EVIDENCE.md) — L0–L6 evidence and fault qualification.
-11. [`GLOBAL_DEFINITION_OF_DONE.md`](GLOBAL_DEFINITION_OF_DONE.md) — exact completion criteria.
+8. [`PERFORMANCE_AND_OPTIMIZATION.md`](PERFORMANCE_AND_OPTIMIZATION.md) — global objective, SLOs and benchmark gates.
+9. [`TEAM_AND_DELIVERY_MODEL.md`](TEAM_AND_DELIVERY_MODEL.md) — ownership, review and merge-queue policy.
+10. [`OPERATIONS_AND_ROLLOUT.md`](OPERATIONS_AND_ROLLOUT.md) — deployment, leases, migrations, canary and rollback.
+11. [`QUALIFICATION_AND_EVIDENCE.md`](QUALIFICATION_AND_EVIDENCE.md) — L0–L6 evidence and fault qualification.
+12. [`GLOBAL_DEFINITION_OF_DONE.md`](GLOBAL_DEFINITION_OF_DONE.md) — exact completion criteria.
 
 ## 3. Truth rules
 

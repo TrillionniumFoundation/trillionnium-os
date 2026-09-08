@@ -1,6 +1,6 @@
 {
   "schema": "org.trillionnium.documentation-set.v1",
-  "documentation_revision": "1.1.0",
+  "documentation_revision": "1.1.1",
   "program_revision": "2026-08-31-g1",
   "semantic_revision": "owner-open-semantic-v1",
   "architecture_revision": "modular-control-plane-v1",
@@ -19,6 +19,7 @@
     "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
     "docs/MODULE_DEVELOPMENT_STANDARD.md",
     "docs/COMPONENT_DEVELOPMENT_STANDARD.md",
+    "docs/CI_GATE_MODEL.md",
     "docs/EFFECT_AND_PROTOCOL_STANDARD.md",
     "docs/PERFORMANCE_AND_OPTIMIZATION.md",
     "docs/TEAM_AND_DELIVERY_MODEL.md",
@@ -87,6 +88,7 @@
     "docs/GLOBAL_DEVELOPMENT_PROGRAM.md",
     "docs/MODULE_DEVELOPMENT_STANDARD.md",
     "docs/COMPONENT_DEVELOPMENT_STANDARD.md",
+    "docs/CI_GATE_MODEL.md",
     "docs/MODULE_DOCUMENTATION_POLICY.md",
     "docs/machine/program-state.v1.json",
     "docs/machine/gap-register.v2.json",
