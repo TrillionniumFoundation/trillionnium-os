@@ -31,12 +31,16 @@ message and Git configuration. Recomputing the same tuple must produce the same
 commit SHA. GitHub's hidden pull-request merge ref is a mutable service-side
 observation and is not the canonical decision object.
 
-The server-required exact-head aggregate must fail closed unless the newest run
-of `G1 synthetic-merge qualification` for the exact live base/head subject is
-complete and successful. The aggregate consumes that exact workflow attempt and
-its commit-bound source receipt; this is not target, device or release evidence.
-A failed merge, changed ordered parent, changed merge tree, changed canonical
-commit, rerun-attempt movement or artifact movement invalidates the aggregate.
+The server-required `L1 exact-source-head aggregate candidate` context is owned
+by a dependent job in `G1 synthetic-merge qualification`. It cannot complete
+until the exact live base/head synthetic job succeeds. The separately named
+exact-head direct-source aggregate consumes that same workflow attempt, both
+job identities and its commit-bound source receipt. A rerun of the synthetic job
+therefore requeues its dependent required context; a failed attempt makes that
+context fail without requiring a source push. This is source/integration
+evidence, not target, device or release evidence. A failed merge, changed
+ordered parent, changed merge tree, changed canonical commit, rerun-attempt
+movement or artifact movement invalidates the aggregate.
 
 A source gate must report the failing source property directly. It must not
 require unrelated workflows to manufacture receipts merely to prove that those
@@ -100,13 +104,14 @@ the existing required exact-head aggregate and make it consume the real
 canonical synthetic-merge result. Non-required legacy receipt workflows must be
 renamed, made manual-only or retired.
 
-The real synthetic-merge context should also be continuously enforced by branch
-protection so that a post-aggregate rerun immediately blocks mergeability. That
-administrative requirement is separate from canonicalizing the source-produced
-commit and cannot be claimed complete by a repository commit alone.
+The existing required context is continuously coupled to the synthetic workflow
+by its dependent admission job. The exact-head workflow must not emit the same
+name; duplicate job names across workflows would make protection ambiguous. A
+post-success rerun of the synthetic job and its dependants must make the required
+context pending and then success or failure for that new attempt.
 
-Changes to required context names and branch protection must be atomic: the new
-source guarantee becomes enforceable before the old context is removed.
+Any future context-name or branch-protection migration must remain atomic: the
+new source guarantee becomes enforceable before the old context is removed.
 
 ## 6. Design rule
 

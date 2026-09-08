@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Fail-closed exact-head plus prospective-merge source aggregate.
 
-The protected ``L1 exact-source-head aggregate candidate`` context already
-requires the direct jobs in its own workflow. This command additionally binds
-the newest successful ``G1 synthetic-merge qualification`` run and source-bound
-receipt to the same live PR base/head tuple. It deliberately does not require
-review-index, Android target, evidence-intake, device, fault, signing or release
-workflows.
+The protected ``L1 exact-source-head aggregate candidate`` context is emitted
+by the dependent admission job in ``G1 synthetic-merge qualification``. This
+command runs in the separately named exact-head direct-source aggregate and
+binds that workflow's exact attempt, both job identities, and source receipt to
+the same live PR base/head tuple. It deliberately does not require review-index,
+Android target, evidence-intake, device, fault, signing or release workflows.
 """
 from __future__ import annotations
 

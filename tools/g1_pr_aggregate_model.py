@@ -39,7 +39,12 @@ REQUIREMENTS = (
     WorkflowRequirement(
         filename="g1-synthetic-merge.yml",
         workflow_name="G1 synthetic-merge qualification",
-        job_names=frozenset({"L1 exact two-parent merge source qualification"}),
+        job_names=frozenset(
+            {
+                "L1 exact two-parent merge source qualification",
+                "L1 exact-source-head aggregate candidate",
+            }
+        ),
         artifact_kind="synthetic",
     ),
 )

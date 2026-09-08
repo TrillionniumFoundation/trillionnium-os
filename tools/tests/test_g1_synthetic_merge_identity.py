@@ -11,6 +11,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github/workflows/g1-synthetic-merge.yml"
+EXACT_HEAD_WORKFLOW = ROOT / ".github/workflows/g1-exact-head-source.yml"
 CANONICAL_NAME = "g1-synthetic-merge"
 CANONICAL_EMAIL = "g1-synthetic-merge@invalid"
 CANONICAL_DATE = "2000-01-01T00:00:00Z"
@@ -109,6 +110,23 @@ class SyntheticMergeIdentityTest(unittest.TestCase):
             "test \"$merge_commit\" = \"$recomputed_merge_commit\"",
         ):
             self.assertIn(literal, source)
+
+    def test_required_context_is_owned_by_synthetic_attempt(self) -> None:
+        synthetic = WORKFLOW.read_text(encoding="utf-8")
+        exact_head = EXACT_HEAD_WORKFLOW.read_text(encoding="utf-8")
+        required = "name: L1 exact-source-head aggregate candidate"
+        self.assertEqual(synthetic.count(required), 1)
+        self.assertNotIn(required, exact_head)
+        self.assertIn("  source-admission:\n", synthetic)
+        self.assertIn("      - synthetic-merge\n", synthetic)
+        self.assertIn("    if: ${{ always() }}\n", synthetic)
+        self.assertIn(
+            "SYNTHETIC_RESULT: ${{ needs.synthetic-merge.result }}", synthetic
+        )
+        self.assertIn('test "$SYNTHETIC_RESULT" = success', synthetic)
+        self.assertIn(
+            "name: L1 exact-head direct-source aggregate", exact_head
+        )
 
     def test_same_tree_and_ordered_parents_produce_one_commit_identity(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

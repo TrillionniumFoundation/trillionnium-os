@@ -51,17 +51,19 @@ alone never promotes a claim or closes a higher-level gap.
 
 ### 2.2 Protected L1 pull-request source gate
 
-The server-required `L1 exact-source-head aggregate candidate` context is the
-repository-controlled L1 source/integration gate. It requires every direct
-source job in its own exact-head workflow and binds the live pull-request base,
-head, repository and clean checkout.
+The server-required `L1 exact-source-head aggregate candidate` context is a
+dependent admission job in `G1 synthetic-merge qualification`. It becomes
+pending for each new workflow attempt and succeeds only after the exact
+conflict-checked synthetic merge job succeeds. The direct exact-head jobs retain
+their own required contexts, while their separately named aggregate binds the
+live pull-request base, head, repository and clean checkout.
 
-A real conflict-checked canonical synthetic merge is also a direct
-source/integration property. The aggregate therefore requires the newest
-exact-subject run of `G1 synthetic-merge qualification` to be terminal-success
-and validates its source-bound receipt against the same live base/head tuple,
-ordered parents, merge tree, canonical merge commit, lockfile and source
-checkout.
+The exact-head aggregate requires the newest exact-subject synthetic workflow to
+be terminal-success and validates both workflow jobs plus its source-bound
+receipt against the same live base/head tuple, ordered parents, merge tree,
+canonical merge commit, lockfile and source checkout. A post-success rerun of
+the synthetic job and dependent admission job therefore invalidates the old
+required result without a source push.
 
 The canonical commit is generated with fixed author and committer identities,
 fixed timestamps and timezone, a fixed message, a clean Git configuration, the

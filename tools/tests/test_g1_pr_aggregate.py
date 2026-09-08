@@ -183,7 +183,12 @@ class SourceGateBoundaryTest(SourceAggregateFixture):
         )
         self.assertEqual(
             requirement.job_names,
-            frozenset({"L1 exact two-parent merge source qualification"}),
+            frozenset(
+                {
+                    "L1 exact two-parent merge source qualification",
+                    "L1 exact-source-head aggregate candidate",
+                }
+            ),
         )
         self.assertEqual(requirement.artifact_kind, "synthetic")
         self.assertTrue(callable(_verify_workflow))
@@ -197,7 +202,7 @@ class SourceGateBoundaryTest(SourceAggregateFixture):
         workflow = report["workflows"][0]
         self.assertEqual(workflow["run_id"], 1001)
         self.assertEqual(workflow["run_attempt"], 1)
-        self.assertEqual(len(workflow["jobs"]), 1)
+        self.assertEqual(len(workflow["jobs"]), 2)
         self.assertEqual(len(workflow["artifacts"]), 1)
         self.assertEqual(
             workflow["artifacts"][0]["semantic"]["merge_commit"],
