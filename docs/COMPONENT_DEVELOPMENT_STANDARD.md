@@ -108,3 +108,25 @@ target-files, physical-device behavior, destructive-fault recovery, signing,
 OTA or public-release authority.
 
 An uncertain effect is never automatically redispatched.
+
+## 8. Accepted Markdown surface
+
+The component verifier intentionally supports a bounded Markdown subset rather
+than claiming a complete CommonMark parser. Required commands receive credit
+only as complete lines inside visible `sh`, `bash`, `shell`, `zsh` or `console`
+fences. Required module navigation receives credit only from a visible,
+repository-relative Markdown link resolving to the canonical
+`docs/modules/MOD-*.md` file.
+
+HTML comments, inline-code spans, fenced examples, four-column indented code,
+escaped links and malformed or noncanonical targets cannot supply a required
+command or link. Backtick spans retain state across physical lines and close
+only on a maximal run whose length exactly equals the opening delimiter. Fence
+indentation is interpreted in columns with four-column tab stops.
+
+A line-leading raw HTML block opener outside a fenced example is rejected,
+including ordinary element tags, custom tags, declarations, processing
+instructions and CDATA. The verifier does not partially parse raw block HTML,
+because content inside an unrecognised block could otherwise appear to be a
+Markdown fence or link without rendering as one. Ordinary inline HTML following
+prose remains allowed. Put block-HTML examples inside a fenced code block.
