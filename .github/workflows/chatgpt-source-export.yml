@@ -1,4 +1,4 @@
-name: ChatGPT PR50 convergence
+name: ChatGPT exact-source export
 
 on:
   push:
@@ -6,107 +6,39 @@ on:
       - ops/chatgpt-source-export-20260908
 
 permissions:
-  contents: write
-
-concurrency:
-  group: chatgpt-pr50-convergence
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  converge:
+  export-pr50:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 10
     env:
-      EXPECTED_PR_HEAD: 2c34090389ed6e87f30515827128d17b0f30621d
-      EXPECTED_MAIN: 85e10930530b9bbad4cb4b5470e03c9758ce7277
-      PR_BRANCH: reviewer/ci-governance-simplification-20260908
+      SOURCE_SHA: 8b8fa7def9ae9f8e0994b129db96b8820231eb80
     steps:
-      - name: Check out exact PR50 branch
+      - name: Check out exact PR50 head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-          ref: ${{ env.PR_BRANCH }}
-          persist-credentials: true
-      - name: Merge current protected main and resolve additive documentation conflicts
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Assert clean exact checkout and archive
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --no-tags origin main "$PR_BRANCH"
-          test "$(git rev-parse HEAD)" = "$EXPECTED_PR_HEAD"
-          test "$(git rev-parse origin/main)" = "$EXPECTED_MAIN"
-          git config user.name 'Qian QI'
-          git config user.email '102159240+ProfHepta@users.noreply.github.com'
-          set +e
-          git merge --no-ff --no-commit origin/main
-          merge_rc=$?
-          set -e
-          test "$merge_rc" -eq 1
-          python3 - <<'PY'
-          import json
-          import subprocess
-          from pathlib import Path
-
-          root = Path.cwd()
-          start = subprocess.check_output(
-              ["git", "show", "origin/main:docs/START_HERE.md"], text=True
-          )
-          start = start.replace(
-              "Documentation revision: **1.1.0**",
-              "Documentation revision: **1.1.1**",
-          )
-          component = (
-              "5. [`COMPONENT_DEVELOPMENT_STANDARD.md`](COMPONENT_DEVELOPMENT_STANDARD.md) "
-              "— concrete build units, local documentation and sealed-component rules.\n"
-          )
-          if component not in start:
-              raise SystemExit("component-development entry moved")
-          start = start.replace(
-              component,
-              component
-              + "6. [`CI_GATE_MODEL.md`](CI_GATE_MODEL.md) — source, promotion and release gate separation.\n",
-              1,
-          )
-          for old, new in ((11, 12), (10, 11), (9, 10), (8, 9), (7, 8), (6, 7)):
-              start = start.replace(f"{old}. [`", f"{new}. [`", 1)
-          start = start.replace("7. [`CI_GATE_MODEL.md`", "6. [`CI_GATE_MODEL.md`", 1)
-          (root / "docs/START_HERE.md").write_text(start, encoding="utf-8")
-
-          docset = json.loads(
-              subprocess.check_output(
-                  ["git", "show", "origin/main:docs/machine/doc-set.v1.json"], text=True
-              )
-          )
-          docset["documentation_revision"] = "1.1.1"
-          required = docset["required_files"]
-          after = "docs/COMPONENT_DEVELOPMENT_STANDARD.md"
-          if "docs/CI_GATE_MODEL.md" not in required:
-              required.insert(required.index(after) + 1, "docs/CI_GATE_MODEL.md")
-          authority = docset["authority_order"]
-          if "docs/CI_GATE_MODEL.md" not in authority:
-              authority.insert(authority.index(after) + 1, "docs/CI_GATE_MODEL.md")
-          (root / "docs/machine/doc-set.v1.json").write_text(
-              json.dumps(docset, indent=2, ensure_ascii=False) + "\n",
-              encoding="utf-8",
-          )
-          PY
-          git add docs/START_HERE.md docs/machine/doc-set.v1.json
-          test -z "$(git ls-files -u)"
-          git diff --check
-      - name: Verify merged CI-gate source
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 tools/docs/generate_global_docs.py --check
-          python3 tools/docs/verify_global_docs.py
-          python3 -m unittest \
-            tools.tests.test_g1_pr_aggregate \
-            tools.tests.test_g1_pr_aggregate_job_attempt_binding \
-            tools.tests.test_g1_synthetic_merge_identity -v
-      - name: Publish explicit two-parent convergence commit
-        shell: bash
-        run: |
-          set -euo pipefail
-          git commit -m 'ci: converge deterministic source gate with durable-admission main'
-          test "$(git rev-parse HEAD^1)" = "$EXPECTED_PR_HEAD"
-          test "$(git rev-parse HEAD^2)" = "$EXPECTED_MAIN"
-          git push origin "HEAD:$PR_BRANCH"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
+          if ! worktree_status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$worktree_status"
+          git --no-replace-objects archive --format=tar.gz --output="${RUNNER_TEMP}/trillionnium-os-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
+          sha256sum "${RUNNER_TEMP}/trillionnium-os-${SOURCE_SHA}.tar.gz" > "${RUNNER_TEMP}/trillionnium-os-${SOURCE_SHA}.tar.gz.sha256"
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: chatgpt-source-pr50-${{ env.SOURCE_SHA }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/trillionnium-os-${{ env.SOURCE_SHA }}.tar.gz
+            ${{ runner.temp }}/trillionnium-os-${{ env.SOURCE_SHA }}.tar.gz.sha256
