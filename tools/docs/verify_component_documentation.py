@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """Stable CLI facade for the component-documentation verifier.
 
-The reviewed core remains byte-identical.  This facade adds one deliberately
-smaller accepted-subset rule: outside fenced examples, a raw HTML block opener
-is rejected after both physical-line container markers and any continuation
-indentation.  That fail-closed rule prevents list-item continuation state from
-making a literal Markdown-looking link or shell fence count as rendered
-content.
+The reviewed core remains byte-identical. This facade adds two deliberately
+smaller accepted-subset rules:
+
+* outside fenced examples, a raw HTML block opener is rejected after both
+  physical-line container markers and any continuation indentation;
+* a fenced block beginning after a blockquote/list marker is rejected rather
+  than partially parsed by the root-level-only core.
+
+These fail-closed rules prevent list continuation state or container-nested code
+examples from making literal Markdown-looking links or shell commands count as
+rendered documentation.
 """
 from __future__ import annotations
 
@@ -27,18 +32,30 @@ SPEC.loader.exec_module(CORE)
 _ORIGINAL_MARKDOWN_SURFACES = CORE.markdown_surfaces
 
 
-def _reject_indented_raw_html(prose: str, label: str) -> None:
-    """Reject raw block HTML at any continuation indentation outside fences."""
+def _reject_unsupported_markdown(prose: str, label: str) -> None:
+    """Reject ambiguous continuation HTML and container-nested fences."""
     source = CORE.strip_html_comments(prose, label)
     marker_character: str | None = None
     marker_length = 0
 
     for line_number, line in enumerate(source.splitlines(), start=1):
         if marker_character is None:
-            remainder = CORE.strip_markdown_container_prefix(line).lstrip(" \t")
-            if CORE.RAW_HTML_BLOCK_OPEN.match(remainder):
+            remainder = CORE.strip_markdown_container_prefix(line)
+            had_container_prefix = remainder != line
+            normalized = remainder.lstrip(" \t")
+
+            if CORE.RAW_HTML_BLOCK_OPEN.match(normalized):
                 raise CORE.VerificationError(
                     f"{label}: line {line_number} raw HTML block opener is forbidden"
+                )
+
+            # The reviewed core intentionally parses root-level fences only.
+            # Reject a fence that begins after an explicit blockquote/list
+            # marker instead of allowing its contents to be scanned as prose.
+            if had_container_prefix and CORE.FENCE_OPEN.fullmatch(normalized):
+                raise CORE.VerificationError(
+                    f"{label}: line {line_number} "
+                    "container-nested fenced code block is forbidden"
                 )
 
             match = CORE.FENCE_OPEN.fullmatch(line)
@@ -65,7 +82,7 @@ def _reject_indented_raw_html(prose: str, label: str) -> None:
 
 
 def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
-    _reject_indented_raw_html(prose, label)
+    _reject_unsupported_markdown(prose, label)
     return _ORIGINAL_MARKDOWN_SURFACES(prose, label)
 
 
@@ -73,7 +90,7 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
 CORE.markdown_surfaces = markdown_surfaces
 
 # Preserve the established public import surface used by focused tests and
-# external source tooling.  The hardened function above intentionally wins.
+# external source tooling. The hardened function above intentionally wins.
 for _name in dir(CORE):
     if not _name.startswith("__") and _name != "markdown_surfaces":
         globals()[_name] = getattr(CORE, _name)
