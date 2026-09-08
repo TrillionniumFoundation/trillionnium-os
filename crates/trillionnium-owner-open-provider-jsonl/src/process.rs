@@ -407,8 +407,8 @@ mod worker_ownership_tests {
             dropped: Arc::clone(&dropped),
         };
         let (sender, _receiver) = std::sync::mpsc::sync_channel(1);
-        let worker = spawn_stdout_reader(tracked, 1024, 4096, sender)
-            .expect("spawn provider reader");
+        let worker =
+            spawn_stdout_reader(tracked, 1024, 4096, sender).expect("spawn provider reader");
 
         drop(worker);
         assert!(
@@ -426,8 +426,8 @@ mod worker_ownership_tests {
             dropped: Arc::clone(&dropped),
         };
         let (sender, _receiver) = std::sync::mpsc::sync_channel(1);
-        let worker = spawn_stdout_reader(tracked, 1024, 4096, sender)
-            .expect("spawn provider reader");
+        let worker =
+            spawn_stdout_reader(tracked, 1024, 4096, sender).expect("spawn provider reader");
         let started = Instant::now();
 
         let errors = join_provider_workers_bounded(vec![worker]);
