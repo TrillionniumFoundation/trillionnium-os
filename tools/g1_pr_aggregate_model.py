@@ -1,9 +1,9 @@
 """Immutable G1 aggregate subject and direct source-workflow requirements.
 
 The protected aggregate is a source-correctness gate. It consumes the exact
-prospective-merge qualification because merge compatibility is a direct source
-property. Android target evidence, review-index receipts, evidence intake and
-release qualification remain separate promotion or release concerns.
+canonical synthetic-merge qualification because merge compatibility is a direct
+source property. Android target evidence, review-index receipts, evidence
+intake and release qualification remain separate promotion or release concerns.
 """
 from __future__ import annotations
 
