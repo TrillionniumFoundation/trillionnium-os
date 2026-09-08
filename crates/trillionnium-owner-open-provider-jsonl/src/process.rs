@@ -11,8 +11,7 @@
 mod retained;
 
 pub(crate) use retained::{
-    ProcessIdentity, ProviderChildGuard, ProviderOutput, allow_natural_exit_grace,
-    capture_process_identity,
+    ProviderChildGuard, ProviderOutput, allow_natural_exit_grace, capture_process_identity,
 };
 
 use std::io::{self, BufRead, BufReader, Read};
