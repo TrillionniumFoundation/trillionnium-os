@@ -271,19 +271,23 @@ fn turn_cancel_remains_serviceable_while_high_volume_delivery_is_paused() {
     let directory = secure_tempdir();
     let provider = directory.path().join("provider.sh");
     let release = directory.path().join("release");
+    let provider_trace = directory.path().join("provider-trace");
     let event_store = directory.path().join("events.jsonl");
     fs::write(
         &provider,
         r#"#!/bin/sh
+trap 'status=$?; printf "exit=%s\n" "$status" >> "$2"' 0
 IFS= read -r start || exit 10
 while [ ! -f "$1" ]; do sleep 0.01; done
 printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"tool.call","seq":0,"call":{"call_id":"call-paused-cancel","tool":"shell.exec","command":"sleep 30"}}'
 IFS= read -r result || exit 11
+printf 'result=%s\n' "$result" >> "$2"
 case "$result" in
-  *'"terminal_kind":"client_cancelled"'*) ;;
+  *'"kind":"client_cancelled"'*) ;;
   *) exit 12 ;;
 esac
 IFS= read -r cancel || exit 13
+printf 'cancel=%s\n' "$cancel" >> "$2"
 case "$cancel" in
   *'"kind":"turn.cancel"'*) ;;
   *) exit 14 ;;
@@ -294,7 +298,7 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     .unwrap();
     fs::set_permissions(&provider, fs::Permissions::from_mode(0o700)).unwrap();
 
-    let mut running = start_host(&provider, &[&release], Some(&event_store));
+    let mut running = start_host(&provider, &[&release, &provider_trace], Some(&event_store));
     send(&mut running.stdin, start_frame("turn-paused-cancel"));
     let accepted = read_until(&mut running.stdout, "turn.accepted")
         .pop()
@@ -336,6 +340,21 @@ printf '%s\n' '{"protocol":"trillionnium.owner-open.provider-jsonl.v1","kind":"t
     assert!(frames.iter().any(|frame| {
         frame["kind"] == "tool.result" && frame["payload"]["terminal_kind"] == "client_cancelled"
     }));
-    assert_eq!(frames.last().unwrap()["payload"]["status"], "cancelled");
+    assert_eq!(
+        frames.last().unwrap()["payload"]["status"],
+        "cancelled",
+        "complete cancellation frame trace: {}; provider input/exit trace: {}",
+        serde_json::to_string_pretty(&frames).unwrap(),
+        fs::read_to_string(&provider_trace).unwrap_or_else(|error| error.to_string())
+    );
+    // EOF after a cancellation request is also classified as cancelled. The
+    // explicit summary proves that this fixture actually accepted the tool
+    // result and cancel frame, instead of exiting early on a wrong field.
+    assert_eq!(
+        frames.last().unwrap()["payload"]["summary"],
+        "cancel remained serviceable",
+        "provider input/exit trace: {}",
+        fs::read_to_string(&provider_trace).unwrap_or_else(|error| error.to_string())
+    );
     finish(running);
 }

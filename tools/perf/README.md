@@ -53,10 +53,13 @@ build command, toolchain identity and build logs alongside the measurement.
 | `pipe_job` | Real local pipe job, durable job journal, exact output and successful job terminal. Provider must remain unused. |
 | `pty_job` | Same through an actual PTY. |
 | `restart_replay` | Complete once, then start new Host/Core against the same store and exact turn bytes. Measures only the second process run. Event IDs must replay identically, with no second provider start or marker effect. This is clean-restart recovery, not crash or fsync-ambiguity qualification. |
-| `broker_inspect` | Several authenticated Unix clients issue distinct absent-job inspections through one real broker/Host/Core. Exact expected missing-job errors and correct client/job ownership are required. Measures connect/authentication and the concurrent request batch; excludes broker startup. This is a negative read-only workload, not concurrent effect execution. |
+| `broker_inspect` | Several authenticated Unix clients issue distinct absent-job inspections through one real broker/Host/Core. Exact expected missing-job errors and correct client/job ownership are required. Measures the first connect/authentication and concurrent request batch after descriptor publication. Upstream Host/Core startup and hello precede publication, but remaining broker worker startup may overlap the measurement. This is a negative read-only workload, not concurrent effect execution or a warmed steady-state benchmark. |
 
 Each sample retains nanosecond wall time, operation count, exact output hashes
-and byte counts, observed frame kinds/timestamps/hashes and correctness results.
+and byte counts, observed frame kinds/hashes and correctness results. Direct
+Host sessions also retain client-observed frame timestamps; broker observations
+currently have no per-frame timestamps. Client observation time does not identify
+when the Host emitted a frame or separate producer work from reader scheduling.
 Full output content is not retained. Concurrent session/client timings and replay
 setup observations are retained separately; only the declared measurement phase
 contributes to its workload summary. Throughput is completed operations divided
@@ -101,8 +104,11 @@ variance. Changing the harness requires a new baseline.
 At least five measured repetitions per workload in both artifacts are needed.
 The gate rejects any observed P50 or P95 increase beyond the threshold. This is
 an explicit deterministic regression rule, not a claim of statistical
-significance; P99 is descriptive and cannot establish a product SLO from ten
-samples. Tune repeat counts and the reviewed threshold for the actual runner.
+significance; nearest-rank P95 and P99 both equal the maximum with ten measured
+samples and cannot establish a population percentile or product SLO. Select
+repeat counts and the reviewed threshold before running on the actual runner;
+retain failed comparisons rather than changing the threshold or selecting later
+green runs. Changing instrumentation requires a new baseline identity.
 
 | Gate | Exit behavior |
 | --- | --- |
