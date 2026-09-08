@@ -27,7 +27,7 @@ def _verify_workflow(
     now: datetime,
     synthetic_state: dict[str, Any],
 ) -> dict[str, Any]:
-    """Bind the exact successful prospective-merge source receipt.
+    """Bind the exact successful canonical synthetic-merge receipt.
 
     Promotion, review-index, Android target-evidence and release workflows are
     deliberately outside this ordinary source gate and therefore have no
