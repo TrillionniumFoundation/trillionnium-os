@@ -124,6 +124,25 @@ edition = "2024"
         )
         path.write_text(prose, encoding="utf-8")
 
+    def replace_contract_with_container_html(
+        self,
+        root: Path,
+        opener: str,
+        link_prefix: str,
+        closer: str,
+    ) -> None:
+        path = root / "active/README.md"
+        prose = path.read_text(encoding="utf-8").replace(
+            "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)",
+            "MOD-FIXTURE",
+        )
+        prose += (
+            f"\n{opener}\n"
+            f"{link_prefix}[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)\n"
+            f"{closer}\n"
+        )
+        path.write_text(prose, encoding="utf-8")
+
     def test_div_block_cannot_supply_command_or_contract_link(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -181,6 +200,54 @@ edition = "2024"
                 ):
                     VERIFY.verify(root)
 
+    def test_blockquote_html_cannot_supply_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            self.replace_contract_with_container_html(
+                root,
+                "> <div>",
+                "> ",
+                "> </div>",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "raw HTML block opener is forbidden",
+            ):
+                VERIFY.verify(root)
+
+    def test_nested_blockquote_list_custom_html_cannot_supply_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            self.replace_contract_with_container_html(
+                root,
+                '> 1. <component-contract mode="hidden">',
+                "> 1. ",
+                "> 1. </component-contract>",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "raw HTML block opener is forbidden",
+            ):
+                VERIFY.verify(root)
+
+    def test_bullet_list_html_cannot_supply_contract_link(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            self.replace_contract_with_container_html(
+                root,
+                "- <div>",
+                "  ",
+                "  </div>",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "raw HTML block opener is forbidden",
+            ):
+                VERIFY.verify(root)
+
     def test_inline_html_after_prose_remains_allowed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -201,6 +268,34 @@ edition = "2024"
             path.write_text(
                 path.read_text(encoding="utf-8")
                 + "\n```text\n<div>example only</div>\n```\n",
+                encoding="utf-8",
+            )
+            VERIFY.verify(root)
+
+    def test_visible_blockquote_markdown_link_remains_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)",
+                    "> [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)",
+                ),
+                encoding="utf-8",
+            )
+            VERIFY.verify(root)
+
+    def test_visible_list_markdown_link_remains_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            path = root / "active/README.md"
+            path.write_text(
+                path.read_text(encoding="utf-8").replace(
+                    "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)",
+                    "- [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)",
+                ),
                 encoding="utf-8",
             )
             VERIFY.verify(root)
