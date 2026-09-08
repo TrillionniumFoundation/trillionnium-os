@@ -35,6 +35,20 @@ MARKDOWN_LINK = re.compile(
 FENCE_OPEN = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
 SHELL_FENCE_LANGUAGES = {"sh", "bash", "shell", "zsh", "console"}
 
+# The accepted documentation subset deliberately rejects a line-leading raw
+# HTML block outside a fenced example. Parsing only a few CommonMark HTML block
+# families is unsafe: content inside an unrecognised <div>, custom element,
+# declaration, processing instruction or CDATA block could otherwise receive
+# false Markdown-link or shell-fence credit.
+RAW_HTML_BLOCK_OPEN = re.compile(
+    r"^ {0,3}(?:"
+    r"</?[A-Za-z][A-Za-z0-9-]*(?:\s[^<>]*|/?)>"
+    r"|<!"
+    r"|<\?"
+    r")",
+    re.IGNORECASE,
+)
+
 
 class VerificationError(Exception):
     pass
@@ -133,12 +147,14 @@ def package_name(manifest: Path, label: str) -> str:
         value = tomllib.loads(manifest.read_text(encoding="utf-8"))
         package = value["package"]["name"]
     except (OSError, UnicodeError, KeyError, TypeError, tomllib.TOMLDecodeError) as error:
-        raise VerificationError(f"{label} package manifest cannot be parsed: {error}") from error
+        raise VerificationError(
+            f"{label} package manifest cannot be parsed: {error}"
+        ) from error
     return text(package, f"{label}.package.name")
 
 
 def strip_html_comments(source: str, label: str) -> str:
-    """Remove HTML comments while preserving line and byte positions."""
+    """Remove HTML comments while preserving physical line structure."""
     characters = list(source)
     cursor = 0
     while True:
@@ -174,7 +190,9 @@ def _find_exact_backtick_run(line: str, marker: str, start: int = 0) -> int:
     return -1
 
 
-def strip_inline_code(line: str, open_marker: str | None) -> tuple[str, str | None]:
+def strip_inline_code(
+    line: str, open_marker: str | None
+) -> tuple[str, str | None]:
     """Hide inline code spans, retaining an exact marker across physical lines."""
     characters = list(line)
     cursor = 0
@@ -208,6 +226,7 @@ def strip_inline_code(line: str, open_marker: str | None) -> tuple[str, str | No
         marker = None
     return "".join(characters), None
 
+
 def indentation_columns(line: str) -> int:
     """Return CommonMark-style leading indentation columns with tab stops."""
     columns = 0
@@ -222,39 +241,35 @@ def indentation_columns(line: str) -> int:
 
 
 def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
-    """Return rendered prose, exact shell-fence lines, and comment-free source."""
+    """Return visible prose, exact shell-fence lines and comment-free source.
+
+    The accepted subset is intentionally smaller than CommonMark. Raw HTML block
+    openers at the start of a block are rejected rather than partially parsed.
+    Inline HTML following ordinary prose remains available.
+    """
     source = strip_html_comments(prose, label)
     visible_lines: list[str] = []
     shell_lines: set[str] = set()
     marker_character: str | None = None
     marker_length = 0
     language = ""
-    html_code_block: str | None = None
     inline_marker: str | None = None
 
-    for line in source.splitlines():
-        lowered = line.lstrip().lower()
-        if html_code_block is not None:
-            if f"</{html_code_block}>" in lowered:
-                html_code_block = None
-            continue
-
+    for line_number, line in enumerate(source.splitlines(), start=1):
         if marker_character is None:
             if inline_marker is not None:
                 visible, inline_marker = strip_inline_code(line, inline_marker)
                 visible_lines.append(visible)
                 continue
 
-            opened_html_block = False
-            for tag in ("pre", "code", "script", "style"):
-                if re.match(rf"^<{tag}(?:\s|>)", lowered):
-                    if f"</{tag}>" not in lowered:
-                        html_code_block = tag
-                    opened_html_block = True
-                    break
-            if opened_html_block:
-                continue
+            if RAW_HTML_BLOCK_OPEN.match(line):
+                raise VerificationError(
+                    f"{label}: line {line_number} raw HTML block opener is forbidden"
+                )
 
+            # A valid fence may be indented by at most three spaces. Tabs are
+            # expanded as CommonMark columns and therefore cannot impersonate a
+            # one-to-three-space fence prefix.
             match = FENCE_OPEN.fullmatch(line)
             if match is not None:
                 marker = match.group("marker")
@@ -264,7 +279,6 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
                 language = info.split(None, 1)[0].lower() if info else ""
                 continue
 
-            # Four-column indentation is Markdown code, including mixed tabs.
             if indentation_columns(line) >= 4:
                 continue
             visible, inline_marker = strip_inline_code(line, None)
@@ -274,7 +288,10 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
         stripped = line.lstrip(" \t")
         indentation = indentation_columns(line)
         run_length = 0
-        while run_length < len(stripped) and stripped[run_length] == marker_character:
+        while (
+            run_length < len(stripped)
+            and stripped[run_length] == marker_character
+        ):
             run_length += 1
         if (
             indentation <= 3
@@ -288,12 +305,17 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
         if language in SHELL_FENCE_LANGUAGES:
             shell_lines.add(line.strip())
 
-    require(marker_character is None, f"{label} has an unterminated fenced code block")
-    require(html_code_block is None, f"{label} has an unterminated HTML code block")
+    require(
+        marker_character is None,
+        f"{label} has an unterminated fenced code block",
+    )
+    require(inline_marker is None, f"{label} has an unterminated inline code span")
     return "\n".join(visible_lines), shell_lines, source
 
 
-def module_contract_links(root: Path, readme: Path, visible_prose: str) -> set[str]:
+def module_contract_links(
+    root: Path, readme: Path, visible_prose: str
+) -> set[str]:
     """Resolve visible Markdown module links to exact repository contract files."""
     links: set[str] = set()
     for line_number, line in enumerate(visible_prose.splitlines(), start=1):
@@ -304,7 +326,10 @@ def module_contract_links(root: Path, readme: Path, visible_prose: str) -> set[s
             label = f"{readme}: line {line_number} module contract link"
             require("\\" not in target, f"{label} uses a backslash")
             require("%" not in target, f"{label} uses percent-encoding")
-            require("?" not in target and "#" not in target, f"{label} has query or fragment")
+            require(
+                "?" not in target and "#" not in target,
+                f"{label} has query or fragment",
+            )
             require("://" not in target, f"{label} is not repository-local")
             pure = PurePosixPath(target)
             require(not pure.is_absolute(), f"{label} must be relative")
@@ -317,21 +342,37 @@ def module_contract_links(root: Path, readme: Path, visible_prose: str) -> set[s
                     cursor = cursor.parent
                 else:
                     cursor /= part
-                    require(not cursor.is_symlink(), f"{label} traverses symlink {cursor}")
-                require(cursor.is_relative_to(root), f"{label} escapes repository")
+                    require(
+                        not cursor.is_symlink(),
+                        f"{label} traverses symlink {cursor}",
+                    )
+                require(
+                    cursor.is_relative_to(root),
+                    f"{label} escapes repository",
+                )
             candidate = cursor.resolve(strict=False)
-            require(candidate.is_relative_to(root), f"{label} escapes repository")
+            require(
+                candidate.is_relative_to(root),
+                f"{label} escapes repository",
+            )
             relative = candidate.relative_to(root).as_posix()
             require(
                 MODULE_CONTRACT_PATH.fullmatch(relative) is not None,
-                f"{label} does not resolve to a canonical docs/modules/MOD-*.md file: {target}",
+                f"{label} does not resolve to a canonical "
+                f"docs/modules/MOD-*.md file: {target}",
             )
 
             cursor = root
             for part in PurePosixPath(relative).parts:
                 cursor /= part
-                require(not cursor.is_symlink(), f"{label} traverses symlink {cursor}")
-            require(candidate.is_file(), f"{label} target does not exist: {relative}")
+                require(
+                    not cursor.is_symlink(),
+                    f"{label} traverses symlink {cursor}",
+                )
+            require(
+                candidate.is_file(),
+                f"{label} target does not exist: {relative}",
+            )
             links.add(relative)
     return links
 
@@ -353,21 +394,33 @@ def module_contracts(
     seen_ids: set[str] = set()
 
     for index, module in enumerate(modules):
-        require(isinstance(module, dict), f"module-catalog.modules[{index}] must be an object")
-        module_id = text(module.get("id"), f"module-catalog.modules[{index}].id")
-        require(MODULE_ID.fullmatch(module_id) is not None, f"invalid module id: {module_id}")
+        require(
+            isinstance(module, dict),
+            f"module-catalog.modules[{index}] must be an object",
+        )
+        module_id = text(
+            module.get("id"), f"module-catalog.modules[{index}].id"
+        )
+        require(
+            MODULE_ID.fullmatch(module_id) is not None,
+            f"invalid module id: {module_id}",
+        )
         require(module_id not in seen_ids, f"duplicate module id: {module_id}")
         seen_ids.add(module_id)
 
         contract_text = f"docs/modules/{module_id}.md"
-        _, contract = normalized_path(root, contract_text, f"{module_id}.contract")
+        _, contract = normalized_path(
+            root, contract_text, f"{module_id}.contract"
+        )
         require(
             contract.is_file() and not contract.is_symlink(),
             f"module contract missing: {contract_text}",
         )
         valid_contracts.add(contract_text)
 
-        for path_index, raw_path in enumerate(strings(module.get("paths"), f"{module_id}.paths")):
+        for path_index, raw_path in enumerate(
+            strings(module.get("paths"), f"{module_id}.paths")
+        ):
             module_path_text, _ = normalized_path(
                 root,
                 raw_path,
@@ -375,7 +428,10 @@ def module_contracts(
             )
             module_path = PurePosixPath(module_path_text)
             for member, member_path in member_parts.items():
-                if module_path == member_path or member_path in module_path.parents:
+                if (
+                    module_path == member_path
+                    or member_path in module_path.parents
+                ):
                     physical[member].add(contract_text)
 
     return valid_contracts, {
@@ -422,13 +478,25 @@ def verify(root: Path) -> None:
             isinstance(entry, dict),
             f"non_product_members[{index}] must be an object",
         )
-        exact_keys(entry, LIFECYCLE_ENTRY_KEYS, f"non_product_members[{index}]")
+        exact_keys(
+            entry,
+            LIFECYCLE_ENTRY_KEYS,
+            f"non_product_members[{index}]",
+        )
         path, _ = normalized_path(
-            root, entry["path"], f"non_product_members[{index}].path"
+            root,
+            entry["path"],
+            f"non_product_members[{index}].path",
         )
         non_product.append(path)
-        require(path in member_set, f"lifecycle path is not a workspace member: {path}")
-        require(path not in default_set, f"default member is classified non-product: {path}")
+        require(
+            path in member_set,
+            f"lifecycle path is not a workspace member: {path}",
+        )
+        require(
+            path not in default_set,
+            f"default member is classified non-product: {path}",
+        )
         classification = text(entry["classification"], f"{path}.classification")
         require(
             classification.startswith("sealed_"),
@@ -436,14 +504,26 @@ def verify(root: Path) -> None:
         )
         reason = text(entry["reason"], f"{path}.reason")
         require(len(reason) >= 32, f"non-product reason is too short: {path}")
-        for replacement in strings(entry["replacement"], f"{path}.replacement", empty=True):
-            _, target = normalized_path(root, replacement, f"{path}.replacement")
-            require(target.exists(), f"replacement path does not exist: {replacement}")
+        for replacement in strings(
+            entry["replacement"],
+            f"{path}.replacement",
+            empty=True,
+        ):
+            _, target = normalized_path(
+                root, replacement, f"{path}.replacement"
+            )
+            require(
+                target.exists(),
+                f"replacement path does not exist: {replacement}",
+            )
 
-    expected_non_product = [member for member in members if member not in default_set]
+    expected_non_product = [
+        member for member in members if member not in default_set
+    ]
     require(
         non_product == expected_non_product,
-        "component lifecycle must exactly follow the non-default workspace member order",
+        "component lifecycle must exactly follow the non-default workspace "
+        "member order",
     )
 
     seen_packages: list[str] = []
@@ -452,7 +532,10 @@ def verify(root: Path) -> None:
         member_text, directory = normalized_path(
             root, member, f"workspace.members[{index}]"
         )
-        require(directory.is_dir(), f"workspace member directory missing: {member_text}")
+        require(
+            directory.is_dir(),
+            f"workspace member directory missing: {member_text}",
+        )
         manifest = directory / "Cargo.toml"
         require(
             manifest.is_file() and not manifest.is_symlink(),
@@ -467,19 +550,28 @@ def verify(root: Path) -> None:
             f"workspace member README missing: {member_text}",
         )
         raw = readme.read_bytes()
-        require(len(raw) >= 256, f"workspace member README truncated: {member_text}")
-        require(len(raw) <= 1 << 20, f"workspace member README is unbounded: {member_text}")
+        require(
+            len(raw) >= 256,
+            f"workspace member README truncated: {member_text}",
+        )
+        require(
+            len(raw) <= 1 << 20,
+            f"workspace member README is unbounded: {member_text}",
+        )
         try:
             prose = raw.decode("utf-8")
         except UnicodeError as error:
             raise VerificationError(
-                f"workspace member README is not UTF-8: {member_text}: {error}"
+                f"workspace member README is not UTF-8: "
+                f"{member_text}: {error}"
             ) from error
 
         try:
-            visible_prose, shell_lines, comment_free_source = markdown_surfaces(
-                prose,
-                f"workspace member README {member_text}",
+            visible_prose, shell_lines, comment_free_source = (
+                markdown_surfaces(
+                    prose,
+                    f"workspace member README {member_text}",
+                )
             )
         except VerificationError as error:
             readme_errors.append(str(error))
@@ -487,7 +579,8 @@ def verify(root: Path) -> None:
 
         if package not in comment_free_source:
             readme_errors.append(
-                f"workspace member README does not identify package {package}: {member_text}"
+                f"workspace member README does not identify package "
+                f"{package}: {member_text}"
             )
 
         command = f"cargo test --locked -p {package} --all-targets"
@@ -509,12 +602,13 @@ def verify(root: Path) -> None:
             for contract in physical_contracts:
                 if contract not in linked_contracts:
                     readme_errors.append(
-                        "active workspace member README missing module contract link "
-                        f"{contract}: {member_text}"
+                        "active workspace member README missing module "
+                        f"contract link {contract}: {member_text}"
                     )
             if not (physical_contracts or linked_contracts):
                 readme_errors.append(
-                    f"active workspace member has no module contract mapping: {member_text}"
+                    f"active workspace member has no module contract "
+                    f"mapping: {member_text}"
                 )
             unknown_contracts = [
                 contract
@@ -523,17 +617,23 @@ def verify(root: Path) -> None:
             ]
             if unknown_contracts:
                 readme_errors.append(
-                    "active workspace member README has unknown module contract links "
-                    f"{unknown_contracts}: {member_text}"
+                    "active workspace member README has unknown module "
+                    f"contract links {unknown_contracts}: {member_text}"
                 )
 
     duplicates = [
-        package for package, count in Counter(seen_packages).items() if count > 1
+        package
+        for package, count in Counter(seen_packages).items()
+        if count > 1
     ]
-    require(not duplicates, f"duplicate workspace package names: {duplicates}")
+    require(
+        not duplicates,
+        f"duplicate workspace package names: {duplicates}",
+    )
     require(
         not readme_errors,
-        "component README contract violations:\n- " + "\n- ".join(readme_errors),
+        "component README contract violations:\n- "
+        + "\n- ".join(readme_errors),
     )
 
 
@@ -548,7 +648,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         verify(args.root)
     except VerificationError as error:
-        print(f"component documentation verification failed: {error}", file=sys.stderr)
+        print(
+            f"component documentation verification failed: {error}",
+            file=sys.stderr,
+        )
         return 1
     print("component documentation verification passed")
     return 0
