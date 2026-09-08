@@ -7,6 +7,7 @@
   "changed_paths": [
     "governance/pr41-review-index.v1.json",
     "tools/build/README.md",
+    "tools/build/_verify_host_reproducibility_core.py",
     "tools/build/verify_host_reproducibility.py",
     "tools/perf/README.md",
     "tools/perf/_run_product_baseline_core.py",
@@ -23,6 +24,11 @@
     },
     {
       "path": "tools/build/README.md",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/build/_verify_host_reproducibility_core.py",
       "previous_path": null,
       "status": "added"
     },
@@ -64,10 +70,10 @@
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 9,
-    "changes_sha256": "bf551f7ad1482ee6f6973c23b654068fd95d47d7e28ebfaa2427246c61625010",
-    "path_count": 9,
-    "paths_sha256": "cf19d6ca0ceac244660a9c6ccc9209b8aa1ff11fcda00539e3314d08463cd5ad"
+    "change_count": 10,
+    "changes_sha256": "563dfd5f5eaa581717ad1206614062bda6360422a6817fd9f80d35b993f2ec3d",
+    "path_count": 10,
+    "paths_sha256": "e4f36de7b592de2be442823296ac013db72efad8afb2da21153e30e5e06be743"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
@@ -77,8 +83,8 @@
   "pull_request": 63,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "288c273ffb8b322daa65c18c10a3be7a0b72c1a9",
-    "tree": "f7cd166b34a00a93acb5372dce4960be125792d9"
+    "commit": "0931af51a8810d14031eedc3843f13a2e0512b4b",
+    "tree": "04008b1bb8db6e8e8633e92784431aa6c6ce38dc"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -102,6 +108,7 @@
       ],
       "paths": [
         "tools/build/README.md",
+        "tools/build/_verify_host_reproducibility_core.py",
         "tools/build/verify_host_reproducibility.py",
         "tools/perf/README.md",
         "tools/perf/_run_product_baseline_core.py",
