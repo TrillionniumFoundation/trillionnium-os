@@ -1,0 +1,81 @@
+name: ChatGPT exact blocker program inventory
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+    paths:
+      - .github/workflows/chatgpt-program-inventory.yml
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+  actions: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Capture exact live inventory
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/inventory"
+          main="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          printf '%s\n' "$main" > "${RUNNER_TEMP}/inventory/main"
+          branches=(
+            codex/perf-harness-isolation-20260908
+            codex/repository-truth-profiles-20260908
+            codex/executable-module-contracts-v1-20260909
+            codex/performance-measurement-v1-20260909
+            codex/observe-shadow-telemetry-v1-20260909
+            external/qualification-protocol-v5-20260909
+            external/qualification-chain-v1-20260909
+          )
+          : > "${RUNNER_TEMP}/inventory/branches.tsv"
+          for branch in "${branches[@]}"; do
+            if value="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${branch//\//%2F}" --jq '.commit.sha' 2>/dev/null)"; then
+              printf '%s\t%s\n' "$branch" "$value" >> "${RUNNER_TEMP}/inventory/branches.tsv"
+            else
+              printf '%s\t%s\n' "$branch" MISSING >> "${RUNNER_TEMP}/inventory/branches.tsv"
+            fi
+          done
+          gh api "repos/${GITHUB_REPOSITORY}/pulls/63" > "${RUNNER_TEMP}/inventory/pr63.json"
+          : > "${RUNNER_TEMP}/inventory/issues.tsv"
+          for issue in 51 52 53 54 55 56 57 58 59 60 61 62 67 68; do
+            printf '%s\t%s\n' "$issue" "$(gh api "repos/${GITHUB_REPOSITORY}/issues/${issue}" --jq '.state')" >> "${RUNNER_TEMP}/inventory/issues.tsv"
+          done
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'inventory'
+          pr=json.loads((root/'pr63.json').read_text())
+          branches=dict(line.split('\t',1) for line in (root/'branches.tsv').read_text().splitlines())
+          issues={int(k):v for k,v in (line.split('\t',1) for line in (root/'issues.tsv').read_text().splitlines())}
+          report={'schema':'org.trillionnium.blocker-program-inventory.v1','main':(root/'main').read_text().strip(),'pr63':{'state':pr.get('state'),'draft':pr.get('draft'),'merged':pr.get('merged'),'head':(pr.get('head')or{}).get('sha'),'base':(pr.get('base')or{}).get('sha'),'mergeable':pr.get('mergeable'),'mergeable_state':pr.get('mergeable_state')},'branches':branches,'issues':issues,'zero_gap':False,'public_release':False}
+          (root/'inventory.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(report,sort_keys=True))
+          PY
+          body="$(python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'inventory/inventory.json').read_text())
+          lines=[f"Exact blocker inventory on main `{r['main']}`.","","| Subject | State / SHA |","|---|---|"]
+          p=r['pr63']; lines.append(f"| PR #63 | state={p['state']}, draft={p['draft']}, merged={p['merged']}, head={p['head']}, mergeable={p['mergeable']}/{p['mergeable_state']} |")
+          for name,value in r['branches'].items(): lines.append(f"| `{name}` | `{value}` |")
+          lines += ["","Issue states: "+", ".join(f"#{k}={v}" for k,v in sorted(r['issues'].items())),"","This inventory grants no target evidence. `zero_gap=false` and `public_release=false` until genuine L2-L6 receipts are independently promoted."]
+          print('\n'.join(lines))
+          PY
+          )"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/51/comments" -f body="$body" >/dev/null
+      - name: Upload inventory
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: blocker-program-inventory-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 30
+          path: ${{ runner.temp }}/inventory
