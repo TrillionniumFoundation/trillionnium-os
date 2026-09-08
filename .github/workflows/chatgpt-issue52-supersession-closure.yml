@@ -1,0 +1,55 @@
+name: ChatGPT issue52 exact supersession closure
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+    paths:
+      - .github/workflows/chatgpt-issue52-supersession-closure.yml
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: chatgpt-issue52-supersession-closure
+  cancel-in-progress: false
+
+jobs:
+  close:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Wait for all four replacement integrations
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS+2700))
+          replacements=(63 64 65 66)
+          while ((SECONDS<deadline)); do
+            complete=true
+            for pr in "${replacements[@]}"; do
+              merged="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merged')"
+              test "$merged" = true || complete=false
+            done
+            if test "$complete" = true; then exit 0; fi
+            sleep 15
+          done
+          exit 1
+      - name: Close the superseded mixed candidate and issue52
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/49" --jq '.state')"
+          if test "$state" = open; then
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/49/comments" -f body='Closed without merge. Its journal, Provider deadline, Host convergence and measurement-harness concerns have independently reviewed replacement integrations in PRs #66, #65, #64 and #63. The retained FAIL_REGRESSION remains evidence for #56 and is not converted to a pass.' >/dev/null
+            gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/49" -f state=closed >/dev/null
+          fi
+          main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/52/comments" -f body="All required split replacements (#63, #64, #65, #66) are protected-main integrations as of ${main_sha}; PR #49 is closed without merge, and its failed performance result remains retained under #56. Issue #52 source split/supersession exit is complete." >/dev/null
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/52" -f state=closed >/dev/null
