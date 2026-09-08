@@ -18,6 +18,7 @@ jobs:
     timeout-minutes: 10
     env:
       SOURCE_SHA: fb196c36fbd6d1ca9978c229b3bd4fecd5f5783e
+      SOURCE_TREE: 202f4509d4deda35db5d0a08528f76110fd183f0
     steps:
       - name: Check out exact source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -30,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "d2ed1a63b0d7dfacdc62e0f915753a0682240dbc"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
           if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
             exit 1
           fi
