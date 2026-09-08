@@ -248,6 +248,23 @@ edition = "2024"
             ):
                 VERIFY.verify(root)
 
+    def test_deep_container_nesting_cannot_escape_html_guard(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            prefix = "> " * 64
+            self.replace_contract_with_container_html(
+                root,
+                prefix + "<div>",
+                prefix,
+                prefix + "</div>",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "raw HTML block opener is forbidden",
+            ):
+                VERIFY.verify(root)
+
     def test_inline_html_after_prose_remains_allowed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
