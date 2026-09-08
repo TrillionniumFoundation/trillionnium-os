@@ -1,0 +1,49 @@
+name: ChatGPT exact-source export
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chatgpt-source-export-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  export:
+    name: Export exact source archive
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact pushed commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Assert clean exact checkout and create archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$GITHUB_SHA"
+          if ! worktree_status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
+          git --no-replace-objects archive --format=tar.gz --output="${RUNNER_TEMP}/trillionnium-os-${GITHUB_SHA}.tar.gz" "$GITHUB_SHA"
+          test -s "${RUNNER_TEMP}/trillionnium-os-${GITHUB_SHA}.tar.gz"
+          sha256sum "${RUNNER_TEMP}/trillionnium-os-${GITHUB_SHA}.tar.gz" > "${RUNNER_TEMP}/trillionnium-os-${GITHUB_SHA}.tar.gz.sha256"
+      - name: Upload exact source archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: chatgpt-source-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/trillionnium-os-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/trillionnium-os-${{ github.sha }}.tar.gz.sha256
