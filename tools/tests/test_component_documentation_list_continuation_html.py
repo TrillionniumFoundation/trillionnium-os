@@ -23,6 +23,21 @@ class ComponentDocumentationListContinuationHtmlTests(unittest.TestCase):
         )
         path.write_text(prose + "\n" + replacement + "\n", encoding="utf-8")
 
+    def replace_required_surfaces(self, root: Path, replacement: str) -> None:
+        path = root / "active/README.md"
+        prose = path.read_text(encoding="utf-8")
+        prose = prose.replace(
+            "[MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)",
+            "MOD-FIXTURE",
+        )
+        prose = prose.replace(
+            "```sh\n"
+            "cargo test --locked -p active-package --all-targets\n"
+            "```",
+            "cargo test",
+        )
+        path.write_text(prose + "\n" + replacement + "\n", encoding="utf-8")
+
     def assert_raw_html_rejected(self, replacement: str) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -31,6 +46,17 @@ class ComponentDocumentationListContinuationHtmlTests(unittest.TestCase):
             with self.assertRaisesRegex(
                 VERIFY.VerificationError,
                 "raw HTML block opener is forbidden",
+            ):
+                VERIFY.verify(root)
+
+    def assert_container_fence_rejected(self, replacement: str) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            self.replace_required_surfaces(root, replacement)
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "container-nested fenced code block is forbidden",
             ):
                 VERIFY.verify(root)
 
@@ -56,6 +82,22 @@ class ComponentDocumentationListContinuationHtmlTests(unittest.TestCase):
             ">     <div>\n"
             ">   [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)\n"
             ">     </div>"
+        )
+
+    def test_blockquote_fenced_example_cannot_supply_required_surfaces(self) -> None:
+        self.assert_container_fence_rejected(
+            "> ```sh\n"
+            "> cargo test --locked -p active-package --all-targets\n"
+            "> [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)\n"
+            "> ```"
+        )
+
+    def test_list_fenced_example_cannot_supply_required_surfaces(self) -> None:
+        self.assert_container_fence_rejected(
+            "- ```sh\n"
+            "  cargo test --locked -p active-package --all-targets\n"
+            "  [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)\n"
+            "  ```"
         )
 
     def test_indented_visible_list_markdown_link_remains_allowed(self) -> None:
