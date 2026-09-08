@@ -1,0 +1,204 @@
+name: ChatGPT external qualification environment audit and executor
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+    paths:
+      - .github/workflows/chatgpt-external-environment-executor.yml
+
+permissions:
+  contents: read
+  actions: write
+  deployments: write
+  issues: write
+
+concurrency:
+  group: chatgpt-external-environment-executor
+  cancel-in-progress: false
+
+jobs:
+  audit-and-execute:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Wait for protected chain source
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS+6000))
+          while ((SECONDS<deadline)); do
+            main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+            chain="$(gh api -H 'Accept: application/vnd.github.raw+json' "repos/${GITHUB_REPOSITORY}/contents/.github/workflows/owner-open-external-qualification-chain-v1.yml?ref=${main_sha}" 2>/dev/null || true)"
+            protocol="$(gh api -H 'Accept: application/vnd.github.raw+json' "repos/${GITHUB_REPOSITORY}/contents/.github/workflows/owner-open-external-qualification-v4.yml?ref=${main_sha}" 2>/dev/null || true)"
+            if grep -q 'workflow_dispatch' <<<"$chain" && grep -q 'workflow_dispatch' <<<"$protocol"; then
+              printf '%s\n' "$main_sha" > "${RUNNER_TEMP}/main"
+              exit 0
+            fi
+            sleep 15
+          done
+          exit 1
+
+      - name: Check out exact protected main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          ref: main
+          persist-credentials: false
+
+      - name: Configure protected environments where administration permits
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$(cat "${RUNNER_TEMP}/main")"
+          mkdir -p "${RUNNER_TEMP}/audit"
+          : > "${RUNNER_TEMP}/audit/environment-status.tsv"
+          for level in l2 l3 l4 l5 l6; do
+            env="owner-open-r5-${level}"
+            payload="$(jq -n '{wait_timer:0,prevent_self_review:true,reviewers:[{type:"User",id:273673612},{type:"User",id:273670192}],deployment_branch_policy:{protected_branches:true,custom_branch_policies:false}}')"
+            set +e
+            response="$(gh api --method PUT "repos/${GITHUB_REPOSITORY}/environments/${env}" --input - <<<"$payload" 2>"${RUNNER_TEMP}/audit/${env}.put.err")"
+            rc=$?
+            set -e
+            if test "$rc" -eq 0; then
+              printf '%s\t%s\n' "$env" configured >> "${RUNNER_TEMP}/audit/environment-status.tsv"
+              jq '.' <<<"$response" > "${RUNNER_TEMP}/audit/${env}.json"
+            else
+              printf '%s\t%s\n' "$env" administration-denied >> "${RUNNER_TEMP}/audit/environment-status.tsv"
+            fi
+          done
+
+      - name: Capture environment variables, runner labels and gap truth
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          main_sha="$(cat "${RUNNER_TEMP}/main")"
+          for level in l2 l3 l4 l5 l6; do
+            env="owner-open-r5-${level}"
+            gh api "repos/${GITHUB_REPOSITORY}/environments/${env}" > "${RUNNER_TEMP}/audit/${env}.read.json" 2>"${RUNNER_TEMP}/audit/${env}.read.err" || true
+            gh api "repos/${GITHUB_REPOSITORY}/environments/${env}/variables?per_page=100" > "${RUNNER_TEMP}/audit/${env}.variables.json" 2>"${RUNNER_TEMP}/audit/${env}.variables.err" || true
+            gh api "repos/${GITHUB_REPOSITORY}/environments/${env}/secrets?per_page=100" --jq '{total_count,secrets:[.secrets[].name]}' > "${RUNNER_TEMP}/audit/${env}.secret-names.json" 2>"${RUNNER_TEMP}/audit/${env}.secrets.err" || true
+          done
+          gh api "repos/${GITHUB_REPOSITORY}/actions/runners?per_page=100" > "${RUNNER_TEMP}/audit/runners.json" 2>"${RUNNER_TEMP}/audit/runners.err" || true
+          gh api "repos/${GITHUB_REPOSITORY}/actions/variables/TRILLIONNIUM_QUALIFICATION_CHAIN_PLAN_JSON" > "${RUNNER_TEMP}/audit/plan-variable.json" 2>"${RUNNER_TEMP}/audit/plan-variable.err" || true
+          cp docs/machine/gap-register.v2.json "${RUNNER_TEMP}/audit/gap-register.v2.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "audit"
+          gaps = json.loads((root / "gap-register.v2.json").read_text())
+          records = gaps.get("gaps", gaps if isinstance(gaps, list) else [])
+          counts = {}
+          for item in records:
+              status = item.get("status", "UNKNOWN")
+              counts[status] = counts.get(status, 0) + 1
+          report = {
+              "schema": "org.trillionnium.external-qualification-prerequisite-audit.v1",
+              "source_commit": (Path(os.environ["RUNNER_TEMP"]) / "main").read_text().strip(),
+              "gap_counts": counts,
+              "zero_gap": False,
+              "public_release": False,
+              "environments": {},
+              "runners_endpoint_available": False,
+              "online_labels": [],
+              "plan_variable_present": False,
+              "ready": False,
+              "missing": [],
+          }
+          required_vars = {
+              "TRILLIONNIUM_QUALIFICATION_ADAPTER",
+              "TRILLIONNIUM_QUALIFICATION_TARGET_ID",
+              "TRILLIONNIUM_QUALIFICATION_OPERATOR_IDENTITY",
+          }
+          for level in ("l2","l3","l4","l5","l6"):
+              name = f"owner-open-r5-{level}"
+              env_path = root / f"{name}.read.json"
+              var_path = root / f"{name}.variables.json"
+              env_value = None
+              variables = set()
+              try: env_value = json.loads(env_path.read_text())
+              except Exception: pass
+              try:
+                  value = json.loads(var_path.read_text())
+                  variables = {item["name"] for item in value.get("variables", [])}
+              except Exception: pass
+              reviewers = []
+              protected_only = False
+              if isinstance(env_value, dict):
+                  for rule in env_value.get("protection_rules", []):
+                      if rule.get("type") == "required_reviewers":
+                          reviewers = sorted(r.get("reviewer", {}).get("login") for r in rule.get("reviewers", []) if r.get("reviewer", {}).get("login"))
+                  policy = env_value.get("deployment_branch_policy") or {}
+                  protected_only = policy.get("protected_branches") is True and policy.get("custom_branch_policies") is False
+              missing_vars = sorted(required_vars - variables)
+              report["environments"][name] = {"exists": isinstance(env_value, dict) and env_value.get("name") == name, "reviewers": reviewers, "protected_branches_only": protected_only, "variables": sorted(variables), "missing_variables": missing_vars}
+              if not report["environments"][name]["exists"]: report["missing"].append(f"{name}:environment")
+              if len(reviewers) < 1: report["missing"].append(f"{name}:required-reviewer")
+              if not protected_only: report["missing"].append(f"{name}:protected-branch-policy")
+              report["missing"].extend(f"{name}:variable:{v}" for v in missing_vars)
+          try:
+              runners = json.loads((root / "runners.json").read_text())
+              report["runners_endpoint_available"] = isinstance(runners, dict) and "runners" in runners
+              labels = set()
+              for runner in runners.get("runners", []):
+                  if runner.get("status") == "online" and runner.get("busy") is False:
+                      labels.update(label.get("name") for label in runner.get("labels", []) if label.get("name"))
+              report["online_labels"] = sorted(labels)
+          except Exception:
+              pass
+          for level in ("l2","l3","l4","l5","l6"):
+              label = f"owner-open-r5-{level}"
+              if label not in report["online_labels"]:
+                  report["missing"].append(f"runner-label:{label}")
+          try:
+              plan = json.loads((root / "plan-variable.json").read_text())
+              report["plan_variable_present"] = bool(plan.get("value"))
+          except Exception:
+              pass
+          if not report["plan_variable_present"]:
+              report["missing"].append("repository-variable:TRILLIONNIUM_QUALIFICATION_CHAIN_PLAN_JSON")
+          report["missing"] = sorted(set(report["missing"]))
+          report["ready"] = not report["missing"]
+          (root / "audit.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          PY
+          jq '.' "${RUNNER_TEMP}/audit/audit.json"
+
+      - name: Publish exact prerequisite audit
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: external-qualification-prerequisite-audit-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 30
+          path: ${{ runner.temp }}/audit
+
+      - name: Dispatch the exact chain only when every real prerequisite exists
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! jq -e '.ready == true' "${RUNNER_TEMP}/audit/audit.json" >/dev/null; then
+            missing="$(jq -c '.missing' "${RUNNER_TEMP}/audit/audit.json")"
+            gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/68/comments" -f body="External qualification prerequisite audit failed closed on protected main $(cat "${RUNNER_TEMP}/main"). Missing: ${missing}. No qualification, evidence promotion, gap transition or release was dispatched." >/dev/null
+            exit 1
+          fi
+          plan="$(jq -r '.value' "${RUNNER_TEMP}/audit/plan-variable.json")"
+          test -n "$plan"
+          workflow=.github/workflows/owner-open-external-qualification-chain-v1.yml
+          if gh workflow run "$workflow" --ref main -f plan_json="$plan"; then
+            :
+          elif gh workflow run "$workflow" --ref main -f qualification_plan_json="$plan"; then
+            :
+          else
+            printf '%s\n' 'chain workflow inputs do not accept the exact configured plan' >&2
+            exit 1
+          fi
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/68/comments" -f body="All external prerequisites were read back and the exact ordered L2-L6 chain was dispatched from protected main $(cat "${RUNNER_TEMP}/main"). No gap is credited until strict intake and independent promotion complete." >/dev/null
