@@ -124,9 +124,11 @@ command or link. Backtick spans retain state across physical lines and close
 only on a maximal run whose length exactly equals the opening delimiter. Fence
 indentation is interpreted in columns with four-column tab stops.
 
-A line-leading raw HTML block opener outside a fenced example is rejected,
-including ordinary element tags, custom tags, declarations, processing
-instructions and CDATA. The verifier does not partially parse raw block HTML,
-because content inside an unrecognised block could otherwise appear to be a
-Markdown fence or link without rendering as one. Ordinary inline HTML following
-prose remains allowed. Put block-HTML examples inside a fenced code block.
+A raw HTML block opener outside a fenced example is rejected at the document
+root and after nested blockquote or bullet/ordered-list container prefixes. This
+covers ordinary element tags, custom tags, declarations, processing instructions
+and CDATA. The verifier does not partially parse raw block HTML, because content
+inside an unrecognised block could otherwise appear to be a Markdown fence or
+link without rendering as one. A genuine Markdown link inside a blockquote or
+list remains visible and valid. Ordinary inline HTML following prose remains
+allowed. Put block-HTML examples inside a fenced code block.
