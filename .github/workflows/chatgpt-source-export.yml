@@ -1,4 +1,4 @@
-name: ChatGPT lifecycle carrier diagnostics
+name: ChatGPT exact source export
 
 on:
   push:
@@ -9,85 +9,41 @@ permissions:
   contents: read
 
 concurrency:
-  group: chatgpt-lifecycle-carrier-diagnostics
+  group: chatgpt-exact-source-export
   cancel-in-progress: true
 
 jobs:
-  diagnose:
+  export:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      CONTROL_BRANCH: ops/chatgpt-source-export-20260908
-      EXPECTED_PATCH_SHA256: 84f0e0c2654147cf2edf9e606c18d9d1d87258a5aab2515c036a43f7fe77aad5
+      SOURCE_SHA: fb196c36fbd6d1ca9978c229b3bd4fecd5f5783e
     steps:
-      - name: Check out exact diagnostic source
+      - name: Check out exact source
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          fetch-depth: 1
-          ref: ${{ github.sha }}
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
-      - name: Recover every verified decompressed byte without applying it
+      - name: Bind and archive clean exact tree
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          import base64
-          import hashlib
-          import json
-          import os
-          from pathlib import Path
-          import zlib
-
-          source = Path('ops/issue54.patch.gz.b64')
-          raw = source.read_text(encoding='ascii')
-          alphabet = frozenset('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
-          encoded = ''.join(ch for ch in raw if ch in alphabet)
-          decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
-          plain = bytearray()
-          failure = None
-          consumed_quads = 0
-          for offset in range(0, len(encoded) - 3, 4):
-              quad = encoded[offset:offset + 4]
-              try:
-                  block = base64.b64decode(quad, validate=True)
-                  plain.extend(decoder.decompress(block))
-              except Exception as exc:
-                  failure = f'{type(exc).__name__}: {exc}'
-                  break
-              consumed_quads += 1
-              if decoder.eof:
-                  plain.extend(decoder.flush())
-                  break
-          patch = Path(os.environ['RUNNER_TEMP']) / 'issue54.partial.patch'
-          patch.write_bytes(plain)
-          lines = plain.count(b'\n')
-          metadata = {
-              'schema': 'org.trillionnium.lifecycle-carrier-diagnostic.v1',
-              'carrier_blob_sha': '319462a96a4299333af1ccf0df2d8e509ed15608',
-              'carrier_character_count': len(raw),
-              'filtered_base64_character_count': len(encoded),
-              'consumed_quads': consumed_quads,
-              'decompressed_bytes': len(plain),
-              'decompressed_lines': lines,
-              'decompressed_sha256': hashlib.sha256(plain).hexdigest(),
-              'expected_complete_sha256': os.environ['EXPECTED_PATCH_SHA256'],
-              'gzip_eof': decoder.eof,
-              'failure': failure,
-              'applied': False,
-              'qualification': False,
-          }
-          meta = Path(os.environ['RUNNER_TEMP']) / 'issue54.partial.metadata.json'
-          meta.write_text(json.dumps(metadata, indent=2, sort_keys=True) + '\n', encoding='utf-8')
-          print(json.dumps(metadata, sort_keys=True))
-          PY
-          test -s "${RUNNER_TEMP}/issue54.partial.patch"
-          python3 -m json.tool "${RUNNER_TEMP}/issue54.partial.metadata.json" >/dev/null
-      - name: Upload non-authorizing reconstruction diagnostic
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "d2ed1a63b0d7dfacdc62e0f915753a0682240dbc"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+          git --no-replace-objects archive --format=tar.gz --output="${RUNNER_TEMP}/repository-truth-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
+          sha256sum "${RUNNER_TEMP}/repository-truth-${SOURCE_SHA}.tar.gz" > "${RUNNER_TEMP}/repository-truth-${SOURCE_SHA}.tar.gz.sha256"
+      - name: Upload exact non-qualifying source export
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: issue54-carrier-diagnostic-${{ github.sha }}
+          name: repository-truth-source-${{ env.SOURCE_SHA }}
           if-no-files-found: error
           retention-days: 1
+          compression-level: 0
           path: |
-            ${{ runner.temp }}/issue54.partial.patch
-            ${{ runner.temp }}/issue54.partial.metadata.json
+            ${{ runner.temp }}/repository-truth-${{ env.SOURCE_SHA }}.tar.gz
+            ${{ runner.temp }}/repository-truth-${{ env.SOURCE_SHA }}.tar.gz.sha256
