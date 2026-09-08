@@ -1,11 +1,11 @@
-name: G1 exact-head and synthetic-merge review-index receipts
+name: G1 legacy review-index migration diagnostic
 
-# Compatibility context only. This workflow intentionally no longer builds a
-# second CI qualification system out of review-index receipts. The retained
-# workflow/job names avoid breaking existing required-check configuration while
-# the repository moves to the three-layer gate model documented below.
+# Manual-only compatibility diagnostic. This workflow does not claim to qualify
+# an exact prospective merge, a closed-world review inventory, integration,
+# promotion, a target, a device or a release. The real prospective-merge source
+# gate is `G1 synthetic-merge qualification` and is consumed by the protected
+# exact-head aggregate.
 on:
-  pull_request:
   workflow_dispatch:
     inputs:
       pr_number:
@@ -26,44 +26,46 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: g1-review-index-receipts-${{ github.event.pull_request.number || inputs.pr_number }}-${{ github.event.pull_request.head.sha || inputs.head_commit }}
+  group: g1-legacy-review-index-${{ inputs.pr_number }}-${{ inputs.head_commit }}
   cancel-in-progress: true
 
 env:
-  SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || inputs.head_commit }}
-  EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_commit }}
-  EVENT_PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
+  SOURCE_HEAD_SHA: ${{ inputs.head_commit }}
+  EVENT_BASE_SHA: ${{ inputs.base_commit }}
+  EVENT_PR_NUMBER: ${{ inputs.pr_number }}
 
 jobs:
-  review-index-receipts:
-    name: L1 exact-head and synthetic-merge closed-world receipt binding
+  source-subject-diagnostic:
+    name: L1 legacy review-index source-subject diagnostic
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Check out pull-request head
+      - name: Check out selected pull-request head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
           ref: ${{ env.SOURCE_HEAD_SHA }}
           persist-credentials: false
-      - name: Verify source subject only
+      - name: Verify bounded source subject only
         run: |
           set -euo pipefail
           [[ "$EVENT_PR_NUMBER" =~ ^[1-9][0-9]{0,8}$ ]]
           [[ "$EVENT_BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
           [[ "$SOURCE_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^{commit})" = "$SOURCE_HEAD_SHA"
           git --no-replace-objects cat-file -e "$EVENT_BASE_SHA^{commit}"
-          if ! worktree_status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+          git --no-replace-objects merge-base --is-ancestor \
+            "$EVENT_BASE_SHA" "$SOURCE_HEAD_SHA"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
             printf '%s\n' 'Cannot verify repository worktree state' >&2
             exit 1
           fi
           test -z "$worktree_status"
-      - name: Explain compatibility context
+      - name: State diagnostic claim ceiling
         run: |
           cat <<'EOF'
-          This check intentionally verifies only immutable source identity.
-          Review-index inventories, synthetic-merge receipts, evidence packets,
-          device qualification, and release authorization are separate promotion
-          concerns and are not recursive prerequisites for ordinary pull requests.
+          This manual diagnostic verifies only source object identity, ancestry
+          and a clean checkout. It is not a review receipt, synthetic-merge
+          qualification, approval, integration authorization, promotion
+          authorization, target observation or public-release authority.
           EOF
