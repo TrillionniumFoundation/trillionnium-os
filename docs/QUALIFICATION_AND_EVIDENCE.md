@@ -56,13 +56,20 @@ repository-controlled L1 source/integration gate. It requires every direct
 source job in its own exact-head workflow and binds the live pull-request base,
 head, repository and clean checkout.
 
-A real deterministic prospective merge is also a direct source/integration
-property. The aggregate therefore requires the newest exact-subject run of
-`G1 synthetic-merge qualification` to be terminal-success and validates its
-source-bound synthetic receipt against the same live base/head tuple, parent
-order, merge commit/tree, lockfile and source checkout. A base/head movement,
-newer run, failed merge, stale artifact, identity mismatch or widened claim
-fails the aggregate.
+A real conflict-checked canonical synthetic merge is also a direct
+source/integration property. The aggregate therefore requires the newest
+exact-subject run of `G1 synthetic-merge qualification` to be terminal-success
+and validates its source-bound receipt against the same live base/head tuple,
+ordered parents, merge tree, canonical merge commit, lockfile and source
+checkout.
+
+The canonical commit is generated with fixed author and committer identities,
+fixed timestamps and timezone, a fixed message, a clean Git configuration, the
+exact merge tree and the ordered base/head parents. Recomputing the same tuple
+must produce the same SHA. GitHub's hidden pull-request merge ref is a mutable
+service-side observation and is not substituted for this canonical decision
+object. A base/head movement, newer run, failed merge, stale artifact, changed
+canonical commit, identity mismatch or widened claim fails the aggregate.
 
 The ordinary source aggregate does not require Android evaluated-matrix,
 evidence-intake, review-index or release receipts merely to prove those other
@@ -70,10 +77,11 @@ workflows ran. Those checks belong to affected source paths or explicit
 promotion/release operations. This separation is defined by
 `CI_GATE_MODEL.md`.
 
-The exact-head and prospective-merge checks remain repository-controlled L1
-source evidence. They are not an external signature and cannot promote a gap.
-A current complete-subject attestation still requires a detached signature under
-an independently administered out-of-repository trust root.
+The exact-head and canonical synthetic-merge checks remain
+repository-controlled L1 source evidence. They are not an external signature
+and cannot promote a gap. A current complete-subject attestation still requires
+a detached signature under an independently administered out-of-repository
+trust root.
 
 ### 2.3 Immutable input snapshots
 
@@ -206,8 +214,9 @@ explicit human authorization.
 ## 8. Current boundary
 
 An ordinary pull request must pass exact-head source checks and a real exact
-prospective-merge source qualification. The protected exact-head aggregate binds
-those source properties to one unchanged live base/head subject.
+canonical synthetic-merge source qualification. The protected exact-head
+aggregate binds those source properties to one unchanged live base/head subject
+and one reproducible two-parent merge commit.
 
 Android evaluated-graph, external evidence intake, physical-device, destructive
 fault, signing and release checks run on the source or promotion paths where
