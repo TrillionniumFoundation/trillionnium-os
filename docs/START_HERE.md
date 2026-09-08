@@ -2,7 +2,7 @@
 
 Status: **ACTIVE CANDIDATE**  
 Program revision: **2026-08-31-g1**  
-Documentation revision: **1.1.0**
+Documentation revision: **1.1.1**
 Semantic authority: **owner-open-semantic-v1**  
 Architecture authority: **modular-control-plane-v1**  
 Machine truth root: [`machine/`](machine/)  
@@ -27,12 +27,13 @@ and compatibility rules.
 2. [`GLOBAL_ARCHITECTURE.md`](GLOBAL_ARCHITECTURE.md) — four-plane architecture, module map and state ownership.
 3. [`GLOBAL_DEVELOPMENT_PROGRAM.md`](GLOBAL_DEVELOPMENT_PROGRAM.md) — current phases, critical path and delivery order.
 4. [`MODULE_DEVELOPMENT_STANDARD.md`](MODULE_DEVELOPMENT_STANDARD.md) — definition of a team-owned module.
-5. [`EFFECT_AND_PROTOCOL_STANDARD.md`](EFFECT_AND_PROTOCOL_STANDARD.md) — identity, durability and no-redispatch rules.
-6. [`PERFORMANCE_AND_OPTIMIZATION.md`](PERFORMANCE_AND_OPTIMIZATION.md) — global objective, SLOs and benchmark gates.
-7. [`TEAM_AND_DELIVERY_MODEL.md`](TEAM_AND_DELIVERY_MODEL.md) — ownership, review and merge-queue policy.
-8. [`OPERATIONS_AND_ROLLOUT.md`](OPERATIONS_AND_ROLLOUT.md) — deployment, leases, migrations, canary and rollback.
-9. [`QUALIFICATION_AND_EVIDENCE.md`](QUALIFICATION_AND_EVIDENCE.md) — L0–L6 evidence and fault qualification.
-10. [`GLOBAL_DEFINITION_OF_DONE.md`](GLOBAL_DEFINITION_OF_DONE.md) — exact completion criteria.
+5. [`CI_GATE_MODEL.md`](CI_GATE_MODEL.md) — source, promotion and release gate separation.
+6. [`EFFECT_AND_PROTOCOL_STANDARD.md`](EFFECT_AND_PROTOCOL_STANDARD.md) — identity, durability and no-redispatch rules.
+7. [`PERFORMANCE_AND_OPTIMIZATION.md`](PERFORMANCE_AND_OPTIMIZATION.md) — global objective, SLOs and benchmark gates.
+8. [`TEAM_AND_DELIVERY_MODEL.md`](TEAM_AND_DELIVERY_MODEL.md) — ownership, review and merge-queue policy.
+9. [`OPERATIONS_AND_ROLLOUT.md`](OPERATIONS_AND_ROLLOUT.md) — deployment, leases, migrations, canary and rollback.
+10. [`QUALIFICATION_AND_EVIDENCE.md`](QUALIFICATION_AND_EVIDENCE.md) — L0–L6 evidence and fault qualification.
+11. [`GLOBAL_DEFINITION_OF_DONE.md`](GLOBAL_DEFINITION_OF_DONE.md) — exact completion criteria.
 
 ## 3. Truth rules
 
