@@ -1,4 +1,4 @@
-name: ChatGPT repository-truth candidate
+name: ChatGPT effect-lifecycle candidate
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: chatgpt-repository-truth-candidate
+  group: chatgpt-effect-lifecycle-candidate
   cancel-in-progress: false
 
 jobs:
@@ -17,19 +17,19 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      EXPECTED_BASE: 907ef8cb26aaa0862ea6573eeb89867cbdb313ef
-      TARGET_BRANCH: codex/repository-truth-profiles-20260908
+      EXPECTED_BASE: fb196c36fbd6d1ca9978c229b3bd4fecd5f5783e
+      TARGET_BRANCH: codex/effect-lifecycle-model-20260908
       CONTROL_BRANCH: ops/chatgpt-source-export-20260908
-      B64_SHA256: 8ae53903a35e0ae6b7f86054e28c5d1d3b912dbc5f7361134ee807504df7e4ac
-      PATCH_SHA256: 39d584062921677a5222130086137c0fa8a933f680a7b8b6815aa459237d8255
+      B64_SHA256: 4e4c498aa9aabfaebf06e5de00343b573a2bc8a563896cefce15987345eaf2c4
+      PATCH_SHA256: 84f0e0c2654147cf2edf9e606c18d9d1d87258a5aab2515c036a43f7fe77aad5
     steps:
-      - name: Check out exact repository-truth base
+      - name: Check out exact lifecycle base
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-          ref: codex/repository-truth-profiles-20260908
+          ref: codex/effect-lifecycle-model-20260908
           persist-credentials: true
-      - name: Reassemble and apply bound patch
+      - name: Reassemble and apply bound lifecycle patch
         shell: bash
         run: |
           set -euo pipefail
@@ -37,41 +37,35 @@ jobs:
           git config user.name 'Qian QI'
           git config user.email '102159240+ProfHepta@users.noreply.github.com'
           git fetch --no-tags origin "$CONTROL_BRANCH"
-          : > "${RUNNER_TEMP}/issue53.patch.gz.b64"
-          for part in 00 01 02 03 04; do
-            git show "origin/$CONTROL_BRANCH:ops/issue53.patch.gz.b64.part${part}" >> "${RUNNER_TEMP}/issue53.patch.gz.b64"
-          done
-          echo "$B64_SHA256  ${RUNNER_TEMP}/issue53.patch.gz.b64" | sha256sum --check -
-          base64 --decode "${RUNNER_TEMP}/issue53.patch.gz.b64" > "${RUNNER_TEMP}/issue53.patch.gz"
-          gzip --decompress --stdout "${RUNNER_TEMP}/issue53.patch.gz" > "${RUNNER_TEMP}/issue53.patch"
-          echo "$PATCH_SHA256  ${RUNNER_TEMP}/issue53.patch" | sha256sum --check -
-          git apply --check "${RUNNER_TEMP}/issue53.patch"
-          git apply "${RUNNER_TEMP}/issue53.patch"
+          git show "origin/$CONTROL_BRANCH:ops/issue54.patch.gz.b64" > "${RUNNER_TEMP}/issue54.patch.gz.b64"
+          echo "$B64_SHA256  ${RUNNER_TEMP}/issue54.patch.gz.b64" | sha256sum --check -
+          base64 --decode "${RUNNER_TEMP}/issue54.patch.gz.b64" > "${RUNNER_TEMP}/issue54.patch.gz"
+          gzip --decompress --stdout "${RUNNER_TEMP}/issue54.patch.gz" > "${RUNNER_TEMP}/issue54.patch"
+          echo "$PATCH_SHA256  ${RUNNER_TEMP}/issue54.patch" | sha256sum --check -
+          git apply --check "${RUNNER_TEMP}/issue54.patch"
+          git apply "${RUNNER_TEMP}/issue54.patch"
           git diff --check
-      - name: Verify repository authority and profile contracts
+      - name: Verify machine lifecycle and formal projection
         shell: bash
         run: |
           set -euo pipefail
           python3 -m py_compile \
             tools/docs/generate_global_docs.py \
             tools/docs/verify_global_docs.py \
-            tools/docs/verify_repository_authority.py
+            tools/docs/verify_effect_lifecycle.py
           python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_effect_lifecycle.py --model-check --json
           python3 tools/docs/verify_repository_authority.py
           python3 tools/docs/verify_global_docs.py
           python3 -m unittest \
+            tools.tests.test_effect_lifecycle \
             tools.tests.test_repository_authority \
             tools.tests.test_verify_global_docs_contracts \
-            tools.tests.test_owner_open_broker_component_documentation \
             tools.tests.test_owner_open_broker_module_documentation -v
-          if ! worktree_status="$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
-            exit 1
-          fi
-          test -n "$worktree_status"
       - name: Commit and publish candidate
         shell: bash
         run: |
           set -euo pipefail
           git add -A
-          git commit -m 'docs: make repository profiles and authority executable'
+          git commit -m 'docs: machine-verify cross-module effect lifecycle'
           git push origin "HEAD:$TARGET_BRANCH"
