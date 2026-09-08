@@ -1,0 +1,194 @@
+name: ChatGPT PR63 methodology blocker repair v2
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-pr63-methodology-repair
+  cancel-in-progress: true
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TARGET_BRANCH: codex/perf-harness-isolation-20260908
+      CONTROL_BRANCH: ops/chatgpt-source-export-20260908
+      PR_NUMBER: '63'
+    steps:
+      - name: Check out live PR63 head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+          persist-credentials: true
+
+      - name: Apply or verify the exact methodology repair
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          live_head="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$live_head"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+
+          if ! grep -q 'org.trillionnium.product-measurement-implementation.v1' tools/perf/_run_product_baseline_core.py; then
+            git fetch --no-tags origin "$CONTROL_BRANCH"
+            git show "origin/$CONTROL_BRANCH:.github/workflows/chatgpt-pr63-methodology-repair.yml" > "${RUNNER_TEMP}/repair.yml"
+            python3 - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path("${RUNNER_TEMP}/repair.yml")
+          raw = workflow.read_text(encoding="utf-8")
+          start_marker = "          python3 - <<'PY'\n"
+          end_marker = "          PY\n\n          git diff --check"
+          start = raw.find(start_marker)
+          end = raw.find(end_marker, start + len(start_marker))
+          if start < 0 or end < 0:
+              raise SystemExit("cannot extract bound repair program")
+          program = textwrap.dedent(raw[start + len(start_marker):end])
+          anchor = '          perf_core = read(perf_core_path)\n'
+          replacement = '''          perf_core = read(perf_core_path)\n          if "import re\\n" not in perf_core:\n              for import_anchor in ("import os\\n", "import math\\n", "import json\\n"):\n                  if import_anchor in perf_core:\n                      perf_core = perf_core.replace(import_anchor, import_anchor + "import re\\n", 1)\n                      break\n              else:\n                  raise SystemExit("cannot add re import to performance core")\n'''
+          if anchor not in program:
+              raise SystemExit("repair-program performance anchor drifted")
+          program = program.replace(anchor, replacement, 1)
+          namespace = {"__name__": "__main__"}
+          exec(compile(program, "pr63-methodology-repair", "exec"), namespace, namespace)
+          PY
+          fi
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          for relative, marker in (
+              ("tools/tests/test_run_product_baseline.py", "class MeasurementMethodIdentityTests"),
+              ("tools/tests/test_verify_host_reproducibility.py", "class ReproducibilityMethodIdentityTests"),
+          ):
+              path = Path(relative)
+              text = path.read_text(encoding="utf-8")
+              if marker not in text:
+                  raise SystemExit(f"missing methodology tests in {relative}")
+              class_index = text.index(marker)
+              prefix, suffix = text[:class_index], text[class_index:]
+              helper_name = "_load_policy_module"
+              suffix = suffix.replace("module = load_module()", f"module = {helper_name}()")
+              if f"def {helper_name}():" not in prefix:
+                  script = (
+                      "tools/perf/run_product_baseline.py"
+                      if "run_product" in relative
+                      else "tools/build/verify_host_reproducibility.py"
+                  )
+                  helper = f'''\ndef {helper_name}():\n    import importlib.util\n    import sys\n    import uuid\n    script = Path(__file__).resolve().parents[2] / {script!r}\n    name = "_method_identity_" + uuid.uuid4().hex\n    spec = importlib.util.spec_from_file_location(name, script)\n    if spec is None or spec.loader is None:\n        raise RuntimeError(f"cannot load {{script}}")\n    module = importlib.util.module_from_spec(spec)\n    sys.modules[name] = module\n    try:\n        spec.loader.exec_module(module)\n    finally:\n        sys.modules.pop(name, None)\n    return module\n\n\n'''
+                  prefix += helper
+              path.write_text(prefix + suffix, encoding="utf-8")
+          PY
+
+          git diff --check
+          python3 -m py_compile \
+            tools/perf/run_product_baseline.py \
+            tools/perf/_run_product_baseline_core.py \
+            tools/build/verify_host_reproducibility.py \
+            tools/build/_verify_host_reproducibility_core.py \
+            tools/tests/test_run_product_baseline.py \
+            tools/tests/test_verify_host_reproducibility.py
+          python3 -m unittest \
+            tools.tests.test_run_product_baseline \
+            tools.tests.test_product_baseline_process_group_cleanup \
+            tools.tests.test_verify_host_reproducibility -v
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+
+      - name: Publish one repaired head when needed
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            printf '%s\n' 'methodology repair already present and verified'
+            exit 0
+          fi
+          expected_paths="$(printf '%s\n' \
+            tools/build/README.md \
+            tools/build/_verify_host_reproducibility_core.py \
+            tools/perf/README.md \
+            tools/perf/_run_product_baseline_core.py \
+            tools/tests/test_run_product_baseline.py \
+            tools/tests/test_verify_host_reproducibility.py | sort)"
+          actual_paths="$(git diff --name-only | sort)"
+          test "$actual_paths" = "$expected_paths"
+          old_head="$(git --no-replace-objects rev-parse HEAD)"
+          old_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add $actual_paths
+          git commit -m 'perf: bind measurement method and fixed gate policy'
+          new_head="$(git --no-replace-objects rev-parse HEAD)"
+          new_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          git push origin "HEAD:$TARGET_BRANCH"
+
+          base_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.sha')"
+          base_tree="$(git --no-replace-objects rev-parse "${base_sha}^{tree}")"
+          merge_sha=""
+          for _ in $(seq 1 20); do
+            observed_head="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+            test "$observed_head" = "$new_head"
+            merge_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.merge_commit_sha // empty')"
+            test -n "$merge_sha" && break
+            sleep 1
+          done
+          test -n "$merge_sha"
+
+          cat > "${RUNNER_TEMP}/body.md" <<EOF
+          Parent work: #52, #56
+          Source extraction: performance/reproducibility tooling from blocked PR #49
+
+          ## Exact subject
+
+          \`\`\`text
+          base branch:               main
+          base commit:               ${base_sha}
+          base tree:                 ${base_tree}
+          review predecessor:        ${old_head}
+          review predecessor tree:   ${old_tree}
+          head commit:               ${new_head}
+          head tree:                 ${new_tree}
+          GitHub prospective merge:  ${merge_sha}
+          changed paths from base:   10
+          \`\`\`
+
+          Any base/head/tree/prospective-merge, workflow or review-surface movement invalidates current qualification and review.
+
+          ## Purpose
+
+          Extract the real local Host/Core measurement harness and same-host reproducibility checker from blocked PR #49 without carrying unrelated runtime behavior, component documentation or a performance-pass claim.
+
+          ## Closed methodology identity
+
+          Performance comparison now binds a closed manifest containing repository-relative path, byte size and SHA-256 for the public facade, private workload core and imported process-group supervisor. Host reproducibility reports bind the corresponding facade/core/supervisor manifest. Changing any behavior-bearing member changes the method identity and makes prior artifacts incompatible.
+
+          The maximum regression percentage is fixed by a versioned, reviewed policy. The CLI value is assertion-only, must equal that policy, and the policy identity participates in baseline compatibility. A caller cannot weaken the threshold to convert a failed comparison into a pass.
+
+          ## Verification
+
+          Before publication this repair passed Python compilation; the product baseline, retained-process-group and Host reproducibility suites; repository-authority verification; and global-document verification. The current exact-head and canonical synthetic-merge workflow families must now complete on the unchanged tuple before fresh non-author review.
+
+          ## Claim ceiling
+
+          This PR establishes source-level measurement and reproducibility method integrity only. It asserts no performance pass and grants no installed Root Linux, Android, physical-device, destructive-fault, independent-builder, signing, OTA or public-release evidence. PR #49's retained \`FAIL_REGRESSION\` remains tracked by #56.
+
+          Fresh exact-head review is required from \`Tomasrgbsf\` for methodology and \`Franksudoman\` for exact-subject/evidence boundaries after all current workflows are terminal.
+          EOF
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" -f body="$(cat "${RUNNER_TEMP}/body.md")" >/dev/null
+          gh api graphql -f query='mutation($id:ID!){convertPullRequestToDraft(input:{pullRequestId:$id}){pullRequest{number}}}' -f id="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.node_id')" >/dev/null || true
