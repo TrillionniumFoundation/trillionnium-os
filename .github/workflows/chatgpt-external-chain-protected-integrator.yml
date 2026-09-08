@@ -1,0 +1,144 @@
+name: ChatGPT protected external qualification chain integrator
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+    paths:
+      - .github/workflows/chatgpt-external-chain-protected-integrator.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: chatgpt-external-chain-protected-integrator
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      SOURCE_BRANCH: external/qualification-chain-v1-20260909
+      TARGET_BRANCH: external/qualification-chain-v2-20260909
+    steps:
+      - name: Wait for protected protocol integration
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS+5400))
+          while ((SECONDS<deadline)); do
+            main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+            q="$(gh api -H 'Accept: application/vnd.github.raw+json' "repos/${GITHUB_REPOSITORY}/contents/.github/workflows/owner-open-external-qualification-v4.yml?ref=${main_sha}" 2>/dev/null || true)"
+            i="$(gh api -H 'Accept: application/vnd.github.raw+json' "repos/${GITHUB_REPOSITORY}/contents/.github/workflows/owner-open-external-evidence-intake-v4.yml?ref=${main_sha}" 2>/dev/null || true)"
+            if grep -q 'workflow_dispatch' <<<"$q" && grep -q 'VERIFIED_NOT_PROMOTED' <<<"$i"; then printf '%s\n' "$main_sha" > "${RUNNER_TEMP}/base"; exit 0; fi
+            sleep 15
+          done
+          exit 1
+
+      - name: Check out exact current main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: true
+
+      - name: Extract frozen chain delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"; test "$(git rev-parse HEAD)" = "$base"
+          git ls-remote --exit-code --heads origin "$SOURCE_BRANCH" >/dev/null
+          git fetch --no-tags origin "$SOURCE_BRANCH"
+          source_head="$(git rev-parse "origin/${SOURCE_BRANCH}^{commit}")"; source_tree="$(git rev-parse "${source_head}^{tree}")"; source_base="$(git merge-base "$base" "$source_head")"
+          git diff --name-only "$source_base..$source_head" > "${RUNNER_TEMP}/paths"; test -s "${RUNNER_TEMP}/paths"
+          if grep -E '^(ops/|\.github/workflows/chatgpt-|governance/pr41-review-index)' "${RUNNER_TEMP}/paths"; then exit 1; fi
+          git diff --binary "$source_base..$source_head" > "${RUNNER_TEMP}/chain.patch"
+          printf '%s\n' "$source_head" > "${RUNNER_TEMP}/source-head"; printf '%s\n' "$source_tree" > "${RUNNER_TEMP}/source-tree"; printf '%s\n' "$source_base" > "${RUNNER_TEMP}/source-base"
+          git switch -c "$TARGET_BRANCH"; git apply --3way --index "${RUNNER_TEMP}/chain.patch"; git diff --cached --check
+          git config user.name 'Qian QI'; git config user.email '102159240+ProfHepta@users.noreply.github.com'; git commit -m 'qualification: add ordered L2-L6 execution and intake chain'
+
+      - name: Verify exact ordered chain and no automatic promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f tools/qualification/run_external_chain.py
+          test -f .github/workflows/owner-open-external-qualification-chain-v1.yml
+          grep -q 'L2' tools/qualification/run_external_chain.py; grep -q 'L6' tools/qualification/run_external_chain.py
+          grep -Rqs 'automatic_redispatch.*false\|"automatic_redispatch"[[:space:]]*:[[:space:]]*false' tools/qualification .github/workflows/owner-open-external-qualification-chain-v1.yml
+          grep -Rqs 'VERIFIED_NOT_PROMOTED' tools/qualification .github/workflows/owner-open-external-qualification-chain-v1.yml
+          grep -Rqs 'public_release.*false\|"public_release"[[:space:]]*:[[:space:]]*false' tools/qualification .github/workflows/owner-open-external-qualification-chain-v1.yml
+          python3 -m py_compile tools/qualification/*.py
+          mapfile -t tests < <(find tools/tests -maxdepth 1 -type f \( -iname '*external*chain*.py' -o -iname '*qualification*chain*.py' \) -printf '%f\n'|sed 's/\.py$//'|sort -u); test "${#tests[@]}" -gt 0; modules=(); for t in "${tests[@]}"; do modules+=("tools.tests.${t}"); done; python3 -m unittest "${modules[@]}" -v
+          python3 tools/docs/generate_global_docs.py --check; python3 tools/docs/verify_repository_authority.py; python3 tools/docs/verify_global_docs.py
+          if ! status="$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then exit 1; fi; test -z "$status"
+
+      - name: Publish exact draft chain PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"; source_head="$(cat "${RUNNER_TEMP}/source-head")"; source_tree="$(cat "${RUNNER_TEMP}/source-tree")"; source_base="$(cat "${RUNNER_TEMP}/source-base")"; head="$(git rev-parse HEAD)"; tree="$(git rev-parse HEAD^{tree})"
+          git push origin "HEAD:$TARGET_BRANCH"
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=all&head=${GITHUB_REPOSITORY_OWNER}%3A${TARGET_BRANCH}" --jq '.[0].number // empty')"; if test -z "$pr"; then pr="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls" -f title='qualification: add ordered L2-L6 execution and intake chain' -f head="$TARGET_BRANCH" -f base=main -F draft=true -f body='Exact L2-L6 chain-controller candidate.' --jq '.number')"; fi
+          printf '%s\n' "$pr" > "${RUNNER_TEMP}/pr"; printf '%s\n' "$head" > "${RUNNER_TEMP}/head"
+          merge_sha=""; for _ in $(seq 1 30); do merge_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merge_commit_sha // empty')"; test -n "$merge_sha" && break; sleep 1; done; test -n "$merge_sha"
+          base_tree="$(git rev-parse "${base}^{tree}")"; count="$(git diff --name-only "$base...$head"|wc -l|tr -d ' ')"
+          cat > "${RUNNER_TEMP}/body.md" <<EOF
+          Parent program: #51
+          External evidence umbrella: #22, #67, #68
+
+          ## Exact subject
+
+          \`\`\`text
+          base:                    main@${base}
+          base tree:               ${base_tree}
+          source candidate:        ${source_head}
+          source candidate tree:   ${source_tree}
+          source merge base:       ${source_base}
+          head:                    ${head}
+          head tree:               ${tree}
+          GitHub prospective merge:${merge_sha}
+          changed paths:           ${count}
+          \`\`\`
+
+          ## Ordered execution
+
+          The controller executes qualification then strict intake in the only legal order \`L2 → L3 → L4 → L5 → L6\`. Every level consumes exact prior intake run/attempt/job/artifact/receipt identities, uses a distinct nonce, stops on first failure and never automatically redispatches, edits gaps, promotes evidence or enables public release. The terminal result is only \`L2_L6_RECEIPTS_AND_INTAKES_VERIFIED_NOT_PROMOTED\`.
+
+          ## Claim ceiling
+
+          Integrating this controller does not prove any external target exists or that any level ran. Genuine protected-environment approvals, independently operated targets/devices/fault rigs/signers and subsequent evidence-promotion review remain mandatory. Fresh exact-head review by \`Tomasrgbsf\` and \`Franksudoman\` is required.
+          EOF
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f body="$(cat "${RUNNER_TEMP}/body.md")" >/dev/null
+
+      - name: Qualify, review and merge normally
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pr="$(cat "${RUNNER_TEMP}/pr")"; head="$(cat "${RUNNER_TEMP}/head")"; required=('L1 graph, documentation, broker and MCP source closure' 'L1 Rust 1.93 selected Host, job, flow and recovery closure' 'L1 exact-head direct-source aggregate' 'L1 exact two-parent merge source qualification' 'L1 exact-source-head aggregate candidate' 'L1 protected-main and exact-head independent-review readiness')
+          deadline=$((SECONDS+2100)); passed=false
+          while ((SECONDS<deadline)); do test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"; gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${head}/check-runs?per_page=100" --jq '.check_runs[]|[.name,.status,(.conclusion//""),.id]|@tsv' > "${RUNNER_TEMP}/checks"; if python3 - "${RUNNER_TEMP}/checks" "${required[@]}" <<'PY'
+          from pathlib import Path
+          import sys
+          latest={}
+          for line in Path(sys.argv[1]).read_text().splitlines(): n,s,c,i=line.split('\t'); v=(int(i),s,c); latest[n]=max(latest.get(n,(0,'','')),v)
+          failed=[n for n,(_,s,c) in latest.items() if s=='completed' and c not in {'success','neutral','skipped'}]
+          if failed: raise SystemExit(2)
+          if not all(latest.get(n,(0,'',''))[1:]==('completed','success') for n in sys.argv[2:]): raise SystemExit(1)
+          PY
+            then passed=true; break; else rc=$?; test "$rc" -ne 2 || exit 1; fi; sleep 15; done; test "$passed" = true
+          node="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.node_id')"; gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -f id="$node" >/dev/null; gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls/${pr}/requested_reviewers" -f reviewers[]='Tomasrgbsf' -f reviewers[]='Franksudoman' >/dev/null
+          deadline=$((SECONDS+1200)); states=''; while ((SECONDS<deadline)); do test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"; states="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr}/reviews?per_page=100" --jq '.[]|select(.commit_id=="'"$head"'")|[.user.login,.state,.id]|@tsv'|sort -k1,1 -k3,3n|awk -F'\t' '$1=="Tomasrgbsf"||$1=="Franksudoman"{s[$1]=$2} END{print s["Tomasrgbsf"],s["Franksudoman"]}')"; test "$states" = 'APPROVED APPROVED' && break; sleep 15; done; test "$states" = 'APPROVED APPROVED'
+          unresolved="$(gh api graphql -f owner="${GITHUB_REPOSITORY_OWNER}" -f name="${GITHUB_REPOSITORY#*/}" -F number="$pr" -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}' --jq '[.data.repository.pullRequest.reviewThreads.nodes[]|select(.isResolved==false)]|length')"; test "$unresolved" = 0
+          result="$(gh api --method PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/merge" -f merge_method=squash -f sha="$head" -f commit_title='qualification: add ordered L2-L6 execution chain' -f commit_message='Integrate the fail-closed controller only. No external evidence, gap transition or public release is claimed.')"; jq -e '.merged==true'<<<"$result" >/dev/null
+          merge_sha="$(jq -r '.sha'<<<"$result")"; for issue in 22 58 59 60 61 62 67 68; do gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${issue}/comments" -f body="Ordered qualification/intake chain source integrated at ${merge_sha}. Execution remains blocked until exact protected environments, independent operators and real targets exist." >/dev/null; done
