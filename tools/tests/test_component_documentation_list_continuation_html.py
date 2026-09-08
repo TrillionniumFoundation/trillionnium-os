@@ -38,6 +38,16 @@ class ComponentDocumentationListContinuationHtmlTests(unittest.TestCase):
         )
         path.write_text(prose + "\n" + replacement + "\n", encoding="utf-8")
 
+    def replace_required_command(self, root: Path, replacement: str) -> None:
+        path = root / "active/README.md"
+        prose = path.read_text(encoding="utf-8").replace(
+            "```sh\n"
+            "cargo test --locked -p active-package --all-targets\n"
+            "```",
+            replacement,
+        )
+        path.write_text(prose, encoding="utf-8")
+
     def assert_raw_html_rejected(self, replacement: str) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -57,6 +67,17 @@ class ComponentDocumentationListContinuationHtmlTests(unittest.TestCase):
             with self.assertRaisesRegex(
                 VERIFY.VerificationError,
                 "container-nested fenced code block is forbidden",
+            ):
+                VERIFY.verify(root)
+
+    def assert_invalid_backtick_info_rejected(self, replacement: str) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            self.replace_required_command(root, replacement)
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "backtick fenced-code info string contains a backtick",
             ):
                 VERIFY.verify(root)
 
@@ -99,6 +120,48 @@ class ComponentDocumentationListContinuationHtmlTests(unittest.TestCase):
             "  [MOD-FIXTURE](../docs/modules/MOD-FIXTURE.md)\n"
             "  ```"
         )
+
+    def test_backtick_in_three_tick_fence_info_cannot_supply_command(self) -> None:
+        self.assert_invalid_backtick_info_rejected(
+            "```sh `\n"
+            "cargo test --locked -p active-package --all-targets\n"
+            "```"
+        )
+
+    def test_backtick_in_long_fence_info_with_extra_tokens_is_rejected(self) -> None:
+        self.assert_invalid_backtick_info_rejected(
+            "`````bash fixture`mode extra\n"
+            "cargo test --locked -p active-package --all-targets\n"
+            "`````"
+        )
+
+    def test_container_invalid_backtick_fence_is_rejected_before_credit(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            self.replace_required_command(
+                root,
+                "> ```sh `\n"
+                "> cargo test --locked -p active-package --all-targets\n"
+                "> ```",
+            )
+            with self.assertRaisesRegex(
+                VERIFY.VerificationError,
+                "backtick fenced-code info string contains a backtick",
+            ):
+                VERIFY.verify(root)
+
+    def test_tilde_fence_info_may_contain_backtick(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            self.write_fixture(root)
+            self.replace_required_command(
+                root,
+                "~~~sh `literal-info\n"
+                "cargo test --locked -p active-package --all-targets\n"
+                "~~~",
+            )
+            VERIFY.verify(root)
 
     def test_indented_visible_list_markdown_link_remains_allowed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

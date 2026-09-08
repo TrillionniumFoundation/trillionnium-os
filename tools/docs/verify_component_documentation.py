@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Stable CLI facade for the component-documentation verifier.
 
-The reviewed core remains byte-identical. This facade adds two deliberately
+The reviewed core remains byte-identical. This facade adds three deliberately
 smaller accepted-subset rules:
 
 * outside fenced examples, a raw HTML block opener is rejected after both
   physical-line container markers and any continuation indentation;
 * a fenced block beginning after a blockquote/list marker is rejected rather
-  than partially parsed by the root-level-only core.
+  than partially parsed by the root-level-only core;
+* a backtick fence whose info string contains a backtick is rejected before it
+  can supply shell-command or documentation credit.
 
-These fail-closed rules prevent list continuation state or container-nested code
-examples from making literal Markdown-looking links or shell commands count as
-rendered documentation.
+These fail-closed rules prevent list continuation state, container-nested code
+examples or invalid CommonMark fence syntax from making literal
+Markdown-looking links or shell commands count as rendered documentation.
 """
 from __future__ import annotations
 
@@ -32,8 +34,30 @@ SPEC.loader.exec_module(CORE)
 _ORIGINAL_MARKDOWN_SURFACES = CORE.markdown_surfaces
 
 
+def _validated_fence_open(
+    line: str, label: str, line_number: int
+) -> Any | None:
+    """Recognize only the root/container fence subset we intentionally accept.
+
+    CommonMark forbids a backtick in the info string of a backtick fence. Tilde
+    fences have no equivalent prohibition, so they remain accepted and are
+    passed to the reviewed core unchanged.
+    """
+    match = CORE.FENCE_OPEN.fullmatch(line)
+    if match is None:
+        return None
+    marker = match.group("marker")
+    info = match.group("info")
+    if marker.startswith("`") and "`" in info:
+        raise CORE.VerificationError(
+            f"{label}: line {line_number} backtick fenced-code "
+            "info string contains a backtick"
+        )
+    return match
+
+
 def _reject_unsupported_markdown(prose: str, label: str) -> None:
-    """Reject ambiguous continuation HTML and container-nested fences."""
+    """Reject ambiguous continuation HTML and unsupported fenced blocks."""
     source = CORE.strip_html_comments(prose, label)
     marker_character: str | None = None
     marker_length = 0
@@ -49,16 +73,19 @@ def _reject_unsupported_markdown(prose: str, label: str) -> None:
                     f"{label}: line {line_number} raw HTML block opener is forbidden"
                 )
 
+            container_match = _validated_fence_open(
+                normalized, label, line_number
+            )
             # The reviewed core intentionally parses root-level fences only.
             # Reject a fence that begins after an explicit blockquote/list
             # marker instead of allowing its contents to be scanned as prose.
-            if had_container_prefix and CORE.FENCE_OPEN.fullmatch(normalized):
+            if had_container_prefix and container_match is not None:
                 raise CORE.VerificationError(
                     f"{label}: line {line_number} "
                     "container-nested fenced code block is forbidden"
                 )
 
-            match = CORE.FENCE_OPEN.fullmatch(line)
+            match = _validated_fence_open(line, label, line_number)
             if match is not None:
                 marker = match.group("marker")
                 marker_character = marker[0]
