@@ -15,6 +15,7 @@ const MAX_INSPECT_FRAMES: usize = 4096;
 #[derive(Debug, Clone)]
 pub enum StoredTurn {
     Empty,
+    Unavailable(String),
     Complete(Vec<RunTurnFrame>),
     Incomplete(Vec<RunTurnFrame>),
     Conflict(String),
@@ -45,6 +46,7 @@ pub struct Persistence {
     store: Option<EventStoreBackend>,
     configured: bool,
     error: Option<String>,
+    allow_unjournaled_effects: bool,
 }
 
 #[derive(Debug)]
@@ -85,6 +87,7 @@ impl Persistence {
             store: None,
             configured: false,
             error: None,
+            allow_unjournaled_effects: false,
         }
     }
 
@@ -98,11 +101,13 @@ impl Persistence {
                 store: Some(EventStoreBackend::Legacy(Box::new(store))),
                 configured: true,
                 error: None,
+                allow_unjournaled_effects: false,
             },
             Err(error) => Self {
                 store: None,
                 configured: true,
                 error: Some(error.to_string()),
+                allow_unjournaled_effects: false,
             },
         }
     }
@@ -137,6 +142,7 @@ impl Persistence {
                     store: None,
                     configured: true,
                     error: Some(error.to_string()),
+                    allow_unjournaled_effects: false,
                 };
             }
         };
@@ -149,6 +155,7 @@ impl Persistence {
             store: Some(EventStoreBackend::Segmented(Box::new(segmented))),
             configured: true,
             error: None,
+            allow_unjournaled_effects: false,
         }
     }
 
@@ -166,6 +173,9 @@ impl Persistence {
 
     #[must_use]
     pub fn status(&self) -> &'static str {
+        if self.error.is_some() {
+            return "unavailable";
+        }
         match (&self.store, self.configured) {
             (Some(_), _) => "durable",
             (None, true) => "unavailable",
@@ -180,11 +190,36 @@ impl Persistence {
 
     #[must_use]
     pub fn is_durable(&self) -> bool {
-        self.store.is_some()
+        self.store.is_some() && self.error.is_none()
+    }
+
+    /// Explicit source-development mode only. A configured failed store can
+    /// never be downgraded to this mode, even when the option is enabled.
+    pub fn allow_unjournaled_effects(&mut self, allow: bool) {
+        self.allow_unjournaled_effects = allow;
+    }
+
+    #[must_use]
+    pub fn effect_admission_error(&self) -> Option<String> {
+        if self.is_durable() || (!self.configured && self.allow_unjournaled_effects) {
+            None
+        } else {
+            Some(self.error.clone().unwrap_or_else(|| {
+                "direct effects require a durable event store; memory-only source experiments require --allow-unjournaled-effects-for-development".to_string()
+            }))
+        }
     }
 
     pub fn load(&self, scope: &TurnScope, request_sha256: &str) -> StoredTurn {
+        if let Some(error) = &self.error {
+            return StoredTurn::Unavailable(error.clone());
+        }
         let Some(store) = &self.store else {
+            if self.configured {
+                return StoredTurn::Unavailable(
+                    "configured event store is unavailable".to_string(),
+                );
+            }
             return StoredTurn::Empty;
         };
         let records = match store.replay(scope) {
@@ -253,7 +288,7 @@ impl Persistence {
         inclusive_cursor: u64,
         limit: usize,
     ) -> StoredInspection {
-        if self.store.is_none() {
+        if !self.is_durable() {
             return StoredInspection::Unavailable {
                 status: self.status().to_string(),
                 error: self.error.clone(),
@@ -270,6 +305,12 @@ impl Persistence {
             StoredTurn::Complete(frames) => (frames, true),
             StoredTurn::Incomplete(frames) => (frames, false),
             StoredTurn::Conflict(error) => return StoredInspection::Conflict(error),
+            StoredTurn::Unavailable(error) => {
+                return StoredInspection::Unavailable {
+                    status: self.status().to_string(),
+                    error: Some(error),
+                };
+            }
         };
         let total_events = match u64::try_from(frames.len()) {
             Ok(value) => value,
@@ -312,15 +353,15 @@ impl Persistence {
     }
 
     /// Returns true only when the frame is durably present or an exact
-    /// duplicate was already present. A failure disables further durable use;
-    /// the caller may continue the owner-open turn as unreplayable.
+    /// duplicate was already present. Failure fences further effects and
+    /// retains writer custody until this Persistence is dropped.
     pub fn append_frame(
         &mut self,
         scope: &TurnScope,
         request_sha256: &str,
         frame: &RunTurnFrame,
     ) -> bool {
-        if self.store.is_none() {
+        if !self.is_durable() {
             return false;
         }
         let Some(event_id) = frame.event_id.clone() else {
@@ -369,7 +410,8 @@ impl Persistence {
     }
 
     fn disable(&mut self, error: String) {
-        self.store = None;
+        // Keep the writer lock/descriptor alive. An error is not permission
+        // for another instance to assume ownership of ambiguous history.
         self.configured = true;
         self.error = Some(error);
     }
@@ -412,6 +454,8 @@ fn is_authority_frame(kind: &str) -> bool {
     matches!(
         kind,
         "turn.accepted"
+            | "tool.accepted"
+            | "tool.result"
             | "turn.end"
             | "turn.cancel.accepted"
             | "turn.cancelled"

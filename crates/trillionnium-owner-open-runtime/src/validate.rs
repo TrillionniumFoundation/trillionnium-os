@@ -8,10 +8,16 @@ use crate::types::{
     ProcessSpec, Result, RuntimeError, ShellExecRequest, ShellInvocation, ToolKind,
 };
 
-pub(crate) fn shell_spec(
-    request: ShellExecRequest,
+/// Validate every mechanical shell-request field without allocating process or
+/// PTY resources and without publishing an acceptance observation.
+///
+/// The public runtime entry points use this borrowed preflight before their
+/// synchronous durable-admission callback. `shell_spec` repeats the same pure
+/// checks while consuming the request so internal callers cannot bypass them.
+pub(crate) fn validate_shell_request(
+    request: &ShellExecRequest,
     limits: &MechanicalLimits,
-) -> Result<ProcessSpec> {
+) -> Result<()> {
     limits.validate()?;
     validate_common_request(
         &request.call_id,
@@ -22,7 +28,7 @@ pub(crate) fn shell_spec(
         limits,
     )?;
 
-    let (program, args) = match &request.invocation {
+    match &request.invocation {
         ShellInvocation::Command(command) => {
             validate_scalar(
                 command,
@@ -36,18 +42,28 @@ pub(crate) fn shell_spec(
                 limits.max_cwd_bytes,
                 false,
             )?;
-            (
-                request.shell_executable.clone().into_os_string(),
-                vec![OsString::from("-c"), OsString::from(command)],
-            )
         }
-        ShellInvocation::Argv(argv) => {
-            validate_argv(argv, limits, "shell argv")?;
-            (
-                OsString::from(&argv[0]),
-                argv[1..].iter().map(OsString::from).collect(),
-            )
-        }
+        ShellInvocation::Argv(argv) => validate_argv(argv, limits, "shell argv")?,
+    }
+    let _normalized_timeout = normalized_timeout(request.timeout, limits)?;
+    Ok(())
+}
+
+pub(crate) fn shell_spec(
+    request: ShellExecRequest,
+    limits: &MechanicalLimits,
+) -> Result<ProcessSpec> {
+    validate_shell_request(&request, limits)?;
+
+    let (program, args) = match &request.invocation {
+        ShellInvocation::Command(command) => (
+            request.shell_executable.clone().into_os_string(),
+            vec![OsString::from("-c"), OsString::from(command)],
+        ),
+        ShellInvocation::Argv(argv) => (
+            OsString::from(&argv[0]),
+            argv[1..].iter().map(OsString::from).collect(),
+        ),
     };
 
     Ok(ProcessSpec {
@@ -64,7 +80,12 @@ pub(crate) fn shell_spec(
     })
 }
 
-pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Result<ProcessSpec> {
+/// Validate every mechanical ADB-request field before durable admission or any
+/// process observation. Unknown ADB subcommands remain opaque and valid.
+pub(crate) fn validate_adb_request(
+    request: &AdbExecRequest,
+    limits: &MechanicalLimits,
+) -> Result<()> {
     limits.validate()?;
     validate_common_request(
         &request.call_id,
@@ -76,9 +97,9 @@ pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Re
     )?;
     validate_argv(&request.argv, limits, "adb argv")?;
     // An empty executable is an explicit owner-open "transport not
-    // configured" state.  It is carried to the process boundary so callers
+    // configured" state. It is carried to the process boundary so callers
     // receive one honest `transport_unavailable` terminal observation instead
-    // of a policy-shaped request rejection.  Non-empty paths still receive
+    // of a policy-shaped request rejection. Non-empty paths still receive
     // ordinary NUL/size framing checks.
     validate_os_value(
         request.adb_executable.as_os_str(),
@@ -86,6 +107,12 @@ pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Re
         limits.max_cwd_bytes,
         true,
     )?;
+    let _normalized_timeout = normalized_timeout(request.timeout, limits)?;
+    Ok(())
+}
+
+pub(crate) fn adb_spec(request: AdbExecRequest, limits: &MechanicalLimits) -> Result<ProcessSpec> {
+    validate_adb_request(&request, limits)?;
 
     Ok(ProcessSpec {
         call_id: request.call_id,
@@ -224,8 +251,10 @@ mod tests {
     #[test]
     fn invalid_requests_are_rejected_before_acceptance() {
         let limits = MechanicalLimits::default();
-        let error =
-            shell_spec(ShellExecRequest::argv("call-empty", Vec::new()), &limits).unwrap_err();
+        let request = ShellExecRequest::argv("call-empty", Vec::new());
+        let error = validate_shell_request(&request, &limits).unwrap_err();
+        assert!(error.to_string().contains("must not be empty"));
+        let error = shell_spec(request, &limits).unwrap_err();
         assert!(error.to_string().contains("must not be empty"));
     }
 

@@ -40,6 +40,7 @@ pub(crate) fn run() -> Result<(), String> {
     // source; all new authority records go to the sibling segmented root.
     let mut persistence =
         Persistence::open_best_effort_segmented_path(parsed.base.event_store.as_deref());
+    persistence.allow_unjournaled_effects(parsed.allow_unjournaled_effects);
     let derived_job_store = parsed.job_store.or_else(|| {
         parsed.base.event_store.as_ref().map(|path| {
             let mut derived = path.clone();

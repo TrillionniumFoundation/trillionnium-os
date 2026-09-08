@@ -381,7 +381,7 @@ jobs:
           test -z "$worktree_status"
 
   aggregate:
-    name: L1 exact-source-head aggregate candidate
+    name: L1 exact-head direct-source aggregate
     needs:
       - docs-graph
       - rust-runtime

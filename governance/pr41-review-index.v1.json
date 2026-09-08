@@ -1,8 +1,8 @@
 {
   "automatic_redispatch": false,
   "base": {
-    "commit": "3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba",
-    "tree": "ef7112bbb84588209b849666914eb63d6580da8b"
+    "commit": "d323a685c752b5bccc045a82728fd0c93c015163",
+    "tree": "2cab1b1cfebf15a4d995ea4705e21dc675531c05"
   },
   "changed_paths": [
     "governance/pr41-review-index.v1.json",
@@ -83,8 +83,8 @@
   "pull_request": 63,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "0931af51a8810d14031eedc3843f13a2e0512b4b",
-    "tree": "04008b1bb8db6e8e8633e92784431aa6c6ce38dc"
+    "commit": "a60922722a7ea8af2bce3e8d712728ce991eee59",
+    "tree": "fe2d4a8d14e7aee629a155bdb40d4686c3a16805"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
