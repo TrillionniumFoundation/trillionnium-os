@@ -1,0 +1,183 @@
+name: ChatGPT issue56 protected performance integrator
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+    paths:
+      - .github/workflows/chatgpt-issue56-protected-integrator.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: chatgpt-issue56-protected-integrator
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 70
+    env:
+      SOURCE_BRANCH: codex/performance-measurement-v1-20260909
+      TARGET_BRANCH: codex/performance-measurement-v2-20260909
+      DEPENDENCY_ISSUE: '55'
+      ISSUE_NUMBER: '56'
+    steps:
+      - name: Wait for executable-contract source closure
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS+4200))
+          while ((SECONDS<deadline)); do
+            if test "$(gh api "repos/${GITHUB_REPOSITORY}/issues/${DEPENDENCY_ISSUE}" --jq '.state')" = closed; then
+              main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+              gh api "repos/${GITHUB_REPOSITORY}/contents/schemas/modules?ref=${main_sha}" >/dev/null
+              printf '%s\n' "$main_sha" > "${RUNNER_TEMP}/base"
+              exit 0
+            fi
+            sleep 15
+          done
+          exit 1
+
+      - name: Check out exact current main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: true
+
+      - name: Extract frozen issue56 delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"; test "$(git rev-parse HEAD)" = "$base"
+          git ls-remote --exit-code --heads origin "$SOURCE_BRANCH" >/dev/null
+          git fetch --no-tags origin "$SOURCE_BRANCH"
+          source_head="$(git rev-parse "origin/${SOURCE_BRANCH}^{commit}")"; source_tree="$(git rev-parse "${source_head}^{tree}")"; source_parent="$(git rev-parse "${source_head}^1")"
+          test "$(git rev-list --parents -n1 "$source_head"|wc -w)" -eq 2
+          git log -1 --format=%s "$source_head" | grep -Eiq '(perf|measurement|workload|telemetry|baseline)'
+          git diff --binary "$source_parent..$source_head" > "${RUNNER_TEMP}/issue56.patch"; test -s "${RUNNER_TEMP}/issue56.patch"
+          printf '%s\n' "$source_head" > "${RUNNER_TEMP}/source-head"; printf '%s\n' "$source_tree" > "${RUNNER_TEMP}/source-tree"; printf '%s\n' "$source_parent" > "${RUNNER_TEMP}/source-parent"
+          git switch -c "$TARGET_BRANCH"
+          git apply --3way --index "${RUNNER_TEMP}/issue56.patch"
+          git diff --cached --check
+          git config user.name 'Qian QI'; git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git commit -m 'perf: stabilize baselines and bind stage resource telemetry'
+
+      - name: Verify performance methodology and L1 workload closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Rqs 'UNSTABLE_ENVIRONMENT' tools docs schemas
+          grep -Rqs 'WL-01' docs tools
+          grep -Rqs 'WL-10' docs tools
+          grep -Rqs 'P99\|p99' tools/perf docs/machine
+          grep -Rqs 'MAD\|median_absolute_deviation\|median absolute deviation' tools/perf docs
+          grep -Rqs 'peak_rss\|rss_peak\|memory.peak' tools/perf docs
+          grep -Rqs 'fd_peak\|peak_fd\|file descriptor' tools/perf docs
+          grep -Rqs 'queue.*wait\|lock.*wait\|fsync' tools/perf docs
+          grep -Rqs 'redispatch' tools/perf docs
+          grep -Rqs 'FAIL_REGRESSION' docs tools evidence
+          grep -q 'GATE_POLICY_MAX_REGRESSION_PERCENT' tools/perf/_run_product_baseline_core.py
+          mapfile -t perf_tests < <(find tools/tests -maxdepth 1 -type f \( -iname '*perf*.py' -o -iname '*baseline*.py' -o -iname '*reproducib*.py' -o -iname '*workload*.py' -o -iname '*resource*.py' \) -printf '%f\n' | sed 's/\.py$//' | sort -u)
+          test "${#perf_tests[@]}" -gt 0
+          modules=(); for t in "${perf_tests[@]}"; do modules+=("tools.tests.${t}"); done
+          python3 -m unittest "${modules[@]}" -v
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_effect_lifecycle.py --model-check --json
+          python3 tools/perf/run_product_baseline.py --help >/dev/null
+          python3 tools/build/verify_host_reproducibility.py --help >/dev/null
+          if ! status="$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then exit 1; fi; test -z "$status"
+
+      - name: Publish exact draft PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"; source_head="$(cat "${RUNNER_TEMP}/source-head")"; source_tree="$(cat "${RUNNER_TEMP}/source-tree")"; source_parent="$(cat "${RUNNER_TEMP}/source-parent")"; head="$(git rev-parse HEAD)"; tree="$(git rev-parse HEAD^{tree})"
+          git push origin "HEAD:$TARGET_BRANCH"
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=all&head=${GITHUB_REPOSITORY_OWNER}%3A${TARGET_BRANCH}" --jq '.[0].number // empty')"
+          if test -z "$pr"; then pr="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls" -f title='perf: stabilize baselines and bind stage resource telemetry' -f head="$TARGET_BRANCH" -f base=main -F draft=true -f body='Issue #56 exact performance candidate.' --jq '.number')"; fi
+          printf '%s\n' "$pr" > "${RUNNER_TEMP}/pr"; printf '%s\n' "$head" > "${RUNNER_TEMP}/head"
+          merge_sha=""; for _ in $(seq 1 30); do merge_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merge_commit_sha // empty')"; test -n "$merge_sha" && break; sleep 1; done; test -n "$merge_sha"
+          base_tree="$(git rev-parse "${base}^{tree}")"; count="$(git diff --name-only "$base...$head"|wc -l|tr -d ' ')"
+          cat > "${RUNNER_TEMP}/body.md" <<EOF
+          Parent program: #51
+          Closes source/performance work: #56
+          Depends on protected source closure of #52, #54 and #55
+
+          ## Exact subject
+
+          \`\`\`text
+          base:                    main@${base}
+          base tree:               ${base_tree}
+          source candidate:        ${source_head}
+          source candidate tree:   ${source_tree}
+          source candidate parent: ${source_parent}
+          head:                    ${head}
+          head tree:               ${tree}
+          GitHub prospective merge:${merge_sha}
+          changed paths:           ${count}
+          \`\`\`
+
+          The candidate extracts only the final frozen issue56 delta and reapplies it to current protected main.
+
+          ## Performance closure
+
+          Same-binary A1/A2/A3 stability precedes candidate comparison; cold-start and steady-state workloads are separated; raw samples are retained without outlier deletion; median/P90/P95/P99/max/MAD/stdev/confidence intervals are emitted; unstable identical-input runs return \`UNSTABLE_ENVIRONMENT\`. Broker, Host, journal, Provider, callback, tool, terminal and delivery stages carry monotonic timing. CPU, RSS, FD/thread/process, cgroup I/O/pids, queue/lock/fsync, unknown and redispatch observations remain explicit. WL-01 through WL-10 are source-qualified; WL-11/L4 and WL-12/L5 remain external.
+
+          The fixed reviewed regression policy introduced by #63 remains immutable. PR #49's failed raw result is retained and its root-cause disposition is explicit; no feature PR weakens a threshold.
+
+          ## Claim ceiling
+
+          Source/L1 performance closure only. No L2 installed-target, L3 Android image, L4 device, L5 destructive fault or L6 release evidence is claimed. Fresh exact-head review by \`Tomasrgbsf\` and \`Franksudoman\` is required.
+          EOF
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f body="$(cat "${RUNNER_TEMP}/body.md")" >/dev/null
+
+      - name: Qualify, review and merge normally
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pr="$(cat "${RUNNER_TEMP}/pr")"; head="$(cat "${RUNNER_TEMP}/head")"
+          required=('L1 graph, documentation, broker and MCP source closure' 'L1 Rust 1.93 selected Host, job, flow and recovery closure' 'L1 exact-head direct-source aggregate' 'L1 exact two-parent merge source qualification' 'L1 exact-source-head aggregate candidate' 'L1 protected-main and exact-head independent-review readiness')
+          deadline=$((SECONDS+2100)); passed=false
+          while ((SECONDS<deadline)); do
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${head}/check-runs?per_page=100" --jq '.check_runs[]|[.name,.status,(.conclusion//""),.id]|@tsv' > "${RUNNER_TEMP}/checks"
+            if python3 - "${RUNNER_TEMP}/checks" "${required[@]}" <<'PY'
+          from pathlib import Path
+          import sys
+          latest={}
+          for line in Path(sys.argv[1]).read_text().splitlines():
+              n,s,c,i=line.split('\t'); v=(int(i),s,c)
+              if n not in latest or v[0]>latest[n][0]: latest[n]=v
+          failures=[n for n,(_,s,c) in latest.items() if s=='completed' and c not in {'success','neutral','skipped'}]
+          if failures: print(failures); raise SystemExit(2)
+          if not all(latest.get(n,(0,'',''))[1:]==('completed','success') for n in sys.argv[2:]): raise SystemExit(1)
+          PY
+            then passed=true; break; else rc=$?; test "$rc" -ne 2 || exit 1; fi; sleep 15
+          done
+          test "$passed" = true
+          node="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.node_id')"; gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -f id="$node" >/dev/null
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls/${pr}/requested_reviewers" -f reviewers[]='Tomasrgbsf' -f reviewers[]='Franksudoman' >/dev/null
+          deadline=$((SECONDS+1200)); states=''
+          while ((SECONDS<deadline)); do
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"
+            states="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr}/reviews?per_page=100" --jq '.[]|select(.commit_id=="'"$head"'")|[.user.login,.state,.id]|@tsv'|sort -k1,1 -k3,3n|awk -F'\t' '$1=="Tomasrgbsf"||$1=="Franksudoman"{s[$1]=$2} END{print s["Tomasrgbsf"],s["Franksudoman"]}')"; test "$states" = 'APPROVED APPROVED' && break; sleep 15
+          done
+          test "$states" = 'APPROVED APPROVED'
+          unresolved="$(gh api graphql -f owner="${GITHUB_REPOSITORY_OWNER}" -f name="${GITHUB_REPOSITORY#*/}" -F number="$pr" -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}' --jq '[.data.repository.pullRequest.reviewThreads.nodes[]|select(.isResolved==false)]|length')"; test "$unresolved" = 0
+          result="$(gh api --method PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/merge" -f merge_method=squash -f sha="$head" -f commit_title='perf: stabilize baselines and stage resource attribution' -f commit_message='Close issue #56 at source/L1 level; WL-11/L4, WL-12/L5 and all L2-L6 evidence remain external.')"; jq -e '.merged==true'<<<"$result" >/dev/null
+          merge_sha="$(jq -r '.sha'<<<"$result")"; gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="Protected performance source integration completed at ${merge_sha}. L1 performance exit criteria are closed; external workload/evidence levels remain separate." >/dev/null; gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}" -f state=closed >/dev/null
