@@ -1,0 +1,199 @@
+name: ChatGPT issue55 protected contract integrator
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+    paths:
+      - .github/workflows/chatgpt-issue55-protected-integrator.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: chatgpt-issue55-protected-integrator
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      SOURCE_BRANCH: codex/executable-module-contracts-v1-20260909
+      TARGET_BRANCH: codex/executable-module-contracts-v2-20260909
+      DEPENDENCY_ISSUE: '54'
+      ISSUE_NUMBER: '55'
+    steps:
+      - name: Wait for lifecycle source closure
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 3600))
+          while (( SECONDS < deadline )); do
+            if test "$(gh api "repos/${GITHUB_REPOSITORY}/issues/${DEPENDENCY_ISSUE}" --jq '.state')" = closed; then
+              main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+              gh api -H 'Accept: application/vnd.github.raw+json' "repos/${GITHUB_REPOSITORY}/contents/docs/machine/effect-lifecycle.v1.json?ref=${main_sha}" | grep -q 'effect'
+              printf '%s\n' "$main_sha" > "${RUNNER_TEMP}/base"
+              exit 0
+            fi
+            sleep 15
+          done
+          exit 1
+
+      - name: Check out exact current main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: true
+
+      - name: Extract only the frozen issue55 source delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$base"
+          git ls-remote --exit-code --heads origin "$SOURCE_BRANCH" >/dev/null
+          git fetch --no-tags origin "$SOURCE_BRANCH"
+          source_head="$(git --no-replace-objects rev-parse "origin/${SOURCE_BRANCH}^{commit}")"
+          source_tree="$(git --no-replace-objects rev-parse "${source_head}^{tree}")"
+          source_parent="$(git --no-replace-objects rev-parse "${source_head}^1")"
+          test "$(git --no-replace-objects rev-list --parents -n 1 "$source_head" | wc -w)" -eq 2
+          git log -1 --format=%s "$source_head" | grep -Eiq '(contract|schema|module)'
+          git diff --binary "$source_parent..$source_head" > "${RUNNER_TEMP}/issue55.patch"
+          test -s "${RUNNER_TEMP}/issue55.patch"
+          printf '%s\n' "$source_head" > "${RUNNER_TEMP}/source-head"
+          printf '%s\n' "$source_tree" > "${RUNNER_TEMP}/source-tree"
+          printf '%s\n' "$source_parent" > "${RUNNER_TEMP}/source-parent"
+          git switch -c "$TARGET_BRANCH"
+          git apply --3way --index "${RUNNER_TEMP}/issue55.patch"
+          git diff --cached --check
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git commit -m 'contracts: generate executable module API state and error schemas'
+
+      - name: Verify executable contract closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d schemas/modules
+          api_count="$(find schemas/modules -type f -name 'api-v1.schema.json' | wc -l)"
+          state_count="$(find schemas/modules -type f -name 'state-v1.schema.json' | wc -l)"
+          error_count="$(find schemas/modules -type f -name 'errors-v1.schema.json' | wc -l)"
+          compat_count="$(find schemas/modules -type f -name 'compatibility.json' | wc -l)"
+          test "$api_count" -gt 0
+          test "$api_count" -eq "$state_count"
+          test "$api_count" -eq "$error_count"
+          test "$api_count" -eq "$compat_count"
+          valid_count="$(find schemas/modules -path '*/golden/valid/*' -type f | wc -l)"
+          invalid_count="$(find schemas/modules -path '*/golden/invalid/*' -type f | wc -l)"
+          test "$valid_count" -ge "$api_count"
+          test "$invalid_count" -ge "$api_count"
+          mapfile -t contract_tools < <(find tools -type f \( -iname '*module*contract*.py' -o -iname '*contract*schema*.py' -o -iname '*contract*compat*.py' \) | sort)
+          test "${#contract_tools[@]}" -gt 0
+          python3 -m py_compile "${contract_tools[@]}"
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_effect_lifecycle.py --model-check --json
+          mapfile -t contract_tests < <(find tools/tests -maxdepth 1 -type f \( -iname '*contract*.py' -o -iname '*schema*.py' -o -iname '*compatib*.py' \) -printf '%f\n' | sed 's/\.py$//' | sort -u)
+          test "${#contract_tests[@]}" -gt 0
+          modules=()
+          for test_name in "${contract_tests[@]}"; do modules+=("tools.tests.${test_name}"); done
+          python3 -m unittest "${modules[@]}" -v
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then exit 1; fi
+          test -z "$status"
+
+      - name: Publish exact draft PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"
+          source_head="$(cat "${RUNNER_TEMP}/source-head")"
+          source_tree="$(cat "${RUNNER_TEMP}/source-tree")"
+          source_parent="$(cat "${RUNNER_TEMP}/source-parent")"
+          head="$(git rev-parse HEAD)"; tree="$(git rev-parse HEAD^{tree})"
+          git push origin "HEAD:$TARGET_BRANCH"
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=all&head=${GITHUB_REPOSITORY_OWNER}%3A${TARGET_BRANCH}" --jq '.[0].number // empty')"
+          if test -z "$pr"; then
+            pr="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls" -f title='contracts: generate executable module API state and error schemas' -f head="$TARGET_BRANCH" -f base=main -F draft=true -f body='Issue #55 exact contract candidate.' --jq '.number')"
+          fi
+          printf '%s\n' "$pr" > "${RUNNER_TEMP}/pr"; printf '%s\n' "$head" > "${RUNNER_TEMP}/head"
+          merge_sha=""; for _ in $(seq 1 30); do merge_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merge_commit_sha // empty')"; test -n "$merge_sha" && break; sleep 1; done; test -n "$merge_sha"
+          base_tree="$(git rev-parse "${base}^{tree}")"; count="$(git diff --name-only "$base...$head" | wc -l | tr -d ' ')"
+          cat > "${RUNNER_TEMP}/body.md" <<EOF
+          Parent program: #51
+          Closes source work: #55
+          Depends on protected source closure of #53 and #54
+
+          ## Exact subject
+
+          \`\`\`text
+          base:                    main@${base}
+          base tree:               ${base_tree}
+          source candidate:        ${source_head}
+          source candidate tree:   ${source_tree}
+          source candidate parent: ${source_parent}
+          head:                    ${head}
+          head tree:               ${tree}
+          GitHub prospective merge:${merge_sha}
+          changed paths:           ${count}
+          \`\`\`
+
+          The integration extracts only the frozen final commit delta from the source candidate and reapplies it to current protected main; predecessor issue deltas are not duplicated.
+
+          ## Contract closure
+
+          Every selected module has resolvable API, independently versioned state and error schemas, valid/invalid golden vectors and a machine compatibility declaration. Generated artifacts are byte-reproducible; strict JSON, unknown-field, duplicate-member, non-finite, size/depth, identity/default/alias and breaking-change policy are fail-closed. Logical catalog labels resolve to concrete files and implementation bindings, and the cross-language consumer matrix executes the same vectors.
+
+          ## Claim ceiling
+
+          Source-contract closure only. No installed target, device, destructive-fault, signing, OTA or release evidence is granted. Fresh exact-head review from \`Tomasrgbsf\` and \`Franksudoman\` is mandatory after all current checks succeed.
+          EOF
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f body="$(cat "${RUNNER_TEMP}/body.md")" >/dev/null
+
+      - name: Qualify review and merge through protection
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pr="$(cat "${RUNNER_TEMP}/pr")"; head="$(cat "${RUNNER_TEMP}/head")"
+          required=('L1 graph, documentation, broker and MCP source closure' 'L1 Rust 1.93 selected Host, job, flow and recovery closure' 'L1 exact-head direct-source aggregate' 'L1 exact two-parent merge source qualification' 'L1 exact-source-head aggregate candidate' 'L1 protected-main and exact-head independent-review readiness')
+          deadline=$((SECONDS+1800))
+          while ((SECONDS<deadline)); do
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${head}/check-runs?per_page=100" --jq '.check_runs[]|[.name,.status,(.conclusion//""),.id]|@tsv' > "${RUNNER_TEMP}/checks"
+            python3 - "${RUNNER_TEMP}/checks" "${required[@]}" <<'PY' && break || rc=$?
+          from pathlib import Path
+          import sys
+          latest={}
+          for line in Path(sys.argv[1]).read_text().splitlines():
+              n,s,c,i=line.split('\t'); v=(int(i),s,c)
+              if n not in latest or v[0]>latest[n][0]: latest[n]=v
+          failures=[n for n,(_,s,c) in latest.items() if s=='completed' and c not in {'success','neutral','skipped'}]
+          if failures: raise SystemExit(2)
+          if not all(latest.get(n,(0,'',''))[1:]==('completed','success') for n in sys.argv[2:]): raise SystemExit(1)
+          PY
+            test "${rc:-1}" -ne 2 || exit 1; sleep 15
+          done
+          node="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.node_id')"; gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -f id="$node" >/dev/null
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls/${pr}/requested_reviewers" -f reviewers[]='Tomasrgbsf' -f reviewers[]='Franksudoman' >/dev/null
+          deadline=$((SECONDS+1200)); states=''
+          while ((SECONDS<deadline)); do
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"
+            states="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr}/reviews?per_page=100" --jq '.[]|select(.commit_id=="'"$head"'")|[.user.login,.state,.id]|@tsv'|sort -k1,1 -k3,3n|awk -F'\t' '$1=="Tomasrgbsf"||$1=="Franksudoman"{s[$1]=$2} END{print s["Tomasrgbsf"],s["Franksudoman"]}')"
+            test "$states" = 'APPROVED APPROVED' && break; sleep 15
+          done
+          test "$states" = 'APPROVED APPROVED'
+          unresolved="$(gh api graphql -f owner="${GITHUB_REPOSITORY_OWNER}" -f name="${GITHUB_REPOSITORY#*/}" -F number="$pr" -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}' --jq '[.data.repository.pullRequest.reviewThreads.nodes[]|select(.isResolved==false)]|length')"; test "$unresolved" = 0
+          result="$(gh api --method PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/merge" -f merge_method=squash -f sha="$head" -f commit_title='contracts: generate executable module schemas' -f commit_message='Close issue #55 at source-contract level; no L2-L6 evidence or release authority is granted.')"; jq -e '.merged==true'<<<"$result" >/dev/null
+          merge_sha="$(jq -r '.sha'<<<"$result")"; gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" -f body="Protected executable-contract integration completed at ${merge_sha}. Source exit criteria are closed; target/release evidence remains separate." >/dev/null; gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}" -f state=closed >/dev/null
