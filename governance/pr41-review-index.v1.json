@@ -23,6 +23,7 @@
     "apps/trillionnium-owner-open-host/tests/r5_terminal_receipt.rs",
     "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
     "crates/trillionnium-owner-open-runtime/src/lib.rs",
+    "crates/trillionnium-owner-open-runtime/src/validate.rs",
     "governance/pr41-review-index.v1.json"
   ],
   "changes": [
@@ -117,6 +118,11 @@
       "status": "modified"
     },
     {
+      "path": "crates/trillionnium-owner-open-runtime/src/validate.rs",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
       "path": "governance/pr41-review-index.v1.json",
       "previous_path": null,
       "status": "modified"
@@ -124,10 +130,10 @@
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 19,
-    "changes_sha256": "3d19cb7fbed3a2187acd60b654d2b336f063c9b9f89b365e662a594e46b435ad",
-    "path_count": 19,
-    "paths_sha256": "56f32d64ae5ad34ff77ad798b15266b20dabfc5baa805ecf03c93203a5bc46e2"
+    "change_count": 20,
+    "changes_sha256": "cf3ccf6ef47c9e8a57addea016900783c2e11d25ee79735c0e2a2da87e7847d8",
+    "path_count": 20,
+    "paths_sha256": "0d567bb820458fbabf5fffd0341bbe51dddc537f375ce16351a479234d4f14aa"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
@@ -137,8 +143,8 @@
   "pull_request": 66,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "417d680503bc680242bd42c9628f715edc123ce7",
-    "tree": "12b810a35b1562d9d9ecd789cf11709f96ad431b"
+    "commit": "c6ca7185b5b5b7e5a747fca070614836e79b2352",
+    "tree": "d2c96cec58e54701b1c8593a74f70906ab46fcd8"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -178,7 +184,8 @@
         "apps/trillionnium-owner-open-host/tests/r5_stream_flow_control.rs",
         "apps/trillionnium-owner-open-host/tests/r5_terminal_receipt.rs",
         "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
-        "crates/trillionnium-owner-open-runtime/src/lib.rs"
+        "crates/trillionnium-owner-open-runtime/src/lib.rs",
+        "crates/trillionnium-owner-open-runtime/src/validate.rs"
       ],
       "review_order": 2,
       "security_domain": "runtime-and-protocol"
