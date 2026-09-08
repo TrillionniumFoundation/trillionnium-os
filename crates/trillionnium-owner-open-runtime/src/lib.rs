@@ -28,8 +28,8 @@ pub use types::{
     TerminalKind, ToolKind,
 };
 
-/// Publish the accepted observation synchronously before entering any process
-/// preparation or spawn path.
+/// Publish the accepted observation synchronously after all mechanical request
+/// validation and before entering any process preparation or spawn path.
 ///
 /// The caller's sink is the ownership boundary used by the Host to obtain a
 /// durable acceptance receipt. A failed receipt cancels the linked token while
@@ -93,8 +93,9 @@ where
     run(&mut forward)
 }
 
-/// Execute a first-class shell request only after its accepted observation has
-/// crossed the caller-owned synchronous admission boundary.
+/// Execute a first-class shell request only after mechanical validation and its
+/// accepted observation have crossed the caller-owned synchronous admission
+/// boundary.
 pub fn execute_shell<F>(
     request: ShellExecRequest,
     limits: &MechanicalLimits,
@@ -104,6 +105,7 @@ pub fn execute_shell<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    validate::validate_shell_request(&request, limits)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -116,8 +118,8 @@ where
     )
 }
 
-/// Execute a shell request through a PTY under the same pre-effect acceptance
-/// barrier as pipe mode.
+/// Execute a shell request through a PTY under the same validation and
+/// pre-effect acceptance barrier as pipe mode.
 pub fn execute_shell_pty<F>(
     request: ShellExecRequest,
     size: PtySize,
@@ -128,6 +130,8 @@ pub fn execute_shell_pty<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    size.validate()?;
+    validate::validate_shell_request(&request, limits)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -155,6 +159,7 @@ pub fn execute_adb<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    validate::validate_adb_request(&request, limits)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -178,6 +183,8 @@ pub fn execute_adb_pty<F>(
 where
     F: FnMut(ExecutionEvent),
 {
+    size.validate()?;
+    validate::validate_adb_request(&request, limits)?;
     let call_id = request.call_id.clone();
     let target_id = request.target_id.clone();
     execute_after_acceptance(
@@ -228,6 +235,23 @@ mod admission_tests {
                 .iter()
                 .all(|kind| !matches!(kind, ExecutionEventKind::Started { .. }))
         );
+    }
+
+    #[test]
+    fn invalid_requests_emit_no_acceptance_or_process_event() {
+        let request = AdbExecRequest::new("invalid-adb", Vec::new());
+        let cancellation = CancellationToken::new();
+        let mut events = Vec::new();
+        let error = execute_adb(
+            request,
+            &MechanicalLimits::default(),
+            &cancellation,
+            |event| events.push(event.kind),
+        )
+        .expect_err("malformed ADB request must fail before acceptance");
+
+        assert!(error.to_string().contains("must not be empty"));
+        assert!(events.is_empty());
     }
 
     #[test]
