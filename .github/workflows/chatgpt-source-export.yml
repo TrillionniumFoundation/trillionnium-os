@@ -51,22 +51,27 @@ jobs:
           encoded = "".join(ch for ch in source.read_text(encoding="ascii") if ch in alphabet)
           decoder = zlib.decompressobj(16 + zlib.MAX_WBITS)
           plain = bytearray()
+          trailer_error = None
           for offset in range(0, len(encoded) - 3, 4):
               quad = encoded[offset : offset + 4]
               try:
                   block = base64.b64decode(quad, validate=True)
+                  plain.extend(decoder.decompress(block))
+              except zlib.error as exc:
+                  trailer_error = str(exc)
+                  break
               except Exception as exc:
                   raise SystemExit(f"invalid bound base64 quartet at {offset}: {exc}")
-              plain.extend(decoder.decompress(block))
               if decoder.eof:
                   plain.extend(decoder.flush())
                   break
-          if not decoder.eof:
-              raise SystemExit("no complete gzip member in lifecycle patch carrier")
           digest = hashlib.sha256(plain).hexdigest()
           expected = os.environ["PATCH_SHA256"]
           if digest != expected:
-              raise SystemExit(f"lifecycle patch digest mismatch: {digest}")
+              detail = trailer_error or "gzip member incomplete"
+              raise SystemExit(f"lifecycle patch digest mismatch: {digest}; {detail}")
+          if trailer_error and "incorrect data check" not in trailer_error:
+              raise SystemExit(f"unexpected gzip failure after exact payload: {trailer_error}")
           output.write_bytes(plain)
           PY
           echo "$PATCH_SHA256  ${RUNNER_TEMP}/issue54.patch" | sha256sum --check -
