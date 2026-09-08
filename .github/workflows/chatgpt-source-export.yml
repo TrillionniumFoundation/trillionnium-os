@@ -1,13 +1,43 @@
-name: ChatGPT temporary control
+name: ChatGPT exact-source export
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
 
 permissions:
   contents: read
 
 jobs:
-  quiesced:
+  export-base:
+    name: Export exact base 3b22b366
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - run: printf '%s\n' 'temporary control branch is quiesced'
+      - name: Check out exact base
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: 3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba
+          persist-credentials: false
+      - name: Assert and archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba"
+          if ! worktree_status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$worktree_status"
+          git --no-replace-objects archive --format=tar.gz --output="${RUNNER_TEMP}/trillionnium-os-3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba.tar.gz" HEAD
+          sha256sum "${RUNNER_TEMP}/trillionnium-os-3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba.tar.gz" > "${RUNNER_TEMP}/trillionnium-os-3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba.tar.gz.sha256"
+      - name: Upload exact base archive
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: chatgpt-source-base-3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/trillionnium-os-3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba.tar.gz
+            ${{ runner.temp }}/trillionnium-os-3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba.tar.gz.sha256
