@@ -1,0 +1,50 @@
+name: ChatGPT PR63 exact source export
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chatgpt-pr63-exact-source-export
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: 1419f6d09f4b6cf6aa4dce7cfdc1d1cdab0c9256
+      SOURCE_TREE: 892b5ae0d6e670aef994c9e20621809142b5bb60
+    steps:
+      - name: Check out exact PR63 source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Bind and archive clean exact tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+          git --no-replace-objects archive --format=tar.gz --output="${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
+          sha256sum "${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz" > "${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz.sha256"
+      - name: Upload exact non-qualifying source export
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr63-source-${{ env.SOURCE_SHA }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz
+            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz.sha256
