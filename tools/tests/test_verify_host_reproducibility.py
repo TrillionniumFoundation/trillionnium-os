@@ -5,6 +5,7 @@ import copy
 import importlib.util
 import os
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import time
@@ -98,6 +99,27 @@ class HostReproducibilityTests(unittest.TestCase):
                 change(value)
                 with self.assertRaises(VERIFY.VerificationError):
                     VERIFY.compare_artifacts(value)
+
+    def test_implementation_manifest_binds_facade_core_and_cleanup_sources(self) -> None:
+        manifest = VERIFY.implementation_manifest()
+        self.assertEqual([item["path"] for item in manifest["files"]],
+                         list(VERIFY.IMPLEMENTATION_PATHS))
+        VERIFY.validate_implementation_manifest(manifest)
+        with tempfile.TemporaryDirectory() as directory:
+            copied_root = Path(directory)
+            for relative in VERIFY.IMPLEMENTATION_PATHS:
+                source = VERIFY.CORE.ROOT / relative
+                destination = copied_root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, destination)
+            with mock.patch.object(VERIFY.CORE, "ROOT", copied_root):
+                before = VERIFY.implementation_manifest()
+                target = copied_root / VERIFY.IMPLEMENTATION_PATHS[-1]
+                target.write_bytes(target.read_bytes() + b"\n# identity mutation\n")
+                after = VERIFY.implementation_manifest()
+        self.assertNotEqual(before["manifest_sha256"], after["manifest_sha256"])
+        core_source = Path(VERIFY.CORE_PATH).read_text(encoding="utf-8")
+        self.assertIn('"implementation_manifest": implementation', core_source)
 
     def test_recipe_is_fixed_offline_and_remaps_both_build_paths(self) -> None:
         tools = {name: {"path": f"/tools/{name}"} for name in ("cargo", "rustc", "cc", "ar")}

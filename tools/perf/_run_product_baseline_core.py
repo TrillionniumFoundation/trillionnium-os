@@ -34,6 +34,16 @@ SCHEMA = "org.trillionnium.product-host-baseline.v1"
 MAX_CAPTURE = 16 * 1024 * 1024
 MAX_ARTIFACT = 32 * 1024 * 1024
 MIN_GATE_REPETITIONS = 5
+MAX_REGRESSION_PERCENT = 25.0
+GATE_POLICY_SCHEMA = "org.trillionnium.product-host-baseline-gate-policy.v1"
+GATE_POLICY_VERSION = "2026-09-09-v1"
+IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.product-host-baseline-implementation.v1"
+GATE_METRICS = ("latency_p50_ms", "latency_p95_ms")
+IMPLEMENTATION_PATHS = (
+    "tools/owner-open/owner_open_rootlinux_supervisor.py",
+    "tools/perf/_run_product_baseline_core.py",
+    "tools/perf/run_product_baseline.py",
+)
 WORKLOADS = {
     "short_turn": "fresh Host/Core, fixture provider, shell callback, durable event store",
     "concurrent_turns": "concurrent independent Host/Core sessions and stores; not shared-core admission",
@@ -97,6 +107,64 @@ def measured_file(path: Path) -> dict[str, Any]:
     require((before.st_ino, before.st_size, before.st_mtime_ns) ==
             (after.st_ino, after.st_size, after.st_mtime_ns), f"file changed: {path}")
     return {"path": str(resolved), "size": before.st_size, "sha256": hasher.hexdigest()}
+
+
+def repository_file_identity(relative: str) -> dict[str, Any]:
+    require(relative in IMPLEMENTATION_PATHS, f"unregistered implementation path: {relative}")
+    candidate = ROOT / relative
+    require(not candidate.is_symlink(), f"implementation path is a symlink: {relative}")
+    resolved_root = ROOT.resolve(strict=True)
+    resolved = candidate.resolve(strict=True)
+    require(resolved.is_relative_to(resolved_root), f"implementation path escaped repository: {relative}")
+    identity = measured_file(candidate)
+    return {"path": relative, "size": identity["size"], "sha256": identity["sha256"]}
+
+
+def implementation_manifest() -> dict[str, Any]:
+    files = [repository_file_identity(relative) for relative in IMPLEMENTATION_PATHS]
+    body = {"schema": IMPLEMENTATION_MANIFEST_SCHEMA, "files": files}
+    return {**body, "manifest_sha256": digest(canonical(body))}
+
+
+def gate_policy() -> dict[str, Any]:
+    return {
+        "schema": GATE_POLICY_SCHEMA,
+        "version": GATE_POLICY_VERSION,
+        "max_regression_percent": MAX_REGRESSION_PERCENT,
+        "metrics": list(GATE_METRICS),
+        "minimum_repetitions": MIN_GATE_REPETITIONS,
+    }
+
+
+def validate_implementation_manifest(value: Any) -> dict[str, Any]:
+    require(isinstance(value, dict), "implementation manifest must be an object")
+    require(set(value) == {"schema", "files", "manifest_sha256"},
+            "implementation manifest keys differ")
+    require(value["schema"] == IMPLEMENTATION_MANIFEST_SCHEMA,
+            "implementation manifest schema differs")
+    files = value["files"]
+    require(isinstance(files, list) and len(files) == len(IMPLEMENTATION_PATHS),
+            "implementation manifest file count differs")
+    require([item.get("path") if isinstance(item, dict) else None for item in files] ==
+            list(IMPLEMENTATION_PATHS), "implementation manifest paths differ")
+    for item in files:
+        require(isinstance(item, dict) and set(item) == {"path", "size", "sha256"},
+                "implementation manifest entry keys differ")
+        require(type(item["size"]) is int and item["size"] > 0,
+                f"invalid implementation size: {item.get('path')}")
+        value_sha = item["sha256"]
+        require(isinstance(value_sha, str) and len(value_sha) == 64 and
+                all(char in "0123456789abcdef" for char in value_sha),
+                f"invalid implementation digest: {item.get('path')}")
+    body = {"schema": value["schema"], "files": files}
+    require(value["manifest_sha256"] == digest(canonical(body)),
+            "implementation manifest digest mismatch")
+    return value
+
+
+def validate_gate_policy(value: Any) -> dict[str, Any]:
+    require(value == gate_policy(), "performance gate policy differs from reviewed policy")
+    return value
 
 
 def git(*args: str) -> bytes:
@@ -415,7 +483,14 @@ def validate_artifact(value: Any) -> dict:
     body = dict(value)
     claimed = body.pop("artifact_digest", None)
     require(claimed == digest(canonical(body)), "baseline content digest mismatch")
-    require(isinstance(value.get("comparison_identity"), dict), "missing comparison identity")
+    manifest = validate_implementation_manifest(value.get("implementation_manifest"))
+    policy = validate_gate_policy(value.get("gate_policy"))
+    identity = value.get("comparison_identity")
+    require(isinstance(identity, dict), "missing comparison identity")
+    require(identity.get("implementation_manifest_sha256") == manifest["manifest_sha256"],
+            "comparison identity does not bind implementation manifest")
+    require(identity.get("gate_policy_sha256") == digest(canonical(policy)),
+            "comparison identity does not bind gate policy")
     require(value.get("qualification") == "L1_HOST_SOURCE_BENCHMARK_ONLY" and
             value.get("public_release") is False, "baseline widened its claim")
     samples = value.get("samples")
@@ -437,6 +512,9 @@ def validate_artifact(value: Any) -> dict:
             all(name in WORKLOADS for name in workloads) and len(set(workloads)) == len(workloads), "invalid configured workloads")
     require(type(repetitions) is int and 1 <= repetitions <= 100 and
             type(warmup) is int and 0 <= warmup <= 10, "invalid configured repetitions")
+    require(configuration.get("max_regression_percent") == policy["max_regression_percent"] and
+            configuration.get("gate_policy_version") == policy["version"],
+            "configuration does not bind reviewed gate policy")
     expected = {(name, is_warmup, index) for name in workloads
                 for is_warmup, count in ((True, warmup), (False, repetitions)) for index in range(count)}
     require(seen == expected, "baseline omits or adds configured samples")
@@ -445,28 +523,38 @@ def validate_artifact(value: Any) -> dict:
     return value
 
 
-def regression_gate(current: dict, previous: dict | None, threshold_percent: float) -> dict:
+def regression_gate(current: dict, previous: dict | None,
+                    threshold_percent: float | None = None) -> dict:
+    policy = validate_gate_policy(current.get("gate_policy"))
+    reviewed_threshold = policy["max_regression_percent"]
+    if threshold_percent is not None:
+        require(threshold_percent == reviewed_threshold,
+                "caller threshold differs from reviewed gate policy")
     if current["failures"]:
         return {"status": "FAIL_CORRECTNESS", "passed": False, "regressions": []}
     if previous is None:
         return {"status": "BASELINE_RECORDED_NO_COMPARISON", "passed": False, "regressions": []}
+    previous_policy = validate_gate_policy(previous.get("gate_policy"))
+    require(policy == previous_policy, "baseline gate policy differs")
     require(current["comparison_identity"] == previous["comparison_identity"], "incompatible environment or workload configuration")
     require(set(current["summaries"]) == set(previous["summaries"]), "baseline workload set differs")
-    if min(s["samples"] for a in (current, previous) for s in a["summaries"].values()) < MIN_GATE_REPETITIONS:
+    if min(s["samples"] for a in (current, previous) for s in a["summaries"].values()) < policy["minimum_repetitions"]:
         return {"status": "INSUFFICIENT_REPETITIONS", "passed": False, "regressions": []}
     comparisons = []
     for name, summary in current["summaries"].items():
         old = previous["summaries"][name]
-        for metric in ("latency_p50_ms", "latency_p95_ms"):
+        for metric in policy["metrics"]:
             delta = (summary[metric] / old[metric] - 1) * 100
             comparisons.append({"workload": name, "metric": metric, "previous": old[metric],
                                 "current": summary[metric], "regression_percent": delta,
-                                "regressed": delta > threshold_percent})
+                                "regressed": delta > reviewed_threshold})
     regressions = [row for row in comparisons if row["regressed"]]
     return {"status": "FAIL_REGRESSION" if regressions else "PASS_COMPARISON",
-            "passed": not regressions, "threshold_percent": threshold_percent,
-            "minimum_repetitions": MIN_GATE_REPETITIONS, "comparisons": comparisons, "regressions": regressions,
-            "interpretation": "deterministic observed P50/P95 threshold; not a statistical significance or P99 SLO claim"}
+            "passed": not regressions, "threshold_percent": reviewed_threshold,
+            "gate_policy_version": policy["version"],
+            "minimum_repetitions": policy["minimum_repetitions"],
+            "comparisons": comparisons, "regressions": regressions,
+            "interpretation": "deterministic observed P50/P95 reviewed-policy threshold; not a statistical significance or P99 SLO claim"}
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -486,7 +574,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output-bytes", type=int, default=262144)
     parser.add_argument("--slow-read-ms", type=float, default=1)
     parser.add_argument("--timeout-seconds", type=float, default=15)
-    parser.add_argument("--max-regression-percent", type=float, default=25)
+    parser.add_argument("--max-regression-percent", type=float, default=MAX_REGRESSION_PERCENT)
     args = parser.parse_args(argv)
     for name, low, high in (("repetitions", 1, 100), ("warmup", 0, 10), ("concurrency", 1, 16),
                             ("output_bytes", 65536, 1048576), ("slow_read_ms", 0.1, 10),
@@ -494,6 +582,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         value = getattr(args, name)
         if not math.isfinite(value) or not low <= value <= high:
             parser.error(f"--{name.replace('_', '-')} must be in {low}..{high}")
+    if args.max_regression_percent != MAX_REGRESSION_PERCENT:
+        parser.error(f"--max-regression-percent is fixed by {GATE_POLICY_VERSION} at {MAX_REGRESSION_PERCENT:g}")
     if len(set(args.workloads)) != len(args.workloads):
         parser.error("workloads must be unique")
     return args
@@ -506,6 +596,8 @@ def run(args: argparse.Namespace) -> dict:
     identities = {"host": measured_file(host), "core": measured_file(core),
                   "python": measured_file(Path(sys.executable)), "shell": measured_file(Path("/bin/sh")),
                   "harness": measured_file(Path(__file__))}
+    implementation = implementation_manifest()
+    policy = gate_policy()
     source = source_identity()
     require(not args.require_clean_source or not source["dirty"], "clean source required")
     previous = None
@@ -517,6 +609,8 @@ def run(args: argparse.Namespace) -> dict:
         previous = validate_artifact(strict_json(previous_bytes))
     config = {name: getattr(args, name) for name in ("concurrency", "output_bytes", "slow_read_ms", "timeout_seconds", "build_profile")}
     config["workloads"] = args.workloads
+    config["max_regression_percent"] = policy["max_regression_percent"]
+    config["gate_policy_version"] = policy["version"]
     environment = {"system": platform.system(), "kernel": platform.release(), "machine": platform.machine(),
                    "cpu_count": os.cpu_count(), "python_version": platform.python_version(),
                    "cpu_model": next((line.split(":", 1)[1].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()
@@ -527,11 +621,14 @@ def run(args: argparse.Namespace) -> dict:
                        Path("/sys/devices/system/cpu").glob("cpu[0-9]*/cpufreq/scaling_governor")})}
     artifact = {"schema": SCHEMA, "qualification": "L1_HOST_SOURCE_BENCHMARK_ONLY", "public_release": False,
                 "generated_at_unix_ns": time.time_ns(), "source": source, "executables": identities,
+                "implementation_manifest": implementation, "gate_policy": policy,
                 "binary_source_binding": "caller_supplied_binaries_measured_not_attested_build_provenance",
                 "environment": environment, "configuration": {**config, "repetitions": args.repetitions, "warmup": args.warmup},
                 "comparison_identity": {"environment": environment, "configuration": config,
                                         "python_sha256": identities["python"]["sha256"], "shell_sha256": identities["shell"]["sha256"],
-                                        "harness_sha256": identities["harness"]["sha256"]},
+                                        "harness_sha256": identities["harness"]["sha256"],
+                                        "implementation_manifest_sha256": implementation["manifest_sha256"],
+                                        "gate_policy_sha256": digest(canonical(policy))},
                 "workload_descriptions": {name: WORKLOADS[name] for name in args.workloads},
                 "unavailable_measurements": UNAVAILABLE, "samples": [], "failures": [],
                 "limitations": ["No installed Root Linux, Android, device, crash, power-loss or release qualification",
@@ -586,9 +683,11 @@ def run(args: argparse.Namespace) -> dict:
     for name, path in (("host", host), ("core", core)):
         if measured_file(path) != identities[name]:
             artifact["failures"].append({"error": f"{name} bytes changed during benchmark"})
+    if implementation_manifest() != implementation:
+        artifact["failures"].append({"error": "measurement implementation changed during benchmark"})
     artifact["summaries"] = summarize(artifact["samples"])
     try:
-        artifact["gate"] = regression_gate(artifact, previous, args.max_regression_percent)
+        artifact["gate"] = regression_gate(artifact, previous)
     except BenchmarkError as error:
         artifact["gate"] = {"status": "INCOMPATIBLE_BASELINE", "passed": False, "reason": str(error)}
     artifact["previous_artifact_digest"] = previous["artifact_digest"] if previous else None

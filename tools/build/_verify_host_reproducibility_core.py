@@ -24,6 +24,14 @@ SCHEMA = "org.trillionnium.host-build-reproducibility.v1"
 BINARIES = ("trillionnium-owner-open-r5-host", "trillionnium-owner-open-r5-core")
 RUST_VERSION = "1.93.0"
 MAX_LOG_BYTES = 32 * 1024 * 1024
+IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.host-build-reproducibility-implementation.v1"
+IMPLEMENTATION_PATHS = (
+    "tools/build/_verify_host_reproducibility_core.py",
+    "tools/build/verify_host_reproducibility.py",
+    "tools/owner-open/owner_open_rootlinux_supervisor.py",
+    "tools/perf/_run_product_baseline_core.py",
+    "tools/perf/run_product_baseline.py",
+)
 
 
 class VerificationError(ValueError):
@@ -55,6 +63,49 @@ def file_identity(path: Path) -> dict[str, Any]:
     require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
             (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns), f"input changed: {path}")
     return {"path": str(path), "size": before.st_size, "sha256": digest.hexdigest()}
+
+
+def repository_file_identity(relative: str) -> dict[str, Any]:
+    require(relative in IMPLEMENTATION_PATHS, f"unregistered implementation path: {relative}")
+    candidate = ROOT / relative
+    require(not candidate.is_symlink(), f"implementation path is a symlink: {relative}")
+    resolved_root = ROOT.resolve(strict=True)
+    resolved = candidate.resolve(strict=True)
+    require(resolved.is_relative_to(resolved_root), f"implementation path escaped repository: {relative}")
+    identity = file_identity(candidate)
+    return {"path": relative, "size": identity["size"], "sha256": identity["sha256"]}
+
+
+def implementation_manifest() -> dict[str, Any]:
+    files = [repository_file_identity(relative) for relative in IMPLEMENTATION_PATHS]
+    body = {"schema": IMPLEMENTATION_MANIFEST_SCHEMA, "files": files}
+    return {**body, "manifest_sha256": sha256(canonical(body))}
+
+
+def validate_implementation_manifest(value: Any) -> dict[str, Any]:
+    require(isinstance(value, dict), "implementation manifest must be an object")
+    require(set(value) == {"schema", "files", "manifest_sha256"},
+            "implementation manifest keys differ")
+    require(value["schema"] == IMPLEMENTATION_MANIFEST_SCHEMA,
+            "implementation manifest schema differs")
+    files = value["files"]
+    require(isinstance(files, list) and len(files) == len(IMPLEMENTATION_PATHS),
+            "implementation manifest file count differs")
+    require([item.get("path") if isinstance(item, dict) else None for item in files] ==
+            list(IMPLEMENTATION_PATHS), "implementation manifest paths differ")
+    for item in files:
+        require(isinstance(item, dict) and set(item) == {"path", "size", "sha256"},
+                "implementation manifest entry keys differ")
+        require(type(item["size"]) is int and item["size"] > 0,
+                f"invalid implementation size: {item.get('path')}")
+        digest_value = item["sha256"]
+        require(isinstance(digest_value, str) and len(digest_value) == 64 and
+                all(char in "0123456789abcdef" for char in digest_value),
+                f"invalid implementation digest: {item.get('path')}")
+    body = {"schema": value["schema"], "files": files}
+    require(value["manifest_sha256"] == sha256(canonical(body)),
+            "implementation manifest digest mismatch")
+    return value
 
 
 def query(command: list[str], cwd: Path) -> str:
@@ -227,8 +278,11 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         resolved = [p.resolve(strict=True) for p in (args.cargo, args.rustc, args.cc, args.ar)]
         require(all(os.access(p, os.X_OK) for p in resolved), "build tools must be executable")
         tools = toolchain_identity(*resolved, repo)
+        implementation = implementation_manifest()
+        validate_implementation_manifest(implementation)
         report.update({"source": source, "tools": tools, "dependency_cache": str(cache),
-                       "build_root": str(build_root), "harness": file_identity(Path(__file__))})
+                       "build_root": str(build_root), "harness": file_identity(Path(__file__)),
+                       "implementation_manifest": implementation})
         build_root.mkdir(mode=0o700)
         for label in ("a", "b"):
             target = build_root / f"target-{label}"
@@ -253,6 +307,8 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
                 with path.open("rb") as stream:
                     require(stream.read(4) == b"\x7fELF", f"artifact is not ELF: {binary}")
                 build["artifacts"][binary] = file_identity(path)
+        require(implementation_manifest() == implementation,
+                "reproducibility implementation changed during builds")
         report["gate"] = compare_artifacts(report["builds"])
     except (VerificationError, OSError, subprocess.SubprocessError) as error:
         report["errors"].append(str(error))

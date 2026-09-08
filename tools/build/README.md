@@ -75,8 +75,11 @@ can receive ordinary Cargo cache metadata writes.
 
 The JSON report includes the source commit/tree, commit timestamp, lockfile and
 manifest identities, direct tool hashes and versions, platform and Rust sysroot,
-verifier identity, complete build commands and environments, elapsed times,
-raw-log identities, and both binary identities. Source and direct tool identities
+verifier identity, a closed implementation manifest covering the build facade,
+private recipe core, performance cleanup facade/private core and Root Linux
+supervisor, complete build commands and environments, elapsed times, raw-log
+identities, and both binary identities. Any implementation member changing
+during the two builds fails verification. Source and direct tool identities
 are checked before and after each build. Reports and logs are created privately;
 the report has a canonical JSON SHA-256 digest computed before adding the
 `report_digest` field.
@@ -114,7 +117,8 @@ baseline in `tools/perf` for that purpose.
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tools.tests.test_verify_host_reproducibility -v
 ```
 
-These small tests check the fixed build recipe and failure gates, including
-artifact differences, failed builds, missing hashes/artifacts, source/tool
-identity changes, dirty or moved source, ambient configuration, and a wrong
-toolchain. They do not execute Cargo or substitute for a real dual-build report.
+These small tests check the fixed build recipe and failure gates, including the
+closed behavior-bearing implementation manifest, artifact differences, failed
+builds, missing hashes/artifacts, source/tool identity changes, dirty or moved
+source, ambient configuration, and a wrong toolchain. They do not
+execute Cargo or substitute for a real dual-build report.

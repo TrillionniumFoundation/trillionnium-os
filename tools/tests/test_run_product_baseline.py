@@ -12,8 +12,10 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 PATH = Path(__file__).resolve().parents[1] / "perf/run_product_baseline.py"
 SPEC = importlib.util.spec_from_file_location("product_baseline", PATH)
@@ -33,10 +35,18 @@ def artifact(latencies: list[int] | None = None) -> dict:
     samples = [{"workload": "short_turn", "repetition": i, "warmup": False,
                 "elapsed_ns": n * 1_000_000, "operations": 1, "correctness_validated": True}
                for i, n in enumerate(latencies)]
+    manifest = BENCH.implementation_manifest()
+    policy = BENCH.gate_policy()
     return reseal({"schema": BENCH.SCHEMA, "qualification": "L1_HOST_SOURCE_BENCHMARK_ONLY",
         "public_release": False, "samples": samples, "summaries": BENCH.summarize(samples),
-        "configuration": {"workloads": ["short_turn"], "repetitions": len(samples), "warmup": 0},
-        "comparison_identity": {"controlled_environment": "fixture"}, "failures": []})
+        "implementation_manifest": manifest, "gate_policy": policy,
+        "configuration": {"workloads": ["short_turn"], "repetitions": len(samples), "warmup": 0,
+                          "max_regression_percent": policy["max_regression_percent"],
+                          "gate_policy_version": policy["version"]},
+        "comparison_identity": {"controlled_environment": "fixture",
+                                "implementation_manifest_sha256": manifest["manifest_sha256"],
+                                "gate_policy_sha256": BENCH.digest(BENCH.canonical(policy))},
+        "failures": []})
 
 
 class ProductBaselineContractTests(unittest.TestCase):
@@ -64,6 +74,45 @@ class ProductBaselineContractTests(unittest.TestCase):
         current["comparison_identity"]["controlled_environment"] = "different"
         with self.assertRaisesRegex(BENCH.BenchmarkError, "incompatible"):
             BENCH.regression_gate(current, artifact(), 25)
+
+    def test_implementation_manifest_is_closed_and_changes_break_compatibility(self) -> None:
+        manifest = BENCH.implementation_manifest()
+        self.assertEqual([item["path"] for item in manifest["files"]],
+                         list(BENCH.IMPLEMENTATION_PATHS))
+        with tempfile.TemporaryDirectory() as directory:
+            copied_root = Path(directory)
+            for relative in BENCH.IMPLEMENTATION_PATHS:
+                source = BENCH.CORE.ROOT / relative
+                destination = copied_root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, destination)
+            with mock.patch.object(BENCH.CORE, "ROOT", copied_root):
+                before = BENCH.implementation_manifest()
+                target = copied_root / BENCH.IMPLEMENTATION_PATHS[0]
+                target.write_bytes(target.read_bytes() + b"\n# identity mutation\n")
+                after = BENCH.implementation_manifest()
+        self.assertNotEqual(before["manifest_sha256"], after["manifest_sha256"])
+
+        previous = artifact()
+        current = artifact()
+        current_manifest = copy.deepcopy(current["implementation_manifest"])
+        current_manifest["files"][0]["sha256"] = "b" * 64
+        body = {"schema": current_manifest["schema"], "files": current_manifest["files"]}
+        current_manifest["manifest_sha256"] = BENCH.digest(BENCH.canonical(body))
+        current["implementation_manifest"] = current_manifest
+        current["comparison_identity"]["implementation_manifest_sha256"] = current_manifest["manifest_sha256"]
+        current = reseal(current)
+        BENCH.validate_artifact(current)
+        with self.assertRaisesRegex(BENCH.BenchmarkError, "incompatible"):
+            BENCH.regression_gate(current, previous)
+
+    def test_threshold_is_reviewed_policy_not_caller_mutable(self) -> None:
+        previous = BENCH.validate_artifact(artifact())
+        current = artifact([20, 21, 22, 23, 24])
+        with self.assertRaisesRegex(BENCH.BenchmarkError, "caller threshold"):
+            BENCH.regression_gate(current, previous, BENCH.MAX_REGRESSION_PERCENT + 1)
+        self.assertEqual(BENCH.regression_gate(current, previous)["threshold_percent"],
+                         BENCH.MAX_REGRESSION_PERCENT)
 
     def test_modified_digest_or_summary_rejected(self) -> None:
         current = artifact()
@@ -115,6 +164,7 @@ class ProductBaselineContractTests(unittest.TestCase):
         common = ["--host", "/host", "--core", "/core", "--output", "/output"]
         for args in (["--repetitions", "0"], ["--concurrency", "17"],
                      ["--slow-read-ms", "nan"], ["--timeout-seconds", "inf"],
+                     ["--max-regression-percent", "26"],
                      ["--workloads", "short_turn", "short_turn"]):
             with self.subTest(args=args), contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
                 BENCH.parse_args(common + args)

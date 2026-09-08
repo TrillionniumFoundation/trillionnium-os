@@ -35,8 +35,11 @@ reaping its carriers. Existing event/job stores are never consumed.
 
 Use explicit host/core paths. The tool hashes their bytes before and after the
 run; it records the source commit/tree, dirty tracked diff and untracked inputs,
-lockfile, Python, shell and harness identities. Source or executable changes
-during a run fail it. A dirty but stable checkout is allowed unless
+lockfile, Python and shell identities plus a closed implementation manifest
+covering the public facade, private core and imported Root Linux supervisor.
+Changing any manifest member changes comparison identity; changing one during a
+run fails it. Source or executable changes during a run also fail it. A
+dirty but stable checkout is allowed unless
 `--require-clean-source` is supplied. These identities do not attest that
 caller-supplied binaries were built from that source; CI must retain the actual
 build command, toolchain identity and build logs alongside the measurement.
@@ -93,8 +96,9 @@ widened release claims are rejected. Content hashes are not independent
 signatures; the runner/custodian must control which baseline is admitted.
 
 Comparisons require the same machine-ID hash, kernel, CPU model/count/affinity/
-governors, scratch filesystem type, Python/shell/harness bytes, build-profile
-label, workloads and workload parameters. Binary and source identities may change
+governors, scratch filesystem type, Python/shell bytes, closed implementation
+manifest, reviewed gate-policy version, build-profile label, workloads and
+workload parameters. Binary and source identities may change
 because those are the candidate under test. Hosted runners with different
 machine identities are deliberately not comparable; do not disable this check
 to reuse a convenient old green result. The tool does not control host load,
@@ -102,8 +106,11 @@ thermal state or storage topology, so run in a controlled environment and inspec
 variance. Changing the harness requires a new baseline.
 
 At least five measured repetitions per workload in both artifacts are needed.
-The gate rejects any observed P50 or P95 increase beyond the threshold. This is
-an explicit deterministic regression rule, not a claim of statistical
+The gate rejects any observed P50 or P95 increase beyond the reviewed policy's
+fixed 25% threshold. `--max-regression-percent` remains only as a compatibility
+input and must equal that policy value; a caller cannot weaken it. Any threshold
+or metric change requires a separately reviewed source-policy change and a new
+baseline identity. This is an explicit deterministic regression rule, not a claim of statistical
 significance; nearest-rank P95 and P99 both equal the maximum with ten measured
 samples and cannot establish a population percentile or product SLO. Select
 repeat counts and the reviewed threshold before running on the actual runner;
@@ -135,8 +142,9 @@ TRILLIONNIUM_PERF_CORE="$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-cor
 python3 -m unittest tools.tests.test_run_product_baseline -v
 ```
 
-The first command tests artifact integrity, raw-summary consistency, thresholds,
-finite input bounds, correctness-before-performance and no-overwrite behavior.
+The first command tests artifact integrity, raw-summary consistency, the closed
+implementation manifest, immutable gate policy, finite input bounds,
+correctness-before-performance and no-overwrite behavior.
 The second additionally exercises all eight workloads against the explicitly
 provided real binaries. Missing environment variables produce an explicit skip
 only for this optional integration test; the benchmark CLI cannot skip a selected
