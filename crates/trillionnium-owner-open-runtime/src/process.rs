@@ -4,7 +4,9 @@ use std::ops::{Deref, DerefMut};
 use std::os::fd::{AsRawFd, FromRawFd};
 use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::process::{Child, Command, ExitStatus, Stdio};
-use std::sync::mpsc::{SyncSender, sync_channel};
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::{SyncSender, TrySendError, sync_channel};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
 
@@ -184,6 +186,12 @@ where
     F: FnMut(ExecutionEvent),
 {
     let started_at = Instant::now();
+    let request_deadline = started_at
+        .checked_add(spec.timeout)
+        .expect("validated runtime timeout is representable");
+    let deadline = cancellation
+        .deadline()
+        .map_or(request_deadline, |outer| outer.min(request_deadline));
     let mut sequence = 0u64;
     let mut emit = |kind: ExecutionEventKind| {
         let event = ExecutionEvent {
@@ -320,17 +328,51 @@ where
     }
 
     let parent_pid = unsafe { libc::getpid() };
+    let child_cancellation = cancellation.clone();
     // A dedicated process group and parent-death signal are lifecycle
     // primitives, not semantic policy. They prevent timeout, cancellation,
     // output exhaustion, or Host death from silently leaving descendants.
     unsafe {
-        command.pre_exec(move || configure_child_lifecycle(parent_pid, pty_slave_fd));
+        command.pre_exec(move || {
+            if child_cancellation.is_cancelled() {
+                return Err(std::io::Error::from_raw_os_error(libc::ECANCELED));
+            }
+            if Instant::now() >= deadline {
+                return Err(std::io::Error::from_raw_os_error(libc::ETIMEDOUT));
+            }
+            configure_child_lifecycle(parent_pid, pty_slave_fd)
+        });
+    }
+
+    let pre_spawn_kind = if cancellation.is_cancelled() {
+        Some(TerminalKind::Cancelled)
+    } else if Instant::now() >= deadline {
+        Some(TerminalKind::TimedOut)
+    } else {
+        None
+    };
+    if let Some(kind) = pre_spawn_kind {
+        let terminal = terminal_observation(
+            kind,
+            None,
+            None,
+            (0, 0),
+            false,
+            started_at,
+            Some("operation stopped before process spawn".to_string()),
+        );
+        emit(ExecutionEventKind::Terminal(terminal.clone()));
+        return Ok(terminal);
     }
 
     let child = match command.spawn() {
         Ok(child) => child,
         Err(error) => {
-            let kind = if spec.tool == crate::types::ToolKind::AdbExec
+            let kind = if error.raw_os_error() == Some(libc::ETIMEDOUT) {
+                TerminalKind::TimedOut
+            } else if error.raw_os_error() == Some(libc::ECANCELED) {
+                TerminalKind::Cancelled
+            } else if spec.tool == crate::types::ToolKind::AdbExec
                 && error.kind() == std::io::ErrorKind::NotFound
             {
                 TerminalKind::TransportUnavailable
@@ -395,81 +437,83 @@ where
     // Readers are live before initial stdin is written. This order prevents a
     // child that writes before reading from deadlocking the Host setup path.
     let (sender, receiver) = sync_channel::<ReaderMessage>(limits.reader_queue_depth);
-    let (stdout_thread, stderr_thread, pty_stdin) = if let Some(master) = pty_master {
-        let reader = match master.try_clone() {
-            Ok(reader) => reader,
-            Err(error) => {
-                let _ = terminate_process_group(&mut child, &identity, limits.terminate_grace);
-                let terminal = terminal_observation(
-                    TerminalKind::IoError,
-                    None,
-                    None,
-                    (0, 0),
-                    false,
-                    started_at,
-                    Some(format!("pty_reader_clone_failed: {error}")),
-                );
-                emit(ExecutionEventKind::Terminal(terminal.clone()));
-                return Ok(terminal);
-            }
-        };
-        let writer = match master.try_clone() {
-            Ok(writer) => Some(writer),
-            Err(error) => {
-                let _ = terminate_process_group(&mut child, &identity, limits.terminate_grace);
-                let terminal = terminal_observation(
-                    TerminalKind::IoError,
-                    None,
-                    None,
-                    (0, 0),
-                    false,
-                    started_at,
-                    Some(format!("pty_writer_clone_failed: {error}")),
-                );
-                emit(ExecutionEventKind::Terminal(terminal.clone()));
-                return Ok(terminal);
-            }
-        };
-        (
-            Some(spawn_reader(
-                reader,
-                StreamKind::Pty,
-                limits.stream_chunk_bytes,
-                sender.clone(),
-                true,
-            )),
-            None,
-            writer,
-        )
-    } else {
-        let stdout_thread = child.stdout.take().map(|stdout| {
-            spawn_reader(
-                stdout,
-                StreamKind::Stdout,
-                limits.stream_chunk_bytes,
-                sender.clone(),
-                false,
+    let workers = (|| -> std::io::Result<_> {
+        let (stdout_thread, stderr_thread, pty_stdin) = if let Some(master) = pty_master {
+            let reader = master.try_clone()?;
+            let writer = master.try_clone()?;
+            (
+                Some(spawn_reader(
+                    reader,
+                    StreamKind::Pty,
+                    limits.stream_chunk_bytes,
+                    sender.clone(),
+                    true,
+                )?),
+                None,
+                Some(writer),
             )
-        });
-        let stderr_thread = child.stderr.take().map(|stderr| {
-            spawn_reader(
-                stderr,
-                StreamKind::Stderr,
-                limits.stream_chunk_bytes,
-                sender.clone(),
+        } else {
+            let stdout_thread = child
+                .stdout
+                .take()
+                .map(|stdout| {
+                    spawn_reader(
+                        stdout,
+                        StreamKind::Stdout,
+                        limits.stream_chunk_bytes,
+                        sender.clone(),
+                        false,
+                    )
+                })
+                .transpose()?;
+            let stderr_thread = child
+                .stderr
+                .take()
+                .map(|stderr| {
+                    spawn_reader(
+                        stderr,
+                        StreamKind::Stderr,
+                        limits.stream_chunk_bytes,
+                        sender.clone(),
+                        false,
+                    )
+                })
+                .transpose()?;
+            (stdout_thread, stderr_thread, None)
+        };
+        let stdin_thread = if let Some(writer) = pty_stdin {
+            Some(spawn_stdin_writer(writer, spec.stdin)?)
+        } else {
+            child
+                .stdin
+                .take()
+                .map(|stdin| spawn_stdin_writer(stdin, spec.stdin))
+                .transpose()?
+        };
+        Ok((stdout_thread, stderr_thread, stdin_thread))
+    })();
+    let (stdout_thread, stderr_thread, stdin_thread) = match workers {
+        Ok(workers) => workers,
+        Err(error) => {
+            // Any earlier worker has stopped and joined through its guard.
+            // Preserve cleanup uncertainty alongside the setup failure.
+            let cleanup = terminate_process_group(&mut child, &identity, limits.terminate_grace);
+            let message = match cleanup {
+                Ok(_) => format!("process_io_setup_failed: {error}"),
+                Err(cleanup) => format!("process_io_setup_failed: {error}; {cleanup}"),
+            };
+            let terminal = terminal_observation(
+                TerminalKind::IoError,
+                None,
+                None,
+                (0, 0),
                 false,
-            )
-        });
-        (stdout_thread, stderr_thread, None)
-    };
-    let stdin_thread = if let Some(writer) = pty_stdin {
-        let bytes = spec.stdin;
-        Some(thread::spawn(move || write_initial_stdin(writer, bytes)))
-    } else {
-        child.stdin.take().map(|stdin| {
-            let bytes = spec.stdin;
-            thread::spawn(move || write_initial_stdin(stdin, bytes))
-        })
+                started_at,
+                Some(message),
+            );
+            emit(ExecutionEventKind::Terminal(terminal.clone()));
+            return Ok(terminal);
+        }
     };
 
     let mut stdout_eof = stdout_thread.is_none();
@@ -517,7 +561,7 @@ where
         if child_status.is_none() && forced_kind.is_none() {
             if cancellation.is_cancelled() {
                 forced_kind = Some(TerminalKind::Cancelled);
-            } else if started_at.elapsed() >= spec.timeout {
+            } else if Instant::now() >= deadline {
                 forced_kind = Some(TerminalKind::TimedOut);
             }
         }
@@ -549,7 +593,14 @@ where
             break;
         }
 
-        match receiver.recv_timeout(limits.poll_interval) {
+        let receive_wait = if child_status.is_none() && forced_kind.is_none() {
+            limits
+                .poll_interval
+                .min(deadline.saturating_duration_since(Instant::now()))
+        } else {
+            limits.poll_interval
+        };
+        match receiver.recv_timeout(receive_wait) {
             Ok(ReaderMessage::Chunk(stream, bytes)) => {
                 let used = stdout_bytes.saturating_add(stderr_bytes);
                 let remaining = limits.max_output_bytes.saturating_sub(used);
@@ -606,24 +657,13 @@ where
         }
     }
 
-    let join_grace = post_exit_grace(limits);
-    if !join_reader_bounded(
-        stdout_thread,
-        &mut runtime_error,
-        "stdout_reader",
-        join_grace,
-    ) {
+    if !retire_reader(stdout_thread, &mut runtime_error, "stdout_reader") {
         forced_kind = Some(TerminalKind::IoError);
     }
-    if !join_reader_bounded(
-        stderr_thread,
-        &mut runtime_error,
-        "stderr_reader",
-        join_grace,
-    ) {
+    if !retire_reader(stderr_thread, &mut runtime_error, "stderr_reader") {
         forced_kind = Some(TerminalKind::IoError);
     }
-    if !join_stdin_bounded(stdin_thread, &mut runtime_error, join_grace) {
+    if !retire_stdin_writer(stdin_thread, &mut runtime_error) {
         forced_kind = Some(TerminalKind::IoError);
     }
 
@@ -692,49 +732,155 @@ fn configure_child_lifecycle(
     Ok(())
 }
 
+/// All production workers own nonblocking pipes/PTYs and use a short finite
+/// poll interval plus cancellable queue delivery. Their guard never detaches
+/// a live thread: failed setup, normal retirement and unwinding all stop/join.
+struct IoWorker<T> {
+    handle: Option<JoinHandle<T>>,
+    stop: Arc<AtomicBool>,
+}
+
+impl<T: Send + 'static> IoWorker<T> {
+    fn spawn(
+        name: &str,
+        run: impl FnOnce(Arc<AtomicBool>) -> T + Send + 'static,
+    ) -> std::io::Result<Self> {
+        let stop = Arc::new(AtomicBool::new(false));
+        let worker_stop = Arc::clone(&stop);
+        let handle = thread::Builder::new()
+            .name(name.to_string())
+            .spawn(move || run(worker_stop))?;
+        Ok(Self {
+            handle: Some(handle),
+            stop,
+        })
+    }
+}
+
+impl<T> IoWorker<T> {
+    fn stop_and_join(mut self) -> thread::Result<T> {
+        self.stop.store(true, Ordering::Release);
+        self.handle.take().expect("worker owns its thread").join()
+    }
+}
+
+impl<T> Drop for IoWorker<T> {
+    fn drop(&mut self) {
+        self.stop.store(true, Ordering::Release);
+        if let Some(handle) = self.handle.take() {
+            let _ = handle.join();
+        }
+    }
+}
+
+fn set_nonblocking(fd: i32) -> std::io::Result<()> {
+    let flags = unsafe { libc::fcntl(fd, libc::F_GETFL) };
+    if flags < 0 || unsafe { libc::fcntl(fd, libc::F_SETFL, flags | libc::O_NONBLOCK) } < 0 {
+        return Err(std::io::Error::last_os_error());
+    }
+    Ok(())
+}
+
+fn wait_io(fd: i32, events: i16, stop: &AtomicBool) -> std::io::Result<bool> {
+    loop {
+        if stop.load(Ordering::Acquire) {
+            return Ok(false);
+        }
+        let mut descriptor = libc::pollfd {
+            fd,
+            events,
+            revents: 0,
+        };
+        let result = unsafe { libc::poll(&mut descriptor, 1, 10) };
+        if result < 0 {
+            let error = std::io::Error::last_os_error();
+            if error.kind() == std::io::ErrorKind::Interrupted {
+                continue;
+            }
+            return Err(error);
+        }
+        if stop.load(Ordering::Acquire) {
+            return Ok(false);
+        }
+        if descriptor.revents & libc::POLLNVAL != 0 {
+            return Err(std::io::Error::other(
+                "runtime pipe descriptor became invalid",
+            ));
+        }
+        if result > 0 {
+            return Ok(true);
+        }
+    }
+}
+
+fn send_reader_message(
+    sender: &SyncSender<ReaderMessage>,
+    mut message: ReaderMessage,
+    stop: &AtomicBool,
+) -> bool {
+    while !stop.load(Ordering::Acquire) {
+        match sender.try_send(message) {
+            Ok(()) => return true,
+            Err(TrySendError::Disconnected(_)) => return false,
+            Err(TrySendError::Full(returned)) => {
+                message = returned;
+                thread::sleep(Duration::from_millis(1));
+            }
+        }
+    }
+    false
+}
+
 fn spawn_reader<R>(
     mut reader: R,
     stream: StreamKind,
     chunk_bytes: usize,
     sender: SyncSender<ReaderMessage>,
     pty: bool,
-) -> JoinHandle<()>
+) -> std::io::Result<IoWorker<()>>
 where
-    R: Read + Send + 'static,
+    R: Read + AsRawFd + Send + 'static,
 {
-    thread::spawn(move || {
+    set_nonblocking(reader.as_raw_fd())?;
+    IoWorker::spawn("owner-open-runtime-reader", move |stop| {
         let mut buffer = vec![0u8; chunk_bytes];
         loop {
-            match reader.read(&mut buffer) {
+            let result = wait_io(reader.as_raw_fd(), libc::POLLIN, &stop).and_then(|ready| {
+                if ready {
+                    reader.read(&mut buffer)
+                } else {
+                    Ok(0)
+                }
+            });
+            match result {
                 Ok(0) => {
-                    let _ = sender.send(ReaderMessage::Eof(stream));
+                    send_reader_message(&sender, ReaderMessage::Eof(stream), &stop);
                     return;
                 }
                 Ok(count) => {
-                    if sender
-                        .send(ReaderMessage::Chunk(stream, buffer[..count].to_vec()))
-                        .is_err()
-                    {
+                    if !send_reader_message(
+                        &sender,
+                        ReaderMessage::Chunk(stream, buffer[..count].to_vec()),
+                        &stop,
+                    ) {
                         return;
                     }
                 }
-                Err(error) if error.kind() == std::io::ErrorKind::Interrupted => {}
+                Err(error)
+                    if matches!(
+                        error.kind(),
+                        std::io::ErrorKind::Interrupted | std::io::ErrorKind::WouldBlock
+                    ) => {}
                 Err(error) if pty && error.raw_os_error() == Some(libc::EIO) => {
-                    let _ = sender.send(ReaderMessage::Eof(stream));
+                    send_reader_message(&sender, ReaderMessage::Eof(stream), &stop);
                     return;
                 }
                 Err(error) => {
-                    let _ = sender.send(ReaderMessage::Error(
-                        stream,
-                        format!(
-                            "{}_read_error: {error}",
-                            match stream {
-                                StreamKind::Stdout => "stdout",
-                                StreamKind::Stderr => "stderr",
-                                StreamKind::Pty => "pty",
-                            }
-                        ),
-                    ));
+                    send_reader_message(
+                        &sender,
+                        ReaderMessage::Error(stream, format!("{stream:?}_read_error: {error}")),
+                        &stop,
+                    );
                     return;
                 }
             }
@@ -742,20 +888,32 @@ where
     })
 }
 
-fn write_initial_stdin<W>(mut writer: W, bytes: Vec<u8>) -> Option<String>
+fn spawn_stdin_writer<W>(mut writer: W, bytes: Vec<u8>) -> std::io::Result<IoWorker<Option<String>>>
 where
-    W: Write,
+    W: Write + AsRawFd + Send + 'static,
 {
-    if bytes.is_empty() {
-        return None;
-    }
-    match writer.write_all(&bytes).and_then(|_| writer.flush()) {
-        Ok(()) => None,
-        Err(error) if error.kind() == std::io::ErrorKind::BrokenPipe => {
-            Some(format!("stdin_closed: {error}"))
+    set_nonblocking(writer.as_raw_fd())?;
+    IoWorker::spawn("owner-open-runtime-stdin", move |stop| {
+        let mut offset = 0;
+        while offset < bytes.len() {
+            match wait_io(writer.as_raw_fd(), libc::POLLOUT, &stop) {
+                Ok(true) => {}
+                Ok(false) => return Some("stdin_write_interrupted_by_retirement".to_string()),
+                Err(error) => return Some(format!("stdin_poll_error: {error}")),
+            }
+            match writer.write(&bytes[offset..]) {
+                Ok(0) => return Some("stdin_write_made_no_progress".to_string()),
+                Ok(count) => offset += count,
+                Err(error)
+                    if matches!(
+                        error.kind(),
+                        std::io::ErrorKind::Interrupted | std::io::ErrorKind::WouldBlock
+                    ) => {}
+                Err(error) => return Some(format!("stdin_io_error: {error}")),
+            }
         }
-        Err(error) => Some(format!("stdin_io_error: {error}")),
-    }
+        None
+    })
 }
 
 fn open_pty(size: PtySize) -> std::io::Result<PtyPair> {
@@ -804,57 +962,25 @@ fn set_cloexec(fd: i32) -> std::io::Result<()> {
     Ok(())
 }
 
-fn wait_until_finished<T>(thread: &JoinHandle<T>, timeout: Duration) -> bool {
-    let deadline = Instant::now()
-        .checked_add(timeout)
-        .unwrap_or_else(Instant::now);
-    while !thread.is_finished() && Instant::now() < deadline {
-        thread::sleep(Duration::from_millis(1));
-    }
-    thread.is_finished()
-}
-
-fn join_reader_bounded(
-    thread: Option<JoinHandle<()>>,
-    error: &mut Option<String>,
-    label: &str,
-    timeout: Duration,
-) -> bool {
+fn retire_reader(thread: Option<IoWorker<()>>, error: &mut Option<String>, label: &str) -> bool {
     let Some(thread) = thread else {
         return true;
     };
-    if !wait_until_finished(&thread, timeout) {
-        *error = Some(join_error(
-            error.take(),
-            format!("{label}_did_not_finish_after_process_cleanup"),
-        ));
-        drop(thread);
-        return false;
-    }
-    if thread.join().is_err() {
+    if thread.stop_and_join().is_err() {
         *error = Some(join_error(error.take(), format!("{label}_panicked")));
         return false;
     }
     true
 }
 
-fn join_stdin_bounded(
-    thread: Option<JoinHandle<Option<String>>>,
+fn retire_stdin_writer(
+    thread: Option<IoWorker<Option<String>>>,
     error: &mut Option<String>,
-    timeout: Duration,
 ) -> bool {
     let Some(thread) = thread else {
         return true;
     };
-    if !wait_until_finished(&thread, timeout) {
-        *error = Some(join_error(
-            error.take(),
-            "stdin_writer_did_not_finish_after_process_cleanup".to_string(),
-        ));
-        drop(thread);
-        return false;
-    }
-    match thread.join() {
+    match thread.stop_and_join() {
         Ok(Some(next)) => {
             *error = Some(join_error(error.take(), next));
             true
@@ -1506,6 +1632,63 @@ fn join_error(existing: Option<String>, next: String) -> String {
 #[cfg(test)]
 mod lifecycle_tests {
     use super::*;
+
+    #[test]
+    fn full_output_queue_is_cancellable_and_unwinding_joins_its_reader() {
+        use std::os::unix::net::UnixStream;
+        use std::sync::atomic::AtomicUsize;
+        struct TrackedReader {
+            socket: UnixStream,
+            reads: Arc<AtomicUsize>,
+            closed: Arc<AtomicBool>,
+        }
+        impl AsRawFd for TrackedReader {
+            fn as_raw_fd(&self) -> i32 {
+                self.socket.as_raw_fd()
+            }
+        }
+        impl Read for TrackedReader {
+            fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
+                let result = self.socket.read(bytes);
+                if result.is_ok() {
+                    self.reads.fetch_add(1, Ordering::SeqCst);
+                }
+                result
+            }
+        }
+        impl Drop for TrackedReader {
+            fn drop(&mut self) {
+                self.closed.store(true, Ordering::SeqCst);
+            }
+        }
+        let (socket, mut writer) = UnixStream::pair().unwrap();
+        let reads = Arc::new(AtomicUsize::new(0));
+        let closed = Arc::new(AtomicBool::new(false));
+        let reader = TrackedReader {
+            socket,
+            reads: Arc::clone(&reads),
+            closed: Arc::clone(&closed),
+        };
+        let (sender, _receiver) = sync_channel(1);
+        let worker = spawn_reader(reader, StreamKind::Stdout, 1, sender, false).unwrap();
+        writer.write_all(b"fill-the-output-queue").unwrap();
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while reads.load(Ordering::SeqCst) < 2 {
+            assert!(Instant::now() < deadline);
+            thread::sleep(Duration::from_millis(1));
+        }
+        // The receiver is deliberately retained without draining and the peer
+        // writer stays open. Neither queue capacity nor pipe EOF can rescue a
+        // blocking implementation when setup/event delivery unwinds here.
+        let started = Instant::now();
+        let unwound = std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || {
+            let _worker = worker;
+            panic!("injected failure after reader setup");
+        }));
+        assert!(unwound.is_err());
+        assert!(closed.load(Ordering::SeqCst));
+        assert!(started.elapsed() < Duration::from_secs(1));
+    }
 
     #[cfg(any(target_os = "linux", target_os = "android"))]
     #[test]

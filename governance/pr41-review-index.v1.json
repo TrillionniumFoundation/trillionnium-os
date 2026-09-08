@@ -1,142 +1,71 @@
 {
   "automatic_redispatch": false,
   "base": {
-    "commit": "3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba",
-    "tree": "ef7112bbb84588209b849666914eb63d6580da8b"
+    "commit": "d7a4e2da36ab4423dcfd70f663be8f59f3f9823f",
+    "tree": "e7c77c540a989c6720575c163dd003a5949b06ae"
   },
   "changed_paths": [
-    ".gap-closure-bootstrap",
-    "CONTRIBUTING.md",
-    "README.md",
-    "apps/trillionnium-agent-privilege-broker/README.md",
-    "apps/trillionnium-agent-stdio-proxy/README.md",
-    "apps/trillionniumd/README.md",
-    "crates/trillionnium-agent-api-uds/README.md",
-    "crates/trillionnium-agent-direct-tools/README.md",
-    "crates/trillionnium-audit-sqlite/README.md",
-    "crates/trillionnium-dbus/README.md",
-    "crates/trillionnium-os-types/README.md",
-    "crates/trillionnium-policy-system/README.md",
-    "crates/trillionnium-privilege-broker-protocol/README.md",
-    "crates/trillionnium-shell-exec/README.md",
-    "crates/trillionnium-task-registry/README.md",
-    "crates/trillionnium-tool-runtime/README.md",
-    "docs/COMPONENT_DEVELOPMENT_STANDARD.md",
-    "docs/START_HERE.md",
-    "docs/generated/COMPONENT_STATUS.md",
-    "docs/machine/doc-set.v1.json",
-    "governance/README.md",
+    "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+    "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+    "crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+    "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs",
+    "crates/trillionnium-owner-open-provider-jsonl/tests/deadline.rs",
+    "crates/trillionnium-owner-open-runtime/src/process.rs",
+    "crates/trillionnium-owner-open-runtime/src/types.rs",
+    "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
+    "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
+    "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
     "governance/pr41-review-index.v1.json",
-    "tools/docs/_verify_component_documentation_core.py",
-    "tools/docs/generate_global_docs.py",
-    "tools/docs/verify_component_documentation.py",
-    "tools/tests/test_component_documentation_list_continuation_html.py",
-    "tools/tests/test_owner_open_broker_component_documentation.py",
-    "tools/tests/test_owner_open_broker_component_documentation_html.py"
+    "tools/tests/test_owner_open_provider_terminal_order.py"
   ],
   "changes": [
     {
-      "path": ".gap-closure-bootstrap",
-      "previous_path": null,
-      "status": "removed"
-    },
-    {
-      "path": "CONTRIBUTING.md",
+      "path": "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "README.md",
+      "path": "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "apps/trillionnium-agent-privilege-broker/README.md",
+      "path": "crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "apps/trillionnium-agent-stdio-proxy/README.md",
+      "path": "crates/trillionnium-owner-open-provider-jsonl/tests/deadline.rs",
       "previous_path": null,
       "status": "added"
     },
     {
-      "path": "apps/trillionniumd/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-agent-api-uds/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-agent-direct-tools/README.md",
+      "path": "crates/trillionnium-owner-open-runtime/src/process.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "crates/trillionnium-audit-sqlite/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-dbus/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-os-types/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-policy-system/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-privilege-broker-protocol/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-shell-exec/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-task-registry/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "crates/trillionnium-tool-runtime/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "docs/COMPONENT_DEVELOPMENT_STANDARD.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "docs/START_HERE.md",
+      "path": "crates/trillionnium-owner-open-runtime/src/types.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "docs/generated/COMPONENT_STATUS.md",
+      "path": "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
       "previous_path": null,
       "status": "added"
     },
     {
-      "path": "docs/machine/doc-set.v1.json",
+      "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "governance/README.md",
+      "path": "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
       "previous_path": null,
       "status": "modified"
     },
@@ -146,53 +75,28 @@
       "status": "modified"
     },
     {
-      "path": "tools/docs/_verify_component_documentation_core.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/docs/generate_global_docs.py",
+      "path": "tools/tests/test_owner_open_provider_terminal_order.py",
       "previous_path": null,
       "status": "modified"
-    },
-    {
-      "path": "tools/docs/verify_component_documentation.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/tests/test_component_documentation_list_continuation_html.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/tests/test_owner_open_broker_component_documentation.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/tests/test_owner_open_broker_component_documentation_html.py",
-      "previous_path": null,
-      "status": "added"
     }
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 28,
-    "changes_sha256": "98fed2d4e2adb920a76559f094bf827aa59c3e7978481503443a6aba3ff09d0c",
-    "path_count": 28,
-    "paths_sha256": "02e7744021830d23ea1e2b4fe82e131e5dbad2dd44a289b88940b8e2ea92b001"
+    "change_count": 12,
+    "changes_sha256": "895abd3208ec95bcf2bfd1f6d858fea6c2f3e5029f457bddcbcef5a687556591",
+    "path_count": 12,
+    "paths_sha256": "83081d8111032e6da792d82badece977aca560ca9d56dfe7685e24aafd4f2235"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
   "program_revision": "2026-08-31-g1",
   "promotion_authorized": false,
   "public_release": false,
-  "pull_request": 47,
+  "pull_request": 65,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "d0090e48b87dd8861abf18a4fe296c71c0dbd9fd",
-    "tree": "c7db85c3df5ac5ec71fce317b89244d0aea726be"
+    "commit": "23b3db326aeaf9c070f289a2a1bcb7cfbad6e5d9",
+    "tree": "44e248f843cd4b8a5153b4bda85d3bfff91c13d0"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -203,40 +107,10 @@
         "Franksudoman"
       ],
       "paths": [
-        "governance/README.md",
         "governance/pr41-review-index.v1.json"
       ],
       "review_order": 1,
       "security_domain": "ci-evidence-and-authority"
-    },
-    {
-      "accountable_owner": "ProfHepta",
-      "id": "documentation-and-contracts",
-      "independent_reviewers": [
-        "Franksudoman"
-      ],
-      "paths": [
-        "docs/COMPONENT_DEVELOPMENT_STANDARD.md",
-        "docs/START_HERE.md",
-        "docs/generated/COMPONENT_STATUS.md",
-        "docs/machine/doc-set.v1.json"
-      ],
-      "review_order": 2,
-      "security_domain": "documentation-and-contracts"
-    },
-    {
-      "accountable_owner": "ProfHepta",
-      "id": "repository-and-retirement",
-      "independent_reviewers": [
-        "Franksudoman"
-      ],
-      "paths": [
-        ".gap-closure-bootstrap",
-        "CONTRIBUTING.md",
-        "README.md"
-      ],
-      "review_order": 3,
-      "security_domain": "repository-and-retirement"
     },
     {
       "accountable_owner": "ProfHepta",
@@ -245,39 +119,20 @@
         "Tomasrgbsf"
       ],
       "paths": [
-        "apps/trillionnium-agent-privilege-broker/README.md",
-        "apps/trillionnium-agent-stdio-proxy/README.md",
-        "apps/trillionniumd/README.md",
-        "crates/trillionnium-agent-api-uds/README.md",
-        "crates/trillionnium-agent-direct-tools/README.md",
-        "crates/trillionnium-audit-sqlite/README.md",
-        "crates/trillionnium-dbus/README.md",
-        "crates/trillionnium-os-types/README.md",
-        "crates/trillionnium-policy-system/README.md",
-        "crates/trillionnium-privilege-broker-protocol/README.md",
-        "crates/trillionnium-shell-exec/README.md",
-        "crates/trillionnium-task-registry/README.md",
-        "crates/trillionnium-tool-runtime/README.md"
+        "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+        "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+        "crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+        "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs",
+        "crates/trillionnium-owner-open-provider-jsonl/tests/deadline.rs",
+        "crates/trillionnium-owner-open-runtime/src/process.rs",
+        "crates/trillionnium-owner-open-runtime/src/types.rs",
+        "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
+        "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
+        "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+        "tools/tests/test_owner_open_provider_terminal_order.py"
       ],
-      "review_order": 4,
+      "review_order": 2,
       "security_domain": "runtime-and-protocol"
-    },
-    {
-      "accountable_owner": "ProfHepta",
-      "id": "source-tooling-and-verification",
-      "independent_reviewers": [
-        "Franksudoman"
-      ],
-      "paths": [
-        "tools/docs/_verify_component_documentation_core.py",
-        "tools/docs/generate_global_docs.py",
-        "tools/docs/verify_component_documentation.py",
-        "tools/tests/test_component_documentation_list_continuation_html.py",
-        "tools/tests/test_owner_open_broker_component_documentation.py",
-        "tools/tests/test_owner_open_broker_component_documentation_html.py"
-      ],
-      "review_order": 5,
-      "security_domain": "source-tooling-and-verification"
     }
   ]
 }
