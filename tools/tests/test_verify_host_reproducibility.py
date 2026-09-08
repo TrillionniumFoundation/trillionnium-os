@@ -124,16 +124,16 @@ class HostReproducibilityTests(unittest.TestCase):
 
     def test_fixed_toolchain_version_rejected_before_build(self) -> None:
         paths = [Path("/cargo"), Path("/rustc"), Path("/cc"), Path("/ar")]
-        with mock.patch.object(VERIFY, "file_identity", return_value={"path": "/tool", "sha256": "x"}), \
-             mock.patch.object(VERIFY, "query", side_effect=["cargo 1.95.0 (x)", "rustc 1.93.0 (x)\nrelease: 1.93.0"]):
+        with mock.patch.object(VERIFY.CORE, "file_identity", return_value={"path": "/tool", "sha256": "x"}), \
+             mock.patch.object(VERIFY.CORE, "query", side_effect=["cargo 1.95.0 (x)", "rustc 1.93.0 (x)\nrelease: 1.93.0"]):
             with self.assertRaisesRegex(VERIFY.VerificationError, "Cargo must"):
                 VERIFY.toolchain_identity(*paths, Path("/repo"))
 
     def test_dirty_or_moved_source_is_rejected(self) -> None:
-        with mock.patch.object(VERIFY, "query", side_effect=["/repo", "head", " M Cargo.toml"]):
+        with mock.patch.object(VERIFY.CORE, "query", side_effect=["/repo", "head", " M Cargo.toml"]):
             with self.assertRaisesRegex(VERIFY.VerificationError, "source must be clean"):
                 VERIFY.source_identity(Path("/repo"))
-        with mock.patch.object(VERIFY, "query", side_effect=["/repo", "moved"]):
+        with mock.patch.object(VERIFY.CORE, "query", side_effect=["/repo", "moved"]):
             with self.assertRaisesRegex(VERIFY.VerificationError, "expected commit"):
                 VERIFY.source_identity(Path("/repo"), "reviewed")
 
@@ -158,7 +158,7 @@ class HostReproducibilityTests(unittest.TestCase):
         return root, log, elapsed
 
     def test_timeout_cleans_child_after_leader_exit_and_next_build_is_clean(self) -> None:
-        root, _, elapsed = self.run_split_group(flood=False, timeout=0.2)
+        root, _, elapsed = self.run_split_group(flood=False, timeout=1.0)
         self.assertLess(elapsed, 5.0)
         result = VERIFY.run_build(
             [sys.executable, "-c", "pass"],

@@ -135,7 +135,7 @@ os._exit(0)
                 BENCH.collect(
                     [sys.executable, "-c", script, str(child_path)],
                     [],
-                    timeout=0.2,
+                    timeout=1.0,
                 )
             self.assertLess(time.monotonic() - started, 5.0)
             child = int(child_path.read_text(encoding="ascii"))
