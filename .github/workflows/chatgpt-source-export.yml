@@ -52,18 +52,16 @@ jobs:
             tools.tests.test_g1_synthetic_merge_identity \
             tools.tests.test_owner_open_workflow_exact_head \
             tools.tests.test_verify_global_docs_contracts -v
-      - name: Commit and publish repair
+      - name: Commit and publish non-workflow files
         shell: bash
         run: |
           set -euo pipefail
           git add \
-            .github/workflows/g1-exact-head-source.yml \
-            .github/workflows/g1-synthetic-merge.yml \
             docs/CI_GATE_MODEL.md \
             docs/QUALIFICATION_AND_EVIDENCE.md \
             tools/g1_pr_aggregate_model.py \
             tools/tests/test_g1_pr_aggregate.py \
             tools/tests/test_g1_synthetic_merge_identity.py \
             tools/verify-g1-pr-aggregate.py
-          git commit -m 'ci: continuously invalidate synthetic rerun admission'
+          git commit -m 'ci: bind aggregate model to synthetic admission job'
           git push origin "HEAD:$PR_BRANCH"
