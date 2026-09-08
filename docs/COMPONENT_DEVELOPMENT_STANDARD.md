@@ -134,4 +134,10 @@ not partially parse raw block HTML, because content inside an unrecognised block
 could otherwise appear to be a Markdown fence or link without rendering as one.
 A genuine Markdown link inside a blockquote or list remains visible and valid.
 Ordinary inline HTML following prose remains allowed. Put block-HTML examples
-inside a fenced code block.
+inside a root-level fenced code block.
+
+A fenced block beginning after an explicit blockquote or list marker is outside
+the accepted subset and is rejected. Required commands or module links must not
+be supplied by a container-nested code example. Authors should move such
+examples to a root-level fence or keep the required navigation as ordinary
+visible Markdown.
