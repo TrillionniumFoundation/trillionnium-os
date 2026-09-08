@@ -36,17 +36,15 @@ FENCE_OPEN = re.compile(r"^ {0,3}(?P<marker>`{3,}|~{3,})(?P<info>.*)$")
 SHELL_FENCE_LANGUAGES = {"sh", "bash", "shell", "zsh", "console"}
 
 # The accepted documentation subset deliberately rejects a line-leading raw
-# HTML block outside a fenced example, including after nested blockquote/list
-# container markers. Parsing only a few CommonMark HTML block families is
-# unsafe: content inside an unrecognised <div>, custom element, declaration,
-# processing instruction or CDATA block could otherwise receive false
-# Markdown-link or shell-fence credit. Container nesting is explicitly bounded.
-CONTAINER_PREFIX = (
-    r"(?:(?: {0,3}>[ \t]?)|"
-    r"(?: {0,3}(?:[-+*]|[0-9]{1,9}[.)])[ \t]+)){0,32}"
-)
+# HTML block outside a fenced example, including after any finite sequence of
+# blockquote/list container markers present on that physical line. Parsing only
+# a few CommonMark HTML block families is unsafe: content inside an unrecognised
+# <div>, custom element, declaration, processing instruction or CDATA block
+# could otherwise receive false Markdown-link or shell-fence credit.
+BLOCKQUOTE_PREFIX = re.compile(r"^ {0,3}>[ \t]?")
+LIST_PREFIX = re.compile(r"^ {0,3}(?:[-+*]|[0-9]{1,9}[.)])[ \t]+")
 RAW_HTML_BLOCK_OPEN = re.compile(
-    r"^" + CONTAINER_PREFIX + r" {0,3}(?:"
+    r"^ {0,3}(?:"
     r"</?[A-Za-z][A-Za-z0-9-]*(?:\s[^<>]*|/?)>"
     r"|<!"
     r"|<\?"
@@ -175,6 +173,20 @@ def strip_html_comments(source: str, label: str) -> str:
     return "".join(characters)
 
 
+def strip_markdown_container_prefix(line: str) -> str:
+    """Remove all physical-line blockquote/list markers with guaranteed progress."""
+    remainder = line
+    while remainder:
+        match = BLOCKQUOTE_PREFIX.match(remainder)
+        if match is None:
+            match = LIST_PREFIX.match(remainder)
+        if match is None:
+            return remainder
+        require(match.end() > 0, "Markdown container parser made no progress")
+        remainder = remainder[match.end():]
+    return remainder
+
+
 def _find_exact_backtick_run(line: str, marker: str, start: int = 0) -> int:
     """Find a maximal backtick run whose length exactly matches marker."""
     cursor = start
@@ -249,9 +261,9 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
     """Return visible prose, exact shell-fence lines and comment-free source.
 
     The accepted subset is intentionally smaller than CommonMark. Raw HTML block
-    openers at the start of a block or after bounded blockquote/list containers
-    are rejected rather than partially parsed. Inline HTML following ordinary
-    prose remains available.
+    openers at the start of a block or after any finite sequence of blockquote
+    and list containers are rejected rather than partially parsed. Inline HTML
+    following ordinary prose remains available.
     """
     source = strip_html_comments(prose, label)
     visible_lines: list[str] = []
@@ -268,7 +280,7 @@ def markdown_surfaces(prose: str, label: str) -> tuple[str, set[str], str]:
                 visible_lines.append(visible)
                 continue
 
-            if RAW_HTML_BLOCK_OPEN.match(line):
+            if RAW_HTML_BLOCK_OPEN.match(strip_markdown_container_prefix(line)):
                 raise VerificationError(
                     f"{label}: line {line_number} raw HTML block opener is forbidden"
                 )
