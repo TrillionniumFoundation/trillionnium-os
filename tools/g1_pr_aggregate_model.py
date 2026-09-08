@@ -1,9 +1,9 @@
-"""Immutable G1 aggregate subject and workflow requirements.
+"""Immutable G1 aggregate subject and direct source-workflow requirements.
 
-The protected pull-request aggregate is intentionally a source-correctness gate.
-Promotion, device, evidence, release, and other qualification workflows are not
-transitive prerequisites for ordinary pull requests; they run on their own
-promotion/release paths instead of recursively qualifying CI with more CI.
+The protected aggregate is a source-correctness gate. It consumes the exact
+prospective-merge qualification because merge compatibility is a direct source
+property. Android target evidence, review-index receipts, evidence intake and
+release qualification remain separate promotion or release concerns.
 """
 from __future__ import annotations
 
@@ -35,11 +35,11 @@ class WorkflowRequirement:
         return f".github/workflows/{self.filename}"
 
 
-# Deliberately empty for ordinary pull requests.
-#
-# The aggregate still verifies the exact live PR subject and all source jobs in
-# its own workflow. Cross-workflow qualification (synthetic merge receipts,
-# Android evaluated matrices, evidence intake, release/signing evidence) is a
-# separate promotion concern and must not make CI itself a recursive admission
-# authority.
-REQUIREMENTS: tuple[WorkflowRequirement, ...] = ()
+REQUIREMENTS = (
+    WorkflowRequirement(
+        filename="g1-synthetic-merge.yml",
+        workflow_name="G1 synthetic-merge qualification",
+        job_names=frozenset({"L1 exact two-parent merge source qualification"}),
+        artifact_kind="synthetic",
+    ),
+)
