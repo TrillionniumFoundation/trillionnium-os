@@ -15,7 +15,8 @@
     "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
     "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
     "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
-    "governance/pr41-review-index.v1.json"
+    "governance/pr41-review-index.v1.json",
+    "tools/tests/test_owner_open_provider_terminal_order.py"
   ],
   "changes": [
     {
@@ -72,14 +73,19 @@
       "path": "governance/pr41-review-index.v1.json",
       "previous_path": null,
       "status": "modified"
+    },
+    {
+      "path": "tools/tests/test_owner_open_provider_terminal_order.py",
+      "previous_path": null,
+      "status": "modified"
     }
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 11,
-    "changes_sha256": "6732aead9ae086b85ac9ad8ce5b0d6c5bf2efe71a910be0d1b208738f8d625be",
-    "path_count": 11,
-    "paths_sha256": "d438db6ee16500c318141ffdf600191e46e0f2d089dc8f62f103e1bac74c91d6"
+    "change_count": 12,
+    "changes_sha256": "895abd3208ec95bcf2bfd1f6d858fea6c2f3e5029f457bddcbcef5a687556591",
+    "path_count": 12,
+    "paths_sha256": "83081d8111032e6da792d82badece977aca560ca9d56dfe7685e24aafd4f2235"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
@@ -89,8 +95,8 @@
   "pull_request": 65,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "a4b454385b049579472d66591fe3bb8b8f5c05ec",
-    "tree": "5d4cf29c99eac08534370b0f3aaa3c615f315b80"
+    "commit": "73be9b20246a4b2034dbcd00d522ce23989afed6",
+    "tree": "63e1060567d521777746676e4fe8d0a1dfad5657"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -122,7 +128,8 @@
         "crates/trillionnium-owner-open-runtime/src/types.rs",
         "crates/trillionnium-owner-open-runtime/tests/retirement.rs",
         "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-        "crates/trillionnium-owner-open-turn-loop/src/lib.rs"
+        "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+        "tools/tests/test_owner_open_provider_terminal_order.py"
       ],
       "review_order": 2,
       "security_domain": "runtime-and-protocol"
