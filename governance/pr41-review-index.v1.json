@@ -137,8 +137,8 @@
   "pull_request": 66,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "d82886bd72b22222d3853274e7709f98f040abc8",
-    "tree": "c40ec5932fac9a87c0ce44c647fd8461d0e32197"
+    "commit": "417d680503bc680242bd42c9628f715edc123ce7",
+    "tree": "12b810a35b1562d9d9ecd789cf11709f96ad431b"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
