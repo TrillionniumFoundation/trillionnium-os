@@ -39,11 +39,22 @@ def _verify_workflow(
     )
     run_id = _positive_int(run.get("id"), "workflow run id")
     _require(
-        run.get("status") == "completed" and run.get("conclusion") == "success",
+        run.get("status") == "completed"
+        and run.get("conclusion") == "success",
         f"latest {requirement.workflow_name} run is not terminal success",
     )
-    attempt = _positive_int(run.get("run_attempt"), f"workflow run {run_id} attempt")
-    jobs = _verify_jobs(api, run_id, requirement.job_names)
+    attempt = _positive_int(
+        run.get("run_attempt"), f"workflow run {run_id} attempt"
+    )
+    jobs = _verify_jobs(
+        api,
+        run_id,
+        attempt,
+        requirement.workflow_name,
+        subject.head_commit,
+        subject.head_ref,
+        requirement.job_names,
+    )
     artifacts, artifact_list_digest = _artifact_metadata(api, run, now)
     selected = _select_artifacts(artifacts, requirement, subject)
 
@@ -77,7 +88,9 @@ def _verify_workflow(
             baseline.get("qualification") == "SOURCE_EVIDENCE_ONLY",
             "synthetic baseline claim widened",
         )
-        gate = _mapping(baseline.get("gate"), "synthetic baseline gate")
+        gate = _mapping(
+            baseline.get("gate"), "synthetic baseline gate"
+        )
         _require(
             gate.get("passed") is False,
             "host synthetic baseline cannot claim target qualification",
