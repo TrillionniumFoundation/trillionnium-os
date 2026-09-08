@@ -1,0 +1,169 @@
+{
+  "schema": "org.trillionnium.product-profile-catalog.v1",
+  "program_revision": "2026-08-31-g1",
+  "default_profile": "owner-open-core",
+  "semantic_contract": "docs/PRODUCT_SEMANTICS.md",
+  "component_lifecycle": "governance/component-lifecycle.v1.json",
+  "profiles": [
+    {
+      "id": "owner-open-core",
+      "status": "ACTIVE_DEFAULT",
+      "default": true,
+      "activation_allowed": true,
+      "claim_ceiling": "SOURCE_PROFILE_SELECTION_ONLY_UNTIL_L2_L4_EVIDENCE",
+      "selected_modules": [
+        "MOD-PROTOCOL",
+        "MOD-BROKER",
+        "MOD-TRANSPORT",
+        "MOD-EXECUTION-CORE",
+        "MOD-PROVIDER",
+        "MOD-TURN-ENGINE",
+        "MOD-TOOL-RUNTIME",
+        "MOD-JOB-RUNTIME",
+        "MOD-EVENT-STORE",
+        "MOD-STREAM",
+        "MOD-ROOTLINUX",
+        "MOD-ANDROID",
+        "MOD-ADB",
+        "MOD-EVIDENCE"
+      ],
+      "selected_cargo_components": [
+        "apps/trillionnium-owner-open-host",
+        "crates/trillionnium-owner-open-call-registry",
+        "crates/trillionnium-owner-open-event-store",
+        "crates/trillionnium-owner-open-job-registry",
+        "crates/trillionnium-owner-open-job-runtime",
+        "crates/trillionnium-owner-open-provider-jsonl",
+        "crates/trillionnium-owner-open-stream-window",
+        "crates/trillionnium-owner-open-tool-bridge",
+        "crates/trillionnium-owner-open-turn-loop",
+        "crates/trillionnium-owner-open-types",
+        "crates/trillionnium-owner-open-runtime"
+      ],
+      "selected_implementation_paths": [
+        "apps/trillionnium-owner-open-host",
+        "crates/trillionnium-owner-open-call-registry",
+        "crates/trillionnium-owner-open-event-store",
+        "crates/trillionnium-owner-open-job-registry",
+        "crates/trillionnium-owner-open-job-runtime",
+        "crates/trillionnium-owner-open-provider-jsonl",
+        "crates/trillionnium-owner-open-stream-window",
+        "crates/trillionnium-owner-open-tool-bridge",
+        "crates/trillionnium-owner-open-turn-loop",
+        "crates/trillionnium-owner-open-types",
+        "crates/trillionnium-owner-open-runtime",
+        "tools/owner-open",
+        "packaging/root-linux",
+        "packaging/owner-open-adb",
+        "android-integration/working-tree/vendor/trillionnium/owner-open",
+        "docs/machine/evidence-index.v1.json"
+      ],
+      "offered_capabilities": [
+        {
+          "id": "shell.exec",
+          "owner_module": "MOD-TOOL-RUNTIME",
+          "implementation_paths": [
+            "crates/trillionnium-owner-open-tool-bridge",
+            "crates/trillionnium-owner-open-runtime"
+          ]
+        },
+        {
+          "id": "adb.exec",
+          "owner_module": "MOD-ADB",
+          "implementation_paths": [
+            "packaging/owner-open-adb",
+            "crates/trillionnium-owner-open-tool-bridge"
+          ]
+        },
+        {
+          "id": "job.pipe",
+          "owner_module": "MOD-JOB-RUNTIME",
+          "implementation_paths": [
+            "crates/trillionnium-owner-open-job-runtime"
+          ]
+        },
+        {
+          "id": "job.pty",
+          "owner_module": "MOD-JOB-RUNTIME",
+          "implementation_paths": [
+            "crates/trillionnium-owner-open-job-runtime",
+            "crates/trillionnium-owner-open-runtime"
+          ]
+        },
+        {
+          "id": "stream.resume",
+          "owner_module": "MOD-STREAM",
+          "implementation_paths": [
+            "crates/trillionnium-owner-open-stream-window"
+          ]
+        },
+        {
+          "id": "event.replay",
+          "owner_module": "MOD-EVENT-STORE",
+          "implementation_paths": [
+            "crates/trillionnium-owner-open-event-store"
+          ]
+        }
+      ],
+      "retained_components": [],
+      "blocked_capabilities": [],
+      "evidence_requirements": [
+        "L1 exact-head source",
+        "L2 installed Root Linux",
+        "L3 Android image",
+        "L4 authorized physical device"
+      ]
+    },
+    {
+      "id": "sealed-typed-android-extensions",
+      "status": "SEALED_OPTIONAL",
+      "default": false,
+      "activation_allowed": false,
+      "claim_ceiling": "RETAINED_HISTORY_AND_SOURCE_ARCHAEOLOGY_ONLY",
+      "selected_modules": [],
+      "selected_cargo_components": [],
+      "selected_implementation_paths": [],
+      "offered_capabilities": [],
+      "retained_components": [
+        "apps/trillionniumd",
+        "crates/trillionnium-os-types",
+        "crates/trillionnium-agent-api-uds",
+        "crates/trillionnium-task-registry",
+        "crates/trillionnium-policy-system",
+        "crates/trillionnium-audit-sqlite",
+        "crates/trillionnium-privilege-broker-protocol",
+        "crates/trillionnium-tool-runtime",
+        "crates/trillionnium-agent-direct-tools",
+        "crates/trillionnium-shell-exec",
+        "crates/trillionnium-dbus",
+        "apps/trillionnium-agent-privilege-broker",
+        "apps/trillionnium-agent-stdio-proxy"
+      ],
+      "blocked_capabilities": [
+        {
+          "id": "system-api.open-uri",
+          "reason": "no active module/API/state/error schema, privacy review, SELinux and device evidence"
+        },
+        {
+          "id": "system-api.launch-package",
+          "reason": "no active module/API/state/error schema, privacy review, SELinux and device evidence"
+        },
+        {
+          "id": "accessibility.snapshot",
+          "reason": "no active module/API/state/error schema, privacy review, SELinux and device evidence"
+        },
+        {
+          "id": "accessibility.mutate",
+          "reason": "no active module/API/state/error schema, privacy review, SELinux and device evidence"
+        }
+      ],
+      "evidence_requirements": [
+        "catalogued logical modules",
+        "executable schemas",
+        "privacy review",
+        "compiled SELinux evidence",
+        "authorized device evidence"
+      ]
+    }
+  ]
+}

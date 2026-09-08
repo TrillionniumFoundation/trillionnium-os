@@ -2,12 +2,13 @@
 
 Status: **ACTIVE CANDIDATE**  
 Program revision: **2026-08-31-g1**  
-Documentation revision: **1.1.1**
+Documentation revision: **1.2.0**
 Semantic authority: **owner-open-semantic-v1**  
 Architecture authority: **modular-control-plane-v1**  
 Machine truth root: [`machine/`](machine/)  
 Generated current state: [`generated/CURRENT_STATE.md`](generated/CURRENT_STATE.md)  
 Generated component inventory: [`generated/COMPONENT_STATUS.md`](generated/COMPONENT_STATUS.md)
+Generated product profiles: [`generated/PRODUCT_PROFILE_STATUS.md`](generated/PRODUCT_PROFILE_STATUS.md)
 
 ## 1. Purpose
 
@@ -48,6 +49,7 @@ The source of truth is split by concern:
 - `machine/current-baseline.v1.json` — the dated, recorded trunk/source-CI/source-parent/documentation snapshot; its `latest_*` keys are not a live remote-status API;
 - `machine/program-state.v1.json` — active program, phases and capabilities;
 - `machine/module-catalog.v1.json` — logical module boundaries, dependencies, owners, state and SLO contracts;
+- `machine/product-profile-catalog.v1.json` — the exact active default profile, sealed optional profile and capability-to-module graph;
 - `../Cargo.toml` plus `../governance/component-lifecycle.v1.json` — the exact active/default versus sealed root Cargo component inventory;
 - `machine/requirement-graph.v1.json` — requirement-to-module-to-gap-to-evidence graph;
 - `machine/gap-register.v2.json` — every open or closed gap and its exit level;
