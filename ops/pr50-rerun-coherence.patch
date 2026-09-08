@@ -1,0 +1,225 @@
+diff --git a/.github/workflows/g1-exact-head-source.yml b/.github/workflows/g1-exact-head-source.yml
+index 991df68..3bccfbf 100644
+--- a/.github/workflows/g1-exact-head-source.yml
++++ b/.github/workflows/g1-exact-head-source.yml
+@@ -381,7 +381,7 @@ jobs:
+           test -z "$worktree_status"
+ 
+   aggregate:
+-    name: L1 exact-source-head aggregate candidate
++    name: L1 exact-head direct-source aggregate
+     needs:
+       - docs-graph
+       - rust-runtime
+diff --git a/.github/workflows/g1-synthetic-merge.yml b/.github/workflows/g1-synthetic-merge.yml
+index 8ede428..c601d27 100644
+--- a/.github/workflows/g1-synthetic-merge.yml
++++ b/.github/workflows/g1-synthetic-merge.yml
+@@ -427,3 +427,20 @@ jobs:
+           path: |
+             ${{ runner.temp }}/g1-synthetic-merge-evidence.json
+             ${{ runner.temp }}/g1-merge-baseline.json
++
++  source-admission:
++    name: L1 exact-source-head aggregate candidate
++    needs:
++      - synthetic-merge
++    if: ${{ always() }}
++    runs-on: ubuntu-24.04
++    timeout-minutes: 5
++    steps:
++      - name: Continuously bind the required context to this workflow attempt
++        env:
++          SYNTHETIC_RESULT: ${{ needs.synthetic-merge.result }}
++        shell: bash
++        run: |
++          set -euo pipefail
++          test "$SYNTHETIC_RESULT" = success
++          printf '%s\n' 'L1_EXACT_HEAD_AND_SYNTHETIC_SOURCE_PASSED'
+diff --git a/docs/CI_GATE_MODEL.md b/docs/CI_GATE_MODEL.md
+index ca0618b..c4d3b4f 100644
+--- a/docs/CI_GATE_MODEL.md
++++ b/docs/CI_GATE_MODEL.md
+@@ -31,12 +31,16 @@ message and Git configuration. Recomputing the same tuple must produce the same
+ commit SHA. GitHub's hidden pull-request merge ref is a mutable service-side
+ observation and is not the canonical decision object.
+ 
+-The server-required exact-head aggregate must fail closed unless the newest run
+-of `G1 synthetic-merge qualification` for the exact live base/head subject is
+-complete and successful. The aggregate consumes that exact workflow attempt and
+-its commit-bound source receipt; this is not target, device or release evidence.
+-A failed merge, changed ordered parent, changed merge tree, changed canonical
+-commit, rerun-attempt movement or artifact movement invalidates the aggregate.
++The server-required `L1 exact-source-head aggregate candidate` context is owned
++by a dependent job in `G1 synthetic-merge qualification`. It cannot complete
++until the exact live base/head synthetic job succeeds. The separately named
++exact-head direct-source aggregate consumes that same workflow attempt, both
++job identities and its commit-bound source receipt. A rerun of the synthetic job
++therefore requeues its dependent required context; a failed attempt makes that
++context fail without requiring a source push. This is source/integration
++evidence, not target, device or release evidence. A failed merge, changed
++ordered parent, changed merge tree, changed canonical commit, rerun-attempt
++movement or artifact movement invalidates the aggregate.
+ 
+ A source gate must report the failing source property directly. It must not
+ require unrelated workflows to manufacture receipts merely to prove that those
+@@ -100,13 +104,14 @@ the existing required exact-head aggregate and make it consume the real
+ canonical synthetic-merge result. Non-required legacy receipt workflows must be
+ renamed, made manual-only or retired.
+ 
+-The real synthetic-merge context should also be continuously enforced by branch
+-protection so that a post-aggregate rerun immediately blocks mergeability. That
+-administrative requirement is separate from canonicalizing the source-produced
+-commit and cannot be claimed complete by a repository commit alone.
++The existing required context is continuously coupled to the synthetic workflow
++by its dependent admission job. The exact-head workflow must not emit the same
++name; duplicate job names across workflows would make protection ambiguous. A
++post-success rerun of the synthetic job and its dependants must make the required
++context pending and then success or failure for that new attempt.
+ 
+-Changes to required context names and branch protection must be atomic: the new
+-source guarantee becomes enforceable before the old context is removed.
++Any future context-name or branch-protection migration must remain atomic: the
++new source guarantee becomes enforceable before the old context is removed.
+ 
+ ## 6. Design rule
+ 
+diff --git a/docs/QUALIFICATION_AND_EVIDENCE.md b/docs/QUALIFICATION_AND_EVIDENCE.md
+index d57013d..770f8c8 100644
+--- a/docs/QUALIFICATION_AND_EVIDENCE.md
++++ b/docs/QUALIFICATION_AND_EVIDENCE.md
+@@ -51,17 +51,19 @@ alone never promotes a claim or closes a higher-level gap.
+ 
+ ### 2.2 Protected L1 pull-request source gate
+ 
+-The server-required `L1 exact-source-head aggregate candidate` context is the
+-repository-controlled L1 source/integration gate. It requires every direct
+-source job in its own exact-head workflow and binds the live pull-request base,
+-head, repository and clean checkout.
+-
+-A real conflict-checked canonical synthetic merge is also a direct
+-source/integration property. The aggregate therefore requires the newest
+-exact-subject run of `G1 synthetic-merge qualification` to be terminal-success
+-and validates its source-bound receipt against the same live base/head tuple,
+-ordered parents, merge tree, canonical merge commit, lockfile and source
+-checkout.
++The server-required `L1 exact-source-head aggregate candidate` context is a
++dependent admission job in `G1 synthetic-merge qualification`. It becomes
++pending for each new workflow attempt and succeeds only after the exact
++conflict-checked synthetic merge job succeeds. The direct exact-head jobs retain
++their own required contexts, while their separately named aggregate binds the
++live pull-request base, head, repository and clean checkout.
++
++The exact-head aggregate requires the newest exact-subject synthetic workflow to
++be terminal-success and validates both workflow jobs plus its source-bound
++receipt against the same live base/head tuple, ordered parents, merge tree,
++canonical merge commit, lockfile and source checkout. A post-success rerun of
++the synthetic job and dependent admission job therefore invalidates the old
++required result without a source push.
+ 
+ The canonical commit is generated with fixed author and committer identities,
+ fixed timestamps and timezone, a fixed message, a clean Git configuration, the
+diff --git a/tools/g1_pr_aggregate_model.py b/tools/g1_pr_aggregate_model.py
+index b14b8cc..4b7896e 100644
+--- a/tools/g1_pr_aggregate_model.py
++++ b/tools/g1_pr_aggregate_model.py
+@@ -39,7 +39,12 @@ REQUIREMENTS = (
+     WorkflowRequirement(
+         filename="g1-synthetic-merge.yml",
+         workflow_name="G1 synthetic-merge qualification",
+-        job_names=frozenset({"L1 exact two-parent merge source qualification"}),
++        job_names=frozenset(
++            {
++                "L1 exact two-parent merge source qualification",
++                "L1 exact-source-head aggregate candidate",
++            }
++        ),
+         artifact_kind="synthetic",
+     ),
+ )
+diff --git a/tools/tests/test_g1_pr_aggregate.py b/tools/tests/test_g1_pr_aggregate.py
+index cc11900..741c479 100644
+--- a/tools/tests/test_g1_pr_aggregate.py
++++ b/tools/tests/test_g1_pr_aggregate.py
+@@ -183,7 +183,12 @@ class SourceGateBoundaryTest(SourceAggregateFixture):
+         )
+         self.assertEqual(
+             requirement.job_names,
+-            frozenset({"L1 exact two-parent merge source qualification"}),
++            frozenset(
++                {
++                    "L1 exact two-parent merge source qualification",
++                    "L1 exact-source-head aggregate candidate",
++                }
++            ),
+         )
+         self.assertEqual(requirement.artifact_kind, "synthetic")
+         self.assertTrue(callable(_verify_workflow))
+@@ -197,7 +202,7 @@ class SourceGateBoundaryTest(SourceAggregateFixture):
+         workflow = report["workflows"][0]
+         self.assertEqual(workflow["run_id"], 1001)
+         self.assertEqual(workflow["run_attempt"], 1)
+-        self.assertEqual(len(workflow["jobs"]), 1)
++        self.assertEqual(len(workflow["jobs"]), 2)
+         self.assertEqual(len(workflow["artifacts"]), 1)
+         self.assertEqual(
+             workflow["artifacts"][0]["semantic"]["merge_commit"],
+diff --git a/tools/tests/test_g1_synthetic_merge_identity.py b/tools/tests/test_g1_synthetic_merge_identity.py
+index b50ec21..3bd9f34 100644
+--- a/tools/tests/test_g1_synthetic_merge_identity.py
++++ b/tools/tests/test_g1_synthetic_merge_identity.py
+@@ -11,6 +11,7 @@ import unittest
+ 
+ ROOT = Path(__file__).resolve().parents[2]
+ WORKFLOW = ROOT / ".github/workflows/g1-synthetic-merge.yml"
++EXACT_HEAD_WORKFLOW = ROOT / ".github/workflows/g1-exact-head-source.yml"
+ CANONICAL_NAME = "g1-synthetic-merge"
+ CANONICAL_EMAIL = "g1-synthetic-merge@invalid"
+ CANONICAL_DATE = "2000-01-01T00:00:00Z"
+@@ -110,6 +111,23 @@ class SyntheticMergeIdentityTest(unittest.TestCase):
+         ):
+             self.assertIn(literal, source)
+ 
++    def test_required_context_is_owned_by_synthetic_attempt(self) -> None:
++        synthetic = WORKFLOW.read_text(encoding="utf-8")
++        exact_head = EXACT_HEAD_WORKFLOW.read_text(encoding="utf-8")
++        required = "name: L1 exact-source-head aggregate candidate"
++        self.assertEqual(synthetic.count(required), 1)
++        self.assertNotIn(required, exact_head)
++        self.assertIn("  source-admission:\n", synthetic)
++        self.assertIn("      - synthetic-merge\n", synthetic)
++        self.assertIn("    if: ${{ always() }}\n", synthetic)
++        self.assertIn(
++            "SYNTHETIC_RESULT: ${{ needs.synthetic-merge.result }}", synthetic
++        )
++        self.assertIn('test "$SYNTHETIC_RESULT" = success', synthetic)
++        self.assertIn(
++            "name: L1 exact-head direct-source aggregate", exact_head
++        )
++
+     def test_same_tree_and_ordered_parents_produce_one_commit_identity(self) -> None:
+         with tempfile.TemporaryDirectory() as temporary:
+             root = Path(temporary) / "repo"
+diff --git a/tools/verify-g1-pr-aggregate.py b/tools/verify-g1-pr-aggregate.py
+index d58094a..c500e83 100755
+--- a/tools/verify-g1-pr-aggregate.py
++++ b/tools/verify-g1-pr-aggregate.py
+@@ -1,12 +1,12 @@
+ #!/usr/bin/env python3
+ """Fail-closed exact-head plus prospective-merge source aggregate.
+ 
+-The protected ``L1 exact-source-head aggregate candidate`` context already
+-requires the direct jobs in its own workflow. This command additionally binds
+-the newest successful ``G1 synthetic-merge qualification`` run and source-bound
+-receipt to the same live PR base/head tuple. It deliberately does not require
+-review-index, Android target, evidence-intake, device, fault, signing or release
+-workflows.
++The protected ``L1 exact-source-head aggregate candidate`` context is emitted
++by the dependent admission job in ``G1 synthetic-merge qualification``. This
++command runs in the separately named exact-head direct-source aggregate and
++binds that workflow's exact attempt, both job identities, and source receipt to
++the same live PR base/head tuple. It deliberately does not require review-index,
++Android target, evidence-intake, device, fault, signing or release workflows.
+ """
+ from __future__ import annotations
+ 
