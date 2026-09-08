@@ -1,0 +1,238 @@
+name: ChatGPT issue53 protected integrator
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-source-export-20260908
+    paths:
+      - .github/workflows/chatgpt-issue53-protected-integrator.yml
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  checks: read
+  actions: read
+
+concurrency:
+  group: chatgpt-issue53-protected-integrator
+  cancel-in-progress: false
+
+jobs:
+  integrate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PREDECESSOR_COMMIT: fb196c36fbd6d1ca9978c229b3bd4fecd5f5783e
+      PREDECESSOR_TREE: 202f4509d4deda35db5d0a08528f76110fd183f0
+      PREDECESSOR_BRANCH: codex/repository-truth-profiles-20260908
+      TARGET_BRANCH: codex/repository-truth-profiles-v2-20260909
+      DEPENDENCY_PR: '63'
+      ISSUE_NUMBER: '53'
+    steps:
+      - name: Wait for protected PR63 integration
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 1800))
+          while (( SECONDS < deadline )); do
+            value="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${DEPENDENCY_PR}")"
+            if test "$(jq -r '.merged' <<<"$value")" = true; then
+              merge_sha="$(jq -r '.merge_commit_sha' <<<"$value")"
+              main_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/main" --jq '.commit.sha')"
+              gh api "repos/${GITHUB_REPOSITORY}/compare/${merge_sha}...${main_sha}" --jq '.status' | grep -Eq '^(identical|ahead)$'
+              printf '%s\n' "$main_sha" > "${RUNNER_TEMP}/base"
+              exit 0
+            fi
+            sleep 15
+          done
+          printf '%s\n' 'PR63 did not reach protected main' >&2
+          exit 1
+
+      - name: Build exact issue53 candidate on current main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: main
+          persist-credentials: true
+
+      - name: Cherry-pick the reviewed repository-truth delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$base"
+          git fetch --no-tags origin "$PREDECESSOR_BRANCH"
+          test "$(git --no-replace-objects rev-parse "origin/${PREDECESSOR_BRANCH}")" = "$PREDECESSOR_COMMIT"
+          test "$(git --no-replace-objects rev-parse "${PREDECESSOR_COMMIT}^{tree}")" = "$PREDECESSOR_TREE"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git switch -c "$TARGET_BRANCH"
+          git cherry-pick -x "$PREDECESSOR_COMMIT"
+          git diff --check "$base...HEAD"
+          test "$(git diff --name-only "$base...HEAD" | wc -l)" -gt 0
+          test -f docs/machine/product-profile-catalog.v1.json
+          test -f docs/generated/PRODUCT_PROFILE_STATUS.md
+
+      - name: Verify repository truth and product profiles
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/docs/generate_global_docs.py \
+            tools/docs/verify_global_docs.py \
+            tools/docs/verify_repository_authority.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest \
+            tools.tests.test_repository_authority \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_owner_open_broker_module_documentation -v
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+
+      - name: Publish draft PR with exact subject
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          base="$(cat "${RUNNER_TEMP}/base")"
+          head="$(git --no-replace-objects rev-parse HEAD)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          git push origin "HEAD:$TARGET_BRANCH"
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=all&head=${GITHUB_REPOSITORY_OWNER}%3A${TARGET_BRANCH}" --jq '.[0].number // empty')"
+          if test -z "$pr"; then
+            pr="$(gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls" \
+              -f title='docs: make repository profiles and authority executable' \
+              -f head="$TARGET_BRANCH" -f base=main -F draft=true \
+              -f body='Issue #53 exact repository-truth candidate; exact subject is being bound.' --jq '.number')"
+          fi
+          printf '%s\n' "$pr" > "${RUNNER_TEMP}/pr"
+          merge_sha=""
+          for _ in $(seq 1 30); do
+            merge_sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merge_commit_sha // empty')"
+            test -n "$merge_sha" && break
+            sleep 1
+          done
+          test -n "$merge_sha"
+          base_tree="$(git --no-replace-objects rev-parse "${base}^{tree}")"
+          count="$(git diff --name-only "$base...$head" | wc -l | tr -d ' ')"
+          cat > "${RUNNER_TEMP}/body.md" <<EOF
+          Parent program: #51
+          Closes source work: #53
+
+          ## Exact subject
+
+          \`\`\`text
+          base:                    main@${base}
+          base tree:               ${base_tree}
+          reviewed predecessor:    ${PREDECESSOR_COMMIT}
+          predecessor tree:        ${PREDECESSOR_TREE}
+          head:                    ${head}
+          head tree:               ${tree}
+          GitHub prospective merge:${merge_sha}
+          changed paths:           ${count}
+          \`\`\`
+
+          Any base/head/tree/prospective-merge, workflow or review-surface movement invalidates qualification and review.
+
+          ## Delivered authority
+
+          - one machine-readable \`owner-open-core\` default profile;
+          - a separately sealed, non-activatable typed Android extension profile;
+          - repository-wide current-authority/link verification;
+          - explicit \`HISTORICAL_NON_AUTHORITATIVE\` markings for retained components;
+          - generated product-profile status;
+          - exact capability-to-module/component ownership with no unowned current capability.
+
+          The candidate is rebased by cherry-picking the reviewed issue53 delta onto the protected main that already contains #50 and #63. No source presence activates sealed System API or Accessibility features.
+
+          ## Claim ceiling
+
+          Repository/source truth only. No installed target, physical device, destructive fault, signing, deployment, OTA or public-release authority is claimed. \`automatic_redispatch=false\` and \`public_release=false\` remain unchanged.
+
+          Fresh exact-head non-author review is required from \`Tomasrgbsf\` and \`Franksudoman\` after all current checks are terminal-success.
+          EOF
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f body="$(cat "${RUNNER_TEMP}/body.md")" >/dev/null
+          printf '%s\n' "$head" > "${RUNNER_TEMP}/head"
+
+      - name: Require terminal-success source qualification
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pr="$(cat "${RUNNER_TEMP}/pr")"
+          head="$(cat "${RUNNER_TEMP}/head")"
+          deadline=$((SECONDS + 1500))
+          required=(
+            'L1 graph, documentation, broker and MCP source closure'
+            'L1 Rust 1.93 selected Host, job, flow and recovery closure'
+            'L1 exact-head direct-source aggregate'
+            'L1 exact two-parent merge source qualification'
+            'L1 exact-source-head aggregate candidate'
+            'L1 protected-main and exact-head independent-review readiness'
+          )
+          while (( SECONDS < deadline )); do
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/commits/${head}/check-runs?per_page=100" \
+              --jq '.check_runs[] | [.name,.status,(.conclusion // ""),.id] | @tsv' > "${RUNNER_TEMP}/checks.tsv"
+            python3 - "${RUNNER_TEMP}/checks.tsv" "${RUNNER_TEMP}/result" "${required[@]}" <<'PY'
+          from pathlib import Path
+          import sys
+          latest = {}
+          for line in Path(sys.argv[1]).read_text().splitlines():
+              name, status, conclusion, raw_id = line.split("\t")
+              value = (int(raw_id), status, conclusion)
+              if name not in latest or value[0] > latest[name][0]: latest[name] = value
+          required = sys.argv[3:]
+          failed = [name for name, (_, status, conclusion) in latest.items()
+                    if status == "completed" and conclusion not in {"success", "neutral", "skipped"}]
+          good = not failed and all(latest.get(name, (0,"", ""))[1:] == ("completed", "success") for name in required)
+          Path(sys.argv[2]).write_text(("PASS" if good else "FAIL:" + ",".join(failed)))
+          if failed: raise SystemExit(2)
+          PY
+            test "$(cat "${RUNNER_TEMP}/result")" = PASS && exit 0
+            sleep 15
+          done
+          exit 1
+
+      - name: Obtain fresh reviews and merge normally
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          pr="$(cat "${RUNNER_TEMP}/pr")"
+          head="$(cat "${RUNNER_TEMP}/head")"
+          node_id="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.node_id')"
+          gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -f id="$node_id" >/dev/null
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pulls/${pr}/requested_reviewers" \
+            -f reviewers[]='Tomasrgbsf' -f reviewers[]='Franksudoman' >/dev/null
+          deadline=$((SECONDS + 1200))
+          while (( SECONDS < deadline )); do
+            test "$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.head.sha')" = "$head"
+            states="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${pr}/reviews?per_page=100" --jq '.[] | select(.commit_id == "'"$head"'") | [.user.login,.state,.id] | @tsv' | sort -k1,1 -k3,3n | awk -F'\t' '$1=="Tomasrgbsf"||$1=="Franksudoman"{s[$1]=$2} END{print s["Tomasrgbsf"],s["Franksudoman"]}')"
+            if test "$states" = 'APPROVED APPROVED'; then
+              unresolved="$(gh api graphql -f owner="${GITHUB_REPOSITORY_OWNER}" -f name="${GITHUB_REPOSITORY#*/}" -F number="$pr" -f query='query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}}}' --jq '[.data.repository.pullRequest.reviewThreads.nodes[] | select(.isResolved == false)] | length')"
+              test "$unresolved" = 0
+              break
+            fi
+            sleep 15
+          done
+          test "$states" = 'APPROVED APPROVED'
+          result="$(gh api --method PUT "repos/${GITHUB_REPOSITORY}/pulls/${pr}/merge" \
+            -f merge_method=squash -f sha="$head" \
+            -f commit_title='docs: make repository profiles and authority executable' \
+            -f commit_message='Close issue #53 at the repository/source level. Sealed profiles remain non-activatable and no L2-L6 evidence or release authority is granted.')"
+          jq -e '.merged == true' <<<"$result" >/dev/null
+          merge_sha="$(jq -r '.sha' <<<"$result")"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}/comments" \
+            -f body="Protected source integration completed at ${merge_sha}; repository truth/profile exit criteria are met. This closes source work only and grants no L2-L6 evidence." >/dev/null
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/${ISSUE_NUMBER}" -f state=closed >/dev/null
