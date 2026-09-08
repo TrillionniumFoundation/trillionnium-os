@@ -10,6 +10,7 @@ use std::mem::size_of;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::time::Instant;
 
 use thiserror::Error;
 use trillionnium_owner_open_call_registry::{
@@ -258,6 +259,17 @@ impl ProviderHost<'_> {
     }
 
     pub fn invoke_tool(&mut self, call: BoundToolCall) -> Result<ToolOutcome, TurnLoopError> {
+        self.invoke_tool_with_deadline(call, None)
+    }
+
+    /// Invoke the exact callback under an enclosing monotonic turn deadline.
+    /// Runtime expiry yields a timed-out observation; it does not assert that
+    /// an already-started effect was undone.
+    pub fn invoke_tool_with_deadline(
+        &mut self,
+        call: BoundToolCall,
+        deadline: Option<Instant>,
+    ) -> Result<ToolOutcome, TurnLoopError> {
         if call.key.scope != self.scope {
             return Err(TurnLoopError::ToolScopeMismatch);
         }
@@ -273,10 +285,11 @@ impl ProviderHost<'_> {
             let retained_event_bytes = &mut *self.retained_event_bytes;
             let next_seq = &mut *self.next_seq;
             let sink = &mut *self.sink;
-            bridge.execute_fallible_with_external_flags(
+            bridge.execute_fallible_with_deadline(
                 call,
                 self.limits,
                 std::iter::once(self.cancellation.shared_flag()),
+                deadline,
                 |event| {
                     retain_tool_event(&mut runtime_events, &mut runtime_event_bytes, event.clone());
                     push_event(
