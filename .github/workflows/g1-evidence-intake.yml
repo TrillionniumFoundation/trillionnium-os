@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       source_sha:
-        description: Exact source commit to qualify
+        description: Exact protected-main-reachable source commit to qualify
         required: true
         type: string
 
@@ -23,7 +23,7 @@ env:
 
 jobs:
   source-evidence:
-    name: L1 strict evidence intake on exact source head
+    name: L1 strict evidence intake on exact protected-main source
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -37,6 +37,19 @@ jobs:
           fetch-depth: 0
           ref: ${{ env.SOURCE_HEAD_SHA }}
           persist-credentials: false
+      - name: Bind selected source to protected main
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^{commit})" = "$SOURCE_HEAD_SHA"
+          git --no-replace-objects cat-file -e "$SOURCE_HEAD_SHA^{commit}"
+          git fetch --no-tags origin '+refs/heads/main:refs/remotes/origin/main'
+          git --no-replace-objects merge-base --is-ancestor \
+            "$SOURCE_HEAD_SHA" refs/remotes/origin/main
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
       - name: Set up Python 3.13
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
@@ -44,7 +57,7 @@ jobs:
       - name: Verify evidence contracts and non-mutating promotion plan
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_HEAD_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^{commit})" = "$SOURCE_HEAD_SHA"
           python3 -m py_compile \
             tools/evidence/g1_evidence_contract.py \
             tools/evidence/g1_evidence_types.py \
@@ -64,16 +77,32 @@ jobs:
           import json
           import os
           from pathlib import Path
-          report = json.loads(Path(os.environ["RUNNER_TEMP"], "g1-evidence-report.json").read_text())
-          plan = json.loads(Path(os.environ["RUNNER_TEMP"], "g1-promotion-plan.json").read_text())
+
+          report = json.loads(
+              Path(os.environ["RUNNER_TEMP"], "g1-evidence-report.json")
+              .read_text(encoding="utf-8")
+          )
+          plan = json.loads(
+              Path(os.environ["RUNNER_TEMP"], "g1-promotion-plan.json")
+              .read_text(encoding="utf-8")
+          )
+          assert report["schema"] == "org.trillionnium.g1.evidence-verification-report.v2"
+          assert plan["schema"] == "org.trillionnium.g1.gap-promotion-plan.v1"
           assert report["current_source_commit"] == os.environ["SOURCE_HEAD_SHA"]
+          assert plan["current_source_commit"] == os.environ["SOURCE_HEAD_SHA"]
+          assert report["gap_specs_sha256"] == plan["gap_specs_sha256"]
+          assert report["unresolved_gaps"] == plan["unresolved_gaps"]
           assert report["public_release"] is False
           assert report["automatic_redispatch"] is False
           assert plan["public_release_after_plan"] is False
           assert plan["automatic_redispatch"] is False
           PY
           git diff --check
-          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state after intake' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
       - name: Upload promotion evidence report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
