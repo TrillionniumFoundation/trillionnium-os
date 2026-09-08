@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH }}
           persist-credentials: true
-      - name: Apply byte-bound rebuilt lifecycle patch
+      - name: Assemble and apply byte-bound rebuilt lifecycle patch
         shell: bash
         run: |
           set -euo pipefail
@@ -39,9 +39,26 @@ jobs:
           git config user.name 'Qian QI'
           git config user.email '102159240+ProfHepta@users.noreply.github.com'
           git fetch --no-tags origin "$CONTROL_BRANCH"
-          git show "origin/$CONTROL_BRANCH:ops/issue54-rebuilt.patch.gz.b64" > "${RUNNER_TEMP}/issue54-rebuilt.patch.gz.b64"
-          echo "$PATCH_B64_SHA256  ${RUNNER_TEMP}/issue54-rebuilt.patch.gz.b64" | sha256sum --check -
-          base64 --decode "${RUNNER_TEMP}/issue54-rebuilt.patch.gz.b64" > "${RUNNER_TEMP}/issue54-rebuilt.patch.gz"
+
+          parts=(00 01 02 03 04 05)
+          hashes=(
+            8dfc65345807471f1df386cb5580958ab0ff941fcc407ba0b05d26cfe137468d
+            5e550decbddb5fff2285b1ebea1ec9e3306e33c969f41d918231fa910644f3c9
+            68d7e495bc464776b0797dfde589d0e5d2951f98ca5ff9979d0a78c9cba94cb9
+            9c80947a49f4ba2d9c891f95191121cdcb9b6599bdb56a73851bef2ea1e8bdd1
+            a5198ade8d122825083ea1789b14d1c5c12ac617d12272c8ea4428d82cfd2518
+            0ab0b668fabdc4f0bf93a7ce0eba3743cf8bcff64fe7f4ab91897853edbfdce7
+          )
+          assembled="${RUNNER_TEMP}/issue54-rebuilt.patch.gz.b64"
+          : > "$assembled"
+          for index in "${!parts[@]}"; do
+            part="${RUNNER_TEMP}/issue54-rebuilt.part${parts[$index]}"
+            git show "origin/$CONTROL_BRANCH:ops/issue54-rebuilt.part${parts[$index]}" > "$part"
+            echo "${hashes[$index]}  $part" | sha256sum --check -
+            cat "$part" >> "$assembled"
+          done
+          echo "$PATCH_B64_SHA256  $assembled" | sha256sum --check -
+          base64 --decode "$assembled" > "${RUNNER_TEMP}/issue54-rebuilt.patch.gz"
           gzip --test "${RUNNER_TEMP}/issue54-rebuilt.patch.gz"
           gzip --decompress --stdout "${RUNNER_TEMP}/issue54-rebuilt.patch.gz" > "${RUNNER_TEMP}/issue54-rebuilt.patch"
           echo "$PATCH_SHA256  ${RUNNER_TEMP}/issue54-rebuilt.patch" | sha256sum --check -
