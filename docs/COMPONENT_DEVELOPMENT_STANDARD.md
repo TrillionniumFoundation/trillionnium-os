@@ -125,10 +125,13 @@ only on a maximal run whose length exactly equals the opening delimiter. Fence
 indentation is interpreted in columns with four-column tab stops.
 
 A raw HTML block opener outside a fenced example is rejected at the document
-root and after nested blockquote or bullet/ordered-list container prefixes. This
-covers ordinary element tags, custom tags, declarations, processing instructions
-and CDATA. The verifier does not partially parse raw block HTML, because content
-inside an unrecognised block could otherwise appear to be a Markdown fence or
-link without rendering as one. A genuine Markdown link inside a blockquote or
-list remains visible and valid. Ordinary inline HTML following prose remains
-allowed. Put block-HTML examples inside a fenced code block.
+root, after any finite sequence of blockquote or bullet/ordered-list container
+prefixes, and after any continuation indentation. This deliberately smaller
+accepted subset also covers list-item continuation lines whose container marker
+appears only on a preceding physical line. It covers ordinary element tags,
+custom tags, declarations, processing instructions and CDATA. The verifier does
+not partially parse raw block HTML, because content inside an unrecognised block
+could otherwise appear to be a Markdown fence or link without rendering as one.
+A genuine Markdown link inside a blockquote or list remains visible and valid.
+Ordinary inline HTML following prose remains allowed. Put block-HTML examples
+inside a fenced code block.

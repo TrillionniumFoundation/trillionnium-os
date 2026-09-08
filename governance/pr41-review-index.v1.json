@@ -1,8 +1,8 @@
 {
   "automatic_redispatch": false,
   "base": {
-    "commit": "968968046d69d000f1f9fe03683e92aa7903cf99",
-    "tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9"
+    "commit": "3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba",
+    "tree": "ef7112bbb84588209b849666914eb63d6580da8b"
   },
   "changed_paths": [
     ".gap-closure-bootstrap",
@@ -27,8 +27,10 @@
     "docs/machine/doc-set.v1.json",
     "governance/README.md",
     "governance/pr41-review-index.v1.json",
+    "tools/docs/_verify_component_documentation_core.py",
     "tools/docs/generate_global_docs.py",
     "tools/docs/verify_component_documentation.py",
+    "tools/tests/test_component_documentation_list_continuation_html.py",
     "tools/tests/test_owner_open_broker_component_documentation.py",
     "tools/tests/test_owner_open_broker_component_documentation_html.py"
   ],
@@ -144,12 +146,22 @@
       "status": "modified"
     },
     {
+      "path": "tools/docs/_verify_component_documentation_core.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
       "path": "tools/docs/generate_global_docs.py",
       "previous_path": null,
       "status": "modified"
     },
     {
       "path": "tools/docs/verify_component_documentation.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/tests/test_component_documentation_list_continuation_html.py",
       "previous_path": null,
       "status": "added"
     },
@@ -166,10 +178,10 @@
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 26,
-    "changes_sha256": "7f8b1e32be52e057b9c04ba723ca10c7418bbbf792d6bcbe7200b9e61dbab78a",
-    "path_count": 26,
-    "paths_sha256": "9b344cd1b244fcf13c100a7a25140f205be721713177e9d8f10834d49f21e5c2"
+    "change_count": 28,
+    "changes_sha256": "98fed2d4e2adb920a76559f094bf827aa59c3e7978481503443a6aba3ff09d0c",
+    "path_count": 28,
+    "paths_sha256": "02e7744021830d23ea1e2b4fe82e131e5dbad2dd44a289b88940b8e2ea92b001"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
@@ -179,8 +191,8 @@
   "pull_request": 47,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "edccf1ed0ab999868f87f2b42a4c2476d413a1fb",
-    "tree": "89327da89c10ed1e73a067dbcee6aa1f7100f804"
+    "commit": "0f54848e748404652ee5328daf5f0a97801c346f",
+    "tree": "a2092014eb50ae466c1ebf4d01fbcaa4c8798446"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -257,8 +269,10 @@
         "Franksudoman"
       ],
       "paths": [
+        "tools/docs/_verify_component_documentation_core.py",
         "tools/docs/generate_global_docs.py",
         "tools/docs/verify_component_documentation.py",
+        "tools/tests/test_component_documentation_list_continuation_html.py",
         "tools/tests/test_owner_open_broker_component_documentation.py",
         "tools/tests/test_owner_open_broker_component_documentation_html.py"
       ],
