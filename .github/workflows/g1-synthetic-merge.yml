@@ -159,6 +159,11 @@ jobs:
           fi
           mkdir -m 0700 "$EMPTY_HOME"
           git worktree add --detach "$MERGE_DIR" refs/g1/base
+          # `git merge --no-commit` still validates committer identity while
+          # creating merge state. Bind that mechanism-only identity locally;
+          # the canonical commit below is independently generated in env -i.
+          git -C "$MERGE_DIR" config user.name g1-synthetic-merge
+          git -C "$MERGE_DIR" config user.email g1-synthetic-merge@invalid
           if ! git -C "$MERGE_DIR" merge --no-commit --no-ff refs/g1/head; then
             git -C "$MERGE_DIR" merge --abort || true
             echo 'base/head synthetic merge has conflicts' >&2
