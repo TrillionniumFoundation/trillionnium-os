@@ -197,10 +197,8 @@ mod admission_tests {
     #[test]
     fn accepted_sink_cancellation_prevents_process_spawn() {
         let directory = tempfile::tempdir().expect("temporary directory");
-        let mut request = ShellExecRequest::command(
-            "receipt-failure",
-            "printf x > effect-must-not-exist",
-        );
+        let mut request =
+            ShellExecRequest::command("receipt-failure", "printf x > effect-must-not-exist");
         request.cwd = Some(directory.path().to_path_buf());
 
         let cancellation = CancellationToken::new();
