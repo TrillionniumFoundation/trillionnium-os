@@ -13,7 +13,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_call_registry::{
@@ -437,6 +437,23 @@ impl DirectToolBridge {
         call: BoundToolCall,
         limits: &BridgeLimits,
         external_flags: I,
+        event_sink: impl FnMut(ExecutionEvent) -> std::result::Result<(), E>,
+    ) -> Result<DispatchResult>
+    where
+        E: Display,
+        I: IntoIterator<Item = Arc<AtomicBool>>,
+    {
+        self.execute_fallible_with_deadline(call, limits, external_flags, None, event_sink)
+    }
+
+    /// Preserve the caller's absolute deadline through admission and process
+    /// execution. It is execution context, not part of the requested effect.
+    pub fn execute_fallible_with_deadline<E, I>(
+        &self,
+        call: BoundToolCall,
+        limits: &BridgeLimits,
+        external_flags: I,
+        deadline: Option<Instant>,
         mut event_sink: impl FnMut(ExecutionEvent) -> std::result::Result<(), E>,
     ) -> Result<DispatchResult>
     where
@@ -516,7 +533,8 @@ impl DirectToolBridge {
         // without a forwarding monitor thread.
         let runtime_cancellation = RuntimeCancellationToken::from_shared_flags(
             std::iter::once(cancellation.shared_flag()).chain(external_flags),
-        );
+        )
+        .with_deadline(deadline);
 
         let mut digest = ObservationDigest::new(
             &call.key.call_id,

@@ -35,6 +35,45 @@ fn request() -> RunTurnRequest {
     }
 }
 
+#[test]
+fn memory_only_requires_explicit_development_admission() {
+    let mut persistence = Persistence::memory_only();
+    assert!(persistence.effect_admission_error().is_some());
+    persistence.allow_unjournaled_effects(true);
+    assert!(persistence.effect_admission_error().is_none());
+    assert!(!persistence.is_durable());
+}
+
+#[test]
+fn failed_append_retains_writer_custody_and_cannot_become_empty_history() {
+    let root = secure_tempdir();
+    let path = root.path().join("events.jsonl");
+    let mut persistence = Persistence::open_best_effort_segmented_path(Some(&path));
+    assert!(persistence.is_durable());
+    let request = request();
+    let stream = stable_turn_stream_id(&request).unwrap();
+    let digest = request_sha256(&request).unwrap();
+    let scope = event_scope(&request, &stream);
+    let mut invalid = frame(&request, &stream, "tool.accepted", 0);
+    invalid.event_id = None;
+    assert!(!persistence.append_frame(&scope, &digest, &invalid));
+    persistence.allow_unjournaled_effects(true);
+    assert_eq!(persistence.status(), "unavailable");
+    assert!(persistence.effect_admission_error().is_some());
+    assert!(matches!(
+        persistence.load(&scope, &digest),
+        StoredTurn::Unavailable(_)
+    ));
+    let competing = Persistence::open_best_effort_segmented_path(Some(&path));
+    assert!(
+        !competing.is_durable(),
+        "failed writer must retain its exclusive lease"
+    );
+    drop(competing);
+    drop(persistence);
+    assert!(Persistence::open_best_effort_segmented_path(Some(&path)).is_durable());
+}
+
 fn frame(request: &RunTurnRequest, stream: &str, kind: &str, seq: u64) -> RunTurnFrame {
     RunTurnFrame {
         kind: kind.to_string(),

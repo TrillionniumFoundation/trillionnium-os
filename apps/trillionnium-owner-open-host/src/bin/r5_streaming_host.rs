@@ -374,7 +374,7 @@ fn process_connection<R: BufRead, W: Write>(
                         write_replay(&mut writer, &frames, limits.max_frame_bytes)?;
                         continue;
                     }
-                    StoredTurn::Conflict(error) => {
+                    StoredTurn::Conflict(error) | StoredTurn::Unavailable(error) => {
                         write_frame(
                             &mut writer,
                             &output.frame(

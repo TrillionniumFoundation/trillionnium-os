@@ -5,8 +5,12 @@ separate from installed-target evidence.
 
 - [`component-lifecycle.v1.json`](component-lifecycle.v1.json) classifies every
   root Cargo workspace member that is not part of the selected G1 default
-  source closure.  A non-default member is never implicitly active merely
+  source closure. A non-default member is never implicitly active merely
   because it still compiles.
+- Every root Cargo workspace member, default or sealed, has a component-local
+  `README.md`. `tools/docs/verify_component_documentation.py` verifies complete
+  coverage, package identity, lifecycle set equality and bounded UTF-8
+  documentation.
 - [`TARGET_EVIDENCE_OPERATOR.md`](TARGET_EVIDENCE_OPERATOR.md) defines the
   fixed independently administered L2–L6 runner, harness, target-attestation,
   authorization and output contract used by
@@ -18,7 +22,7 @@ Nothing in this directory can approve a pull request, sign an attestation,
 close a target gap, merge protected `main`, authorize a destructive test or
 enable public release.
 
-Repository-controlled source qualification ends at L1.  L2 installed runtime,
+Repository-controlled source qualification ends at L1. L2 installed runtime,
 L3 Android image, L4 physical-device effect, L5 destructive recovery and L6
 release claims require observations produced by their real custodians and then
 independently reviewed against the exact unchanged source subject.

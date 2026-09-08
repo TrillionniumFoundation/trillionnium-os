@@ -146,8 +146,20 @@ fn process_messages_with_control_seq<W: Write>(
                         };
                         let context = output.context(&request)?;
                         let digest = request_sha256(&request)?;
-                        let durable_scope =
-                            event_scope(&request, &context.turn_stream_id);
+                        let durable_scope = event_scope(&request, &context.turn_stream_id);
+                        if let Some(error) = persistence.effect_admission_error() {
+                            deliver_unscoped_host_error_with_context(
+                                &mut writer,
+                                &mut output,
+                                &context,
+                                "turn_journal_unavailable",
+                                &error,
+                                limits.max_frame_bytes,
+                                &mut delivery_attached,
+                                &mut delivery_error,
+                            );
+                            continue;
+                        }
                         match persistence.load(&durable_scope, &digest) {
                             StoredTurn::Complete(frames) => {
                                 output.observe_replay(&frames);
@@ -168,7 +180,7 @@ fn process_messages_with_control_seq<W: Write>(
                                         "status": "unknown_after_disconnect",
                                         "summary": Value::Null,
                                         "error": "a prior durable turn has no terminal observation; automatic redispatch is denied",
-                                        "runtime_ready": true,
+                                        "runtime_ready": persistence.effect_admission_error().is_none(),
                                         "reconciliation": true,
                                         "automatic_redispatch": false,
                                         "event_log_status": persistence.status(),
@@ -193,7 +205,7 @@ fn process_messages_with_control_seq<W: Write>(
                                 );
                                 continue;
                             }
-                            StoredTurn::Conflict(error) => {
+                            StoredTurn::Conflict(error) | StoredTurn::Unavailable(error) => {
                                 // A conflicting retry has no valid request
                                 // context for this turn stream.  `context()`
                                 // resets the per-turn host cursor, so emitting
@@ -231,12 +243,27 @@ fn process_messages_with_control_seq<W: Write>(
                             Some(&context),
                             EventCorrelation::default(),
                         );
-                        let accepted = persist_for_delivery(
+                        let accepted = match persist_before_effect(
                             persistence,
                             &durable_scope,
                             &digest,
                             accepted,
-                        );
+                        ) {
+                            Ok(frame) => frame,
+                            Err(error) => {
+                                deliver_unscoped_host_error_with_context(
+                                    &mut writer,
+                                    &mut output,
+                                    &context,
+                                    "turn_journal_unavailable",
+                                    &error,
+                                    limits.max_frame_bytes,
+                                    &mut delivery_attached,
+                                    &mut delivery_error,
+                                );
+                                continue;
+                            }
+                        };
                         deliver_frame(
                             &mut writer,
                             &accepted,
@@ -263,15 +290,9 @@ fn process_messages_with_control_seq<W: Write>(
                             .spawn(move || {
                                 let runner = TurnRunner::new(worker_registry);
                                 let event_sender = worker_sender.clone();
-                                let mut sink =
-                                    move |event: &TurnEvent| -> Result<(), String> {
-                                        event_sender
-                                            .send(HostMessage::TurnEvent(Box::new(event.clone())))
-                                            .map_err(|_| {
-                                                "Host event receiver disconnected"
-                                                    .to_string()
-                                            })
-                                    };
+                                let mut sink = move |event: &TurnEvent| -> Result<(), String> {
+                                    send_turn_event(&event_sender, event)
+                                };
                                 let result = runner
                                     .run_with_sink_and_cancellation(
                                         loop_request,
@@ -281,8 +302,7 @@ fn process_messages_with_control_seq<W: Write>(
                                     )
                                     .map(|run| run.terminal)
                                     .map_err(|error| error.to_string());
-                                let _ = worker_sender
-                                    .send(HostMessage::TurnComplete(result));
+                                let _ = worker_sender.send(HostMessage::TurnComplete(result));
                             })
                             .map_err(|error| {
                                 format!("failed to spawn active turn worker: {error}")
@@ -345,26 +365,41 @@ fn process_messages_with_control_seq<W: Write>(
                 input_open = false;
                 delivery_error.get_or_insert(error);
             }
-            Ok(HostMessage::TurnEvent(event)) => {
+            Ok(HostMessage::TurnEvent { event, receipt }) => {
                 let Some(active_turn) = active.as_ref() else {
+                    let _ = receipt.send(Err("turn is no longer active".to_string()));
                     continue;
                 };
-                if let Some(frame) =
-                    map_turn_event(&mut output, &active_turn.context, &event)
-                {
-                    let frame = persist_for_delivery(
+                if let Some(frame) = map_turn_event(&mut output, &active_turn.context, &event) {
+                    match persist_before_effect(
                         persistence,
                         &active_turn.durable_scope,
                         &active_turn.request_digest,
                         frame,
-                    );
-                    deliver_frame(
-                        &mut writer,
-                        &frame,
-                        limits.max_frame_bytes,
-                        &mut delivery_attached,
-                        &mut delivery_error,
-                    );
+                    ) {
+                        Ok(frame) => {
+                            // Acknowledge journal custody before client delivery;
+                            // slow or detached clients do not authorize cancellation.
+                            let _ = receipt.send(Ok(()));
+                            deliver_frame(
+                                &mut writer,
+                                &frame,
+                                limits.max_frame_bytes,
+                                &mut delivery_attached,
+                                &mut delivery_error,
+                            );
+                        }
+                        Err(error) => {
+                            active_turn.cancellation.cancel();
+                            let _ = receipt.send(Err(error));
+                        }
+                    }
+                } else {
+                    let result = persistence.effect_admission_error().map_or(Ok(()), Err);
+                    if result.is_err() {
+                        active_turn.cancellation.cancel();
+                    }
+                    let _ = receipt.send(result);
                 }
             }
             Ok(HostMessage::TurnComplete(result)) => {
@@ -406,10 +441,9 @@ fn process_messages_with_control_seq<W: Write>(
                         .expect("active turn has a worker")
                         .join();
                     let result = match worker_result {
-                        Ok(()) => Err(
-                            "active turn worker exited without a terminal message"
-                                .to_string(),
-                        ),
+                        Ok(()) => {
+                            Err("active turn worker exited without a terminal message".to_string())
+                        }
                         Err(_) => Err("active turn worker panicked".to_string()),
                     };
                     finish_active_turn(

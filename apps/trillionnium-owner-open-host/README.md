@@ -27,7 +27,15 @@ Cancellation is targeted. Terminal completion and timeout/cancel races pass thro
 
 ## Persistence and recovery
 
-The host binds accepted operations to durable records owned by the relevant registry or event store. On restart it creates a new epoch, fences stale writers, reconstructs correlation state and reconciles observed external reality. Missing terminal evidence produces an unknown/reconciliation-required outcome; it is not proof that a process or device action never occurred.
+The host binds accepted operations to durable event/job journals; live registries themselves are volatile. On restart it creates a new epoch, fences stale writers, reconstructs correlation state and reconciles observed external reality. Missing terminal evidence produces an unknown/reconciliation-required outcome; it is not proof that a process or device action never occurred.
+
+Both direct turns and jobs require a durable store by default. Only an explicitly
+selected `--allow-unjournaled-effects-for-development` run with no configured
+store may omit it. A configured store failure never falls back to development
+mode. Required acceptance/terminal events wait for persistence acknowledgements;
+a queue send does not establish durability. Store failure inhibits admission,
+sets `runtime_ready=false` and reports uncertain effect outcome while retaining the
+observed terminal status. See the execution-core contract for recovery handling.
 
 ## Build and verification
 
