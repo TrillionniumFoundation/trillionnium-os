@@ -1,4 +1,4 @@
-name: ChatGPT PR63 exact source export
+name: ChatGPT PR63 blocker repair
 
 on:
   push:
@@ -6,45 +6,99 @@ on:
       - ops/chatgpt-source-export-20260908
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: chatgpt-pr63-exact-source-export
+  group: chatgpt-pr63-blocker-repair
   cancel-in-progress: true
 
 jobs:
-  export:
+  repair:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
-      SOURCE_SHA: 1419f6d09f4b6cf6aa4dce7cfdc1d1cdab0c9256
-      SOURCE_TREE: 892b5ae0d6e670aef994c9e20621809142b5bb60
+      CONTROL_BRANCH: ops/chatgpt-source-export-20260908
+      TARGET_BRANCH: codex/perf-harness-isolation-20260908
+      EXPECTED_HEAD: 1419f6d09f4b6cf6aa4dce7cfdc1d1cdab0c9256
+      EXPECTED_TREE: 892b5ae0d6e670aef994c9e20621809142b5bb60
+      B64_SHA256: b9fbc315ed7bdbc7b52e898fbe681ebc36a834b73c5b723f069f12c8db188830
+      GZIP_SHA256: 4cc383fc15d5d8118bb0b6644db08c1cc2a47a3e0f97b1c1158814f8efe56a24
+      PATCH_SHA256: a937477d2b214a4c900288997e40c8b29982adf4361b2dc1b6505f70f4f2af52
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
-      - name: Check out exact PR63 source
+      - name: Check out exact PR63 head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-          ref: ${{ env.SOURCE_SHA }}
-          persist-credentials: false
-      - name: Bind and archive clean exact tree
+          ref: ${{ env.TARGET_BRANCH }}
+          persist-credentials: true
+      - name: Reassemble and apply exact review repair
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
           if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
             exit 1
           fi
           test -z "$status"
-          git --no-replace-objects archive --format=tar.gz --output="${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz" "$SOURCE_SHA"
-          sha256sum "${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz" > "${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz.sha256"
-      - name: Upload exact non-qualifying source export
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: pr63-source-${{ env.SOURCE_SHA }}
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 0
-          path: |
-            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz
-            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz.sha256
+          git fetch --no-tags origin "$CONTROL_BRANCH"
+          {
+            git show "origin/$CONTROL_BRANCH:ops/pr63-review-fix.part00"
+            git show "origin/$CONTROL_BRANCH:ops/pr63-review-fix.part01"
+          } > "${RUNNER_TEMP}/pr63-review-fix.patch.gz.b64"
+          echo "$B64_SHA256  ${RUNNER_TEMP}/pr63-review-fix.patch.gz.b64" | sha256sum --check -
+          base64 --decode "${RUNNER_TEMP}/pr63-review-fix.patch.gz.b64" > "${RUNNER_TEMP}/pr63-review-fix.patch.gz"
+          echo "$GZIP_SHA256  ${RUNNER_TEMP}/pr63-review-fix.patch.gz" | sha256sum --check -
+          gzip --decompress --stdout "${RUNNER_TEMP}/pr63-review-fix.patch.gz" > "${RUNNER_TEMP}/pr63-review-fix.patch"
+          echo "$PATCH_SHA256  ${RUNNER_TEMP}/pr63-review-fix.patch" | sha256sum --check -
+          git apply --check "${RUNNER_TEMP}/pr63-review-fix.patch"
+          git apply "${RUNNER_TEMP}/pr63-review-fix.patch"
+          git diff --check
+          cat > "${RUNNER_TEMP}/expected-paths" <<'EOF'
+          tools/build/README.md
+          tools/build/_verify_host_reproducibility_core.py
+          tools/perf/README.md
+          tools/perf/_run_product_baseline_core.py
+          tools/tests/test_run_product_baseline.py
+          tools/tests/test_verify_host_reproducibility.py
+          EOF
+          git diff --name-only | LC_ALL=C sort > "${RUNNER_TEMP}/actual-paths"
+          diff -u "${RUNNER_TEMP}/expected-paths" "${RUNNER_TEMP}/actual-paths"
+      - name: Execute focused hostile and lifecycle matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/perf/_run_product_baseline_core.py \
+            tools/perf/run_product_baseline.py \
+            tools/build/_verify_host_reproducibility_core.py \
+            tools/build/verify_host_reproducibility.py \
+            tools/tests/test_run_product_baseline.py \
+            tools/tests/test_product_baseline_process_group_cleanup.py \
+            tools/tests/test_verify_host_reproducibility.py
+          python3 -m unittest \
+            tools.tests.test_run_product_baseline \
+            tools.tests.test_product_baseline_process_group_cleanup \
+            tools.tests.test_verify_host_reproducibility \
+            tools.tests.test_owner_open_rootlinux_supervisor -v
+          git diff --check
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          printf '%s\n' "$status"
+      - name: Commit and publish repaired exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add \
+            tools/build/README.md \
+            tools/build/_verify_host_reproducibility_core.py \
+            tools/perf/README.md \
+            tools/perf/_run_product_baseline_core.py \
+            tools/tests/test_run_product_baseline.py \
+            tools/tests/test_verify_host_reproducibility.py
+          git commit -m 'perf: bind implementation and reviewed gate policy'
+          git push origin "HEAD:$TARGET_BRANCH"
