@@ -69,3 +69,11 @@ jobs:
           qualification, approval, integration authorization, promotion
           authorization, target observation or public-release authority.
           EOF
+      - name: Prove the diagnostic left the selected checkout unchanged
+        run: |
+          set -euo pipefail
+          if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            printf '%s\n' 'Cannot verify repository worktree state after diagnostic' >&2
+            exit 1
+          fi
+          test -z "$worktree_status"
