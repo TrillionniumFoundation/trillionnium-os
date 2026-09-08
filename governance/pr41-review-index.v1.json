@@ -1,68 +1,117 @@
 {
-  "schema": "org.trillionnium.g1-pr-review-index.v1",
-  "program_revision": "2026-08-31-g1",
-  "repository": "TrillionniumFoundation/trillionnium-os",
-  "pull_request": 64,
+  "automatic_redispatch": false,
   "base": {
-    "commit": "968968046d69d000f1f9fe03683e92aa7903cf99",
-    "tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9"
-  },
-  "review_predecessor": {
-    "commit": "d195f533ba47ffa6d27e1211dc1d248c22beeff9",
-    "tree": "67d7f47ddcaa93bc0966d13ec312972d67238597"
-  },
-  "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
-  "expected": {
-    "path_count": 2,
-    "paths_sha256": "3854d268e4e97a82bdb4c38ea24fb1ee697949311fa15d4bf114ccc81f019184",
-    "change_count": 2,
-    "changes_sha256": "5aadfa2920f3d6897bad28cac615a7b6bdaf90b148c34bb85dd55449009f7fc5"
+    "commit": "3b22b36693ae3ab9c0172af3d6cd3808ec9d19ba",
+    "tree": "ef7112bbb84588209b849666914eb63d6580da8b"
   },
   "changed_paths": [
-    "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
-    "governance/pr41-review-index.v1.json"
+    "governance/pr41-review-index.v1.json",
+    "tools/build/README.md",
+    "tools/build/verify_host_reproducibility.py",
+    "tools/perf/README.md",
+    "tools/perf/_run_product_baseline_core.py",
+    "tools/perf/run_product_baseline.py",
+    "tools/tests/test_product_baseline_process_group_cleanup.py",
+    "tools/tests/test_run_product_baseline.py",
+    "tools/tests/test_verify_host_reproducibility.py"
   ],
   "changes": [
     {
-      "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
-      "status": "modified",
-      "previous_path": null
-    },
-    {
       "path": "governance/pr41-review-index.v1.json",
-      "status": "modified",
-      "previous_path": null
-    }
-  ],
-  "slices": [
-    {
-      "id": "ci-evidence-and-authority",
-      "security_domain": "ci-evidence-and-authority",
-      "accountable_owner": "ProfHepta",
-      "independent_reviewers": [
-        "Franksudoman"
-      ],
-      "review_order": 1,
-      "paths": [
-        "governance/pr41-review-index.v1.json"
-      ]
+      "previous_path": null,
+      "status": "modified"
     },
     {
-      "id": "runtime-and-protocol",
-      "security_domain": "runtime-and-protocol",
-      "accountable_owner": "ProfHepta",
-      "independent_reviewers": [
-        "Tomasrgbsf"
-      ],
-      "review_order": 2,
-      "paths": [
-        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs"
-      ]
+      "path": "tools/build/README.md",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/build/verify_host_reproducibility.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/perf/README.md",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/perf/_run_product_baseline_core.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/perf/run_product_baseline.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/tests/test_product_baseline_process_group_cleanup.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/tests/test_run_product_baseline.py",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "tools/tests/test_verify_host_reproducibility.py",
+      "previous_path": null,
+      "status": "added"
     }
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
-  "automatic_redispatch": false,
+  "expected": {
+    "change_count": 9,
+    "changes_sha256": "bf551f7ad1482ee6f6973c23b654068fd95d47d7e28ebfaa2427246c61625010",
+    "path_count": 9,
+    "paths_sha256": "cf19d6ca0ceac244660a9c6ccc9209b8aa1ff11fcda00539e3314d08463cd5ad"
+  },
+  "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
+  "program_revision": "2026-08-31-g1",
   "promotion_authorized": false,
-  "public_release": false
+  "public_release": false,
+  "pull_request": 63,
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "review_predecessor": {
+    "commit": "288c273ffb8b322daa65c18c10a3be7a0b72c1a9",
+    "tree": "f7cd166b34a00a93acb5372dce4960be125792d9"
+  },
+  "schema": "org.trillionnium.g1-pr-review-index.v1",
+  "slices": [
+    {
+      "accountable_owner": "ProfHepta",
+      "id": "ci-evidence-and-authority",
+      "independent_reviewers": [
+        "Franksudoman"
+      ],
+      "paths": [
+        "governance/pr41-review-index.v1.json"
+      ],
+      "review_order": 1,
+      "security_domain": "ci-evidence-and-authority"
+    },
+    {
+      "accountable_owner": "ProfHepta",
+      "id": "source-tooling-and-verification",
+      "independent_reviewers": [
+        "Tomasrgbsf"
+      ],
+      "paths": [
+        "tools/build/README.md",
+        "tools/build/verify_host_reproducibility.py",
+        "tools/perf/README.md",
+        "tools/perf/_run_product_baseline_core.py",
+        "tools/perf/run_product_baseline.py",
+        "tools/tests/test_product_baseline_process_group_cleanup.py",
+        "tools/tests/test_run_product_baseline.py",
+        "tools/tests/test_verify_host_reproducibility.py"
+      ],
+      "review_order": 2,
+      "security_domain": "source-tooling-and-verification"
+    }
+  ]
 }
