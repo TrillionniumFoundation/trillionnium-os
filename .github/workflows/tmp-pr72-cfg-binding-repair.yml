@@ -1,0 +1,254 @@
+name: Temporary PR72 CFG binding repair
+
+on:
+  push:
+    branches:
+      - ops/pr72-final-test-contract-repair-20260910
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-pr72-cfg-binding-repair
+  cancel-in-progress: true
+
+jobs:
+  repair-validate-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      BASE_SHA: 3fae18209e3b4627fab28141b0ed1e3354e6d570
+      BASE_TREE: a912fe2f86f96d4b372901faaa878d5bdb0f5b2f
+      CANDIDATE_BRANCH: codex/effect-lifecycle-model-20260909
+      EXPECTED_CONFIG_SHA256: 2b689982cc1e00de604af990b7bead43cfbceff69cefaaef7cd6cfd42f68488c
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Bind controller and apply exact three-file repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git --no-replace-objects rev-parse "$BASE_SHA^{tree}")" = "$BASE_TREE"
+          observed="$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD | LC_ALL=C sort)"
+          test "$observed" = '.github/workflows/tmp-pr72-cfg-binding-repair.yml'
+          git --no-replace-objects checkout --detach "$BASE_SHA"
+          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          verifier = Path('tools/docs/verify_effect_lifecycle.py')
+          text = verifier.read_text(encoding='utf-8')
+          old = '''EXPECTED_CFG_INVARIANTS = {
+              "TypeOK",
+              "NoAutomaticRedispatch",
+              "EffectRequiresDurableAcceptance",
+              "DeliveryRequiresDurableTerminal",
+              "AcknowledgementRequiresDelivery",
+              "NoEffectReadmissionAfterUncertainRecovery",
+          }
+          '''
+          new = '''EXPECTED_CFG_INVARIANTS = {
+              "TypeOK",
+              "NoAutomaticRedispatch",
+              "EffectRequiresDurableAcceptance",
+              "DeliveryRequiresDurableTerminal",
+              "AcknowledgementRequiresDelivery",
+              "NoEffectReadmissionAfterUncertainRecovery",
+          }
+          EXPECTED_CFG_LINES = [
+              "SPECIFICATION Spec",
+              "INVARIANT TypeOK",
+              "INVARIANT NoAutomaticRedispatch",
+              "INVARIANT EffectRequiresDurableAcceptance",
+              "INVARIANT DeliveryRequiresDurableTerminal",
+              "INVARIANT AcknowledgementRequiresDelivery",
+              "INVARIANT NoEffectReadmissionAfterUncertainRecovery",
+              "CHECK_DEADLOCK FALSE",
+          ]
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('CFG constant insertion point differs')
+          text = text.replace(old, new, 1)
+          marker = 'def render_tla_model(\n'
+          if text.count(marker) != 1:
+              raise SystemExit('TLA renderer insertion point differs')
+          text = text.replace(
+              marker,
+              '''def render_tla_config() -> str:
+              """Render the complete closed-world TLC configuration byte-for-byte."""
+
+              return "\\n".join(EXPECTED_CFG_LINES) + "\\n"
+
+
+              def render_tla_model(
+              ''',
+              1,
+          )
+          old = '''    cfg_invariants = set(re.findall(r"^INVARIANT\\s+([A-Za-z][A-Za-z0-9_]*)\\s*$", config_source, re.MULTILINE))
+              require(cfg_invariants == EXPECTED_CFG_INVARIANTS, f"formal config invariants drifted: {sorted(cfg_invariants)}")
+              for definition in EXPECTED_CFG_INVARIANTS | {"Spec", "Init", "Next", "OrdinaryNext", "RecoveryNext"}:
+          '''
+          new = '''    cfg_invariants = set(re.findall(r"^INVARIANT\\s+([A-Za-z][A-Za-z0-9_]*)\\s*$", config_source, re.MULTILINE))
+              require(cfg_invariants == EXPECTED_CFG_INVARIANTS, f"formal config invariants drifted: {sorted(cfg_invariants)}")
+              canonical_config = render_tla_config()
+              require(
+                  config_source == canonical_config,
+                  "formal config differs from the canonical executable configuration",
+              )
+              for definition in EXPECTED_CFG_INVARIANTS | {"Spec", "Init", "Next", "OrdinaryNext", "RecoveryNext"}:
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('CFG verifier replacement point differs')
+          text = text.replace(old, new, 1)
+          old = '''        "formal_recovery_edge_count": len(tla_recovery_edges),
+              "formal_model_sha256": hashlib.sha256(model_source.encode("utf-8")).hexdigest(),
+              **tlc_report,
+          '''
+          new = '''        "formal_recovery_edge_count": len(tla_recovery_edges),
+              "formal_model_sha256": hashlib.sha256(model_source.encode("utf-8")).hexdigest(),
+              "formal_config_sha256": hashlib.sha256(config_source.encode("utf-8")).hexdigest(),
+              **tlc_report,
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('CFG evidence replacement point differs')
+          verifier.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+
+          tests = Path('tools/tests/test_effect_lifecycle.py')
+          text = tests.read_text(encoding='utf-8')
+          old = '''        self.assertEqual(report["formal_recovery_edge_count"], 29)
+              self.assertEqual(report["legal_recovery_edge_count"], 29)
+              self.assertGreater(report["recovery_product_successor_count"], 0)
+          '''
+          new = '''        self.assertEqual(report["formal_recovery_edge_count"], 29)
+              self.assertEqual(report["legal_recovery_edge_count"], 29)
+              self.assertEqual(
+                  report["formal_config_sha256"],
+                  "2b689982cc1e00de604af990b7bead43cfbceff69cefaaef7cd6cfd42f68488c",
+              )
+              self.assertGreater(report["recovery_product_successor_count"], 0)
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('positive CFG test replacement point differs')
+          text = text.replace(old, new, 1)
+          anchor = '    def test_formal_redispatch_assignment_drift_fails_closed(self) -> None:\n'
+          if text.count(anchor) != 1:
+              raise SystemExit('CFG hostile-test insertion point differs')
+          hostile = '''    def test_ordinary_only_config_selector_fails_closed(self) -> None:
+              config = CONFIG.read_text(encoding="utf-8").replace(
+                  "SPECIFICATION Spec",
+                  "INIT Init\\nNEXT OrdinaryNext",
+                  1,
+              )
+              with self.assertRaisesRegex(
+                  verifier.VerificationError,
+                  "canonical executable configuration",
+              ):
+                  verifier.verify_authority(authority(), root=ROOT, config_text=config)
+
+              def test_extra_config_constraint_fails_closed(self) -> None:
+              config = CONFIG.read_text(encoding="utf-8") + "CONSTRAINT Init\\n"
+              with self.assertRaisesRegex(
+                  verifier.VerificationError,
+                  "canonical executable configuration",
+              ):
+                  verifier.verify_authority(authority(), root=ROOT, config_text=config)
+
+              def test_nonexistent_config_specification_fails_closed(self) -> None:
+              config = CONFIG.read_text(encoding="utf-8").replace(
+                  "SPECIFICATION Spec",
+                  "SPECIFICATION NonexistentSpec",
+                  1,
+              )
+              with self.assertRaisesRegex(
+                  verifier.VerificationError,
+                  "canonical executable configuration",
+              ):
+                  verifier.verify_authority(authority(), root=ROOT, config_text=config)
+
+          '''
+          tests.write_text(text.replace(anchor, hostile + anchor, 1), encoding='utf-8', newline='\n')
+
+          index = Path('governance/pr41-review-index.v1.json')
+          text = index.read_text(encoding='utf-8')
+          old = '''  "review_predecessor": {
+              "commit": "b9f7b13bd431d8e6fe58eb6c5a532c2939c023c1",
+              "tree": "466563ab66cf6553f1b98b7de0485455f00bed6b"
+            },
+          '''
+          new = '''  "review_predecessor": {
+              "commit": "3fae18209e3b4627fab28141b0ed1e3354e6d570",
+              "tree": "a912fe2f86f96d4b372901faaa878d5bdb0f5b2f"
+            },
+          '''
+          if text.count(old) != 1:
+              raise SystemExit('review predecessor replacement point differs')
+          index.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
+          observed="$(git diff --name-only | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            'governance/pr41-review-index.v1.json' \
+            'tools/docs/verify_effect_lifecycle.py' \
+            'tools/tests/test_effect_lifecycle.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          git diff --check
+
+      - name: Execute focused CFG, TLC, documentation and custody closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          TLC_JAR="${RUNNER_TEMP:?}/tla2tools-1.7.4.jar"
+          curl --proto '=https' --tlsv1.2 --fail --show-error --location --retry 3 \
+            --output "$TLC_JAR" \
+            'https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar'
+          printf '%s  %s\n' \
+            'bee4a54f3ee3d4afc347c3240ec2d9e93b075104' "$TLC_JAR" | sha1sum --check --strict
+          printf '%s  %s\n' \
+            '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88' "$TLC_JAR" | sha256sum --check --strict
+          python3 -m py_compile tools/docs/verify_effect_lifecycle.py tools/tests/test_effect_lifecycle.py
+          python3 -m unittest tools.tests.test_effect_lifecycle -v
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_effect_lifecycle.py \
+            --model-check --tlc-jar "$TLC_JAR" --json \
+            | tee "${RUNNER_TEMP:?}/pr72-cfg-binding-tlc.json"
+          grep -F '"formal_config_sha256": "'"$EXPECTED_CONFIG_SHA256"'"' \
+            "${RUNNER_TEMP:?}/pr72-cfg-binding-tlc.json"
+          git diff --check
+
+      - name: Publish exact repair through a branch lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE_SHA"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -- \
+            governance/pr41-review-index.v1.json \
+            tools/docs/verify_effect_lifecycle.py \
+            tools/tests/test_effect_lifecycle.py
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit \
+            -m 'fix(docs): bind the complete TLC configuration' \
+            -m 'Require byte-exact SPECIFICATION, invariants and deadlock directive; reject ordinary-only, constrained and nonexistent selectors; publish the CFG SHA-256 in verifier evidence; and rebind the review predecessor. Preserve automatic_redispatch=false and the L1-only claim ceiling.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          git push \
+            --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${BASE_SHA}" \
+            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+          printf 'published_head=%s\npublished_tree=%s\n' "$final" "$tree"
