@@ -44,31 +44,41 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD~2)" = "$BASE_SHA"
+          git --no-replace-objects merge-base --is-ancestor "$BASE_SHA" HEAD
+          observed_paths="$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD | LC_ALL=C sort)"
+          expected_paths="$(printf '%s\n' '.github/workflows/tmp-module-contracts-v2-preflight.yml' 'ops/module-contracts-v2-source.zip' | LC_ALL=C sort)"
+          test "$observed_paths" = "$expected_paths"
           python3 - <<'PY'
           from pathlib import Path, PurePosixPath
           import hashlib, io, json, os, zipfile
 
           archive = Path('ops/module-contracts-v2-source.zip')
           archive_raw = archive.read_bytes()
-          expected_archive_sha256 = 'cc1718cf1330fe9a349f0e4c7f5f0d922da34f7f0614c533a640cf683eb82ad9'
-          if hashlib.sha256(archive_raw).hexdigest() != expected_archive_sha256:
-              raise SystemExit('bundle carrier digest differs')
+          print(json.dumps({
+              'carrier_bytes': len(archive_raw),
+              'carrier_sha256': hashlib.sha256(archive_raw).hexdigest(),
+              'semantic_binding': 'fixed_manifest_and_per_file_sha256',
+          }, sort_keys=True))
 
           extracted = []
           with zipfile.ZipFile(io.BytesIO(archive_raw)) as z:
               names = z.namelist()
               if names.count('MANIFEST.json') != 1 or len(names) != len(set(names)):
                   raise SystemExit('bundle inventory is ambiguous')
-              manifest = json.loads(z.read('MANIFEST.json'))
+              manifest_raw = z.read('MANIFEST.json')
+              if hashlib.sha256(manifest_raw).hexdigest() != '2e95393d04e7f5990d74bd61c21b9a9d3f552bfc24f74a49670e694e3ff1a19a':
+                  raise SystemExit('bundle manifest digest differs')
+              manifest = json.loads(manifest_raw)
               if manifest.get('schema') != 'org.trillionnium.module-contract-source-bundle.v1':
                   raise SystemExit('bundle schema differs')
               if manifest.get('base_commit') != 'b9f7b13bd431d8e6fe58eb6c5a532c2939c023c1':
                   raise SystemExit('bundle base differs')
+              if manifest.get('automatic_redispatch') is not False or manifest.get('public_release') is not False:
+                  raise SystemExit('bundle claim ceiling differs')
               expected = [entry['path'] for entry in manifest['entries']]
               if sorted(names) != sorted(expected + ['MANIFEST.json']):
                   raise SystemExit('bundle member set differs')
-              if len(expected) != 20:
+              if len(expected) != 20 or len(expected) != len(set(expected)):
                   raise SystemExit('bundle source-file count differs')
               total = 0
               for entry in manifest['entries']:
@@ -85,8 +95,8 @@ jobs:
                   if len(raw) != entry['bytes'] or hashlib.sha256(raw).hexdigest() != entry['sha256']:
                       raise SystemExit(f'bundle identity differs: {rel}')
                   extracted.append((rel, raw, int(entry['mode'], 8)))
-              if total != 77045:
-                  raise SystemExit('bundle uncompressed byte count differs')
+              if total != 293894:
+                  raise SystemExit('bundle semantic byte count differs')
 
           for rel, raw, mode in extracted:
               target = Path(rel)
