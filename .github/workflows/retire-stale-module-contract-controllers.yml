@@ -1,0 +1,34 @@
+name: Retire stale module-contract controllers
+
+on:
+  push:
+    branches:
+      - ops/retire-stale-module-contract-controllers-20260909
+
+permissions:
+  contents: read
+
+jobs:
+  retire-builder-v2:
+    concurrency:
+      group: chatgpt-executable-module-contract-builder-v2
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'retired stale builder waiting on superseded lifecycle branch'
+
+  retire-closure:
+    concurrency:
+      group: chatgpt-executable-module-contract-closure
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'retired stale closure controller waiting on superseded lifecycle branch'
+
+  retire-post-controller:
+    concurrency:
+      group: chatgpt-executable-module-contract-post-controller
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'retired stale post-controller without a candidate subject'
