@@ -1,0 +1,99 @@
+name: Temporary executable module-contract preflight
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-module-contracts-preflight-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-module-contract-preflight-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  BASE_SHA: 522be785104a1d7b3ca1d286fb678c6234bee319
+  BASE_TREE: efe7c16fcb7c7d585e4c1703a306fed4f36c4aee
+  CONTROLLER_SHA: fd4d7bb50c62c08ae30d58242610e46c1c014368
+  CANDIDATE_BRANCH: codex/executable-module-contracts-preflight-20260909
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  generate-and-verify:
+    if: "${{ github.event.head_commit.message == 'ops: stage executable module-contract preflight' }}"
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact bootstrap subject
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Reconstruct generator inputs on the exact lifecycle stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git --no-replace-objects rev-parse "$BASE_SHA^{tree}")" = "$BASE_TREE"
+          git fetch --no-tags origin "$CONTROLLER_SHA"
+          test "$(git --no-replace-objects rev-parse FETCH_HEAD)" = "$CONTROLLER_SHA"
+          test "$(git --no-replace-objects rev-parse "$CONTROLLER_SHA:ops/build-module-contracts.py")" = ed85b42bb3298e9465a9ed8b4f38137e7e4b8158
+          test "$(git --no-replace-objects rev-parse "$CONTROLLER_SHA:ops/patch-module-contract-generator.py")" = 53f6d18c073b1ac57cecfc7667f0ee77e527ecca
+          test "$(git --no-replace-objects rev-parse "$CONTROLLER_SHA:ops/test-module-contracts.py")" = 5396379e0e105a174aa9bb42fd2bf29565dd534c
+          git show "$CONTROLLER_SHA:ops/build-module-contracts.py" > "${RUNNER_TEMP}/generator-original.py"
+          git show "$CONTROLLER_SHA:ops/patch-module-contract-generator.py" > "${RUNNER_TEMP}/patch-generator.py"
+          git show "$CONTROLLER_SHA:ops/test-module-contracts.py" > "${RUNNER_TEMP}/test_module_contracts.py"
+          git reset --hard "$BASE_SHA"
+          git switch -C "$CANDIDATE_BRANCH"
+          python3 "${RUNNER_TEMP}/patch-generator.py" "${RUNNER_TEMP}/generator-original.py" "${RUNNER_TEMP}/generator.py"
+          mkdir -p tools/tests
+          cp "${RUNNER_TEMP}/test_module_contracts.py" tools/tests/test_module_contracts.py
+
+      - name: Generate deterministic contract artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP}/generator.py" --root "$PWD" --write --install
+          python3 tools/docs/generate_global_docs.py
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 android-integration/module-contracts/verify_vectors.py
+          python3 -m unittest tools.tests.test_module_contracts -v
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          cargo fmt --all -- --check
+          cargo test -p trillionnium-owner-open-types --test module_contract_vectors
+          git diff --check
+
+      - name: Run complete source regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo test --workspace --all-targets
+          cargo clippy --workspace --all-targets -- -D warnings
+          git diff --check
+
+      - name: Publish clean preflight candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all | grep '^?? .github/workflows/tmp-' || true)"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          changed="$(git diff --cached --name-only | wc -l | tr -d ' ')"
+          test "$changed" -ge 80
+          git commit -m 'feat(contracts): preflight executable module API state and error contracts'
+          final_head="$(git --no-replace-objects rev-parse HEAD)"
+          final_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          git push origin "$final_head:refs/heads/$CANDIDATE_BRANCH"
+          printf 'candidate_head=%s\ncandidate_tree=%s\nchanged_paths=%s\n' "$final_head" "$final_tree" "$changed"
