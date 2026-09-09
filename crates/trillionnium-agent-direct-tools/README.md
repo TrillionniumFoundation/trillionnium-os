@@ -1,13 +1,12 @@
 # Agent direct tools
 
-> **2026-08-27-r3 note:** The canonical owner-open plan at
-> [`docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md`](../../docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)
-> supersedes the restrictive sections below for the development product.
-> Codex must receive direct shell.command/shell.exec and raw adb.exec; the
-> seven-command list, risk_guard, typed-only ADB boundary and mandatory
-> production-durable authority are migration/release material, not a
-> prerequisite for owner-open dogfood. Update this README as the implementation
-> lands rather than adding another broker.
+> **HISTORICAL_NON_AUTHORITATIVE.** This sealed pre-r3 component is retained
+> for compatibility tests and source archaeology only. The active owner-open-core
+> profile is defined by
+> [`docs/machine/product-profile-catalog.v1.json`](../../docs/machine/product-profile-catalog.v1.json)
+> and uses the owner-open tool bridge/runtime plus ordinary ADB packaging. Nothing
+> in this README overrides current product semantics, module contracts or profile
+> selection.
 
 > **Reading the remainder:** sections below describe the historical pre-r2/r2
 > typed System API/Accessibility and sealed broker implementation. They are
@@ -27,7 +26,7 @@ with raw shell/ADB transport while retaining the same framing primitives:
 - `trillionnium-agent-adb` is a pre-r2 engineering/recovery adapter. Its inert,
   typed `android.adb.*` contract and fail-closed production path are migration
   material; the owner-open implementation replaces it with a transparent raw
-  ADB client/server path as specified by the canonical plan.
+  ADB client/server path as specified by the active owner-open-core profile.
 
 The shared Rust code is serialization, framing, validation, test code, and the
 feature-gated trusted-context/operation-journal integration described below.
@@ -572,8 +571,9 @@ fall back to the host adb executable or fastboot.
 
 The boundary tests cover admission/tier/binding/rotation, private-key and
 transport-selector rejection, exact UDS framing, forged-envelope rejection,
-indeterminate replay, and the production HOLD. The evidence record is
-[`docs/evidence/2026-08-22-adb-transport-boundary-source-audit.md`](../../docs/evidence/2026-08-22-adb-transport-boundary-source-audit.md).
+indeterminate replay, and the production HOLD. The historical source-audit record was removed from the active tree. This
+sealed component carries no current evidence or product authority; Git history
+retains the old record for archaeology.
 
 There is no production `TcpStream`/UDS connector or listener, adb CLI/server launch,
 DNS lookup, TLS/ADB dependency, private key, public-key enrollment, Android
