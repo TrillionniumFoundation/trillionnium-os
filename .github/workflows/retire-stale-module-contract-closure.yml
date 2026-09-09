@@ -1,0 +1,19 @@
+name: Retire stale module-contract closure
+
+on:
+  push:
+    branches:
+      - ops/retire-stale-contract-workflows-20260909
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chatgpt-executable-module-contract-closure
+  cancel-in-progress: true
+
+jobs:
+  retire:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'stale closure controller retired'
