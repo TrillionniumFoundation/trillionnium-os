@@ -1,4 +1,4 @@
-name: Temporary executable module-contract v3 stacked preflight
+name: Temporary executable module-contract v3 main preflight
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: temporary-module-contracts-v3-stacked-preflight
+  group: temporary-module-contracts-v3-main-preflight
   cancel-in-progress: true
 
 jobs:
@@ -18,9 +18,9 @@ jobs:
     timeout-minutes: 240
     env:
       PROVENANCE_BASE_SHA: 3fae18209e3b4627fab28141b0ed1e3354e6d570
-      TARGET_BASE_SHA: 759398ea93fc92dc0d770b4f8e841382fbcdb5ab
+      TARGET_BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
       TARGET_BASE_TREE: f96f88a9749c61b3ce0dde7167303c8261788f22
-      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-stack-20260910
+      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-main-20260910
       CARRIER_B64_BYTES: "20968"
       CARRIER_B64_SHA256: 7ad6edd6696b7ebc2047952d6723426eaab4357a2d9ed304220e61db1d3bfcf9
       CARRIER_XZ_SHA256: 96dbc9a46bb632915f4c80d0588c443d60f771d80a9f77e4ac3e54a2030eb88f
@@ -166,8 +166,9 @@ jobs:
           python3 "${RUNNER_TEMP:?}/module-contracts-v3-source/generator.py" --root "$PWD" --prepare --install
           cargo fmt --all
           cargo fmt --all -- --check
+          cargo generate-lockfile --offline
           schemars="${RUNNER_TEMP:?}/module-contract-schemars.json"
-          cargo run --locked --quiet -p trillionnium-owner-open-types \
+          cargo run --locked --offline --quiet -p trillionnium-owner-open-types \
             --bin generate_module_contract_schemas > "$schemars"
           test -s "$schemars"
           python3 tools/contracts/generate_module_contracts.py --write --schemars-file "$schemars"
@@ -224,7 +225,7 @@ jobs:
           cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
           test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
 
-      - name: Publish non-admission stacked candidate through an absence lease
+      - name: Publish non-admission main-based candidate through an absence lease
         shell: bash
         run: |
           set -euo pipefail
@@ -252,7 +253,7 @@ jobs:
       - name: Upload non-authorizing preflight receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: module-contract-v3-stacked-preflight-${{ github.sha }}
+          name: module-contract-v3-main-preflight-${{ github.sha }}
           path: |
             ${{ runner.temp }}/module-contract-v3-candidate.env
             ${{ runner.temp }}/module-contract-schemars.json
