@@ -17,7 +17,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      CONTROL_BRANCH: ops/chatgpt-pr63-source-export-20260909
+      CARRIER_BRANCH: ops/chatgpt-pr63-custody-carrier-20260909
+      CARRIER_COMMIT: 774f407b9fedaf2bcfc7d41e2873aa3e0a695aa8
       TARGET_BRANCH: codex/perf-harness-isolation-20260908
       EXPECTED_HEAD: e12a997e6af71c505bc7da07fdee1de1d3f4f733
       EXPECTED_TREE: 913dfa1abdaeb70ac89de416eccda3bb41dbb9a7
@@ -44,15 +45,35 @@ jobs:
           test -z "$status"
           git config user.name 'Qian QI'
           git config user.email '102159240+ProfHepta@users.noreply.github.com'
-          git fetch --no-tags origin "$CONTROL_BRANCH"
+          git fetch --no-tags origin "$CARRIER_BRANCH"
+          test "$(git --no-replace-objects rev-parse FETCH_HEAD)" = "$CARRIER_COMMIT"
+
+          parts=(00 01 02 03 04 05 06 07 08)
+          hashes=(
+            833529edda7ce6ae46e9968695752e2843aefb50c907386ba3393af22a50e6b3
+            e4ec948ca79a2b8989602a71628d48a237ae1a592538683678e853ffb699f5a0
+            d05a25f3fe638c8e980b69b03c9395d33a46b5443d9d9bc4909974292ba115dd
+            39f223740e397ecbbab10c7eac031cc6ed0601a32be80aece2e615413eb5de04
+            2a24d65bf9ced0769ba17b90a862efa108343e5f3216c9219ff943d333446b17
+            00530d3698c4c768cbbfc6a4655e406ec3850c4a953cb04a9b7aedc020a98aec
+            7cfdbccaff365c65b475df39983d92bc97bdd1cbd6bf7da2075d2b8e741f3bff
+            3c83d0be1d3fba63cc98e7655e03c55a833419ef3d7552725946898235680f71
+            2ec5acfd4dd8d489e64677936993a6c398a9ba31cdf809ac9b6e8ff5aba637d3
+          )
           carrier="${RUNNER_TEMP}/pr63-custody.patch.gz.b64"
-          normalized="${RUNNER_TEMP}/pr63-custody.normalized.b64"
+          : > "$carrier"
+          for index in "${!parts[@]}"; do
+            raw="${RUNNER_TEMP}/pr63-part-${parts[$index]}.raw"
+            normalized="${RUNNER_TEMP}/pr63-part-${parts[$index]}.b64"
+            git show "$CARRIER_COMMIT:ops/pr63-custody.part${parts[$index]}" > "$raw"
+            tr -d '\r\n\t ' < "$raw" > "$normalized"
+            echo "${hashes[$index]}  $normalized" | sha256sum --check -
+            cat "$normalized" >> "$carrier"
+          done
+          echo "$CARRIER_SHA256  $carrier" | sha256sum --check -
           archive="${RUNNER_TEMP}/pr63-custody.patch.gz"
           patch="${RUNNER_TEMP}/pr63-custody.patch"
-          git show "origin/$CONTROL_BRANCH:ops/pr63-custody.patch.gz.b64" > "$carrier"
-          tr -d '\r\n\t ' < "$carrier" > "$normalized"
-          echo "$CARRIER_SHA256  $normalized" | sha256sum --check -
-          base64 --decode "$normalized" > "$archive"
+          base64 --decode "$carrier" > "$archive"
           echo "$GZIP_SHA256  $archive" | sha256sum --check -
           gzip --test "$archive"
           gzip --decompress --stdout "$archive" > "$patch"
