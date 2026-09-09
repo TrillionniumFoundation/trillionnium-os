@@ -218,6 +218,92 @@ def product_profile_status() -> str:
     ]
     return "\n".join(lines)
 
+def effect_lifecycle_status() -> str:
+    data = load("effect-lifecycle.v1.json")
+    lines = [
+        "# Effect Lifecycle",
+        "",
+        "<!-- GENERATED. DO NOT EDIT. -->",
+        "",
+        f"- Schema: `{data['schema']}`",
+        f"- Status: `{data['status']}`",
+        f"- Claim ceiling: `{data['claim_ceiling']}`",
+        f"- Automatic redispatch: `{str(data['automatic_redispatch']).lower()}`",
+        f"- States: `{len(data['states'])}`",
+        f"- Transitions: `{len(data['transitions'])}`",
+        f"- Crash cuts: `{len(data['crash_cuts'])}`",
+        "",
+        "## States",
+        "",
+        "| State | Phase | Durable | Effect may have started | Outcome | New effect permitted | Meaning |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for state in data["states"]:
+        lines.append(
+            f"| `{state['id']}` | `{state['phase']}` | "
+            f"`{str(state['durable']).lower()}` | "
+            f"`{str(state['effect_may_have_started']).lower()}` | "
+            f"`{state['outcome']}` | "
+            f"`{str(state['permits_new_effect']).lower()}` | "
+            f"{cell(state['meaning'])} |"
+        )
+    lines += [
+        "",
+        "## Transitions",
+        "",
+        "| ID | From | To | Trigger | Effect boundary | Durable acceptance required |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for transition in data["transitions"]:
+        lines.append(
+            f"| `{transition['id']}` | `{transition['from']}` | `{transition['to']}` | "
+            f"`{transition['trigger']}` | "
+            f"`{str(transition['effect_boundary']).lower()}` | "
+            f"`{str(transition['requires_durable_acceptance']).lower()}` |"
+        )
+    lines += ["", "## Invariants", ""]
+    for invariant in data["invariants"]:
+        lines.append(
+            f"- `{invariant['id']}` / `{invariant['checker']}` — "
+            f"{invariant['statement']}"
+        )
+    lines += [
+        "",
+        "## Crash cuts",
+        "",
+        "| Cut | After | Legal recovery | Forbidden inference | Automatic redispatch |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for cut in data["crash_cuts"]:
+        lines.append(
+            f"| `{cut['id']}` | `{cut['after']}` | "
+            f"{cell(', '.join(cut['legal_recovery']))} | "
+            f"{cell(', '.join(cut['forbidden_inference']))} | "
+            f"`{str(cut['automatic_redispatch']).lower()}` |"
+        )
+    lines += [
+        "",
+        "## Implementation bindings",
+        "",
+        "| Binding | Modules | Source symbol | Transitions | Tests |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for binding in data["implementation_bindings"]:
+        lines.append(
+            f"| `{binding['id']}` | {cell(', '.join(binding['modules']))} | "
+            f"`{binding['source_path']}::{binding['symbol']}` | "
+            f"{cell(', '.join(binding['transitions']))} | "
+            f"{cell(', '.join(binding['tests']))} |"
+        )
+    lines += [
+        "",
+        "The generated view is descriptive. The executable verifier and finite model",
+        "checker remain the authority for legal transitions. Passing them is L1 source",
+        "evidence only and cannot substitute for installed-target or destructive-fault proof.",
+        "",
+    ]
+    return "\n".join(lines)
+
 def gap_status() -> str:
     data = load("gap-register.v2.json")
     counts: dict[str, int] = {status: 0 for status in data["status_vocabulary"]}
@@ -306,6 +392,7 @@ def outputs() -> dict[Path, str]:
         GENERATED / "MODULE_STATUS.md": module_status(),
         GENERATED / "COMPONENT_STATUS.md": component_status(),
         GENERATED / "PRODUCT_PROFILE_STATUS.md": product_profile_status(),
+        GENERATED / "EFFECT_LIFECYCLE.md": effect_lifecycle_status(),
         GENERATED / "GAP_STATUS.md": gap_status(),
         GENERATED / "TRACEABILITY.tsv": traceability(),
         GENERATED / "PERFORMANCE_STATUS.md": performance_status(),
