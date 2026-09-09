@@ -1,0 +1,130 @@
+name: ChatGPT issue54 effect-lifecycle builder 20260909
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-issue54-builder-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-issue54-effect-lifecycle-builder-20260909
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARRIER_BRANCH: ops/chatgpt-source-export-20260908
+      CARRIER_COMMIT: 73ceeaf4898297e8985cf3693d1b48cfde4a95b9
+      TARGET_BRANCH: codex/effect-lifecycle-model-20260909
+      EXPECTED_HEAD: df17b9fb77940f24b8161c372f43cc9d0b09b938
+      EXPECTED_TREE: 95bb605b130a96fc99470f9bf44d254560a38edc
+      CARRIER_SHA256: 2b934ffe1a7082e3a587ceb03333317655cc0a66b86804c9aa40e5a03e70e605
+      GZIP_SHA256: 35729469f0faee521882608076fb4546a46ac4d91e75eec511753a406d54fc56
+      PATCH_SHA256: e68a47bba9a2fb616725c3ea37108a8677e5fcf22f2dea5af65d07cbb4cb8bbd
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Check out exact repository-truth dependency head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+          persist-credentials: true
+      - name: Recover and apply exact lifecycle carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git fetch --no-tags origin "$CARRIER_BRANCH"
+          test "$(git --no-replace-objects rev-parse FETCH_HEAD)" = "$CARRIER_COMMIT"
+
+          expected_hashes=(
+            8dfc65345807471f1df386cb5580958ab0ff941fcc407ba0b05d26cfe137468d
+            5e550decbddb5fff2285b1ebea1ec9e3306e33c969f41d918231fa910644f3c9
+            68d7e495bc464776b0797dfde589d0e5d2951f98ca5ff9979d0a78c9cba94cb9
+            9c80947a49f4ba2d9c891f95191121cdcb9b6599bdb56a73851bef2ea1e8bdd1
+            a5198ade8d122825083ea1789b14d1c5c12ac617d12272c8ea4428d82cfd2518
+            0ab0b668fabdc4f0bf93a7ce0eba3743cf8bcff64fe7f4ab91897853edbfdce7
+          )
+          expected_lengths=(5000 5000 5000 5000 5000 824)
+          carrier="${RUNNER_TEMP}/issue54.patch.gz.b64"
+          : > "$carrier"
+          for index in 0 1 2 3 4 5; do
+            part=$(printf '%02d' "$index")
+            raw="${RUNNER_TEMP}/issue54-${part}.raw"
+            normalized="${RUNNER_TEMP}/issue54-${part}.normalized"
+            exact="${RUNNER_TEMP}/issue54-${part}.exact"
+            git show "$CARRIER_COMMIT:ops/issue54-rebuilt.part${part}" > "$raw"
+            tr -d '\r\n\t ' < "$raw" > "$normalized"
+            head -c "${expected_lengths[$index]}" "$normalized" > "$exact"
+            test "$(wc -c < "$exact" | tr -d ' ')" = "${expected_lengths[$index]}"
+            echo "${expected_hashes[$index]}  $exact" | sha256sum --check -
+            if [ "$index" -gt 0 ]; then
+              test "$(wc -c < "$normalized" | tr -d ' ')" = "${expected_lengths[$index]}"
+            fi
+            cat "$exact" >> "$carrier"
+          done
+          echo "$CARRIER_SHA256  $carrier" | sha256sum --check -
+          archive="${RUNNER_TEMP}/issue54.patch.gz"
+          patch="${RUNNER_TEMP}/issue54.patch"
+          base64 --decode "$carrier" > "$archive"
+          echo "$GZIP_SHA256  $archive" | sha256sum --check -
+          gzip --test "$archive"
+          gzip --decompress --stdout "$archive" > "$patch"
+          echo "$PATCH_SHA256  $patch" | sha256sum --check -
+          expected_paths="$(cat <<'PATHS'
+          docs/EFFECT_AND_PROTOCOL_STANDARD.md
+          docs/START_HERE.md
+          docs/formal/EffectLifecycle.cfg
+          docs/formal/EffectLifecycle.tla
+          docs/generated/EFFECT_LIFECYCLE.md
+          docs/machine/doc-set.v1.json
+          docs/machine/effect-lifecycle.v1.json
+          tools/docs/generate_global_docs.py
+          tools/docs/verify_effect_lifecycle.py
+          tools/docs/verify_global_docs.py
+          tools/tests/test_effect_lifecycle.py
+          PATHS
+          )"
+          actual_paths="$(git apply --numstat "$patch" | cut -f3 | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
+          git add $expected_paths
+      - name: Verify lifecycle model and repository contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/docs/generate_global_docs.py \
+            tools/docs/verify_global_docs.py \
+            tools/docs/verify_effect_lifecycle.py \
+            tools/tests/test_effect_lifecycle.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_effect_lifecycle.py --model-check --json
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest \
+            tools.tests.test_effect_lifecycle \
+            tools.tests.test_repository_authority \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_owner_open_broker_module_documentation -v
+          python3 -m compileall -q tools
+          git diff --check
+      - name: Commit and publish lifecycle candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git commit -m 'docs: machine-verify cross-module effect lifecycle'
+          git push origin "HEAD:$TARGET_BRANCH"
