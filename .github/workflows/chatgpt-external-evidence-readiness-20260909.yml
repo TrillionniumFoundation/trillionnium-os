@@ -1,0 +1,284 @@
+name: ChatGPT external evidence readiness
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr63-source-export-20260909
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+concurrency:
+  group: chatgpt-external-evidence-readiness-20260909
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Audit L2-L6 environments, runners and exact plan without effects
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import hashlib
+          import json
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from pathlib import Path
+
+          repo = os.environ['REPOSITORY']
+          token = os.environ['GH_TOKEN']
+          api = 'https://api.github.com'
+          levels = ['L2', 'L3', 'L4', 'L5', 'L6']
+          environment_names = {level: f'owner-open-r5-{level.lower()}' for level in levels}
+
+          def request(path):
+              req = urllib.request.Request(
+                  api + path,
+                  headers={
+                      'Accept': 'application/vnd.github+json',
+                      'Authorization': f'Bearer {token}',
+                      'X-GitHub-Api-Version': '2022-11-28',
+                      'User-Agent': 'trillionnium-external-evidence-readiness',
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      raw = response.read(8 * 1024 * 1024 + 1)
+                      if len(raw) > 8 * 1024 * 1024:
+                          raise RuntimeError(f'oversized response: {path}')
+                      return {'ok': True, 'status': response.status,
+                              'value': None if not raw else json.loads(raw)}
+              except urllib.error.HTTPError as error:
+                  body = error.read(64 * 1024).decode('utf-8', 'replace')
+                  return {'ok': False, 'status': error.code, 'error': body[:4000]}
+              except Exception as error:
+                  return {'ok': False, 'status': None, 'error': str(error)}
+
+          report = {
+              'schema': 'org.trillionnium.external-evidence-readiness.v1',
+              'repository': repo,
+              'generated_at': dt.datetime.now(dt.timezone.utc).isoformat(),
+              'automatic_redispatch': False,
+              'effect_execution': False,
+              'evidence_promoted': False,
+              'public_release': False,
+              'levels': {},
+          }
+
+          main = request(f'/repos/{repo}/branches/main')
+          report['protected_main'] = (
+              (main.get('value') or {}).get('commit', {}).get('sha') if main['ok'] else None
+          )
+
+          environments = request(f'/repos/{repo}/environments?per_page=100')
+          env_by_name = {}
+          if environments['ok']:
+              env_by_name = {
+                  item.get('name'): item
+                  for item in (environments['value'] or {}).get('environments', [])
+              }
+          report['environments_endpoint'] = {
+              'ok': environments['ok'], 'status': environments['status'],
+              'visible_names': sorted(env_by_name),
+          }
+
+          runners = request(f'/repos/{repo}/actions/runners?per_page=100')
+          runner_values = (runners.get('value') or {}).get('runners', []) if runners['ok'] else []
+          report['runners_endpoint'] = {
+              'ok': runners['ok'], 'status': runners['status'],
+              'visible_count': len(runner_values),
+          }
+
+          variables = request(f'/repos/{repo}/actions/variables?per_page=100')
+          variable_values = (variables.get('value') or {}).get('variables', []) if variables['ok'] else []
+          variable_by_name = {item.get('name'): item.get('value', '') for item in variable_values}
+          report['variables_endpoint'] = {
+              'ok': variables['ok'], 'status': variables['status'],
+              'visible_names': sorted(variable_by_name),
+          }
+
+          workflows = request(f'/repos/{repo}/actions/workflows?per_page=100')
+          workflow_values = (workflows.get('value') or {}).get('workflows', []) if workflows['ok'] else []
+          report['qualification_workflows'] = [
+              {
+                  'id': item.get('id'), 'name': item.get('name'),
+                  'path': item.get('path'), 'state': item.get('state'),
+              }
+              for item in workflow_values
+              if any(word in ((item.get('name') or '') + ' ' + (item.get('path') or '')).lower()
+                     for word in ('external qualification', 'qualification-chain', 'evidence intake'))
+          ]
+
+          plan_name = 'TRILLIONNIUM_QUALIFICATION_CHAIN_PLAN_JSON'
+          plan_raw = variable_by_name.get(plan_name)
+          plan_report = {
+              'present': plan_raw is not None,
+              'sha256': hashlib.sha256(plan_raw.encode()).hexdigest() if plan_raw is not None else None,
+              'valid': False,
+              'errors': [],
+          }
+          if plan_raw is not None:
+              try:
+                  plan = json.loads(plan_raw)
+                  if not isinstance(plan, dict):
+                      raise ValueError('root is not an object')
+                  entries = plan.get('levels')
+                  if not isinstance(entries, list) or len(entries) != 5:
+                      raise ValueError('levels must contain exactly five entries')
+                  observed_levels = [entry.get('level') for entry in entries if isinstance(entry, dict)]
+                  if observed_levels != levels:
+                      raise ValueError(f'level order differs: {observed_levels}')
+                  nonces = []
+                  for entry in entries:
+                      required = {
+                          'level', 'source_commit', 'source_tree', 'target_id',
+                          'operator_identity', 'adapter_sha256', 'authorization_ticket',
+                          'authorization_expiry', 'nonce', 'timeout_seconds',
+                      }
+                      missing = sorted(required - set(entry))
+                      if missing:
+                          raise ValueError(f'{entry.get("level")}: missing {missing}')
+                      for field in ('source_commit', 'source_tree'):
+                          value = entry[field]
+                          if not isinstance(value, str) or len(value) != 40 or any(c not in '0123456789abcdef' for c in value):
+                              raise ValueError(f'{entry["level"]}.{field} is not lowercase 40-hex')
+                      value = entry['adapter_sha256']
+                      if not isinstance(value, str) or len(value) != 64 or any(c not in '0123456789abcdef' for c in value):
+                          raise ValueError(f'{entry["level"]}.adapter_sha256 is not lowercase 64-hex')
+                      if not isinstance(entry['timeout_seconds'], int) or not 1 <= entry['timeout_seconds'] <= 21600:
+                          raise ValueError(f'{entry["level"]}.timeout_seconds is outside 1..21600')
+                      expiry = dt.datetime.fromisoformat(entry['authorization_expiry'].replace('Z', '+00:00'))
+                      if expiry <= dt.datetime.now(dt.timezone.utc):
+                          raise ValueError(f'{entry["level"]}.authorization_expiry is not future')
+                      nonces.append(entry['nonce'])
+                  if len(nonces) != len(set(nonces)):
+                      raise ValueError('authorization nonces are not unique')
+                  if report['protected_main'] and any(
+                      entry['source_commit'] != report['protected_main'] for entry in entries
+                  ):
+                      raise ValueError('one or more source commits differ from protected main')
+                  plan_report['valid'] = True
+              except Exception as error:
+                  plan_report['errors'].append(str(error))
+          report['chain_plan'] = plan_report
+
+          for level in levels:
+              environment_name = environment_names[level]
+              detail = request(f'/repos/{repo}/environments/{urllib.parse.quote(environment_name)}')
+              value = detail.get('value') or {}
+              reviewers = []
+              branch_policy = None
+              if detail['ok']:
+                  for rule in value.get('protection_rules', []) or []:
+                      if rule.get('type') == 'required_reviewers':
+                          reviewers.extend(
+                              ((reviewer.get('reviewer') or {}).get('login') or
+                               (reviewer.get('reviewer') or {}).get('name'))
+                              for reviewer in rule.get('reviewers', [])
+                          )
+                      if rule.get('type') == 'branch_policy':
+                          branch_policy = rule
+              expected_label = f'owner-open-r5-{level.lower()}'
+              eligible = []
+              for runner in runner_values:
+                  labels = sorted(label.get('name') for label in runner.get('labels', []))
+                  if runner.get('status') == 'online' and {'self-hosted', 'linux', expected_label}.issubset(labels):
+                      eligible.append({
+                          'id': runner.get('id'), 'name': runner.get('name'),
+                          'busy': runner.get('busy'), 'labels': labels,
+                      })
+              required_variables = [
+                  f'TRILLIONNIUM_{level}_QUALIFICATION_ADAPTER',
+                  f'TRILLIONNIUM_{level}_QUALIFICATION_TARGET_ID',
+                  f'TRILLIONNIUM_{level}_QUALIFICATION_OPERATOR_IDENTITY',
+              ]
+              report['levels'][level] = {
+                  'environment': environment_name,
+                  'environment_visible': detail['ok'],
+                  'environment_status': detail['status'],
+                  'required_reviewers': sorted(value for value in reviewers if value),
+                  'deployment_branch_policy': value.get('deployment_branch_policy'),
+                  'eligible_online_runners': eligible,
+                  'required_variables': {
+                      name: name in variable_by_name for name in required_variables
+                  },
+                  'ready': bool(
+                      detail['ok']
+                      and reviewers
+                      and value.get('deployment_branch_policy') is not None
+                      and eligible
+                      and all(name in variable_by_name for name in required_variables)
+                  ),
+              }
+
+          report['all_levels_ready'] = all(
+              report['levels'][level]['ready'] for level in levels
+          )
+          report['dispatch_eligible'] = bool(
+              report['protected_main']
+              and report['all_levels_ready']
+              and report['chain_plan']['valid']
+              and report['qualification_workflows']
+          )
+          # This audit never dispatches effects. The exact protected environment
+          # and named human approvals remain the dispatch boundary.
+          report['dispatch_performed'] = False
+
+          Path('/tmp/external-evidence-readiness.json').write_text(
+              json.dumps(report, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+
+          summary = [
+              '## L2-L6 fail-closed infrastructure readback',
+              '',
+              f'Protected main: `{report["protected_main"]}`.',
+              f'Exact chain plan present/valid: `{plan_report["present"]}/{plan_report["valid"]}`.',
+              f'All five levels ready: `{report["all_levels_ready"]}`.',
+              f'Dispatch eligible: `{report["dispatch_eligible"]}`; dispatch performed: `false`.',
+              '',
+          ]
+          for level in levels:
+              value = report['levels'][level]
+              summary.append(
+                  f'- **{level}** `{value["environment"]}`: env={value["environment_visible"]}, '
+                  f'reviewers={len(value["required_reviewers"])}, '
+                  f'online eligible runners={len(value["eligible_online_runners"])}, '
+                  f'variables={sum(value["required_variables"].values())}/3, ready={value["ready"]}.'
+              )
+          summary += [
+              '',
+              'No target, device, destructive fault, signing or release operation was dispatched. '
+              'A repository permission grant is not substituted for target custody, exact authorization, '
+              'protected-environment approval, independent roles or a hardware-backed key.',
+          ]
+          payload = json.dumps({'body': '\n'.join(summary)}).encode()
+          req = urllib.request.Request(
+              api + f'/repos/{repo}/issues/68/comments', data=payload, method='POST',
+              headers={
+                  'Accept': 'application/vnd.github+json',
+                  'Authorization': f'Bearer {token}',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'User-Agent': 'trillionnium-external-evidence-readiness',
+              },
+          )
+          with urllib.request.urlopen(req, timeout=30) as response:
+              response.read()
+          PY
+      - name: Upload non-authorizing readiness report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: external-evidence-readiness-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: /tmp/external-evidence-readiness.json
