@@ -1,0 +1,251 @@
+name: ChatGPT executable module-contract closure
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-module-contracts-controller-20260909
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-executable-module-contract-closure
+  cancel-in-progress: true
+
+jobs:
+  build-review-merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      EFFECT_BRANCH: codex/effect-lifecycle-model-20260908
+      CANDIDATE_BRANCH: codex/executable-module-contracts-20260909
+      CONTROL_BRANCH: ops/chatgpt-module-contracts-controller-20260909
+      REVIEWER_RUNTIME: Tomasrgbsf
+      REVIEWER_EVIDENCE: Franksudoman
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Wait for protected effect-lifecycle integration
+        id: dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          for iteration in $(seq 1 1080); do
+            number="$(gh api "repos/$REPOSITORY/pulls?state=all&per_page=100" --jq ".[] | select(.head.ref == \"$EFFECT_BRANCH\" and .head.repo.full_name == \"$REPOSITORY\") | .number" | tail -n1)"
+            if test -n "$number"; then
+              state="$(gh api "repos/$REPOSITORY/pulls/$number" --jq .state)"
+              merged="$(gh api "repos/$REPOSITORY/pulls/$number" --jq .merged)"
+              if test "$state" = closed && test "$merged" = true; then break; fi
+            fi
+            sleep 15
+          done
+          test -n "${number:-}"
+          test "$state" = closed
+          test "$merged" = true
+          main_head="$(gh api "repos/$REPOSITORY/git/ref/heads/main" --jq .object.sha)"
+          printf 'main_head=%s\n' "$main_head" >> "$GITHUB_OUTPUT"
+
+      - name: Check out protected main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.dependency.outputs.main_head }}
+          persist-credentials: true
+
+      - name: Generate deterministic contracts and first candidate commit
+        id: build
+        shell: bash
+        env:
+          MAIN_HEAD: ${{ steps.dependency.outputs.main_head }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$MAIN_HEAD"
+          if gh api "repos/$REPOSITORY/git/ref/heads/$CANDIDATE_BRANCH" >/dev/null 2>&1; then
+            printf '%s\n' 'candidate branch already exists; refusing to overwrite an unknown subject' >&2
+            exit 1
+          fi
+          git switch -c "$CANDIDATE_BRANCH"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git fetch --no-tags origin "$CONTROL_BRANCH"
+          control_commit="$(git --no-replace-objects rev-parse FETCH_HEAD)"
+          test "$control_commit" = "$GITHUB_SHA"
+          git show "$control_commit:ops/build-module-contracts.py" > "${RUNNER_TEMP}/generator.py"
+          git show "$control_commit:ops/test-module-contracts.py" > "${RUNNER_TEMP}/test_module_contracts.py"
+          python3 - "${RUNNER_TEMP}/generator.py" <<'PY'
+          from pathlib import Path
+          import sys
+          path=Path(sys.argv[1]); source=path.read_text(encoding='utf-8')
+          source=source.replace(
+              'if any(item==CATALOG_PATH for item in value) and CONTRACT_CATALOG_PATH not in value: value.append(CONTRACT_CATALOG_PATH); value.sort()',
+              'if any(item==CATALOG_PATH for item in value) and CONTRACT_CATALOG_PATH not in value: value.append(CONTRACT_CATALOG_PATH)'
+          ).replace(
+              'if any(item=="docs/START_HERE.md" for item in value) and STATUS_PATH not in value: value.append(STATUS_PATH); value.sort()',
+              'if any(item=="docs/START_HERE.md" for item in value) and STATUS_PATH not in value: value.append(STATUS_PATH)'
+          )
+          path.write_text(source,encoding='utf-8')
+          PY
+          mkdir -p tools/tests
+          cp "${RUNNER_TEMP}/test_module_contracts.py" tools/tests/test_module_contracts.py
+          python3 "${RUNNER_TEMP}/generator.py" --root "$PWD" --write --install
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 android-integration/module-contracts/verify_vectors.py
+          python3 -m unittest tools.tests.test_module_contracts -v
+          cargo fmt --all -- --check
+          cargo test -p trillionnium-owner-open-types --test module_contract_vectors
+          git add -A
+          git diff --cached --check
+          git commit -m 'feat(contracts): generate executable module API state and error contracts'
+          first_head="$(git --no-replace-objects rev-parse HEAD)"
+          first_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+          printf 'first_head=%s\n' "$first_head" >> "$GITHUB_OUTPUT"
+          printf 'first_tree=%s\n' "$first_tree" >> "$GITHUB_OUTPUT"
+
+      - name: Create draft PR and bind closed-world review index
+        id: finalize
+        shell: bash
+        env:
+          MAIN_HEAD: ${{ steps.dependency.outputs.main_head }}
+          FIRST_HEAD: ${{ steps.build.outputs.first_head }}
+          FIRST_TREE: ${{ steps.build.outputs.first_tree }}
+        run: |
+          set -euo pipefail
+          response="$(gh api -X POST "repos/$REPOSITORY/pulls" \
+            -f title='feat: generate executable module API, state and error contracts' \
+            -f head="$CANDIDATE_BRANCH" -f base=main -F draft=true \
+            -f body='Parent: #55 and #51. This source-only candidate resolves every logical module label to deterministic API/state/error schemas, compatibility metadata and shared valid/invalid vectors. It grants no installed-target, device, signing or release authority. Exact subject will be rebound in the final candidate commit.')"
+          pr_number="$(printf '%s' "$response" | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+          git fetch --no-tags origin "$CANDIDATE_BRANCH" main
+          git switch "$CANDIDATE_BRANCH"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$FIRST_HEAD"
+          main_tree="$(git --no-replace-objects rev-parse "$MAIN_HEAD^{tree}")"
+          python3 - "$PWD" "$MAIN_HEAD" "$main_tree" "$FIRST_HEAD" "$FIRST_TREE" "$pr_number" <<'PY'
+          import importlib.util,json,subprocess,sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); main,main_tree,predecessor,predecessor_tree=sys.argv[2:6]; number=int(sys.argv[6])
+          spec=importlib.util.spec_from_file_location('_review_index',root/'tools/verify_g1_review_index.py')
+          if spec is None or spec.loader is None: raise SystemExit('cannot load review-index verifier')
+          verifier=importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+          raw=subprocess.check_output(['git','--no-replace-objects','-C',str(root),'diff','--name-status','-M',main],text=True)
+          mapping={'A':'added','M':'modified','D':'removed','T':'changed'}; changes=[]
+          for line in raw.splitlines():
+              fields=line.split('\t'); code=fields[0]
+              if code.startswith('R'): changes.append({'path':fields[2],'status':'renamed','previous_path':fields[1]})
+              else:
+                  status=mapping.get(code[:1])
+                  if status is None or len(fields)!=2: raise SystemExit(f'unsupported diff status: {line}')
+                  changes.append({'path':fields[1],'status':status,'previous_path':None})
+          changes.sort(key=lambda item:item['path'])
+          observation={'repository':'TrillionniumFoundation/trillionnium-os','pull_request':number,'base_commit':main,'base_tree':main_tree,'changes':changes}
+          index=verifier.propose_index(observation,predecessor_commit=predecessor,predecessor_tree=predecessor_tree,
+              accountable_owner='ProfHepta',runtime_reviewer='Tomasrgbsf',evidence_reviewer='Franksudoman')
+          (root/verifier.INDEX_PATH).write_text(json.dumps(index,indent=2,sort_keys=True,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8')
+          PY
+          git add governance/pr41-review-index.v1.json
+          git commit -m 'docs(contracts): bind executable contracts to exact review inventory'
+          final_head="$(git --no-replace-objects rev-parse HEAD)"
+          final_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          count="$(git diff --name-only "$MAIN_HEAD...$final_head" | wc -l | tr -d ' ')"
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 android-integration/module-contracts/verify_vectors.py
+          python3 -m unittest tools.tests.test_module_contracts -v
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets
+          cargo clippy --workspace --all-targets -- -D warnings
+          git diff --check
+          cat > "${RUNNER_TEMP}/body.md" <<EOF
+          ## Exact subject
+
+          \`\`\`text
+          base branch:               main
+          base commit:               $MAIN_HEAD
+          base tree:                 $main_tree
+          head commit:               $final_head
+          head tree:                 $final_tree
+          changed paths from base:   $count
+          \`\`\`
+
+          Any base/head/tree, deterministic synthetic result, workflow attempt,
+          artifact or review movement invalidates qualification.
+
+          ## Scope
+
+          Resolve every active/planned logical module API, state and error label
+          to deterministic checked-in JSON Schema, compatibility metadata and
+          shared valid/invalid vectors. Bind each contract to concrete source/test
+          identities and common Rust \`serde(deny_unknown_fields)\` envelopes.
+          Python, Rust and the Android build-host consumer execute the vectors.
+
+          ## Safety boundary
+
+          Duplicate members, non-finite numbers, unknown fields, missing identity,
+          schema drift and generated-byte drift fail closed. Effect uncertainty
+          always requires reconciliation and automatic redispatch remains false.
+          This is L1 source evidence only; it does not establish Android image,
+          physical-device, destructive-fault, signing or public-release evidence.
+          EOF
+          sed -i 's/^          //' "${RUNNER_TEMP}/body.md"
+          gh api -X PATCH "repos/$REPOSITORY/pulls/$pr_number" --input <(python3 - "${RUNNER_TEMP}/body.md" <<'PY'
+          from pathlib import Path
+          import json,sys
+          print(json.dumps({'body':Path(sys.argv[1]).read_text(encoding='utf-8')}))
+          PY
+          ) >/dev/null
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+          printf 'pr_number=%s\n' "$pr_number" >> "$GITHUB_OUTPUT"
+          printf 'final_head=%s\n' "$final_head" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for source gates, request exact reviews, and merge without bypass
+        shell: bash
+        env:
+          PR_NUMBER: ${{ steps.finalize.outputs.pr_number }}
+          HEAD_SHA: ${{ steps.finalize.outputs.final_head }}
+        run: |
+          set -euo pipefail
+          python3 - "$REPOSITORY" "$HEAD_SHA" <<'PY'
+          import json,subprocess,sys,time
+          repository,head=sys.argv[1:]
+          required={'L1 graph, documentation, broker and MCP source closure','L1 Rust 1.93 selected Host, job, flow and recovery closure','L1 exact-source-head aggregate candidate','L1 protected-main and exact-head independent-review readiness','L1 exact two-parent merge source qualification'}
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          for _ in range(720):
+              values=api(f'repos/{repository}/commits/{head}/check-runs?per_page=100')['check_runs']; latest={}
+              for value in sorted(values,key=lambda item:item.get('started_at') or item.get('created_at') or ''): latest[value['name']]=value
+              failed=sorted(name for name in required if name in latest and latest[name]['status']=='completed' and latest[name]['conclusion']!='success')
+              if failed: raise SystemExit(f'module-contract gates failed: {failed}')
+              if required<=set(latest) and all(latest[name]['status']=='completed' for name in required): break
+              time.sleep(20)
+          else: raise SystemExit('module-contract gates did not complete')
+          PY
+          node_id="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .node_id)"
+          gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -F id="$node_id" >/dev/null
+          gh api -X POST "repos/$REPOSITORY/pulls/$PR_NUMBER/requested_reviewers" -f reviewers[]="$REVIEWER_RUNTIME" -f reviewers[]="$REVIEWER_EVIDENCE" >/dev/null
+          gh api -X POST "repos/$REPOSITORY/issues/$PR_NUMBER/comments" -f body="Executable contracts passed complete source/synthetic gates on exact head \`$HEAD_SHA\`. Fresh dual review requested. No L2-L6 or release authority is claimed." >/dev/null
+          python3 - "$REPOSITORY" "$PR_NUMBER" "$HEAD_SHA" "$REVIEWER_RUNTIME" "$REVIEWER_EVIDENCE" <<'PY'
+          import json,subprocess,sys,time
+          repository,number,head,*reviewers=sys.argv[1:]
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          for _ in range(720):
+              pull=api(f'repos/{repository}/pulls/{number}')
+              if pull['head']['sha']!=head: raise SystemExit('module-contract head moved during review')
+              values=api(f'repos/{repository}/pulls/{number}/reviews?per_page=100'); latest={}
+              for value in sorted(values,key=lambda item:item.get('submitted_at') or ''):
+                  if value['user']['login'] in reviewers: latest[value['user']['login']]=value
+              if all(latest.get(login,{}).get('state')=='APPROVED' and latest[login].get('commit_id')==head for login in reviewers): break
+              time.sleep(20)
+          else: raise SystemExit('module-contract exact-head approvals not observed')
+          PY
+          gh api -X PUT "repos/$REPOSITORY/pulls/$PR_NUMBER/merge" -f merge_method=squash -f sha="$HEAD_SHA" \
+            -f commit_title='feat: generate executable module API, state and error contracts' \
+            -f commit_message='Resolve all logical module labels to reproducible schemas, compatibility metadata and cross-consumer vectors. Preserve explicit uncertainty, no automatic redispatch and source-only claim ceilings.' --jq '{merged,sha,message}'
