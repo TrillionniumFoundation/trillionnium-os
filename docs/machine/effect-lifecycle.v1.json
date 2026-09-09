@@ -1,0 +1,1349 @@
+{
+  "schema": "org.trillionnium.effect-lifecycle.v1",
+  "version": "1",
+  "program_revision": "2026-08-31-g1",
+  "status": "SOURCE_MODEL_PENDING_TARGET_EVIDENCE",
+  "claim_ceiling": "L1_MACHINE_MODEL_ONLY_NO_INSTALLED_TARGET_DEVICE_FAULT_OR_RELEASE_CLAIM",
+  "automatic_redispatch": false,
+  "binding_schema": {
+    "required_identity_fields": [
+      "operation_digest",
+      "request_digest",
+      "session_id",
+      "turn_id",
+      "call_id",
+      "job_id",
+      "ordering_key",
+      "host_epoch",
+      "provider_epoch",
+      "writer_epoch",
+      "fencing_token",
+      "durable_sequence",
+      "monotonic_timestamp_ns"
+    ],
+    "nullable_when_not_applicable": [
+      "call_id",
+      "job_id",
+      "provider_epoch"
+    ],
+    "digest_algorithm": "sha256",
+    "monotonic_clock_required": true,
+    "identity_conflict": "reject_before_effect",
+    "stale_epoch": "fence_before_effect"
+  },
+  "states": [
+    {
+      "id": "RECEIVED",
+      "phase": "ingress",
+      "effect_may_have_started": false,
+      "durable": false,
+      "outcome": "none",
+      "permits_new_effect": false,
+      "meaning": "A bounded request envelope was received; no semantic or effect claim exists."
+    },
+    {
+      "id": "VALIDATED",
+      "phase": "admission",
+      "effect_may_have_started": false,
+      "durable": false,
+      "outcome": "none",
+      "permits_new_effect": false,
+      "meaning": "Mechanical shape, identity domains and fixed limits passed validation."
+    },
+    {
+      "id": "CAPACITY_RESERVED",
+      "phase": "admission",
+      "effect_may_have_started": false,
+      "durable": false,
+      "outcome": "none",
+      "permits_new_effect": false,
+      "meaning": "Finite capacity is exclusively reserved for this ordering key."
+    },
+    {
+      "id": "ACCEPTED_DURABLE",
+      "phase": "admission",
+      "effect_may_have_started": false,
+      "durable": true,
+      "outcome": "none",
+      "permits_new_effect": true,
+      "meaning": "Exact request identity and acceptance are durably committed before effect."
+    },
+    {
+      "id": "EFFECT_ATTEMPTING",
+      "phase": "effect",
+      "effect_may_have_started": true,
+      "durable": false,
+      "outcome": "none",
+      "permits_new_effect": false,
+      "meaning": "The effect boundary was crossed; absence of later data cannot prove no start."
+    },
+    {
+      "id": "EFFECT_STARTED_OBSERVED",
+      "phase": "effect",
+      "effect_may_have_started": true,
+      "durable": false,
+      "outcome": "none",
+      "permits_new_effect": false,
+      "meaning": "Spawn, write, forward or remote start was positively observed."
+    },
+    {
+      "id": "TERMINAL_OBSERVED",
+      "phase": "terminal",
+      "effect_may_have_started": true,
+      "durable": false,
+      "outcome": "definitive",
+      "permits_new_effect": false,
+      "meaning": "A definitive effect outcome was observed but is not yet durable."
+    },
+    {
+      "id": "TERMINAL_DURABLE",
+      "phase": "terminal",
+      "effect_may_have_started": true,
+      "durable": true,
+      "outcome": "definitive",
+      "permits_new_effect": false,
+      "meaning": "The exact terminal bytes and identity are durably committed."
+    },
+    {
+      "id": "DELIVERY_PENDING",
+      "phase": "delivery",
+      "effect_may_have_started": true,
+      "durable": true,
+      "outcome": "definitive",
+      "permits_new_effect": false,
+      "meaning": "Only caller delivery remains; effect execution must never be repeated."
+    },
+    {
+      "id": "DELIVERED",
+      "phase": "delivery",
+      "effect_may_have_started": true,
+      "durable": true,
+      "outcome": "definitive",
+      "permits_new_effect": false,
+      "meaning": "Exact terminal bytes were written to the selected caller channel."
+    },
+    {
+      "id": "ACKNOWLEDGED",
+      "phase": "delivery",
+      "effect_may_have_started": true,
+      "durable": true,
+      "outcome": "definitive",
+      "permits_new_effect": false,
+      "meaning": "The caller acknowledged the exact terminal identity and bytes."
+    },
+    {
+      "id": "REJECTED_BEFORE_EFFECT",
+      "phase": "terminal",
+      "effect_may_have_started": false,
+      "durable": false,
+      "outcome": "definitive",
+      "permits_new_effect": false,
+      "meaning": "Validation, conflict, capacity or definitive acceptance failure rejected before effect."
+    },
+    {
+      "id": "UNKNOWN_RECONCILIATION_REQUIRED",
+      "phase": "uncertainty",
+      "effect_may_have_started": true,
+      "durable": false,
+      "outcome": "uncertain",
+      "permits_new_effect": false,
+      "meaning": "An effect may have occurred; external reality must be reconciled before new semantic action."
+    },
+    {
+      "id": "FENCED",
+      "phase": "uncertainty",
+      "effect_may_have_started": true,
+      "durable": false,
+      "outcome": "uncertain",
+      "permits_new_effect": false,
+      "meaning": "The ordering key or writer epoch is blocked from new authoritative work."
+    },
+    {
+      "id": "CLOSED",
+      "phase": "closed",
+      "effect_may_have_started": true,
+      "durable": true,
+      "outcome": "closed",
+      "permits_new_effect": false,
+      "meaning": "The lifecycle is closed after acknowledgement, pre-effect rejection or an explicit fenced close."
+    }
+  ],
+  "transitions": [
+    {
+      "id": "TR-01",
+      "from": "RECEIVED",
+      "to": "VALIDATED",
+      "trigger": "mechanical_validation_passed",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-02",
+      "from": "RECEIVED",
+      "to": "REJECTED_BEFORE_EFFECT",
+      "trigger": "malformed_or_unsupported_input",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-03",
+      "from": "VALIDATED",
+      "to": "CAPACITY_RESERVED",
+      "trigger": "finite_capacity_reserved",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-04",
+      "from": "VALIDATED",
+      "to": "REJECTED_BEFORE_EFFECT",
+      "trigger": "identity_conflict_or_capacity_rejection",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-05",
+      "from": "CAPACITY_RESERVED",
+      "to": "ACCEPTED_DURABLE",
+      "trigger": "acceptance_commit_confirmed",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-06",
+      "from": "CAPACITY_RESERVED",
+      "to": "REJECTED_BEFORE_EFFECT",
+      "trigger": "acceptance_definitively_failed_before_effect",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-07",
+      "from": "CAPACITY_RESERVED",
+      "to": "FENCED",
+      "trigger": "acceptance_durability_or_writer_epoch_ambiguous",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-08",
+      "from": "ACCEPTED_DURABLE",
+      "to": "EFFECT_ATTEMPTING",
+      "trigger": "effect_boundary_crossed",
+      "effect_boundary": true,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": "This is the sole transition that may initiate an external effect."
+    },
+    {
+      "id": "TR-09",
+      "from": "ACCEPTED_DURABLE",
+      "to": "TERMINAL_OBSERVED",
+      "trigger": "cancel_or_no_effect_terminal_linearized_before_attempt",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-10",
+      "from": "ACCEPTED_DURABLE",
+      "to": "FENCED",
+      "trigger": "writer_epoch_or_fencing_token_lost_before_attempt",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-11",
+      "from": "EFFECT_ATTEMPTING",
+      "to": "EFFECT_STARTED_OBSERVED",
+      "trigger": "spawn_write_forward_or_remote_start_observed",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-12",
+      "from": "EFFECT_ATTEMPTING",
+      "to": "TERMINAL_OBSERVED",
+      "trigger": "definitive_terminal_observed_without_separate_start",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-13",
+      "from": "EFFECT_ATTEMPTING",
+      "to": "UNKNOWN_RECONCILIATION_REQUIRED",
+      "trigger": "timeout_eof_disconnect_or_crash_after_attempt",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-14",
+      "from": "EFFECT_STARTED_OBSERVED",
+      "to": "TERMINAL_OBSERVED",
+      "trigger": "definitive_terminal_observed",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-15",
+      "from": "EFFECT_STARTED_OBSERVED",
+      "to": "UNKNOWN_RECONCILIATION_REQUIRED",
+      "trigger": "terminal_proof_missing_after_observed_start",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-16",
+      "from": "TERMINAL_OBSERVED",
+      "to": "TERMINAL_DURABLE",
+      "trigger": "terminal_commit_confirmed",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-17",
+      "from": "TERMINAL_OBSERVED",
+      "to": "UNKNOWN_RECONCILIATION_REQUIRED",
+      "trigger": "terminal_commit_failed_or_ambiguous",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": "The observed terminal remains attached as non-authoritative evidence."
+    },
+    {
+      "id": "TR-18",
+      "from": "TERMINAL_DURABLE",
+      "to": "DELIVERY_PENDING",
+      "trigger": "caller_delivery_enqueued",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-19",
+      "from": "DELIVERY_PENDING",
+      "to": "DELIVERED",
+      "trigger": "exact_terminal_bytes_written",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-20",
+      "from": "DELIVERY_PENDING",
+      "to": "DELIVERY_PENDING",
+      "trigger": "backpressure_or_disconnect_defers_delivery_only",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-21",
+      "from": "DELIVERED",
+      "to": "ACKNOWLEDGED",
+      "trigger": "exact_terminal_ack_received",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-22",
+      "from": "DELIVERED",
+      "to": "DELIVERY_PENDING",
+      "trigger": "ack_missing_or_connection_lost",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": "Only the same terminal bytes may be redelivered."
+    },
+    {
+      "id": "TR-23",
+      "from": "ACKNOWLEDGED",
+      "to": "CLOSED",
+      "trigger": "acknowledged_lifecycle_closed",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-24",
+      "from": "REJECTED_BEFORE_EFFECT",
+      "to": "CLOSED",
+      "trigger": "pre_effect_rejection_closed",
+      "effect_boundary": false,
+      "requires_durable_acceptance": false,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-25",
+      "from": "UNKNOWN_RECONCILIATION_REQUIRED",
+      "to": "TERMINAL_OBSERVED",
+      "trigger": "external_reconciliation_proves_definitive_terminal",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-26",
+      "from": "UNKNOWN_RECONCILIATION_REQUIRED",
+      "to": "FENCED",
+      "trigger": "reconciliation_incomplete_or_operator_fence",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    },
+    {
+      "id": "TR-27",
+      "from": "FENCED",
+      "to": "CLOSED",
+      "trigger": "explicit_fenced_close_without_redispatch",
+      "effect_boundary": false,
+      "requires_durable_acceptance": true,
+      "preserves_effect_identity": true,
+      "automatic_redispatch": false,
+      "bindings": [
+        "operation_digest",
+        "request_digest",
+        "session_id",
+        "turn_id",
+        "call_id",
+        "job_id",
+        "ordering_key",
+        "host_epoch",
+        "provider_epoch",
+        "writer_epoch",
+        "fencing_token",
+        "durable_sequence",
+        "monotonic_timestamp_ns"
+      ],
+      "notes": ""
+    }
+  ],
+  "invariants": [
+    {
+      "id": "INV-01",
+      "statement": "An effect attempt is reachable only from durable acceptance.",
+      "checker": "effect_requires_durable_acceptance"
+    },
+    {
+      "id": "INV-02",
+      "statement": "Timeout, EOF, disconnect and crash after attempt produce uncertainty, never proof of cancellation or no start.",
+      "checker": "ambiguous_observation_requires_unknown"
+    },
+    {
+      "id": "INV-03",
+      "statement": "Terminal observation, terminal durability, delivery and acknowledgement are distinct ordered states.",
+      "checker": "terminal_delivery_order_is_strict"
+    },
+    {
+      "id": "INV-04",
+      "statement": "Exact duplicates attach or replay known bytes; changed content conflicts before effect.",
+      "checker": "duplicate_policy_is_closed"
+    },
+    {
+      "id": "INV-05",
+      "statement": "Cancel versus terminal uses one per-ordering-key linearization sequence.",
+      "checker": "race_policy_has_one_linearization_point"
+    },
+    {
+      "id": "INV-06",
+      "statement": "Stale writers and fencing violations cannot reach the effect boundary.",
+      "checker": "fenced_states_have_no_effect_path"
+    },
+    {
+      "id": "INV-07",
+      "statement": "Cleanup errors remain secondary and cannot overwrite a definitive effect result.",
+      "checker": "cleanup_preserves_primary_outcome"
+    },
+    {
+      "id": "INV-08",
+      "statement": "Recovery never infers not-started from missing post-acceptance data.",
+      "checker": "crash_cuts_forbid_false_no_start"
+    },
+    {
+      "id": "INV-09",
+      "statement": "Automatic redispatch is false in every state transition and recovery cut.",
+      "checker": "automatic_redispatch_is_globally_false"
+    },
+    {
+      "id": "INV-10",
+      "statement": "Every active transition is mapped to source and deterministic tests.",
+      "checker": "implementation_mapping_is_total"
+    }
+  ],
+  "duplicate_policy": {
+    "identity_fields": [
+      "operation_digest",
+      "request_digest",
+      "session_id",
+      "turn_id",
+      "call_id",
+      "job_id",
+      "ordering_key",
+      "host_epoch",
+      "provider_epoch",
+      "writer_epoch",
+      "fencing_token"
+    ],
+    "exact_identity_equal_bytes": "ATTACH_OR_REPLAY_KNOWN_STATE",
+    "exact_identity_changed_bytes": "CONFLICT_BEFORE_EFFECT",
+    "unknown_effect_state": "RECONCILE_WITHOUT_AUTOMATIC_REDISPATCH",
+    "implicit_defaults_change_identity": true,
+    "field_aliases_change_identity": true,
+    "automatic_redispatch": false
+  },
+  "race_policy": {
+    "scope": "one_ordering_key",
+    "linearization_field": "durable_sequence",
+    "clock_field": "monotonic_timestamp_ns",
+    "cancel_before_effect": "TERMINAL_OBSERVED",
+    "effect_attempt_before_cancel": "UNKNOWN_RECONCILIATION_REQUIRED_OR_DEFINITIVE_TERMINAL",
+    "terminal_before_cancel": "PRESERVE_TERMINAL",
+    "equal_time_tie_break": "LOWEST_DURABLE_SEQUENCE_THEN_FENCE",
+    "cleanup_error_role": "SECONDARY_OBSERVATION_NEVER_PRIMARY_OUTCOME",
+    "stale_writer": "FENCED",
+    "automatic_redispatch": false
+  },
+  "crash_cuts": [
+    {
+      "id": "CUT-01",
+      "after": "RECEIVED",
+      "legal_recovery": [
+        "RECEIVED",
+        "REJECTED_BEFORE_EFFECT"
+      ],
+      "forbidden_inference": [
+        "effect_started",
+        "safe_automatic_dispatch"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-02",
+      "after": "VALIDATED",
+      "legal_recovery": [
+        "RECEIVED",
+        "VALIDATED",
+        "REJECTED_BEFORE_EFFECT"
+      ],
+      "forbidden_inference": [
+        "effect_started",
+        "safe_automatic_dispatch"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-03",
+      "after": "CAPACITY_RESERVED",
+      "legal_recovery": [
+        "REJECTED_BEFORE_EFFECT",
+        "FENCED"
+      ],
+      "forbidden_inference": [
+        "effect_started",
+        "durable_acceptance"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-04",
+      "after": "ACCEPTED_DURABLE",
+      "legal_recovery": [
+        "ACCEPTED_DURABLE",
+        "FENCED"
+      ],
+      "forbidden_inference": [
+        "not_started_from_missing_attempt_data",
+        "safe_automatic_dispatch"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-05",
+      "after": "EFFECT_ATTEMPTING",
+      "legal_recovery": [
+        "UNKNOWN_RECONCILIATION_REQUIRED",
+        "FENCED"
+      ],
+      "forbidden_inference": [
+        "not_started",
+        "cancelled",
+        "safe_retry"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-06",
+      "after": "EFFECT_STARTED_OBSERVED",
+      "legal_recovery": [
+        "UNKNOWN_RECONCILIATION_REQUIRED",
+        "FENCED"
+      ],
+      "forbidden_inference": [
+        "not_started",
+        "cancelled",
+        "safe_retry"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-07",
+      "after": "TERMINAL_OBSERVED",
+      "legal_recovery": [
+        "TERMINAL_DURABLE",
+        "UNKNOWN_RECONCILIATION_REQUIRED",
+        "FENCED"
+      ],
+      "forbidden_inference": [
+        "terminal_durable_from_memory_only_observation",
+        "safe_effect_retry"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-08",
+      "after": "TERMINAL_DURABLE",
+      "legal_recovery": [
+        "TERMINAL_DURABLE",
+        "DELIVERY_PENDING"
+      ],
+      "forbidden_inference": [
+        "effect_must_repeat_for_delivery"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-09",
+      "after": "DELIVERY_PENDING",
+      "legal_recovery": [
+        "DELIVERY_PENDING",
+        "DELIVERED"
+      ],
+      "forbidden_inference": [
+        "effect_must_repeat_for_delivery"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-10",
+      "after": "DELIVERED",
+      "legal_recovery": [
+        "DELIVERY_PENDING",
+        "DELIVERED",
+        "ACKNOWLEDGED"
+      ],
+      "forbidden_inference": [
+        "effect_must_repeat_for_ack"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-11",
+      "after": "ACKNOWLEDGED",
+      "legal_recovery": [
+        "ACKNOWLEDGED",
+        "CLOSED"
+      ],
+      "forbidden_inference": [
+        "effect_must_repeat"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-12",
+      "after": "UNKNOWN_RECONCILIATION_REQUIRED",
+      "legal_recovery": [
+        "UNKNOWN_RECONCILIATION_REQUIRED",
+        "FENCED"
+      ],
+      "forbidden_inference": [
+        "not_started",
+        "safe_retry",
+        "cancelled_without_proof"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    },
+    {
+      "id": "CUT-13",
+      "after": "FENCED",
+      "legal_recovery": [
+        "FENCED",
+        "CLOSED"
+      ],
+      "forbidden_inference": [
+        "safe_automatic_dispatch"
+      ],
+      "requires_same_effect_identity": true,
+      "automatic_redispatch": false
+    }
+  ],
+  "implementation_bindings": [
+    {
+      "id": "BIND-INGRESS",
+      "modules": [
+        "MOD-PROTOCOL",
+        "MOD-BROKER"
+      ],
+      "source_path": "crates/trillionnium-owner-open-types/src/lib.rs",
+      "symbol": "pub fn validate",
+      "transitions": [
+        "TR-01",
+        "TR-02",
+        "TR-03",
+        "TR-04"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-types/src/lib.rs",
+        "tools/tests/test_owner_open_ingress_contract.py"
+      ]
+    },
+    {
+      "id": "BIND-HOST-DURABILITY",
+      "modules": [
+        "MOD-EXECUTION-CORE",
+        "MOD-EVENT-STORE"
+      ],
+      "source_path": "apps/trillionnium-owner-open-host/src/r5_persistence.rs",
+      "symbol": "pub fn append_frame",
+      "transitions": [
+        "TR-05",
+        "TR-06",
+        "TR-07",
+        "TR-16",
+        "TR-17"
+      ],
+      "tests": [
+        "apps/trillionnium-owner-open-host/tests/r5_effect_admission.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_terminal_receipt.rs"
+      ]
+    },
+    {
+      "id": "BIND-DIRECT-RUNTIME",
+      "modules": [
+        "MOD-TOOL-RUNTIME"
+      ],
+      "source_path": "crates/trillionnium-owner-open-runtime/src/process.rs",
+      "symbol": "execute_process",
+      "transitions": [
+        "TR-08",
+        "TR-11",
+        "TR-12",
+        "TR-13",
+        "TR-14",
+        "TR-15"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-runtime/tests/runtime.rs",
+        "crates/trillionnium-owner-open-runtime/tests/retirement.rs"
+      ]
+    },
+    {
+      "id": "BIND-TURN-LINEARIZATION",
+      "modules": [
+        "MOD-TURN-ENGINE",
+        "MOD-PROVIDER"
+      ],
+      "source_path": "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+      "symbol": "run_with_sink_and_cancellation",
+      "transitions": [
+        "TR-09",
+        "TR-12",
+        "TR-14"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-turn-loop/tests/streaming_and_cancel.rs",
+        "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs"
+      ]
+    },
+    {
+      "id": "BIND-JOB-LIFECYCLE",
+      "modules": [
+        "MOD-JOB-RUNTIME"
+      ],
+      "source_path": "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+      "symbol": "pub fn start",
+      "transitions": [
+        "TR-03",
+        "TR-05",
+        "TR-07",
+        "TR-08",
+        "TR-11",
+        "TR-13",
+        "TR-15",
+        "TR-25",
+        "TR-26"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_jobs.rs"
+      ]
+    },
+    {
+      "id": "BIND-STORE-REPLAY",
+      "modules": [
+        "MOD-EVENT-STORE"
+      ],
+      "source_path": "crates/trillionnium-owner-open-event-store/src/lib.rs",
+      "symbol": "pub fn append_durable",
+      "transitions": [
+        "TR-05",
+        "TR-16",
+        "TR-17",
+        "TR-25"
+      ],
+      "tests": [
+        "crates/trillionnium-owner-open-event-store/tests/durable.rs",
+        "crates/trillionnium-owner-open-event-store/tests/segmented.rs"
+      ]
+    },
+    {
+      "id": "BIND-CALLER-DELIVERY",
+      "modules": [
+        "MOD-TRANSPORT",
+        "MOD-STREAM"
+      ],
+      "source_path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
+      "symbol": "deliver_raw_line",
+      "transitions": [
+        "TR-18",
+        "TR-19",
+        "TR-20",
+        "TR-21",
+        "TR-22",
+        "TR-23"
+      ],
+      "tests": [
+        "apps/trillionnium-owner-open-host/tests/r5_stream_flow_control.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_transport_core_drain.rs"
+      ]
+    },
+    {
+      "id": "BIND-PRE-EFFECT-CLOSE",
+      "modules": [
+        "MOD-EXECUTION-CORE"
+      ],
+      "source_path": "apps/trillionnium-owner-open-host/src/lib.rs",
+      "symbol": "handle_turn_cancel",
+      "transitions": [
+        "TR-06",
+        "TR-09",
+        "TR-10",
+        "TR-24"
+      ],
+      "tests": [
+        "apps/trillionnium-owner-open-host/tests/r5_active_controls.rs",
+        "apps/trillionnium-owner-open-host/tests/r5_client_disconnect.rs"
+      ]
+    },
+    {
+      "id": "BIND-BROKER-FENCE",
+      "modules": [
+        "MOD-BROKER",
+        "MOD-TRANSPORT"
+      ],
+      "source_path": "tools/owner-open/owner_open_broker_mux.py",
+      "symbol": "def fence_active",
+      "transitions": [
+        "TR-10",
+        "TR-13",
+        "TR-15",
+        "TR-26",
+        "TR-27"
+      ],
+      "tests": [
+        "tools/tests/test_owner_open_broker_mux.py",
+        "tools/tests/test_owner_open_broker_mux_integration.py"
+      ]
+    }
+  ],
+  "verification": {
+    "formal_model": "docs/formal/EffectLifecycle.tla",
+    "formal_config": "docs/formal/EffectLifecycle.cfg",
+    "model_checker": "tools/docs/verify_effect_lifecycle.py",
+    "test_suite": "tools/tests/test_effect_lifecycle.py",
+    "expected_state_count": 15,
+    "expected_transition_count": 27,
+    "exhaustive_ordered_pair_count": 225,
+    "legal_ordered_pair_count": 27,
+    "illegal_ordered_pair_count": 198,
+    "required_test_classes": [
+      "legal_and_illegal_transition_exhaustion",
+      "duplicate_and_conflict_mutation",
+      "cancel_terminal_linearization",
+      "crash_cut_recovery",
+      "formal_projection_equivalence",
+      "implementation_binding_totality",
+      "source_path_custody"
+    ],
+    "claim_ceiling": "L1_SOURCE_MODEL_ONLY_NOT_INSTALLED_TARGET_DEVICE_FAULT_SIGNING_OR_RELEASE_EVIDENCE",
+    "tlc_version": "1.7.4",
+    "tlc_url": "https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar",
+    "tlc_sha1": "bee4a54f3ee3d4afc347c3240ec2d9e93b075104",
+    "tlc_sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+  }
+}

@@ -877,6 +877,7 @@ def main() -> int:
         program = load("program-state.v1.json")
         catalog = load("module-catalog.v1.json")
         profiles = load("product-profile-catalog.v1.json")
+        lifecycle = load("effect-lifecycle.v1.json")
         requirements = load("requirement-graph.v1.json")
         gaps = load("gap-register.v2.json")
         objective = load("global-objective.v1.json")
@@ -887,6 +888,7 @@ def main() -> int:
             program["program_revision"],
             catalog["program_revision"],
             profiles["program_revision"],
+            lifecycle["program_revision"],
             requirements["program_revision"],
             gaps["program_revision"],
             objective["program_revision"],
@@ -910,6 +912,16 @@ def main() -> int:
             check=False,
         )
         require(result.returncode == 0, "generated documentation does not match machine truth")
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "docs" / "verify_effect_lifecycle.py"),
+                "--model-check",
+            ],
+            cwd=ROOT,
+            check=False,
+        )
+        require(result.returncode == 0, "effect lifecycle model verification failed")
         result = subprocess.run(
             [sys.executable, str(ROOT / "tools" / "docs" / "verify_repository_authority.py")],
             cwd=ROOT,

@@ -1,93 +1,93 @@
 {
   "automatic_redispatch": false,
   "base": {
-    "commit": "d323a685c752b5bccc045a82728fd0c93c015163",
-    "tree": "2cab1b1cfebf15a4d995ea4705e21dc675531c05"
+    "commit": "e842c5cc449cd78c93596f64af5364b4a5a18e86",
+    "tree": "54270c6e386a54fee84892e5840e0a95da4c0e11"
   },
   "changed_paths": [
+    ".github/workflows/g1-exact-head-source.yml",
+    ".github/workflows/g1-synthetic-merge.yml",
+    "docs/EFFECT_AND_PROTOCOL_STANDARD.md",
+    "docs/START_HERE.md",
+    "docs/formal/EffectLifecycle.cfg",
+    "docs/formal/EffectLifecycle.tla",
+    "docs/generated/EFFECT_LIFECYCLE.md",
+    "docs/machine/doc-set.v1.json",
+    "docs/machine/effect-lifecycle.v1.json",
     "governance/pr41-review-index.v1.json",
-    "tools/build/README.md",
-    "tools/build/_verify_host_reproducibility_core.py",
-    "tools/build/_verify_host_reproducibility_facade.py",
-    "tools/build/verify_host_reproducibility.py",
-    "tools/owner-open/authenticated_python_bootstrap.py",
-    "tools/perf/README.md",
-    "tools/perf/_run_product_baseline_core.py",
-    "tools/perf/_run_product_baseline_facade.py",
-    "tools/perf/run_product_baseline.py",
-    "tools/tests/authenticated_python_bootstrap_fixture.py",
-    "tools/tests/test_product_baseline_process_group_cleanup.py",
-    "tools/tests/test_run_product_baseline.py",
-    "tools/tests/test_verify_host_reproducibility.py"
+    "tools/docs/generate_global_docs.py",
+    "tools/docs/verify_effect_lifecycle.py",
+    "tools/docs/verify_global_docs.py",
+    "tools/tests/test_effect_lifecycle.py"
   ],
   "changes": [
+    {
+      "path": ".github/workflows/g1-exact-head-source.yml",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": ".github/workflows/g1-synthetic-merge.yml",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "docs/EFFECT_AND_PROTOCOL_STANDARD.md",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "docs/START_HERE.md",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "docs/formal/EffectLifecycle.cfg",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "docs/formal/EffectLifecycle.tla",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "docs/generated/EFFECT_LIFECYCLE.md",
+      "previous_path": null,
+      "status": "added"
+    },
+    {
+      "path": "docs/machine/doc-set.v1.json",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "docs/machine/effect-lifecycle.v1.json",
+      "previous_path": null,
+      "status": "added"
+    },
     {
       "path": "governance/pr41-review-index.v1.json",
       "previous_path": null,
       "status": "modified"
     },
     {
-      "path": "tools/build/README.md",
+      "path": "tools/docs/generate_global_docs.py",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": "tools/docs/verify_effect_lifecycle.py",
       "previous_path": null,
       "status": "added"
     },
     {
-      "path": "tools/build/_verify_host_reproducibility_core.py",
+      "path": "tools/docs/verify_global_docs.py",
       "previous_path": null,
-      "status": "added"
+      "status": "modified"
     },
     {
-      "path": "tools/build/_verify_host_reproducibility_facade.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/build/verify_host_reproducibility.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/owner-open/authenticated_python_bootstrap.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/perf/README.md",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/perf/_run_product_baseline_core.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/perf/_run_product_baseline_facade.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/perf/run_product_baseline.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/tests/authenticated_python_bootstrap_fixture.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/tests/test_product_baseline_process_group_cleanup.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/tests/test_run_product_baseline.py",
-      "previous_path": null,
-      "status": "added"
-    },
-    {
-      "path": "tools/tests/test_verify_host_reproducibility.py",
+      "path": "tools/tests/test_effect_lifecycle.py",
       "previous_path": null,
       "status": "added"
     }
@@ -95,20 +95,20 @@
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
     "change_count": 14,
-    "changes_sha256": "92454c8e6fc7ab11879a1266ec078d0a67bae5bc17219749321b6ef7320ce390",
+    "changes_sha256": "5675bc58a1410277b0edc4c26d1a56c3ec55726169f0dddb591d3aa0bf7ee01c",
     "path_count": 14,
-    "paths_sha256": "d8ddcf5850f2ccae3276fcafefbfa5df1e3390e352252166578826380b3b596f"
+    "paths_sha256": "f6a91f6f7a59d24e26eccc2350f7a83e683750bb15bb200c193829f91f26b897"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
   "program_revision": "2026-08-31-g1",
   "promotion_authorized": false,
   "public_release": false,
-  "pull_request": 63,
+  "pull_request": 72,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "0b2228aae3512650340cd50c84f52daf10e3649a",
-    "tree": "61e43db3904b0d08e10a3e49e6cce47a4d7edade"
+    "commit": "e433bc092ef73a498a3f52ff9cc064fad9c096f0",
+    "tree": "f532d88f10b39836e0758af1829084f33fe3cfae"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -119,6 +119,8 @@
         "Franksudoman"
       ],
       "paths": [
+        ".github/workflows/g1-exact-head-source.yml",
+        ".github/workflows/g1-synthetic-merge.yml",
         "governance/pr41-review-index.v1.json"
       ],
       "review_order": 1,
@@ -126,26 +128,35 @@
     },
     {
       "accountable_owner": "ProfHepta",
-      "id": "source-tooling-and-verification",
+      "id": "documentation-and-contracts",
       "independent_reviewers": [
-        "Tomasrgbsf"
+        "Franksudoman"
       ],
       "paths": [
-        "tools/build/README.md",
-        "tools/build/_verify_host_reproducibility_core.py",
-        "tools/build/_verify_host_reproducibility_facade.py",
-        "tools/build/verify_host_reproducibility.py",
-        "tools/owner-open/authenticated_python_bootstrap.py",
-        "tools/perf/README.md",
-        "tools/perf/_run_product_baseline_core.py",
-        "tools/perf/_run_product_baseline_facade.py",
-        "tools/perf/run_product_baseline.py",
-        "tools/tests/authenticated_python_bootstrap_fixture.py",
-        "tools/tests/test_product_baseline_process_group_cleanup.py",
-        "tools/tests/test_run_product_baseline.py",
-        "tools/tests/test_verify_host_reproducibility.py"
+        "docs/EFFECT_AND_PROTOCOL_STANDARD.md",
+        "docs/START_HERE.md",
+        "docs/formal/EffectLifecycle.cfg",
+        "docs/formal/EffectLifecycle.tla",
+        "docs/generated/EFFECT_LIFECYCLE.md",
+        "docs/machine/doc-set.v1.json",
+        "docs/machine/effect-lifecycle.v1.json"
       ],
       "review_order": 2,
+      "security_domain": "documentation-and-contracts"
+    },
+    {
+      "accountable_owner": "ProfHepta",
+      "id": "source-tooling-and-verification",
+      "independent_reviewers": [
+        "Franksudoman"
+      ],
+      "paths": [
+        "tools/docs/generate_global_docs.py",
+        "tools/docs/verify_effect_lifecycle.py",
+        "tools/docs/verify_global_docs.py",
+        "tools/tests/test_effect_lifecycle.py"
+      ],
+      "review_order": 3,
       "security_domain": "source-tooling-and-verification"
     }
   ]
