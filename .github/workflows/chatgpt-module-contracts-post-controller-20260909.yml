@@ -1,0 +1,105 @@
+name: ChatGPT executable module-contract post controller
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-module-contracts-controller-20260909
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-executable-module-contract-post-controller
+  cancel-in-progress: true
+
+jobs:
+  review-merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      CANDIDATE_BRANCH: codex/executable-module-contracts-20260909
+      REVIEWER_RUNTIME: Tomasrgbsf
+      REVIEWER_EVIDENCE: Franksudoman
+    steps:
+      - name: Wait for exact final candidate
+        id: subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          for iteration in $(seq 1 1080); do
+            pr_number="$(gh api "repos/$REPOSITORY/pulls?state=all&per_page=100" --jq ".[] | select(.head.ref == \"$CANDIDATE_BRANCH\" and .head.repo.full_name == \"$REPOSITORY\") | .number" | tail -n1)"
+            if test -n "$pr_number"; then
+              state="$(gh api "repos/$REPOSITORY/pulls/$pr_number" --jq .state)"
+              merged="$(gh api "repos/$REPOSITORY/pulls/$pr_number" --jq .merged)"
+              if test "$state" = closed && test "$merged" = true; then printf 'already_merged=true\n' >> "$GITHUB_OUTPUT"; exit 0; fi
+              head="$(gh api "repos/$REPOSITORY/pulls/$pr_number" --jq .head.sha)"
+              if gh api "repos/$REPOSITORY/contents/docs/machine/module-contract-catalog.v1.json?ref=$head" >/dev/null 2>&1 \
+                && gh api "repos/$REPOSITORY/contents/tools/contracts/module-contracts.lock.json?ref=$head" >/dev/null 2>&1; then break; fi
+            fi
+            sleep 15
+          done
+          test -n "${pr_number:-}"
+          test "$state" = open
+          printf 'already_merged=false\n' >> "$GITHUB_OUTPUT"
+          printf 'pr_number=%s\n' "$pr_number" >> "$GITHUB_OUTPUT"
+          printf 'head=%s\n' "$head" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for all source and synthetic gates
+        if: steps.subject.outputs.already_merged != 'true'
+        shell: bash
+        env:
+          HEAD_SHA: ${{ steps.subject.outputs.head }}
+        run: |
+          set -euo pipefail
+          python3 - "$REPOSITORY" "$HEAD_SHA" <<'PY'
+          import json,subprocess,sys,time
+          repository,head=sys.argv[1:]
+          required={'L1 graph, documentation, broker and MCP source closure','L1 Rust 1.93 selected Host, job, flow and recovery closure','L1 exact-source-head aggregate candidate','L1 protected-main and exact-head independent-review readiness','L1 exact two-parent merge source qualification'}
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          for _ in range(720):
+              values=api(f'repos/{repository}/commits/{head}/check-runs?per_page=100')['check_runs']; latest={}
+              for value in sorted(values,key=lambda item:item.get('started_at') or item.get('created_at') or ''): latest[value['name']]=value
+              failed=sorted(name for name in required if name in latest and latest[name]['status']=='completed' and latest[name]['conclusion']!='success')
+              if failed: raise SystemExit(f'module-contract gates failed: {failed}')
+              if required<=set(latest) and all(latest[name]['status']=='completed' for name in required): break
+              time.sleep(20)
+          else: raise SystemExit('module-contract gates did not complete')
+          PY
+
+      - name: Request fresh reviews and merge without bypass
+        if: steps.subject.outputs.already_merged != 'true'
+        shell: bash
+        env:
+          PR_NUMBER: ${{ steps.subject.outputs.pr_number }}
+          HEAD_SHA: ${{ steps.subject.outputs.head }}
+        run: |
+          set -euo pipefail
+          node_id="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .node_id)"
+          if test "$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .draft)" = true; then
+            gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -F id="$node_id" >/dev/null
+          fi
+          gh api -X POST "repos/$REPOSITORY/pulls/$PR_NUMBER/requested_reviewers" -f reviewers[]="$REVIEWER_RUNTIME" -f reviewers[]="$REVIEWER_EVIDENCE" >/dev/null
+          gh api -X POST "repos/$REPOSITORY/issues/$PR_NUMBER/comments" -f body="Executable module contracts passed complete source/synthetic gates on exact head \`$HEAD_SHA\`. Fresh dual review requested; no L2-L6 or release authority is claimed." >/dev/null
+          python3 - "$REPOSITORY" "$PR_NUMBER" "$HEAD_SHA" "$REVIEWER_RUNTIME" "$REVIEWER_EVIDENCE" <<'PY'
+          import json,subprocess,sys,time
+          repository,number,head,*reviewers=sys.argv[1:]
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          for _ in range(720):
+              pull=api(f'repos/{repository}/pulls/{number}')
+              if pull['head']['sha']!=head: raise SystemExit('module-contract head moved during review')
+              values=api(f'repos/{repository}/pulls/{number}/reviews?per_page=100'); latest={}
+              for value in sorted(values,key=lambda item:item.get('submitted_at') or ''):
+                  if value['user']['login'] in reviewers: latest[value['user']['login']]=value
+              if all(latest.get(login,{}).get('state')=='APPROVED' and latest[login].get('commit_id')==head for login in reviewers): break
+              time.sleep(20)
+          else: raise SystemExit('module-contract exact-head approvals not observed')
+          PY
+          gh api -X PUT "repos/$REPOSITORY/pulls/$PR_NUMBER/merge" -f merge_method=squash -f sha="$HEAD_SHA" \
+            -f commit_title='feat: generate executable module API, state and error contracts' \
+            -f commit_message='Resolve every logical module label to reproducible schemas, compatibility metadata and cross-consumer vectors. Preserve strict parsing, explicit uncertainty, no automatic redispatch and source-only claim ceilings.' --jq '{merged,sha,message}'
