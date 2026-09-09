@@ -1,0 +1,48 @@
+name: ChatGPT source CI triage
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr63-source-export-20260909
+
+permissions:
+  actions: write
+  checks: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: chatgpt-source-ci-triage-20260909
+  cancel-in-progress: true
+
+jobs:
+  triage:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Check out exact triage controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Run bounded transient-only triage
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m py_compile ops/source-ci-triage.py
+          python3 ops/source-ci-triage.py
+          python3 -m json.tool /tmp/source-ci-triage.json >/dev/null
+      - name: Upload non-authorizing triage ledger
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: source-ci-triage-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: /tmp/source-ci-triage.json
