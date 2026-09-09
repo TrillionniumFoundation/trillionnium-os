@@ -8,6 +8,7 @@ observed values are recorded; missing runtime instrumentation remains null.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import base64
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
@@ -21,6 +22,7 @@ import shlex
 import shutil
 import signal
 import socket
+import stat
 import statistics
 import subprocess
 import sys
@@ -40,6 +42,7 @@ GATE_POLICY_VERSION = "2026-09-09-v1"
 IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.product-host-baseline-implementation.v1"
 GATE_METRICS = ("latency_p50_ms", "latency_p95_ms")
 IMPLEMENTATION_PATHS = (
+    "tools/owner-open/owner_open_connection_broker.py",
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
     "tools/perf/_run_product_baseline_core.py",
     "tools/perf/run_product_baseline.py",
@@ -60,6 +63,13 @@ UNAVAILABLE = {
                  "io_bytes", "fsync_count", "queue_wait_ms", "lock_wait_ms", "lock_hold_ms",
                  "fairness", "unknown_rate")
 }
+
+
+PINNED_IMPLEMENTATION_FILES: dict[str, dict[str, Any]] | None = None
+PINNED_IMPLEMENTATION_SOURCES: dict[str, bytes] | None = None
+EXECUTION_PATHS: dict[str, str] = {}
+EXECUTION_PASS_FDS: tuple[int, ...] = ()
+MAX_PINNED_EXECUTABLE_BYTES = 512 * 1024 * 1024
 
 
 class BenchmarkError(ValueError):
@@ -104,26 +114,198 @@ def measured_file(path: Path) -> dict[str, Any]:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             hasher.update(block)
     after = resolved.stat()
-    require((before.st_ino, before.st_size, before.st_mtime_ns) ==
-            (after.st_ino, after.st_size, after.st_mtime_ns), f"file changed: {path}")
-    return {"path": str(resolved), "size": before.st_size, "sha256": hasher.hexdigest()}
+    require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns),
+            f"file changed: {path}")
+    return {"path": str(resolved), "size": before.st_size,
+            "sha256": hasher.hexdigest()}
 
 
-def repository_file_identity(relative: str) -> dict[str, Any]:
-    require(relative in IMPLEMENTATION_PATHS, f"unregistered implementation path: {relative}")
+def _selection_identity(path: Path) -> dict[str, Any]:
+    absolute = path.absolute()
+    value = os.lstat(absolute)
+    return {
+        "path": str(absolute),
+        "device": value.st_dev,
+        "inode": value.st_ino,
+        "mode": stat.S_IFMT(value.st_mode),
+        "size": value.st_size,
+        "mtime_ns": value.st_mtime_ns,
+        "symlink_target": os.readlink(absolute) if stat.S_ISLNK(value.st_mode) else None,
+    }
+
+
+def _write_all(descriptor: int, data: bytes) -> None:
+    offset = 0
+    while offset < len(data):
+        written = os.write(descriptor, data[offset:])
+        require(written > 0, "zero-progress write while creating pinned executable")
+        offset += written
+
+
+def _read_regular_descriptor(descriptor: int, label: str) -> tuple[bytes, os.stat_result]:
+    before = os.fstat(descriptor)
+    require(stat.S_ISREG(before.st_mode), f"{label} is not a regular file")
+    require(0 < before.st_size <= MAX_PINNED_EXECUTABLE_BYTES,
+            f"{label} is empty or exceeds the pinned executable bound")
+    chunks: list[bytes] = []
+    offset = 0
+    while offset < before.st_size:
+        block = os.pread(descriptor, min(1024 * 1024, before.st_size - offset), offset)
+        require(bool(block), f"short read while pinning {label}")
+        chunks.append(block)
+        offset += len(block)
+    after = os.fstat(descriptor)
+    require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns),
+            f"{label} changed while it was pinned")
+    return b"".join(chunks), before
+
+
+class PinnedExecutable:
+    """Private single-link executable copied from one verified source descriptor."""
+
+    def __init__(self, source: Path, custody_root: Path, label: str) -> None:
+        self.requested_path = source.absolute()
+        self._selection = _selection_identity(self.requested_path)
+        self.resolved_source = source.resolve(strict=True)
+        require(self.resolved_source.is_file() and os.access(self.resolved_source, os.X_OK),
+                f"{label} source must be an executable regular file")
+        flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        source_descriptor = os.open(self.resolved_source, flags)
+        try:
+            payload, source_stat = _read_regular_descriptor(source_descriptor, label)
+            require(bool(source_stat.st_mode & 0o111), f"{label} source has no execute bit")
+            self.execution_path = custody_root / label
+            destination = os.open(
+                self.execution_path,
+                os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
+                0o500,
+            )
+            try:
+                _write_all(destination, payload)
+                os.fsync(destination)
+            finally:
+                os.close(destination)
+            os.chmod(self.execution_path, 0o500, follow_symlinks=False)
+            directory = os.open(custody_root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
+        finally:
+            os.close(source_descriptor)
+        self._source_identity = measured_file(self.resolved_source)
+        require(self._source_identity["size"] == len(payload) and
+                self._source_identity["sha256"] == hashlib.sha256(payload).hexdigest(),
+                f"{label} source path moved before custody completed")
+        private = measured_file(self.execution_path)
+        private_stat = self.execution_path.stat()
+        require(private_stat.st_nlink == 1 and private_stat.st_uid == os.geteuid(),
+                f"{label} custody copy is not private and single-link")
+        require(private_stat.st_mode & 0o077 == 0,
+                f"{label} custody copy is group/world accessible")
+        require(private["size"] == self._source_identity["size"] and
+                private["sha256"] == self._source_identity["sha256"],
+                f"{label} custody copy differs from admitted bytes")
+        self.identity = {
+            "path": self._source_identity["path"],
+            "requested_path": str(self.requested_path),
+            "size": self._source_identity["size"],
+            "sha256": self._source_identity["sha256"],
+            "execution_custody": "verified-private-single-link-copy-v1",
+        }
+
+    def assert_execution_copy(self) -> None:
+        current = measured_file(self.execution_path)
+        value = self.execution_path.stat()
+        require(value.st_nlink == 1 and value.st_uid == os.geteuid() and
+                value.st_mode & 0o077 == 0,
+                f"pinned execution copy custody changed: {self.execution_path.name}")
+        require(current["size"] == self.identity["size"] and
+                current["sha256"] == self.identity["sha256"],
+                f"pinned execution bytes changed: {self.execution_path.name}")
+
+    def assert_source_selection(self) -> None:
+        require(_selection_identity(self.requested_path) == self._selection,
+                f"selected executable path moved: {self.requested_path}")
+        require(measured_file(self.resolved_source) == self._source_identity,
+                f"selected executable bytes changed: {self.resolved_source}")
+
+
+def _write_pinned_source(
+    custody_root: Path,
+    name: str,
+    source: bytes,
+    identity: dict[str, Any],
+) -> Path:
+    require(len(source) == identity["size"] and
+            hashlib.sha256(source).hexdigest() == identity["sha256"],
+            f"pinned source bytes differ: {identity['path']}")
+    target = custody_root / name
+    descriptor = os.open(
+        target,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
+        0o400,
+    )
+    try:
+        _write_all(descriptor, source)
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    os.chmod(target, 0o400, follow_symlinks=False)
+    observed = measured_file(target)
+    value = target.stat()
+    require(value.st_nlink == 1 and value.st_uid == os.geteuid() and
+            value.st_mode & 0o077 == 0,
+            f"pinned source custody is not private: {identity['path']}")
+    require(observed["size"] == identity["size"] and
+            observed["sha256"] == identity["sha256"],
+            f"pinned source custody bytes differ: {identity['path']}")
+    return target
+
+
+def _live_repository_file_identity(relative: str) -> dict[str, Any]:
+    require(relative in IMPLEMENTATION_PATHS,
+            f"unregistered implementation path: {relative}")
     candidate = ROOT / relative
     require(not candidate.is_symlink(), f"implementation path is a symlink: {relative}")
     resolved_root = ROOT.resolve(strict=True)
     resolved = candidate.resolve(strict=True)
-    require(resolved.is_relative_to(resolved_root), f"implementation path escaped repository: {relative}")
+    require(resolved.is_relative_to(resolved_root),
+            f"implementation path escaped repository: {relative}")
     identity = measured_file(candidate)
-    return {"path": relative, "size": identity["size"], "sha256": identity["sha256"]}
+    return {"path": relative, "size": identity["size"],
+            "sha256": identity["sha256"]}
+
+
+def repository_file_identity(relative: str) -> dict[str, Any]:
+    if PINNED_IMPLEMENTATION_FILES is not None:
+        require(set(PINNED_IMPLEMENTATION_FILES) == set(IMPLEMENTATION_PATHS),
+                "pinned implementation inventory differs")
+        value = PINNED_IMPLEMENTATION_FILES.get(relative)
+        require(isinstance(value, dict),
+                f"missing pinned implementation source: {relative}")
+        require(set(value) == {"path", "size", "sha256"} and
+                value["path"] == relative,
+                f"invalid pinned implementation identity: {relative}")
+        return dict(value)
+    return _live_repository_file_identity(relative)
+
+
+def _manifest(files: list[dict[str, Any]]) -> dict[str, Any]:
+    body = {"schema": IMPLEMENTATION_MANIFEST_SCHEMA, "files": files}
+    return {**body, "manifest_sha256": digest(canonical(body))}
 
 
 def implementation_manifest() -> dict[str, Any]:
-    files = [repository_file_identity(relative) for relative in IMPLEMENTATION_PATHS]
-    body = {"schema": IMPLEMENTATION_MANIFEST_SCHEMA, "files": files}
-    return {**body, "manifest_sha256": digest(canonical(body))}
+    return _manifest([repository_file_identity(relative)
+                      for relative in IMPLEMENTATION_PATHS])
+
+
+def live_implementation_manifest() -> dict[str, Any]:
+    return _manifest([_live_repository_file_identity(relative)
+                      for relative in IMPLEMENTATION_PATHS])
 
 
 def gate_policy() -> dict[str, Any]:
@@ -194,6 +376,13 @@ def finite_env() -> dict[str, str]:
     # No login, credential, Codex registration, inherited proxy or device access.
     return {"PATH": "/usr/bin:/bin", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
             "HOME": "/nonexistent", "PYTHONDONTWRITEBYTECODE": "1"}
+
+
+def _execution_path(name: str, fallback: Path | str) -> str:
+    value = EXECUTION_PATHS.get(name, str(fallback))
+    require(isinstance(value, str) and value.startswith("/") and "\n" not in value,
+            f"invalid pinned execution path for {name}")
+    return value
 
 
 def stop(process: subprocess.Popen[bytes]) -> None:
@@ -286,7 +475,8 @@ def write_provider(root: Path, command: str) -> Path:
                                   "command": command, "timeout_ms": 5000}}
     terminal = {"protocol": "trillionnium.owner-open.provider-jsonl.v1", "kind": "turn.complete",
                 "seq": 1, "summary": "benchmark fixture complete"}
-    provider.write_text("#!/bin/sh\nset -eu\nprintf x >> " + shlex.quote(str(root / "provider-starts")) +
+    provider.write_text("#!" + _execution_path("shell", "/bin/sh") +
+                        "\nset -eu\nprintf x >> " + shlex.quote(str(root / "provider-starts")) +
                         "\nIFS= read -r request\nprintf '%s\\n' " + shlex.quote(canonical(call).decode()) +
                         "\nIFS= read -r result\ncase \"$result\" in *'\"kind\":\"tool.result\"'*) ;; *) exit 12 ;; esac\n" +
                         "printf '%s\\n' " + shlex.quote(canonical(terminal).decode()) + "\n")
@@ -296,7 +486,9 @@ def write_provider(root: Path, command: str) -> Path:
 
 def host_command(host: Path, core: Path, root: Path, provider: Path) -> list[str]:
     return [str(host), "--transport-core", str(core), "--provider", str(provider),
-            "--event-store", str(root / "events.jsonl"), "--job-store", str(root / "jobs.jsonl")]
+            "--shell", _execution_path("shell", "/bin/sh"),
+            "--event-store", str(root / "events.jsonl"),
+            "--job-store", str(root / "jobs.jsonl")]
 
 
 def validate_turn(frames: list[dict], expected: bytes) -> dict:
@@ -319,7 +511,7 @@ def run_turn_sample(host: Path, core: Path, root: Path, size: int, timeout: floa
                     slow_ms: float = 0, replay: bool = False) -> dict:
     root.mkdir(mode=0o700)
     expected = b"x" * size
-    command = (shlex.quote(str(Path(sys.executable).resolve())) + " -I -c " +
+    command = (shlex.quote(_execution_path("python", Path(sys.executable).resolve())) + " -I -c " +
                shlex.quote(f"import sys;sys.stdout.write('x'*{size})") +
                "; printf x >> " + shlex.quote(str(root / "effects")))
     provider = write_provider(root, command)
@@ -390,7 +582,8 @@ def run_broker_sample(host: Path, core: Path, root: Path, clients: int, timeout:
     upstream = root / "host"
     shutil.copyfile(host, upstream)
     upstream.chmod(0o700)
-    command = [sys.executable, str(ROOT / "tools/owner-open/owner_open_connection_broker.py"),
+    command = [_execution_path("python", Path(sys.executable).resolve()),
+               _execution_path("broker", ROOT / "tools/owner-open/owner_open_connection_broker.py"),
                "--socket", str(root / "socket"), "--descriptor", str(root / "descriptor.json"),
                "--token-file", str(root / "token"), "--broker-id", "product-benchmark",
                "--upstream", str(upstream), "--max-clients", str(clients),
@@ -589,111 +782,269 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return args
 
 
-def run(args: argparse.Namespace) -> dict:
-    require(sys.platform == "linux", "product benchmark requires Linux")
-    host, core = args.host.resolve(strict=True), args.core.resolve(strict=True)
-    require(os.access(host, os.X_OK) and os.access(core, os.X_OK), "product executable not executable")
-    identities = {"host": measured_file(host), "core": measured_file(core),
-                  "python": measured_file(Path(sys.executable)), "shell": measured_file(Path("/bin/sh")),
-                  "harness": measured_file(Path(__file__))}
+def _run_with_custody(
+    args: argparse.Namespace,
+    pins: dict[str, PinnedExecutable],
+    custody_root: Path,
+) -> dict:
+    global EXECUTION_PATHS
+    host = pins["host"].execution_path
+    core = pins["core"].execution_path
+    identities = {
+        name: dict(pin.identity) for name, pin in pins.items()
+    }
     implementation = implementation_manifest()
+    validate_implementation_manifest(implementation)
+    harness = next(
+        item for item in implementation["files"]
+        if item["path"] == "tools/perf/run_product_baseline.py"
+    )
+    identities["harness"] = dict(harness)
     policy = gate_policy()
     source = source_identity()
     require(not args.require_clean_source or not source["dirty"], "clean source required")
     previous = None
     if args.previous:
-        require(args.previous.is_file() and not args.previous.is_symlink(), "previous baseline must be a regular nonsymlink file")
+        require(args.previous.is_file() and not args.previous.is_symlink(),
+                "previous baseline must be a regular nonsymlink file")
         with args.previous.open("rb") as stream:
             previous_bytes = stream.read(MAX_ARTIFACT + 1)
         require(len(previous_bytes) <= MAX_ARTIFACT, "previous baseline exceeds bound")
         previous = validate_artifact(strict_json(previous_bytes))
-    config = {name: getattr(args, name) for name in ("concurrency", "output_bytes", "slow_read_ms", "timeout_seconds", "build_profile")}
+    config = {name: getattr(args, name) for name in (
+        "concurrency", "output_bytes", "slow_read_ms", "timeout_seconds", "build_profile"
+    )}
     config["workloads"] = args.workloads
     config["max_regression_percent"] = policy["max_regression_percent"]
     config["gate_policy_version"] = policy["version"]
-    environment = {"system": platform.system(), "kernel": platform.release(), "machine": platform.machine(),
-                   "cpu_count": os.cpu_count(), "python_version": platform.python_version(),
-                   "cpu_model": next((line.split(":", 1)[1].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()
-                                      if line.startswith("model name")), "unavailable"),
-                   "cpu_affinity": sorted(os.sched_getaffinity(0)),
-                   "machine_id_sha256": digest(Path("/etc/machine-id").read_bytes()),
-                   "cpu_governors": sorted({p.read_text().strip() for p in
-                       Path("/sys/devices/system/cpu").glob("cpu[0-9]*/cpufreq/scaling_governor")})}
-    artifact = {"schema": SCHEMA, "qualification": "L1_HOST_SOURCE_BENCHMARK_ONLY", "public_release": False,
-                "generated_at_unix_ns": time.time_ns(), "source": source, "executables": identities,
-                "implementation_manifest": implementation, "gate_policy": policy,
-                "binary_source_binding": "caller_supplied_binaries_measured_not_attested_build_provenance",
-                "environment": environment, "configuration": {**config, "repetitions": args.repetitions, "warmup": args.warmup},
-                "comparison_identity": {"environment": environment, "configuration": config,
-                                        "python_sha256": identities["python"]["sha256"], "shell_sha256": identities["shell"]["sha256"],
-                                        "harness_sha256": identities["harness"]["sha256"],
-                                        "implementation_manifest_sha256": implementation["manifest_sha256"],
-                                        "gate_policy_sha256": digest(canonical(policy))},
-                "workload_descriptions": {name: WORKLOADS[name] for name in args.workloads},
-                "unavailable_measurements": UNAVAILABLE, "samples": [], "failures": [],
-                "limitations": ["No installed Root Linux, Android, device, crash, power-loss or release qualification",
-                                "Fresh processes and independent session stores; not a long-lived production throughput SLO",
-                                "Raw timing samples and frame metadata retained; full stdout represented by byte count/digest",
-                                "Replayed fixture completion is clean-restart recovery, not ambiguous-effect crash recovery",
-                                "No CPU/RSS/lock/fsync/fairness instrumentation; these values remain explicitly unavailable",
-                                "P99 descriptive only; P50/P95 threshold comparison is not statistical significance"]}
-    with tempfile.TemporaryDirectory(prefix="tos-perf-", dir=args.scratch_parent) as temporary:
+    environment = {
+        "system": platform.system(),
+        "kernel": platform.release(),
+        "machine": platform.machine(),
+        "cpu_count": os.cpu_count(),
+        "python_version": platform.python_version(),
+        "cpu_model": next((
+            line.split(":", 1)[1].strip()
+            for line in Path("/proc/cpuinfo").read_text().splitlines()
+            if line.startswith("model name")
+        ), "unavailable"),
+        "cpu_affinity": sorted(os.sched_getaffinity(0)),
+        "machine_id_sha256": digest(Path("/etc/machine-id").read_bytes()),
+        "cpu_governors": sorted({
+            path.read_text().strip()
+            for path in Path("/sys/devices/system/cpu").glob(
+                "cpu[0-9]*/cpufreq/scaling_governor"
+            )
+        }),
+        "execution_custody": "verified-private-single-link-copies-v1",
+    }
+    artifact = {
+        "schema": SCHEMA,
+        "qualification": "L1_HOST_SOURCE_BENCHMARK_ONLY",
+        "public_release": False,
+        "generated_at_unix_ns": time.time_ns(),
+        "source": source,
+        "executables": identities,
+        "implementation_manifest": implementation,
+        "gate_policy": policy,
+        "binary_source_binding": (
+            "caller-selected binaries copied from verified source descriptors "
+            "to private single-link execution files; build provenance not attested"
+        ),
+        "environment": environment,
+        "configuration": {
+            **config,
+            "repetitions": args.repetitions,
+            "warmup": args.warmup,
+        },
+        "comparison_identity": {
+            "environment": environment,
+            "configuration": config,
+            "python_sha256": identities["python"]["sha256"],
+            "shell_sha256": identities["shell"]["sha256"],
+            "harness_sha256": identities["harness"]["sha256"],
+            "implementation_manifest_sha256": implementation["manifest_sha256"],
+            "gate_policy_sha256": digest(canonical(policy)),
+            "execution_custody": "verified-private-single-link-copies-v1",
+        },
+        "workload_descriptions": {
+            name: WORKLOADS[name] for name in args.workloads
+        },
+        "unavailable_measurements": UNAVAILABLE,
+        "samples": [],
+        "failures": [],
+        "limitations": [
+            "No installed Root Linux, Android, device, crash, power-loss or release qualification",
+            "Fresh processes and independent session stores; not a long-lived production throughput SLO",
+            "Raw timing samples and frame metadata retained; full stdout represented by byte count/digest",
+            "Replayed fixture completion is clean-restart recovery, not ambiguous-effect crash recovery",
+            "No CPU/RSS/lock/fsync/fairness instrumentation; these values remain explicitly unavailable",
+            "P99 descriptive only; P50/P95 threshold comparison is not statistical significance",
+            "Dynamic libraries, kernel state and the complete runtime filesystem are not recursively attested",
+        ],
+    }
+    with tempfile.TemporaryDirectory(
+        prefix="tos-perf-work-", dir=args.scratch_parent
+    ) as temporary:
         root = Path(temporary)
-        filesystem = subprocess.check_output(["stat", "-f", "-c", "%T", str(root)], env=finite_env(), timeout=5).decode().strip()
+        filesystem = subprocess.check_output(
+            ["stat", "-f", "-c", "%T", str(root)],
+            env=finite_env(),
+            timeout=5,
+        ).decode().strip()
         artifact["environment"]["scratch_filesystem"] = filesystem
         for name in args.workloads:
             for index in range(args.warmup + args.repetitions):
                 warmup = index < args.warmup
                 sample_root = root / f"{name}-{index}"
                 try:
+                    for pin in pins.values():
+                        pin.assert_execution_copy()
                     operations = 1
                     if name == "concurrent_turns":
                         sample_root.mkdir(mode=0o700)
                         started = time.perf_counter_ns()
                         with ThreadPoolExecutor(max_workers=args.concurrency) as executor:
-                            rows = list(executor.map(lambda i: run_turn_sample(host, core, sample_root / str(i), 16,
-                                                                              args.timeout_seconds), range(args.concurrency)))
-                        observation = {"elapsed_ns": time.perf_counter_ns() - started, "sessions": rows}
+                            rows = list(executor.map(
+                                lambda item: run_turn_sample(
+                                    host,
+                                    core,
+                                    sample_root / str(item),
+                                    16,
+                                    args.timeout_seconds,
+                                ),
+                                range(args.concurrency),
+                            ))
+                        observation = {
+                            "elapsed_ns": time.perf_counter_ns() - started,
+                            "sessions": rows,
+                        }
                         operations = args.concurrency
                     elif name == "broker_inspect":
-                        observation = run_broker_sample(host, core, sample_root, args.concurrency, args.timeout_seconds)
+                        observation = run_broker_sample(
+                            host,
+                            core,
+                            sample_root,
+                            args.concurrency,
+                            args.timeout_seconds,
+                        )
                         operations = args.concurrency
                     elif name in {"pipe_job", "pty_job"}:
-                        observation = run_job_sample(host, core, sample_root, name.split("_")[0], args.timeout_seconds)
+                        observation = run_job_sample(
+                            host,
+                            core,
+                            sample_root,
+                            name.split("_")[0],
+                            args.timeout_seconds,
+                        )
                     else:
-                        observation = run_turn_sample(host, core, sample_root,
-                            args.output_bytes if name in {"large_output", "slow_consumer"} else 16,
-                            args.timeout_seconds, args.slow_read_ms if name == "slow_consumer" else 0,
-                            replay=name == "restart_replay")
-                    artifact["samples"].append({"workload": name, "warmup": warmup,
+                        observation = run_turn_sample(
+                            host,
+                            core,
+                            sample_root,
+                            args.output_bytes
+                            if name in {"large_output", "slow_consumer"}
+                            else 16,
+                            args.timeout_seconds,
+                            args.slow_read_ms if name == "slow_consumer" else 0,
+                            replay=name == "restart_replay",
+                        )
+                    artifact["samples"].append({
+                        "workload": name,
+                        "warmup": warmup,
                         "repetition": index if warmup else index - args.warmup,
-                        "operations": operations, "correctness_validated": True, **observation})
-                except (BenchmarkError, OSError, subprocess.SubprocessError, json.JSONDecodeError) as error:
-                    artifact["failures"].append({"workload": name, "repetition": index,
-                                                 "error": str(error)[:4096]})
+                        "operations": operations,
+                        "correctness_validated": True,
+                        **observation,
+                    })
+                except (
+                    BenchmarkError,
+                    OSError,
+                    subprocess.SubprocessError,
+                    json.JSONDecodeError,
+                ) as error:
+                    artifact["failures"].append({
+                        "workload": name,
+                        "repetition": index,
+                        "error": str(error)[:4096],
+                    })
                     break
                 finally:
-                    # Each sample has reaped its carriers before scratch reclamation.
-                    # Retain measurements, not an ever-growing set of fixture stores.
                     if sample_root.exists():
                         shutil.rmtree(sample_root)
     artifact["source_after"] = source_identity()
     if artifact["source_after"] != source:
         artifact["failures"].append({"error": "source changed during benchmark"})
-    for name, path in (("host", host), ("core", core)):
-        if measured_file(path) != identities[name]:
-            artifact["failures"].append({"error": f"{name} bytes changed during benchmark"})
-    if implementation_manifest() != implementation:
-        artifact["failures"].append({"error": "measurement implementation changed during benchmark"})
+    for name, pin in pins.items():
+        try:
+            pin.assert_execution_copy()
+            pin.assert_source_selection()
+        except (BenchmarkError, OSError) as error:
+            artifact["failures"].append({
+                "error": f"{name} executable custody failed: {error}"
+            })
+    try:
+        if live_implementation_manifest() != implementation:
+            artifact["failures"].append({
+                "error": "measurement implementation source paths changed during benchmark"
+            })
+    except (BenchmarkError, OSError) as error:
+        artifact["failures"].append({
+            "error": f"cannot revalidate measurement implementation paths: {error}"
+        })
     artifact["summaries"] = summarize(artifact["samples"])
     try:
         artifact["gate"] = regression_gate(artifact, previous)
     except BenchmarkError as error:
-        artifact["gate"] = {"status": "INCOMPATIBLE_BASELINE", "passed": False, "reason": str(error)}
-    artifact["previous_artifact_digest"] = previous["artifact_digest"] if previous else None
+        artifact["gate"] = {
+            "status": "INCOMPATIBLE_BASELINE",
+            "passed": False,
+            "reason": str(error),
+        }
+    artifact["previous_artifact_digest"] = (
+        previous["artifact_digest"] if previous else None
+    )
     artifact["artifact_digest"] = digest(canonical(artifact))
     return artifact
 
+
+def run(args: argparse.Namespace) -> dict:
+    global EXECUTION_PATHS, EXECUTION_PASS_FDS
+    require(sys.platform == "linux", "product benchmark requires Linux")
+    custody_parent = args.scratch_parent
+    with tempfile.TemporaryDirectory(
+        prefix="tos-perf-custody-", dir=custody_parent
+    ) as temporary:
+        custody_root = Path(temporary)
+        os.chmod(custody_root, 0o700)
+        require("\n" not in str(custody_root), "invalid custody directory")
+        pins = {
+            "host": PinnedExecutable(args.host, custody_root, "host"),
+            "core": PinnedExecutable(args.core, custody_root, "core"),
+            "python": PinnedExecutable(Path(sys.executable), custody_root, "python"),
+            "shell": PinnedExecutable(Path("/bin/sh"), custody_root, "shell"),
+        }
+        require(PINNED_IMPLEMENTATION_FILES is not None and
+                PINNED_IMPLEMENTATION_SOURCES is not None,
+                "performance Python implementation is not snapshot-bound")
+        broker_relative = "tools/owner-open/owner_open_connection_broker.py"
+        broker = _write_pinned_source(
+            custody_root,
+            "owner_open_connection_broker.py",
+            PINNED_IMPLEMENTATION_SOURCES[broker_relative],
+            PINNED_IMPLEMENTATION_FILES[broker_relative],
+        )
+        prior_paths, prior_fds = EXECUTION_PATHS, EXECUTION_PASS_FDS
+        EXECUTION_PATHS = {
+            name: str(pin.execution_path) for name, pin in pins.items()
+        }
+        EXECUTION_PATHS["broker"] = str(broker)
+        EXECUTION_PASS_FDS = ()
+        try:
+            return _run_with_custody(args, pins, custody_root)
+        finally:
+            EXECUTION_PATHS = prior_paths
+            EXECUTION_PASS_FDS = prior_fds
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)

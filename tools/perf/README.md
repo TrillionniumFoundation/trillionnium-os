@@ -33,13 +33,21 @@ used for measured persistence; otherwise the system temporary directory is used.
 Each sample gets a fresh private directory and reclaims it after measuring and
 reaping its carriers. Existing event/job stores are never consumed.
 
-Use explicit host/core paths. The tool hashes their bytes before and after the
-run; it records the source commit/tree, dirty tracked diff and untracked inputs,
-lockfile, Python and shell identities plus a closed implementation manifest
-covering the public facade, private core and imported Root Linux supervisor.
-Changing any manifest member changes comparison identity; changing one during a
-run fails it. Source or executable changes during a run also fail it. A
-dirty but stable checkout is allowed unless
+Use explicit host/core paths. Before any workload, the tool opens each selected
+Host, Core, Python and shell executable once, reads and hashes those admitted
+bytes, and writes them to owner-only, single-link execution files in a private
+custody directory. Workloads execute only those private copies. Replacing or
+restoring an original pathname therefore cannot substitute different bytes for
+the admitted executable; any source-path movement still fails the final report.
+
+The public facade also reads every behavior-bearing Python source once through a
+regular-file descriptor and compiles or executes those exact snapshot bytes. Its
+closed implementation manifest covers the facade, private core, Root Linux
+supervisor and source broker, and the broker workload executes a private script
+made from the same admitted snapshot. The report additionally records the source
+commit/tree, dirty tracked diff and untracked inputs, lockfile, Python and shell
+identities. Changing any manifest member changes comparison identity; changing a
+source path during a run fails it. A dirty but stable checkout is allowed unless
 `--require-clean-source` is supplied. These identities do not attest that
 caller-supplied binaries were built from that source; CI must retain the actual
 build command, toolchain identity and build logs alongside the measurement.
@@ -144,7 +152,10 @@ python3 -m unittest tools.tests.test_run_product_baseline -v
 
 The first command tests artifact integrity, raw-summary consistency, the closed
 implementation manifest, immutable gate policy, finite input bounds,
-correctness-before-performance and no-overwrite behavior.
+correctness-before-performance and no-overwrite behavior. It also performs
+hostile swap tests proving that imported Python executes the bytes read into its
+snapshot and that a replaced executable pathname cannot change the private bytes
+actually executed or yield a passing source-selection check.
 The second additionally exercises all eight workloads against the explicitly
 provided real binaries. Missing environment variables produce an explicit skip
 only for this optional integration test; the benchmark CLI cannot skip a selected

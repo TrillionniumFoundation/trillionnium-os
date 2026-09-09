@@ -6,6 +6,7 @@ import importlib.util
 import os
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import tempfile
 import time
@@ -112,22 +113,79 @@ class HostReproducibilityTests(unittest.TestCase):
                 destination = copied_root / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, destination)
-            with mock.patch.object(VERIFY.CORE, "ROOT", copied_root):
-                before = VERIFY.implementation_manifest()
+            with mock.patch.object(VERIFY.CORE, "ROOT", copied_root), \
+                 mock.patch.object(VERIFY.CORE, "PINNED_IMPLEMENTATION_FILES", None):
+                before = VERIFY.live_implementation_manifest()
                 target = copied_root / VERIFY.IMPLEMENTATION_PATHS[-1]
                 target.write_bytes(target.read_bytes() + b"\n# identity mutation\n")
-                after = VERIFY.implementation_manifest()
+                after = VERIFY.live_implementation_manifest()
         self.assertNotEqual(before["manifest_sha256"], after["manifest_sha256"])
         core_source = Path(VERIFY.CORE_PATH).read_text(encoding="utf-8")
         self.assertIn('"implementation_manifest": implementation', core_source)
 
+    def test_snapshot_loader_executes_the_admitted_bytes_after_path_swap(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            module_path = root / "module.py"
+            safe = b"VALUE = 'safe'\n"
+            module_path.write_bytes(safe)
+
+            def swap(path: Path) -> None:
+                path.write_text("raise RuntimeError('hostile path bytes executed')\n")
+
+            with mock.patch.object(VERIFY, "REPOSITORY_ROOT", root):
+                module, loaded, identity = VERIFY._load_snapshot(
+                    "host_reproducibility_snapshot_test",
+                    module_path,
+                    "module.py",
+                    before_exec=swap,
+                )
+            self.assertEqual(loaded, safe)
+            self.assertEqual(module.VALUE, "safe")
+            self.assertEqual(identity["sha256"], VERIFY.sha256(safe))
+            sys.modules.pop("host_reproducibility_snapshot_test", None)
+
+    def test_descriptor_pinned_tool_survives_source_swap_but_reports_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "python-source"
+            custody = root / "custody"
+            custody.mkdir(mode=0o700)
+            shutil.copyfile(sys.executable, source)
+            source.chmod(0o700)
+            pin = VERIFY.PinnedTool(source, custody, "python")
+            try:
+                source.write_bytes(b"#!/bin/sh\nexit 98\n")
+                source.chmod(0o700)
+                result = subprocess.run(
+                    [str(pin.execution_path), "-I", "-c", "print('descriptor-safe')"],
+                    pass_fds=(pin.descriptor,),
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.stdout.strip(), "descriptor-safe")
+                pin.assert_descriptor()
+                with self.assertRaisesRegex(VERIFY.VerificationError, "selected tool"):
+                    pin.assert_source_selection()
+            finally:
+                pin.close()
+
     def test_recipe_is_fixed_offline_and_remaps_both_build_paths(self) -> None:
-        tools = {name: {"path": f"/tools/{name}"} for name in ("cargo", "rustc", "cc", "ar")}
+        tools = {
+            name: {"path": f"/tools/original/{name}",
+                   "execution_path": f"/custody/{name}"}
+            for name in ("cargo", "rustc", "cc", "ar")
+        }
         for label in ("a", "b"):
             command, env = VERIFY.recipe(Path("/source"), Path(f"/tmp/target-{label}"),
                 Path(f"/tmp/home-{label}"), Path("/cache"), tools, {"source_date_epoch": "123"})
             for flag in ("--locked", "--offline", "--frozen", "--release"):
                 self.assertIn(flag, command)
+            self.assertEqual(command[0], "/custody/cargo")
+            self.assertEqual(env["RUSTC"], "/custody/rustc")
+            self.assertEqual(env["CC"], "/custody/cc")
+            self.assertEqual(env["AR"], "/custody/ar")
             self.assertEqual(env["SOURCE_DATE_EPOCH"], "123")
             self.assertEqual(env["CARGO_INCREMENTAL"], "0")
             self.assertIn(f"--remap-path-prefix=/tmp/target-{label}=/build/target", env["CARGO_ENCODED_RUSTFLAGS"])

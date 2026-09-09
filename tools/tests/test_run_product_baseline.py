@@ -13,6 +13,8 @@ import json
 import os
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -86,11 +88,12 @@ class ProductBaselineContractTests(unittest.TestCase):
                 destination = copied_root / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, destination)
-            with mock.patch.object(BENCH.CORE, "ROOT", copied_root):
-                before = BENCH.implementation_manifest()
+            with mock.patch.object(BENCH.CORE, "ROOT", copied_root), \
+                 mock.patch.object(BENCH.CORE, "PINNED_IMPLEMENTATION_FILES", None):
+                before = BENCH.live_implementation_manifest()
                 target = copied_root / BENCH.IMPLEMENTATION_PATHS[0]
                 target.write_bytes(target.read_bytes() + b"\n# identity mutation\n")
-                after = BENCH.implementation_manifest()
+                after = BENCH.live_implementation_manifest()
         self.assertNotEqual(before["manifest_sha256"], after["manifest_sha256"])
 
         previous = artifact()
@@ -105,6 +108,50 @@ class ProductBaselineContractTests(unittest.TestCase):
         BENCH.validate_artifact(current)
         with self.assertRaisesRegex(BENCH.BenchmarkError, "incompatible"):
             BENCH.regression_gate(current, previous)
+
+    def test_snapshot_loader_executes_the_admitted_bytes_after_path_swap(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            module_path = root / "module.py"
+            safe = b"VALUE = 'safe'\n"
+            module_path.write_bytes(safe)
+
+            def swap(path: Path) -> None:
+                path.write_text("raise RuntimeError('hostile path bytes executed')\n")
+
+            with mock.patch.object(BENCH, "REPOSITORY_ROOT", root):
+                module, loaded, identity = BENCH._load_snapshot(
+                    "product_baseline_snapshot_test",
+                    module_path,
+                    "module.py",
+                    before_exec=swap,
+                )
+            self.assertEqual(loaded, safe)
+            self.assertEqual(module.VALUE, "safe")
+            self.assertEqual(identity["sha256"], BENCH.digest(safe))
+            sys.modules.pop("product_baseline_snapshot_test", None)
+
+    def test_private_executable_copy_runs_pinned_bytes_after_source_swap(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "python-source"
+            custody = root / "custody"
+            custody.mkdir(mode=0o700)
+            shutil.copyfile(sys.executable, source)
+            source.chmod(0o700)
+            pin = BENCH.PinnedExecutable(source, custody, "python")
+            source.write_bytes(b"#!/bin/sh\nexit 97\n")
+            source.chmod(0o700)
+            result = subprocess.run(
+                [str(pin.execution_path), "-I", "-c", "print('pinned-safe')"],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.stdout.strip(), "pinned-safe")
+            pin.assert_execution_copy()
+            with self.assertRaisesRegex(BENCH.BenchmarkError, "selected executable"):
+                pin.assert_source_selection()
 
     def test_threshold_is_reviewed_policy_not_caller_mutable(self) -> None:
         previous = BENCH.validate_artifact(artifact())

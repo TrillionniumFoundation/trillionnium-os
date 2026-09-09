@@ -7,6 +7,7 @@ hermetic build attestation, installation, signature, or release qualification.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import hashlib
 import json
 import os
@@ -14,8 +15,10 @@ from pathlib import Path
 import selectors
 import shutil
 import signal
+import stat
 import subprocess
 import sys
+import tempfile
 import time
 from typing import Any
 
@@ -32,6 +35,11 @@ IMPLEMENTATION_PATHS = (
     "tools/perf/_run_product_baseline_core.py",
     "tools/perf/run_product_baseline.py",
 )
+
+
+PINNED_IMPLEMENTATION_FILES: dict[str, dict[str, Any]] | None = None
+EXECUTION_PASS_FDS: tuple[int, ...] = ()
+MAX_PINNED_TOOL_BYTES = 512 * 1024 * 1024
 
 
 class VerificationError(ValueError):
@@ -52,34 +60,195 @@ def sha256(data: bytes) -> str:
 
 
 def file_identity(path: Path) -> dict[str, Any]:
-    path = path.resolve(strict=True)
-    require(path.is_file(), f"not a regular input: {path}")
-    before = path.stat()
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
+    resolved = path.resolve(strict=True)
+    require(resolved.is_file(), f"not a regular input: {path}")
+    before = resolved.stat()
+    digest_value = hashlib.sha256()
+    with resolved.open("rb") as stream:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
-    after = path.stat()
+            digest_value.update(block)
+    after = resolved.stat()
     require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
-            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns), f"input changed: {path}")
-    return {"path": str(path), "size": before.st_size, "sha256": digest.hexdigest()}
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns),
+            f"input changed: {path}")
+    return {"path": str(resolved), "size": before.st_size,
+            "sha256": digest_value.hexdigest()}
 
 
-def repository_file_identity(relative: str) -> dict[str, Any]:
-    require(relative in IMPLEMENTATION_PATHS, f"unregistered implementation path: {relative}")
+def _selection_identity(path: Path) -> dict[str, Any]:
+    absolute = path.absolute()
+    value = os.lstat(absolute)
+    return {
+        "path": str(absolute),
+        "device": value.st_dev,
+        "inode": value.st_ino,
+        "mode": stat.S_IFMT(value.st_mode),
+        "size": value.st_size,
+        "mtime_ns": value.st_mtime_ns,
+        "symlink_target": os.readlink(absolute) if stat.S_ISLNK(value.st_mode) else None,
+    }
+
+
+def _hash_descriptor(descriptor: int, label: str) -> tuple[str, int, os.stat_result]:
+    before = os.fstat(descriptor)
+    require(stat.S_ISREG(before.st_mode), f"{label} is not a regular file")
+    require(0 < before.st_size <= MAX_PINNED_TOOL_BYTES,
+            f"{label} is empty or exceeds the pinned tool bound")
+    digest_value = hashlib.sha256()
+    offset = 0
+    while offset < before.st_size:
+        block = os.pread(descriptor, min(1024 * 1024, before.st_size - offset), offset)
+        require(bool(block), f"short read while pinning {label}")
+        digest_value.update(block)
+        offset += len(block)
+    after = os.fstat(descriptor)
+    require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns),
+            f"{label} changed while it was pinned")
+    return digest_value.hexdigest(), before.st_size, before
+
+
+def _write_descriptor(descriptor: int, payload: bytes) -> None:
+    offset = 0
+    while offset < len(payload):
+        written = os.write(descriptor, payload[offset:])
+        require(written > 0, "zero-progress write while creating sealed tool")
+        offset += written
+
+
+class PinnedTool:
+    """Executable copied into a write-sealed memfd and invoked by a private name."""
+
+    _SEALS = (
+        getattr(fcntl, "F_SEAL_WRITE", 0x0008)
+        | getattr(fcntl, "F_SEAL_GROW", 0x0004)
+        | getattr(fcntl, "F_SEAL_SHRINK", 0x0002)
+        | getattr(fcntl, "F_SEAL_SEAL", 0x0001)
+    )
+
+    def __init__(self, source: Path, custody_root: Path, name: str) -> None:
+        self.requested_path = source.absolute()
+        self._selection = _selection_identity(self.requested_path)
+        self.resolved_source = source.resolve(strict=True)
+        require(self.resolved_source.is_file() and os.access(self.resolved_source, os.X_OK),
+                f"{name} must resolve to an executable regular file")
+        source_descriptor = os.open(
+            self.resolved_source,
+            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0),
+        )
+        try:
+            digest_value, size, value = _hash_descriptor(source_descriptor, name)
+            require(bool(value.st_mode & 0o111), f"{name} has no execute bit")
+            payload = bytearray()
+            offset = 0
+            while offset < size:
+                block = os.pread(
+                    source_descriptor,
+                    min(1024 * 1024, size - offset),
+                    offset,
+                )
+                require(bool(block), f"short second read while sealing {name}")
+                payload.extend(block)
+                offset += len(block)
+            require(hashlib.sha256(payload).hexdigest() == digest_value,
+                    f"{name} bytes changed between admission reads")
+        finally:
+            os.close(source_descriptor)
+        require(hasattr(os, "memfd_create"), "sealed tool custody requires memfd_create")
+        flags = getattr(os, "MFD_CLOEXEC", 0x0001) | getattr(os, "MFD_ALLOW_SEALING", 0x0002)
+        self.descriptor = os.memfd_create(f"trillionnium-{name}", flags)
+        try:
+            _write_descriptor(self.descriptor, bytes(payload))
+            os.fchmod(self.descriptor, 0o500)
+            fcntl.fcntl(self.descriptor, fcntl.F_ADD_SEALS, self._SEALS)
+            require(fcntl.fcntl(self.descriptor, fcntl.F_GET_SEALS) == self._SEALS,
+                    f"{name} memfd sealing is incomplete")
+            os.set_inheritable(self.descriptor, True)
+            self.execution_path = custody_root / name
+            os.symlink(f"/proc/self/fd/{self.descriptor}", self.execution_path)
+            link_state = os.lstat(self.execution_path)
+            require(stat.S_ISLNK(link_state.st_mode), f"{name} execution link is invalid")
+            self.identity = {
+                "path": str(self.resolved_source),
+                "requested_path": str(self.requested_path),
+                "size": size,
+                "sha256": digest_value,
+                "execution_custody": "linux-write-sealed-memfd-v1",
+                "execution_path": str(self.execution_path),
+            }
+            self._source_identity = file_identity(self.resolved_source)
+            require(self._source_identity["size"] == size and
+                    self._source_identity["sha256"] == digest_value,
+                    f"{name} source path moved before custody completed")
+        except BaseException:
+            os.close(self.descriptor)
+            raise
+
+    def assert_descriptor(self) -> None:
+        digest_value, size, _ = _hash_descriptor(
+            self.descriptor, self.execution_path.name
+        )
+        require(size == self.identity["size"] and
+                digest_value == self.identity["sha256"],
+                f"sealed tool bytes changed: {self.execution_path.name}")
+        require(fcntl.fcntl(self.descriptor, fcntl.F_GET_SEALS) == self._SEALS,
+                f"sealed tool lost write protection: {self.execution_path.name}")
+        require(os.readlink(self.execution_path) == f"/proc/self/fd/{self.descriptor}",
+                f"sealed tool execution link changed: {self.execution_path.name}")
+
+    def assert_source_selection(self) -> None:
+        require(_selection_identity(self.requested_path) == self._selection,
+                f"selected tool path moved: {self.requested_path}")
+        require(file_identity(self.resolved_source) == self._source_identity,
+                f"selected tool bytes changed: {self.resolved_source}")
+
+    def close(self) -> None:
+        if self.descriptor >= 0:
+            os.close(self.descriptor)
+            self.descriptor = -1
+
+
+def _live_repository_file_identity(relative: str) -> dict[str, Any]:
+    require(relative in IMPLEMENTATION_PATHS,
+            f"unregistered implementation path: {relative}")
     candidate = ROOT / relative
     require(not candidate.is_symlink(), f"implementation path is a symlink: {relative}")
     resolved_root = ROOT.resolve(strict=True)
     resolved = candidate.resolve(strict=True)
-    require(resolved.is_relative_to(resolved_root), f"implementation path escaped repository: {relative}")
+    require(resolved.is_relative_to(resolved_root),
+            f"implementation path escaped repository: {relative}")
     identity = file_identity(candidate)
-    return {"path": relative, "size": identity["size"], "sha256": identity["sha256"]}
+    return {"path": relative, "size": identity["size"],
+            "sha256": identity["sha256"]}
+
+
+def repository_file_identity(relative: str) -> dict[str, Any]:
+    if PINNED_IMPLEMENTATION_FILES is not None:
+        require(set(PINNED_IMPLEMENTATION_FILES) == set(IMPLEMENTATION_PATHS),
+                "pinned implementation inventory differs")
+        value = PINNED_IMPLEMENTATION_FILES.get(relative)
+        require(isinstance(value, dict) and
+                set(value) == {"path", "size", "sha256"} and
+                value["path"] == relative,
+                f"invalid pinned implementation source: {relative}")
+        return dict(value)
+    return _live_repository_file_identity(relative)
+
+
+def _manifest(files: list[dict[str, Any]]) -> dict[str, Any]:
+    body = {"schema": IMPLEMENTATION_MANIFEST_SCHEMA, "files": files}
+    return {**body, "manifest_sha256": sha256(canonical(body))}
 
 
 def implementation_manifest() -> dict[str, Any]:
-    files = [repository_file_identity(relative) for relative in IMPLEMENTATION_PATHS]
-    body = {"schema": IMPLEMENTATION_MANIFEST_SCHEMA, "files": files}
-    return {**body, "manifest_sha256": sha256(canonical(body))}
+    return _manifest([repository_file_identity(relative)
+                      for relative in IMPLEMENTATION_PATHS])
+
+
+def live_implementation_manifest() -> dict[str, Any]:
+    return _manifest([_live_repository_file_identity(relative)
+                      for relative in IMPLEMENTATION_PATHS])
 
 
 def validate_implementation_manifest(value: Any) -> dict[str, Any]:
@@ -108,10 +277,19 @@ def validate_implementation_manifest(value: Any) -> dict[str, Any]:
     return value
 
 
-def query(command: list[str], cwd: Path) -> str:
-    result = subprocess.run(command, cwd=cwd, env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
-                            capture_output=True, text=True, timeout=20, check=True)
-    require(len(result.stdout.encode()) <= 1024 * 1024, "identity query exceeded bound")
+def query(command: list[str], cwd: Path, *, pass_fds: tuple[int, ...] = ()) -> str:
+    result = subprocess.run(
+        command,
+        cwd=cwd,
+        env={"PATH": "/usr/bin:/bin", "LC_ALL": "C"},
+        capture_output=True,
+        text=True,
+        timeout=20,
+        check=True,
+        pass_fds=pass_fds,
+    )
+    require(len(result.stdout.encode()) <= 1024 * 1024,
+            "identity query exceeded bound")
     return result.stdout.strip()
 
 
@@ -143,20 +321,61 @@ def reject_ambient_config(repo: Path, cargo_home: Path) -> None:
                 "input Cargo home must not provide ambient configuration")
 
 
-def toolchain_identity(cargo: Path, rustc: Path, cc: Path, ar: Path, repo: Path) -> dict[str, Any]:
-    identities = {name: file_identity(path) for name, path in (("cargo", cargo), ("rustc", rustc), ("cc", cc), ("ar", ar))}
-    cargo_version = query([str(cargo), "--version"], repo)
-    rust_version = query([str(rustc), "--version", "--verbose"], repo)
-    require(cargo_version.startswith(f"cargo {RUST_VERSION} "), "Cargo must be exactly 1.93.0")
-    require(rust_version.splitlines()[0].startswith(f"rustc {RUST_VERSION} "), "Rustc must be exactly 1.93.0")
-    require(f"release: {RUST_VERSION}" in rust_version.splitlines(), "Rust release metadata differs")
-    for name, path in (("cc", cc), ("ar", ar)):
-        identities[name]["version"] = query([str(path), "--version"], repo)
+def toolchain_identity(
+    cargo: Path,
+    rustc: Path,
+    cc: Path,
+    ar: Path,
+    repo: Path,
+    *,
+    pinned: dict[str, PinnedTool] | None = None,
+) -> dict[str, Any]:
+    selected = {"cargo": cargo, "rustc": rustc, "cc": cc, "ar": ar}
+    if pinned is None:
+        identities = {
+            name: file_identity(path) for name, path in selected.items()
+        }
+        execution = {name: str(path) for name, path in selected.items()}
+        pass_fds: tuple[int, ...] = ()
+    else:
+        require(set(pinned) == set(selected), "pinned tool inventory differs")
+        identities = {name: dict(pin.identity) for name, pin in pinned.items()}
+        execution = {
+            name: str(pin.execution_path) for name, pin in pinned.items()
+        }
+        pass_fds = tuple(pin.descriptor for pin in pinned.values())
+        for pin in pinned.values():
+            pin.assert_descriptor()
+    cargo_version = query(
+        [execution["cargo"], "--version"], repo, pass_fds=pass_fds
+    )
+    rust_version = query(
+        [execution["rustc"], "--version", "--verbose"],
+        repo,
+        pass_fds=pass_fds,
+    )
+    require(cargo_version.startswith(f"cargo {RUST_VERSION} "),
+            "Cargo must be exactly 1.93.0")
+    require(rust_version.splitlines()[0].startswith(f"rustc {RUST_VERSION} "),
+            "Rustc must be exactly 1.93.0")
+    require(f"release: {RUST_VERSION}" in rust_version.splitlines(),
+            "Rust release metadata differs")
+    for name in ("cc", "ar"):
+        identities[name]["version"] = query(
+            [execution[name], "--version"], repo, pass_fds=pass_fds
+        )
     identities["cargo"]["version"] = cargo_version
     identities["rustc"]["version"] = rust_version
-    identities["rust_sysroot"] = query([str(rustc), "--print", "sysroot"], repo)
-    identities["host_platform"] = {"sysname": os.uname().sysname, "release": os.uname().release,
-                                   "machine": os.uname().machine}
+    identities["rust_sysroot"] = query(
+        [execution["rustc"], "--print", "sysroot"],
+        repo,
+        pass_fds=pass_fds,
+    )
+    identities["host_platform"] = {
+        "sysname": os.uname().sysname,
+        "release": os.uname().release,
+        "machine": os.uname().machine,
+    }
     return identities
 
 
@@ -170,8 +389,10 @@ def prepare_home(path: Path, cache: Path) -> None:
 
 
 def recipe(repo: Path, target: Path, home: Path, cache: Path, tools: dict, source: dict) -> tuple[list[str], dict[str, str]]:
-    cargo, rustc = tools["cargo"]["path"], tools["rustc"]["path"]
-    cc, ar = tools["cc"]["path"], tools["ar"]["path"]
+    cargo = tools["cargo"].get("execution_path", tools["cargo"]["path"])
+    rustc = tools["rustc"].get("execution_path", tools["rustc"]["path"])
+    cc = tools["cc"].get("execution_path", tools["cc"]["path"])
+    ar = tools["ar"].get("execution_path", tools["ar"]["path"])
     flags = [f"--remap-path-prefix={repo}=/source/trillionnium-os",
              f"--remap-path-prefix={target}=/build/target",
              f"--remap-path-prefix={home}=/build/cargo-home",
@@ -256,66 +477,142 @@ def compare_artifacts(builds: list[dict]) -> dict[str, Any]:
 
 
 def verify(args: argparse.Namespace) -> dict[str, Any]:
-    report: dict[str, Any] = {"schema": SCHEMA, "qualification": "L1_LOCAL_BUILD_REPRODUCIBILITY_ONLY",
-        "public_release": False, "installation_performed": False, "signing_performed": False,
-        "builds": [], "gate": {"status": "FAIL_PREFLIGHT", "passed": False}, "errors": [],
-        "limitations": ["No installed-target, image, device, signing or release qualification",
-                        "Same host/kernel and shared offline dependency cache, not independent-builder attestation",
-                        "Direct tool bytes/version and Cargo.lock bound; full sysroot/linker/runtime/cache trees are not recursively attested",
-                        "Path remapping and identical outputs do not establish a hermetic or trusted build"]}
+    global EXECUTION_PASS_FDS
+    report: dict[str, Any] = {
+        "schema": SCHEMA,
+        "qualification": "L1_LOCAL_BUILD_REPRODUCIBILITY_ONLY",
+        "public_release": False,
+        "installation_performed": False,
+        "signing_performed": False,
+        "builds": [],
+        "gate": {"status": "FAIL_PREFLIGHT", "passed": False},
+        "errors": [],
+        "limitations": [
+            "No installed-target, image, device, signing or release qualification",
+            "Same host/kernel and shared offline dependency cache, not independent-builder attestation",
+            "Tool executables run from write-sealed memfd snapshots; full sysroot, linker/runtime libraries and cache trees are not recursively attested",
+            "Path remapping and identical outputs do not establish a hermetic or trusted build",
+        ],
+    }
+    pins: dict[str, PinnedTool] = {}
+    prior_pass_fds = EXECUTION_PASS_FDS
     try:
         require(sys.platform == "linux", "this host recipe requires Linux")
         repo = args.repo_root.resolve(strict=True)
         cache = args.cargo_home.resolve(strict=True)
         build_root = args.build_root.resolve()
         require(cache.is_dir(), "input Cargo home is not a directory")
-        require(not build_root.exists() and not build_root.is_symlink(), "build root must be new")
+        require(not build_root.exists() and not build_root.is_symlink(),
+                "build root must be new")
         parent = build_root.parent.resolve(strict=True)
-        require(not parent.is_relative_to(repo) and not parent.is_relative_to(cache), "build root must be outside source and cache")
-        require(not args.output.resolve().is_relative_to(repo), "report must be outside source checkout")
+        require(not parent.is_relative_to(repo) and not parent.is_relative_to(cache),
+                "build root must be outside source and cache")
+        require(not args.output.resolve().is_relative_to(repo),
+                "report must be outside source checkout")
         reject_ambient_config(repo, cache)
         source = source_identity(repo, args.expected_commit)
-        resolved = [p.resolve(strict=True) for p in (args.cargo, args.rustc, args.cc, args.ar)]
-        require(all(os.access(p, os.X_OK) for p in resolved), "build tools must be executable")
-        tools = toolchain_identity(*resolved, repo)
-        implementation = implementation_manifest()
-        validate_implementation_manifest(implementation)
-        report.update({"source": source, "tools": tools, "dependency_cache": str(cache),
-                       "build_root": str(build_root), "harness": file_identity(Path(__file__)),
-                       "implementation_manifest": implementation})
-        build_root.mkdir(mode=0o700)
-        for label in ("a", "b"):
-            target = build_root / f"target-{label}"
-            home = build_root / f"cargo-home-{label}"
-            prepare_home(home, cache)
-            target.mkdir(mode=0o700)
-            command, env = recipe(repo, target, home, cache, tools, source)
-            before_source = source_identity(repo, source["commit"])
-            before_tools = toolchain_identity(*resolved, repo)
-            require(before_source == source and before_tools == tools, "input identity changed before build")
-            build = {"label": label, "command": command, "environment": env,
-                     "source_before": before_source, "tools_before": before_tools, "artifacts": {}}
-            report["builds"].append(build)
-            build.update(run_build(command, env, repo, build_root / f"cargo-{label}.log", args.timeout_seconds))
-            build["source_after"] = source_identity(repo, source["commit"])
-            build["tools_after"] = toolchain_identity(*resolved, repo)
-            require(build["exit_code"] == 0, f"build {label} failed; inspect retained Cargo log")
-            require(build["source_after"] == source and build["tools_after"] == tools, "source or tools changed during build")
-            for binary in BINARIES:
-                path = target / "release" / binary
-                require(not path.is_symlink() and path.is_file() and os.access(path, os.X_OK), f"missing executable artifact: {binary}")
-                with path.open("rb") as stream:
-                    require(stream.read(4) == b"\x7fELF", f"artifact is not ELF: {binary}")
-                build["artifacts"][binary] = file_identity(path)
-        require(implementation_manifest() == implementation,
-                "reproducibility implementation changed during builds")
-        report["gate"] = compare_artifacts(report["builds"])
+        selected = {
+            "cargo": args.cargo,
+            "rustc": args.rustc,
+            "cc": args.cc,
+            "ar": args.ar,
+        }
+        resolved = [selected[name].resolve(strict=True)
+                    for name in ("cargo", "rustc", "cc", "ar")]
+        require(all(os.access(path, os.X_OK) for path in resolved),
+                "build tools must be executable")
+        with tempfile.TemporaryDirectory(
+            prefix="tos-build-custody-", dir=parent
+        ) as custody_directory:
+            custody_root = Path(custody_directory)
+            os.chmod(custody_root, 0o700)
+            pins = {
+                name: PinnedTool(selected[name], custody_root, name)
+                for name in ("cargo", "rustc", "cc", "ar")
+            }
+            EXECUTION_PASS_FDS = tuple(
+                pin.descriptor for pin in pins.values()
+            )
+            tools = toolchain_identity(*resolved, repo, pinned=pins)
+            implementation = implementation_manifest()
+            validate_implementation_manifest(implementation)
+            harness = next(
+                item for item in implementation["files"]
+                if item["path"] == "tools/build/verify_host_reproducibility.py"
+            )
+            report.update({
+                "source": source,
+                "tools": tools,
+                "dependency_cache": str(cache),
+                "build_root": str(build_root),
+                "harness": dict(harness),
+                "implementation_manifest": implementation,
+                "execution_custody": "linux-write-sealed-memfds-v1",
+            })
+            build_root.mkdir(mode=0o700)
+            for label in ("a", "b"):
+                for pin in pins.values():
+                    pin.assert_descriptor()
+                target = build_root / f"target-{label}"
+                home = build_root / f"cargo-home-{label}"
+                prepare_home(home, cache)
+                target.mkdir(mode=0o700)
+                command, env = recipe(repo, target, home, cache, tools, source)
+                before_source = source_identity(repo, source["commit"])
+                before_tools = toolchain_identity(
+                    *resolved, repo, pinned=pins
+                )
+                require(before_source == source and before_tools == tools,
+                        "input identity changed before build")
+                build = {
+                    "label": label,
+                    "command": command,
+                    "environment": env,
+                    "source_before": before_source,
+                    "tools_before": before_tools,
+                    "artifacts": {},
+                }
+                report["builds"].append(build)
+                build.update(run_build(
+                    command,
+                    env,
+                    repo,
+                    build_root / f"cargo-{label}.log",
+                    args.timeout_seconds,
+                ))
+                build["source_after"] = source_identity(repo, source["commit"])
+                build["tools_after"] = toolchain_identity(
+                    *resolved, repo, pinned=pins
+                )
+                require(build["exit_code"] == 0,
+                        f"build {label} failed; inspect retained Cargo log")
+                require(build["source_after"] == source and
+                        build["tools_after"] == tools,
+                        "source or pinned tools changed during build")
+                for pin in pins.values():
+                    pin.assert_descriptor()
+                    pin.assert_source_selection()
+                for binary in BINARIES:
+                    path = target / "release" / binary
+                    require(not path.is_symlink() and path.is_file() and
+                            os.access(path, os.X_OK),
+                            f"missing executable artifact: {binary}")
+                    with path.open("rb") as stream:
+                        require(stream.read(4) == b"\x7fELF",
+                                f"artifact is not ELF: {binary}")
+                    build["artifacts"][binary] = file_identity(path)
+            require(live_implementation_manifest() == implementation,
+                    "reproducibility implementation source paths changed during builds")
+            report["gate"] = compare_artifacts(report["builds"])
     except (VerificationError, OSError, subprocess.SubprocessError) as error:
         report["errors"].append(str(error))
         report["gate"] = {"status": "FAIL_VERIFICATION", "passed": False}
+    finally:
+        EXECUTION_PASS_FDS = prior_pass_fds
+        for pin in pins.values():
+            pin.close()
     report["report_digest"] = sha256(canonical(report))
     return report
-
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
