@@ -63,6 +63,55 @@ cargo fmt --all
 if text.count(execution_anchor) != 1:
     raise SystemExit("controller execution anchor differs")
 text = text.replace(execution_anchor, clippy_repair, 1)
+
+docs_anchor = "python3 tools/docs/verify_global_docs.py\n"
+docs_stage = dedent(r'''
+python3 - <<'PY_STAGE_DOCS'
+from pathlib import Path
+import subprocess
+
+expected = {
+    "android-integration/module-contracts/README.md",
+    "docs/MODULE_CONTRACT_STATUS.md",
+    "tools/contracts/README.md",
+}
+completed = subprocess.run(
+    ["git", "ls-files", "--others", "--exclude-standard", "-z", "--", "*.md"],
+    check=True,
+    capture_output=True,
+)
+observed = {
+    item.decode("utf-8")
+    for item in completed.stdout.split(b"\0")
+    if item
+}
+if observed != expected:
+    raise SystemExit(
+        "generated Markdown inventory differs: "
+        f"missing={sorted(expected-observed)} extra={sorted(observed-expected)}"
+    )
+for relative in sorted(expected):
+    target = Path(relative)
+    if not target.is_file() or target.is_symlink():
+        raise SystemExit(f"generated Markdown is not a regular file: {relative}")
+subprocess.run(["git", "add", "--", *sorted(expected)], check=True)
+tracked = subprocess.run(
+    ["git", "ls-files", "-z", "--", *sorted(expected)],
+    check=True,
+    capture_output=True,
+).stdout
+tracked_set = {item.decode("utf-8") for item in tracked.split(b"\0") if item}
+if tracked_set != expected:
+    raise SystemExit("generated Markdown did not enter the exact Git index")
+print("generated_markdown_staged=3")
+PY_STAGE_DOCS
+
+python3 tools/docs/verify_global_docs.py
+''').removeprefix("\n")
+if text.count(docs_anchor) != 1:
+    raise SystemExit("controller documentation verification anchor differs")
+text = text.replace(docs_anchor, docs_stage, 1)
+
 path.write_text(text, encoding="utf-8")
 PY_PATCHER
 
