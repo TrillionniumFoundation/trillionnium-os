@@ -1,0 +1,41 @@
+name: ChatGPT issue54 carrier export 20260909
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-issue54-carrier-export-20260909
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact carrier branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Archive raw and normalized fragments
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="${RUNNER_TEMP}/issue54-carrier"
+          mkdir -p "$out/raw" "$out/normalized"
+          for part in 00 01 02 03 04 05; do
+            cp "ops/issue54-rebuilt.part${part}" "$out/raw/part${part}"
+            tr -d '\r\n\t ' < "ops/issue54-rebuilt.part${part}" > "$out/normalized/part${part}"
+          done
+          sha256sum "$out"/raw/* "$out"/normalized/* > "$out/current.sha256"
+          wc -c "$out"/raw/* "$out"/normalized/* > "$out/current.sizes"
+      - name: Upload non-authorizing carrier snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: issue54-carrier-fragments-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          path: ${{ runner.temp }}/issue54-carrier
