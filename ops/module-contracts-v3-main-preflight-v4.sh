@@ -64,8 +64,14 @@ if text.count(execution_anchor) != 1:
     raise SystemExit("controller execution anchor differs")
 text = text.replace(execution_anchor, clippy_repair, 1)
 
-docs_anchor = "python3 tools/docs/verify_global_docs.py\n"
+docs_anchor = (
+    "python3 tools/docs/generate_global_docs.py\n"
+    "python3 tools/docs/generate_global_docs.py --check\n"
+    "python3 tools/docs/verify_global_docs.py\n"
+)
 docs_stage = dedent(r'''
+python3 tools/docs/generate_global_docs.py
+python3 tools/docs/generate_global_docs.py --check
 python3 - <<'PY_STAGE_DOCS'
 from pathlib import Path
 import subprocess
@@ -109,7 +115,7 @@ PY_STAGE_DOCS
 python3 tools/docs/verify_global_docs.py
 ''').removeprefix("\n")
 if text.count(docs_anchor) != 1:
-    raise SystemExit("controller documentation verification anchor differs")
+    raise SystemExit("controller documentation verification phase differs")
 text = text.replace(docs_anchor, docs_stage, 1)
 
 path.write_text(text, encoding="utf-8")
