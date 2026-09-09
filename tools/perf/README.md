@@ -40,11 +40,14 @@ custody directory. Workloads execute only those private copies. Replacing or
 restoring an original pathname therefore cannot substitute different bytes for
 the admitted executable; any source-path movement still fails the final report.
 
-The public facade also reads every behavior-bearing Python source once through a
-regular-file descriptor and compiles or executes those exact snapshot bytes. Its
-closed implementation manifest covers the facade, private core, Root Linux
-supervisor and source broker, and the broker workload executes a private script
-made from the same admitted snapshot. The report additionally records the source
+The public entry point is a deliberately small reviewed launcher. It walks every
+facade path component from the filesystem root with descriptor-relative opens and
+`O_NOFOLLOW`, verifies a fixed facade SHA-256, compiles those same bytes, and only
+then transfers control. The authenticated facade applies the same component-wise
+open discipline to every behavior-bearing Python source. Its closed implementation
+manifest covers the launcher, authenticated facade, private core, Root Linux
+supervisor and source broker. The broker workload executes a private script made
+from the same admitted snapshot. The report additionally records the source
 commit/tree, dirty tracked diff and untracked inputs, lockfile, Python and shell
 identities. Changing any manifest member changes comparison identity; changing a
 source path during a run fails it. A dirty but stable checkout is allowed unless
@@ -153,8 +156,10 @@ python3 -m unittest tools.tests.test_run_product_baseline -v
 The first command tests artifact integrity, raw-summary consistency, the closed
 implementation manifest, immutable gate policy, finite input bounds,
 correctness-before-performance and no-overwrite behavior. It also performs
-hostile swap tests proving that imported Python executes the bytes read into its
-snapshot and that a replaced executable pathname cannot change the private bytes
+hostile parent- and final-component substitution tests proving that the launcher
+never executes a facade under the wrong digest, imported Python executes only the
+bytes read through its admitted descriptor, and Host/Core/Python/shell path swaps
+cannot change the private bytes
 actually executed or yield a passing source-selection check.
 The second additionally exercises all eight workloads against the explicitly
 provided real binaries. Missing environment variables produce an explicit skip

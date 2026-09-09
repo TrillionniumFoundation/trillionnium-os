@@ -30,15 +30,20 @@ MAX_LOG_BYTES = 32 * 1024 * 1024
 IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.host-build-reproducibility-implementation.v1"
 IMPLEMENTATION_PATHS = (
     "tools/build/_verify_host_reproducibility_core.py",
+    "tools/build/_verify_host_reproducibility_facade.py",
     "tools/build/verify_host_reproducibility.py",
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
     "tools/perf/_run_product_baseline_core.py",
+    "tools/perf/_run_product_baseline_facade.py",
     "tools/perf/run_product_baseline.py",
 )
 
 
 PINNED_IMPLEMENTATION_FILES: dict[str, dict[str, Any]] | None = None
 EXECUTION_PASS_FDS: tuple[int, ...] = ()
+OPEN_ADMITTED_FILE: Any = None
+REOPEN_ADMITTED_IDENTITY: Any = None
+SAME_ADMITTED_OBJECT: Any = None
 MAX_PINNED_TOOL_BYTES = 512 * 1024 * 1024
 
 
@@ -75,18 +80,40 @@ def file_identity(path: Path) -> dict[str, Any]:
             "sha256": digest_value.hexdigest()}
 
 
-def _selection_identity(path: Path) -> dict[str, Any]:
-    absolute = path.absolute()
-    value = os.lstat(absolute)
-    return {
-        "path": str(absolute),
-        "device": value.st_dev,
-        "inode": value.st_ino,
-        "mode": stat.S_IFMT(value.st_mode),
-        "size": value.st_size,
-        "mtime_ns": value.st_mtime_ns,
-        "symlink_target": os.readlink(absolute) if stat.S_ISLNK(value.st_mode) else None,
-    }
+def _admit_tool(
+    path: Path,
+    name: str,
+    *,
+    before_component: Any = None,
+    after_final: Any = None,
+) -> tuple[bytes, dict[str, Any], dict[str, Any]]:
+    require(callable(OPEN_ADMITTED_FILE),
+            "descriptor-rooted tool admission is not installed")
+    return OPEN_ADMITTED_FILE(
+        path,
+        str(path.absolute()),
+        maximum=MAX_PINNED_TOOL_BYTES,
+        executable=True,
+        before_component=before_component,
+        after_final=after_final,
+    )
+
+
+def _reopen_tool(path: Path, name: str) -> dict[str, Any]:
+    require(callable(REOPEN_ADMITTED_IDENTITY),
+            "descriptor-rooted tool revalidation is not installed")
+    return REOPEN_ADMITTED_IDENTITY(
+        path,
+        str(path.absolute()),
+        maximum=MAX_PINNED_TOOL_BYTES,
+        executable=True,
+    )
+
+
+def _same_admitted(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    require(callable(SAME_ADMITTED_OBJECT),
+            "descriptor-rooted identity comparison is not installed")
+    return bool(SAME_ADMITTED_OBJECT(left, right))
 
 
 def _hash_descriptor(descriptor: int, label: str) -> tuple[str, int, os.stat_result]:
@@ -117,7 +144,7 @@ def _write_descriptor(descriptor: int, payload: bytes) -> None:
 
 
 class PinnedTool:
-    """Executable copied into a write-sealed memfd and invoked by a private name."""
+    """Executable admitted by descriptor and copied into a write-sealed memfd."""
 
     _SEALS = (
         getattr(fcntl, "F_SEAL_WRITE", 0x0008)
@@ -126,40 +153,28 @@ class PinnedTool:
         | getattr(fcntl, "F_SEAL_SEAL", 0x0001)
     )
 
-    def __init__(self, source: Path, custody_root: Path, name: str) -> None:
+    def __init__(
+        self,
+        source: Path,
+        custody_root: Path,
+        name: str,
+        *,
+        before_component: Any = None,
+        after_final: Any = None,
+    ) -> None:
         self.requested_path = source.absolute()
-        self._selection = _selection_identity(self.requested_path)
-        self.resolved_source = source.resolve(strict=True)
-        require(self.resolved_source.is_file() and os.access(self.resolved_source, os.X_OK),
-                f"{name} must resolve to an executable regular file")
-        source_descriptor = os.open(
-            self.resolved_source,
-            os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
-            | getattr(os, "O_NOFOLLOW", 0),
+        payload, report, internal = _admit_tool(
+            self.requested_path,
+            name,
+            before_component=before_component,
+            after_final=after_final,
         )
-        try:
-            digest_value, size, value = _hash_descriptor(source_descriptor, name)
-            require(bool(value.st_mode & 0o111), f"{name} has no execute bit")
-            payload = bytearray()
-            offset = 0
-            while offset < size:
-                block = os.pread(
-                    source_descriptor,
-                    min(1024 * 1024, size - offset),
-                    offset,
-                )
-                require(bool(block), f"short second read while sealing {name}")
-                payload.extend(block)
-                offset += len(block)
-            require(hashlib.sha256(payload).hexdigest() == digest_value,
-                    f"{name} bytes changed between admission reads")
-        finally:
-            os.close(source_descriptor)
+        self._source_internal = internal
         require(hasattr(os, "memfd_create"), "sealed tool custody requires memfd_create")
         flags = getattr(os, "MFD_CLOEXEC", 0x0001) | getattr(os, "MFD_ALLOW_SEALING", 0x0002)
         self.descriptor = os.memfd_create(f"trillionnium-{name}", flags)
         try:
-            _write_descriptor(self.descriptor, bytes(payload))
+            _write_descriptor(self.descriptor, payload)
             os.fchmod(self.descriptor, 0o500)
             fcntl.fcntl(self.descriptor, fcntl.F_ADD_SEALS, self._SEALS)
             require(fcntl.fcntl(self.descriptor, fcntl.F_GET_SEALS) == self._SEALS,
@@ -169,18 +184,17 @@ class PinnedTool:
             os.symlink(f"/proc/self/fd/{self.descriptor}", self.execution_path)
             link_state = os.lstat(self.execution_path)
             require(stat.S_ISLNK(link_state.st_mode), f"{name} execution link is invalid")
+            current = _reopen_tool(self.requested_path, name)
+            require(_same_admitted(self._source_internal, current),
+                    f"{name} selected tool changed before custody completed")
             self.identity = {
-                "path": str(self.resolved_source),
+                "path": internal["absolute_path"],
                 "requested_path": str(self.requested_path),
-                "size": size,
-                "sha256": digest_value,
-                "execution_custody": "linux-write-sealed-memfd-v1",
+                "size": report["size"],
+                "sha256": report["sha256"],
+                "execution_custody": "descriptor-rooted-linux-write-sealed-memfd-v2",
                 "execution_path": str(self.execution_path),
             }
-            self._source_identity = file_identity(self.resolved_source)
-            require(self._source_identity["size"] == size and
-                    self._source_identity["sha256"] == digest_value,
-                    f"{name} source path moved before custody completed")
         except BaseException:
             os.close(self.descriptor)
             raise
@@ -198,10 +212,9 @@ class PinnedTool:
                 f"sealed tool execution link changed: {self.execution_path.name}")
 
     def assert_source_selection(self) -> None:
-        require(_selection_identity(self.requested_path) == self._selection,
-                f"selected tool path moved: {self.requested_path}")
-        require(file_identity(self.resolved_source) == self._source_identity,
-                f"selected tool bytes changed: {self.resolved_source}")
+        current = _reopen_tool(self.requested_path, self.execution_path.name)
+        require(_same_admitted(self._source_internal, current),
+                f"selected tool path or bytes moved: {self.requested_path}")
 
     def close(self) -> None:
         if self.descriptor >= 0:
@@ -212,15 +225,12 @@ class PinnedTool:
 def _live_repository_file_identity(relative: str) -> dict[str, Any]:
     require(relative in IMPLEMENTATION_PATHS,
             f"unregistered implementation path: {relative}")
-    candidate = ROOT / relative
-    require(not candidate.is_symlink(), f"implementation path is a symlink: {relative}")
-    resolved_root = ROOT.resolve(strict=True)
-    resolved = candidate.resolve(strict=True)
-    require(resolved.is_relative_to(resolved_root),
-            f"implementation path escaped repository: {relative}")
-    identity = file_identity(candidate)
-    return {"path": relative, "size": identity["size"],
-            "sha256": identity["sha256"]}
+    require(callable(OPEN_ADMITTED_FILE),
+            "descriptor-rooted implementation admission is not installed")
+    _, report, _ = OPEN_ADMITTED_FILE(
+        ROOT / relative, relative, maximum=8 * 1024 * 1024, executable=False
+    )
+    return report
 
 
 def repository_file_identity(relative: str) -> dict[str, Any]:
@@ -519,8 +529,7 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
         }
         resolved = [selected[name].resolve(strict=True)
                     for name in ("cargo", "rustc", "cc", "ar")]
-        require(all(os.access(path, os.X_OK) for path in resolved),
-                "build tools must be executable")
+        selected = dict(zip(("cargo", "rustc", "cc", "ar"), resolved, strict=True))
         with tempfile.TemporaryDirectory(
             prefix="tos-build-custody-", dir=parent
         ) as custody_directory:

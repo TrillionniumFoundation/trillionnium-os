@@ -226,8 +226,185 @@ class ProductBaselineContractTests(unittest.TestCase):
             self.assertEqual(output.read_text(), "keep")
 
 
+    def test_minimal_launcher_rejects_swap_restore_before_facade_admission(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            facade = root / "facade.py"
+            backup = root / "facade.reviewed"
+            marker = root / "hostile-ran"
+            reviewed = b"VALUE = 'reviewed'\n"
+            facade.write_bytes(reviewed)
+            hostile = (
+                "from pathlib import Path\n"
+                f"Path({str(marker)!r}).write_text('ran')\n"
+            ).encode()
+            swapped = False
+
+            def before(_absolute: Path, _component: str, final: bool) -> None:
+                nonlocal swapped
+                if final and not swapped:
+                    facade.rename(backup)
+                    facade.write_bytes(hostile)
+                    swapped = True
+
+            def restore(_absolute: Path, _descriptor: int) -> None:
+                facade.unlink()
+                backup.rename(facade)
+
+            with self.assertRaisesRegex(RuntimeError, "unadmitted facade bytes"):
+                getattr(BENCH, "__launcher_authenticate_facade")(
+                    facade,
+                    expected_sha256=BENCH.digest(reviewed),
+                    before_component=before,
+                    after_final=restore,
+                )
+            self.assertFalse(marker.exists())
+            self.assertEqual(facade.read_bytes(), reviewed)
+
+    def test_descriptor_walk_rejects_parent_symlink_substitution(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            parent = root / "selected"
+            backup = root / "selected-reviewed"
+            attacker = root / "attacker"
+            parent.mkdir()
+            attacker.mkdir()
+            (parent / "module.py").write_text("VALUE = 'reviewed'\n")
+            (attacker / "module.py").write_text("raise RuntimeError('hostile')\n")
+            swapped = False
+
+            def swap(_absolute: Path, component: str, final: bool) -> None:
+                nonlocal swapped
+                if component == parent.name and not final and not swapped:
+                    parent.rename(backup)
+                    parent.symlink_to(attacker, target_is_directory=True)
+                    swapped = True
+
+            try:
+                with mock.patch.object(BENCH, "REPOSITORY_ROOT", root):
+                    with self.assertRaises(OSError):
+                        BENCH._snapshot_source(
+                            parent / "module.py",
+                            "selected/module.py",
+                            before_component=swap,
+                        )
+            finally:
+                if parent.is_symlink():
+                    parent.unlink()
+                if backup.exists():
+                    backup.rename(parent)
+
+    def test_python_final_component_swap_restore_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "module.py"
+            backup = root / "module.reviewed"
+            source.write_text("VALUE = 'reviewed'\n")
+            swapped = False
+
+            def before(_absolute: Path, _component: str, final: bool) -> None:
+                nonlocal swapped
+                if final and not swapped:
+                    source.rename(backup)
+                    source.write_text("raise RuntimeError('hostile')\n")
+                    swapped = True
+
+            def restore(_absolute: Path, _descriptor: int) -> None:
+                source.unlink()
+                backup.rename(source)
+
+            with mock.patch.object(BENCH, "REPOSITORY_ROOT", root):
+                with self.assertRaisesRegex(RuntimeError, "selection changed"):
+                    BENCH._snapshot_source(
+                        source,
+                        "module.py",
+                        before_component=before,
+                        after_final=restore,
+                    )
+            self.assertIn("reviewed", source.read_text())
+
+    def test_all_product_executable_roles_reject_parent_substitution(self) -> None:
+        for role in ("host", "core", "python", "shell"):
+            with self.subTest(role=role), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                parent = root / "selected"
+                backup = root / "selected-reviewed"
+                attacker = root / "attacker"
+                custody = root / "custody"
+                parent.mkdir()
+                attacker.mkdir()
+                custody.mkdir(mode=0o700)
+                source = parent / role
+                shutil.copyfile(sys.executable, source)
+                source.chmod(0o700)
+                hostile = attacker / role
+                hostile.write_text("#!/bin/sh\nexit 99\n")
+                hostile.chmod(0o700)
+                swapped = False
+
+                def before(_absolute: Path, component: str, final: bool) -> None:
+                    nonlocal swapped
+                    if component == parent.name and not final and not swapped:
+                        parent.rename(backup)
+                        parent.symlink_to(attacker, target_is_directory=True)
+                        swapped = True
+
+                try:
+                    with self.assertRaises(OSError):
+                        BENCH.PinnedExecutable(
+                            source,
+                            custody,
+                            role,
+                            before_component=before,
+                        )
+                finally:
+                    if parent.is_symlink():
+                        parent.unlink()
+                    if backup.exists():
+                        backup.rename(parent)
+
+    def test_all_product_executable_roles_reject_final_swap_restore(self) -> None:
+        for role in ("host", "core", "python", "shell"):
+            with self.subTest(role=role), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                source = root / f"{role}-source"
+                backup = root / f"{role}-reviewed"
+                custody = root / "custody"
+                custody.mkdir(mode=0o700)
+                shutil.copyfile(sys.executable, source)
+                source.chmod(0o700)
+                swapped = False
+
+                def before(_absolute: Path, _component: str, final: bool) -> None:
+                    nonlocal swapped
+                    if final and not swapped:
+                        source.rename(backup)
+                        source.write_text("#!/bin/sh\nexit 97\n")
+                        source.chmod(0o700)
+                        swapped = True
+
+                def restore(_absolute: Path, _descriptor: int) -> None:
+                    source.unlink()
+                    backup.rename(source)
+
+                with self.assertRaisesRegex(
+                    BENCH.BenchmarkError, "changed before custody completed"
+                ):
+                    BENCH.PinnedExecutable(
+                        source,
+                        custody,
+                        role,
+                        before_component=before,
+                        after_final=restore,
+                    )
+                self.assertEqual(
+                    source.read_bytes()[:4], Path(sys.executable).read_bytes()[:4]
+                )
+
+
 @unittest.skipUnless(os.environ.get("TRILLIONNIUM_PERF_HOST") and os.environ.get("TRILLIONNIUM_PERF_CORE"),
                      "set TRILLIONNIUM_PERF_HOST and TRILLIONNIUM_PERF_CORE for real-binary integration")
+
 class RealProductBaselineTests(unittest.TestCase):
     def test_real_selected_products_all_workloads(self) -> None:
         host = Path(os.environ["TRILLIONNIUM_PERF_HOST"]).resolve(strict=True)

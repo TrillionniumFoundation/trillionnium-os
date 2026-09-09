@@ -45,6 +45,7 @@ IMPLEMENTATION_PATHS = (
     "tools/owner-open/owner_open_connection_broker.py",
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
     "tools/perf/_run_product_baseline_core.py",
+    "tools/perf/_run_product_baseline_facade.py",
     "tools/perf/run_product_baseline.py",
 )
 WORKLOADS = {
@@ -69,6 +70,9 @@ PINNED_IMPLEMENTATION_FILES: dict[str, dict[str, Any]] | None = None
 PINNED_IMPLEMENTATION_SOURCES: dict[str, bytes] | None = None
 EXECUTION_PATHS: dict[str, str] = {}
 EXECUTION_PASS_FDS: tuple[int, ...] = ()
+OPEN_ADMITTED_FILE: Any = None
+REOPEN_ADMITTED_IDENTITY: Any = None
+SAME_ADMITTED_OBJECT: Any = None
 MAX_PINNED_EXECUTABLE_BYTES = 512 * 1024 * 1024
 
 
@@ -121,18 +125,40 @@ def measured_file(path: Path) -> dict[str, Any]:
             "sha256": hasher.hexdigest()}
 
 
-def _selection_identity(path: Path) -> dict[str, Any]:
-    absolute = path.absolute()
-    value = os.lstat(absolute)
-    return {
-        "path": str(absolute),
-        "device": value.st_dev,
-        "inode": value.st_ino,
-        "mode": stat.S_IFMT(value.st_mode),
-        "size": value.st_size,
-        "mtime_ns": value.st_mtime_ns,
-        "symlink_target": os.readlink(absolute) if stat.S_ISLNK(value.st_mode) else None,
-    }
+def _admit_executable(
+    path: Path,
+    label: str,
+    *,
+    before_component: Any = None,
+    after_final: Any = None,
+) -> tuple[bytes, dict[str, Any], dict[str, Any]]:
+    require(callable(OPEN_ADMITTED_FILE),
+            "descriptor-rooted executable admission is not installed")
+    return OPEN_ADMITTED_FILE(
+        path,
+        str(path.absolute()),
+        maximum=MAX_PINNED_EXECUTABLE_BYTES,
+        executable=True,
+        before_component=before_component,
+        after_final=after_final,
+    )
+
+
+def _reopen_executable(path: Path, label: str) -> dict[str, Any]:
+    require(callable(REOPEN_ADMITTED_IDENTITY),
+            "descriptor-rooted executable revalidation is not installed")
+    return REOPEN_ADMITTED_IDENTITY(
+        path,
+        str(path.absolute()),
+        maximum=MAX_PINNED_EXECUTABLE_BYTES,
+        executable=True,
+    )
+
+
+def _same_admitted(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    require(callable(SAME_ADMITTED_OBJECT),
+            "descriptor-rooted identity comparison is not installed")
+    return bool(SAME_ADMITTED_OBJECT(left, right))
 
 
 def _write_all(descriptor: int, data: bytes) -> None:
@@ -143,77 +169,61 @@ def _write_all(descriptor: int, data: bytes) -> None:
         offset += written
 
 
-def _read_regular_descriptor(descriptor: int, label: str) -> tuple[bytes, os.stat_result]:
-    before = os.fstat(descriptor)
-    require(stat.S_ISREG(before.st_mode), f"{label} is not a regular file")
-    require(0 < before.st_size <= MAX_PINNED_EXECUTABLE_BYTES,
-            f"{label} is empty or exceeds the pinned executable bound")
-    chunks: list[bytes] = []
-    offset = 0
-    while offset < before.st_size:
-        block = os.pread(descriptor, min(1024 * 1024, before.st_size - offset), offset)
-        require(bool(block), f"short read while pinning {label}")
-        chunks.append(block)
-        offset += len(block)
-    after = os.fstat(descriptor)
-    require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) ==
-            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns),
-            f"{label} changed while it was pinned")
-    return b"".join(chunks), before
-
-
 class PinnedExecutable:
-    """Private single-link executable copied from one verified source descriptor."""
+    """Private executable copied from one descriptor-rooted admitted object."""
 
-    def __init__(self, source: Path, custody_root: Path, label: str) -> None:
+    def __init__(
+        self,
+        source: Path,
+        custody_root: Path,
+        label: str,
+        *,
+        before_component: Any = None,
+        after_final: Any = None,
+    ) -> None:
         self.requested_path = source.absolute()
-        self._selection = _selection_identity(self.requested_path)
-        self.resolved_source = source.resolve(strict=True)
-        require(self.resolved_source.is_file() and os.access(self.resolved_source, os.X_OK),
-                f"{label} source must be an executable regular file")
-        flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-        source_descriptor = os.open(self.resolved_source, flags)
+        payload, report, internal = _admit_executable(
+            self.requested_path,
+            label,
+            before_component=before_component,
+            after_final=after_final,
+        )
+        self._source_internal = internal
+        self.execution_path = custody_root / label
+        destination = os.open(
+            self.execution_path,
+            os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
+            0o500,
+        )
         try:
-            payload, source_stat = _read_regular_descriptor(source_descriptor, label)
-            require(bool(source_stat.st_mode & 0o111), f"{label} source has no execute bit")
-            self.execution_path = custody_root / label
-            destination = os.open(
-                self.execution_path,
-                os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0),
-                0o500,
-            )
-            try:
-                _write_all(destination, payload)
-                os.fsync(destination)
-            finally:
-                os.close(destination)
-            os.chmod(self.execution_path, 0o500, follow_symlinks=False)
-            directory = os.open(custody_root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-            try:
-                os.fsync(directory)
-            finally:
-                os.close(directory)
+            _write_all(destination, payload)
+            os.fsync(destination)
         finally:
-            os.close(source_descriptor)
-        self._source_identity = measured_file(self.resolved_source)
-        require(self._source_identity["size"] == len(payload) and
-                self._source_identity["sha256"] == hashlib.sha256(payload).hexdigest(),
-                f"{label} source path moved before custody completed")
+            os.close(destination)
+        os.chmod(self.execution_path, 0o500, follow_symlinks=False)
+        directory = os.open(custody_root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+        current = _reopen_executable(self.requested_path, label)
+        require(_same_admitted(self._source_internal, current),
+                f"{label} selected executable changed before custody completed")
         private = measured_file(self.execution_path)
         private_stat = self.execution_path.stat()
         require(private_stat.st_nlink == 1 and private_stat.st_uid == os.geteuid(),
                 f"{label} custody copy is not private and single-link")
         require(private_stat.st_mode & 0o077 == 0,
                 f"{label} custody copy is group/world accessible")
-        require(private["size"] == self._source_identity["size"] and
-                private["sha256"] == self._source_identity["sha256"],
+        require(private["size"] == report["size"] and
+                private["sha256"] == report["sha256"],
                 f"{label} custody copy differs from admitted bytes")
         self.identity = {
-            "path": self._source_identity["path"],
+            "path": internal["absolute_path"],
             "requested_path": str(self.requested_path),
-            "size": self._source_identity["size"],
-            "sha256": self._source_identity["sha256"],
-            "execution_custody": "verified-private-single-link-copy-v1",
+            "size": report["size"],
+            "sha256": report["sha256"],
+            "execution_custody": "descriptor-rooted-private-single-link-copy-v2",
         }
 
     def assert_execution_copy(self) -> None:
@@ -227,10 +237,9 @@ class PinnedExecutable:
                 f"pinned execution bytes changed: {self.execution_path.name}")
 
     def assert_source_selection(self) -> None:
-        require(_selection_identity(self.requested_path) == self._selection,
-                f"selected executable path moved: {self.requested_path}")
-        require(measured_file(self.resolved_source) == self._source_identity,
-                f"selected executable bytes changed: {self.resolved_source}")
+        current = _reopen_executable(self.requested_path, self.execution_path.name)
+        require(_same_admitted(self._source_internal, current),
+                f"selected executable path or bytes moved: {self.requested_path}")
 
 
 def _write_pinned_source(
@@ -268,15 +277,12 @@ def _write_pinned_source(
 def _live_repository_file_identity(relative: str) -> dict[str, Any]:
     require(relative in IMPLEMENTATION_PATHS,
             f"unregistered implementation path: {relative}")
-    candidate = ROOT / relative
-    require(not candidate.is_symlink(), f"implementation path is a symlink: {relative}")
-    resolved_root = ROOT.resolve(strict=True)
-    resolved = candidate.resolve(strict=True)
-    require(resolved.is_relative_to(resolved_root),
-            f"implementation path escaped repository: {relative}")
-    identity = measured_file(candidate)
-    return {"path": relative, "size": identity["size"],
-            "sha256": identity["sha256"]}
+    require(callable(OPEN_ADMITTED_FILE),
+            "descriptor-rooted implementation admission is not installed")
+    _, report, _ = OPEN_ADMITTED_FILE(
+        ROOT / relative, relative, maximum=8 * 1024 * 1024, executable=False
+    )
+    return report
 
 
 def repository_file_identity(relative: str) -> dict[str, Any]:
@@ -1021,8 +1027,8 @@ def run(args: argparse.Namespace) -> dict:
         pins = {
             "host": PinnedExecutable(args.host, custody_root, "host"),
             "core": PinnedExecutable(args.core, custody_root, "core"),
-            "python": PinnedExecutable(Path(sys.executable), custody_root, "python"),
-            "shell": PinnedExecutable(Path("/bin/sh"), custody_root, "shell"),
+            "python": PinnedExecutable(Path(sys.executable).resolve(strict=True), custody_root, "python"),
+            "shell": PinnedExecutable(Path("/bin/sh").resolve(strict=True), custody_root, "shell"),
         }
         require(PINNED_IMPLEMENTATION_FILES is not None and
                 PINNED_IMPLEMENTATION_SOURCES is not None,

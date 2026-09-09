@@ -75,16 +75,19 @@ can receive ordinary Cargo cache metadata writes.
 
 The JSON report includes the source commit/tree, commit timestamp, lockfile and
 manifest identities, direct tool hashes and versions, platform and Rust sysroot,
-verifier identity, a closed implementation manifest covering the build facade,
-private recipe core, performance cleanup facade/private core and Root Linux
-supervisor, complete build commands and environments, elapsed times, raw-log
-identities, and both binary identities.
+verifier identity, a closed implementation manifest covering the minimal build
+launcher, authenticated build facade, private recipe core, minimal performance
+launcher, authenticated cleanup facade/private core and Root Linux supervisor,
+complete build commands and environments, elapsed times, raw-log identities, and
+both binary identities.
 
 Every behavior-bearing Python dependency is read, hashed, compiled and executed
-from one admitted source snapshot. Cargo, rustc, cc and ar are each copied from
-one verified source read into a Linux memfd, write/grow/shrink sealing is applied,
-and a private basename-preserving link is used for all version probes and both
-builds. The sealed descriptors are explicitly inherited by Cargo and its child
+from one admitted source snapshot. Both launchers authenticate their facade
+bytes before compilation. Every Python and tool path is opened component by
+component with descriptor-relative `O_NOFOLLOW` lookups. Cargo, rustc, cc and ar
+are each copied from the opened descriptor into a Linux memfd, write/grow/shrink
+sealing is applied, and a private basename-preserving link is used for all version
+probes and both builds. The sealed descriptors are explicitly inherited by Cargo and its child
 tool processes. A swap or in-place rewrite of the original tool path therefore
 cannot change executed bytes; source-path movement is still detected and fails
 the report. Any implementation member changing during the two builds also fails
@@ -128,8 +131,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tools.tests.test_verify_host_repro
 These small tests check the fixed build recipe and failure gates, including the
 closed behavior-bearing implementation manifest, artifact differences, failed
 builds, missing hashes/artifacts, source/tool identity changes, dirty or moved
-source, ambient configuration, and a wrong toolchain. Hostile controls replace a
-Python module path after snapshot compilation and rewrite a tool path after memfd
-sealing; only the admitted bytes execute, while source-selection drift fails
-closed. They do not
+source, ambient configuration, and a wrong toolchain. Hostile controls replace launcher facades, parent directories and final path
+components for Python sources and all cargo/rustc/cc/ar selections. Only the
+opened, admitted bytes execute; wrong facade digests and component substitutions
+fail closed, while later source-selection drift remains visible. They do not
 execute Cargo or substitute for a real dual-build report.
