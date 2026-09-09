@@ -1,0 +1,51 @@
+name: ChatGPT PR72 exact source export
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr72-source-export-20260909
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chatgpt-pr72-exact-source-export
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: 458f501608dc4313aae0d8093b7e4a045f3b5427
+      SOURCE_TREE: 0774b019912ed1374ac81a0335edd4d02a4d455e
+    steps:
+      - name: Check out exact PR72 head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Bind and archive clean exact tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+          archive="${RUNNER_TEMP}/pr72-${SOURCE_SHA}.tar.gz"
+          git --no-replace-objects archive --format=tar.gz --output="$archive" "$SOURCE_SHA"
+          sha256sum "$archive" > "${archive}.sha256"
+      - name: Upload non-qualifying exact source export
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr72-source-${{ env.SOURCE_SHA }}
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          path: |
+            ${{ runner.temp }}/pr72-${{ env.SOURCE_SHA }}.tar.gz
+            ${{ runner.temp }}/pr72-${{ env.SOURCE_SHA }}.tar.gz.sha256
