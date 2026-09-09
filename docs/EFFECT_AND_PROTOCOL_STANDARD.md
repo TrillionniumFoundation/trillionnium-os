@@ -26,6 +26,25 @@ An exact key with exact bytes attaches, inspects or replays known state. The
 same key with different bytes is a conflict before effect. Transport-local
 sequence fields do not replace semantic request identity.
 
+## 1.1 Machine lifecycle authority
+
+The executable cross-module authority is
+[`machine/effect-lifecycle.v1.json`](machine/effect-lifecycle.v1.json), with the
+generated human view in
+[`generated/EFFECT_LIFECYCLE.md`](generated/EFFECT_LIFECYCLE.md). Every active
+transition binds the complete operation/request/session/turn/call/job identity,
+ordering key, Host/Provider/writer epochs, fencing token, durable sequence and
+monotonic timestamp. The checked-in TLA+ projection and the finite Python model
+checker prove source-level transition invariants; they do not replace L2-L6
+target, device, destructive-fault or release evidence.
+
+The only effect boundary is `ACCEPTED_DURABLE -> EFFECT_ATTEMPTING`. Timeout,
+EOF, disconnect or crash after that boundary can converge only through a
+definitive terminal proof or `UNKNOWN_RECONCILIATION_REQUIRED`/`FENCED`. Missing
+post-acceptance data is never proof that an effect did not start, and no state,
+transition, duplicate path, cleanup path or crash cut authorizes automatic
+redispatch.
+
 ## 2. Lifecycle
 
 ```text
