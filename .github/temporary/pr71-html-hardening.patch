@@ -1,0 +1,318 @@
+--- a/tools/docs/verify_repository_authority.py
++++ b/tools/docs/verify_repository_authority.py
+@@ -12,6 +12,7 @@
+ 
+ from collections import Counter
+ import html
++from html.parser import HTMLParser
+ import json
+ from pathlib import Path, PurePosixPath
+ import re
+@@ -52,12 +53,15 @@
+ )
+ REFERENCE_LINK_RE = re.compile(r"!?\[([^\[\]]+)\]\[([^\[\]]*)\]", re.MULTILINE)
+ BRACKET_RE = re.compile(r"!?\[([^\[\]]+)\]", re.MULTILINE)
+-HTML_TARGET_RE = re.compile(
+-    r"<[A-Za-z][^>]*?\b(?:href|src)[ \t\r\n]*=[ \t\r\n]*"
+-    r"(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))[^>]*>",
+-    re.IGNORECASE,
+-)
+ ANGLE_TARGET_RE = re.compile(r"<([^<>\s]+)>")
++HTML_TAG_NAME_RE = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)")
++HTML_BLOCK_BOUNDARY_TAGS = frozenset({
++    "address", "article", "aside", "blockquote", "br", "dd", "div", "dl",
++    "dt", "fieldset", "figcaption", "figure", "footer", "form", "h1",
++    "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main",
++    "nav", "ol", "p", "pre", "section", "table", "tbody", "td",
++    "tfoot", "th", "thead", "tr", "ul",
++})
+ BARE_AUTHORITY_PATH_RE = re.compile(
+     r"(?<![A-Za-z0-9_.+/-])((?:(?:\.{1,2}/)+)?(?:(?:docs|governance|schemas|apps|crates|tools|packaging|"
+     r"android-integration|evidence|foundations|planned|platform|profile)/"
+@@ -381,6 +385,135 @@
+     return "".join(chars)
+ 
+ 
++def _is_angle_target(candidate: str) -> bool:
++    """Return whether ``<candidate>`` is a supported Markdown autolink.
++
++    A self-closing HTML tag such as ``<br/>`` is deliberately not classified
++    as a repository-path autolink merely because it contains ``/``.
++    """
++    candidate = html.unescape(candidate)
++    if URL_SCHEME_RE.match(candidate) or candidate.startswith("//"):
++        return True
++    if re.fullmatch(r"/?[A-Za-z][A-Za-z0-9:-]*/?", candidate):
++        return False
++    return "/" in candidate
++
++
++def _angle_target_ranges(source: str) -> set[tuple[int, int]]:
++    return {
++        match.span()
++        for match in ANGLE_TARGET_RE.finditer(source)
++        if _is_angle_target(match.group(1))
++    }
++
++
++class _SingleHtmlTagParser(HTMLParser):
++    """Parse one bounded HTML tag and retain exact href/src attributes."""
++
++    def __init__(self, label: str) -> None:
++        super().__init__(convert_charrefs=True)
++        self.label = label
++        self.events = 0
++        self.tag_name: str | None = None
++        self.targets: list[str] = []
++
++    def _record(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
++        self.events += 1
++        require(self.events == 1, f"{self.label}: HTML fragment contains multiple tags")
++        self.tag_name = tag.casefold()
++        names = [name.casefold() for name, _ in attrs]
++        duplicates = sorted(name for name, count in Counter(names).items() if count > 1)
++        require(not duplicates, f"{self.label}: duplicate HTML attributes {duplicates}")
++        for (name, value), normalized_name in zip(attrs, names):
++            del name
++            if normalized_name not in {"href", "src"}:
++                continue
++            require(value is not None and bool(value.strip()),
++                    f"{self.label}: empty HTML {normalized_name} target")
++            self.targets.append(value)
++
++    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
++        self._record(tag, attrs)
++
++    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
++        self._record(tag, attrs)
++
++    def handle_endtag(self, tag: str) -> None:
++        self.events += 1
++        require(self.events == 1, f"{self.label}: HTML fragment contains multiple tags")
++        self.tag_name = tag.casefold()
++
++    def handle_data(self, data: str) -> None:
++        require(not data.strip(), f"{self.label}: malformed HTML tag fragment")
++
++
++def _html_tags(source: str, label: str) -> list[tuple[int, int, str, list[str]]]:
++    """Return structurally bounded HTML tags and every exact href/src target.
++
++    The scanner respects quotes while locating ``>``.  Attribute names are
++    then parsed by :class:`HTMLParser`, so ``data-href`` and text containing
++    ``href=`` cannot masquerade as the real destination. Duplicate attributes
++    fail closed instead of relying on browser-dependent first/last semantics.
++    """
++    angle_ranges = _angle_target_ranges(source)
++    result: list[tuple[int, int, str, list[str]]] = []
++    index = 0
++    while index < len(source):
++        start = source.find("<", index)
++        if start < 0:
++            break
++        angle = next((span for span in angle_ranges if span[0] == start), None)
++        if angle is not None:
++            index = angle[1]
++            continue
++        name_match = HTML_TAG_NAME_RE.match(source, start)
++        if name_match is None:
++            index = start + 1
++            continue
++        quote: str | None = None
++        cursor = name_match.end()
++        while cursor < len(source):
++            character = source[cursor]
++            if quote is None and character in {"\"", "'"}:
++                quote = character
++            elif quote is not None and character == quote:
++                quote = None
++            elif quote is None and character == ">":
++                break
++            cursor += 1
++        require(cursor < len(source), f"{label}: unterminated HTML tag")
++        end = cursor + 1
++        fragment = source[start:end]
++        parser = _SingleHtmlTagParser(f"{label}: HTML tag at offset {start}")
++        try:
++            parser.feed(fragment)
++            parser.close()
++        except VerificationError:
++            raise
++        except Exception as error:  # HTMLParser can surface malformed entity errors.
++            raise VerificationError(f"{label}: malformed HTML tag: {error}") from error
++        require(parser.events == 1 and parser.tag_name == name_match.group(1).casefold(),
++                f"{label}: malformed or ambiguously parsed HTML tag")
++        result.append((start, end, parser.tag_name, parser.targets))
++        index = end
++    return result
++
++
++def _semantic_without_html(value: str, label: str) -> str:
++    tags = _html_tags(value, label)
++    if not tags:
++        return value
++    output: list[str] = []
++    cursor = 0
++    for start, end, tag_name, _ in tags:
++        output.append(value[cursor:start])
++        if tag_name in HTML_BLOCK_BOUNDARY_TAGS:
++            output.append(" ")
++        cursor = end
++    output.append(value[cursor:])
++    return "".join(output)
++
++
+ def markdown_targets(
+     paragraph: str,
+     *,
+@@ -411,13 +544,16 @@
+             shortcut_ranges.append(match.span())
+     masked = _mask_ranges(masked, shortcut_ranges)
+ 
+-    for match in HTML_TARGET_RE.finditer(paragraph):
+-        targets.append((match.group(1) or match.group(2) or match.group(3),
+-                        "HTML href/src target"))
+-        consumed.append(match.span())
++    html_ranges: list[tuple[int, int]] = []
++    for start, end, _, html_targets in _html_tags(masked, label):
++        html_ranges.append((start, end))
++        for target in html_targets:
++            targets.append((target, "HTML href/src target"))
++    consumed.extend(html_ranges)
++
+     for match in ANGLE_TARGET_RE.finditer(_mask_ranges(paragraph, consumed)):
+         candidate = html.unescape(match.group(1))
+-        if URL_SCHEME_RE.match(candidate) or candidate.startswith("//") or "/" in candidate:
++        if _is_angle_target(candidate):
+             targets.append((candidate, "angle autolink"))
+ 
+     # Any remaining explicit inline/reference delimiter is link-shaped syntax
+@@ -652,14 +788,15 @@
+ 
+     Target extraction still uses the original paragraph. Semantic matching uses
+     rendered link labels rather than Markdown destinations so permitted link
+-    syntax cannot split a visible authority phrase. HTML tags are removed while
+-    visible text remains, entities are decoded, and whitespace/emphasis normalize.
++    syntax cannot split a visible authority phrase. Inline HTML tags preserve
++    text adjacency (``Canoni<b>cal</b>`` renders as ``Canonical``); block and
++    line-break tags retain a whitespace boundary. Entities and emphasis normalize.
+     """
+-    value = html.unescape(paragraph)
+-    value = INLINE_LINK_RE.sub(lambda match: match.group(1), value)
++    value = INLINE_LINK_RE.sub(lambda match: match.group(1), paragraph)
+     value = REFERENCE_LINK_RE.sub(lambda match: match.group(1), value)
+     value = BRACKET_RE.sub(lambda match: match.group(1), value)
+-    value = re.sub(r"<[^>]*>", " ", value)
++    value = _semantic_without_html(value, "semantic authority text")
++    value = html.unescape(value)
+     value = value.translate(str.maketrans("", "", "*_~"))
+     return re.sub(r"\s+", " ", value).strip()
+ 
+--- a/tools/tests/test_repository_authority.py
++++ b/tools/tests/test_repository_authority.py
+@@ -140,6 +140,105 @@
+         with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+             VERIFY.verify(self.root)
+ 
++    def test_html_data_href_cannot_mask_actual_external_href(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + '\nCanonical source for this program: '
++              '<a data-href="docs/START_HERE.md" '
++              'href="https://example.invalid/plan">plan</a>\n'
++        )
++        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
++            VERIFY.verify(self.root)
++
++    def test_html_data_src_cannot_mask_actual_external_src(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + '\nCanonical source for this program: '
++              '<img data-src="docs/START_HERE.md" '
++              'src="https://example.invalid/plan">\n'
++        )
++        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
++            VERIFY.verify(self.root)
++
++    def test_html_title_text_cannot_mask_actual_href(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + "\nCanonical source for this program: "
++              "<a title='href=\"docs/START_HERE.md\"' "
++              "href=\"https://example.invalid/plan\">plan</a>\n"
++        )
++        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
++            VERIFY.verify(self.root)
++
++    def test_html_actual_target_is_checked_in_either_attribute_order(self) -> None:
++        for fragment in (
++            '<a href="https://example.invalid/plan" data-href="docs/START_HERE.md">plan</a>',
++            '<a data-href="docs/START_HERE.md" href="https://example.invalid/plan">plan</a>',
++        ):
++            with self.subTest(fragment=fragment):
++                root = Path(self.temp.name) / ("html-order-" + str(abs(hash(fragment))))
++                shutil.copytree(
++                    ROOT,
++                    root,
++                    ignore=shutil.ignore_patterns(".git", "target", "__pycache__", "*.pyc"),
++                )
++                path = root / "README.md"
++                path.write_text(
++                    path.read_text()
++                    + "\nCanonical source for this program: " + fragment + "\n"
++                )
++                with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
++                    VERIFY.verify(root)
++
++    def test_html_mixed_case_unquoted_href_is_checked(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + "\nCanonical source for this program: "
++              "<A DATA-HREF=docs/START_HERE.md HREF=https://example.invalid/plan>plan</A>\n"
++        )
++        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
++            VERIFY.verify(self.root)
++
++    def test_duplicate_html_target_attribute_fails_closed(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + '\nCanonical source for this program: '
++              '<a href="docs/START_HERE.md" href="https://example.invalid/plan">plan</a>\n'
++        )
++        with self.assertRaisesRegex(VERIFY.VerificationError, "duplicate HTML attributes"):
++            VERIFY.verify(self.root)
++
++    def test_inline_html_split_word_preserves_external_authority_phrase(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + "\nCanoni<b>cal</b> plan: [external](https://example.invalid/plan).\n"
++        )
++        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
++            VERIFY.verify(self.root)
++
++    def test_inline_html_split_word_preserves_local_authority_phrase(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + "\nSource of tr<span>uth</span> is [self](README.md).\n"
++        )
++        with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered target"):
++            VERIFY.verify(self.root)
++
++    def test_inline_html_formatting_keeps_registered_authority_valid(self) -> None:
++        path = self.root / "README.md"
++        path.write_text(
++            path.read_text()
++            + "\nCanoni<b>cal</b> plan: [current](docs/START_HERE.md).\n"
++        )
++        VERIFY.verify(self.root)
++
+     def test_wrapped_inline_authority_link_fails(self) -> None:
+         self.add_forbidden_document()
+         path = self.root / "README.md"
