@@ -1,0 +1,118 @@
+name: ChatGPT PR71 closed-world authority repair
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr71-authority-builder-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-pr71-closed-world-authority-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARRIER_BRANCH: ops/chatgpt-pr71-authority-carrier-20260909
+      CARRIER_COMMIT: 2daf53cfd8e304c4486feea01ab0ecc2adef4e4f
+      TARGET_BRANCH: codex/repository-truth-profiles-20260908
+      EXPECTED_HEAD: c3808287057e2acb131466de7cf89642278b57dc
+      EXPECTED_TREE: 202f4509d4deda35db5d0a08528f76110fd183f0
+      CARRIER_SHA256: 5fb38de90740b91dd6d82fefe7edc604d4892a5da38468d91713e4c2035ad49e
+      GZIP_SHA256: f86fd9d57bd61be7402e905f038f250d0f66215e5ac3b29f0490b20ec660c80f
+      PATCH_SHA256: 4066ffce6b05a37c0092d0c10962c200a7cf17c7c7d5221d04b2aea7e814779b
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Check out exact PR71 head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+          persist-credentials: true
+      - name: Reassemble and apply exact authority repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git fetch --no-tags origin "$CARRIER_BRANCH"
+          test "$(git --no-replace-objects rev-parse FETCH_HEAD)" = "$CARRIER_COMMIT"
+
+          parts=(00 01 02 03)
+          hashes=(
+            5974374eca13dcb807206cc98bf2e7c2c03dacfd43374bd89b49aedd6b18fbff
+            35d925f80c45ab396b5e132622cdcf895c878da54d24a049b21177c5c84d418a
+            5b05269a83d974becc2577903af938c0ff26add553d8ef7d5d09e8e276e33c03
+            24f2e6e077444956ecdfd56d77baf9caf0997114ce6781f5195aa066c0baa565
+          )
+          carrier="${RUNNER_TEMP}/pr71-authority.patch.gz.b64"
+          : > "$carrier"
+          for index in "${!parts[@]}"; do
+            raw="${RUNNER_TEMP}/pr71-part-${parts[$index]}.raw"
+            normalized="${RUNNER_TEMP}/pr71-part-${parts[$index]}.b64"
+            git show "$CARRIER_COMMIT:ops/pr71-authority.part${parts[$index]}" > "$raw"
+            tr -d '\r\n\t ' < "$raw" > "$normalized"
+            echo "${hashes[$index]}  $normalized" | sha256sum --check -
+            cat "$normalized" >> "$carrier"
+          done
+          echo "$CARRIER_SHA256  $carrier" | sha256sum --check -
+          archive="${RUNNER_TEMP}/pr71-authority.patch.gz"
+          patch="${RUNNER_TEMP}/pr71-authority.patch"
+          base64 --decode "$carrier" > "$archive"
+          echo "$GZIP_SHA256  $archive" | sha256sum --check -
+          gzip --test "$archive"
+          gzip --decompress --stdout "$archive" > "$patch"
+          echo "$PATCH_SHA256  $patch" | sha256sum --check -
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
+          expected_paths="$(cat <<'PATHS'
+          README.md
+          crates/trillionnium-agent-direct-tools/README.md
+          docs/START_HERE.md
+          docs/machine/product-profile-catalog.v1.json
+          tools/docs/verify_repository_authority.py
+          tools/tests/test_repository_authority.py
+          PATHS
+          )"
+          actual_paths="$(git diff --name-only | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+      - name: Verify closed Markdown and profile authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/docs/verify_repository_authority.py \
+            tools/tests/test_repository_authority.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest \
+            tools.tests.test_repository_authority \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_owner_open_broker_module_documentation -v
+          python3 -m compileall -q tools
+          git diff --check
+      - name: Commit and publish repaired candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            README.md \
+            crates/trillionnium-agent-direct-tools/README.md \
+            docs/START_HERE.md \
+            docs/machine/product-profile-catalog.v1.json \
+            tools/docs/verify_repository_authority.py \
+            tools/tests/test_repository_authority.py
+          git commit -m 'fix(docs): close repository authority inventory and ownership'
+          git push origin "HEAD:$TARGET_BRANCH"
