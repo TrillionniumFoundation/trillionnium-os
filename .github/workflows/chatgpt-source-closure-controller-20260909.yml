@@ -13,13 +13,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  repair-pr71:
+  converge-pr71:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       TARGET_BRANCH: codex/repository-truth-profiles-20260908
-      CONTROL_BRANCH: ops/chatgpt-pr63-source-export-20260909
-      EXPECTED_HEAD: b2ae0c37c2079cdaf7623ef7799ce4bf35cb13af
+      EXPECTED_HEAD: 162857eac16e8b4109734e598ba2b398fcd0b146
+      EXPECTED_MAIN: 9c3759a37b95aaaf5e9b964a015f56d4195ba8f0
     steps:
       - name: Check out exact PR71 head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -27,32 +27,36 @@ jobs:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH }}
           persist-credentials: true
-      - name: Apply byte-visible repair script
+      - name: Converge protected main without dropping PR71 history
         shell: bash
         run: |
           set -euo pipefail
           test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
-          git fetch --no-tags origin "$CONTROL_BRANCH"
-          git show "origin/$CONTROL_BRANCH:ops/pr71_authority_fix.py" > /tmp/pr71_authority_fix.py
-          python3 /tmp/pr71_authority_fix.py
-          python3 -m py_compile tools/docs/verify_repository_authority.py tools/tests/test_repository_authority.py
-          git diff --check
-      - name: Verify repaired repository authority
+          git fetch --no-tags origin main
+          test "$(git --no-replace-objects rev-parse origin/main)" = "$EXPECTED_MAIN"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git merge --no-ff --no-edit "$EXPECTED_MAIN"
+          test "$(git --no-replace-objects rev-parse HEAD^1)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^2)" = "$EXPECTED_MAIN"
+          git diff --check "$EXPECTED_HEAD"..HEAD
+      - name: Verify converged repository truth candidate
         shell: bash
         run: |
           set -euo pipefail
+          python3 -m py_compile tools/docs/verify_repository_authority.py tools/tests/test_repository_authority.py
           python3 -m unittest tools.tests.test_repository_authority -v
           python3 tools/docs/generate_global_docs.py --check
           python3 tools/docs/verify_repository_authority.py
           python3 tools/docs/verify_global_docs.py
           python3 -m unittest tools.tests.test_verify_global_docs_contracts tools.tests.test_owner_open_broker_module_documentation -v
-      - name: Commit and publish exact PR71 repair
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets
+          cargo clippy --workspace --all-targets -- -D warnings
+      - name: Publish converged PR71 head
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'Qian QI'
-          git config user.email '102159240+ProfHepta@users.noreply.github.com'
-          git add docs/START_HERE.md tools/docs/verify_repository_authority.py tools/tests/test_repository_authority.py
-          git diff --cached --check
-          git commit -m 'docs: close rendered authority target bypasses'
+          git status --porcelain=v1 --untracked-files=all | tee /tmp/status
+          test ! -s /tmp/status
           git push origin "HEAD:$TARGET_BRANCH"
