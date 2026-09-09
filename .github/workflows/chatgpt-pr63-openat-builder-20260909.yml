@@ -1,0 +1,143 @@
+name: ChatGPT PR63 descriptor-root custody repair
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr63-openat-builder-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-pr63-descriptor-root-custody-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARRIER_BRANCH: ops/chatgpt-pr63-openat-carrier-20260909
+      CARRIER_COMMIT: eca76fd0fe0fcc235d1581942340d32e0fd5528c
+      TARGET_BRANCH: codex/perf-harness-isolation-20260908
+      EXPECTED_HEAD: 8d90cbae36df393d97cf643e99eaf262bc342c16
+      EXPECTED_TREE: f2233086c03283f6400eae33751fecfb6d1d2dfd
+      CARRIER_SHA256: af29ad8ce54584827acb6e00ed8b6393358b895a1b25360a94cb2561a1fa2a42
+      GZIP_SHA256: 5bf3d3479283d9b2b322e1b472b2f8a8c1ee9bdb56c64427ac4f6050ccb774bd
+      PATCH_SHA256: 4f6caaa1f1cdc86178845a95ca93980d84e1b9424f1add135a2830166b2a4025
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Check out exact PR63 head
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+          persist-credentials: true
+      - name: Reassemble and apply descriptor-root custody repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -z "$status"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git fetch --no-tags origin "$CARRIER_BRANCH"
+          test "$(git --no-replace-objects rev-parse FETCH_HEAD)" = "$CARRIER_COMMIT"
+
+          parts=(00 01 02 03 04 05 06)
+          hashes=(
+            c10e6bc793ab810ce856ea140a023a8b7330fbdc23e9265218c81f7b888cb4e6
+            a44396a450b778e9297c8b37e8bd63ff3659e38ba198be879c7709eae9fd834b
+            5f63d1354cff69604ca803ec21bf2fe7051ae5844ff8d23d34893cbbbc550506
+            7f58a83bfc727ebdd4e40f1aeffa967c8616fb29500b418a12f3bb1e45d4b122
+            16bea5fae3da502f954b9e3a379c919ad596ce372e93f18541ec78c03fe56e0e
+            fd6f3f940d8616bf3398658cdd9d1e932a0682d2dc0c5e839cc265131b68e7f2
+            7e26278d0ef4f7ee0d4afa46df4c60787fecee0e0dfe678b961db482b1253462
+          )
+          carrier="${RUNNER_TEMP}/pr63-openat.patch.gz.b64"
+          : > "$carrier"
+          for index in "${!parts[@]}"; do
+            raw="${RUNNER_TEMP}/pr63-openat-${parts[$index]}.raw"
+            normalized="${RUNNER_TEMP}/pr63-openat-${parts[$index]}.b64"
+            git show "$CARRIER_COMMIT:ops/pr63-openat.part${parts[$index]}" > "$raw"
+            tr -d '\r\n\t ' < "$raw" > "$normalized"
+            echo "${hashes[$index]}  $normalized" | sha256sum --check -
+            cat "$normalized" >> "$carrier"
+          done
+          echo "$CARRIER_SHA256  $carrier" | sha256sum --check -
+          archive="${RUNNER_TEMP}/pr63-openat.patch.gz"
+          patch="${RUNNER_TEMP}/pr63-openat.patch"
+          base64 --decode "$carrier" > "$archive"
+          echo "$GZIP_SHA256  $archive" | sha256sum --check -
+          gzip --test "$archive"
+          gzip --decompress --stdout "$archive" > "$patch"
+          echo "$PATCH_SHA256  $patch" | sha256sum --check -
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
+          expected_paths="$(cat <<'PATHS'
+          governance/pr41-review-index.v1.json
+          tools/build/README.md
+          tools/build/_verify_host_reproducibility_core.py
+          tools/build/_verify_host_reproducibility_facade.py
+          tools/build/verify_host_reproducibility.py
+          tools/perf/README.md
+          tools/perf/_run_product_baseline_core.py
+          tools/perf/_run_product_baseline_facade.py
+          tools/perf/run_product_baseline.py
+          tools/tests/test_product_baseline_process_group_cleanup.py
+          tools/tests/test_run_product_baseline.py
+          tools/tests/test_verify_host_reproducibility.py
+          PATHS
+          )"
+          actual_paths="$(git diff --name-only | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+      - name: Verify launch trust and descriptor-root selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            tools/perf/run_product_baseline.py \
+            tools/perf/_run_product_baseline_facade.py \
+            tools/perf/_run_product_baseline_core.py \
+            tools/build/verify_host_reproducibility.py \
+            tools/build/_verify_host_reproducibility_facade.py \
+            tools/build/_verify_host_reproducibility_core.py \
+            tools/tests/test_run_product_baseline.py \
+            tools/tests/test_verify_host_reproducibility.py
+          python3 -m unittest \
+            tools.tests.test_run_product_baseline \
+            tools.tests.test_verify_host_reproducibility \
+            tools.tests.test_product_baseline_process_group_cleanup -v
+          python3 tools/perf/run_product_baseline.py --help >/dev/null
+          python3 tools/build/verify_host_reproducibility.py --help >/dev/null
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_owner_open_workflow_exact_head -v
+          python3 -m compileall -q tools
+          git diff --check
+      - name: Commit and publish corrected candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            governance/pr41-review-index.v1.json \
+            tools/build/README.md \
+            tools/build/_verify_host_reproducibility_core.py \
+            tools/build/_verify_host_reproducibility_facade.py \
+            tools/build/verify_host_reproducibility.py \
+            tools/perf/README.md \
+            tools/perf/_run_product_baseline_core.py \
+            tools/perf/_run_product_baseline_facade.py \
+            tools/perf/run_product_baseline.py \
+            tools/tests/test_product_baseline_process_group_cleanup.py \
+            tools/tests/test_run_product_baseline.py \
+            tools/tests/test_verify_host_reproducibility.py
+          git commit -m 'fix(perf): authenticate launchers and descriptor-root selections'
+          git push origin "HEAD:$TARGET_BRANCH"
