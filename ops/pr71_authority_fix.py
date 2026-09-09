@@ -4,7 +4,7 @@ verifier = Path('tools/docs/verify_repository_authority.py')
 source = verifier.read_text(encoding='utf-8')
 
 old = '''BARE_AUTHORITY_PATH_RE = re.compile(\n    r"(?<![A-Za-z0-9_.+/-])((?:(?:docs|governance|schemas|apps|crates|tools|packaging|"\n    r"android-integration|evidence|foundations|planned|platform|profile)/"\n    r"[A-Za-z0-9_.+@~/-]+|README\\.md|SECURITY\\.md|CONTRIBUTING\\.md)"\n    r"(?:#[A-Za-z0-9_.:+-]+)?)"\n)'''
-new = '''BARE_AUTHORITY_PATH_RE = re.compile(\n    r"(?<![A-Za-z0-9_.+/-])((?:(?:\\.{1,2}/)+)?(?:(?:docs|governance|schemas|apps|crates|tools|packaging|"\n    r"android-integration|evidence|foundations|planned|platform|profile|machine|modules|generated)/"\n    r"[A-Za-z0-9_.+@~/-]+|README\\.md|SECURITY\\.md|CONTRIBUTING\\.md|"\n    r"TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN\\.md)(?:#[A-Za-z0-9_.:+-]+)?)"\n)'''
+new = '''BARE_AUTHORITY_PATH_RE = re.compile(\n    r"(?<![A-Za-z0-9_.+/-])((?:(?:\\.{1,2}/)+)?(?:(?:docs|governance|schemas|apps|crates|tools|packaging|"\n    r"android-integration|evidence|foundations|planned|platform|profile)/"\n    r"[A-Za-z0-9_.+@~/-]+|README\\.md|SECURITY\\.md|CONTRIBUTING\\.md|"\n    r"TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN\\.md)(?:#[A-Za-z0-9_.:+-]+)?)"\n)'''
 if old not in source:
     raise SystemExit('bare authority regex subject drifted')
 source = source.replace(old, new, 1)
