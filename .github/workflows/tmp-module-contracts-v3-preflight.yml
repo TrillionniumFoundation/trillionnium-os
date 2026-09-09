@@ -164,6 +164,7 @@ jobs:
           cp "${RUNNER_TEMP:?}/module-contracts-v3-source/test_module_contracts.py" tools/tests/test_module_contracts.py
           chmod 0644 tools/tests/test_module_contracts.py
           python3 "${RUNNER_TEMP:?}/module-contracts-v3-source/generator.py" --root "$PWD" --prepare --install
+          cargo fmt --all
           cargo fmt --all -- --check
           schemars="${RUNNER_TEMP:?}/module-contract-schemars.json"
           cargo run --locked --quiet -p trillionnium-owner-open-types \
