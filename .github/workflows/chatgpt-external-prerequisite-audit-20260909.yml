@@ -1,0 +1,195 @@
+name: ChatGPT L2-L6 prerequisite audit
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-external-prerequisite-audit-20260909
+
+permissions:
+  actions: read
+  contents: read
+  deployments: read
+  issues: write
+
+concurrency:
+  group: chatgpt-l2-l6-prerequisite-audit
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      LEDGER_ISSUE: "68"
+    steps:
+      - name: Audit names and protection metadata only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$REPOSITORY" > "${RUNNER_TEMP}/audit.json" <<'PY'
+          from __future__ import annotations
+          import json
+          import subprocess
+          import sys
+
+          repository = sys.argv[1]
+          levels = ["L2", "L3", "L4", "L5", "L6"]
+          expected_environments = {level: f"owner-open-r5-{level.lower()}" for level in levels}
+          expected_labels = {level: ["self-hosted", "linux", f"owner-open-r5-{level.lower()}"] for level in levels}
+          expected_variables = [
+              "TRILLIONNIUM_QUALIFICATION_CHAIN_PLAN_JSON",
+              *[f"TRILLIONNIUM_{level}_ADAPTER_PATH" for level in levels],
+              *[f"TRILLIONNIUM_{level}_ADAPTER_SHA256" for level in levels],
+              *[f"TRILLIONNIUM_{level}_TARGET_ID" for level in levels],
+              *[f"TRILLIONNIUM_{level}_OPERATOR_IDENTITY" for level in levels],
+          ]
+
+          def api(path: str):
+              completed = subprocess.run(
+                  ["gh", "api", path], text=True, capture_output=True, check=False
+              )
+              if completed.returncode != 0:
+                  return None, {
+                      "available": False,
+                      "returncode": completed.returncode,
+                      "diagnostic": completed.stderr.strip()[:500],
+                  }
+              return json.loads(completed.stdout), {"available": True}
+
+          environments, environment_api = api(f"repos/{repository}/environments?per_page=100")
+          runners, runner_api = api(f"repos/{repository}/actions/runners?per_page=100")
+          variables, variable_api = api(f"repos/{repository}/actions/variables?per_page=100")
+
+          environment_map = {}
+          if isinstance(environments, dict):
+              for item in environments.get("environments", []):
+                  name = item.get("name")
+                  if not isinstance(name, str):
+                      continue
+                  protection = item.get("protection_rules") or []
+                  reviewer_count = 0
+                  for rule in protection:
+                      if rule.get("type") == "required_reviewers":
+                          reviewer_count += len(rule.get("reviewers") or [])
+                  policy = item.get("deployment_branch_policy") or {}
+                  environment_map[name] = {
+                      "required_reviewer_count": reviewer_count,
+                      "protected_branches": policy.get("protected_branches") is True,
+                      "custom_branch_policies": policy.get("custom_branch_policies") is True,
+                  }
+
+          runner_rows = []
+          if isinstance(runners, dict):
+              for item in runners.get("runners", []):
+                  runner_rows.append({
+                      "id": item.get("id"),
+                      "name": item.get("name"),
+                      "os": item.get("os"),
+                      "status": item.get("status"),
+                      "busy": item.get("busy"),
+                      "labels": sorted(label.get("name") for label in item.get("labels", []) if isinstance(label.get("name"), str)),
+                  })
+
+          variable_names = []
+          if isinstance(variables, dict):
+              variable_names = sorted(item.get("name") for item in variables.get("variables", []) if isinstance(item.get("name"), str))
+
+          level_rows = []
+          for level in levels:
+              environment = expected_environments[level]
+              environment_row = environment_map.get(environment)
+              eligible = []
+              for runner in runner_rows:
+                  labels = set(runner["labels"])
+                  if set(expected_labels[level]) <= labels and runner["status"] == "online":
+                      eligible.append({
+                          "id": runner["id"],
+                          "name": runner["name"],
+                          "busy": runner["busy"],
+                          "labels": runner["labels"],
+                      })
+              required_names = [
+                  f"TRILLIONNIUM_{level}_ADAPTER_PATH",
+                  f"TRILLIONNIUM_{level}_ADAPTER_SHA256",
+                  f"TRILLIONNIUM_{level}_TARGET_ID",
+                  f"TRILLIONNIUM_{level}_OPERATOR_IDENTITY",
+              ]
+              missing_variables = sorted(name for name in required_names if name not in variable_names)
+              ready = bool(
+                  environment_row
+                  and environment_row["required_reviewer_count"] > 0
+                  and environment_row["protected_branches"]
+                  and eligible
+                  and not missing_variables
+                  and "TRILLIONNIUM_QUALIFICATION_CHAIN_PLAN_JSON" in variable_names
+              )
+              level_rows.append({
+                  "level": level,
+                  "environment": environment,
+                  "environment_observed": environment_row,
+                  "eligible_online_runners": eligible,
+                  "missing_variable_names": missing_variables,
+                  "ready_for_authorized_dispatch": ready,
+              })
+
+          result = {
+              "schema": "org.trillionnium.external-qualification-prerequisite-audit.v1",
+              "repository": repository,
+              "environment_api": environment_api,
+              "runner_api": runner_api,
+              "variable_api": variable_api,
+              "levels": level_rows,
+              "chain_plan_variable_present": "TRILLIONNIUM_QUALIFICATION_CHAIN_PLAN_JSON" in variable_names,
+              "all_levels_ready": all(row["ready_for_authorized_dispatch"] for row in level_rows),
+              "secret_values_read": False,
+              "target_allocated": False,
+              "candidate_executed": False,
+              "automatic_redispatch": False,
+              "evidence_promoted": False,
+              "public_release": False,
+              "claim_ceiling": "READ_ONLY_PREREQUISITE_DISCOVERY_NO_TARGET_OR_RELEASE_AUTHORITY",
+          }
+          print(json.dumps(result, indent=2, sort_keys=True))
+          PY
+          python3 -m json.tool "${RUNNER_TEMP}/audit.json" >/dev/null
+
+      - name: Record exact fail-closed prerequisite ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "${RUNNER_TEMP}/audit.json" > "${RUNNER_TEMP}/comment.md" <<'PY'
+          from pathlib import Path
+          import json
+          import sys
+          value = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          lines = [
+              "## Automated read-only L2-L6 prerequisite audit",
+              "",
+              f"- environment API available: `{value['environment_api']['available']}`",
+              f"- runner API available: `{value['runner_api']['available']}`",
+              f"- variable API available: `{value['variable_api']['available']}`",
+              f"- chain-plan variable present: `{value['chain_plan_variable_present']}`",
+              f"- every level ready for authorized dispatch: `{value['all_levels_ready']}`",
+              "",
+              "| Level | Environment | Protected + reviewer | Eligible online runner | Missing required variable names | Ready |",
+              "| --- | --- | --- | --- | --- | --- |",
+          ]
+          for row in value["levels"]:
+              environment = row["environment_observed"] or {}
+              protected = bool(environment.get("protected_branches") and environment.get("required_reviewer_count", 0) > 0)
+              runners = ", ".join(item["name"] for item in row["eligible_online_runners"]) or "none observed"
+              missing = ", ".join(row["missing_variable_names"]) or "none"
+              lines.append(
+                  f"| `{row['level']}` | `{row['environment']}` | `{protected}` | {runners} | {missing} | `{row['ready_for_authorized_dispatch']}` |"
+              )
+          lines += [
+              "",
+              "This audit read names and protection metadata only. It did not read secret values, allocate a target, run a candidate, create an evidence receipt, promote a gap, redispatch an uncertain effect, sign an artifact, or authorize release.",
+              "",
+              "`zero_gap` and `public_release` remain false until the real independently reviewed L2→L6 chain exists.",
+          ]
+          print("\n".join(lines))
+          PY
+          gh api -X POST "repos/$REPOSITORY/issues/$LEDGER_ISSUE/comments" -f body="$(cat "${RUNNER_TEMP}/comment.md")" >/dev/null
