@@ -571,8 +571,9 @@ fall back to the host adb executable or fastboot.
 
 The boundary tests cover admission/tier/binding/rotation, private-key and
 transport-selector rejection, exact UDS framing, forged-envelope rejection,
-indeterminate replay, and the production HOLD. The evidence record is
-[`docs/evidence/2026-08-22-adb-transport-boundary-source-audit.md`](../../docs/evidence/2026-08-22-adb-transport-boundary-source-audit.md).
+indeterminate replay, and the production HOLD. The historical source-audit record was removed from the active tree. This
+sealed component carries no current evidence or product authority; Git history
+retains the old record for archaeology.
 
 There is no production `TcpStream`/UDS connector or listener, adb CLI/server launch,
 DNS lookup, TLS/ADB dependency, private key, public-key enrollment, Android

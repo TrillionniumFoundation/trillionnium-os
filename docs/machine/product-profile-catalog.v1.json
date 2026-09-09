@@ -63,16 +63,14 @@
           "id": "shell.exec",
           "owner_module": "MOD-TOOL-RUNTIME",
           "implementation_paths": [
-            "crates/trillionnium-owner-open-tool-bridge",
-            "crates/trillionnium-owner-open-runtime"
+            "crates/trillionnium-owner-open-tool-bridge"
           ]
         },
         {
           "id": "adb.exec",
           "owner_module": "MOD-ADB",
           "implementation_paths": [
-            "packaging/owner-open-adb",
-            "crates/trillionnium-owner-open-tool-bridge"
+            "packaging/owner-open-adb"
           ]
         },
         {
@@ -86,8 +84,7 @@
           "id": "job.pty",
           "owner_module": "MOD-JOB-RUNTIME",
           "implementation_paths": [
-            "crates/trillionnium-owner-open-job-runtime",
-            "crates/trillionnium-owner-open-runtime"
+            "crates/trillionnium-owner-open-job-runtime"
           ]
         },
         {

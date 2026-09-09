@@ -28,11 +28,38 @@ class RepositoryAuthorityTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp.cleanup()
 
+    def profile(self) -> tuple[Path, dict]:
+        path = self.root / VERIFY.PROFILE_PATH
+        return path, json.loads(path.read_text())
+
+    def add_forbidden_document(self) -> str:
+        relative = "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md"
+        (self.root / relative).write_text("# stale\n")
+        return relative
+
     def test_checked_in_repository_passes(self) -> None:
         report = VERIFY.verify(ROOT)
         self.assertEqual(report["profiles"], 2)
-        self.assertGreater(report["markdown_files"], 20)
-        self.assertGreater(report["local_links"], 20)
+        self.assertGreaterEqual(report["markdown_files"], 84)
+        self.assertGreater(report["local_links"], 50)
+
+    def test_root_markdown_is_in_closed_inventory(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\n[missing](docs/DOES_NOT_EXIST.md)\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "target does not exist"):
+            VERIFY.verify(self.root)
+
+    def test_governance_markdown_is_in_closed_inventory(self) -> None:
+        path = self.root / "governance/README.md"
+        path.write_text(path.read_text() + "\n[missing](DOES_NOT_EXIST.md)\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "target does not exist"):
+            VERIFY.verify(self.root)
+
+    def test_new_unregistered_markdown_cannot_declare_external_authority(self) -> None:
+        path = self.root / "UNREGISTERED.md"
+        path.write_text("Canonical source for this program: <https://example.invalid/plan>\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
 
     def test_broken_repository_local_link_fails(self) -> None:
         path = self.root / "apps/trillionnium-owner-open-host/README.md"
@@ -40,15 +67,107 @@ class RepositoryAuthorityTest(unittest.TestCase):
         with self.assertRaisesRegex(VERIFY.VerificationError, "target does not exist"):
             VERIFY.verify(self.root)
 
-    def test_forbidden_historical_link_fails(self) -> None:
-        path = self.root / "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md"
-        path.write_text("# stale\n")
+    def test_forbidden_historical_inline_link_fails(self) -> None:
+        self.add_forbidden_document()
         readme = self.root / "crates/trillionnium-agent-direct-tools/README.md"
         readme.write_text(
             readme.read_text()
-            + "\n[canonical plan](../../docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
+            + "\nCanonical plan: [legacy](../../docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
         )
         with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_reference_style_authority_link_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical plan: [legacy plan][legacy].\n\n"
+              "[legacy]: docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_collapsed_reference_authority_link_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical plan: [legacy][].\n\n"
+              "[legacy]: docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_shortcut_reference_authority_link_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical plan: [legacy].\n\n"
+              "[legacy]: docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_html_authority_link_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + '\nCanonical plan: <a href="docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md">legacy</a>\n'
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_wrapped_inline_authority_link_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical plan: [legacy](\n"
+              "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_bare_authority_path_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical plan is docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md.\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_indented_list_continuation_is_visible(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\n- retained note\n"
+              "    Canonical plan: [legacy](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_external_canonical_link_fails(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical plan: [external](https://example.invalid/plan).\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
+
+    def test_duplicate_reference_definition_fails(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\n[one]: docs/START_HERE.md\n[ONE]: docs/GLOBAL_ARCHITECTURE.md\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "duplicate"):
             VERIFY.verify(self.root)
 
     def test_authority_phrase_cannot_point_to_unregistered_readme(self) -> None:
@@ -58,13 +177,55 @@ class RepositoryAuthorityTest(unittest.TestCase):
             VERIFY.verify(self.root)
 
     def test_active_profile_cannot_select_sealed_component(self) -> None:
-        path = self.root / VERIFY.PROFILE_PATH
-        value = json.loads(path.read_text())
+        path, value = self.profile()
         active = value["profiles"][0]
-        active["selected_cargo_components"].append("crates/trillionnium-agent-direct-tools")
-        active["selected_implementation_paths"].append("crates/trillionnium-agent-direct-tools")
+        active["selected_implementation_paths"].append(
+            "crates/trillionnium-agent-direct-tools"
+        )
         path.write_text(json.dumps(value))
-        with self.assertRaisesRegex(VERIFY.VerificationError, "default_source_closure"):
+        with self.assertRaisesRegex(VERIFY.VerificationError, "overlaps sealed"):
+            VERIFY.verify(self.root)
+
+    def test_active_profile_cannot_use_broad_ancestor(self) -> None:
+        path, value = self.profile()
+        active = value["profiles"][0]
+        active["selected_implementation_paths"] = [
+            "tools" if item == "tools/owner-open" else item
+            for item in active["selected_implementation_paths"]
+        ]
+        path.write_text(json.dumps(value))
+        with self.assertRaisesRegex(VERIFY.VerificationError, "not an exact component or module root"):
+            VERIFY.verify(self.root)
+
+    def test_active_profile_cannot_use_child_only_underselection(self) -> None:
+        child = self.root / "tools/owner-open/narrow"
+        child.mkdir()
+        path, value = self.profile()
+        active = value["profiles"][0]
+        active["selected_implementation_paths"] = [
+            "tools/owner-open/narrow" if item == "tools/owner-open" else item
+            for item in active["selected_implementation_paths"]
+        ]
+        path.write_text(json.dumps(value))
+        with self.assertRaisesRegex(VERIFY.VerificationError, "not an exact component or module root"):
+            VERIFY.verify(self.root)
+
+    def test_capability_owner_must_own_every_implementation_path(self) -> None:
+        path, value = self.profile()
+        capability = value["profiles"][0]["offered_capabilities"][0]
+        capability["owner_module"] = "MOD-EVENT-STORE"
+        path.write_text(json.dumps(value))
+        with self.assertRaisesRegex(VERIFY.VerificationError, "ownership differs"):
+            VERIFY.verify(self.root)
+
+    def test_cross_module_implementation_substitution_fails(self) -> None:
+        path, value = self.profile()
+        capability = value["profiles"][0]["offered_capabilities"][0]
+        capability["implementation_paths"] = [
+            "crates/trillionnium-owner-open-event-store"
+        ]
+        path.write_text(json.dumps(value))
+        with self.assertRaisesRegex(VERIFY.VerificationError, "ownership differs"):
             VERIFY.verify(self.root)
 
     def test_semantic_capability_requires_profile_owner(self) -> None:
@@ -79,8 +240,7 @@ class RepositoryAuthorityTest(unittest.TestCase):
             VERIFY.verify(self.root)
 
     def test_sealed_profile_cannot_offer_behavior(self) -> None:
-        path = self.root / VERIFY.PROFILE_PATH
-        value = json.loads(path.read_text())
+        path, value = self.profile()
         sealed = value["profiles"][1]
         sealed["selected_modules"] = ["MOD-PROTOCOL"]
         sealed["selected_implementation_paths"] = ["crates/trillionnium-owner-open-types"]

@@ -1,6 +1,6 @@
 # Trillionnium OS
 
-Canonical source for the Trillionnium OS owner-open control plane, Root Linux
+Repository source tree for the Trillionnium OS owner-open control plane, Root Linux
 packaging, Android integration overlays and evidence-qualified release program.
 
 The active development and qualification entrypoint is

@@ -1,30 +1,69 @@
 #!/usr/bin/env python3
-"""Verify repository-wide links, authority references and product profiles."""
+"""Verify repository-wide links, authority references and product profiles.
+
+The verifier deliberately uses a closed, dependency-free Markdown policy. Every
+repository Markdown file outside explicitly ephemeral build directories is
+visited exactly once. Supported links are inline links/images, full/collapsed/
+shortcut references, angle autolinks and HTML href/src attributes. Unsupported
+or unresolved link-shaped syntax fails closed instead of becoming invisible to
+an authority check.
+"""
 from __future__ import annotations
 
 from collections import Counter
+import html
 import json
 from pathlib import Path, PurePosixPath
 import re
+import subprocess
 import sys
 from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
-SCAN_ROOTS = ("docs", "apps", "crates", "tools", "packaging", "android-integration")
+MARKDOWN_EXCLUDED_DIRECTORIES = frozenset({
+    ".git", "target", ".venv", "venv", "__pycache__", ".pytest_cache",
+})
 PROFILE_PATH = "docs/machine/product-profile-catalog.v1.json"
 LIFECYCLE_PATH = "governance/component-lifecycle.v1.json"
 CAPABILITY_BEGIN = "<!-- PROFILE_CAPABILITIES_BEGIN -->"
 CAPABILITY_END = "<!-- PROFILE_CAPABILITIES_END -->"
 CAPABILITY_RE = re.compile(r"^- `([a-z][a-z0-9]*(?:[.-][a-z0-9]+)+)`$")
-MARKDOWN_LINK_RE = re.compile(
-    r"(?<!!)\[[^\]\n]+\]\(\s*(?:<([^>\n]+)>|([^\s)]+))(?:\s+['\"][^\n]*['\"])?\s*\)"
-)
 AUTHORITY_PHRASE_RE = re.compile(
     r"\b(?:canonical (?:plan|document|status|source)|authoritative (?:plan|document|status|source)|"
     r"source of truth|current (?:plan|status|state|authority))\b",
     re.IGNORECASE,
 )
+DECLARATIVE_AUTHORITY_RE = re.compile(
+    r"(?:\bcanonical (?:plan|document|status|source)\b\s+(?:for\b|is\b)|"
+    r"\bauthoritative (?:plan|document|status|source)\b\s+(?:for\b|is\b)|"
+    r"\bsource of truth\b\s*(?:is\b|:)|"
+    r"\bcurrent authority\b\s*(?:is\b|:))",
+    re.IGNORECASE,
+)
 URL_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
+REFERENCE_DEFINITION_RE = re.compile(
+    r"^ {0,3}\[([^\]\n]+)\]:[ \t]*(?:<([^>\n]+)>|([^\s]+))"
+    r"(?:[ \t]+(?:\"[^\"\n]*\"|'[^'\n]*'|\([^\)\n]*\)))?[ \t]*$"
+)
+INLINE_LINK_RE = re.compile(
+    r"!?\[([^\[\]]+)\]\([ \t\r\n]*(?:<([^<>\n]+)>|([^\s\)]+))"
+    r"(?:[ \t\r\n]+(?:\"[^\"\n]*\"|'[^'\n]*'|\([^\)\n]*\)))?[ \t\r\n]*\)",
+    re.MULTILINE,
+)
+REFERENCE_LINK_RE = re.compile(r"!?\[([^\[\]]+)\]\[([^\[\]]*)\]", re.MULTILINE)
+BRACKET_RE = re.compile(r"!?\[([^\[\]]+)\]", re.MULTILINE)
+HTML_TARGET_RE = re.compile(
+    r"<[A-Za-z][^>]*?\b(?:href|src)[ \t\r\n]*=[ \t\r\n]*"
+    r"(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))[^>]*>",
+    re.IGNORECASE,
+)
+ANGLE_TARGET_RE = re.compile(r"<([^<>\s]+)>")
+BARE_AUTHORITY_PATH_RE = re.compile(
+    r"(?<![A-Za-z0-9_.+/-])((?:(?:docs|governance|schemas|apps|crates|tools|packaging|"
+    r"android-integration|evidence|foundations|planned|platform|profile)/"
+    r"[A-Za-z0-9_.+@~/-]+|README\.md|SECURITY\.md|CONTRIBUTING\.md)"
+    r"(?:#[A-Za-z0-9_.:+-]+)?)"
+)
 PROFILE_KEYS = {
     "schema", "program_revision", "default_profile", "semantic_contract",
     "component_lifecycle", "profiles",
@@ -114,63 +153,150 @@ def normalized_repository_path(root: Path, value: Any, label: str) -> tuple[str,
     return pure.as_posix(), candidate
 
 
-def visible_markdown(source: str) -> list[str]:
-    """Return prose lines while excluding fenced/indented code and HTML comments."""
-    lines: list[str] = []
-    marker: str | None = None
-    marker_len = 0
-    in_comment = False
-    for raw in source.splitlines():
-        line = raw
+def _strip_html_comments(line: str, in_comment: bool) -> tuple[str, bool]:
+    output = ""
+    remaining = line
+    while True:
         if in_comment:
-            if "-->" in line:
-                line = line.split("-->", 1)[1]
-                in_comment = False
-            else:
-                continue
-        while "<!--" in line:
-            before, after = line.split("<!--", 1)
-            if "-->" in after:
-                after = after.split("-->", 1)[1]
-                line = before + after
-            else:
-                line = before
-                in_comment = True
-                break
+            end = remaining.find("-->")
+            if end < 0:
+                return output, True
+            remaining = remaining[end + 3:]
+            in_comment = False
+        start = remaining.find("<!--")
+        if start < 0:
+            return output + remaining, in_comment
+        output += remaining[:start]
+        remaining = remaining[start + 4:]
+        in_comment = True
+
+
+def _strip_inline_code(line: str) -> str:
+    chars = list(line)
+    index = 0
+    while index < len(chars):
+        if chars[index] != "`":
+            index += 1
+            continue
+        end_run = index
+        while end_run < len(chars) and chars[end_run] == "`":
+            end_run += 1
+        marker = "`" * (end_run - index)
+        closing = line.find(marker, end_run)
+        if closing < 0:
+            index = end_run
+            continue
+        for position in range(index, closing + len(marker)):
+            chars[position] = " "
+        index = closing + len(marker)
+    return "".join(chars)
+
+
+def visible_markdown(source: str) -> list[tuple[int, str]]:
+    """Return visible prose with source line numbers.
+
+    Fenced code, true top-level indented code and HTML comments are excluded.
+    Four-space list continuations remain visible; this is the authority-bearing
+    case that the previous line-oriented filter incorrectly discarded.
+    """
+    lines: list[tuple[int, str]] = []
+    fence_character: str | None = None
+    fence_length = 0
+    in_comment = False
+    list_content_indent: int | None = None
+    for line_number, raw in enumerate(source.splitlines(), start=1):
+        line, in_comment = _strip_html_comments(raw, in_comment)
         stripped = line.lstrip(" ")
         indent = len(line) - len(stripped)
-        if marker is None:
-            match = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
-            if match:
-                marker = match.group(1)[0]
-                marker_len = len(match.group(1))
+        if fence_character is None:
+            opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+            if opening:
+                marker = opening.group(1)
+                if marker[0] == "`":
+                    require("`" not in opening.group(2),
+                            "backtick fence info string contains a backtick")
+                fence_character = marker[0]
+                fence_length = len(marker)
                 continue
-            if indent >= 4:
-                continue
-            # Inline code cannot contain a Markdown link that should carry authority.
-            line = re.sub(r"(`+)(?:(?!\1).)*\1", "", line)
-            lines.append(line)
         else:
-            close = re.match(rf"^ {{0,3}}{re.escape(marker)}{{{marker_len},}}\s*$", line)
-            if close:
-                marker = None
-                marker_len = 0
-    require(marker is None, "unterminated fenced code block in Markdown input")
+            closing = re.match(
+                rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
+                line,
+            )
+            if closing:
+                fence_character = None
+                fence_length = 0
+            continue
+
+        if not line.strip():
+            lines.append((line_number, ""))
+            continue
+        item = re.match(r"^( {0,3})(?:[-+*]|\d{1,9}[.)])([ \t]+)", line)
+        if item:
+            list_content_indent = item.end()
+        elif list_content_indent is not None and indent < list_content_indent:
+            list_content_indent = None
+        if indent >= 4 and (list_content_indent is None or indent < list_content_indent):
+            continue
+        lines.append((line_number, _strip_inline_code(line)))
+    require(fence_character is None, "unterminated fenced code block in Markdown input")
     require(not in_comment, "unterminated HTML comment in Markdown input")
     return lines
 
 
+def _filesystem_markdown_inventory(root: Path) -> dict[str, Path]:
+    result: dict[str, Path] = {}
+    for path in root.rglob("*.md"):
+        relative_parts = path.relative_to(root).parts
+        if any(part in MARKDOWN_EXCLUDED_DIRECTORIES for part in relative_parts):
+            continue
+        relative = path.relative_to(root).as_posix()
+        require(relative not in result, f"Markdown inventory repeats {relative}")
+        require(path.is_file() and not path.is_symlink(),
+                f"Markdown source is not a regular non-symlink file: {relative}")
+        result[relative] = path
+    return result
+
+
+def _tracked_markdown_inventory(root: Path) -> set[str] | None:
+    if not (root / ".git").exists():
+        return None
+    completed = subprocess.run(
+        ["git", "--no-replace-objects", "-C", str(root), "ls-files", "-z", "--", "*.md"],
+        check=False,
+        capture_output=True,
+        timeout=30,
+    )
+    require(completed.returncode == 0,
+            f"cannot enumerate tracked Markdown: {completed.stderr.decode(errors='replace').strip()}")
+    tracked: set[str] = set()
+    for raw in completed.stdout.split(b"\0"):
+        if not raw:
+            continue
+        try:
+            relative = raw.decode("utf-8")
+        except UnicodeDecodeError as error:
+            raise VerificationError(f"tracked Markdown path is not UTF-8: {error}") from error
+        require(relative not in tracked, f"tracked Markdown inventory repeats {relative}")
+        tracked.add(relative)
+    return tracked
+
+
 def markdown_files(root: Path) -> Iterable[Path]:
-    for directory in SCAN_ROOTS:
-        base = root / directory
-        require(base.is_dir() and not base.is_symlink(), f"scan root missing or unsafe: {directory}")
-        for path in sorted(base.rglob("*.md")):
-            require(not path.is_symlink(), f"Markdown source is a symlink: {path.relative_to(root)}")
-            yield path
+    filesystem = _filesystem_markdown_inventory(root)
+    tracked = _tracked_markdown_inventory(root)
+    if tracked is not None:
+        require(
+            set(filesystem) == tracked,
+            "closed Markdown inventory differs from tracked source; "
+            f"untracked={sorted(set(filesystem)-tracked)}, missing={sorted(tracked-set(filesystem))}",
+        )
+    for relative in sorted(filesystem):
+        yield filesystem[relative]
 
 
-def resolve_markdown_target(root: Path, source: Path, target: str, label: str) -> str | None:
-    target = target.strip()
+def resolve_markdown_target(root: Path, source: Path, target: str, label: str) -> str:
+    target = html.unescape(target.strip())
     if not target or target.startswith("#"):
         return source.relative_to(root).as_posix()
     require("\\" not in target and "%" not in target and "\x00" not in target,
@@ -197,6 +323,113 @@ def resolve_markdown_target(root: Path, source: Path, target: str, label: str) -
     return resolved.relative_to(root).as_posix()
 
 
+def resolve_bare_repository_target(root: Path, target: str, label: str) -> str:
+    target = target.split("#", 1)[0]
+    normalized, candidate = normalized_repository_path(root, target, label)
+    require(candidate.exists(), f"{label} target does not exist: {target}")
+    return normalized
+
+
+def normalize_reference_label(value: str) -> str:
+    return re.sub(r"[ \t\r\n]+", " ", value.strip()).casefold()
+
+
+def _reference_definitions(
+    visible_lines: list[tuple[int, str]], relative: str,
+) -> tuple[dict[str, str], set[int]]:
+    definitions: dict[str, str] = {}
+    definition_lines: set[int] = set()
+    for line_number, line in visible_lines:
+        match = REFERENCE_DEFINITION_RE.fullmatch(line)
+        if not match:
+            continue
+        name = normalize_reference_label(match.group(1))
+        require(name and name not in definitions,
+                f"{relative}: duplicate or empty reference definition {name!r}")
+        definitions[name] = match.group(2) or match.group(3)
+        definition_lines.add(line_number)
+    return definitions, definition_lines
+
+
+def _paragraphs(
+    visible_lines: list[tuple[int, str]], definition_lines: set[int],
+) -> list[tuple[int, str]]:
+    result: list[tuple[int, str]] = []
+    buffer: list[str] = []
+    start = 1
+    for line_number, line in visible_lines:
+        if line_number in definition_lines:
+            continue
+        if not line.strip():
+            if buffer:
+                result.append((start, "\n".join(buffer)))
+                buffer = []
+            continue
+        if not buffer:
+            start = line_number
+        buffer.append(line)
+    if buffer:
+        result.append((start, "\n".join(buffer)))
+    return result
+
+
+def _mask_ranges(source: str, ranges: list[tuple[int, int]]) -> str:
+    chars = list(source)
+    for start, end in ranges:
+        for index in range(start, end):
+            chars[index] = " "
+    return "".join(chars)
+
+
+def markdown_targets(
+    paragraph: str,
+    *,
+    definitions: dict[str, str],
+    label: str,
+) -> list[tuple[str, str]]:
+    """Return (target, syntax) for every supported link in one paragraph."""
+    targets: list[tuple[str, str]] = []
+    consumed: list[tuple[int, int]] = []
+    for match in INLINE_LINK_RE.finditer(paragraph):
+        targets.append((match.group(2) or match.group(3), "inline Markdown link"))
+        consumed.append(match.span())
+    masked = _mask_ranges(paragraph, consumed)
+
+    reference_ranges: list[tuple[int, int]] = []
+    for match in REFERENCE_LINK_RE.finditer(masked):
+        name = normalize_reference_label(match.group(2) or match.group(1))
+        require(name in definitions, f"{label}: unresolved reference link {name!r}")
+        targets.append((definitions[name], "reference Markdown link"))
+        reference_ranges.append(match.span())
+    masked = _mask_ranges(masked, reference_ranges)
+
+    shortcut_ranges: list[tuple[int, int]] = []
+    for match in BRACKET_RE.finditer(masked):
+        name = normalize_reference_label(match.group(1))
+        if name in definitions:
+            targets.append((definitions[name], "shortcut Markdown link"))
+            shortcut_ranges.append(match.span())
+    masked = _mask_ranges(masked, shortcut_ranges)
+
+    for match in HTML_TARGET_RE.finditer(paragraph):
+        targets.append((match.group(1) or match.group(2) or match.group(3),
+                        "HTML href/src target"))
+        consumed.append(match.span())
+    for match in ANGLE_TARGET_RE.finditer(_mask_ranges(paragraph, consumed)):
+        candidate = html.unescape(match.group(1))
+        if URL_SCHEME_RE.match(candidate) or candidate.startswith("//") or "/" in candidate:
+            targets.append((candidate, "angle autolink"))
+
+    # Any remaining explicit inline/reference delimiter is link-shaped syntax
+    # outside the closed parser and therefore cannot silently evade validation.
+    residual = _mask_ranges(masked, consumed)
+    require(re.search(r"\]\s*\(", residual) is None,
+            f"{label}: unsupported inline-link syntax")
+    require(re.search(r"\]\s*\[", residual) is None,
+            f"{label}: unsupported reference-link syntax")
+    return targets
+
+
 def semantic_capabilities(root: Path) -> list[str]:
     source = (root / "docs/PRODUCT_SEMANTICS.md").read_text(encoding="utf-8")
     require(source.count(CAPABILITY_BEGIN) == 1 and source.count(CAPABILITY_END) == 1,
@@ -215,8 +448,12 @@ def semantic_capabilities(root: Path) -> list[str]:
     return values
 
 
-def path_covers(owner: str, selected: str) -> bool:
-    return owner == selected or owner.startswith(selected + "/") or selected.startswith(owner + "/")
+def path_is_within(child: str, parent: str) -> bool:
+    return child == parent or child.startswith(parent.rstrip("/") + "/")
+
+
+def paths_overlap(left: str, right: str) -> bool:
+    return path_is_within(left, right) or path_is_within(right, left)
 
 
 def verify_profiles(root: Path) -> dict[str, Any]:
@@ -233,14 +470,35 @@ def verify_profiles(root: Path) -> dict[str, Any]:
             "component lifecycle binding drift")
 
     modules = load_json(root / "docs/machine/module-catalog.v1.json")
-    module_map = {text(item.get("id"), "module id"): item for item in modules.get("modules", [])}
-    require(len(module_map) == len(modules.get("modules", [])), "module catalog repeats an id")
+    module_items = modules.get("modules", [])
+    require(isinstance(module_items, list) and module_items, "module catalog has no modules")
+    module_map = {text(item.get("id"), "module id"): item for item in module_items}
+    require(len(module_map) == len(module_items), "module catalog repeats an id")
+    module_paths: dict[str, list[str]] = {}
+    for module_id, item in module_map.items():
+        paths: list[str] = []
+        for index, raw_path in enumerate(string_list(item.get("paths"), f"{module_id}.paths")):
+            normalized, candidate = normalized_repository_path(
+                root, raw_path, f"{module_id}.paths[{index}]"
+            )
+            require(candidate.exists(), f"{module_id} path does not exist: {normalized}")
+            paths.append(normalized)
+        module_paths[module_id] = paths
+
     default_components = string_list(modules.get("default_source_closure"), "module default_source_closure")
+    default_components = [
+        normalized_repository_path(root, value, "module default_source_closure")[0]
+        for value in default_components
+    ]
     lifecycle = load_json(lifecycle_file)
     retained = string_list(
         [item.get("path") for item in lifecycle.get("non_product_members", [])],
         "lifecycle retained components",
     )
+    retained = [
+        normalized_repository_path(root, value, "lifecycle retained component")[0]
+        for value in retained
+    ]
 
     profiles = catalog["profiles"]
     require(isinstance(profiles, list) and bool(profiles), "profiles must be a non-empty array")
@@ -263,18 +521,49 @@ def verify_profiles(root: Path) -> dict[str, Any]:
             default_ids.append(profile_id)
         text(raw["claim_ceiling"], f"{profile_id}.claim_ceiling")
         selected_modules = string_list(raw["selected_modules"], f"{profile_id}.selected_modules", allow_empty=True)
-        selected_cargo = string_list(raw["selected_cargo_components"], f"{profile_id}.selected_cargo_components", allow_empty=True)
-        selected_paths = string_list(raw["selected_implementation_paths"], f"{profile_id}.selected_implementation_paths", allow_empty=True)
-        retained_components = string_list(raw["retained_components"], f"{profile_id}.retained_components", allow_empty=True)
+        selected_cargo_raw = string_list(raw["selected_cargo_components"], f"{profile_id}.selected_cargo_components", allow_empty=True)
+        selected_paths_raw = string_list(raw["selected_implementation_paths"], f"{profile_id}.selected_implementation_paths", allow_empty=True)
+        retained_raw = string_list(raw["retained_components"], f"{profile_id}.retained_components", allow_empty=True)
         string_list(raw["evidence_requirements"], f"{profile_id}.evidence_requirements")
-        for path_index, path in enumerate(selected_paths + retained_components):
-            _, candidate = normalized_repository_path(root, path, f"{profile_id}.path[{path_index}]")
-            require(candidate.exists(), f"{profile_id} path does not exist: {path}")
+
+        selected_cargo: list[str] = []
+        for path_index, value in enumerate(selected_cargo_raw):
+            normalized, candidate = normalized_repository_path(root, value, f"{profile_id}.selected_cargo[{path_index}]")
+            require(candidate.exists(), f"{profile_id} Cargo path does not exist: {normalized}")
+            selected_cargo.append(normalized)
+        selected_paths: list[str] = []
+        for path_index, value in enumerate(selected_paths_raw):
+            normalized, candidate = normalized_repository_path(root, value, f"{profile_id}.selected_path[{path_index}]")
+            require(candidate.exists(), f"{profile_id} path does not exist: {normalized}")
+            selected_paths.append(normalized)
+        retained_components: list[str] = []
+        for path_index, value in enumerate(retained_raw):
+            normalized, candidate = normalized_repository_path(root, value, f"{profile_id}.retained[{path_index}]")
+            require(candidate.exists(), f"{profile_id} retained path does not exist: {normalized}")
+            retained_components.append(normalized)
+
+        for selected in selected_paths:
+            require(not any(paths_overlap(selected, sealed) for sealed in retained),
+                    f"{profile_id} selected path overlaps sealed lifecycle component: {selected}")
+        require(set(selected_cargo).issubset(set(selected_paths)),
+                f"{profile_id} selected implementation graph omits a selected Cargo component")
+
         for module_id in selected_modules:
             require(module_id in module_map, f"{profile_id} selects unknown module {module_id}")
-            for owner_path in string_list(module_map[module_id].get("paths"), f"{module_id}.paths"):
-                require(any(path_covers(owner_path, selected) for selected in selected_paths),
-                        f"{profile_id} selects {module_id} without implementation path {owner_path}")
+        allowed_selected_roots = set(selected_cargo)
+        for module_id in selected_modules:
+            allowed_selected_roots.update(module_paths[module_id])
+        for selected in selected_paths:
+            require(selected in allowed_selected_roots,
+                    f"{profile_id} selected path is not an exact component or module root: {selected}")
+        for module_id in selected_modules:
+            for owner_path in module_paths[module_id]:
+                covered = owner_path in selected_paths or any(
+                    cargo in selected_paths and path_is_within(owner_path, cargo)
+                    for cargo in selected_cargo
+                )
+                require(covered,
+                        f"{profile_id} selects {module_id} without complete path {owner_path}")
 
         capabilities = raw["offered_capabilities"]
         require(isinstance(capabilities, list), f"{profile_id}.offered_capabilities must be an array")
@@ -289,14 +578,31 @@ def verify_profiles(root: Path) -> dict[str, Any]:
             owner_module = text(capability["owner_module"], f"{capability_id}.owner_module")
             require(owner_module in selected_modules,
                     f"{profile_id} capability {capability_id} owner is not selected")
-            implementation_paths = string_list(
+            implementations = string_list(
                 capability["implementation_paths"], f"{capability_id}.implementation_paths"
             )
-            for implementation in implementation_paths:
-                _, candidate = normalized_repository_path(root, implementation, f"{capability_id}.implementation")
+            normalized_implementations: list[str] = []
+            for implementation_index, implementation in enumerate(implementations):
+                normalized, candidate = normalized_repository_path(
+                    root, implementation, f"{capability_id}.implementation[{implementation_index}]"
+                )
                 require(candidate.exists(), f"{capability_id} implementation path does not exist")
-                require(any(path_covers(implementation, selected) for selected in selected_paths),
-                        f"{capability_id} implementation is outside selected graph: {implementation}")
+                require(any(path_is_within(normalized, selected) for selected in selected_paths),
+                        f"{capability_id} implementation is outside selected graph: {normalized}")
+                require(not any(paths_overlap(normalized, sealed) for sealed in retained),
+                        f"{capability_id} implementation overlaps sealed lifecycle path: {normalized}")
+                owners = {
+                    candidate_module
+                    for candidate_module in selected_modules
+                    if any(path_is_within(normalized, owner_path)
+                           for owner_path in module_paths[candidate_module])
+                }
+                require(owners == {owner_module},
+                        f"{capability_id} implementation ownership differs: "
+                        f"declared={owner_module}, observed={sorted(owners)}")
+                normalized_implementations.append(normalized)
+            require(len(normalized_implementations) == len(set(normalized_implementations)),
+                    f"{capability_id} repeats an implementation path")
         require(len(capability_ids) == len(set(capability_ids)),
                 f"{profile_id} repeats a capability")
 
@@ -341,53 +647,92 @@ def verify_profiles(root: Path) -> dict[str, Any]:
     return catalog
 
 
+def _registered_authority(target: str, authority_targets: set[str]) -> bool:
+    return (
+        target in authority_targets
+        or target == "docs/machine"
+        or target.startswith("docs/machine/")
+        or target == "docs/modules"
+        or target.startswith("docs/modules/")
+        or target == "docs/generated"
+        or target.startswith("docs/generated/")
+        or target == "schemas"
+        or target.startswith("schemas/")
+    )
+
+
 def verify_markdown(root: Path, profile_catalog: dict[str, Any]) -> tuple[int, int]:
+    del profile_catalog  # The profile is verified independently; no hidden scan roots come from it.
     docset = load_json(root / "docs/machine/doc-set.v1.json")
     forbidden_paths = string_list(docset.get("forbidden_paths"), "doc-set.forbidden_paths")
     forbidden_markers = string_list(docset.get("forbidden_content_markers"), "doc-set.forbidden_content_markers")
     authority_targets = set(string_list(docset.get("authority_order"), "doc-set.authority_order"))
     authority_targets.update({PROFILE_PATH, LIFECYCLE_PATH, "docs/generated/CURRENT_STATE.md"})
     link_count = 0
-    file_count = 0
-    for path in markdown_files(root):
-        file_count += 1
+    files = list(markdown_files(root))
+    require(len(files) == len({path.relative_to(root).as_posix() for path in files}),
+            "Markdown inventory is not one-to-one")
+    for path in files:
         relative = path.relative_to(root).as_posix()
         source = path.read_text(encoding="utf-8")
-        lines = visible_markdown(source)
-        visible = "\n".join(lines)
-        if relative != "docs/machine/doc-set.v1.json":
-            for marker in forbidden_markers:
-                require(marker not in visible,
-                        f"forbidden legacy marker {marker!r} appears in {relative}")
-        for line_number, line in enumerate(lines, start=1):
-            local_targets: list[str] = []
-            for match in MARKDOWN_LINK_RE.finditer(line):
-                target = match.group(1) or match.group(2)
-                if URL_SCHEME_RE.match(target) or target.startswith("//"):
+        visible_lines = visible_markdown(source)
+        visible = "\n".join(line for _, line in visible_lines)
+        for marker in forbidden_markers:
+            require(marker not in visible,
+                    f"forbidden legacy marker {marker!r} appears in {relative}")
+        definitions, definition_lines = _reference_definitions(visible_lines, relative)
+        for paragraph_line, paragraph in _paragraphs(visible_lines, definition_lines):
+            targets = markdown_targets(
+                paragraph,
+                definitions=definitions,
+                label=f"{relative}: paragraph at visible line {paragraph_line}",
+            )
+            authority_phrase = AUTHORITY_PHRASE_RE.search(paragraph) is not None
+            if authority_phrase:
+                for match in BARE_AUTHORITY_PATH_RE.finditer(paragraph):
+                    targets.append((match.group(1).rstrip(".,;:!?"), "bare authority path"))
+            resolved_targets: list[tuple[str, str]] = []
+            external_targets: list[tuple[str, str]] = []
+            seen: set[tuple[str, str]] = set()
+            for target, syntax in targets:
+                item = (target, syntax)
+                if item in seen:
                     continue
-                resolved = resolve_markdown_target(
-                    root, path, target, f"{relative}: visible line {line_number} Markdown link"
-                )
-                assert resolved is not None
+                seen.add(item)
+                normalized_target = html.unescape(target.strip())
+                if URL_SCHEME_RE.match(normalized_target) or normalized_target.startswith("//"):
+                    external_targets.append((normalized_target, syntax))
+                    continue
+                if syntax == "bare authority path":
+                    resolved = resolve_bare_repository_target(
+                        root, normalized_target,
+                        f"{relative}: visible line {paragraph_line} {syntax}",
+                    )
+                else:
+                    resolved = resolve_markdown_target(
+                        root, path, normalized_target,
+                        f"{relative}: visible line {paragraph_line} {syntax}",
+                    )
                 link_count += 1
-                local_targets.append(resolved)
+                resolved_targets.append((resolved, syntax))
                 for forbidden in forbidden_paths:
                     require(
                         resolved != forbidden and not resolved.startswith(forbidden.rstrip("/") + "/"),
                         f"{relative}: link targets forbidden authority path {resolved}",
                     )
-            if AUTHORITY_PHRASE_RE.search(line) and local_targets:
-                for target in local_targets:
-                    permitted = (
-                        target in authority_targets
-                        or target.startswith("docs/machine/")
-                        or target.startswith("docs/modules/")
-                        or target.startswith("docs/generated/")
-                        or target.startswith("schemas/")
+            if authority_phrase:
+                if external_targets:
+                    raise VerificationError(
+                        f"{relative}: authority phrase points to external target "
+                        f"{external_targets[0][0]}"
                     )
-                    require(permitted,
+                for target, _ in resolved_targets:
+                    require(_registered_authority(target, authority_targets),
                             f"{relative}: authority phrase points to unregistered target {target}")
-    return file_count, link_count
+                if DECLARATIVE_AUTHORITY_RE.search(paragraph) and not resolved_targets:
+                    require(_registered_authority(relative, authority_targets),
+                            f"{relative}: unregistered document makes an unbound authority declaration")
+    return len(files), link_count
 
 
 def verify(root: Path = ROOT) -> dict[str, int]:
@@ -400,7 +745,7 @@ def verify(root: Path = ROOT) -> dict[str, int]:
 def main() -> int:
     try:
         report = verify()
-    except (VerificationError, OSError, UnicodeError, KeyError, TypeError) as error:
+    except (VerificationError, OSError, UnicodeError, KeyError, TypeError, subprocess.SubprocessError) as error:
         print(f"repository authority verification failed: {error}", file=sys.stderr)
         return 1
     print(
