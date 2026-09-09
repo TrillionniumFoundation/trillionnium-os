@@ -1,0 +1,47 @@
+name: ChatGPT source chain v3
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr63-source-export-20260909
+
+permissions:
+  actions: read
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-source-chain-v3-20260909
+  cancel-in-progress: true
+
+jobs:
+  drive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Check out exact controller source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Verify and execute fail-closed controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m py_compile ops/source-chain-v3.py
+          python3 ops/source-chain-v3.py
+          python3 -m json.tool /tmp/source-chain-v3.json >/dev/null
+      - name: Upload non-authorizing source-chain ledger
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: source-chain-v3-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: /tmp/source-chain-v3.json
