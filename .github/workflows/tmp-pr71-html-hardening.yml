@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   apply-repair:
-    if: github.event.head_commit.message == 'ops: stage temporary PR71 HTML authority repair'
+    if: "${{ github.event.head_commit.message == 'ops: repair temporary PR71 workflow syntax' }}"
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
