@@ -139,6 +139,10 @@ class FormalProjectionEquivalenceTests(unittest.TestCase):
         self.assertEqual(report["formal_edge_count"], 27)
         self.assertEqual(report["formal_recovery_edge_count"], 29)
         self.assertEqual(report["legal_recovery_edge_count"], 29)
+        self.assertEqual(
+            report["formal_config_sha256"],
+            "2b689982cc1e00de604af990b7bead43cfbceff69cefaaef7cd6cfd42f68488c",
+        )
         self.assertGreater(report["recovery_product_successor_count"], 0)
 
     def test_formal_edge_drift_fails_closed(self) -> None:
@@ -155,6 +159,38 @@ class FormalProjectionEquivalenceTests(unittest.TestCase):
             "INVARIANT NoAutomaticRedispatch\n", "", 1
         )
         with self.assertRaisesRegex(verifier.VerificationError, "formal config invariants"):
+            verifier.verify_authority(authority(), root=ROOT, config_text=config)
+
+    def test_ordinary_only_config_selector_fails_closed(self) -> None:
+        config = CONFIG.read_text(encoding="utf-8").replace(
+            "SPECIFICATION Spec",
+            "INIT Init\nNEXT OrdinaryNext",
+            1,
+        )
+        with self.assertRaisesRegex(
+            verifier.VerificationError,
+            "canonical executable configuration",
+        ):
+            verifier.verify_authority(authority(), root=ROOT, config_text=config)
+
+    def test_extra_config_constraint_fails_closed(self) -> None:
+        config = CONFIG.read_text(encoding="utf-8") + "CONSTRAINT Init\n"
+        with self.assertRaisesRegex(
+            verifier.VerificationError,
+            "canonical executable configuration",
+        ):
+            verifier.verify_authority(authority(), root=ROOT, config_text=config)
+
+    def test_nonexistent_config_specification_fails_closed(self) -> None:
+        config = CONFIG.read_text(encoding="utf-8").replace(
+            "SPECIFICATION Spec",
+            "SPECIFICATION NonexistentSpec",
+            1,
+        )
+        with self.assertRaisesRegex(
+            verifier.VerificationError,
+            "canonical executable configuration",
+        ):
             verifier.verify_authority(authority(), root=ROOT, config_text=config)
 
     def test_formal_redispatch_assignment_drift_fails_closed(self) -> None:

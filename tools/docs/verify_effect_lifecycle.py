@@ -111,6 +111,16 @@ EXPECTED_CFG_INVARIANTS = {
     "AcknowledgementRequiresDelivery",
     "NoEffectReadmissionAfterUncertainRecovery",
 }
+EXPECTED_CFG_LINES = [
+    "SPECIFICATION Spec",
+    "INVARIANT TypeOK",
+    "INVARIANT NoAutomaticRedispatch",
+    "INVARIANT EffectRequiresDurableAcceptance",
+    "INVARIANT DeliveryRequiresDurableTerminal",
+    "INVARIANT AcknowledgementRequiresDelivery",
+    "INVARIANT NoEffectReadmissionAfterUncertainRecovery",
+    "CHECK_DEADLOCK FALSE",
+]
 
 TOP_KEYS = {
     "schema",
@@ -399,6 +409,12 @@ def _render_tla_edge_set(name: str, edges: list[tuple[str, str]]) -> list[str]:
         lines.append(f'  <<"{source}", "{target}">>{suffix}')
     lines.append("}")
     return lines
+
+
+def render_tla_config() -> str:
+    """Render the complete closed-world TLC configuration byte-for-byte."""
+
+    return "\n".join(EXPECTED_CFG_LINES) + "\n"
 
 
 def render_tla_model(
@@ -912,6 +928,11 @@ def verify_authority(
     require(model_source == canonical_model, "formal model differs from the canonical executable projection")
     cfg_invariants = set(re.findall(r"^INVARIANT\s+([A-Za-z][A-Za-z0-9_]*)\s*$", config_source, re.MULTILINE))
     require(cfg_invariants == EXPECTED_CFG_INVARIANTS, f"formal config invariants drifted: {sorted(cfg_invariants)}")
+    canonical_config = render_tla_config()
+    require(
+        config_source == canonical_config,
+        "formal config differs from the canonical executable configuration",
+    )
     for definition in EXPECTED_CFG_INVARIANTS | {"Spec", "Init", "Next", "OrdinaryNext", "RecoveryNext"}:
         require(re.search(rf"^{re.escape(definition)}\s*==", model_source, re.MULTILINE) is not None, f"formal model lacks definition {definition}")
 
@@ -936,6 +957,7 @@ def verify_authority(
         "formal_edge_count": len(tla_edges),
         "formal_recovery_edge_count": len(tla_recovery_edges),
         "formal_model_sha256": hashlib.sha256(model_source.encode("utf-8")).hexdigest(),
+        "formal_config_sha256": hashlib.sha256(config_source.encode("utf-8")).hexdigest(),
         **tlc_report,
         **graph_report,
         "installed_target_evidence": False,
