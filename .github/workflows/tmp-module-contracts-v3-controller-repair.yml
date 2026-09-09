@@ -33,21 +33,26 @@ jobs:
 
           path = Path('.github/workflows/tmp-module-contracts-v3-preflight.yml')
           text = path.read_text(encoding='utf-8')
-
-          old_inventory = """            '.github/workflows/tmp-module-contracts-v3-carrier-diagnostic.yml' \\
-            '.github/workflows/tmp-module-contracts-v3-preflight.yml' \\
-"""
-          new_inventory = """            '.github/workflows/tmp-module-contracts-v3-carrier-diagnostic.yml' \\
-            '.github/workflows/tmp-module-contracts-v3-controller-repair.yml' \\
-            '.github/workflows/tmp-module-contracts-v3-preflight.yml' \\
-"""
-          old_format = """          cargo fmt --all -- --check
-          schemars="${RUNNER_TEMP:?}/module-contract-schemars.json"
-"""
-          new_format = """          cargo fmt --all
-          cargo fmt --all -- --check
-          schemars="${RUNNER_TEMP:?}/module-contract-schemars.json"
-"""
+          nl = chr(10)
+          slash = chr(92)
+          old_inventory = (
+              "            '.github/workflows/tmp-module-contracts-v3-carrier-diagnostic.yml' " + slash + nl
+              + "            '.github/workflows/tmp-module-contracts-v3-preflight.yml' " + slash + nl
+          )
+          new_inventory = (
+              "            '.github/workflows/tmp-module-contracts-v3-carrier-diagnostic.yml' " + slash + nl
+              + "            '.github/workflows/tmp-module-contracts-v3-controller-repair.yml' " + slash + nl
+              + "            '.github/workflows/tmp-module-contracts-v3-preflight.yml' " + slash + nl
+          )
+          old_format = (
+              '          cargo fmt --all -- --check' + nl
+              + '          schemars="${RUNNER_TEMP:?}/module-contract-schemars.json"' + nl
+          )
+          new_format = (
+              '          cargo fmt --all' + nl
+              + '          cargo fmt --all -- --check' + nl
+              + '          schemars="${RUNNER_TEMP:?}/module-contract-schemars.json"' + nl
+          )
 
           already_inventory = new_inventory in text
           already_format = new_format in text
@@ -60,9 +65,10 @@ jobs:
               raise SystemExit('controller inventory anchor differs')
           if text.count(old_format) != 1:
               raise SystemExit('rustfmt normalization anchor differs')
-          text = text.replace(old_inventory, new_inventory, 1)
-          text = text.replace(old_format, new_format, 1)
-          path.write_text(text, encoding='utf-8')
+          path.write_text(
+              text.replace(old_inventory, new_inventory, 1).replace(old_format, new_format, 1),
+              encoding='utf-8',
+          )
           print('controller_repair=applied')
           PY
 
