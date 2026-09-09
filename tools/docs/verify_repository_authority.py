@@ -59,10 +59,10 @@ HTML_TARGET_RE = re.compile(
 )
 ANGLE_TARGET_RE = re.compile(r"<([^<>\s]+)>")
 BARE_AUTHORITY_PATH_RE = re.compile(
-    r"(?<![A-Za-z0-9_.+/-])((?:(?:docs|governance|schemas|apps|crates|tools|packaging|"
+    r"(?<![A-Za-z0-9_.+/-])((?:(?:\.{1,2}/)+)?(?:(?:docs|governance|schemas|apps|crates|tools|packaging|"
     r"android-integration|evidence|foundations|planned|platform|profile)/"
-    r"[A-Za-z0-9_.+@~/-]+|README\.md|SECURITY\.md|CONTRIBUTING\.md)"
-    r"(?:#[A-Za-z0-9_.:+-]+)?)"
+    r"[A-Za-z0-9_.+@~/-]+|README\.md|SECURITY\.md|CONTRIBUTING\.md|"
+    r"TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN\.md)(?:#[A-Za-z0-9_.:+-]+)?)"
 )
 PROFILE_KEYS = {
     "schema", "program_revision", "default_profile", "semantic_contract",
@@ -647,32 +647,27 @@ def verify_profiles(root: Path) -> dict[str, Any]:
     return catalog
 
 
-AUTHORITY_DIRECTORY_ROOTS = frozenset({
-    "docs/machine",
-    "docs/modules",
-    "docs/generated",
-    "schemas",
-})
-
-
 def _semantic_visible_text(paragraph: str) -> str:
     """Normalize rendered prose for authority-phrase classification.
 
-    Link extraction still uses the original paragraph so target/source ranges are
-    unchanged.  Semantic matching, however, must treat ordinary Markdown line
-    wrapping, emphasis and character entities as the visible text a reviewer
-    reads.  HTML tags are removed rather than trusted as semantic separators.
+    Target extraction still uses the original paragraph. Semantic matching uses
+    rendered link labels rather than Markdown destinations so permitted link
+    syntax cannot split a visible authority phrase. HTML tags are removed while
+    visible text remains, entities are decoded, and whitespace/emphasis normalize.
     """
     value = html.unescape(paragraph)
+    value = INLINE_LINK_RE.sub(lambda match: match.group(1), value)
+    value = REFERENCE_LINK_RE.sub(lambda match: match.group(1), value)
+    value = BRACKET_RE.sub(lambda match: match.group(1), value)
     value = re.sub(r"<[^>]*>", " ", value)
-    value = value.translate(str.maketrans("", "", "*_~[]"))
+    value = value.translate(str.maketrans("", "", "*_~"))
     return re.sub(r"\s+", " ", value).strip()
 
 
 def _registered_authority(target: str, authority_targets: set[str]) -> bool:
-    # Directory landing pages are explicit navigation roots.  No descendant is
-    # trusted merely because it lives under one of these directories.
-    return target in authority_targets or target in AUTHORITY_DIRECTORY_ROOTS
+    # Authority is granted only to exact registered file identities. Directory
+    # roots remain ordinary navigation targets and never confer authority.
+    return target in authority_targets
 
 
 def verify_markdown(root: Path, profile_catalog: dict[str, Any]) -> tuple[int, int]:
@@ -725,7 +720,7 @@ def verify_markdown(root: Path, profile_catalog: dict[str, Any]) -> tuple[int, i
                 if URL_SCHEME_RE.match(normalized_target) or normalized_target.startswith("//"):
                     external_targets.append((normalized_target, syntax))
                     continue
-                if syntax == "bare authority path":
+                if syntax == "bare authority path" and not normalized_target.startswith(("./", "../")):
                     resolved = resolve_bare_repository_target(
                         root, normalized_target,
                         f"{relative}: visible line {paragraph_line} {syntax}",

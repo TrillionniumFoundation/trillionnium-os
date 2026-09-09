@@ -226,6 +226,49 @@ class RepositoryAuthorityTest(unittest.TestCase):
         with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered target"):
             VERIFY.verify(self.root)
 
+    def test_inline_link_label_participates_in_authority_phrase(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\nCanonical [plan](README.md) governs this tree.\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered target"):
+            VERIFY.verify(self.root)
+
+    def test_reference_link_label_participates_in_authority_phrase(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\nCanonical [plan][self] governs this tree.\n\n[self]: README.md\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered target"):
+            VERIFY.verify(self.root)
+
+    def test_shortcut_link_label_participates_in_authority_phrase(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\nCanonical [plan] governs this tree.\n\n[plan]: README.md\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered target"):
+            VERIFY.verify(self.root)
+
+    def test_navigation_directory_is_not_authority_target(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\nCanonical source is [machine docs](docs/machine/).\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered target"):
+            VERIFY.verify(self.root)
+
+    def test_navigation_directory_remains_valid_non_authority_link(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(path.read_text() + "\nNavigation: [machine docs](docs/machine/).\n")
+        VERIFY.verify(self.root)
+
+    def test_source_relative_bare_authority_path_is_validated(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "docs/START_HERE.md"
+        path.write_text(path.read_text() + "\nCanonical plan is ./TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md.\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_parent_relative_bare_authority_path_is_validated(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "docs/generated/CURRENT_STATE.md"
+        path.write_text(path.read_text() + "\nCanonical plan is ../TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md.\n")
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
     def test_active_profile_cannot_select_sealed_component(self) -> None:
         path, value = self.profile()
         active = value["profiles"][0]
