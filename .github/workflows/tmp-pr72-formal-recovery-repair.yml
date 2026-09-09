@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          git --no-replace-objects merge-base --is-ancestor "$BASE_SHA" HEAD
           observed="$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD | LC_ALL=C sort)"
           expected="$(printf '%s\n' \
             '.github/workflows/tmp-pr72-formal-recovery-repair.yml' \
@@ -127,6 +127,7 @@ jobs:
           final="$(git --no-replace-objects rev-parse HEAD)"
           tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
           test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          printf 'prepared_head=%s\nprepared_tree=%s\n' "$final" "$tree"
           git push \
             --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${BASE_SHA}" \
             origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
