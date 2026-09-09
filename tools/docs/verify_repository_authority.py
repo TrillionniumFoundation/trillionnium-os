@@ -647,18 +647,32 @@ def verify_profiles(root: Path) -> dict[str, Any]:
     return catalog
 
 
+AUTHORITY_DIRECTORY_ROOTS = frozenset({
+    "docs/machine",
+    "docs/modules",
+    "docs/generated",
+    "schemas",
+})
+
+
+def _semantic_visible_text(paragraph: str) -> str:
+    """Normalize rendered prose for authority-phrase classification.
+
+    Link extraction still uses the original paragraph so target/source ranges are
+    unchanged.  Semantic matching, however, must treat ordinary Markdown line
+    wrapping, emphasis and character entities as the visible text a reviewer
+    reads.  HTML tags are removed rather than trusted as semantic separators.
+    """
+    value = html.unescape(paragraph)
+    value = re.sub(r"<[^>]*>", " ", value)
+    value = value.translate(str.maketrans("", "", "*_~[]"))
+    return re.sub(r"\s+", " ", value).strip()
+
+
 def _registered_authority(target: str, authority_targets: set[str]) -> bool:
-    return (
-        target in authority_targets
-        or target == "docs/machine"
-        or target.startswith("docs/machine/")
-        or target == "docs/modules"
-        or target.startswith("docs/modules/")
-        or target == "docs/generated"
-        or target.startswith("docs/generated/")
-        or target == "schemas"
-        or target.startswith("schemas/")
-    )
+    # Directory landing pages are explicit navigation roots.  No descendant is
+    # trusted merely because it lives under one of these directories.
+    return target in authority_targets or target in AUTHORITY_DIRECTORY_ROOTS
 
 
 def verify_markdown(root: Path, profile_catalog: dict[str, Any]) -> tuple[int, int]:
@@ -666,8 +680,15 @@ def verify_markdown(root: Path, profile_catalog: dict[str, Any]) -> tuple[int, i
     docset = load_json(root / "docs/machine/doc-set.v1.json")
     forbidden_paths = string_list(docset.get("forbidden_paths"), "doc-set.forbidden_paths")
     forbidden_markers = string_list(docset.get("forbidden_content_markers"), "doc-set.forbidden_content_markers")
-    authority_targets = set(string_list(docset.get("authority_order"), "doc-set.authority_order"))
-    authority_targets.update({PROFILE_PATH, LIFECYCLE_PATH, "docs/generated/CURRENT_STATE.md"})
+    authority_order = string_list(docset.get("authority_order"), "doc-set.authority_order")
+    required_files = string_list(docset.get("required_files"), "doc-set.required_files")
+    authority_targets: set[str] = set()
+    for index, value in enumerate(authority_order + required_files + [LIFECYCLE_PATH]):
+        normalized, candidate = normalized_repository_path(
+            root, value, f"registered authority[{index}]"
+        )
+        require(candidate.exists(), f"registered authority does not exist: {normalized}")
+        authority_targets.add(normalized)
     link_count = 0
     files = list(markdown_files(root))
     require(len(files) == len({path.relative_to(root).as_posix() for path in files}),
@@ -687,7 +708,8 @@ def verify_markdown(root: Path, profile_catalog: dict[str, Any]) -> tuple[int, i
                 definitions=definitions,
                 label=f"{relative}: paragraph at visible line {paragraph_line}",
             )
-            authority_phrase = AUTHORITY_PHRASE_RE.search(paragraph) is not None
+            semantic_paragraph = _semantic_visible_text(paragraph)
+            authority_phrase = AUTHORITY_PHRASE_RE.search(semantic_paragraph) is not None
             if authority_phrase:
                 for match in BARE_AUTHORITY_PATH_RE.finditer(paragraph):
                     targets.append((match.group(1).rstrip(".,;:!?"), "bare authority path"))
@@ -729,7 +751,7 @@ def verify_markdown(root: Path, profile_catalog: dict[str, Any]) -> tuple[int, i
                 for target, _ in resolved_targets:
                     require(_registered_authority(target, authority_targets),
                             f"{relative}: authority phrase points to unregistered target {target}")
-                if DECLARATIVE_AUTHORITY_RE.search(paragraph) and not resolved_targets:
+                if DECLARATIVE_AUTHORITY_RE.search(semantic_paragraph) and not resolved_targets:
                     require(_registered_authority(relative, authority_targets),
                             f"{relative}: unregistered document makes an unbound authority declaration")
     return len(files), link_count

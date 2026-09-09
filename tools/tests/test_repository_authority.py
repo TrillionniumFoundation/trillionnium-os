@@ -61,6 +61,26 @@ class RepositoryAuthorityTest(unittest.TestCase):
         with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
             VERIFY.verify(self.root)
 
+    def test_privileged_directories_do_not_implicitly_register_authority(self) -> None:
+        for relative in (
+            "docs/machine/rogue.md",
+            "docs/modules/rogue.md",
+            "docs/generated/rogue.md",
+            "schemas/rogue.md",
+        ):
+            with self.subTest(relative=relative):
+                root = Path(self.temp.name) / ("case-" + relative.replace("/", "-"))
+                shutil.copytree(
+                    ROOT,
+                    root,
+                    ignore=shutil.ignore_patterns(".git", "target", "__pycache__", "*.pyc"),
+                )
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("Canonical source for this program is this unregistered file.\n")
+                with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered document"):
+                    VERIFY.verify(root)
+
     def test_broken_repository_local_link_fails(self) -> None:
         path = self.root / "apps/trillionnium-owner-open-host/README.md"
         path.write_text(path.read_text() + "\n[missing](../../docs/DOES_NOT_EXIST.md)\n")
@@ -127,6 +147,36 @@ class RepositoryAuthorityTest(unittest.TestCase):
             path.read_text()
             + "\nCanonical plan: [legacy](\n"
               "docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_wrapped_authority_phrase_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical\nplan: [legacy](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_emphasized_authority_phrase_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical **plan**: [legacy](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
+            VERIFY.verify(self.root)
+
+    def test_entity_separated_authority_phrase_fails(self) -> None:
+        self.add_forbidden_document()
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical&#32;plan: [legacy](docs/TRILLIONNIUM_CANONICAL_DEVELOPMENT_PLAN.md)\n"
         )
         with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
             VERIFY.verify(self.root)
