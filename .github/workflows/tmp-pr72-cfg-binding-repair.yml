@@ -20,6 +20,7 @@ jobs:
       BASE_SHA: 3fae18209e3b4627fab28141b0ed1e3354e6d570
       BASE_TREE: a912fe2f86f96d4b372901faaa878d5bdb0f5b2f
       CANDIDATE_BRANCH: codex/effect-lifecycle-model-20260909
+      PATCH_SHA256: aa183a18d078882e791936b3870f6708bade45992031137ff1a6db4a1ad93ce9
       EXPECTED_CONFIG_SHA256: 2b689982cc1e00de604af990b7bead43cfbceff69cefaaef7cd6cfd42f68488c
       PYTHONDONTWRITEBYTECODE: "1"
 
@@ -40,163 +41,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          git --no-replace-objects merge-base --is-ancestor "$BASE_SHA" HEAD
           test "$(git --no-replace-objects rev-parse "$BASE_SHA^{tree}")" = "$BASE_TREE"
           observed="$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD | LC_ALL=C sort)"
-          test "$observed" = '.github/workflows/tmp-pr72-cfg-binding-repair.yml'
+          expected="$(printf '%s\n' \
+            '.github/workflows/tmp-pr72-cfg-binding-repair.yml' \
+            'ops/pr72-cfg-binding.patch' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          PATCH="${RUNNER_TEMP:?}/pr72-cfg-binding.patch"
+          git --no-replace-objects show 'HEAD:ops/pr72-cfg-binding.patch' > "$PATCH"
+          printf '%s  %s\n' "$PATCH_SHA256" "$PATCH" | sha256sum --check --strict
           git --no-replace-objects checkout --detach "$BASE_SHA"
           test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
-          python3 - <<'PY'
-          from pathlib import Path
-
-          verifier = Path('tools/docs/verify_effect_lifecycle.py')
-          text = verifier.read_text(encoding='utf-8')
-          old = '''EXPECTED_CFG_INVARIANTS = {
-              "TypeOK",
-              "NoAutomaticRedispatch",
-              "EffectRequiresDurableAcceptance",
-              "DeliveryRequiresDurableTerminal",
-              "AcknowledgementRequiresDelivery",
-              "NoEffectReadmissionAfterUncertainRecovery",
-          }
-          '''
-          new = '''EXPECTED_CFG_INVARIANTS = {
-              "TypeOK",
-              "NoAutomaticRedispatch",
-              "EffectRequiresDurableAcceptance",
-              "DeliveryRequiresDurableTerminal",
-              "AcknowledgementRequiresDelivery",
-              "NoEffectReadmissionAfterUncertainRecovery",
-          }
-          EXPECTED_CFG_LINES = [
-              "SPECIFICATION Spec",
-              "INVARIANT TypeOK",
-              "INVARIANT NoAutomaticRedispatch",
-              "INVARIANT EffectRequiresDurableAcceptance",
-              "INVARIANT DeliveryRequiresDurableTerminal",
-              "INVARIANT AcknowledgementRequiresDelivery",
-              "INVARIANT NoEffectReadmissionAfterUncertainRecovery",
-              "CHECK_DEADLOCK FALSE",
-          ]
-          '''
-          if text.count(old) != 1:
-              raise SystemExit('CFG constant insertion point differs')
-          text = text.replace(old, new, 1)
-          marker = 'def render_tla_model(\n'
-          if text.count(marker) != 1:
-              raise SystemExit('TLA renderer insertion point differs')
-          text = text.replace(
-              marker,
-              '''def render_tla_config() -> str:
-              """Render the complete closed-world TLC configuration byte-for-byte."""
-
-              return "\\n".join(EXPECTED_CFG_LINES) + "\\n"
-
-
-              def render_tla_model(
-              ''',
-              1,
-          )
-          old = '''    cfg_invariants = set(re.findall(r"^INVARIANT\\s+([A-Za-z][A-Za-z0-9_]*)\\s*$", config_source, re.MULTILINE))
-              require(cfg_invariants == EXPECTED_CFG_INVARIANTS, f"formal config invariants drifted: {sorted(cfg_invariants)}")
-              for definition in EXPECTED_CFG_INVARIANTS | {"Spec", "Init", "Next", "OrdinaryNext", "RecoveryNext"}:
-          '''
-          new = '''    cfg_invariants = set(re.findall(r"^INVARIANT\\s+([A-Za-z][A-Za-z0-9_]*)\\s*$", config_source, re.MULTILINE))
-              require(cfg_invariants == EXPECTED_CFG_INVARIANTS, f"formal config invariants drifted: {sorted(cfg_invariants)}")
-              canonical_config = render_tla_config()
-              require(
-                  config_source == canonical_config,
-                  "formal config differs from the canonical executable configuration",
-              )
-              for definition in EXPECTED_CFG_INVARIANTS | {"Spec", "Init", "Next", "OrdinaryNext", "RecoveryNext"}:
-          '''
-          if text.count(old) != 1:
-              raise SystemExit('CFG verifier replacement point differs')
-          text = text.replace(old, new, 1)
-          old = '''        "formal_recovery_edge_count": len(tla_recovery_edges),
-              "formal_model_sha256": hashlib.sha256(model_source.encode("utf-8")).hexdigest(),
-              **tlc_report,
-          '''
-          new = '''        "formal_recovery_edge_count": len(tla_recovery_edges),
-              "formal_model_sha256": hashlib.sha256(model_source.encode("utf-8")).hexdigest(),
-              "formal_config_sha256": hashlib.sha256(config_source.encode("utf-8")).hexdigest(),
-              **tlc_report,
-          '''
-          if text.count(old) != 1:
-              raise SystemExit('CFG evidence replacement point differs')
-          verifier.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
-
-          tests = Path('tools/tests/test_effect_lifecycle.py')
-          text = tests.read_text(encoding='utf-8')
-          old = '''        self.assertEqual(report["formal_recovery_edge_count"], 29)
-              self.assertEqual(report["legal_recovery_edge_count"], 29)
-              self.assertGreater(report["recovery_product_successor_count"], 0)
-          '''
-          new = '''        self.assertEqual(report["formal_recovery_edge_count"], 29)
-              self.assertEqual(report["legal_recovery_edge_count"], 29)
-              self.assertEqual(
-                  report["formal_config_sha256"],
-                  "2b689982cc1e00de604af990b7bead43cfbceff69cefaaef7cd6cfd42f68488c",
-              )
-              self.assertGreater(report["recovery_product_successor_count"], 0)
-          '''
-          if text.count(old) != 1:
-              raise SystemExit('positive CFG test replacement point differs')
-          text = text.replace(old, new, 1)
-          anchor = '    def test_formal_redispatch_assignment_drift_fails_closed(self) -> None:\n'
-          if text.count(anchor) != 1:
-              raise SystemExit('CFG hostile-test insertion point differs')
-          hostile = '''    def test_ordinary_only_config_selector_fails_closed(self) -> None:
-              config = CONFIG.read_text(encoding="utf-8").replace(
-                  "SPECIFICATION Spec",
-                  "INIT Init\\nNEXT OrdinaryNext",
-                  1,
-              )
-              with self.assertRaisesRegex(
-                  verifier.VerificationError,
-                  "canonical executable configuration",
-              ):
-                  verifier.verify_authority(authority(), root=ROOT, config_text=config)
-
-              def test_extra_config_constraint_fails_closed(self) -> None:
-              config = CONFIG.read_text(encoding="utf-8") + "CONSTRAINT Init\\n"
-              with self.assertRaisesRegex(
-                  verifier.VerificationError,
-                  "canonical executable configuration",
-              ):
-                  verifier.verify_authority(authority(), root=ROOT, config_text=config)
-
-              def test_nonexistent_config_specification_fails_closed(self) -> None:
-              config = CONFIG.read_text(encoding="utf-8").replace(
-                  "SPECIFICATION Spec",
-                  "SPECIFICATION NonexistentSpec",
-                  1,
-              )
-              with self.assertRaisesRegex(
-                  verifier.VerificationError,
-                  "canonical executable configuration",
-              ):
-                  verifier.verify_authority(authority(), root=ROOT, config_text=config)
-
-          '''
-          tests.write_text(text.replace(anchor, hostile + anchor, 1), encoding='utf-8', newline='\n')
-
-          index = Path('governance/pr41-review-index.v1.json')
-          text = index.read_text(encoding='utf-8')
-          old = '''  "review_predecessor": {
-              "commit": "b9f7b13bd431d8e6fe58eb6c5a532c2939c023c1",
-              "tree": "466563ab66cf6553f1b98b7de0485455f00bed6b"
-            },
-          '''
-          new = '''  "review_predecessor": {
-              "commit": "3fae18209e3b4627fab28141b0ed1e3354e6d570",
-              "tree": "a912fe2f86f96d4b372901faaa878d5bdb0f5b2f"
-            },
-          '''
-          if text.count(old) != 1:
-              raise SystemExit('review predecessor replacement point differs')
-          index.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
-          PY
+          git apply --check --whitespace=error-all "$PATCH"
+          git apply --whitespace=error-all "$PATCH"
           observed="$(git diff --name-only | LC_ALL=C sort)"
           expected="$(printf '%s\n' \
             'governance/pr41-review-index.v1.json' \
@@ -210,6 +68,7 @@ jobs:
         run: |
           set -euo pipefail
           TLC_JAR="${RUNNER_TEMP:?}/tla2tools-1.7.4.jar"
+          REPORT="${RUNNER_TEMP:?}/pr72-cfg-binding-tlc.json"
           curl --proto '=https' --tlsv1.2 --fail --show-error --location --retry 3 \
             --output "$TLC_JAR" \
             'https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar'
@@ -223,10 +82,19 @@ jobs:
           python3 tools/docs/verify_global_docs.py
           python3 tools/docs/verify_repository_authority.py
           python3 tools/docs/verify_effect_lifecycle.py \
-            --model-check --tlc-jar "$TLC_JAR" --json \
-            | tee "${RUNNER_TEMP:?}/pr72-cfg-binding-tlc.json"
-          grep -F '"formal_config_sha256": "'"$EXPECTED_CONFIG_SHA256"'"' \
-            "${RUNNER_TEMP:?}/pr72-cfg-binding-tlc.json"
+            --model-check --tlc-jar "$TLC_JAR" --json | tee "$REPORT"
+          python3 - "$REPORT" "$EXPECTED_CONFIG_SHA256" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          report = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert report["status"] == "PASS", report
+          assert report["tlc_executed"] is True, report
+          assert report["formal_config_sha256"] == sys.argv[2], report
+          assert report["formal_recovery_edge_count"] == 29, report
+          assert report["automatic_redispatch"] is False, report
+          PY
           git diff --check
 
       - name: Publish exact repair through a branch lease
