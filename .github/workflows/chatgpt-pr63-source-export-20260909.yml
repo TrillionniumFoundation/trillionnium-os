@@ -1,4 +1,4 @@
-name: ChatGPT PR63 exact source export
+name: ChatGPT PR63 authenticated-bootstrap repair
 
 on:
   push:
@@ -6,46 +6,132 @@ on:
       - ops/chatgpt-pr63-source-export-20260909
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: chatgpt-pr63-exact-source-export
-  cancel-in-progress: true
+  group: chatgpt-pr63-authenticated-bootstrap-repair
+  cancel-in-progress: false
 
 jobs:
-  export:
+  repair:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 60
     env:
-      SOURCE_SHA: 0b2228aae3512650340cd50c84f52daf10e3649a
-      SOURCE_TREE: 61e43db3904b0d08e10a3e49e6cce47a4d7edade
+      TARGET_BRANCH: codex/perf-harness-isolation-20260908
+      EXPECTED_HEAD: 0b2228aae3512650340cd50c84f52daf10e3649a
+      EXPECTED_TREE: 61e43db3904b0d08e10a3e49e6cce47a4d7edade
+      CARRIER_SHA256: e0a6c0814a6b8c170c2fd1b2dfd8a5bd2e833eb9ccdd9b5b2be619e47770171f
+      GZIP_SHA256: 3c76ec7b2f2682427a7d730e7f0b6efa58842302cae31b686d620b4a2ea7dc30
+      PATCH_SHA256: e5cea938b45c5a8727ba795c20d1e2e018baa0cd506a928c59474dabbfca05ab
+      PYTHONDONTWRITEBYTECODE: 1
     steps:
       - name: Check out exact PR63 head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-          ref: ${{ env.SOURCE_SHA }}
-          persist-credentials: false
-      - name: Bind and archive clean exact tree
+          ref: ${{ env.TARGET_BRANCH }}
+          persist-credentials: true
+      - name: Reassemble and apply byte-bound bootstrap repair
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
           if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
             exit 1
           fi
           test -z "$status"
-          archive="${RUNNER_TEMP}/pr63-${SOURCE_SHA}.tar.gz"
-          git --no-replace-objects archive --format=tar.gz --output="$archive" "$SOURCE_SHA"
-          sha256sum "$archive" > "${archive}.sha256"
-      - name: Upload non-qualifying exact source export
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: pr63-source-${{ env.SOURCE_SHA }}
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 0
-          path: |
-            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz
-            ${{ runner.temp }}/pr63-${{ env.SOURCE_SHA }}.tar.gz.sha256
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git fetch --no-tags origin "$GITHUB_SHA"
+          test "$(git --no-replace-objects rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+
+          parts=(00 01 02)
+          hashes=(
+            75945afc8b1f671f171379314784dd4fff695b794bca28efcc5af1ddcc07e81b
+            8d4bae42ae245c66c8f525214e98d98cb330ddc901213a8ddc58c1349f340a88
+            b178badeeac9c967fc7db7b2040cc0bb00a17d438b9976163a1ffe4db4f840c2
+          )
+          carrier="${RUNNER_TEMP}/pr63-bootstrap-fix.patch.gz.b64"
+          : > "$carrier"
+          for index in "${!parts[@]}"; do
+            raw="${RUNNER_TEMP}/pr63-bootstrap-part-${parts[$index]}.raw"
+            normalized="${RUNNER_TEMP}/pr63-bootstrap-part-${parts[$index]}.b64"
+            git show "$GITHUB_SHA:ops/pr63-bootstrap-fix.part${parts[$index]}" > "$raw"
+            tr -d '\r\n\t ' < "$raw" > "$normalized"
+            echo "${hashes[$index]}  $normalized" | sha256sum --check -
+            cat "$normalized" >> "$carrier"
+          done
+          echo "$CARRIER_SHA256  $carrier" | sha256sum --check -
+          archive="${RUNNER_TEMP}/pr63-bootstrap-fix.patch.gz"
+          patch="${RUNNER_TEMP}/pr63-bootstrap-fix.patch"
+          base64 --decode "$carrier" > "$archive"
+          echo "$GZIP_SHA256  $archive" | sha256sum --check -
+          gzip --test "$archive"
+          gzip --decompress --stdout "$archive" > "$patch"
+          echo "$PATCH_SHA256  $patch" | sha256sum --check -
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
+
+          expected_paths="$(cat <<'PATHS'
+          governance/pr41-review-index.v1.json
+          tools/build/README.md
+          tools/build/_verify_host_reproducibility_core.py
+          tools/build/_verify_host_reproducibility_facade.py
+          tools/build/verify_host_reproducibility.py
+          tools/owner-open/authenticated_python_bootstrap.py
+          tools/perf/README.md
+          tools/perf/_run_product_baseline_core.py
+          tools/perf/_run_product_baseline_facade.py
+          tools/perf/run_product_baseline.py
+          tools/tests/authenticated_python_bootstrap_fixture.py
+          tools/tests/test_product_baseline_process_group_cleanup.py
+          tools/tests/test_run_product_baseline.py
+          tools/tests/test_verify_host_reproducibility.py
+          PATHS
+          )"
+          actual_paths="$(git status --porcelain=v1 --untracked-files=all | sed 's/^...//' | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+      - name: Verify bootstrap trust ordering and repository contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest \
+            tools.tests.test_run_product_baseline \
+            tools.tests.test_product_baseline_process_group_cleanup \
+            tools.tests.test_verify_host_reproducibility \
+            tools.tests.test_owner_open_workflow_exact_head \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_g1_pr_aggregate -q
+          python3 -B tools/docs/generate_global_docs.py --check
+          python3 -B tools/docs/verify_global_docs.py
+          cargo fmt --all -- --check
+          git diff --check
+          if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
+            exit 1
+          fi
+          test -n "$status"
+      - name: Commit and publish repaired exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            governance/pr41-review-index.v1.json \
+            tools/build/README.md \
+            tools/build/_verify_host_reproducibility_core.py \
+            tools/build/_verify_host_reproducibility_facade.py \
+            tools/build/verify_host_reproducibility.py \
+            tools/owner-open/authenticated_python_bootstrap.py \
+            tools/perf/README.md \
+            tools/perf/_run_product_baseline_core.py \
+            tools/perf/_run_product_baseline_facade.py \
+            tools/perf/run_product_baseline.py \
+            tools/tests/authenticated_python_bootstrap_fixture.py \
+            tools/tests/test_product_baseline_process_group_cleanup.py \
+            tools/tests/test_run_product_baseline.py \
+            tools/tests/test_verify_host_reproducibility.py
+          git diff --cached --check
+          test "$(git diff --cached --name-only | LC_ALL=C sort | wc -l)" -eq 14
+          git commit -m 'perf: require authenticated bootstrap before launcher execution'
+          git push origin "HEAD:$TARGET_BRANCH"
