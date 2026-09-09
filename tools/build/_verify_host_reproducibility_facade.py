@@ -27,6 +27,10 @@ _REQUIRED_BOOTSTRAP = {
     "_TRILLIONNIUM_FACADE_SOURCE",
     "_TRILLIONNIUM_FACADE_IDENTITY",
     "_TRILLIONNIUM_FACADE_PATH",
+    "_TRILLIONNIUM_BOOTSTRAP_ATTESTATION",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_SOURCE",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_IDENTITY",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_PATH",
 }
 if not _REQUIRED_BOOTSTRAP.issubset(globals()):
     raise RuntimeError("reproducibility facade requires the authenticated minimal launcher")
@@ -37,12 +41,24 @@ _LAUNCHER_PATH = Path(globals()["_TRILLIONNIUM_LAUNCHER_PATH"])
 _FACADE_SOURCE = globals()["_TRILLIONNIUM_FACADE_SOURCE"]
 _FACADE_IDENTITY = dict(globals()["_TRILLIONNIUM_FACADE_IDENTITY"])
 _FACADE_PATH = Path(globals()["_TRILLIONNIUM_FACADE_PATH"])
-if not isinstance(_LAUNCHER_SOURCE, bytes) or not isinstance(_FACADE_SOURCE, bytes):
+_BOOTSTRAP_ATTESTATION = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_ATTESTATION"])
+_BOOTSTRAP_SOURCE = globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_SOURCE"]
+_BOOTSTRAP_IDENTITY = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_IDENTITY"])
+_BOOTSTRAP_PATH = Path(globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_PATH"])
+if not isinstance(_LAUNCHER_SOURCE, bytes) or not isinstance(_FACADE_SOURCE, bytes) or not isinstance(_BOOTSTRAP_SOURCE, bytes):
     raise RuntimeError("reproducibility bootstrap sources must be exact bytes")
 if hashlib.sha256(_LAUNCHER_SOURCE).hexdigest() != _LAUNCHER_IDENTITY.get("sha256"):
     raise RuntimeError("reproducibility launcher bootstrap digest differs")
 if hashlib.sha256(_FACADE_SOURCE).hexdigest() != _FACADE_IDENTITY.get("sha256"):
     raise RuntimeError("reproducibility facade bootstrap digest differs")
+if hashlib.sha256(_BOOTSTRAP_SOURCE).hexdigest() != _BOOTSTRAP_IDENTITY.get("sha256"):
+    raise RuntimeError("bootstrap source digest differs")
+if _BOOTSTRAP_IDENTITY.get("path") != "tools/owner-open/authenticated_python_bootstrap.py":
+    raise RuntimeError("bootstrap logical path differs")
+if _BOOTSTRAP_ATTESTATION.get("bootstrap") != _BOOTSTRAP_IDENTITY:
+    raise RuntimeError("bootstrap attestation identity differs")
+if _BOOTSTRAP_ATTESTATION.get("launcher") != _LAUNCHER_IDENTITY:
+    raise RuntimeError("bootstrap attestation launcher differs")
 
 HERE = _FACADE_PATH.parent
 REPOSITORY_ROOT = HERE.parents[1]
@@ -177,6 +193,12 @@ def _load_snapshot(name: str, path: Path, logical_path: str, *,
     module.__dict__["_TRILLIONNIUM_BOOTSTRAP_SOURCE"] = source
     module.__dict__["_TRILLIONNIUM_BOOTSTRAP_IDENTITY"] = dict(identity)
     module.__dict__["_TRILLIONNIUM_BOOTSTRAP_PATH"] = logical_path
+    nested_attestation = dict(_BOOTSTRAP_ATTESTATION)
+    nested_attestation["launcher"] = dict(identity)
+    module.__dict__["_TRILLIONNIUM_BOOTSTRAP_ATTESTATION"] = nested_attestation
+    module.__dict__["_TRILLIONNIUM_BOOTSTRAP_FILE_SOURCE"] = _BOOTSTRAP_SOURCE
+    module.__dict__["_TRILLIONNIUM_BOOTSTRAP_FILE_IDENTITY"] = dict(_BOOTSTRAP_IDENTITY)
+    module.__dict__["_TRILLIONNIUM_BOOTSTRAP_FILE_PATH"] = str(_BOOTSTRAP_PATH)
     sys.modules[name] = module
     try:
         exec(code, module.__dict__)
@@ -198,6 +220,7 @@ if not isinstance(cleanup_files, dict):
 if cleanup_files.get("tools/perf/run_product_baseline.py") != _CLEANUP_IDENTITY:
     raise RuntimeError("cleanup launcher executed bytes differ from its nested identity")
 PINNED_IMPLEMENTATION_FILES = {
+    "tools/owner-open/authenticated_python_bootstrap.py": _BOOTSTRAP_IDENTITY,
     "tools/build/_verify_host_reproducibility_core.py": _CORE_IDENTITY,
     "tools/build/_verify_host_reproducibility_facade.py": _FACADE_IDENTITY,
     "tools/build/verify_host_reproducibility.py": _LAUNCHER_IDENTITY,
@@ -212,6 +235,7 @@ PINNED_IMPLEMENTATION_FILES = {
 }
 if set(PINNED_IMPLEMENTATION_FILES) != set(CORE.IMPLEMENTATION_PATHS):
     raise RuntimeError("reproducibility implementation snapshot is incomplete")
+CORE.PINNED_BOOTSTRAP_ATTESTATION = dict(_BOOTSTRAP_ATTESTATION)
 CORE.PINNED_IMPLEMENTATION_FILES = {
     path: dict(identity) for path, identity in PINNED_IMPLEMENTATION_FILES.items()
 }

@@ -19,13 +19,40 @@ export CARGO_TARGET_DIR=/absolute/outside-checkout/cargo-target
 cargo build --locked --release -p trillionnium-owner-open-host \
   --bin trillionnium-owner-open-r5-host --bin trillionnium-owner-open-r5-core
 
-python3 tools/perf/run_product_baseline.py \
+python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
+  "$PWD/tools/owner-open/authenticated_python_bootstrap.py" \
+  cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
+  "$PWD/tools/perf/run_product_baseline.py" \
+  tools/perf/run_product_baseline.py \
+  2ab7c93fa12e88325e8d280782b043f0fe9c1af5e7597e15639f5c50836de8cc \
+  -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \
   --build-profile release \
   --repetitions 10 --warmup 1 --require-clean-source \
   --output /absolute/outside-checkout/product-baseline.json
 ```
+
+
+### Authenticated entrypoint boundary
+
+`TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1` is a separately reviewed,
+operator-controlled inline `python -I -c` source value. It is the first trust
+anchor and is not read from a mutable repository pathname. The inline loader
+walks the bootstrap path from `/` with descriptor-relative `O_NOFOLLOW` opens,
+checks the exact bootstrap digest above, and compiles those same captured bytes.
+The bootstrap repeats that operation for the exact launcher digest and injects
+an attestation before any launcher code executes.
+
+The repository's canonical source-level loader implementation is exercised by
+`tools/tests/authenticated_python_bootstrap_fixture.py`; copying that test file
+by pathname is not an evidence-producing invocation. Production and controlled
+performance runners must provision the reviewed inline source through their
+protected configuration and retain the exact command bytes with the report.
+Direct invocation such as `python3 tools/perf/run_product_baseline.py` fails
+closed and cannot emit an admitted artifact. Any bootstrap, launcher, facade or
+nested implementation change produces a new manifest and requires a new
+baseline.
 
 The output parent must exist; the output must not exist. The artifact is private
 mode 0600. `--scratch-parent /controlled/filesystem` chooses the scratch storage
@@ -40,7 +67,9 @@ custody directory. Workloads execute only those private copies. Replacing or
 restoring an original pathname therefore cannot substitute different bytes for
 the admitted executable; any source-path movement still fails the final report.
 
-The public entry point is a deliberately small reviewed launcher. It walks every
+The public evidence-producing entrypoint is the separately authenticated
+inline-loader → bootstrap → launcher chain. The launcher payload is deliberately
+small and cannot be executed directly. It walks every
 facade path component from the filesystem root with descriptor-relative opens and
 `O_NOFOLLOW`, verifies a fixed facade SHA-256, compiles those same bytes, and only
 then transfers control. The authenticated facade applies the same component-wise
@@ -90,7 +119,13 @@ Observed output/store byte counts are not disk-I/O amplification or fsync counts
 Keep a reviewed baseline on a controlled performance runner, then use:
 
 ```sh
-python3 tools/perf/run_product_baseline.py \
+python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
+  "$PWD/tools/owner-open/authenticated_python_bootstrap.py" \
+  cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
+  "$PWD/tools/perf/run_product_baseline.py" \
+  tools/perf/run_product_baseline.py \
+  2ab7c93fa12e88325e8d280782b043f0fe9c1af5e7597e15639f5c50836de8cc \
+  -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \
   --build-profile release --repetitions 10 --warmup 1 \

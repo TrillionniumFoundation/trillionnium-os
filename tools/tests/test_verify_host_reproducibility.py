@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import copy
-import importlib.util
 import os
 from pathlib import Path
 import shutil
@@ -13,11 +12,15 @@ import time
 import unittest
 from unittest import mock
 
+from tools.tests.authenticated_python_bootstrap_fixture import (
+    BOOTSTRAP_LOGICAL_PATH,
+    load_authenticated_module,
+    run_authenticated,
+)
+
 PATH = Path(__file__).resolve().parents[1] / "build/verify_host_reproducibility.py"
-SPEC = importlib.util.spec_from_file_location("host_reproducibility", PATH)
-VERIFY = importlib.util.module_from_spec(SPEC)
-assert SPEC and SPEC.loader
-SPEC.loader.exec_module(VERIFY)
+LOGICAL_PATH = "tools/build/verify_host_reproducibility.py"
+VERIFY = load_authenticated_module("host_reproducibility", PATH, LOGICAL_PATH)
 
 
 def builds() -> list[dict]:
@@ -255,6 +258,50 @@ class HostReproducibilityTests(unittest.TestCase):
         self.assertLess(elapsed, 5.0)
         self.assertLessEqual(log.stat().st_size, 1024)
 
+
+    def test_direct_build_launcher_is_non_authorizing(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(PATH), "--help"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("direct pathname execution is non-authorizing", result.stderr)
+
+    def test_authenticated_build_bootstrap_runs_help(self) -> None:
+        result = run_authenticated(PATH, LOGICAL_PATH, ["--help"])
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("usage:", result.stdout.lower())
+        manifest = VERIFY.implementation_manifest()
+        bootstrap = manifest["files"][0]
+        self.assertEqual(bootstrap["path"], BOOTSTRAP_LOGICAL_PATH)
+        self.assertEqual(bootstrap, VERIFY.PINNED_IMPLEMENTATION_FILES[BOOTSTRAP_LOGICAL_PATH])
+
+    def test_preinterpreter_build_swap_restore_cannot_emit_admitted_report(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            launcher = root / "verify_host_reproducibility.py"
+            backup = root / "verify_host_reproducibility.reviewed"
+            marker = root / "hostile-ran"
+            shutil.copyfile(PATH, backup)
+            launcher.write_text(
+                "from pathlib import Path\n"
+                f"Path({str(marker)!r}).write_text('ran')\n"
+                "raise SystemExit(0)\n",
+                encoding="utf-8",
+            )
+            result = run_authenticated(
+                launcher,
+                LOGICAL_PATH,
+                ["--help"],
+                restore_backup=backup,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("unadmitted launcher bytes", result.stderr)
+            self.assertFalse(marker.exists())
+            self.assertEqual(launcher.read_bytes(), PATH.read_bytes())
 
     def test_build_launcher_rejects_swap_restore_before_facade_admission(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

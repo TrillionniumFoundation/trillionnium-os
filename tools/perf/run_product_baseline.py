@@ -1,13 +1,24 @@
 #!/usr/bin/env python3
-"""Minimal reviewed launcher for the Trillionnium Host/Core product baseline facade.
+"""Pre-authenticated launcher payload for the Trillionnium Host/Core product baseline facade.
 
-This file is the intentionally small source-review trust anchor.  It walks the
-facade pathname from the filesystem root with descriptor-relative ``open``
-operations and ``O_NOFOLLOW`` on every component, verifies the exact facade
-digest, compiles those same bytes, and executes that code object.  The launcher
-and facade byte identities are injected into the resulting report manifest.
+This file is not a direct pathname entrypoint.  The canonical authenticated
+Python bootstrap must descriptor-open and hash these exact bytes before Python
+compiles any launcher code.  Direct execution fails closed before imports.
 """
 from __future__ import annotations
+
+__REQUIRED_PREAUTHENTICATED_GLOBALS = {
+    "_TRILLIONNIUM_BOOTSTRAP_SOURCE",
+    "_TRILLIONNIUM_BOOTSTRAP_IDENTITY",
+    "_TRILLIONNIUM_BOOTSTRAP_ATTESTATION",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_SOURCE",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_IDENTITY",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_PATH",
+}
+if not __REQUIRED_PREAUTHENTICATED_GLOBALS.issubset(globals()):
+    raise RuntimeError(
+        "direct pathname execution is non-authorizing; use the authenticated Python bootstrap"
+    )
 
 import hashlib as __launcher_hashlib
 import os as __launcher_os
@@ -18,7 +29,13 @@ from typing import Any as __LauncherAny, Callable as __LauncherCallable
 __LAUNCHER_LOGICAL_PATH = 'tools/perf/run_product_baseline.py'
 __FACADE_LOGICAL_PATH = 'tools/perf/_run_product_baseline_facade.py'
 __FACADE_FILENAME = '_run_product_baseline_facade.py'
-__EXPECTED_FACADE_SHA256 = '5f5691aa5c90b3296b073d654ee92d9fc7d8c780ee7863508c40e87897b44378'
+__EXPECTED_FACADE_SHA256 = '11fe4223a29d972ad9a41657629d45c32b3e1ad5d5f8c33b06fc04479b1a0eaa'
+__BOOTSTRAP_LOGICAL_PATH = 'tools/owner-open/authenticated_python_bootstrap.py'
+__EXPECTED_BOOTSTRAP_SHA256 = 'cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96'
+__BOOTSTRAP_SCHEMA = 'org.trillionnium.authenticated-python-bootstrap.v1'
+__BOOTSTRAP_POLICY_VERSION = '2026-09-09-v1'
+__BOOTSTRAP_TRANSPORT = 'captured-bootstrap-and-launcher-bytes-v1'
+__OUTER_LOADER_POLICY = 'python-isolated-inline-descriptor-loader-v1'
 __MAX_LAUNCH_SOURCE_BYTES = 8 * 1024 * 1024
 
 
@@ -108,9 +125,7 @@ def __launcher_snapshot(
         __launcher_os.close(descriptor)
     digest = __launcher_hashlib.sha256(source).hexdigest()
     if expected_sha256 is not None and digest != expected_sha256:
-        raise RuntimeError(
-            f"unadmitted facade bytes for {logical_path}: {digest}"
-        )
+        raise RuntimeError(f"unadmitted facade bytes for {logical_path}: {digest}")
     report = {"path": logical_path, "size": len(source), "sha256": digest}
     internal = {
         "absolute_path": str(absolute),
@@ -157,20 +172,54 @@ def __launcher_authenticate_facade(
     return source, identity, code
 
 
-if "_TRILLIONNIUM_BOOTSTRAP_SOURCE" in globals():
-    __launcher_source = globals()["_TRILLIONNIUM_BOOTSTRAP_SOURCE"]
-    __launcher_identity = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_IDENTITY"])
-    __launcher_path = __launcher_absolute(__LauncherPath(__file__))
-    if not isinstance(__launcher_source, bytes):
-        raise RuntimeError("captured launcher source is not bytes")
-    if __launcher_hashlib.sha256(__launcher_source).hexdigest() != __launcher_identity.get("sha256"):
-        raise RuntimeError("captured launcher digest differs")
-else:
-    __launcher_path = __launcher_absolute(__LauncherPath(__file__))
-    __launcher_source, __launcher_identity, _ = __launcher_snapshot(
-        __launcher_path, __LAUNCHER_LOGICAL_PATH
-    )
+def __validated_bootstrap() -> tuple[bytes, dict[str, __LauncherAny], dict[str, __LauncherAny]]:
+    launcher_source = globals()["_TRILLIONNIUM_BOOTSTRAP_SOURCE"]
+    launcher_identity = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_IDENTITY"])
+    bootstrap_source = globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_SOURCE"]
+    bootstrap_identity = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_IDENTITY"])
+    attestation = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_ATTESTATION"])
+    if not isinstance(launcher_source, bytes) or not isinstance(bootstrap_source, bytes):
+        raise RuntimeError("authenticated launcher inputs must be exact bytes")
+    if set(launcher_identity) != {"path", "size", "sha256"}:
+        raise RuntimeError("launcher identity keys differ")
+    if launcher_identity != {
+        "path": __LAUNCHER_LOGICAL_PATH,
+        "size": len(launcher_source),
+        "sha256": __launcher_hashlib.sha256(launcher_source).hexdigest(),
+    }:
+        raise RuntimeError("captured launcher identity differs")
+    if set(bootstrap_identity) != {"path", "size", "sha256"}:
+        raise RuntimeError("bootstrap identity keys differ")
+    if bootstrap_identity != {
+        "path": __BOOTSTRAP_LOGICAL_PATH,
+        "size": len(bootstrap_source),
+        "sha256": __launcher_hashlib.sha256(bootstrap_source).hexdigest(),
+    } or bootstrap_identity["sha256"] != __EXPECTED_BOOTSTRAP_SHA256:
+        raise RuntimeError("captured bootstrap identity differs")
+    expected_keys = {
+        "schema", "policy_version", "transport", "outer_loader_policy",
+        "bootstrap", "launcher", "direct_path_execution",
+        "automatic_redispatch", "public_release",
+    }
+    if set(attestation) != expected_keys:
+        raise RuntimeError("bootstrap attestation keys differ")
+    if (
+        attestation["schema"] != __BOOTSTRAP_SCHEMA
+        or attestation["policy_version"] != __BOOTSTRAP_POLICY_VERSION
+        or attestation["transport"] != __BOOTSTRAP_TRANSPORT
+        or attestation["outer_loader_policy"] != __OUTER_LOADER_POLICY
+        or attestation["bootstrap"] != bootstrap_identity
+        or attestation["launcher"] != launcher_identity
+        or attestation["direct_path_execution"] is not False
+        or attestation["automatic_redispatch"] is not False
+        or attestation["public_release"] is not False
+    ):
+        raise RuntimeError("bootstrap attestation differs")
+    return launcher_source, launcher_identity, attestation
 
+
+__launcher_source, __launcher_identity, __bootstrap_attestation = __validated_bootstrap()
+__launcher_path = __launcher_absolute(__LauncherPath(__file__))
 __facade_path = __launcher_path.with_name(__FACADE_FILENAME)
 __facade_source, __facade_identity, __facade_code = __launcher_authenticate_facade(
     __facade_path
@@ -183,5 +232,6 @@ globals().update({
     "_TRILLIONNIUM_FACADE_SOURCE": __facade_source,
     "_TRILLIONNIUM_FACADE_IDENTITY": dict(__facade_identity),
     "_TRILLIONNIUM_FACADE_PATH": str(__facade_path),
+    "_TRILLIONNIUM_BOOTSTRAP_ATTESTATION": dict(__bootstrap_attestation),
 })
 exec(__facade_code, globals())

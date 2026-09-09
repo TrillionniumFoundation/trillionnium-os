@@ -42,6 +42,7 @@ GATE_POLICY_VERSION = "2026-09-09-v1"
 IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.product-host-baseline-implementation.v1"
 GATE_METRICS = ("latency_p50_ms", "latency_p95_ms")
 IMPLEMENTATION_PATHS = (
+    "tools/owner-open/authenticated_python_bootstrap.py",
     "tools/owner-open/owner_open_connection_broker.py",
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
     "tools/perf/_run_product_baseline_core.py",
@@ -68,6 +69,7 @@ UNAVAILABLE = {
 
 PINNED_IMPLEMENTATION_FILES: dict[str, dict[str, Any]] | None = None
 PINNED_IMPLEMENTATION_SOURCES: dict[str, bytes] | None = None
+PINNED_BOOTSTRAP_ATTESTATION: dict[str, Any] | None = None
 EXECUTION_PATHS: dict[str, str] = {}
 EXECUTION_PASS_FDS: tuple[int, ...] = ()
 OPEN_ADMITTED_FILE: Any = None
@@ -312,6 +314,43 @@ def implementation_manifest() -> dict[str, Any]:
 def live_implementation_manifest() -> dict[str, Any]:
     return _manifest([_live_repository_file_identity(relative)
                       for relative in IMPLEMENTATION_PATHS])
+
+
+def validate_bootstrap_attestation(
+    value: Any,
+    manifest: dict[str, Any],
+    *,
+    launcher_path: str = "tools/perf/run_product_baseline.py",
+) -> dict[str, Any]:
+    require(isinstance(value, dict), "missing authenticated bootstrap attestation")
+    expected = {
+        "schema", "policy_version", "transport", "outer_loader_policy",
+        "bootstrap", "launcher", "direct_path_execution",
+        "automatic_redispatch", "public_release",
+    }
+    require(set(value) == expected, "bootstrap attestation keys differ")
+    require(value["schema"] == "org.trillionnium.authenticated-python-bootstrap.v1",
+            "bootstrap attestation schema differs")
+    require(value["policy_version"] == "2026-09-09-v1",
+            "bootstrap policy version differs")
+    require(value["transport"] == "captured-bootstrap-and-launcher-bytes-v1" and
+            value["outer_loader_policy"] == "python-isolated-inline-descriptor-loader-v1",
+            "bootstrap transport policy differs")
+    require(value["direct_path_execution"] is False and
+            value["automatic_redispatch"] is False and
+            value["public_release"] is False,
+            "bootstrap attestation widened authority")
+    files = {item["path"]: item for item in manifest["files"]}
+    require(value["bootstrap"] == files["tools/owner-open/authenticated_python_bootstrap.py"],
+            "bootstrap attestation does not bind implementation manifest")
+    require(value["launcher"] == files[launcher_path],
+            "bootstrap attestation does not bind launcher")
+    return dict(value)
+
+
+def bootstrap_attestation() -> dict[str, Any]:
+    manifest = implementation_manifest()
+    return validate_bootstrap_attestation(PINNED_BOOTSTRAP_ATTESTATION, manifest)
 
 
 def gate_policy() -> dict[str, Any]:
@@ -683,11 +722,16 @@ def validate_artifact(value: Any) -> dict:
     claimed = body.pop("artifact_digest", None)
     require(claimed == digest(canonical(body)), "baseline content digest mismatch")
     manifest = validate_implementation_manifest(value.get("implementation_manifest"))
+    bootstrap = validate_bootstrap_attestation(
+        value.get("bootstrap_attestation"), manifest
+    )
     policy = validate_gate_policy(value.get("gate_policy"))
     identity = value.get("comparison_identity")
     require(isinstance(identity, dict), "missing comparison identity")
     require(identity.get("implementation_manifest_sha256") == manifest["manifest_sha256"],
             "comparison identity does not bind implementation manifest")
+    require(identity.get("bootstrap_attestation_sha256") == digest(canonical(bootstrap)),
+            "comparison identity does not bind bootstrap attestation")
     require(identity.get("gate_policy_sha256") == digest(canonical(policy)),
             "comparison identity does not bind gate policy")
     require(value.get("qualification") == "L1_HOST_SOURCE_BENCHMARK_ONLY" and
@@ -801,6 +845,7 @@ def _run_with_custody(
     }
     implementation = implementation_manifest()
     validate_implementation_manifest(implementation)
+    bootstrap = bootstrap_attestation()
     harness = next(
         item for item in implementation["files"]
         if item["path"] == "tools/perf/run_product_baseline.py"
@@ -852,6 +897,7 @@ def _run_with_custody(
         "source": source,
         "executables": identities,
         "implementation_manifest": implementation,
+        "bootstrap_attestation": bootstrap,
         "gate_policy": policy,
         "binary_source_binding": (
             "caller-selected binaries copied from verified source descriptors "
@@ -870,6 +916,7 @@ def _run_with_custody(
             "shell_sha256": identities["shell"]["sha256"],
             "harness_sha256": identities["harness"]["sha256"],
             "implementation_manifest_sha256": implementation["manifest_sha256"],
+            "bootstrap_attestation_sha256": digest(canonical(bootstrap)),
             "gate_policy_sha256": digest(canonical(policy)),
             "execution_custody": "verified-private-single-link-copies-v1",
         },

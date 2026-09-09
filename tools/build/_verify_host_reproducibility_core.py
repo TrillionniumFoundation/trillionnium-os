@@ -29,6 +29,7 @@ RUST_VERSION = "1.93.0"
 MAX_LOG_BYTES = 32 * 1024 * 1024
 IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.host-build-reproducibility-implementation.v1"
 IMPLEMENTATION_PATHS = (
+    "tools/owner-open/authenticated_python_bootstrap.py",
     "tools/build/_verify_host_reproducibility_core.py",
     "tools/build/_verify_host_reproducibility_facade.py",
     "tools/build/verify_host_reproducibility.py",
@@ -40,6 +41,7 @@ IMPLEMENTATION_PATHS = (
 
 
 PINNED_IMPLEMENTATION_FILES: dict[str, dict[str, Any]] | None = None
+PINNED_BOOTSTRAP_ATTESTATION: dict[str, Any] | None = None
 EXECUTION_PASS_FDS: tuple[int, ...] = ()
 OPEN_ADMITTED_FILE: Any = None
 REOPEN_ADMITTED_IDENTITY: Any = None
@@ -285,6 +287,33 @@ def validate_implementation_manifest(value: Any) -> dict[str, Any]:
     require(value["manifest_sha256"] == sha256(canonical(body)),
             "implementation manifest digest mismatch")
     return value
+
+
+def bootstrap_attestation() -> dict[str, Any]:
+    value = PINNED_BOOTSTRAP_ATTESTATION
+    require(isinstance(value, dict), "missing authenticated bootstrap attestation")
+    expected = {
+        "schema", "policy_version", "transport", "outer_loader_policy",
+        "bootstrap", "launcher", "direct_path_execution",
+        "automatic_redispatch", "public_release",
+    }
+    require(set(value) == expected, "bootstrap attestation keys differ")
+    require(value["schema"] == "org.trillionnium.authenticated-python-bootstrap.v1" and
+            value["policy_version"] == "2026-09-09-v1",
+            "bootstrap attestation version differs")
+    require(value["transport"] == "captured-bootstrap-and-launcher-bytes-v1" and
+            value["outer_loader_policy"] == "python-isolated-inline-descriptor-loader-v1",
+            "bootstrap transport policy differs")
+    require(value["direct_path_execution"] is False and
+            value["automatic_redispatch"] is False and
+            value["public_release"] is False,
+            "bootstrap attestation widened authority")
+    files = {item["path"]: item for item in implementation_manifest()["files"]}
+    require(value["bootstrap"] == files["tools/owner-open/authenticated_python_bootstrap.py"],
+            "bootstrap attestation does not bind implementation manifest")
+    require(value["launcher"] == files["tools/build/verify_host_reproducibility.py"],
+            "bootstrap attestation does not bind build launcher")
+    return dict(value)
 
 
 def query(command: list[str], cwd: Path, *, pass_fds: tuple[int, ...] = ()) -> str:
@@ -545,6 +574,7 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
             tools = toolchain_identity(*resolved, repo, pinned=pins)
             implementation = implementation_manifest()
             validate_implementation_manifest(implementation)
+            bootstrap = bootstrap_attestation()
             harness = next(
                 item for item in implementation["files"]
                 if item["path"] == "tools/build/verify_host_reproducibility.py"
@@ -556,6 +586,7 @@ def verify(args: argparse.Namespace) -> dict[str, Any]:
                 "build_root": str(build_root),
                 "harness": dict(harness),
                 "implementation_manifest": implementation,
+                "bootstrap_attestation": bootstrap,
                 "execution_custody": "linux-write-sealed-memfds-v1",
             })
             build_root.mkdir(mode=0o700)

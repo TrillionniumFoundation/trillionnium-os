@@ -33,7 +33,13 @@ commit and checkout. It neither commits changes nor creates or switches branches
 Run from the clean checkout, replacing the example absolute paths and commit:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 python3 tools/build/verify_host_reproducibility.py \
+PYTHONDONTWRITEBYTECODE=1 python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
+  /work/reviewed-checkout/tools/owner-open/authenticated_python_bootstrap.py \
+  cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
+  /work/reviewed-checkout/tools/build/verify_host_reproducibility.py \
+  tools/build/verify_host_reproducibility.py \
+  437a0e8bcff3b2c7cff7b2a4fac3e8824a3c1a36246d0b247d7c3a49fec82539 \
+  -- \
   --repo-root /work/reviewed-checkout \
   --expected-commit FULL_REVIEWED_COMMIT_SHA \
   --cargo /tools/rust/1.93.0/bin/cargo \
@@ -44,6 +50,24 @@ PYTHONDONTWRITEBYTECODE=1 python3 tools/build/verify_host_reproducibility.py \
   --build-root /work/host-reproducibility-run-001 \
   --output /work/host-reproducibility-run-001.json
 ```
+
+
+### Authenticated entrypoint boundary
+
+`TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1` is a separately reviewed,
+operator-controlled inline `python -I -c` source value. It is not read from a
+mutable repository pathname. The inline loader descriptor-opens and verifies
+the exact bootstrap digest above, then the bootstrap descriptor-opens and
+verifies the exact launcher digest before any launcher code executes. The
+bootstrap and launcher identities are retained in the implementation manifest
+and report attestation.
+
+The canonical source-level loader behavior is exercised by
+`tools/tests/authenticated_python_bootstrap_fixture.py`; that test helper is not
+itself an evidence-producing entrypoint. Controlled runners must provision the
+reviewed inline source through protected configuration and retain the exact
+command bytes. Direct execution such as
+`python3 tools/build/verify_host_reproducibility.py` fails closed.
 
 The build root and report must not exist yet. Their parent directories must
 already exist, and both must be outside the source checkout; the build root
@@ -82,8 +106,9 @@ complete build commands and environments, elapsed times, raw-log identities, and
 both binary identities.
 
 Every behavior-bearing Python dependency is read, hashed, compiled and executed
-from one admitted source snapshot. Both launchers authenticate their facade
-bytes before compilation. Every Python and tool path is opened component by
+from one admitted source snapshot. The inline loader authenticates the bootstrap, and the bootstrap authenticates
+each launcher before any launcher code executes. Each launcher then authenticates
+its facade bytes before compilation. Every Python and tool path is opened component by
 component with descriptor-relative `O_NOFOLLOW` lookups. Cargo, rustc, cc and ar
 are each copied from the opened descriptor into a Linux memfd, write/grow/shrink
 sealing is applied, and a private basename-preserving link is used for all version

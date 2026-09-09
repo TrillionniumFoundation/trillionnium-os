@@ -28,6 +28,10 @@ _REQUIRED_BOOTSTRAP = {
     "_TRILLIONNIUM_FACADE_SOURCE",
     "_TRILLIONNIUM_FACADE_IDENTITY",
     "_TRILLIONNIUM_FACADE_PATH",
+    "_TRILLIONNIUM_BOOTSTRAP_ATTESTATION",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_SOURCE",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_IDENTITY",
+    "_TRILLIONNIUM_BOOTSTRAP_FILE_PATH",
 }
 if not _REQUIRED_BOOTSTRAP.issubset(globals()):
     raise RuntimeError("performance facade requires the authenticated minimal launcher")
@@ -38,12 +42,25 @@ _LAUNCHER_PATH = Path(globals()["_TRILLIONNIUM_LAUNCHER_PATH"])
 _FACADE_SOURCE = globals()["_TRILLIONNIUM_FACADE_SOURCE"]
 _FACADE_IDENTITY = dict(globals()["_TRILLIONNIUM_FACADE_IDENTITY"])
 _FACADE_PATH = Path(globals()["_TRILLIONNIUM_FACADE_PATH"])
-if not isinstance(_LAUNCHER_SOURCE, bytes) or not isinstance(_FACADE_SOURCE, bytes):
+_BOOTSTRAP_ATTESTATION = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_ATTESTATION"])
+_BOOTSTRAP_SOURCE = globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_SOURCE"]
+_BOOTSTRAP_IDENTITY = dict(globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_IDENTITY"])
+_BOOTSTRAP_PATH = Path(globals()["_TRILLIONNIUM_BOOTSTRAP_FILE_PATH"])
+if not isinstance(_LAUNCHER_SOURCE, bytes) or not isinstance(_FACADE_SOURCE, bytes) or not isinstance(_BOOTSTRAP_SOURCE, bytes):
     raise RuntimeError("performance bootstrap sources must be exact bytes")
 if hashlib.sha256(_LAUNCHER_SOURCE).hexdigest() != _LAUNCHER_IDENTITY.get("sha256"):
     raise RuntimeError("performance launcher bootstrap digest differs")
 if hashlib.sha256(_FACADE_SOURCE).hexdigest() != _FACADE_IDENTITY.get("sha256"):
     raise RuntimeError("performance facade bootstrap digest differs")
+if hashlib.sha256(_BOOTSTRAP_SOURCE).hexdigest() != _BOOTSTRAP_IDENTITY.get("sha256"):
+    raise RuntimeError("bootstrap source digest differs")
+if _BOOTSTRAP_IDENTITY.get("path") != "tools/owner-open/authenticated_python_bootstrap.py":
+    raise RuntimeError("bootstrap logical path differs")
+if _BOOTSTRAP_ATTESTATION.get("bootstrap") != _BOOTSTRAP_IDENTITY:
+    raise RuntimeError("bootstrap attestation identity differs")
+if _BOOTSTRAP_ATTESTATION.get("launcher") != _LAUNCHER_IDENTITY:
+    raise RuntimeError("bootstrap attestation launcher differs")
+
 
 HERE = _FACADE_PATH.parent
 REPOSITORY_ROOT = HERE.parents[1]
@@ -248,6 +265,7 @@ _BROKER_SOURCE, _BROKER_IDENTITY = _snapshot_source(
 PINNED_IMPLEMENTATION_FILES = {
     item["path"]: dict(item)
     for item in (
+        _BOOTSTRAP_IDENTITY,
         _BROKER_IDENTITY,
         _SUPERVISOR_IDENTITY,
         _CORE_IDENTITY,
@@ -256,6 +274,7 @@ PINNED_IMPLEMENTATION_FILES = {
     )
 }
 PINNED_IMPLEMENTATION_SOURCES = {
+    "tools/owner-open/authenticated_python_bootstrap.py": _BOOTSTRAP_SOURCE,
     "tools/owner-open/owner_open_connection_broker.py": _BROKER_SOURCE,
     "tools/owner-open/owner_open_rootlinux_supervisor.py": _SUPERVISOR_SOURCE,
     "tools/perf/_run_product_baseline_core.py": _CORE_SOURCE,
@@ -264,6 +283,7 @@ PINNED_IMPLEMENTATION_SOURCES = {
 }
 if set(PINNED_IMPLEMENTATION_FILES) != set(CORE.IMPLEMENTATION_PATHS):
     raise RuntimeError("performance implementation snapshot is incomplete")
+CORE.PINNED_BOOTSTRAP_ATTESTATION = dict(_BOOTSTRAP_ATTESTATION)
 CORE.PINNED_IMPLEMENTATION_FILES = dict(PINNED_IMPLEMENTATION_FILES)
 CORE.PINNED_IMPLEMENTATION_SOURCES = dict(PINNED_IMPLEMENTATION_SOURCES)
 CORE.OPEN_ADMITTED_FILE = _opened_identity

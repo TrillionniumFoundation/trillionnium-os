@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib.util
 import os
 from pathlib import Path
 import signal
@@ -10,11 +9,12 @@ import time
 import unittest
 
 
+from tools.tests.authenticated_python_bootstrap_fixture import load_authenticated_module
+
 PATH = Path(__file__).resolve().parents[1] / "perf/run_product_baseline.py"
-SPEC = importlib.util.spec_from_file_location("product_baseline_cleanup", PATH)
-BENCH = importlib.util.module_from_spec(SPEC)
-assert SPEC is not None and SPEC.loader is not None
-SPEC.loader.exec_module(BENCH)
+BENCH = load_authenticated_module(
+    "product_baseline_cleanup", PATH, "tools/perf/run_product_baseline.py"
+)
 
 
 def live_task(pid: int) -> bool:
