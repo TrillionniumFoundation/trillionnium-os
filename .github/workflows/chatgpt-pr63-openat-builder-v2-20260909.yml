@@ -75,9 +75,6 @@ jobs:
           gzip --test "$archive"
           gzip --decompress --stdout "$archive" > "$patch"
           echo "$PATCH_SHA256  $patch" | sha256sum --check -
-          git apply --check "$patch"
-          git apply "$patch"
-          git diff --check
           expected_paths="$(cat <<'PATHS'
           governance/pr41-review-index.v1.json
           tools/build/README.md
@@ -92,8 +89,11 @@ jobs:
           tools/tests/test_verify_host_reproducibility.py
           PATHS
           )"
-          actual_paths="$(git diff --name-only | LC_ALL=C sort)"
+          actual_paths="$(git apply --numstat "$patch" | cut -f3 | LC_ALL=C sort)"
           test "$actual_paths" = "$expected_paths"
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
       - name: Verify launch trust and descriptor-root selection
         shell: bash
         run: |
