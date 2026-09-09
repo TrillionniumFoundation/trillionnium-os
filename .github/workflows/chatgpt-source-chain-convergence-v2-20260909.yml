@@ -1,0 +1,372 @@
+name: ChatGPT source chain convergence v2
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr63-source-export-20260909
+
+permissions:
+  actions: read
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-source-chain-convergence-v2-20260909
+  cancel-in-progress: true
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Sequentially converge source candidates after protected merges
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import importlib.util
+          import json
+          import os
+          import subprocess
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          from pathlib import Path
+
+          repo = os.environ['REPOSITORY']
+          org, repo_name = repo.split('/', 1)
+          token = os.environ['GH_TOKEN']
+          api = 'https://api.github.com'
+          branches = [
+              'codex/perf-harness-isolation-20260908',
+              'codex/repository-truth-profiles-20260908',
+              'codex/effect-lifecycle-model-20260908',
+              'codex/executable-module-contracts-v1-20260909',
+              'codex/performance-measurement-v1-20260909',
+              'codex/observe-shadow-telemetry-v1-20260909',
+          ]
+
+          def request(method, path, payload=None):
+              data = None if payload is None else json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  api + path, data=data, method=method,
+                  headers={
+                      'Accept': 'application/vnd.github+json',
+                      'Authorization': f'Bearer {token}',
+                      'X-GitHub-Api-Version': '2022-11-28',
+                      'User-Agent': 'trillionnium-source-chain-v2',
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      raw = response.read(16 * 1024 * 1024 + 1)
+              except urllib.error.HTTPError as error:
+                  body = error.read(64 * 1024).decode('utf-8', 'replace')
+                  raise RuntimeError(f'{method} {path}: HTTP {error.code}: {body}') from error
+              if len(raw) > 16 * 1024 * 1024:
+                  raise RuntimeError(f'oversized API response: {path}')
+              return None if not raw else json.loads(raw)
+
+          def command(*args, cwd=None, env=None, check=True, timeout=1800):
+              result = subprocess.run(
+                  list(args), cwd=cwd, env=env, text=True,
+                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                  check=False, timeout=timeout,
+              )
+              if check and result.returncode != 0:
+                  raise RuntimeError(
+                      f'command failed {result.returncode}: {args}\n'
+                      f'stdout:\n{result.stdout[-10000:]}\n'
+                      f'stderr:\n{result.stderr[-10000:]}'
+                  )
+              return result
+
+          def main_identity():
+              value = request('GET', f'/repos/{repo}/branches/main')
+              return value['commit']['sha']
+
+          def pull_for(ref):
+              head = urllib.parse.quote(f'{org}:{ref}', safe=':')
+              values = request('GET', f'/repos/{repo}/pulls?state=all&head={head}&per_page=20')
+              return max(values, key=lambda item: item['number']) if values else None
+
+          def post(number, body):
+              request('POST', f'/repos/{repo}/issues/{number}/comments', {'body': body})
+
+          def status_records(root):
+              raw = command(
+                  'git', 'diff', '--cached', '--name-status', '-z', '-M', 'origin/main', cwd=root
+              ).stdout
+              values = raw.split('\0')
+              if values and values[-1] == '':
+                  values.pop()
+              result = []
+              index = 0
+              while index < len(values):
+                  token_value = values[index]
+                  index += 1
+                  code = token_value[0]
+                  if code == 'R':
+                      previous, path = values[index], values[index + 1]
+                      index += 2
+                      result.append({'path': path, 'status': 'renamed', 'previous_path': previous})
+                  elif code == 'C':
+                      _, path = values[index], values[index + 1]
+                      index += 2
+                      result.append({'path': path, 'status': 'copied', 'previous_path': None})
+                  else:
+                      path = values[index]
+                      index += 1
+                      result.append({
+                          'path': path,
+                          'status': {'A': 'added', 'M': 'modified', 'D': 'removed'}.get(code, 'changed'),
+                          'previous_path': None,
+                      })
+              return sorted(result, key=lambda item: item['path'])
+
+          def rebuild_review_index(root, number, main_sha, main_tree, predecessor, predecessor_tree):
+              index_path = root / 'governance/pr41-review-index.v1.json'
+              index_path.parent.mkdir(parents=True, exist_ok=True)
+              if not index_path.exists():
+                  index_path.write_text('{}\n', encoding='utf-8')
+              command('git', 'add', '-A', cwd=root)
+              records = status_records(root)
+              if not any(row['path'] == 'governance/pr41-review-index.v1.json' for row in records):
+                  records.append({
+                      'path': 'governance/pr41-review-index.v1.json',
+                      'status': 'modified', 'previous_path': None,
+                  })
+                  records.sort(key=lambda row: row['path'])
+              path = root / 'tools/verify_g1_review_index.py'
+              spec = importlib.util.spec_from_file_location('review_index_v2', path)
+              if spec is None or spec.loader is None:
+                  raise RuntimeError('review-index verifier unavailable')
+              module = importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(module)
+              observation = {
+                  'repository': repo,
+                  'pull_request': number,
+                  'base_commit': main_sha,
+                  'base_tree': main_tree,
+                  'head_commit': predecessor,
+                  'head_tree': predecessor_tree,
+                  'changes': records,
+              }
+              index_value = module.propose_index(
+                  observation,
+                  predecessor_commit=predecessor,
+                  predecessor_tree=predecessor_tree,
+                  accountable_owner='ProfHepta',
+                  runtime_reviewer='Tomasrgbsf',
+                  evidence_reviewer='Franksudoman',
+              )
+              index_path.write_text(
+                  json.dumps(index_value, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + '\n',
+                  encoding='utf-8',
+              )
+              command('git', 'add', '-A', cwd=root)
+              final_records = status_records(root)
+              if final_records != records:
+                  observation['changes'] = final_records
+                  index_value = module.propose_index(
+                      observation,
+                      predecessor_commit=predecessor,
+                      predecessor_tree=predecessor_tree,
+                      accountable_owner='ProfHepta',
+                      runtime_reviewer='Tomasrgbsf',
+                      evidence_reviewer='Franksudoman',
+                  )
+                  index_path.write_text(
+                      json.dumps(index_value, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False) + '\n',
+                      encoding='utf-8',
+                  )
+                  command('git', 'add', '-A', cwd=root)
+                  final_records = status_records(root)
+              return final_records
+
+          def focused_preflight(root):
+              command('git', 'diff', '--cached', '--check', cwd=root)
+              command('python3', '-m', 'compileall', '-q', 'tools', cwd=root)
+              if (root / 'tools/docs/generate_global_docs.py').exists():
+                  command('python3', 'tools/docs/generate_global_docs.py', '--check', cwd=root)
+              if (root / 'tools/docs/verify_global_docs.py').exists():
+                  command('python3', 'tools/docs/verify_global_docs.py', cwd=root)
+              selected = []
+              for name in (
+                  'tools.tests.test_repository_authority',
+                  'tools.tests.test_effect_lifecycle',
+                  'tools.tests.test_executable_module_contracts',
+                  'tools.tests.test_module_contracts',
+                  'tools.tests.test_run_product_baseline',
+                  'tools.tests.test_verify_host_reproducibility',
+                  'tools.tests.test_telemetry_control',
+                  'tools.tests.test_metric_catalog',
+              ):
+                  if (root / (name.replace('.', '/') + '.py')).exists():
+                      selected.append(name)
+              if selected:
+                  command('python3', '-m', 'unittest', *selected, '-v', cwd=root)
+
+          report = {
+              'schema': 'org.trillionnium.source-chain-convergence.v2',
+              'automatic_redispatch': False,
+              'administrator_bypass': False,
+              'events': [],
+          }
+          deadline = time.monotonic() + 40 * 60
+          while time.monotonic() < deadline:
+              target = None
+              blocked = None
+              for ref in branches:
+                  pull = pull_for(ref)
+                  if pull is None:
+                      blocked = {'ref': ref, 'decision': 'NO_PULL_REQUEST'}
+                      break
+                  if pull.get('merged'):
+                      continue
+                  if pull.get('state') != 'open':
+                      blocked = {
+                          'ref': ref, 'pr': pull['number'],
+                          'decision': 'CLOSED_WITHOUT_MERGE',
+                      }
+                      break
+                  target = pull
+                  break
+              if blocked is not None:
+                  report['events'].append(blocked)
+                  time.sleep(30)
+                  continue
+              if target is None:
+                  report['events'].append({'decision': 'ALL_SOURCE_PRS_MERGED'})
+                  break
+
+              number = target['number']
+              ref = target['head']['ref']
+              head = target['head']['sha']
+              main_sha = main_identity()
+              if target['base']['sha'] == main_sha and main_sha in (target.get('body') or ''):
+                  report['events'].append({
+                      'pr': number, 'ref': ref, 'head': head,
+                      'main': main_sha, 'decision': 'WAITING_FOR_CI_REVIEW_OR_MERGE',
+                  })
+                  time.sleep(30)
+                  continue
+
+              root = Path('/tmp/source-chain-v2')
+              if root.exists():
+                  command('rm', '-rf', str(root))
+              clone_url = f'https://x-access-token:{token}@github.com/{repo}.git'
+              environment = dict(os.environ)
+              environment.update({'GIT_TERMINAL_PROMPT': '0', 'LC_ALL': 'C', 'LANG': 'C'})
+              command('git', 'clone', '--no-tags', '--branch', ref, clone_url, str(root), env=environment)
+              command('git', 'fetch', '--no-tags', 'origin', 'main', cwd=root, env=environment)
+              observed = command('git', 'rev-parse', 'HEAD', cwd=root).stdout.strip()
+              if observed != head:
+                  raise RuntimeError(f'head moved during convergence: expected {head}, got {observed}')
+              main_sha = command('git', 'rev-parse', 'origin/main', cwd=root).stdout.strip()
+              main_tree = command('git', 'rev-parse', 'origin/main^{tree}', cwd=root).stdout.strip()
+              predecessor_tree = command('git', 'rev-parse', 'HEAD^{tree}', cwd=root).stdout.strip()
+              command('git', 'config', 'user.name', 'Qian QI', cwd=root)
+              command('git', 'config', 'user.email', '102159240+ProfHepta@users.noreply.github.com', cwd=root)
+
+              ancestor = command(
+                  'git', 'merge-base', '--is-ancestor', main_sha, 'HEAD', cwd=root, check=False
+              ).returncode == 0
+              if not ancestor:
+                  merged = command(
+                      'git', 'merge', '--no-ff', '--no-commit', 'origin/main', cwd=root, check=False
+                  )
+                  if merged.returncode != 0:
+                      command('git', 'merge', '--abort', cwd=root, check=False)
+                      post(number, (
+                          f'## Explicit convergence failed closed\n\n'
+                          f'`{ref}@{head}` conflicts with protected `main@{main_sha}`. '
+                          'No automatic conflict resolution, force push, review dismissal or '
+                          'administrator bypass was performed.\n\n'
+                          f'```text\n{merged.stderr[-5000:]}\n```'
+                      ))
+                      report['events'].append({
+                          'pr': number, 'ref': ref, 'head': head, 'main': main_sha,
+                          'decision': 'MERGE_CONFLICT_FAIL_CLOSED',
+                      })
+                      break
+              else:
+                  # Create a fresh exact object after rebinding the review index.
+                  command('git', 'reset', '--mixed', 'HEAD', cwd=root)
+
+              records = rebuild_review_index(
+                  root, number, main_sha, main_tree, head, predecessor_tree
+              )
+              focused_preflight(root)
+              if not command('git', 'diff', '--cached', '--quiet', cwd=root, check=False).returncode:
+                  command('git', 'commit', '--allow-empty', '-m', f'chore: requalify PR #{number} on current main', cwd=root)
+              else:
+                  command('git', 'commit', '-m', f'chore: converge PR #{number} with current main', cwd=root)
+              new_head = command('git', 'rev-parse', 'HEAD', cwd=root).stdout.strip()
+              new_tree = command('git', 'rev-parse', 'HEAD^{tree}', cwd=root).stdout.strip()
+              if not ancestor:
+                  parents = command('git', 'show', '-s', '--format=%P', 'HEAD', cwd=root).stdout.split()
+                  if main_sha not in parents:
+                      raise RuntimeError('protected main is not an ordered convergence parent')
+              command('git', 'push', 'origin', f'HEAD:{ref}', cwd=root, env=environment)
+
+              exact = (
+                  '## Current exact subject\n\n'
+                  '```text\n'
+                  f'base branch:        main\n'
+                  f'base commit:        {main_sha}\n'
+                  f'base tree:          {main_tree}\n'
+                  f'review predecessor: {head}\n'
+                  f'head commit:        {new_head}\n'
+                  f'head tree:          {new_tree}\n'
+                  f'changed paths:      {len(records)}\n'
+                  '```\n\n'
+                  'This object is explicitly rebound to the current protected main. Any '
+                  'base/head/tree/workflow/review movement invalidates qualification. No '
+                  'old-head evidence or review transfers.\n\n'
+              )
+              old_body = target.get('body') or ''
+              if old_body.startswith('## Current exact subject'):
+                  position = old_body.find('\n## ', 4)
+                  old_body = old_body[position + 1:] if position >= 0 else ''
+              request('PATCH', f'/repos/{repo}/pulls/{number}', {'body': exact + old_body})
+              try:
+                  request('POST', f'/repos/{repo}/pulls/{number}/requested_reviewers', {
+                      'reviewers': ['Tomasrgbsf', 'Franksudoman'],
+                  })
+              except RuntimeError as error:
+                  if '422' not in str(error):
+                      raise
+              post(number, (
+                  f'## Current-main source candidate published\n\n'
+                  f'`{ref}` moved from `{head}` to `{new_head}` and is bound to '
+                  f'protected `main@{main_sha}`. Focused preflight passed. Full exact-head '
+                  'and deterministic synthetic-merge workflows plus fresh decisions from '
+                  '`Tomasrgbsf` and `Franksudoman` are still required. No administrator '
+                  'bypass or L2-L6 authority is granted.'
+              ))
+              report['events'].append({
+                  'pr': number, 'ref': ref, 'old_head': head,
+                  'new_head': new_head, 'new_tree': new_tree,
+                  'main': main_sha, 'changed_paths': len(records),
+                  'decision': 'CURRENT_MAIN_CANDIDATE_PUBLISHED',
+              })
+              time.sleep(30)
+
+          Path('/tmp/source-chain-v2.json').write_text(
+              json.dumps(report, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          PY
+      - name: Upload convergence ledger
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: source-chain-convergence-v2-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: /tmp/source-chain-v2.json
