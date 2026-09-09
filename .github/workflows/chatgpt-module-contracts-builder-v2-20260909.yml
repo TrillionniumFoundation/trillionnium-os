@@ -1,0 +1,191 @@
+name: ChatGPT executable module-contract builder v2
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-module-contracts-controller-20260909
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-executable-module-contract-builder-v2
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      EFFECT_BRANCH: codex/effect-lifecycle-model-20260908
+      CANDIDATE_BRANCH: codex/executable-module-contracts-20260909
+      CONTROL_BRANCH: ops/chatgpt-module-contracts-controller-20260909
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Wait for protected effect-lifecycle integration
+        id: dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          for iteration in $(seq 1 720); do
+            number="$(gh api "repos/$REPOSITORY/pulls?state=all&per_page=100" --jq ".[] | select(.head.ref == \"$EFFECT_BRANCH\" and .head.repo.full_name == \"$REPOSITORY\") | .number" | tail -n1)"
+            if test -n "$number"; then
+              state="$(gh api "repos/$REPOSITORY/pulls/$number" --jq .state)"
+              merged="$(gh api "repos/$REPOSITORY/pulls/$number" --jq .merged)"
+              if test "$state" = closed && test "$merged" = true; then break; fi
+            fi
+            sleep 15
+          done
+          test -n "${number:-}"
+          test "$state" = closed
+          test "$merged" = true
+          main_head="$(gh api "repos/$REPOSITORY/git/ref/heads/main" --jq .object.sha)"
+          printf 'main_head=%s\n' "$main_head" >> "$GITHUB_OUTPUT"
+
+      - name: Check out protected main
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.dependency.outputs.main_head }}
+          persist-credentials: true
+
+      - name: Generate and publish final source candidate
+        shell: bash
+        env:
+          MAIN_HEAD: ${{ steps.dependency.outputs.main_head }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$MAIN_HEAD"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          if gh api "repos/$REPOSITORY/git/ref/heads/$CANDIDATE_BRANCH" >/dev/null 2>&1; then
+            git fetch --no-tags origin "$CANDIDATE_BRANCH"
+            git switch -C "$CANDIDATE_BRANCH" "origin/$CANDIDATE_BRANCH"
+            old_candidate="$(git --no-replace-objects rev-parse HEAD)"
+            set +e
+            git merge --no-ff --no-commit "$MAIN_HEAD"
+            merge_status=$?
+            set -e
+            unmerged="$(git diff --name-only --diff-filter=U | LC_ALL=C sort)"
+            if test -n "$unmerged"; then
+              test "$unmerged" = governance/pr41-review-index.v1.json
+              git checkout --theirs governance/pr41-review-index.v1.json
+              git add governance/pr41-review-index.v1.json
+            else
+              test "$merge_status" -eq 0
+            fi
+          else
+            git switch -c "$CANDIDATE_BRANCH"
+            old_candidate="$MAIN_HEAD"
+          fi
+
+          git fetch --no-tags origin "$CONTROL_BRANCH"
+          control_commit="$(git --no-replace-objects rev-parse FETCH_HEAD)"
+          test "$control_commit" = "$GITHUB_SHA"
+          git show "$control_commit:ops/build-module-contracts.py" > "${RUNNER_TEMP}/generator-original.py"
+          git show "$control_commit:ops/patch-module-contract-generator.py" > "${RUNNER_TEMP}/patch-generator.py"
+          git show "$control_commit:ops/test-module-contracts.py" > "${RUNNER_TEMP}/test_module_contracts.py"
+          python3 "${RUNNER_TEMP}/patch-generator.py" "${RUNNER_TEMP}/generator-original.py" "${RUNNER_TEMP}/generator.py"
+          mkdir -p tools/tests
+          cp "${RUNNER_TEMP}/test_module_contracts.py" tools/tests/test_module_contracts.py
+          python3 "${RUNNER_TEMP}/generator.py" --root "$PWD" --write --install
+          python3 tools/docs/generate_global_docs.py
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 android-integration/module-contracts/verify_vectors.py
+          python3 -m unittest tools.tests.test_module_contracts -v
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          cargo fmt --all -- --check
+          cargo test -p trillionnium-owner-open-types --test module_contract_vectors
+          git add -A
+          git diff --cached --check
+          git commit -m 'feat(contracts): generate executable module API state and error contracts'
+          generation_head="$(git --no-replace-objects rev-parse HEAD)"
+          generation_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          git push origin "HEAD:$CANDIDATE_BRANCH"
+
+          pr_number="$(gh api "repos/$REPOSITORY/pulls?state=all&per_page=100" --jq ".[] | select(.head.ref == \"$CANDIDATE_BRANCH\" and .head.repo.full_name == \"$REPOSITORY\") | .number" | tail -n1)"
+          if test -z "$pr_number"; then
+            response="$(gh api -X POST "repos/$REPOSITORY/pulls" -f title='feat: generate executable module API, state and error contracts' -f head="$CANDIDATE_BRANCH" -f base=main -F draft=true -f body='Parent: #55 and #51. Deterministic source-only module contracts; exact packet follows in the final head. No L2-L6 or release authority.')"
+            pr_number="$(printf '%s' "$response" | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+          else
+            state="$(gh api "repos/$REPOSITORY/pulls/$pr_number" --jq .state)"
+            merged="$(gh api "repos/$REPOSITORY/pulls/$pr_number" --jq .merged)"
+            test "$merged" = false
+            if test "$state" = closed; then gh api -X PATCH "repos/$REPOSITORY/pulls/$pr_number" -f state=open >/dev/null; fi
+          fi
+
+          main_tree="$(git --no-replace-objects rev-parse "$MAIN_HEAD^{tree}")"
+          python3 - "$PWD" "$MAIN_HEAD" "$main_tree" "$generation_head" "$generation_tree" "$pr_number" <<'PY'
+          import importlib.util,json,subprocess,sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); main,main_tree,predecessor,predecessor_tree=sys.argv[2:6]; number=int(sys.argv[6])
+          spec=importlib.util.spec_from_file_location('_review_index',root/'tools/verify_g1_review_index.py')
+          if spec is None or spec.loader is None: raise SystemExit('cannot load review-index verifier')
+          verifier=importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+          raw=subprocess.check_output(['git','--no-replace-objects','-C',str(root),'diff','--name-status','-M',main],text=True)
+          mapping={'A':'added','M':'modified','D':'removed','T':'changed'}; changes=[]
+          for line in raw.splitlines():
+              fields=line.split('\t'); code=fields[0]
+              if code.startswith('R'): changes.append({'path':fields[2],'status':'renamed','previous_path':fields[1]})
+              else:
+                  status=mapping.get(code[:1])
+                  if status is None or len(fields)!=2: raise SystemExit(f'unsupported diff status: {line}')
+                  changes.append({'path':fields[1],'status':status,'previous_path':None})
+          changes.sort(key=lambda item:item['path'])
+          observation={'repository':'TrillionniumFoundation/trillionnium-os','pull_request':number,'base_commit':main,'base_tree':main_tree,'changes':changes}
+          index=verifier.propose_index(observation,predecessor_commit=predecessor,predecessor_tree=predecessor_tree,
+              accountable_owner='ProfHepta',runtime_reviewer='Tomasrgbsf',evidence_reviewer='Franksudoman')
+          (root/verifier.INDEX_PATH).write_text(json.dumps(index,indent=2,sort_keys=True,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8')
+          PY
+          git add governance/pr41-review-index.v1.json
+          git commit -m 'docs(contracts): bind executable contracts to exact review inventory'
+          final_head="$(git --no-replace-objects rev-parse HEAD)"
+          final_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          count="$(git diff --name-only "$MAIN_HEAD...$final_head" | wc -l | tr -d ' ')"
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --workspace --all-targets
+          cargo clippy --workspace --all-targets -- -D warnings
+          cat > "${RUNNER_TEMP}/body.md" <<EOF
+          ## Exact subject
+
+          \`\`\`text
+          base branch:               main
+          base commit:               $MAIN_HEAD
+          base tree:                 $main_tree
+          head commit:               $final_head
+          head tree:                 $final_tree
+          changed paths from base:   $count
+          \`\`\`
+
+          Any subject, workflow-attempt, artifact or review movement invalidates qualification.
+
+          ## Scope
+
+          Resolve every logical module API/state/error label to deterministic JSON
+          Schema, compatibility metadata and shared valid/invalid vectors. Bind
+          concrete source/test identities and common Rust serde envelopes. Python,
+          Rust and the Android build-host consumer execute the same vectors.
+
+          ## Non-claims
+
+          This is L1 source evidence only. It does not establish installation,
+          Android image compilation, physical device, destructive fault, signing,
+          OTA or public release. Automatic redispatch after uncertainty is false.
+          EOF
+          sed -i 's/^          //' "${RUNNER_TEMP}/body.md"
+          gh api -X PATCH "repos/$REPOSITORY/pulls/$pr_number" --input <(python3 - "${RUNNER_TEMP}/body.md" <<'PY'
+          from pathlib import Path
+          import json,sys
+          print(json.dumps({'body':Path(sys.argv[1]).read_text(encoding='utf-8')}))
+          PY
+          ) >/dev/null
+          git push origin "HEAD:$CANDIDATE_BRANCH"
