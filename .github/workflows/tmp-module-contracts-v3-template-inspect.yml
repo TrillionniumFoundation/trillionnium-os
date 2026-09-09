@@ -1,0 +1,64 @@
+name: Temporary module-contract v3 template inspect
+
+on:
+  push:
+    branches:
+      - ops/module-contracts-v3-preflight-fix-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temporary-module-contract-v3-template-inspect
+  cancel-in-progress: true
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Authenticate, extract and inspect generator templates
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="${RUNNER_TEMP:?}/inspect"
+          mkdir -p "$root/src"
+          { head -c 5500 -- ops/module-contracts-v3-source.tar.xz.b64.00; cat -- ops/module-contracts-v3-source.tar.xz.b64.01 ops/module-contracts-v3-source.tar.xz.b64.02 ops/module-contracts-v3-source.tar.xz.b64.03; } > "$root/bundle.b64"
+          test "$(sha256sum "$root/bundle.b64" | cut -d' ' -f1)" = 7ad6edd6696b7ebc2047952d6723426eaab4357a2d9ed304220e61db1d3bfcf9
+          base64 --decode -- "$root/bundle.b64" > "$root/bundle.tar.xz"
+          test "$(sha256sum "$root/bundle.tar.xz" | cut -d' ' -f1)" = 96dbc9a46bb632915f4c80d0588c443d60f771d80a9f77e4ac3e54a2030eb88f
+          xz --decompress --stdout -- "$root/bundle.tar.xz" > "$root/bundle.tar"
+          test "$(sha256sum "$root/bundle.tar" | cut -d' ' -f1)" = c3d175853a44194beeb1a4739f036f8e05fff48965d0b38f4ac6bd131149e28f
+          tar -xf "$root/bundle.tar" -C "$root/src"
+          generator="$root/src/generator.py"
+          python3 - "$generator" <<'PY'
+          from pathlib import Path
+          import sys
+          text = Path(sys.argv[1]).read_text(encoding="utf-8")
+          needles = [
+              'println!("{}", serde_json::to_string(&value).expect("serialize schemars bundle"));',
+              'use super::{decode_strict_value, MechanicalLimits, ProtocolError};',
+              'return Err(invalid("module contract ordering or fencing identity is invalid"));',
+              'use serde_json::{json, Value};',
+              'parse_module_api, parse_module_error, parse_module_state, ModuleApiEnvelopeV1,',
+              'let expected = read_json(',
+              'if !directory.is_dir() || directory.file_name().and_then(|v| v.to_str()) == Some("_shared") {',
+              'let name = path.file_name().and_then(|value| value.to_str()).expect("name");',
+          ]
+          lines = text.splitlines()
+          for needle in needles:
+              matches = [i for i, line in enumerate(lines) if needle in line]
+              print(f"NEEDLE {needle!r} MATCHES {len(matches)}")
+              for i in matches:
+                  start = max(0, i - 4)
+                  end = min(len(lines), i + 9)
+                  print(f"--- lines {start + 1}-{end} ---")
+                  for j in range(start, end):
+                      print(f"{j + 1:05d}:{lines[j]}")
+          PY
