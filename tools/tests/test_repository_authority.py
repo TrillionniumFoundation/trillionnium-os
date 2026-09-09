@@ -140,6 +140,105 @@ class RepositoryAuthorityTest(unittest.TestCase):
         with self.assertRaisesRegex(VERIFY.VerificationError, "forbidden authority path"):
             VERIFY.verify(self.root)
 
+    def test_html_data_href_cannot_mask_actual_external_href(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + '\nCanonical source for this program: '
+              '<a data-href="docs/START_HERE.md" '
+              'href="https://example.invalid/plan">plan</a>\n'
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
+
+    def test_html_data_src_cannot_mask_actual_external_src(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + '\nCanonical source for this program: '
+              '<img data-src="docs/START_HERE.md" '
+              'src="https://example.invalid/plan">\n'
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
+
+    def test_html_title_text_cannot_mask_actual_href(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical source for this program: "
+              "<a title='href=\"docs/START_HERE.md\"' "
+              "href=\"https://example.invalid/plan\">plan</a>\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
+
+    def test_html_actual_target_is_checked_in_either_attribute_order(self) -> None:
+        for fragment in (
+            '<a href="https://example.invalid/plan" data-href="docs/START_HERE.md">plan</a>',
+            '<a data-href="docs/START_HERE.md" href="https://example.invalid/plan">plan</a>',
+        ):
+            with self.subTest(fragment=fragment):
+                root = Path(self.temp.name) / ("html-order-" + str(abs(hash(fragment))))
+                shutil.copytree(
+                    ROOT,
+                    root,
+                    ignore=shutil.ignore_patterns(".git", "target", "__pycache__", "*.pyc"),
+                )
+                path = root / "README.md"
+                path.write_text(
+                    path.read_text()
+                    + "\nCanonical source for this program: " + fragment + "\n"
+                )
+                with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+                    VERIFY.verify(root)
+
+    def test_html_mixed_case_unquoted_href_is_checked(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanonical source for this program: "
+              "<A DATA-HREF=docs/START_HERE.md HREF=https://example.invalid/plan>plan</A>\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
+
+    def test_duplicate_html_target_attribute_fails_closed(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + '\nCanonical source for this program: '
+              '<a href="docs/START_HERE.md" href="https://example.invalid/plan">plan</a>\n'
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "duplicate HTML attributes"):
+            VERIFY.verify(self.root)
+
+    def test_inline_html_split_word_preserves_external_authority_phrase(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanoni<b>cal</b> plan: [external](https://example.invalid/plan).\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "external target"):
+            VERIFY.verify(self.root)
+
+    def test_inline_html_split_word_preserves_local_authority_phrase(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nSource of tr<span>uth</span> is [self](README.md).\n"
+        )
+        with self.assertRaisesRegex(VERIFY.VerificationError, "unregistered target"):
+            VERIFY.verify(self.root)
+
+    def test_inline_html_formatting_keeps_registered_authority_valid(self) -> None:
+        path = self.root / "README.md"
+        path.write_text(
+            path.read_text()
+            + "\nCanoni<b>cal</b> plan: [current](docs/START_HERE.md).\n"
+        )
+        VERIFY.verify(self.root)
+
     def test_wrapped_inline_authority_link_fails(self) -> None:
         self.add_forbidden_document()
         path = self.root / "README.md"
