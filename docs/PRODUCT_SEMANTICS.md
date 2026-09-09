@@ -15,7 +15,7 @@ The product loop is:
 ```text
 owner intent
   -> one Codex/provider turn
-  -> direct shell, ordinary ADB, System API or Accessibility primitive
+  -> direct shell, ordinary ADB, pipe/PTY job or retained replay primitive
   -> mechanical execution substrate
   -> raw observation
   -> the same Codex/provider turn
@@ -57,8 +57,20 @@ epoch, missing required durability, unavailable resource capacity or platform
 failure. It must preserve the raw error and must not rename it as a semantic
 approval decision.
 
-## 4. Direct tools
+## 4. Current owner-open-core capabilities
 
+<!-- PROFILE_CAPABILITIES_BEGIN -->
+- `shell.exec`
+- `adb.exec`
+- `job.pipe`
+- `job.pty`
+- `stream.resume`
+- `event.replay`
+<!-- PROFILE_CAPABILITIES_END -->
+
+Each identifier above must resolve to exactly one owning module and selected
+implementation path in
+[`machine/product-profile-catalog.v1.json`](machine/product-profile-catalog.v1.json).
 `shell.exec` accepts either a command string or element-preserving arguments.
 `adb.exec` accepts ordinary ADB arguments. Unknown or future ADB subcommands
 remain transport-valid. No mechanism layer may inject a serial, host, port,
@@ -96,6 +108,11 @@ The control plane decides where and when mechanically admissible work may run.
 Owner-open dogfood intentionally grants broad control to the configured Codex
 instance. Safety relies on testing, bounded mechanics, backups, truthful
 uncertainty and an out-of-band emergency stop—not a hidden second semantic gate.
+
+The retained typed System API and Accessibility implementations belong only to
+the non-activatable `sealed-typed-android-extensions` profile. They offer no
+current product capability until logical modules, executable schemas, privacy and
+SELinux review, and authorized device evidence are all present.
 
 A future sealed or public profile may add explicit restrictions, but it must
 reuse the same direct-tool and effect identity contracts and must never silently

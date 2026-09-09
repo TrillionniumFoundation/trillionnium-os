@@ -1,5 +1,7 @@
 # Trillionnium Agent stdio proxy
 
+> **HISTORICAL_NON_AUTHORITATIVE.** This component is excluded from the
+> `owner-open-core` default profile and cannot define current product behavior.
 Lifecycle classification: **`sealed_fixed_fd_proxy`**  
 Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)  
 Default owner-open source closure: **not selected**

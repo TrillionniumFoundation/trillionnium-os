@@ -1,5 +1,7 @@
 # Trillionnium legacy task registry
 
+> **HISTORICAL_NON_AUTHORITATIVE.** This component is excluded from the
+> `owner-open-core` default profile and cannot define current product behavior.
 Lifecycle classification: **`sealed_legacy_registry`**  
 Lifecycle authority: [`governance/component-lifecycle.v1.json`](../../governance/component-lifecycle.v1.json)  
 Default owner-open source closure: **not selected**
