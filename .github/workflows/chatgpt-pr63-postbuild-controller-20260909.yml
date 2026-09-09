@@ -1,0 +1,216 @@
+name: ChatGPT PR63 post-build controller
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr63-bootstrap-builder-20260909
+
+permissions:
+  actions: write
+  checks: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-pr63-postbuild-controller
+  cancel-in-progress: true
+
+jobs:
+  drive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      PR_NUMBER: "63"
+      OLD_HEAD: 0b2228aae3512650340cd50c84f52daf10e3649a
+      TARGET_BRANCH: codex/perf-harness-isolation-20260908
+      REVIEWER_RUNTIME: Tomasrgbsf
+      REVIEWER_EVIDENCE: Franksudoman
+    steps:
+      - name: Observe repaired exact head
+        id: subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          for iteration in $(seq 1 240); do
+            head="$(gh api "repos/$REPOSITORY/git/ref/heads/$TARGET_BRANCH" --jq .object.sha)"
+            if test "$head" != "$OLD_HEAD"; then
+              break
+            fi
+            sleep 15
+          done
+          test -n "${head:-}"
+          test "$head" != "$OLD_HEAD"
+          tree="$(gh api "repos/$REPOSITORY/git/commits/$head" --jq .tree.sha)"
+          base="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .base.sha)"
+          test "$base" = "$(gh api "repos/$REPOSITORY/git/ref/heads/main" --jq .object.sha)"
+          test "$(gh api "repos/$REPOSITORY/contents/tools/launch/verified_python_bootstrap_v1.py?ref=$head" --jq .type)" = file
+          test "$(gh api "repos/$REPOSITORY/contents/tools/verified-python-entrypoints.v1.json?ref=$head" --jq .type)" = file
+          printf 'head=%s\n' "$head" >> "$GITHUB_OUTPUT"
+          printf 'tree=%s\n' "$tree" >> "$GITHUB_OUTPUT"
+          printf 'base=%s\n' "$base" >> "$GITHUB_OUTPUT"
+
+      - name: Bind pull request body to repaired exact subject
+        shell: bash
+        env:
+          HEAD_SHA: ${{ steps.subject.outputs.head }}
+          HEAD_TREE: ${{ steps.subject.outputs.tree }}
+          BASE_SHA: ${{ steps.subject.outputs.base }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .body > "${RUNNER_TEMP}/body.md"
+          merge_ref="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq '.merge_commit_sha // "not-yet-materialized"')"
+          python3 - "$BASE_SHA" "$HEAD_SHA" "$HEAD_TREE" "$merge_ref" "${RUNNER_TEMP}/body.md" <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+          base, head, tree, merge_ref, path = sys.argv[1:]
+          body_path = Path(path)
+          body = body_path.read_text(encoding="utf-8")
+          subject = f'''## Exact subject
+
+          ```text
+          base branch:                  main
+          base commit:                  {base}
+          head commit:                  {head}
+          head tree:                    {tree}
+          GitHub merge-ref observation: {merge_ref}
+          changed paths from base:      15
+          ```
+
+          The decision surface is the exact base/head/tree plus the deterministic
+          ordered-parent synthetic receipt, exact workflow attempts, jobs,
+          artifacts and fresh reviews. Any movement invalidates qualification.
+          '''
+          subject = "\n".join(line[10:] if line.startswith("          ") else line for line in subject.splitlines())
+          body = re.sub(r"## Exact subject\n.*?(?=\n## )", subject.rstrip() + "\n", body, count=1, flags=re.S)
+          section = '''
+
+          ## Mandatory pre-interpreter bootstrap
+
+          Evidence-producing performance and reproducibility invocations now use
+          `tools/launch/verified_python_bootstrap_v1.py` as exact CPython `-I -c`
+          command source. The bootstrap descriptor-walks the strict entrypoint
+          manifest and launcher, hashes and compiles the same opened bytes, and
+          injects bootstrap/manifest/launcher identities. Each reviewed launcher
+          independently validates the actual kernel command source. Direct
+          pathname execution fails closed; import-only loading is explicitly
+          `IMPORT_ONLY_NO_EVIDENCE`. Hostile tests cover command-source mutation
+          and pre-interpreter launcher swap/restore for both entrypoints.
+          '''
+          section = "\n".join(line[10:] if line.startswith("          ") else line for line in section.splitlines())
+          if "## Mandatory pre-interpreter bootstrap" not in body:
+              body = body.rstrip() + section + "\n"
+          body_path.write_text(body, encoding="utf-8")
+          PY
+          gh api -X PATCH "repos/$REPOSITORY/pulls/$PR_NUMBER" --input <(python3 - "${RUNNER_TEMP}/body.md" <<'PY'
+          from pathlib import Path
+          import json, sys
+          print(json.dumps({"body": Path(sys.argv[1]).read_text(encoding="utf-8")}))
+          PY
+          ) >/dev/null
+
+      - name: Wait for exact-head and synthetic source gates
+        shell: bash
+        env:
+          HEAD_SHA: ${{ steps.subject.outputs.head }}
+        run: |
+          set -euo pipefail
+          python3 - "$REPOSITORY" "$HEAD_SHA" <<'PY'
+          import json
+          import os
+          import subprocess
+          import sys
+          import time
+
+          repository, head = sys.argv[1:]
+          required = {
+              "L1 graph, documentation, broker and MCP source closure",
+              "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+              "L1 exact-source-head aggregate candidate",
+              "L1 protected-main and exact-head independent-review readiness",
+              "L1 exact two-parent merge source qualification",
+          }
+          def api(path):
+              raw = subprocess.check_output(["gh", "api", path], text=True)
+              return json.loads(raw)
+          for _ in range(360):
+              runs = api(f"repos/{repository}/commits/{head}/check-runs?per_page=100")["check_runs"]
+              latest = {}
+              for run in sorted(runs, key=lambda item: item.get("started_at") or item.get("created_at") or ""):
+                  latest[run["name"]] = run
+              missing = sorted(required - set(latest))
+              pending = sorted(name for name in required if name in latest and latest[name]["status"] != "completed")
+              failed = sorted(name for name in required if name in latest and latest[name]["status"] == "completed" and latest[name]["conclusion"] != "success")
+              if failed:
+                  raise SystemExit(f"deterministic required checks failed: {failed}")
+              if not missing and not pending:
+                  break
+              time.sleep(20)
+          else:
+              raise SystemExit("required checks did not reach terminal success")
+          print(json.dumps({name: latest[name]["id"] for name in sorted(required)}, sort_keys=True))
+          PY
+
+      - name: Request exact-head review
+        shell: bash
+        env:
+          HEAD_SHA: ${{ steps.subject.outputs.head }}
+        run: |
+          set -euo pipefail
+          node_id="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .node_id)"
+          is_draft="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .draft)"
+          if test "$is_draft" = true; then
+            gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -F id="$node_id" >/dev/null
+          fi
+          gh api -X POST "repos/$REPOSITORY/pulls/$PR_NUMBER/requested_reviewers" \
+            -f reviewers[]="$REVIEWER_RUNTIME" \
+            -f reviewers[]="$REVIEWER_EVIDENCE" >/dev/null
+          gh api -X POST "repos/$REPOSITORY/issues/$PR_NUMBER/comments" \
+            -f body="Fresh non-author review requested for exact head \`$HEAD_SHA\` after mandatory pre-interpreter bootstrap repair and terminal source/synthetic gates. Historical reviews do not transfer. No L2-L6 or release authority is claimed." >/dev/null
+
+      - name: Wait for both exact-head approvals and ordinary protected merge
+        shell: bash
+        env:
+          HEAD_SHA: ${{ steps.subject.outputs.head }}
+        run: |
+          set -euo pipefail
+          python3 - "$REPOSITORY" "$PR_NUMBER" "$HEAD_SHA" "$REVIEWER_RUNTIME" "$REVIEWER_EVIDENCE" <<'PY'
+          import json
+          import subprocess
+          import sys
+          import time
+
+          repository, number, head, *reviewers = sys.argv[1:]
+          def api(path):
+              return json.loads(subprocess.check_output(["gh", "api", path], text=True))
+          for _ in range(360):
+              pull = api(f"repos/{repository}/pulls/{number}")
+              if pull["head"]["sha"] != head:
+                  raise SystemExit("pull request head moved during review")
+              values = api(f"repos/{repository}/pulls/{number}/reviews?per_page=100")
+              latest = {}
+              for item in sorted(values, key=lambda value: value.get("submitted_at") or ""):
+                  login = item["user"]["login"]
+                  if login in reviewers:
+                      latest[login] = item
+              approved = all(
+                  latest.get(login, {}).get("state") == "APPROVED"
+                  and latest.get(login, {}).get("commit_id") == head
+                  for login in reviewers
+              )
+              if approved:
+                  break
+              time.sleep(20)
+          else:
+              raise SystemExit("both exact-head approvals were not observed")
+          print(json.dumps({login: latest[login]["id"] for login in reviewers}, sort_keys=True))
+          PY
+          gh api -X PUT "repos/$REPOSITORY/pulls/$PR_NUMBER/merge" \
+            -f merge_method=squash \
+            -f sha="$HEAD_SHA" \
+            -f commit_title='perf: authenticate benchmark and reproducibility launch boundaries (#63)' \
+            -f commit_message='Require a separately executed, descriptor-rooted bootstrap before either evidence-producing Python launcher can execute. Bind bootstrap, entrypoint-manifest and launcher identities; reject direct pathname execution; retain fixed performance policy, complete process-group cleanup and all external-evidence non-claims.' \
+            --jq '{merged,sha,message}'
