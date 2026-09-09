@@ -1,4 +1,4 @@
-name: ChatGPT PR71 exact source export
+name: ChatGPT PR71 authority-closure repair
 
 on:
   push:
@@ -6,46 +6,82 @@ on:
       - ops/chatgpt-pr71-source-export-20260909
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: chatgpt-pr71-exact-source-export
-  cancel-in-progress: true
+  group: chatgpt-pr71-authority-closure-repair
+  cancel-in-progress: false
 
 jobs:
-  export:
+  repair:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 45
     env:
-      SOURCE_SHA: df17b9fb77940f24b8161c372f43cc9d0b09b938
-      SOURCE_TREE: 95bb605b130a96fc99470f9bf44d254560a38edc
+      TARGET_BRANCH: codex/repository-truth-profiles-20260908
+      EXPECTED_HEAD: df17b9fb77940f24b8161c372f43cc9d0b09b938
+      EXPECTED_TREE: 95bb605b130a96fc99470f9bf44d254560a38edc
+      CARRIER_SHA256: 377b4b657153913c9e2a833adb6a25705e9960a7a29a441e15acf28c25de8fea
+      GZIP_SHA256: 94f9983a72c95e2ff272a19d63f3a0932f0fef15e843a33317d5740d5a268322
+      PATCH_SHA256: ece323622d14cdd99a0e14caeea458d92599f9a8b4f0889fecf2d4b9f9568f08
+      PYTHONDONTWRITEBYTECODE: 1
     steps:
       - name: Check out exact PR71 head
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-          ref: ${{ env.SOURCE_SHA }}
-          persist-credentials: false
-      - name: Bind and archive clean exact tree
+          ref: ${{ env.TARGET_BRANCH }}
+          persist-credentials: true
+      - name: Reassemble and apply byte-bound authority repair
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
           if ! status="$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
             exit 1
           fi
           test -z "$status"
-          archive="${RUNNER_TEMP}/pr71-${SOURCE_SHA}.tar.gz"
-          git --no-replace-objects archive --format=tar.gz --output="$archive" "$SOURCE_SHA"
-          sha256sum "$archive" > "${archive}.sha256"
-      - name: Upload non-qualifying exact source export
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: pr71-source-${{ env.SOURCE_SHA }}
-          if-no-files-found: error
-          retention-days: 1
-          compression-level: 0
-          path: |
-            ${{ runner.temp }}/pr71-${{ env.SOURCE_SHA }}.tar.gz
-            ${{ runner.temp }}/pr71-${{ env.SOURCE_SHA }}.tar.gz.sha256
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git fetch --no-tags origin "$GITHUB_SHA"
+          test "$(git --no-replace-objects rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+
+          raw="${RUNNER_TEMP}/pr71-authority-fix.raw"
+          carrier="${RUNNER_TEMP}/pr71-authority-fix.patch.gz.b64"
+          archive="${RUNNER_TEMP}/pr71-authority-fix.patch.gz"
+          patch="${RUNNER_TEMP}/pr71-authority-fix.patch"
+          git show "$GITHUB_SHA:ops/pr71-authority-fix.part00" > "$raw"
+          tr -d '\r\n\t ' < "$raw" > "$carrier"
+          echo "$CARRIER_SHA256  $carrier" | sha256sum --check -
+          base64 --decode "$carrier" > "$archive"
+          echo "$GZIP_SHA256  $archive" | sha256sum --check -
+          gzip --test "$archive"
+          gzip --decompress --stdout "$archive" > "$patch"
+          echo "$PATCH_SHA256  $patch" | sha256sum --check -
+          git apply --check "$patch"
+          git apply "$patch"
+          git diff --check
+          expected_paths="$(printf '%s\n' tools/docs/verify_repository_authority.py tools/tests/test_repository_authority.py)"
+          actual_paths="$(git status --porcelain=v1 --untracked-files=all | sed 's/^...//' | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+      - name: Verify closed authority registry and visible-text semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B tools/docs/verify_repository_authority.py
+          python3 -B tools/docs/generate_global_docs.py --check
+          python3 -B tools/docs/verify_global_docs.py
+          python3 -B -m unittest \
+            tools.tests.test_repository_authority \
+            tools.tests.test_verify_global_docs_contracts \
+            tools.tests.test_owner_open_broker_module_documentation -q
+          git diff --check
+      - name: Commit and publish repaired exact head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add tools/docs/verify_repository_authority.py tools/tests/test_repository_authority.py
+          git diff --cached --check
+          test "$(git diff --cached --name-only | LC_ALL=C sort | wc -l)" -eq 2
+          git commit -m 'docs: close implicit authority and rendered-phrase escapes'
+          git push origin "HEAD:$TARGET_BRANCH"
