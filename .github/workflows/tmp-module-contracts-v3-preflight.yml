@@ -1,26 +1,31 @@
-name: Temporary executable module-contract v3 preflight
+name: Temporary executable module-contract v3 stacked preflight
 
 on:
   push:
     branches:
-      - ops/module-contracts-v3-preflight-20260909
+      - ops/module-contracts-v3-preflight-fix-20260910
 
 permissions:
   contents: write
 
 concurrency:
-  group: temporary-module-contracts-v3-preflight
+  group: temporary-module-contracts-v3-stacked-preflight
   cancel-in-progress: true
 
 jobs:
   generate-qualify-publish:
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 240
     env:
-      BASE_SHA: 3fae18209e3b4627fab28141b0ed1e3354e6d570
-      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-20260909
+      PROVENANCE_BASE_SHA: 3fae18209e3b4627fab28141b0ed1e3354e6d570
+      TARGET_BASE_SHA: 759398ea93fc92dc0d770b4f8e841382fbcdb5ab
+      TARGET_BASE_TREE: f96f88a9749c61b3ce0dde7167303c8261788f22
+      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-stack-20260910
+      CARRIER_B64_BYTES: "20968"
+      CARRIER_B64_SHA256: 7ad6edd6696b7ebc2047952d6723426eaab4357a2d9ed304220e61db1d3bfcf9
       CARRIER_XZ_SHA256: 96dbc9a46bb632915f4c80d0588c443d60f771d80a9f77e4ac3e54a2030eb88f
       CARRIER_TAR_SHA256: c3d175853a44194beeb1a4739f036f8e05fff48965d0b38f4ac6bd131149e28f
+      CARRIER_MANIFEST_SHA256: 19d5d89864d2ff0fdbfec825dae588ed032392bc2f0befaa7bd5b525b920c689
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_TERM_COLOR: always
 
@@ -43,39 +48,65 @@ jobs:
           toolchain: "1.93.0"
           components: rustfmt,clippy
 
-      - name: Bind controller bytes and check out immutable source subject
+      - name: Authenticate recovered controller bundle and create isolated target worktree
         shell: bash
         run: |
           set -euo pipefail
-          git --no-replace-objects merge-base --is-ancestor "$BASE_SHA" HEAD
-          observed="$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD | LC_ALL=C sort)"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$GITHUB_SHA"
+          git --no-replace-objects merge-base --is-ancestor "$PROVENANCE_BASE_SHA" HEAD
+          observed="$(git --no-replace-objects diff --name-only "$PROVENANCE_BASE_SHA"...HEAD | LC_ALL=C sort)"
           expected="$(printf '%s\n' \
+            '.github/workflows/tmp-module-contracts-v3-carrier-diagnostic.yml' \
             '.github/workflows/tmp-module-contracts-v3-preflight.yml' \
             'ops/module-contracts-v3-source.tar.xz.b64.00' \
             'ops/module-contracts-v3-source.tar.xz.b64.01' \
             'ops/module-contracts-v3-source.tar.xz.b64.02' \
             'ops/module-contracts-v3-source.tar.xz.b64.03' | LC_ALL=C sort)"
           test "$observed" = "$expected"
-          CARRIER_B64="${RUNNER_TEMP:?}/module-contracts-v3-source.tar.xz.b64"
-          CARRIER_XZ="${RUNNER_TEMP:?}/module-contracts-v3-source.tar.xz"
-          CARRIER_TAR="${RUNNER_TEMP:?}/module-contracts-v3-source.tar"
-          : > "$CARRIER_B64"
-          for suffix in 00 01 02 03; do
-            git --no-replace-objects show "HEAD:ops/module-contracts-v3-source.tar.xz.b64.${suffix}" >> "$CARRIER_B64"
+
+          for pair in 00:10000 01:5500 02:5500 03:4468; do
+            suffix="${pair%%:*}"
+            expected_bytes="${pair##*:}"
+            path="ops/module-contracts-v3-source.tar.xz.b64.${suffix}"
+            test -f "$path"
+            test ! -L "$path"
+            test "$(wc -c < "$path" | tr -d ' ')" = "$expected_bytes"
           done
-          test "$(wc -c < "$CARRIER_B64" | tr -d ' ')" = 20968
-          LC_ALL=C grep -Eq '^[A-Za-z0-9+/]+={0,2}$' "$CARRIER_B64"
-          base64 --decode -- "$CARRIER_B64" > "$CARRIER_XZ"
-          printf '%s  %s\n' "$CARRIER_XZ_SHA256" "$CARRIER_XZ" | sha256sum --check --strict
-          xz --decompress --stdout -- "$CARRIER_XZ" > "$CARRIER_TAR"
-          printf '%s  %s\n' "$CARRIER_TAR_SHA256" "$CARRIER_TAR" | sha256sum --check --strict
-          python3 - <<'PY'
+
+          bundle_root="${RUNNER_TEMP:?}/module-contracts-v3-source"
+          carrier_b64="${RUNNER_TEMP:?}/module-contracts-v3-source.tar.xz.b64"
+          carrier_xz="${RUNNER_TEMP:?}/module-contracts-v3-source.tar.xz"
+          carrier_tar="${RUNNER_TEMP:?}/module-contracts-v3-source.tar"
+          mkdir -m 0700 "$bundle_root"
+          head -c 5500 -- ops/module-contracts-v3-source.tar.xz.b64.00 > "$carrier_b64"
+          cat -- \
+            ops/module-contracts-v3-source.tar.xz.b64.01 \
+            ops/module-contracts-v3-source.tar.xz.b64.02 \
+            ops/module-contracts-v3-source.tar.xz.b64.03 >> "$carrier_b64"
+          test "$(wc -c < "$carrier_b64" | tr -d ' ')" = "$CARRIER_B64_BYTES"
+          printf '%s  %s\n' "$CARRIER_B64_SHA256" "$carrier_b64" | sha256sum --check --strict
+          python3 - "$carrier_b64" "$carrier_xz" <<'PY'
+          from pathlib import Path
+          import base64, binascii, sys
+          source, target = map(Path, sys.argv[1:])
+          raw = source.read_bytes()
+          if any(byte in b" \t\r\n" for byte in raw):
+              raise SystemExit("carrier contains whitespace")
+          try:
+              decoded = base64.b64decode(raw, validate=True)
+          except binascii.Error as exc:
+              raise SystemExit(f"invalid base64 carrier: {exc}") from exc
+          target.write_bytes(decoded)
+          PY
+          printf '%s  %s\n' "$CARRIER_XZ_SHA256" "$carrier_xz" | sha256sum --check --strict
+          xz --test -- "$carrier_xz"
+          xz --decompress --stdout -- "$carrier_xz" > "$carrier_tar"
+          printf '%s  %s\n' "$CARRIER_TAR_SHA256" "$carrier_tar" | sha256sum --check --strict
+
+          python3 - "$carrier_tar" "$bundle_root" <<'PY'
           from pathlib import Path, PurePosixPath
-          import hashlib, json, os, tarfile
-          root = Path(os.environ["RUNNER_TEMP"])
-          archive = root / "module-contracts-v3-source.tar"
-          destination = root / "module-contracts-v3-source"
-          destination.mkdir(mode=0o700)
+          import hashlib, json, os, sys, tarfile
+          archive, destination = map(Path, sys.argv[1:])
           with tarfile.open(archive, mode="r:") as tar:
               members = tar.getmembers()
               names = [member.name for member in members]
@@ -89,13 +120,13 @@ jobs:
                   if not member.isfile() or member.issym() or member.islnk():
                       raise SystemExit(f"unsupported controller member: {member.name}")
               manifest_raw = tar.extractfile("MANIFEST.json").read()
-              if hashlib.sha256(manifest_raw).hexdigest() != "19d5d89864d2ff0fdbfec825dae588ed032392bc2f0befaa7bd5b525b920c689":
+              if hashlib.sha256(manifest_raw).hexdigest() != os.environ["CARRIER_MANIFEST_SHA256"]:
                   raise SystemExit("controller manifest digest differs")
               manifest = json.loads(manifest_raw)
               if manifest.get("schema") != "org.trillionnium.module-contract-v3-controller-bundle.v1":
                   raise SystemExit("controller schema differs")
-              if manifest.get("base_commit") != os.environ["BASE_SHA"]:
-                  raise SystemExit("controller base differs")
+              if manifest.get("base_commit") != os.environ["PROVENANCE_BASE_SHA"]:
+                  raise SystemExit("controller provenance base differs")
               if manifest.get("automatic_redispatch") is not False or manifest.get("public_release") is not False:
                   raise SystemExit("controller claim ceiling differs")
               entries = manifest.get("entries")
@@ -103,6 +134,8 @@ jobs:
                   raise SystemExit("controller entries differ")
               for entry in entries:
                   name = entry["path"]
+                  if name not in {"generator.py", "test_module_contracts.py"}:
+                      raise SystemExit(f"unexpected controller source: {name}")
                   raw = tar.extractfile(name).read()
                   if len(raw) != entry["bytes"] or hashlib.sha256(raw).hexdigest() != entry["sha256"]:
                       raise SystemExit(f"controller source identity differs: {name}")
@@ -110,33 +143,36 @@ jobs:
                   target.write_bytes(raw)
                   os.chmod(target, int(entry["mode"], 8))
           PY
-          GENERATOR="${RUNNER_TEMP:?}/module-contracts-v3-source/generator.py"
-          TEST_SOURCE="${RUNNER_TEMP:?}/module-contracts-v3-source/test_module_contracts.py"
-          test -x "$GENERATOR"
-          test -r "$TEST_SOURCE"
-          git --no-replace-objects checkout --detach "$BASE_SHA"
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE_SHA"
-          test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          test -x "$bundle_root/generator.py"
+          test -r "$bundle_root/test_module_contracts.py"
+
+          test "$(git --no-replace-objects rev-parse "$TARGET_BASE_SHA^{tree}")" = "$TARGET_BASE_TREE"
+          worktree="${RUNNER_TEMP:?}/module-contracts-v3-worktree"
+          git worktree add --detach "$worktree" "$TARGET_BASE_SHA"
+          test "$(git -C "$worktree" --no-replace-objects rev-parse HEAD)" = "$TARGET_BASE_SHA"
+          test "$(git -C "$worktree" --no-replace-objects rev-parse HEAD^{tree})" = "$TARGET_BASE_TREE"
+          test -z "$(git -C "$worktree" --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
 
       - name: Generate from real Rust schemars types and execute shared vectors
         shell: bash
         run: |
           set -euo pipefail
+          worktree="${RUNNER_TEMP:?}/module-contracts-v3-worktree"
+          cd "$worktree"
           rustc --version | grep -F 'rustc 1.93.0 '
           mkdir -p tools/tests
           cp "${RUNNER_TEMP:?}/module-contracts-v3-source/test_module_contracts.py" tools/tests/test_module_contracts.py
           chmod 0644 tools/tests/test_module_contracts.py
           python3 "${RUNNER_TEMP:?}/module-contracts-v3-source/generator.py" --root "$PWD" --prepare --install
           cargo fmt --all -- --check
-          SCHEMARS="${RUNNER_TEMP:?}/module-contract-schemars.json"
+          schemars="${RUNNER_TEMP:?}/module-contract-schemars.json"
           cargo run --locked --quiet -p trillionnium-owner-open-types \
-            --bin generate_module_contract_schemas > "$SCHEMARS"
-          test -s "$SCHEMARS"
-          python3 tools/contracts/generate_module_contracts.py \
-            --write --schemars-file "$SCHEMARS"
+            --bin generate_module_contract_schemas > "$schemars"
+          test -s "$schemars"
+          python3 tools/contracts/generate_module_contracts.py --write --schemars-file "$schemars"
           python3 tools/contracts/generate_module_contracts.py --check
           python3 tools/contracts/generate_module_contracts.py --verify
-          python3 tools/contracts/check_module_contract_compatibility.py --base-ref "$BASE_SHA"
+          python3 tools/contracts/check_module_contract_compatibility.py --base-ref "$TARGET_BASE_SHA"
           python3 android-integration/module-contracts/verify_vectors.py
           python3 -m unittest tools.tests.test_module_contracts -v
           cargo fmt --all -- --check
@@ -152,6 +188,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          worktree="${RUNNER_TEMP:?}/module-contracts-v3-worktree"
+          cd "$worktree"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_BASE_SHA"
           git config user.name 'Qian QI'
           git config user.email '102159240+ProfHepta@users.noreply.github.com'
           git add -A
@@ -160,15 +199,18 @@ jobs:
           git diff --cached --check
           git commit -m 'feat(contracts): generate executable module API state and error contracts' \
             -m 'Resolve all 16 module labels to Rust-schemars-derived JSON Schema, byte-locked compatibility metadata, and shared Python/Rust/Android valid and hostile vectors. Preserve no-default, no-alias, no-automatic-redispatch and L1-only claim boundaries.'
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_BASE_SHA"
           test -z "$(git --no-replace-objects status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
 
       - name: Run complete source and planned qualification on clean candidate
         shell: bash
         run: |
           set -euo pipefail
+          worktree="${RUNNER_TEMP:?}/module-contracts-v3-worktree"
+          cd "$worktree"
           python3 tools/contracts/generate_module_contracts.py --check
           python3 tools/contracts/generate_module_contracts.py --verify
-          python3 tools/contracts/check_module_contract_compatibility.py --base-ref "$BASE_SHA"
+          python3 tools/contracts/check_module_contract_compatibility.py --base-ref "$TARGET_BASE_SHA"
           python3 tools/docs/generate_global_docs.py --check
           python3 tools/docs/verify_global_docs.py
           python3 tools/docs/verify_repository_authority.py
@@ -185,16 +227,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          worktree="${RUNNER_TEMP:?}/module-contracts-v3-worktree"
+          cd "$worktree"
           final="$(git --no-replace-objects rev-parse HEAD)"
           tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
-          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_BASE_SHA"
           git push \
             --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:" \
             origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
           {
             printf 'candidate_head=%s\n' "$final"
             printf 'candidate_tree=%s\n' "$tree"
-            printf 'base_head=%s\n' "$BASE_SHA"
+            printf 'target_base_head=%s\n' "$TARGET_BASE_SHA"
+            printf 'target_base_tree=%s\n' "$TARGET_BASE_TREE"
+            printf 'controller_head=%s\n' "$GITHUB_SHA"
+            printf 'carrier_b64_sha256=%s\n' "$CARRIER_B64_SHA256"
+            printf 'carrier_xz_sha256=%s\n' "$CARRIER_XZ_SHA256"
+            printf 'carrier_tar_sha256=%s\n' "$CARRIER_TAR_SHA256"
             printf 'automatic_redispatch=false\n'
             printf 'public_release=false\n'
           } | tee "${RUNNER_TEMP:?}/module-contract-v3-candidate.env"
@@ -202,7 +251,7 @@ jobs:
       - name: Upload non-authorizing preflight receipt
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: module-contract-v3-preflight-${{ github.sha }}
+          name: module-contract-v3-stacked-preflight-${{ github.sha }}
           path: |
             ${{ runner.temp }}/module-contract-v3-candidate.env
             ${{ runner.temp }}/module-contract-schemars.json
