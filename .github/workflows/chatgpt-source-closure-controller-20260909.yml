@@ -1,0 +1,286 @@
+name: ChatGPT source closure controller
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-pr63-source-export-20260909
+
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-source-closure-controller-20260909
+  cancel-in-progress: true
+
+jobs:
+  drive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Drive ordinary protected source closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          repo = os.environ['REPOSITORY']
+          token = os.environ['GH_TOKEN']
+          owner, name = repo.split('/', 1)
+          api = 'https://api.github.com'
+          required_checks = {
+              'L1 graph, documentation, broker and MCP source closure',
+              'L1 Rust 1.93 selected Host, job, flow and recovery closure',
+              'L1 exact-source-head aggregate candidate',
+              'L1 protected-main and exact-head independent-review readiness',
+              'L1 exact two-parent merge source qualification',
+          }
+          chain = [
+              ('codex/perf-harness-isolation-20260908', 63),
+              ('codex/repository-truth-profiles-20260908', 71),
+              ('codex/effect-lifecycle-model-20260908', None),
+              ('codex/executable-module-contracts-v1-20260909', None),
+              ('codex/performance-measurement-v1-20260909', None),
+              ('codex/observe-shadow-telemetry-v1-20260909', None),
+          ]
+
+          def request(method, path, payload=None):
+              data = None if payload is None else json.dumps(payload).encode()
+              req = urllib.request.Request(
+                  api + path,
+                  data=data,
+                  method=method,
+                  headers={
+                      'Accept': 'application/vnd.github+json',
+                      'Authorization': f'Bearer {token}',
+                      'X-GitHub-Api-Version': '2022-11-28',
+                      'User-Agent': 'trillionnium-source-closure-controller',
+                  },
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      raw = response.read(8 * 1024 * 1024 + 1)
+                      if len(raw) > 8 * 1024 * 1024:
+                          raise RuntimeError(f'oversized response for {path}')
+                      return None if not raw else json.loads(raw)
+              except urllib.error.HTTPError as error:
+                  raw = error.read(64 * 1024).decode('utf-8', 'replace')
+                  raise RuntimeError(f'{method} {path}: HTTP {error.code}: {raw}') from error
+
+          def graphql(query, variables):
+              req = urllib.request.Request(
+                  api + '/graphql',
+                  data=json.dumps({'query': query, 'variables': variables}).encode(),
+                  method='POST',
+                  headers={
+                      'Accept': 'application/vnd.github+json',
+                      'Authorization': f'Bearer {token}',
+                      'User-Agent': 'trillionnium-source-closure-controller',
+                  },
+              )
+              with urllib.request.urlopen(req, timeout=30) as response:
+                  value = json.loads(response.read(4 * 1024 * 1024))
+              if value.get('errors'):
+                  raise RuntimeError(f'GraphQL errors: {value["errors"]}')
+              return value['data']
+
+          def current_main():
+              return request('GET', f'/repos/{repo}/branches/main')['commit']['sha']
+
+          def open_pulls():
+              pulls = request('GET', f'/repos/{repo}/pulls?state=open&per_page=100')
+              return {p['head']['ref']: p for p in pulls}
+
+          def latest_checks(head):
+              value = request('GET', f'/repos/{repo}/commits/{head}/check-runs?per_page=100')
+              latest = {}
+              for item in value.get('check_runs', []):
+                  key = item.get('name')
+                  previous = latest.get(key)
+                  if previous is None or item.get('id', 0) > previous.get('id', 0):
+                      latest[key] = item
+              return latest
+
+          def review_state(number, head):
+              reviews = request('GET', f'/repos/{repo}/pulls/{number}/reviews?per_page=100')
+              latest = {}
+              for item in reviews:
+                  login = (item.get('user') or {}).get('login')
+                  if login in {'Tomasrgbsf', 'Franksudoman'}:
+                      latest[login] = item
+              return {
+                  login: {
+                      'state': (latest.get(login) or {}).get('state'),
+                      'commit_id': (latest.get(login) or {}).get('commit_id'),
+                      'exact_approval': (
+                          (latest.get(login) or {}).get('state') == 'APPROVED'
+                          and (latest.get(login) or {}).get('commit_id') == head
+                      ),
+                  }
+                  for login in ('Tomasrgbsf', 'Franksudoman')
+              }
+
+          def unresolved_threads(number):
+              query = '''query($owner:String!,$name:String!,$number:Int!){
+                repository(owner:$owner,name:$name){
+                  pullRequest(number:$number){reviewThreads(first:100){nodes{isResolved}}}
+                }
+              }'''
+              data = graphql(query, {'owner': owner, 'name': name, 'number': number})
+              nodes = data['repository']['pullRequest']['reviewThreads']['nodes']
+              return sum(not node['isResolved'] for node in nodes)
+
+          def mark_ready(pull):
+              if not pull.get('draft'):
+                  return
+              query = '''mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}'''
+              graphql(query, {'id': pull['node_id']})
+
+          def request_reviewers(number):
+              try:
+                  request('POST', f'/repos/{repo}/pulls/{number}/requested_reviewers', {
+                      'reviewers': ['Tomasrgbsf', 'Franksudoman']
+                  })
+              except RuntimeError as error:
+                  if '422' not in str(error):
+                      raise
+
+          def post(number, body):
+              request('POST', f'/repos/{repo}/issues/{number}/comments', {'body': body})
+
+          report = {'schema': 'org.trillionnium.source-closure-controller.v1', 'cycles': []}
+          for cycle in range(60):
+              main = current_main()
+              pulls = open_pulls()
+              snapshot = {'cycle': cycle + 1, 'main': main, 'candidates': []}
+              prior_complete = True
+              changed = False
+              for ref, pinned_number in chain:
+                  pull = pulls.get(ref)
+                  if pull is None:
+                      snapshot['candidates'].append({'ref': ref, 'state': 'NO_OPEN_PULL'})
+                      prior_complete = False
+                      continue
+                  number = pull['number']
+                  if pinned_number is not None and number != pinned_number:
+                      raise RuntimeError(f'{ref} unexpectedly belongs to PR #{number}')
+                  head = pull['head']['sha']
+                  base = pull['base']['sha']
+                  checks = latest_checks(head)
+                  check_state = {
+                      key: {
+                          'status': (checks.get(key) or {}).get('status'),
+                          'conclusion': (checks.get(key) or {}).get('conclusion'),
+                      }
+                      for key in sorted(required_checks)
+                  }
+                  reviews = review_state(number, head)
+                  threads = unresolved_threads(number)
+                  body = pull.get('body') or ''
+                  body_binds_base = main in body
+                  all_checks = all(
+                      value['status'] == 'completed' and value['conclusion'] == 'success'
+                      for value in check_state.values()
+                  )
+                  all_reviews = all(value['exact_approval'] for value in reviews.values())
+                  candidate = {
+                      'number': number,
+                      'ref': ref,
+                      'head': head,
+                      'base': base,
+                      'draft': pull.get('draft'),
+                      'body_binds_current_main': body_binds_base,
+                      'checks': check_state,
+                      'reviews': reviews,
+                      'unresolved_threads': threads,
+                  }
+                  snapshot['candidates'].append(candidate)
+                  if not prior_complete:
+                      request_reviewers(number)
+                      continue
+                  if base != main or not body_binds_base:
+                      candidate['decision'] = 'NEEDS_EXPLICIT_CURRENT_MAIN_CONVERGENCE'
+                      prior_complete = False
+                      continue
+                  if all_checks:
+                      mark_ready(pull)
+                      request_reviewers(number)
+                  if all_checks and all_reviews and threads == 0:
+                      try:
+                          result = request('PUT', f'/repos/{repo}/pulls/{number}/merge', {
+                              'sha': head,
+                              'merge_method': 'squash',
+                              'commit_title': f'{pull["title"]} (#{number})',
+                              'commit_message': 'Ordinary protected integration after exact-head checks and two fresh non-author approvals. No administrator bypass and no L2-L6 authority.',
+                          })
+                      except RuntimeError as error:
+                          candidate['decision'] = 'ORDINARY_MERGE_REJECTED'
+                          candidate['merge_error'] = str(error)
+                          prior_complete = False
+                      else:
+                          candidate['decision'] = 'MERGED_BY_ORDINARY_PROTECTED_PATH'
+                          candidate['merge_result'] = result
+                          changed = True
+                          prior_complete = True
+                          break
+                  else:
+                      candidate['decision'] = 'WAITING_FOR_EXACT_CHECKS_REVIEWS_OR_THREADS'
+                      prior_complete = False
+              report['cycles'].append(snapshot)
+              if changed:
+                  time.sleep(20)
+                  continue
+              if cycle in {0, 9, 29, 59}:
+                  lines = [
+                      '## Fail-closed source-closure controller readback',
+                      '',
+                      f'Cycle: {cycle + 1}; protected main: `{main}`.',
+                      '',
+                  ]
+                  for item in snapshot['candidates']:
+                      if 'number' not in item:
+                          lines.append(f'- `{item["ref"]}`: no open pull request.')
+                          continue
+                      passed = sum(v['conclusion'] == 'success' for v in item['checks'].values())
+                      approvals = sum(v['exact_approval'] for v in item['reviews'].values())
+                      lines.append(
+                          f'- PR #{item["number"]} `{item["head"]}`: '
+                          f'{passed}/{len(required_checks)} checks, {approvals}/2 exact-head approvals, '
+                          f'{item["unresolved_threads"]} unresolved threads; `{item.get("decision")}`.'
+                      )
+                  lines += [
+                      '',
+                      'This controller uses only the ordinary protected merge API. It does not dismiss reviews, weaken checks, self-approve, mint L2-L6 evidence, redispatch uncertain effects, or authorize release.',
+                  ]
+                  try:
+                      post(51, '\n'.join(lines))
+                  except Exception as error:
+                      snapshot['comment_error'] = str(error)
+              if cycle < 59:
+                  time.sleep(30)
+          report['automatic_redispatch'] = False
+          report['administrator_bypass'] = False
+          report['zero_gap'] = False
+          report['public_release'] = False
+          with open('/tmp/source-closure-controller.json', 'w', encoding='utf-8') as stream:
+              json.dump(report, stream, indent=2, sort_keys=True)
+              stream.write('\n')
+          PY
+      - name: Upload non-authorizing controller readback
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: source-closure-controller-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: error
+          path: /tmp/source-closure-controller.json
