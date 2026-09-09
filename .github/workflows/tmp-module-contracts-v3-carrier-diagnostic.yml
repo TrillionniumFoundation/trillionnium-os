@@ -1,4 +1,4 @@
-name: Temporary module-contract v3 carrier diagnostic
+name: Temporary module-contract v3 carrier recovery diagnostic
 
 on:
   push:
@@ -9,44 +9,67 @@ permissions:
   contents: read
 
 concurrency:
-  group: temporary-module-contract-v3-carrier-diagnostic
+  group: temporary-module-contract-v3-carrier-recovery
   cancel-in-progress: true
 
 jobs:
-  diagnose:
+  recover:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
+      EXPECTED_B64_BYTES: "20968"
       EXPECTED_XZ_SHA256: 96dbc9a46bb632915f4c80d0588c443d60f771d80a9f77e4ac3e54a2030eb88f
       EXPECTED_TAR_SHA256: c3d175853a44194beeb1a4739f036f8e05fff48965d0b38f4ac6bd131149e28f
+      EXPECTED_MANIFEST_SHA256: 19d5d89864d2ff0fdbfec825dae588ed032392bc2f0befaa7bd5b525b920c689
+      EXPECTED_BASE_SHA: 3fae18209e3b4627fab28141b0ed1e3354e6d570
     steps:
-      - name: Check out exact diagnostic subject
+      - name: Check out exact recovery subject
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
           ref: ${{ github.sha }}
           persist-credentials: false
 
-      - name: Verify carrier bytes, digests and archive inventory
+      - name: Recover and authenticate the unique 5,500-byte chunk-00 boundary
         shell: bash
         run: |
           set -euo pipefail
-          b64="${RUNNER_TEMP:?}/module-contracts-v3-source.tar.xz.b64"
-          xz_file="${RUNNER_TEMP:?}/module-contracts-v3-source.tar.xz"
-          tar_file="${RUNNER_TEMP:?}/module-contracts-v3-source.tar"
-          : > "$b64"
-          for suffix in 00 01 02 03; do
+          root="${RUNNER_TEMP:?}/module-contract-v3-recovery"
+          mkdir -p "$root"
+          part00="ops/module-contracts-v3-source.tar.xz.b64.00"
+          test -f "$part00"
+          test ! -L "$part00"
+          test "$(wc -c < "$part00" | tr -d ' ')" = 10000
+          for pair in 01:5500 02:5500 03:4468; do
+            suffix="${pair%%:*}"
+            expected="${pair##*:}"
             part="ops/module-contracts-v3-source.tar.xz.b64.${suffix}"
             test -f "$part"
             test ! -L "$part"
-            cat -- "$part" >> "$b64"
+            test "$(wc -c < "$part" | tr -d ' ')" = "$expected"
           done
-          observed_b64_bytes="$(wc -c < "$b64" | tr -d ' ')"
-          observed_b64_sha256="$(sha256sum "$b64" | cut -d' ' -f1)"
-          printf 'carrier_b64_bytes=%s\n' "$observed_b64_bytes"
-          printf 'carrier_b64_sha256=%s\n' "$observed_b64_sha256"
-          test "$observed_b64_bytes" = 25468
-          python3 - "$b64" "$xz_file" <<'PY'
+
+          matches=0
+          selected=""
+          for mode in head tail; do
+            b64="$root/${mode}.tar.xz.b64"
+            xz_file="$root/${mode}.tar.xz"
+            tar_file="$root/${mode}.tar"
+            if test "$mode" = head; then
+              head -c 5500 -- "$part00" > "$b64"
+            else
+              tail -c 5500 -- "$part00" > "$b64"
+            fi
+            cat -- \
+              ops/module-contracts-v3-source.tar.xz.b64.01 \
+              ops/module-contracts-v3-source.tar.xz.b64.02 \
+              ops/module-contracts-v3-source.tar.xz.b64.03 >> "$b64"
+            bytes="$(wc -c < "$b64" | tr -d ' ')"
+            b64_sha="$(sha256sum "$b64" | cut -d' ' -f1)"
+            printf '%s_b64_bytes=%s\n' "$mode" "$bytes"
+            printf '%s_b64_sha256=%s\n' "$mode" "$b64_sha"
+            test "$bytes" = "$EXPECTED_B64_BYTES"
+            if ! python3 - "$b64" "$xz_file" <<'PY'
           from pathlib import Path
           import base64, binascii, sys
           source, target = map(Path, sys.argv[1:])
@@ -59,17 +82,23 @@ jobs:
               raise SystemExit(f"invalid base64 carrier: {exc}") from exc
           target.write_bytes(decoded)
           PY
-          observed_xz_sha256="$(sha256sum "$xz_file" | cut -d' ' -f1)"
-          printf 'carrier_xz_sha256=%s\n' "$observed_xz_sha256"
-          test "$observed_xz_sha256" = "$EXPECTED_XZ_SHA256"
-          xz --test -- "$xz_file"
-          xz --decompress --stdout -- "$xz_file" > "$tar_file"
-          observed_tar_sha256="$(sha256sum "$tar_file" | cut -d' ' -f1)"
-          printf 'carrier_tar_sha256=%s\n' "$observed_tar_sha256"
-          test "$observed_tar_sha256" = "$EXPECTED_TAR_SHA256"
-          python3 - "$tar_file" <<'PY'
+            then
+              printf '%s_base64_valid=false\n' "$mode"
+              continue
+            fi
+            xz_sha="$(sha256sum "$xz_file" | cut -d' ' -f1)"
+            printf '%s_xz_sha256=%s\n' "$mode" "$xz_sha"
+            if test "$xz_sha" != "$EXPECTED_XZ_SHA256"; then
+              continue
+            fi
+            xz --test -- "$xz_file"
+            xz --decompress --stdout -- "$xz_file" > "$tar_file"
+            tar_sha="$(sha256sum "$tar_file" | cut -d' ' -f1)"
+            printf '%s_tar_sha256=%s\n' "$mode" "$tar_sha"
+            test "$tar_sha" = "$EXPECTED_TAR_SHA256"
+            python3 - "$tar_file" <<'PY'
           from pathlib import Path, PurePosixPath
-          import hashlib, json, sys, tarfile
+          import hashlib, json, os, sys, tarfile
           archive = Path(sys.argv[1])
           with tarfile.open(archive, mode="r:") as tar:
               members = tar.getmembers()
@@ -84,10 +113,30 @@ jobs:
                   if not member.isfile() or member.issym() or member.islnk():
                       raise SystemExit(f"unsupported archive member: {member.name}")
               manifest_raw = tar.extractfile("MANIFEST.json").read()
+              digest = hashlib.sha256(manifest_raw).hexdigest()
+              print(f"manifest_sha256={digest}")
+              if digest != os.environ["EXPECTED_MANIFEST_SHA256"]:
+                  raise SystemExit("manifest digest differs")
               manifest = json.loads(manifest_raw)
-              print(f"manifest_sha256={hashlib.sha256(manifest_raw).hexdigest()}")
-              print(f"manifest_schema={manifest.get('schema')}")
-              print(f"manifest_base_commit={manifest.get('base_commit')}")
-              print(f"manifest_automatic_redispatch={str(manifest.get('automatic_redispatch')).lower()}")
-              print(f"manifest_public_release={str(manifest.get('public_release')).lower()}")
+              if manifest.get("schema") != "org.trillionnium.module-contract-v3-controller-bundle.v1":
+                  raise SystemExit("manifest schema differs")
+              if manifest.get("base_commit") != os.environ["EXPECTED_BASE_SHA"]:
+                  raise SystemExit("manifest base differs")
+              if manifest.get("automatic_redispatch") is not False:
+                  raise SystemExit("automatic redispatch ceiling differs")
+              if manifest.get("public_release") is not False:
+                  raise SystemExit("public-release ceiling differs")
+              entries = manifest.get("entries")
+              if not isinstance(entries, list) or len(entries) != 2:
+                  raise SystemExit("manifest entries differ")
+              for entry in entries:
+                  raw = tar.extractfile(entry["path"]).read()
+                  if len(raw) != entry["bytes"] or hashlib.sha256(raw).hexdigest() != entry["sha256"]:
+                      raise SystemExit(f"member identity differs: {entry['path']}")
           PY
+            matches=$((matches + 1))
+            selected="$mode"
+          done
+          printf 'matching_variants=%s\n' "$matches"
+          printf 'selected_chunk00_slice=%s\n' "$selected"
+          test "$matches" = 1
