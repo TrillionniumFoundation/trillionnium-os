@@ -1,0 +1,133 @@
+name: Temporary PR72 formal-recovery repair
+
+on:
+  push:
+    branches:
+      - ops/pr72-formal-recovery-repair-20260909
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-pr72-formal-recovery-repair
+  cancel-in-progress: true
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      BASE_SHA: b9f7b13bd431d8e6fe58eb6c5a532c2939c023c1
+      CANDIDATE_BRANCH: codex/effect-lifecycle-model-20260909
+      PATCH_XZ_SHA256: 23a5c33f5e3381ed5bd39f8c5d54d820370085bd8138ceed4d1030c7edc5c5bd
+      PATCH_SHA256: 93ad89b05dfa74b316ed87cc1627b77287ef8939a3eaff79638706c7bb83de27
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Verify immutable controller and recover patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          observed="$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/tmp-pr72-formal-recovery-repair.yml' \
+            'ops/pr72-formal-recovery.patch.xz' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          PATCH_XZ="${RUNNER_TEMP:?}/pr72-formal-recovery.patch.xz"
+          PATCH="${RUNNER_TEMP:?}/pr72-formal-recovery.patch"
+          cp -- ops/pr72-formal-recovery.patch.xz "$PATCH_XZ"
+          printf '%s  %s\n' "$PATCH_XZ_SHA256" "$PATCH_XZ" | sha256sum --check --strict
+          xz --decompress --stdout -- "$PATCH_XZ" > "$PATCH"
+          printf '%s  %s\n' "$PATCH_SHA256" "$PATCH" | sha256sum --check --strict
+          git --no-replace-objects checkout --detach "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git apply --check --whitespace=error-all "$PATCH"
+          git apply --whitespace=error-all "$PATCH"
+          observed="$(git diff --name-only | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/g1-exact-head-source.yml' \
+            '.github/workflows/g1-synthetic-merge.yml' \
+            'docs/formal/EffectLifecycle.cfg' \
+            'docs/formal/EffectLifecycle.tla' \
+            'docs/machine/effect-lifecycle.v1.json' \
+            'governance/pr41-review-index.v1.json' \
+            'tools/docs/verify_effect_lifecycle.py' \
+            'tools/tests/test_effect_lifecycle.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          git diff --check
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Execute pinned TLC and hostile regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          TLC_JAR="${RUNNER_TEMP:?}/tla2tools-1.7.4.jar"
+          curl --proto '=https' --tlsv1.2 --fail --show-error --location --retry 3 \
+            --output "$TLC_JAR" \
+            'https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar'
+          printf '%s  %s\n' \
+            'bee4a54f3ee3d4afc347c3240ec2d9e93b075104' "$TLC_JAR" | sha1sum --check --strict
+          printf '%s  %s\n' \
+            '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88' "$TLC_JAR" | sha256sum --check --strict
+          python3 tools/docs/generate_global_docs.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_effect_lifecycle.py \
+            --model-check --tlc-jar "$TLC_JAR" --json \
+            | tee "${RUNNER_TEMP:?}/pr72-effect-lifecycle-tlc.json"
+          python3 -m unittest tools.tests.test_effect_lifecycle -v
+          python3 -m unittest tools.tests.test_owner_open_workflow_exact_head -v
+          git diff --check
+          observed="$(git diff --name-only | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/g1-exact-head-source.yml' \
+            '.github/workflows/g1-synthetic-merge.yml' \
+            'docs/formal/EffectLifecycle.cfg' \
+            'docs/formal/EffectLifecycle.tla' \
+            'docs/machine/effect-lifecycle.v1.json' \
+            'governance/pr41-review-index.v1.json' \
+            'tools/docs/verify_effect_lifecycle.py' \
+            'tools/tests/test_effect_lifecycle.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+
+      - name: Publish clean exact-head repair through branch lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE_SHA"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -- \
+            .github/workflows/g1-exact-head-source.yml \
+            .github/workflows/g1-synthetic-merge.yml \
+            docs/formal/EffectLifecycle.cfg \
+            docs/formal/EffectLifecycle.tla \
+            docs/machine/effect-lifecycle.v1.json \
+            governance/pr41-review-index.v1.json \
+            tools/docs/verify_effect_lifecycle.py \
+            tools/tests/test_effect_lifecycle.py
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit -m 'fix(docs): execute crash-recovery semantics and reject symlink custody bypass' \
+            -m 'Generate and byte-bind the complete TLA+ projection, execute content-pinned TLC, include all crash/recovery edges in the finite product, validate exact state semantics, and reject lexical parent/final symlink custody. Preserve automatic_redispatch=false and the L1-only claim ceiling.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          git push \
+            --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${BASE_SHA}" \
+            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+          printf 'published_head=%s\npublished_tree=%s\n' "$final" "$tree"
