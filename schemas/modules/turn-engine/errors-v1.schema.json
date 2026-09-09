@@ -1,0 +1,106 @@
+{
+  "$id": "urn:trillionnium:turn_error_v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "ModuleErrorClassV1": {
+      "enum": [
+        "REJECTED_BEFORE_EFFECT",
+        "TRANSIENT_BEFORE_EFFECT",
+        "EFFECT_UNCERTAIN",
+        "TERMINAL_FAILURE",
+        "INTERNAL_INVARIANT"
+      ],
+      "type": "string"
+    },
+    "ModuleRetryDispositionV1": {
+      "enum": [
+        "MAY_RETRY_BEFORE_EFFECT",
+        "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH",
+        "DO_NOT_RETRY"
+      ],
+      "type": "string"
+    }
+  },
+  "properties": {
+    "class": {
+      "$ref": "#/definitions/ModuleErrorClassV1"
+    },
+    "code": {
+      "maxLength": 128,
+      "minLength": 1,
+      "type": "string"
+    },
+    "effect_uncertain": {
+      "type": "boolean"
+    },
+    "module_id": {
+      "const": "MOD-TURN-ENGINE",
+      "type": "string"
+    },
+    "operation_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "type": "string"
+    },
+    "original_cause": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "request_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "retry_disposition": {
+      "$ref": "#/definitions/ModuleRetryDispositionV1"
+    },
+    "schema": {
+      "const": "turn_error_v1",
+      "type": "string"
+    }
+  },
+  "required": [
+    "class",
+    "code",
+    "effect_uncertain",
+    "module_id",
+    "operation_id",
+    "original_cause",
+    "request_digest",
+    "retry_disposition",
+    "schema"
+  ],
+  "title": "MOD-TURN-ENGINE error envelope v1",
+  "type": "object",
+  "x-trillionnium-binding": {
+    "api_symbol": "ModuleApiEnvelopeV1",
+    "contract_tests": [
+      {
+        "path": "android-integration/module-contracts/verify_vectors.py",
+        "sha256": "d0b6e97f4829cebefff873e44aebe239e74570d7460f88a06e93f9992d3ee57b",
+        "size": 5928
+      },
+      {
+        "path": "crates/trillionnium-owner-open-types/tests/module_contract_vectors.rs",
+        "sha256": "96a4784eec19a7a66abdeb3f1422a5e7deda1def0b15314a22792754ab4b1ac4",
+        "size": 4473
+      },
+      {
+        "path": "tools/contracts/check_module_contract_compatibility.py",
+        "sha256": "8bbdc6d1a5553fcf86074ae5f360368c1a747263fa03f0e2ba08c8604e53ed64",
+        "size": 3849
+      }
+    ],
+    "error_symbol": "ModuleErrorEnvelopeV1",
+    "path": "crates/trillionnium-owner-open-types/src/module_contract.rs",
+    "schemars": {
+      "path": "schemas/modules/_shared/envelopes-v1.schemars.json",
+      "sha256": "7333926b96118fdd0cf2bae9a7c5ab93d118a6a26addf8cf13c4f25ece8a1448",
+      "size": 4403
+    },
+    "sha256": "865f50ff6457c4be8b21c95ef6d19b09a9883e18fc297c3b2091b2cd50101ac9",
+    "size": 8336,
+    "state_symbol": "ModuleStateEnvelopeV1"
+  }
+}

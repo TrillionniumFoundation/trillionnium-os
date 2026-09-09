@@ -1,0 +1,91 @@
+{
+  "fencing_token": "fence-valid",
+  "host_epoch": 1,
+  "module_id": "MOD-GLOBAL-CONTROL",
+  "operation_id": "operation-valid",
+  "ordering_key": "session/turn/operation",
+  "payload": {
+    "nested": {
+      "nested": {
+        "nested": {
+          "nested": {
+            "nested": {
+              "nested": {
+                "nested": {
+                  "nested": {
+                    "nested": {
+                      "nested": {
+                        "nested": {
+                          "nested": {
+                            "nested": {
+                              "nested": {
+                                "nested": {
+                                  "nested": {
+                                    "nested": {
+                                      "nested": {
+                                        "nested": {
+                                          "nested": {
+                                            "nested": {
+                                              "nested": {
+                                                "nested": {
+                                                  "nested": {
+                                                    "nested": {
+                                                      "nested": {
+                                                        "nested": {
+                                                          "nested": {
+                                                            "nested": {
+                                                              "nested": {
+                                                                "nested": {
+                                                                  "nested": {
+                                                                    "nested": {
+                                                                      "nested": {
+                                                                        "nested": {
+                                                                          "nested": {
+                                                                            "nested": {
+                                                                              "nested": {
+                                                                                "nested": {
+                                                                                  "nested": {}
+                                                                                }
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "request_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "schema": "org.trillionnium.mod_global_control.api.v1",
+  "writer_epoch": 1
+}

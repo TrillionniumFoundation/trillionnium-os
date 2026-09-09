@@ -1,0 +1,124 @@
+{
+  "$id": "org.trillionnium.mod_provider.state.v1",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "ModuleLifecycleStateV1": {
+      "enum": [
+        "RECEIVED",
+        "VALIDATED",
+        "CAPACITY_RESERVED",
+        "ACCEPTED_DURABLE",
+        "EFFECT_ATTEMPTING",
+        "EFFECT_STARTED_OBSERVED",
+        "TERMINAL_OBSERVED",
+        "TERMINAL_DURABLE",
+        "DELIVERY_PENDING",
+        "DELIVERED",
+        "ACKNOWLEDGED",
+        "REJECTED_BEFORE_EFFECT",
+        "UNKNOWN_RECONCILIATION_REQUIRED",
+        "FENCED",
+        "CLOSED",
+        "STATELESS"
+      ],
+      "type": "string"
+    }
+  },
+  "properties": {
+    "durable_sequence": {
+      "format": "uint64",
+      "minimum": 0.0,
+      "type": "integer"
+    },
+    "fencing_token": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string"
+    },
+    "host_epoch": {
+      "format": "uint64",
+      "minimum": 0.0,
+      "type": "integer"
+    },
+    "module_id": {
+      "const": "MOD-PROVIDER",
+      "type": "string"
+    },
+    "monotonic_ns": {
+      "format": "uint64",
+      "minimum": 0.0,
+      "type": "integer"
+    },
+    "operation_id": {
+      "maxLength": 256,
+      "minLength": 1,
+      "type": "string"
+    },
+    "payload": {
+      "maxProperties": 64,
+      "type": "object"
+    },
+    "request_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema": {
+      "const": "org.trillionnium.mod_provider.state.v1",
+      "type": "string"
+    },
+    "state": {
+      "$ref": "#/definitions/ModuleLifecycleStateV1"
+    },
+    "writer_epoch": {
+      "format": "uint64",
+      "minimum": 0.0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "durable_sequence",
+    "fencing_token",
+    "host_epoch",
+    "module_id",
+    "monotonic_ns",
+    "operation_id",
+    "payload",
+    "request_digest",
+    "schema",
+    "state",
+    "writer_epoch"
+  ],
+  "title": "MOD-PROVIDER state envelope v1",
+  "type": "object",
+  "x-trillionnium-binding": {
+    "api_symbol": "ModuleApiEnvelopeV1",
+    "contract_tests": [
+      {
+        "path": "android-integration/module-contracts/verify_vectors.py",
+        "sha256": "d0b6e97f4829cebefff873e44aebe239e74570d7460f88a06e93f9992d3ee57b",
+        "size": 5928
+      },
+      {
+        "path": "crates/trillionnium-owner-open-types/tests/module_contract_vectors.rs",
+        "sha256": "96a4784eec19a7a66abdeb3f1422a5e7deda1def0b15314a22792754ab4b1ac4",
+        "size": 4473
+      },
+      {
+        "path": "tools/contracts/check_module_contract_compatibility.py",
+        "sha256": "8bbdc6d1a5553fcf86074ae5f360368c1a747263fa03f0e2ba08c8604e53ed64",
+        "size": 3849
+      }
+    ],
+    "error_symbol": "ModuleErrorEnvelopeV1",
+    "path": "crates/trillionnium-owner-open-types/src/module_contract.rs",
+    "schemars": {
+      "path": "schemas/modules/_shared/envelopes-v1.schemars.json",
+      "sha256": "7333926b96118fdd0cf2bae9a7c5ab93d118a6a26addf8cf13c4f25ece8a1448",
+      "size": 4403
+    },
+    "sha256": "865f50ff6457c4be8b21c95ef6d19b09a9883e18fc297c3b2091b2cd50101ac9",
+    "size": 8336,
+    "state_symbol": "ModuleStateEnvelopeV1"
+  }
+}

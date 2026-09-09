@@ -1,0 +1,11 @@
+{
+  "class": "EFFECT_UNCERTAIN",
+  "code": "example_failure",
+  "effect_uncertain": true,
+  "module_id": "MOD-CROSS-SPLICE",
+  "operation_id": "operation-valid",
+  "original_cause": "raw bounded cause",
+  "request_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "retry_disposition": "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH",
+  "schema": "android_error_v1"
+}

@@ -1,0 +1,13 @@
+{
+  "durable_sequence": 1,
+  "fencing_token": "fence-valid",
+  "host_epoch": 1,
+  "module_id": "MOD-EVENT-STORE",
+  "monotonic_ns": 1,
+  "operation_id": "operation-valid",
+  "payload": {},
+  "request_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "schema": "org.trillionnium.mod_event_store.state.v1",
+  "state": "REENTER_ACCEPTED_AFTER_FENCE",
+  "writer_epoch": 1
+}

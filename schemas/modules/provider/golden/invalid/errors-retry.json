@@ -1,0 +1,11 @@
+{
+  "class": "EFFECT_UNCERTAIN",
+  "code": "example_failure",
+  "effect_uncertain": true,
+  "module_id": "MOD-PROVIDER",
+  "operation_id": "operation-valid",
+  "original_cause": "raw bounded cause",
+  "request_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "retry_disposition": "AUTOMATIC_REDISPATCH",
+  "schema": "provider_error_v1"
+}

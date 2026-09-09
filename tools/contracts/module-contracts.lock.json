@@ -1,0 +1,1391 @@
+{
+  "artifacts": {
+    "android-integration/module-contracts/README.md": {
+      "bytes": 394,
+      "sha256": "b9d2e2b91a8a695beea28d522bc5d6aa0e4b3c4f2884372e2a758dac09eb6324"
+    },
+    "android-integration/module-contracts/verify_vectors.py": {
+      "bytes": 5928,
+      "sha256": "d0b6e97f4829cebefff873e44aebe239e74570d7460f88a06e93f9992d3ee57b"
+    },
+    "crates/trillionnium-owner-open-types/src/bin/generate_module_contract_schemas.rs": {
+      "bytes": 574,
+      "sha256": "bb031101bb4ff9576c6e89d6c74c977941711e25419a122837d6b4a94d635e91"
+    },
+    "crates/trillionnium-owner-open-types/src/module_contract.rs": {
+      "bytes": 8336,
+      "sha256": "865f50ff6457c4be8b21c95ef6d19b09a9883e18fc297c3b2091b2cd50101ac9"
+    },
+    "crates/trillionnium-owner-open-types/tests/module_contract_vectors.rs": {
+      "bytes": 4473,
+      "sha256": "96a4784eec19a7a66abdeb3f1422a5e7deda1def0b15314a22792754ab4b1ac4"
+    },
+    "docs/MODULE_CONTRACT_STATUS.md": {
+      "bytes": 4020,
+      "sha256": "91e01017233d7abf09a6e19a26d269cabcfd2633d3dd54e4546ff20d78417045"
+    },
+    "docs/machine/module-contract-catalog.v1.json": {
+      "bytes": 54131,
+      "sha256": "3dcc7b8efd09918bed6852e73016d906d69e04bdf53bed96253738de1edb5104"
+    },
+    "schemas/modules/_shared/envelopes-v1.schemars.json": {
+      "bytes": 4403,
+      "sha256": "7333926b96118fdd0cf2bae9a7c5ab93d118a6a26addf8cf13c4f25ece8a1448"
+    },
+    "schemas/modules/adb/api-v1.schema.json": {
+      "bytes": 2407,
+      "sha256": "6fa60cd8824fd39ec033a6ca172bbb34b8fd7fcca31d488835b111c04c6db19e"
+    },
+    "schemas/modules/adb/compatibility.json": {
+      "bytes": 4123,
+      "sha256": "eef1f24b743999b60eba7e9cdca82fd54f7299302d2e5c2c03602c29190018fe"
+    },
+    "schemas/modules/adb/errors-v1.schema.json": {
+      "bytes": 2788,
+      "sha256": "c912b06f22d5814f9a63f4c4aa561f7c284862c53f7a9c7c8b0d4270aad0bd80"
+    },
+    "schemas/modules/adb/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 339,
+      "sha256": "7b5b8e339a210f1dfc890d2af36a29855e543522baeef3321d8d4ab9d4aafe48"
+    },
+    "schemas/modules/adb/golden/invalid/api-depth.json": {
+      "bytes": 4256,
+      "sha256": "ea0f7a7b4a273521ad1cba02ecfac936fc7159f57e55fb495eee893042cabff5"
+    },
+    "schemas/modules/adb/golden/invalid/api-duplicate.json": {
+      "bytes": 321,
+      "sha256": "7606af1dbfe4ce91bfb82867e53e286b5cdbbcae4ad92d4ece0252b5c05f4128"
+    },
+    "schemas/modules/adb/golden/invalid/api-identity-alias.json": {
+      "bytes": 334,
+      "sha256": "8c81b06e1e09d036b4cc30a0f2414cc8ec345e0bd441cf802a07b12636561a04"
+    },
+    "schemas/modules/adb/golden/invalid/api-missing-ordering.json": {
+      "bytes": 292,
+      "sha256": "7e96eefda1384fd199b5805b06755deed3ba5340ad597761ccfc109818d37924"
+    },
+    "schemas/modules/adb/golden/invalid/api-unknown.json": {
+      "bytes": 358,
+      "sha256": "88dfe74c2bec16758e57b234edcd0ccef037d6e3de2f09e934b42945ba03218a"
+    },
+    "schemas/modules/adb/golden/invalid/errors-class.json": {
+      "bytes": 383,
+      "sha256": "83427427a96248d0aaa81874e91828620468d603bc34b6fee3b6e1525a2f49d5"
+    },
+    "schemas/modules/adb/golden/invalid/errors-missing.json": {
+      "bytes": 351,
+      "sha256": "f14435b55926cc50299c0538bf446790f033f1405ccd9c90a7159f1bc71f9d42"
+    },
+    "schemas/modules/adb/golden/invalid/errors-module-splice.json": {
+      "bytes": 389,
+      "sha256": "8a127a623451852ec2ebe88b68ea75bfb60f45f08f182883b3719dce710e9f38"
+    },
+    "schemas/modules/adb/golden/invalid/errors-retry.json": {
+      "bytes": 358,
+      "sha256": "7391933084f5ff5c9325cb59da56a36144999c3c0c636026c729a4b90180b182"
+    },
+    "schemas/modules/adb/golden/invalid/errors-uncertainty.json": {
+      "bytes": 381,
+      "sha256": "61477718fb1e17324aebed59c1a2c4967d27c63d2b952211d28e8c34ef8f39e2"
+    },
+    "schemas/modules/adb/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 374,
+      "sha256": "da5972e7c9276cc90e2f593a57b5ea67794405a635b7505ee049148afb521ad4"
+    },
+    "schemas/modules/adb/golden/invalid/state-invalid.json": {
+      "bytes": 383,
+      "sha256": "60148d0753e1d55ad7331847a0991714f31a53db4eb97dd1643580e53fb8d69b"
+    },
+    "schemas/modules/adb/golden/invalid/state-nonfinite.json": {
+      "bytes": 345,
+      "sha256": "1be1a6f8ac56bbe22a5ac18a200540dd2351adfc602f4da67864a03110b14257"
+    },
+    "schemas/modules/adb/golden/valid/api.json": {
+      "bytes": 336,
+      "sha256": "811a3998ead2f1197ded8f2779ea5e7adf132f95c8b7d3a2212e3b2a480e7e7e"
+    },
+    "schemas/modules/adb/golden/valid/errors.json": {
+      "bytes": 380,
+      "sha256": "d7dea8a1c2c7edf5d12f1ee7d5b800416b54cee175ac24fa0bb61821b0595c5c"
+    },
+    "schemas/modules/adb/golden/valid/state.json": {
+      "bytes": 371,
+      "sha256": "2aed214d7aaf6a1fe01b6140c7dd3369995ba740c156fe06c4ff5e57813baf9f"
+    },
+    "schemas/modules/adb/state-v1.schema.json": {
+      "bytes": 3168,
+      "sha256": "4c58a698b55550fafdd1f0d8a6b0fa86fcdfa8d884a93ece262c6a7937b9dfc0"
+    },
+    "schemas/modules/android/api-v1.schema.json": {
+      "bytes": 2423,
+      "sha256": "3e237b447c234d45c15e1ec0f6ed11c9aadd1943fe9c63169cac7afe5529353a"
+    },
+    "schemas/modules/android/compatibility.json": {
+      "bytes": 7706,
+      "sha256": "33016ce025c32ada62bdc858540d67988e006e6d55d0b29434b740b3cb896fab"
+    },
+    "schemas/modules/android/errors-v1.schema.json": {
+      "bytes": 2804,
+      "sha256": "17751e7f6b355e34fbe8af4b03abd7cb8b58e4c141c31e9cf3ea26af7dde9589"
+    },
+    "schemas/modules/android/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 347,
+      "sha256": "736d3a0c8988593de0b7c0d4cc460f091e2671b32d097ecc743e4746d0458945"
+    },
+    "schemas/modules/android/golden/invalid/api-depth.json": {
+      "bytes": 4264,
+      "sha256": "f8c567a26c1d39e022f0baf02a42d8c0fdd1e70111479c62d05194c845371f96"
+    },
+    "schemas/modules/android/golden/invalid/api-duplicate.json": {
+      "bytes": 333,
+      "sha256": "410654e01fbf840db1085626af176eae5473d99505571baa0288241725a28a7e"
+    },
+    "schemas/modules/android/golden/invalid/api-identity-alias.json": {
+      "bytes": 342,
+      "sha256": "000743cbb5880beced67be719695067609e0148736787b2e29e123c4d6996185"
+    },
+    "schemas/modules/android/golden/invalid/api-missing-ordering.json": {
+      "bytes": 300,
+      "sha256": "a200219ddf6ccf8a035bf5906ba0a616b6b227d9e02431d14695a62bd57a2895"
+    },
+    "schemas/modules/android/golden/invalid/api-unknown.json": {
+      "bytes": 366,
+      "sha256": "c5d0ddeefea256d80422df892ef3aba091422667db32bb2e8e1cd6601d2140c2"
+    },
+    "schemas/modules/android/golden/invalid/errors-class.json": {
+      "bytes": 391,
+      "sha256": "3ddf2457c8ca5b472d4a4d9fbdb8f7c3d3f63868d8cc744e4f8316e53ea59aa4"
+    },
+    "schemas/modules/android/golden/invalid/errors-missing.json": {
+      "bytes": 359,
+      "sha256": "2e43708c5d88a42885e5dce65d8200da6d0d8dc399301f02c5b30f73152fb69b"
+    },
+    "schemas/modules/android/golden/invalid/errors-module-splice.json": {
+      "bytes": 393,
+      "sha256": "395a4eb251ac492af188f3661e4fbb4575f9794e51e976c3060a83c4b57bf44a"
+    },
+    "schemas/modules/android/golden/invalid/errors-retry.json": {
+      "bytes": 366,
+      "sha256": "64a25f9357fb310612a66e28f8c1ed51e5bea41bbfc1b78718dc2deb85647a31"
+    },
+    "schemas/modules/android/golden/invalid/errors-uncertainty.json": {
+      "bytes": 389,
+      "sha256": "8d8492592e4d4a4be0507eb6123dd84384cfecb23ca92447d0d89aaf0904b64a"
+    },
+    "schemas/modules/android/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 382,
+      "sha256": "75fd8b1081563864134ed044ed26ba368d03c77fa637fe8bd8e62f5b788c1dbd"
+    },
+    "schemas/modules/android/golden/invalid/state-invalid.json": {
+      "bytes": 391,
+      "sha256": "c36c9d632a296472fd78a4a12122c23cf2c3ef26c5a32a4bac34ce603e0f9791"
+    },
+    "schemas/modules/android/golden/invalid/state-nonfinite.json": {
+      "bytes": 353,
+      "sha256": "4e75e7fb5ab6fff64cd6c930285d3002674a8537806870d11f58d9d0b0308c0b"
+    },
+    "schemas/modules/android/golden/valid/api.json": {
+      "bytes": 344,
+      "sha256": "ca180ce77c310a0512ec28bfe3788b9e34e301d52954b3bec78707dc3e0e6d6c"
+    },
+    "schemas/modules/android/golden/valid/errors.json": {
+      "bytes": 388,
+      "sha256": "fc4e96e1320627236f593db63c32c0e36080dcd23ace787c07bd10e67b3cfd53"
+    },
+    "schemas/modules/android/golden/valid/state.json": {
+      "bytes": 379,
+      "sha256": "67968d3e3226a715dbebb05cd8d572585190e811e234d5f9bfca65154711f35f"
+    },
+    "schemas/modules/android/state-v1.schema.json": {
+      "bytes": 3184,
+      "sha256": "9d1f27e416ac30c40a48140e419858a8f9621f039cea2bc9566d5297c01d1f1c"
+    },
+    "schemas/modules/broker/api-v1.schema.json": {
+      "bytes": 2419,
+      "sha256": "11e3ad96690b9068974eebec469a48700245dab145450e61d153e5a3cea52201"
+    },
+    "schemas/modules/broker/compatibility.json": {
+      "bytes": 11355,
+      "sha256": "a4ca4e92f48185feab5fdcf4beca345adf3994eecf5594d3167398a9eba64abb"
+    },
+    "schemas/modules/broker/errors-v1.schema.json": {
+      "bytes": 2800,
+      "sha256": "602fa33cf0ff2cc122775ee896ed65f8bcc8e32b5ea9340c170c7490a1e31259"
+    },
+    "schemas/modules/broker/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 345,
+      "sha256": "bf0a1a95d9c2ab0429ff062d7a574d25738ab66dc27977621d1b18cbfec5241f"
+    },
+    "schemas/modules/broker/golden/invalid/api-depth.json": {
+      "bytes": 4262,
+      "sha256": "558ddaa87b4eac0562adf83fe12dec5944d6502f4a35f3caf5ebf5224409b32d"
+    },
+    "schemas/modules/broker/golden/invalid/api-duplicate.json": {
+      "bytes": 330,
+      "sha256": "e4c4cdaf1e9343b7bbe79a26e51d032bd3fb356d4d7558790c4cad84da110d97"
+    },
+    "schemas/modules/broker/golden/invalid/api-identity-alias.json": {
+      "bytes": 340,
+      "sha256": "47cd1c7d75c4f8714900a5d528fab5d48020523aed7c35a6f0aa9dfd008773c5"
+    },
+    "schemas/modules/broker/golden/invalid/api-missing-ordering.json": {
+      "bytes": 298,
+      "sha256": "f52a7548a3dc1c03722865a46f212327fc099440807612d4179047fb5b95f04b"
+    },
+    "schemas/modules/broker/golden/invalid/api-unknown.json": {
+      "bytes": 364,
+      "sha256": "7c337b67bacb992fa3b288fe40dd0009ce0e0fdca184089dd4c0650fb891fd5a"
+    },
+    "schemas/modules/broker/golden/invalid/errors-class.json": {
+      "bytes": 389,
+      "sha256": "53d5de191c3165e6075fb824194d94c8916ac9c0ebd332381925867fcc0aa6ba"
+    },
+    "schemas/modules/broker/golden/invalid/errors-missing.json": {
+      "bytes": 357,
+      "sha256": "74cfe1ce9e10ba2c19a1f04874015369799ad0cb1e099e979b952f136f10fd10"
+    },
+    "schemas/modules/broker/golden/invalid/errors-module-splice.json": {
+      "bytes": 392,
+      "sha256": "74c5e7093740ff6733fcac21285b610ec2dcde5977db4fc833d34943a2f529c5"
+    },
+    "schemas/modules/broker/golden/invalid/errors-retry.json": {
+      "bytes": 364,
+      "sha256": "cbb2f7efc5c880bd2a77e0312e0c74482da3769672fb1aa96a6959d148a12226"
+    },
+    "schemas/modules/broker/golden/invalid/errors-uncertainty.json": {
+      "bytes": 387,
+      "sha256": "62a5cf6672824081b005fc2e54b560627f832b9bb4fc109e25506cdff460e74a"
+    },
+    "schemas/modules/broker/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 380,
+      "sha256": "dde86c96fbe9f751088fa3da964c6646f3c3cd608ae624ff874ba8c868b6c833"
+    },
+    "schemas/modules/broker/golden/invalid/state-invalid.json": {
+      "bytes": 389,
+      "sha256": "41d2663254fa64a4a34ea6d28fb0654714880ba58312128660d28cf1aed93311"
+    },
+    "schemas/modules/broker/golden/invalid/state-nonfinite.json": {
+      "bytes": 351,
+      "sha256": "ad21c11647fae1f3a2628b32dd987f30e1e6872a2053e76bc5495ce710b625ae"
+    },
+    "schemas/modules/broker/golden/valid/api.json": {
+      "bytes": 342,
+      "sha256": "0d5ef2c07190f6ccf9fe74abccfd513bcdece35119745deb9bd3792dff1ca012"
+    },
+    "schemas/modules/broker/golden/valid/errors.json": {
+      "bytes": 386,
+      "sha256": "5f4d1a37206ca408f360e4d4eb593412ae0314d29f4e8937a1aa907b6929a525"
+    },
+    "schemas/modules/broker/golden/valid/state.json": {
+      "bytes": 377,
+      "sha256": "09ea18ff5232908a4418437978e318433ddd8309141f6883e8adb8f66159d542"
+    },
+    "schemas/modules/broker/state-v1.schema.json": {
+      "bytes": 3180,
+      "sha256": "dea05c67e8ef1481c0f0604f134855a5d151ce274e51c988658f1851beb39683"
+    },
+    "schemas/modules/event-store/api-v1.schema.json": {
+      "bytes": 2439,
+      "sha256": "938961e24881c5a6ec69d1021412447908c95b496d1987c54b33c067b9e6a8a5"
+    },
+    "schemas/modules/event-store/compatibility.json": {
+      "bytes": 4769,
+      "sha256": "57de1dc81b844bfeec147d35403fc72faac75119aa7784f5af94b9c1f336b209"
+    },
+    "schemas/modules/event-store/errors-v1.schema.json": {
+      "bytes": 2820,
+      "sha256": "272671f3d73a7bcc9928463f6fc621068643f5850bdc4c6bdbb067c51771e5fb"
+    },
+    "schemas/modules/event-store/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 355,
+      "sha256": "03ee4e196b739374b28e340db631440bf6e578cbd9fdc488d70c43ba8f5c5f1e"
+    },
+    "schemas/modules/event-store/golden/invalid/api-depth.json": {
+      "bytes": 4272,
+      "sha256": "0a96bc166857d143ad9b3158f6776461c6007cf21ff83129552124bd70a28d30"
+    },
+    "schemas/modules/event-store/golden/invalid/api-duplicate.json": {
+      "bytes": 345,
+      "sha256": "a7bc5d6e2de66386eb9876069fddb3a9c6c92a7a40c20a844d9a5cdd375bfdbf"
+    },
+    "schemas/modules/event-store/golden/invalid/api-identity-alias.json": {
+      "bytes": 350,
+      "sha256": "f170def3b8edcbd2e9182bbe843169b2bfa539d53d833da90573f6c61aaa8571"
+    },
+    "schemas/modules/event-store/golden/invalid/api-missing-ordering.json": {
+      "bytes": 308,
+      "sha256": "5c604b588c00e086bd26ae4196ba9b95f9917b39aceee3c2c1a84d4199c6ea20"
+    },
+    "schemas/modules/event-store/golden/invalid/api-unknown.json": {
+      "bytes": 374,
+      "sha256": "e55e1a155c56c6f212380b415db756b06d1254cfaf9f956e889dc622b310cb45"
+    },
+    "schemas/modules/event-store/golden/invalid/errors-class.json": {
+      "bytes": 399,
+      "sha256": "ad28836c684c7f5afef2c6488527ae016b368942e6e035f6d50747d5dbeb861e"
+    },
+    "schemas/modules/event-store/golden/invalid/errors-missing.json": {
+      "bytes": 367,
+      "sha256": "2ae3478caa147a85e2eeedb54fccc33e720ce5a325881cc0e2177be021a4f6ed"
+    },
+    "schemas/modules/event-store/golden/invalid/errors-module-splice.json": {
+      "bytes": 397,
+      "sha256": "5dd15203f3dfef2dabcc8e9e0b2214946086780d245277b7c7a5a2e9dec0639a"
+    },
+    "schemas/modules/event-store/golden/invalid/errors-retry.json": {
+      "bytes": 374,
+      "sha256": "fd9ad2811b049178ba71180e000880947647ab1cdcba8a963fb2f16481b42ae4"
+    },
+    "schemas/modules/event-store/golden/invalid/errors-uncertainty.json": {
+      "bytes": 397,
+      "sha256": "11d3e4c1856866b65a5922d9be08ad45edc9f25297216e46ba9ec37c432c28d0"
+    },
+    "schemas/modules/event-store/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 390,
+      "sha256": "60e359255238ec55b24961d97c2f69489bbe4f0d90155299af985263e9a903fe"
+    },
+    "schemas/modules/event-store/golden/invalid/state-invalid.json": {
+      "bytes": 399,
+      "sha256": "7969a33c661b5bfc8505b27162efbcc12c4aee41aa3d5f3fd66e15b3da012f97"
+    },
+    "schemas/modules/event-store/golden/invalid/state-nonfinite.json": {
+      "bytes": 361,
+      "sha256": "444923e76157379e1950c86d5b2209b4ba7e927b2f047b7554b4e7062db80c50"
+    },
+    "schemas/modules/event-store/golden/valid/api.json": {
+      "bytes": 352,
+      "sha256": "ea6e0e743c5d57f1d7ec162c7ae5860e08fe6cd2a76532de1aee91f416cfc875"
+    },
+    "schemas/modules/event-store/golden/valid/errors.json": {
+      "bytes": 396,
+      "sha256": "06db3d3b98f9e42eb9f832361d08743456efe20f3e395b05baa0d5a7b9dcf348"
+    },
+    "schemas/modules/event-store/golden/valid/state.json": {
+      "bytes": 387,
+      "sha256": "4dfba8b3c54ab999ff52c8b927d250fcc7499a0896bc9067bec5b2c5b23dc11d"
+    },
+    "schemas/modules/event-store/state-v1.schema.json": {
+      "bytes": 3200,
+      "sha256": "34e0e754d75e5cdc6f3b8eb902799731d2cbc7e7f708296f368a124292c92d29"
+    },
+    "schemas/modules/evidence/api-v1.schema.json": {
+      "bytes": 2427,
+      "sha256": "cd1ad61d880fea5184224c9f771315ddfaa9ef481513794364057c93640f97b2"
+    },
+    "schemas/modules/evidence/compatibility.json": {
+      "bytes": 3924,
+      "sha256": "68e6142e8e51f0b8919bf7491eb3c7d546d60dd233a95e017f64aadcb1c72e61"
+    },
+    "schemas/modules/evidence/errors-v1.schema.json": {
+      "bytes": 2808,
+      "sha256": "06895e8d0da97baf3c604c8c9aa573b200ede321d0a2e9e65dc62f35210a043c"
+    },
+    "schemas/modules/evidence/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 349,
+      "sha256": "28e914bf1c6d48b6ce26edfa4300e88d82b14aed2f7acc96afe023a99ab187d5"
+    },
+    "schemas/modules/evidence/golden/invalid/api-depth.json": {
+      "bytes": 4266,
+      "sha256": "bf92a87b8bd8ec8053eaaf43b4ac72e6708ff1640b674c38c32494add3fb4de2"
+    },
+    "schemas/modules/evidence/golden/invalid/api-duplicate.json": {
+      "bytes": 336,
+      "sha256": "48d5ef5f2df4de0c685c03e970dd645b8e6060919f4d7d2c31608be495bdec43"
+    },
+    "schemas/modules/evidence/golden/invalid/api-identity-alias.json": {
+      "bytes": 344,
+      "sha256": "64107f01ae20e52c89f4765e409b9a7071f370cf9faada786d5c610975528bb7"
+    },
+    "schemas/modules/evidence/golden/invalid/api-missing-ordering.json": {
+      "bytes": 302,
+      "sha256": "f9e3bec98b0b2e219bac0b11a36552bc7b4fab1fb76719de3aab28463d447093"
+    },
+    "schemas/modules/evidence/golden/invalid/api-unknown.json": {
+      "bytes": 368,
+      "sha256": "5c56c44516c949fba629be424b9c334265091ebe4dcb46a3ad32d8aae874bc68"
+    },
+    "schemas/modules/evidence/golden/invalid/errors-class.json": {
+      "bytes": 393,
+      "sha256": "ea4e72e4f7e923e774402ee1df41059e454a6b69ee885bcaaba0ac1d1de38ddb"
+    },
+    "schemas/modules/evidence/golden/invalid/errors-missing.json": {
+      "bytes": 361,
+      "sha256": "e597cded58e9cf907334bf4f503eed73b638960fc902ab1f445867b8e67caa3c"
+    },
+    "schemas/modules/evidence/golden/invalid/errors-module-splice.json": {
+      "bytes": 394,
+      "sha256": "9c3131099c0b8a30861701fe8652ef460a4ac36d99d204aecf7ab5f88f72b56b"
+    },
+    "schemas/modules/evidence/golden/invalid/errors-retry.json": {
+      "bytes": 368,
+      "sha256": "975f948178873138ac0f8e4e93d0796e3ca2dc1bf7008d99300a8dfa1d3a828d"
+    },
+    "schemas/modules/evidence/golden/invalid/errors-uncertainty.json": {
+      "bytes": 391,
+      "sha256": "95a9a32b533dad13865984dd485daac4989ab8742644290cdf151f19a6c442ed"
+    },
+    "schemas/modules/evidence/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 384,
+      "sha256": "2381d346df435b21c70a1949dc041be5c49a5435c72e096ff36bac0bf778797d"
+    },
+    "schemas/modules/evidence/golden/invalid/state-invalid.json": {
+      "bytes": 393,
+      "sha256": "539abeca1d3cc0dac85cad960e964c02731d4e83782bcfdf70a1515914409cf0"
+    },
+    "schemas/modules/evidence/golden/invalid/state-nonfinite.json": {
+      "bytes": 355,
+      "sha256": "e6466833b93cfa7240e8002f74e5caf68b044273b069ed5db18c83ee27dc0b9a"
+    },
+    "schemas/modules/evidence/golden/valid/api.json": {
+      "bytes": 346,
+      "sha256": "97f272d37197526651db61596b654f97dd35ee7d8b5c0efc804aa4daee975bf4"
+    },
+    "schemas/modules/evidence/golden/valid/errors.json": {
+      "bytes": 390,
+      "sha256": "5597756949f6b31ce202fdf2ad03659f7637f3b3d3ffb1bb036eb8345e7f768c"
+    },
+    "schemas/modules/evidence/golden/valid/state.json": {
+      "bytes": 381,
+      "sha256": "ec958ffc4e2be20371cb76f38823fa4a829e60beb27f934c7c63eb7e40ca1e05"
+    },
+    "schemas/modules/evidence/state-v1.schema.json": {
+      "bytes": 3188,
+      "sha256": "cc3642c9770bbe043d8a54dd842eb69596cbebb19b60c50572239c279a0b386a"
+    },
+    "schemas/modules/execution-core/api-v1.schema.json": {
+      "bytes": 2451,
+      "sha256": "cab557f8f15259964c7e7e7a27ed1311b9c78f8d446c8c9ab315b96963bfd558"
+    },
+    "schemas/modules/execution-core/compatibility.json": {
+      "bytes": 4678,
+      "sha256": "cf022802a846a980f15f6106f051097d1a237c9aa0ec4a9d8333893457a34503"
+    },
+    "schemas/modules/execution-core/errors-v1.schema.json": {
+      "bytes": 2822,
+      "sha256": "08542dc3916550f61633af585d312e3692434858e4b97d0013ff69e8dc349f77"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 361,
+      "sha256": "4542e4addef5029287156d95fb01b8df74933ae091cb88b4d564d8c3342bb565"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-depth.json": {
+      "bytes": 4278,
+      "sha256": "45bd5ecaac49edb3863e5b990fa2e03cf4f20aac83bf0eeb52f9c066c9752a8e"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-duplicate.json": {
+      "bytes": 354,
+      "sha256": "2e3584fefe7d5ce2f619f5fa247162eae9f8bc1c485eba10891398e6a10d074b"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-identity-alias.json": {
+      "bytes": 356,
+      "sha256": "a66e4bf4089685535a8863ce6305a667718b7138fe02e6eca06fea4da904f2f0"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-missing-ordering.json": {
+      "bytes": 314,
+      "sha256": "bb67a3a123faa193a95a53057582117c520ae091a779d6a0adbf54b4ebebdf7e"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-unknown.json": {
+      "bytes": 380,
+      "sha256": "8a8a5baf116681852c9ee1e2c8a478036292fe6ace9df4193e17f77f71ea06be"
+    },
+    "schemas/modules/execution-core/golden/invalid/errors-class.json": {
+      "bytes": 400,
+      "sha256": "1f7bd7313bcc0bacb735190a4183e7ba1226090a23a4f76820a596ac686da321"
+    },
+    "schemas/modules/execution-core/golden/invalid/errors-missing.json": {
+      "bytes": 368,
+      "sha256": "c7d99ceb06639fdf9a6ebb3a8ccc695501879f07b212c106a55fda6dfb51b5da"
+    },
+    "schemas/modules/execution-core/golden/invalid/errors-module-splice.json": {
+      "bytes": 395,
+      "sha256": "b1010ba20019f56b9e89c2f827bbe641c35c7aaeac78e7d418cf58096804296c"
+    },
+    "schemas/modules/execution-core/golden/invalid/errors-retry.json": {
+      "bytes": 375,
+      "sha256": "b6f480d1823b4f0693661b8b3e50cb92c02957b733b2c58e34098d5a4c3b6351"
+    },
+    "schemas/modules/execution-core/golden/invalid/errors-uncertainty.json": {
+      "bytes": 398,
+      "sha256": "e10e91c00576b9adb302cab9c44a1b3aaeec2fe64bff876751d04ee3d6bce30c"
+    },
+    "schemas/modules/execution-core/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 396,
+      "sha256": "2ae411500f8d94ca32f3e9d298f0bec27d91f6022d3bdfb3c3add08a15e6bb9f"
+    },
+    "schemas/modules/execution-core/golden/invalid/state-invalid.json": {
+      "bytes": 405,
+      "sha256": "4e1cbd2db41ec5b12610e131204d8181bbfb62028535f585c89b73121c498318"
+    },
+    "schemas/modules/execution-core/golden/invalid/state-nonfinite.json": {
+      "bytes": 367,
+      "sha256": "34ceed09fb6118b59555cd4bbfaa81b3f379564607010aa9b75d3baab6a6f6b6"
+    },
+    "schemas/modules/execution-core/golden/valid/api.json": {
+      "bytes": 358,
+      "sha256": "38cae5cc58587f3385277ec06ce1f65fbb910f6dfeff3255990476793e846ab9"
+    },
+    "schemas/modules/execution-core/golden/valid/errors.json": {
+      "bytes": 397,
+      "sha256": "721e4a3917fedf427bf951a6ed6669c48c516f4fa392ddef194c4d56fe6ec197"
+    },
+    "schemas/modules/execution-core/golden/valid/state.json": {
+      "bytes": 393,
+      "sha256": "9836eb44a3447193e907504863fbce43c5c64c9cb6afd111f1babf06a8384dbb"
+    },
+    "schemas/modules/execution-core/state-v1.schema.json": {
+      "bytes": 3212,
+      "sha256": "1fd6feabeaa2a6428194877b9ce2231d2c103486b853782b90364a8b112f5f69"
+    },
+    "schemas/modules/global-control/api-v1.schema.json": {
+      "bytes": 2451,
+      "sha256": "016da9d8d35c77e2ae3285b904851fa582692cab67be9edfceb56fede7d595f6"
+    },
+    "schemas/modules/global-control/compatibility.json": {
+      "bytes": 4197,
+      "sha256": "9e968633e69d1be3da370f32cbbd64639c4a17cb9e0e4281496a6bbada746b60"
+    },
+    "schemas/modules/global-control/errors-v1.schema.json": {
+      "bytes": 2818,
+      "sha256": "bbde2ba0e3eaa6e4cf055d62cfb4011cc763164b8fe3045e0a8144b86235591b"
+    },
+    "schemas/modules/global-control/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 361,
+      "sha256": "e40fce848f4b1349c6bd3f73ad6b1c67a4dc478cd4760a2dd9e9556d77f3c941"
+    },
+    "schemas/modules/global-control/golden/invalid/api-depth.json": {
+      "bytes": 4278,
+      "sha256": "e8250e227cc859fc72749647f6b170fe9c1a7d925d4e4479b37d76c54489d454"
+    },
+    "schemas/modules/global-control/golden/invalid/api-duplicate.json": {
+      "bytes": 354,
+      "sha256": "c28acf11dbc9dc663694f78376a1300546ed084a0a8b10cd35b0c69d615ae737"
+    },
+    "schemas/modules/global-control/golden/invalid/api-identity-alias.json": {
+      "bytes": 356,
+      "sha256": "82adb63b40f69832951aa2ee786b3b8565d86b582be1ff1bbca4e1a942af2e27"
+    },
+    "schemas/modules/global-control/golden/invalid/api-missing-ordering.json": {
+      "bytes": 314,
+      "sha256": "74cbf0aa6fddfd9cc7c274917cc068bf5a372ba9881c66d624e52530c815ca38"
+    },
+    "schemas/modules/global-control/golden/invalid/api-unknown.json": {
+      "bytes": 380,
+      "sha256": "4e0fa744e16fec28e950dc1b8991fe6ae87bf0ae6ca94209eee03b2917c69218"
+    },
+    "schemas/modules/global-control/golden/invalid/errors-class.json": {
+      "bytes": 398,
+      "sha256": "f27bc84f25c4f36537dfddd9985f03fea8e97d035c5f6e66cad7ba8fa6a935c4"
+    },
+    "schemas/modules/global-control/golden/invalid/errors-missing.json": {
+      "bytes": 366,
+      "sha256": "962d7b9d6db01ee61274139b850c2c9853a0567fa17020e96315f0121822351e"
+    },
+    "schemas/modules/global-control/golden/invalid/errors-module-splice.json": {
+      "bytes": 393,
+      "sha256": "cfdc7dbaa40982b60b2bdbe44b5ee62c6718c60a4cf26c9c7ec2519085c008b8"
+    },
+    "schemas/modules/global-control/golden/invalid/errors-retry.json": {
+      "bytes": 373,
+      "sha256": "860bafce3af2af30c7002b579808769b7ea584ecbf4447fd43251de6294f1a95"
+    },
+    "schemas/modules/global-control/golden/invalid/errors-uncertainty.json": {
+      "bytes": 396,
+      "sha256": "0194bb5f0b2bb2838265e375f828c21b11a791a130ef456d78efe5319ac092bb"
+    },
+    "schemas/modules/global-control/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 396,
+      "sha256": "31ab65f5074f3b38feb5068ee543f6cc962040d90bc084e1071fec5226871e80"
+    },
+    "schemas/modules/global-control/golden/invalid/state-invalid.json": {
+      "bytes": 405,
+      "sha256": "2c30c4d115e2d89c58743a8cbeccd63f72b19726fc6aa79b622ebf0184c712c0"
+    },
+    "schemas/modules/global-control/golden/invalid/state-nonfinite.json": {
+      "bytes": 367,
+      "sha256": "c194f0b74e77808321b3c8522a23562e4b1a5556a6b21b60f61d0be5d46d627b"
+    },
+    "schemas/modules/global-control/golden/valid/api.json": {
+      "bytes": 358,
+      "sha256": "e9275ceab480020d3a0b228853be04261f7db2ac40f7d0ecb9dfc91fc8dede6d"
+    },
+    "schemas/modules/global-control/golden/valid/errors.json": {
+      "bytes": 395,
+      "sha256": "28afb3a0e9d5a1a7e2f195caf5c7d8210320fa892241319edc81b5f3b444256f"
+    },
+    "schemas/modules/global-control/golden/valid/state.json": {
+      "bytes": 393,
+      "sha256": "ba4e589c09bf618b12d5dc59e59b2232cc31cabe8d4a3430e3aef330ea1f8375"
+    },
+    "schemas/modules/global-control/state-v1.schema.json": {
+      "bytes": 3212,
+      "sha256": "4e441ca463d097e098f252b14c55fd7e486882a1696b7cf1538601ddd1f0e378"
+    },
+    "schemas/modules/job-runtime/api-v1.schema.json": {
+      "bytes": 2439,
+      "sha256": "745941b15eda8f2faceaba59035f3dadfde92f7d318dc2aa4e63e4ce2534f1bd"
+    },
+    "schemas/modules/job-runtime/compatibility.json": {
+      "bytes": 6699,
+      "sha256": "891394d8804a33e5ac8787c34790bfe170ffc0684fe846e766127be6cc90be70"
+    },
+    "schemas/modules/job-runtime/errors-v1.schema.json": {
+      "bytes": 2804,
+      "sha256": "dd4116ceadb0261b92773fddbe9b78befb4cb4fceb68f03b924d53007eb429a7"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 355,
+      "sha256": "5ab0396c743c60927e720c20b2901a519952467820a9394554b3ec862e0bf165"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-depth.json": {
+      "bytes": 4272,
+      "sha256": "4ffc4397eead12fe73fc968aa95e0acf64bd58907154ddddc7dbdfb2cfa07a5d"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-duplicate.json": {
+      "bytes": 345,
+      "sha256": "17a120c8e836331e0a19a50f2b591dde512a7f1b6a1bc4ffa5e0dbddd417cc86"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-identity-alias.json": {
+      "bytes": 350,
+      "sha256": "cb23445191f4af7627b9d4c0c53e29d4ccb52c5c1da457c97fe7e7937915f491"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-missing-ordering.json": {
+      "bytes": 308,
+      "sha256": "0d4400a53d069a5b66c27e2ac345172fb39826ca50d0a8ad8a6b49e060bee775"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-unknown.json": {
+      "bytes": 374,
+      "sha256": "2205b4b34eece5e8d9a367c1bd1be48e7bc8e97778361edd674ccb7932c4fc22"
+    },
+    "schemas/modules/job-runtime/golden/invalid/errors-class.json": {
+      "bytes": 391,
+      "sha256": "5b839a706558280620f6d154bcfb17538497e1db7006f191d288ebd33b4b0572"
+    },
+    "schemas/modules/job-runtime/golden/invalid/errors-missing.json": {
+      "bytes": 359,
+      "sha256": "0386c537f8533e1aa2c79b25c3df9477d116a4b22948675db289d67d1c2d73b9"
+    },
+    "schemas/modules/job-runtime/golden/invalid/errors-module-splice.json": {
+      "bytes": 389,
+      "sha256": "2f218a5c0a17311800b38af409f6f0ce91742521c333dd78e6c1973c8f4e9254"
+    },
+    "schemas/modules/job-runtime/golden/invalid/errors-retry.json": {
+      "bytes": 366,
+      "sha256": "893ab46ea81184946f1d73c3e0f0ce8f9a0a05e6c1fc0cf1df12efb6a421e5bc"
+    },
+    "schemas/modules/job-runtime/golden/invalid/errors-uncertainty.json": {
+      "bytes": 389,
+      "sha256": "496ca97af9aa75c21bdfc81392342c86e9fe2a1da99e34eee40c77766bfa6594"
+    },
+    "schemas/modules/job-runtime/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 390,
+      "sha256": "bab2858dc9829bac8d3decef818bcecbd849217eb45c040858a6ab54c899d85b"
+    },
+    "schemas/modules/job-runtime/golden/invalid/state-invalid.json": {
+      "bytes": 399,
+      "sha256": "88e399e2aef8adfba09f60fec6d5fa0392a2b168fc2b15cdc0198c39088857e1"
+    },
+    "schemas/modules/job-runtime/golden/invalid/state-nonfinite.json": {
+      "bytes": 361,
+      "sha256": "21a83d192df9cecf19d37af4241ddf989b002b2af02bc07f52104523fb891a56"
+    },
+    "schemas/modules/job-runtime/golden/valid/api.json": {
+      "bytes": 352,
+      "sha256": "a41e648caeb3a51b37e7efaf20beaa63ed671f88873e730df26c61f59e68fa5d"
+    },
+    "schemas/modules/job-runtime/golden/valid/errors.json": {
+      "bytes": 388,
+      "sha256": "fc408b60b134c752d7a585b1ef9220dcebbda00372d4b564324b279c02b88fbc"
+    },
+    "schemas/modules/job-runtime/golden/valid/state.json": {
+      "bytes": 387,
+      "sha256": "f9df62e7edef040f69d60d3c8a482c091a36bc746f425097aa1b89cec8f0cff3"
+    },
+    "schemas/modules/job-runtime/state-v1.schema.json": {
+      "bytes": 3200,
+      "sha256": "43a329e4f0787c363a01733afd9f5607bd09ab388cc12d3bb3dc57acc8e3b976"
+    },
+    "schemas/modules/protocol/api-v1.schema.json": {
+      "bytes": 2427,
+      "sha256": "3b915921038afb98aad935a48b16ea732090ab56df4e756f2857abbc01bc6bfc"
+    },
+    "schemas/modules/protocol/compatibility.json": {
+      "bytes": 4279,
+      "sha256": "282f634deca2915f3fb00b45d2525e36e83abfaa3431637547ff67e92efaabc2"
+    },
+    "schemas/modules/protocol/errors-v1.schema.json": {
+      "bytes": 2808,
+      "sha256": "4322d1a80618e6a902d015356955ab1395aa3d85eb6e4354c5ee3bc94251261c"
+    },
+    "schemas/modules/protocol/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 349,
+      "sha256": "9f19a1935fad030d91a8c9aad3326798a172b7bffc179e08992e4102bbde2c05"
+    },
+    "schemas/modules/protocol/golden/invalid/api-depth.json": {
+      "bytes": 4266,
+      "sha256": "5450ecd234e3ba7a133b997e2f5b8a92cfaf657e9ef48d85628223f48ec7233b"
+    },
+    "schemas/modules/protocol/golden/invalid/api-duplicate.json": {
+      "bytes": 336,
+      "sha256": "139c00d8f01e325ad5709fc8b0b14fa1cb163ebdcf6cef2b58f1ad0c1a9c5d63"
+    },
+    "schemas/modules/protocol/golden/invalid/api-identity-alias.json": {
+      "bytes": 344,
+      "sha256": "55fc0f13ffcd082a2d26af7d0e351ac75ea54c9d628e001be808537cd3536a51"
+    },
+    "schemas/modules/protocol/golden/invalid/api-missing-ordering.json": {
+      "bytes": 302,
+      "sha256": "71880c32dd701a1f8032a8852b41ec61d3dae0a803b5b6e5246e3de8d9dacdaf"
+    },
+    "schemas/modules/protocol/golden/invalid/api-unknown.json": {
+      "bytes": 368,
+      "sha256": "8ee7cb11ad46a2bf43d944da7ef5fed8fb42199ded98808e8f7ddf8e93782373"
+    },
+    "schemas/modules/protocol/golden/invalid/errors-class.json": {
+      "bytes": 393,
+      "sha256": "e1fb3a95632dd8e905531d9c6dd131d0556dd04bbaa959b1add00943d2bb4079"
+    },
+    "schemas/modules/protocol/golden/invalid/errors-missing.json": {
+      "bytes": 361,
+      "sha256": "e0163dce4ff4251fe0a13443e657d9df2c7f5391ca7072a62f57814c63c57a01"
+    },
+    "schemas/modules/protocol/golden/invalid/errors-module-splice.json": {
+      "bytes": 394,
+      "sha256": "b8ff2fd1370b0262cab64da0304de025088859cc092078169cbeb14618dd7f75"
+    },
+    "schemas/modules/protocol/golden/invalid/errors-retry.json": {
+      "bytes": 368,
+      "sha256": "443ca958f6e94bffd5704f27376d5ccdb1280821d4f82ec2c93e2ddc4e16de12"
+    },
+    "schemas/modules/protocol/golden/invalid/errors-uncertainty.json": {
+      "bytes": 391,
+      "sha256": "8150cea3090c59b04f431e99a89fc79f2e7325c6bf584766ea8fc6fd3acb98ae"
+    },
+    "schemas/modules/protocol/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 384,
+      "sha256": "15ee68cad554b499a299d0f20f36ccfbd81f08d6b96226ae9f1f5afa4c3cb655"
+    },
+    "schemas/modules/protocol/golden/invalid/state-invalid.json": {
+      "bytes": 393,
+      "sha256": "d2c14707405efff9a2d5e13ecb5f679b54481cf39fac0d151b2376666233da6d"
+    },
+    "schemas/modules/protocol/golden/invalid/state-nonfinite.json": {
+      "bytes": 355,
+      "sha256": "8305fdf6d8a3e1e065951b4301561832aa8860da571fe7da8a6d9902c665105a"
+    },
+    "schemas/modules/protocol/golden/valid/api.json": {
+      "bytes": 346,
+      "sha256": "2e2a818dca47b5b16e56e0fd432805300017740f09011f913fe0ff6e92dba032"
+    },
+    "schemas/modules/protocol/golden/valid/errors.json": {
+      "bytes": 390,
+      "sha256": "a905ab2077db126b5b18a181c0313a8d58211dbb6f818029a975ad66f97650e5"
+    },
+    "schemas/modules/protocol/golden/valid/state.json": {
+      "bytes": 381,
+      "sha256": "d7797540359623f361fb9500c64fb7c7d64ad68f2a99ca36371310eb4ceedbec"
+    },
+    "schemas/modules/protocol/state-v1.schema.json": {
+      "bytes": 3188,
+      "sha256": "1f18fc02732a1a8d757c43a217215b434ac23a0e57d61ceacedd91da532afb3a"
+    },
+    "schemas/modules/provider/api-v1.schema.json": {
+      "bytes": 2427,
+      "sha256": "227d32c07a793574ec067181f80bdaef5b791be7f2101454ab07ab66f64d1fbb"
+    },
+    "schemas/modules/provider/compatibility.json": {
+      "bytes": 5773,
+      "sha256": "d8d814448f5c919aa741dff6ce228ac457bb524a9dd772cd2ae3114ef5b347ee"
+    },
+    "schemas/modules/provider/errors-v1.schema.json": {
+      "bytes": 2808,
+      "sha256": "65a40f8e724e1db465bb8eaf7a2e7623aeb42b21a4a3e45a30a26962d794afc9"
+    },
+    "schemas/modules/provider/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 349,
+      "sha256": "8aa5c365813f7bfc2637d74f8af8a550c52224483e857f21999e1749dd2a09a8"
+    },
+    "schemas/modules/provider/golden/invalid/api-depth.json": {
+      "bytes": 4266,
+      "sha256": "7a1445685142eaabe9461fe00fb6cfefdd8ce769340d356ff886cd9bbd2b49be"
+    },
+    "schemas/modules/provider/golden/invalid/api-duplicate.json": {
+      "bytes": 336,
+      "sha256": "cbf225c36534e8a5da596ade8d7ba549cde98ee064bbb33e0af126849319120d"
+    },
+    "schemas/modules/provider/golden/invalid/api-identity-alias.json": {
+      "bytes": 344,
+      "sha256": "b166033c4b673799be6f83e2bc5c12c4b3790908616454f3a1e8f681285722b2"
+    },
+    "schemas/modules/provider/golden/invalid/api-missing-ordering.json": {
+      "bytes": 302,
+      "sha256": "ed1f3394ce6ebed99d3a1658b2ed748e7cfc35cc491cb90a75c0a912cebf34dc"
+    },
+    "schemas/modules/provider/golden/invalid/api-unknown.json": {
+      "bytes": 368,
+      "sha256": "6a5d796e47016641d3f43a0b908ff1c2839eaa3d0ed42c63329e69a0c64d3138"
+    },
+    "schemas/modules/provider/golden/invalid/errors-class.json": {
+      "bytes": 393,
+      "sha256": "27e0bb04d00292bfc5a433142b3ca0d4be66534d295934f556617594121e338b"
+    },
+    "schemas/modules/provider/golden/invalid/errors-missing.json": {
+      "bytes": 361,
+      "sha256": "ac63fa90610cd6b0cebddc228de0eab26303a7992a2e6bbf91c47129c69f094f"
+    },
+    "schemas/modules/provider/golden/invalid/errors-module-splice.json": {
+      "bytes": 394,
+      "sha256": "d8c882361fc19e53253fca03fb17900adef5f69dc1ce2359c6ab612ee2fec666"
+    },
+    "schemas/modules/provider/golden/invalid/errors-retry.json": {
+      "bytes": 368,
+      "sha256": "c06cf5276dafe8a6ddabd52f23787d47d8974ab5949fb2d3e642141c4e165cf1"
+    },
+    "schemas/modules/provider/golden/invalid/errors-uncertainty.json": {
+      "bytes": 391,
+      "sha256": "c43cdc5a42881ab1824823325f1780339ed441ad60d87ed99408e3a3ac9f427a"
+    },
+    "schemas/modules/provider/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 384,
+      "sha256": "1c77ba71e40b5bb7e7e4c653df925af513dc03439a61a8d27069db4bcc847897"
+    },
+    "schemas/modules/provider/golden/invalid/state-invalid.json": {
+      "bytes": 393,
+      "sha256": "3de439324958db9daf52f9c9d0d1330476331d4e479af0abce6a02d682dbab59"
+    },
+    "schemas/modules/provider/golden/invalid/state-nonfinite.json": {
+      "bytes": 355,
+      "sha256": "e5dbc1ff25dcdbaaa05e673c48a0a95f5035449680f670b367dd7a5fe5356744"
+    },
+    "schemas/modules/provider/golden/valid/api.json": {
+      "bytes": 346,
+      "sha256": "a3d361915bd4a16e6dd24e58137a2a2b8777228dac966a78c67698183c87b7c4"
+    },
+    "schemas/modules/provider/golden/valid/errors.json": {
+      "bytes": 390,
+      "sha256": "a1b2d0251720b5273924fd6e58d436bf9d9bd58ee4ea3e42a89d6d842300d34b"
+    },
+    "schemas/modules/provider/golden/valid/state.json": {
+      "bytes": 381,
+      "sha256": "a89e5eb9398734b6643ae2bcf16eb0e3f7c7d91d43a424fe7cf32558d9565e90"
+    },
+    "schemas/modules/provider/state-v1.schema.json": {
+      "bytes": 3188,
+      "sha256": "66409476d45f3f52ff27a769f334f87554e02493836506c9f3bd304a90c6c7bc"
+    },
+    "schemas/modules/rootlinux/api-v1.schema.json": {
+      "bytes": 2431,
+      "sha256": "f503ea25dcdc3bc8752d4d62bee9bf5e69e9957018ca6db180ccab27e8ac0597"
+    },
+    "schemas/modules/rootlinux/compatibility.json": {
+      "bytes": 4785,
+      "sha256": "62642ef6087187ce6d2d80d42c5e64bbd57854291e4863400cab06092c568db8"
+    },
+    "schemas/modules/rootlinux/errors-v1.schema.json": {
+      "bytes": 2812,
+      "sha256": "ce3348591feeb107bf23e26ae46f1efa2b81a23d29a57feff8795245e4586f9e"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 351,
+      "sha256": "16eba96eaa6f59f506652a511f609001e9b5a34722df82a37ae16d834f7195c0"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-depth.json": {
+      "bytes": 4268,
+      "sha256": "d453cb40889d8b0853314fb9ae31a4886cec925e9aad1a62b4dcfa98e5c591e5"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-duplicate.json": {
+      "bytes": 339,
+      "sha256": "85f0ac615bb5d73fcedf7495f68a9438680958fb8c591faa5eebbc2b8bbb5a33"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-identity-alias.json": {
+      "bytes": 346,
+      "sha256": "10bd675b392314d7039d52edc2fd13f4aa3dd143d8376f012d9a513d0e14ed29"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-missing-ordering.json": {
+      "bytes": 304,
+      "sha256": "98a42f6994cb2c74d20aaf78ad7355d26d277cbbbd7cc1aaf77fa58f0fae6e15"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-unknown.json": {
+      "bytes": 370,
+      "sha256": "bdb824cb33adf20ca3f66e1953eda4f944e0afa7834309ecd6a896161f761bc9"
+    },
+    "schemas/modules/rootlinux/golden/invalid/errors-class.json": {
+      "bytes": 395,
+      "sha256": "b5819c31ed562c490029d2b2f75c3d1a5b14da2891c47b1e020b26ebe852ed87"
+    },
+    "schemas/modules/rootlinux/golden/invalid/errors-missing.json": {
+      "bytes": 363,
+      "sha256": "ff5ec8e4a7fbd4c8ec39ac3b7f87c3f999ba50d984ccd2ca4400b8176dcd6a8f"
+    },
+    "schemas/modules/rootlinux/golden/invalid/errors-module-splice.json": {
+      "bytes": 395,
+      "sha256": "1e7f488fc94c8d941c7c9abcf591ebea0facf85fb30d4fa7c21e22bd078dc7c2"
+    },
+    "schemas/modules/rootlinux/golden/invalid/errors-retry.json": {
+      "bytes": 370,
+      "sha256": "86dde6d9d28c97d9f03bdd4a599b596934f6478e57ddab50a3189a1d751ee249"
+    },
+    "schemas/modules/rootlinux/golden/invalid/errors-uncertainty.json": {
+      "bytes": 393,
+      "sha256": "1641a3526528396536481d9e20179c1baef1e5fa94253af2b0d846b42974504b"
+    },
+    "schemas/modules/rootlinux/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 386,
+      "sha256": "3375995aa8335a604bcd4a23c4f779803dd124bc27c04017c69a8d4fdffd4979"
+    },
+    "schemas/modules/rootlinux/golden/invalid/state-invalid.json": {
+      "bytes": 395,
+      "sha256": "d646d5d8f249a2da93ce6e9ae1b2718b4d3e7b64e91f1835981da455727af9a0"
+    },
+    "schemas/modules/rootlinux/golden/invalid/state-nonfinite.json": {
+      "bytes": 357,
+      "sha256": "5f4c620c9293fe0d60e5e9dc705872ff8d9d935fd911ddae91187b3e4cec4513"
+    },
+    "schemas/modules/rootlinux/golden/valid/api.json": {
+      "bytes": 348,
+      "sha256": "dbcfe1fa741d2e54d24ca69ed473082247e78562753ffa0730fa7543eddab08a"
+    },
+    "schemas/modules/rootlinux/golden/valid/errors.json": {
+      "bytes": 392,
+      "sha256": "c061d4cc4ce892154912a60a8119025fd30646f7d19523fd52439a52bc017477"
+    },
+    "schemas/modules/rootlinux/golden/valid/state.json": {
+      "bytes": 383,
+      "sha256": "372cb5e9610cd258ef890f061fa88f0bebd6e7ffd420e17797d87a1efbf3f785"
+    },
+    "schemas/modules/rootlinux/state-v1.schema.json": {
+      "bytes": 3192,
+      "sha256": "f6cfa3caa9d06d93cff34fed8519b522b1c1a13fdb1028f785e043c922c44d4f"
+    },
+    "schemas/modules/stream/api-v1.schema.json": {
+      "bytes": 2419,
+      "sha256": "ff78d0f087e06c749f5ffc11171a07ac6935e8c0fab93145253cc9d19b414590"
+    },
+    "schemas/modules/stream/compatibility.json": {
+      "bytes": 4118,
+      "sha256": "22a035843c82f2a8a2c7537265ea377adab00408603ab6856dd93ddfad0222a1"
+    },
+    "schemas/modules/stream/errors-v1.schema.json": {
+      "bytes": 2800,
+      "sha256": "c61030c97c71e2508291a66137672f9f37ab86a6ff4644e2534f90ca3d935b29"
+    },
+    "schemas/modules/stream/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 345,
+      "sha256": "b6f491eaa317311d95e333f94b64ee40dc311b81624128e44a7277bcf973f62d"
+    },
+    "schemas/modules/stream/golden/invalid/api-depth.json": {
+      "bytes": 4262,
+      "sha256": "c624c4731a8d778b3b1edbbef2bba4eac8aa36eeabd39fac1afe8cdfd138fb9a"
+    },
+    "schemas/modules/stream/golden/invalid/api-duplicate.json": {
+      "bytes": 330,
+      "sha256": "b7a8543e247a058703bd3c4f26d74dfca85916bc2998ceb01c47305230869bdb"
+    },
+    "schemas/modules/stream/golden/invalid/api-identity-alias.json": {
+      "bytes": 340,
+      "sha256": "6c1922dfcb97daf4bfde01ca0833401827882b2faaaef7f2d64168f143a057cc"
+    },
+    "schemas/modules/stream/golden/invalid/api-missing-ordering.json": {
+      "bytes": 298,
+      "sha256": "b06c3bb9fa949d1bd13f954ceb138961eb69b0775d4e87659a6b76c7be55721e"
+    },
+    "schemas/modules/stream/golden/invalid/api-unknown.json": {
+      "bytes": 364,
+      "sha256": "2d50e18cd78278eb0f626f16ee69f7683e2c0ae387bf9ad624a95c5be1312419"
+    },
+    "schemas/modules/stream/golden/invalid/errors-class.json": {
+      "bytes": 389,
+      "sha256": "32ccea426239ce8161d0ab96521c20224005c7aa34806b19cea44df93a08f8d1"
+    },
+    "schemas/modules/stream/golden/invalid/errors-missing.json": {
+      "bytes": 357,
+      "sha256": "f47c23d6cd7e85b66a690141f764561b31fe321830647cffbbcc42e0fafb6912"
+    },
+    "schemas/modules/stream/golden/invalid/errors-module-splice.json": {
+      "bytes": 392,
+      "sha256": "dc36fd6a520f7d121adf4546dba987f58d10f8335a39099556792afd61ef7bd0"
+    },
+    "schemas/modules/stream/golden/invalid/errors-retry.json": {
+      "bytes": 364,
+      "sha256": "3df9dc89e59d8ea44d093ad8812fc6035a9a78ea3023178bc2f629491baafce4"
+    },
+    "schemas/modules/stream/golden/invalid/errors-uncertainty.json": {
+      "bytes": 387,
+      "sha256": "8b3dff7ff211d5390e307fe520850d7fdf2c5f49b46cae11349b1722ece297c3"
+    },
+    "schemas/modules/stream/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 380,
+      "sha256": "0ba2ea1abc495e773ca77e89db1db941acc7a441bd0b53aab3b4d16bdf9c45e7"
+    },
+    "schemas/modules/stream/golden/invalid/state-invalid.json": {
+      "bytes": 389,
+      "sha256": "a275b5c4c0ff9ce67fc8d81b015722d4a95c1abbafff931d5e8503ea4a388f64"
+    },
+    "schemas/modules/stream/golden/invalid/state-nonfinite.json": {
+      "bytes": 351,
+      "sha256": "a066cfb735b31fc900588862a07e80b651c75e9f428896e8171b6dde2a20202d"
+    },
+    "schemas/modules/stream/golden/valid/api.json": {
+      "bytes": 342,
+      "sha256": "f420a841b279091b8fd8f72193031d6c1ba36552605e25401dd82fb123f3e059"
+    },
+    "schemas/modules/stream/golden/valid/errors.json": {
+      "bytes": 386,
+      "sha256": "8b14ace877139ffa32bb6e03ae7124bf494f2bcf746e975d55da5ff5d7293d65"
+    },
+    "schemas/modules/stream/golden/valid/state.json": {
+      "bytes": 377,
+      "sha256": "e7685385a67a24c4519a7abd52c7900f85af2686a00874d3eb84e3ef6bc589df"
+    },
+    "schemas/modules/stream/state-v1.schema.json": {
+      "bytes": 3180,
+      "sha256": "b4a8cdb40ad025bdc8dd2075d3f1e302210a7e40b8771fae7e6e4e9b7b144c26"
+    },
+    "schemas/modules/telemetry/api-v1.schema.json": {
+      "bytes": 2431,
+      "sha256": "6a5633c55c2f1734e78c599d768eb986fcfb203ade9bdca1a84c81f7c972ce27"
+    },
+    "schemas/modules/telemetry/compatibility.json": {
+      "bytes": 4125,
+      "sha256": "cf432d9b2aaf81f8e6eae2801368ef54727de040659128873525da8d71831b8d"
+    },
+    "schemas/modules/telemetry/errors-v1.schema.json": {
+      "bytes": 2812,
+      "sha256": "45214f576ddea8ce0fc918a5e77c0a6ac3f74f1b69fa4af539d55f539e0bff57"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 351,
+      "sha256": "4be4e4e3a3ca7f5433d3783ebf2f5b2a57ae9ad4d15d14ebde479b518acc49c3"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-depth.json": {
+      "bytes": 4268,
+      "sha256": "13219282823db00420625049f0f8a1ea3160e12fc49d9ba0f2bcc708ad33a284"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-duplicate.json": {
+      "bytes": 339,
+      "sha256": "9f5957032cfb99cffa97e6c047583baa60318844a06044c936d429d50a51eb28"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-identity-alias.json": {
+      "bytes": 346,
+      "sha256": "828930c6d3a50d6c4f6c6e025e82a9572a109913f4250d72171b0eac3813c7dc"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-missing-ordering.json": {
+      "bytes": 304,
+      "sha256": "e9b8381f1787647c1b1808542ae4b2de85afcb466f5ac846dabfce5c864ec7a7"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-unknown.json": {
+      "bytes": 370,
+      "sha256": "6874ee04a4165c4d5a04148177eeb8950db9fc67033bc8116d52c444a27e44bc"
+    },
+    "schemas/modules/telemetry/golden/invalid/errors-class.json": {
+      "bytes": 395,
+      "sha256": "4cdd491e4cfdaabb61ed3e564146b118768cb8c876cb4cd1149dfc59deaee78f"
+    },
+    "schemas/modules/telemetry/golden/invalid/errors-missing.json": {
+      "bytes": 363,
+      "sha256": "4448f8852c3df9ac1157b267d4d8153bd6be0d8796f5848f26c2e55967564f26"
+    },
+    "schemas/modules/telemetry/golden/invalid/errors-module-splice.json": {
+      "bytes": 395,
+      "sha256": "4e564f66db361765f081929af2bd120f71c674083056eeea827d1ce594323d01"
+    },
+    "schemas/modules/telemetry/golden/invalid/errors-retry.json": {
+      "bytes": 370,
+      "sha256": "4904bdda0f17d50ded460cadff36531447fc8a0686a9f0168386bbb219067760"
+    },
+    "schemas/modules/telemetry/golden/invalid/errors-uncertainty.json": {
+      "bytes": 393,
+      "sha256": "72ba6c94d1c8345d9ee97b14d93def0fb6dec29bcb794afabf8997e7ef1e6d40"
+    },
+    "schemas/modules/telemetry/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 386,
+      "sha256": "cc4e352bc3490bbf6aad57dc3426ba7b25c17a685dcabb544549ea87fde0876a"
+    },
+    "schemas/modules/telemetry/golden/invalid/state-invalid.json": {
+      "bytes": 395,
+      "sha256": "b9ba5d7d434489202c29884add47d6109debe39e552ce4626ed36bd7bf4b82aa"
+    },
+    "schemas/modules/telemetry/golden/invalid/state-nonfinite.json": {
+      "bytes": 357,
+      "sha256": "b778b634554e3e2fe4dbe7d18a1664105c2ec788c16b9663281a2a9d3fceae09"
+    },
+    "schemas/modules/telemetry/golden/valid/api.json": {
+      "bytes": 348,
+      "sha256": "f49e2292239d1d80f176a6da34a7a09133c0eaf201bc3029659bd698891003f4"
+    },
+    "schemas/modules/telemetry/golden/valid/errors.json": {
+      "bytes": 392,
+      "sha256": "90ffab52462d1284700d41b5b4ec270eb53ecac96f31cf245eb6252727970ef2"
+    },
+    "schemas/modules/telemetry/golden/valid/state.json": {
+      "bytes": 383,
+      "sha256": "b256b71f7cf65fe84e8670f912f4e5355ca68c40b2a76453195c12e605dac47d"
+    },
+    "schemas/modules/telemetry/state-v1.schema.json": {
+      "bytes": 3192,
+      "sha256": "5e78941e31bd313f5cd75509730aed4a24cc1ff8fed5263e4e6848e1905a403f"
+    },
+    "schemas/modules/tool-runtime/api-v1.schema.json": {
+      "bytes": 2443,
+      "sha256": "50a315d9acf6af557e5f6176e3b7901d7b3e00d153fce6f3735d3f3ad2b740b3"
+    },
+    "schemas/modules/tool-runtime/compatibility.json": {
+      "bytes": 4542,
+      "sha256": "a42d46349f3d3a66caa90b5c0e886f986f8e1fed161b8f1e161c08d68795af8e"
+    },
+    "schemas/modules/tool-runtime/errors-v1.schema.json": {
+      "bytes": 2808,
+      "sha256": "9cc1c5d5c75fa3f140a2100a80219fec92ff07483767cf3bf9bc3279dacb308b"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 357,
+      "sha256": "3e6970f867bca4b2052ab27c1bb976d98d7ec7a902d1872c0365927c5af5ba5d"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-depth.json": {
+      "bytes": 4274,
+      "sha256": "df45970ce98a249c48a1a98eeeab736cc2cec3719cb8bc588b4e032ce60ba883"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-duplicate.json": {
+      "bytes": 348,
+      "sha256": "a3dc62b825ab744e043b2206f330561fa97b8324151e8db45a75b7a14255f0bb"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-identity-alias.json": {
+      "bytes": 352,
+      "sha256": "920f6ca52cfcb88515c6543c812a7d69cd47310f3404acf4e276b3c489be6d37"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-missing-ordering.json": {
+      "bytes": 310,
+      "sha256": "ab6e18d68718343b94a753114f88559711f33bd5f749e7451f5a86d455908884"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-unknown.json": {
+      "bytes": 376,
+      "sha256": "dd838fea5140f939567eff44567da86081f95b9a8e1db653b36ee672d32d48cd"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/errors-class.json": {
+      "bytes": 393,
+      "sha256": "493bcca9ef0ce88f58d6d04d7205fb10ad0b134e9b3f0450e0bf141789b3b6d8"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/errors-missing.json": {
+      "bytes": 361,
+      "sha256": "88ada964b3990fc0cb0aca80b4c5bcf1e6ad8cb8fd18f4036eafe7810908f6f9"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/errors-module-splice.json": {
+      "bytes": 390,
+      "sha256": "4dbda058fb8fcace69c276f8feb86dcc38a783422f9180d584a2a24384d9cbc3"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/errors-retry.json": {
+      "bytes": 368,
+      "sha256": "ddede9ee9a47ddda290121bd9323ab39ef7081a3099c53ac8e5450dbd7be7735"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/errors-uncertainty.json": {
+      "bytes": 391,
+      "sha256": "9d13dd0dbfe1c32f97935f876e2503d89210cb350312dfd6289af3e3ba30ed1f"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 392,
+      "sha256": "8f8b3cd6de6d9838c6a46c892423683aeafad34f090b0a1ff0e792b92b9f4ec9"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/state-invalid.json": {
+      "bytes": 401,
+      "sha256": "0a0e1a82c76f50f8595f5a2b6aeadfd719ec60b6e87da65cf1c1c739085793fd"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/state-nonfinite.json": {
+      "bytes": 363,
+      "sha256": "6c7c3c9e56742c6914f90a08e738f1ca5313c9ec66b047d5084dbaec7196d621"
+    },
+    "schemas/modules/tool-runtime/golden/valid/api.json": {
+      "bytes": 354,
+      "sha256": "96a743c5d103e32ec48cf2a33bac48ea6c98c3c8b9b477ca70711571b43195fc"
+    },
+    "schemas/modules/tool-runtime/golden/valid/errors.json": {
+      "bytes": 390,
+      "sha256": "33b10799f81e54b56e64de022373590bcd43989d71925dbdb5346fa9a2ccd221"
+    },
+    "schemas/modules/tool-runtime/golden/valid/state.json": {
+      "bytes": 389,
+      "sha256": "73063872646c7db6a478ae8635f7953fdd62e36e53fe5144dabcba0d0c55c0cd"
+    },
+    "schemas/modules/tool-runtime/state-v1.schema.json": {
+      "bytes": 3204,
+      "sha256": "5417703053a6da13ac7efa872d87f358ceefc37240618947fd902e74267e09b3"
+    },
+    "schemas/modules/transport/api-v1.schema.json": {
+      "bytes": 2431,
+      "sha256": "8d2e8476f80715d532c44974a7940dd537b41dccb28d9574e66471a71bc63a41"
+    },
+    "schemas/modules/transport/compatibility.json": {
+      "bytes": 7120,
+      "sha256": "818be449a3314a42652cf218b9268262d2a4052b20247dd188f7e81fb112e00e"
+    },
+    "schemas/modules/transport/errors-v1.schema.json": {
+      "bytes": 2812,
+      "sha256": "079daab37d8fc94f863f4b2e5ed99374c40385cb7eb91813e8d19910182d564c"
+    },
+    "schemas/modules/transport/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 351,
+      "sha256": "8b56aa3300cd98d162f7f42c95bd4f8794cfaf543bb51878db7851270f59f59a"
+    },
+    "schemas/modules/transport/golden/invalid/api-depth.json": {
+      "bytes": 4268,
+      "sha256": "a0b190a88771fc8ce8b5c4ca2a8c159681571a92ab8af7a8d61a7a040a1a073c"
+    },
+    "schemas/modules/transport/golden/invalid/api-duplicate.json": {
+      "bytes": 339,
+      "sha256": "0ef8e48ab9dde9329637e47db7d6b244a60f33217e12f640ac871f30572ee612"
+    },
+    "schemas/modules/transport/golden/invalid/api-identity-alias.json": {
+      "bytes": 346,
+      "sha256": "3ea44e158ee9fe191ac6a5c2fbcb5cbc7fd50b9281c9a39a3608d99d2f2170e7"
+    },
+    "schemas/modules/transport/golden/invalid/api-missing-ordering.json": {
+      "bytes": 304,
+      "sha256": "c3f47998a6b217ad14a448bd0f6624e2373c876970875525ad0013662c9f5bf5"
+    },
+    "schemas/modules/transport/golden/invalid/api-unknown.json": {
+      "bytes": 370,
+      "sha256": "9cafdd82948ce53d831eb833cb36ccd137271a49adc0e0a9e44d0d2f359028a1"
+    },
+    "schemas/modules/transport/golden/invalid/errors-class.json": {
+      "bytes": 395,
+      "sha256": "c5413f6c4d4955d90331f2a0552fff3564627c4d0e14ceb97966c80cf7a8ff8f"
+    },
+    "schemas/modules/transport/golden/invalid/errors-missing.json": {
+      "bytes": 363,
+      "sha256": "62e4a016489aa9d0c54767721a2d8a2eea1c4f53f8c84de760874e2dd5fdb602"
+    },
+    "schemas/modules/transport/golden/invalid/errors-module-splice.json": {
+      "bytes": 395,
+      "sha256": "d0a66bcccd35c6386b5f59a8651d655dc04c839da167e1960860ec8ce22f1289"
+    },
+    "schemas/modules/transport/golden/invalid/errors-retry.json": {
+      "bytes": 370,
+      "sha256": "8423a1fd1575c54cb5cde5f1cb67733e79ed41d3e50075fed703fbc3311d8e5a"
+    },
+    "schemas/modules/transport/golden/invalid/errors-uncertainty.json": {
+      "bytes": 393,
+      "sha256": "8da9358d6eb78061a546e1546bccc166cd1bc386c240e84ccd1c9abbd1c3d79f"
+    },
+    "schemas/modules/transport/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 386,
+      "sha256": "056fbb61beaec44ffce27e43cbd514ccb0f47d67251f0bb85553230a8912ecc2"
+    },
+    "schemas/modules/transport/golden/invalid/state-invalid.json": {
+      "bytes": 395,
+      "sha256": "fcb18f0bcb2af11ae14c15e044cb735f02e91a6cf4fbd59167af68818bcfa8ae"
+    },
+    "schemas/modules/transport/golden/invalid/state-nonfinite.json": {
+      "bytes": 357,
+      "sha256": "df431fc247372a93695f263942820ff01d777156c6308d6fbaade80068342fc8"
+    },
+    "schemas/modules/transport/golden/valid/api.json": {
+      "bytes": 348,
+      "sha256": "e6dd71e5acdb9a55d8f80887938185e607e6fac7f8f1b4b241cc6b8191f805ac"
+    },
+    "schemas/modules/transport/golden/valid/errors.json": {
+      "bytes": 392,
+      "sha256": "da991373affd311dd4a23f6e3d04ea159e743da450e5cf98d5d4c4ce37ecd692"
+    },
+    "schemas/modules/transport/golden/valid/state.json": {
+      "bytes": 383,
+      "sha256": "d61311d9e1eda0d40d41687b17ed369932bbe4ab558dc2e3429e38a4c4ed970d"
+    },
+    "schemas/modules/transport/state-v1.schema.json": {
+      "bytes": 3192,
+      "sha256": "35141ce86022cf812f01d0a868799fbbadc17c688f7158d277de9e125887573b"
+    },
+    "schemas/modules/turn-engine/api-v1.schema.json": {
+      "bytes": 2439,
+      "sha256": "928f8e58d7593b21dbb87cecfdb241312ae9bd35812cebfac1461076626ea4a3"
+    },
+    "schemas/modules/turn-engine/compatibility.json": {
+      "bytes": 4560,
+      "sha256": "1c2520104d6efb6671940653915b3fed25ac55d12f9b35568a3c95175b6e2451"
+    },
+    "schemas/modules/turn-engine/errors-v1.schema.json": {
+      "bytes": 2806,
+      "sha256": "e99e3e72a21ee2f6eec1eec9549538cea61dc6f3bf8e655f51a5a6a0a65c3af7"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-boolean-epoch.json": {
+      "bytes": 355,
+      "sha256": "72eb92474321559642fb24fcde7d9f6c20ca71c22a2e64a2452eb0f43a394845"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-depth.json": {
+      "bytes": 4272,
+      "sha256": "23d3dc6bf0e587b34d9476a8cb94736d0db1c10fce8b649036d213db7d5a74c2"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-duplicate.json": {
+      "bytes": 345,
+      "sha256": "339032922de788b9fa25fa94531dd928a9e4e373b98200016a090fcd5d8fc51b"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-identity-alias.json": {
+      "bytes": 350,
+      "sha256": "4f14632c6c8554f2d04f0ed2fab8bb0a5cbd278aab64f152fc6698bd4ced6406"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-missing-ordering.json": {
+      "bytes": 308,
+      "sha256": "be7d5d68c49a0b87feb6376f7a8763c49eda642f7a7b754eb6190981e122b536"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-unknown.json": {
+      "bytes": 374,
+      "sha256": "c2560a0f0e456d45ff2470b04b8cc49ae7b14ad168307ae885b8485d9a4d6792"
+    },
+    "schemas/modules/turn-engine/golden/invalid/errors-class.json": {
+      "bytes": 392,
+      "sha256": "0b4017cef1cd34e8e3b37f63875a8a6aceafc881665ae57b6268b2b205661c53"
+    },
+    "schemas/modules/turn-engine/golden/invalid/errors-missing.json": {
+      "bytes": 360,
+      "sha256": "ba492d2cf159b75827229af89e2c3941fce1d22f331910098000e45cb6f94d4c"
+    },
+    "schemas/modules/turn-engine/golden/invalid/errors-module-splice.json": {
+      "bytes": 390,
+      "sha256": "bebb44928eb8a04ffcaf7130ba7693403925d269784c71c3e71c9db0f30dd92c"
+    },
+    "schemas/modules/turn-engine/golden/invalid/errors-retry.json": {
+      "bytes": 367,
+      "sha256": "1837ed9b24e488b1e76129b422e4f807df162919aba92a7d0feb5bbd06a931ee"
+    },
+    "schemas/modules/turn-engine/golden/invalid/errors-uncertainty.json": {
+      "bytes": 390,
+      "sha256": "1bdf76f7f9ff477ccba88842df32b5310940fd359299acf2f128f1fca8720d19"
+    },
+    "schemas/modules/turn-engine/golden/invalid/state-boolean-sequence.json": {
+      "bytes": 390,
+      "sha256": "c3841731a478e5e1d83263ac3b7aa4143e4b09a6fb4dbf290799ba8cccfd75d5"
+    },
+    "schemas/modules/turn-engine/golden/invalid/state-invalid.json": {
+      "bytes": 399,
+      "sha256": "0e571a1ca3176260b1d54a5a932257c040e71fbc3d6e48d816f3cfd555acd536"
+    },
+    "schemas/modules/turn-engine/golden/invalid/state-nonfinite.json": {
+      "bytes": 361,
+      "sha256": "fa0f5de62fd7089b62a7ce4a3ff20641828e7affee8ba8e568f5fc86fdebdf3f"
+    },
+    "schemas/modules/turn-engine/golden/valid/api.json": {
+      "bytes": 352,
+      "sha256": "eeb0c10c297014cb56f2cc35673dfdc97f309456ef4183418d8f495ec31b077b"
+    },
+    "schemas/modules/turn-engine/golden/valid/errors.json": {
+      "bytes": 389,
+      "sha256": "ce70f02d5d20d184626a0905f58a705626ff49449158828e9f37ff9b5137575e"
+    },
+    "schemas/modules/turn-engine/golden/valid/state.json": {
+      "bytes": 387,
+      "sha256": "ec8b9964de6a240c2ecf7dc8bfab2d6e16d0bc99cf295367c2b6bf2c2718b1ec"
+    },
+    "schemas/modules/turn-engine/state-v1.schema.json": {
+      "bytes": 3200,
+      "sha256": "c465ecdbf2f7f58497e52419654550a9a1af8a2c77f988ffa791b35702894b9a"
+    },
+    "tools/contracts/README.md": {
+      "bytes": 907,
+      "sha256": "bd4962c354ef876757a26b071caca8ee3c6dcb25abf2a6e7c4f5170dccfda229"
+    },
+    "tools/contracts/check_module_contract_compatibility.py": {
+      "bytes": 3849,
+      "sha256": "8bbdc6d1a5553fcf86074ae5f360368c1a747263fa03f0e2ba08c8604e53ed64"
+    }
+  },
+  "automatic_redispatch": false,
+  "public_release": false,
+  "schema": "org.trillionnium.module-contract-lock.v1"
+}

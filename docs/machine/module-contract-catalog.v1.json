@@ -1,0 +1,1536 @@
+{
+  "android_build_host_consumer": "android-integration/module-contracts/verify_vectors.py",
+  "automatic_redispatch": false,
+  "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
+  "compatibility_checker": {
+    "path": "tools/contracts/check_module_contract_compatibility.py",
+    "sha256": "8bbdc6d1a5553fcf86074ae5f360368c1a747263fa03f0e2ba08c8604e53ed64",
+    "size": 3849
+  },
+  "generator": {
+    "path": "tools/contracts/generate_module_contracts.py",
+    "sha256": "316202540d0e4c02e79c964a8440e30e655b03d5fe0cb1e8d93ba397edb8babe",
+    "size": 64153
+  },
+  "module_count": 16,
+  "modules": [
+    {
+      "artifacts": {
+        "api": "schemas/modules/adb/api-v1.schema.json",
+        "compatibility": "schemas/modules/adb/compatibility.json",
+        "errors": "schemas/modules/adb/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/adb/golden/invalid",
+        "state": "schemas/modules/adb/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/adb/golden/valid"
+      },
+      "dependencies": [
+        "MOD-ROOTLINUX",
+        "MOD-TOOL-RUNTIME"
+      ],
+      "implementation_sources": [
+        {
+          "path": "packaging/owner-open-adb/owner-open-adb-arm64-artifact.schema.json",
+          "sha256": "eeaf5ae47a2989a884fefa78b49d83c89998901f139d8c0d3c6594a233475ac2",
+          "size": 3585
+        },
+        {
+          "path": "packaging/owner-open-adb/verify_arm64_adb.py",
+          "sha256": "199a6d543eb2808c3abf5fc3d85e1e18588b4c3639dab467730ec482e0c6c89f",
+          "size": 12555
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_adb.api.v1",
+        "errors": "adb_error_v1",
+        "state": "org.trillionnium.mod_adb.state.v1"
+      },
+      "module_id": "MOD-ADB",
+      "read_versions": [
+        1
+      ],
+      "slug": "adb",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/android/api-v1.schema.json",
+        "compatibility": "schemas/modules/android/compatibility.json",
+        "errors": "schemas/modules/android/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/android/golden/invalid",
+        "state": "schemas/modules/android/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/android/golden/valid"
+      },
+      "dependencies": [
+        "MOD-BROKER",
+        "MOD-ROOTLINUX",
+        "MOD-TRANSPORT"
+      ],
+      "implementation_sources": [
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/Android.bp",
+          "sha256": "40a128c8bf2822b1dcf7804c7106808119c88dcb41cbd827d390b8d79b0838e7",
+          "size": 3929
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClient.java",
+          "sha256": "29c1b5fc2849aecb807aed69a26dcdb35e285e5a623f40c4e1ffb1f32b34fad4",
+          "size": 7275
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
+          "sha256": "b5d8b4d89582363fb77647881183f4db8b159111adfeb1f1cf46f883228c25b6",
+          "size": 9834
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
+          "sha256": "8e0c42ce70c68b6507728a9e664cf2bacef0b912f6524ddbbb650c318e0de074",
+          "size": 5890
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json",
+          "sha256": "eab8cd760ee4e5b455995d453b6e91bbcfcbaa76253d3c7382df415f3d99e52b",
+          "size": 1980
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_bootstrap.cpp",
+          "sha256": "abc3326b642dad91a23d8d9f7f80b671d14e56811f7ab816e4895dbbc3b06bd4",
+          "size": 35051
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_emergency_stop.cpp",
+          "sha256": "d63c33490fe10762bf528e6cf8c57fb0fd9efedf87ce2000b590caadcba3a849",
+          "size": 3176
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_ingress_proxy.cpp",
+          "sha256": "d10716008a26558910b22001816e7fa22ef38f89aa8962d5ff4ce557c9186501",
+          "size": 18361
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/product.mk",
+          "sha256": "42f3527122be592aebd2a6462c017530867db17dcb539853d17e4c496bcb0f30",
+          "size": 2991
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/adbd.te",
+          "sha256": "d95f966553e6ab0d7054c4a63cc273db98eb804ee4547629035f7055b77d0629",
+          "size": 150
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/adbroot.te",
+          "sha256": "2f25b298d9d8ff8c325b8368fd4985bfa52ad1e6b30be1b1a623535a9727fb03",
+          "size": 686
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/file.te",
+          "sha256": "128db39ea4be1eba8b9cd4a5273c4083c6b646c6326b3abc6f11d539abf540e1",
+          "size": 72
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/service.te",
+          "sha256": "5e68aa42e45cc1e4465404a445ae996a335207fe1bb00fbc771122c66b4fe410",
+          "size": 44
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/system_server.te",
+          "sha256": "041364093eb17908e9b63a494f326a362f57a9938803d67cc93c9d0bfd417716",
+          "size": 58
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/domains.te",
+          "sha256": "fe6e5b7d82fe632f82d0bff18796cc3ce3cd4827dd4cf7e8a32b7ff09761ab67",
+          "size": 5026
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/types.te",
+          "sha256": "595b89946fc94668dac73d0f397cb80f51e032c9b2b206bb5edcc545bed02f64",
+          "size": 1768
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/tools/verify_owner_open_materialized_payload.py",
+          "sha256": "3fe86e3598dc7191129eaa980e5e3d1c7b2f89f2e93277153918ce663fa8eb18",
+          "size": 17242
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_android.api.v1",
+        "errors": "android_error_v1",
+        "state": "org.trillionnium.mod_android.state.v1"
+      },
+      "module_id": "MOD-ANDROID",
+      "read_versions": [
+        1
+      ],
+      "slug": "android",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/broker/api-v1.schema.json",
+        "compatibility": "schemas/modules/broker/compatibility.json",
+        "errors": "schemas/modules/broker/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/broker/golden/invalid",
+        "state": "schemas/modules/broker/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/broker/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "implementation_sources": [
+        {
+          "path": "tools/owner-open/adb_smart_socket_relay.py",
+          "sha256": "8f24406236c0e00f5bf87ba4927df66fac2f3050b1f7150c82cdc727211e3bee",
+          "size": 16337
+        },
+        {
+          "path": "tools/owner-open/adb_smart_socket_relay_release.py",
+          "sha256": "d53ce1af5b7a9c1e0db1cecc58590567178074664046f31dc0515624c140e15b",
+          "size": 1988
+        },
+        {
+          "path": "tools/owner-open/adb_smart_socket_relay_selected.py",
+          "sha256": "ab0e0ef91e82d910e0d89c7fabd4441f13a110ffd53eef482e35b9f0f5e5e83b",
+          "size": 23049
+        },
+        {
+          "path": "tools/owner-open/authenticated_python_bootstrap.py",
+          "sha256": "cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96",
+          "size": 7624
+        },
+        {
+          "path": "tools/owner-open/build_codex_exec_prefix.py",
+          "sha256": "3d089887eee58a79fc746fd824fa20d424517d2bb31849a584c6bcd9cb981dfd",
+          "size": 13021
+        },
+        {
+          "path": "tools/owner-open/build_owner_open_rootfs_image_release.py",
+          "sha256": "edb84d355c30d2fa5603bc4e757a6afa3d530e7e15fe96ee4621ba2c4b64eadd",
+          "size": 26866
+        },
+        {
+          "path": "tools/owner-open/build_owner_open_rootfs_image_release_v2.py",
+          "sha256": "759094cf4b1d3ff30357ef9af750ad78bacecbfdb7d76878623b2347633f35fe",
+          "size": 12172
+        },
+        {
+          "path": "tools/owner-open/codex_owner_open_mcp.py",
+          "sha256": "0fbc063a4ee8d558afad597c46938d3997b02510b451539469aab4c366f1e75a",
+          "size": 13595
+        },
+        {
+          "path": "tools/owner-open/execute_codex_exec_plan.py",
+          "sha256": "c655e1d8325e1fc57b006333638459f5fed82ed33f94345054a756514ab3b910",
+          "size": 20664
+        },
+        {
+          "path": "tools/owner-open/generate_owner_open_l1_candidate.py",
+          "sha256": "947b7093f6f2cb891cdc0667f27f350ebd22a527f052ca02c3fe66f12b796c3f",
+          "size": 31193
+        },
+        {
+          "path": "tools/owner-open/jsonl_provider_runtime.py",
+          "sha256": "055697e7564af0d0c76c64064b28104d5cec95a46ad3e53df964ab09f438cbcd",
+          "size": 24165
+        },
+        {
+          "path": "tools/owner-open/owner_open_adb_relay.py",
+          "sha256": "604db49fcca4117d65ef1f5b4400c1f0e1d3b3b03e4088879fab760f1e429389",
+          "size": 17070
+        },
+        {
+          "path": "tools/owner-open/owner_open_adb_relay_v2.py",
+          "sha256": "e621f876434ad47c229b47cf3b01d0c50eb269307465f20c9433cc5b6ee717b5",
+          "size": 17337
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_admission_v2.py",
+          "sha256": "74c801798fce3817cbd0853d88bbbe25d32e7442d229f736aceeefe2aa721927",
+          "size": 33358
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_audit.py",
+          "sha256": "6f4ab4eccf04b148a4d3642c05a2558409000d94ab15b12d95535b2f3d0ebf18",
+          "size": 21817
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_base_v2.py",
+          "sha256": "2f08886a6e49baf5500cefc4d0e75ad650bdcf7304d7997eaf36a6250a3d6436",
+          "size": 25956
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_client.py",
+          "sha256": "d4fdbad3154902c3dd3f9f976abb328a69ca5dbf57842359ee1cd21eb8fcb94a",
+          "size": 8801
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_common.py",
+          "sha256": "71b20cce8782fb1f065aa85d6f1e84a0ed29ca5d0c618d135ddf8b17c380d783",
+          "size": 16177
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_connections.py",
+          "sha256": "ac25938ed0b690eedf74bc5a1e588e8570d6d1de4238441ab140307eb0233e1f",
+          "size": 9436
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_convergence_v2.py",
+          "sha256": "d3c10d858c8041b4be3ff40873c1b359e80fcaf69dafc57349359ca30b3f2200",
+          "size": 42927
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_mux.py",
+          "sha256": "b19b5bc571f5a5a7314fa929bd0ea888fcbdc40b37af86ff664a06ef9b13d7c3",
+          "size": 31138
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_runtime.py",
+          "sha256": "d0146f7b66c27abbed573b5e9e7f9a1d9cdf4e02e26dd8cf7f00152ec3776329",
+          "size": 21106
+        },
+        {
+          "path": "tools/owner-open/owner_open_broker_server_v2.py",
+          "sha256": "e34a60551552277ab72cf92e0dce9bf716624c6aa477f983b7429a0b32d3b5af",
+          "size": 11244
+        },
+        {
+          "path": "tools/owner-open/owner_open_connection_broker.py",
+          "sha256": "702240c72eec01a9449dffb234037d4c68abe8619126d2739c3ad285f6b72f59",
+          "size": 702
+        },
+        {
+          "path": "tools/owner-open/owner_open_connection_broker_v2.py",
+          "sha256": "8eae99d0933e7cea97276c65119ee4effae666f18bc125c968c81112942a87e1",
+          "size": 3758
+        },
+        {
+          "path": "tools/owner-open/owner_open_mcp_common.py",
+          "sha256": "ff1f6e0f41c5afb5731b8be9550a9b9ad145f462ce1965950cbefb2dd7a07d6c",
+          "size": 4977
+        },
+        {
+          "path": "tools/owner-open/owner_open_mcp_host.py",
+          "sha256": "8771e7f101b9f62436a877e16473c814cc539d5c5748d2023a58b0673a01f33a",
+          "size": 9180
+        },
+        {
+          "path": "tools/owner-open/owner_open_mcp_jobs.py",
+          "sha256": "b03fad573a6bc393cdba6c87faf64904e93302cc42f8b694d67653d1b970e59d",
+          "size": 17750
+        },
+        {
+          "path": "tools/owner-open/owner_open_rootlinux_supervisor.py",
+          "sha256": "0414bffd86ae43210aeb95d32e93c2398ee2adfe6546e1267682c6ce4a75be83",
+          "size": 39900
+        },
+        {
+          "path": "tools/owner-open/prepare-adb-reverse-v1.sh",
+          "sha256": "f269343f3901ef73938c2e7f8eb12f0a4ffdb28c20c463e6cc2af0191628e3c0",
+          "size": 9754
+        },
+        {
+          "path": "tools/owner-open/prepare-adb-reverse.sh",
+          "sha256": "4db4863a8deb8ca933dc40e0286a463ebfa596c9a7a63c63f2059ab793375026",
+          "size": 6773
+        },
+        {
+          "path": "tools/owner-open/probe_codex_cli.py",
+          "sha256": "39002074cd2a9fcb7b809358865aa5a7796131694d5f646bdaff312c800932db",
+          "size": 8746
+        },
+        {
+          "path": "tools/owner-open/qualify_codex_mcp_jobs.py",
+          "sha256": "0418ea9918408db8761b30afec09180058db3ac2c45d1686638453f206601630",
+          "size": 29350
+        },
+        {
+          "path": "tools/owner-open/qualify_owner_open_adb.py",
+          "sha256": "3eff736c685331ff2ba3dfe1e12ca45ea6b653ebb804f6384ee8f7088fb41639",
+          "size": 17914
+        },
+        {
+          "path": "tools/owner-open/qualify_owner_open_adb_release.py",
+          "sha256": "f8967aa288d10f434c06176ea00aa78a797a2dbd40fb8b1f84b7e2dab17522d9",
+          "size": 2998
+        },
+        {
+          "path": "tools/owner-open/qualify_owner_open_adb_selected.py",
+          "sha256": "cdf85fe4d6baaf395e94f2de74d8f81a9d1cda35a6c5d57706462f3d9886c357",
+          "size": 23754
+        },
+        {
+          "path": "tools/owner-open/stage_owner_open_rootfs_payload.py",
+          "sha256": "861a20afb0e51cb1a57a20df0b9866d25048405a7e602bb2e862a937d3e478f8",
+          "size": 14042
+        },
+        {
+          "path": "tools/owner-open/stage_owner_open_rootfs_payload_release.py",
+          "sha256": "4b8ef698b75dad9153c528936d15d2778757b01bcf6aed8ec0cd732edb2dac30",
+          "size": 18328
+        },
+        {
+          "path": "tools/owner-open/supervise_codex_mcp_qualification.py",
+          "sha256": "655f8dcbf7ab3bd66b0e433fcb44e99451bd884f657da0da10593e454d0d02c1",
+          "size": 13321
+        },
+        {
+          "path": "tools/owner-open/supervise_codex_mcp_qualification_release.py",
+          "sha256": "e6202b85894cbf48091bed1e94e55842989f891a35e394379da64d82b06dc82e",
+          "size": 968
+        },
+        {
+          "path": "tools/owner-open/trace_mcp_stdio.py",
+          "sha256": "d494e3bccefff3e191a3d8ad00ffbd324f3c4810a8e5f25b1f5eb0cf68c265d0",
+          "size": 15849
+        },
+        {
+          "path": "tools/owner-open/verify_owner_open_materialized_payload.py",
+          "sha256": "f4a754344a0ba8e233817462bc517d6df9835604ac34590aaf5c30643d482a14",
+          "size": 17244
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_broker.api.v1",
+        "errors": "broker_error_v1",
+        "state": "org.trillionnium.mod_broker.state.v1"
+      },
+      "module_id": "MOD-BROKER",
+      "read_versions": [
+        1
+      ],
+      "slug": "broker",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/event-store/api-v1.schema.json",
+        "compatibility": "schemas/modules/event-store/compatibility.json",
+        "errors": "schemas/modules/event-store/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/event-store/golden/invalid",
+        "state": "schemas/modules/event-store/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/event-store/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "implementation_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-event-store/Cargo.toml",
+          "sha256": "048c4ac9c9ba8e9f25f3fa2de01cfdb32ac5eb2cffdd385210dbe54f275b791f",
+          "size": 410
+        },
+        {
+          "path": "crates/trillionnium-owner-open-event-store/src/lib.rs",
+          "sha256": "99b2f280ba4798cd8ee3f74fa9e9c901893c3a4949800dc13083d5842ac38018",
+          "size": 166377
+        },
+        {
+          "path": "crates/trillionnium-owner-open-event-store/src/strict_json.rs",
+          "sha256": "11aae2509a860f09e533e071873f87ad48d9591fb611086fdda25e8cbc645445",
+          "size": 3176
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_event_store.api.v1",
+        "errors": "event_store_error_v1",
+        "state": "org.trillionnium.mod_event_store.state.v1"
+      },
+      "module_id": "MOD-EVENT-STORE",
+      "read_versions": [
+        1
+      ],
+      "slug": "event-store",
+      "test_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-event-store/tests/durable.rs",
+          "sha256": "129d497fc0e90fc3644670a33b984ac1f9e9111380628689787aa1ed5af505c8",
+          "size": 8401
+        },
+        {
+          "path": "crates/trillionnium-owner-open-event-store/tests/segmented.rs",
+          "sha256": "9e6f45f72177706ca0ddff76dfbc92f0814f0c63422784707bc364f15be10533",
+          "size": 22671
+        },
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/evidence/api-v1.schema.json",
+        "compatibility": "schemas/modules/evidence/compatibility.json",
+        "errors": "schemas/modules/evidence/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/evidence/golden/invalid",
+        "state": "schemas/modules/evidence/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/evidence/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "implementation_sources": [
+        {
+          "path": "docs/machine/evidence-index.v1.json",
+          "sha256": "8c3e5024c19e26ab03613f1ce145a667142c57dcd773ce291324bbda33a684e7",
+          "size": 13308
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_evidence.api.v1",
+        "errors": "evidence_error_v1",
+        "state": "org.trillionnium.mod_evidence.state.v1"
+      },
+      "module_id": "MOD-EVIDENCE",
+      "read_versions": [
+        1
+      ],
+      "slug": "evidence",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/execution-core/api-v1.schema.json",
+        "compatibility": "schemas/modules/execution-core/compatibility.json",
+        "errors": "schemas/modules/execution-core/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/execution-core/golden/invalid",
+        "state": "schemas/modules/execution-core/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/execution-core/golden/valid"
+      },
+      "dependencies": [
+        "MOD-EVENT-STORE",
+        "MOD-JOB-RUNTIME",
+        "MOD-PROTOCOL",
+        "MOD-TURN-ENGINE"
+      ],
+      "implementation_sources": [
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
+          "sha256": "0ba35b039601b7e02ac3e969b6b26cb8280b11747ab8b7f8ca385564080085e6",
+          "size": 7190
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs",
+          "sha256": "40aa42c38fd1af4493b6a69d982e64517f83a50d69fe10023ce67222360b4d8c",
+          "size": 1209
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
+          "sha256": "97cf1bd7b5669a384647f8b5f04cbe7dd73ef6d28334d795d20c344c95510339",
+          "size": 114832
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
+          "sha256": "7b8546da83c2b2df6555d55a5171d832b0bb4f503125093bb352f2791c95450e",
+          "size": 33921
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_execution_core.api.v1",
+        "errors": "execution_error_v1",
+        "state": "org.trillionnium.mod_execution_core.state.v1"
+      },
+      "module_id": "MOD-EXECUTION-CORE",
+      "read_versions": [
+        1
+      ],
+      "slug": "execution-core",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/global-control/api-v1.schema.json",
+        "compatibility": "schemas/modules/global-control/compatibility.json",
+        "errors": "schemas/modules/global-control/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/global-control/golden/invalid",
+        "state": "schemas/modules/global-control/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/global-control/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-TELEMETRY"
+      ],
+      "implementation_sources": [
+        {
+          "path": "planned/crates/trillionnium-global-control-plane/Cargo.toml",
+          "sha256": "eb38e143abd33a2685bc8e6d270ce84ff7b261a035cd8a982f4805adf5b2e168",
+          "size": 286
+        },
+        {
+          "path": "planned/crates/trillionnium-global-control-plane/src/lib.rs",
+          "sha256": "7374151610b0285c633e3eb48c1a7064cbdc583df192ee1ae16de7fe332199d1",
+          "size": 129822
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_global_control.api.v1",
+        "errors": "control_error_v1",
+        "state": "org.trillionnium.mod_global_control.state.v1"
+      },
+      "module_id": "MOD-GLOBAL-CONTROL",
+      "read_versions": [
+        1
+      ],
+      "slug": "global-control",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/job-runtime/api-v1.schema.json",
+        "compatibility": "schemas/modules/job-runtime/compatibility.json",
+        "errors": "schemas/modules/job-runtime/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/job-runtime/golden/invalid",
+        "state": "schemas/modules/job-runtime/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/job-runtime/golden/valid"
+      },
+      "dependencies": [
+        "MOD-EVENT-STORE",
+        "MOD-PROTOCOL"
+      ],
+      "implementation_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-job-registry/Cargo.toml",
+          "sha256": "7373351540752310819b8615e13039a5933847097f06d40b556a31f918686514",
+          "size": 293
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-registry/src/lib.rs",
+          "sha256": "6eb26d8fc931044ede7cbdf2a1a1a13f9302b8c1db7ca7ca48eeb139bd889090",
+          "size": 461
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-registry/src/registry.rs",
+          "sha256": "86a36287c2b091328d453e7bcffedfb5a246dd87b692d7287f77e7aab03d9b38",
+          "size": 38049
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-registry/src/types.rs",
+          "sha256": "fb8264f808cf171b32e22081d115f4d7bbfed24a5ae381706468ea000acd148a",
+          "size": 8711
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-registry/src/validate.rs",
+          "sha256": "969d544449e5ccf401187a35ec2070cd539f688950ba6c0e6fe2b89ba6739676",
+          "size": 1841
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/Cargo.toml",
+          "sha256": "86d5ced299b5f28feef8c96aa5911e933a27b73cd7e9b9197e7c46b329f47101",
+          "size": 517
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
+          "sha256": "b5cfed9000227dc28aa5e1cf44e43ca03974950a64cdc681f77fc24d5a86bbb8",
+          "size": 6292
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/src/journal.rs",
+          "sha256": "89e9f44f958d3f029dda3f624a379fc461ec913f5960dc57510edc683865e9ea",
+          "size": 58688
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/src/lib.rs",
+          "sha256": "73a5bc625f88dfdfbb7ec4f831b52c911f6056a3be3b426475fd2997147efaff",
+          "size": 871
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
+          "sha256": "e684e3007cbaacc64d1b302f65a45ad03add1fc063f463c12e2bb23aaf4ff039",
+          "size": 111963
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/src/process.rs",
+          "sha256": "46f0e7dc71d9f797fe4ddefbf018abf2a7ead5c6c89ff8334c1462dfdf72cf88",
+          "size": 62044
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/src/types.rs",
+          "sha256": "50b865eda53260dcd18a9b3db92a67b69c4e1696b83e3de76b4b8a2485fdd61d",
+          "size": 11986
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/src/validate.rs",
+          "sha256": "de168b99882da51ea76e29aaa5fd83c958ff9084d1d562be3aa52cfb2571d2e1",
+          "size": 1272
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_job_runtime.api.v1",
+        "errors": "job_error_v1",
+        "state": "org.trillionnium.mod_job_runtime.state.v1"
+      },
+      "module_id": "MOD-JOB-RUNTIME",
+      "read_versions": [
+        1
+      ],
+      "slug": "job-runtime",
+      "test_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-job-registry/tests/registry.rs",
+          "sha256": "8851e3bd347b5aa863e516f79dc0a1e1fe961994e5f1078f03a3af7f19384e84",
+          "size": 5202
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
+          "sha256": "a1733b2110b8dd1b43ab6676800b76c8042bd99a329adf1c3ebce3d72d85dadd",
+          "size": 20073
+        },
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/protocol/api-v1.schema.json",
+        "compatibility": "schemas/modules/protocol/compatibility.json",
+        "errors": "schemas/modules/protocol/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/protocol/golden/invalid",
+        "state": "schemas/modules/protocol/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/protocol/golden/valid"
+      },
+      "dependencies": [],
+      "implementation_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-types/Cargo.toml",
+          "sha256": "d405d06dd1c4a81e42dae0541221b07e0b170076d933866bab22370c881cbeaf",
+          "size": 388
+        },
+        {
+          "path": "crates/trillionnium-owner-open-types/src/generated.rs",
+          "sha256": "a9ef8c6ab7b79ac753e51a83ffb3e62745fac6eaa4373422b47c5a25cfdc701e",
+          "size": 907
+        },
+        {
+          "path": "crates/trillionnium-owner-open-types/src/lib.rs",
+          "sha256": "f113d287ce7f0e80a3b8a3ec937c9628bb23edf0eef687f6466d86b804f2a8f6",
+          "size": 43497
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_protocol.api.v1",
+        "errors": "protocol_error_v1",
+        "state": "org.trillionnium.mod_protocol.state.v1"
+      },
+      "module_id": "MOD-PROTOCOL",
+      "read_versions": [
+        1
+      ],
+      "slug": "protocol",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/provider/api-v1.schema.json",
+        "compatibility": "schemas/modules/provider/compatibility.json",
+        "errors": "schemas/modules/provider/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/provider/golden/invalid",
+        "state": "schemas/modules/provider/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/provider/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-TOOL-RUNTIME",
+        "MOD-TURN-ENGINE"
+      ],
+      "implementation_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/Cargo.toml",
+          "sha256": "6df6c5e365201f9c6b425ae52804b563ae0bd24c54e866449a0a3ed1d926459c",
+          "size": 719
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
+          "sha256": "df2ccb8fc10c2ccf53b46dc48bf3b96be1526848dff548d718ee7b35c4be54ae",
+          "size": 41933
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
+          "sha256": "9a92601c0b4f2a308b043febd478a1443eec320836bb3a85348301e36b26aa6e",
+          "size": 15330
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/src/process_retained.rs",
+          "sha256": "d922d20fb87d913eb49002ab37bcbfc44fe266c31fea6c7284829bb02e903a3b",
+          "size": 44492
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
+          "sha256": "a77c06e761e06f858d56c1dbe5b372317ebed86bd4304f44cf3da50a8c5ba64f",
+          "size": 34226
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/src/strict_json.rs",
+          "sha256": "2aace9fb080c5401a7f3147c48afc6303599f69419d347870d651f2c9ac159e1",
+          "size": 3196
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_provider.api.v1",
+        "errors": "provider_error_v1",
+        "state": "org.trillionnium.mod_provider.state.v1"
+      },
+      "module_id": "MOD-PROVIDER",
+      "read_versions": [
+        1
+      ],
+      "slug": "provider",
+      "test_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/tests/cancellation.rs",
+          "sha256": "16f3c1bb1ab8826e9ed70cbe35fdbd91bc7c857388cba996ccf226ca571752cd",
+          "size": 6140
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/tests/deadline.rs",
+          "sha256": "832d67e27d02f77aaaad23c045d2d8b11ec1b39d9b762112e4552e76123e9741",
+          "size": 5316
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/tests/duplex.rs",
+          "sha256": "f9f6c1c73f010d9d9ccfb6bddb564bab94eab438057e4c8a0d330cd5d427aaa7",
+          "size": 7984
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/tests/terminal_ordering.rs",
+          "sha256": "084d3b9ee2788fad373e58c1824b9544910c9d7724e92e1f283db82e97827e5c",
+          "size": 1841
+        },
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/rootlinux/api-v1.schema.json",
+        "compatibility": "schemas/modules/rootlinux/compatibility.json",
+        "errors": "schemas/modules/rootlinux/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/rootlinux/golden/invalid",
+        "state": "schemas/modules/rootlinux/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/rootlinux/golden/valid"
+      },
+      "dependencies": [
+        "MOD-EXECUTION-CORE",
+        "MOD-GLOBAL-CONTROL",
+        "MOD-PROVIDER"
+      ],
+      "implementation_sources": [
+        {
+          "path": "packaging/root-linux/rootfs-codex-erofs-admission.v1.json",
+          "sha256": "2ac55ff03836292026059a789864f40e470d00bbdb40d207d2f8abd2030f5b41",
+          "size": 4650
+        },
+        {
+          "path": "packaging/root-linux/rootfs-codex-erofs-admission.v2.json",
+          "sha256": "e8128f6671fc80b63964225dd0ccbc94a911707feb5ec37950b2e55ad603d445",
+          "size": 5813
+        },
+        {
+          "path": "packaging/root-linux/rootfs-codex-erofs-admission.v3.json",
+          "sha256": "41c0e677020a3130f0959e8362ae571b102845a2ab235ae439eee311fe38268c",
+          "size": 5891
+        },
+        {
+          "path": "packaging/root-linux/rootfs-codex-erofs-admission.v4.json",
+          "sha256": "f42aaf8383d4c10f5ae0ba5fe609d748c12b3a203489592a230cbcb240f32d68",
+          "size": 5891
+        },
+        {
+          "path": "packaging/root-linux/rootfs-fresh-minimal-bookworm-arm64.allowlist.v1.json",
+          "sha256": "90ae07cf6d731726f9afc6912eac713aaa71ddebf5d3d60bdf9aede2c651aab5",
+          "size": 3633
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_rootlinux.api.v1",
+        "errors": "rootlinux_error_v1",
+        "state": "org.trillionnium.mod_rootlinux.state.v1"
+      },
+      "module_id": "MOD-ROOTLINUX",
+      "read_versions": [
+        1
+      ],
+      "slug": "rootlinux",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/stream/api-v1.schema.json",
+        "compatibility": "schemas/modules/stream/compatibility.json",
+        "errors": "schemas/modules/stream/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/stream/golden/invalid",
+        "state": "schemas/modules/stream/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/stream/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "implementation_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-stream-window/Cargo.toml",
+          "sha256": "8d1021d310be82578b1eea87c9499eea5ca5277be6c346d2724fea0847cdc388",
+          "size": 271
+        },
+        {
+          "path": "crates/trillionnium-owner-open-stream-window/src/lib.rs",
+          "sha256": "902b635eaf1a97c4a601107222baee8e0361cf1ad143b6f57565a9bd17798cbd",
+          "size": 18764
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_stream.api.v1",
+        "errors": "stream_error_v1",
+        "state": "org.trillionnium.mod_stream.state.v1"
+      },
+      "module_id": "MOD-STREAM",
+      "read_versions": [
+        1
+      ],
+      "slug": "stream",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/telemetry/api-v1.schema.json",
+        "compatibility": "schemas/modules/telemetry/compatibility.json",
+        "errors": "schemas/modules/telemetry/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/telemetry/golden/invalid",
+        "state": "schemas/modules/telemetry/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/telemetry/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "implementation_sources": [
+        {
+          "path": "planned/crates/trillionnium-telemetry/Cargo.toml",
+          "sha256": "946df055079d4a812fc511a8a382767b9364a02ed9130339948311b34da2bd08",
+          "size": 211
+        },
+        {
+          "path": "planned/crates/trillionnium-telemetry/src/lib.rs",
+          "sha256": "4b5c8e122c52262b8575f101984c4d56973fcd88fca18ee9cd68a72579bb6cbc",
+          "size": 76445
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_telemetry.api.v1",
+        "errors": "telemetry_error_v1",
+        "state": "org.trillionnium.mod_telemetry.state.v1"
+      },
+      "module_id": "MOD-TELEMETRY",
+      "read_versions": [
+        1
+      ],
+      "slug": "telemetry",
+      "test_sources": [
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/tool-runtime/api-v1.schema.json",
+        "compatibility": "schemas/modules/tool-runtime/compatibility.json",
+        "errors": "schemas/modules/tool-runtime/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/tool-runtime/golden/invalid",
+        "state": "schemas/modules/tool-runtime/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/tool-runtime/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL"
+      ],
+      "implementation_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-tool-bridge/Cargo.toml",
+          "sha256": "dfbb5ed4b5f1d2c80f35389183a8843a207aba2d0e2aec7978a59d62ed622d96",
+          "size": 442
+        },
+        {
+          "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
+          "sha256": "50276548f8fd083c0823e32e48d994fc25e8e01930639ccdb9e5b2c6f4c22a55",
+          "size": 36688
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_tool_runtime.api.v1",
+        "errors": "tool_error_v1",
+        "state": "org.trillionnium.mod_tool_runtime.state.v1"
+      },
+      "module_id": "MOD-TOOL-RUNTIME",
+      "read_versions": [
+        1
+      ],
+      "slug": "tool-runtime",
+      "test_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-tool-bridge/tests/bridge.rs",
+          "sha256": "f84dead3a00faccda8b2c0b0ab52c52d466570ecf9a47efa0493d565696c2f89",
+          "size": 18264
+        },
+        {
+          "path": "crates/trillionnium-owner-open-tool-bridge/tests/failure_closure.rs",
+          "sha256": "22552226e0521d4bf3297f11dc3a3d30efd956393a331c92f82b1965e725f0e9",
+          "size": 3629
+        },
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/transport/api-v1.schema.json",
+        "compatibility": "schemas/modules/transport/compatibility.json",
+        "errors": "schemas/modules/transport/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/transport/golden/invalid",
+        "state": "schemas/modules/transport/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/transport/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-STREAM"
+      ],
+      "implementation_sources": [
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry.rs",
+          "sha256": "95c5b7bd2dee18aab7261da09408cf4a14bc4b52b49c0ea048dfb158275964c9",
+          "size": 88
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/imports.rs",
+          "sha256": "ed0479749a716b7558d6777d88a3a7bbce098fd655314dc0c07c204df3fca34e",
+          "size": 2610
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/options.rs",
+          "sha256": "87d8184d70f7dc62cb64a635622375a0360a0a5296657b4756a5c70c55ae812c",
+          "size": 4586
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/state.rs",
+          "sha256": "a428eb1f1cef57b34e695f5ebe335497c5d6a741a25ece59cd41be99e85bf3d7",
+          "size": 55175
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow.rs",
+          "sha256": "9f50576bb116dd61f4ab0b3e8db9d258e9b462c840f32f2275a4dabbf45d3274",
+          "size": 81
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/queue.rs",
+          "sha256": "c95ea2f7e6e3096d07301a86d1c3cfcdd621508cbde31a5e5fb0497b666298d0",
+          "size": 8961
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs",
+          "sha256": "8de194696916e6be4c90292746f1c86545d7280a2cc58a22f00445d64cd36892",
+          "size": 45
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/types.rs",
+          "sha256": "1d321e4f4c19a5dbbb8e1d670357177b72decbc1883ed3138176724747657748",
+          "size": 5214
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/window.rs",
+          "sha256": "070174eedda80bc4b338278ff281e0056dacea880ffcf067b0d26e1be546c395",
+          "size": 5023
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/journal.rs",
+          "sha256": "ed337d485d775b707c98b778761c41c7a9d5a6283d10cdd6f393c05848df604c",
+          "size": 6576
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process.rs",
+          "sha256": "ccccb65bfafcef6b676a705bd4129681eeb951a665c6efe6ada08882d43bf84e",
+          "size": 88
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/handlers.rs",
+          "sha256": "e7c67dfcc149bd3d6371021644f69f59d955d84ef5d58b79524cb5b1bdb81c31",
+          "size": 74960
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs",
+          "sha256": "b5377b4402c5a7f7341297e28165725fc4bc4c4829b600d571fecd800268f64e",
+          "size": 29124
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/run.rs",
+          "sha256": "e5c34544dbe7bd2a42c08415f9bea02ce91e880c74cbdf197d05d7ac001210a6",
+          "size": 76122
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/protocol.rs",
+          "sha256": "1389f95d40b3e6ceef252823ecf1d893b115d3ce5e73e558db3bae268ee6c0cd",
+          "size": 11332
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_transport.api.v1",
+        "errors": "transport_error_v1",
+        "state": "org.trillionnium.mod_transport.state.v1"
+      },
+      "module_id": "MOD-TRANSPORT",
+      "read_versions": [
+        1
+      ],
+      "slug": "transport",
+      "test_sources": [
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/tests.rs",
+          "sha256": "518914fd27d654249ffbc9ce858bb9ffb464af9e97638e326ffbd6f908a96fc1",
+          "size": 11773
+        },
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    },
+    {
+      "artifacts": {
+        "api": "schemas/modules/turn-engine/api-v1.schema.json",
+        "compatibility": "schemas/modules/turn-engine/compatibility.json",
+        "errors": "schemas/modules/turn-engine/errors-v1.schema.json",
+        "invalid_vectors": "schemas/modules/turn-engine/golden/invalid",
+        "state": "schemas/modules/turn-engine/state-v1.schema.json",
+        "valid_vectors": "schemas/modules/turn-engine/golden/valid"
+      },
+      "dependencies": [
+        "MOD-PROTOCOL",
+        "MOD-TOOL-RUNTIME"
+      ],
+      "implementation_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-turn-loop/Cargo.toml",
+          "sha256": "714b471cc28dd617ac291086ac10a80d59f8c1729bc04740e201aa9219058059",
+          "size": 470
+        },
+        {
+          "path": "crates/trillionnium-owner-open-turn-loop/src/lib.rs",
+          "sha256": "e732eedcf5b8c768ce96a41bea99d1c651331a8427d0734873e4c7a4836ebd82",
+          "size": 31140
+        }
+      ],
+      "logical_labels": {
+        "api": "org.trillionnium.mod_turn_engine.api.v1",
+        "errors": "turn_error_v1",
+        "state": "org.trillionnium.mod_turn_engine.state.v1"
+      },
+      "module_id": "MOD-TURN-ENGINE",
+      "read_versions": [
+        1
+      ],
+      "slug": "turn-engine",
+      "test_sources": [
+        {
+          "path": "crates/trillionnium-owner-open-turn-loop/tests/same_turn.rs",
+          "sha256": "a50928741579ac6c8f8839210e0dc886ff94a3d4ce2868d919f3ccb48afff8ce",
+          "size": 10012
+        },
+        {
+          "path": "crates/trillionnium-owner-open-turn-loop/tests/streaming_and_cancel.rs",
+          "sha256": "0e49b34739fe927192c2910578e6781421b6fbdcb5ae7331cf4f29e30ac6dcc8",
+          "size": 9931
+        },
+        {
+          "path": "tools/tests/test_module_contracts.py",
+          "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
+          "size": 7652
+        }
+      ],
+      "write_versions": [
+        1
+      ]
+    }
+  ],
+  "producer_consumer_pair_count": 29,
+  "producer_consumer_pairs": [
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ADB",
+      "decision": "PASS",
+      "producer": "MOD-ROOTLINUX"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ADB",
+      "decision": "PASS",
+      "producer": "MOD-TOOL-RUNTIME"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ANDROID",
+      "decision": "PASS",
+      "producer": "MOD-BROKER"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ANDROID",
+      "decision": "PASS",
+      "producer": "MOD-ROOTLINUX"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ANDROID",
+      "decision": "PASS",
+      "producer": "MOD-TRANSPORT"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-BROKER",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-EVENT-STORE",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-EVIDENCE",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-EXECUTION-CORE",
+      "decision": "PASS",
+      "producer": "MOD-EVENT-STORE"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-EXECUTION-CORE",
+      "decision": "PASS",
+      "producer": "MOD-JOB-RUNTIME"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-EXECUTION-CORE",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-EXECUTION-CORE",
+      "decision": "PASS",
+      "producer": "MOD-TURN-ENGINE"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-GLOBAL-CONTROL",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-GLOBAL-CONTROL",
+      "decision": "PASS",
+      "producer": "MOD-TELEMETRY"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-JOB-RUNTIME",
+      "decision": "PASS",
+      "producer": "MOD-EVENT-STORE"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-JOB-RUNTIME",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-PROVIDER",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-PROVIDER",
+      "decision": "PASS",
+      "producer": "MOD-TOOL-RUNTIME"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-PROVIDER",
+      "decision": "PASS",
+      "producer": "MOD-TURN-ENGINE"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ROOTLINUX",
+      "decision": "PASS",
+      "producer": "MOD-EXECUTION-CORE"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ROOTLINUX",
+      "decision": "PASS",
+      "producer": "MOD-GLOBAL-CONTROL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-ROOTLINUX",
+      "decision": "PASS",
+      "producer": "MOD-PROVIDER"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-STREAM",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-TELEMETRY",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-TOOL-RUNTIME",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-TRANSPORT",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-TRANSPORT",
+      "decision": "PASS",
+      "producer": "MOD-STREAM"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-TURN-ENGINE",
+      "decision": "PASS",
+      "producer": "MOD-PROTOCOL"
+    },
+    {
+      "compatible_api_versions": [
+        1
+      ],
+      "consumer": "MOD-TURN-ENGINE",
+      "decision": "PASS",
+      "producer": "MOD-TOOL-RUNTIME"
+    }
+  ],
+  "program_revision": "2026-08-31-g1",
+  "promotion_authorized": false,
+  "public_release": false,
+  "python_consumer": "tools/contracts/generate_module_contracts.py",
+  "rust_binding": {
+    "api_symbol": "ModuleApiEnvelopeV1",
+    "contract_tests": [
+      {
+        "path": "android-integration/module-contracts/verify_vectors.py",
+        "sha256": "d0b6e97f4829cebefff873e44aebe239e74570d7460f88a06e93f9992d3ee57b",
+        "size": 5928
+      },
+      {
+        "path": "crates/trillionnium-owner-open-types/tests/module_contract_vectors.rs",
+        "sha256": "96a4784eec19a7a66abdeb3f1422a5e7deda1def0b15314a22792754ab4b1ac4",
+        "size": 4473
+      },
+      {
+        "path": "tools/contracts/check_module_contract_compatibility.py",
+        "sha256": "8bbdc6d1a5553fcf86074ae5f360368c1a747263fa03f0e2ba08c8604e53ed64",
+        "size": 3849
+      }
+    ],
+    "error_symbol": "ModuleErrorEnvelopeV1",
+    "path": "crates/trillionnium-owner-open-types/src/module_contract.rs",
+    "schemars": {
+      "path": "schemas/modules/_shared/envelopes-v1.schemars.json",
+      "sha256": "7333926b96118fdd0cf2bae9a7c5ab93d118a6a26addf8cf13c4f25ece8a1448",
+      "size": 4403
+    },
+    "sha256": "865f50ff6457c4be8b21c95ef6d19b09a9883e18fc297c3b2091b2cd50101ac9",
+    "size": 8336,
+    "state_symbol": "ModuleStateEnvelopeV1"
+  },
+  "rust_consumer": "crates/trillionnium-owner-open-types/tests/module_contract_vectors.rs",
+  "schema": "org.trillionnium.module-contract-catalog.v1",
+  "schemars_bundle": {
+    "path": "schemas/modules/_shared/envelopes-v1.schemars.json",
+    "sha256": "7333926b96118fdd0cf2bae9a7c5ab93d118a6a26addf8cf13c4f25ece8a1448",
+    "size": 4403
+  }
+}

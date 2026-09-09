@@ -1,0 +1,1 @@
+{"schema":"org.trillionnium.mod_provider.state.v1","module_id":"MOD-PROVIDER","operation_id":"operation-valid","request_digest":"0000000000000000000000000000000000000000000000000000000000000000","state":"ACCEPTED_DURABLE","host_epoch":1,"writer_epoch":1,"fencing_token":"fence-valid","durable_sequence":1,"monotonic_ns":1,"payload":{},"monotonic_ns":NaN}
