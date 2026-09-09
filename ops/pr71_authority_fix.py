@@ -24,9 +24,9 @@ verifier.write_text(source, encoding='utf-8')
 
 start = Path('docs/START_HERE.md')
 start_source = start.read_text(encoding='utf-8')
-start_source = start_source.replace('Machine truth root: [`machine/`](machine/)  ', 'Machine catalog navigation: [`machine/`](machine/)', 1)
+start_source = start_source.replace('Machine truth root: [`machine/`](machine/)  ', 'Machine catalog navigation: `machine/`', 1)
 old = 'The source of truth is split by concern across [`machine/`](machine/):\n'
-new = 'Browse machine records under [`machine/`](machine/).\n\nThe exact registered files below are authoritative for their individual concerns:\n'
+new = 'Browse machine records under `machine/`.\n\n### Registered machine authorities\n\nThe exact registered files below are authoritative for their individual concerns:\n'
 if old not in start_source:
     raise SystemExit('START_HERE truth paragraph drifted')
 start_source = start_source.replace(old, new, 1)
