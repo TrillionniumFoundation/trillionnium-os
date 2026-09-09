@@ -1,0 +1,247 @@
+name: ChatGPT effect-lifecycle convergence
+
+on:
+  push:
+    branches:
+      - ops/chatgpt-effect-lifecycle-controller-20260909
+
+permissions:
+  actions: read
+  checks: read
+  contents: write
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: chatgpt-effect-lifecycle-convergence
+  cancel-in-progress: true
+
+jobs:
+  converge-review-merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      DEPENDENCY_PR: "71"
+      CANDIDATE_BRANCH: codex/effect-lifecycle-model-20260908
+      REVIEWER_RUNTIME: Tomasrgbsf
+      REVIEWER_EVIDENCE: Franksudoman
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - name: Wait for protected repository-truth integration and locate lifecycle PR
+        id: subject
+        shell: bash
+        run: |
+          set -euo pipefail
+          for iteration in $(seq 1 1080); do
+            state="$(gh api "repos/$REPOSITORY/pulls/$DEPENDENCY_PR" --jq .state)"
+            merged="$(gh api "repos/$REPOSITORY/pulls/$DEPENDENCY_PR" --jq .merged)"
+            if test "$state" = closed && test "$merged" = true; then
+              break
+            fi
+            sleep 15
+          done
+          test "$state" = closed
+          test "$merged" = true
+          main_head="$(gh api "repos/$REPOSITORY/git/ref/heads/main" --jq .object.sha)"
+          candidate_head="$(gh api "repos/$REPOSITORY/git/ref/heads/$CANDIDATE_BRANCH" --jq .object.sha)"
+          matches="$(gh api "repos/$REPOSITORY/pulls?state=all&per_page=100" --jq "[.[] | select(.head.ref == \"$CANDIDATE_BRANCH\" and .head.repo.full_name == \"$REPOSITORY\")] | length")"
+          test "$matches" -le 1
+          if test "$matches" -eq 0; then
+            response="$(gh api -X POST "repos/$REPOSITORY/pulls" \
+              -f title='docs: machine-verify the cross-module effect lifecycle' \
+              -f head="$CANDIDATE_BRANCH" -f base=main -F draft=true \
+              -f body='Parent: #54 and #51. This source-only candidate adds the machine effect lifecycle, generated projection, crash-cut verification and formal model. It grants no L2-L6, target, device, signing or release authority. Exact subject and review packet will be rebound after protected-main convergence.')"
+            pr_number="$(printf '%s' "$response" | python3 -c 'import json,sys; print(json.load(sys.stdin)["number"])')"
+          else
+            pr_number="$(gh api "repos/$REPOSITORY/pulls?state=all&per_page=100" --jq ".[] | select(.head.ref == \"$CANDIDATE_BRANCH\" and .head.repo.full_name == \"$REPOSITORY\") | .number")"
+            pr_state="$(gh api "repos/$REPOSITORY/pulls/$pr_number" --jq .state)"
+            pr_merged="$(gh api "repos/$REPOSITORY/pulls/$pr_number" --jq .merged)"
+            if test "$pr_state" = closed && test "$pr_merged" = true; then
+              printf 'already_merged=true\n' >> "$GITHUB_OUTPUT"
+              printf 'pr_number=%s\n' "$pr_number" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if test "$pr_state" = closed; then
+              gh api -X PATCH "repos/$REPOSITORY/pulls/$pr_number" -f state=open >/dev/null
+            fi
+          fi
+          printf 'already_merged=false\n' >> "$GITHUB_OUTPUT"
+          printf 'pr_number=%s\n' "$pr_number" >> "$GITHUB_OUTPUT"
+          printf 'main_head=%s\n' "$main_head" >> "$GITHUB_OUTPUT"
+          printf 'candidate_head=%s\n' "$candidate_head" >> "$GITHUB_OUTPUT"
+
+      - name: Check out lifecycle candidate
+        if: steps.subject.outputs.already_merged != 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.CANDIDATE_BRANCH }}
+          persist-credentials: true
+
+      - name: Converge lifecycle authority with protected main
+        if: steps.subject.outputs.already_merged != 'true'
+        id: converge
+        shell: bash
+        env:
+          PR_NUMBER: ${{ steps.subject.outputs.pr_number }}
+          MAIN_HEAD: ${{ steps.subject.outputs.main_head }}
+          OLD_HEAD: ${{ steps.subject.outputs.candidate_head }}
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$OLD_HEAD"
+          test -f docs/machine/effect-lifecycle.v1.json
+          test -f docs/formal/EffectLifecycle.tla
+          test -f docs/formal/EffectLifecycle.cfg
+          test -f tools/docs/verify_effect_lifecycle.py
+          git fetch --no-tags origin main
+          test "$(git --no-replace-objects rev-parse origin/main)" = "$MAIN_HEAD"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          predecessor_tree="$(git --no-replace-objects rev-parse "$OLD_HEAD^{tree}")"
+          main_tree="$(git --no-replace-objects rev-parse "$MAIN_HEAD^{tree}")"
+          if ! git --no-replace-objects merge-base --is-ancestor "$MAIN_HEAD" "$OLD_HEAD"; then
+            set +e
+            git merge --no-ff --no-commit "$MAIN_HEAD"
+            merge_status=$?
+            set -e
+            unmerged="$(git diff --name-only --diff-filter=U | LC_ALL=C sort)"
+            if test -n "$unmerged"; then
+              test "$unmerged" = governance/pr41-review-index.v1.json
+              git checkout --ours governance/pr41-review-index.v1.json
+              git add governance/pr41-review-index.v1.json
+            else
+              test "$merge_status" -eq 0
+            fi
+          fi
+
+          python3 - "$PWD" "$MAIN_HEAD" "$main_tree" "$OLD_HEAD" "$predecessor_tree" "$PR_NUMBER" <<'PY'
+          from __future__ import annotations
+          import importlib.util, json, subprocess, sys
+          from pathlib import Path
+          root = Path(sys.argv[1]); main, main_tree, predecessor, predecessor_tree = sys.argv[2:6]; number = int(sys.argv[6])
+          spec = importlib.util.spec_from_file_location('_review_index', root / 'tools/verify_g1_review_index.py')
+          if spec is None or spec.loader is None: raise SystemExit('cannot load review-index verifier')
+          verifier = importlib.util.module_from_spec(spec); spec.loader.exec_module(verifier)
+          raw = subprocess.check_output(['git','--no-replace-objects','-C',str(root),'diff','--cached','--name-status','-M',main], text=True)
+          mapping = {'A':'added','M':'modified','D':'removed','T':'changed'}; changes=[]
+          for line in raw.splitlines():
+              fields=line.split('\t'); code=fields[0]
+              if code.startswith('R'): changes.append({'path':fields[2],'status':'renamed','previous_path':fields[1]})
+              else:
+                  status=mapping.get(code[:1])
+                  if status is None or len(fields)!=2: raise SystemExit(f'unsupported diff status: {line}')
+                  changes.append({'path':fields[1],'status':status,'previous_path':None})
+          changes.sort(key=lambda item:item['path'])
+          if not changes: raise SystemExit('effect-lifecycle candidate has no changes')
+          observation={'repository':'TrillionniumFoundation/trillionnium-os','pull_request':number,'base_commit':main,'base_tree':main_tree,'changes':changes}
+          index=verifier.propose_index(observation, predecessor_commit=predecessor, predecessor_tree=predecessor_tree,
+              accountable_owner='ProfHepta', runtime_reviewer='Tomasrgbsf', evidence_reviewer='Franksudoman')
+          (root / verifier.INDEX_PATH).write_text(json.dumps(index,indent=2,sort_keys=True,ensure_ascii=False,allow_nan=False)+'\n',encoding='utf-8')
+          PY
+          git add governance/pr41-review-index.v1.json
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_effect_lifecycle.py --model-check --json
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+          python3 -m unittest tools.tests.test_effect_lifecycle tools.tests.test_repository_authority tools.tests.test_verify_global_docs_contracts tools.tests.test_owner_open_broker_module_documentation -v
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            new_head="$OLD_HEAD"
+          else
+            git commit -m 'docs: converge the machine effect lifecycle with protected main'
+            new_head="$(git --no-replace-objects rev-parse HEAD)"
+          fi
+          new_tree="$(git --no-replace-objects rev-parse "$new_head^{tree}")"
+          changed_count="$(git diff --name-only "$MAIN_HEAD...$new_head" | wc -l | tr -d ' ')"
+          test "$changed_count" -gt 0
+
+          gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .body > "${RUNNER_TEMP}/body.md"
+          python3 - "$MAIN_HEAD" "$main_tree" "$new_head" "$new_tree" "$changed_count" "${RUNNER_TEMP}/body.md" <<'PY'
+          from pathlib import Path
+          import re, sys
+          base, base_tree, head, head_tree, count, body_path = sys.argv[1:]
+          path=Path(body_path); body=path.read_text(encoding='utf-8')
+          block=f'''## Exact subject
+
+          ```text
+          base branch:               main
+          base commit:               {base}
+          base tree:                 {base_tree}
+          head commit:               {head}
+          head tree:                 {head_tree}
+          changed paths from base:   {count}
+          ```
+
+          The admission surface is this exact base/head/tree plus deterministic
+          ordered-parent synthetic execution, exact run attempts/jobs/artifacts,
+          and fresh non-author review. Any movement invalidates qualification.
+          '''
+          block='\n'.join(line[10:] if line.startswith('          ') else line for line in block.splitlines())
+          if re.search(r'## Exact subject\n.*?(?=\n## )',body,flags=re.S): body=re.sub(r'## Exact subject\n.*?(?=\n## )',block.rstrip()+'\n',body,count=1,flags=re.S)
+          else: body=block.rstrip()+'\n\n'+body
+          path.write_text(body,encoding='utf-8')
+          PY
+          gh api -X PATCH "repos/$REPOSITORY/pulls/$PR_NUMBER" --input <(python3 - "${RUNNER_TEMP}/body.md" <<'PY'
+          from pathlib import Path
+          import json,sys
+          print(json.dumps({'body':Path(sys.argv[1]).read_text(encoding='utf-8')}))
+          PY
+          ) >/dev/null
+          if test "$new_head" != "$OLD_HEAD"; then git push origin "HEAD:$CANDIDATE_BRANCH"; fi
+          printf 'new_head=%s\n' "$new_head" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for complete source and synthetic gates
+        if: steps.subject.outputs.already_merged != 'true'
+        shell: bash
+        env:
+          HEAD_SHA: ${{ steps.converge.outputs.new_head }}
+        run: |
+          set -euo pipefail
+          python3 - "$REPOSITORY" "$HEAD_SHA" <<'PY'
+          import json,subprocess,sys,time
+          repository,head=sys.argv[1:]
+          required={'L1 graph, documentation, broker and MCP source closure','L1 Rust 1.93 selected Host, job, flow and recovery closure','L1 exact-source-head aggregate candidate','L1 protected-main and exact-head independent-review readiness','L1 exact two-parent merge source qualification'}
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          for _ in range(720):
+              values=api(f'repos/{repository}/commits/{head}/check-runs?per_page=100')['check_runs']; latest={}
+              for value in sorted(values,key=lambda item:item.get('started_at') or item.get('created_at') or ''): latest[value['name']]=value
+              failed=sorted(name for name in required if name in latest and latest[name]['status']=='completed' and latest[name]['conclusion']!='success')
+              if failed: raise SystemExit(f'effect-lifecycle gates failed: {failed}')
+              if required<=set(latest) and all(latest[name]['status']=='completed' for name in required): break
+              time.sleep(20)
+          else: raise SystemExit('effect-lifecycle gates did not complete')
+          PY
+
+      - name: Request fresh reviews and merge only after both exact-head approvals
+        if: steps.subject.outputs.already_merged != 'true'
+        shell: bash
+        env:
+          PR_NUMBER: ${{ steps.subject.outputs.pr_number }}
+          HEAD_SHA: ${{ steps.converge.outputs.new_head }}
+        run: |
+          set -euo pipefail
+          node_id="$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .node_id)"
+          if test "$(gh api "repos/$REPOSITORY/pulls/$PR_NUMBER" --jq .draft)" = true; then
+            gh api graphql -f query='mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{number}}}' -F id="$node_id" >/dev/null
+          fi
+          gh api -X POST "repos/$REPOSITORY/pulls/$PR_NUMBER/requested_reviewers" -f reviewers[]="$REVIEWER_RUNTIME" -f reviewers[]="$REVIEWER_EVIDENCE" >/dev/null
+          gh api -X POST "repos/$REPOSITORY/issues/$PR_NUMBER/comments" -f body="Effect-lifecycle authority is source-qualified on exact head \`$HEAD_SHA\`. Fresh dual review requested; no target/device/signing/release authority is implied." >/dev/null
+          python3 - "$REPOSITORY" "$PR_NUMBER" "$HEAD_SHA" "$REVIEWER_RUNTIME" "$REVIEWER_EVIDENCE" <<'PY'
+          import json,subprocess,sys,time
+          repository,number,head,*reviewers=sys.argv[1:]
+          def api(path): return json.loads(subprocess.check_output(['gh','api',path],text=True))
+          for _ in range(720):
+              pull=api(f'repos/{repository}/pulls/{number}')
+              if pull['head']['sha']!=head: raise SystemExit('effect-lifecycle head moved during review')
+              values=api(f'repos/{repository}/pulls/{number}/reviews?per_page=100'); latest={}
+              for value in sorted(values,key=lambda item:item.get('submitted_at') or ''):
+                  if value['user']['login'] in reviewers: latest[value['user']['login']]=value
+              if all(latest.get(login,{}).get('state')=='APPROVED' and latest[login].get('commit_id')==head for login in reviewers): break
+              time.sleep(20)
+          else: raise SystemExit('effect-lifecycle exact-head approvals not observed')
+          PY
+          gh api -X PUT "repos/$REPOSITORY/pulls/$PR_NUMBER/merge" -f merge_method=squash -f sha="$HEAD_SHA" \
+            -f commit_title='docs: machine-verify the cross-module effect lifecycle' \
+            -f commit_message='Add the executable effect state machine, crash-cut table, generated projection and formal model after repository-truth convergence. Source-level only; no L2-L6 or public-release evidence is promoted.' --jq '{merged,sha,message}'
