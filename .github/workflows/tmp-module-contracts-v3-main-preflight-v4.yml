@@ -3,7 +3,7 @@ name: Temporary executable module-contract v3 main preflight v4
 on:
   push:
     branches:
-      - ops/module-contracts-v3-preflight-fix-20260910
+      - ops/module-contracts-v3-final-qualifier-20260910
 
 permissions:
   contents: write
