@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -96,7 +97,7 @@ class CrashCutRecoveryTests(unittest.TestCase):
         value = authority()
         cut = next(item for item in value["crash_cuts"] if item["after"] == "EFFECT_ATTEMPTING")
         cut["legal_recovery"].append("VALIDATED")
-        with self.assertRaisesRegex(verifier.VerificationError, "pre-effect state"):
+        with self.assertRaisesRegex(verifier.VerificationError, "legal recovery relation|pre-effect state"):
             verifier.verify_authority(value, root=ROOT)
 
     def test_unknown_cut_must_forbid_safe_retry(self) -> None:
@@ -116,12 +117,29 @@ class CrashCutRecoveryTests(unittest.TestCase):
         with self.assertRaisesRegex(verifier.VerificationError, "redispatch"):
             verifier.verify_authority(value, root=ROOT)
 
+    def test_fenced_cut_cannot_reenter_acceptance(self) -> None:
+        value = authority()
+        cut = next(item for item in value["crash_cuts"] if item["id"] == "CUT-13")
+        cut["legal_recovery"] = ["ACCEPTED_DURABLE"]
+        with self.assertRaisesRegex(verifier.VerificationError, "legal recovery relation"):
+            verifier.verify_authority(value, root=ROOT)
+
+    def test_terminal_durable_attribute_cannot_be_false(self) -> None:
+        value = authority()
+        state = next(item for item in value["states"] if item["id"] == "TERMINAL_DURABLE")
+        state["durable"] = False
+        with self.assertRaisesRegex(verifier.VerificationError, "state attributes drifted"):
+            verifier.verify_authority(value, root=ROOT)
+
 
 class FormalProjectionEquivalenceTests(unittest.TestCase):
     def test_checked_in_tla_projection_is_exact(self) -> None:
         report = verifier.verify_authority(authority(), root=ROOT, model_check=True)
         self.assertEqual(report["formal_state_count"], 15)
         self.assertEqual(report["formal_edge_count"], 27)
+        self.assertEqual(report["formal_recovery_edge_count"], 29)
+        self.assertEqual(report["legal_recovery_edge_count"], 29)
+        self.assertGreater(report["recovery_product_successor_count"], 0)
 
     def test_formal_edge_drift_fails_closed(self) -> None:
         model = MODEL.read_text(encoding="utf-8").replace(
@@ -138,6 +156,24 @@ class FormalProjectionEquivalenceTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(verifier.VerificationError, "formal config invariants"):
             verifier.verify_authority(authority(), root=ROOT, config_text=config)
+
+    def test_formal_redispatch_assignment_drift_fails_closed(self) -> None:
+        model = MODEL.read_text(encoding="utf-8").replace(
+            "    /\\ automaticRedispatch' = FALSE",
+            "    /\\ automaticRedispatch' = TRUE",
+            1,
+        )
+        with self.assertRaisesRegex(verifier.VerificationError, "canonical executable projection"):
+            verifier.verify_authority(authority(), root=ROOT, formal_text=model)
+
+    def test_formal_acceptance_knowledge_drift_fails_closed(self) -> None:
+        model = MODEL.read_text(encoding="utf-8").replace(
+            "    /\\ accepted' = (accepted \\/ edge[2] = \"ACCEPTED_DURABLE\")",
+            "    /\\ accepted' = FALSE",
+            1,
+        )
+        with self.assertRaisesRegex(verifier.VerificationError, "canonical executable projection"):
+            verifier.verify_authority(authority(), root=ROOT, formal_text=model)
 
 
 class ImplementationBindingTotalityTests(unittest.TestCase):
@@ -165,6 +201,31 @@ class ImplementationBindingTotalityTests(unittest.TestCase):
         value["implementation_bindings"][0]["modules"].append("MOD-NOT-REAL")
         with self.assertRaisesRegex(verifier.VerificationError, "unknown modules"):
             verifier.verify_authority(value, root=ROOT)
+
+
+class SourcePathCustodyTests(unittest.TestCase):
+    def test_final_component_symlink_fails_before_following(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "real.txt").write_text("real", encoding="utf-8")
+            (root / "link.txt").symlink_to("real.txt")
+            with self.assertRaisesRegex(verifier.VerificationError, "symbolic link"):
+                verifier.repository_relative_file(root, "link.txt", "fixture")
+
+    def test_parent_component_symlink_fails_before_following(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            real = root / "real"
+            real.mkdir()
+            (real / "file.txt").write_text("real", encoding="utf-8")
+            (root / "linked-parent").symlink_to("real", target_is_directory=True)
+            with self.assertRaisesRegex(verifier.VerificationError, "symbolic link"):
+                verifier.repository_relative_file(root, "linked-parent/file.txt", "fixture")
+
+    def test_lexical_parent_escape_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(verifier.VerificationError, "not normalized"):
+                verifier.repository_relative_file(Path(directory), "../outside", "fixture")
 
 
 class GlobalNoRedispatchTests(unittest.TestCase):

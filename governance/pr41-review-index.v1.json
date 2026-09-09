@@ -5,6 +5,8 @@
     "tree": "54270c6e386a54fee84892e5840e0a95da4c0e11"
   },
   "changed_paths": [
+    ".github/workflows/g1-exact-head-source.yml",
+    ".github/workflows/g1-synthetic-merge.yml",
     "docs/EFFECT_AND_PROTOCOL_STANDARD.md",
     "docs/START_HERE.md",
     "docs/formal/EffectLifecycle.cfg",
@@ -19,6 +21,16 @@
     "tools/tests/test_effect_lifecycle.py"
   ],
   "changes": [
+    {
+      "path": ".github/workflows/g1-exact-head-source.yml",
+      "previous_path": null,
+      "status": "modified"
+    },
+    {
+      "path": ".github/workflows/g1-synthetic-merge.yml",
+      "previous_path": null,
+      "status": "modified"
+    },
     {
       "path": "docs/EFFECT_AND_PROTOCOL_STANDARD.md",
       "previous_path": null,
@@ -82,10 +94,10 @@
   ],
   "claim_ceiling": "CLOSED_WORLD_REVIEW_INDEX_ONLY_NO_APPROVAL_OR_INTEGRATION_AUTHORITY",
   "expected": {
-    "change_count": 12,
-    "changes_sha256": "c3f77d8a2540dd3ce0f9fc0d35f3362d6768043dfa46119646902b814789007f",
-    "path_count": 12,
-    "paths_sha256": "d9f8e986c2ec3027dc6857bc853c2b5b84e65b0cfc3f8458dbe4b4afad471a3b"
+    "change_count": 14,
+    "changes_sha256": "5675bc58a1410277b0edc4c26d1a56c3ec55726169f0dddb591d3aa0bf7ee01c",
+    "path_count": 14,
+    "paths_sha256": "f6a91f6f7a59d24e26eccc2350f7a83e683750bb15bb200c193829f91f26b897"
   },
   "head_binding": "LIVE_PR_EXACT_HEAD_NO_SELF_REFERENCE",
   "integration_authorized": false,
@@ -95,8 +107,8 @@
   "pull_request": 72,
   "repository": "TrillionniumFoundation/trillionnium-os",
   "review_predecessor": {
-    "commit": "e842c5cc449cd78c93596f64af5364b4a5a18e86",
-    "tree": "54270c6e386a54fee84892e5840e0a95da4c0e11"
+    "commit": "b9f7b13bd431d8e6fe58eb6c5a532c2939c023c1",
+    "tree": "466563ab66cf6553f1b98b7de0485455f00bed6b"
   },
   "schema": "org.trillionnium.g1-pr-review-index.v1",
   "slices": [
@@ -107,6 +119,8 @@
         "Franksudoman"
       ],
       "paths": [
+        ".github/workflows/g1-exact-head-source.yml",
+        ".github/workflows/g1-synthetic-merge.yml",
         "governance/pr41-review-index.v1.json"
       ],
       "review_order": 1,
