@@ -44,35 +44,55 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD~2)" = "$BASE_SHA"
           python3 - <<'PY'
           from pathlib import Path, PurePosixPath
-          import hashlib, json, os, zipfile
-          archive=Path('ops/module-contracts-v2-source.zip')
-          with zipfile.ZipFile(archive) as z:
-              names=z.namelist()
+          import hashlib, io, json, os, zipfile
+
+          archive = Path('ops/module-contracts-v2-source.zip')
+          archive_raw = archive.read_bytes()
+          expected_archive_sha256 = 'cc1718cf1330fe9a349f0e4c7f5f0d922da34f7f0614c533a640cf683eb82ad9'
+          if hashlib.sha256(archive_raw).hexdigest() != expected_archive_sha256:
+              raise SystemExit('bundle carrier digest differs')
+
+          extracted = []
+          with zipfile.ZipFile(io.BytesIO(archive_raw)) as z:
+              names = z.namelist()
               if names.count('MANIFEST.json') != 1 or len(names) != len(set(names)):
                   raise SystemExit('bundle inventory is ambiguous')
-              manifest=json.loads(z.read('MANIFEST.json'))
-              if manifest.get('schema')!='org.trillionnium.module-contract-source-bundle.v1':
+              manifest = json.loads(z.read('MANIFEST.json'))
+              if manifest.get('schema') != 'org.trillionnium.module-contract-source-bundle.v1':
                   raise SystemExit('bundle schema differs')
-              if manifest.get('base_commit')!='b9f7b13bd431d8e6fe58eb6c5a532c2939c023c1':
+              if manifest.get('base_commit') != 'b9f7b13bd431d8e6fe58eb6c5a532c2939c023c1':
                   raise SystemExit('bundle base differs')
-              expected=[entry['path'] for entry in manifest['entries']]
-              if sorted(names) != sorted(expected+['MANIFEST.json']):
+              expected = [entry['path'] for entry in manifest['entries']]
+              if sorted(names) != sorted(expected + ['MANIFEST.json']):
                   raise SystemExit('bundle member set differs')
+              if len(expected) != 20:
+                  raise SystemExit('bundle source-file count differs')
+              total = 0
               for entry in manifest['entries']:
-                  rel=entry['path']; pure=PurePosixPath(rel)
+                  rel = entry['path']
+                  pure = PurePosixPath(rel)
                   if pure.is_absolute() or rel != pure.as_posix() or '.' in pure.parts or '..' in pure.parts or '\\' in rel:
                       raise SystemExit(f'unsafe bundle path: {rel}')
-                  info=z.getinfo(rel)
-                  if info.is_dir() or ((info.external_attr >> 16) & 0o170000) == 0o120000:
+                  info = z.getinfo(rel)
+                  mode = (info.external_attr >> 16) & 0o170000
+                  if info.is_dir() or mode == 0o120000 or info.flag_bits & 0x1:
                       raise SystemExit(f'unsupported bundle member: {rel}')
-                  raw=z.read(rel)
-                  if len(raw)!=entry['bytes'] or hashlib.sha256(raw).hexdigest()!=entry['sha256']:
+                  raw = z.read(info)
+                  total += len(raw)
+                  if len(raw) != entry['bytes'] or hashlib.sha256(raw).hexdigest() != entry['sha256']:
                       raise SystemExit(f'bundle identity differs: {rel}')
-                  target=Path(rel); target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(raw)
-                  os.chmod(target,int(entry['mode'],8))
+                  extracted.append((rel, raw, int(entry['mode'], 8)))
+              if total != 77045:
+                  raise SystemExit('bundle uncompressed byte count differs')
+
+          for rel, raw, mode in extracted:
+              target = Path(rel)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(raw)
+              os.chmod(target, mode)
           PY
           rm -f -- ops/module-contracts-v2-source.zip .github/workflows/tmp-module-contracts-v2-preflight.yml
           rmdir ops 2>/dev/null || true
@@ -82,7 +102,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(rustc --version)" = "rustc 1.93.0 (0837ad5 2026-01-15)" || rustc --version | grep -F 'rustc 1.93.0 '
+          rustc --version | grep -F 'rustc 1.93.0 '
           cargo fmt --all
           python3 tools/contracts/generate_module_contracts.py --write
           python3 tools/docs/generate_global_docs.py
