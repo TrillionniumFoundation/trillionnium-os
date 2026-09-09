@@ -88,7 +88,6 @@ jobs:
           tools/perf/_run_product_baseline_core.py
           tools/perf/_run_product_baseline_facade.py
           tools/perf/run_product_baseline.py
-          tools/tests/test_product_baseline_process_group_cleanup.py
           tools/tests/test_run_product_baseline.py
           tools/tests/test_verify_host_reproducibility.py
           PATHS
@@ -135,7 +134,6 @@ jobs:
             tools/perf/_run_product_baseline_core.py \
             tools/perf/_run_product_baseline_facade.py \
             tools/perf/run_product_baseline.py \
-            tools/tests/test_product_baseline_process_group_cleanup.py \
             tools/tests/test_run_product_baseline.py \
             tools/tests/test_verify_host_reproducibility.py
           git commit -m 'fix(perf): authenticate launchers and descriptor-root selections'
