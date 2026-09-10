@@ -1,0 +1,35 @@
+name: Temporary human telemetry candidate review route
+
+on:
+  push:
+    branches:
+      - ops/human-telemetry-review-route-20260911
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  route:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      HEAD_BRANCH: codex/telemetry-observe-shadow-v2-human-20260911
+    steps:
+      - name: Request fresh reviewers while preserving Draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          number="$(gh pr list --repo "$REPOSITORY" --state open --head "$HEAD_BRANCH" --json number --jq 'if length == 1 then .[0].number else empty end')"
+          if [[ -z "$number" ]]; then
+            printf 'telemetry candidate PR absent; no route action\n'
+            exit 0
+          fi
+          gh api --method POST "repos/${REPOSITORY}/pulls/${number}/requested_reviewers" \
+            -f 'reviewers[]=Tomasrgbsf' \
+            -f 'reviewers[]=Franksudoman' >/dev/null
+          draft="$(gh pr view "$number" --repo "$REPOSITORY" --json isDraft --jq '.isDraft')"
+          test "$draft" = true
+          printf 'telemetry PR %s remains Draft pending complete source review\n' "$number"
