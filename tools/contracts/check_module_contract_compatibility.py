@@ -6,8 +6,10 @@ import argparse
 import hashlib
 import json
 import math
-from pathlib import Path
+import os
+from pathlib import Path, PurePosixPath
 import re
+import stat
 import subprocess
 import sys
 import unicodedata
@@ -17,6 +19,14 @@ ROOT = Path(__file__).resolve().parents[2]
 CATALOG = "docs/machine/module-contract-catalog.v1.json"
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
+REVIEW_PACKET_PATH = re.compile(
+    r"^docs/reviews/module-contracts/([0-9a-f]{64})[.]json$"
+)
+REVIEW_PACKET_SCHEMA = "org.trillionnium.module-contract-migration-review-packet.v1"
+REVIEW_PACKET_MAX_BYTES = 65536
+REVIEW_AUTHORITY = "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED"
+CLAIM_CEILING = "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY"
+AUTHORIZED_MIGRATION_REVIEWERS = frozenset({"Franksudoman", "Tomasrgbsf"})
 CHANGE_REVIEW_CLASSES = {"NO_CHANGE", "BREAKING_MIGRATION"}
 CHANGE_REVIEW_CONTRACTS = {"api", "state", "errors"}
 CHANGE_REVIEW_FAMILIES = {
@@ -68,6 +78,162 @@ def canonical(value: Any) -> bytes:
 
 def sha256_bytes(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
+
+
+def canonical_packet(value: Any) -> bytes:
+    return canonical(value) + b"\n"
+
+
+def stable_file_identity(value: os.stat_result) -> tuple[int, ...]:
+    return (
+        value.st_dev,
+        value.st_ino,
+        value.st_mode,
+        value.st_nlink,
+        value.st_size,
+        value.st_mtime_ns,
+        value.st_ctime_ns,
+    )
+
+
+def read_review_packet(
+    root: Path,
+    relative: Any,
+    expected_sha256: Any,
+    label: str,
+) -> bytes:
+    if not isinstance(relative, str):
+        raise ValueError(f"{label}: review packet path is not text")
+    match = REVIEW_PACKET_PATH.fullmatch(relative)
+    if match is None:
+        raise ValueError(f"{label}: review packet path is not canonical")
+    path_digest = match.group(1)
+    if expected_sha256 != path_digest:
+        raise ValueError(f"{label}: review packet path and digest differ")
+
+    pure = PurePosixPath(relative)
+    if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
+        raise ValueError(f"{label}: review packet path is unsafe")
+    candidate = root
+    try:
+        for part in pure.parts:
+            candidate = candidate / part
+            metadata = os.lstat(candidate)
+            if stat.S_ISLNK(metadata.st_mode):
+                raise ValueError(f"{label}: review packet path contains a symlink")
+    except OSError as error:
+        raise ValueError(f"{label}: review packet path is unavailable") from error
+
+    required_flags = ("O_CLOEXEC", "O_NOFOLLOW")
+    if any(not hasattr(os, name) for name in required_flags):
+        raise ValueError(f"{label}: review packet no-follow acquisition is unavailable")
+    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
+    try:
+        descriptor = os.open(candidate, flags)
+    except OSError as error:
+        raise ValueError(f"{label}: review packet open failed") from error
+    try:
+        before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_nlink != 1
+            or before.st_size <= 0
+            or before.st_size > REVIEW_PACKET_MAX_BYTES
+        ):
+            raise ValueError(f"{label}: review packet is not one bounded regular file")
+        remaining = before.st_size + 1
+        chunks: list[bytes] = []
+        while remaining:
+            chunk = os.read(descriptor, min(65536, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        raw = b"".join(chunks)
+        after = os.fstat(descriptor)
+    except OSError as error:
+        raise ValueError(f"{label}: review packet read failed") from error
+    finally:
+        os.close(descriptor)
+
+    try:
+        current = os.lstat(candidate)
+    except OSError as error:
+        raise ValueError(f"{label}: review packet pathname disappeared") from error
+    if (
+        len(raw) != before.st_size
+        or len(raw) > REVIEW_PACKET_MAX_BYTES
+        or stable_file_identity(after) != stable_file_identity(before)
+        or stable_file_identity(current) != stable_file_identity(before)
+    ):
+        raise ValueError(f"{label}: review packet changed while being read")
+    if sha256_bytes(raw) != expected_sha256:
+        raise ValueError(f"{label}: review packet digest differs")
+    return raw
+
+
+def validate_review_packet(
+    packet: Any,
+    label: str,
+    review: dict[str, Any],
+    migration_sha256: str,
+    rollback_sha256: str,
+) -> None:
+    expected = {
+        "schema",
+        "module_id",
+        "contracts",
+        "families",
+        "base_catalog_sha256",
+        "base_contract_sha256",
+        "target_contract_sha256",
+        "migration_review_sha256",
+        "rollback_review_sha256",
+        "reviewer",
+        "review_authority",
+        "approval_asserted",
+        "automatic_redispatch",
+        "claim_ceiling",
+        "public_release",
+    }
+    if not isinstance(packet, dict) or set(packet) != expected:
+        raise ValueError(f"{label}: review packet keys differ")
+    if packet.get("schema") != REVIEW_PACKET_SCHEMA:
+        raise ValueError(f"{label}: review packet schema differs")
+    if packet.get("module_id") != label:
+        raise ValueError(f"{label}: review packet module differs")
+    for field in (
+        "contracts",
+        "families",
+        "base_catalog_sha256",
+        "base_contract_sha256",
+        "target_contract_sha256",
+    ):
+        if packet.get(field) != review.get(field):
+            raise ValueError(f"{label}: review packet {field} differs")
+    if packet.get("migration_review_sha256") != migration_sha256:
+        raise ValueError(f"{label}: review packet migration digest differs")
+    if packet.get("rollback_review_sha256") != rollback_sha256:
+        raise ValueError(f"{label}: review packet rollback digest differs")
+    reviewer = packet.get("reviewer")
+    if not valid_text(reviewer, 64) or reviewer not in AUTHORIZED_MIGRATION_REVIEWERS:
+        raise ValueError(f"{label}: review packet reviewer is unauthorized")
+    if packet.get("review_authority") != REVIEW_AUTHORITY:
+        raise ValueError(f"{label}: review packet authority differs")
+    if packet.get("approval_asserted") is not False:
+        raise ValueError(f"{label}: source packet cannot assert independent approval")
+    if packet.get("automatic_redispatch") is not False:
+        raise ValueError(f"{label}: review packet enables redispatch")
+    if packet.get("claim_ceiling") != CLAIM_CEILING:
+        raise ValueError(f"{label}: review packet claim ceiling differs")
+    if packet.get("public_release") is not False:
+        raise ValueError(f"{label}: review packet authorizes release")
+    if review.get("reviewer") != reviewer:
+        raise ValueError(f"{label}: change review reviewer differs from packet")
+    if review.get("review_authority") != REVIEW_AUTHORITY:
+        raise ValueError(f"{label}: change review authority differs from packet")
+    if review.get("approval_asserted") is not False:
+        raise ValueError(f"{label}: change review cannot assert independent approval")
 
 
 def valid_text(value: Any, maximum: int) -> bool:
@@ -288,7 +454,12 @@ def semantic_change_families(old: Any, new: Any, kind: str) -> list[str]:
     return sorted(families)
 
 
-def validate_change_review(compatibility: Any, label: str) -> dict[str, Any]:
+def validate_change_review(
+    compatibility: Any,
+    label: str,
+    *,
+    root: Path,
+) -> dict[str, Any]:
     if not isinstance(compatibility, dict):
         raise ValueError(f"{label}: compatibility metadata is not an object")
     if compatibility.get("introduction_review_class") != "INITIAL_V1":
@@ -300,11 +471,22 @@ def validate_change_review(compatibility: Any, label: str) -> dict[str, Any]:
     if not isinstance(rollback, dict) or not rollback or rollback.get("fail_closed") is not True:
         raise ValueError(f"{label}: rollback metadata is not fail-closed")
 
+    migration_sha256 = sha256_bytes(canonical(migration))
+    rollback_sha256 = sha256_bytes(canonical(rollback))
     review = compatibility.get("change_review")
     expected = {
-        "class", "contracts", "families", "review_id", "migration_plan",
-        "rollback_plan", "migration_review_sha256", "rollback_review_sha256",
-        "base_catalog_sha256", "base_contract_sha256",
+        "class",
+        "contracts",
+        "families",
+        "review_packet",
+        "review_packet_sha256",
+        "reviewer",
+        "review_authority",
+        "approval_asserted",
+        "migration_review_sha256",
+        "rollback_review_sha256",
+        "base_catalog_sha256",
+        "base_contract_sha256",
         "target_contract_sha256",
     }
     if not isinstance(review, dict) or set(review) != expected:
@@ -326,18 +508,21 @@ def validate_change_review(compatibility: Any, label: str) -> dict[str, Any]:
         or not set(families) <= CHANGE_REVIEW_FAMILIES
     ):
         raise ValueError(f"{label}: change review families are malformed")
-    if review.get("migration_review_sha256") != sha256_bytes(canonical(migration)):
+    if review.get("migration_review_sha256") != migration_sha256:
         raise ValueError(f"{label}: migration metadata digest differs")
-    if review.get("rollback_review_sha256") != sha256_bytes(canonical(rollback)):
+    if review.get("rollback_review_sha256") != rollback_sha256:
         raise ValueError(f"{label}: rollback metadata digest differs")
+    if review.get("approval_asserted") is not False:
+        raise ValueError(f"{label}: source metadata cannot assert independent approval")
 
     if review_class == "NO_CHANGE":
         if contracts or families:
             raise ValueError(f"{label}: NO_CHANGE carries a change scope")
         if not (
-            review.get("review_id") is None
-            and review.get("migration_plan") is None
-            and review.get("rollback_plan") is None
+            review.get("review_packet") is None
+            and review.get("review_packet_sha256") is None
+            and review.get("reviewer") is None
+            and review.get("review_authority") is None
             and review.get("base_catalog_sha256") is None
             and review.get("base_contract_sha256") == {}
             and review.get("target_contract_sha256") == {}
@@ -346,13 +531,6 @@ def validate_change_review(compatibility: Any, label: str) -> dict[str, Any]:
     else:
         if not contracts or not families:
             raise ValueError(f"{label}: breaking review has no exact scope")
-        for field, maximum in (
-            ("review_id", 256),
-            ("migration_plan", 4096),
-            ("rollback_plan", 4096),
-        ):
-            if not valid_text(review.get(field), maximum):
-                raise ValueError(f"{label}: breaking review {field} is invalid")
         if not isinstance(review.get("base_catalog_sha256"), str) or SHA64.fullmatch(
             review["base_catalog_sha256"]
         ) is None:
@@ -366,7 +544,24 @@ def validate_change_review(compatibility: Any, label: str) -> dict[str, Any]:
                 for value in values.values()
             ):
                 raise ValueError(f"{label}: {field} digest is invalid")
+        packet_raw = read_review_packet(
+            root,
+            review.get("review_packet"),
+            review.get("review_packet_sha256"),
+            label,
+        )
+        packet = load(packet_raw, f"{label} review packet")
+        if packet_raw != canonical_packet(packet):
+            raise ValueError(f"{label}: review packet is not canonical")
+        validate_review_packet(
+            packet,
+            label,
+            review,
+            migration_sha256,
+            rollback_sha256,
+        )
     return review
+
 
 
 def evaluate(root: Path, base_ref: str) -> dict[str, Any]:
@@ -379,7 +574,7 @@ def evaluate(root: Path, base_ref: str) -> dict[str, Any]:
                 (root / module["artifacts"]["compatibility"]).read_bytes(),
                 module["module_id"],
             )
-            review = validate_change_review(compatibility, module["module_id"])
+            review = validate_change_review(compatibility, module["module_id"], root=root)
             if review["class"] != "NO_CHANGE":
                 raise ValueError("initial introduction carries a reusable change class")
         return {
@@ -407,8 +602,8 @@ def evaluate(root: Path, base_ref: str) -> dict[str, Any]:
             base_commit, old_record["artifacts"]["compatibility"], root=root
         )
         old_compatibility = load(old_compatibility_raw, f"base {module_id}")
-        review = validate_change_review(compatibility, module_id)
-        validate_change_review(old_compatibility, f"base {module_id}")
+        review = validate_change_review(compatibility, module_id, root=root)
+        validate_change_review(old_compatibility, f"base {module_id}", root=root)
         if compatibility["introduction_review_class"] != old_compatibility[
             "introduction_review_class"
         ]:

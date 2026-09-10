@@ -218,9 +218,11 @@ class ModuleContractTest(unittest.TestCase):
                 "class": "NO_CHANGE",
                 "contracts": [],
                 "families": [],
-                "review_id": None,
-                "migration_plan": None,
-                "rollback_plan": None,
+                "review_packet": None,
+                "review_packet_sha256": None,
+                "reviewer": None,
+                "review_authority": None,
+                "approval_asserted": False,
                 "migration_review_sha256": self.checker.sha256_bytes(
                     self.checker.canonical(migration)
                 ),
@@ -250,6 +252,68 @@ class ModuleContractTest(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(raw)
             return raw
+
+        def packet_for(
+            module_id: str,
+            contracts: list[str],
+            families: list[str],
+            base_catalog_sha256: str,
+            base_contract_sha256: dict[str, str],
+            target_contract_sha256: dict[str, str],
+            *,
+            reviewer: str = "Tomasrgbsf",
+            approval_asserted: bool = False,
+        ):
+            return {
+                "schema": self.checker.REVIEW_PACKET_SCHEMA,
+                "module_id": module_id,
+                "contracts": contracts,
+                "families": families,
+                "base_catalog_sha256": base_catalog_sha256,
+                "base_contract_sha256": base_contract_sha256,
+                "target_contract_sha256": target_contract_sha256,
+                "migration_review_sha256": self.checker.sha256_bytes(
+                    self.checker.canonical(migration)
+                ),
+                "rollback_review_sha256": self.checker.sha256_bytes(
+                    self.checker.canonical(rollback)
+                ),
+                "reviewer": reviewer,
+                "review_authority": self.checker.REVIEW_AUTHORITY,
+                "approval_asserted": approval_asserted,
+                "automatic_redispatch": False,
+                "claim_ceiling": self.checker.CLAIM_CEILING,
+                "public_release": False,
+            }
+
+        def install_packet(root: Path, packet) -> tuple[str, str]:
+            raw = self.checker.canonical_packet(packet)
+            digest = self.checker.sha256_bytes(raw)
+            path = f"docs/reviews/module-contracts/{digest}.json"
+            destination = root / path
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(raw)
+            return path, digest
+
+        def reviewed_from_packet(root: Path, packet):
+            path, digest = install_packet(root, packet)
+            review = no_change_review()
+            review.update(
+                {
+                    "class": "BREAKING_MIGRATION",
+                    "contracts": packet["contracts"],
+                    "families": packet["families"],
+                    "review_packet": path,
+                    "review_packet_sha256": digest,
+                    "reviewer": packet["reviewer"],
+                    "review_authority": packet["review_authority"],
+                    "approval_asserted": False,
+                    "base_catalog_sha256": packet["base_catalog_sha256"],
+                    "base_contract_sha256": packet["base_contract_sha256"],
+                    "target_contract_sha256": packet["target_contract_sha256"],
+                }
+            )
+            return review
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -386,6 +450,8 @@ class ModuleContractTest(unittest.TestCase):
                     ),
                 ),
             }
+            first_valid_review = None
+            first_valid_packet_path = None
             for expected_family, (kind, mutate) in cases.items():
                 with self.subTest(family=expected_family):
                     for restore_kind in ("api", "state", "errors"):
@@ -406,26 +472,15 @@ class ModuleContractTest(unittest.TestCase):
                         schemas[kind], target, kind
                     )
                     self.assertIn(expected_family, families)
-                    reviewed = no_change_review()
-                    reviewed.update(
-                        {
-                            "class": "BREAKING_MIGRATION",
-                            "contracts": [kind],
-                            "families": families,
-                            "review_id": f"review-{expected_family}-fixture",
-                            "migration_plan": "migrate exact bound fixture bytes",
-                            "rollback_plan": "fail closed and restore exact base bytes",
-                            "base_catalog_sha256": self.checker.sha256_bytes(
-                                base_catalog_raw
-                            ),
-                            "base_contract_sha256": {
-                                kind: self.checker.sha256_bytes(base_schema_raw[kind])
-                            },
-                            "target_contract_sha256": {
-                                kind: self.checker.sha256_bytes(target_raw)
-                            },
-                        }
+                    packet = packet_for(
+                        "MOD-FIXTURE",
+                        [kind],
+                        families,
+                        self.checker.sha256_bytes(base_catalog_raw),
+                        {kind: self.checker.sha256_bytes(base_schema_raw[kind])},
+                        {kind: self.checker.sha256_bytes(target_raw)},
                     )
+                    reviewed = reviewed_from_packet(root, packet)
                     write_json(
                         root / paths["compatibility"], compatibility(reviewed)
                     )
@@ -433,32 +488,167 @@ class ModuleContractTest(unittest.TestCase):
                     self.assertEqual(
                         result["semantic_changes"], [f"MOD-FIXTURE:{kind}"]
                     )
+                    if first_valid_review is None:
+                        first_valid_review = copy.deepcopy(reviewed)
+                        first_valid_packet_path = reviewed["review_packet"]
+
+            self.assertIsNotNone(first_valid_review)
+            self.assertIsNotNone(first_valid_packet_path)
+
+            arbitrary = copy.deepcopy(first_valid_review)
+            arbitrary["review_packet"] = "review-type-fixture"
+            write_json(root / paths["compatibility"], compatibility(arbitrary))
+            with self.assertRaisesRegex(ValueError, "path is not canonical"):
+                self.checker.evaluate(root, base)
+
+            reused = copy.deepcopy(first_valid_review)
+            reused["contracts"] = ["state"]
+            reused["base_contract_sha256"] = {
+                "state": self.checker.sha256_bytes(base_schema_raw["state"])
+            }
+            reused["target_contract_sha256"] = {
+                "state": self.checker.sha256_bytes(
+                    (root / paths["state"]).read_bytes()
+                )
+            }
+            write_json(root / paths["compatibility"], compatibility(reused))
+            with self.assertRaisesRegex(ValueError, "review packet contracts differs"):
+                self.checker.evaluate(root, base)
+
+            tampered_path = root / first_valid_packet_path
+            tampered = json.loads(tampered_path.read_text(encoding="utf-8"))
+            tampered["families"] = ["other"]
+            tampered_path.write_bytes(self.checker.canonical_packet(tampered))
+            write_json(root / paths["compatibility"], compatibility(first_valid_review))
+            with self.assertRaisesRegex(ValueError, "review packet digest differs"):
+                self.checker.evaluate(root, base)
+
+            unauthorized_packet = packet_for(
+                "MOD-FIXTURE",
+                ["errors"],
+                ["error"],
+                self.checker.sha256_bytes(base_catalog_raw),
+                {"errors": self.checker.sha256_bytes(base_schema_raw["errors"])},
+                {"errors": self.checker.sha256_bytes(base_schema_raw["errors"])},
+                reviewer="ProfHepta",
+            )
+            unauthorized_review = reviewed_from_packet(root, unauthorized_packet)
+            write_json(root / paths["compatibility"], compatibility(unauthorized_review))
+            with self.assertRaisesRegex(ValueError, "reviewer is unauthorized"):
+                self.checker.evaluate(root, base)
+
+            asserting_packet = packet_for(
+                "MOD-FIXTURE",
+                ["errors"],
+                ["error"],
+                self.checker.sha256_bytes(base_catalog_raw),
+                {"errors": self.checker.sha256_bytes(base_schema_raw["errors"])},
+                {"errors": self.checker.sha256_bytes(base_schema_raw["errors"])},
+                approval_asserted=True,
+            )
+            asserting_review = reviewed_from_packet(root, asserting_packet)
+            write_json(root / paths["compatibility"], compatibility(asserting_review))
+            with self.assertRaisesRegex(ValueError, "cannot assert independent approval"):
+                self.checker.evaluate(root, base)
 
             for kind in ("api", "state", "errors"):
                 write_json(root / paths[kind], schemas[kind])
-            stale = no_change_review()
-            stale.update(
-                {
-                    "class": "BREAKING_MIGRATION",
-                    "contracts": ["api"],
-                    "families": ["type"],
-                    "review_id": "stale-review-fixture",
-                    "migration_plan": "stale migration",
-                    "rollback_plan": "stale rollback",
-                    "base_catalog_sha256": self.checker.sha256_bytes(
-                        base_catalog_raw
-                    ),
-                    "base_contract_sha256": {
-                        "api": self.checker.sha256_bytes(base_schema_raw["api"])
-                    },
-                    "target_contract_sha256": {
-                        "api": self.checker.sha256_bytes(base_schema_raw["api"])
-                    },
-                }
+            stale_packet = packet_for(
+                "MOD-FIXTURE",
+                ["api"],
+                ["type"],
+                self.checker.sha256_bytes(base_catalog_raw),
+                {"api": self.checker.sha256_bytes(base_schema_raw["api"])},
+                {"api": self.checker.sha256_bytes(base_schema_raw["api"])},
             )
+            stale = reviewed_from_packet(root, stale_packet)
             write_json(root / paths["compatibility"], compatibility(stale))
             with self.assertRaisesRegex(ValueError, "stale breaking review"):
                 self.checker.evaluate(root, base)
+
+    def test_generator_review_packet_is_content_addressed_and_non_authorizing(self) -> None:
+        migration = {
+            "from_versions": [],
+            "to_version": "v1",
+            "strategy": "none",
+            "dual_read": False,
+            "dual_write": False,
+        }
+        rollback = {
+            "supported": False,
+            "procedure": "fail_closed_fixture",
+            "fail_closed": True,
+        }
+        target_contracts = {
+            "api": b"api fixture\n",
+            "state": b"state fixture\n",
+            "errors": b"errors fixture\n",
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            packet = {
+                "schema": self.contracts.REVIEW_PACKET_SCHEMA,
+                "module_id": "MOD-FIXTURE",
+                "contracts": ["api"],
+                "families": ["type"],
+                "base_catalog_sha256": "1" * 64,
+                "base_contract_sha256": {"api": "2" * 64},
+                "target_contract_sha256": {
+                    "api": self.contracts.sha(target_contracts["api"])
+                },
+                "migration_review_sha256": self.contracts.semantic_digest(migration),
+                "rollback_review_sha256": self.contracts.semantic_digest(rollback),
+                "reviewer": "Franksudoman",
+                "review_authority": self.contracts.REVIEW_AUTHORITY,
+                "approval_asserted": False,
+                "automatic_redispatch": False,
+                "claim_ceiling": self.contracts.CLAIM_CEILING,
+                "public_release": False,
+            }
+            raw = self.contracts.canonical_packet(packet)
+            digest = self.contracts.sha(raw)
+            relative = f"docs/reviews/module-contracts/{digest}.json"
+            destination = root / relative
+            destination.parent.mkdir(parents=True)
+            destination.write_bytes(raw)
+            item = {
+                "id": "MOD-FIXTURE",
+                "compatibility": {
+                    "contract_change_review": {
+                        "class": "BREAKING_MIGRATION",
+                        "review_packet": relative,
+                    }
+                },
+                "migration": migration,
+                "rollback": rollback,
+            }
+            result = self.contracts.contract_change_review(
+                root, item, target_contracts
+            )
+            self.assertEqual(result["review_packet_sha256"], digest)
+            self.assertEqual(result["reviewer"], "Franksudoman")
+            self.assertFalse(result["approval_asserted"])
+            self.assertEqual(
+                result["review_authority"],
+                "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED",
+            )
+            tampered = copy.deepcopy(packet)
+            tampered["target_contract_sha256"]["api"] = "3" * 64
+            tampered_raw = self.contracts.canonical_packet(tampered)
+            tampered_digest = self.contracts.sha(tampered_raw)
+            tampered_relative = (
+                f"docs/reviews/module-contracts/{tampered_digest}.json"
+            )
+            tampered_destination = root / tampered_relative
+            tampered_destination.write_bytes(tampered_raw)
+            item["compatibility"]["contract_change_review"][
+                "review_packet"
+            ] = tampered_relative
+            with self.assertRaisesRegex(
+                self.contracts.ContractError,
+                "target digest does not bind generated bytes",
+            ):
+                self.contracts.contract_change_review(root, item, target_contracts)
 
     def test_initial_introduction_uses_provenance_not_reusable_change_class(self) -> None:
         outputs = self.outputs()

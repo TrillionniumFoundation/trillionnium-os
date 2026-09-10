@@ -3,15 +3,17 @@
   "automatic_redispatch_after_uncertainty": false,
   "breaking_change_review": "REQUIRED_FOR_REQUIRED_TYPE_ENUM_DEFAULT_IDENTITY_ORDERING_STATE_OR_ERROR_CHANGE",
   "change_review": {
+    "approval_asserted": false,
     "base_catalog_sha256": null,
     "base_contract_sha256": {},
     "class": "NO_CHANGE",
     "contracts": [],
     "families": [],
-    "migration_plan": null,
     "migration_review_sha256": "32b71694a9459ffab112fd2dd06c750e7e56eb4d597966f1e3e1ddd01c19f733",
-    "review_id": null,
-    "rollback_plan": null,
+    "review_authority": null,
+    "review_packet": null,
+    "review_packet_sha256": null,
+    "reviewer": null,
     "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
     "target_contract_sha256": {}
   },
@@ -29,8 +31,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "6aa511c31567df1b6a91352fc0ba7fe840e63402f6591b24bea602acbe683099",
-      "size": 18133
+      "sha256": "22ed9364c3cdc8a48a1a570f8c3211fb9c8f980f2e9d7fa1f85c153b71245343",
+      "size": 25337
     }
   ],
   "contracts": {
@@ -116,8 +118,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "6aa511c31567df1b6a91352fc0ba7fe840e63402f6591b24bea602acbe683099",
-        "size": 18133
+        "sha256": "22ed9364c3cdc8a48a1a570f8c3211fb9c8f980f2e9d7fa1f85c153b71245343",
+        "size": 25337
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -146,8 +148,8 @@
     },
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
-      "size": 24267
+      "sha256": "95d9bad9f051c928f0686ca59859092c0c42fef5156a617df3b285dcd127cc2f",
+      "size": 32901
     }
   ],
   "unknown_fields": "REJECT"

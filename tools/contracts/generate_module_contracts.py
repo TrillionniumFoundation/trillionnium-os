@@ -10,6 +10,7 @@ import math
 import os
 from pathlib import Path, PurePosixPath
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -32,6 +33,14 @@ ANDROID_README_PATH = "android-integration/module-contracts/README.md"
 TEST_PATH = "tools/tests/test_module_contracts.py"
 README_PATH = "tools/contracts/README.md"
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
+REVIEW_PACKET_PATH = re.compile(
+    r"^docs/reviews/module-contracts/([0-9a-f]{64})[.]json$"
+)
+REVIEW_PACKET_SCHEMA = "org.trillionnium.module-contract-migration-review-packet.v1"
+REVIEW_PACKET_MAX_BYTES = 65536
+REVIEW_AUTHORITY = "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED"
+CLAIM_CEILING = "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY"
+AUTHORIZED_MIGRATION_REVIEWERS = frozenset({"Franksudoman", "Tomasrgbsf"})
 API_LABEL = re.compile(r"^org\.trillionnium\.mod_[a-z0-9_]+\.api\.v[0-9]+$")
 STATE_LABEL = re.compile(r"^org\.trillionnium\.mod_[a-z0-9_]+\.state\.v[0-9]+$")
 ERROR_LABEL = re.compile(r"^[a-z0-9_]+_error_v[0-9]+$")
@@ -58,6 +67,94 @@ def canonical_json(value: Any) -> bytes:
 
 def sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
+
+
+def canonical_packet(value: Any) -> bytes:
+    return (
+        json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ).encode("utf-8")
+        + b"\n"
+    )
+
+
+def stable_file_identity(value: os.stat_result) -> tuple[int, ...]:
+    return (
+        value.st_dev,
+        value.st_ino,
+        value.st_mode,
+        value.st_nlink,
+        value.st_size,
+        value.st_mtime_ns,
+        value.st_ctime_ns,
+    )
+
+
+def read_review_packet(root: Path, relative: Any) -> tuple[bytes, str]:
+    require(isinstance(relative, str), "review packet path is not text")
+    match = REVIEW_PACKET_PATH.fullmatch(relative)
+    require(match is not None, "review packet path is not canonical")
+    expected_sha256 = match.group(1)
+    pure = PurePosixPath(relative)
+    require(
+        not pure.is_absolute() and all(part not in {"", ".", ".."} for part in pure.parts),
+        "review packet path is unsafe",
+    )
+    candidate = root
+    try:
+        for part in pure.parts:
+            candidate = candidate / part
+            metadata = os.lstat(candidate)
+            require(not stat.S_ISLNK(metadata.st_mode), "review packet path contains a symlink")
+    except OSError as error:
+        raise ContractError("review packet path is unavailable") from error
+    require(
+        hasattr(os, "O_CLOEXEC") and hasattr(os, "O_NOFOLLOW"),
+        "review packet no-follow acquisition is unavailable",
+    )
+    try:
+        descriptor = os.open(candidate, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)
+    except OSError as error:
+        raise ContractError("review packet open failed") from error
+    try:
+        before = os.fstat(descriptor)
+        require(
+            stat.S_ISREG(before.st_mode)
+            and before.st_nlink == 1
+            and 0 < before.st_size <= REVIEW_PACKET_MAX_BYTES,
+            "review packet is not one bounded regular file",
+        )
+        remaining = before.st_size + 1
+        chunks: list[bytes] = []
+        while remaining:
+            chunk = os.read(descriptor, min(65536, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        raw = b"".join(chunks)
+        after = os.fstat(descriptor)
+    except OSError as error:
+        raise ContractError("review packet read failed") from error
+    finally:
+        os.close(descriptor)
+    try:
+        current = os.lstat(candidate)
+    except OSError as error:
+        raise ContractError("review packet pathname disappeared") from error
+    require(
+        len(raw) == before.st_size
+        and len(raw) <= REVIEW_PACKET_MAX_BYTES
+        and stable_file_identity(after) == stable_file_identity(before)
+        and stable_file_identity(current) == stable_file_identity(before),
+        "review packet changed while being read",
+    )
+    require(sha(raw) == expected_sha256, "review packet digest differs from path")
+    return raw, expected_sha256
 
 
 def strict_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
@@ -773,490 +870,7 @@ if __name__ == "__main__":
 
 
 def compatibility_checker_source() -> bytes:
-    return b'''#!/usr/bin/env python3
-"Fail-closed semantic compatibility and one-shot change-review admission."
-from __future__ import annotations
-
-import argparse
-import hashlib
-import json
-import math
-from pathlib import Path
-import re
-import subprocess
-import sys
-import unicodedata
-from typing import Any
-
-ROOT = Path(__file__).resolve().parents[2]
-CATALOG = "docs/machine/module-contract-catalog.v1.json"
-SHA40 = re.compile(r"^[0-9a-f]{40}$")
-SHA64 = re.compile(r"^[0-9a-f]{64}$")
-CHANGE_REVIEW_CLASSES = {"NO_CHANGE", "BREAKING_MIGRATION"}
-CHANGE_REVIEW_CONTRACTS = {"api", "state", "errors"}
-CHANGE_REVIEW_FAMILIES = {
-    "required", "type", "enum", "default", "identity", "ordering",
-    "state", "error", "other",
-}
-IDENTITY_FIELDS = {"schema", "module_id", "operation_id", "request_digest"}
-ORDERING_FIELDS = {
-    "ordering_key", "host_epoch", "writer_epoch", "fencing_token",
-    "durable_sequence", "monotonic_ns",
-}
-
-
-def finite_float(raw: str) -> float:
-    value = float(raw)
-    if not math.isfinite(value):
-        raise ValueError(f"nonfinite JSON number: {raw}")
-    return value
-
-
-def load(raw: bytes, label: str) -> Any:
-    def pairs(items):
-        out = {}
-        for key, value in items:
-            if key in out:
-                raise ValueError(f"{label}: duplicate member {key}")
-            out[key] = value
-        return out
-
-    return json.loads(
-        raw.decode("utf-8"),
-        object_pairs_hook=pairs,
-        parse_constant=lambda value: (_ for _ in ()).throw(
-            ValueError(f"{label}: nonfinite {value}")
-        ),
-        parse_float=finite_float,
-    )
-
-
-def canonical(value: Any) -> bytes:
-    return json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
-        allow_nan=False,
-    ).encode("utf-8")
-
-
-def sha256_bytes(raw: bytes) -> str:
-    return hashlib.sha256(raw).hexdigest()
-
-
-def valid_text(value: Any, maximum: int) -> bool:
-    if not isinstance(value, str) or not value:
-        return False
-    try:
-        encoded = value.encode("utf-8")
-    except UnicodeEncodeError:
-        return False
-    return len(encoded) <= maximum and not any(
-        unicodedata.category(char) == "Cc" for char in value
-    )
-
-
-def git(args: list[str], label: str, *, root: Path = ROOT) -> bytes:
-    result = subprocess.run(
-        ["git", "--no-replace-objects", *args],
-        cwd=root,
-        capture_output=True,
-        check=False,
-        timeout=30,
-    )
-    if result.returncode != 0:
-        detail = result.stderr.decode("utf-8", "replace").strip()
-        raise ValueError(f"{label}: git returned {result.returncode}: {detail}")
-    return result.stdout
-
-
-def resolve_commit(ref: str, *, root: Path = ROOT) -> str:
-    if not isinstance(ref, str) or not ref or "\\x00" in ref or "\\n" in ref:
-        raise ValueError("base ref is malformed")
-    raw = git(
-        ["rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}"],
-        "resolve base ref",
-        root=root,
-    )
-    values = raw.decode("ascii", "strict").splitlines()
-    if len(values) != 1 or SHA40.fullmatch(values[0]) is None:
-        raise ValueError("base ref did not resolve to one exact commit")
-    commit = values[0]
-    git(
-        ["merge-base", "--is-ancestor", commit, "HEAD"],
-        "verify base ancestry",
-        root=root,
-    )
-    return commit
-
-
-def show(
-    commit: str,
-    path: str,
-    *,
-    allow_absent: bool = False,
-    root: Path = ROOT,
-) -> bytes | None:
-    if SHA40.fullmatch(commit) is None:
-        raise ValueError("show requires an exact commit")
-    if (
-        not isinstance(path, str)
-        or not path
-        or path.startswith("/")
-        or "\\\\" in path
-        or "\\x00" in path
-        or "\\n" in path
-        or any(part in {"", ".", ".."} for part in path.split("/"))
-    ):
-        raise ValueError(f"unsafe tree path: {path!r}")
-
-    listing = git(
-        ["ls-tree", "-z", "--full-tree", commit, "--", path],
-        f"inspect {path} in verified base",
-        root=root,
-    )
-    entries = [entry for entry in listing.split(b"\\0") if entry]
-    if not entries:
-        if allow_absent:
-            return None
-        raise ValueError(f"verified base path is absent: {path}")
-    if len(entries) != 1:
-        raise ValueError(f"verified base path is ambiguous: {path}")
-
-    metadata, separator, encoded_name = entries[0].partition(b"\\t")
-    if not separator:
-        raise ValueError(f"malformed ls-tree result for {path}")
-    try:
-        mode, kind, object_id = metadata.decode("ascii", "strict").split(" ")
-        observed_name = encoded_name.decode("utf-8", "strict")
-    except (UnicodeError, ValueError) as error:
-        raise ValueError(f"malformed ls-tree identity for {path}") from error
-    if (
-        observed_name != path
-        or kind != "blob"
-        or mode not in {"100644", "100755"}
-        or SHA40.fullmatch(object_id) is None
-    ):
-        raise ValueError(f"verified base object is not one regular tracked file: {path}")
-    return git(["cat-file", "blob", object_id], f"read verified base file {path}", root=root)
-
-
-NON_SEMANTIC = {
-    "$schema", "$id", "title", "description", "examples",
-    "x-trillionnium-binding",
-}
-NAMED_SCHEMA_MAPS = {
-    "$defs", "definitions", "properties", "patternProperties",
-    "dependentSchemas",
-}
-SCHEMA_SINGLE = {
-    "additionalProperties", "unevaluatedProperties", "propertyNames",
-    "contains", "contentSchema", "if", "then", "else", "not",
-    "unevaluatedItems",
-}
-SCHEMA_ARRAYS = {"allOf", "anyOf", "oneOf", "prefixItems"}
-
-
-def normalized_data(value: Any) -> Any:
-    if isinstance(value, dict):
-        return {
-            key: normalized_data(item)
-            for key, item in sorted(value.items())
-        }
-    if isinstance(value, list):
-        return [normalized_data(item) for item in value]
-    return value
-
-
-def fingerprint(value: Any) -> Any:
-    "Remove annotations only where the dictionary is a JSON Schema object."
-    if isinstance(value, bool):
-        return value
-    if not isinstance(value, dict):
-        return normalized_data(value)
-
-    result = {}
-    for key, item in sorted(value.items()):
-        if key in NON_SEMANTIC:
-            continue
-        if key in NAMED_SCHEMA_MAPS and isinstance(item, dict):
-            result[key] = {
-                name: fingerprint(child)
-                for name, child in sorted(item.items())
-            }
-        elif key == "dependencies" and isinstance(item, dict):
-            result[key] = {
-                name: (
-                    fingerprint(child)
-                    if isinstance(child, (dict, bool))
-                    else normalized_data(child)
-                )
-                for name, child in sorted(item.items())
-            }
-        elif key in SCHEMA_SINGLE and isinstance(item, (dict, bool)):
-            result[key] = fingerprint(item)
-        elif key == "items":
-            if isinstance(item, list):
-                result[key] = [fingerprint(child) for child in item]
-            elif isinstance(item, (dict, bool)):
-                result[key] = fingerprint(item)
-            else:
-                result[key] = normalized_data(item)
-        elif key in SCHEMA_ARRAYS and isinstance(item, list):
-            result[key] = [fingerprint(child) for child in item]
-        else:
-            result[key] = normalized_data(item)
-    return result
-
-
-def semantic_change_families(old: Any, new: Any, kind: str) -> list[str]:
-    old = fingerprint(old)
-    new = fingerprint(new)
-    families: set[str] = set()
-
-    def mark(path: tuple[str, ...]) -> None:
-        before = set(families)
-        leaf = path[-1] if path else ""
-        if leaf == "required" or "required" in path:
-            families.add("required")
-        if leaf == "type":
-            families.add("type")
-        if leaf == "enum":
-            families.add("enum")
-        if leaf == "default":
-            families.add("default")
-        if any(part in IDENTITY_FIELDS for part in path):
-            families.add("identity")
-        if any(part in ORDERING_FIELDS for part in path):
-            families.add("ordering")
-        if kind == "state":
-            families.add("state")
-        if kind == "errors":
-            families.add("error")
-        if families == before:
-            families.add("other")
-
-    def walk(left: Any, right: Any, path: tuple[str, ...]) -> None:
-        if left == right:
-            return
-        if isinstance(left, dict) and isinstance(right, dict):
-            for key in sorted(set(left) | set(right)):
-                if key not in left or key not in right:
-                    mark(path + (key,))
-                else:
-                    walk(left[key], right[key], path + (key,))
-            return
-        if isinstance(left, list) and isinstance(right, list):
-            if path and path[-1] in {"required", "enum"}:
-                mark(path)
-                return
-            for index in range(max(len(left), len(right))):
-                if index >= len(left) or index >= len(right):
-                    mark(path + (str(index),))
-                else:
-                    walk(left[index], right[index], path + (str(index),))
-            return
-        mark(path)
-
-    walk(old, new, ())
-    return sorted(families)
-
-
-def validate_change_review(compatibility: Any, label: str) -> dict[str, Any]:
-    if not isinstance(compatibility, dict):
-        raise ValueError(f"{label}: compatibility metadata is not an object")
-    if compatibility.get("introduction_review_class") != "INITIAL_V1":
-        raise ValueError(f"{label}: introduction provenance differs")
-    migration = compatibility.get("migration_review")
-    rollback = compatibility.get("rollback_review")
-    if not isinstance(migration, dict) or not migration:
-        raise ValueError(f"{label}: migration metadata is missing")
-    if not isinstance(rollback, dict) or not rollback or rollback.get("fail_closed") is not True:
-        raise ValueError(f"{label}: rollback metadata is not fail-closed")
-
-    review = compatibility.get("change_review")
-    expected = {
-        "class", "contracts", "families", "review_id", "migration_plan",
-        "rollback_plan", "migration_review_sha256", "rollback_review_sha256",
-        "base_catalog_sha256", "base_contract_sha256",
-        "target_contract_sha256",
-    }
-    if not isinstance(review, dict) or set(review) != expected:
-        raise ValueError(f"{label}: change review keys differ")
-    review_class = review.get("class")
-    if review_class not in CHANGE_REVIEW_CLASSES:
-        raise ValueError(f"{label}: change review class is unknown")
-    contracts = review.get("contracts")
-    families = review.get("families")
-    if (
-        not isinstance(contracts, list)
-        or contracts != sorted(set(contracts))
-        or not set(contracts) <= CHANGE_REVIEW_CONTRACTS
-    ):
-        raise ValueError(f"{label}: change review contract scope is malformed")
-    if (
-        not isinstance(families, list)
-        or families != sorted(set(families))
-        or not set(families) <= CHANGE_REVIEW_FAMILIES
-    ):
-        raise ValueError(f"{label}: change review families are malformed")
-    if review.get("migration_review_sha256") != sha256_bytes(canonical(migration)):
-        raise ValueError(f"{label}: migration metadata digest differs")
-    if review.get("rollback_review_sha256") != sha256_bytes(canonical(rollback)):
-        raise ValueError(f"{label}: rollback metadata digest differs")
-
-    if review_class == "NO_CHANGE":
-        if contracts or families:
-            raise ValueError(f"{label}: NO_CHANGE carries a change scope")
-        if not (
-            review.get("review_id") is None
-            and review.get("migration_plan") is None
-            and review.get("rollback_plan") is None
-            and review.get("base_catalog_sha256") is None
-            and review.get("base_contract_sha256") == {}
-            and review.get("target_contract_sha256") == {}
-        ):
-            raise ValueError(f"{label}: NO_CHANGE carries reusable review authority")
-    else:
-        if not contracts or not families:
-            raise ValueError(f"{label}: breaking review has no exact scope")
-        for field, maximum in (
-            ("review_id", 256),
-            ("migration_plan", 4096),
-            ("rollback_plan", 4096),
-        ):
-            if not valid_text(review.get(field), maximum):
-                raise ValueError(f"{label}: breaking review {field} is invalid")
-        if not isinstance(review.get("base_catalog_sha256"), str) or SHA64.fullmatch(
-            review["base_catalog_sha256"]
-        ) is None:
-            raise ValueError(f"{label}: base catalog digest is invalid")
-        for field in ("base_contract_sha256", "target_contract_sha256"):
-            values = review.get(field)
-            if not isinstance(values, dict) or set(values) != set(contracts):
-                raise ValueError(f"{label}: {field} scope differs")
-            if not all(
-                isinstance(value, str) and SHA64.fullmatch(value)
-                for value in values.values()
-            ):
-                raise ValueError(f"{label}: {field} digest is invalid")
-    return review
-
-
-def evaluate(root: Path, base_ref: str) -> dict[str, Any]:
-    current = load((root / CATALOG).read_bytes(), CATALOG)
-    base_commit = resolve_commit(base_ref, root=root)
-    old_raw = show(base_commit, CATALOG, allow_absent=True, root=root)
-    if old_raw is None:
-        for module in current["modules"]:
-            compatibility = load(
-                (root / module["artifacts"]["compatibility"]).read_bytes(),
-                module["module_id"],
-            )
-            review = validate_change_review(compatibility, module["module_id"])
-            if review["class"] != "NO_CHANGE":
-                raise ValueError("initial introduction carries a reusable change class")
-        return {
-            "base_commit": base_commit,
-            "modules": current["module_count"],
-            "public_release": False,
-            "result": "PASS_INITIAL_V1",
-        }
-
-    old = load(old_raw, CATALOG)
-    old_by = {item["module_id"]: item for item in old["modules"]}
-    current_by = {item["module_id"]: item for item in current["modules"]}
-    if set(old_by) != set(current_by):
-        raise ValueError("module set changed without a separately reviewed catalog migration")
-
-    changed: list[str] = []
-    for module_id in sorted(current_by):
-        current_record = current_by[module_id]
-        old_record = old_by[module_id]
-        compatibility = load(
-            (root / current_record["artifacts"]["compatibility"]).read_bytes(),
-            module_id,
-        )
-        old_compatibility_raw = show(
-            base_commit, old_record["artifacts"]["compatibility"], root=root
-        )
-        old_compatibility = load(old_compatibility_raw, f"base {module_id}")
-        review = validate_change_review(compatibility, module_id)
-        validate_change_review(old_compatibility, f"base {module_id}")
-        if compatibility["introduction_review_class"] != old_compatibility[
-            "introduction_review_class"
-        ]:
-            raise ValueError(f"{module_id}: introduction provenance changed")
-
-        changed_kinds: list[str] = []
-        detected_families: set[str] = set()
-        old_contract_raw: dict[str, bytes] = {}
-        new_contract_raw: dict[str, bytes] = {}
-        for kind in ("api", "state", "errors"):
-            new_path = current_record["artifacts"][kind]
-            old_path = old_record["artifacts"][kind]
-            old_schema_raw = show(base_commit, old_path, root=root)
-            new_schema_raw = (root / new_path).read_bytes()
-            old_contract_raw[kind] = old_schema_raw
-            new_contract_raw[kind] = new_schema_raw
-            old_schema = load(old_schema_raw, old_path)
-            new_schema = load(new_schema_raw, new_path)
-            if fingerprint(old_schema) != fingerprint(new_schema):
-                changed_kinds.append(kind)
-                detected_families.update(
-                    semantic_change_families(old_schema, new_schema, kind)
-                )
-                changed.append(f"{module_id}:{kind}")
-
-        if not changed_kinds:
-            if review["class"] != "NO_CHANGE":
-                raise ValueError(f"{module_id}: stale breaking review was not reset")
-            continue
-
-        if review["class"] != "BREAKING_MIGRATION":
-            raise ValueError(
-                f"{module_id}: semantic schema drift lacks BREAKING_MIGRATION review"
-            )
-        if review["contracts"] != sorted(changed_kinds):
-            raise ValueError(f"{module_id}: reviewed contract scope differs from detected drift")
-        if review["families"] != sorted(detected_families):
-            raise ValueError(f"{module_id}: reviewed change families differ from detected drift")
-        if review["base_catalog_sha256"] != sha256_bytes(old_raw):
-            raise ValueError(f"{module_id}: review does not bind the base catalog")
-        for kind in changed_kinds:
-            if review["base_contract_sha256"][kind] != sha256_bytes(
-                old_contract_raw[kind]
-            ):
-                raise ValueError(f"{module_id}: review does not bind base {kind}")
-            if review["target_contract_sha256"][kind] != sha256_bytes(
-                new_contract_raw[kind]
-            ):
-                raise ValueError(f"{module_id}: review does not bind target {kind}")
-
-    return {
-        "base_commit": base_commit,
-        "public_release": False,
-        "result": "PASS",
-        "semantic_changes": changed,
-    }
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--base-ref", required=True)
-    args = parser.parse_args()
-    print(json.dumps(evaluate(ROOT, args.base_ref), sort_keys=True))
-    return 0
-
-
-if __name__ == "__main__":
-    try:
-        raise SystemExit(main())
-    except (OSError, UnicodeError, ValueError, subprocess.SubprocessError) as error:
-        print(f"module-contract compatibility failed: {error}", file=sys.stderr)
-        raise SystemExit(2)
-'''
+    return b'#!/usr/bin/env python3\n"Fail-closed semantic compatibility and one-shot change-review admission."\nfrom __future__ import annotations\n\nimport argparse\nimport hashlib\nimport json\nimport math\nimport os\nfrom pathlib import Path, PurePosixPath\nimport re\nimport stat\nimport subprocess\nimport sys\nimport unicodedata\nfrom typing import Any\n\nROOT = Path(__file__).resolve().parents[2]\nCATALOG = "docs/machine/module-contract-catalog.v1.json"\nSHA40 = re.compile(r"^[0-9a-f]{40}$")\nSHA64 = re.compile(r"^[0-9a-f]{64}$")\nREVIEW_PACKET_PATH = re.compile(\n    r"^docs/reviews/module-contracts/([0-9a-f]{64})[.]json$"\n)\nREVIEW_PACKET_SCHEMA = "org.trillionnium.module-contract-migration-review-packet.v1"\nREVIEW_PACKET_MAX_BYTES = 65536\nREVIEW_AUTHORITY = "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED"\nCLAIM_CEILING = "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY"\nAUTHORIZED_MIGRATION_REVIEWERS = frozenset({"Franksudoman", "Tomasrgbsf"})\nCHANGE_REVIEW_CLASSES = {"NO_CHANGE", "BREAKING_MIGRATION"}\nCHANGE_REVIEW_CONTRACTS = {"api", "state", "errors"}\nCHANGE_REVIEW_FAMILIES = {\n    "required", "type", "enum", "default", "identity", "ordering",\n    "state", "error", "other",\n}\nIDENTITY_FIELDS = {"schema", "module_id", "operation_id", "request_digest"}\nORDERING_FIELDS = {\n    "ordering_key", "host_epoch", "writer_epoch", "fencing_token",\n    "durable_sequence", "monotonic_ns",\n}\n\n\ndef finite_float(raw: str) -> float:\n    value = float(raw)\n    if not math.isfinite(value):\n        raise ValueError(f"nonfinite JSON number: {raw}")\n    return value\n\n\ndef load(raw: bytes, label: str) -> Any:\n    def pairs(items):\n        out = {}\n        for key, value in items:\n            if key in out:\n                raise ValueError(f"{label}: duplicate member {key}")\n            out[key] = value\n        return out\n\n    return json.loads(\n        raw.decode("utf-8"),\n        object_pairs_hook=pairs,\n        parse_constant=lambda value: (_ for _ in ()).throw(\n            ValueError(f"{label}: nonfinite {value}")\n        ),\n        parse_float=finite_float,\n    )\n\n\ndef canonical(value: Any) -> bytes:\n    return json.dumps(\n        value,\n        sort_keys=True,\n        separators=(",", ":"),\n        ensure_ascii=False,\n        allow_nan=False,\n    ).encode("utf-8")\n\n\ndef sha256_bytes(raw: bytes) -> str:\n    return hashlib.sha256(raw).hexdigest()\n\n\ndef canonical_packet(value: Any) -> bytes:\n    return canonical(value) + b"\\n"\n\n\ndef stable_file_identity(value: os.stat_result) -> tuple[int, ...]:\n    return (\n        value.st_dev,\n        value.st_ino,\n        value.st_mode,\n        value.st_nlink,\n        value.st_size,\n        value.st_mtime_ns,\n        value.st_ctime_ns,\n    )\n\n\ndef read_review_packet(\n    root: Path,\n    relative: Any,\n    expected_sha256: Any,\n    label: str,\n) -> bytes:\n    if not isinstance(relative, str):\n        raise ValueError(f"{label}: review packet path is not text")\n    match = REVIEW_PACKET_PATH.fullmatch(relative)\n    if match is None:\n        raise ValueError(f"{label}: review packet path is not canonical")\n    path_digest = match.group(1)\n    if expected_sha256 != path_digest:\n        raise ValueError(f"{label}: review packet path and digest differ")\n\n    pure = PurePosixPath(relative)\n    if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):\n        raise ValueError(f"{label}: review packet path is unsafe")\n    candidate = root\n    try:\n        for part in pure.parts:\n            candidate = candidate / part\n            metadata = os.lstat(candidate)\n            if stat.S_ISLNK(metadata.st_mode):\n                raise ValueError(f"{label}: review packet path contains a symlink")\n    except OSError as error:\n        raise ValueError(f"{label}: review packet path is unavailable") from error\n\n    required_flags = ("O_CLOEXEC", "O_NOFOLLOW")\n    if any(not hasattr(os, name) for name in required_flags):\n        raise ValueError(f"{label}: review packet no-follow acquisition is unavailable")\n    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW\n    try:\n        descriptor = os.open(candidate, flags)\n    except OSError as error:\n        raise ValueError(f"{label}: review packet open failed") from error\n    try:\n        before = os.fstat(descriptor)\n        if (\n            not stat.S_ISREG(before.st_mode)\n            or before.st_nlink != 1\n            or before.st_size <= 0\n            or before.st_size > REVIEW_PACKET_MAX_BYTES\n        ):\n            raise ValueError(f"{label}: review packet is not one bounded regular file")\n        remaining = before.st_size + 1\n        chunks: list[bytes] = []\n        while remaining:\n            chunk = os.read(descriptor, min(65536, remaining))\n            if not chunk:\n                break\n            chunks.append(chunk)\n            remaining -= len(chunk)\n        raw = b"".join(chunks)\n        after = os.fstat(descriptor)\n    except OSError as error:\n        raise ValueError(f"{label}: review packet read failed") from error\n    finally:\n        os.close(descriptor)\n\n    try:\n        current = os.lstat(candidate)\n    except OSError as error:\n        raise ValueError(f"{label}: review packet pathname disappeared") from error\n    if (\n        len(raw) != before.st_size\n        or len(raw) > REVIEW_PACKET_MAX_BYTES\n        or stable_file_identity(after) != stable_file_identity(before)\n        or stable_file_identity(current) != stable_file_identity(before)\n    ):\n        raise ValueError(f"{label}: review packet changed while being read")\n    if sha256_bytes(raw) != expected_sha256:\n        raise ValueError(f"{label}: review packet digest differs")\n    return raw\n\n\ndef validate_review_packet(\n    packet: Any,\n    label: str,\n    review: dict[str, Any],\n    migration_sha256: str,\n    rollback_sha256: str,\n) -> None:\n    expected = {\n        "schema",\n        "module_id",\n        "contracts",\n        "families",\n        "base_catalog_sha256",\n        "base_contract_sha256",\n        "target_contract_sha256",\n        "migration_review_sha256",\n        "rollback_review_sha256",\n        "reviewer",\n        "review_authority",\n        "approval_asserted",\n        "automatic_redispatch",\n        "claim_ceiling",\n        "public_release",\n    }\n    if not isinstance(packet, dict) or set(packet) != expected:\n        raise ValueError(f"{label}: review packet keys differ")\n    if packet.get("schema") != REVIEW_PACKET_SCHEMA:\n        raise ValueError(f"{label}: review packet schema differs")\n    if packet.get("module_id") != label:\n        raise ValueError(f"{label}: review packet module differs")\n    for field in (\n        "contracts",\n        "families",\n        "base_catalog_sha256",\n        "base_contract_sha256",\n        "target_contract_sha256",\n    ):\n        if packet.get(field) != review.get(field):\n            raise ValueError(f"{label}: review packet {field} differs")\n    if packet.get("migration_review_sha256") != migration_sha256:\n        raise ValueError(f"{label}: review packet migration digest differs")\n    if packet.get("rollback_review_sha256") != rollback_sha256:\n        raise ValueError(f"{label}: review packet rollback digest differs")\n    reviewer = packet.get("reviewer")\n    if not valid_text(reviewer, 64) or reviewer not in AUTHORIZED_MIGRATION_REVIEWERS:\n        raise ValueError(f"{label}: review packet reviewer is unauthorized")\n    if packet.get("review_authority") != REVIEW_AUTHORITY:\n        raise ValueError(f"{label}: review packet authority differs")\n    if packet.get("approval_asserted") is not False:\n        raise ValueError(f"{label}: source packet cannot assert independent approval")\n    if packet.get("automatic_redispatch") is not False:\n        raise ValueError(f"{label}: review packet enables redispatch")\n    if packet.get("claim_ceiling") != CLAIM_CEILING:\n        raise ValueError(f"{label}: review packet claim ceiling differs")\n    if packet.get("public_release") is not False:\n        raise ValueError(f"{label}: review packet authorizes release")\n    if review.get("reviewer") != reviewer:\n        raise ValueError(f"{label}: change review reviewer differs from packet")\n    if review.get("review_authority") != REVIEW_AUTHORITY:\n        raise ValueError(f"{label}: change review authority differs from packet")\n    if review.get("approval_asserted") is not False:\n        raise ValueError(f"{label}: change review cannot assert independent approval")\n\n\ndef valid_text(value: Any, maximum: int) -> bool:\n    if not isinstance(value, str) or not value:\n        return False\n    try:\n        encoded = value.encode("utf-8")\n    except UnicodeEncodeError:\n        return False\n    return len(encoded) <= maximum and not any(\n        unicodedata.category(char) == "Cc" for char in value\n    )\n\n\ndef git(args: list[str], label: str, *, root: Path = ROOT) -> bytes:\n    result = subprocess.run(\n        ["git", "--no-replace-objects", *args],\n        cwd=root,\n        capture_output=True,\n        check=False,\n        timeout=30,\n    )\n    if result.returncode != 0:\n        detail = result.stderr.decode("utf-8", "replace").strip()\n        raise ValueError(f"{label}: git returned {result.returncode}: {detail}")\n    return result.stdout\n\n\ndef resolve_commit(ref: str, *, root: Path = ROOT) -> str:\n    if not isinstance(ref, str) or not ref or "\\x00" in ref or "\\n" in ref:\n        raise ValueError("base ref is malformed")\n    raw = git(\n        ["rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}"],\n        "resolve base ref",\n        root=root,\n    )\n    values = raw.decode("ascii", "strict").splitlines()\n    if len(values) != 1 or SHA40.fullmatch(values[0]) is None:\n        raise ValueError("base ref did not resolve to one exact commit")\n    commit = values[0]\n    git(\n        ["merge-base", "--is-ancestor", commit, "HEAD"],\n        "verify base ancestry",\n        root=root,\n    )\n    return commit\n\n\ndef show(\n    commit: str,\n    path: str,\n    *,\n    allow_absent: bool = False,\n    root: Path = ROOT,\n) -> bytes | None:\n    if SHA40.fullmatch(commit) is None:\n        raise ValueError("show requires an exact commit")\n    if (\n        not isinstance(path, str)\n        or not path\n        or path.startswith("/")\n        or "\\\\" in path\n        or "\\x00" in path\n        or "\\n" in path\n        or any(part in {"", ".", ".."} for part in path.split("/"))\n    ):\n        raise ValueError(f"unsafe tree path: {path!r}")\n\n    listing = git(\n        ["ls-tree", "-z", "--full-tree", commit, "--", path],\n        f"inspect {path} in verified base",\n        root=root,\n    )\n    entries = [entry for entry in listing.split(b"\\0") if entry]\n    if not entries:\n        if allow_absent:\n            return None\n        raise ValueError(f"verified base path is absent: {path}")\n    if len(entries) != 1:\n        raise ValueError(f"verified base path is ambiguous: {path}")\n\n    metadata, separator, encoded_name = entries[0].partition(b"\\t")\n    if not separator:\n        raise ValueError(f"malformed ls-tree result for {path}")\n    try:\n        mode, kind, object_id = metadata.decode("ascii", "strict").split(" ")\n        observed_name = encoded_name.decode("utf-8", "strict")\n    except (UnicodeError, ValueError) as error:\n        raise ValueError(f"malformed ls-tree identity for {path}") from error\n    if (\n        observed_name != path\n        or kind != "blob"\n        or mode not in {"100644", "100755"}\n        or SHA40.fullmatch(object_id) is None\n    ):\n        raise ValueError(f"verified base object is not one regular tracked file: {path}")\n    return git(["cat-file", "blob", object_id], f"read verified base file {path}", root=root)\n\n\nNON_SEMANTIC = {\n    "$schema", "$id", "title", "description", "examples",\n    "x-trillionnium-binding",\n}\nNAMED_SCHEMA_MAPS = {\n    "$defs", "definitions", "properties", "patternProperties",\n    "dependentSchemas",\n}\nSCHEMA_SINGLE = {\n    "additionalProperties", "unevaluatedProperties", "propertyNames",\n    "contains", "contentSchema", "if", "then", "else", "not",\n    "unevaluatedItems",\n}\nSCHEMA_ARRAYS = {"allOf", "anyOf", "oneOf", "prefixItems"}\n\n\ndef normalized_data(value: Any) -> Any:\n    if isinstance(value, dict):\n        return {\n            key: normalized_data(item)\n            for key, item in sorted(value.items())\n        }\n    if isinstance(value, list):\n        return [normalized_data(item) for item in value]\n    return value\n\n\ndef fingerprint(value: Any) -> Any:\n    "Remove annotations only where the dictionary is a JSON Schema object."\n    if isinstance(value, bool):\n        return value\n    if not isinstance(value, dict):\n        return normalized_data(value)\n\n    result = {}\n    for key, item in sorted(value.items()):\n        if key in NON_SEMANTIC:\n            continue\n        if key in NAMED_SCHEMA_MAPS and isinstance(item, dict):\n            result[key] = {\n                name: fingerprint(child)\n                for name, child in sorted(item.items())\n            }\n        elif key == "dependencies" and isinstance(item, dict):\n            result[key] = {\n                name: (\n                    fingerprint(child)\n                    if isinstance(child, (dict, bool))\n                    else normalized_data(child)\n                )\n                for name, child in sorted(item.items())\n            }\n        elif key in SCHEMA_SINGLE and isinstance(item, (dict, bool)):\n            result[key] = fingerprint(item)\n        elif key == "items":\n            if isinstance(item, list):\n                result[key] = [fingerprint(child) for child in item]\n            elif isinstance(item, (dict, bool)):\n                result[key] = fingerprint(item)\n            else:\n                result[key] = normalized_data(item)\n        elif key in SCHEMA_ARRAYS and isinstance(item, list):\n            result[key] = [fingerprint(child) for child in item]\n        else:\n            result[key] = normalized_data(item)\n    return result\n\n\ndef semantic_change_families(old: Any, new: Any, kind: str) -> list[str]:\n    old = fingerprint(old)\n    new = fingerprint(new)\n    families: set[str] = set()\n\n    def mark(path: tuple[str, ...]) -> None:\n        before = set(families)\n        leaf = path[-1] if path else ""\n        if leaf == "required" or "required" in path:\n            families.add("required")\n        if leaf == "type":\n            families.add("type")\n        if leaf == "enum":\n            families.add("enum")\n        if leaf == "default":\n            families.add("default")\n        if any(part in IDENTITY_FIELDS for part in path):\n            families.add("identity")\n        if any(part in ORDERING_FIELDS for part in path):\n            families.add("ordering")\n        if kind == "state":\n            families.add("state")\n        if kind == "errors":\n            families.add("error")\n        if families == before:\n            families.add("other")\n\n    def walk(left: Any, right: Any, path: tuple[str, ...]) -> None:\n        if left == right:\n            return\n        if isinstance(left, dict) and isinstance(right, dict):\n            for key in sorted(set(left) | set(right)):\n                if key not in left or key not in right:\n                    mark(path + (key,))\n                else:\n                    walk(left[key], right[key], path + (key,))\n            return\n        if isinstance(left, list) and isinstance(right, list):\n            if path and path[-1] in {"required", "enum"}:\n                mark(path)\n                return\n            for index in range(max(len(left), len(right))):\n                if index >= len(left) or index >= len(right):\n                    mark(path + (str(index),))\n                else:\n                    walk(left[index], right[index], path + (str(index),))\n            return\n        mark(path)\n\n    walk(old, new, ())\n    return sorted(families)\n\n\ndef validate_change_review(\n    compatibility: Any,\n    label: str,\n    *,\n    root: Path,\n) -> dict[str, Any]:\n    if not isinstance(compatibility, dict):\n        raise ValueError(f"{label}: compatibility metadata is not an object")\n    if compatibility.get("introduction_review_class") != "INITIAL_V1":\n        raise ValueError(f"{label}: introduction provenance differs")\n    migration = compatibility.get("migration_review")\n    rollback = compatibility.get("rollback_review")\n    if not isinstance(migration, dict) or not migration:\n        raise ValueError(f"{label}: migration metadata is missing")\n    if not isinstance(rollback, dict) or not rollback or rollback.get("fail_closed") is not True:\n        raise ValueError(f"{label}: rollback metadata is not fail-closed")\n\n    migration_sha256 = sha256_bytes(canonical(migration))\n    rollback_sha256 = sha256_bytes(canonical(rollback))\n    review = compatibility.get("change_review")\n    expected = {\n        "class",\n        "contracts",\n        "families",\n        "review_packet",\n        "review_packet_sha256",\n        "reviewer",\n        "review_authority",\n        "approval_asserted",\n        "migration_review_sha256",\n        "rollback_review_sha256",\n        "base_catalog_sha256",\n        "base_contract_sha256",\n        "target_contract_sha256",\n    }\n    if not isinstance(review, dict) or set(review) != expected:\n        raise ValueError(f"{label}: change review keys differ")\n    review_class = review.get("class")\n    if review_class not in CHANGE_REVIEW_CLASSES:\n        raise ValueError(f"{label}: change review class is unknown")\n    contracts = review.get("contracts")\n    families = review.get("families")\n    if (\n        not isinstance(contracts, list)\n        or contracts != sorted(set(contracts))\n        or not set(contracts) <= CHANGE_REVIEW_CONTRACTS\n    ):\n        raise ValueError(f"{label}: change review contract scope is malformed")\n    if (\n        not isinstance(families, list)\n        or families != sorted(set(families))\n        or not set(families) <= CHANGE_REVIEW_FAMILIES\n    ):\n        raise ValueError(f"{label}: change review families are malformed")\n    if review.get("migration_review_sha256") != migration_sha256:\n        raise ValueError(f"{label}: migration metadata digest differs")\n    if review.get("rollback_review_sha256") != rollback_sha256:\n        raise ValueError(f"{label}: rollback metadata digest differs")\n    if review.get("approval_asserted") is not False:\n        raise ValueError(f"{label}: source metadata cannot assert independent approval")\n\n    if review_class == "NO_CHANGE":\n        if contracts or families:\n            raise ValueError(f"{label}: NO_CHANGE carries a change scope")\n        if not (\n            review.get("review_packet") is None\n            and review.get("review_packet_sha256") is None\n            and review.get("reviewer") is None\n            and review.get("review_authority") is None\n            and review.get("base_catalog_sha256") is None\n            and review.get("base_contract_sha256") == {}\n            and review.get("target_contract_sha256") == {}\n        ):\n            raise ValueError(f"{label}: NO_CHANGE carries reusable review authority")\n    else:\n        if not contracts or not families:\n            raise ValueError(f"{label}: breaking review has no exact scope")\n        if not isinstance(review.get("base_catalog_sha256"), str) or SHA64.fullmatch(\n            review["base_catalog_sha256"]\n        ) is None:\n            raise ValueError(f"{label}: base catalog digest is invalid")\n        for field in ("base_contract_sha256", "target_contract_sha256"):\n            values = review.get(field)\n            if not isinstance(values, dict) or set(values) != set(contracts):\n                raise ValueError(f"{label}: {field} scope differs")\n            if not all(\n                isinstance(value, str) and SHA64.fullmatch(value)\n                for value in values.values()\n            ):\n                raise ValueError(f"{label}: {field} digest is invalid")\n        packet_raw = read_review_packet(\n            root,\n            review.get("review_packet"),\n            review.get("review_packet_sha256"),\n            label,\n        )\n        packet = load(packet_raw, f"{label} review packet")\n        if packet_raw != canonical_packet(packet):\n            raise ValueError(f"{label}: review packet is not canonical")\n        validate_review_packet(\n            packet,\n            label,\n            review,\n            migration_sha256,\n            rollback_sha256,\n        )\n    return review\n\n\n\ndef evaluate(root: Path, base_ref: str) -> dict[str, Any]:\n    current = load((root / CATALOG).read_bytes(), CATALOG)\n    base_commit = resolve_commit(base_ref, root=root)\n    old_raw = show(base_commit, CATALOG, allow_absent=True, root=root)\n    if old_raw is None:\n        for module in current["modules"]:\n            compatibility = load(\n                (root / module["artifacts"]["compatibility"]).read_bytes(),\n                module["module_id"],\n            )\n            review = validate_change_review(compatibility, module["module_id"], root=root)\n            if review["class"] != "NO_CHANGE":\n                raise ValueError("initial introduction carries a reusable change class")\n        return {\n            "base_commit": base_commit,\n            "modules": current["module_count"],\n            "public_release": False,\n            "result": "PASS_INITIAL_V1",\n        }\n\n    old = load(old_raw, CATALOG)\n    old_by = {item["module_id"]: item for item in old["modules"]}\n    current_by = {item["module_id"]: item for item in current["modules"]}\n    if set(old_by) != set(current_by):\n        raise ValueError("module set changed without a separately reviewed catalog migration")\n\n    changed: list[str] = []\n    for module_id in sorted(current_by):\n        current_record = current_by[module_id]\n        old_record = old_by[module_id]\n        compatibility = load(\n            (root / current_record["artifacts"]["compatibility"]).read_bytes(),\n            module_id,\n        )\n        old_compatibility_raw = show(\n            base_commit, old_record["artifacts"]["compatibility"], root=root\n        )\n        old_compatibility = load(old_compatibility_raw, f"base {module_id}")\n        review = validate_change_review(compatibility, module_id, root=root)\n        validate_change_review(old_compatibility, f"base {module_id}", root=root)\n        if compatibility["introduction_review_class"] != old_compatibility[\n            "introduction_review_class"\n        ]:\n            raise ValueError(f"{module_id}: introduction provenance changed")\n\n        changed_kinds: list[str] = []\n        detected_families: set[str] = set()\n        old_contract_raw: dict[str, bytes] = {}\n        new_contract_raw: dict[str, bytes] = {}\n        for kind in ("api", "state", "errors"):\n            new_path = current_record["artifacts"][kind]\n            old_path = old_record["artifacts"][kind]\n            old_schema_raw = show(base_commit, old_path, root=root)\n            new_schema_raw = (root / new_path).read_bytes()\n            old_contract_raw[kind] = old_schema_raw\n            new_contract_raw[kind] = new_schema_raw\n            old_schema = load(old_schema_raw, old_path)\n            new_schema = load(new_schema_raw, new_path)\n            if fingerprint(old_schema) != fingerprint(new_schema):\n                changed_kinds.append(kind)\n                detected_families.update(\n                    semantic_change_families(old_schema, new_schema, kind)\n                )\n                changed.append(f"{module_id}:{kind}")\n\n        if not changed_kinds:\n            if review["class"] != "NO_CHANGE":\n                raise ValueError(f"{module_id}: stale breaking review was not reset")\n            continue\n\n        if review["class"] != "BREAKING_MIGRATION":\n            raise ValueError(\n                f"{module_id}: semantic schema drift lacks BREAKING_MIGRATION review"\n            )\n        if review["contracts"] != sorted(changed_kinds):\n            raise ValueError(f"{module_id}: reviewed contract scope differs from detected drift")\n        if review["families"] != sorted(detected_families):\n            raise ValueError(f"{module_id}: reviewed change families differ from detected drift")\n        if review["base_catalog_sha256"] != sha256_bytes(old_raw):\n            raise ValueError(f"{module_id}: review does not bind the base catalog")\n        for kind in changed_kinds:\n            if review["base_contract_sha256"][kind] != sha256_bytes(\n                old_contract_raw[kind]\n            ):\n                raise ValueError(f"{module_id}: review does not bind base {kind}")\n            if review["target_contract_sha256"][kind] != sha256_bytes(\n                new_contract_raw[kind]\n            ):\n                raise ValueError(f"{module_id}: review does not bind target {kind}")\n\n    return {\n        "base_commit": base_commit,\n        "public_release": False,\n        "result": "PASS",\n        "semantic_changes": changed,\n    }\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser()\n    parser.add_argument("--base-ref", required=True)\n    args = parser.parse_args()\n    print(json.dumps(evaluate(ROOT, args.base_ref), sort_keys=True))\n    return 0\n\n\nif __name__ == "__main__":\n    try:\n        raise SystemExit(main())\n    except (OSError, UnicodeError, ValueError, subprocess.SubprocessError) as error:\n        print(f"module-contract compatibility failed: {error}", file=sys.stderr)\n        raise SystemExit(2)\n'
 
 
 def contract_readme() -> bytes:
@@ -1644,6 +1258,7 @@ def semantic_digest(value: Any) -> str:
 
 
 def contract_change_review(
+    root: Path,
     item: dict[str, Any],
     target_contracts: dict[str, bytes],
 ) -> dict[str, Any]:
@@ -1664,9 +1279,11 @@ def contract_change_review(
             "class": "NO_CHANGE",
             "contracts": [],
             "families": [],
-            "review_id": None,
-            "migration_plan": None,
-            "rollback_plan": None,
+            "review_packet": None,
+            "review_packet_sha256": None,
+            "reviewer": None,
+            "review_authority": None,
+            "approval_asserted": False,
             "migration_review_sha256": migration_sha,
             "rollback_review_sha256": rollback_sha,
             "base_catalog_sha256": None,
@@ -1674,94 +1291,104 @@ def contract_change_review(
             "target_contract_sha256": {},
         }
 
-    require(isinstance(source, dict), f"{mid} contract change review is malformed")
+    require(
+        isinstance(source, dict) and set(source) == {"class", "review_packet"},
+        f"{mid} contract change review source keys differ",
+    )
+    require(
+        source.get("class") == "BREAKING_MIGRATION",
+        f"{mid} contract change review source class is invalid",
+    )
+    packet_raw, packet_sha256 = read_review_packet(root, source.get("review_packet"))
+    packet = strict_load(packet_raw, f"{mid} review packet")
+    require(packet_raw == canonical_packet(packet), f"{mid} review packet is not canonical")
     expected = {
-        "class",
+        "schema",
+        "module_id",
         "contracts",
         "families",
-        "review_id",
-        "migration_plan",
-        "rollback_plan",
         "base_catalog_sha256",
         "base_contract_sha256",
         "target_contract_sha256",
+        "migration_review_sha256",
+        "rollback_review_sha256",
+        "reviewer",
+        "review_authority",
+        "approval_asserted",
+        "automatic_redispatch",
+        "claim_ceiling",
+        "public_release",
     }
-    require(set(source) == expected, f"{mid} contract change review keys differ")
-    review_class = source.get("class")
-    contracts = source.get("contracts")
-    families = source.get("families")
-    require(review_class in CHANGE_REVIEW_CLASSES, f"{mid} contract change review class is unknown")
+    require(isinstance(packet, dict) and set(packet) == expected, f"{mid} review packet keys differ")
+    require(packet.get("schema") == REVIEW_PACKET_SCHEMA, f"{mid} review packet schema differs")
+    require(packet.get("module_id") == mid, f"{mid} review packet module differs")
+    contracts = packet.get("contracts")
+    families = packet.get("families")
     require(
         isinstance(contracts, list)
         and contracts == sorted(set(contracts))
+        and contracts
         and set(contracts) <= CHANGE_REVIEW_CONTRACTS,
-        f"{mid} contract change scope is malformed",
+        f"{mid} review packet contract scope is malformed",
     )
     require(
         isinstance(families, list)
         and families == sorted(set(families))
+        and families
         and set(families) <= CHANGE_REVIEW_FAMILIES,
-        f"{mid} contract change families are malformed",
+        f"{mid} review packet families are malformed",
     )
-
-    if review_class == "NO_CHANGE":
-        require(not contracts and not families, f"{mid} NO_CHANGE carries a change scope")
+    require(
+        isinstance(packet.get("base_catalog_sha256"), str)
+        and SHA64.fullmatch(packet["base_catalog_sha256"]) is not None,
+        f"{mid} review packet base catalog digest is invalid",
+    )
+    for field in ("base_contract_sha256", "target_contract_sha256"):
+        digests = packet.get(field)
         require(
-            source.get("review_id") is None
-            and source.get("migration_plan") is None
-            and source.get("rollback_plan") is None
-            and source.get("base_catalog_sha256") is None
-            and source.get("base_contract_sha256") == {}
-            and source.get("target_contract_sha256") == {},
-            f"{mid} NO_CHANGE carries reusable review authority",
+            isinstance(digests, dict) and set(digests) == set(contracts),
+            f"{mid} review packet {field} scope differs",
         )
-    else:
-        require(contracts and families, f"{mid} breaking review has no exact scope")
-        for field, maximum in (
-            ("review_id", 256),
-            ("migration_plan", 4096),
-            ("rollback_plan", 4096),
-        ):
-            require(
-                valid_text(source.get(field), maximum),
-                f"{mid} breaking review {field} is invalid",
-            )
         require(
-            isinstance(source.get("base_catalog_sha256"), str)
-            and SHA64.fullmatch(source["base_catalog_sha256"]) is not None,
-            f"{mid} breaking review base catalog digest is invalid",
+            all(isinstance(value, str) and SHA64.fullmatch(value) for value in digests.values()),
+            f"{mid} review packet {field} digest is invalid",
         )
-        for field in ("base_contract_sha256", "target_contract_sha256"):
-            digests = source.get(field)
-            require(
-                isinstance(digests, dict) and set(digests) == set(contracts),
-                f"{mid} breaking review {field} scope differs",
-            )
-            require(
-                all(isinstance(value, str) and SHA64.fullmatch(value) for value in digests.values()),
-                f"{mid} breaking review {field} digest is invalid",
-            )
-        require(
-            all(
-                source["target_contract_sha256"][kind] == sha(target_contracts[kind])
-                for kind in contracts
-            ),
-            f"{mid} breaking review target digest does not bind generated bytes",
-        )
+    require(
+        all(
+            packet["target_contract_sha256"][kind] == sha(target_contracts[kind])
+            for kind in contracts
+        ),
+        f"{mid} review packet target digest does not bind generated bytes",
+    )
+    require(packet.get("migration_review_sha256") == migration_sha, f"{mid} review packet migration digest differs")
+    require(packet.get("rollback_review_sha256") == rollback_sha, f"{mid} review packet rollback digest differs")
+    reviewer = packet.get("reviewer")
+    require(
+        valid_text(reviewer, 64) and reviewer in AUTHORIZED_MIGRATION_REVIEWERS,
+        f"{mid} review packet reviewer is unauthorized",
+    )
+    require(packet.get("review_authority") == REVIEW_AUTHORITY, f"{mid} review packet authority differs")
+    require(packet.get("approval_asserted") is False, f"{mid} source packet cannot assert independent approval")
+    require(packet.get("automatic_redispatch") is False, f"{mid} review packet enables redispatch")
+    require(packet.get("claim_ceiling") == CLAIM_CEILING, f"{mid} review packet claim ceiling differs")
+    require(packet.get("public_release") is False, f"{mid} review packet authorizes release")
 
     return {
-        "class": review_class,
+        "class": "BREAKING_MIGRATION",
         "contracts": list(contracts),
         "families": list(families),
-        "review_id": source.get("review_id"),
-        "migration_plan": source.get("migration_plan"),
-        "rollback_plan": source.get("rollback_plan"),
+        "review_packet": source["review_packet"],
+        "review_packet_sha256": packet_sha256,
+        "reviewer": reviewer,
+        "review_authority": REVIEW_AUTHORITY,
+        "approval_asserted": False,
         "migration_review_sha256": migration_sha,
         "rollback_review_sha256": rollback_sha,
-        "base_catalog_sha256": source.get("base_catalog_sha256"),
-        "base_contract_sha256": dict(source.get("base_contract_sha256", {})),
-        "target_contract_sha256": dict(source.get("target_contract_sha256", {})),
+        "base_catalog_sha256": packet["base_catalog_sha256"],
+        "base_contract_sha256": dict(packet["base_contract_sha256"]),
+        "target_contract_sha256": dict(packet["target_contract_sha256"]),
     }
+
 
 
 def static_outputs() -> dict[str, bytes]:
@@ -1981,6 +1608,7 @@ def generated(root: Path, schemars_raw: bytes) -> dict[str, bytes]:
             "automatic_redispatch_after_uncertainty":False,
             "introduction_review_class":"INITIAL_V1",
             "change_review":contract_change_review(
+                root,
                 item,
                 {
                     "api": outputs[api_path],
