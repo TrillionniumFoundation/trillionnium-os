@@ -1,0 +1,48 @@
+name: Temporary PR76 exact-source snapshot v1
+
+on:
+  push:
+    branches:
+      - ops/pr76-performance-qualification-repair-v1-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr76-exact-source-snapshot-v1
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TARGET_HEAD: c54d7632e51619409ac9cce3cd1be9d05d405e04
+      TARGET_TREE: 23fac110e0fdde82cb6d5a84435163ee173b587f
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_HEAD }}
+          persist-credentials: false
+      - name: Bind and archive exact tracked source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$TARGET_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          archive="${RUNNER_TEMP:?}/trillionnium-os-${TARGET_HEAD}.tar.gz"
+          git --no-replace-objects archive --format=tar "$TARGET_HEAD" | gzip -9 > "$archive"
+          sha256sum "$archive" > "${archive}.sha256"
+          test -s "$archive"
+      - name: Upload exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr76-exact-source-c54d7632
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/trillionnium-os-c54d7632e51619409ac9cce3cd1be9d05d405e04.tar.gz
+            ${{ runner.temp }}/trillionnium-os-c54d7632e51619409ac9cce3cd1be9d05d405e04.tar.gz.sha256
