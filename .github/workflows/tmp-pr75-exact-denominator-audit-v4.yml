@@ -1,0 +1,59 @@
+name: Temporary PR75 exact denominator audit v4
+
+on:
+  push:
+    branches:
+      - ops/pr75-contract-boundary-repair-v3-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr75-exact-denominator-audit-v4
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+      HEAD_SHA: 06925e9b29a160ebcc2650c02d366a86bed3c555
+      EXPECTED_TREE: 1ecde18ea661cfe103e1296e926248ff2c5ef223
+    steps:
+      - name: Check out exact object graph
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.HEAD_SHA }}
+          persist-credentials: false
+      - name: Compute closed-world denominator
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$HEAD_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test "$(git --no-replace-objects merge-base "$BASE_SHA" "$HEAD_SHA")" = "$BASE_SHA"
+          test "$(git --no-replace-objects rev-list --count "$BASE_SHA..$HEAD_SHA")" = 2
+          git --no-replace-objects diff --name-only -z "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/paths.z"
+          git --no-replace-objects diff --binary --full-index "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/diff.patch"
+          path_count="$(python3 - <<'PY'
+          import os
+          from pathlib import Path
+          raw = (Path(os.environ['RUNNER_TEMP']) / 'paths.z').read_bytes()
+          print(len([item for item in raw.split(b'\0') if item]))
+          PY
+          )"
+          test "$path_count" = 514
+          path_sha256="$(sha256sum "$RUNNER_TEMP/paths.z" | cut -d' ' -f1)"
+          diff_sha256="$(sha256sum "$RUNNER_TEMP/diff.patch" | cut -d' ' -f1)"
+          printf 'base_sha=%s\nhead_sha=%s\nhead_tree=%s\ncommit_count=2\nchanged_path_count=%s\nchanged_paths_nul_sha256=%s\nfull_binary_diff_sha256=%s\n' \
+            "$BASE_SHA" "$HEAD_SHA" "$EXPECTED_TREE" "$path_count" "$path_sha256" "$diff_sha256" \
+            | tee "$RUNNER_TEMP/pr75-denominator.env"
+      - name: Upload non-authorizing denominator
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr75-exact-denominator-${{ env.HEAD_SHA }}
+          path: ${{ runner.temp }}/pr75-denominator.env
+          if-no-files-found: error
+          retention-days: 30
