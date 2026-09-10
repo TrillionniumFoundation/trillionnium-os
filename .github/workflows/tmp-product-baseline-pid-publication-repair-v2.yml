@@ -1,0 +1,151 @@
+name: Temporary product-baseline PID publication repair v2
+
+on:
+  push:
+    branches:
+      - ops/product-baseline-pid-publication-repair-v2-20260911
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-product-baseline-pid-publication-repair-v2
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+  TARGET_BRANCH: codex/product-baseline-pid-publication-20260911
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  repair-qualify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out immutable controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Authenticate controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD)" = '.github/workflows/tmp-product-baseline-pid-publication-repair-v2.yml'
+
+      - name: Install source-test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Apply bounded PID publication read repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git --no-replace-objects checkout --detach "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('tools/tests/test_product_baseline_process_group_cleanup.py')
+          text = path.read_text(encoding='utf-8')
+          needle = '        child = int(child_path.read_text(encoding="ascii"))\n'
+          if text.count(needle) != 1:
+              raise SystemExit('expected exactly one unbounded child PID read')
+          replacement = (
+              '        deadline = time.monotonic() + 2.0\n'
+              '        while True:\n'
+              '            try:\n'
+              '                child_text = child_path.read_text(encoding="ascii").strip()\n'
+              '                if child_text:\n'
+              '                    child = int(child_text)\n'
+              '                    break\n'
+              '            except (FileNotFoundError, ValueError):\n'
+              '                pass\n'
+              '            if time.monotonic() >= deadline:\n'
+              '                self.fail("child PID was not published completely within two seconds")\n'
+              '            time.sleep(0.01)\n'
+          )
+          text = text.replace(needle, replacement)
+          lines = text.splitlines(keepends=True)
+          if not any(line == 'import time\n' for line in lines[:50]):
+              last_import = None
+              for index, line in enumerate(lines[:80]):
+                  if line.startswith(('import ', 'from ')):
+                      last_import = index
+                  elif last_import is not None and not line.strip():
+                      break
+              if last_import is None:
+                  raise SystemExit('cannot place time import deterministically')
+              lines.insert(last_import + 1, 'import time\n')
+              text = ''.join(lines)
+          path.write_text(text, encoding='utf-8')
+          PY
+          test "$(git diff --name-only)" = 'tools/tests/test_product_baseline_process_group_cleanup.py'
+          python3 -m py_compile tools/tests/test_product_baseline_process_group_cleanup.py
+          git diff --check
+
+      - name: Execute focused race stress matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 20); do
+            printf 'focused_attempt=%s\n' "$attempt"
+            python3 -m unittest tools.tests.test_product_baseline_process_group_cleanup -v
+          done
+
+      - name: Execute complete repository qualification matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+          git diff --check
+          observed="$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          expected=' M tools/tests/test_product_baseline_process_group_cleanup.py'
+          test "$observed" = "$expected"
+
+      - name: Publish focused candidate through absence lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE_SHA"
+          test ! -e .github/workflows/tmp-product-baseline-pid-publication-repair-v2.yml
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add tools/tests/test_product_baseline_process_group_cleanup.py
+          test "$(git diff --cached --name-only)" = 'tools/tests/test_product_baseline_process_group_cleanup.py'
+          git diff --cached --check
+          git commit \
+            -m 'test(perf): wait for complete child PID publication' \
+            -m 'The process-group fixture creates the PID pathname before the buffered text write is necessarily visible. Read the asynchronously published value with a fixed two-second deadline and short sleeps, accepting only a complete decimal PID. This removes a deterministic empty-read race without weakening lifecycle cleanup assertions.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          git push \
+            --force-with-lease="refs/heads/${TARGET_BRANCH}:" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          printf 'published_head=%s\n' "$final"
