@@ -1,0 +1,52 @@
+name: Temporary PR76 full source export v2
+
+on:
+  push:
+    branches:
+      - ops/pr76-source-export-v1-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr76-full-source-export-v2
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      TARGET_HEAD: c54d7632e51619409ac9cce3cd1be9d05d405e04
+      TARGET_BASE: b681cd856fccac1189496576f25d259752d2dcce
+    steps:
+      - name: Check out exact PR76 source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_HEAD }}
+          path: source
+          persist-credentials: false
+      - name: Assert exact immutable source and pack tracked bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE/source"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git --no-replace-objects merge-base HEAD origin/main)" = "$TARGET_BASE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git ls-files -z | tar --null --files-from=- --sort=name \
+            --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            -czf "$GITHUB_WORKSPACE/pr76-full-source.tar.gz"
+          cd "$GITHUB_WORKSPACE"
+          sha256sum pr76-full-source.tar.gz | tee pr76-full-source.sha256
+          du -h pr76-full-source.tar.gz
+      - name: Upload exact tracked source packet
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr76-full-source-${{ github.sha }}
+          path: |
+            pr76-full-source.tar.gz
+            pr76-full-source.sha256
+          if-no-files-found: error
+          retention-days: 7
