@@ -1,0 +1,27 @@
+name: Temporary human-race v2 review brief
+
+on:
+  push:
+    branches:
+      - ops/human-race-v2-review-brief-20260911
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  brief:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      HEAD_BRANCH: codex/source-qualification-observation-races-v2-human-20260911
+    steps:
+      - name: Publish exact review brief
+        shell: bash
+        run: |
+          set -euo pipefail
+          number="$(gh pr list --repo "$REPOSITORY" --state open --head "$HEAD_BRANCH" --json number --jq 'if length == 1 then .[0].number else empty end')"
+          [[ -n "$number" ]] || { printf 'v2 PR absent\n'; exit 0; }
+          gh pr comment "$number" --repo "$REPOSITORY" --body $'## Fresh exact-head review brief\n\n@Tomasrgbsf @Franksudoman — review this immutable v2 head, not any v1/controller branch. Please independently check:\n\n1. `_stable_stat_identity` excludes only read-induced atime and retains device, inode, mode, link count, UID/GID, size, mtime and ctime; true replacement/mutation remains fail-closed.\n2. the child PID reader has one fixed two-second deadline, short sleeps, accepts only complete decimal text, and does not weaken process-group cleanup assertions.\n3. explicit-field positive/negative tests avoid synthetic `os.stat_result` optional-field ambiguity; the lifecycle suite is stress-run repeatedly.\n4. complete Python/Rust/planned/documentation/authority and ordered-parent matrices bind this exact head.\n5. no product behavior, performance threshold, evidence level, redispatch or release authority changes.\n\nSubmit a fresh current-head decision. Old-head approval, inherited review, dismissal and administrator bypass receive no credit.'
