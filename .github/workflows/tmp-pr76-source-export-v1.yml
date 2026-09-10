@@ -1,0 +1,106 @@
+name: Temporary PR76 source export v1
+
+on:
+  push:
+    branches:
+      - ops/pr76-source-export-v1-20260910
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr76-source-export-v1
+  cancel-in-progress: true
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TARGET_HEAD: c54d7632e51619409ac9cce3cd1be9d05d405e04
+      TARGET_BASE: b681cd856fccac1189496576f25d259752d2dcce
+    steps:
+      - name: Check out immutable exporter
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+          path: exporter
+          persist-credentials: false
+
+      - name: Check out exact PR76 source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_HEAD }}
+          path: source
+          persist-credentials: false
+
+      - name: Build read-only source packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE/source"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git --no-replace-objects merge-base HEAD origin/main)" = "$TARGET_BASE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          cd "$GITHUB_WORKSPACE"
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+
+          root = Path('source')
+          out = Path('packet')
+          needles = (
+              '_validate_and_normalize_payload',
+              'tolerances',
+              'performance registry',
+              'registry_digest',
+              'verify_init_agent_activation',
+              'read_regular',
+          )
+          required = {
+              'tools/perf/performance_qualification.py',
+              'tools/tests/test_performance_qualification.py',
+              'tools/verify_init_agent_activation.py',
+              '.github/workflows/g1-exact-head-source.yml',
+              '.github/workflows/g1-synthetic-merge.yml',
+          }
+          for base in ('tools', 'docs/machine', '.github/workflows'):
+              directory = root / base
+              if not directory.exists():
+                  continue
+              for path in directory.rglob('*'):
+                  if not path.is_file() or path.is_symlink() or path.stat().st_size > 4 * 1024 * 1024:
+                      continue
+                  try:
+                      text = path.read_text(encoding='utf-8')
+                  except UnicodeDecodeError:
+                      continue
+                  if any(needle in text for needle in needles):
+                      required.add(path.relative_to(root).as_posix())
+          manifest = []
+          for relative in sorted(required):
+              source = root / relative
+              if not source.is_file() or source.is_symlink():
+                  continue
+              destination = out / relative
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              shutil.copyfile(source, destination)
+              manifest.append(relative)
+          (out / 'MANIFEST.txt').write_text('\n'.join(manifest) + '\n', encoding='utf-8')
+          print(f'exported_files={len(manifest)}')
+          PY
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            -czf pr76-source-packet.tar.gz -C packet .
+          sha256sum pr76-source-packet.tar.gz | tee pr76-source-packet.sha256
+
+      - name: Upload read-only packet
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr76-source-packet-${{ github.sha }}
+          path: |
+            pr76-source-packet.tar.gz
+            pr76-source-packet.sha256
+          if-no-files-found: error
+          retention-days: 7
