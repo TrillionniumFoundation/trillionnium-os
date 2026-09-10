@@ -1,0 +1,41 @@
+name: Temporary post-observation candidate review route v2
+
+on:
+  push:
+    branches:
+      - ops/post-observation-review-route-v2-20260911
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  route:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Route exact-head review requests after relay
+        shell: bash
+        run: |
+          set -euo pipefail
+          route() {
+            local branch="$1" expected_draft="$2" auto_merge="$3"
+            local number draft
+            number="$(gh pr list --repo "$REPOSITORY" --state open --head "$branch" --json number --jq 'if length == 1 then .[0].number else empty end')"
+            [[ -n "$number" ]] || { printf 'branch=%s pr=ABSENT\n' "$branch"; return 0; }
+            gh api --method POST "repos/${REPOSITORY}/pulls/${number}/requested_reviewers" \
+              -f 'reviewers[]=Tomasrgbsf' -f 'reviewers[]=Franksudoman' >/dev/null
+            draft="$(gh pr view "$number" --repo "$REPOSITORY" --json isDraft --jq '.isDraft')"
+            test "$draft" = "$expected_draft"
+            if [[ "$auto_merge" == true && "$draft" == false ]]; then
+              gh pr merge "$number" --repo "$REPOSITORY" --auto --merge || printf 'pr=%s auto_merge=HELD\n' "$number"
+            fi
+            printf 'branch=%s pr=%s draft=%s reviewers=REQUESTED\n' "$branch" "$number" "$draft"
+          }
+          route codex/executable-module-contracts-v4-main-20260911 false true
+          route codex/performance-measurement-v3-20260911 true false
+          gh issue comment 51 --repo "$REPOSITORY" --body 'Second post-observation review route executed after linked-account relay. Fresh reviewers were requested wherever replacement PRs exist; contracts uses ordinary auto-merge only, performance remains Draft. No bypass or evidence promotion.'
