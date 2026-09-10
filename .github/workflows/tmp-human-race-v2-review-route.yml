@@ -1,0 +1,38 @@
+name: Temporary human-race v2 candidate review route
+
+on:
+  push:
+    branches:
+      - ops/human-race-v2-review-route-20260911
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  route:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+      HEAD_BRANCH: codex/source-qualification-observation-races-v2-human-20260911
+    steps:
+      - name: Request fresh v2 reviews and ordinary auto-merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          number="$(gh pr list --repo "$REPOSITORY" --state open --head "$HEAD_BRANCH" --json number --jq 'if length == 1 then .[0].number else empty end')"
+          if [[ -z "$number" ]]; then
+            printf 'v2 candidate PR absent; no route action\n'
+            exit 0
+          fi
+          gh api --method POST "repos/${REPOSITORY}/pulls/${number}/requested_reviewers" \
+            -f 'reviewers[]=Tomasrgbsf' \
+            -f 'reviewers[]=Franksudoman' >/dev/null
+          draft="$(gh pr view "$number" --repo "$REPOSITORY" --json isDraft --jq '.isDraft')"
+          test "$draft" = false
+          gh pr merge "$number" --repo "$REPOSITORY" --auto --merge || \
+            printf 'ordinary auto-merge remains held by repository requirements\n'
+          gh issue comment 51 --repo "$REPOSITORY" --body "Observation-race v2 PR #${number} is the only routed candidate for this prerequisite. Fresh current-head reviews and all protected checks remain mandatory; v1 receives no qualification credit."
