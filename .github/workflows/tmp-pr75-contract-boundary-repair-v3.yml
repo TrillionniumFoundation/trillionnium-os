@@ -1,0 +1,191 @@
+name: Temporary PR75 contract-boundary repair v3
+
+on:
+  push:
+    branches:
+      - ops/pr75-contract-boundary-repair-v3-20260910
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pr75-contract-boundary-repair-v3
+  cancel-in-progress: false
+
+jobs:
+  repair-qualify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      TARGET_BRANCH: codex/executable-module-contracts-v3-main-20260910
+      TARGET_HEAD: e84227a9cce92bcda45e66c9e9060036f424c4cd
+      TARGET_BASE: b681cd856fccac1189496576f25d259752d2dcce
+      CHECKER_SHA256: 1c8be47df5b6361b391cfb29d04cd3897fb1394e2115becf6fa5298ed8fe210a
+      CHECKER_ZLIB_B64: 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
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_TERM_COLOR: always
+    steps:
+      - name: Check out immutable repair controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+          path: controller
+          persist-credentials: false
+
+      - name: Check out exact PR candidate with publication credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+          path: candidate
+          persist-credentials: true
+
+      - name: Assert exact immutable input tuple
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_BASE"
+          test "$(git --no-replace-objects rev-parse origin/main)" = "$TARGET_BASE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Extract reviewed patcher and repair escaped checker embedding
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          import os
+          from pathlib import Path
+          import re
+          import zlib
+
+          workflow = Path("controller/.github/workflows/tmp-pr75-contract-boundary-repair-v1.yml")
+          text = workflow.read_text(encoding="utf-8")
+          match = re.search(
+              r"(?ms)^      PATCH_ZLIB_B64: \|\n(?P<body>(?:          [A-Za-z0-9+/=]+\n)+)",
+              text,
+          )
+          if match is None:
+              raise SystemExit("reviewed repair payload block not found")
+          encoded = "".join(line.strip() for line in match.group("body").splitlines())
+          patcher = zlib.decompress(base64.b64decode(encoded, validate=True))
+          patcher_path = Path(os.environ["RUNNER_TEMP"]) / "repair_pr75_contract_boundaries.py"
+          patcher_path.write_bytes(patcher)
+          patcher_path.chmod(0o700)
+
+          checker = zlib.decompress(
+              base64.b64decode(os.environ["CHECKER_ZLIB_B64"], validate=True)
+          )
+          if hashlib.sha256(checker).hexdigest() != os.environ["CHECKER_SHA256"]:
+              raise SystemExit("exact checker payload digest differs")
+          checker_path = Path(os.environ["RUNNER_TEMP"]) / "check_module_contract_compatibility.py"
+          checker_path.write_bytes(checker)
+          checker_path.chmod(0o700)
+          print(f"reviewed_patcher_bytes={len(patcher)} exact_checker_bytes={len(checker)}")
+          PY
+          python3 "$RUNNER_TEMP/repair_pr75_contract_boundaries.py" "$GITHUB_WORKSPACE/candidate"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["GITHUB_WORKSPACE"]) / "candidate"
+          generator = root / "tools/contracts/generate_module_contracts.py"
+          checker = (Path(os.environ["RUNNER_TEMP"]) / "check_module_contract_compatibility.py").read_bytes()
+          text = generator.read_text(encoding="utf-8")
+          start = "def compatibility_checker_source() -> bytes:\n"
+          end = "\n\ndef contract_readme() -> bytes:\n"
+          first = text.find(start)
+          last = text.find(end, first)
+          if first < 0 or last < 0:
+              raise SystemExit("compatibility checker generator boundaries differ")
+          replacement = start + "    return " + repr(checker) + "\n"
+          generator.write_text(text[:first] + replacement + text[last:], encoding="utf-8")
+          PY
+          cd "$GITHUB_WORKSPACE/candidate"
+          python3 -m py_compile \
+            tools/contracts/generate_module_contracts.py \
+            tools/contracts/check_module_contract_compatibility.py \
+            android-integration/module-contracts/verify_vectors.py \
+            tools/tests/test_module_contracts.py
+
+      - name: Generate and verify exact shared contracts
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/contracts/generate_module_contracts.py --write
+          test "$(python3 - <<'PY'
+          from pathlib import Path
+          print(Path('tools/contracts/check_module_contract_compatibility.py').read_bytes().count(b'\0'))
+          PY
+          )" = 0
+          python3 -m py_compile tools/contracts/check_module_contract_compatibility.py
+          cmp --silent \
+            tools/contracts/check_module_contract_compatibility.py \
+            "$RUNNER_TEMP/check_module_contract_compatibility.py"
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 tools/contracts/check_module_contract_compatibility.py --base-ref origin/main
+          python3 android-integration/module-contracts/verify_vectors.py
+          python3 -m unittest tools.tests.test_module_contracts -v
+
+      - name: Execute global documentation and complete Python matrix
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+
+      - name: Execute locked Rust and planned matrices
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --all -- --check
+          cargo test --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+
+      - name: Publish exact fast-forward repair commit
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$TARGET_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_BASE"
+          test -z "$(git diff --name-only -- 'ops/**' '.github/workflows/tmp-*')"
+          git diff --check
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -A
+          test -n "$(git diff --cached --name-only)"
+          test -z "$(git diff --cached --name-only | grep -E '^(ops/|\.github/workflows/tmp-)' || true)"
+          git diff --cached --check
+          git commit \
+            -m 'fix(contracts): close reviewed parser and compatibility boundaries' \
+            -m 'Fail closed on unresolved base refs, preserve annotation-named schema properties, reject exponent overflow, and enforce one UTF-8 byte/control domain across Python, Rust and Android vectors. Preserve automatic_redispatch=false and the L1-only claim ceiling.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_HEAD"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$TARGET_HEAD" \
+            origin "HEAD:refs/heads/$TARGET_BRANCH"
+          printf 'published_head=%s\n' "$final"
