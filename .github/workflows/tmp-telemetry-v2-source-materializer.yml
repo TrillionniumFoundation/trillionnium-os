@@ -1,0 +1,107 @@
+name: Temporary telemetry V2 exact-source materializer
+
+on:
+  push:
+    branches:
+      - ops/telemetry-v2-source-materializer-20260911
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CONTROLLER_BRANCH: ops/telemetry-v2-source-materializer-20260911
+  TARGET_BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+  TARGET_BASE_TREE: f96f88a9749c61b3ce0dde7167303c8261788f22
+  DIAGNOSTIC_BRANCH: diagnostic/telemetry-v2-unqualified-source-20260911
+  PART00_SHA256: d96ac0bbd13cc899e806286332fdd8e337b1a741a28e3c758dd82a882448da32
+  PART01_SHA256: 1bb6d6706a3177765c06b966858fd669e9ad01988cb58311458afba081ced8ed
+  PART02_SHA256: 6bcbabaefa3789b4275fc8088e720c0bd7591f19188b7af26057f1f5a38302db
+  PART03_SHA256: 09721576d76036d41c1164e48cdee685868050b315c69d5b40fe9b6065bfef8f
+  PAYLOAD_B64_BYTES: "23896"
+  PAYLOAD_B64_SHA256: 07f4195881d3e3a0e21b77283c52f7eba6d2f33f50cc97fdc4bfca0fcf8c275b
+  PAYLOAD_XZ_BYTES: "17920"
+  PAYLOAD_XZ_SHA256: 77d8a9230e78971a909cc7f1223f6f898dbb3a333f11a5a5c94d5929146f27ad
+  PAYLOAD_PATCH_BYTES: "139023"
+  PAYLOAD_PATCH_SHA256: 34df83df8c67848128e07b3e7c8c65f838a53144adab89678c5362c8e9503cf2
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Reconstruct and publish unqualified source through absence lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME:?}" = "$CONTROLLER_BRANCH"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "${GITHUB_SHA:?}"
+
+          parts=(
+            ops/telemetry-observe-shadow-v2.part00.b64
+            ops/telemetry-observe-shadow-v2.part01.b64
+            ops/telemetry-observe-shadow-v2.part02.b64
+            ops/telemetry-observe-shadow-v2.part03.b64
+          )
+          sizes=(6000 6000 6000 5896)
+          digests=(
+            "$PART00_SHA256"
+            "$PART01_SHA256"
+            "$PART02_SHA256"
+            "$PART03_SHA256"
+          )
+          for index in 0 1 2 3; do
+            path="${parts[$index]}"
+            test -f "$path" && test ! -L "$path"
+            test "$(wc -c < "$path" | tr -d ' ')" = "${sizes[$index]}"
+            printf '%s  %s\n' "${digests[$index]}" "$path" | sha256sum --check --strict
+          done
+
+          payload_b64="${RUNNER_TEMP:?}/telemetry-v2.patch.xz.b64"
+          payload_xz="${RUNNER_TEMP:?}/telemetry-v2.patch.xz"
+          payload_patch="${RUNNER_TEMP:?}/telemetry-v2.patch"
+          cat "${parts[@]}" > "$payload_b64"
+          test "$(wc -c < "$payload_b64" | tr -d ' ')" = "$PAYLOAD_B64_BYTES"
+          printf '%s  %s\n' "$PAYLOAD_B64_SHA256" "$payload_b64" | sha256sum --check --strict
+          base64 --decode "$payload_b64" > "$payload_xz"
+          test "$(wc -c < "$payload_xz" | tr -d ' ')" = "$PAYLOAD_XZ_BYTES"
+          printf '%s  %s\n' "$PAYLOAD_XZ_SHA256" "$payload_xz" | sha256sum --check --strict
+          xz --decompress --stdout "$payload_xz" > "$payload_patch"
+          test "$(wc -c < "$payload_patch" | tr -d ' ')" = "$PAYLOAD_PATCH_BYTES"
+          printf '%s  %s\n' "$PAYLOAD_PATCH_SHA256" "$payload_patch" | sha256sum --check --strict
+
+          git --no-replace-objects cat-file -e "${TARGET_BASE_SHA}^{commit}"
+          test "$(git --no-replace-objects rev-parse "${TARGET_BASE_SHA}^{tree}")" = "$TARGET_BASE_TREE"
+          if git ls-remote --exit-code --heads origin "refs/heads/${DIAGNOSTIC_BRANCH}" >/dev/null 2>&1; then
+            echo "diagnostic branch already exists; absence lease refused" >&2
+            exit 1
+          fi
+
+          worktree="${RUNNER_TEMP:?}/telemetry-v2-unqualified"
+          git worktree add --detach "$worktree" "$TARGET_BASE_SHA"
+          cd "$worktree"
+          git apply --binary --index --check "$payload_patch"
+          git apply --binary --index "$payload_patch"
+          cargo fmt --manifest-path planned/Cargo.toml --all
+          git add --all
+          git diff --cached --check
+
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git commit -m 'diagnostic: materialize unqualified telemetry v2 source' \
+            -m 'Exact content-addressed source materialization only. This commit intentionally carries no qualification, review, target, activation, evidence-promotion, or release authority.'
+          source_head="$(git --no-replace-objects rev-parse HEAD)"
+          source_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_BASE_SHA"
+          git push --force-with-lease="refs/heads/${DIAGNOSTIC_BRANCH}:" \
+            origin "HEAD:refs/heads/${DIAGNOSTIC_BRANCH}"
+          printf 'diagnostic_head=%s\ndiagnostic_tree=%s\nqualified=false\nactive_control=false\nautomatic_redispatch=false\npublic_release=false\n' \
+            "$source_head" "$source_tree"
