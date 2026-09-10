@@ -1,0 +1,299 @@
+name: Temporary source qualification observation-race repair v2
+
+on:
+  push:
+    branches:
+      - ops/source-qualification-observation-race-repair-v2-20260911
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: temporary-source-qualification-observation-race-repair-v2
+  cancel-in-progress: true
+
+env:
+  BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+  TARGET_BRANCH: codex/source-qualification-observation-races-v2-20260911
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  repair-qualify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out immutable controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Authenticate controller
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test "$(git --no-replace-objects diff --name-only "$BASE_SHA"...HEAD)" = '.github/workflows/tmp-source-qualification-observation-race-repair-v2.yml'
+
+      - name: Install source-test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Apply race-free observation repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git --no-replace-objects checkout --detach "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          from textwrap import dedent
+
+          init_source = Path('tools/verify_init_agent_activation.py')
+          init_text = init_source.read_text(encoding='utf-8')
+          marker = 'def read_regular('
+          if init_text.count(marker) != 1:
+              raise SystemExit('expected exactly one read_regular definition')
+          helper = dedent(
+              '''\
+              def _stable_stat_identity(value: object) -> tuple[int, ...]:
+                  """Return stable path and mutation fields, excluding read-induced atime."""
+                  return (
+                      int(value.st_dev),
+                      int(value.st_ino),
+                      int(value.st_mode),
+                      int(value.st_nlink),
+                      int(value.st_uid),
+                      int(value.st_gid),
+                      int(value.st_size),
+                      int(value.st_mtime_ns),
+                      int(value.st_ctime_ns),
+                  )
+
+
+              '''
+          )
+          init_text = init_text.replace(marker, helper + marker, 1)
+          comparison = re.compile(
+              r'(?P<indent>^[ \t]+)current = os\.lstat\(path\)\n'
+              r'(?P=indent)if current != before:\n'
+              r'(?P=indent)    raise ContractError\((?P<message>[^\n]+)\)\n',
+              re.MULTILINE,
+          )
+          matches = list(comparison.finditer(init_text))
+          if len(matches) != 1:
+              raise SystemExit(f'expected one full-stat pathname comparison, found {len(matches)}')
+          match = matches[0]
+          indent = match.group('indent')
+          replacement = (
+              f'{indent}current = os.lstat(path)\n'
+              f'{indent}if _stable_stat_identity(current) != _stable_stat_identity(before):\n'
+              f'{indent}    raise ContractError({match.group("message")})\n'
+          )
+          init_text = init_text[:match.start()] + replacement + init_text[match.end():]
+          init_source.write_text(init_text, encoding='utf-8')
+
+          atime_test = Path('tools/tests/test_verify_init_agent_activation_atime.py')
+          if atime_test.exists():
+              raise SystemExit('atime regression test path already exists')
+          atime_test.write_text(
+              dedent(
+                  '''\
+                  from __future__ import annotations
+
+                  import stat
+                  import unittest
+                  from types import SimpleNamespace
+
+                  from tools import verify_init_agent_activation as target
+
+
+                  class StableStatIdentityTests(unittest.TestCase):
+                      @staticmethod
+                      def _record(
+                          *,
+                          inode: int = 23,
+                          size: int = 17,
+                          atime_ns: int = 100,
+                          mtime_ns: int = 200,
+                          ctime_ns: int = 300,
+                      ) -> SimpleNamespace:
+                          return SimpleNamespace(
+                              st_dev=11,
+                              st_ino=inode,
+                              st_mode=stat.S_IFREG | 0o600,
+                              st_nlink=1,
+                              st_uid=1000,
+                              st_gid=1000,
+                              st_size=size,
+                              st_atime_ns=atime_ns,
+                              st_mtime_ns=mtime_ns,
+                              st_ctime_ns=ctime_ns,
+                          )
+
+                      def test_read_induced_atime_drift_is_not_pathname_drift(self) -> None:
+                          before = self._record(atime_ns=100)
+                          after = self._record(atime_ns=101)
+                          self.assertEqual(
+                              target._stable_stat_identity(before),
+                              target._stable_stat_identity(after),
+                          )
+
+                      def test_identity_and_content_metadata_drift_remain_rejected(self) -> None:
+                          before = self._record()
+                          for after in (
+                              self._record(inode=24),
+                              self._record(size=18),
+                              self._record(mtime_ns=201),
+                              self._record(ctime_ns=301),
+                          ):
+                              with self.subTest(after=after):
+                                  self.assertNotEqual(
+                                      target._stable_stat_identity(before),
+                                      target._stable_stat_identity(after),
+                                  )
+
+
+                  if __name__ == '__main__':
+                      unittest.main()
+                  '''
+              ),
+              encoding='utf-8',
+          )
+
+          pid_test = Path('tools/tests/test_product_baseline_process_group_cleanup.py')
+          pid_text = pid_test.read_text(encoding='utf-8')
+          pid_needle = '        child = int(child_path.read_text(encoding="ascii"))\n'
+          if pid_text.count(pid_needle) != 1:
+              raise SystemExit('expected exactly one unbounded child PID read')
+          pid_replacement = (
+              '        deadline = time.monotonic() + 2.0\n'
+              '        while True:\n'
+              '            try:\n'
+              '                child_text = child_path.read_text(encoding="ascii").strip()\n'
+              '                if child_text:\n'
+              '                    child = int(child_text)\n'
+              '                    break\n'
+              '            except (FileNotFoundError, ValueError):\n'
+              '                pass\n'
+              '            if time.monotonic() >= deadline:\n'
+              '                self.fail("child PID was not published completely within two seconds")\n'
+              '            time.sleep(0.01)\n'
+          )
+          pid_text = pid_text.replace(pid_needle, pid_replacement)
+          pid_lines = pid_text.splitlines(keepends=True)
+          if not any(line == 'import time\n' for line in pid_lines[:50]):
+              last_import = None
+              for index, line in enumerate(pid_lines[:80]):
+                  if line.startswith(('import ', 'from ')):
+                      last_import = index
+                  elif last_import is not None and not line.strip():
+                      break
+              if last_import is None:
+                  raise SystemExit('cannot place time import deterministically')
+              pid_lines.insert(last_import + 1, 'import time\n')
+              pid_text = ''.join(pid_lines)
+          pid_test.write_text(pid_text, encoding='utf-8')
+          PY
+          observed="$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            ' M tools/tests/test_product_baseline_process_group_cleanup.py' \
+            ' M tools/verify_init_agent_activation.py' \
+            '?? tools/tests/test_verify_init_agent_activation_atime.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          python3 -m py_compile \
+            tools/verify_init_agent_activation.py \
+            tools/tests/test_verify_init_agent_activation_atime.py \
+            tools/tests/test_product_baseline_process_group_cleanup.py
+          git diff --check
+
+      - name: Execute focused hostile and stress matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest \
+            tools.tests.test_verify_init_agent_activation \
+            tools.tests.test_verify_init_agent_activation_atime -v
+          for attempt in $(seq 1 20); do
+            printf 'pid_race_attempt=%s\n' "$attempt"
+            python3 -m unittest tools.tests.test_product_baseline_process_group_cleanup -v
+          done
+
+      - name: Execute complete repository qualification matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+          git diff --check
+          observed="$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            ' M tools/tests/test_product_baseline_process_group_cleanup.py' \
+            ' M tools/verify_init_agent_activation.py' \
+            '?? tools/tests/test_verify_init_agent_activation_atime.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+
+      - name: Publish focused candidate through absence lease
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$BASE_SHA"
+          test ! -e .github/workflows/tmp-source-qualification-observation-race-repair-v2.yml
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add \
+            tools/verify_init_agent_activation.py \
+            tools/tests/test_verify_init_agent_activation_atime.py \
+            tools/tests/test_product_baseline_process_group_cleanup.py
+          observed="$(git diff --cached --name-only | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            'tools/tests/test_product_baseline_process_group_cleanup.py' \
+            'tools/tests/test_verify_init_agent_activation_atime.py' \
+            'tools/verify_init_agent_activation.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          git diff --cached --check
+          git commit \
+            -m 'fix(ci): make source qualification observation race-free' \
+            -m 'Exclude read-induced atime from stable pathname identity while retaining device, inode, mode, link, owner, size, mtime and ctime mutation checks. Read asynchronously published child PID text with a fixed deadline and accept only a complete decimal value. Add permanent explicit-field atime and mutation regressions and stress the PID lifecycle path without changing product behavior, thresholds or authority.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git ls-remote --heads origin "refs/heads/${TARGET_BRANCH}")"
+          git push --force-with-lease="refs/heads/${TARGET_BRANCH}:" origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          printf 'head=%s\ntree=%s\n' "$final" "$tree" >> "$GITHUB_OUTPUT"
+
+      - name: Publish non-authorizing qualification receipt
+        shell: bash
+        env:
+          CANDIDATE_HEAD: ${{ steps.publish.outputs.head }}
+          CANDIDATE_TREE: ${{ steps.publish.outputs.tree }}
+        run: |
+          set -euo pipefail
+          gh issue comment 51 --repo "$GITHUB_REPOSITORY" --body "Source-observation race v2 candidate published after focused stress and the complete repository matrix: branch \`${TARGET_BRANCH}\`, head \`${CANDIDATE_HEAD}\`, tree \`${CANDIDATE_TREE}\`. Linked-account publication, permanent exact-head/ordered-parent checks, fresh non-author review and ordinary protected integration remain required. No L2-L6 or release claim."
