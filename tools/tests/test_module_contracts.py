@@ -198,6 +198,280 @@ class ModuleContractTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "permission denied fixture"):
                 self.checker.git(["ls-tree"], "permission simulation")
 
+
+    def test_change_review_state_machine_is_closed_and_one_shot(self) -> None:
+        migration = {
+            "from_versions": [],
+            "to_version": "v1",
+            "strategy": "none",
+            "dual_read": False,
+            "dual_write": False,
+        }
+        rollback = {
+            "supported": False,
+            "procedure": "fail_closed_fixture",
+            "fail_closed": True,
+        }
+
+        def no_change_review():
+            return {
+                "class": "NO_CHANGE",
+                "contracts": [],
+                "families": [],
+                "review_id": None,
+                "migration_plan": None,
+                "rollback_plan": None,
+                "migration_review_sha256": self.checker.sha256_bytes(
+                    self.checker.canonical(migration)
+                ),
+                "rollback_review_sha256": self.checker.sha256_bytes(
+                    self.checker.canonical(rollback)
+                ),
+                "base_catalog_sha256": None,
+                "base_contract_sha256": {},
+                "target_contract_sha256": {},
+            }
+
+        def compatibility(review):
+            return {
+                "introduction_review_class": "INITIAL_V1",
+                "change_review": review,
+                "migration_review": migration,
+                "rollback_review": rollback,
+            }
+
+        def write_json(path: Path, value) -> bytes:
+            raw = json.dumps(
+                value,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+            ).encode("utf-8") + b"\n"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(raw)
+            return raw
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "config", "user.email", "fixture@example.invalid"],
+                cwd=root,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "fixture"], cwd=root, check=True
+            )
+
+            paths = {
+                "api": "schemas/api.json",
+                "state": "schemas/state.json",
+                "errors": "schemas/errors.json",
+                "compatibility": "schemas/compatibility.json",
+            }
+            catalog = {
+                "module_count": 1,
+                "modules": [
+                    {
+                        "module_id": "MOD-FIXTURE",
+                        "artifacts": paths,
+                    }
+                ],
+            }
+            schemas = {
+                "api": {
+                    "type": "object",
+                    "properties": {
+                        "operation_id": {"type": "string", "maxLength": 256},
+                        "ordering_key": {"type": "string", "maxLength": 512},
+                        "payload": {"type": "object"},
+                    },
+                    "required": ["operation_id", "ordering_key", "payload"],
+                },
+                "state": {
+                    "type": "object",
+                    "properties": {
+                        "state": {"type": "string", "enum": ["RECEIVED", "CLOSED"]},
+                        "durable_sequence": {"type": "integer"},
+                    },
+                    "required": ["state", "durable_sequence"],
+                },
+                "errors": {
+                    "type": "object",
+                    "properties": {
+                        "code": {"type": "string", "maxLength": 128},
+                        "class": {"type": "string", "enum": ["TERMINAL_FAILURE"]},
+                    },
+                    "required": ["code", "class"],
+                },
+            }
+            write_json(root / self.checker.CATALOG, catalog)
+            for kind in ("api", "state", "errors"):
+                write_json(root / paths[kind], schemas[kind])
+            write_json(root / paths["compatibility"], compatibility(no_change_review()))
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "base"], cwd=root, check=True)
+            base = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            base_catalog_raw = subprocess.check_output(
+                ["git", "show", f"{base}:{self.checker.CATALOG}"], cwd=root
+            )
+            base_schema_raw = {
+                kind: subprocess.check_output(
+                    ["git", "show", f"{base}:{paths[kind]}"], cwd=root
+                )
+                for kind in ("api", "state", "errors")
+            }
+
+            self.assertEqual(
+                self.checker.evaluate(root, base)["semantic_changes"], []
+            )
+
+            bad = no_change_review()
+            bad["class"] = "INITIAL_V1"
+            write_json(root / paths["compatibility"], compatibility(bad))
+            with self.assertRaisesRegex(ValueError, "class is unknown"):
+                self.checker.evaluate(root, base)
+            bad["class"] = "ARBITRARY_APPROVAL"
+            write_json(root / paths["compatibility"], compatibility(bad))
+            with self.assertRaisesRegex(ValueError, "class is unknown"):
+                self.checker.evaluate(root, base)
+
+            cases = {
+                "required": (
+                    "api",
+                    lambda value: value["required"].append("new_required"),
+                ),
+                "type": (
+                    "api",
+                    lambda value: value["properties"]["payload"].update(
+                        {"type": "array"}
+                    ),
+                ),
+                "enum": (
+                    "api",
+                    lambda value: value["properties"]["operation_id"].update(
+                        {"enum": ["one", "two"]}
+                    ),
+                ),
+                "default": (
+                    "api",
+                    lambda value: value["properties"]["payload"].update(
+                        {"default": {}}
+                    ),
+                ),
+                "identity": (
+                    "api",
+                    lambda value: value["properties"]["operation_id"].update(
+                        {"maxLength": 255}
+                    ),
+                ),
+                "ordering": (
+                    "api",
+                    lambda value: value["properties"]["ordering_key"].update(
+                        {"maxLength": 511}
+                    ),
+                ),
+                "state": (
+                    "state",
+                    lambda value: value["properties"]["state"].update(
+                        {"enum": ["CLOSED"]}
+                    ),
+                ),
+                "error": (
+                    "errors",
+                    lambda value: value["properties"]["code"].update(
+                        {"maxLength": 127}
+                    ),
+                ),
+            }
+            for expected_family, (kind, mutate) in cases.items():
+                with self.subTest(family=expected_family):
+                    for restore_kind in ("api", "state", "errors"):
+                        write_json(root / paths[restore_kind], schemas[restore_kind])
+                    target = copy.deepcopy(schemas[kind])
+                    mutate(target)
+                    target_raw = write_json(root / paths[kind], target)
+                    write_json(
+                        root / paths["compatibility"],
+                        compatibility(no_change_review()),
+                    )
+                    with self.assertRaisesRegex(
+                        ValueError, "lacks BREAKING_MIGRATION review"
+                    ):
+                        self.checker.evaluate(root, base)
+
+                    families = self.checker.semantic_change_families(
+                        schemas[kind], target, kind
+                    )
+                    self.assertIn(expected_family, families)
+                    reviewed = no_change_review()
+                    reviewed.update(
+                        {
+                            "class": "BREAKING_MIGRATION",
+                            "contracts": [kind],
+                            "families": families,
+                            "review_id": f"review-{expected_family}-fixture",
+                            "migration_plan": "migrate exact bound fixture bytes",
+                            "rollback_plan": "fail closed and restore exact base bytes",
+                            "base_catalog_sha256": self.checker.sha256_bytes(
+                                base_catalog_raw
+                            ),
+                            "base_contract_sha256": {
+                                kind: self.checker.sha256_bytes(base_schema_raw[kind])
+                            },
+                            "target_contract_sha256": {
+                                kind: self.checker.sha256_bytes(target_raw)
+                            },
+                        }
+                    )
+                    write_json(
+                        root / paths["compatibility"], compatibility(reviewed)
+                    )
+                    result = self.checker.evaluate(root, base)
+                    self.assertEqual(
+                        result["semantic_changes"], [f"MOD-FIXTURE:{kind}"]
+                    )
+
+            for kind in ("api", "state", "errors"):
+                write_json(root / paths[kind], schemas[kind])
+            stale = no_change_review()
+            stale.update(
+                {
+                    "class": "BREAKING_MIGRATION",
+                    "contracts": ["api"],
+                    "families": ["type"],
+                    "review_id": "stale-review-fixture",
+                    "migration_plan": "stale migration",
+                    "rollback_plan": "stale rollback",
+                    "base_catalog_sha256": self.checker.sha256_bytes(
+                        base_catalog_raw
+                    ),
+                    "base_contract_sha256": {
+                        "api": self.checker.sha256_bytes(base_schema_raw["api"])
+                    },
+                    "target_contract_sha256": {
+                        "api": self.checker.sha256_bytes(base_schema_raw["api"])
+                    },
+                }
+            )
+            write_json(root / paths["compatibility"], compatibility(stale))
+            with self.assertRaisesRegex(ValueError, "stale breaking review"):
+                self.checker.evaluate(root, base)
+
+    def test_initial_introduction_uses_provenance_not_reusable_change_class(self) -> None:
+        outputs = self.outputs()
+        catalog = json.loads(outputs[self.contracts.CONTRACT_CATALOG_PATH])
+        for module in catalog["modules"]:
+            compatibility = json.loads(outputs[module["artifacts"]["compatibility"]])
+            self.assertEqual(
+                compatibility["introduction_review_class"], "INITIAL_V1"
+            )
+            self.assertEqual(compatibility["change_review"]["class"], "NO_CHANGE")
+            self.assertEqual(compatibility["change_review"]["contracts"], [])
+            self.assertEqual(compatibility["change_review"]["families"], [])
+
     def test_lock_binds_every_generated_artifact_except_itself(self) -> None:
         outputs = self.outputs()
         lock = json.loads(outputs[self.contracts.LOCK_PATH])

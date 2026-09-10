@@ -2,7 +2,19 @@
   "api_semver": "1.0.0",
   "automatic_redispatch_after_uncertainty": false,
   "breaking_change_review": "REQUIRED_FOR_REQUIRED_TYPE_ENUM_DEFAULT_IDENTITY_ORDERING_STATE_OR_ERROR_CHANGE",
-  "change_review_class": "INITIAL_V1",
+  "change_review": {
+    "base_catalog_sha256": null,
+    "base_contract_sha256": {},
+    "class": "NO_CHANGE",
+    "contracts": [],
+    "families": [],
+    "migration_plan": null,
+    "migration_review_sha256": "32b71694a9459ffab112fd2dd06c750e7e56eb4d597966f1e3e1ddd01c19f733",
+    "review_id": null,
+    "rollback_plan": null,
+    "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
+    "target_contract_sha256": {}
+  },
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
   "contract_tests": [
     {
@@ -17,8 +29,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "1c8be47df5b6361b391cfb29d04cd3897fb1394e2115becf6fa5298ed8fe210a",
-      "size": 9491
+      "sha256": "6aa511c31567df1b6a91352fc0ba7fe840e63402f6591b24bea602acbe683099",
+      "size": 18133
     }
   ],
   "contracts": {
@@ -271,6 +283,7 @@
       "size": 17244
     }
   ],
+  "introduction_review_class": "INITIAL_V1",
   "maximum_json_bytes": 4194304,
   "maximum_json_depth": 32,
   "migration_review": {
@@ -303,8 +316,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "1c8be47df5b6361b391cfb29d04cd3897fb1394e2115becf6fa5298ed8fe210a",
-        "size": 9491
+        "sha256": "6aa511c31567df1b6a91352fc0ba7fe840e63402f6591b24bea602acbe683099",
+        "size": 18133
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -323,8 +336,8 @@
   "test_sources": [
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-      "size": 12845
+      "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+      "size": 24267
     }
   ],
   "unknown_fields": "REJECT"

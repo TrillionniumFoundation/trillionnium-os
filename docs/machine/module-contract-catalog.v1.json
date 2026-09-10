@@ -4,13 +4,13 @@
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
   "compatibility_checker": {
     "path": "tools/contracts/check_module_contract_compatibility.py",
-    "sha256": "1c8be47df5b6361b391cfb29d04cd3897fb1394e2115becf6fa5298ed8fe210a",
-    "size": 9491
+    "sha256": "6aa511c31567df1b6a91352fc0ba7fe840e63402f6591b24bea602acbe683099",
+    "size": 18133
   },
   "generator": {
     "path": "tools/contracts/generate_module_contracts.py",
-    "sha256": "214751eb187f6bf51f59ab5f7f7b217e626701945ce6cb5a61c4e83d1843f4fe",
-    "size": 75654
+    "sha256": "3e9e5a26f605a64fc5f42ac3095b0d0b1e6d8b7c936bc0461874dd975fa2ff21",
+    "size": 89639
   },
   "module_count": 16,
   "modules": [
@@ -52,8 +52,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -174,8 +174,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -419,8 +419,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -479,8 +479,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -519,8 +519,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -577,8 +577,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -623,8 +623,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -734,8 +734,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -782,8 +782,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -869,8 +869,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -931,8 +931,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -976,8 +976,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -1021,8 +1021,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -1076,8 +1076,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -1192,8 +1192,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -1248,8 +1248,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
-          "size": 12845
+          "sha256": "1b7516b6b64425d781577180d728af92a9549bc6d5ef56d057987de2268c7285",
+          "size": 24267
         }
       ],
       "write_versions": [
@@ -1511,8 +1511,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "1c8be47df5b6361b391cfb29d04cd3897fb1394e2115becf6fa5298ed8fe210a",
-        "size": 9491
+        "sha256": "6aa511c31567df1b6a91352fc0ba7fe840e63402f6591b24bea602acbe683099",
+        "size": 18133
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
