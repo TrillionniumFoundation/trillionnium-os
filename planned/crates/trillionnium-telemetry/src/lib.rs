@@ -11,6 +11,8 @@ use std::sync::{Arc, Mutex};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
+pub mod catalog;
+
 pub const METRIC_SAMPLE_SCHEMA: &str = "trillionnium.owner-open.metric-sample.v1";
 pub const BASELINE_REPORT_SCHEMA: &str = "trillionnium.owner-open.baseline-report.v1";
 pub const REQUIRED_WORKLOADS: [&str; 12] = [

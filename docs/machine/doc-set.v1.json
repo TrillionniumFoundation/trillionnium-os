@@ -38,6 +38,7 @@
     "docs/machine/resource-budget-provenance.v1.json",
     "docs/machine/gap-register.v2.json",
     "docs/machine/global-objective.v1.json",
+    "docs/machine/metric-catalog.v1.json",
     "docs/machine/evidence-index.v1.json",
     "docs/modules/MOD-PROTOCOL.md",
     "docs/modules/MOD-BROKER.md",
@@ -64,7 +65,8 @@
     "docs/generated/EFFECT_LIFECYCLE.md",
     "docs/generated/GAP_STATUS.md",
     "docs/generated/TRACEABILITY.tsv",
-    "docs/generated/PERFORMANCE_STATUS.md"
+    "docs/generated/PERFORMANCE_STATUS.md",
+    "docs/generated/METRIC_STATUS.md"
   ],
   "forbidden_paths": [
     "docs/archive",
@@ -103,6 +105,7 @@
     "docs/machine/effect-lifecycle.v1.json",
     "docs/machine/module-document-index.v1.json",
     "docs/machine/resource-budget-provenance.v1.json",
+    "docs/machine/metric-catalog.v1.json",
     "docs/machine/requirement-graph.v1.json",
     "docs/machine/evidence-index.v1.json"
   ],
