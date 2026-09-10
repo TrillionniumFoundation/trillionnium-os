@@ -19,8 +19,8 @@ env:
   TARGET_BASE_TREE: f96f88a9749c61b3ce0dde7167303c8261788f22
   CANDIDATE_BRANCH: codex/performance-measurement-v2-20260910
   PAYLOAD_PATH: ops/performance-qualification-v2.patch.xz.b64
-  PAYLOAD_B64_BYTES: "17743"
-  PAYLOAD_B64_SHA256: 722760a12c935ace24976dd4f7a6b55a2389611222c02fda5ce7c3fb48fa2b22
+  PAYLOAD_B64_BYTES: "17742"
+  PAYLOAD_B64_SHA256: 9f6ad4c658efc255e4b41c15046249d99cc39a205108316f27393bbf6eb737d6
   PAYLOAD_XZ_BYTES: "13132"
   PAYLOAD_XZ_SHA256: e64d98ba8e27d7d47aeaa247086ab1ae2dd64bc0cb859ba6c3c86ca8dc966734
   PAYLOAD_PATCH_BYTES: "55988"
@@ -55,6 +55,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          printf 'controller_ref=%s controller_head=%s\n' "${GITHUB_REF_NAME:?}" "${GITHUB_SHA:?}"
+          printf 'payload_bytes=%s payload_sha256=' "$(wc -c < "$PAYLOAD_PATH" | tr -d ' ')"
+          sha256sum "$PAYLOAD_PATH"
           test "${GITHUB_REF_NAME:?}" = "$CONTROLLER_BRANCH"
           test "$(git --no-replace-objects rev-parse HEAD)" = "${GITHUB_SHA:?}"
           test -f "$PAYLOAD_PATH"
@@ -91,13 +94,13 @@ jobs:
           expected="${RUNNER_TEMP:?}/performance-qualification-v2.expected"
           actual="${RUNNER_TEMP:?}/performance-qualification-v2.actual"
           cat > "$expected" <<'EOF_EXPECTED'
-          .github/workflows/g1-exact-head-source.yml
-          .github/workflows/g1-synthetic-merge.yml
-          docs/PERFORMANCE_AND_OPTIMIZATION.md
-          tools/perf/README.md
-          tools/perf/performance_qualification.py
-          tools/tests/test_performance_qualification.py
-          EOF_EXPECTED
+.github/workflows/g1-exact-head-source.yml
+.github/workflows/g1-synthetic-merge.yml
+docs/PERFORMANCE_AND_OPTIMIZATION.md
+tools/perf/README.md
+tools/perf/performance_qualification.py
+tools/tests/test_performance_qualification.py
+EOF_EXPECTED
           git diff --cached --name-only | LC_ALL=C sort > "$actual"
           diff --unified "$expected" "$actual"
           test -z "$(grep -E '^(ops/|\.github/workflows/tmp-)' "$actual" || true)"
@@ -111,7 +114,8 @@ jobs:
           python3 tools/docs/verify_global_docs.py
           python3 tools/docs/verify_repository_authority.py
           cargo fmt --all -- --check
-          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none | grep -v '^M  ' || true)"
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
           git diff --cached --check
 
           git config user.name 'Qian QI'
