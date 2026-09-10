@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 20
     env:
       TARGET_HEAD: c54d7632e51619409ac9cce3cd1be9d05d405e04
-      TARGET_TREE: 23fac110e0fdde82cb6d5a84435163ee173b587f
+      TARGET_TREE: 77fc266b98c8f1518b490ab4fbbd443caa239ce3
     steps:
       - name: Check out exact candidate
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
