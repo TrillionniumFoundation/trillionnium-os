@@ -1,0 +1,57 @@
+name: Temporary stale probe cleanup
+
+on:
+  push:
+    branches:
+      - ops/stale-probe-cleanup-20260911
+
+permissions:
+  actions: read
+  contents: write
+  issues: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Delete only inactive failed/probe branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            ops/noop-probe-do-not-use-20260911
+            ops/product-baseline-pid-publication-repair-20260911
+            ops/init-activation-atime-identity-repair-20260911
+          )
+          report=''
+          for branch in "${branches[@]}"; do
+            encoded="${branch//\//%2F}"
+            active="$(gh api "repos/${REPOSITORY}/actions/runs?branch=${encoded}&status=in_progress&per_page=1" --jq '.total_count')"
+            queued="$(gh api "repos/${REPOSITORY}/actions/runs?branch=${encoded}&status=queued&per_page=1" --jq '.total_count')"
+            if [[ "$active" != 0 || "$queued" != 0 ]]; then
+              report+="- \`${branch}\`: retained; active or queued run exists.\n"
+              continue
+            fi
+            if gh api "repos/${REPOSITORY}/git/ref/heads/${branch}" >/dev/null 2>&1; then
+              gh api --method DELETE "repos/${REPOSITORY}/git/refs/heads/${branch}"
+              report+="- \`${branch}\`: deleted after inactive-run proof.\n"
+            else
+              report+="- \`${branch}\`: already absent.\n"
+            fi
+          done
+          printf '%b' "$report" > "${RUNNER_TEMP:?}/cleanup-report.md"
+
+      - name: Publish cleanup receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf '%s\n\n' '## Stale controller/probe cleanup receipt'
+            cat "${RUNNER_TEMP:?}/cleanup-report.md"
+            printf '%s\n' 'No candidate, protected branch, active controller, review or evidence object was deleted.'
+          } > "${RUNNER_TEMP:?}/comment.md"
+          gh issue comment 51 --repo "$REPOSITORY" --body-file "${RUNNER_TEMP:?}/comment.md"
