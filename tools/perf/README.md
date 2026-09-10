@@ -200,3 +200,34 @@ The second additionally exercises all eight workloads against the explicitly
 provided real binaries. Missing environment variables produce an explicit skip
 only for this optional integration test; the benchmark CLI cannot skip a selected
 workload or silently replace a product executable with a mock.
+
+
+## Controlled three-batch qualification
+
+`performance_qualification.py` validates the retained comparison packet after
+raw batch capture. The required order is `A1/A2/A3` for a same-binary baseline,
+then `C1/C2/C3` for the candidate. Every batch contains WL-01 through WL-10,
+both cold-start and steady-state phases, at least 50 raw repetitions, complete
+stage/resource observation objects, an immutable environment/source identity
+and a content digest. No outlier may be deleted.
+
+```sh
+python3 tools/perf/performance_qualification.py \
+  --level L2_INSTALLED \
+  --baseline /retained/A1.json --baseline /retained/A2.json --baseline /retained/A3.json \
+  --candidate /retained/C1.json --candidate /retained/C2.json --candidate /retained/C3.json \
+  --output /new/private/performance-qualification.json
+```
+
+The verifier refuses candidate comparison when either batch set is unstable.
+It gates median/P95/P99, unknown-rate and fairness under fixed reviewed policy.
+In L2 mode it rejects any unavailable applicable stage or core resource. The L1
+mode exists for hostile source fixtures and returns a source-only status; it
+cannot promote installed, physical-device, destructive-fault, signing or
+release evidence. WL-11 and WL-12 remain explicit L4/L5 holds in every report.
+
+Contract tests:
+
+```sh
+python3 -m unittest tools.tests.test_performance_qualification -v
+```

@@ -1,6 +1,6 @@
 # Trillionnium OS Performance and Global Optimization
 
-Status: **NORMATIVE BASELINE — measurements pending**
+Status: **NORMATIVE SOURCE QUALIFICATION CONTRACT — controlled measurements pending**
 
 ## 1. Goal
 
@@ -117,6 +117,34 @@ durability policy, module versions, control configuration and artifact digest.
 - Broker or ordering change: requires mixed-client fairness and correlation evidence.
 - Control-weight change: requires shadow replay and canary plan.
 - A benchmark without repeat count, confidence data and environment identity is informational only.
+
+### 7.1 Stable-batch qualification protocol
+
+`tools/perf/performance_qualification.py` is the fail-closed source contract for
+comparison admission. It accepts exactly three same-binary baseline batches
+(`A1`, `A2`, `A3`) and three candidate batches (`C1`, `C2`, `C3`). Each batch
+must preserve every raw sample for WL-01 through WL-10 in both `cold_start` and
+`steady_state`, with at least 50 measured repetitions per series and no outlier
+deletion. The verifier recomputes median, P90, P95, P99, maximum, median
+absolute deviation, standard deviation and a declared 95% mean confidence
+interval. A median or P95 inter-batch spread above the reviewed 10% ceiling
+returns `UNSTABLE_ENVIRONMENT` and prevents candidate comparison.
+
+The installed L2 mode additionally requires observed, non-null values for the
+full Broker/Host/journal/Provider/tool/delivery stage matrix and every core
+resource counter, including CPU user/system time, current/peak RSS,
+FD/thread/process peaks, context switches, cgroup CPU/memory/I/O/pids, read and
+write bytes, fsync count, queue depth/wait, lock wait/hold, unknown rate, zero
+automatic redispatch and fairness. An explicit `unavailable` value is valid for
+an L1 source fixture but makes an L2 decision impossible; it is never converted
+to zero. WL-11 remains an L4 physical-device hold and WL-12 remains an L5
+destructive-fault hold.
+
+The fixed source policy compares median, P95 and P99 against a 25% regression
+ceiling, rejects any unknown-rate increase and bounds fairness loss, only after
+both three-batch sets are stable. Passing the source mode
+returns `SOURCE_COMPARISON_PASS_NOT_L2`; it does not install a target, close an
+external gap or authorize release.
 
 ## 8. Control stability
 
