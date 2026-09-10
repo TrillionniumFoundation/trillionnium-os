@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Android build-host consumer for the exact shared module-contract vectors."""
 from __future__ import annotations
+
 import json
+import math
 from pathlib import Path
 import re
+import unicodedata
 
 ROOT = Path(__file__).resolve().parents[2]
 MAX_BYTES = 4 * 1024 * 1024
@@ -41,6 +44,13 @@ def bad(value):
     raise ValueError(f"nonfinite: {value}")
 
 
+def finite_float(raw):
+    value = float(raw)
+    if not math.isfinite(value):
+        raise ValueError(f"nonfinite JSON number: {raw}")
+    return value
+
+
 def depth(value):
     if isinstance(value, dict):
         return 1 + max((depth(item) for item in value.values()), default=0)
@@ -55,18 +65,27 @@ def load(path):
     raw = path.read_bytes()
     if not raw or len(raw) > MAX_BYTES:
         raise ValueError("vector byte bound differs")
-    value = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs, parse_constant=bad)
+    value = json.loads(
+        raw.decode("utf-8"),
+        object_pairs_hook=pairs,
+        parse_constant=bad,
+        parse_float=finite_float,
+    )
     if depth(value) > MAX_DEPTH:
         raise ValueError("vector depth bound differs")
     return value
 
 
 def text(value, maximum):
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        encoded = value.encode("utf-8", "strict")
+    except UnicodeError:
+        return False
     return (
-        isinstance(value, str)
-        and bool(value)
-        and len(value.encode("utf-8")) <= maximum
-        and not any(ord(char) < 32 or ord(char) == 127 for char in value)
+        len(encoded) <= maximum
+        and not any(unicodedata.category(char) == "Cc" for char in value)
     )
 
 

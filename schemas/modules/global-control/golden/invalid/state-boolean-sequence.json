@@ -1,10 +1,10 @@
 {
   "durable_sequence": true,
-  "fencing_token": "fence-valid",
+  "fencing_token": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   "host_epoch": 1,
   "module_id": "MOD-GLOBAL-CONTROL",
   "monotonic_ns": 1,
-  "operation_id": "operation-valid",
+  "operation_id": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
   "payload": {},
   "request_digest": "0000000000000000000000000000000000000000000000000000000000000000",
   "schema": "org.trillionnium.mod_global_control.state.v1",

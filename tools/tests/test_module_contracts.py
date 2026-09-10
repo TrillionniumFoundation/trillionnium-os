@@ -4,17 +4,21 @@ import copy
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
+import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 GENERATOR = ROOT / "tools/contracts/generate_module_contracts.py"
+CHECKER = ROOT / "tools/contracts/check_module_contract_compatibility.py"
 SCHEMARS = ROOT / "schemas/modules/_shared/envelopes-v1.schemars.json"
 
 
-def load_generator():
-    spec = importlib.util.spec_from_file_location("_module_contracts", GENERATOR)
+def load_module(path: Path, name: str):
+    spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
-        raise RuntimeError("cannot load module-contract generator")
+        raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
@@ -23,7 +27,8 @@ def load_generator():
 class ModuleContractTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.contracts = load_generator()
+        cls.contracts = load_module(GENERATOR, "_module_contracts")
+        cls.checker = load_module(CHECKER, "_module_contract_compatibility")
         cls.schemars = SCHEMARS.read_bytes()
 
     def outputs(self):
@@ -53,8 +58,15 @@ class ModuleContractTest(unittest.TestCase):
     def test_strict_parser_rejects_duplicate_nonfinite_depth_and_oversize(self) -> None:
         with self.assertRaises(self.contracts.ContractError):
             self.contracts.strict_load(b'{"a":1,"a":2}', "duplicate")
-        with self.assertRaises(self.contracts.ContractError):
-            self.contracts.strict_load(b'{"a":NaN}', "nonfinite")
+        for raw in (
+            b'{"a":NaN}',
+            b'{"a":Infinity}',
+            b'{"a":1e400}',
+            b'{"a":{"nested":[-1e400]}}',
+        ):
+            with self.subTest(raw=raw):
+                with self.assertRaises(self.contracts.ContractError):
+                    self.contracts.strict_load(raw, "nonfinite")
         nested = {}
         for _ in range(40):
             nested = {"n": nested}
@@ -62,6 +74,14 @@ class ModuleContractTest(unittest.TestCase):
             self.contracts.strict_load(json.dumps(nested).encode(), "deep")
         with self.assertRaises(self.contracts.ContractError):
             self.contracts.strict_load(b" " * (4 * 1024 * 1024 + 1), "large")
+
+    def test_canonical_text_domain_is_utf8_byte_bounded_and_control_free(self) -> None:
+        self.assertTrue(self.contracts.valid_text("a" * 256, 256))
+        self.assertFalse(self.contracts.valid_text("a" * 257, 256))
+        self.assertTrue(self.contracts.valid_text("é" * 128, 256))
+        self.assertFalse(self.contracts.valid_text("é" * 129, 256))
+        self.assertFalse(self.contracts.valid_text("prefix\u0085suffix", 256))
+        self.assertFalse(self.contracts.valid_text("\ud800", 256))
 
     def test_schemars_projection_is_semantically_bound(self) -> None:
         bundle, normalized = self.contracts.validate_schemars_bundle(self.schemars)
@@ -89,7 +109,7 @@ class ModuleContractTest(unittest.TestCase):
                 )
             prefix = f"schemas/modules/{module['slug']}/golden/invalid/"
             invalid = [path for path in outputs if path.startswith(prefix)]
-            self.assertEqual(len(invalid), 14)
+            self.assertEqual(len(invalid), 24)
             for path in invalid:
                 kind = Path(path).name.split("-", 1)[0]
                 schema = json.loads(outputs[module["artifacts"][kind]])
@@ -99,6 +119,84 @@ class ModuleContractTest(unittest.TestCase):
                     self.contracts.validate_semantics(
                         value, kind, module["module_id"], module["logical_labels"][kind]
                     )
+
+    def test_valid_vectors_hit_exact_ascii_byte_boundaries(self) -> None:
+        outputs = self.outputs()
+        catalog = json.loads(outputs[self.contracts.CONTRACT_CATALOG_PATH])
+        for module in catalog["modules"]:
+            base = f"schemas/modules/{module['slug']}/golden/valid"
+            api = json.loads(outputs[f"{base}/api.json"])
+            state = json.loads(outputs[f"{base}/state.json"])
+            errors = json.loads(outputs[f"{base}/errors.json"])
+            self.assertEqual(len(api["operation_id"].encode()), 256)
+            self.assertEqual(len(api["ordering_key"].encode()), 512)
+            self.assertEqual(len(api["fencing_token"].encode()), 512)
+            self.assertEqual(len(state["operation_id"].encode()), 256)
+            self.assertEqual(len(state["fencing_token"].encode()), 512)
+            self.assertEqual(len(errors["operation_id"].encode()), 256)
+            self.assertEqual(len(errors["code"].encode()), 128)
+            self.assertEqual(len(errors["original_cause"].encode()), 4096)
+
+    def test_compatibility_fingerprint_preserves_annotation_named_properties(self) -> None:
+        for property_name in sorted(self.checker.NON_SEMANTIC):
+            base = {
+                "type": "object",
+                "properties": {
+                    property_name: {
+                        "type": "string",
+                        "title": "annotation one",
+                    }
+                },
+                "required": [property_name],
+            }
+            annotation_only = copy.deepcopy(base)
+            annotation_only["properties"][property_name]["description"] = "annotation two"
+            self.assertEqual(
+                self.checker.fingerprint(base),
+                self.checker.fingerprint(annotation_only),
+                property_name,
+            )
+            breaking = copy.deepcopy(base)
+            breaking["properties"][property_name]["type"] = "integer"
+            self.assertNotEqual(
+                self.checker.fingerprint(base),
+                self.checker.fingerprint(breaking),
+                property_name,
+            )
+
+    def test_compatibility_base_resolution_distinguishes_absence_from_git_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.email", "fixture@example.invalid"], cwd=root, check=True)
+            subprocess.run(["git", "config", "user.name", "fixture"], cwd=root, check=True)
+            (root / "present.json").write_text("{}\n", encoding="utf-8")
+            subprocess.run(["git", "add", "present.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "base"], cwd=root, check=True)
+            base = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
+            (root / "later.json").write_text("{}\n", encoding="utf-8")
+            subprocess.run(["git", "add", "later.json"], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "head"], cwd=root, check=True)
+
+            self.assertEqual(self.checker.resolve_commit(base, root=root), base)
+            self.assertEqual(self.checker.show(base, "present.json", root=root), b"{}\n")
+            self.assertIsNone(
+                self.checker.show(base, "later.json", allow_absent=True, root=root)
+            )
+            with self.assertRaises(ValueError):
+                self.checker.show(base, "later.json", root=root)
+            with self.assertRaises(ValueError):
+                self.checker.resolve_commit("does-not-exist-review-fixture", root=root)
+
+        failed = subprocess.CompletedProcess(
+            args=["git"],
+            returncode=128,
+            stdout=b"",
+            stderr=b"permission denied fixture",
+        )
+        with mock.patch.object(self.checker.subprocess, "run", return_value=failed):
+            with self.assertRaisesRegex(ValueError, "permission denied fixture"):
+                self.checker.git(["ls-tree"], "permission simulation")
 
     def test_lock_binds_every_generated_artifact_except_itself(self) -> None:
         outputs = self.outputs()
@@ -140,7 +238,12 @@ class ModuleContractTest(unittest.TestCase):
             for item in catalog["producer_consumer_pairs"]
         )
         self.assertEqual(observed, expected)
-        self.assertTrue(all(item["compatible_api_versions"] for item in catalog["producer_consumer_pairs"]))
+        self.assertTrue(
+            all(
+                item["compatible_api_versions"]
+                for item in catalog["producer_consumer_pairs"]
+            )
+        )
 
     def test_static_sources_forbid_defaults_aliases_and_auto_redispatch(self) -> None:
         rust = self.contracts.rust_source().decode()
@@ -149,6 +252,7 @@ class ModuleContractTest(unittest.TestCase):
         self.assertNotIn("AUTOMATIC_REDISPATCH", rust)
         android = self.contracts.android_verifier_source().decode()
         self.assertIn("RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH", android)
+        self.assertIn("parse_float=finite_float", android)
         self.assertNotIn("shell=True", android)
 
 

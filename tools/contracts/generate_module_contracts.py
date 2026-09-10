@@ -13,6 +13,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from typing import Any, Iterable
 
 CATALOG_PATH = "docs/machine/module-catalog.v1.json"
@@ -71,11 +72,22 @@ def reject_nonfinite(value: str) -> None:
     raise ContractError(f"non-finite JSON number: {value}")
 
 
+def strict_float(raw: str) -> float:
+    value = float(raw)
+    require(math.isfinite(value), f"non-finite JSON number: {raw}")
+    return value
+
+
 def strict_load(raw: bytes, label: str) -> Any:
     require(len(raw) <= 4 * 1024 * 1024, f"{label} exceeds byte bound")
     try:
-        value = json.loads(raw.decode("utf-8"), object_pairs_hook=strict_pairs, parse_constant=reject_nonfinite)
-    except (UnicodeError, json.JSONDecodeError, ContractError) as error:
+        value = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=strict_pairs,
+            parse_constant=reject_nonfinite,
+            parse_float=strict_float,
+        )
+    except (UnicodeError, ValueError, json.JSONDecodeError, ContractError) as error:
         raise ContractError(f"{label} is not strict JSON: {error}") from error
     require(depth(value) <= 32, f"{label} exceeds depth bound")
     return value
@@ -597,9 +609,12 @@ def android_verifier_source() -> bytes:
     return b'''#!/usr/bin/env python3
 """Android build-host consumer for the exact shared module-contract vectors."""
 from __future__ import annotations
+
 import json
+import math
 from pathlib import Path
 import re
+import unicodedata
 
 ROOT = Path(__file__).resolve().parents[2]
 MAX_BYTES = 4 * 1024 * 1024
@@ -637,6 +652,13 @@ def bad(value):
     raise ValueError(f"nonfinite: {value}")
 
 
+def finite_float(raw):
+    value = float(raw)
+    if not math.isfinite(value):
+        raise ValueError(f"nonfinite JSON number: {raw}")
+    return value
+
+
 def depth(value):
     if isinstance(value, dict):
         return 1 + max((depth(item) for item in value.values()), default=0)
@@ -651,18 +673,27 @@ def load(path):
     raw = path.read_bytes()
     if not raw or len(raw) > MAX_BYTES:
         raise ValueError("vector byte bound differs")
-    value = json.loads(raw.decode("utf-8"), object_pairs_hook=pairs, parse_constant=bad)
+    value = json.loads(
+        raw.decode("utf-8"),
+        object_pairs_hook=pairs,
+        parse_constant=bad,
+        parse_float=finite_float,
+    )
     if depth(value) > MAX_DEPTH:
         raise ValueError("vector depth bound differs")
     return value
 
 
 def text(value, maximum):
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        encoded = value.encode("utf-8", "strict")
+    except UnicodeError:
+        return False
     return (
-        isinstance(value, str)
-        and bool(value)
-        and len(value.encode("utf-8")) <= maximum
-        and not any(ord(char) < 32 or ord(char) == 127 for char in value)
+        len(encoded) <= maximum
+        and not any(unicodedata.category(char) == "Cc" for char in value)
     )
 
 
@@ -742,108 +773,7 @@ if __name__ == "__main__":
 
 
 def compatibility_checker_source() -> bytes:
-    return b'''#!/usr/bin/env python3
-"""Fail-closed semantic compatibility check for generated module contracts."""
-from __future__ import annotations
-import argparse
-import json
-import subprocess
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[2]
-CATALOG = "docs/machine/module-contract-catalog.v1.json"
-
-
-def load(raw, label):
-    def pairs(items):
-        out = {}
-        for key, value in items:
-            if key in out:
-                raise ValueError(f"{label}: duplicate member {key}")
-            out[key] = value
-        return out
-    return json.loads(
-        raw.decode("utf-8"),
-        object_pairs_hook=pairs,
-        parse_constant=lambda value: (_ for _ in ()).throw(ValueError(f"{label}: nonfinite {value}")),
-    )
-
-
-def show(ref, path):
-    result = subprocess.run(
-        ["git", "--no-replace-objects", "show", f"{ref}:{path}"],
-        cwd=ROOT,
-        capture_output=True,
-        check=False,
-        timeout=30,
-    )
-    return result.stdout if result.returncode == 0 else None
-
-
-NON_SEMANTIC = {"$schema", "$id", "title", "description", "examples", "x-trillionnium-binding"}
-
-
-def fingerprint(value):
-    if isinstance(value, dict):
-        return {
-            key: fingerprint(item)
-            for key, item in sorted(value.items())
-            if key not in NON_SEMANTIC
-        }
-    if isinstance(value, list):
-        return [fingerprint(item) for item in value]
-    return value
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--base-ref", required=True)
-    args = parser.parse_args()
-    current = load((ROOT / CATALOG).read_bytes(), CATALOG)
-    old_raw = show(args.base_ref, CATALOG)
-    if old_raw is None:
-        for module in current["modules"]:
-            compatibility = load(
-                (ROOT / module["artifacts"]["compatibility"]).read_bytes(),
-                module["module_id"],
-            )
-            if compatibility.get("change_review_class") != "INITIAL_V1":
-                raise SystemExit("initial contract lacks INITIAL_V1 review class")
-        print(json.dumps({"result":"PASS_INITIAL_V1","modules":current["module_count"],"public_release":False},sort_keys=True))
-        return 0
-    old = load(old_raw, CATALOG)
-    old_by = {item["module_id"]: item for item in old["modules"]}
-    current_by = {item["module_id"]: item for item in current["modules"]}
-    if set(old_by) != set(current_by):
-        raise SystemExit("module set changed without a separately reviewed catalog migration")
-    changed = []
-    for module_id in sorted(current_by):
-        for kind in ("api", "state", "errors"):
-            new_path = current_by[module_id]["artifacts"][kind]
-            old_path = old_by[module_id]["artifacts"][kind]
-            old_schema_raw = show(args.base_ref, old_path)
-            if old_schema_raw is None:
-                raise SystemExit(f"base schema missing: {module_id}/{kind}")
-            if fingerprint(load(old_schema_raw, old_path)) != fingerprint(load((ROOT / new_path).read_bytes(), new_path)):
-                changed.append(f"{module_id}:{kind}")
-        compatibility = load(
-            (ROOT / current_by[module_id]["artifacts"]["compatibility"]).read_bytes(),
-            module_id,
-        )
-        if any(item.startswith(module_id + ":") for item in changed) and compatibility.get("change_review_class") == "NO_CHANGE":
-            raise SystemExit(f"semantic schema drift lacks migration/rollback review class: {module_id}")
-    print(json.dumps({"result":"PASS","semantic_changes":changed,"public_release":False},sort_keys=True))
-    return 0
-
-
-if __name__ == "__main__":
-    try:
-        raise SystemExit(main())
-    except (OSError, ValueError, subprocess.SubprocessError) as error:
-        print(f"module-contract compatibility failed: {error}", file=sys.stderr)
-        raise SystemExit(2)
-'''
+    return b'#!/usr/bin/env python3\n"""Fail-closed semantic compatibility check for generated module contracts."""\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport math\nfrom pathlib import Path\nimport re\nimport subprocess\nimport sys\nfrom typing import Any\n\nROOT = Path(__file__).resolve().parents[2]\nCATALOG = "docs/machine/module-contract-catalog.v1.json"\nSHA40 = re.compile(r"^[0-9a-f]{40}$")\n\n\ndef finite_float(raw: str) -> float:\n    value = float(raw)\n    if not math.isfinite(value):\n        raise ValueError(f"nonfinite JSON number: {raw}")\n    return value\n\n\ndef load(raw: bytes, label: str) -> Any:\n    def pairs(items):\n        out = {}\n        for key, value in items:\n            if key in out:\n                raise ValueError(f"{label}: duplicate member {key}")\n            out[key] = value\n        return out\n\n    return json.loads(\n        raw.decode("utf-8"),\n        object_pairs_hook=pairs,\n        parse_constant=lambda value: (_ for _ in ()).throw(\n            ValueError(f"{label}: nonfinite {value}")\n        ),\n        parse_float=finite_float,\n    )\n\n\ndef git(args: list[str], label: str, *, root: Path = ROOT) -> bytes:\n    result = subprocess.run(\n        ["git", "--no-replace-objects", *args],\n        cwd=root,\n        capture_output=True,\n        check=False,\n        timeout=30,\n    )\n    if result.returncode != 0:\n        detail = result.stderr.decode("utf-8", "replace").strip()\n        raise ValueError(f"{label}: git returned {result.returncode}: {detail}")\n    return result.stdout\n\n\ndef resolve_commit(ref: str, *, root: Path = ROOT) -> str:\n    if not isinstance(ref, str) or not ref or "\\x00" in ref or "\\n" in ref:\n        raise ValueError("base ref is malformed")\n    raw = git(\n        ["rev-parse", "--verify", "--end-of-options", f"{ref}^{{commit}}"],\n        "resolve base ref",\n        root=root,\n    )\n    values = raw.decode("ascii", "strict").splitlines()\n    if len(values) != 1 or SHA40.fullmatch(values[0]) is None:\n        raise ValueError("base ref did not resolve to one exact commit")\n    commit = values[0]\n    git(\n        ["merge-base", "--is-ancestor", commit, "HEAD"],\n        "verify base ancestry",\n        root=root,\n    )\n    return commit\n\n\ndef show(\n    commit: str,\n    path: str,\n    *,\n    allow_absent: bool = False,\n    root: Path = ROOT,\n) -> bytes | None:\n    if SHA40.fullmatch(commit) is None:\n        raise ValueError("show requires an exact commit")\n    if (\n        not isinstance(path, str)\n        or not path\n        or path.startswith("/")\n        or "\\\\" in path\n        or "\\x00" in path\n        or "\\n" in path\n        or any(part in {"", ".", ".."} for part in path.split("/"))\n    ):\n        raise ValueError(f"unsafe tree path: {path!r}")\n\n    listing = git(\n        ["ls-tree", "-z", "--full-tree", commit, "--", path],\n        f"inspect {path} in verified base",\n        root=root,\n    )\n    entries = [entry for entry in listing.split(b"\\0") if entry]\n    if not entries:\n        if allow_absent:\n            return None\n        raise ValueError(f"verified base path is absent: {path}")\n    if len(entries) != 1:\n        raise ValueError(f"verified base path is ambiguous: {path}")\n\n    metadata, separator, encoded_name = entries[0].partition(b"\\t")\n    if not separator:\n        raise ValueError(f"malformed ls-tree result for {path}")\n    try:\n        mode, kind, object_id = metadata.decode("ascii", "strict").split(" ")\n        observed_name = encoded_name.decode("utf-8", "strict")\n    except (UnicodeError, ValueError) as error:\n        raise ValueError(f"malformed ls-tree identity for {path}") from error\n    if (\n        observed_name != path\n        or kind != "blob"\n        or mode not in {"100644", "100755"}\n        or SHA40.fullmatch(object_id) is None\n    ):\n        raise ValueError(f"verified base object is not one regular tracked file: {path}")\n    return git(["cat-file", "blob", object_id], f"read verified base file {path}", root=root)\n\n\nNON_SEMANTIC = {\n    "$schema",\n    "$id",\n    "title",\n    "description",\n    "examples",\n    "x-trillionnium-binding",\n}\nNAMED_SCHEMA_MAPS = {\n    "$defs",\n    "definitions",\n    "properties",\n    "patternProperties",\n    "dependentSchemas",\n}\nSCHEMA_SINGLE = {\n    "additionalProperties",\n    "unevaluatedProperties",\n    "propertyNames",\n    "contains",\n    "contentSchema",\n    "if",\n    "then",\n    "else",\n    "not",\n    "unevaluatedItems",\n}\nSCHEMA_ARRAYS = {"allOf", "anyOf", "oneOf", "prefixItems"}\n\n\ndef normalized_data(value: Any) -> Any:\n    if isinstance(value, dict):\n        return {\n            key: normalized_data(item)\n            for key, item in sorted(value.items())\n        }\n    if isinstance(value, list):\n        return [normalized_data(item) for item in value]\n    return value\n\n\ndef fingerprint(value: Any) -> Any:\n    """Remove annotations only where the dictionary is a JSON Schema object."""\n    if isinstance(value, bool):\n        return value\n    if not isinstance(value, dict):\n        return normalized_data(value)\n\n    result = {}\n    for key, item in sorted(value.items()):\n        if key in NON_SEMANTIC:\n            continue\n        if key in NAMED_SCHEMA_MAPS and isinstance(item, dict):\n            # Keys here are application property/definition names. They are\n            # semantic even when they happen to be called "title" or "$id".\n            result[key] = {\n                name: fingerprint(child)\n                for name, child in sorted(item.items())\n            }\n        elif key == "dependencies" and isinstance(item, dict):\n            result[key] = {\n                name: (\n                    fingerprint(child)\n                    if isinstance(child, (dict, bool))\n                    else normalized_data(child)\n                )\n                for name, child in sorted(item.items())\n            }\n        elif key in SCHEMA_SINGLE and isinstance(item, (dict, bool)):\n            result[key] = fingerprint(item)\n        elif key == "items":\n            if isinstance(item, list):\n                result[key] = [fingerprint(child) for child in item]\n            elif isinstance(item, (dict, bool)):\n                result[key] = fingerprint(item)\n            else:\n                result[key] = normalized_data(item)\n        elif key in SCHEMA_ARRAYS and isinstance(item, list):\n            result[key] = [fingerprint(child) for child in item]\n        else:\n            # Values of const/enum/default-like or unknown extension keywords\n            # are data, not automatically nested schemas. Preserve them.\n            result[key] = normalized_data(item)\n    return result\n\n\ndef main() -> int:\n    parser = argparse.ArgumentParser()\n    parser.add_argument("--base-ref", required=True)\n    args = parser.parse_args()\n\n    current = load((ROOT / CATALOG).read_bytes(), CATALOG)\n    base_commit = resolve_commit(args.base_ref)\n    old_raw = show(base_commit, CATALOG, allow_absent=True)\n    if old_raw is None:\n        for module in current["modules"]:\n            compatibility = load(\n                (ROOT / module["artifacts"]["compatibility"]).read_bytes(),\n                module["module_id"],\n            )\n            if compatibility.get("change_review_class") != "INITIAL_V1":\n                raise SystemExit("initial contract lacks INITIAL_V1 review class")\n        print(\n            json.dumps(\n                {\n                    "base_commit": base_commit,\n                    "modules": current["module_count"],\n                    "public_release": False,\n                    "result": "PASS_INITIAL_V1",\n                },\n                sort_keys=True,\n            )\n        )\n        return 0\n\n    old = load(old_raw, CATALOG)\n    old_by = {item["module_id"]: item for item in old["modules"]}\n    current_by = {item["module_id"]: item for item in current["modules"]}\n    if set(old_by) != set(current_by):\n        raise SystemExit(\n            "module set changed without a separately reviewed catalog migration"\n        )\n\n    changed = []\n    for module_id in sorted(current_by):\n        for kind in ("api", "state", "errors"):\n            new_path = current_by[module_id]["artifacts"][kind]\n            old_path = old_by[module_id]["artifacts"][kind]\n            old_schema_raw = show(base_commit, old_path)\n            if fingerprint(load(old_schema_raw, old_path)) != fingerprint(\n                load((ROOT / new_path).read_bytes(), new_path)\n            ):\n                changed.append(f"{module_id}:{kind}")\n        compatibility = load(\n            (ROOT / current_by[module_id]["artifacts"]["compatibility"]).read_bytes(),\n            module_id,\n        )\n        if (\n            any(item.startswith(module_id + ":") for item in changed)\n            and compatibility.get("change_review_class") == "NO_CHANGE"\n        ):\n            raise SystemExit(\n                "semantic schema drift lacks migration/rollback review class: "\n                f"{module_id}"\n            )\n\n    print(\n        json.dumps(\n            {\n                "base_commit": base_commit,\n                "public_release": False,\n                "result": "PASS",\n                "semantic_changes": changed,\n            },\n            sort_keys=True,\n        )\n    )\n    return 0\n\n\nif __name__ == "__main__":\n    try:\n        raise SystemExit(main())\n    except (OSError, UnicodeError, ValueError, subprocess.SubprocessError) as error:\n        print(f"module-contract compatibility failed: {error}", file=sys.stderr)\n        raise SystemExit(2)\n'
 
 
 def contract_readme() -> bytes:
@@ -932,18 +862,29 @@ def specialize_schemars_schema(
         require(isinstance(value, dict) and "$ref" not in value, f"schemars {kind}.{field} is not a direct field schema")
         return value
 
+    def bounded_text(field: str, maximum: int) -> None:
+        direct(field).update(
+            {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": maximum,
+                "x-trillionnium-maxUtf8Bytes": maximum,
+                "x-trillionnium-forbidUnicodeControls": True,
+            }
+        )
+
     direct("schema").update({"type": "string", "const": label})
     direct("module_id").update({"type": "string", "const": module})
-    direct("operation_id").update({"type": "string", "minLength": 1, "maxLength": 256})
+    bounded_text("operation_id", 256)
     direct("request_digest").update({"type": "string", "pattern": "^[0-9a-f]{64}$"})
     if kind in {"api", "state"}:
-        direct("fencing_token").update({"type": "string", "minLength": 1, "maxLength": 512})
+        bounded_text("fencing_token", 512)
         properties["payload"] = {"type": "object", "maxProperties": 64}
     if kind == "api":
-        direct("ordering_key").update({"type": "string", "minLength": 1, "maxLength": 512})
+        bounded_text("ordering_key", 512)
     elif kind == "errors":
-        direct("code").update({"type": "string", "minLength": 1, "maxLength": 128})
-        direct("original_cause").update({"type": "string", "minLength": 1, "maxLength": 4096})
+        bounded_text("code", 128)
+        bounded_text("original_cause", 4096)
     result["$id"] = identifier
     result["title"] = title
     result["x-trillionnium-binding"] = binding
@@ -987,6 +928,24 @@ def validate_schema(instance: Any, schema: Any, path: str = "$", root: dict[str,
             require(len(instance) <= schema["maxLength"], f"{path} too long")
         if "pattern" in schema:
             require(re.fullmatch(schema["pattern"], instance) is not None, f"{path} pattern differs")
+        maximum_utf8 = schema.get("x-trillionnium-maxUtf8Bytes")
+        if maximum_utf8 is not None:
+            require(
+                isinstance(maximum_utf8, int)
+                and not isinstance(maximum_utf8, bool)
+                and maximum_utf8 > 0,
+                f"{path} UTF-8 byte bound is invalid",
+            )
+            require(valid_text(instance, maximum_utf8), f"{path} UTF-8 text domain differs")
+        if schema.get("x-trillionnium-forbidUnicodeControls") is not None:
+            require(
+                schema["x-trillionnium-forbidUnicodeControls"] is True,
+                f"{path} Unicode-control policy differs",
+            )
+            require(
+                not any(unicodedata.category(char) == "Cc" for char in instance),
+                f"{path} contains a Unicode control character",
+            )
     elif kind == "integer":
         require(isinstance(instance, int) and not isinstance(instance, bool), f"{path} must be integer")
         if "minimum" in schema:
@@ -1082,30 +1041,97 @@ def version_numbers(item: dict[str, Any]) -> tuple[list[int], list[int]]:
     return parse("read"), parse("write")
 
 
+def valid_text(value: Any, maximum: int) -> bool:
+    if not isinstance(value, str) or not value:
+        return False
+    try:
+        encoded = value.encode("utf-8", "strict")
+    except UnicodeError:
+        return False
+    return (
+        len(encoded) <= maximum
+        and not any(unicodedata.category(char) == "Cc" for char in value)
+    )
+
+
 def validate_semantics(value: Any, kind: str, module_id_value: str, label: str) -> None:
     require(isinstance(value, dict), "contract vector must be an object")
-    require(value.get("module_id") == module_id_value and value.get("schema") == label, "contract vector identity differs")
-    operation = value.get("operation_id")
-    require(isinstance(operation, str) and operation and len(operation.encode("utf-8")) <= 256 and not any(ord(char) < 32 or ord(char) == 127 for char in operation), "operation identity differs")
-    require(isinstance(value.get("request_digest"), str) and SHA64.fullmatch(value["request_digest"]) is not None, "request digest differs")
+    require(
+        value.get("module_id") == module_id_value and value.get("schema") == label,
+        "contract vector identity differs",
+    )
+    require(valid_text(value.get("operation_id"), 256), "operation identity differs")
+    require(
+        isinstance(value.get("request_digest"), str)
+        and SHA64.fullmatch(value["request_digest"]) is not None,
+        "request digest differs",
+    )
     if kind in {"api", "state"}:
         for field in ("host_epoch", "writer_epoch"):
-            require(isinstance(value.get(field), int) and not isinstance(value[field], bool) and 0 <= value[field] <= (1 << 64) - 1, f"{field} differs")
-        require(isinstance(value.get("fencing_token"), str) and value["fencing_token"], "fencing token differs")
-        require(isinstance(value.get("payload"), dict) and len(value["payload"]) <= 64, "payload differs")
+            require(
+                isinstance(value.get(field), int)
+                and not isinstance(value[field], bool)
+                and 0 <= value[field] <= (1 << 64) - 1,
+                f"{field} differs",
+            )
+        require(valid_text(value.get("fencing_token"), 512), "fencing token differs")
+        require(
+            isinstance(value.get("payload"), dict) and len(value["payload"]) <= 64,
+            "payload differs",
+        )
     if kind == "api":
-        require(isinstance(value.get("ordering_key"), str) and value["ordering_key"], "ordering key differs")
+        require(valid_text(value.get("ordering_key"), 512), "ordering key differs")
     elif kind == "state":
-        require(value.get("state") in EXPECTED_LIFECYCLE_STATES | {"STATELESS"}, "state differs")
+        require(
+            value.get("state") in EXPECTED_LIFECYCLE_STATES | {"STATELESS"},
+            "state differs",
+        )
         for field in ("durable_sequence", "monotonic_ns"):
-            require(isinstance(value.get(field), int) and not isinstance(value[field], bool) and 0 <= value[field] <= (1 << 64) - 1, f"{field} differs")
+            require(
+                isinstance(value.get(field), int)
+                and not isinstance(value[field], bool)
+                and 0 <= value[field] <= (1 << 64) - 1,
+                f"{field} differs",
+            )
     else:
-        require(value.get("class") in {"REJECTED_BEFORE_EFFECT","TRANSIENT_BEFORE_EFFECT","EFFECT_UNCERTAIN","TERMINAL_FAILURE","INTERNAL_INVARIANT"}, "error class differs")
-        require(value.get("retry_disposition") in {"MAY_RETRY_BEFORE_EFFECT","RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH","DO_NOT_RETRY"}, "retry disposition differs")
-        require(isinstance(value.get("effect_uncertain"), bool), "effect uncertainty type differs")
+        require(valid_text(value.get("code"), 128), "error code differs")
+        require(
+            valid_text(value.get("original_cause"), 4096),
+            "original cause differs",
+        )
+        require(
+            value.get("class")
+            in {
+                "REJECTED_BEFORE_EFFECT",
+                "TRANSIENT_BEFORE_EFFECT",
+                "EFFECT_UNCERTAIN",
+                "TERMINAL_FAILURE",
+                "INTERNAL_INVARIANT",
+            },
+            "error class differs",
+        )
+        require(
+            value.get("retry_disposition")
+            in {
+                "MAY_RETRY_BEFORE_EFFECT",
+                "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH",
+                "DO_NOT_RETRY",
+            },
+            "retry disposition differs",
+        )
+        require(
+            isinstance(value.get("effect_uncertain"), bool),
+            "effect uncertainty type differs",
+        )
         uncertain = value.get("class") == "EFFECT_UNCERTAIN"
-        reconcile = value.get("retry_disposition") == "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH"
-        require(value.get("effect_uncertain") is uncertain and reconcile is uncertain, "error uncertainty semantics differ")
+        reconcile = (
+            value.get("retry_disposition")
+            == "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH"
+        )
+        require(
+            value.get("effect_uncertain") is uncertain and reconcile is uncertain,
+            "error uncertainty semantics differ",
+        )
 
 
 def static_outputs() -> dict[str, bytes]:
@@ -1173,28 +1199,132 @@ def generated(root: Path, schemars_raw: bytes) -> dict[str, bytes]:
         outputs[api_path]=canonical_json(api_schema)
         outputs[state_path]=canonical_json(state_schema)
         outputs[error_path]=canonical_json(error_schema)
-        valid_api={"schema":api,"module_id":mid,"operation_id":"operation-valid","request_digest":request_digest,"ordering_key":"session/turn/operation","host_epoch":1,"writer_epoch":1,"fencing_token":"fence-valid","payload":{}}
-        valid_state={"schema":state,"module_id":mid,"operation_id":"operation-valid","request_digest":request_digest,"state":"ACCEPTED_DURABLE","host_epoch":1,"writer_epoch":1,"fencing_token":"fence-valid","durable_sequence":1,"monotonic_ns":1,"payload":{}}
-        valid_error={"schema":error,"module_id":mid,"operation_id":"operation-valid","request_digest":request_digest,"code":"example_failure","class":"EFFECT_UNCERTAIN","retry_disposition":"RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH","effect_uncertain":True,"original_cause":"raw bounded cause"}
-        outputs[f"{base}/golden/valid/api.json"]=canonical_json(valid_api)
-        outputs[f"{base}/golden/valid/state.json"]=canonical_json(valid_state)
-        outputs[f"{base}/golden/valid/errors.json"]=canonical_json(valid_error)
-        outputs[f"{base}/golden/invalid/api-duplicate.json"]=(json.dumps(valid_api,separators=(",",":"))[:-1]+f',"module_id":"{mid}"}}\n').encode()
-        invalid=dict(valid_api); invalid["unexpected"]=True; outputs[f"{base}/golden/invalid/api-unknown.json"]=canonical_json(invalid)
-        invalid=dict(valid_api); invalid.pop("ordering_key"); outputs[f"{base}/golden/invalid/api-missing-ordering.json"]=canonical_json(invalid)
-        invalid=dict(valid_api); invalid.pop("request_digest"); invalid["request_hash"]=request_digest; outputs[f"{base}/golden/invalid/api-identity-alias.json"]=canonical_json(invalid)
+        valid_api = {
+            "schema": api,
+            "module_id": mid,
+            "operation_id": "o" * 256,
+            "request_digest": request_digest,
+            "ordering_key": "k" * 512,
+            "host_epoch": 1,
+            "writer_epoch": 1,
+            "fencing_token": "f" * 512,
+            "payload": {},
+        }
+        valid_state = {
+            "schema": state,
+            "module_id": mid,
+            "operation_id": "o" * 256,
+            "request_digest": request_digest,
+            "state": "ACCEPTED_DURABLE",
+            "host_epoch": 1,
+            "writer_epoch": 1,
+            "fencing_token": "f" * 512,
+            "durable_sequence": 1,
+            "monotonic_ns": 1,
+            "payload": {},
+        }
+        valid_error = {
+            "schema": error,
+            "module_id": mid,
+            "operation_id": "o" * 256,
+            "request_digest": request_digest,
+            "code": "c" * 128,
+            "class": "EFFECT_UNCERTAIN",
+            "retry_disposition": "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH",
+            "effect_uncertain": True,
+            "original_cause": "r" * 4096,
+        }
+        outputs[f"{base}/golden/valid/api.json"] = canonical_json(valid_api)
+        outputs[f"{base}/golden/valid/state.json"] = canonical_json(valid_state)
+        outputs[f"{base}/golden/valid/errors.json"] = canonical_json(valid_error)
+
+        outputs[f"{base}/golden/invalid/api-duplicate.json"] = (
+            json.dumps(valid_api, separators=(",", ":"))[:-1]
+            + f',"module_id":"{mid}"}}\n'
+        ).encode()
+        invalid = dict(valid_api)
+        invalid["unexpected"] = True
+        outputs[f"{base}/golden/invalid/api-unknown.json"] = canonical_json(invalid)
+        invalid = dict(valid_api)
+        invalid.pop("ordering_key")
+        outputs[f"{base}/golden/invalid/api-missing-ordering.json"] = canonical_json(invalid)
+        invalid = dict(valid_api)
+        invalid.pop("request_digest")
+        invalid["request_hash"] = request_digest
+        outputs[f"{base}/golden/invalid/api-identity-alias.json"] = canonical_json(invalid)
         nested: Any = {}
-        for _ in range(40): nested={"nested":nested}
-        invalid=dict(valid_api); invalid["payload"]=nested; outputs[f"{base}/golden/invalid/api-depth.json"]=canonical_json(invalid)
-        invalid=dict(valid_api); invalid["host_epoch"]=True; outputs[f"{base}/golden/invalid/api-boolean-epoch.json"]=canonical_json(invalid)
-        outputs[f"{base}/golden/invalid/state-nonfinite.json"]=(json.dumps(valid_state,separators=(",",":"))[:-1]+',"monotonic_ns":NaN}\n').encode()
-        invalid=dict(valid_state); invalid["state"]="REENTER_ACCEPTED_AFTER_FENCE"; outputs[f"{base}/golden/invalid/state-invalid.json"]=canonical_json(invalid)
-        invalid=dict(valid_state); invalid["durable_sequence"]=True; outputs[f"{base}/golden/invalid/state-boolean-sequence.json"]=canonical_json(invalid)
-        invalid=dict(valid_error); invalid.pop("code"); outputs[f"{base}/golden/invalid/errors-missing.json"]=canonical_json(invalid)
-        invalid=dict(valid_error); invalid["retry_disposition"]="AUTOMATIC_REDISPATCH"; outputs[f"{base}/golden/invalid/errors-retry.json"]=canonical_json(invalid)
-        invalid=dict(valid_error); invalid["class"]="UNKNOWN_ERROR_CLASS"; outputs[f"{base}/golden/invalid/errors-class.json"]=canonical_json(invalid)
-        invalid=dict(valid_error); invalid["effect_uncertain"]=False; outputs[f"{base}/golden/invalid/errors-uncertainty.json"]=canonical_json(invalid)
-        invalid=dict(valid_error); invalid["module_id"]="MOD-CROSS-SPLICE"; outputs[f"{base}/golden/invalid/errors-module-splice.json"]=canonical_json(invalid)
+        for _ in range(40):
+            nested = {"nested": nested}
+        invalid = dict(valid_api)
+        invalid["payload"] = nested
+        outputs[f"{base}/golden/invalid/api-depth.json"] = canonical_json(invalid)
+        invalid = dict(valid_api)
+        invalid["host_epoch"] = True
+        outputs[f"{base}/golden/invalid/api-boolean-epoch.json"] = canonical_json(invalid)
+
+        invalid = copy.deepcopy(valid_api)
+        invalid["payload"] = {"nested": ["__POSITIVE_EXPONENT_OVERFLOW__"]}
+        raw = json.dumps(invalid, separators=(",", ":"), ensure_ascii=False)
+        outputs[f"{base}/golden/invalid/api-payload-positive-exponent-overflow.json"] = (
+            raw.replace('"__POSITIVE_EXPONENT_OVERFLOW__"', "1e400") + "\n"
+        ).encode("utf-8")
+        invalid = copy.deepcopy(valid_api)
+        invalid["payload"] = {"nested": ["__NEGATIVE_EXPONENT_OVERFLOW__"]}
+        raw = json.dumps(invalid, separators=(",", ":"), ensure_ascii=False)
+        outputs[f"{base}/golden/invalid/api-payload-negative-exponent-overflow.json"] = (
+            raw.replace('"__NEGATIVE_EXPONENT_OVERFLOW__"', "-1e400") + "\n"
+        ).encode("utf-8")
+        invalid = dict(valid_api)
+        invalid["operation_id"] = "é" * 129
+        outputs[f"{base}/golden/invalid/api-operation-multibyte-overflow.json"] = canonical_json(invalid)
+        invalid = dict(valid_api)
+        invalid["operation_id"] = "operation\u0085control"
+        outputs[f"{base}/golden/invalid/api-operation-unicode-control.json"] = canonical_json(invalid)
+        invalid = dict(valid_api)
+        invalid["ordering_key"] = "é" * 257
+        outputs[f"{base}/golden/invalid/api-ordering-multibyte-overflow.json"] = canonical_json(invalid)
+
+        outputs[f"{base}/golden/invalid/state-nonfinite.json"] = (
+            json.dumps(valid_state, separators=(",", ":"))[:-1]
+            + ',"monotonic_ns":NaN}\n'
+        ).encode()
+        invalid = dict(valid_state)
+        invalid["state"] = "REENTER_ACCEPTED_AFTER_FENCE"
+        outputs[f"{base}/golden/invalid/state-invalid.json"] = canonical_json(invalid)
+        invalid = dict(valid_state)
+        invalid["durable_sequence"] = True
+        outputs[f"{base}/golden/invalid/state-boolean-sequence.json"] = canonical_json(invalid)
+        invalid = dict(valid_state)
+        invalid["fencing_token"] = "é" * 257
+        outputs[f"{base}/golden/invalid/state-fencing-multibyte-overflow.json"] = canonical_json(invalid)
+        invalid = dict(valid_state)
+        invalid["fencing_token"] = "fence\u0085control"
+        outputs[f"{base}/golden/invalid/state-fencing-unicode-control.json"] = canonical_json(invalid)
+
+        invalid = dict(valid_error)
+        invalid.pop("code")
+        outputs[f"{base}/golden/invalid/errors-missing.json"] = canonical_json(invalid)
+        invalid = dict(valid_error)
+        invalid["retry_disposition"] = "AUTOMATIC_REDISPATCH"
+        outputs[f"{base}/golden/invalid/errors-retry.json"] = canonical_json(invalid)
+        invalid = dict(valid_error)
+        invalid["class"] = "UNKNOWN_ERROR_CLASS"
+        outputs[f"{base}/golden/invalid/errors-class.json"] = canonical_json(invalid)
+        invalid = dict(valid_error)
+        invalid["effect_uncertain"] = False
+        outputs[f"{base}/golden/invalid/errors-uncertainty.json"] = canonical_json(invalid)
+        invalid = dict(valid_error)
+        invalid["module_id"] = "MOD-CROSS-SPLICE"
+        outputs[f"{base}/golden/invalid/errors-module-splice.json"] = canonical_json(invalid)
+        invalid = dict(valid_error)
+        invalid["code"] = "é" * 65
+        outputs[f"{base}/golden/invalid/errors-code-multibyte-overflow.json"] = canonical_json(invalid)
+        invalid = dict(valid_error)
+        invalid["original_cause"] = "é" * 2049
+        outputs[f"{base}/golden/invalid/errors-cause-multibyte-overflow.json"] = canonical_json(invalid)
+        invalid = dict(valid_error)
+        invalid["original_cause"] = "cause\u0085control"
+        outputs[f"{base}/golden/invalid/errors-cause-unicode-control.json"] = canonical_json(invalid)
         compatibility_path=f"{base}/compatibility.json"
         compatibility={
             "schema":"org.trillionnium.module-contract-compatibility.v1",
@@ -1266,7 +1396,7 @@ def generated(root: Path, schemars_raw: bytes) -> dict[str, bytes]:
         "claim_ceiling":"L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
     }
     outputs[CONTRACT_CATALOG_PATH]=canonical_json(machine)
-    lines=["# Module Contract Status","","<!-- GENERATED BY tools/contracts/generate_module_contracts.py. DO NOT EDIT. -->","",f"- Modules: `{len(records)}`","- API/state/error schemas: `3 per module`","- Shared valid vectors: `3 per module`","- Shared invalid vectors: `10 per module`",f"- Producer/consumer pairs: `{len(pairs)}`","- Schemars projection: `byte-bound`","- Automatic redispatch after uncertainty: `false`","- Public release: `false`","","| Module | API | State | Errors | Compatibility |","| --- | --- | --- | --- | --- |"]
+    lines=["# Module Contract Status","","<!-- GENERATED BY tools/contracts/generate_module_contracts.py. DO NOT EDIT. -->","",f"- Modules: `{len(records)}`","- API/state/error schemas: `3 per module`","- Shared valid vectors: `3 per module`","- Shared invalid vectors: `24 per module`",f"- Producer/consumer pairs: `{len(pairs)}`","- Schemars projection: `byte-bound`","- Automatic redispatch after uncertainty: `false`","- Public release: `false`","","| Module | API | State | Errors | Compatibility |","| --- | --- | --- | --- | --- |"]
     for record in records:
         a=record["artifacts"]
         lines.append(f"| `{record['module_id']}` | `{a['api']}` | `{a['state']}` | `{a['errors']}` | `{a['compatibility']}` |")
@@ -1331,7 +1461,7 @@ def verify_outputs(root: Path, outputs: dict[str, bytes]) -> None:
                 rejected+=1
             else:
                 raise ContractError(f"invalid vector accepted: {path}")
-        require(rejected==14,f"{record['module_id']} invalid vector count differs: {rejected}")
+        require(rejected==24,f"{record['module_id']} invalid vector count differs: {rejected}")
     subprocess.run([sys.executable,str(root / ANDROID_VERIFY_PATH)],cwd=root,check=True,timeout=60)
 
 

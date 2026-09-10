@@ -7,8 +7,8 @@
   "contract_tests": [
     {
       "path": "android-integration/module-contracts/verify_vectors.py",
-      "sha256": "d0b6e97f4829cebefff873e44aebe239e74570d7460f88a06e93f9992d3ee57b",
-      "size": 5928
+      "sha256": "7f0a63f81ed88755420359070cdfb33af2b6f960326efadd87888d60df42ec8f",
+      "size": 6282
     },
     {
       "path": "crates/trillionnium-owner-open-types/tests/module_contract_vectors.rs",
@@ -17,8 +17,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "8bbdc6d1a5553fcf86074ae5f360368c1a747263fa03f0e2ba08c8604e53ed64",
-      "size": 3849
+      "sha256": "1c8be47df5b6361b391cfb29d04cd3897fb1394e2115becf6fa5298ed8fe210a",
+      "size": 9491
     }
   ],
   "contracts": {
@@ -106,8 +106,8 @@
     "contract_tests": [
       {
         "path": "android-integration/module-contracts/verify_vectors.py",
-        "sha256": "d0b6e97f4829cebefff873e44aebe239e74570d7460f88a06e93f9992d3ee57b",
-        "size": 5928
+        "sha256": "7f0a63f81ed88755420359070cdfb33af2b6f960326efadd87888d60df42ec8f",
+        "size": 6282
       },
       {
         "path": "crates/trillionnium-owner-open-types/tests/module_contract_vectors.rs",
@@ -116,8 +116,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "8bbdc6d1a5553fcf86074ae5f360368c1a747263fa03f0e2ba08c8604e53ed64",
-        "size": 3849
+        "sha256": "1c8be47df5b6361b391cfb29d04cd3897fb1394e2115becf6fa5298ed8fe210a",
+        "size": 9491
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -136,8 +136,8 @@
   "test_sources": [
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "cb7cf7dc37c60bc97693e49dd16fe0696756933f97953254e583ba85764f51b0",
-      "size": 7652
+      "sha256": "711d4785ef1c2236de69afb701c58efc3ca855912b59930a6fcb60954e169812",
+      "size": 12845
     }
   ],
   "unknown_fields": "REJECT"
