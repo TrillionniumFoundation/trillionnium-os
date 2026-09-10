@@ -1,0 +1,208 @@
+name: Temporary telemetry V2 borrow-scope qualifier
+
+on:
+  push:
+    branches:
+      - ops/telemetry-v2-borrow-scope-qualifier-20260911
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CONTROLLER_BRANCH: ops/telemetry-v2-borrow-scope-qualifier-20260911
+  SOURCE_HEAD: 15d7ea40343b5fbb91a78d8ac6e61219c75a8baf
+  SOURCE_TREE: b78f89c8eb06673c6afb714ab7dc77e3b0252796
+  SOURCE_BASE: b681cd856fccac1189496576f25d259752d2dcce
+  CANDIDATE_BRANCH: codex/observe-shadow-telemetry-v2-20260911
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Repair exact borrow scopes, qualify, and publish through absence lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME:?}" = "$CONTROLLER_BRANCH"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "${GITHUB_SHA:?}"
+          git --no-replace-objects cat-file -e "${SOURCE_HEAD}^{commit}"
+          test "$(git --no-replace-objects rev-parse "${SOURCE_HEAD}^{tree}")" = "$SOURCE_TREE"
+          test "$(git --no-replace-objects rev-parse "${SOURCE_HEAD}^")" = "$SOURCE_BASE"
+          if git ls-remote --exit-code --heads origin "refs/heads/${CANDIDATE_BRANCH}" >/dev/null 2>&1; then
+            echo "candidate branch already exists; absence lease refused" >&2
+            exit 1
+          fi
+
+          worktree="${RUNNER_TEMP:?}/telemetry-v2-repair"
+          git worktree add --detach "$worktree" "$SOURCE_HEAD"
+          cd "$worktree"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("planned/crates/trillionnium-telemetry/src/catalog.rs")
+          source = path.read_text(encoding="utf-8")
+
+          old_last = """\
+                  if let Some(last) = state.last_events.get(&stream_key) {
+          """
+          new_last = """\
+                  let last_event = state.last_events.get(&stream_key).cloned();
+                  if let Some(last) = last_event {
+          """
+          if source.count(old_last) != 1:
+              raise SystemExit("last-event borrow anchor count differs")
+          source = source.replace(old_last, new_last, 1)
+
+          old_window = """\
+                  let window = state.windows.entry(series_key).or_default();
+                  if window.len() == self.max_samples_per_series {
+                      window.pop_front();
+                      let dropped = state
+                          .dropped_by_metric
+                          .entry(event.metric.clone())
+                          .or_default();
+                      *dropped = dropped
+                          .checked_add(1)
+                          .ok_or_else(|| TelemetryError::Invalid("metric drop count overflow".into()))?;
+                      push_gap(
+                          &mut state.gaps,
+                          self.max_gaps,
+                          CoverageGap {
+                              schema: COVERAGE_GAP_SCHEMA.to_string(),
+                              metric: event.metric.clone(),
+                              module_instance_id: event.module_instance_id.clone(),
+                              control_epoch: event.control_epoch,
+                              kind: CoverageGapKind::WindowEviction,
+                              expected_sequence: event.sequence,
+                              observed_sequence: event.sequence,
+                          },
+                      )?;
+                  }
+                  window.push_back(event.clone());
+          """
+          new_window = """\
+                  let window_evicted = {
+                      let window = state.windows.entry(series_key).or_default();
+                      let evicted = window.len() == self.max_samples_per_series;
+                      if evicted {
+                          window.pop_front();
+                      }
+                      window.push_back(event.clone());
+                      evicted
+                  };
+                  if window_evicted {
+                      let dropped = state
+                          .dropped_by_metric
+                          .entry(event.metric.clone())
+                          .or_default();
+                      *dropped = dropped
+                          .checked_add(1)
+                          .ok_or_else(|| TelemetryError::Invalid("metric drop count overflow".into()))?;
+                      push_gap(
+                          &mut state.gaps,
+                          self.max_gaps,
+                          CoverageGap {
+                              schema: COVERAGE_GAP_SCHEMA.to_string(),
+                              metric: event.metric.clone(),
+                              module_instance_id: event.module_instance_id.clone(),
+                              control_epoch: event.control_epoch,
+                              kind: CoverageGapKind::WindowEviction,
+                              expected_sequence: event.sequence,
+                              observed_sequence: event.sequence,
+                          },
+                      )?;
+                  }
+          """
+          if source.count(old_window) != 1:
+              raise SystemExit("window borrow anchor count differs")
+          source = source.replace(old_window, new_window, 1)
+          path.write_text(source, encoding="utf-8")
+          PY
+
+          cargo fmt --manifest-path planned/Cargo.toml --all
+          git add -- planned/crates/trillionnium-telemetry/src/catalog.rs
+          test "$(git diff --cached --name-only)" = "planned/crates/trillionnium-telemetry/src/catalog.rs"
+          git diff --cached --check
+
+          python3 -m unittest tools.tests.test_metric_catalog -v
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml -p trillionnium-telemetry --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml -p trillionnium-telemetry --all-targets -- -D warnings
+
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+          git diff --cached --check
+
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git commit -m 'fix(telemetry): separate ingest borrow scopes' \
+            -m 'Clone the retained last-event record before mutating coverage gaps, and finish the per-series window borrow before updating drop counters or gaps. Preserve event admission, idempotence, sequence and clock semantics, semantic_authority=false, active_control=false and automatic_redispatch=false.'
+
+          candidate_head="$(git --no-replace-objects rev-parse HEAD)"
+          candidate_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$SOURCE_HEAD"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git push --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:" \
+            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+
+          receipt="${RUNNER_TEMP:?}/telemetry-v2-borrow-scope-receipt.env"
+          {
+            printf 'schema=org.trillionnium.telemetry-v2-borrow-scope-receipt.v1\n'
+            printf 'controller_head=%s\n' "${GITHUB_SHA:?}"
+            printf 'source_head=%s\n' "$SOURCE_HEAD"
+            printf 'source_tree=%s\n' "$SOURCE_TREE"
+            printf 'candidate_branch=%s\n' "$CANDIDATE_BRANCH"
+            printf 'candidate_head=%s\n' "$candidate_head"
+            printf 'candidate_tree=%s\n' "$candidate_tree"
+            printf 'changed_file_count=1\n'
+            printf 'metric_count=43\n'
+            printf 'semantic_authority=false\n'
+            printf 'active_control=false\n'
+            printf 'automatic_redispatch=false\n'
+            printf 'zero_gap=false\n'
+            printf 'public_release=false\n'
+            printf 'qualification=L1_SOURCE_ONLY\n'
+          } > "$receipt"
+          cat "$receipt"
+
+      - name: Upload non-authorizing qualification receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: telemetry-v2-borrow-scope-${{ github.sha }}
+          path: ${{ runner.temp }}/telemetry-v2-borrow-scope-receipt.env
+          if-no-files-found: error
+          retention-days: 30
