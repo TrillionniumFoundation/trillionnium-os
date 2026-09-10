@@ -1,0 +1,152 @@
+name: Temporary PR76 performance and determinism V4 controller
+
+on:
+  push:
+    branches:
+      - ops/pr76-performance-and-determinism-v4-20260911
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CONTROLLER_BRANCH: ops/pr76-performance-and-determinism-v4-20260911
+  CANDIDATE_BRANCH: codex/performance-measurement-v2-20260910
+  EXPECTED_CANDIDATE_HEAD: c54d7632e51619409ac9cce3cd1be9d05d405e04
+  PERF_PATCH_XZ_SHA256: d94c7a8eb88f9160f483daf8afc6de44e31a680fe943057734521bef7861c612
+  PERF_PATCH_SHA256: c79827d4a1df0648b4801ecda0b3177cdbab2bf622039f337cf02a3641668f44
+  DET_PATCH_XZ_SHA256: 6aee09bb6764d3de3933597fdfd77ad9701bad385cf601041828497cc3b52580
+  DET_PATCH_SHA256: 4e1e8ace0d332193a716e861b07f868cb841c5d9d25f6472446bf4d6aa9354f1
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Authenticate patches, qualify exact source, and publish through lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME:?}" = "$CONTROLLER_BRANCH"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "${GITHUB_SHA:?}"
+
+          perf_xz="$GITHUB_WORKSPACE/ops/pr76-performance-v4.patch.xz"
+          det_xz="$GITHUB_WORKSPACE/ops/main-python-determinism-v1.patch.xz"
+          test -f "$perf_xz" && test ! -L "$perf_xz"
+          test -f "$det_xz" && test ! -L "$det_xz"
+          printf '%s  %s\n' "$PERF_PATCH_XZ_SHA256" "$perf_xz" | sha256sum --check --strict
+          printf '%s  %s\n' "$DET_PATCH_XZ_SHA256" "$det_xz" | sha256sum --check --strict
+
+          perf_patch="${RUNNER_TEMP:?}/pr76-performance-v4.patch"
+          det_patch="${RUNNER_TEMP:?}/main-python-determinism-v1.patch"
+          xz --decompress --stdout "$perf_xz" > "$perf_patch"
+          xz --decompress --stdout "$det_xz" > "$det_patch"
+          printf '%s  %s\n' "$PERF_PATCH_SHA256" "$perf_patch" | sha256sum --check --strict
+          printf '%s  %s\n' "$DET_PATCH_SHA256" "$det_patch" | sha256sum --check --strict
+
+          remote_head="$(git ls-remote --exit-code --heads origin "refs/heads/${CANDIDATE_BRANCH}" | awk '{print $1}')"
+          test "$remote_head" = "$EXPECTED_CANDIDATE_HEAD"
+          git --no-replace-objects cat-file -e "${EXPECTED_CANDIDATE_HEAD}^{commit}"
+
+          worktree="${RUNNER_TEMP:?}/pr76-v4-source"
+          git worktree add --detach "$worktree" "$EXPECTED_CANDIDATE_HEAD"
+          cd "$worktree"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$EXPECTED_CANDIDATE_HEAD"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+          git apply --binary --index --check "$perf_patch"
+          git apply --binary --index "$perf_patch"
+          git apply --binary --index --check "$det_patch"
+          git apply --binary --index "$det_patch"
+
+          expected="${RUNNER_TEMP:?}/pr76-v4.expected"
+          actual="${RUNNER_TEMP:?}/pr76-v4.actual"
+          printf '%s\n' \
+            'docs/PERFORMANCE_AND_OPTIMIZATION.md' \
+            'tools/perf/README.md' \
+            'tools/perf/performance_qualification.py' \
+            'tools/perf/performance_qualification_policy_registry.v1.json' \
+            'tools/tests/test_performance_qualification.py' \
+            'tools/tests/test_product_baseline_process_group_cleanup.py' \
+            'tools/tests/test_verify_init_agent_activation.py' \
+            'tools/verify_init_agent_activation.py' | LC_ALL=C sort > "$expected"
+          git diff --cached --name-only | LC_ALL=C sort > "$actual"
+          diff --unified "$expected" "$actual"
+          git diff --cached --check
+
+          python3 -m unittest tools.tests.test_performance_qualification -v
+          python3 -m unittest tools.tests.test_verify_init_agent_activation -v
+          python3 -m unittest tools.tests.test_product_baseline_process_group_cleanup -v
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+
+          cargo fmt --all -- --check
+          cargo test --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+          git diff --cached --check
+
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git commit -m 'fix(perf): bind policy work and raw outcomes' \
+            -m 'Load qualification tolerances from a content-addressed registry; bind workload configuration and operation denominators; gate normalized throughput; derive and reconcile unknown outcomes; reject L2 unknowns; make special-file acquisition nonblocking and fail closed; and remove read-induced atime and PID-publication nondeterminism. Preserve automatic_redispatch=false, zero_gap=false, and public_release=false.'
+
+          candidate_head="$(git --no-replace-objects rev-parse HEAD)"
+          candidate_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$EXPECTED_CANDIDATE_HEAD"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+          git push --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${EXPECTED_CANDIDATE_HEAD}" \
+            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+
+          receipt="${RUNNER_TEMP:?}/pr76-v4-controller-receipt.env"
+          {
+            printf 'schema=org.trillionnium.pr76-v4-controller-receipt.v1\n'
+            printf 'controller_head=%s\n' "${GITHUB_SHA:?}"
+            printf 'candidate_previous_head=%s\n' "$EXPECTED_CANDIDATE_HEAD"
+            printf 'candidate_head=%s\n' "$candidate_head"
+            printf 'candidate_tree=%s\n' "$candidate_tree"
+            printf 'performance_patch_sha256=%s\n' "$PERF_PATCH_SHA256"
+            printf 'determinism_patch_sha256=%s\n' "$DET_PATCH_SHA256"
+            printf 'changed_file_count=8\n'
+            printf 'automatic_redispatch=false\n'
+            printf 'zero_gap=false\n'
+            printf 'public_release=false\n'
+            printf 'qualification=L1_SOURCE_REPAIR_ONLY\n'
+          } > "$receipt"
+          cat "$receipt"
+
+      - name: Upload non-authorizing controller receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr76-v4-controller-${{ github.sha }}
+          path: ${{ runner.temp }}/pr76-v4-controller-receipt.env
+          if-no-files-found: error
+          retention-days: 30
