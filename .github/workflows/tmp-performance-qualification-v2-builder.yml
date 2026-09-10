@@ -93,14 +93,13 @@ jobs:
 
           expected="${RUNNER_TEMP:?}/performance-qualification-v2.expected"
           actual="${RUNNER_TEMP:?}/performance-qualification-v2.actual"
-          cat > "$expected" <<'EOF_EXPECTED'
-.github/workflows/g1-exact-head-source.yml
-.github/workflows/g1-synthetic-merge.yml
-docs/PERFORMANCE_AND_OPTIMIZATION.md
-tools/perf/README.md
-tools/perf/performance_qualification.py
-tools/tests/test_performance_qualification.py
-EOF_EXPECTED
+          printf '%s\n' \
+            '.github/workflows/g1-exact-head-source.yml' \
+            '.github/workflows/g1-synthetic-merge.yml' \
+            'docs/PERFORMANCE_AND_OPTIMIZATION.md' \
+            'tools/perf/README.md' \
+            'tools/perf/performance_qualification.py' \
+            'tools/tests/test_performance_qualification.py' > "$expected"
           git diff --cached --name-only | LC_ALL=C sort > "$actual"
           diff --unified "$expected" "$actual"
           test -z "$(grep -E '^(ops/|\.github/workflows/tmp-)' "$actual" || true)"
