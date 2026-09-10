@@ -1,0 +1,171 @@
+name: Temporary PR76 performance-boundary repair v2
+
+on:
+  push:
+    branches:
+      - ops/pr76-performance-qualification-repair-v2-20260910
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-pr76-performance-qualification-repair-v2
+  cancel-in-progress: true
+
+env:
+  PR_HEAD_SHA: c54d7632e51619409ac9cce3cd1be9d05d405e04
+  BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+  TARGET_BRANCH: codex/performance-measurement-v2-20260910
+  PATCH_XZ_SHA256: d3c63c28f69e526fc2de6698fd411820956ebe5e3a34d848be39510705f62b54
+  PATCH_SHA256: e4c4f6d5ed79c247807fbb3a838bd8d362108fd23e94f00a371917c4606af5d4
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  repair-qualify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out immutable repair controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Authenticate controller and repair patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$PR_HEAD_SHA"
+          observed="$(git --no-replace-objects diff --name-only "$PR_HEAD_SHA"...HEAD | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/tmp-pr76-performance-boundary-repair-v2.yml' \
+            'ops/pr76-performance-repair.patch.xz' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          cp -- ops/pr76-performance-repair.patch.xz "${RUNNER_TEMP:?}/repair.patch.xz"
+          printf '%s  %s\n' "$PATCH_XZ_SHA256" "${RUNNER_TEMP:?}/repair.patch.xz" | sha256sum --check --strict
+          xz --decompress --stdout -- "${RUNNER_TEMP:?}/repair.patch.xz" > "${RUNNER_TEMP:?}/repair.patch"
+          printf '%s  %s\n' "$PATCH_SHA256" "${RUNNER_TEMP:?}/repair.patch" | sha256sum --check --strict
+
+      - name: Install declared source-test tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Apply exact four-file repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git --no-replace-objects checkout --detach "$PR_HEAD_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git apply --check --whitespace=error-all "${RUNNER_TEMP:?}/repair.patch"
+          git apply --whitespace=error-all "${RUNNER_TEMP:?}/repair.patch"
+          observed="$(git diff --name-only | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            'docs/PERFORMANCE_AND_OPTIMIZATION.md' \
+            'tools/perf/README.md' \
+            'tools/perf/performance_qualification.py' \
+            'tools/tests/test_performance_qualification.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          python3 -m py_compile \
+            tools/perf/performance_qualification.py \
+            tools/tests/test_performance_qualification.py
+          git diff --check
+
+      - name: Execute focused hostile performance contract matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest tools.tests.test_performance_qualification -v
+          python3 - <<'PY'
+          import importlib.util
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+          import tempfile
+
+          path = Path('tools/perf/performance_qualification.py').resolve()
+          spec = importlib.util.spec_from_file_location('_perf_qualification_gate', path)
+          if spec is None or spec.loader is None:
+              raise SystemExit('cannot import performance qualification module')
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+
+          with tempfile.TemporaryDirectory() as temporary:
+              fifo = Path(temporary) / 'hostile.fifo'
+              os.mkfifo(fifo)
+              process = subprocess.run(
+                  [sys.executable, '-c', (
+                      'import importlib.util,sys;'
+                      f's=importlib.util.spec_from_file_location("m",{str(path)!r});'
+                      'm=importlib.util.module_from_spec(s);s.loader.exec_module(m);'
+                      f'm._read_bounded(__import__("pathlib").Path({str(fifo)!r}))'
+                  )],
+                  capture_output=True,
+                  timeout=2,
+                  check=False,
+              )
+              if process.returncode == 0:
+                  raise SystemExit('FIFO was accepted by bounded input acquisition')
+          print('PR76_FOCUSED_HOSTILE_MATRIX_PASS')
+          PY
+
+      - name: Execute complete repository qualification matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+          git diff --check
+
+      - name: Publish repaired exact head through immutable branch lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$PR_HEAD_SHA"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$BASE_SHA"
+          test ! -e ops/pr76-performance-repair.patch.xz
+          test ! -e .github/workflows/tmp-pr76-performance-boundary-repair-v2.yml
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -- \
+            docs/PERFORMANCE_AND_OPTIMIZATION.md \
+            tools/perf/README.md \
+            tools/perf/performance_qualification.py \
+            tools/tests/test_performance_qualification.py
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit \
+            -m 'fix(perf): bind work denominator raw unknowns and regular inputs' \
+            -m 'Bind the exact workload configuration and operation denominator across A/C cohorts, gate normalized throughput, derive and reconcile unknown rates from raw outcomes, and acquire evidence files nonblocking through regular-descriptor checks. Preserve L1/L2, WL-11/WL-12, automatic_redispatch=false and public_release=false boundaries.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$PR_HEAD_SHA"
+          git push \
+            --force-with-lease="refs/heads/${TARGET_BRANCH}:${PR_HEAD_SHA}" \
+            origin "HEAD:refs/heads/${TARGET_BRANCH}"
+          printf 'published_head=%s\npublished_tree=%s\n' "$final" "$tree"
