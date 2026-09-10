@@ -1,0 +1,88 @@
+name: Temporary exact-head review routing controller
+
+on:
+  push:
+    branches:
+      - ops/review-routing-controller-20260911
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  route:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Route fresh reviewers and ordinary auto-merge by exact head branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          find_pr() {
+            local branch="$1"
+            gh pr list \
+              --repo "$REPOSITORY" \
+              --state open \
+              --head "$branch" \
+              --json number \
+              --jq 'if length == 1 then .[0].number else empty end'
+          }
+
+          request_reviewers() {
+            local number="$1"
+            gh api \
+              --method POST \
+              -H 'Accept: application/vnd.github+json' \
+              "repos/${REPOSITORY}/pulls/${number}/requested_reviewers" \
+              -f 'reviewers[]=Tomasrgbsf' \
+              -f 'reviewers[]=Franksudoman' >/dev/null
+          }
+
+          route() {
+            local branch="$1"
+            local allow_auto_merge="$2"
+            local number
+            number="$(find_pr "$branch")"
+            if [[ -z "$number" ]]; then
+              printf 'branch=%s pr=ABSENT\n' "$branch"
+              return 0
+            fi
+            request_reviewers "$number"
+            draft="$(gh pr view "$number" --repo "$REPOSITORY" --json isDraft --jq '.isDraft')"
+            printf 'branch=%s pr=%s draft=%s\n' "$branch" "$number" "$draft"
+            if [[ "$allow_auto_merge" == true && "$draft" == false ]]; then
+              gh pr merge "$number" --repo "$REPOSITORY" --auto --merge || \
+                printf 'branch=%s pr=%s auto_merge=HELD_BY_REPOSITORY\n' "$branch" "$number"
+            fi
+          }
+
+          route codex/executable-module-contracts-v3-main-20260910 true
+          route codex/performance-measurement-v2-20260910 false
+          route codex/source-qualification-observation-races-20260911 true
+          route codex/telemetry-observe-shadow-v2-20260910 false
+
+      - name: Publish non-authorizing routing checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          body=$(cat <<'EOF'
+          ## Exact-head review routing checkpoint
+
+          Review requests were refreshed by exact head branch for #55/#56, the source-qualification observation-race prerequisite, and the #57 observe/shadow candidate wherever a unique open PR exists. Ordinary auto-merge was requested only for non-Draft source candidates and remains subject to all branch protection, exact-head checks, fresh independent approvals and unresolved-thread rules.
+
+          No review was dismissed, no self-approval was submitted, no administrator bypass was requested, and no L2-L6 evidence or release authority was minted.
+
+          ```text
+          automatic_redispatch=false
+          global_control_activation=OBSERVE_ONLY
+          zero_gap=false
+          public_release=false
+          ```
+          EOF
+          )
+          gh issue comment 51 --repo "$REPOSITORY" --body "$body"
