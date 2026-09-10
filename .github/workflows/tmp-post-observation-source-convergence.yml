@@ -1,0 +1,226 @@
+name: Temporary post-observation source convergence
+
+on:
+  push:
+    branches:
+      - ops/post-observation-source-convergence-20260911
+
+permissions:
+  contents: write
+  actions: read
+  pull-requests: read
+  issues: write
+
+concurrency:
+  group: temporary-post-observation-source-convergence
+  cancel-in-progress: true
+
+env:
+  OLD_BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+  PR75_ORIGINAL_SHA: c543385f6b0cef61ef14086db92a465f7b0598f2
+  PR76_ORIGINAL_SHA: c54d7632e51619409ac9cce3cd1be9d05d405e04
+  PR75_PATCH_BLOB_SHA: 216521fc19e95e3f6890198b63af543e8d29c3c4
+  PR75_PATCH_SHA256: 1da9aea4130428962df4f74618cf6a24e11f7770e6f234e3b1af6f9838a4c84f
+  PR76_PATCH_XZ_SHA256: d3c63c28f69e526fc2de6698fd411820956ebe5e3a34d848be39510705f62b54
+  PR76_PATCH_SHA256: e4c4f6d5ed79c247807fbb3a838bd8d362108fd23e94f00a371917c4606af5d4
+  PR75_STAGING: staging/pr75-post-observation-race-20260911
+  PR76_STAGING: staging/pr76-post-observation-race-20260911
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  converge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out immutable controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Authenticate controller and wait for protected prerequisite
+        id: prerequisite
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$OLD_BASE_SHA"
+          test "$(git --no-replace-objects diff --name-only "$OLD_BASE_SHA"...HEAD)" = '.github/workflows/tmp-post-observation-source-convergence.yml'
+          ready=false
+          for attempt in $(seq 1 150); do
+            git fetch --no-tags origin main
+            main_sha="$(git --no-replace-objects rev-parse origin/main)"
+            if git show "${main_sha}:tools/verify_init_agent_activation.py" | grep -Fq 'def _stable_stat_identity' && \
+               git show "${main_sha}:tools/tests/test_product_baseline_process_group_cleanup.py" | grep -Fq 'child PID was not published completely within two seconds'; then
+              ready=true
+              printf 'main_sha=%s\n' "$main_sha" >> "$GITHUB_OUTPUT"
+              break
+            fi
+            printf 'prerequisite_attempt=%s main=%s state=HOLD\n' "$attempt" "$main_sha"
+            sleep 60
+          done
+          test "$ready" = true
+
+      - name: Install source-test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Materialize authenticated repair payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            ops/pr75-review-packet-repair-v1-20260910 \
+            ops/pr76-performance-qualification-repair-v3-20260910
+          git show origin/ops/pr75-review-packet-repair-v1-20260910:ops/pr75-review-packet.patch.xz > "${RUNNER_TEMP:?}/pr75.patch.xz"
+          test "$(git hash-object --no-filters -- "${RUNNER_TEMP:?}/pr75.patch.xz")" = "$PR75_PATCH_BLOB_SHA"
+          xz --decompress --stdout -- "${RUNNER_TEMP:?}/pr75.patch.xz" > "${RUNNER_TEMP:?}/pr75.patch"
+          printf '%s  %s\n' "$PR75_PATCH_SHA256" "${RUNNER_TEMP:?}/pr75.patch" | sha256sum --check --strict
+          git show origin/ops/pr76-performance-qualification-repair-v3-20260910:ops/pr76-performance-repair.patch.xz > "${RUNNER_TEMP:?}/pr76.patch.xz"
+          printf '%s  %s\n' "$PR76_PATCH_XZ_SHA256" "${RUNNER_TEMP:?}/pr76.patch.xz" | sha256sum --check --strict
+          xz --decompress --stdout -- "${RUNNER_TEMP:?}/pr76.patch.xz" > "${RUNNER_TEMP:?}/pr76.patch"
+          printf '%s  %s\n' "$PR76_PATCH_SHA256" "${RUNNER_TEMP:?}/pr76.patch" | sha256sum --check --strict
+
+      - name: Rebuild and qualify PR75 on protected prerequisite
+        id: pr75
+        shell: bash
+        env:
+          NEW_MAIN_SHA: ${{ steps.prerequisite.outputs.main_sha }}
+        run: |
+          set -euo pipefail
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git branch -f candidate-pr75 "$PR75_ORIGINAL_SHA"
+          git switch candidate-pr75
+          git rebase --onto "$NEW_MAIN_SHA" "$OLD_BASE_SHA"
+          test "$(git --no-replace-objects merge-base "$NEW_MAIN_SHA" HEAD)" = "$NEW_MAIN_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git apply -p1 --check --whitespace=error-all "${RUNNER_TEMP:?}/pr75.patch"
+          git apply -p1 --whitespace=error-all "${RUNNER_TEMP:?}/pr75.patch"
+          python3 -m unittest tools.tests.test_module_contracts -v
+          python3 tools/contracts/generate_module_contracts.py --write
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 tools/contracts/check_module_contract_compatibility.py --base-ref "$NEW_MAIN_SHA"
+          python3 android-integration/module-contracts/verify_vectors.py
+          git diff --check
+          git status --porcelain=v1 --untracked-files=all --ignore-submodules=none > "${RUNNER_TEMP:?}/pr75.expected-status"
+          test -s "${RUNNER_TEMP:?}/pr75.expected-status"
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+          git diff --check
+          git status --porcelain=v1 --untracked-files=all --ignore-submodules=none > "${RUNNER_TEMP:?}/pr75.observed-status"
+          cmp --silent "${RUNNER_TEMP:?}/pr75.expected-status" "${RUNNER_TEMP:?}/pr75.observed-status"
+          git add -A
+          if git diff --cached --name-only | grep -E '^(ops/|\.github/workflows/tmp-)'; then
+            printf '%s\n' 'temporary controller path leaked into PR75 candidate' >&2
+            exit 1
+          fi
+          git diff --cached --check
+          git commit \
+            -m 'fix(contracts): require content-addressed migration review packets' \
+            -m 'Rebase executable contracts onto the protected source-observation repair and replace opaque author-controlled review metadata with a bounded content-addressed packet. Preserve fresh GitHub independent approval as a separate protected requirement and retain automatic_redispatch=false, OBSERVE_ONLY and the L1-only claim ceiling.'
+          pr75_head="$(git --no-replace-objects rev-parse HEAD)"
+          pr75_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git ls-remote --heads origin "refs/heads/${PR75_STAGING}")"
+          git push --force-with-lease="refs/heads/${PR75_STAGING}:" origin "HEAD:refs/heads/${PR75_STAGING}"
+          printf 'head=%s\ntree=%s\n' "$pr75_head" "$pr75_tree" >> "$GITHUB_OUTPUT"
+
+      - name: Rebuild and qualify PR76 on protected prerequisite
+        id: pr76
+        shell: bash
+        env:
+          NEW_MAIN_SHA: ${{ steps.prerequisite.outputs.main_sha }}
+        run: |
+          set -euo pipefail
+          git switch --detach "$PR76_ORIGINAL_SHA"
+          git branch -f candidate-pr76 HEAD
+          git switch candidate-pr76
+          git rebase --onto "$NEW_MAIN_SHA" "$OLD_BASE_SHA"
+          test "$(git --no-replace-objects merge-base "$NEW_MAIN_SHA" HEAD)" = "$NEW_MAIN_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git apply --check --whitespace=error-all "${RUNNER_TEMP:?}/pr76.patch"
+          git apply --whitespace=error-all "${RUNNER_TEMP:?}/pr76.patch"
+          python3 -m unittest tools.tests.test_performance_qualification -v
+          git diff --check
+          git status --porcelain=v1 --untracked-files=all --ignore-submodules=none > "${RUNNER_TEMP:?}/pr76.expected-status"
+          test -s "${RUNNER_TEMP:?}/pr76.expected-status"
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --all-targets
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets
+          cargo clippy --locked --manifest-path planned/Cargo.toml --workspace --all-targets -- -D warnings
+          git diff --check
+          git status --porcelain=v1 --untracked-files=all --ignore-submodules=none > "${RUNNER_TEMP:?}/pr76.observed-status"
+          cmp --silent "${RUNNER_TEMP:?}/pr76.expected-status" "${RUNNER_TEMP:?}/pr76.observed-status"
+          git add -A
+          observed="$(git diff --cached --name-only | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            'docs/PERFORMANCE_AND_OPTIMIZATION.md' \
+            'tools/perf/README.md' \
+            'tools/perf/performance_qualification.py' \
+            'tools/tests/test_performance_qualification.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          git diff --cached --check
+          git commit \
+            -m 'fix(perf): bind equal work and raw outcome truth' \
+            -m 'Rebase the controlled qualification contract onto the protected source-observation repair. Bind exact workload/configuration and operation denominators, gate normalized throughput, derive and reconcile raw unknown outcomes, reject every L2 raw unknown, and acquire bounded regular inputs without blocking on special files. Thresholds remain fixed.'
+          pr76_head="$(git --no-replace-objects rev-parse HEAD)"
+          pr76_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test -z "$(git ls-remote --heads origin "refs/heads/${PR76_STAGING}")"
+          git push --force-with-lease="refs/heads/${PR76_STAGING}:" origin "HEAD:refs/heads/${PR76_STAGING}"
+          printf 'head=%s\ntree=%s\n' "$pr76_head" "$pr76_tree" >> "$GITHUB_OUTPUT"
+
+      - name: Publish non-authorizing staging receipt
+        shell: bash
+        env:
+          NEW_MAIN_SHA: ${{ steps.prerequisite.outputs.main_sha }}
+          PR75_HEAD: ${{ steps.pr75.outputs.head }}
+          PR75_TREE: ${{ steps.pr75.outputs.tree }}
+          PR76_HEAD: ${{ steps.pr76.outputs.head }}
+          PR76_TREE: ${{ steps.pr76.outputs.tree }}
+        run: |
+          set -euo pipefail
+          body=$(cat <<EOF
+          ## Post-observation source convergence staging receipt
+
+          Protected prerequisite: \`${NEW_MAIN_SHA}\`.
+
+          - #55 staging: \`${PR75_STAGING}\`, head \`${PR75_HEAD}\`, tree \`${PR75_TREE}\`.
+          - #56 staging: \`${PR76_STAGING}\`, head \`${PR76_HEAD}\`, tree \`${PR76_TREE}\`.
+
+          Both staging heads were produced only after focused hostile tests, generated-artifact verification, complete Python discovery, Rust 1.93 formatting/tests/strict Clippy, planned-workspace formatting/tests/strict Clippy, documentation/authority checks and clean-path comparison. They are not yet protected PR evidence. A linked-account branch publication, fresh exact-head/synthetic-merge workflows, fresh non-author review and ordinary protected integration remain mandatory.
+
+          No L2-L6 evidence or release authority is minted; \`automatic_redispatch=false\`, \`zero_gap=false\`, \`public_release=false\`.
+          EOF
+          )
+          gh issue comment 51 --repo "$GITHUB_REPOSITORY" --body "$body"
