@@ -110,8 +110,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "22ed9364c3cdc8a48a1a570f8c3211fb9c8f980f2e9d7fa1f85c153b71245343",
-        "size": 25337
+        "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
+        "size": 25928
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",

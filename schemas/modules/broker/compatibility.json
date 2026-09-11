@@ -31,8 +31,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "22ed9364c3cdc8a48a1a570f8c3211fb9c8f980f2e9d7fa1f85c153b71245343",
-      "size": 25337
+      "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
+      "size": 25928
     }
   ],
   "contracts": {
@@ -318,8 +318,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "22ed9364c3cdc8a48a1a570f8c3211fb9c8f980f2e9d7fa1f85c153b71245343",
-        "size": 25337
+        "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
+        "size": 25928
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -338,8 +338,8 @@
   "test_sources": [
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "95d9bad9f051c928f0686ca59859092c0c42fef5156a617df3b285dcd127cc2f",
-      "size": 32901
+      "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
+      "size": 37209
     }
   ],
   "unknown_fields": "REJECT"

@@ -3,8 +3,10 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -198,6 +200,112 @@ class ModuleContractTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "permission denied fixture"):
                 self.checker.git(["ls-tree"], "permission simulation")
 
+
+    @unittest.skipUnless(
+        hasattr(os, "mkfifo")
+        and hasattr(os, "O_NONBLOCK")
+        and hasattr(os, "pread")
+        and os.open in os.supports_dir_fd
+        and os.stat in os.supports_dir_fd
+        and os.stat in os.supports_follow_symlinks,
+        "descriptor-relative nonblocking file acquisition is unavailable",
+    )
+    def test_review_packet_acquisition_is_nonblocking_and_descriptor_relative(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            packet_directory = root / "docs/reviews/module-contracts"
+            packet_directory.mkdir(parents=True)
+            fifo_digest = "0" * 64
+            fifo_relative = (
+                f"docs/reviews/module-contracts/{fifo_digest}.json"
+            )
+            fifo = root / fifo_relative
+            os.mkfifo(fifo)
+            probe = r"""
+import importlib.util
+from pathlib import Path
+import sys
+
+spec = importlib.util.spec_from_file_location("_packet_probe", sys.argv[1])
+if spec is None or spec.loader is None:
+    raise SystemExit(4)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+try:
+    if sys.argv[2] == "checker":
+        module.read_review_packet(
+            Path(sys.argv[3]), sys.argv[4], sys.argv[5], "MOD-FIXTURE"
+        )
+    else:
+        module.read_review_packet(Path(sys.argv[3]), sys.argv[4])
+except ValueError as error:
+    print(error, file=sys.stderr)
+    raise SystemExit(0 if "not one bounded regular file" in str(error) else 5)
+raise SystemExit(6)
+"""
+            for kind, source in (("checker", CHECKER), ("generator", GENERATOR)):
+                with self.subTest(kind=kind):
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            "-c",
+                            probe,
+                            str(source),
+                            kind,
+                            str(root),
+                            fifo_relative,
+                            fifo_digest,
+                        ],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=3,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn("not one bounded regular file", result.stderr)
+
+            fifo.unlink()
+            regular_raw = self.checker.canonical_packet({"fixture": True})
+            regular_digest = self.checker.sha256_bytes(regular_raw)
+            regular_relative = (
+                f"docs/reviews/module-contracts/{regular_digest}.json"
+            )
+            (root / regular_relative).write_bytes(regular_raw)
+            self.assertEqual(
+                self.checker.read_review_packet(
+                    root,
+                    regular_relative,
+                    regular_digest,
+                    "MOD-FIXTURE",
+                ),
+                regular_raw,
+            )
+            self.assertEqual(
+                self.contracts.read_review_packet(root, regular_relative),
+                (regular_raw, regular_digest),
+            )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            root = base / "root"
+            outside = base / "outside"
+            root.mkdir()
+            packet_directory = outside / "reviews/module-contracts"
+            packet_directory.mkdir(parents=True)
+            raw = self.checker.canonical_packet({"fixture": "outside"})
+            digest = self.checker.sha256_bytes(raw)
+            relative = f"docs/reviews/module-contracts/{digest}.json"
+            (packet_directory / f"{digest}.json").write_bytes(raw)
+            (root / "docs").symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "descriptor acquisition failed"):
+                self.checker.read_review_packet(
+                    root,
+                    relative,
+                    digest,
+                    "MOD-FIXTURE",
+                )
+            with self.assertRaisesRegex(ValueError, "descriptor acquisition failed"):
+                self.contracts.read_review_packet(root, relative)
 
     def test_change_review_state_machine_is_closed_and_one_shot(self) -> None:
         migration = {

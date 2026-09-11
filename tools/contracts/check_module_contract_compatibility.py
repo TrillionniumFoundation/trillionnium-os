@@ -114,25 +114,29 @@ def read_review_packet(
     pure = PurePosixPath(relative)
     if pure.is_absolute() or any(part in {"", ".", ".."} for part in pure.parts):
         raise ValueError(f"{label}: review packet path is unsafe")
-    candidate = root
-    try:
-        for part in pure.parts:
-            candidate = candidate / part
-            metadata = os.lstat(candidate)
-            if stat.S_ISLNK(metadata.st_mode):
-                raise ValueError(f"{label}: review packet path contains a symlink")
-    except OSError as error:
-        raise ValueError(f"{label}: review packet path is unavailable") from error
+    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
+    if any(not hasattr(os, name) for name in required_flags) or not hasattr(os, "pread"):
+        raise ValueError(f"{label}: review packet safe acquisition is unavailable")
+    if (
+        os.open not in os.supports_dir_fd
+        or os.stat not in os.supports_dir_fd
+        or os.stat not in os.supports_follow_symlinks
+    ):
+        raise ValueError(f"{label}: descriptor-relative review packet acquisition is unavailable")
 
-    required_flags = ("O_CLOEXEC", "O_NOFOLLOW")
-    if any(not hasattr(os, name) for name in required_flags):
-        raise ValueError(f"{label}: review packet no-follow acquisition is unavailable")
-    flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW
+    directory_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
+    directory_descriptors: list[int] = []
+    descriptor: int | None = None
     try:
-        descriptor = os.open(candidate, flags)
-    except OSError as error:
-        raise ValueError(f"{label}: review packet open failed") from error
-    try:
+        directory_descriptors.append(os.open(root, directory_flags))
+        for part in pure.parts[:-1]:
+            directory_descriptors.append(
+                os.open(part, directory_flags, dir_fd=directory_descriptors[-1])
+            )
+        parent_descriptor = directory_descriptors[-1]
+        leaf = pure.parts[-1]
+        descriptor = os.open(leaf, file_flags, dir_fd=parent_descriptor)
         before = os.fstat(descriptor)
         if (
             not stat.S_ISREG(before.st_mode)
@@ -141,25 +145,31 @@ def read_review_packet(
             or before.st_size > REVIEW_PACKET_MAX_BYTES
         ):
             raise ValueError(f"{label}: review packet is not one bounded regular file")
-        remaining = before.st_size + 1
         chunks: list[bytes] = []
-        while remaining:
-            chunk = os.read(descriptor, min(65536, remaining))
+        offset = 0
+        while offset < before.st_size:
+            chunk = os.pread(
+                descriptor,
+                min(65536, before.st_size - offset),
+                offset,
+            )
             if not chunk:
-                break
+                raise ValueError(f"{label}: review packet short read")
             chunks.append(chunk)
-            remaining -= len(chunk)
+            offset += len(chunk)
         raw = b"".join(chunks)
         after = os.fstat(descriptor)
+        current = os.stat(leaf, dir_fd=parent_descriptor, follow_symlinks=False)
+    except ValueError:
+        raise
     except OSError as error:
-        raise ValueError(f"{label}: review packet read failed") from error
+        raise ValueError(f"{label}: review packet descriptor acquisition failed") from error
     finally:
-        os.close(descriptor)
+        if descriptor is not None:
+            os.close(descriptor)
+        for directory_descriptor in reversed(directory_descriptors):
+            os.close(directory_descriptor)
 
-    try:
-        current = os.lstat(candidate)
-    except OSError as error:
-        raise ValueError(f"{label}: review packet pathname disappeared") from error
     if (
         len(raw) != before.st_size
         or len(raw) > REVIEW_PACKET_MAX_BYTES
