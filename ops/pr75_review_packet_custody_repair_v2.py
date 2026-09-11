@@ -32,8 +32,7 @@ def replace_between(
     return text[:start] + replacement + text[end:]
 
 
-checker = CHECKER.read_text(encoding="utf-8")
-checker_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
+CHECKER_ACQUISITION = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
     if any(not hasattr(os, name) for name in required_flags) or not hasattr(os, "pread"):
         raise ValueError(f"{label}: review packet safe acquisition is unavailable")
     if (
@@ -97,18 +96,8 @@ checker_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NO
     ):
         raise ValueError(f"{label}: review packet changed while being read")
 '''
-checker = replace_between(
-    checker,
-    "    candidate = root\n",
-    "    if sha256_bytes(raw) != expected_sha256:\n",
-    checker_acquisition,
-    "checker",
-)
-CHECKER.write_text(checker, encoding="utf-8")
 
-
-generator = GENERATOR.read_text(encoding="utf-8")
-generator_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
+GENERATOR_ACQUISITION = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
     require(
         all(hasattr(os, name) for name in required_flags) and hasattr(os, "pread"),
         "review packet safe acquisition is unavailable",
@@ -172,13 +161,58 @@ generator_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_
         "review packet changed while being read",
     )
 '''
-generator = replace_between(
-    generator,
+
+checker = CHECKER.read_text(encoding="utf-8")
+checker = replace_between(
+    checker,
+    "    candidate = root\n",
+    "    if sha256_bytes(raw) != expected_sha256:\n",
+    CHECKER_ACQUISITION,
+    "checker",
+)
+CHECKER.write_text(checker, encoding="utf-8")
+
+
+generator = GENERATOR.read_text(encoding="utf-8")
+function_start = generator.find(
+    "def read_review_packet(root: Path, relative: Any) -> tuple[bytes, str]:\n"
+)
+function_end = generator.find("\n\ndef strict_pairs", function_start)
+if function_start < 0 or function_end < 0:
+    raise SystemExit("generator top-level review reader bounds are missing")
+function = generator[function_start:function_end]
+function = replace_between(
+    function,
     "    candidate = root\n",
     "    require(sha(raw) == expected_sha256, \"review packet digest differs from path\")\n",
-    generator_acquisition,
-    "generator",
+    GENERATOR_ACQUISITION,
+    "generator top-level reader",
 )
+generator = generator[:function_start] + function + generator[function_end:]
+
+wrapper_anchor = "\n\ndef contract_readme() -> bytes:\n"
+if generator.count(wrapper_anchor) != 1:
+    raise SystemExit("compatibility checker wrapper insertion anchor differs")
+wrapper = '''
+
+_compatibility_checker_source_v1 = compatibility_checker_source
+
+
+def compatibility_checker_source() -> bytes:
+    """Generate the checker with the same descriptor-relative custody boundary."""
+    source = _compatibility_checker_source_v1().decode("utf-8")
+    start_marker = "    candidate = root\\n"
+    end_marker = "    if sha256_bytes(raw) != expected_sha256:\\n"
+    require(
+        source.count(start_marker) == 1 and source.count(end_marker) == 1,
+        "compatibility checker custody template anchors differ",
+    )
+    start = source.find(start_marker)
+    end = source.find(end_marker, start)
+    replacement = ''' + repr(CHECKER_ACQUISITION) + '''
+    return (source[:start] + replacement + source[end:]).encode("utf-8")
+'''
+generator = generator.replace(wrapper_anchor, wrapper + wrapper_anchor, 1)
 GENERATOR.write_text(generator, encoding="utf-8")
 
 
