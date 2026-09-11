@@ -15,6 +15,7 @@
     "docs/machine/effect-lifecycle.v1.json",
     "docs/machine/module-document-index.v1.json",
     "docs/machine/resource-budget-provenance.v1.json",
+    "docs/machine/metric-catalog.v1.json",
     "docs/machine/requirement-graph.v1.json",
     "docs/machine/evidence-index.v1.json",
     "docs/machine/module-contract-catalog.v1.json"
@@ -93,6 +94,7 @@
     "docs/machine/resource-budget-provenance.v1.json",
     "docs/machine/gap-register.v2.json",
     "docs/machine/global-objective.v1.json",
+    "docs/machine/metric-catalog.v1.json",
     "docs/machine/evidence-index.v1.json",
     "docs/modules/MOD-PROTOCOL.md",
     "docs/modules/MOD-BROKER.md",
@@ -121,7 +123,8 @@
     "docs/generated/TRACEABILITY.tsv",
     "docs/generated/PERFORMANCE_STATUS.md",
     "docs/machine/module-contract-catalog.v1.json",
-    "docs/MODULE_CONTRACT_STATUS.md"
+    "docs/MODULE_CONTRACT_STATUS.md",
+    "docs/generated/METRIC_STATUS.md"
   ],
   "schema": "org.trillionnium.documentation-set.v1",
   "semantic_revision": "owner-open-semantic-v1",

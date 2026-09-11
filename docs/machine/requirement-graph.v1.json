@@ -340,7 +340,9 @@
       ],
       "source": [
         "docs/GLOBAL_ARCHITECTURE.md",
-        "docs/PERFORMANCE_AND_OPTIMIZATION.md"
+        "docs/PERFORMANCE_AND_OPTIMIZATION.md",
+        "docs/machine/metric-catalog.v1.json",
+        "planned/crates/trillionnium-telemetry/src/catalog.rs"
       ],
       "tests": [
         {

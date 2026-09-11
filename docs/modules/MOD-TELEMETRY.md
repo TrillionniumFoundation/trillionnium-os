@@ -12,6 +12,7 @@ This document is the detailed source-development, integration and qualification 
 - Backup owner: `team-performance`
 - Maturity: `PLANNED_READ_MODEL_COST_CURVE_SOURCE_COMPLETE_PENDING_CI`
 - Catalog authority: `docs/machine/module-catalog.v1.json`
+- Metric authority: `docs/machine/metric-catalog.v1.json`
 - Documentation index: `docs/machine/module-document-index.v1.json`
 - Resource provenance: `docs/machine/resource-budget-provenance.v1.json`
 - Evidence ceiling: **SOURCE_ONLY_UNTIL_EXACT_HEAD_CI**.
@@ -67,13 +68,14 @@ Each request must include its version, request identity, ordering identity and p
 ### Concrete implementation binding
 
 - Implementation source: `planned/crates/trillionnium-telemetry/src/lib.rs` — `MetricSample`
+- Catalog-bound ingestion: `planned/crates/trillionnium-telemetry/src/catalog.rs` — `MetricCatalog`, `CatalogIngestor`, `MetricProjection`
 
 The catalog input/output/error names above are versioned logical contract labels,
 not a claim that identically named Rust declarations or JSON Schema files exist.
 The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
-`MetricSample` contains finite measurements, `MetricWindow` retains bounded samples, and `ModuleReadModelStore`/`CostCurveStore` form derived views. `project_objective` is a calculation, not evidence of a measured target. Hashing an identifier does not reduce its metric-label cardinality.
+`MetricSample` contains finite measurements, `MetricWindow` retains bounded samples, and `ModuleReadModelStore`/`CostCurveStore` form derived views. `MetricCatalog` binds every metric to its unit, value type, source module, collection point, aggregation, retention, cardinality ceiling, privacy class, required and forbidden dimensions, sampling, missing-data meaning, clock and evidence level. `CatalogIngestor` rejects stale epochs, unit/source drift, unknown or sensitive dimensions, cardinality overflow and conflicting sequence reuse; it retains sequence loss, clock regression and window eviction as explicit coverage gaps. `project_objective` is a calculation, not evidence of a measured target. Hashing an identifier does not reduce its metric-label cardinality.
 
 ## 6. State model and ownership
 
@@ -138,7 +140,7 @@ These values are finite source-admission ceilings and provisional objectives, no
 
 ## 10. Persistence, recovery and reconciliation
 
-After restart, only durable complete windows are loaded. Clock jumps, missing samples or mixed epochs create explicit coverage gaps rather than interpolated certainty.
+After restart, only durable complete windows are loaded. Clock jumps, missing samples, eviction or mixed epochs create explicit coverage gaps rather than interpolated certainty. A projection may carry `durable_complete=true` only when it is coverage-complete and the owning store supplies a source-bound journal digest plus successful file and parent-directory fsync receipt. Source construction of that receipt is not installed-target evidence.
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
@@ -175,7 +177,7 @@ Rollback is fail-closed. Stateful modules restore the last compatible durable st
 
 The module is the observation surface: sample acceptance, redaction, cardinality, window completeness, clock skew, projection coverage and storage pressure are themselves measured.
 
-Every metric and log record is bounded and versioned. Required common dimensions are module ID, instance or service epoch, ordering-key digest, operation class and outcome. High-cardinality raw identifiers are hashed or retained only in access-controlled evidence. Readiness means the module can safely admit work; liveness alone is insufficient.
+Every metric and log record is bounded and versioned. `docs/machine/metric-catalog.v1.json` is the closed machine authority and `docs/generated/METRIC_STATUS.md` is its generated view. Required common dimensions are module ID, instance or service epoch, operation class and outcome; privacy-restricted series additionally require a pseudonymous ordering-key digest. Command text, prompts, credentials, secrets, raw user input, model messages, tool arguments, semantic intent and retry instructions are forbidden dimensions. Readiness means the module can safely admit observations; liveness alone is insufficient.
 
 ## 15. Verification and evidence
 
