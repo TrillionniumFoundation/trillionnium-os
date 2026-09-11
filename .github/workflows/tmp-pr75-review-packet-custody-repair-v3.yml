@@ -1,0 +1,229 @@
+name: Temporary PR75 review-packet custody repair v3
+
+on:
+  push:
+    branches:
+      - ops/pr75-review-packet-custody-repair-v2-20260911
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-pr75-review-packet-custody-repair-v3
+  cancel-in-progress: true
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+      OLD_HEAD: 458b22f2a57dec2a8527ac6584dfd8d6f6e64179
+      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-main-20260910
+      REPAIR_SCRIPT: ops/pr75_review_packet_custody_repair_v2.py
+      REPAIR_SHA256: 15aeb2fe36ab260274000292b5c7a02ac33a4e5e587de3f70e06bd9047022af5
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Install source-test system tools before candidate checkout
+        working-directory: ${{ runner.temp }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 update
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 install --yes --no-install-recommends acl
+
+      - name: Check out immutable controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Authenticate controller and copy repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git --no-replace-objects merge-base --is-ancestor "$OLD_HEAD" HEAD
+          observed="$(git --no-replace-objects diff --name-only "$OLD_HEAD"...HEAD | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            '.github/workflows/tmp-pr75-review-packet-custody-repair-v3.yml' \
+            'ops/pr75_review_packet_custody_repair_v2.py' | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+          repair="${RUNNER_TEMP:?}/pr75_review_packet_custody_repair_v3.py"
+          cp -- "$REPAIR_SCRIPT" "$repair"
+          printf '%s  %s\n' "$REPAIR_SHA256" "$repair" | sha256sum --check --strict
+          chmod 0500 "$repair"
+          printf 'REPAIR_COPY=%s\n' "$repair" >> "$GITHUB_ENV"
+
+      - name: Check out exact blocked PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git --no-replace-objects checkout --detach "$OLD_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$OLD_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = e9899d04610d660cce93ea455f885e897f50658c
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Apply exact custody repair and regenerate the closed world
+        shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/pycache
+        run: |
+          set -euo pipefail
+          python3 -I "$REPAIR_COPY"
+          python3 -m py_compile \
+            tools/contracts/generate_module_contracts.py \
+            tools/contracts/check_module_contract_compatibility.py \
+            tools/tests/test_module_contracts.py
+          python3 -m unittest \
+            tools.tests.test_module_contracts.ModuleContractTest.test_review_packet_acquisition_is_nonblocking_and_descriptor_relative -v
+          python3 tools/contracts/generate_module_contracts.py --write
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          generator_path = Path("tools/contracts/generate_module_contracts.py")
+          spec = importlib.util.spec_from_file_location("module_contract_generator", generator_path)
+          assert spec is not None and spec.loader is not None
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          expected = module.compatibility_checker_source()
+          actual = Path("tools/contracts/check_module_contract_compatibility.py").read_bytes()
+          assert actual == expected
+          assert b"O_NONBLOCK" in actual
+          assert b"supports_dir_fd" in actual
+          assert b"os.pread" in actual
+          PY
+          python3 -m unittest tools.tests.test_module_contracts -v
+          python3 tools/contracts/check_module_contract_compatibility.py --base-ref "$BASE_SHA"
+
+      - name: Run generated-document and repository authority checks
+        shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/pycache
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+
+      - name: Run complete Python source matrix
+        shell: bash
+        env:
+          PYTHONPYCACHEPREFIX: ${{ runner.temp }}/pycache
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+
+      - name: Run root and planned Rust matrices
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version | grep -F 'rustc 1.93.0 '
+          cargo --version | grep -F 'cargo 1.93.0 '
+          cargo fmt --all --check
+          cargo test --workspace --all-targets --locked
+          cargo clippy --workspace --all-targets --locked -- -D warnings
+          (
+            cd planned
+            cargo fmt --all --check
+            cargo test --workspace --all-targets --locked
+            cargo clippy --workspace --all-targets --locked -- -D warnings
+          )
+
+      - name: Prove exact generated review surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          changed = subprocess.check_output(
+              ["git", "diff", "--name-only"], text=True
+          ).splitlines()
+          changed_set = set(changed)
+          exact = {
+              "docs/machine/module-contract-catalog.v1.json",
+              "tools/contracts/check_module_contract_compatibility.py",
+              "tools/contracts/generate_module_contracts.py",
+              "tools/contracts/module-contracts.lock.json",
+              "tools/tests/test_module_contracts.py",
+          }
+          slugs = {
+              "adb", "android", "broker", "event-store", "evidence",
+              "execution-core", "global-control", "job-runtime", "protocol",
+              "provider", "rootlinux", "stream", "telemetry", "tool-runtime",
+              "transport", "turn-engine",
+          }
+          for slug in slugs:
+              base = f"schemas/modules/{slug}"
+              exact.update({
+                  f"{base}/api-v1.schema.json",
+                  f"{base}/state-v1.schema.json",
+                  f"{base}/errors-v1.schema.json",
+                  f"{base}/compatibility.json",
+              })
+          assert len(exact) == 69
+          assert changed_set == exact, (
+              f"review surface differs; missing={sorted(exact-changed_set)} "
+              f"extra={sorted(changed_set-exact)}"
+          )
+          for path in changed:
+              assert not path.startswith("ops/")
+              assert not path.startswith(".github/workflows/tmp-")
+              assert Path(path).is_file() and not Path(path).is_symlink()
+          PY
+          untracked="$(git ls-files --others --exclude-standard)"
+          test -z "$untracked"
+
+      - name: Publish tested repair through exact branch lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$OLD_HEAD"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -- \
+            docs/machine/module-contract-catalog.v1.json \
+            schemas/modules \
+            tools/contracts/check_module_contract_compatibility.py \
+            tools/contracts/generate_module_contracts.py \
+            tools/contracts/module-contracts.lock.json \
+            tools/tests/test_module_contracts.py
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit \
+            -m 'fix(contracts): make migration-review packet acquisition nonblocking' \
+            -m 'Require descriptor-relative no-follow directory traversal, O_NONBLOCK final acquisition, regular single-link bounded files, pread, and stable descriptor/path identity in both the generator and generated compatibility checker. Add timeout-bounded FIFO, symlink-parent, and regular-file regressions. Preserve non-authorizing review packets, automatic_redispatch=false, OBSERVE_ONLY, and the L1 claim ceiling.'
+          repair_commit="$(git --no-replace-objects rev-parse HEAD)"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$OLD_HEAD"
+          git commit --allow-empty \
+            -m 'chore(contracts): bind review-packet custody qualification' \
+            -m 'Bind the fully tested custody repair to one immutable exact head for permanent exact-source and deterministic ordered-parent qualification.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$repair_commit"
+          test "$(git --no-replace-objects rev-parse HEAD^^)" = "$OLD_HEAD"
+          git push \
+            --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${OLD_HEAD}" \
+            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+          printf 'repair_commit=%s\nfinal_head=%s\nfinal_tree=%s\n' \
+            "$repair_commit" "$final" "$tree"
