@@ -22,15 +22,14 @@ jobs:
       COMMENT_TOKEN: ${{ github.token }}
       REPOSITORY: ${{ github.repository }}
       API: ${{ github.api_url }}
-      REPORT: ${{ runner.temp }}/l2-l6-environment-hardening.json
     steps:
       - name: Configure protected environments only with dedicated administration authority
         shell: bash
+        env:
+          REPORT: ${{ runner.temp }}/l2-l6-environment-hardening.json
         run: |
           set -euo pipefail
           /usr/bin/python3 -I - <<'PY'
-          from __future__ import annotations
-
           from datetime import datetime, timezone
           import json
           import os
@@ -42,12 +41,9 @@ jobs:
           api = os.environ["API"].rstrip("/")
           repository = os.environ["REPOSITORY"]
           token = os.environ.get("ADMIN_TOKEN", "")
-          report_path = Path(os.environ["REPORT"])
-          environments = [f"owner-open-r5-l{level}" for level in range(2, 7)]
-          required_reviewers = {
-              273670192: "Franksudoman",
-              273673612: "Tomasrgbsf",
-          }
+          output = Path(os.environ["REPORT"])
+          reviewer_ids = [273670192, 273673612]
+          names = [f"owner-open-r5-l{level}" for level in range(2, 7)]
           report = {
               "schema": "org.trillionnium.l2-l6-environment-hardening.v1",
               "repository": repository,
@@ -62,33 +58,30 @@ jobs:
               "environments": [],
           }
 
-          def write_report() -> None:
-              report_path.write_text(
-                  json.dumps(report, sort_keys=True, indent=2) + "\n",
-                  encoding="utf-8",
-              )
+          def save():
+              output.write_text(json.dumps(report, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
           if not token:
-              write_report()
+              save()
               raise SystemExit(0)
 
           headers = {
               "Accept": "application/vnd.github+json",
               "Authorization": f"Bearer {token}",
+              "Content-Type": "application/json",
               "X-GitHub-Api-Version": "2022-11-28",
-              "User-Agent": "trillionnium-l2-l6-environment-hardener-v1",
+              "User-Agent": "trillionnium-l2-l6-environment-hardener-v2",
           }
 
-          def request(method: str, path: str, payload: dict | None = None) -> tuple[int, object | None]:
-              body = None if payload is None else json.dumps(payload).encode("utf-8")
-              req = urllib.request.Request(
+          def call(method, path, payload=None):
+              request = urllib.request.Request(
                   f"{api}/repos/{repository}{path}",
                   method=method,
                   headers=headers,
-                  data=body,
+                  data=None if payload is None else json.dumps(payload).encode("utf-8"),
               )
               try:
-                  with urllib.request.urlopen(req, timeout=30) as response:
+                  with urllib.request.urlopen(request, timeout=30) as response:
                       raw = response.read()
                       return response.status, json.loads(raw) if raw else None
               except urllib.error.HTTPError as error:
@@ -99,82 +92,47 @@ jobs:
                       value = {"message": "non-json GitHub error"}
                   return error.code, value
 
-          report["status"] = "BLOCKED_ADMIN_PERMISSION_OR_POLICY"
           all_applied = True
-          for name in environments:
-              encoded = urllib.parse.quote(name, safe="")
-              get_status, current = request("GET", f"/environments/{encoded}")
-              existing_reviewer_ids: set[int] = set()
-              wait_timer = 0
-              branch_policy: dict[str, bool] | None = {
+          report["status"] = "BLOCKED_ADMIN_PERMISSION_OR_POLICY"
+          payload = {
+              "wait_timer": 0,
+              "prevent_self_review": True,
+              "reviewers": [{"type": "User", "id": value} for value in reviewer_ids],
+              "deployment_branch_policy": {
                   "protected_branches": True,
                   "custom_branch_policies": False,
-              }
-              if get_status == 200 and isinstance(current, dict):
-                  for rule in current.get("protection_rules") or []:
-                      if not isinstance(rule, dict):
-                          continue
-                      if rule.get("type") == "wait_timer" and isinstance(rule.get("wait_timer"), int):
-                          wait_timer = rule["wait_timer"]
-                      if rule.get("type") == "required_reviewers":
-                          for reviewer in rule.get("reviewers") or []:
-                              value = reviewer.get("reviewer") if isinstance(reviewer, dict) else None
-                              if isinstance(value, dict) and isinstance(value.get("id"), int):
-                                  existing_reviewer_ids.add(value["id"])
-                  policy = current.get("deployment_branch_policy")
-                  if isinstance(policy, dict):
-                      protected = policy.get("protected_branches")
-                      custom = policy.get("custom_branch_policies")
-                      if isinstance(protected, bool) and isinstance(custom, bool):
-                          branch_policy = {
-                              "protected_branches": protected,
-                              "custom_branch_policies": custom,
-                          }
-              elif get_status != 404:
-                  all_applied = False
-                  report["environments"].append({
-                      "name": name,
-                      "status": "GET_FAILED",
-                      "http_status": get_status,
-                  })
-                  continue
-
-              reviewer_ids = sorted(existing_reviewer_ids | set(required_reviewers))
-              payload = {
-                  "wait_timer": wait_timer,
-                  "prevent_self_review": True,
-                  "reviewers": [
-                      {"type": "User", "id": reviewer_id}
-                      for reviewer_id in reviewer_ids
-                  ],
-                  "deployment_branch_policy": branch_policy,
-              }
-              put_status, _ = request("PUT", f"/environments/{encoded}", payload)
-              verify_status, verified = request("GET", f"/environments/{encoded}")
-              observed_ids: set[int] = set()
+              },
+          }
+          for name in names:
+              encoded = urllib.parse.quote(name, safe="")
+              put_status, _ = call("PUT", f"/environments/{encoded}", payload)
+              get_status, value = call("GET", f"/environments/{encoded}")
+              observed_ids = set()
               prevent_self_review = None
-              if verify_status == 200 and isinstance(verified, dict):
-                  prevent_self_review = verified.get("prevent_self_review")
-                  for rule in verified.get("protection_rules") or []:
-                      if isinstance(rule, dict) and rule.get("type") == "required_reviewers":
-                          for reviewer in rule.get("reviewers") or []:
-                              value = reviewer.get("reviewer") if isinstance(reviewer, dict) else None
-                              if isinstance(value, dict) and isinstance(value.get("id"), int):
-                                  observed_ids.add(value["id"])
+              if get_status == 200 and isinstance(value, dict):
+                  prevent_self_review = value.get("prevent_self_review")
+                  for rule in value.get("protection_rules") or []:
+                      if not isinstance(rule, dict) or rule.get("type") != "required_reviewers":
+                          continue
+                      if isinstance(rule.get("prevent_self_review"), bool):
+                          prevent_self_review = rule["prevent_self_review"]
+                      for row in rule.get("reviewers") or []:
+                          reviewer = row.get("reviewer") if isinstance(row, dict) else None
+                          if isinstance(reviewer, dict) and isinstance(reviewer.get("id"), int):
+                              observed_ids.add(reviewer["id"])
               applied = (
                   put_status in {200, 201}
-                  and verify_status == 200
-                  and set(required_reviewers).issubset(observed_ids)
+                  and get_status == 200
+                  and set(reviewer_ids).issubset(observed_ids)
                   and prevent_self_review is True
               )
               all_applied = all_applied and applied
               report["environments"].append({
                   "name": name,
                   "status": "APPLIED" if applied else "BLOCKED",
-                  "get_http_status": get_status,
                   "put_http_status": put_status,
-                  "verify_http_status": verify_status,
-                  "required_reviewer_ids": sorted(required_reviewers),
+                  "verify_http_status": get_status,
+                  "required_reviewer_ids": reviewer_ids,
                   "observed_reviewer_ids": sorted(observed_ids),
                   "prevent_self_review": prevent_self_review,
               })
@@ -182,12 +140,14 @@ jobs:
           if all_applied:
               report["status"] = "APPLIED_PROTECTED_ENVIRONMENTS"
               report["configuration_applied"] = True
-          write_report()
+          save()
           PY
 
-      - name: Publish exact non-secret result to the authorization ledger
+      - name: Publish exact non-secret result to authorization ledger
         if: ${{ always() }}
         shell: bash
+        env:
+          REPORT: ${{ runner.temp }}/l2-l6-environment-hardening.json
         run: |
           set -euo pipefail
           /usr/bin/python3 -I - <<'PY'
@@ -197,14 +157,11 @@ jobs:
           import urllib.request
 
           report = json.loads(Path(os.environ["REPORT"]).read_text(encoding="utf-8"))
-          rows = []
-          for item in report.get("environments", []):
-              rows.append(
-                  f"| `{item['name']}` | `{item['status']}` | "
-                  f"{item.get('put_http_status', 'n/a')} | "
-                  f"{item.get('verify_http_status', 'n/a')} |"
-              )
-          table = "\n".join(rows) if rows else "| none | not attempted | n/a | n/a |"
+          rows = [
+              f"| `{item['name']}` | `{item['status']}` | {item.get('put_http_status', 'n/a')} | {item.get('verify_http_status', 'n/a')} |"
+              for item in report.get("environments", [])
+          ]
+          table = "\n".join(rows) or "| none | not attempted | n/a | n/a |"
           body = f"""## L2-L6 protected-environment hardening result
 
 ```text
@@ -230,9 +187,9 @@ Only environment protection metadata was eligible for mutation. No adapter ident
               headers={
                   "Accept": "application/vnd.github+json",
                   "Authorization": f"Bearer {os.environ['COMMENT_TOKEN']}",
-                  "X-GitHub-Api-Version": "2022-11-28",
-                  "User-Agent": "trillionnium-l2-l6-environment-hardener-v1",
                   "Content-Type": "application/json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "trillionnium-l2-l6-environment-hardener-v2",
               },
               data=json.dumps({"body": body}).encode("utf-8"),
           )
@@ -242,6 +199,8 @@ Only environment protection metadata was eligible for mutation. No adapter ident
 
       - name: Fail closed unless every environment is protected
         shell: bash
+        env:
+          REPORT: ${{ runner.temp }}/l2-l6-environment-hardening.json
         run: |
           set -euo pipefail
           /usr/bin/python3 -I - <<'PY'
