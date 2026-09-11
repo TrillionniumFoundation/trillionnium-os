@@ -34,6 +34,32 @@ def wait_not_live(pid: int) -> None:
         raise AssertionError(f"descendant {pid} survived cleanup")
 
 
+def wait_child_pid(path: Path, *, process: object | None = None) -> int:
+    """Wait for one complete PID publication, not merely a created inode."""
+
+    deadline = time.monotonic() + 3.0
+    last_raw = b""
+    while time.monotonic() < deadline:
+        if process is not None:
+            process.poll()
+        try:
+            raw = path.read_bytes()
+        except FileNotFoundError:
+            raw = b""
+        last_raw = raw
+        try:
+            text = raw.decode("ascii")
+            pid = int(text)
+        except (UnicodeDecodeError, ValueError):
+            time.sleep(0.01)
+            continue
+        if text == str(pid) and pid > 0:
+            if process is None or process.poll() is not None:
+                return pid
+        time.sleep(0.01)
+    raise AssertionError(f"child PID was not published atomically: {last_raw!r}")
+
+
 class ProductBaselineProcessGroupCleanupTests(unittest.TestCase):
     def spawn_term_split_group(self) -> tuple[object, int]:
         script = r'''
@@ -87,9 +113,11 @@ path = Path(sys.argv[1])
 child = os.fork()
 if child == 0:
     signal.signal(signal.SIGTERM, signal.SIG_IGN)
-    path.write_text(str(os.getpid()), encoding="ascii")
     while True:
         time.sleep(1)
+temporary = path.with_name(path.name + ".tmp")
+temporary.write_text(str(child), encoding="ascii")
+os.replace(temporary, path)
 os._exit(0)
 '''
             process = BENCH.subprocess.Popen(
@@ -99,11 +127,8 @@ os._exit(0)
                 stderr=BENCH.subprocess.PIPE,
                 start_new_session=True,
             )
-            deadline = time.monotonic() + 3.0
-            while (not child_path.exists() or process.poll() is None) and time.monotonic() < deadline:
-                time.sleep(0.01)
+            child = wait_child_pid(child_path, process=process)
             self.assertEqual(process.poll(), 0)
-            child = int(child_path.read_text(encoding="ascii"))
             self.assertTrue(live_task(child))
             # poll() observed WNOWAIT; cleanup can still use the retained zombie
             # as the original session/PGID anti-reuse anchor.
@@ -125,9 +150,11 @@ path = Path(sys.argv[1])
 child = os.fork()
 if child == 0:
     signal.signal(signal.SIGTERM, signal.SIG_IGN)
-    path.write_text(str(os.getpid()), encoding="ascii")
     while True:
         time.sleep(1)
+temporary = path.with_name(path.name + ".tmp")
+temporary.write_text(str(child), encoding="ascii")
+os.replace(temporary, path)
 os._exit(0)
 '''
             started = time.monotonic()
@@ -135,10 +162,10 @@ os._exit(0)
                 BENCH.collect(
                     [sys.executable, "-c", script, str(child_path)],
                     [],
-                    timeout=1.0,
+                    timeout=2.0,
                 )
             self.assertLess(time.monotonic() - started, 5.0)
-            child = int(child_path.read_text(encoding="ascii"))
+            child = wait_child_pid(child_path)
             wait_not_live(child)
 
             frames, observation = BENCH.collect(

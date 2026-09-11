@@ -5,11 +5,14 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 import stat
 import sys
 import tempfile
+import types
 import unittest
+from unittest import mock
 import zipfile
 
 
@@ -111,6 +114,35 @@ class InitAgentActivationVerifierTests(unittest.TestCase):
             path.write_text(WRAPPER.replace("agent-api-v2.sock", "other.sock"), encoding="utf-8")
             with self.assertRaisesRegex(TOOL.ContractError, "daemon socket export"):
                 TOOL.build_evidence(android, rust, None)
+
+    def test_read_regular_ignores_atime_only_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "source.txt"
+            path.write_text("stable bytes", encoding="utf-8")
+            real_lstat = os.lstat
+
+            def lstat_with_atime_drift(candidate):
+                metadata = real_lstat(candidate)
+                if Path(candidate) != path:
+                    return metadata
+                return types.SimpleNamespace(
+                    st_dev=metadata.st_dev,
+                    st_ino=metadata.st_ino,
+                    st_mode=metadata.st_mode,
+                    st_uid=metadata.st_uid,
+                    st_gid=metadata.st_gid,
+                    st_nlink=metadata.st_nlink,
+                    st_size=metadata.st_size,
+                    st_atime_ns=metadata.st_atime_ns + 1_000_000_000,
+                    st_mtime_ns=metadata.st_mtime_ns,
+                    st_ctime_ns=metadata.st_ctime_ns,
+                )
+
+            with mock.patch.object(TOOL.os, "lstat", side_effect=lstat_with_atime_drift):
+                self.assertEqual(
+                    TOOL.read_regular(path, label="fixture"),
+                    b"stable bytes",
+                )
 
     def test_target_without_init_artifacts_is_hold_not_source_pass(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
