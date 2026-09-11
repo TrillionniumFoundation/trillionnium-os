@@ -1,4 +1,4 @@
-name: Temporary PR76 post-PR75 restack v2
+name: Temporary PR76 post-PR75 restack v3
 
 on:
   push:
@@ -21,8 +21,8 @@ jobs:
     env:
       REPOSITORY: TrillionniumFoundation/trillionnium-os
       OLD_BASE: b681cd856fccac1189496576f25d259752d2dcce
-      CLEAN_SOURCE_HEAD: ffd81a68a5480be206b8cbb3d9724fc6362237cf
-      EXPECTED_CANDIDATE_HEAD: d91e25471169abfd5879c6353421bd6d2702cdb1
+      CLEAN_SOURCE_HEAD: 0118dc977b66a8414f00872807f1aa2ac9e69753
+      EXPECTED_CANDIDATE_HEAD: 0118dc977b66a8414f00872807f1aa2ac9e69753
       NEW_MAIN: 8c51837f545270ca31ee7c0e09250eeda01880d2
       CANDIDATE_BRANCH: codex/performance-measurement-v2-20260910
       PYTHONDONTWRITEBYTECODE: "1"
@@ -47,15 +47,12 @@ jobs:
             "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
           test "$(git rev-parse refs/remotes/origin/main)" = "$NEW_MAIN"
           test "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" = "$EXPECTED_CANDIDATE_HEAD"
-          git merge-base --is-ancestor "$CLEAN_SOURCE_HEAD" "$EXPECTED_CANDIDATE_HEAD"
           python3 - <<'PY'
           import json, os, urllib.request
-          token = os.environ["GITHUB_TOKEN"]
-          repo = os.environ["REPOSITORY"]
-          expected = os.environ["NEW_MAIN"]
-          h = {"Accept":"application/vnd.github+json","Authorization":f"Bearer {token}","X-GitHub-Api-Version":"2022-11-28","User-Agent":"pr76-restack-v2"}
+          token=os.environ['GITHUB_TOKEN']; repo=os.environ['REPOSITORY']; expected=os.environ['NEW_MAIN']
+          headers={'Accept':'application/vnd.github+json','Authorization':f'Bearer {token}','X-GitHub-Api-Version':'2022-11-28','User-Agent':'pr76-restack-v3'}
           def get(path):
-              req=urllib.request.Request(f"https://api.github.com/repos/{repo}{path}",headers=h)
+              req=urllib.request.Request(f'https://api.github.com/repos/{repo}{path}',headers=headers)
               with urllib.request.urlopen(req,timeout=30) as r: return json.load(r)
           branch=get('/branches/main')
           if branch.get('commit',{}).get('sha') != expected: raise SystemExit('protected main moved')
@@ -64,7 +61,7 @@ jobs:
           print('PASS_PROTECTED_MAIN_BINDING', expected, commit.get('tree',{}).get('sha'))
           PY
 
-      - name: Materialize clean eight-path PR76 source on new main
+      - name: Materialize verified eight-path source on new main
         shell: bash
         run: |
           set -euo pipefail
@@ -89,31 +86,7 @@ jobs:
           git reset
           git diff --check
 
-      - name: Apply fail-closed descriptor-relative publication repair
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('tools/perf/performance_qualification.py')
-          s=p.read_text()
-          marker='import sys\nfrom typing import Any, Iterable, Mapping, Sequence\n'
-          replacement='import sys\nfrom typing import Any, Iterable, Mapping, Sequence\n\n_OS_LINK_SUPPORTS_DIR_FD = os.link in os.supports_dir_fd\n_OS_LINK_SUPPORTS_FOLLOW_SYMLINKS = os.link in os.supports_follow_symlinks\n'
-          if marker not in s: raise SystemExit('import marker not found')
-          s=s.replace(marker,replacement,1)
-          old='''    for operation in (os.open, os.stat, os.unlink, os.link):\n        _require(operation in os.supports_dir_fd, "platform lacks required dir_fd semantics")\n    _require(os.link in os.supports_follow_symlinks, "platform lacks link follow-symlink control")\n'''
-          new='''    for operation in (os.open, os.stat, os.unlink):\n        _require(operation in os.supports_dir_fd, "platform lacks required dir_fd semantics")\n    _require(_OS_LINK_SUPPORTS_DIR_FD, "platform lacks required link dir_fd semantics")\n    _require(_OS_LINK_SUPPORTS_FOLLOW_SYMLINKS, "platform lacks link follow-symlink control")\n'''
-          if old not in s: raise SystemExit('capability block not found')
-          s=s.replace(old,new,1)
-          old='''        descriptor_path = f"/proc/self/fd/{descriptor}"\n        descriptor_target = os.stat(descriptor_path)\n        _require(\n            (descriptor_target.st_dev, descriptor_target.st_ino) == staged_dev_ino,\n            "descriptor publication path does not bind staging inode",\n        )\n        os.link(\n            descriptor_path,\n            absolute.name,\n            dst_dir_fd=parent_descriptor,\n            follow_symlinks=True,\n        )\n        published = True\n\n        final_before = os.stat(absolute.name, dir_fd=parent_descriptor, follow_symlinks=False)\n        _require(\n            (final_before.st_dev, final_before.st_ino) == staged_dev_ino\n            and stat.S_ISREG(final_before.st_mode)\n            and stat.S_IMODE(final_before.st_mode) == 0o600\n            and final_before.st_uid == os.geteuid()\n            and final_before.st_nlink == 2\n            and final_before.st_size == len(payload),\n            "published output identity differs from admitted staging inode",\n        )\n'''
-          new='''        os.link(\n            temporary_name,\n            absolute.name,\n            src_dir_fd=parent_descriptor,\n            dst_dir_fd=parent_descriptor,\n            follow_symlinks=False,\n        )\n        published = True\n\n        final_before = os.stat(absolute.name, dir_fd=parent_descriptor, follow_symlinks=False)\n        if (final_before.st_dev, final_before.st_ino) != staged_dev_ino:\n            os.unlink(absolute.name, dir_fd=parent_descriptor)\n            published = False\n            raise QualificationError("staging pathname was replaced during publication")\n        _require(\n            stat.S_ISREG(final_before.st_mode)\n            and stat.S_IMODE(final_before.st_mode) == 0o600\n            and final_before.st_uid == os.geteuid()\n            and final_before.st_nlink == 2\n            and final_before.st_size == len(payload),\n            "published output identity differs from admitted staging inode",\n        )\n'''
-          if old not in s: raise SystemExit('publication block not found')
-          s=s.replace(old,new,1)
-          p.write_text(s)
-          PY
-          git diff --check
-
-      - name: Run focused hostile and repository qualification
+      - name: Run hostile and complete repository qualification
         shell: bash
         run: |
           set -euo pipefail
