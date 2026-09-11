@@ -1,0 +1,330 @@
+name: Temporary PR77 post-PR76 restack v1
+
+on:
+  push:
+    branches:
+      - ops/pr77-post-pr76-restack-v1-20260911
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: temporary-pr77-post-pr76-restack-v1
+  cancel-in-progress: true
+
+jobs:
+  restack-qualify-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      PR75: "75"
+      PR76: "76"
+      PR77: "77"
+      OLD_BASE: b681cd856fccac1189496576f25d259752d2dcce
+      OLD_HEAD: e065a34083faa8a43223150c11cd2a2cc3839712
+      OLD_TREE: d732435e297651859d5d1924ad5d0059cfaf3b3d
+      CANDIDATE_BRANCH: codex/observe-shadow-telemetry-v2-20260911
+      TRIGGER_PATH: docs/machine/.pr77-restack-qualification-trigger
+      TRIGGER_BLOB_SHA: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Wait for ordinary PR75 and PR76 integration
+        id: gate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$OLD_BASE"
+          test "$(git --no-replace-objects diff --name-only "$OLD_BASE"...HEAD)" = \
+            '.github/workflows/tmp-pr77-post-pr76-restack-v1.yml'
+          cd "${RUNNER_TEMP:?}"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          import json
+          import os
+          import re
+          import time
+          import urllib.request
+
+          repository = os.environ["REPOSITORY"]
+          token = os.environ["GITHUB_TOKEN"]
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {token}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "trillionnium-pr77-post-pr76-restack-v1",
+          }
+          deadline = time.monotonic() + 165 * 60
+
+          def get(path):
+              request = urllib.request.Request(
+                  f"https://api.github.com/repos/{repository}{path}", headers=headers
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return json.load(response)
+
+          bound = None
+          while time.monotonic() < deadline:
+              pr75 = get(f"/pulls/{os.environ['PR75']}")
+              pr76 = get(f"/pulls/{os.environ['PR76']}")
+              if pr75.get("merged_at") and pr76.get("merged_at"):
+                  main = get("/branches/main")
+                  main_sha = main.get("commit", {}).get("sha")
+                  if main_sha == pr76.get("merge_commit_sha"):
+                      commit = get(f"/git/commits/{main_sha}")
+                      if commit.get("verification", {}).get("verified") is True:
+                          bound = (pr75, pr76, main_sha, commit.get("tree", {}).get("sha"))
+                          break
+              time.sleep(20)
+          if bound is None:
+              raise SystemExit("PR75/PR76 did not reach ordered ordinary protected integration")
+          pr75, pr76, main_sha, main_tree = bound
+          if not re.fullmatch(r"[0-9a-f]{40}", str(main_tree)):
+              raise SystemExit("post-PR76 main tree unavailable")
+          pr77 = get(f"/pulls/{os.environ['PR77']}")
+          if pr77.get("state") != "open" or pr77.get("merged_at") is not None:
+              raise SystemExit("PR77 is no longer open")
+          if pr77.get("head", {}).get("sha") != os.environ["OLD_HEAD"]:
+              raise SystemExit("PR77 head moved before ordered restack")
+          if pr77.get("base", {}).get("sha") != os.environ["OLD_BASE"]:
+              raise SystemExit("PR77 base moved before ordered restack")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
+              stream.write(f"main_sha={main_sha}\n")
+              stream.write(f"main_tree={main_tree}\n")
+              stream.write(f"pr75_merge={pr75['merge_commit_sha']}\n")
+              stream.write(f"pr76_merge={pr76['merge_commit_sha']}\n")
+          print(json.dumps({
+              "result": "PR75_PR76_ORDERED_PROTECTED_MERGES_BOUND",
+              "pr75_merge": pr75.get("merge_commit_sha"),
+              "pr76_merge": pr76.get("merge_commit_sha"),
+              "main": main_sha,
+              "tree": main_tree,
+          }, sort_keys=True))
+          PY
+
+      - name: Materialize telemetry source on post-PR76 main
+        id: repair
+        env:
+          NEW_MAIN: ${{ steps.gate.outputs.main_sha }}
+          NEW_MAIN_TREE: ${{ steps.gate.outputs.main_tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin \
+            "+refs/heads/main:refs/remotes/origin/main" \
+            "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
+          test "$(git --no-replace-objects rev-parse refs/remotes/origin/main)" = "$NEW_MAIN"
+          test "$(git --no-replace-objects rev-parse "$OLD_HEAD^{tree}")" = "$OLD_TREE"
+          git --no-replace-objects diff --name-only "$OLD_BASE"..."$OLD_HEAD" \
+            | LC_ALL=C sort > "${RUNNER_TEMP:?}/pr77-original-paths.txt"
+          test "$(wc -l < "${RUNNER_TEMP:?}/pr77-original-paths.txt")" -eq 13
+          if grep -E '^(\.github/|ops/|evidence/)' "${RUNNER_TEMP:?}/pr77-original-paths.txt"; then
+            echo 'PR77 original subject contains prohibited control/evidence paths' >&2
+            exit 1
+          fi
+          git --no-replace-objects diff --binary --full-index \
+            "$OLD_BASE"..."$OLD_HEAD" -- > "${RUNNER_TEMP:?}/pr77-restack.patch"
+          test -s "${RUNNER_TEMP:?}/pr77-restack.patch"
+          git --no-replace-objects checkout --detach "$NEW_MAIN"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$NEW_MAIN_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git apply --check --3way --whitespace=error-all "${RUNNER_TEMP:?}/pr77-restack.patch"
+          git apply --3way --whitespace=error-all "${RUNNER_TEMP:?}/pr77-restack.patch"
+          git reset
+          git diff --check
+          python3 tools/docs/generate_global_docs.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m py_compile tools/docs/verify_metric_catalog.py tools/tests/test_metric_catalog.py
+          python3 -m unittest tools.tests.test_metric_catalog -v
+          cargo fmt --all -- --check
+
+          mapfile -t changed < <(git diff --name-only | LC_ALL=C sort)
+          test "${#changed[@]}" -ge 13
+          while IFS= read -r required; do
+            printf '%s\n' "${changed[@]}" | grep -Fqx -- "$required"
+          done < "${RUNNER_TEMP:?}/pr77-original-paths.txt"
+          for path in "${changed[@]}"; do
+            if grep -Fqx -- "$path" "${RUNNER_TEMP:?}/pr77-original-paths.txt"; then
+              continue
+            fi
+            case "$path" in
+              docs/generated/*) ;;
+              *)
+                printf 'unexpected PR77 restack path: %s\n' "$path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test -z "$(git ls-files --others --exclude-standard)"
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -- "${changed[@]}"
+          test -z "$(git diff --name-only)"
+          git diff --cached --check
+          git commit \
+            -m 'feat(telemetry): restack catalog-bound observe and shadow control' \
+            -m 'Rebase the qualified 43-metric catalog, bounded ingestion, explicit gap semantics and deterministic OBSERVE/SHADOW proposals on the protected module-contract and performance integrations. Preserve semantic_authority=false, active_control=false, automatic_redispatch=false, OBSERVE_ONLY, and all L2-L6 claim ceilings.'
+          repair_head="$(git --no-replace-objects rev-parse HEAD)"
+          repair_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$NEW_MAIN"
+          {
+            echo "repair_head=$repair_head"
+            echo "repair_tree=$repair_tree"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Execute complete matrix on exact pure telemetry restack
+        env:
+          REPAIR_HEAD: ${{ steps.repair.outputs.repair_head }}
+          REPAIR_TREE: ${{ steps.repair.outputs.repair_tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          validation="${RUNNER_TEMP:?}/pr77-restack-validation"
+          git worktree add --detach "$validation" "$REPAIR_HEAD"
+          trap 'git worktree remove --force "$validation" >/dev/null 2>&1 || true' EXIT
+          test "$(git -C "$validation" --no-replace-objects rev-parse HEAD)" = "$REPAIR_HEAD"
+          test "$(git -C "$validation" --no-replace-objects rev-parse HEAD^{tree})" = "$REPAIR_TREE"
+          test -z "$(git -C "$validation" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          (
+            cd "$validation"
+            export CARGO_TARGET_DIR="${RUNNER_TEMP:?}/cargo-target-root"
+            python3 tools/docs/generate_global_docs.py
+            python3 tools/docs/generate_global_docs.py --check
+            python3 tools/docs/verify_global_docs.py
+            python3 tools/docs/verify_repository_authority.py
+            python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+            cargo fmt --all -- --check
+            cargo test --locked --workspace --all-targets
+            cargo clippy --locked --workspace --all-targets -- -D warnings
+            (
+              cd planned
+              export CARGO_TARGET_DIR="${RUNNER_TEMP:?}/cargo-target-planned"
+              cargo fmt --all -- --check
+              cargo test --locked --workspace --all-targets
+              cargo clippy --locked --workspace --all-targets -- -D warnings
+            )
+          )
+          git -C "$validation" diff --check
+          test -z "$(git -C "$validation" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          git worktree remove "$validation"
+          trap - EXIT
+
+      - name: Publish trigger-only telemetry head through exact lease
+        id: publish
+        env:
+          REPAIR_HEAD: ${{ steps.repair.outputs.repair_head }}
+          REPAIR_TREE: ${{ steps.repair.outputs.repair_tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(git ls-remote --exit-code origin "refs/heads/${CANDIDATE_BRANCH}" | awk '{print $1}')"
+          test "$current" = "$OLD_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$REPAIR_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$REPAIR_TREE"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+          install -d -m 0755 "$(dirname -- "$TRIGGER_PATH")"
+          : > "$TRIGGER_PATH"
+          test "$(git hash-object -- "$TRIGGER_PATH")" = "$TRIGGER_BLOB_SHA"
+          git add -- "$TRIGGER_PATH"
+          git diff --cached --check
+          test "$(git diff --cached --name-only)" = "$TRIGGER_PATH"
+          git commit \
+            -m 'chore(telemetry): request external clean-head qualification event' \
+            -m 'Append one known empty trigger after the exact pure telemetry restack completes the full matrix. The external GitHub App deletes this blob to create the final clean PR head. No runtime activation, evidence or release authority is granted.'
+          trigger_head="$(git --no-replace-objects rev-parse HEAD)"
+          trigger_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$REPAIR_HEAD"
+          git push \
+            --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${OLD_HEAD}" \
+            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+          {
+            echo "trigger_head=$trigger_head"
+            echo "trigger_tree=$trigger_tree"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Record exact temporary telemetry subject
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NEW_MAIN: ${{ steps.gate.outputs.main_sha }}
+          NEW_MAIN_TREE: ${{ steps.gate.outputs.main_tree }}
+          REPAIR_HEAD: ${{ steps.repair.outputs.repair_head }}
+          REPAIR_TREE: ${{ steps.repair.outputs.repair_tree }}
+          TRIGGER_HEAD: ${{ steps.publish.outputs.trigger_head }}
+          TRIGGER_TREE: ${{ steps.publish.outputs.trigger_tree }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP:?}"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "trillionnium-pr77-post-pr76-restack-v1",
+          }
+          base = f"https://api.github.com/repos/{os.environ['REPOSITORY']}"
+          with urllib.request.urlopen(
+              urllib.request.Request(f"{base}/pulls/{os.environ['PR77']}", headers=headers),
+              timeout=30,
+          ) as response:
+              pull = json.load(response)
+          if not pull.get("draft"):
+              graph = urllib.request.Request(
+                  "https://api.github.com/graphql",
+                  data=json.dumps({
+                      "query": "mutation($id:ID!){convertPullRequestToDraft(input:{pullRequestId:$id}){pullRequest{isDraft}}}",
+                      "variables": {"id": pull["node_id"]},
+                  }).encode(),
+                  method="POST",
+                  headers=headers,
+              )
+              with urllib.request.urlopen(graph, timeout=30) as response:
+                  result = json.load(response)
+              if result.get("errors"):
+                  raise SystemExit(result["errors"])
+          body = f"""## Post-PR76 telemetry restack qualified; temporary trigger head published
+
+```text
+new protected main: {os.environ['NEW_MAIN']}
+new main tree:      {os.environ['NEW_MAIN_TREE']}
+pure repair head:  {os.environ['REPAIR_HEAD']}
+pure repair tree:  {os.environ['REPAIR_TREE']}
+trigger-only head: {os.environ['TRIGGER_HEAD']}
+trigger tree:      {os.environ['TRIGGER_TREE']}
+controller run:    {os.environ['GITHUB_RUN_ID']}
+```
+
+The complete matrix ran on the pure telemetry restack. The trigger-only child adds only the known empty blob `docs/machine/.pr77-restack-qualification-trigger`. The external GitHub App must delete exactly it; final clean tree must equal the tested pure tree before permanent checks or review count. PR77 remains Draft. No predecessor decision transfers.
+
+`semantic_authority=false`; `active_control=false`; `automatic_redispatch=false`; `global_control_activation=OBSERVE_ONLY`; `zero_gap=false`; `public_release=false`.
+"""
+          request = urllib.request.Request(
+              f"{base}/issues/{os.environ['PR77']}/comments",
+              data=json.dumps({"body": body}).encode(),
+              method="POST",
+              headers=headers,
+          )
+          with urllib.request.urlopen(request, timeout=30):
+              pass
+          PY
