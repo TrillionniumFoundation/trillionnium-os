@@ -1,0 +1,317 @@
+name: Temporary PR76 post-PR75 finalizer v1
+
+on:
+  push:
+    branches:
+      - ops/pr76-post-pr75-finalizer-v1-20260911
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: temporary-pr76-post-pr75-finalizer-v1
+  cancel-in-progress: true
+
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      PR75: "75"
+      PR76: "76"
+      OLD_HEAD: 049636361e3f2ae84329197e80a53852c92a16f9
+      CONTROL_BRANCH: ops/pr76-post-pr75-restack-v1-20260911
+      CONTROL_WORKFLOW: Temporary PR76 post-PR75 restack v1
+      CANDIDATE_BRANCH: codex/performance-measurement-v2-20260910
+      TRIGGER_PATH: docs/machine/.pr76-restack-qualification-trigger
+      TRIGGER_BLOB_SHA: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - name: Bind clean exact tree, permanent workflows and review surface
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP:?}"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          import re
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repository = os.environ["REPOSITORY"]
+          pr75_number = int(os.environ["PR75"])
+          pr76_number = int(os.environ["PR76"])
+          old_head = os.environ["OLD_HEAD"]
+          control_branch = os.environ["CONTROL_BRANCH"]
+          control_workflow = os.environ["CONTROL_WORKFLOW"]
+          candidate_branch = os.environ["CANDIDATE_BRANCH"]
+          trigger_path = os.environ["TRIGGER_PATH"]
+          trigger_blob = os.environ["TRIGGER_BLOB_SHA"]
+          token = os.environ["GITHUB_TOKEN"]
+          api = "https://api.github.com"
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {token}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "trillionnium-pr76-post-pr75-finalizer-v1",
+          }
+          required_workflows = {
+              "Owner-open R5 compatibility source routing",
+              "G1 Android privileged-lane evaluated matrix",
+              "Owner-open R5 governance readiness observation",
+              "G1 exact-head source qualification",
+              "G1 synthetic-merge qualification",
+          }
+          deadline = time.monotonic() + 170 * 60
+
+          def require(condition, message):
+              if not condition:
+                  raise SystemExit(message)
+
+          def call(method, path, body=None, allow_404=False):
+              data = None if body is None else json.dumps(body).encode()
+              request = urllib.request.Request(
+                  f"{api}/repos/{repository}{path}", data=data, method=method, headers=headers
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      raw = response.read()
+                      return response.status, json.loads(raw) if raw else None
+              except urllib.error.HTTPError as error:
+                  if allow_404 and error.code == 404:
+                      return 404, None
+                  detail = error.read().decode("utf-8", "replace")
+                  raise SystemExit(f"GitHub {method} {path}: HTTP {error.code}: {detail}") from error
+
+          def get(path, allow_404=False):
+              return call("GET", path, allow_404=allow_404)
+
+          query = urllib.parse.urlencode({
+              "branch": control_branch,
+              "event": "push",
+              "per_page": 100,
+          })
+          control = None
+          while time.monotonic() < deadline:
+              _, value = get(f"/actions/runs?{query}")
+              runs = [
+                  run for run in value.get("workflow_runs", [])
+                  if run.get("name") == control_workflow
+              ]
+              if runs:
+                  control = max(runs, key=lambda run: int(run.get("id", 0)))
+                  if control.get("status") == "completed":
+                      break
+              time.sleep(15)
+          require(control is not None, "PR76 restack controller was not observed")
+          require(
+              control.get("status") == "completed" and control.get("conclusion") == "success",
+              f"PR76 restack controller failed: {control.get('status')}/{control.get('conclusion')}",
+          )
+          control_id = int(control["id"])
+
+          _, pr75 = get(f"/pulls/{pr75_number}")
+          require(pr75.get("merged_at") is not None, "PR75 is not merged")
+          new_base = pr75.get("merge_commit_sha")
+          _, main = get("/branches/main")
+          require(main.get("commit", {}).get("sha") == new_base, "main moved beyond the bound PR75 merge")
+          _, base_commit = get(f"/git/commits/{new_base}")
+          new_base_tree = base_commit.get("tree", {}).get("sha")
+
+          final_head = None
+          final_tree = None
+          trigger_head = None
+          repair_head = None
+          repair_tree = None
+          while time.monotonic() < deadline:
+              _, branch = get(f"/branches/{urllib.parse.quote(candidate_branch, safe='')}")
+              head = branch.get("commit", {}).get("sha")
+              _, trigger = get(
+                  f"/contents/{urllib.parse.quote(trigger_path, safe='/')}?ref={head}",
+                  allow_404=True,
+              )
+              if trigger is not None:
+                  require(trigger.get("sha") == trigger_blob, "PR76 trigger blob differs")
+                  time.sleep(15)
+                  continue
+              if head == old_head:
+                  time.sleep(15)
+                  continue
+              _, final_commit = get(f"/git/commits/{head}")
+              parents = final_commit.get("parents") or []
+              require(len(parents) == 1, "PR76 final head is not single-parent")
+              trigger_head = parents[0].get("sha")
+              _, trigger_commit = get(f"/git/commits/{trigger_head}")
+              trigger_parents = trigger_commit.get("parents") or []
+              require(len(trigger_parents) == 1, "PR76 trigger head is not single-parent")
+              repair_head = trigger_parents[0].get("sha")
+              _, repair_commit = get(f"/git/commits/{repair_head}")
+              repair_parents = repair_commit.get("parents") or []
+              require(len(repair_parents) == 1, "PR76 pure repair is not single-parent")
+              require(repair_parents[0].get("sha") == new_base, "PR76 pure repair parent is not bound new main")
+              _, trigger_at_parent = get(
+                  f"/contents/{urllib.parse.quote(trigger_path, safe='/')}?ref={trigger_head}"
+              )
+              require(trigger_at_parent.get("sha") == trigger_blob, "PR76 trigger parent blob differs")
+              _, trigger_at_repair = get(
+                  f"/contents/{urllib.parse.quote(trigger_path, safe='/')}?ref={repair_head}",
+                  allow_404=True,
+              )
+              require(trigger_at_repair is None, "PR76 pure repair contains trigger")
+              final_tree = final_commit.get("tree", {}).get("sha")
+              repair_tree = repair_commit.get("tree", {}).get("sha")
+              require(final_tree == repair_tree, "PR76 final clean tree differs from tested pure repair tree")
+              final_head = head
+              break
+          require(final_head is not None, "external GitHub App did not create clean PR76 head")
+
+          latest = {}
+          while time.monotonic() < deadline:
+              query = urllib.parse.urlencode({"head_sha": final_head, "per_page": 100})
+              _, value = get(f"/actions/runs?{query}")
+              latest = {}
+              for run in value.get("workflow_runs", []):
+                  name = run.get("name")
+                  if name in required_workflows:
+                      prior = latest.get(name)
+                      if prior is None or int(run.get("id", 0)) > int(prior.get("id", 0)):
+                          latest[name] = run
+              if set(latest) == required_workflows and all(
+                  run.get("status") == "completed" for run in latest.values()
+              ):
+                  if all(run.get("conclusion") == "success" for run in latest.values()):
+                      break
+                  raise SystemExit(
+                      "PR76 permanent matrices failed: "
+                      + json.dumps({name: run.get("conclusion") for name, run in latest.items()})
+                  )
+              time.sleep(20)
+          require(set(latest) == required_workflows, "PR76 permanent workflow family missing")
+          for name, run in latest.items():
+              require(run.get("conclusion") == "success", f"{name} did not succeed")
+              _, jobs_value = get(f"/actions/runs/{int(run['id'])}/jobs?per_page=100")
+              jobs = jobs_value.get("jobs") or []
+              require(jobs, f"{name} has no jobs")
+              require(any(job.get("conclusion") == "success" for job in jobs), f"{name} has no successful job")
+              require(
+                  not any(job.get("conclusion") in {"failure", "cancelled", "timed_out", "action_required"} for job in jobs),
+                  f"{name} contains a failed terminal job",
+              )
+
+          _, pull = get(f"/pulls/{pr76_number}")
+          require(pull.get("head", {}).get("sha") == final_head, "PR76 head moved")
+          require(pull.get("base", {}).get("sha") == new_base, "PR76 base does not equal new main")
+          require(pull.get("state") == "open" and pull.get("merged_at") is None, "PR76 is not open")
+
+          qualification_map = {
+              "compatibility routing": latest["Owner-open R5 compatibility source routing"],
+              "Android evaluated matrix": latest["G1 Android privileged-lane evaluated matrix"],
+              "governance readiness": latest["Owner-open R5 governance readiness observation"],
+              "exact-head qualification": latest["G1 exact-head source qualification"],
+              "ordered synthetic merge": latest["G1 synthetic-merge qualification"],
+          }
+          qualification = "\n".join(
+              f"{label + ':':28} {int(run['id'])} — success"
+              for label, run in qualification_map.items()
+          )
+
+          body = pull.get("body") or ""
+          exact = f"""## Exact immutable subject
+
+```text
+base branch:       main
+base commit:       {new_base}
+base tree:         {new_base_tree}
+head branch:       {candidate_branch}
+head commit:       {final_head}
+head tree:         {final_tree}
+head parent:       {trigger_head}
+pure restack:      {repair_head}
+pure restack tree: {repair_tree}
+pre-restack head:  {old_head}
+controller run:    {control_id}
+commits ahead:     {pull.get('commits')}
+changed files:     {pull.get('changed_files')}
+```
+
+The complete matrix executed on pure restack `{repair_head}` / tree `{repair_tree}`. Trigger-only child `{trigger_head}` added one known empty blob; external-App clean head `{final_head}` removed only that blob and has the exact tested tree. Any base/head/tree movement invalidates qualification and review. No temporary controller or `ops/` path is present.
+
+## Fail-closed performance contract"""
+          body, count = re.subn(
+              r"## Exact immutable subject\n.*?\n## Fail-closed performance contract",
+              exact,
+              body,
+              count=1,
+              flags=re.S,
+          )
+          require(count == 1, "PR76 exact-subject section replacement failed")
+
+          permanent = """## Permanent current-head qualification
+
+All required workflow families completed with non-empty terminal success on the clean restacked exact head and its current protected base:
+
+```text
+""" + qualification + "\n```\n\nPre-restack and trigger-head checks/reviews receive no credit."
+          body, count = re.subn(
+              r"## Permanent current-head qualification\n.*?\n## Review slices",
+              permanent + "\n\n## Review slices",
+              body,
+              count=1,
+              flags=re.S,
+          )
+          require(count == 1, "PR76 qualification section replacement failed")
+          call("PATCH", f"/pulls/{pr76_number}", {"body": body})
+          call(
+              "POST",
+              f"/pulls/{pr76_number}/requested_reviewers",
+              {"reviewers": ["Franksudoman", "Tomasrgbsf"]},
+          )
+
+          node = pull.get("node_id")
+          require(isinstance(node, str) and node, "PR76 node ID unavailable")
+          graph = urllib.request.Request(
+              "https://api.github.com/graphql",
+              data=json.dumps({
+                  "query": "mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}",
+                  "variables": {"id": node},
+              }).encode(),
+              method="POST",
+              headers=headers,
+          )
+          with urllib.request.urlopen(graph, timeout=30) as response:
+              result = json.load(response)
+          require(not result.get("errors"), f"PR76 ready mutation failed: {result.get('errors')}")
+
+          call("POST", f"/issues/{pr76_number}/comments", {"body": f"""## Clean post-PR75 performance subject ready for exact-head review
+
+Pure restack `{repair_head}` / tree `{repair_tree}` completed controller run `{control_id}`. Trigger-only head `{trigger_head}` added the known empty blob; external-App clean head `{final_head}` deleted only it and is byte-identical to the tested tree.
+
+```text
+{qualification}
+```
+
+Please review this exact head. Old-base decisions and checks do not transfer. This remains L1 performance source qualification only: `performance_L2_promoted=false`, `automatic_redispatch=false`, `zero_gap=false`, `public_release=false`. Ordinary protected integration only; no administrator bypass or review dismissal.
+"""})
+          print(json.dumps({
+              "result": "PR76_READY_FOR_FRESH_EXACT_HEAD_REVIEW",
+              "controller_run": control_id,
+              "base": new_base,
+              "repair_head": repair_head,
+              "repair_tree": repair_tree,
+              "head": final_head,
+              "runs": {name: int(run["id"]) for name, run in latest.items()},
+          }, sort_keys=True))
+          PY
