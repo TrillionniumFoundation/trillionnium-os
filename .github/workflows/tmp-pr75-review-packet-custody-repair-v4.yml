@@ -1,0 +1,221 @@
+name: Temporary PR75 review-packet custody repair v4
+
+on:
+  push:
+    branches:
+      - ops/pr75-review-packet-custody-repair-v4-20260911
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: temporary-pr75-review-packet-custody-repair-v2
+  cancel-in-progress: true
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      CANDIDATE_HEAD: 458b22f2a57dec2a8527ac6584dfd8d6f6e64179
+      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-main-20260910
+      SCRIPT_BRANCH: ops/pr75-review-packet-custody-repair-v3-20260911
+      SCRIPT_PATH: ops/pr75_review_packet_custody_repair_v3.py
+      REPAIR_SCRIPT_SHA256: 9cd40a90902e6ce140aa23b819a7a20f64c90f811bb173fb93f9bab09c3d7459
+      TRIGGER_PATH: docs/machine/.pr75-custody-qualification-trigger
+      TRIGGER_BLOB_SHA: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Authenticate controller and extract hash-locked repair script
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git --no-replace-objects merge-base "$CANDIDATE_HEAD" HEAD)" = "$CANDIDATE_HEAD"
+          observed="$(git --no-replace-objects diff --name-only "$CANDIDATE_HEAD"...HEAD | LC_ALL=C sort)"
+          test "$observed" = '.github/workflows/tmp-pr75-review-packet-custody-repair-v4.yml'
+          git fetch --no-tags origin \
+            "+refs/heads/${SCRIPT_BRANCH}:refs/remotes/origin/${SCRIPT_BRANCH}"
+          git --no-replace-objects show \
+            "refs/remotes/origin/${SCRIPT_BRANCH}:${SCRIPT_PATH}" \
+            > "${RUNNER_TEMP:?}/pr75_review_packet_custody_repair_v4.py"
+          printf '%s  %s\n' "$REPAIR_SCRIPT_SHA256" \
+            "${RUNNER_TEMP:?}/pr75_review_packet_custody_repair_v4.py" \
+            | sha256sum --check --strict
+          git --no-replace-objects checkout --detach "$CANDIDATE_HEAD"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "$CANDIDATE_HEAD"
+          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Close dynamic-import ambiguity in the temporary repair script
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "${RUNNER_TEMP:?}/pr75_review_packet_custody_repair_v4.py" <<'PY'
+          from pathlib import Path
+          import sys
+
+          path = Path(sys.argv[1])
+          text = path.read_text(encoding="utf-8")
+          old = "module = importlib.util.module_from_spec(spec)\nspec.loader.exec_module(module)\ntry:\n"
+          new = "module = importlib.util.module_from_spec(spec)\nsys.modules[spec.name] = module\nspec.loader.exec_module(module)\ntry:\n"
+          if text.count(old) != 1:
+              raise SystemExit("dynamic-import patch anchor differs")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          python3 -m py_compile "${RUNNER_TEMP:?}/pr75_review_packet_custody_repair_v4.py"
+          sha256sum "${RUNNER_TEMP:?}/pr75_review_packet_custody_repair_v4.py"
+
+      - name: Apply descriptor-relative nonblocking custody repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "${RUNNER_TEMP:?}/pr75_review_packet_custody_repair_v4.py"
+          python3 -m py_compile \
+            tools/contracts/generate_module_contracts.py \
+            tools/contracts/check_module_contract_compatibility.py \
+            tools/tests/test_module_contracts.py
+          python3 tools/contracts/generate_module_contracts.py --write
+          python3 tools/contracts/generate_module_contracts.py --check
+          python3 tools/contracts/generate_module_contracts.py --verify
+          python3 -m py_compile \
+            tools/contracts/generate_module_contracts.py \
+            tools/contracts/check_module_contract_compatibility.py \
+            tools/tests/test_module_contracts.py
+          python3 -m unittest tools.tests.test_module_contracts -v
+
+      - name: Execute complete repository qualification
+        shell: bash
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target-root
+        run: |
+          set -euo pipefail
+          python3 tools/docs/generate_global_docs.py
+          python3 tools/docs/generate_global_docs.py --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets -- -D warnings
+          (
+            cd planned
+            export CARGO_TARGET_DIR="${RUNNER_TEMP:?}/cargo-target-planned"
+            cargo fmt --all -- --check
+            cargo test --locked --workspace --all-targets
+            cargo clippy --locked --workspace --all-targets -- -D warnings
+          )
+
+      - name: Prove bounded change set and publish temporary trigger head
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 0755 "$(dirname -- "$TRIGGER_PATH")"
+          : > "$TRIGGER_PATH"
+          test "$(git hash-object -- "$TRIGGER_PATH")" = "$TRIGGER_BLOB_SHA"
+          git diff --check
+          mapfile -t changed < <(
+            git status --porcelain=v1 --untracked-files=all \
+              | sed -E 's/^.. //' \
+              | LC_ALL=C sort
+          )
+          test "${#changed[@]}" -gt 0
+          for required in \
+            tools/contracts/generate_module_contracts.py \
+            tools/contracts/check_module_contract_compatibility.py \
+            tools/tests/test_module_contracts.py \
+            "$TRIGGER_PATH"
+          do
+            printf '%s\n' "${changed[@]}" | grep -Fqx -- "$required"
+          done
+          for path in "${changed[@]}"; do
+            case "$path" in
+              tools/contracts/generate_module_contracts.py|\
+              tools/contracts/check_module_contract_compatibility.py|\
+              tools/contracts/module-contracts.lock.json|\
+              tools/tests/test_module_contracts.py|\
+              docs/machine/module-contract-catalog.v1.json|\
+              docs/MODULE_CONTRACT_STATUS.md|\
+              docs/generated/*|\
+              schemas/modules/*|\
+              "$TRIGGER_PATH")
+                ;;
+              *)
+                printf 'unexpected changed path: %s\n' "$path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          git config user.name 'Qian QI'
+          git config user.email '102159240+ProfHepta@users.noreply.github.com'
+          git add -- "${changed[@]}"
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+          git diff --cached --check
+          git commit \
+            -m 'fix(contracts): make review-packet custody nonblocking and descriptor-relative' \
+            -m 'Acquire every path component through no-follow directory descriptors, open the final object nonblocking, reject non-regular objects before reads, retain exact descriptor/path identity checks, and add timeout-bounded FIFO plus parent-symlink hostile regressions. Regenerate the embedded checker and all content-bound contract artifacts. The empty qualification trigger is removed by the external GitHub App before permanent exact-head admission. Preserve automatic_redispatch=false and the L1-only claim ceiling.'
+          repair_head="$(git --no-replace-objects rev-parse HEAD)"
+          repair_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$CANDIDATE_HEAD"
+          git push \
+            --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${CANDIDATE_HEAD}" \
+            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
+          {
+            echo "repair_head=$repair_head"
+            echo "repair_tree=$repair_tree"
+          } >> "$GITHUB_OUTPUT"
+          printf 'repair_head=%s\nrepair_tree=%s\ntrigger_path=%s\ntrigger_blob=%s\n' \
+            "$repair_head" "$repair_tree" "$TRIGGER_PATH" "$TRIGGER_BLOB_SHA"
+
+      - name: Record non-authorizing publication checkpoint
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          REPAIR_HEAD: ${{ steps.publish.outputs.repair_head }}
+          REPAIR_TREE: ${{ steps.publish.outputs.repair_tree }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          body = f"""## Temporary custody-repair head published after full qualification
+
+Controller run `{os.environ['GITHUB_RUN_ID']}` completed the descriptor-relative/nonblocking review-packet repair matrix and published temporary head `{os.environ['REPAIR_HEAD']}` / tree `{os.environ['REPAIR_TREE']}`.
+
+This temporary head contains only the known empty trigger `docs/machine/.pr75-custody-qualification-trigger` (Git blob `e69de29bb2d1d6434b8b29ae775ad8c2e48c5391`) in addition to the qualified repair. The external GitHub App must delete that file to create the final clean same-content tree and trigger permanent exact-head/synthetic-merge workflows. Do not review or merge the temporary trigger head. No prior approval/status is inherited.
+
+`automatic_redispatch=false`; `public_release=false`; L1 source-only claim ceiling unchanged.
+"""
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/{os.environ['REPOSITORY']}/issues/75/comments",
+              data=json.dumps({"body": body}).encode("utf-8"),
+              method="POST",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "trillionnium-pr75-custody-repair-v4",
+              },
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              if response.status not in {200, 201}:
+                  raise SystemExit(f"comment publication failed: HTTP {response.status}")
+          PY
