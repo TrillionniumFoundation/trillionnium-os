@@ -147,7 +147,10 @@ def read_regular(path: Path, *, label: str, maximum: int = MAX_SOURCE_BYTES) -> 
         current = os.lstat(path)
     except OSError as exc:
         raise ContractError(f"{label} disappeared after read") from exc
-    if stat.S_ISLNK(current.st_mode) or current != before:
+    if (
+        stat.S_ISLNK(current.st_mode)
+        or stable_file_identity(current) != stable_file_identity(before)
+    ):
         raise ContractError(f"{label} pathname changed while being read")
     return b"".join(chunks)
 

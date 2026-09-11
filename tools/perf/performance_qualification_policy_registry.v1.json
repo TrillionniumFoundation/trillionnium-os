@@ -1,0 +1,51 @@
+{
+  "policy": {
+    "automatic_redispatch": false,
+    "l2_unknown_outcomes_allowed": false,
+    "max_fairness_drop": 0.05,
+    "max_latency_regression_percent": 25.0,
+    "max_sample_elapsed_ns": 3600000000000,
+    "max_self_drift_percent": 10.0,
+    "max_throughput_regression_percent": 25.0,
+    "max_unknown_rate_increase": 0.0,
+    "maximum_repetitions": 10000,
+    "minimum_repetitions": 50,
+    "outlier_deletion": false,
+    "phases": [
+      "cold_start",
+      "steady_state"
+    ],
+    "public_release": false,
+    "raw_samples_preserved": true,
+    "required_batches": 3,
+    "same_work_contract_required": true,
+    "schema": "org.trillionnium.performance-qualification-policy.v2",
+    "statistics": [
+      "median_ms",
+      "p90_ms",
+      "p95_ms",
+      "p99_ms",
+      "max_ms",
+      "mad_ms",
+      "stdev_ms",
+      "mean_ci95_lower_ms",
+      "mean_ci95_upper_ms"
+    ],
+    "unknown_rate_source": "raw_unknown_outcome_boolean_mean",
+    "version": "2026-09-11-v2",
+    "workloads": [
+      "WL-01",
+      "WL-02",
+      "WL-03",
+      "WL-04",
+      "WL-05",
+      "WL-06",
+      "WL-07",
+      "WL-08",
+      "WL-09",
+      "WL-10"
+    ]
+  },
+  "schema": "org.trillionnium.performance-qualification-policy-registry.v1",
+  "version": "2026-09-11-v2"
+}
