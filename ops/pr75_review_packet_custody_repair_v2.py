@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+GENERATOR = Path("tools/contracts/generate_module_contracts.py")
 CHECKER = Path("tools/contracts/check_module_contract_compatibility.py")
 TESTS = Path("tools/tests/test_module_contracts.py")
 
@@ -15,17 +16,24 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
-checker = CHECKER.read_text(encoding="utf-8")
-start_marker = "    candidate = root\n"
-end_marker = "    if sha256_bytes(raw) != expected_sha256:\n"
-if checker.count(start_marker) != 1 or checker.count(end_marker) != 1:
-    raise SystemExit("checker acquisition block anchors are not unique")
-start = checker.find(start_marker)
-end = checker.find(end_marker, start)
-if start < 0 or end < 0:
-    raise SystemExit("checker acquisition block anchors are missing")
+def replace_between(
+    text: str,
+    start_marker: str,
+    end_marker: str,
+    replacement: str,
+    label: str,
+) -> str:
+    if text.count(start_marker) != 1 or text.count(end_marker) != 1:
+        raise SystemExit(f"{label}: acquisition block anchors are not unique")
+    start = text.find(start_marker)
+    end = text.find(end_marker, start)
+    if start < 0 or end < 0:
+        raise SystemExit(f"{label}: acquisition block anchors are missing")
+    return text[:start] + replacement + text[end:]
 
-new_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
+
+checker = CHECKER.read_text(encoding="utf-8")
+checker_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
     if any(not hasattr(os, name) for name in required_flags) or not hasattr(os, "pread"):
         raise ValueError(f"{label}: review packet safe acquisition is unavailable")
     if (
@@ -89,8 +97,90 @@ new_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLL
     ):
         raise ValueError(f"{label}: review packet changed while being read")
 '''
-checker = checker[:start] + new_acquisition + checker[end:]
+checker = replace_between(
+    checker,
+    "    candidate = root\n",
+    "    if sha256_bytes(raw) != expected_sha256:\n",
+    checker_acquisition,
+    "checker",
+)
 CHECKER.write_text(checker, encoding="utf-8")
+
+
+generator = GENERATOR.read_text(encoding="utf-8")
+generator_acquisition = '''    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")
+    require(
+        all(hasattr(os, name) for name in required_flags) and hasattr(os, "pread"),
+        "review packet safe acquisition is unavailable",
+    )
+    require(
+        os.open in os.supports_dir_fd
+        and os.stat in os.supports_dir_fd
+        and os.stat in os.supports_follow_symlinks,
+        "descriptor-relative review packet acquisition is unavailable",
+    )
+
+    directory_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK
+    directory_descriptors: list[int] = []
+    descriptor: int | None = None
+    try:
+        directory_descriptors.append(os.open(root, directory_flags))
+        for part in pure.parts[:-1]:
+            directory_descriptors.append(
+                os.open(part, directory_flags, dir_fd=directory_descriptors[-1])
+            )
+        parent_descriptor = directory_descriptors[-1]
+        leaf = pure.parts[-1]
+        descriptor = os.open(leaf, file_flags, dir_fd=parent_descriptor)
+        before = os.fstat(descriptor)
+        require(
+            stat.S_ISREG(before.st_mode)
+            and before.st_nlink == 1
+            and 0 < before.st_size <= REVIEW_PACKET_MAX_BYTES,
+            "review packet is not one bounded regular file",
+        )
+        chunks: list[bytes] = []
+        offset = 0
+        while offset < before.st_size:
+            chunk = os.pread(
+                descriptor,
+                min(65536, before.st_size - offset),
+                offset,
+            )
+            require(bool(chunk), "review packet short read")
+            chunks.append(chunk)
+            offset += len(chunk)
+        raw = b"".join(chunks)
+        after = os.fstat(descriptor)
+        current = os.stat(leaf, dir_fd=parent_descriptor, follow_symlinks=False)
+    except ContractError:
+        raise
+    except OSError as error:
+        raise ContractError("review packet descriptor acquisition failed") from error
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+        for directory_descriptor in reversed(directory_descriptors):
+            os.close(directory_descriptor)
+
+    require(
+        len(raw) == before.st_size
+        and len(raw) <= REVIEW_PACKET_MAX_BYTES
+        and stable_file_identity(after) == stable_file_identity(before)
+        and stable_file_identity(current) == stable_file_identity(before),
+        "review packet changed while being read",
+    )
+'''
+generator = replace_between(
+    generator,
+    "    candidate = root\n",
+    "    require(sha(raw) == expected_sha256, \"review packet digest differs from path\")\n",
+    generator_acquisition,
+    "generator",
+)
+GENERATOR.write_text(generator, encoding="utf-8")
+
 
 tests = TESTS.read_text(encoding="utf-8")
 tests = replace_once(
@@ -106,6 +196,7 @@ method = r'''
     @unittest.skipUnless(
         hasattr(os, "mkfifo")
         and hasattr(os, "O_NONBLOCK")
+        and hasattr(os, "pread")
         and os.open in os.supports_dir_fd
         and os.stat in os.supports_dir_fd
         and os.stat in os.supports_follow_symlinks,
@@ -133,31 +224,37 @@ if spec is None or spec.loader is None:
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 try:
-    module.read_review_packet(
-        Path(sys.argv[2]), sys.argv[3], sys.argv[4], "MOD-FIXTURE"
-    )
+    if sys.argv[2] == "checker":
+        module.read_review_packet(
+            Path(sys.argv[3]), sys.argv[4], sys.argv[5], "MOD-FIXTURE"
+        )
+    else:
+        module.read_review_packet(Path(sys.argv[3]), sys.argv[4])
 except ValueError as error:
     print(error, file=sys.stderr)
     raise SystemExit(0 if "not one bounded regular file" in str(error) else 5)
 raise SystemExit(6)
 """
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    "-c",
-                    probe,
-                    str(CHECKER),
-                    str(root),
-                    fifo_relative,
-                    fifo_digest,
-                ],
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=3,
-            )
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertIn("not one bounded regular file", result.stderr)
+            for kind, source in (("checker", CHECKER), ("generator", GENERATOR)):
+                with self.subTest(kind=kind):
+                    result = subprocess.run(
+                        [
+                            sys.executable,
+                            "-c",
+                            probe,
+                            str(source),
+                            kind,
+                            str(root),
+                            fifo_relative,
+                            fifo_digest,
+                        ],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=3,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn("not one bounded regular file", result.stderr)
 
             fifo.unlink()
             regular_raw = self.checker.canonical_packet({"fixture": True})
@@ -174,6 +271,10 @@ raise SystemExit(6)
                     "MOD-FIXTURE",
                 ),
                 regular_raw,
+            )
+            self.assertEqual(
+                self.contracts.read_review_packet(root, regular_relative),
+                (regular_raw, regular_digest),
             )
 
         with tempfile.TemporaryDirectory() as temporary:
@@ -195,12 +296,14 @@ raise SystemExit(6)
                     digest,
                     "MOD-FIXTURE",
                 )
+            with self.assertRaisesRegex(ValueError, "descriptor acquisition failed"):
+                self.contracts.read_review_packet(root, relative)
 
     def test_change_review_state_machine_is_closed_and_one_shot(self) -> None:
 '''
 tests = replace_once(tests, anchor, method, "review packet test insertion")
 TESTS.write_text(tests, encoding="utf-8")
 
-for path in (CHECKER, TESTS):
+for path in (GENERATOR, CHECKER, TESTS):
     raw = path.read_bytes()
     print(f"{path}: bytes={len(raw)} sha256={hashlib.sha256(raw).hexdigest()}")
