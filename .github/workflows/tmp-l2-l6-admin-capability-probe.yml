@@ -1,0 +1,25 @@
+name: Temporary L2-L6 administration capability probe
+
+on:
+  push:
+    branches:
+      - ops/l2-l6-environment-hardening-20260911
+
+permissions: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require dedicated administration authority without disclosing it
+        shell: bash
+        env:
+          ADMIN_TOKEN: ${{ secrets.OWNER_OPEN_R5_ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          if test -z "$ADMIN_TOKEN"; then
+            echo 'OWNER_OPEN_R5_ADMIN_TOKEN is not configured' >&2
+            exit 2
+          fi
+          echo 'Dedicated administration token is configured; value remains masked.'
