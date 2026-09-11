@@ -1,0 +1,209 @@
+name: Temporary telemetry restack final-main v3
+
+on:
+  push:
+    branches:
+      - ops/telemetry-restack-final-main-v3-20260911
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-telemetry-restack-final-main-v3
+  cancel-in-progress: true
+
+env:
+  CONTROLLER_BRANCH: ops/telemetry-restack-final-main-v3-20260911
+  TARGET_BASE_SHA: b6cb785d4fde6427a1ae99ffc12f0679353aaaff
+  OLD_BASE_SHA: b681cd856fccac1189496576f25d259752d2dcce
+  TELEMETRY_SOURCE_SHA: 651e0bf6b6221fe7fed0b649e894b89ceb8347bf
+  EXPECTED_CANDIDATE_HEAD: e065a34083faa8a43223150c11cd2a2cc3839712
+  CANDIDATE_BRANCH: codex/observe-shadow-telemetry-v2-20260911
+  MATERIALIZED_BRANCH: ops/telemetry-restack-materialized-v3-20260911
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  validate-and-materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out exact controller
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: true
+
+      - name: Bind controller, protected base and source objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME:?}" = "$CONTROLLER_BRANCH"
+          test "$(git --no-replace-objects rev-parse HEAD)" = "${GITHUB_SHA:?}"
+          git fetch --no-tags origin \
+            "+refs/heads/main:refs/remotes/origin/main" \
+            "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}" \
+            "$OLD_BASE_SHA" "$TELEMETRY_SOURCE_SHA"
+          test "$(git --no-replace-objects rev-parse refs/remotes/origin/main)" = "$TARGET_BASE_SHA"
+          test "$(git --no-replace-objects rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" = "$EXPECTED_CANDIDATE_HEAD"
+          git --no-replace-objects cat-file -e "$OLD_BASE_SHA^{commit}"
+          git --no-replace-objects cat-file -e "$TELEMETRY_SOURCE_SHA^{commit}"
+          git --no-replace-objects merge-base --is-ancestor "$OLD_BASE_SHA" "$TELEMETRY_SOURCE_SHA"
+          if git ls-remote --exit-code --heads origin "refs/heads/${MATERIALIZED_BRANCH}" >/dev/null 2>&1; then
+            echo "materialized branch already exists" >&2
+            exit 1
+          fi
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.13"
+
+      - name: Set up Rust 1.93
+        uses: dtolnay/rust-toolchain@d8dfd7155fea72af4ad34a8fe97364d210e2d020
+        with:
+          toolchain: "1.93.0"
+          components: rustfmt,clippy
+
+      - name: Three-way restack source and regenerate projections
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch="${RUNNER_TEMP:?}/telemetry-source.patch"
+          worktree="${RUNNER_TEMP:?}/telemetry-restack"
+          paths=(
+            docs/START_HERE.md
+            docs/machine/metric-catalog.v1.json
+            docs/machine/requirement-graph.v1.json
+            docs/modules/MOD-GLOBAL-CONTROL.md
+            docs/modules/MOD-TELEMETRY.md
+            planned/crates/trillionnium-telemetry/src/catalog.rs
+            planned/crates/trillionnium-telemetry/src/lib.rs
+            tools/docs/generate_global_docs.py
+            tools/docs/verify_global_docs.py
+            tools/tests/test_metric_catalog.py
+          )
+          git --no-replace-objects diff --binary "$OLD_BASE_SHA" "$TELEMETRY_SOURCE_SHA" -- "${paths[@]}" > "$patch"
+          test -s "$patch"
+          git worktree add --detach "$worktree" "$TARGET_BASE_SHA"
+          cd "$worktree"
+          git apply --3way --index "$patch"
+
+          python3 - "$OLD_BASE_SHA" "$TELEMETRY_SOURCE_SHA" <<'PY'
+          import json
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          old_base, telemetry_source = sys.argv[1:]
+          path = Path("docs/machine/doc-set.v1.json")
+
+          def from_git(commit: str) -> dict:
+              raw = subprocess.check_output(
+                  ["git", "--no-replace-objects", "show", f"{commit}:{path.as_posix()}"],
+                  text=True,
+              )
+              value = json.loads(raw)
+              if not isinstance(value, dict):
+                  raise SystemExit(f"{commit} documentation set is not an object")
+              return value
+
+          base = from_git(old_base)
+          telemetry = from_git(telemetry_source)
+          current = json.loads(path.read_text(encoding="utf-8"))
+
+          expected_additions = {
+              "required_files": {
+                  "docs/machine/metric-catalog.v1.json",
+                  "docs/generated/METRIC_STATUS.md",
+              },
+              "authority_order": {"docs/machine/metric-catalog.v1.json"},
+          }
+          for field, expected in expected_additions.items():
+              base_items = base[field]
+              telemetry_items = telemetry[field]
+              current_items = current[field]
+              if not all(isinstance(items, list) for items in (base_items, telemetry_items, current_items)):
+                  raise SystemExit(f"{field} is not a list")
+              additions = set(telemetry_items) - set(base_items)
+              removals = set(base_items) - set(telemetry_items)
+              if additions != expected or removals:
+                  raise SystemExit(
+                      f"unexpected telemetry {field} delta: additions={sorted(additions)} removals={sorted(removals)}"
+                  )
+              for item in telemetry_items:
+                  if item not in additions or item in current_items:
+                      continue
+                  source_index = telemetry_items.index(item)
+                  successor = next(
+                      (candidate for candidate in telemetry_items[source_index + 1 :] if candidate in current_items),
+                      None,
+                  )
+                  if successor is None:
+                      current_items.append(item)
+                  else:
+                      current_items.insert(current_items.index(successor), item)
+              if len(current_items) != len(set(current_items)):
+                  raise SystemExit(f"duplicate {field} after merge")
+              if not expected.issubset(set(current_items)):
+                  raise SystemExit(f"telemetry additions missing from {field}")
+
+          path.write_text(
+              json.dumps(current, sort_keys=True, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          python3 tools/docs/generate_global_docs.py
+          python3 tools/docs/generate_global_docs.py --check
+          git add --all
+          git diff --cached --check
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest tools.tests.test_metric_catalog -v
+          cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+          cargo test --locked --manifest-path planned/Cargo.toml -p trillionnium-telemetry
+          cargo clippy --locked --manifest-path planned/Cargo.toml -p trillionnium-telemetry --all-targets -- -D warnings
+          git diff --check
+          git diff --cached --check
+
+          observed="$(git status --porcelain=v1 --untracked-files=all | sed -E 's/^.. //' | LC_ALL=C sort)"
+          expected="$(printf '%s\n' \
+            docs/START_HERE.md \
+            docs/generated/METRIC_STATUS.md \
+            docs/generated/TRACEABILITY.tsv \
+            docs/machine/doc-set.v1.json \
+            docs/machine/metric-catalog.v1.json \
+            docs/machine/requirement-graph.v1.json \
+            docs/modules/MOD-GLOBAL-CONTROL.md \
+            docs/modules/MOD-TELEMETRY.md \
+            planned/crates/trillionnium-telemetry/src/catalog.rs \
+            planned/crates/trillionnium-telemetry/src/lib.rs \
+            tools/docs/generate_global_docs.py \
+            tools/docs/verify_global_docs.py \
+            tools/tests/test_metric_catalog.py | LC_ALL=C sort)"
+          test "$observed" = "$expected"
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(telemetry): restack catalog-bound observe and shadow control' \
+            -m 'Apply the qualified telemetry source to protected main after module-contract and performance integration; regenerate current documentation projections; preserve semantic_authority=false, active_control=false, automatic_redispatch=false, OBSERVE_ONLY, and public_release=false.'
+          final="$(git --no-replace-objects rev-parse HEAD)"
+          tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
+          test "$(git --no-replace-objects rev-parse HEAD^)" = "$TARGET_BASE_SHA"
+          changed="$(git --no-replace-objects diff --name-only "$TARGET_BASE_SHA"...HEAD | LC_ALL=C sort)"
+          test "$changed" = "$expected"
+          git push origin "HEAD:refs/heads/${MATERIALIZED_BRANCH}" \
+            --force-with-lease="refs/heads/${MATERIALIZED_BRANCH}:"
+          printf 'status=PASS_TELEMETRY_RESTACK_MATERIALIZED\nbase=%s\nsource=%s\ncommit=%s\ntree=%s\nchanged_paths=13\nsemantic_authority=false\nactive_control=false\nautomatic_redispatch=false\npublic_release=false\n' \
+            "$TARGET_BASE_SHA" "$TELEMETRY_SOURCE_SHA" "$final" "$tree" \
+            | tee "${RUNNER_TEMP:?}/telemetry-restack-receipt.txt"
+
+      - name: Upload non-authorizing materialization receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: telemetry-restack-final-main-${{ env.TARGET_BASE_SHA }}
+          if-no-files-found: error
+          retention-days: 7
+          path: ${{ runner.temp }}/telemetry-restack-receipt.txt
