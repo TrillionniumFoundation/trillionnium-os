@@ -1,4 +1,4 @@
-name: Temporary PR76 post-PR75 restack v1
+name: Temporary PR76 post-PR75 restack v2
 
 on:
   push:
@@ -6,13 +6,12 @@ on:
       - ops/pr76-post-pr75-restack-v1-20260911
 
 permissions:
-  actions: read
   contents: write
-  pull-requests: write
-  issues: write
+  pull-requests: read
+  actions: read
 
 concurrency:
-  group: temporary-pr76-post-pr75-restack-v1
+  group: temporary-pr76-post-pr75-restack-v2
   cancel-in-progress: true
 
 jobs:
@@ -21,322 +20,133 @@ jobs:
     timeout-minutes: 180
     env:
       REPOSITORY: TrillionniumFoundation/trillionnium-os
-      PR75: "75"
-      PR76: "76"
       OLD_BASE: b681cd856fccac1189496576f25d259752d2dcce
-      OLD_HEAD: 049636361e3f2ae84329197e80a53852c92a16f9
+      CLEAN_SOURCE_HEAD: ffd81a68a5480be206b8cbb3d9724fc6362237cf
+      EXPECTED_CANDIDATE_HEAD: d91e25471169abfd5879c6353421bd6d2702cdb1
+      NEW_MAIN: 8c51837f545270ca31ee7c0e09250eeda01880d2
       CANDIDATE_BRANCH: codex/performance-measurement-v2-20260910
-      TRIGGER_PATH: docs/machine/.pr76-restack-qualification-trigger
-      TRIGGER_BLOB_SHA: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_TERM_COLOR: always
 
     steps:
-      - name: Check out exact controller
+      - name: Check out exact isolated controller
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
           ref: ${{ github.sha }}
           persist-credentials: true
 
-      - name: Wait for ordinary PR75 integration and bind current main
-        id: gate
+      - name: Bind protected main and exact candidate lease
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git --no-replace-objects rev-parse HEAD^)" = "$OLD_BASE"
-          observed="$(git --no-replace-objects diff --name-only "$OLD_BASE"...HEAD)"
-          test "$observed" = '.github/workflows/tmp-pr76-post-pr75-restack-v1.yml'
-          cd "${RUNNER_TEMP:?}"
-          unset PYTHONPATH PYTHONHOME
-          /usr/bin/python3 -I - <<'PY'
-          import json
-          import os
-          import re
-          import time
-          import urllib.request
-
-          repository = os.environ["REPOSITORY"]
-          token = os.environ["GITHUB_TOKEN"]
-          headers = {
-              "Accept": "application/vnd.github+json",
-              "Authorization": f"Bearer {token}",
-              "X-GitHub-Api-Version": "2022-11-28",
-              "User-Agent": "trillionnium-pr76-post-pr75-restack-v1",
-          }
-          deadline = time.monotonic() + 165 * 60
-
-          def get(path):
-              request = urllib.request.Request(
-                  f"https://api.github.com/repos/{repository}{path}", headers=headers
-              )
-              with urllib.request.urlopen(request, timeout=30) as response:
-                  return json.load(response)
-
-          bound = None
-          while time.monotonic() < deadline:
-              pr75 = get(f"/pulls/{os.environ['PR75']}")
-              if pr75.get("merged_at") and pr75.get("merge_commit_sha"):
-                  branch = get("/branches/main")
-                  main_sha = branch.get("commit", {}).get("sha")
-                  if main_sha == pr75.get("merge_commit_sha"):
-                      commit = get(f"/git/commits/{main_sha}")
-                      if commit.get("verification", {}).get("verified") is True:
-                          bound = (pr75, main_sha, commit.get("tree", {}).get("sha"))
-                          break
-              time.sleep(20)
-          if bound is None:
-              raise SystemExit("PR75 did not reach ordinary verified protected-main integration")
-          pr75, main_sha, main_tree = bound
-          if not re.fullmatch(r"[0-9a-f]{40}", str(main_tree)):
-              raise SystemExit("new main tree unavailable")
-
-          pr76 = get(f"/pulls/{os.environ['PR76']}")
-          if pr76.get("state") != "open" or pr76.get("merged_at") is not None:
-              raise SystemExit("PR76 is no longer an open restack subject")
-          if pr76.get("head", {}).get("sha") != os.environ["OLD_HEAD"]:
-              raise SystemExit("PR76 head moved before restack")
-          if pr76.get("base", {}).get("sha") != os.environ["OLD_BASE"]:
-              raise SystemExit("PR76 base moved before restack")
-
-          output = os.environ["GITHUB_OUTPUT"]
-          with open(output, "a", encoding="utf-8") as stream:
-              stream.write(f"main_sha={main_sha}\n")
-              stream.write(f"main_tree={main_tree}\n")
-              stream.write(f"pr75_merge={pr75['merge_commit_sha']}\n")
-          print(json.dumps({
-              "result": "PR75_PROTECTED_MERGE_BOUND",
-              "pr75_head": pr75.get("head", {}).get("sha"),
-              "pr75_merge": pr75.get("merge_commit_sha"),
-              "main_sha": main_sha,
-              "main_tree": main_tree,
-          }, sort_keys=True))
-          PY
-
-      - name: Materialize the exact PR76 diff on new protected main
-        id: repair
-        env:
-          NEW_MAIN: ${{ steps.gate.outputs.main_sha }}
-          NEW_MAIN_TREE: ${{ steps.gate.outputs.main_tree }}
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags origin \
             "+refs/heads/main:refs/remotes/origin/main" \
             "+refs/heads/${CANDIDATE_BRANCH}:refs/remotes/origin/${CANDIDATE_BRANCH}"
-          test "$(git --no-replace-objects rev-parse refs/remotes/origin/main)" = "$NEW_MAIN"
-          test "$(git --no-replace-objects rev-parse "$OLD_HEAD")" = "$OLD_HEAD"
-          test "$(git --no-replace-objects rev-parse "$OLD_BASE")" = "$OLD_BASE"
-          test "$(git --no-replace-objects rev-parse "$OLD_HEAD^{tree}")" = '3ae20d716baed6511eff9dc5aa9eb37e58df2068'
-          git --no-replace-objects diff --name-only "$OLD_BASE"..."$OLD_HEAD" \
-            | LC_ALL=C sort > "${RUNNER_TEMP:?}/pr76-original-paths.txt"
-          test "$(wc -l < "${RUNNER_TEMP:?}/pr76-original-paths.txt")" -eq 8
-          if grep -E '^(\.github/|ops/|evidence/)' "${RUNNER_TEMP:?}/pr76-original-paths.txt"; then
-            echo 'PR76 original subject contains prohibited control/evidence paths' >&2
-            exit 1
-          fi
-          git --no-replace-objects diff --binary --full-index \
-            "$OLD_BASE"..."$OLD_HEAD" -- \
-            > "${RUNNER_TEMP:?}/pr76-restack.patch"
-          test -s "${RUNNER_TEMP:?}/pr76-restack.patch"
-          git --no-replace-objects checkout --detach "$NEW_MAIN"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$NEW_MAIN_TREE"
-          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
-          git apply --check --3way --whitespace=error-all "${RUNNER_TEMP:?}/pr76-restack.patch"
-          git apply --3way --whitespace=error-all "${RUNNER_TEMP:?}/pr76-restack.patch"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$NEW_MAIN"
+          test "$(git rev-parse refs/remotes/origin/${CANDIDATE_BRANCH})" = "$EXPECTED_CANDIDATE_HEAD"
+          git merge-base --is-ancestor "$CLEAN_SOURCE_HEAD" "$EXPECTED_CANDIDATE_HEAD"
+          python3 - <<'PY'
+          import json, os, urllib.request
+          token = os.environ["GITHUB_TOKEN"]
+          repo = os.environ["REPOSITORY"]
+          expected = os.environ["NEW_MAIN"]
+          h = {"Accept":"application/vnd.github+json","Authorization":f"Bearer {token}","X-GitHub-Api-Version":"2022-11-28","User-Agent":"pr76-restack-v2"}
+          def get(path):
+              req=urllib.request.Request(f"https://api.github.com/repos/{repo}{path}",headers=h)
+              with urllib.request.urlopen(req,timeout=30) as r: return json.load(r)
+          branch=get('/branches/main')
+          if branch.get('commit',{}).get('sha') != expected: raise SystemExit('protected main moved')
+          commit=get(f'/git/commits/{expected}')
+          if commit.get('verification',{}).get('verified') is not True: raise SystemExit('new main is not signature verified')
+          print('PASS_PROTECTED_MAIN_BINDING', expected, commit.get('tree',{}).get('sha'))
+          PY
+
+      - name: Materialize clean eight-path PR76 source on new main
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "${RUNNER_TEMP}/expected-paths.txt" <<'EOF'
+          docs/PERFORMANCE_AND_OPTIMIZATION.md
+          tools/perf/README.md
+          tools/perf/performance_qualification.py
+          tools/perf/performance_qualification_policy_registry.v1.json
+          tools/tests/test_performance_qualification.py
+          tools/tests/test_product_baseline_process_group_cleanup.py
+          tools/tests/test_verify_init_agent_activation.py
+          tools/verify_init_agent_activation.py
+          EOF
+          git diff --name-only "$OLD_BASE"..."$CLEAN_SOURCE_HEAD" | LC_ALL=C sort > "${RUNNER_TEMP}/source-paths.txt"
+          diff -u "${RUNNER_TEMP}/expected-paths.txt" "${RUNNER_TEMP}/source-paths.txt"
+          git diff --binary --full-index "$OLD_BASE"..."$CLEAN_SOURCE_HEAD" > "${RUNNER_TEMP}/pr76.patch"
+          test -s "${RUNNER_TEMP}/pr76.patch"
+          git checkout --detach "$NEW_MAIN"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git apply --check --3way --whitespace=error-all "${RUNNER_TEMP}/pr76.patch"
+          git apply --3way --whitespace=error-all "${RUNNER_TEMP}/pr76.patch"
           git reset
           git diff --check
 
-          python3 -m py_compile \
-            tools/perf/performance_qualification.py \
-            tools/tests/test_performance_qualification.py \
-            tools/perf/run_product_baseline.py \
-            tools/verify_init_agent_activation.py
-          python3 -m unittest \
-            tools.tests.test_performance_qualification \
-            tools.tests.test_run_product_baseline \
-            tools.tests.test_verify_init_agent_activation -v
+      - name: Apply fail-closed descriptor-relative publication repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('tools/perf/performance_qualification.py')
+          s=p.read_text()
+          marker='import sys\nfrom typing import Any, Iterable, Mapping, Sequence\n'
+          replacement='import sys\nfrom typing import Any, Iterable, Mapping, Sequence\n\n_OS_LINK_SUPPORTS_DIR_FD = os.link in os.supports_dir_fd\n_OS_LINK_SUPPORTS_FOLLOW_SYMLINKS = os.link in os.supports_follow_symlinks\n'
+          if marker not in s: raise SystemExit('import marker not found')
+          s=s.replace(marker,replacement,1)
+          old='''    for operation in (os.open, os.stat, os.unlink, os.link):\n        _require(operation in os.supports_dir_fd, "platform lacks required dir_fd semantics")\n    _require(os.link in os.supports_follow_symlinks, "platform lacks link follow-symlink control")\n'''
+          new='''    for operation in (os.open, os.stat, os.unlink):\n        _require(operation in os.supports_dir_fd, "platform lacks required dir_fd semantics")\n    _require(_OS_LINK_SUPPORTS_DIR_FD, "platform lacks required link dir_fd semantics")\n    _require(_OS_LINK_SUPPORTS_FOLLOW_SYMLINKS, "platform lacks link follow-symlink control")\n'''
+          if old not in s: raise SystemExit('capability block not found')
+          s=s.replace(old,new,1)
+          old='''        descriptor_path = f"/proc/self/fd/{descriptor}"\n        descriptor_target = os.stat(descriptor_path)\n        _require(\n            (descriptor_target.st_dev, descriptor_target.st_ino) == staged_dev_ino,\n            "descriptor publication path does not bind staging inode",\n        )\n        os.link(\n            descriptor_path,\n            absolute.name,\n            dst_dir_fd=parent_descriptor,\n            follow_symlinks=True,\n        )\n        published = True\n\n        final_before = os.stat(absolute.name, dir_fd=parent_descriptor, follow_symlinks=False)\n        _require(\n            (final_before.st_dev, final_before.st_ino) == staged_dev_ino\n            and stat.S_ISREG(final_before.st_mode)\n            and stat.S_IMODE(final_before.st_mode) == 0o600\n            and final_before.st_uid == os.geteuid()\n            and final_before.st_nlink == 2\n            and final_before.st_size == len(payload),\n            "published output identity differs from admitted staging inode",\n        )\n'''
+          new='''        os.link(\n            temporary_name,\n            absolute.name,\n            src_dir_fd=parent_descriptor,\n            dst_dir_fd=parent_descriptor,\n            follow_symlinks=False,\n        )\n        published = True\n\n        final_before = os.stat(absolute.name, dir_fd=parent_descriptor, follow_symlinks=False)\n        if (final_before.st_dev, final_before.st_ino) != staged_dev_ino:\n            os.unlink(absolute.name, dir_fd=parent_descriptor)\n            published = False\n            raise QualificationError("staging pathname was replaced during publication")\n        _require(\n            stat.S_ISREG(final_before.st_mode)\n            and stat.S_IMODE(final_before.st_mode) == 0o600\n            and final_before.st_uid == os.geteuid()\n            and final_before.st_nlink == 2\n            and final_before.st_size == len(payload),\n            "published output identity differs from admitted staging inode",\n        )\n'''
+          if old not in s: raise SystemExit('publication block not found')
+          s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+          git diff --check
+
+      - name: Run focused hostile and repository qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/perf/performance_qualification.py tools/tests/test_performance_qualification.py tools/verify_init_agent_activation.py
+          python3 -m unittest tools.tests.test_performance_qualification tools.tests.test_product_baseline_process_group_cleanup tools.tests.test_verify_init_agent_activation -v
           python3 tools/docs/generate_global_docs.py
           python3 tools/docs/generate_global_docs.py --check
           python3 tools/docs/verify_global_docs.py
           python3 tools/docs/verify_repository_authority.py
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v
+          cargo fmt --all -- --check
+          cargo test --locked --workspace --all-targets
+          cargo clippy --locked --workspace --all-targets --all-features -- -D warnings
+          if test -f planned/Cargo.toml; then
+            cargo fmt --manifest-path planned/Cargo.toml --all -- --check
+            cargo test --manifest-path planned/Cargo.toml --locked --workspace --all-targets
+            cargo clippy --manifest-path planned/Cargo.toml --locked --workspace --all-targets --all-features -- -D warnings
+          fi
           git diff --check
+          git diff --name-only | LC_ALL=C sort > "${RUNNER_TEMP}/final-paths.txt"
+          diff -u "${RUNNER_TEMP}/expected-paths.txt" "${RUNNER_TEMP}/final-paths.txt"
 
-          mapfile -t changed < <(git diff --name-only | LC_ALL=C sort)
-          test "${#changed[@]}" -ge 8
-          while IFS= read -r required; do
-            printf '%s\n' "${changed[@]}" | grep -Fqx -- "$required"
-          done < "${RUNNER_TEMP:?}/pr76-original-paths.txt"
-          for path in "${changed[@]}"; do
-            if grep -Fqx -- "$path" "${RUNNER_TEMP:?}/pr76-original-paths.txt"; then
-              continue
-            fi
-            case "$path" in
-              docs/generated/*) ;;
-              *)
-                printf 'unexpected PR76 restack path: %s\n' "$path" >&2
-                exit 1
-                ;;
-            esac
-          done
-          test -z "$(git ls-files --others --exclude-standard)"
-          git config user.name 'Qian QI'
-          git config user.email '102159240+ProfHepta@users.noreply.github.com'
-          git add -- "${changed[@]}"
-          test -z "$(git diff --name-only)"
+      - name: Publish one direct-child restack with exact force-with-lease
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- docs/PERFORMANCE_AND_OPTIMIZATION.md tools/perf/README.md tools/perf/performance_qualification.py tools/perf/performance_qualification_policy_registry.v1.json tools/tests/test_performance_qualification.py tools/tests/test_product_baseline_process_group_cleanup.py tools/tests/test_verify_init_agent_activation.py tools/verify_init_agent_activation.py
           git diff --cached --check
-          git commit \
-            -m 'perf: restack stable controlled performance qualification' \
-            -m 'Rebase the fully qualified eight-file performance contract on the protected module-contract integration. Preserve authoritative content-addressed policy, equal-work normalized throughput, raw unknown reconciliation, nonblocking special-file rejection, atime-stable identity checks, atomic PID publication, automatic_redispatch=false, and all L2-L6 claim ceilings.'
-          repair_head="$(git --no-replace-objects rev-parse HEAD)"
-          repair_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
-          test "$(git --no-replace-objects rev-parse HEAD^)" = "$NEW_MAIN"
-          {
-            echo "repair_head=$repair_head"
-            echo "repair_tree=$repair_tree"
-          } >> "$GITHUB_OUTPUT"
-          printf 'repair_head=%s\nrepair_tree=%s\n' "$repair_head" "$repair_tree"
-
-      - name: Execute complete matrix on exact restacked repair commit
-        env:
-          REPAIR_HEAD: ${{ steps.repair.outputs.repair_head }}
-          REPAIR_TREE: ${{ steps.repair.outputs.repair_tree }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          validation="${RUNNER_TEMP:?}/pr76-restack-validation"
-          git worktree add --detach "$validation" "$REPAIR_HEAD"
-          trap 'git worktree remove --force "$validation" >/dev/null 2>&1 || true' EXIT
-          test "$(git -C "$validation" --no-replace-objects rev-parse HEAD)" = "$REPAIR_HEAD"
-          test "$(git -C "$validation" --no-replace-objects rev-parse HEAD^{tree})" = "$REPAIR_TREE"
-          test -z "$(git -C "$validation" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
-          (
-            cd "$validation"
-            export CARGO_TARGET_DIR="${RUNNER_TEMP:?}/cargo-target-root"
-            python3 tools/docs/generate_global_docs.py
-            python3 tools/docs/generate_global_docs.py --check
-            python3 tools/docs/verify_global_docs.py
-            python3 tools/docs/verify_repository_authority.py
-            python3 -m unittest discover -s tools/tests -p 'test*.py' -v
-            cargo fmt --all -- --check
-            cargo test --locked --workspace --all-targets
-            cargo clippy --locked --workspace --all-targets -- -D warnings
-            (
-              cd planned
-              export CARGO_TARGET_DIR="${RUNNER_TEMP:?}/cargo-target-planned"
-              cargo fmt --all -- --check
-              cargo test --locked --workspace --all-targets
-              cargo clippy --locked --workspace --all-targets -- -D warnings
-            )
-          )
-          git -C "$validation" diff --check
-          test -z "$(git -C "$validation" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
-          git worktree remove "$validation"
-          trap - EXIT
-
-      - name: Publish trigger-only head through exact PR76 lease
-        id: publish
-        env:
-          REPAIR_HEAD: ${{ steps.repair.outputs.repair_head }}
-          REPAIR_TREE: ${{ steps.repair.outputs.repair_tree }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          current="$(git ls-remote --exit-code origin "refs/heads/${CANDIDATE_BRANCH}" | awk '{print $1}')"
-          test "$current" = "$OLD_HEAD"
-          test "$(git --no-replace-objects rev-parse HEAD)" = "$REPAIR_HEAD"
-          test "$(git --no-replace-objects rev-parse HEAD^{tree})" = "$REPAIR_TREE"
-          test -z "$(git status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"
-          install -d -m 0755 "$(dirname -- "$TRIGGER_PATH")"
-          : > "$TRIGGER_PATH"
-          test "$(git hash-object -- "$TRIGGER_PATH")" = "$TRIGGER_BLOB_SHA"
-          git add -- "$TRIGGER_PATH"
-          git diff --cached --check
-          test "$(git diff --cached --name-only)" = "$TRIGGER_PATH"
-          git commit \
-            -m 'chore(perf): request external clean-head qualification event' \
-            -m 'Append one known empty trigger only after the exact pure restack commit completes the full matrix. The external GitHub App deletes this blob to create the final clean PR head. No performance, target, evidence or release authority is granted.'
-          trigger_head="$(git --no-replace-objects rev-parse HEAD)"
-          trigger_tree="$(git --no-replace-objects rev-parse HEAD^{tree})"
-          test "$(git --no-replace-objects rev-parse HEAD^)" = "$REPAIR_HEAD"
-          git push \
-            --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${OLD_HEAD}" \
-            origin "HEAD:refs/heads/${CANDIDATE_BRANCH}"
-          {
-            echo "trigger_head=$trigger_head"
-            echo "trigger_tree=$trigger_tree"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Return PR76 to Draft and record exact temporary subject
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-          REPAIR_HEAD: ${{ steps.repair.outputs.repair_head }}
-          REPAIR_TREE: ${{ steps.repair.outputs.repair_tree }}
-          TRIGGER_HEAD: ${{ steps.publish.outputs.trigger_head }}
-          TRIGGER_TREE: ${{ steps.publish.outputs.trigger_tree }}
-          NEW_MAIN: ${{ steps.gate.outputs.main_sha }}
-          NEW_MAIN_TREE: ${{ steps.gate.outputs.main_tree }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd "${RUNNER_TEMP:?}"
-          unset PYTHONPATH PYTHONHOME
-          /usr/bin/python3 -I - <<'PY'
-          import json
-          import os
-          import urllib.request
-
-          headers = {
-              "Accept": "application/vnd.github+json",
-              "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
-              "X-GitHub-Api-Version": "2022-11-28",
-              "User-Agent": "trillionnium-pr76-post-pr75-restack-v1",
-          }
-          base = f"https://api.github.com/repos/{os.environ['REPOSITORY']}"
-          with urllib.request.urlopen(
-              urllib.request.Request(f"{base}/pulls/{os.environ['PR76']}", headers=headers),
-              timeout=30,
-          ) as response:
-              pull = json.load(response)
-          node = pull["node_id"]
-          request = urllib.request.Request(
-              "https://api.github.com/graphql",
-              data=json.dumps({
-                  "query": "mutation($id:ID!){convertPullRequestToDraft(input:{pullRequestId:$id}){pullRequest{isDraft}}}",
-                  "variables": {"id": node},
-              }).encode(),
-              method="POST",
-              headers=headers,
-          )
-          with urllib.request.urlopen(request, timeout=30) as response:
-              value = json.load(response)
-          if value.get("errors"):
-              raise SystemExit(value["errors"])
-
-          body = f"""## Post-PR75 restack qualified; temporary trigger head published
-
-```text
-new protected main: {os.environ['NEW_MAIN']}
-new main tree:      {os.environ['NEW_MAIN_TREE']}
-pure repair head:  {os.environ['REPAIR_HEAD']}
-pure repair tree:  {os.environ['REPAIR_TREE']}
-trigger-only head: {os.environ['TRIGGER_HEAD']}
-trigger tree:      {os.environ['TRIGGER_TREE']}
-controller run:    {os.environ['GITHUB_RUN_ID']}
-```
-
-The complete matrix ran on the pure repair commit. The trigger-only child adds only the known empty blob `docs/machine/.pr76-restack-qualification-trigger`. The external GitHub App must delete exactly that blob; final clean tree must equal the tested pure repair tree before permanent workflows or review count. PR76 remains Draft. No old-base check/review is inherited, and no L2 installed-performance promotion is claimed.
-
-`automatic_redispatch=false`; `zero_gap=false`; `public_release=false`.
-"""
-          request = urllib.request.Request(
-              f"{base}/issues/{os.environ['PR76']}/comments",
-              data=json.dumps({"body": body}).encode(),
-              method="POST",
-              headers=headers,
-          )
-          with urllib.request.urlopen(request, timeout=30):
-              pass
-          PY
+          test "$(git rev-parse HEAD)" = "$NEW_MAIN"
+          git commit -m 'perf: restack controlled qualification on executable contracts'
+          new_head="$(git rev-parse HEAD)"
+          test "$(git rev-parse HEAD^)" = "$NEW_MAIN"
+          git push origin "HEAD:refs/heads/${CANDIDATE_BRANCH}" --force-with-lease="refs/heads/${CANDIDATE_BRANCH}:${EXPECTED_CANDIDATE_HEAD}"
+          echo "PUBLISHED_PR76_RESTACK=${new_head}"
