@@ -91,3 +91,5 @@ historical observation. They must not be substituted for the current PR head,
 its parent or its latest checks. Each changed G1 candidate remains unqualified
 until its exact source, deterministic synthetic merge, workflow attempts,
 artifacts and non-author reviews are current and mutually consistent.
+
+- Executable module-contract status: [`docs/MODULE_CONTRACT_STATUS.md`](MODULE_CONTRACT_STATUS.md)

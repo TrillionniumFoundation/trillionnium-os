@@ -1,0 +1,201 @@
+{
+  "api": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "properties": {
+      "fencing_token": {
+        "type": "string"
+      },
+      "host_epoch": {
+        "format": "uint64",
+        "minimum": 0.0,
+        "type": "integer"
+      },
+      "module_id": {
+        "type": "string"
+      },
+      "operation_id": {
+        "type": "string"
+      },
+      "ordering_key": {
+        "type": "string"
+      },
+      "payload": true,
+      "request_digest": {
+        "type": "string"
+      },
+      "schema": {
+        "type": "string"
+      },
+      "writer_epoch": {
+        "format": "uint64",
+        "minimum": 0.0,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "fencing_token",
+      "host_epoch",
+      "module_id",
+      "operation_id",
+      "ordering_key",
+      "payload",
+      "request_digest",
+      "schema",
+      "writer_epoch"
+    ],
+    "title": "ModuleApiEnvelopeV1",
+    "type": "object"
+  },
+  "errors": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+      "ModuleErrorClassV1": {
+        "enum": [
+          "REJECTED_BEFORE_EFFECT",
+          "TRANSIENT_BEFORE_EFFECT",
+          "EFFECT_UNCERTAIN",
+          "TERMINAL_FAILURE",
+          "INTERNAL_INVARIANT"
+        ],
+        "type": "string"
+      },
+      "ModuleRetryDispositionV1": {
+        "enum": [
+          "MAY_RETRY_BEFORE_EFFECT",
+          "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH",
+          "DO_NOT_RETRY"
+        ],
+        "type": "string"
+      }
+    },
+    "properties": {
+      "class": {
+        "$ref": "#/definitions/ModuleErrorClassV1"
+      },
+      "code": {
+        "type": "string"
+      },
+      "effect_uncertain": {
+        "type": "boolean"
+      },
+      "module_id": {
+        "type": "string"
+      },
+      "operation_id": {
+        "type": "string"
+      },
+      "original_cause": {
+        "type": "string"
+      },
+      "request_digest": {
+        "type": "string"
+      },
+      "retry_disposition": {
+        "$ref": "#/definitions/ModuleRetryDispositionV1"
+      },
+      "schema": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "class",
+      "code",
+      "effect_uncertain",
+      "module_id",
+      "operation_id",
+      "original_cause",
+      "request_digest",
+      "retry_disposition",
+      "schema"
+    ],
+    "title": "ModuleErrorEnvelopeV1",
+    "type": "object"
+  },
+  "schema": "org.trillionnium.module-schemars-bundle.v1",
+  "state": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+      "ModuleLifecycleStateV1": {
+        "enum": [
+          "RECEIVED",
+          "VALIDATED",
+          "CAPACITY_RESERVED",
+          "ACCEPTED_DURABLE",
+          "EFFECT_ATTEMPTING",
+          "EFFECT_STARTED_OBSERVED",
+          "TERMINAL_OBSERVED",
+          "TERMINAL_DURABLE",
+          "DELIVERY_PENDING",
+          "DELIVERED",
+          "ACKNOWLEDGED",
+          "REJECTED_BEFORE_EFFECT",
+          "UNKNOWN_RECONCILIATION_REQUIRED",
+          "FENCED",
+          "CLOSED",
+          "STATELESS"
+        ],
+        "type": "string"
+      }
+    },
+    "properties": {
+      "durable_sequence": {
+        "format": "uint64",
+        "minimum": 0.0,
+        "type": "integer"
+      },
+      "fencing_token": {
+        "type": "string"
+      },
+      "host_epoch": {
+        "format": "uint64",
+        "minimum": 0.0,
+        "type": "integer"
+      },
+      "module_id": {
+        "type": "string"
+      },
+      "monotonic_ns": {
+        "format": "uint64",
+        "minimum": 0.0,
+        "type": "integer"
+      },
+      "operation_id": {
+        "type": "string"
+      },
+      "payload": true,
+      "request_digest": {
+        "type": "string"
+      },
+      "schema": {
+        "type": "string"
+      },
+      "state": {
+        "$ref": "#/definitions/ModuleLifecycleStateV1"
+      },
+      "writer_epoch": {
+        "format": "uint64",
+        "minimum": 0.0,
+        "type": "integer"
+      }
+    },
+    "required": [
+      "durable_sequence",
+      "fencing_token",
+      "host_epoch",
+      "module_id",
+      "monotonic_ns",
+      "operation_id",
+      "payload",
+      "request_digest",
+      "schema",
+      "state",
+      "writer_epoch"
+    ],
+    "title": "ModuleStateEnvelopeV1",
+    "type": "object"
+  },
+  "version": 1
+}

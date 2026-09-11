@@ -1,0 +1,13 @@
+{
+  "durable_sequence": true,
+  "fencing_token": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "host_epoch": 1,
+  "module_id": "MOD-EVENT-STORE",
+  "monotonic_ns": 1,
+  "operation_id": "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
+  "payload": {},
+  "request_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+  "schema": "org.trillionnium.mod_event_store.state.v1",
+  "state": "ACCEPTED_DURABLE",
+  "writer_epoch": 1
+}

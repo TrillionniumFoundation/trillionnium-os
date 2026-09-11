@@ -1184,3 +1184,5 @@ mod tests {
         );
     }
 }
+
+pub mod module_contract;
