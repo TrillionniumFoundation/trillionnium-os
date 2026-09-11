@@ -1,0 +1,367 @@
+name: Temporary PR75 custody finalizer v2
+
+on:
+  push:
+    branches:
+      - ops/pr75-custody-finalizer-v2-20260911
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: temporary-pr75-custody-finalizer-v2
+  cancel-in-progress: true
+
+jobs:
+  finalize-clean-subject:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      PR_NUMBER: "75"
+      BASE_HEAD: b681cd856fccac1189496576f25d259752d2dcce
+      OLD_HEAD: 458b22f2a57dec2a8527ac6584dfd8d6f6e64179
+      CONTROL_BRANCH: ops/pr75-review-packet-custody-repair-v5-20260911
+      CONTROL_WORKFLOW: Temporary PR75 review-packet custody repair v5
+      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-main-20260910
+      TRIGGER_PATH: docs/machine/.pr75-custody-qualification-trigger
+      TRIGGER_BLOB_SHA: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - name: Wait for exact tested tree, clean external event and permanent matrices
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP:?}"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          import re
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repository = os.environ["REPOSITORY"]
+          pr_number = int(os.environ["PR_NUMBER"])
+          base_head = os.environ["BASE_HEAD"]
+          old_head = os.environ["OLD_HEAD"]
+          control_branch = os.environ["CONTROL_BRANCH"]
+          control_workflow = os.environ["CONTROL_WORKFLOW"]
+          candidate_branch = os.environ["CANDIDATE_BRANCH"]
+          trigger_path = os.environ["TRIGGER_PATH"]
+          trigger_blob = os.environ["TRIGGER_BLOB_SHA"]
+          token = os.environ["GITHUB_TOKEN"]
+          api = "https://api.github.com"
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {token}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "trillionnium-pr75-custody-finalizer-v2",
+          }
+          required_workflows = {
+              "Owner-open R5 compatibility source routing",
+              "G1 Android privileged-lane evaluated matrix",
+              "Owner-open R5 governance readiness observation",
+              "G1 exact-head source qualification",
+              "G1 synthetic-merge qualification",
+          }
+          deadline = time.monotonic() + 170 * 60
+
+          def require(condition: bool, message: str) -> None:
+              if not condition:
+                  raise SystemExit(message)
+
+          def request(method: str, path: str, body=None, *, allow_404=False):
+              data = None if body is None else json.dumps(body).encode("utf-8")
+              req = urllib.request.Request(
+                  f"{api}/repos/{repository}{path}",
+                  data=data,
+                  method=method,
+                  headers=headers,
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      raw = response.read()
+                      return response.status, json.loads(raw) if raw else None
+              except urllib.error.HTTPError as error:
+                  if allow_404 and error.code == 404:
+                      return 404, None
+                  detail = error.read().decode("utf-8", "replace")
+                  raise SystemExit(f"GitHub {method} {path}: HTTP {error.code}: {detail}") from error
+
+          def get(path: str, *, allow_404=False):
+              return request("GET", path, allow_404=allow_404)
+
+          def post_comment(text: str) -> None:
+              request("POST", f"/issues/{pr_number}/comments", {"body": text})
+
+          def latest_control_run():
+              query = urllib.parse.urlencode(
+                  {"branch": control_branch, "event": "push", "per_page": 100}
+              )
+              _, value = get(f"/actions/runs?{query}")
+              runs = [
+                  run for run in value.get("workflow_runs", [])
+                  if run.get("name") == control_workflow
+              ]
+              return max(runs, key=lambda run: int(run.get("id", 0))) if runs else None
+
+          control = None
+          while time.monotonic() < deadline:
+              control = latest_control_run()
+              if control and control.get("status") == "completed":
+                  break
+              time.sleep(15)
+          require(control is not None, "v5 custody repair control run was not observed")
+          require(
+              control.get("status") == "completed" and control.get("conclusion") == "success",
+              f"v5 custody repair control did not succeed: {control.get('status')}/{control.get('conclusion')}",
+          )
+          control_id = int(control["id"])
+
+          final_head = None
+          final_tree = None
+          trigger_head = None
+          trigger_tree = None
+          repair_head = None
+          repair_tree = None
+          while time.monotonic() < deadline:
+              encoded_branch = urllib.parse.quote(candidate_branch, safe="")
+              _, branch = get(f"/branches/{encoded_branch}")
+              head = branch.get("commit", {}).get("sha")
+              if not isinstance(head, str) or not re.fullmatch(r"[0-9a-f]{40}", head):
+                  time.sleep(15)
+                  continue
+              _, trigger = get(
+                  f"/contents/{urllib.parse.quote(trigger_path, safe='/')}?ref={head}",
+                  allow_404=True,
+              )
+              if trigger is not None:
+                  require(trigger.get("sha") == trigger_blob, "qualification trigger blob differs")
+                  time.sleep(15)
+                  continue
+              if head == old_head:
+                  time.sleep(15)
+                  continue
+
+              _, final_commit = get(f"/git/commits/{head}")
+              final_parents = final_commit.get("parents") or []
+              require(len(final_parents) == 1, "final clean head is not single-parent")
+              trigger_head = final_parents[0].get("sha")
+              _, trigger_commit = get(f"/git/commits/{trigger_head}")
+              trigger_parents = trigger_commit.get("parents") or []
+              require(len(trigger_parents) == 1, "trigger head is not single-parent")
+              repair_head = trigger_parents[0].get("sha")
+              _, repair_commit = get(f"/git/commits/{repair_head}")
+              repair_parents = repair_commit.get("parents") or []
+              require(len(repair_parents) == 1, "pure repair head is not single-parent")
+              require(repair_parents[0].get("sha") == old_head, "pure repair does not descend directly from old head")
+
+              _, trigger_at_parent = get(
+                  f"/contents/{urllib.parse.quote(trigger_path, safe='/')}?ref={trigger_head}"
+              )
+              require(trigger_at_parent.get("sha") == trigger_blob, "trigger parent blob differs")
+              _, no_trigger_at_repair = get(
+                  f"/contents/{urllib.parse.quote(trigger_path, safe='/')}?ref={repair_head}",
+                  allow_404=True,
+              )
+              require(no_trigger_at_repair is None, "pure repair unexpectedly contains trigger")
+
+              final_tree = final_commit.get("tree", {}).get("sha")
+              trigger_tree = trigger_commit.get("tree", {}).get("sha")
+              repair_tree = repair_commit.get("tree", {}).get("sha")
+              require(final_tree == repair_tree, "final clean tree differs from fully tested pure repair tree")
+              require(trigger_tree != repair_tree, "trigger tree did not differ from pure repair tree")
+              final_head = head
+              break
+
+          require(final_head is not None, "external GitHub App did not create the clean custody-repair head")
+          for value, label in (
+              (final_tree, "final tree"),
+              (trigger_head, "trigger head"),
+              (repair_head, "repair head"),
+              (repair_tree, "repair tree"),
+          ):
+              require(re.fullmatch(r"[0-9a-f]{40}", str(value)) is not None, f"{label} unavailable")
+
+          latest = {}
+          while time.monotonic() < deadline:
+              query = urllib.parse.urlencode({"head_sha": final_head, "per_page": 100})
+              _, value = get(f"/actions/runs?{query}")
+              latest = {}
+              for run in value.get("workflow_runs", []):
+                  name = run.get("name")
+                  if name not in required_workflows:
+                      continue
+                  previous = latest.get(name)
+                  if previous is None or int(run.get("id", 0)) > int(previous.get("id", 0)):
+                      latest[name] = run
+              if set(latest) == required_workflows and all(
+                  run.get("status") == "completed" for run in latest.values()
+              ):
+                  if all(run.get("conclusion") == "success" for run in latest.values()):
+                      break
+                  failed = {
+                      name: run.get("conclusion")
+                      for name, run in latest.items()
+                      if run.get("conclusion") != "success"
+                  }
+                  raise SystemExit(f"permanent custody-repair matrices failed: {failed}")
+              time.sleep(20)
+
+          require(set(latest) == required_workflows, "permanent workflow family is missing")
+          require(
+              all(
+                  run.get("status") == "completed" and run.get("conclusion") == "success"
+                  for run in latest.values()
+              ),
+              "permanent workflow family is not terminal success",
+          )
+          for name, run in latest.items():
+              _, jobs_value = get(f"/actions/runs/{int(run['id'])}/jobs?per_page=100")
+              jobs = jobs_value.get("jobs") or []
+              require(jobs, f"{name}: workflow has no jobs")
+              require(
+                  any(
+                      job.get("status") == "completed" and job.get("conclusion") == "success"
+                      for job in jobs
+                  ),
+                  f"{name}: no successful executed job",
+              )
+              require(
+                  not any(
+                      job.get("conclusion") in {"failure", "cancelled", "timed_out", "action_required"}
+                      for job in jobs
+                  ),
+                  f"{name}: failed terminal job",
+              )
+
+          _, pull = get(f"/pulls/{pr_number}")
+          require(pull.get("head", {}).get("sha") == final_head, "PR head moved during finalization")
+          require(pull.get("base", {}).get("sha") == base_head, "PR base moved")
+          require(pull.get("merged_at") is None and pull.get("state") == "open", "PR is no longer open")
+
+          run_lines = {
+              "compatibility routing": latest["Owner-open R5 compatibility source routing"],
+              "Android evaluated matrix": latest["G1 Android privileged-lane evaluated matrix"],
+              "governance readiness": latest["Owner-open R5 governance readiness observation"],
+              "exact-head qualification": latest["G1 exact-head source qualification"],
+              "ordered synthetic merge": latest["G1 synthetic-merge qualification"],
+          }
+          qualification = "\n".join(
+              f"{label + ':':28} {int(run['id'])} — success"
+              for label, run in run_lines.items()
+          )
+          body = pull.get("body") or ""
+          exact_section = f"""## Exact immutable subject
+
+```text
+base branch:       main
+base commit:       {base_head}
+base tree:         f96f88a9749c61b3ce0dde7167303c8261788f22
+head branch:       {candidate_branch}
+head commit:       {final_head}
+head tree:         {final_tree}
+head parent:       {trigger_head}
+pure repair:       {repair_head}
+pure repair tree:  {repair_tree}
+repair predecessor:{old_head}
+controller run:    {control_id}
+commits ahead:     {pull.get('commits')}
+changed files:     {pull.get('changed_files')}
+```
+
+`{repair_head[:8]}...` is the pure repair commit on which the complete matrix executed. `{trigger_head[:8]}...` adds only the known empty qualification trigger. The external GitHub App created clean head `{final_head[:8]}...` by deleting only that blob; its tree is byte-identical to the tested pure repair tree `{repair_tree}`. No temporary controller workflow or `ops/` payload is present in the PR tree. Any base/head/tree movement invalidates qualification and review.
+
+## Executable contract closure"""
+          body, count = re.subn(
+              r"## Exact immutable subject\n.*?\n## Executable contract closure",
+              exact_section,
+              body,
+              count=1,
+              flags=re.S,
+          )
+          require(count == 1, "PR exact-subject section could not be replaced")
+
+          custody = """## Review-packet custody closure
+
+The content-addressed migration-review packet is acquired through a descriptor-relative closed path walk. Every parent component is opened with `O_DIRECTORY | O_NOFOLLOW`; the leaf is opened with `O_NONBLOCK | O_NOFOLLOW`, verified as a bounded single-link regular file before reading, consumed through bounded `pread`, and rechecked against both its acquired descriptor and final parent descriptor. FIFO, symlink-parent, special-file, short-read, identity-drift and digest-drift cases fail closed. The same boundary is generated into the embedded compatibility checker and bound into all regenerated catalog/lock artifacts.
+
+## Current-head qualification
+
+All required workflow families completed with non-empty terminal success on the clean exact head:
+
+```text
+""" + qualification + "\n```\n\nPredecessor runs and approvals receive no current-head credit."
+          body, count = re.subn(
+              r"## Current-head qualification\n.*?\n## Review slices",
+              custody + "\n\n## Review slices",
+              body,
+              count=1,
+              flags=re.S,
+          )
+          require(count == 1, "PR qualification section could not be replaced")
+
+          request("PATCH", f"/pulls/{pr_number}", {"body": body})
+          request(
+              "POST",
+              f"/pulls/{pr_number}/requested_reviewers",
+              {"reviewers": ["Franksudoman", "Tomasrgbsf"]},
+          )
+
+          node_id = pull.get("node_id")
+          require(isinstance(node_id, str) and node_id, "PR node ID unavailable")
+          graph = urllib.request.Request(
+              "https://api.github.com/graphql",
+              data=json.dumps({
+                  "query": "mutation($id:ID!){markPullRequestReadyForReview(input:{pullRequestId:$id}){pullRequest{isDraft}}}",
+                  "variables": {"id": node_id},
+              }).encode("utf-8"),
+              method="POST",
+              headers=headers,
+          )
+          with urllib.request.urlopen(graph, timeout=30) as response:
+              value = json.load(response)
+          require(not value.get("errors"), f"ready mutation failed: {value.get('errors')}")
+          require(
+              value["data"]["markPullRequestReadyForReview"]["pullRequest"]["isDraft"] is False,
+              "PR remained Draft",
+          )
+
+          post_comment(
+              f"""## Clean custody-repair subject ready for independent review
+
+Pure repair `{repair_head}` / tree `{repair_tree}` completed the complete controller matrix in run `{control_id}`. Trigger-only head `{trigger_head}` added the known empty blob, and external-App clean head `{final_head}` deleted only that blob; the final tree equals the tested pure tree exactly.
+
+All five permanent current-head workflow families are terminal non-empty success:
+
+```text
+{qualification}
+```
+
+Please review this exact head. No predecessor review or status transfers. Ordinary protected integration only; no review dismissal, administrator bypass, installed-target promotion, automatic redispatch or release authority.
+"""
+          )
+          print(json.dumps({
+              "result": "READY_FOR_FRESH_EXACT_HEAD_REVIEW",
+              "control_run": control_id,
+              "repair_head": repair_head,
+              "repair_tree": repair_tree,
+              "trigger_head": trigger_head,
+              "head": final_head,
+              "tree": final_tree,
+              "runs": {name: int(run["id"]) for name, run in latest.items()},
+              "automatic_redispatch": False,
+              "public_release": False,
+          }, sort_keys=True))
+          PY
