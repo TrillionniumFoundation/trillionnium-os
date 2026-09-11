@@ -61,7 +61,6 @@ jobs:
           worktree="${RUNNER_TEMP:?}/telemetry-restack"
           paths=(
             docs/START_HERE.md
-            docs/machine/doc-set.v1.json
             docs/machine/metric-catalog.v1.json
             docs/machine/requirement-graph.v1.json
             docs/modules/MOD-GLOBAL-CONTROL.md
@@ -76,11 +75,73 @@ jobs:
           test -s "$patch"
           git worktree add --detach "$worktree" "$TARGET_BASE_SHA"
           cd "$worktree"
-          if ! git apply --3way --index "$patch"; then
-            git status --short
-            git diff --name-only --diff-filter=U
-            exit 1
-          fi
+          git apply --3way --index "$patch"
+
+          python3 - "$OLD_BASE_SHA" "$TELEMETRY_SOURCE_SHA" <<'PY'
+          import json
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          old_base, telemetry_source = sys.argv[1:]
+          path = Path("docs/machine/doc-set.v1.json")
+
+          def from_git(commit: str) -> dict:
+              raw = subprocess.check_output(
+                  ["git", "--no-replace-objects", "show", f"{commit}:{path.as_posix()}"],
+                  text=True,
+              )
+              value = json.loads(raw)
+              if not isinstance(value, dict):
+                  raise SystemExit(f"{commit} documentation set is not an object")
+              return value
+
+          base = from_git(old_base)
+          telemetry = from_git(telemetry_source)
+          current = json.loads(path.read_text(encoding="utf-8"))
+
+          expected_additions = {
+              "required_files": {
+                  "docs/machine/metric-catalog.v1.json",
+                  "docs/generated/METRIC_STATUS.md",
+              },
+              "authority_order": {"docs/machine/metric-catalog.v1.json"},
+          }
+          for field, expected in expected_additions.items():
+              base_items = base[field]
+              telemetry_items = telemetry[field]
+              current_items = current[field]
+              if not all(isinstance(items, list) for items in (base_items, telemetry_items, current_items)):
+                  raise SystemExit(f"{field} is not a list")
+              additions = set(telemetry_items) - set(base_items)
+              removals = set(base_items) - set(telemetry_items)
+              if additions != expected or removals:
+                  raise SystemExit(
+                      f"unexpected telemetry {field} delta: additions={sorted(additions)} removals={sorted(removals)}"
+                  )
+              for item in telemetry_items:
+                  if item not in additions or item in current_items:
+                      continue
+                  source_index = telemetry_items.index(item)
+                  successor = next(
+                      (candidate for candidate in telemetry_items[source_index + 1 :] if candidate in current_items),
+                      None,
+                  )
+                  if successor is None:
+                      current_items.append(item)
+                  else:
+                      current_items.insert(current_items.index(successor), item)
+              if len(current_items) != len(set(current_items)):
+                  raise SystemExit(f"duplicate {field} after merge")
+              if not expected.issubset(set(current_items)):
+                  raise SystemExit(f"telemetry additions missing from {field}")
+
+          path.write_text(
+              json.dumps(current, sort_keys=True, indent=2, ensure_ascii=False) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
           python3 tools/docs/generate_global_docs.py
           python3 tools/docs/generate_global_docs.py --check
           python3 tools/docs/verify_global_docs.py
