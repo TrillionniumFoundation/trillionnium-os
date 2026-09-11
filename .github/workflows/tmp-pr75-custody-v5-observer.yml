@@ -1,0 +1,143 @@
+name: Temporary PR75 custody v5 observer
+
+on:
+  push:
+    branches:
+      - ops/pr75-custody-v5-observer-20260911
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+
+concurrency:
+  group: temporary-pr75-custody-v5-observer
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      REPOSITORY: TrillionniumFoundation/trillionnium-os
+      CONTROL_BRANCH: ops/pr75-review-packet-custody-repair-v5-20260911
+      CONTROL_WORKFLOW: Temporary PR75 review-packet custody repair v5
+      CANDIDATE_BRANCH: codex/executable-module-contracts-v3-main-20260910
+      TRIGGER_PATH: docs/machine/.pr75-custody-qualification-trigger
+      TRIGGER_BLOB_SHA: e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+    steps:
+      - name: Wait and publish exact controller result
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP:?}"
+          unset PYTHONPATH PYTHONHOME
+          /usr/bin/python3 -I - <<'PY'
+          import json
+          import os
+          import time
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repository = os.environ["REPOSITORY"]
+          token = os.environ["GITHUB_TOKEN"]
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {token}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "trillionnium-pr75-custody-v5-observer",
+          }
+          api = "https://api.github.com"
+          deadline = time.monotonic() + 170 * 60
+
+          def call(method, path, body=None, allow_404=False):
+              data = None if body is None else json.dumps(body).encode()
+              request = urllib.request.Request(
+                  f"{api}/repos/{repository}{path}", data=data, method=method, headers=headers
+              )
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      raw = response.read()
+                      return response.status, json.loads(raw) if raw else None
+              except urllib.error.HTTPError as error:
+                  if allow_404 and error.code == 404:
+                      return 404, None
+                  raise
+
+          query = urllib.parse.urlencode({
+              "branch": os.environ["CONTROL_BRANCH"],
+              "event": "push",
+              "per_page": 100,
+          })
+          selected = None
+          while time.monotonic() < deadline:
+              _, value = call("GET", f"/actions/runs?{query}")
+              runs = [
+                  run for run in value.get("workflow_runs", [])
+                  if run.get("name") == os.environ["CONTROL_WORKFLOW"]
+              ]
+              if runs:
+                  selected = max(runs, key=lambda run: int(run.get("id", 0)))
+                  if selected.get("status") == "completed":
+                      break
+              time.sleep(15)
+          if selected is None or selected.get("status") != "completed":
+              raise SystemExit("v5 control run did not reach terminal state")
+
+          run_id = int(selected["id"])
+          _, jobs_value = call("GET", f"/actions/runs/{run_id}/jobs?per_page=100")
+          jobs = jobs_value.get("jobs") or []
+          lines = []
+          for job in jobs:
+              lines.append(
+                  f"job {job.get('id')} {job.get('name')}: {job.get('status')}/{job.get('conclusion')}"
+              )
+              for step in job.get("steps") or []:
+                  if step.get("conclusion") not in {"success", "skipped", None}:
+                      lines.append(
+                          f"  step {step.get('number')} {step.get('name')}: "
+                          f"{step.get('status')}/{step.get('conclusion')}"
+                      )
+
+          encoded = urllib.parse.quote(os.environ["CANDIDATE_BRANCH"], safe="")
+          _, branch = call("GET", f"/branches/{encoded}")
+          candidate_head = branch.get("commit", {}).get("sha")
+          _, trigger = call(
+              "GET",
+              f"/contents/{urllib.parse.quote(os.environ['TRIGGER_PATH'], safe='/')}?ref={candidate_head}",
+              allow_404=True,
+          )
+          trigger_state = "absent"
+          if trigger is not None:
+              trigger_state = f"present:{trigger.get('sha')}"
+
+          result = selected.get("conclusion")
+          heading = (
+              "## Custody repair v5 full qualification succeeded"
+              if result == "success"
+              else "## Custody repair v5 full qualification failed"
+          )
+          body = f"""{heading}
+
+```text
+run:             {run_id}
+control head:    {selected.get('head_sha')}
+status:          {selected.get('status')}
+conclusion:      {result}
+candidate head:  {candidate_head}
+trigger:         {trigger_state}
+```
+
+```text
+{chr(10).join(lines) if lines else 'no jobs returned'}
+```
+
+This is a read-only observation. A successful controller result is still not permanent exact-head admission until the external GitHub App removes only the known empty trigger and all five permanent current-head workflows succeed. A failed controller result publishes no candidate repair through the exact old-head lease. No review, evidence level, target or release authority changes.
+"""
+          call("POST", "/issues/75/comments", {"body": body})
+          if result != "success":
+              raise SystemExit("v5 control failed; exact failed step was posted to PR #75")
+          PY
