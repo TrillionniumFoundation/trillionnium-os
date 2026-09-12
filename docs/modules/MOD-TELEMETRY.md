@@ -75,7 +75,7 @@ not a claim that identically named Rust declarations or JSON Schema files exist.
 The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
-`MetricSample` contains finite measurements, `MetricWindow` retains bounded samples, and `ModuleReadModelStore`/`CostCurveStore` form derived views. `MetricCatalog` binds every metric to its unit, value type, source module, collection point, aggregation, retention, cardinality ceiling, privacy class, required and forbidden dimensions, sampling, missing-data meaning, clock and evidence level. `CatalogIngestor` rejects stale epochs, unit/source drift, unknown or sensitive dimensions, cardinality overflow and conflicting sequence reuse; it retains sequence loss, clock regression and window eviction as explicit coverage gaps. `project_objective` is a calculation, not evidence of a measured target. Hashing an identifier does not reduce its metric-label cardinality.
+`MetricSample` contains finite measurements, `MetricWindow` retains bounded samples, and `ModuleReadModelStore`/`CostCurveStore` form derived views. `MetricCatalog` binds every metric to its unit, value type, source module, collection point, aggregation, retention, cardinality ceiling, privacy class, required and forbidden dimensions, sampling, missing-data meaning, clock and evidence level. `CatalogIngestor` rejects stale epochs, unit/source drift, unknown or sensitive dimensions, cardinality overflow and conflicting sequence reuse; it retains admitted sequence loss and window eviction as coverage gaps and returns explicit diagnostics for rejected clock/late observations without mutating retained state. `project_objective` is a calculation, not evidence of a measured target. Hashing an identifier does not reduce its metric-label cardinality.
 
 ## 6. State model and ownership
 
@@ -143,6 +143,67 @@ These values are finite source-admission ceilings and provisional objectives, no
 After restart, only durable complete windows are loaded. Clock jumps, missing samples, eviction or mixed epochs create explicit coverage gaps rather than interpolated certainty. A projection may carry `durable_complete=true` only when it is coverage-complete and the owning store supplies a source-bound journal digest plus successful file and parent-directory fsync receipt. Source construction of that receipt is not installed-target evidence.
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
+
+### Catalog admission and retention repair
+
+For the v1 metric catalog, `required_dimensions` is also the complete allowed
+set: no optional label is implicit. Every label resolves to `dimension_catalog`.
+A restricted dimension requires a restricted metric and `redacted=true`; the
+flag is an input assertion, not proof that a producer has anonymized arbitrary
+content. The ordering-key digest keeps its explicit hexadecimal validation.
+
+Each dimension's distinct-value ceiling applies across metrics for the lifetime
+of one `CatalogIngestor`. Values and series identities are not reclaimed during
+sample eviction, so cycling labels or epochs cannot bypass admission. A fresh
+collector epoch needs an explicit deployment decision, not an automatic retry.
+The constructor's `max_series` also bounds retained stream and instance metadata.
+Per-series retention uses the smaller of the catalog `max_samples` and the
+constructor cap; neither can expand the other's limit.
+
+Time retention uses nanoseconds and an inclusive lower cutoff. Ingestion expires
+older samples across all label series in the same metric/instance/control-epoch
+clock domain. Other instances' monotonic clocks are never compared. Idle sources
+must call `advance_watermark` with an independently observed time from that same
+clock domain; it also expires samples without manufacturing a new event. Without
+that call, `project` is an event-time snapshot as of the last observed watermark,
+not a claim that an idle stream is current or that a timer has run. Runtime timer
+integration and installed clock identity remain separate qualification work.
+
+A late sequence or a non-advancing event clock is rejected with explicit
+`LATE_OBSERVATION` or `CLOCK_REGRESSION` diagnostics. Rejected input is not inserted
+into the observation/gap journal. A forward interval exceeding the retention
+window is retained as `ClockJump`: an observed coverage discontinuity, not proof
+of a hardware clock fault. Time and count evictions have distinct gap kinds.
+
+All fallible capacity, integer-overflow, identity, privacy and ordering checks
+precede the first retained-state mutation. Every returned error leaves windows,
+value sets, counters, gaps, epochs, watermarks and duplicate metadata unchanged.
+This is one mutex-protected in-memory transition, not a disk transaction. Memory
+allocation failure/process abort and installed durability are not covered by this
+returned-error guarantee. No full-state clone or external I/O runs under the lock;
+window scans remain finite but require measured cost attribution before use at
+large scale.
+
+Coverage gaps and dropped counters intentionally remain lifetime-scoped per
+metric, even after affected samples expire. Expiration never silently restores
+`coverage_complete`, and a full gap log rejects a transition before mutation.
+An empty retained projection is unavailable, not zero. No automatic gap reset,
+collector restart or authority escalation is permitted to obtain a green receipt.
+
+The v1 event uses `f64`; `U64_COUNT` therefore accepts only nonnegative represented
+integers through `2^53-1`, not the entire u64 range. Larger counts need a separately
+versioned integer payload. This does not prove the exact lexical spelling of an
+upstream JSON number, and floating aggregate statistics remain approximate.
+`EVERY_OBSERVATION` permits only the explicit sampling ratio `1/1`.
+
+Compatibility: event/config field names are unchanged, but admission is stricter,
+`TimeWindowEviction` and `ClockJump` extend the gap vocabulary, and rejected clock
+observations no longer mutate the journal. Strict readers and rolling upgrades
+must be reviewed against these changes; old successful CI is not inherited.
+The regression suite is
+`planned/crates/trillionnium-telemetry/src/catalog/regressions.rs` and runs in the
+existing locked planned-workspace test lane. No source fixture establishes L2,
+active control, physical-device, destructive-fault or public-release readiness.
 
 ## 11. Security and trust boundaries
 
