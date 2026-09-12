@@ -9,6 +9,7 @@ Machine catalog navigation: `machine/`
 Generated current state: [`generated/CURRENT_STATE.md`](generated/CURRENT_STATE.md)  
 Generated component inventory: [`generated/COMPONENT_STATUS.md`](generated/COMPONENT_STATUS.md)
 Generated product profiles: [`generated/PRODUCT_PROFILE_STATUS.md`](generated/PRODUCT_PROFILE_STATUS.md)
+Generated metric authority: [`generated/METRIC_STATUS.md`](generated/METRIC_STATUS.md)
 
 ## 1. Purpose
 
@@ -59,6 +60,7 @@ The exact registered files below are authoritative for their individual concerns
 - `machine/requirement-graph.v1.json` — requirement-to-module-to-gap-to-evidence graph;
 - `machine/gap-register.v2.json` — every open or closed gap and its exit level;
 - `machine/global-objective.v1.json` — hard constraints, soft objectives and workloads;
+- `machine/metric-catalog.v1.json` — metric units, sources, collection points, retention, cardinality, privacy, dimensions, sampling, missing-data meaning, clocks and evidence levels;
 - `machine/evidence-index.v1.json` — retained evidence identities and claim ceilings;
 - `machine/doc-set.v1.json` — complete active document set and forbidden legacy paths.
 

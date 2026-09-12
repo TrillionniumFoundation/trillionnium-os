@@ -386,6 +386,46 @@ def performance_status() -> str:
     ]
     return "\n".join(lines) + "\n"
 
+def metric_status() -> str:
+    data = load("metric-catalog.v1.json")
+    lines = [
+        "# Metric Status",
+        "",
+        "<!-- GENERATED. DO NOT EDIT. -->",
+        "",
+        f"- Catalog version: `{data['catalog_version']}`",
+        f"- Status: `{data['status']}`",
+        f"- Activation ceiling: `{data['activation_ceiling']}`",
+        f"- Semantic authority: `{str(data['semantic_authority']).lower()}`",
+        f"- Automatic redispatch: `{str(data['automatic_redispatch']).lower()}`",
+        f"- Metric definitions: `{len(data['metrics'])}`",
+        "",
+        "| Metric | Unit | Type | Source | Collection point | Aggregation | Retention | Cardinality | Privacy | Dimensions | Missing data | Clock | Evidence |",
+        "| --- | --- | --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- | --- |",
+    ]
+    for metric in data["metrics"]:
+        retention = metric["retention"]
+        sampling = metric["sampling"]
+        lines.append(
+            f"| `{metric['name']}` | `{metric['unit']}` | `{metric['value_type']}` | "
+            f"`{metric['source_module']}` | `{metric['collection_point']}` | "
+            f"`{metric['aggregation']}` | "
+            f"`{retention['window_seconds']}s/{retention['max_samples']} samples; "
+            f"{sampling['rate_numerator']}/{sampling['rate_denominator']} {sampling['mode']}` | "
+            f"{metric['cardinality_ceiling']} | `{metric['privacy_class']}` | "
+            f"{cell(', '.join(metric['required_dimensions']))} | "
+            f"`{metric['missing_data']}` | `{metric['clock_source']}` | "
+            f"`{metric['evidence_level']}` |"
+        )
+    lines += [
+        "",
+        "Metrics are bounded observations. They do not carry command text, prompts,",
+        "credentials, semantic intent, retry authority or effect authorization. A source",
+        "definition does not establish an installed L2 measurement.",
+        "",
+    ]
+    return "\n".join(lines)
+
 def outputs() -> dict[Path, str]:
     return {
         GENERATED / "CURRENT_STATE.md": current_state(),
@@ -396,6 +436,7 @@ def outputs() -> dict[Path, str]:
         GENERATED / "GAP_STATUS.md": gap_status(),
         GENERATED / "TRACEABILITY.tsv": traceability(),
         GENERATED / "PERFORMANCE_STATUS.md": performance_status(),
+        GENERATED / "METRIC_STATUS.md": metric_status(),
     }
 
 def main() -> int:

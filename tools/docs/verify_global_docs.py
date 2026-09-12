@@ -888,6 +888,169 @@ def verify_objective(objective: dict[str, Any]) -> None:
     require(required <= set(objective["required_measurements"]), "required system measurements are incomplete")
     require(objective["control_phases"] == ["OBSERVE","SHADOW","ADVISORY","ACTIVE_CANARY","ACTIVE"], "control maturity sequence drift")
 
+def verify_metric_catalog(catalog: dict[str, Any], module_ids: set[str]) -> set[str]:
+    root_keys = {
+        "schema", "program_revision", "catalog_version", "status",
+        "activation_ceiling", "semantic_authority", "automatic_redispatch",
+        "dimension_catalog", "forbidden_dimension_names", "metrics",
+    }
+    dimension_keys = {"name", "cardinality_ceiling", "privacy_class"}
+    metric_keys = {
+        "name", "unit", "value_type", "source_module", "collection_point",
+        "aggregation", "retention", "cardinality_ceiling", "privacy_class",
+        "required_dimensions", "forbidden_dimensions", "sampling",
+        "missing_data", "clock_source", "evidence_level",
+    }
+    retention_keys = {"window_seconds", "max_samples"}
+    sampling_keys = {"mode", "rate_numerator", "rate_denominator"}
+    forbidden_required = {
+        "command", "prompt", "credential", "secret", "token", "user_input",
+        "tool_argument", "intent", "model_message", "retry_instruction",
+    }
+    sensitive_tokens = tuple(sorted(forbidden_required))
+    allowed_units = {"milliseconds", "microseconds", "seconds", "bytes", "count", "ratio"}
+    allowed_types = {"F64_NONNEGATIVE", "U64_COUNT", "RATIO_0_1"}
+    allowed_aggregations = {"HISTOGRAM", "SUM", "MAX", "LAST", "MEAN"}
+    allowed_privacy = {"PUBLIC_MECHANICAL", "PSEUDONYMOUS_RESTRICTED"}
+    allowed_missing = {"EXPLICIT_UNAVAILABLE", "WINDOW_INCOMPLETE", "COUNTER_NOT_OBSERVED"}
+    allowed_clocks = {"MONOTONIC", "PROCESS_COUNTER", "CGROUP_COUNTER"}
+    allowed_evidence = {"L1_SOURCE", "L2_TARGET"}
+
+    require_exact_keys(catalog, root_keys, "metric catalog")
+    require(catalog["schema"] == "org.trillionnium.metric-catalog.v1",
+            "metric catalog schema is unsupported")
+    require_semver(catalog["catalog_version"], "metric catalog catalog_version")
+    require(catalog["status"] == "SOURCE_CONTRACT_OBSERVE_SHADOW_ONLY",
+            "metric catalog status must remain observe/shadow source-only")
+    require(catalog["activation_ceiling"] == "SHADOW",
+            "metric catalog activation ceiling must remain SHADOW")
+    require(catalog["semantic_authority"] is False,
+            "metrics cannot acquire semantic authority")
+    require(catalog["automatic_redispatch"] is False,
+            "metrics cannot authorize automatic redispatch")
+
+    dimensions = catalog["dimension_catalog"]
+    require(isinstance(dimensions, list) and 1 <= len(dimensions) <= 256,
+            "metric dimension catalog must be finite and non-empty")
+    dimension_names: list[str] = []
+    for index, raw in enumerate(dimensions):
+        dimension = require_object(raw, f"metric dimension[{index}]")
+        require_exact_keys(dimension, dimension_keys, f"metric dimension[{index}]")
+        name = require_string(dimension["name"], f"metric dimension[{index}].name")
+        require(re.fullmatch(r"[a-z][a-z0-9_]*", name) is not None,
+                f"metric dimension name is not canonical: {name}")
+        dimension_names.append(name)
+        require_positive_int(
+            dimension["cardinality_ceiling"],
+            f"metric dimension {name}.cardinality_ceiling",
+            1_048_576,
+        )
+        require(dimension["privacy_class"] in allowed_privacy,
+                f"metric dimension {name} privacy class is invalid")
+    unique(dimension_names, "metric dimension name")
+    require(dimension_names == sorted(dimension_names),
+            "metric dimensions must be name-sorted")
+    known_dimensions = set(dimension_names)
+
+    forbidden = require_string_list(
+        catalog["forbidden_dimension_names"],
+        "metric catalog.forbidden_dimension_names",
+    )
+    require(forbidden_required <= set(forbidden),
+            "metric catalog sensitive dimension denylist is incomplete")
+
+    metrics = catalog["metrics"]
+    require(isinstance(metrics, list) and 1 <= len(metrics) <= 4096,
+            "metric catalog metrics must be finite and non-empty")
+    names: list[str] = []
+    for index, raw in enumerate(metrics):
+        metric = require_object(raw, f"metric[{index}]")
+        require_exact_keys(metric, metric_keys, f"metric[{index}]")
+        name = require_string(metric["name"], f"metric[{index}].name")
+        require(re.fullmatch(r"[a-z][a-z0-9]*(?:\.[a-z0-9_]+)+", name) is not None,
+                f"metric name is not canonical lowercase dotted form: {name}")
+        collection = require_string(metric["collection_point"], f"metric {name}.collection_point")
+        require(not any(token in name or token in collection for token in sensitive_tokens),
+                f"metric {name} contains semantic or sensitive vocabulary")
+        names.append(name)
+        require(metric["unit"] in allowed_units, f"metric {name} unit is invalid")
+        require(metric["value_type"] in allowed_types, f"metric {name} value type is invalid")
+        require(metric["source_module"] in module_ids,
+                f"metric {name} has unknown source module")
+        require(metric["aggregation"] in allowed_aggregations,
+                f"metric {name} aggregation is invalid")
+        require(metric["privacy_class"] in allowed_privacy,
+                f"metric {name} privacy class is invalid")
+        require(metric["missing_data"] in allowed_missing,
+                f"metric {name} missing-data meaning is invalid")
+        require(metric["clock_source"] in allowed_clocks,
+                f"metric {name} clock source is invalid")
+        require(metric["evidence_level"] in allowed_evidence,
+                f"metric {name} evidence level is invalid")
+        require_positive_int(metric["cardinality_ceiling"],
+                             f"metric {name}.cardinality_ceiling", 1_048_576)
+
+        retention = require_object(metric["retention"], f"metric {name}.retention")
+        require_exact_keys(retention, retention_keys, f"metric {name}.retention")
+        require_positive_int(retention["window_seconds"],
+                             f"metric {name}.retention.window_seconds", 86_400)
+        require_positive_int(retention["max_samples"],
+                             f"metric {name}.retention.max_samples", 1_048_576)
+        sampling = require_object(metric["sampling"], f"metric {name}.sampling")
+        require_exact_keys(sampling, sampling_keys, f"metric {name}.sampling")
+        require(sampling["mode"] == "EVERY_OBSERVATION",
+                f"metric {name} sampling mode is not reviewable")
+        numerator = require_positive_int(sampling["rate_numerator"],
+                                         f"metric {name}.sampling.rate_numerator")
+        denominator = require_positive_int(sampling["rate_denominator"],
+                                           f"metric {name}.sampling.rate_denominator")
+        require(numerator <= denominator, f"metric {name} sampling rate exceeds one")
+
+        required_dimensions = require_string_list(
+            metric["required_dimensions"], f"metric {name}.required_dimensions"
+        )
+        forbidden_dimensions = require_string_list(
+            metric["forbidden_dimensions"], f"metric {name}.forbidden_dimensions"
+        )
+        require(set(required_dimensions) <= known_dimensions,
+                f"metric {name} references an unknown required dimension")
+        require(set(required_dimensions).isdisjoint(forbidden_dimensions),
+                f"metric {name} requires a forbidden dimension")
+        require(forbidden_required <= set(forbidden_dimensions),
+                f"metric {name} does not forbid every sensitive dimension")
+        require({"module_id", "operation_class", "outcome", "instance_epoch"}
+                <= set(required_dimensions),
+                f"metric {name} lacks common low-cardinality identity")
+        if metric["privacy_class"] == "PSEUDONYMOUS_RESTRICTED":
+            require("ordering_key_digest" in required_dimensions,
+                    f"restricted metric {name} lacks a pseudonymous ordering digest")
+
+    unique(names, "metric name")
+    require(names == sorted(names), "metric definitions must be name-sorted")
+    required_metrics = {
+        "broker.accept.duration_ms", "broker.auth.duration_ms",
+        "broker.queue.wait_ms", "broker.forward.duration_ms",
+        "host.decode.duration_ms", "host.capacity.wait_ms",
+        "journal.append.duration_ms", "journal.fsync.duration_ms",
+        "provider.spawn.duration_ms", "provider.first_event.duration_ms",
+        "provider.wait.duration_ms", "callback.admission.duration_ms",
+        "tool.spawn.duration_ms", "tool.output.bytes", "tool.exit.duration_ms",
+        "tool.cleanup.duration_ms", "terminal.persistence.duration_ms",
+        "delivery.queue.wait_ms", "delivery.client.duration_ms",
+        "process.cpu.user_seconds", "process.cpu.system_seconds",
+        "process.rss.current_bytes", "process.rss.peak_bytes",
+        "process.fd.peak_count", "process.thread.peak_count",
+        "process.process.peak_count", "process.context_switch.count",
+        "cgroup.cpu.usage_us", "cgroup.memory.current_bytes",
+        "cgroup.io.read_bytes", "cgroup.io.write_bytes", "cgroup.pids.current_count",
+        "journal.fsync.count", "queue.depth.count", "lock.wait.duration_ms",
+        "lock.hold.duration_ms", "operation.unknown.rate",
+        "operation.redispatch.count", "scheduler.fairness.ratio",
+    }
+    require(required_metrics <= set(names),
+            f"metric catalog lacks required stage/resource metrics: {sorted(required_metrics-set(names))}")
+    return set(names)
+
 def main() -> int:
     try:
         docset = load("doc-set.v1.json")
@@ -899,6 +1062,7 @@ def main() -> int:
         requirements = load("requirement-graph.v1.json")
         gaps = load("gap-register.v2.json")
         objective = load("global-objective.v1.json")
+        metrics = load("metric-catalog.v1.json")
         evidence = load("evidence-index.v1.json")
 
         revisions = {
@@ -910,12 +1074,14 @@ def main() -> int:
             requirements["program_revision"],
             gaps["program_revision"],
             objective["program_revision"],
+            metrics["program_revision"],
             evidence["program_revision"],
         }
         require(len(revisions) == 1, f"program revision drift: {sorted(revisions)}")
 
         evidence_ids = verify_evidence_index(evidence)
         module_ids = verify_modules(catalog)
+        verify_metric_catalog(metrics, module_ids)
         gap_ids = verify_gaps(gaps, module_ids)
         verify_module_gap_refs(catalog, gaps)
         capability_ids = verify_program(program, gaps)
