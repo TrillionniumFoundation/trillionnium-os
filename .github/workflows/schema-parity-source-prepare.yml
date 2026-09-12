@@ -1,0 +1,75 @@
+name: Schema parity source preparation only
+on:
+  push:
+    branches: [ops/schema-parity-source-prepare-20260912]
+permissions:
+  contents: write
+concurrency:
+  group: schema-parity-source-prepare-20260912
+  cancel-in-progress: false
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      EXPECTED_PARENT: f1e35e4c28ee84cfe6b22ffc4a7f32e78f597cef
+      EXPECTED_TREE: b41ab42e952a5a74b859d9de9324249a1cd4c4b7
+    steps:
+      - name: Check out exact preparation source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check out fixed PR78 source parent separately
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: f1e35e4c28ee84cfe6b22ffc4a7f32e78f597cef
+          fetch-depth: 0
+          path: candidate
+          persist-credentials: false
+      - name: Materialize and verify exact source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/trillionnium-os
+          python3 .github/schema_parity_recipe.py "$GITHUB_WORKSPACE/candidate"
+          test "$(git -C candidate write-tree)" = "$EXPECTED_TREE"
+          test "$(git -C candidate rev-parse HEAD)" = "$EXPECTED_PARENT"
+          git -C candidate diff --cached --check
+          git -C candidate config user.name 'github-actions[bot]'
+          git -C candidate config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C candidate commit -m 'fix(contracts): project bounded numbers text and uncertainty into module schemas' -m 'Prepared source only. No independent approval, target qualification, release or gap promotion. Depends on PR78; ordinary exact-head/synthetic-merge checks and fresh independent review are required.'
+          test "$(git -C candidate rev-parse HEAD^{tree})" = "$EXPECTED_TREE"
+          test "$(git -C candidate rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test -z "$(git -C candidate status --porcelain)"
+      - name: Publish create-only source export branch
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git -C candidate ls-remote origin refs/heads/main | cut -f1)" = b6cb785d4fde6427a1ae99ffc12f0679353aaaff
+          export_ref="refs/heads/export/schema-parity-20260912-${GITHUB_RUN_ID}"
+          observed="$(git -C candidate ls-remote origin "$export_ref")"
+          test -z "$observed"
+          askpass="${RUNNER_TEMP}/schema-parity-askpass-${GITHUB_RUN_ID}"
+          trap 'rm -f "$askpass"' EXIT
+          cat > "$askpass" <<'ASKPASS'
+          #!/bin/sh
+          case "$1" in
+            *Username*) printf '%s\n' x-access-token ;;
+            *Password*) printf '%s\n' "$GITHUB_TOKEN" ;;
+            *) exit 1 ;;
+          esac
+          ASKPASS
+          chmod 700 "$askpass"
+          GIT_TERMINAL_PROMPT=0 GIT_ASKPASS="$askpass" git -C candidate push origin "HEAD:$export_ref"
+          printf 'source_export_ref=%s\nsource_commit=%s\nsource_tree=%s\nsource_preparation_only=true\npublic_release=false\n' "$export_ref" "$(git -C candidate rev-parse HEAD)" "$EXPECTED_TREE" | tee "${RUNNER_TEMP}/schema-parity-source-export.txt"
+      - name: Retain preparation identity only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: schema-parity-source-preparation-${{ github.run_id }}
+          path: ${{ runner.temp }}/schema-parity-source-export.txt
+          if-no-files-found: error
+          retention-days: 7
