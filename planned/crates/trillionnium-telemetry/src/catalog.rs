@@ -19,6 +19,8 @@ pub const METRIC_PROJECTION_SCHEMA: &str = "trillionnium.owner-open.metric-proje
 pub const COVERAGE_GAP_SCHEMA: &str = "trillionnium.owner-open.metric-gap.v1";
 pub const DURABILITY_RECEIPT_SCHEMA: &str = "trillionnium.owner-open.metric-durability-receipt.v1";
 pub const DURABLE_PROJECTION_SCHEMA: &str = "trillionnium.owner-open.durable-metric-projection.v1";
+pub const DURABILITY_JOURNAL_COMMITMENT_SCHEMA: &str =
+    "trillionnium.owner-open.metric-journal-commitment.v1";
 
 pub const MAX_CATALOG_METRICS: usize = 4_096;
 pub const MAX_CATALOG_DIMENSIONS: usize = 256;
@@ -677,6 +679,45 @@ impl DurabilityReceipt {
         )?;
         Ok(())
     }
+
+    pub fn journal_record_digest_for_projection(
+        source_commit: &str,
+        source_tree: &str,
+        projection: &MetricProjection,
+    ) -> Result<String> {
+        projection.validate()?;
+        require_lower_hex(source_commit, 40, "durability source commit")?;
+        require_lower_hex(source_tree, 40, "durability source tree")?;
+        #[derive(Serialize)]
+        struct JournalCommitment<'a> {
+            schema: &'static str,
+            source_commit: &'a str,
+            source_tree: &'a str,
+            projection_digest: &'a str,
+        }
+        let commitment = JournalCommitment {
+            schema: DURABILITY_JOURNAL_COMMITMENT_SCHEMA,
+            source_commit,
+            source_tree,
+            projection_digest: &projection.projection_digest,
+        };
+        let bytes = serde_json::to_vec(&commitment).map_err(|error| {
+            TelemetryError::Invalid(format!("metric journal commitment encode: {error}"))
+        })?;
+        Ok(hex_digest(&bytes))
+    }
+
+    fn validate_projection_binding(&self, projection: &MetricProjection) -> Result<()> {
+        let expected = Self::journal_record_digest_for_projection(
+            &self.source_commit,
+            &self.source_tree,
+            projection,
+        )?;
+        if self.journal_record_digest != expected {
+            return invalid("metric durability receipt does not bind the exact projection");
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -694,6 +735,7 @@ impl DurableMetricProjection {
     pub fn seal(projection: MetricProjection, durability: DurabilityReceipt) -> Result<Self> {
         projection.validate()?;
         durability.validate()?;
+        durability.validate_projection_binding(&projection)?;
         if !projection.coverage_complete {
             return invalid("incomplete metric projection cannot be sealed durable-complete");
         }
@@ -883,7 +925,8 @@ mod tests {
         assert_eq!(ingestor.coverage_gaps().unwrap().len(), 1);
         let projection = ingestor.project("broker.accept.duration_ms").unwrap();
         assert!(!projection.coverage_complete);
-        assert!(DurableMetricProjection::seal(projection, durability()).is_err());
+        let receipt = durability(&projection);
+        assert!(DurableMetricProjection::seal(projection, receipt).is_err());
     }
 
     #[test]
@@ -922,19 +965,51 @@ mod tests {
         let ingestor = CatalogIngestor::new(catalog(4), 8, 8, 8).unwrap();
         ingestor.ingest(event(0, 10, "accept")).unwrap();
         let projection = ingestor.project("broker.accept.duration_ms").unwrap();
-        let sealed = DurableMetricProjection::seal(projection.clone(), durability()).unwrap();
+        let sealed =
+            DurableMetricProjection::seal(projection.clone(), durability(&projection)).unwrap();
         assert!(sealed.durable_complete);
-        let mut incomplete = durability();
+        let mut incomplete = durability(&projection);
         incomplete.directory_fsync_confirmed = false;
         assert!(DurableMetricProjection::seal(projection, incomplete).is_err());
     }
 
-    fn durability() -> DurabilityReceipt {
+    #[test]
+    fn durability_receipt_rejects_a_different_projection() {
+        let first_ingestor = CatalogIngestor::new(catalog(4), 8, 8, 8).unwrap();
+        first_ingestor.ingest(event(0, 10, "accept")).unwrap();
+        let first = first_ingestor.project("broker.accept.duration_ms").unwrap();
+        let receipt = durability(&first);
+
+        let second_ingestor = CatalogIngestor::new(catalog(4), 8, 8, 8).unwrap();
+        let mut changed = event(0, 10, "accept");
+        changed.value = 2.5;
+        second_ingestor.ingest(changed).unwrap();
+        let second = second_ingestor
+            .project("broker.accept.duration_ms")
+            .unwrap();
+        assert_ne!(first.projection_digest, second.projection_digest);
+        let error = DurableMetricProjection::seal(second, receipt).unwrap_err();
+        assert!(
+            error
+                .to_string()
+                .contains("does not bind the exact projection")
+        );
+    }
+
+    fn durability(projection: &MetricProjection) -> DurabilityReceipt {
+        let source_commit = "a".repeat(40);
+        let source_tree = "b".repeat(40);
+        let journal_record_digest = DurabilityReceipt::journal_record_digest_for_projection(
+            &source_commit,
+            &source_tree,
+            projection,
+        )
+        .unwrap();
         DurabilityReceipt {
             schema: DURABILITY_RECEIPT_SCHEMA.to_string(),
-            source_commit: "a".repeat(40),
-            source_tree: "b".repeat(40),
-            journal_record_digest: "c".repeat(64),
+            source_commit,
+            source_tree,
+            journal_record_digest,
             file_fsync_confirmed: true,
             directory_fsync_confirmed: true,
         }

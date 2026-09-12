@@ -26,7 +26,7 @@
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 55011,
-      "sha256": "4c6bbc9062c7127e5e7ee8145894fb85a87bb099e23a91c6beb91a6de5235259"
+      "sha256": "448f6edcf7d7d11647a082aed0264064a8bb2f80e6b37348be0ca86ef98cd7a6"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -1526,7 +1526,7 @@
     },
     "schemas/modules/telemetry/compatibility.json": {
       "bytes": 5448,
-      "sha256": "3b9fdb7fb2fa7b89635542c4bbf58cefe5028970508c898cecc94cc8ea65f573"
+      "sha256": "a3012deaa67684a1c09079707b3c33513bc80393044e606754098cd64116d0fe"
     },
     "schemas/modules/telemetry/errors-v1.schema.json": {
       "bytes": 3096,

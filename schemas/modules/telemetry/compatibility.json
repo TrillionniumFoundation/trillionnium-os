@@ -81,8 +81,8 @@
     },
     {
       "path": "planned/crates/trillionnium-telemetry/src/catalog.rs",
-      "sha256": "1dccde77149eeccb60ce52f1cf2d56e43192ccb83b84d3016728723aa757eaeb",
-      "size": 34911
+      "sha256": "07c948e5820c188eb44c84175ff2692a783418db844926ea96f14d7a892fad0c",
+      "size": 37834
     },
     {
       "path": "planned/crates/trillionnium-telemetry/src/catalog/admission.rs",

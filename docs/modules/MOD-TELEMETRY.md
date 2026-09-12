@@ -140,7 +140,7 @@ These values are finite source-admission ceilings and provisional objectives, no
 
 ## 10. Persistence, recovery and reconciliation
 
-After restart, only durable complete windows are loaded. Clock jumps, missing samples, eviction or mixed epochs create explicit coverage gaps rather than interpolated certainty. A projection may carry `durable_complete=true` only when it is coverage-complete and the owning store supplies a source-bound journal digest plus successful file and parent-directory fsync receipt. Source construction of that receipt is not installed-target evidence.
+After restart, only durable complete windows are loaded. Clock jumps, missing samples, eviction or mixed epochs create explicit coverage gaps rather than interpolated certainty. A projection may carry `durable_complete=true` only when it is coverage-complete and the owning store supplies a source-bound journal digest plus successful file and parent-directory fsync receipt. The v1 journal commitment is canonical JSON over `{schema, source_commit, source_tree, projection_digest}` and `journal_record_digest` is its SHA-256; `seal` recomputes this commitment and rejects a receipt produced for any other projection. The store must persist and fsync the record identified by that exact digest. Source construction of that receipt is not installed-target evidence.
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
