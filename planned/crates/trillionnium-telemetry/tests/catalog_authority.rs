@@ -79,7 +79,9 @@ fn every_real_metric_rejects_extra_or_missing_labels_without_projection_change()
         next.monotonic_ns = 2;
         for forbidden in ["customer_id", "credential", "unregistered"] {
             let mut invalid = next.clone();
-            invalid.dimensions.insert(forbidden.into(), "fixture".into());
+            invalid
+                .dimensions
+                .insert(forbidden.into(), "fixture".into());
             assert!(ingestor.ingest(invalid).is_err());
             assert_eq!(ingestor.project(&definition.name).unwrap(), before);
         }
