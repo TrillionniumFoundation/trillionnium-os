@@ -209,6 +209,33 @@ def product_profile_status() -> str:
             f"{cell(', '.join(profile['selected_cargo_components']) or 'none')} | "
             f"{cell(offered)} | {cell(blocked)} | {cell(profile['claim_ceiling'])} |"
         )
+    modules = {item["id"]: item for item in load("module-catalog.v1.json")["modules"]}
+    lines += [
+        "",
+        "## Selected source dependencies and explicit planned edges",
+        "",
+        "This graph is a source-selection projection, not an installed service graph.",
+        "Every selected module dependency is either selected or explicitly deferred.",
+        "Deferral never supplies an optional runtime dependency, lease substitute or",
+        "controller activation; its named target-qualification gap must remain unresolved.",
+        "",
+        "| Profile | Source module | Dependency | Selection | Blocking gap |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    for profile in data["profiles"]:
+        selected = set(profile["selected_modules"])
+        deferred = {
+            (item["source_module"], item["dependency_module"]): item
+            for item in profile["deferred_dependencies"]
+        }
+        for source in sorted(selected):
+            for target in sorted(modules[source]["dependencies"]):
+                entry = deferred.get((source, target))
+                selection = "PLANNED_ONLY" if entry else "SELECTED_SOURCE"
+                gap = entry["blocking_gap"] if entry else "none"
+                lines.append(
+                    f"| `{profile['id']}` | `{source}` | `{target}` | `{selection}` | `{gap}` |"
+                )
     lines += [
         "",
         "A sealed profile contributes no current product capability. Source presence or",
