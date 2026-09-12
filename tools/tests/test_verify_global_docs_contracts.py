@@ -46,6 +46,42 @@ class ModuleContractVerificationTests(unittest.TestCase):
                 },
             )
 
+    def test_content_addressed_migration_reference_is_structurally_admissible(self) -> None:
+        value = catalog()
+        value["modules"][0]["compatibility"]["contract_change_review"] = {
+            "class": "BREAKING_MIGRATION",
+            "review_packet": "docs/reviews/module-contracts/" + "a" * 64 + ".json",
+        }
+        # This proves reference shape only. The executable-contract verifier
+        # must separately verify the actual packet; no test authorizes a review.
+        verifier.verify_modules(value)
+
+    def test_migration_reference_never_accepts_an_approval_or_unsafe_path(self) -> None:
+        valid = {
+            "class": "BREAKING_MIGRATION",
+            "review_packet": "docs/reviews/module-contracts/" + "a" * 64 + ".json",
+        }
+        malformed = [None, {}, {**valid, "class": "INITIAL_V1"},
+                     {**valid, "class": "NO_CHANGE"},
+                     {**valid, "approval_asserted": True},
+                     {**valid, "reviewer": "self"},
+                     {**valid, "review_packet": "../packet.json"},
+                     {**valid, "review_packet": "/tmp/packet.json"},
+                     {**valid, "review_packet": "docs/reviews/module-contracts/" + "A" * 64 + ".json"},
+                     {**valid, "review_packet": "docs/reviews/module-contracts/" + "a" * 64 + ".json\n"}]
+        for review in malformed:
+            with self.subTest(review=review):
+                value = catalog()
+                value["modules"][0]["compatibility"]["contract_change_review"] = review
+                with self.assertRaises(verifier.VerificationError):
+                    verifier.verify_modules(value)
+
+    def test_other_unknown_compatibility_keys_remain_forbidden(self) -> None:
+        value = catalog()
+        value["modules"][0]["compatibility"]["approval"] = True
+        with self.assertRaises(verifier.VerificationError):
+            verifier.verify_modules(value)
+
     def test_missing_version_fails_closed(self) -> None:
         value = catalog()
         del value["modules"][0]["module_version"]
