@@ -361,9 +361,7 @@ impl MetricEvent {
             }
             require_identifier(name, "metric dimension")?;
             require_text(value, "metric dimension value")?;
-            if value.len() > MAX_DIMENSION_VALUE_BYTES
-                || value.chars().any(char::is_control)
-            {
+            if value.len() > MAX_DIMENSION_VALUE_BYTES || value.chars().any(char::is_control) {
                 return invalid("metric dimension value exceeds the mechanical bound");
             }
         }

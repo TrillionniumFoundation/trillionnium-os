@@ -62,9 +62,10 @@ impl CatalogIngestor {
             if event.monotonic_ns <= last.monotonic_ns {
                 return invalid("CLOCK_REGRESSION: metric monotonic clock did not advance");
             }
-            let expected = last.sequence.checked_add(1).ok_or_else(|| {
-                TelemetryError::Invalid("metric event sequence exhausted".into())
-            })?;
+            let expected = last
+                .sequence
+                .checked_add(1)
+                .ok_or_else(|| TelemetryError::Invalid("metric event sequence exhausted".into()))?;
             if event.sequence > expected {
                 pending_gaps.push(coverage_gap(
                     &stream_key,
@@ -124,7 +125,10 @@ impl CatalogIngestor {
         }
         let expired = expired_samples(&state, &stream_key, cutoff)?;
         let retained_here = state.windows.get(&series_key).map_or(0, |window| {
-            window.iter().filter(|sample| !expired_sample(sample, &stream_key, cutoff)).count()
+            window
+                .iter()
+                .filter(|sample| !expired_sample(sample, &stream_key, cutoff))
+                .count()
         });
         let count_evicted = retained_here.saturating_add(1).saturating_sub(sample_limit);
         if expired != 0 {
@@ -155,7 +159,11 @@ impl CatalogIngestor {
             .or_default()
             .insert(series_digest.clone());
         for (name, value) in &event.dimensions {
-            state.dimension_values.entry(name.clone()).or_default().insert(value.clone());
+            state
+                .dimension_values
+                .entry(name.clone())
+                .or_default()
+                .insert(value.clone());
         }
         let window = state.windows.entry(series_key).or_default();
         for _ in 0..count_evicted {
@@ -163,11 +171,17 @@ impl CatalogIngestor {
         }
         window.push_back(event.clone());
         if expired != 0 || count_evicted != 0 {
-            state.dropped_by_metric.insert(event.metric.clone(), dropped);
+            state
+                .dropped_by_metric
+                .insert(event.metric.clone(), dropped);
         }
         state.gaps.extend(pending_gaps);
-        state.latest_epoch.insert(event.module_instance_id.clone(), event.control_epoch);
-        state.watermarks.insert(stream_key.clone(), event.monotonic_ns);
+        state
+            .latest_epoch
+            .insert(event.module_instance_id.clone(), event.control_epoch);
+        state
+            .watermarks
+            .insert(stream_key.clone(), event.monotonic_ns);
         state.last_events.insert(
             stream_key,
             LastEvent {
@@ -244,9 +258,11 @@ impl CatalogIngestor {
 }
 
 fn retention_ns(definition: &MetricDefinition) -> Result<u64> {
-    definition.retention.window_seconds.checked_mul(1_000_000_000).ok_or_else(|| {
-        TelemetryError::Invalid("metric retention clock overflow".into())
-    })
+    definition
+        .retention
+        .window_seconds
+        .checked_mul(1_000_000_000)
+        .ok_or_else(|| TelemetryError::Invalid("metric retention clock overflow".into()))
 }
 
 fn coverage_gap(
@@ -274,15 +290,19 @@ fn expired_sample(sample: &MetricEvent, key: &StreamKey, cutoff: u64) -> bool {
 }
 
 fn expired_samples(state: &IngestState, key: &StreamKey, cutoff: u64) -> Result<usize> {
-    state.windows.iter().filter(|(series, _)| series.metric == key.metric).try_fold(
-        0usize,
-        |total, (_, window)| {
-            let count = window.iter().filter(|sample| expired_sample(sample, key, cutoff)).count();
+    state
+        .windows
+        .iter()
+        .filter(|(series, _)| series.metric == key.metric)
+        .try_fold(0usize, |total, (_, window)| {
+            let count = window
+                .iter()
+                .filter(|sample| expired_sample(sample, key, cutoff))
+                .count();
             total.checked_add(count).ok_or_else(|| {
                 TelemetryError::Invalid("metric expired sample count overflow".into())
             })
-        },
-    )
+        })
 }
 
 fn expire_samples(state: &mut IngestState, key: &StreamKey, cutoff: u64) {
@@ -299,16 +319,28 @@ fn checked_drop_total(
     expired: usize,
     evicted: usize,
 ) -> Result<u64> {
-    let delta = expired.checked_add(evicted).and_then(|value| u64::try_from(value).ok());
+    let delta = expired
+        .checked_add(evicted)
+        .and_then(|value| u64::try_from(value).ok());
     delta
-        .and_then(|value| state.dropped_by_metric.get(metric).unwrap_or(&0).checked_add(value))
+        .and_then(|value| {
+            state
+                .dropped_by_metric
+                .get(metric)
+                .unwrap_or(&0)
+                .checked_add(value)
+        })
         .ok_or_else(|| TelemetryError::Invalid("metric drop count overflow".into()))
 }
 
 fn check_gap_capacity(state: &IngestState, maximum: usize, additional: usize) -> Result<()> {
-    if state.gaps.len().checked_add(additional).is_none_or(|size| size > maximum) {
+    if state
+        .gaps
+        .len()
+        .checked_add(additional)
+        .is_none_or(|size| size > maximum)
+    {
         return invalid("metric coverage gap capacity reached");
     }
     Ok(())
 }
-
