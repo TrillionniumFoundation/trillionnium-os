@@ -39,7 +39,7 @@ jobs:
             fi
             test -z "$(git diff --name-only --diff-filter=U)"
           fi
-          python3 tools/docs/generate_global_docs.py --write
+          python3 tools/docs/generate_global_docs.py
           python3 -m unittest tools.tests.test_profile_dependency_closure tools.tests.test_repository_authority -v
           python3 tools/docs/verify_repository_authority.py
           python3 tools/docs/verify_global_docs.py
