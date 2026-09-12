@@ -35,9 +35,42 @@ def test_reference_cell(references: list[dict[str, Any]]) -> str:
             rendered.append(f"{kind}:{path}:{command}:{workflow}#{job}")
     return ";".join(rendered)
 
+def summarize_gaps(data: dict[str, Any]) -> dict[str, Any]:
+    """Count every non-CLOSED gap without promoting evidence or changing state."""
+    vocabulary = data.get("status_vocabulary")
+    expected = {"OPEN", "SOURCE_CLOSED_PENDING_EVIDENCE", "EXTERNAL_HOLD", "CLOSED"}
+    if (not isinstance(vocabulary, list) or not all(isinstance(v, str) for v in vocabulary)
+            or len(vocabulary) != len(expected) or set(vocabulary) != expected):
+        raise ValueError("gap status vocabulary differs")
+    gaps = data.get("gaps")
+    if not isinstance(gaps, list):
+        raise ValueError("gap register must contain a list")
+    counts = {status: 0 for status in vocabulary}
+    levels = {f"L{level}": 0 for level in range(1, 7)}
+    seen: set[str] = set()
+    for gap in gaps:
+        if not isinstance(gap, dict):
+            raise ValueError("gap entry is not an object")
+        identity, status, level = gap.get("id"), gap.get("status"), gap.get("exit_level")
+        if not isinstance(identity, str) or not identity or identity in seen:
+            raise ValueError("gap identity is missing or duplicated")
+        if not isinstance(status, str) or status not in counts:
+            raise ValueError("gap status is unknown")
+        if not isinstance(level, str) or level not in levels:
+            raise ValueError("gap exit level is unknown")
+        seen.add(identity)
+        counts[status] += 1
+        if status != "CLOSED":
+            levels[level] += 1
+    return {"total": len(gaps), "closed": counts["CLOSED"],
+            "unresolved": len(gaps) - counts["CLOSED"],
+            "statuses": counts, "unresolved_by_exit_level": levels}
+
+
 def current_state() -> str:
     base = load("current-baseline.v1.json")
     program = load("program-state.v1.json")
+    gap_summary = summarize_gaps(load("gap-register.v2.json"))
     lines = [
         "# Current State",
         "",
@@ -48,6 +81,7 @@ def current_state() -> str:
         f"- Semantic revision: `{program['semantic_revision']}`",
         f"- Architecture revision: `{program['architecture_revision']}`",
         f"- Zero gap: `{str(program['zero_gap']).lower()}`",
+        f"- Unresolved gaps: `{gap_summary['unresolved']}` of `{gap_summary['total']}` (only CLOSED is resolved)",
         f"- Public release: `{str(program['public_release']).lower()}`",
         f"- Automatic redispatch: `{str(program['automatic_redispatch']).lower()}`",
         "",
@@ -306,9 +340,8 @@ def effect_lifecycle_status() -> str:
 
 def gap_status() -> str:
     data = load("gap-register.v2.json")
-    counts: dict[str, int] = {status: 0 for status in data["status_vocabulary"]}
-    for gap in data["gaps"]:
-        counts[gap["status"]] += 1
+    summary = summarize_gaps(data)
+    counts = summary["statuses"]
     priority_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
     gaps = sorted(data["gaps"], key=lambda g: (priority_order.get(g["priority"], 9), g["id"]))
     lines = [
@@ -317,9 +350,17 @@ def gap_status() -> str:
         "<!-- GENERATED. DO NOT EDIT. -->",
         "",
         f"- Total: `{len(gaps)}`",
+        f"- Unresolved: `{summary['unresolved']}` (includes pending evidence and external holds)",
     ]
     for status in data["status_vocabulary"]:
         lines.append(f"- {status}: `{counts[status]}`")
+    lines += ["", "OPEN=0 does not mean zero unresolved gaps. Source-closed pending evidence",
+              "and external holds remain unresolved until the required receipt is accepted.",
+              "These counts are a projection of the recorded register, not a live CI or target observation.",
+              "", "## Unresolved by required exit level", "",
+              "| Exit level | Unresolved gaps |", "| --- | ---: |"]
+    for level, count in summary["unresolved_by_exit_level"].items():
+        lines.append(f"| `{level}` | `{count}` |")
     lines += [
         "",
         "| Gap | Priority | Class | Status | Exit | Modules | Summary |",

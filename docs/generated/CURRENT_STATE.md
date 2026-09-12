@@ -7,6 +7,7 @@
 - Semantic revision: `owner-open-semantic-v1`
 - Architecture revision: `modular-control-plane-v1`
 - Zero gap: `false`
+- Unresolved gaps: `20` of `21` (only CLOSED is resolved)
 - Public release: `false`
 - Automatic redispatch: `false`
 
