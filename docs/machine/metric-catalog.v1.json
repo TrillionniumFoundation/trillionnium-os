@@ -1,0 +1,1812 @@
+{
+  "schema": "org.trillionnium.metric-catalog.v1",
+  "program_revision": "2026-08-31-g1",
+  "catalog_version": "1.0.0",
+  "status": "SOURCE_CONTRACT_OBSERVE_SHADOW_ONLY",
+  "activation_ceiling": "SHADOW",
+  "semantic_authority": false,
+  "automatic_redispatch": false,
+  "dimension_catalog": [
+    {
+      "name": "instance_epoch",
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL"
+    },
+    {
+      "name": "module_id",
+      "cardinality_ceiling": 16,
+      "privacy_class": "PUBLIC_MECHANICAL"
+    },
+    {
+      "name": "operation_class",
+      "cardinality_ceiling": 64,
+      "privacy_class": "PUBLIC_MECHANICAL"
+    },
+    {
+      "name": "ordering_key_digest",
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PSEUDONYMOUS_RESTRICTED"
+    },
+    {
+      "name": "outcome",
+      "cardinality_ceiling": 32,
+      "privacy_class": "PUBLIC_MECHANICAL"
+    },
+    {
+      "name": "phase",
+      "cardinality_ceiling": 2,
+      "privacy_class": "PUBLIC_MECHANICAL"
+    },
+    {
+      "name": "resource_scope",
+      "cardinality_ceiling": 64,
+      "privacy_class": "PUBLIC_MECHANICAL"
+    },
+    {
+      "name": "workload_id",
+      "cardinality_ceiling": 12,
+      "privacy_class": "PUBLIC_MECHANICAL"
+    }
+  ],
+  "forbidden_dimension_names": [
+    "command",
+    "prompt",
+    "credential",
+    "secret",
+    "token",
+    "user_input",
+    "tool_argument",
+    "intent",
+    "model_message",
+    "retry_instruction"
+  ],
+  "metrics": [
+    {
+      "name": "broker.accept.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-BROKER",
+      "collection_point": "broker.accept.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "broker.auth.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-BROKER",
+      "collection_point": "broker.auth.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "broker.forward.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-BROKER",
+      "collection_point": "broker.forward.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "broker.queue.wait_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-BROKER",
+      "collection_point": "broker.queue.dequeue",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "callback.admission.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TURN-ENGINE",
+      "collection_point": "callback.admission.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "cgroup.cpu.usage_us",
+      "unit": "microseconds",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "cgroup.cpu.read",
+      "aggregation": "LAST",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "CGROUP_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "cgroup.io.read_bytes",
+      "unit": "bytes",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "cgroup.io.read",
+      "aggregation": "LAST",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "CGROUP_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "cgroup.io.write_bytes",
+      "unit": "bytes",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "cgroup.io.write",
+      "aggregation": "LAST",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "CGROUP_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "cgroup.memory.current_bytes",
+      "unit": "bytes",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "cgroup.memory.read",
+      "aggregation": "MAX",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "CGROUP_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "cgroup.pids.current_count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "cgroup.pids.read",
+      "aggregation": "MAX",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "CGROUP_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "delivery.client.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-STREAM",
+      "collection_point": "delivery.client.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "delivery.queue.wait_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-STREAM",
+      "collection_point": "delivery.queue.dequeue",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "host.capacity.wait_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-EXECUTION-CORE",
+      "collection_point": "host.capacity.admitted",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "host.decode.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-EXECUTION-CORE",
+      "collection_point": "host.decode.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "journal.append.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-EVENT-STORE",
+      "collection_point": "journal.append.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "journal.fsync.count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-EVENT-STORE",
+      "collection_point": "journal.fsync.complete",
+      "aggregation": "SUM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "PROCESS_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "journal.fsync.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-EVENT-STORE",
+      "collection_point": "journal.fsync.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "lock.hold.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "lock.release",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PSEUDONYMOUS_RESTRICTED",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "ordering_key_digest"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "lock.wait.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "lock.acquire",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PSEUDONYMOUS_RESTRICTED",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "ordering_key_digest"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "operation.redispatch.count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "operation.terminal",
+      "aggregation": "SUM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PSEUDONYMOUS_RESTRICTED",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "ordering_key_digest"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "PROCESS_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "operation.unknown.rate",
+      "unit": "ratio",
+      "value_type": "RATIO_0_1",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "operation.window.close",
+      "aggregation": "MEAN",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PSEUDONYMOUS_RESTRICTED",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "ordering_key_digest"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "performance.latency.p50_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "performance.window.close",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "workload_id",
+        "phase"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "performance.latency.p95_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "performance.window.close",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "workload_id",
+        "phase"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "performance.latency.p99_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "performance.window.close",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "workload_id",
+        "phase"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "performance.throughput.per_second",
+      "unit": "count",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "performance.window.close",
+      "aggregation": "MEAN",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "workload_id",
+        "phase"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.context_switch.count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.rusage.read",
+      "aggregation": "LAST",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "PROCESS_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.cpu.system_seconds",
+      "unit": "seconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.rusage.read",
+      "aggregation": "LAST",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "PROCESS_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.cpu.user_seconds",
+      "unit": "seconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.rusage.read",
+      "aggregation": "LAST",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "PROCESS_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.fd.peak_count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.fd.scan",
+      "aggregation": "MAX",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "EXPLICIT_UNAVAILABLE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.process.peak_count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.tree.scan",
+      "aggregation": "MAX",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "EXPLICIT_UNAVAILABLE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.rss.current_bytes",
+      "unit": "bytes",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.rss.read",
+      "aggregation": "LAST",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "EXPLICIT_UNAVAILABLE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.rss.peak_bytes",
+      "unit": "bytes",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.rss.read",
+      "aggregation": "MAX",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "EXPLICIT_UNAVAILABLE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "process.thread.peak_count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TELEMETRY",
+      "collection_point": "process.thread.scan",
+      "aggregation": "MAX",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "resource_scope"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "EXPLICIT_UNAVAILABLE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "provider.first_event.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-PROVIDER",
+      "collection_point": "provider.first_event",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "provider.spawn.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-PROVIDER",
+      "collection_point": "provider.spawn.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "provider.wait.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-PROVIDER",
+      "collection_point": "provider.wait.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "queue.depth.count",
+      "unit": "count",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-BROKER",
+      "collection_point": "queue.observe",
+      "aggregation": "MAX",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PSEUDONYMOUS_RESTRICTED",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "ordering_key_digest"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "EXPLICIT_UNAVAILABLE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "scheduler.fairness.ratio",
+      "unit": "ratio",
+      "value_type": "RATIO_0_1",
+      "source_module": "MOD-BROKER",
+      "collection_point": "scheduler.window.close",
+      "aggregation": "MEAN",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PSEUDONYMOUS_RESTRICTED",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch",
+        "ordering_key_digest"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "terminal.persistence.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-EVENT-STORE",
+      "collection_point": "terminal.persistence.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "tool.cleanup.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TOOL-RUNTIME",
+      "collection_point": "tool.cleanup.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "tool.exit.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TOOL-RUNTIME",
+      "collection_point": "tool.exit.observed",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "tool.output.bytes",
+      "unit": "bytes",
+      "value_type": "U64_COUNT",
+      "source_module": "MOD-TOOL-RUNTIME",
+      "collection_point": "tool.output.end",
+      "aggregation": "SUM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "COUNTER_NOT_OBSERVED",
+      "clock_source": "PROCESS_COUNTER",
+      "evidence_level": "L2_TARGET"
+    },
+    {
+      "name": "tool.spawn.duration_ms",
+      "unit": "milliseconds",
+      "value_type": "F64_NONNEGATIVE",
+      "source_module": "MOD-TOOL-RUNTIME",
+      "collection_point": "tool.spawn.end",
+      "aggregation": "HISTOGRAM",
+      "retention": {
+        "window_seconds": 60,
+        "max_samples": 4096
+      },
+      "cardinality_ceiling": 4096,
+      "privacy_class": "PUBLIC_MECHANICAL",
+      "required_dimensions": [
+        "module_id",
+        "operation_class",
+        "outcome",
+        "instance_epoch"
+      ],
+      "forbidden_dimensions": [
+        "command",
+        "prompt",
+        "credential",
+        "secret",
+        "token",
+        "user_input",
+        "tool_argument",
+        "intent",
+        "model_message",
+        "retry_instruction"
+      ],
+      "sampling": {
+        "mode": "EVERY_OBSERVATION",
+        "rate_numerator": 1,
+        "rate_denominator": 1
+      },
+      "missing_data": "WINDOW_INCOMPLETE",
+      "clock_source": "MONOTONIC",
+      "evidence_level": "L2_TARGET"
+    }
+  ]
+}

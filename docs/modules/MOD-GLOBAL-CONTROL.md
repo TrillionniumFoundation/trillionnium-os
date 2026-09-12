@@ -30,7 +30,7 @@ The module has these stable responsibilities:
 
 Operationally, the required flow is:
 
-The controller ingests redacted telemetry and declared objectives, computes a deterministic mechanical budget or placement proposal, records the control epoch and lease, and compares the shadow proposal with actual operation. It does not enter active mode without evidence-qualified authorization.
+The controller ingests catalog-bound redacted telemetry and declared objectives, computes a deterministic mechanical budget or placement proposal, records the control epoch and lease, and compares the shadow proposal with actual operation. Coverage gaps, clock regressions, unavailable measurements and incomplete windows remain explicit controller inputs and cannot be interpreted as zero or success. It does not enter active mode without evidence-qualified authorization.
 
 Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
 
@@ -173,7 +173,7 @@ Rollback is fail-closed. Stateful modules restore the last compatible durable st
 
 ## 14. Observability
 
-Expose control epoch, input digest, proposal digest, shadow delta, lease age, expiry, fencing and rejected active-mode attempts.
+Expose control epoch, metric-catalog digest, input projection digest, coverage completeness, proposal digest, shadow delta, lease age, expiry, fencing and rejected active-mode attempts. A shadow decision may consume incomplete telemetry only to emit an explicit no-apply/insufficient-coverage observation; it cannot mint a lease change or active action.
 
 Every metric and log record is bounded and versioned. Required common dimensions are module ID, instance or service epoch, ordering-key digest, operation class and outcome. High-cardinality raw identifiers are hashed or retained only in access-controlled evidence. Readiness means the module can safely admit work; liveness alone is insufficient.
 
