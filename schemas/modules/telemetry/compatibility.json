@@ -80,9 +80,24 @@
       "size": 211
     },
     {
+      "path": "planned/crates/trillionnium-telemetry/src/catalog.rs",
+      "sha256": "1dccde77149eeccb60ce52f1cf2d56e43192ccb83b84d3016728723aa757eaeb",
+      "size": 34911
+    },
+    {
+      "path": "planned/crates/trillionnium-telemetry/src/catalog/admission.rs",
+      "sha256": "69c26d4e24e9716c998cd33e9a45d4592c12a889af19ddc42e56822abe42afcd",
+      "size": 13150
+    },
+    {
+      "path": "planned/crates/trillionnium-telemetry/src/catalog/regressions.rs",
+      "sha256": "c24deed8dbd876f235dcf747d49ca7fdb15e92d275bae10c0a45983f632af5c8",
+      "size": 13547
+    },
+    {
       "path": "planned/crates/trillionnium-telemetry/src/lib.rs",
-      "sha256": "4b5c8e122c52262b8575f101984c4d56973fcd88fca18ee9cd68a72579bb6cbc",
-      "size": 76445
+      "sha256": "7ccacfe0be0fa9089bd02e43afd8e756f757c010b6d21befa64ba2f7628c1aac",
+      "size": 76463
     }
   ],
   "introduction_review_class": "INITIAL_V1",
@@ -136,6 +151,11 @@
   "schema": "org.trillionnium.module-contract-compatibility.v1",
   "state_schema_version": "1",
   "test_sources": [
+    {
+      "path": "planned/crates/trillionnium-telemetry/tests/catalog_authority.rs",
+      "sha256": "0fec9f2d9347e3e7def26b35bda4551ad695f603eb00f7fa169176a0f92e3902",
+      "size": 4538
+    },
     {
       "path": "tools/tests/test_module_contracts.py",
       "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
