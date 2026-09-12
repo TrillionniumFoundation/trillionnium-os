@@ -424,7 +424,25 @@ def verify_module_contract(module: dict[str, Any], ordering_keys: list[str], sta
             f"{module_id} evidence contract must carry the no-redispatch negative claim")
 
     compatibility = require_object(module["compatibility"], f"{module_id}.compatibility")
-    require_exact_keys(compatibility, COMPATIBILITY_KEYS, f"{module_id}.compatibility")
+    # The executable-contract generator already supports a content-addressed,
+    # non-authorizing BREAKING_MIGRATION packet. Admit that exact optional
+    # reference here; never a reusable approval or arbitrary extra key.
+    compatibility_keys = set(COMPATIBILITY_KEYS)
+    if "contract_change_review" in compatibility:
+        compatibility_keys.add("contract_change_review")
+        review = require_object(
+            compatibility["contract_change_review"],
+            f"{module_id}.compatibility.contract_change_review",
+        )
+        require_exact_keys(review, {"class", "review_packet"},
+                           f"{module_id}.compatibility.contract_change_review")
+        require(review["class"] == "BREAKING_MIGRATION",
+                f"{module_id} contract change review class is invalid")
+        packet = require_string(review["review_packet"],
+                                f"{module_id}.compatibility.review_packet")
+        require(re.fullmatch(r"docs/reviews/module-contracts/[0-9a-f]{64}[.]json", packet) is not None,
+                f"{module_id} contract change review packet path is invalid")
+    require_exact_keys(compatibility, compatibility_keys, f"{module_id}.compatibility")
     require_semver(compatibility["api_semver"], f"{module_id}.compatibility.api_semver")
     require(compatibility["api_semver"] == api_version,
             f"{module_id} compatibility/API version mismatch")
@@ -912,6 +930,18 @@ def main() -> int:
             check=False,
         )
         require(result.returncode == 0, "generated documentation does not match machine truth")
+        # Structural admission of a migration reference is insufficient. The
+        # generator checks exact packet bytes, module/kind scope, target digests,
+        # requested reviewer and approval_asserted=false, as well as generated
+        # artifact/vector identity. Base-to-head compatibility remains a distinct
+        # source gate; no local packet supplies independent GitHub approval.
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "contracts" / "generate_module_contracts.py"), "--verify"],
+            cwd=ROOT,
+            check=False,
+            timeout=120,
+        )
+        require(result.returncode == 0, "executable module contracts or migration packet are invalid")
         result = subprocess.run(
             [
                 sys.executable,
@@ -928,7 +958,7 @@ def main() -> int:
             check=False,
         )
         require(result.returncode == 0, "repository authority/profile verification failed")
-    except VerificationError as error:
+    except (VerificationError, subprocess.SubprocessError) as error:
         print(f"G1 documentation verification failed: {error}", file=sys.stderr)
         return 1
     except (KeyError, TypeError, IndexError, AttributeError) as error:

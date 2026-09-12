@@ -140,3 +140,16 @@ modules, unknown statuses and references to closed gaps also fail closed.
 Update the register, the catalog projection, the module's exit criteria and the
 generated views together. Do not remove an open relationship to hide an external
 hold; closure still requires evidence at the gap's declared exit level.
+
+## Executable-contract migration references
+
+The module catalog may carry exactly one optional
+`compatibility.contract_change_review` object with `class=BREAKING_MIGRATION`
+and a content-addressed `docs/reviews/module-contracts/<sha256>.json` reference.
+The structural graph check admits only that shape. The global documentation
+gate also runs executable-contract verification to bind the actual packet bytes,
+module and contract scope, migration/rollback metadata and generated targets.
+A missing, malformed or stale packet is a source failure. The separate
+base-to-head compatibility gate must still bind the verified base schemas.
+A packet names the intended review route only: `approval_asserted=false`; it is
+not a non-author review, installed-target receipt or release authorization.
