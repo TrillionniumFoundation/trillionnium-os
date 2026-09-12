@@ -4,18 +4,36 @@
   "breaking_change_review": "REQUIRED_FOR_REQUIRED_TYPE_ENUM_DEFAULT_IDENTITY_ORDERING_STATE_OR_ERROR_CHANGE",
   "change_review": {
     "approval_asserted": false,
-    "base_catalog_sha256": null,
-    "base_contract_sha256": {},
-    "class": "NO_CHANGE",
-    "contracts": [],
-    "families": [],
+    "base_catalog_sha256": "1ab062a9517ea6055db6f3b599d23eb6a1450b1c13c574a57f4bbde7f882c8d8",
+    "base_contract_sha256": {
+      "api": "d6eb52daf54ce98dab5db780b16fb80fb5d1052f8f31ad09585bd4ef77b58669",
+      "errors": "ef21d2957852530750ec4debc8b56f57057b7dd43f6e4fe683f2777a468d6ab6",
+      "state": "ddf5bd53bb63c605edeaf4f8a2ba7c60b77f205081afbd22a93af5761cce17e5"
+    },
+    "class": "BREAKING_MIGRATION",
+    "contracts": [
+      "api",
+      "errors",
+      "state"
+    ],
+    "families": [
+      "error",
+      "identity",
+      "ordering",
+      "other",
+      "state"
+    ],
     "migration_review_sha256": "32b71694a9459ffab112fd2dd06c750e7e56eb4d597966f1e3e1ddd01c19f733",
-    "review_authority": null,
-    "review_packet": null,
-    "review_packet_sha256": null,
-    "reviewer": null,
+    "review_authority": "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED",
+    "review_packet": "docs/reviews/module-contracts/27521ceafb16a0fd84f6df81bd1c21091df304de72e582af4fe8cf179b32c344.json",
+    "review_packet_sha256": "27521ceafb16a0fd84f6df81bd1c21091df304de72e582af4fe8cf179b32c344",
+    "reviewer": "Tomasrgbsf",
     "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
-    "target_contract_sha256": {}
+    "target_contract_sha256": {
+      "api": "ad5761dbd5b104092130a12f049ade6187af9e3a045b0d238ad25036524535e1",
+      "errors": "1f08804e44d9f5b45d4436a9f32c06495b343f573f97f3a8beffeb733e3fd000",
+      "state": "bbe99fcdd95d98c5939e7724f7bc7abce8fa6c798f981000b09812cb9dbec450"
+    }
   },
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
   "contract_tests": [
@@ -133,8 +151,8 @@
   "test_sources": [
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-      "size": 37209
+      "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+      "size": 41737
     }
   ],
   "unknown_fields": "REJECT"

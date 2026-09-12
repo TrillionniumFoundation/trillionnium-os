@@ -22,27 +22,27 @@
     },
     "docs/MODULE_CONTRACT_STATUS.md": {
       "bytes": 4020,
-      "sha256": "ed1722cb99574a256bd4e0f4502a4cdf7137bf624b19fc7912d6987f2100ca83"
+      "sha256": "fe3086490d3f4b146fccbe93ed76ee2d69adb91022673424523fb216ddee9222"
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 55011,
-      "sha256": "4c6bbc9062c7127e5e7ee8145894fb85a87bb099e23a91c6beb91a6de5235259"
+      "sha256": "a360c2721a41aa6d8ff9e1ce62d778a3be832febc75d4fa58c45624bb42a43f3"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
       "sha256": "7333926b96118fdd0cf2bae9a7c5ab93d118a6a26addf8cf13c4f25ece8a1448"
     },
     "schemas/modules/adb/api-v1.schema.json": {
-      "bytes": 2690,
-      "sha256": "376e44a440b219b2eda39727431ee30f8ecd0009633c837d0a827d3dccc9d478"
+      "bytes": 2979,
+      "sha256": "2e02b5dd4b04233c6bc92327c942f06badcf2f804c205a1a2c3502588c27cf68"
     },
     "schemas/modules/adb/compatibility.json": {
-      "bytes": 4665,
-      "sha256": "321511b0fad70a7d63a16c88f3b206aa7016f45fba1df360bdf08ea82ec2c600"
+      "bytes": 5581,
+      "sha256": "4f8551a3b6ab2b64f7c30807b7df4f1b813e282d6da4391f8c76d21bc3f1bfa9"
     },
     "schemas/modules/adb/errors-v1.schema.json": {
-      "bytes": 3072,
-      "sha256": "e971e24dca07adee47e71082ce8fea8060fefd27d9880f039c8715701fc76119"
+      "bytes": 4408,
+      "sha256": "e293550c8d7b72e38f3e99b6cccf8b69231e77d11c841b506bc46b6d1bd79991"
     },
     "schemas/modules/adb/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1571,
@@ -52,9 +52,17 @@
       "bytes": 5488,
       "sha256": "aaa8fab865d6b761e68905b89d714c2291704d99eb2c96ae3c3c35d3b88d9ae3"
     },
+    "schemas/modules/adb/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1570,
+      "sha256": "b0beb6e54984144d7658c80ccddf4e2f047d676d32df35bac6de00d958dfca47"
+    },
     "schemas/modules/adb/golden/invalid/api-duplicate.json": {
       "bytes": 1553,
       "sha256": "8f4b506bcda8c086e9a9165a45d126e792414eb441d88231a0d1cff48d2a5640"
+    },
+    "schemas/modules/adb/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1587,
+      "sha256": "980d437e7c999ccc4113336f362982de499c35e4e025f77f2b3aa455ef52a0b4"
     },
     "schemas/modules/adb/golden/invalid/api-identity-alias.json": {
       "bytes": 1566,
@@ -63,6 +71,10 @@
     "schemas/modules/adb/golden/invalid/api-missing-ordering.json": {
       "bytes": 1034,
       "sha256": "a2bb95743e86bd9b0bbb31d3926ef98caeaa0900eebbe1429a80ad785fd9c0de"
+    },
+    "schemas/modules/adb/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1323,
+      "sha256": "c22ad1444ab65e5f73eb3743382e768db120fdfc28be7c0bb89c60a37c95bab0"
     },
     "schemas/modules/adb/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1570,
@@ -87,6 +99,10 @@
     "schemas/modules/adb/golden/invalid/api-unknown.json": {
       "bytes": 1590,
       "sha256": "e2faf453ec2fd1c01fc9ccbf6a074509eb6c86871d97a605317747eccffdb23e"
+    },
+    "schemas/modules/adb/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1587,
+      "sha256": "42e90f417fc5c39297e23a084507cfb6e39354071bf2a7cff529928e2740f97d"
     },
     "schemas/modules/adb/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4815,
@@ -124,6 +140,10 @@
       "bytes": 1116,
       "sha256": "d4b24db12c9445ffff73aca93b0c5b2c6563fabb393abec5dd7493e95a6d58e8"
     },
+    "schemas/modules/adb/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1132,
+      "sha256": "09eeba849eb89358065144e76fa5c3214875d2b68a4be6a7e817f52467ec23a1"
+    },
     "schemas/modules/adb/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1115,
       "sha256": "57352f8c73bacf1f7dc17f5d538ec26e81404edc70587e18c2a93174bea3c513"
@@ -132,13 +152,25 @@
       "bytes": 615,
       "sha256": "28676a336989d3547dd6b86056153ce3d7ac12bf0c7675f9ec4eee76277f9c09"
     },
+    "schemas/modules/adb/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1132,
+      "sha256": "9110577ebd24b28d5211208ae12bfde3baf968473d27338c9a8700e390fe73b3"
+    },
     "schemas/modules/adb/golden/invalid/state-invalid.json": {
       "bytes": 1125,
       "sha256": "aff4675d5272e8a7cb1b5ad3251ee7b0462e1914d2f24b37873474a183c5d4f5"
     },
+    "schemas/modules/adb/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1132,
+      "sha256": "5b40931f6154a61689cc03c063a54f3c3a3ebdddc97a409823a46536401b69d6"
+    },
     "schemas/modules/adb/golden/invalid/state-nonfinite.json": {
       "bytes": 1087,
       "sha256": "0f57c641bac9776f7a8dc5e2a7caa276c959b41b2430a155b2f1e61624c3e49a"
+    },
+    "schemas/modules/adb/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1132,
+      "sha256": "b754e6fa69cd27708b35332371723a1e3f7bf586b9a32bbe8e6ae20ce79284a7"
     },
     "schemas/modules/adb/golden/valid/api.json": {
       "bytes": 1568,
@@ -153,20 +185,20 @@
       "sha256": "441cd056d635658b58d51a64b07f5c90fa3d254f73e6bbf7d27b14abd595c505"
     },
     "schemas/modules/adb/state-v1.schema.json": {
-      "bytes": 3357,
-      "sha256": "3e8e3f60d2a04394e532f8497bfb0d300df9d055b61ce7434042c7acafb9021f"
+      "bytes": 3652,
+      "sha256": "a5c9a360c4eeb1bede80d40d489d58ff2c3db06f328c573372ebbeb11702649b"
     },
     "schemas/modules/android/api-v1.schema.json": {
-      "bytes": 2706,
-      "sha256": "6328c6a0f08a315ed295fa9f3d47595cc48948f67628f3cea4aa15a38eb89469"
+      "bytes": 2995,
+      "sha256": "cf759f8444baa3c498ee1edd1b6d64b628dae961ae290aff354b5a91f24164e9"
     },
     "schemas/modules/android/compatibility.json": {
-      "bytes": 8248,
-      "sha256": "8f6ca36b8660f36ebd0ebd876bf9c85969cf08079c12e7e74aa12ba3fe66e5b0"
+      "bytes": 9164,
+      "sha256": "7f39c844e7618c8b136b02887e020b619c23752c788b6f34b6f455c421e603e4"
     },
     "schemas/modules/android/errors-v1.schema.json": {
-      "bytes": 3088,
-      "sha256": "1757e66e18dc37cd5eef6256f27c84612fc551356e199a8d4f183573a82d6949"
+      "bytes": 4424,
+      "sha256": "3e10e00c43cb65565a42ebe1f3e9515b8b85342f67aee12b552606d8b3580cd1"
     },
     "schemas/modules/android/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1579,
@@ -176,9 +208,17 @@
       "bytes": 5496,
       "sha256": "099cf2890e48cacae35b650bf8b7122255a3ca31c4e97d508b90a4c1c1e98674"
     },
+    "schemas/modules/android/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1578,
+      "sha256": "50b167a773b14d48c0744ee1ed2d9c274bd2f912077c4591e93b7df77970a776"
+    },
     "schemas/modules/android/golden/invalid/api-duplicate.json": {
       "bytes": 1565,
       "sha256": "ca36a5553b44f874d808b1003df45f391850e5ff5eb5a4f62e237de1f05522c3"
+    },
+    "schemas/modules/android/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1595,
+      "sha256": "349afa4df0186d2eb47036dcffc1f5083cd5c1da14485259c5dc5c91d736dfc0"
     },
     "schemas/modules/android/golden/invalid/api-identity-alias.json": {
       "bytes": 1574,
@@ -187,6 +227,10 @@
     "schemas/modules/android/golden/invalid/api-missing-ordering.json": {
       "bytes": 1042,
       "sha256": "3cb9579341da1d4d3cce000e646a9c72f32a3a7114a3da377a542de4e0946fba"
+    },
+    "schemas/modules/android/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1331,
+      "sha256": "6f0429f4c94cb95a35960e346ecec75dbe8eb0657ac087f63e7a0e8f0ab8bb5b"
     },
     "schemas/modules/android/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1578,
@@ -211,6 +255,10 @@
     "schemas/modules/android/golden/invalid/api-unknown.json": {
       "bytes": 1598,
       "sha256": "ad722fff7ef0e9f0e76ed4c2aa0f21b24314c1686127ef17598c364f490d7078"
+    },
+    "schemas/modules/android/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1595,
+      "sha256": "293e0336fad56df939ab19cf9686bbb4aab30a9191ee02c3df0e1407b383ad9b"
     },
     "schemas/modules/android/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4823,
@@ -248,6 +296,10 @@
       "bytes": 1124,
       "sha256": "dda8351ddb8f17f3ec7c0990d9c108b5356fbcfd166c03341b683e21328abeaa"
     },
+    "schemas/modules/android/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1140,
+      "sha256": "391746e935192dca7ef7d819bbd9a4ee02a8c0b6ab48fc15f62cbc1a76f57b46"
+    },
     "schemas/modules/android/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1123,
       "sha256": "f91037c4517ba413bf63e529ea40367c6c885118eb477f0d8bc0a0c65a4c237b"
@@ -256,13 +308,25 @@
       "bytes": 623,
       "sha256": "56264e2098bb20e794875fec1a75f0b809465bac9a2c05daa50ba61510b37f77"
     },
+    "schemas/modules/android/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1140,
+      "sha256": "591ae31d058eb15c6ef1382124ea95d796e2c3c3add03cdaf780c7d480576f04"
+    },
     "schemas/modules/android/golden/invalid/state-invalid.json": {
       "bytes": 1133,
       "sha256": "92a23d8df35aebc8ee9988b2ea25cb7b395dbc1000b92fdefa256150c4ab99da"
     },
+    "schemas/modules/android/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1140,
+      "sha256": "d45f495a3e7c667a14cae3f416865a73f3b600f912c819f676a41b6c0e04b4f9"
+    },
     "schemas/modules/android/golden/invalid/state-nonfinite.json": {
       "bytes": 1095,
       "sha256": "374d3ec8b33276e4b84bb16da8171353fbbfd6c6b021e7be4c9ab2cfb25c9d6f"
+    },
+    "schemas/modules/android/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1140,
+      "sha256": "6c0447e7bf9728b67ed1d2ef8ac0b5a4d80ae0ca4fae61cc54155ee0a08db17c"
     },
     "schemas/modules/android/golden/valid/api.json": {
       "bytes": 1576,
@@ -277,20 +341,20 @@
       "sha256": "2d963cab4b2c478225cd89f01616cb1dbff2b96696f2842ae198493b39dab416"
     },
     "schemas/modules/android/state-v1.schema.json": {
-      "bytes": 3373,
-      "sha256": "5fd5e4b4cf3710329d06024fd44a01734284f21d235b4c623d3a2f0af81a96b2"
+      "bytes": 3668,
+      "sha256": "e4bc483ebca726a9d4ce5ee1a2264a8c6b66de84dd9a35fdc52fd61b5ccb6226"
     },
     "schemas/modules/broker/api-v1.schema.json": {
-      "bytes": 2702,
-      "sha256": "8da2b9332c4b689b48ee075ac74a5f745b475f968650e139a0f0a327a7cea6cb"
+      "bytes": 2991,
+      "sha256": "57b69ff720f86ff84310f0e625d1a1bbe36a664bbb283557d2eff0e216de6ca6"
     },
     "schemas/modules/broker/compatibility.json": {
-      "bytes": 11897,
-      "sha256": "82dc7093c87ee70a22344cc2b7cd7f473a9ac3f6f1e985da0bb2be5f969f6b26"
+      "bytes": 12813,
+      "sha256": "d8dd458a24a3d9c4a03fd1a5841ed08fa8000a158b53406ba5668173ba6c9dfb"
     },
     "schemas/modules/broker/errors-v1.schema.json": {
-      "bytes": 3084,
-      "sha256": "df35eb857257edc1ced57eb998fb3d5954f9b49d92c7d91a436860f893e9d96f"
+      "bytes": 4420,
+      "sha256": "7dbaa39f92a0ef2195a1ab8ca0ab11680190bd6953bb974c9cee7a74b8f5928a"
     },
     "schemas/modules/broker/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1577,
@@ -300,9 +364,17 @@
       "bytes": 5494,
       "sha256": "c9fc36464b27fd45a91207c7885edfa2a7177f42167b159e45e805932afe3ef7"
     },
+    "schemas/modules/broker/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1576,
+      "sha256": "2afecb0df90a0d20df34be7294aee940fd257ebddaa56de763cd95d97bd40b55"
+    },
     "schemas/modules/broker/golden/invalid/api-duplicate.json": {
       "bytes": 1562,
       "sha256": "2f01d7c4a018f10dbe81d262054bc5053f7c5208d7148e4abfa2e880a061177b"
+    },
+    "schemas/modules/broker/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1593,
+      "sha256": "e0fa26c0dd2038be6f1454976c95af05e704eb20169157691f0bc7f5148958c4"
     },
     "schemas/modules/broker/golden/invalid/api-identity-alias.json": {
       "bytes": 1572,
@@ -311,6 +383,10 @@
     "schemas/modules/broker/golden/invalid/api-missing-ordering.json": {
       "bytes": 1040,
       "sha256": "fcd7eadc29270a1e99abad92f3caad30aa375d6299bbf2e473cd82e1e80ff4a1"
+    },
+    "schemas/modules/broker/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1329,
+      "sha256": "cba2ef41a142b7ac50a3e824071d9b71caa609394e020a6460802a2fc670c3e6"
     },
     "schemas/modules/broker/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1576,
@@ -335,6 +411,10 @@
     "schemas/modules/broker/golden/invalid/api-unknown.json": {
       "bytes": 1596,
       "sha256": "97816edd08007b2291c38b2f4e24c0ef822a39f9f912cf64fe77042d18368995"
+    },
+    "schemas/modules/broker/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1593,
+      "sha256": "e18e12e8a97c5fc6cb71e66ad6e2b9316faa843e8732899d4d79d8e8a48e4c58"
     },
     "schemas/modules/broker/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4821,
@@ -372,6 +452,10 @@
       "bytes": 1122,
       "sha256": "1522a7a3cf02da6ae2579c7f7726c67ae1257027d155e60f5253c58b4c1eb198"
     },
+    "schemas/modules/broker/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1138,
+      "sha256": "4b031aff36b4928026072ea0bcc13b8f7458f0b245331180917c9d172ecfbd3d"
+    },
     "schemas/modules/broker/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1121,
       "sha256": "b76b711075822be76c6e5b458d745378d83d90baef019077a0702851b2675838"
@@ -380,13 +464,25 @@
       "bytes": 621,
       "sha256": "0fc99f1ee14e2afecafa772ecc8dd1fd2b975df8ed7c35154d4b5396015db354"
     },
+    "schemas/modules/broker/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1138,
+      "sha256": "7e1cb8ead954b03b92a3269faf6af391725267f8b9883003ffb6c67702e909c6"
+    },
     "schemas/modules/broker/golden/invalid/state-invalid.json": {
       "bytes": 1131,
       "sha256": "25d2101c1233e5cf2f560fb9de97fa7849507981a56eb255d7ea15b867104edd"
     },
+    "schemas/modules/broker/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1138,
+      "sha256": "7b0cdf3f8e43f2ca73d056495d73eb7cba82fa77c367196f78d9861f9b29cbe4"
+    },
     "schemas/modules/broker/golden/invalid/state-nonfinite.json": {
       "bytes": 1093,
       "sha256": "0d7e78f29624bcf9333ee1200c9a1283f3aec11560abcacab034563207343af8"
+    },
+    "schemas/modules/broker/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1138,
+      "sha256": "543507abc1c579ee575d261896b58fde1873c5c50512e69ae34d4ed40440134d"
     },
     "schemas/modules/broker/golden/valid/api.json": {
       "bytes": 1574,
@@ -401,20 +497,20 @@
       "sha256": "10cacaf27224a0584e016b1e5eba0bfeaedce90de9016a6b6afcc8bb35ccf8dd"
     },
     "schemas/modules/broker/state-v1.schema.json": {
-      "bytes": 3369,
-      "sha256": "39b8bdbfd26cbd208cab8e273f28604d41c1ff27bcc1af66e6c4153c38bae9cd"
+      "bytes": 3664,
+      "sha256": "11a38b90df0724fcca093769f8a5c3111a0ccd31e9295f06d31d9d26e189f15f"
     },
     "schemas/modules/event-store/api-v1.schema.json": {
-      "bytes": 2722,
-      "sha256": "0baee93b9af34a8739fc1cc289f2091aecc4f025c853f059a760ec5af520f23e"
+      "bytes": 3011,
+      "sha256": "3c06413d228c1c42d8ab9407f7322c9c79d9a998b51443609b6abc6870eb0350"
     },
     "schemas/modules/event-store/compatibility.json": {
-      "bytes": 5311,
-      "sha256": "c5b312ad5dd073f627417361f6c86770e42fffb75883997c48e81cf4ff733e83"
+      "bytes": 6227,
+      "sha256": "e911bcee097c39e52775e86489305d33f7fa0f6c679421db50d52ca190d09731"
     },
     "schemas/modules/event-store/errors-v1.schema.json": {
-      "bytes": 3104,
-      "sha256": "ed2faf8037dd56ba7401d0cad38caf227d419db5c7f6f4ccef49208954fad67f"
+      "bytes": 4440,
+      "sha256": "0059dea0724cb95c985908b1f8a6109f0e62f967e0d1bd65405dc977c1b0a027"
     },
     "schemas/modules/event-store/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1587,
@@ -424,9 +520,17 @@
       "bytes": 5504,
       "sha256": "f0fa5fd64ffc1869fdb3413b5fbee544cdb5f04eb5eac6a31383d93032ace951"
     },
+    "schemas/modules/event-store/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1586,
+      "sha256": "033cc23b32323113ba91c86487f323df47adfa78b999a355ff15833d0a9b03e5"
+    },
     "schemas/modules/event-store/golden/invalid/api-duplicate.json": {
       "bytes": 1577,
       "sha256": "e0c1485c71609e141ab027bc782cbb5a701e19561724e47bfc7e6ae57d29dc68"
+    },
+    "schemas/modules/event-store/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1603,
+      "sha256": "4640575bcb51febd0cfdc936a9bf13d4b14ed5e5dd3018e10624e70578a710e0"
     },
     "schemas/modules/event-store/golden/invalid/api-identity-alias.json": {
       "bytes": 1582,
@@ -435,6 +539,10 @@
     "schemas/modules/event-store/golden/invalid/api-missing-ordering.json": {
       "bytes": 1050,
       "sha256": "246a0e82151e88d7c999822fe01494f851480198d4cd1e574c3042a45d38eac4"
+    },
+    "schemas/modules/event-store/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1339,
+      "sha256": "69f662b259f5c7764b5a9f00048479839b36489d6eb3f2487fb86aba202432ba"
     },
     "schemas/modules/event-store/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1586,
@@ -459,6 +567,10 @@
     "schemas/modules/event-store/golden/invalid/api-unknown.json": {
       "bytes": 1606,
       "sha256": "70b01a26fb62bd247f2394bc03b8b52fde6cf5ae7c735558eb6007b43d1db629"
+    },
+    "schemas/modules/event-store/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1603,
+      "sha256": "eede296d1378f799f41e90fc3755b3803be661be5528bb94d96194f4f1ae1fa4"
     },
     "schemas/modules/event-store/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4831,
@@ -496,6 +608,10 @@
       "bytes": 1132,
       "sha256": "4f646595a51cd8894c7c5f5f22a30bad2d493604f2a29123be8007268d83fa6d"
     },
+    "schemas/modules/event-store/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1148,
+      "sha256": "03de84d404c36cf1e395049a25f0f750139d2ea895b91b78b24f3e5b069cd2a2"
+    },
     "schemas/modules/event-store/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1131,
       "sha256": "a48443314bff820d3384b54fd6692a56168fad15e88f10fcb770767c383984ae"
@@ -504,13 +620,25 @@
       "bytes": 631,
       "sha256": "32ad9c3c0ca42db329d0d0a5b8c9529c6aa2dad645abe338633ec9c7c7b83f98"
     },
+    "schemas/modules/event-store/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1148,
+      "sha256": "0a795f4b6cd72685d7ac9b7d544cd632059e2c9b76713ed9c6dcbe82d68f8ae7"
+    },
     "schemas/modules/event-store/golden/invalid/state-invalid.json": {
       "bytes": 1141,
       "sha256": "6167a9f31acb5683c59bdd14d553f0785a25ac934e1e9b4c21f679192fde7125"
     },
+    "schemas/modules/event-store/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1148,
+      "sha256": "7f9b61dc28fbd2c6aa051b80eae90f9e720cfb36b16aac7f90b994f23d3d35b6"
+    },
     "schemas/modules/event-store/golden/invalid/state-nonfinite.json": {
       "bytes": 1103,
       "sha256": "15a5d42c01785d861700ccd388dc45c2123fd3c721d9c4d85a55b2f1718ce844"
+    },
+    "schemas/modules/event-store/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1148,
+      "sha256": "375da8623fa141ec6c5f3368b070bcfd72d7a7260ce33b454a8599891da30df7"
     },
     "schemas/modules/event-store/golden/valid/api.json": {
       "bytes": 1584,
@@ -525,20 +653,20 @@
       "sha256": "5a718aea7cacb2193cee637f3d4e2bdb116dc92121e8a6f4fd610f3165b67738"
     },
     "schemas/modules/event-store/state-v1.schema.json": {
-      "bytes": 3389,
-      "sha256": "947df9ab39087ba44956fc40f26d9bd7f086b2e3b08f0e09d30f40196743e396"
+      "bytes": 3684,
+      "sha256": "740992422fe074551c750f7572aa3084c21bdaf883999b935544b5a3323c48c8"
     },
     "schemas/modules/evidence/api-v1.schema.json": {
-      "bytes": 2710,
-      "sha256": "d6eb52daf54ce98dab5db780b16fb80fb5d1052f8f31ad09585bd4ef77b58669"
+      "bytes": 2999,
+      "sha256": "ad5761dbd5b104092130a12f049ade6187af9e3a045b0d238ad25036524535e1"
     },
     "schemas/modules/evidence/compatibility.json": {
-      "bytes": 4466,
-      "sha256": "60e40c41b31c3bc50e72bf4b055b9facab8abdfd1033098fb529f886ce54463a"
+      "bytes": 5382,
+      "sha256": "a19cc339bb78e23c4f74fdd4e797010b0b1266dffca1ae33945f2d145388e0a8"
     },
     "schemas/modules/evidence/errors-v1.schema.json": {
-      "bytes": 3092,
-      "sha256": "ef21d2957852530750ec4debc8b56f57057b7dd43f6e4fe683f2777a468d6ab6"
+      "bytes": 4428,
+      "sha256": "1f08804e44d9f5b45d4436a9f32c06495b343f573f97f3a8beffeb733e3fd000"
     },
     "schemas/modules/evidence/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1581,
@@ -548,9 +676,17 @@
       "bytes": 5498,
       "sha256": "0a46480bf2b5c21aacb295a11f29cbec4b4932c0ad7bdba3f54b558a172b0aed"
     },
+    "schemas/modules/evidence/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1580,
+      "sha256": "784816bc86269b09c368c498b753bfeada78d6e942656dee9a56b25caed49422"
+    },
     "schemas/modules/evidence/golden/invalid/api-duplicate.json": {
       "bytes": 1568,
       "sha256": "375673d4ebe59f54a0ff79c25d57b0a3f93ccbbe42a72dc64c2f98ea23773477"
+    },
+    "schemas/modules/evidence/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1597,
+      "sha256": "44ab20eae4f7639d1415ca46a453af7a3db115c7c296deef1f82c2adf2346b19"
     },
     "schemas/modules/evidence/golden/invalid/api-identity-alias.json": {
       "bytes": 1576,
@@ -559,6 +695,10 @@
     "schemas/modules/evidence/golden/invalid/api-missing-ordering.json": {
       "bytes": 1044,
       "sha256": "c26516f4a0bc09bbf710008670e881db953ded5e9ad9dbaf274eeda7ce898923"
+    },
+    "schemas/modules/evidence/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1333,
+      "sha256": "d036e51a2aa56d932e4228bf64f1dc40c840855efd8c907da24a51e9aa85cb5e"
     },
     "schemas/modules/evidence/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1580,
@@ -583,6 +723,10 @@
     "schemas/modules/evidence/golden/invalid/api-unknown.json": {
       "bytes": 1600,
       "sha256": "3c299edb13b60609ad41c66ca16a14f77495348b2db15f9708a2a8ba6cd8df0e"
+    },
+    "schemas/modules/evidence/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1597,
+      "sha256": "34da87057a3bc10de3e524d7ae8f70f321bde8888bab6a00b79cd77cae4c63c2"
     },
     "schemas/modules/evidence/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4825,
@@ -620,6 +764,10 @@
       "bytes": 1126,
       "sha256": "2d15dcdd7ae16c3df6f8c8ad33ac0082cb2bc2f4dcd299a3eb2347b228319aef"
     },
+    "schemas/modules/evidence/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1142,
+      "sha256": "867cd2ed2a3329dbf8a07cfc8d0b685dfd88cc8433d5e948cdd00537e021e46f"
+    },
     "schemas/modules/evidence/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1125,
       "sha256": "09113133f8b417346486980bb7b64c24227d14b3fe6d7af2e0981b15a9b5d5d1"
@@ -628,13 +776,25 @@
       "bytes": 625,
       "sha256": "e1459ad17dac131877d2844a5536bcc602255ca273745edf612964e1c9c8515c"
     },
+    "schemas/modules/evidence/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1142,
+      "sha256": "32e8e6c03103439f373b4150818b68b755d37162e085fba00a777f7d91e2afbf"
+    },
     "schemas/modules/evidence/golden/invalid/state-invalid.json": {
       "bytes": 1135,
       "sha256": "3efc4a4152f4e225cdc5aec7f0465d4eb44ffe4193b9d8ce267f2e52fa329c63"
     },
+    "schemas/modules/evidence/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1142,
+      "sha256": "9a58b710c7f38c4d1f1d9eda8503b31808c66b0a5d91f781eb3cc088fadf7ba5"
+    },
     "schemas/modules/evidence/golden/invalid/state-nonfinite.json": {
       "bytes": 1097,
       "sha256": "67b11b812f329e4112df0ffac1a0eefcdf2a7e9ee53f3b0ea682a59071148cab"
+    },
+    "schemas/modules/evidence/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1142,
+      "sha256": "70f59c07a30690edcfd4979341f08e8b484711fda1e653570a7d28c6f9636749"
     },
     "schemas/modules/evidence/golden/valid/api.json": {
       "bytes": 1578,
@@ -649,20 +809,20 @@
       "sha256": "78b6c0b5c5c9eaf14bf12308eee7696c4431fb42cb9ebfec94ccab402f3d2362"
     },
     "schemas/modules/evidence/state-v1.schema.json": {
-      "bytes": 3377,
-      "sha256": "ddf5bd53bb63c605edeaf4f8a2ba7c60b77f205081afbd22a93af5761cce17e5"
+      "bytes": 3672,
+      "sha256": "bbe99fcdd95d98c5939e7724f7bc7abce8fa6c798f981000b09812cb9dbec450"
     },
     "schemas/modules/execution-core/api-v1.schema.json": {
-      "bytes": 2734,
-      "sha256": "f0a5199fcc85536ddedf8e5bac56f9aa179c149bcadfc1c0826790775b33ffd1"
+      "bytes": 3023,
+      "sha256": "20e0130463180c6db030a1f1bb58390c566d73b10839d81454ffb35c50ba0433"
     },
     "schemas/modules/execution-core/compatibility.json": {
-      "bytes": 5220,
-      "sha256": "5ca4fb92c2ed904f575249d04653ad7527640ef3caa0cd6b6044d26b383cb409"
+      "bytes": 6136,
+      "sha256": "bcb7a5331f8128bd39c672a320bc60226b05e6d7edf135903cf514874741bc71"
     },
     "schemas/modules/execution-core/errors-v1.schema.json": {
-      "bytes": 3106,
-      "sha256": "da46612a6f9453b20c2469c0da313a4b9089b41efda0c93bc8c03dd7aa7a3bf8"
+      "bytes": 4442,
+      "sha256": "ce6fcc942ca457150f8747d758e0e31c626716ed0802333ef2896ac02fbfcc56"
     },
     "schemas/modules/execution-core/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1593,
@@ -672,9 +832,17 @@
       "bytes": 5510,
       "sha256": "632480733598d522afb61a228986d6f4d01f1d5c62f8b74c4a63e8b86f9426bd"
     },
+    "schemas/modules/execution-core/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1592,
+      "sha256": "21da866ea1adbc395d13796ddad782d1e178bc0ee848d723bed85a3b3f64cba2"
+    },
     "schemas/modules/execution-core/golden/invalid/api-duplicate.json": {
       "bytes": 1586,
       "sha256": "bce0bf678376684f75e54649d0760a7bef43bb2b33a5f7feaa8c9111547d6592"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1609,
+      "sha256": "155a28f02ec3298eb17eaa0325a2039d01aecda2d7885321fcd4e134d4e48c06"
     },
     "schemas/modules/execution-core/golden/invalid/api-identity-alias.json": {
       "bytes": 1588,
@@ -683,6 +851,10 @@
     "schemas/modules/execution-core/golden/invalid/api-missing-ordering.json": {
       "bytes": 1056,
       "sha256": "cdf234640695abbe9357c7a74fa2840089fa0e6ae4fbfc4947b060c1470ba11e"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1345,
+      "sha256": "a45c151da45bc42575c9089be2524b79a72b1ebf21279c3e220e2b8bd286bc99"
     },
     "schemas/modules/execution-core/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1592,
@@ -707,6 +879,10 @@
     "schemas/modules/execution-core/golden/invalid/api-unknown.json": {
       "bytes": 1612,
       "sha256": "b4c596cd658c7647c47cc3f58c8d14944ef6dd7c98e4523643c96f48926fef96"
+    },
+    "schemas/modules/execution-core/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1609,
+      "sha256": "66205da259aeec594fd6f0b2efe21a26949a4f0c030a77758d20c2b9318bccd3"
     },
     "schemas/modules/execution-core/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4832,
@@ -744,6 +920,10 @@
       "bytes": 1138,
       "sha256": "b163154844daa86ef1f054ec1fa32c0d3cd51ab0f0f2a963569e22ba83aea4af"
     },
+    "schemas/modules/execution-core/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1154,
+      "sha256": "868b0236a1c6f4c0e652a9c1173a59e57c53d5a301509a543ae957f57a14db93"
+    },
     "schemas/modules/execution-core/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1137,
       "sha256": "da66d64625867f9000b0df8a2a069520102f25ac875fcb7f1a3b4961247ca331"
@@ -752,13 +932,25 @@
       "bytes": 637,
       "sha256": "93e93756f324f4f82874e51d8fdf437ce1c588a30bfad336fcbf710b7ff78f56"
     },
+    "schemas/modules/execution-core/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1154,
+      "sha256": "afdaf1a8b5f34f930b572568a91a66536a383f1e472ff7922d028e62b55b787f"
+    },
     "schemas/modules/execution-core/golden/invalid/state-invalid.json": {
       "bytes": 1147,
       "sha256": "dfa5d2c4dec697655d1ecf158a35257a4de2d1aa52a8b04bf520289bf99084a6"
     },
+    "schemas/modules/execution-core/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1154,
+      "sha256": "c847fa23808c156f6fda31e7c7c61faaf7b273b09e67bc2c3b84a202311a0c7c"
+    },
     "schemas/modules/execution-core/golden/invalid/state-nonfinite.json": {
       "bytes": 1109,
       "sha256": "f02164409e3892367b990bb01a73c0ab17c5691f6fc72ac171d742ba0fb92ca3"
+    },
+    "schemas/modules/execution-core/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1154,
+      "sha256": "71e316168dc2442b29b17adca0bbb1c103a27b68f67c54d779658c7a4c0c9625"
     },
     "schemas/modules/execution-core/golden/valid/api.json": {
       "bytes": 1590,
@@ -773,20 +965,20 @@
       "sha256": "663af00fe752cb3b8993c5979119513c30864f1918713930294b945c40de7cf1"
     },
     "schemas/modules/execution-core/state-v1.schema.json": {
-      "bytes": 3401,
-      "sha256": "447fd32b2aa9dec16eb61030c102ea43296b155b5348e123a9388bb2f7e2f64d"
+      "bytes": 3696,
+      "sha256": "1eecd95454b604e87269b93b529a1b2f95777b814a11ed14902b58a0a7c42e6c"
     },
     "schemas/modules/global-control/api-v1.schema.json": {
-      "bytes": 2734,
-      "sha256": "5ef129e7970b4ac4f6899580703d371de9269fb3a117446365fc1c49664e781c"
+      "bytes": 3023,
+      "sha256": "de411ed3c0f2f83dca2d52ddfc95ebee8f4dc9bd3480418fb90e472d04ecb637"
     },
     "schemas/modules/global-control/compatibility.json": {
-      "bytes": 4739,
-      "sha256": "bc6d8561be8fba02ae1a7e171a34dc711cbb9febf8cced0503956a78ea6d3bce"
+      "bytes": 5655,
+      "sha256": "698b105f6a53fe9a29c07a5c43d6ab61b261882e11a8c7768a9897b465496680"
     },
     "schemas/modules/global-control/errors-v1.schema.json": {
-      "bytes": 3102,
-      "sha256": "564289cf22591f9651ebc6092d53c2657fc5c70b9fff3f77d76bef0fb65d299a"
+      "bytes": 4438,
+      "sha256": "02cdfcb51cb24f1959c405db88758a6892ae6d6cb03ce80250b04ae52b6ca879"
     },
     "schemas/modules/global-control/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1593,
@@ -796,9 +988,17 @@
       "bytes": 5510,
       "sha256": "f31f23c6e62c46f444cc2bfb259297e39ebd032aafcbecb63fb2792dc03ebd99"
     },
+    "schemas/modules/global-control/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1592,
+      "sha256": "9123616604bae8480ce885930e072a9a553bb8681f186b5591277f24ae6f5631"
+    },
     "schemas/modules/global-control/golden/invalid/api-duplicate.json": {
       "bytes": 1586,
       "sha256": "a7a62f9eed66eaea83cf29fcd3b4ecff232bc50c8144171470cda61a5980d943"
+    },
+    "schemas/modules/global-control/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1609,
+      "sha256": "13fcf1ea4a119754d5bfd24506ab4815b660a115b027be4f38c5b49c880b2655"
     },
     "schemas/modules/global-control/golden/invalid/api-identity-alias.json": {
       "bytes": 1588,
@@ -807,6 +1007,10 @@
     "schemas/modules/global-control/golden/invalid/api-missing-ordering.json": {
       "bytes": 1056,
       "sha256": "f3ece50bb987088f36d3d041d0308f63c81d8c4a90cd0add6d445a2e8936e7df"
+    },
+    "schemas/modules/global-control/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1345,
+      "sha256": "d3e091e2ad4919b6dd9d76510d24f49a5affbddfbfefd28aef75b62b23a70226"
     },
     "schemas/modules/global-control/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1592,
@@ -831,6 +1035,10 @@
     "schemas/modules/global-control/golden/invalid/api-unknown.json": {
       "bytes": 1612,
       "sha256": "9fdfd0f0ba81b144b8a939e458e84430371928d8df08a1d56ef12f3e28c5c9c3"
+    },
+    "schemas/modules/global-control/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1609,
+      "sha256": "a7917fbdb0b3345d1b187b7724dce56b55462cc53d67aa782165d0cd8c0789ce"
     },
     "schemas/modules/global-control/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4830,
@@ -868,6 +1076,10 @@
       "bytes": 1138,
       "sha256": "59474720514616c2ee387d3eb611c9d71cf710effdde6cc9045da4f240d06260"
     },
+    "schemas/modules/global-control/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1154,
+      "sha256": "c6787d2f54fff4514fcda7e41a64abf1b0987fedcb5d057f9cec6ab0e8fc5ec4"
+    },
     "schemas/modules/global-control/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1137,
       "sha256": "fc058f0976b8fd07aa944800292e0b67cf30d5071d2005961d7abf55b2325751"
@@ -876,13 +1088,25 @@
       "bytes": 637,
       "sha256": "db9ccbf7a7af55fc70b44320e0d55a0281624db14b5d7285d72edfcf28b472d8"
     },
+    "schemas/modules/global-control/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1154,
+      "sha256": "196f940fab2d70f4fbe4bdc008ad82d56e0980982d10191469822930e679e9cf"
+    },
     "schemas/modules/global-control/golden/invalid/state-invalid.json": {
       "bytes": 1147,
       "sha256": "9528b96f4b07c3a0aa76bb4607504e156525801f2208814f22ffb79c012c8195"
     },
+    "schemas/modules/global-control/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1154,
+      "sha256": "75ddeb879de8fc5fecebbe2a1e176400f446056bbcfec8ccf6a74dc426cd2aa8"
+    },
     "schemas/modules/global-control/golden/invalid/state-nonfinite.json": {
       "bytes": 1109,
       "sha256": "b0799637301d461597dd754df99521334fcceae25059e1a5fafcf50506dcdfb8"
+    },
+    "schemas/modules/global-control/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1154,
+      "sha256": "d95c388da12bfefff782c9bdaa582057fbe61ea126ad06718cb4f3662848b344"
     },
     "schemas/modules/global-control/golden/valid/api.json": {
       "bytes": 1590,
@@ -897,20 +1121,20 @@
       "sha256": "f25ff0c71a962215f0bf2c3be400e86a0c5736f6f977396c962ada75dc6d5f38"
     },
     "schemas/modules/global-control/state-v1.schema.json": {
-      "bytes": 3401,
-      "sha256": "6169b32b22a6cc0d92762e6c4ee4eda7c4643e16b9f09882f7a72d0b89c57ac5"
+      "bytes": 3696,
+      "sha256": "0d2b541483f97293f6239a0ff0be3a4884fa9f8d0b023912c9dca1fc7f8bbc37"
     },
     "schemas/modules/job-runtime/api-v1.schema.json": {
-      "bytes": 2722,
-      "sha256": "8f2313d5f7de91fa303f12bd8daae97add9a4f8594c4b21ea67940ed791fa3de"
+      "bytes": 3011,
+      "sha256": "fd3864ace819bf74d59feea70e6ce8baada9c231d9a21c0cdc3fdc83448b916c"
     },
     "schemas/modules/job-runtime/compatibility.json": {
-      "bytes": 7241,
-      "sha256": "a2edcdc8aa6aa4421cfcac6ff8cd2d65df992cb6e865570f42e00fd18f2f0ded"
+      "bytes": 8157,
+      "sha256": "8320521a2dc78e3ec763a3d50aedeba315e06d48932e69ceeb5716c226dd3e6d"
     },
     "schemas/modules/job-runtime/errors-v1.schema.json": {
-      "bytes": 3088,
-      "sha256": "1621fe784ae7fdc570142628a012d17a46e7f91cc4732a6ab17d234853951cdf"
+      "bytes": 4424,
+      "sha256": "40dfdefdfba86419f6d89b3b70d132ae4c1559ba12bacd0f823619dc5bf75fa2"
     },
     "schemas/modules/job-runtime/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1587,
@@ -920,9 +1144,17 @@
       "bytes": 5504,
       "sha256": "dd3f2a8895fac3744ff71061323e9cf35e7d058d523b95687d31999b47685441"
     },
+    "schemas/modules/job-runtime/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1586,
+      "sha256": "ee84395838391b18b38a4a94e5db47c12e725cb478106ae3343dd95115893199"
+    },
     "schemas/modules/job-runtime/golden/invalid/api-duplicate.json": {
       "bytes": 1577,
       "sha256": "02b4d2d9ee040a6b07729a5ac1dac33436edd079f8e54d5c61e9f0a9931f693d"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1603,
+      "sha256": "01e2b9c3ad9a657d4b3ba63b6a8788cd0c0df90ad110a5998583c499e7ccab7c"
     },
     "schemas/modules/job-runtime/golden/invalid/api-identity-alias.json": {
       "bytes": 1582,
@@ -931,6 +1163,10 @@
     "schemas/modules/job-runtime/golden/invalid/api-missing-ordering.json": {
       "bytes": 1050,
       "sha256": "9f1274a283d8db7396fad10f9dd56f4a66a4e81a0cf49e7e773b6650906913ea"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1339,
+      "sha256": "5e5b1193e2b3c0d0271a4f664437517700b25041a1ddaf9164ca4dfa90e26159"
     },
     "schemas/modules/job-runtime/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1586,
@@ -955,6 +1191,10 @@
     "schemas/modules/job-runtime/golden/invalid/api-unknown.json": {
       "bytes": 1606,
       "sha256": "3e78e91c88d7f5b44e4261e8b51090085d879b000ddc89db398bba6c793040da"
+    },
+    "schemas/modules/job-runtime/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1603,
+      "sha256": "fa56bdaadbe59f8940ebae33753d8997cd50a9ff46d4d0593abef707d350ccaf"
     },
     "schemas/modules/job-runtime/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4823,
@@ -992,6 +1232,10 @@
       "bytes": 1132,
       "sha256": "5a099cc9baad7bc999a3f232f9a26e2791ca82363c50703e66c9ba45fa1bcf83"
     },
+    "schemas/modules/job-runtime/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1148,
+      "sha256": "25b901d49848a2ffe5bb0da1a56d8a41c43c34e8608c01f20570d81dd4dec046"
+    },
     "schemas/modules/job-runtime/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1131,
       "sha256": "1a60e43e5c3d50c88935309b3d988274f112802926f512a0ac0507a373b2d061"
@@ -1000,13 +1244,25 @@
       "bytes": 631,
       "sha256": "44b3de07bcd7ef47ee27860d97b950697f33cace88c832cac648549a45de51ea"
     },
+    "schemas/modules/job-runtime/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1148,
+      "sha256": "ce7fea37aa04393664e5ac3b907f0df13612816dd53e798c9c9b020805a43201"
+    },
     "schemas/modules/job-runtime/golden/invalid/state-invalid.json": {
       "bytes": 1141,
       "sha256": "e14c5a89df65699575287d58f0958384c443dd796e7ba89c958059fc8a3c2f20"
     },
+    "schemas/modules/job-runtime/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1148,
+      "sha256": "4df261589fdb4c711665f6d594020ac4e427a0cd8f0bd1901cb3f2a8765c076c"
+    },
     "schemas/modules/job-runtime/golden/invalid/state-nonfinite.json": {
       "bytes": 1103,
       "sha256": "58b29078597f3faab50a692f854671963c1fcc87f162316908c864d33512994e"
+    },
+    "schemas/modules/job-runtime/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1148,
+      "sha256": "12b25b68b7c374263cc716dcb4f2fc329bfd13731d69536484f0f911326369e6"
     },
     "schemas/modules/job-runtime/golden/valid/api.json": {
       "bytes": 1584,
@@ -1021,20 +1277,20 @@
       "sha256": "b0c833b245afff76ff0b29268e9a3e3c31347c3393dfab3700bef2ec9c200ceb"
     },
     "schemas/modules/job-runtime/state-v1.schema.json": {
-      "bytes": 3389,
-      "sha256": "1d11fa0a8b690ad09dded40ee6ab5c3845d5b7f3806790866989dccf06e9c9ea"
+      "bytes": 3684,
+      "sha256": "4162678c3aefabcac4da6b13a6f4358176cc52b9e9fadf905374fbf50efa41ac"
     },
     "schemas/modules/protocol/api-v1.schema.json": {
-      "bytes": 2710,
-      "sha256": "a88ce6bfc6e4b071506ee1d51931d7322e64b0de40bf22a81c4a09fdde756813"
+      "bytes": 2999,
+      "sha256": "1892dc38b9120a832332328d26db22e924244232e9c9fea9fc9a94bb3da56856"
     },
     "schemas/modules/protocol/compatibility.json": {
-      "bytes": 4821,
-      "sha256": "a66a06aadeb19a71b28c4ae5a94de757f64bef26e27896faed4dd4288fc5a840"
+      "bytes": 5737,
+      "sha256": "2adcbce9b3b43a848ed9bda2b05aa36798821a805f510790d1f7771bac1e9a7c"
     },
     "schemas/modules/protocol/errors-v1.schema.json": {
-      "bytes": 3092,
-      "sha256": "ea1c738ecb5cca186e048700e154ed521a2602d2ea057f9458708daf7c7cd63f"
+      "bytes": 4428,
+      "sha256": "d20a635274483b176a694cbb3a38e099c85b4f13c9c65c3daa4a91e048a5b577"
     },
     "schemas/modules/protocol/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1581,
@@ -1044,9 +1300,17 @@
       "bytes": 5498,
       "sha256": "5d6e5b257af9356d678f4af6753df0ee299e730ad833d6648524f6624b162a6b"
     },
+    "schemas/modules/protocol/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1580,
+      "sha256": "4cd80489674e943073be0517ed8aec8470575a1d7f364ef82c3ed20fcba200be"
+    },
     "schemas/modules/protocol/golden/invalid/api-duplicate.json": {
       "bytes": 1568,
       "sha256": "e67237baa6a5b62eb034f8f264be3fb5af328edf53ed152cb41a98c8388f0b3c"
+    },
+    "schemas/modules/protocol/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1597,
+      "sha256": "09fb6fbb8000e23935bc975640b8c830a4a21e0e0f65a6f24991712cf3d5107b"
     },
     "schemas/modules/protocol/golden/invalid/api-identity-alias.json": {
       "bytes": 1576,
@@ -1055,6 +1319,10 @@
     "schemas/modules/protocol/golden/invalid/api-missing-ordering.json": {
       "bytes": 1044,
       "sha256": "0f6d91671da01dcc296832b7aec2d001596a21f963b39d1bd4baa35c9df480f5"
+    },
+    "schemas/modules/protocol/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1333,
+      "sha256": "bd661134ceae4a48026abe3bd0312ea65e49092b1465563f91353e8eb65358c3"
     },
     "schemas/modules/protocol/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1580,
@@ -1079,6 +1347,10 @@
     "schemas/modules/protocol/golden/invalid/api-unknown.json": {
       "bytes": 1600,
       "sha256": "393346572f4fdf887a75b6a643ed0f041e2b2d904063bccd89138362382aedda"
+    },
+    "schemas/modules/protocol/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1597,
+      "sha256": "5694ded8eaec85a93750f05500252b7ce53813bc8fab99f1335890cccffe804e"
     },
     "schemas/modules/protocol/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4825,
@@ -1116,6 +1388,10 @@
       "bytes": 1126,
       "sha256": "78b7e2914d4b049de1656da472ffeb04d10d499e6804800ce53919e285480a50"
     },
+    "schemas/modules/protocol/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1142,
+      "sha256": "9704f5c6a84d5d124dca01303d15f324888b7d77785211037bdc53892642331b"
+    },
     "schemas/modules/protocol/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1125,
       "sha256": "95137270625f63a9bc3dc14440d63f98e07bec5fe4cbfa05cbaea01fad75eac7"
@@ -1124,13 +1400,25 @@
       "bytes": 625,
       "sha256": "75b896e2230467fb80f4ecf5a6c149bcbe7a925a8abfa73c120188fef296ca72"
     },
+    "schemas/modules/protocol/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1142,
+      "sha256": "d3f4e756dee1fb820b79b1e2b0ab20e2f2cddeed6be9fe8e8b4be293b2caf5d5"
+    },
     "schemas/modules/protocol/golden/invalid/state-invalid.json": {
       "bytes": 1135,
       "sha256": "27b5eaf5f97bd8c7cac44699f225238e98bbb3ae538b451f73c4a7f6d08a3551"
     },
+    "schemas/modules/protocol/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1142,
+      "sha256": "af03bbd71030bc661831a0be674127a1a857b96a9cf46f378fdae0e759d5fa2b"
+    },
     "schemas/modules/protocol/golden/invalid/state-nonfinite.json": {
       "bytes": 1097,
       "sha256": "752e540123adbdcaaf97087523d914727b85de4ecaab08165451e14457534e84"
+    },
+    "schemas/modules/protocol/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1142,
+      "sha256": "b1fa8aa791f7344e82fdb4a728b298a1037113e893d9855d8e624548c1d79df5"
     },
     "schemas/modules/protocol/golden/valid/api.json": {
       "bytes": 1578,
@@ -1145,20 +1433,20 @@
       "sha256": "a1d4f8afa1639c74dcf5104b7544b685df7f3a029aaca1a5a389e89872baf671"
     },
     "schemas/modules/protocol/state-v1.schema.json": {
-      "bytes": 3377,
-      "sha256": "dd8786cbeef4647f5c66ec20bf9027263a289281ffca8d0452d2d0321d9e1882"
+      "bytes": 3672,
+      "sha256": "3acde1625e2d7065053608181d301ce085dfecd40dc3aaef987c47d87aa795ff"
     },
     "schemas/modules/provider/api-v1.schema.json": {
-      "bytes": 2710,
-      "sha256": "d3242e6495a09e08d6bedb3a45901b17be06a1354a6ee57997c5d4e1f76a7f0f"
+      "bytes": 2999,
+      "sha256": "f0af3185f00fb262f03867ed4ca7edf31f556b11d18e1168f9128c9dae522ad0"
     },
     "schemas/modules/provider/compatibility.json": {
-      "bytes": 6315,
-      "sha256": "4fc989c47d17950a349f6a0af3ca02a093cba7d55f572ff39c6162015362a700"
+      "bytes": 7231,
+      "sha256": "cdb14eb342642223051d1d767f8806bfb6635fb0498ff113858450b6a7db5ad0"
     },
     "schemas/modules/provider/errors-v1.schema.json": {
-      "bytes": 3092,
-      "sha256": "0f91e2725016a821f0941dbe750f6d3b32fcce1364b282459f8a1fe2fa1950cf"
+      "bytes": 4428,
+      "sha256": "d6b13143e6773408d04c1b415a92713db1c553c2d1ce1e32e2597258906f723e"
     },
     "schemas/modules/provider/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1581,
@@ -1168,9 +1456,17 @@
       "bytes": 5498,
       "sha256": "c2da4d4c83c2c26299052d4098e2ff5ee5d5f8621d9e9365cfacb043051c0628"
     },
+    "schemas/modules/provider/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1580,
+      "sha256": "2376f0f2e3e462ff1341f97d18a7a0499cff541855977a9c7c7ca6bd81707fde"
+    },
     "schemas/modules/provider/golden/invalid/api-duplicate.json": {
       "bytes": 1568,
       "sha256": "b4ddddb6c089555c39d9e136addfbcb02339ecee77a658f7cafcb2bb6b69f25d"
+    },
+    "schemas/modules/provider/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1597,
+      "sha256": "13ef337580bc776d2b80c8fe99d0360d3fce5a5a9fb1f823001d7839882b5089"
     },
     "schemas/modules/provider/golden/invalid/api-identity-alias.json": {
       "bytes": 1576,
@@ -1179,6 +1475,10 @@
     "schemas/modules/provider/golden/invalid/api-missing-ordering.json": {
       "bytes": 1044,
       "sha256": "274b9873b308157608b2ca29e3671bf15f260c639dad229d1720bfac3d19244a"
+    },
+    "schemas/modules/provider/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1333,
+      "sha256": "78ddda9e0afc2f97b56b39beb1b8b582b88a689a17022195d01dab6178c98606"
     },
     "schemas/modules/provider/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1580,
@@ -1203,6 +1503,10 @@
     "schemas/modules/provider/golden/invalid/api-unknown.json": {
       "bytes": 1600,
       "sha256": "391813eb0f2137eebf96174ccbc0fb2a2b21e973fe89d65a6ca70f3901dca0ba"
+    },
+    "schemas/modules/provider/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1597,
+      "sha256": "8ad513b6f7f847c013af268e787c18d2fcb17d86f695efd3f963e3b23c568e3c"
     },
     "schemas/modules/provider/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4825,
@@ -1240,6 +1544,10 @@
       "bytes": 1126,
       "sha256": "3fe9d5c18aecde5c5c01a98480f70ad3443c3ef9c8a573f4c0baf9538344a0f1"
     },
+    "schemas/modules/provider/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1142,
+      "sha256": "12aaccc1294e2f4f6cd3e059875f5830ed68a064fd0614a1261c945b8b381bb1"
+    },
     "schemas/modules/provider/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1125,
       "sha256": "3f695db7b2a648cf16ab56f5a94349f21fe15a8df22ec6009aa2aa270f8d3f6b"
@@ -1248,13 +1556,25 @@
       "bytes": 625,
       "sha256": "04120325d69be535ec67b0a40c6517195e7a0c810448c71e25b28948fe00af84"
     },
+    "schemas/modules/provider/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1142,
+      "sha256": "521834bd7413a92031606f5ea439c6b4703be016c38698798f5dc1f8bd92ebf8"
+    },
     "schemas/modules/provider/golden/invalid/state-invalid.json": {
       "bytes": 1135,
       "sha256": "6bd92d0d5c46d7c3bd099c2668fc84467ee3526a1076356f194a48610e1f734c"
     },
+    "schemas/modules/provider/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1142,
+      "sha256": "b520c1afee3e0455fbb4b3396296f0a0ee169928d6da80b8d87d9f92fb3830e8"
+    },
     "schemas/modules/provider/golden/invalid/state-nonfinite.json": {
       "bytes": 1097,
       "sha256": "2c38bdd3aa8ce3ff3608d83d855b83af8c8d5737d510903eaacc4efa95fc0347"
+    },
+    "schemas/modules/provider/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1142,
+      "sha256": "009799e2795e62c4e8646e09930a83ca5341c931d3294e962397f93be4c600e7"
     },
     "schemas/modules/provider/golden/valid/api.json": {
       "bytes": 1578,
@@ -1269,20 +1589,20 @@
       "sha256": "5d9ae949740d11702e90ee1a09ad9dce2db43761070581172244e434b9cd96fe"
     },
     "schemas/modules/provider/state-v1.schema.json": {
-      "bytes": 3377,
-      "sha256": "cf486f3fe41cd9a6b3a0546090caff6cc6e6da52eabf823aefb19e7b7197fd07"
+      "bytes": 3672,
+      "sha256": "e2bf6935a67344b68fd5c8357c617490871b5fca322bf3749fde293c137c6f7e"
     },
     "schemas/modules/rootlinux/api-v1.schema.json": {
-      "bytes": 2714,
-      "sha256": "596ad965b2cfa9414c4d46a95039a5cf1cf1a07199dd252e46854e0d817da7a4"
+      "bytes": 3003,
+      "sha256": "7d225822af4ba0e6d5ec6bca6ebb5b6db7621af516e51cc7e932e73876270f12"
     },
     "schemas/modules/rootlinux/compatibility.json": {
-      "bytes": 5327,
-      "sha256": "bfbaed6a30b091968faf814b39c77fea67cb536de4ca2091e98f8e00ac183d6b"
+      "bytes": 6243,
+      "sha256": "0ac965f0fa7e5e6f9e4865b15c3aae2927e80e3e165776344f849727362532ff"
     },
     "schemas/modules/rootlinux/errors-v1.schema.json": {
-      "bytes": 3096,
-      "sha256": "71da51e6d272ecb5dc26cb025c51cba1659074f6693e586afe355d5ff8266103"
+      "bytes": 4432,
+      "sha256": "508f39688b2074e8d26f36160a3893925a28a33165bcce8a942a52e26447b875"
     },
     "schemas/modules/rootlinux/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1583,
@@ -1292,9 +1612,17 @@
       "bytes": 5500,
       "sha256": "7e9fbc7612c170717ecdf38f56e843c76ac22914814c2acee39ac7008af91aaa"
     },
+    "schemas/modules/rootlinux/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1582,
+      "sha256": "f1c6a731ff25c3bf3e71ef560fb1c149118b3031c2071fd7cd22b4705a325903"
+    },
     "schemas/modules/rootlinux/golden/invalid/api-duplicate.json": {
       "bytes": 1571,
       "sha256": "908e954d0a8769085d1f25895a2c0d00df5a84d668f9a751ac04163ee9e05a5b"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1599,
+      "sha256": "9bea86bd312b06e9fdd10fecb11afd6a56af0d568b7ca5032b945640e13110da"
     },
     "schemas/modules/rootlinux/golden/invalid/api-identity-alias.json": {
       "bytes": 1578,
@@ -1303,6 +1631,10 @@
     "schemas/modules/rootlinux/golden/invalid/api-missing-ordering.json": {
       "bytes": 1046,
       "sha256": "53c3e041a801debb2c5980a075e8a4072a35fcf49a71930cd07ab19f85cba4a2"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1335,
+      "sha256": "68dae6e561c8cb935d2f7435d5ffd91cdde2bdacdcab0ce24eff0675a69f894a"
     },
     "schemas/modules/rootlinux/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1582,
@@ -1327,6 +1659,10 @@
     "schemas/modules/rootlinux/golden/invalid/api-unknown.json": {
       "bytes": 1602,
       "sha256": "f604f59847d9be5d19db6ccc3299036e450b2936749d5852d8431e65e1b278c6"
+    },
+    "schemas/modules/rootlinux/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1599,
+      "sha256": "95422af3f8fb2dd770455bc33b00242505a29b9deb462836ca0b26d445a9e24a"
     },
     "schemas/modules/rootlinux/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4827,
@@ -1364,6 +1700,10 @@
       "bytes": 1128,
       "sha256": "33bdeffd8407e67e606c1a2cbc8593af43e3fe29b69715a4a47049980d78a2c8"
     },
+    "schemas/modules/rootlinux/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1144,
+      "sha256": "9ef55d8e9af94ca750acde757da8a8aaab42bcd43683db57a59f66ae9d5ad061"
+    },
     "schemas/modules/rootlinux/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1127,
       "sha256": "f63a040bbfd1a3a122981be719365c12575e96b5b46b5c602cb14cb1ae8081cf"
@@ -1372,13 +1712,25 @@
       "bytes": 627,
       "sha256": "8201e5dcb8db5f0947f921267d663285dc97e0450e9a54c1adc6cba53d772456"
     },
+    "schemas/modules/rootlinux/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1144,
+      "sha256": "78705e6021fcff4bae14cf0433ec9aab47ca47ac0c6c06a30c6e7c237515b34d"
+    },
     "schemas/modules/rootlinux/golden/invalid/state-invalid.json": {
       "bytes": 1137,
       "sha256": "b0e4e866eeb0eec0112b06ecf3267e377529594b04ca483551b40990ef171776"
     },
+    "schemas/modules/rootlinux/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1144,
+      "sha256": "57e2fc13d39b8f1012432c3e6822d70b17f908553570ed6bb364afbe182dd3ad"
+    },
     "schemas/modules/rootlinux/golden/invalid/state-nonfinite.json": {
       "bytes": 1099,
       "sha256": "0389dc16166302fc0139fb98a8600e1b8f642b879559b84f011d738af2e1d68a"
+    },
+    "schemas/modules/rootlinux/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1144,
+      "sha256": "4837654464fe03c04e2e7d76acfd615f43eea227e82b56825d62f56519cfa919"
     },
     "schemas/modules/rootlinux/golden/valid/api.json": {
       "bytes": 1580,
@@ -1393,20 +1745,20 @@
       "sha256": "f1b9f9a4017f74a46caf9d13e1418557d648cb7e6fe152f973e09a83aca84d36"
     },
     "schemas/modules/rootlinux/state-v1.schema.json": {
-      "bytes": 3381,
-      "sha256": "8068982e097ee88f8f07fbee9325641e794f0f35db914868516a93c21eb83c17"
+      "bytes": 3676,
+      "sha256": "2f0cb8d607b45e9f080ae8aba9ee5a87a823a0cf8337299d4c802634a2bd9ca6"
     },
     "schemas/modules/stream/api-v1.schema.json": {
-      "bytes": 2702,
-      "sha256": "889e538b55a65a17f51e14d0bbf292c039591be80bffd1f9271bb47a21e392dd"
+      "bytes": 2991,
+      "sha256": "addd5fb3511248eb23a6a127f39a1496408d417c62935c5531c791edb340ecd1"
     },
     "schemas/modules/stream/compatibility.json": {
-      "bytes": 4660,
-      "sha256": "de302b94921614cacd28908e26426dce88f29a11657bd983d98b04cdb1292ecd"
+      "bytes": 5576,
+      "sha256": "fdfc823de099b52339c5a25a8501a6932ba3a97eb5f6ec0942f4b05d348aca11"
     },
     "schemas/modules/stream/errors-v1.schema.json": {
-      "bytes": 3084,
-      "sha256": "bec98ee01126f0915f9ccbadb3f6ef56fa7b0ad11aff31a41ba7ad515c23ec16"
+      "bytes": 4420,
+      "sha256": "c7ee9e54b7f25ba12422e8575ccfb08ecf9587d41adaef96358d08e6fb57ac4d"
     },
     "schemas/modules/stream/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1577,
@@ -1416,9 +1768,17 @@
       "bytes": 5494,
       "sha256": "2a46586c7cc887f9a4d4ccb40b81883493012a201217b366c857173bbe073b5b"
     },
+    "schemas/modules/stream/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1576,
+      "sha256": "6708ce03d84a5be25fab344fee2ae164cb018b3d8fc2bfca0d8792e03fdde142"
+    },
     "schemas/modules/stream/golden/invalid/api-duplicate.json": {
       "bytes": 1562,
       "sha256": "ab665a09aec9969b184bf190669d4357d2e523f19193805deee82536be73cce1"
+    },
+    "schemas/modules/stream/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1593,
+      "sha256": "0e6b042311ab4ba04f0afc286db00587e5b36cc6474b9e01eae3121e2f1aefe4"
     },
     "schemas/modules/stream/golden/invalid/api-identity-alias.json": {
       "bytes": 1572,
@@ -1427,6 +1787,10 @@
     "schemas/modules/stream/golden/invalid/api-missing-ordering.json": {
       "bytes": 1040,
       "sha256": "a711a9afd27b1dcb668cb9392d1593fef4dd1288fd93f0bc327a36e8b87fba14"
+    },
+    "schemas/modules/stream/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1329,
+      "sha256": "ddb07e66ce96d737d30244dbb6be0e5a27bf2b7f7821204ebd9c6a21d66769d2"
     },
     "schemas/modules/stream/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1576,
@@ -1451,6 +1815,10 @@
     "schemas/modules/stream/golden/invalid/api-unknown.json": {
       "bytes": 1596,
       "sha256": "cbbe24bf808ef053d3021b42271e0691aab7ce7831f75cc631c9fefb6b9315d3"
+    },
+    "schemas/modules/stream/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1593,
+      "sha256": "2c9a54f12aed4089dfa80a5b32bd32a0c74f1c633107b458cab27de9beae0588"
     },
     "schemas/modules/stream/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4821,
@@ -1488,6 +1856,10 @@
       "bytes": 1122,
       "sha256": "7206dca83e8851cd5514afd6f6748aa9fbc61276290c4cc3b06d9f050dbfda47"
     },
+    "schemas/modules/stream/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1138,
+      "sha256": "7d931d0bc7a94341c83e98ff109e2eefc0d1e0d6223c2fcdb989dad2b9439d9a"
+    },
     "schemas/modules/stream/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1121,
       "sha256": "5aab3542f8a8e4628707416584c4772d6043d0ae718b53b33a65814e8c72edd4"
@@ -1496,13 +1868,25 @@
       "bytes": 621,
       "sha256": "8263ce052300c04af7d7e311c60e2b5b34a7e784b8b5c704b5193b0b3e9fe331"
     },
+    "schemas/modules/stream/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1138,
+      "sha256": "0d9de6935c104a3dcc5fbce92b79aaf44ee6e0f089b7e59258779a9ab3a0f4b6"
+    },
     "schemas/modules/stream/golden/invalid/state-invalid.json": {
       "bytes": 1131,
       "sha256": "532ed72383c05eb4526b9eb5a7560e268e77e812ede30e787c72b3bcbd10aaa8"
     },
+    "schemas/modules/stream/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1138,
+      "sha256": "b9c40fb3b208e7b9d3958191592299fbf4761f6d50f78af2ae92eaed1d66c792"
+    },
     "schemas/modules/stream/golden/invalid/state-nonfinite.json": {
       "bytes": 1093,
       "sha256": "36a6465ee5b5371482a5c9081c19690cf01dc0cfb26352801c309bc666934ab6"
+    },
+    "schemas/modules/stream/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1138,
+      "sha256": "2aae3e3d1ae35774aa9e67be8f697fad0fc0cd0f9a02436833ba7d8dfe750c8b"
     },
     "schemas/modules/stream/golden/valid/api.json": {
       "bytes": 1574,
@@ -1517,20 +1901,20 @@
       "sha256": "e0dc8e3c52eab87743e3dd584e8947bfc09f9038aedc6bda400bec1e7a0188d1"
     },
     "schemas/modules/stream/state-v1.schema.json": {
-      "bytes": 3369,
-      "sha256": "ef5459c0fdefa09bbd0610716e5eec2e3629e1d2a1def04a2cad081800585861"
+      "bytes": 3664,
+      "sha256": "de46565f992448337bc61f95da15f47e2883baf338bdd27ae21cbe711135b241"
     },
     "schemas/modules/telemetry/api-v1.schema.json": {
-      "bytes": 2714,
-      "sha256": "deaa6c69401981ad39605169d5f7c333d5895a620945c8acee8da28a695be47c"
+      "bytes": 3003,
+      "sha256": "93b1158d8100724e8f83ac5f4991e0dbd8a10604637eaff56822c577e14728ff"
     },
     "schemas/modules/telemetry/compatibility.json": {
-      "bytes": 5448,
-      "sha256": "3b9fdb7fb2fa7b89635542c4bbf58cefe5028970508c898cecc94cc8ea65f573"
+      "bytes": 6364,
+      "sha256": "17e8fdd8ef29d052ee9bc67e4c9b4c9297c6059e92ce67da33a82584c030e98e"
     },
     "schemas/modules/telemetry/errors-v1.schema.json": {
-      "bytes": 3096,
-      "sha256": "fa38be394ee10c29b71ef616f7ea5c885cf277734d6b61f871011a321326b075"
+      "bytes": 4432,
+      "sha256": "8fec0ee94a0478271acdf762811c137448caafb137117d87c2b6746925dbebc3"
     },
     "schemas/modules/telemetry/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1583,
@@ -1540,9 +1924,17 @@
       "bytes": 5500,
       "sha256": "aa6ccb6df5c28ac416b9eb5350c018c6d916a24f9ea731fa67447963c19a17a1"
     },
+    "schemas/modules/telemetry/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1582,
+      "sha256": "7819cab402ef9bca13f3a09eebf3ff6b1649647d984c73f1ea3ca7470bd0b29d"
+    },
     "schemas/modules/telemetry/golden/invalid/api-duplicate.json": {
       "bytes": 1571,
       "sha256": "e41b4a3c16fa64b2215f4ca3ccd7b765d5a9836132381859008266bc31cc82ff"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1599,
+      "sha256": "b5af9a3321cefbd3ec1032f13a4c8b38d2fff93bea69d6124b1ba630f4c53ece"
     },
     "schemas/modules/telemetry/golden/invalid/api-identity-alias.json": {
       "bytes": 1578,
@@ -1551,6 +1943,10 @@
     "schemas/modules/telemetry/golden/invalid/api-missing-ordering.json": {
       "bytes": 1046,
       "sha256": "f3ae45e96ec637cd5403cbad61ef1d5c709ecadfab95866b2f17dc5cfa3e0c10"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1335,
+      "sha256": "b96c702e78bab4c5b7f645ffd520dc245bea3185bd87c1c105c621b520a09a33"
     },
     "schemas/modules/telemetry/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1582,
@@ -1575,6 +1971,10 @@
     "schemas/modules/telemetry/golden/invalid/api-unknown.json": {
       "bytes": 1602,
       "sha256": "cadbbe2bfaf232e9cbbfcd6b4cb3357f4ed55c9efe8056632d9231ab6f537b98"
+    },
+    "schemas/modules/telemetry/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1599,
+      "sha256": "5264bb5495bcbeec317eea2afef43c5d96ec23cf69503bddf975dde03ea4dc3a"
     },
     "schemas/modules/telemetry/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4827,
@@ -1612,6 +2012,10 @@
       "bytes": 1128,
       "sha256": "3b282ecc18b7fe9fdb8123ce272d077a77ccc18e5a4fcfd6c84a0ca5d440e489"
     },
+    "schemas/modules/telemetry/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1144,
+      "sha256": "f48948bcab770afa3287ba7d4266a2df222073db8ab536526cadb18c0e2a06b1"
+    },
     "schemas/modules/telemetry/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1127,
       "sha256": "1a72a9f79a53d0c850c8ae7bb32890661465dfa2ec54081e19d397ed1dfbac8f"
@@ -1620,13 +2024,25 @@
       "bytes": 627,
       "sha256": "f5c85ac3df9da9f1a555656d3ee7507939dbbbe3a9159dc02efd7196f03a04dc"
     },
+    "schemas/modules/telemetry/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1144,
+      "sha256": "07d2288d88376154c53266abf72b99a177e8bc4df0696b7b5f0c51de9f0f1182"
+    },
     "schemas/modules/telemetry/golden/invalid/state-invalid.json": {
       "bytes": 1137,
       "sha256": "29064dd19b581dca4e87c82bc34ec8cf9681cdffad08528146e2fd1ba89392af"
     },
+    "schemas/modules/telemetry/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1144,
+      "sha256": "4c61b935efbde3307d111ef3fba70b6ee7caf5ee6ae6dfcfdf43e0418b072c63"
+    },
     "schemas/modules/telemetry/golden/invalid/state-nonfinite.json": {
       "bytes": 1099,
       "sha256": "852971693fa735b1fdba8f4b15382bee1015fb0fafb8a1286c5c2f67eb0d9a48"
+    },
+    "schemas/modules/telemetry/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1144,
+      "sha256": "c8b9be88042679389e103adefa031a4fbf0412e7d6aa8e3aace1562a7e08ee6d"
     },
     "schemas/modules/telemetry/golden/valid/api.json": {
       "bytes": 1580,
@@ -1641,20 +2057,20 @@
       "sha256": "fe7482ae1f25ef4a89194d7b32e006479af4d381bf29ed1c03faf3910dc724fc"
     },
     "schemas/modules/telemetry/state-v1.schema.json": {
-      "bytes": 3381,
-      "sha256": "35394a1a2aad61d25258b03878a40ec16ee7e9ec576d5949bf33d36925d7472c"
+      "bytes": 3676,
+      "sha256": "06817c835529d69b87c23577e02de600b61d6a38de7f0f10bc58e4811de99d37"
     },
     "schemas/modules/tool-runtime/api-v1.schema.json": {
-      "bytes": 2726,
-      "sha256": "3c614b973b9b2dfc8a0bca1c56b8fae6770221c030f62a0e75cb41247c3e3086"
+      "bytes": 3015,
+      "sha256": "a78fa7820c8a9fec298ba44e0854d17274c0c53a1a4bd6aeeb3c9767bf86bff0"
     },
     "schemas/modules/tool-runtime/compatibility.json": {
-      "bytes": 5084,
-      "sha256": "6718ecdb17de5511de78a5d43107f4c452bf54bb254456a8f298904d6a33a03b"
+      "bytes": 6000,
+      "sha256": "b9c4acbf2e1b3ecea44f29e60c1b8d3ec840cf05e43d828535401f7d8ff51d2b"
     },
     "schemas/modules/tool-runtime/errors-v1.schema.json": {
-      "bytes": 3092,
-      "sha256": "5df88666578c5bb675404f4d9132b03fd30a8cb8e441a3b47f2e7997fa0eeb3e"
+      "bytes": 4428,
+      "sha256": "64d5d00e08ae6ba3c8a09f2687085f6d31b1da2108258bb5c5e76d35af1c0c22"
     },
     "schemas/modules/tool-runtime/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1589,
@@ -1664,9 +2080,17 @@
       "bytes": 5506,
       "sha256": "a452f10cecc883ea783981978d26823aac43294559017fb85e4221083707a3a5"
     },
+    "schemas/modules/tool-runtime/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1588,
+      "sha256": "3938c179032f082b5530e5f1bdd5a8f5d6cb4257b1eec3d0bbc05d68a49500f7"
+    },
     "schemas/modules/tool-runtime/golden/invalid/api-duplicate.json": {
       "bytes": 1580,
       "sha256": "ce32a671d9e179730dd840a214365a5bbe49c6b123363139c80d55df4ec25ad3"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1605,
+      "sha256": "16b91cd4284beefb8c7b0bbf793f33d1e9a6e7cae67a30ba350f8dc7a4ad68bd"
     },
     "schemas/modules/tool-runtime/golden/invalid/api-identity-alias.json": {
       "bytes": 1584,
@@ -1675,6 +2099,10 @@
     "schemas/modules/tool-runtime/golden/invalid/api-missing-ordering.json": {
       "bytes": 1052,
       "sha256": "1c4907188654323cd172888a772ef667e7ad56e5cb281fb6848997935e19ed4b"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1341,
+      "sha256": "e9b7f92ffa85b57c256256dbef26a9386d09911e4799859d08cf5238a1833b6a"
     },
     "schemas/modules/tool-runtime/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1588,
@@ -1699,6 +2127,10 @@
     "schemas/modules/tool-runtime/golden/invalid/api-unknown.json": {
       "bytes": 1608,
       "sha256": "028858b50d471d4e8a20a144f7fb4644eeaa04fbf07aaf9f270e4729e25ee32f"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1605,
+      "sha256": "91036b65707a8a8446ebdf5daf88da1b79bc1498d8b1a3a225b721dffb429987"
     },
     "schemas/modules/tool-runtime/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4825,
@@ -1736,6 +2168,10 @@
       "bytes": 1134,
       "sha256": "6b4026b9d096723ab43b220723aadf409f03ca14f1d8c791ac52fc9a3f5ba6b5"
     },
+    "schemas/modules/tool-runtime/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1150,
+      "sha256": "2e4500a2e5cd4ba5b99790ed484f7ad867523701b2b7b438cd6ebbbda72eab15"
+    },
     "schemas/modules/tool-runtime/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1133,
       "sha256": "7fca86e2afaac576d014349c6e9c4c8f1907a380dd8b0a4038c270dec8fe9197"
@@ -1744,13 +2180,25 @@
       "bytes": 633,
       "sha256": "552fe3b854a0ce91b4d3b7e1e377742aaddfc7d10623d92e17ed156dd18235e1"
     },
+    "schemas/modules/tool-runtime/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1150,
+      "sha256": "22f444fea173c500308c0a3c168d1b2f153d60c06dbfe781474b64710fb52acf"
+    },
     "schemas/modules/tool-runtime/golden/invalid/state-invalid.json": {
       "bytes": 1143,
       "sha256": "bbe9e05ac401f8f61e06a9abaff406c83fc685e3625cda97283e6a7b4f093700"
     },
+    "schemas/modules/tool-runtime/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1150,
+      "sha256": "d6527a3fb3502e21c5f8d4d37c6012aa981f37a307fce42b213f4921b4f4796c"
+    },
     "schemas/modules/tool-runtime/golden/invalid/state-nonfinite.json": {
       "bytes": 1105,
       "sha256": "8b0acff373835318c4471ab194bd7733dfd67d0bb3f562e39e6fa45f9afc507e"
+    },
+    "schemas/modules/tool-runtime/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1150,
+      "sha256": "b02ec745dc29887cf9e3708f60076d249949d5c63ea168038058d3db841e34ec"
     },
     "schemas/modules/tool-runtime/golden/valid/api.json": {
       "bytes": 1586,
@@ -1765,20 +2213,20 @@
       "sha256": "6f178ca47127cd41bd58935a75e06aa5b9bb6c7e744024c931b862c6f9e24f48"
     },
     "schemas/modules/tool-runtime/state-v1.schema.json": {
-      "bytes": 3393,
-      "sha256": "39376140829443bc764c04593cbf32a3496123a8625bb1b0ab4eb30f1df35d67"
+      "bytes": 3688,
+      "sha256": "5dabaafdf875ae4f7ca118a64fe0fe9e486f6691febf3372ffb714cf6880b57e"
     },
     "schemas/modules/transport/api-v1.schema.json": {
-      "bytes": 2714,
-      "sha256": "dec4b9cb65ee58a72371295c401b5c35e1986c0bc5abe8d894ee7e9924ba02c5"
+      "bytes": 3003,
+      "sha256": "eb2f8f7680dec92d7b05de98dd58823a62a340f13e165ec203bbcfffa6709ab8"
     },
     "schemas/modules/transport/compatibility.json": {
-      "bytes": 7662,
-      "sha256": "9f3847918e6bb02f14fe876c38517a434ceb30ebce518600c7d62973fec78720"
+      "bytes": 8578,
+      "sha256": "9318e415e776a06831d2d1240193dee5e2f5d752edfd4faf09e4bdc5332733d2"
     },
     "schemas/modules/transport/errors-v1.schema.json": {
-      "bytes": 3096,
-      "sha256": "cdc804e9f096fae17d6a7e65f760d974658c54aa0a5339d36d396e0d723d0f81"
+      "bytes": 4432,
+      "sha256": "81dc066031df885a91fd67fada4e0edac66b528d7129401778b9380c3b726205"
     },
     "schemas/modules/transport/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1583,
@@ -1788,9 +2236,17 @@
       "bytes": 5500,
       "sha256": "cdc06400c5dda7c4fc7f182d3b7ba059752bd4f94040eed4edfdb42b7d9c69c3"
     },
+    "schemas/modules/transport/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1582,
+      "sha256": "56dfecea9a3bce27ec981628552e25876a9728fbbc330bf8da22f01d84d42bac"
+    },
     "schemas/modules/transport/golden/invalid/api-duplicate.json": {
       "bytes": 1571,
       "sha256": "42a69682fadbb923b83250f81d185eb414b3208237da54ddd0b363227f08b246"
+    },
+    "schemas/modules/transport/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1599,
+      "sha256": "b103bf7a79814e0e970e2796a7058feca78c1516be8cb4d03452fee259280ce2"
     },
     "schemas/modules/transport/golden/invalid/api-identity-alias.json": {
       "bytes": 1578,
@@ -1799,6 +2255,10 @@
     "schemas/modules/transport/golden/invalid/api-missing-ordering.json": {
       "bytes": 1046,
       "sha256": "5e9f59b4a9f68b80f86a3bca70c1ac408b3c854a2a1a3482933c632739d66155"
+    },
+    "schemas/modules/transport/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1335,
+      "sha256": "986304865d1d897ddcea1fac3541bdae8e5c74c34bba7451c41c8711a5503423"
     },
     "schemas/modules/transport/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1582,
@@ -1823,6 +2283,10 @@
     "schemas/modules/transport/golden/invalid/api-unknown.json": {
       "bytes": 1602,
       "sha256": "f65d37ccff3463b94dbf28da9947451b95a765e25edc19da5cc4b8a138fd10b2"
+    },
+    "schemas/modules/transport/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1599,
+      "sha256": "b610b0ac94f62f972bd93c64a28ad17ee8f37dcbee5cca30816d069d94cc8ff1"
     },
     "schemas/modules/transport/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4827,
@@ -1860,6 +2324,10 @@
       "bytes": 1128,
       "sha256": "7182baf5b5eb7d83ce815110bca232cd2e22b0c82b39555721ebec25fbe3ddee"
     },
+    "schemas/modules/transport/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1144,
+      "sha256": "8a4a3c69e3cab28529b9c7710f3224a03d33d08731bfdfafb7f14acf5bdf842b"
+    },
     "schemas/modules/transport/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1127,
       "sha256": "f6c1e7ecf36c04a2ff6aef08283027dad55ed7ae2a685a653d26504383782475"
@@ -1868,13 +2336,25 @@
       "bytes": 627,
       "sha256": "42a7d6f955a33190ae6587fe423f353a4ea36dacfbd68298a900ba5fcee5fdf3"
     },
+    "schemas/modules/transport/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1144,
+      "sha256": "1f76a83d2fb3168b18b9e3619af2b2b7698d96e395bfa914deb69f4a3a8ad3a1"
+    },
     "schemas/modules/transport/golden/invalid/state-invalid.json": {
       "bytes": 1137,
       "sha256": "4f5a3e45c9e38d639b3e94f8714e44bf28dc991288876a331fa60c19a9e13195"
     },
+    "schemas/modules/transport/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1144,
+      "sha256": "8ce99a362f32d3132910ed420aa72d26123c3a464f3b83a7ab3d17809502107c"
+    },
     "schemas/modules/transport/golden/invalid/state-nonfinite.json": {
       "bytes": 1099,
       "sha256": "d60e2cfc9b5d8333d137cc6ef48c260a0867d60e81891af422794a851b3ec57b"
+    },
+    "schemas/modules/transport/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1144,
+      "sha256": "6166cb2a0d4f473ef634d58bf26ec1786162d0c3f05e45e6899c95615533f4c9"
     },
     "schemas/modules/transport/golden/valid/api.json": {
       "bytes": 1580,
@@ -1889,20 +2369,20 @@
       "sha256": "3b3065aa80e0da74db32e05d2a8f779066ad7f6633e48fb31c197eae8051fe2b"
     },
     "schemas/modules/transport/state-v1.schema.json": {
-      "bytes": 3381,
-      "sha256": "c1b31b79ca2704f00b7070e3e3a01bb92ddb0aa6b8292ec779fee58aa5e1a193"
+      "bytes": 3676,
+      "sha256": "75241c9f65846d3c195c25e64529c4cb897133e65601ebf5a34402caad0101a9"
     },
     "schemas/modules/turn-engine/api-v1.schema.json": {
-      "bytes": 2722,
-      "sha256": "75b65bdf817b4f90a7c90c36ff87c951c200b934a7c3897e23cfc8d642753d08"
+      "bytes": 3011,
+      "sha256": "b20d95e85d2baf56a58f83c28e7daa58bce5c6ec74e6ee8fde2895df55fd8bc0"
     },
     "schemas/modules/turn-engine/compatibility.json": {
-      "bytes": 5102,
-      "sha256": "c9515975d06c0adbc60bd018dc782c5130622990cd3f52ab61efc08c7f57191b"
+      "bytes": 6018,
+      "sha256": "5fbb6d3a13b1c128fb06bbc9188baa7b74ae887ff3019002905955dcad710370"
     },
     "schemas/modules/turn-engine/errors-v1.schema.json": {
-      "bytes": 3090,
-      "sha256": "4367016057daa4f7a2ef3b271f442f269e89ba3393ba11917c704069144ad952"
+      "bytes": 4426,
+      "sha256": "08cc9d3ee885001c77b7eeb59f633f5edb64d4aab354f0c0233f14ff0d8c6b39"
     },
     "schemas/modules/turn-engine/golden/invalid/api-boolean-epoch.json": {
       "bytes": 1587,
@@ -1912,9 +2392,17 @@
       "bytes": 5504,
       "sha256": "d4710b0fba29bbef711bf43cc2c320d183b665592a328a56c0498702aa3ba357"
     },
+    "schemas/modules/turn-engine/golden/invalid/api-digest-final-newline.json": {
+      "bytes": 1586,
+      "sha256": "f71f77d84fb394b4df67a14db7a0f2b54a2e091be7800b831a219eaf62fffd85"
+    },
     "schemas/modules/turn-engine/golden/invalid/api-duplicate.json": {
       "bytes": 1577,
       "sha256": "a327f4e243a7ea7a8f05ee6850a068362f8d942d9062f11a005fcfe2345f4e86"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-host-epoch-overflow.json": {
+      "bytes": 1603,
+      "sha256": "fa187e6fe21776de1db0714bea896ed71552ee3a678cf8554b4462f53033eb81"
     },
     "schemas/modules/turn-engine/golden/invalid/api-identity-alias.json": {
       "bytes": 1582,
@@ -1923,6 +2411,10 @@
     "schemas/modules/turn-engine/golden/invalid/api-missing-ordering.json": {
       "bytes": 1050,
       "sha256": "82017bb586908518da9ed1e11c625c98498ba7a0bd131b79c904d43ea9b6be53"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-operation-final-newline.json": {
+      "bytes": 1339,
+      "sha256": "ea407f412141e7cab82631334ddfb8ff351b235a18dec43a5ebd0d1796347159"
     },
     "schemas/modules/turn-engine/golden/invalid/api-operation-multibyte-overflow.json": {
       "bytes": 1586,
@@ -1947,6 +2439,10 @@
     "schemas/modules/turn-engine/golden/invalid/api-unknown.json": {
       "bytes": 1606,
       "sha256": "ce0ab57536c4ab2ad5091c8ea49f48d0615ca0b7f532b2359c716c5ad3697e93"
+    },
+    "schemas/modules/turn-engine/golden/invalid/api-writer-epoch-overflow.json": {
+      "bytes": 1603,
+      "sha256": "e539f05d19217f679a10a9d6d9564b8288f5ad988a80f58db45931f6e74e450b"
     },
     "schemas/modules/turn-engine/golden/invalid/errors-cause-multibyte-overflow.json": {
       "bytes": 4824,
@@ -1984,6 +2480,10 @@
       "bytes": 1132,
       "sha256": "bac5db36e6ddf68fbdf30b182efed128acac2c33bf1abd2982d8edf92f9a018b"
     },
+    "schemas/modules/turn-engine/golden/invalid/state-durable-sequence-overflow.json": {
+      "bytes": 1148,
+      "sha256": "52e9853154e631a2fd64f388ddda4430bad887bfcbc75f8a951ae771a0109b27"
+    },
     "schemas/modules/turn-engine/golden/invalid/state-fencing-multibyte-overflow.json": {
       "bytes": 1131,
       "sha256": "d049aae75141eb9abb9f2776b30a68bc3d955c1727d9c2ccac71220777c612dc"
@@ -1992,13 +2492,25 @@
       "bytes": 631,
       "sha256": "b4594c1ca3e625937ea1a4c021838eb88e9dc1a9a115bfe0aba855b1a0659567"
     },
+    "schemas/modules/turn-engine/golden/invalid/state-host-epoch-overflow.json": {
+      "bytes": 1148,
+      "sha256": "a68a73830bfbb367f1851eb64e28929b1ec2418be6f55c32c880c242dd6aa607"
+    },
     "schemas/modules/turn-engine/golden/invalid/state-invalid.json": {
       "bytes": 1141,
       "sha256": "b8e912ea489218731b00d32a164344de213ef749b7ecdeee745f5d2cb82f3ea2"
     },
+    "schemas/modules/turn-engine/golden/invalid/state-monotonic-ns-overflow.json": {
+      "bytes": 1148,
+      "sha256": "8bd7e63de365ff6d232e9d6211a3168b887d96dff75de2abe60ad42a7941966d"
+    },
     "schemas/modules/turn-engine/golden/invalid/state-nonfinite.json": {
       "bytes": 1103,
       "sha256": "b3896793390261771c5706ae3dcd75e34da1e6b34ef16f5a03cfe79a36e480a6"
+    },
+    "schemas/modules/turn-engine/golden/invalid/state-writer-epoch-overflow.json": {
+      "bytes": 1148,
+      "sha256": "75547c7a10f6cd209a13fc16bbd7518dc2a4d95d6e6d3c111c089f0634741981"
     },
     "schemas/modules/turn-engine/golden/valid/api.json": {
       "bytes": 1584,
@@ -2013,12 +2525,12 @@
       "sha256": "ab6a6369621451f9d215bd536ebd1237cb98ca89245cc3ccd94ded7b4f5ab077"
     },
     "schemas/modules/turn-engine/state-v1.schema.json": {
-      "bytes": 3389,
-      "sha256": "d9d835fa36981887b7910e75fb8d539c4ef432da55e70455e8a2ee85ff1506e6"
+      "bytes": 3684,
+      "sha256": "703e450651c848409721df7ae9af94221a596b8e2f08eb36a19ff046665db3e8"
     },
     "tools/contracts/README.md": {
-      "bytes": 907,
-      "sha256": "bd4962c354ef876757a26b071caca8ee3c6dcb25abf2a6e7c4f5170dccfda229"
+      "bytes": 2497,
+      "sha256": "56bc2dd1b81f7343af43107b0bc075cdf80f58ead154e690c2449432f5165e48"
     },
     "tools/contracts/check_module_contract_compatibility.py": {
       "bytes": 25928,
