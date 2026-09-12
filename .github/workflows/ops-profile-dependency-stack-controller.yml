@@ -1,0 +1,52 @@
+name: Ops profile dependency stack controller
+
+on:
+  push:
+    branches:
+      - "ops/profile-dependency-stack-controller-20260912"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply dependency-closure delta on schema/telemetry stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+          TARGET=codex/profile-dependency-closure-v2-20260912
+          BASE=b6cb785d4fde6427a1ae99ffc12f0679353aaaff
+          SOURCE=7e1c238f478ed6dbe54e462ca7d28e0b054f81fc
+          git checkout -B work "origin/${TARGET}"
+          git diff --binary "$BASE" "$SOURCE" -- . > "${RUNNER_TEMP}/profile.patch"
+          set +e
+          git apply --3way --index "${RUNNER_TEMP}/profile.patch"
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            if git ls-files -u -- docs/generated/PRODUCT_PROFILE_STATUS.md | grep -q .; then
+              git checkout --ours -- docs/generated/PRODUCT_PROFILE_STATUS.md
+              git add docs/generated/PRODUCT_PROFILE_STATUS.md
+            fi
+            test -z "$(git diff --name-only --diff-filter=U)"
+          fi
+          python3 tools/docs/generate_global_docs.py --write
+          python3 -m unittest tools.tests.test_profile_dependency_closure tools.tests.test_repository_authority -v
+          python3 tools/docs/verify_repository_authority.py
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/docs/generate_global_docs.py --check
+          git add -A
+          test -z "$(git diff --cached --name-only | grep '^.github/workflows/' || true)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(profiles): stack explicit planned dependency closure'
+          git push origin HEAD:"refs/heads/${TARGET}"
