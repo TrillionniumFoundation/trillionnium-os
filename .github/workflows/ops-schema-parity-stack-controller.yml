@@ -1,0 +1,57 @@
+name: Ops schema parity stack controller
+
+on:
+  push:
+    branches:
+      - "ops/schema-parity-stack-controller-20260912"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Apply parity delta on telemetry head and regenerate contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+          TARGET=codex/module-schema-parity-v2-20260912
+          BASE=f1e35e4c28ee84cfe6b22ffc4a7f32e78f597cef
+          SOURCE=b5c6e7b3d9b22f01c4fc1bf8e095261bd0418a1b
+          git checkout -B work "origin/${TARGET}"
+          git diff --binary "$BASE" "$SOURCE" -- . > "${RUNNER_TEMP}/parity.patch"
+          set +e
+          git apply --3way --index "${RUNNER_TEMP}/parity.patch"
+          rc=$?
+          set -e
+          if [ "$rc" -ne 0 ]; then
+            for path in \
+              docs/machine/module-contract-catalog.v1.json \
+              schemas/modules/telemetry/compatibility.json \
+              tools/contracts/module-contracts.lock.json
+            do
+              if git ls-files -u -- "$path" | grep -q .; then
+                git checkout --ours -- "$path"
+                git add "$path"
+              fi
+            done
+            test -z "$(git diff --name-only --diff-filter=U)"
+          fi
+          python3 tools/contracts/generate_module_contracts.py --write
+          python3 -m unittest tools.tests.test_module_contracts tools.tests.test_verify_global_docs_contracts -v
+          python3 tools/docs/verify_global_docs.py
+          python3 tools/contracts/generate_module_contracts.py --check
+          git add -A
+          test -z "$(git diff --cached --name-only | grep '^.github/workflows/' || true)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(contracts): stack portable schema parity after telemetry'
+          git push origin HEAD:"refs/heads/${TARGET}"
