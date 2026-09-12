@@ -144,6 +144,63 @@ After restart, only durable complete windows are loaded. Clock jumps, missing sa
 
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
+### Catalog admission, temporal receipts and retention
+
+`CatalogIngestor` resolves every dimension through the immutable dimension
+catalog. In v1 there are no optional dimensions: a metric's
+`required_dimensions` is its complete allowed set. Even a registered global
+key is rejected when that metric does not declare it. A restricted dimension
+requires a restricted metric and a redacted event. Distinct values per dimension
+are bounded across all metrics, instances and epochs in one ingestor lifetime;
+series churn does not reset that budget. Instance and stream identity maps are
+also bounded by `max_series`. Resetting an ingestor is not a proof of continuity.
+
+The v1 `MetricEvent.value` wire is `f64`. `U64_COUNT` therefore admits only
+integer-valued, finite values in `[0, 2^53-1]`, not the full u64 range. Values at
+`2^53`, the rounded `u64::MAX as f64` boundary (`2^64`), fractions and nonfinite
+values are rejected. Producers must not round larger counters into this wire;
+full-width counters require a separately versioned typed integer representation.
+Projection sum/mean remain floating-point descriptive statistics, not exact
+integer accounting or evidence of a measured target.
+
+A series identity now binds module instance, control epoch and dimensions, so
+unrelated monotonic clock domains never evict each other's observations. Its
+sample capacity is the minimum of the caller limit and the metric's catalog
+`retention.max_samples`. Accepted observations advance an event-time watermark;
+retention is the interval `(watermark - window_seconds, watermark]`. Expiration
+is applied at ingestion, not by a wall-clock timer. An idle series/projection is
+an as-of-last-observation snapshot and makes no currentness or background-GC
+claim. Expiration increments the drop count and records `TIME_WINDOW_EVICTION`;
+capacity eviction records `WINDOW_EVICTION`. A forward step greater than the
+window records `CLOCK_JUMP`, including a genuine long sampling absence rather
+than pretending it proves a faulty clock. All these gaps prevent a
+`durable_complete` claim. Gap history is retained, not silently cleared when a
+new window begins.
+
+Admission preflights dimensions, identity/series capacity, exact duplicate and
+conflict handling, every required gap slot, retention and counter overflow under
+one metadata lock. It then commits once without fallible operations; it does
+not clone the whole store. Every returned `Err` leaves **all** maps, windows,
+last-event/rejection records, counters and gaps unchanged. Allocation failure or
+panic is not claimed as a recoverable rejection.
+
+A late sequence or regressed/equal clock on an admitted stream is a separate
+explicit diagnostic transaction: `Ok` with `accepted=false`,
+`idempotent_duplicate=false`, `coverage_complete=false`, and a retained
+`LATE_OBSERVATION` or `CLOCK_REGRESSION` gap. It does not consume the valid stream
+sequence or enter a sample window. An exact repeat of the last such diagnostic
+returns `idempotent_duplicate=true` without growing state. If the diagnostic
+cannot be retained, admission returns `Err` and changes nothing. A conflicting
+same-sequence sample remains an error. Callers must inspect receipt acceptance;
+`Ok` alone never acknowledges a sample, effect, persistence or target success.
+
+These stricter v1 source admission rules, series-digest inputs and new gap enum
+values require consumer compatibility review before deployment. They do not
+migrate persisted state or inherit old review/CI credit. Regressions snapshot
+every internal state family after capacity/overflow rejection, exercise
+concurrent duplicate admission, and test all catalog metrics against their
+actual sample/time limits. No fixture supplies L2 measurements or active control.
+
 ## 11. Security and trust boundaries
 
 Telemetry excludes command content, prompts, credentials and user data by default. Metrics are observations, not authority, and cannot trigger semantic action directly.

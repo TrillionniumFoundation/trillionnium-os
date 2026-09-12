@@ -13,6 +13,8 @@ use sha2::{Digest, Sha256};
 
 use crate::{Result, TelemetryError};
 
+mod admission;
+
 pub const METRIC_CATALOG_SCHEMA: &str = "org.trillionnium.metric-catalog.v1";
 pub const METRIC_EVENT_SCHEMA: &str = "trillionnium.owner-open.metric-event.v1";
 pub const METRIC_PROJECTION_SCHEMA: &str = "trillionnium.owner-open.metric-projection.v1";
@@ -28,6 +30,9 @@ pub const MAX_DIMENSION_VALUE_BYTES: usize = 256;
 pub const MAX_INGEST_SERIES: usize = 1_048_576;
 pub const MAX_SAMPLES_PER_SERIES: usize = 1_048_576;
 pub const MAX_COVERAGE_GAPS: usize = 1_048_576;
+/// The v1 event carries f64, not all u64 values. Never admit the rounded 2^64
+/// boundary (or an integer whose identity cannot be represented in this wire).
+pub const MAX_EXACT_COUNT_V1: f64 = 9_007_199_254_740_991.0;
 
 const SENSITIVE_TOKENS: [&str; 10] = [
     "command",
@@ -273,6 +278,12 @@ impl MetricDefinition {
         {
             return invalid("metric required/forbidden dimension policy differs");
         }
+        if required.iter().any(|name| {
+            dimensions[name].privacy_class == "PSEUDONYMOUS_RESTRICTED"
+                && self.privacy_class != "PSEUDONYMOUS_RESTRICTED"
+        }) {
+            return invalid("restricted dimension cannot enter a public metric");
+        }
         Ok(())
     }
 }
@@ -295,7 +306,11 @@ pub struct MetricEvent {
 }
 
 impl MetricEvent {
-    fn validate(&self, definition: &MetricDefinition) -> Result<()> {
+    fn validate(
+        &self,
+        definition: &MetricDefinition,
+        dimensions: &BTreeMap<String, DimensionDefinition>,
+    ) -> Result<()> {
         if self.schema != METRIC_EVENT_SCHEMA
             || self.metric != definition.name
             || self.unit != definition.unit
@@ -311,8 +326,8 @@ impl MetricEvent {
             return invalid("metric event value must be finite and nonnegative");
         }
         match definition.value_type.as_str() {
-            "U64_COUNT" if self.value.fract() != 0.0 || self.value > u64::MAX as f64 => {
-                return invalid("count metric is not an exact u64-compatible value");
+            "U64_COUNT" if self.value.fract() != 0.0 || self.value > MAX_EXACT_COUNT_V1 => {
+                return invalid("v1 count metric must be an integer in [0, 2^53-1]");
             }
             "RATIO_0_1" if self.value > 1.0 => {
                 return invalid("ratio metric is outside [0,1]");
@@ -337,10 +352,20 @@ impl MetricEvent {
             .iter()
             .map(String::as_str)
             .collect::<BTreeSet<_>>();
-        if !required.is_subset(&keys) || !keys.is_disjoint(&forbidden) {
-            return invalid("metric event required/forbidden dimensions differ");
+        // v1 declares no optional dimensions: required is the entire allowed
+        // set for this metric, not permission to use any other catalog key.
+        if required != keys || !keys.is_disjoint(&forbidden) {
+            return invalid("metric event allowed/required dimensions differ");
         }
         for (name, value) in &self.dimensions {
+            let policy = dimensions
+                .get(name)
+                .ok_or_else(|| TelemetryError::Invalid("unregistered metric dimension".into()))?;
+            if policy.privacy_class == "PSEUDONYMOUS_RESTRICTED"
+                && (definition.privacy_class != "PSEUDONYMOUS_RESTRICTED" || !self.redacted)
+            {
+                return invalid("metric dimension privacy policy differs");
+            }
             require_identifier(name, "metric dimension")?;
             require_text(value, "metric dimension value")?;
             if value.len() > MAX_DIMENSION_VALUE_BYTES
@@ -399,7 +424,10 @@ struct LastEvent {
 pub enum CoverageGapKind {
     MissingSequence,
     ClockRegression,
+    ClockJump,
+    LateObservation,
     WindowEviction,
+    TimeWindowEviction,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -426,10 +454,12 @@ pub struct IngestReceipt {
     pub automatic_redispatch: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct IngestState {
     latest_epoch: BTreeMap<String, u64>,
     last_events: BTreeMap<StreamKey, LastEvent>,
+    last_rejections: BTreeMap<StreamKey, String>,
+    dimension_values: BTreeMap<String, BTreeSet<String>>,
     series_by_metric: BTreeMap<String, BTreeSet<String>>,
     windows: BTreeMap<SeriesKey, VecDeque<MetricEvent>>,
     gaps: VecDeque<CoverageGap>,
@@ -440,6 +470,7 @@ struct IngestState {
 pub struct CatalogIngestor {
     catalog: MetricCatalog,
     catalog_digest: String,
+    dimensions: BTreeMap<String, DimensionDefinition>,
     max_series: usize,
     max_samples_per_series: usize,
     max_gaps: usize,
@@ -464,8 +495,14 @@ impl CatalogIngestor {
             return invalid("catalog ingestor bounds are invalid");
         }
         let catalog_digest = catalog.digest()?;
+        let dimensions = catalog
+            .dimension_catalog
+            .iter()
+            .map(|policy| (policy.name.clone(), policy.clone()))
+            .collect();
         Ok(Self {
             catalog,
+            dimensions,
             catalog_digest,
             max_series,
             max_samples_per_series,
@@ -473,6 +510,8 @@ impl CatalogIngestor {
             state: Arc::new(Mutex::new(IngestState {
                 latest_epoch: BTreeMap::new(),
                 last_events: BTreeMap::new(),
+                last_rejections: BTreeMap::new(),
+                dimension_values: BTreeMap::new(),
                 series_by_metric: BTreeMap::new(),
                 windows: BTreeMap::new(),
                 gaps: VecDeque::new(),
@@ -481,162 +520,11 @@ impl CatalogIngestor {
         })
     }
 
+    /// Every Err leaves all ingestion state unchanged. Temporal rejections
+    /// with a retained diagnostic return Ok with accepted=false; they are not
+    /// samples or effect acknowledgements. See the module contract.
     pub fn ingest(&self, event: MetricEvent) -> Result<IngestReceipt> {
-        let definition = self
-            .catalog
-            .definition(&event.metric)
-            .ok_or_else(|| TelemetryError::Invalid("unknown metric event name".into()))?;
-        event.validate(definition)?;
-        let event_digest = event.digest()?;
-        let stream_key = StreamKey {
-            metric: event.metric.clone(),
-            module_instance_id: event.module_instance_id.clone(),
-            control_epoch: event.control_epoch,
-        };
-        let dimensions_bytes = serde_json::to_vec(&event.dimensions).map_err(|error| {
-            TelemetryError::Invalid(format!("metric dimensions encode: {error}"))
-        })?;
-        let series_digest = hex_digest(&dimensions_bytes);
-        let series_key = SeriesKey {
-            metric: event.metric.clone(),
-            dimensions_digest: series_digest.clone(),
-        };
-
-        let mut state = self
-            .state
-            .lock()
-            .map_err(|_| TelemetryError::Invalid("catalog ingestor lock poisoned".into()))?;
-        if state
-            .latest_epoch
-            .get(&event.module_instance_id)
-            .is_some_and(|epoch| event.control_epoch < *epoch)
-        {
-            return invalid("metric event control epoch regressed");
-        }
-        let last_event = state.last_events.get(&stream_key).cloned();
-        if let Some(last) = last_event {
-            if event.sequence == last.sequence {
-                if event_digest == last.digest {
-                    return Ok(IngestReceipt {
-                        accepted: false,
-                        idempotent_duplicate: true,
-                        event_digest,
-                        series_digest,
-                        coverage_complete: !state.gaps.iter().any(|gap| gap.metric == event.metric),
-                        semantic_authority: false,
-                        automatic_redispatch: false,
-                    });
-                }
-                return invalid("metric event sequence conflicts with retained bytes");
-            }
-            if event.sequence < last.sequence {
-                return invalid("metric event sequence regressed");
-            }
-            if event.monotonic_ns <= last.monotonic_ns {
-                push_gap(
-                    &mut state.gaps,
-                    self.max_gaps,
-                    CoverageGap {
-                        schema: COVERAGE_GAP_SCHEMA.to_string(),
-                        metric: event.metric.clone(),
-                        module_instance_id: event.module_instance_id.clone(),
-                        control_epoch: event.control_epoch,
-                        kind: CoverageGapKind::ClockRegression,
-                        expected_sequence: last.sequence.saturating_add(1),
-                        observed_sequence: event.sequence,
-                    },
-                )?;
-                return invalid("metric event monotonic clock regressed");
-            }
-            if event.sequence > last.sequence.saturating_add(1) {
-                push_gap(
-                    &mut state.gaps,
-                    self.max_gaps,
-                    CoverageGap {
-                        schema: COVERAGE_GAP_SCHEMA.to_string(),
-                        metric: event.metric.clone(),
-                        module_instance_id: event.module_instance_id.clone(),
-                        control_epoch: event.control_epoch,
-                        kind: CoverageGapKind::MissingSequence,
-                        expected_sequence: last.sequence.saturating_add(1),
-                        observed_sequence: event.sequence,
-                    },
-                )?;
-            }
-        }
-
-        let existing_total = state
-            .series_by_metric
-            .values()
-            .map(BTreeSet::len)
-            .sum::<usize>();
-        let metric_series = state
-            .series_by_metric
-            .entry(event.metric.clone())
-            .or_default();
-        let is_new_series = !metric_series.contains(&series_digest);
-        if is_new_series
-            && (metric_series.len() >= definition.cardinality_ceiling as usize
-                || existing_total >= self.max_series)
-        {
-            return invalid("metric series cardinality ceiling reached");
-        }
-        if is_new_series {
-            metric_series.insert(series_digest.clone());
-        }
-
-        let window_evicted = {
-            let window = state.windows.entry(series_key).or_default();
-            let evicted = window.len() == self.max_samples_per_series;
-            if evicted {
-                window.pop_front();
-            }
-            window.push_back(event.clone());
-            evicted
-        };
-        if window_evicted {
-            let dropped = state
-                .dropped_by_metric
-                .entry(event.metric.clone())
-                .or_default();
-            *dropped = dropped
-                .checked_add(1)
-                .ok_or_else(|| TelemetryError::Invalid("metric drop count overflow".into()))?;
-            push_gap(
-                &mut state.gaps,
-                self.max_gaps,
-                CoverageGap {
-                    schema: COVERAGE_GAP_SCHEMA.to_string(),
-                    metric: event.metric.clone(),
-                    module_instance_id: event.module_instance_id.clone(),
-                    control_epoch: event.control_epoch,
-                    kind: CoverageGapKind::WindowEviction,
-                    expected_sequence: event.sequence,
-                    observed_sequence: event.sequence,
-                },
-            )?;
-        }
-        state
-            .latest_epoch
-            .insert(event.module_instance_id.clone(), event.control_epoch);
-        state.last_events.insert(
-            stream_key,
-            LastEvent {
-                sequence: event.sequence,
-                monotonic_ns: event.monotonic_ns,
-                digest: event_digest.clone(),
-            },
-        );
-        let coverage_complete = !state.gaps.iter().any(|gap| gap.metric == event.metric);
-        Ok(IngestReceipt {
-            accepted: true,
-            idempotent_duplicate: false,
-            event_digest,
-            series_digest,
-            coverage_complete,
-            semantic_authority: false,
-            automatic_redispatch: false,
-        })
+        admission::ingest(self, event)
     }
 
     pub fn coverage_gaps(&self) -> Result<Vec<CoverageGap>> {
@@ -724,14 +612,6 @@ impl CatalogIngestor {
         projection.validate()?;
         Ok(projection)
     }
-}
-
-fn push_gap(gaps: &mut VecDeque<CoverageGap>, maximum: usize, gap: CoverageGap) -> Result<()> {
-    if gaps.len() >= maximum {
-        return invalid("metric coverage gap capacity reached");
-    }
-    gaps.push_back(gap);
-    Ok(())
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -910,6 +790,8 @@ fn invalid<T>(message: &str) -> Result<T> {
 mod tests {
     use super::*;
 
+    mod hostile;
+
     fn catalog(cardinality: u32) -> MetricCatalog {
         MetricCatalog {
             schema: METRIC_CATALOG_SCHEMA.to_string(),
@@ -1033,7 +915,8 @@ mod tests {
     fn clock_regression_is_retained_and_rejected() {
         let ingestor = CatalogIngestor::new(catalog(4), 8, 8, 8).unwrap();
         ingestor.ingest(event(0, 10, "accept")).unwrap();
-        assert!(ingestor.ingest(event(1, 9, "accept")).is_err());
+        let receipt = ingestor.ingest(event(1, 9, "accept")).unwrap();
+        assert!(!receipt.accepted && !receipt.idempotent_duplicate);
         assert!(matches!(
             ingestor.coverage_gaps().unwrap()[0].kind,
             CoverageGapKind::ClockRegression
