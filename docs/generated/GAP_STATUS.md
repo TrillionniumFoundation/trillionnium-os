@@ -3,10 +3,26 @@
 <!-- GENERATED. DO NOT EDIT. -->
 
 - Total: `21`
+- Unresolved: `20` (includes pending evidence and external holds)
 - OPEN: `0`
 - SOURCE_CLOSED_PENDING_EVIDENCE: `13`
 - EXTERNAL_HOLD: `7`
 - CLOSED: `1`
+
+OPEN=0 does not mean zero unresolved gaps. Source-closed pending evidence
+and external holds remain unresolved until the required receipt is accepted.
+These counts are a projection of the recorded register, not a live CI or target observation.
+
+## Unresolved by required exit level
+
+| Exit level | Unresolved gaps |
+| --- | ---: |
+| `L1` | `2` |
+| `L2` | `12` |
+| `L3` | `2` |
+| `L4` | `1` |
+| `L5` | `2` |
+| `L6` | `1` |
 
 | Gap | Priority | Class | Status | Exit | Modules | Summary |
 | --- | --- | --- | --- | --- | --- | --- |
