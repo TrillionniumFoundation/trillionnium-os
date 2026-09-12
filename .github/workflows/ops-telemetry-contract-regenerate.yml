@@ -1,0 +1,38 @@
+name: Ops telemetry contract regeneration
+
+on:
+  push:
+    branches:
+      - "ops/telemetry-contract-regenerate-20260912"
+
+permissions:
+  contents: read
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Regenerate executable module contracts
+        run: |
+          set -euo pipefail
+          python3 tools/contracts/generate_module_contracts.py --write
+          git diff --binary -- . ':!.github/workflows/ops-telemetry-contract-regenerate.yml' > "${RUNNER_TEMP}/generated.patch"
+          git diff --name-only -- . ':!.github/workflows/ops-telemetry-contract-regenerate.yml' > "${RUNNER_TEMP}/generated.paths"
+          test -s "${RUNNER_TEMP}/generated.patch"
+          cat "${RUNNER_TEMP}/generated.paths"
+      - name: Upload generated delta
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: telemetry-contract-regenerated-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 3
+          path: |
+            ${{ runner.temp }}/generated.patch
+            ${{ runner.temp }}/generated.paths
