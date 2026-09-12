@@ -185,3 +185,5 @@ old = 'A projection may carry `durable_complete=true` only when it is coverage-c
 new = 'A projection may carry `durable_complete=true` only when it is coverage-complete and the owning store supplies a source-bound journal digest plus successful file and parent-directory fsync receipt. The v1 journal commitment is canonical JSON over `{schema, source_commit, source_tree, projection_digest}` and `journal_record_digest` is its SHA-256; `seal` recomputes this commitment and rejects a receipt produced for any other projection. The store must persist and fsync the record identified by that exact digest. Source construction of that receipt is not installed-target evidence.\n'
 assert text.count(old) == 1
 doc.write_text(text.replace(old, new, 1))
+
+# Trigger only; this helper never enters the product branch.
