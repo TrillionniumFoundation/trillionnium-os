@@ -27,6 +27,8 @@ jobs:
           BASE=f1e35e4c28ee84cfe6b22ffc4a7f32e78f597cef
           SOURCE=b5c6e7b3d9b22f01c4fc1bf8e095261bd0418a1b
           git checkout -B work "origin/${TARGET}"
+          git show HEAD:docs/machine/doc-set.v1.json > "${RUNNER_TEMP}/doc-set-ours.json"
+          git show "$SOURCE":docs/machine/doc-set.v1.json > "${RUNNER_TEMP}/doc-set-source.json"
           git diff --binary "$BASE" "$SOURCE" -- . > "${RUNNER_TEMP}/parity.patch"
           set +e
           git apply --3way --index "${RUNNER_TEMP}/parity.patch"
@@ -43,6 +45,23 @@ jobs:
                 git add "$path"
               fi
             done
+            if git ls-files -u -- docs/machine/doc-set.v1.json | grep -q .; then
+              python3 - "${RUNNER_TEMP}/doc-set-ours.json" "${RUNNER_TEMP}/doc-set-source.json" docs/machine/doc-set.v1.json <<'PY'
+          import json, pathlib, sys
+          ours = json.loads(pathlib.Path(sys.argv[1]).read_text())
+          source = json.loads(pathlib.Path(sys.argv[2]).read_text())
+          for key in ("authority_order", "required_files"):
+              merged = list(ours[key])
+              seen = set(merged)
+              for value in source[key]:
+                  if value not in seen:
+                      merged.append(value)
+                      seen.add(value)
+              ours[key] = merged
+          pathlib.Path(sys.argv[3]).write_text(json.dumps(ours, indent=2, sort_keys=True) + "\n")
+          PY
+              git add docs/machine/doc-set.v1.json
+            fi
             test -z "$(git diff --name-only --diff-filter=U)"
           fi
           python3 tools/contracts/generate_module_contracts.py --write
