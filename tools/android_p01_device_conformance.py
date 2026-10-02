@@ -15,6 +15,7 @@ import json
 import os
 import re
 import selectors
+import shlex
 import shutil
 import signal
 import stat as stat_module
@@ -288,8 +289,7 @@ def measure_regular_file(
 
 
 def _kill_process_group(process: subprocess.Popen[bytes]) -> None:
-    if process.poll() is not None:
-        return
+    # Children can still hold the output pipes after the group leader exits.
     try:
         os.killpg(process.pid, signal.SIGKILL)
     except ProcessLookupError:
@@ -319,16 +319,19 @@ def run_bounded(
     )
     assert process.stdout is not None
     assert process.stderr is not None
-    selector = selectors.DefaultSelector()
+    stdout_fd = process.stdout.fileno()
+    stderr_fd = process.stderr.fileno()
+    selector = None
     streams: dict[int, bytearray] = {
-        process.stdout.fileno(): bytearray(),
-        process.stderr.fileno(): bytearray(),
+        stdout_fd: bytearray(),
+        stderr_fd: bytearray(),
     }
-    for stream in (process.stdout, process.stderr):
-        os.set_blocking(stream.fileno(), False)
-        selector.register(stream, selectors.EVENT_READ)
     deadline = time.monotonic() + timeout_seconds
     try:
+        selector = selectors.DefaultSelector()
+        for stream in (process.stdout, process.stderr):
+            os.set_blocking(stream.fileno(), False)
+            selector.register(stream, selectors.EVENT_READ)
         while selector.get_map():
             remaining = deadline - time.monotonic()
             if remaining <= 0:
@@ -350,7 +353,10 @@ def run_bounded(
                 if total > maximum_output:
                     _kill_process_group(process)
                     raise ConformanceError("subprocess output exceeded bound")
-        return_code = process.wait(timeout=max(0.1, deadline - time.monotonic()))
+        try:
+            return_code = process.wait(timeout=max(0.001, deadline - time.monotonic()))
+        except subprocess.TimeoutExpired as exc:
+            raise ConformanceError("subprocess timed out") from exc
     except BaseException:
         _kill_process_group(process)
         try:
@@ -359,12 +365,11 @@ def run_bounded(
             pass
         raise
     finally:
-        selector.close()
+        if selector is not None:
+            selector.close()
         process.stdout.close()
         process.stderr.close()
-    return return_code, bytes(streams[process.stdout.fileno()]), bytes(
-        streams[process.stderr.fileno()]
-    )
+    return return_code, bytes(streams[stdout_fd]), bytes(streams[stderr_fd])
 
 
 def _validate_serial(serial: str) -> str:
@@ -486,7 +491,9 @@ class AdbClient:
         format_string = "%F|%s|%a|%u|%g|%d|%i|%h|%C"
         output = self._run(
             f"stat:{path}",
-            ["shell", "stat", "-c", format_string, path],
+            # adb shell joins arguments for its remote shell parser; quote
+            # the literal separators so they cannot become pipelines.
+            ["shell", "stat", "-c", shlex.quote(format_string), path],
             maximum=16384,
         ).decode("utf-8", "strict").strip()
         fields = output.split("|", 8)

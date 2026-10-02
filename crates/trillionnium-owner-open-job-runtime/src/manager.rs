@@ -12,7 +12,7 @@ use trillionnium_owner_open_job_registry::{
 };
 
 use crate::journal::{JournalStatus, OperationBegin};
-use crate::process::{ProcessControl, StdinCloseEffect, spawn_process};
+use crate::process::{ProcessControl, StdinCloseEffect, spawn_process, validate_start};
 use crate::{
     ControlDisposition, EventLogStatus, InternalProcessEvent, JobInspection, JobJournal,
     JobObservationGap, JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult,
@@ -330,8 +330,8 @@ impl JobManager {
             && !matches!(&journal_status, JournalStatus::Durable)
         {
             let reason = journal_status_reason(&journal_status);
-            let _ = self.note_journal_degraded_for_job(&request.key, reason);
             if registry_entry_exists {
+                let _ = self.note_journal_degraded_for_job(&request.key, reason);
                 // A pre-existing registry marker must not remain an
                 // unowned, redispatchable Accepted state while persistence
                 // is unavailable. The live-map check above already ruled
@@ -341,6 +341,11 @@ impl JobManager {
                     .mark_restart_uncertain(&request.key)
                     .map_err(registry_error)?;
             }
+            // A rejected new key owns no bounded registry entry. Retaining
+            // an observation for every such key would let repeated failed
+            // admissions grow the observations map without a capacity fence.
+            // Inspection still exposes the manager's journal status/error;
+            // per-job degradation history belongs only to accepted jobs.
             return Err(JobRuntimeError::Journal(
                 "job journal is unavailable and unjournaled effects are disabled".to_string(),
             ));
@@ -2055,7 +2060,9 @@ fn validate_start_request(request: &JobStartRequest, config: &JobRuntimeConfig) 
             "initial stdin exceeds its bound".to_string(),
         ));
     }
-    Ok(())
+    // Validate process framing before reserving registry/journal state. A
+    // malformed command, environment, path or PTY is not an accepted effect.
+    validate_start(request)
 }
 
 fn validate_operation_id(value: &str, maximum: usize) -> Result<()> {
@@ -2234,6 +2241,66 @@ mod tests {
             initial_stdin: Vec::new(),
             pty: None,
         }
+    }
+
+    #[test]
+    fn rejected_unjournaled_starts_do_not_retain_attacker_selected_job_keys() {
+        let manager = JobManager::new(JobRuntimeConfig::default(), JobJournal::memory_only())
+            .expect("fail-closed manager");
+        for index in 0..512 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("rejected-{index}");
+            let error = manager
+                .start(stale_start_request(key, rollback_test_request(), "start"))
+                .expect_err("durability is required before acceptance");
+            assert!(matches!(error, JobRuntimeError::Journal(_)));
+        }
+        assert!(manager.observations().unwrap().is_empty());
+        assert!(!manager.has_live_or_pending_jobs());
+    }
+
+    #[test]
+    fn malformed_process_requests_are_rejected_before_durable_acceptance() {
+        let directory = tempdir().expect("temporary directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("harden temporary directory");
+        let journal_path = directory.path().join("jobs.jsonl");
+        let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        for kind in [
+            "nul-command",
+            "empty-executable",
+            "nul-cwd",
+            "bad-env",
+            "zero-pty",
+        ] {
+            let mut key = rollback_test_key();
+            key.job_id = kind.to_string();
+            let mut request = stale_start_request(key.clone(), rollback_test_request(), "start");
+            match kind {
+                "nul-command" => {
+                    request.invocation = JobInvocation::Command {
+                        command: "x\0y".to_string(),
+                    }
+                }
+                "empty-executable" => request.shell_executable = PathBuf::new(),
+                "nul-cwd" => request.cwd = Some(PathBuf::from("x\0y")),
+                "bad-env" => {
+                    request.env.insert("bad=key".to_string(), None);
+                }
+                "zero-pty" => request.pty = Some(PtySize { rows: 0, cols: 80 }),
+                _ => unreachable!(),
+            }
+            assert!(matches!(
+                manager.start(request),
+                Err(JobRuntimeError::InvalidRequest(_))
+            ));
+            assert!(matches!(
+                manager.registry().snapshot(&key),
+                Err(JobRegistryError::NotFound)
+            ));
+            assert!(manager.durable_records(&key).unwrap().is_empty());
+        }
+        assert!(!manager.has_live_or_pending_jobs());
     }
 
     #[test]

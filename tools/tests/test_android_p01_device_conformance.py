@@ -597,6 +597,63 @@ class AndroidP01DeviceConformanceTest(unittest.TestCase):
                 maximum_output=1024,
             )
 
+    def test_bounded_runner_returns_both_streams_and_exit_status(self) -> None:
+        result = tool.run_bounded(
+            [sys.executable, "-c", "import os; os.write(1,b'out'); os.write(2,b'err'); raise SystemExit(7)"],
+            timeout_seconds=5,
+            maximum_output=1024,
+        )
+        self.assertEqual(result, (7, b"out", b"err"))
+
+    def test_bounded_runner_handles_successful_empty_output(self) -> None:
+        self.assertEqual(
+            tool.run_bounded([sys.executable, "-c", "pass"], timeout_seconds=5),
+            (0, b"", b""),
+        )
+
+    def test_bounded_runner_rejects_timeout_after_pipes_close(self) -> None:
+        with self.assertRaisesRegex(tool.ConformanceError, "timed out"):
+            tool.run_bounded(
+                [sys.executable, "-c", "import os,time; os.close(1); os.close(2); time.sleep(5)"],
+                timeout_seconds=0.2,
+                maximum_output=1024,
+            )
+
+    def test_capture_setup_failures_reap_process_and_close_pipes(self) -> None:
+        for failure in ("selector", "blocking", "register"):
+            with self.subTest(failure=failure):
+                processes = []
+                original_popen = tool.subprocess.Popen
+
+                def spawn(*args, **kwargs):
+                    process = original_popen(*args, **kwargs)
+                    processes.append(process)
+                    return process
+
+                selector = mock.Mock()
+                if failure == "register":
+                    selector.register.side_effect = OSError("register failed")
+                with mock.patch.object(tool.subprocess, "Popen", side_effect=spawn), \
+                     mock.patch.object(
+                         tool.selectors, "DefaultSelector", return_value=selector,
+                         side_effect=OSError("EMFILE") if failure == "selector" else None,
+                     ), \
+                     mock.patch.object(
+                         tool.os, "set_blocking",
+                         side_effect=OSError("blocking failed") if failure == "blocking" else None,
+                     ):
+                    with self.assertRaises(OSError):
+                        tool.run_bounded(
+                            [sys.executable, "-c", "import time; time.sleep(20)"],
+                            timeout_seconds=5,
+                        )
+                self.assertEqual(len(processes), 1)
+                self.assertIsNotNone(processes[0].poll())
+                self.assertTrue(processes[0].stdout.closed)
+                self.assertTrue(processes[0].stderr.closed)
+                if failure != "selector":
+                    selector.close.assert_called_once()
+
     def test_bounded_runner_rejects_timeout(self) -> None:
         with self.assertRaisesRegex(tool.ConformanceError, "timed out"):
             tool.run_bounded(
@@ -706,7 +763,7 @@ class AndroidP01DeviceConformanceTest(unittest.TestCase):
                 ],
             )
 
-    def test_adb_file_reads_use_no_remote_shell_parser(self) -> None:
+    def test_adb_file_reads_use_only_fixed_read_only_commands(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             fake_adb = Path(temporary) / "adb"
             fake_adb.write_bytes(b"#!/bin/sh\nexit 0\n")
@@ -726,7 +783,7 @@ class AndroidP01DeviceConformanceTest(unittest.TestCase):
                     "shell",
                     "stat",
                     "-c",
-                    "%F|%s|%a|%u|%g|%d|%i|%h|%C",
+                    "'%F|%s|%a|%u|%g|%d|%i|%h|%C'",
                     source,
                 ]:
                     return (
@@ -746,6 +803,32 @@ class AndroidP01DeviceConformanceTest(unittest.TestCase):
             tails = [argv[3:] for argv in captured]
             self.assertNotIn("sh", {item for tail in tails for item in tail})
             self.assertTrue(all(tail[:2] != ["shell", "sh"] for tail in tails))
+
+    def test_stat_format_survives_adb_remote_shell_argument_joining(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = tool.ARTIFACT_SPECS[0].source
+            fake_stat = root / "stat"
+            fake_stat.write_text(
+                f"#!{sys.executable}\n"
+                "import sys\n"
+                f"assert sys.argv[1:] == ['-c', '%F|%s|%a|%u|%g|%d|%i|%h|%C', {source!r}]\n"
+                "print('regular file|12|755|0|0|1|2|1|u:object_r:system_file:s0')\n",
+                encoding="utf-8",
+            )
+            fake_stat.chmod(0o755)
+            fake_adb = root / "adb"
+            fake_adb.write_text(
+                f"#!{sys.executable}\n"
+                "import os, subprocess, sys\n"
+                "assert sys.argv[1:4] == ['-s', 'SERIAL', 'shell']\n"
+                f"os.environ['PATH'] = {str(root)!r}\n"
+                "raise SystemExit(subprocess.run(['/bin/sh', '-c', ' '.join(sys.argv[4:])]).returncode)\n",
+                encoding="utf-8",
+            )
+            fake_adb.chmod(0o755)
+            client = tool.AdbClient(str(fake_adb), "SERIAL")
+            self.assertEqual(client.stat(source)["inode"], 2)
 
 
 if __name__ == "__main__":

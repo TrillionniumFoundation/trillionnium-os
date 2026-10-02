@@ -94,8 +94,8 @@
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
-      "sha256": "7b8546da83c2b2df6555d55a5171d832b0bb4f503125093bb352f2791c95450e",
-      "size": 33921
+      "sha256": "433ac00f4d1912dc02f7419f0b376c883074dfad23f903ac4b260b82244c3b61",
+      "size": 35306
     }
   ],
   "introduction_review_class": "INITIAL_V1",

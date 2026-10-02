@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::fs::{self, File};
 use std::io::Read;
 use std::os::fd::{AsRawFd, FromRawFd};
+use std::os::unix::ffi::OsStrExt;
 use std::os::unix::process::{CommandExt, ExitStatusExt};
 use std::path::Path;
 use std::process::{Child, ChildStdin, Command, ExitStatus, Stdio};
@@ -568,12 +569,8 @@ fn apply_environment(command: &mut Command, env: &BTreeMap<String, Option<String
     }
 }
 
-fn validate_start(request: &JobStartRequest) -> Result<()> {
-    if request.shell_executable.as_os_str().is_empty() {
-        return Err(JobRuntimeError::InvalidRequest(
-            "shell executable is empty".to_string(),
-        ));
-    }
+pub(crate) fn validate_start(request: &JobStartRequest) -> Result<()> {
+    validate_path(&request.shell_executable, "shell executable")?;
     if let Some(cwd) = &request.cwd {
         validate_path(cwd, "cwd")?;
     }
@@ -587,15 +584,22 @@ fn validate_start(request: &JobStartRequest) -> Result<()> {
         }
         JobInvocation::Argv { argv } => {
             if argv.is_empty()
-                || argv
-                    .iter()
-                    .any(|argument| argument.is_empty() || argument.as_bytes().contains(&0))
+                || argv[0].is_empty()
+                || argv.iter().any(|argument| argument.as_bytes().contains(&0))
             {
                 return Err(JobRuntimeError::InvalidRequest(
                     "job argv is empty or contains an invalid element".to_string(),
                 ));
             }
         }
+    }
+    if request
+        .pty
+        .is_some_and(|size| size.rows == 0 || size.cols == 0)
+    {
+        return Err(JobRuntimeError::InvalidRequest(
+            "PTY rows and cols must be non-zero".to_string(),
+        ));
     }
     for (key, value) in &request.env {
         if key.is_empty() || key.contains('=') || key.as_bytes().contains(&0) {
@@ -616,8 +620,10 @@ fn validate_start(request: &JobStartRequest) -> Result<()> {
 }
 
 fn validate_path(path: &Path, label: &str) -> Result<()> {
-    if path.as_os_str().is_empty() {
-        return Err(JobRuntimeError::InvalidRequest(format!("{label} is empty")));
+    if path.as_os_str().is_empty() || path.as_os_str().as_bytes().contains(&0) {
+        return Err(JobRuntimeError::InvalidRequest(format!(
+            "{label} is empty or contains NUL"
+        )));
     }
     Ok(())
 }

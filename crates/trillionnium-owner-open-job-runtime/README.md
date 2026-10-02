@@ -20,3 +20,11 @@ cargo test --locked -p trillionnium-owner-open-job-runtime --all-targets
 
 Use the linked module runbook for state ownership and recovery. This command
 does not establish installed-target, device, fault or release qualification.
+
+Process framing (command/argv, environment, paths and PTY dimensions) is checked
+before registry or durable acceptance. An empty argument after a nonempty argv
+executable is preserved. Rejected new jobs do not retain per-key observation
+state when durability is unavailable; inspection exposes the journal status
+without an accepted job marker. These internal fixes preserve the v1 journal
+schema and require no migration. Rollback restores the prior rejection behavior;
+source tests alone do not qualify installed memory use or recovery latency.

@@ -22,9 +22,9 @@ use trillionnium_owner_open_call_registry::{
 };
 use trillionnium_owner_open_runtime::{
     AdbExecRequest, CancellationToken as RuntimeCancellationToken, ExecutionEvent,
-    ExecutionEventKind, ExecutionTerminal, MechanicalLimits, PtySize, ShellExecRequest,
-    ShellInvocation, StreamKind, TerminalKind, ToolKind, execute_adb, execute_adb_pty,
-    execute_shell, execute_shell_pty,
+    ExecutionEventKind, ExecutionTerminal, MAX_RUNTIME_REQUEST_TIMEOUT, MechanicalLimits, PtySize,
+    ShellExecRequest, ShellInvocation, StreamKind, TerminalKind, ToolKind, execute_adb,
+    execute_adb_pty, execute_shell, execute_shell_pty,
 };
 
 #[derive(Debug)]
@@ -830,6 +830,7 @@ fn validate_runtime_request(
         .map_err(|error| invalid(error.to_string()))?;
     match request {
         DirectToolRequest::Shell(request) => {
+            validate_timeout(request.timeout)?;
             validate_common(
                 &request.call_id,
                 request.target_id.as_deref(),
@@ -857,6 +858,7 @@ fn validate_runtime_request(
             }
         }
         DirectToolRequest::Adb(request) => {
+            validate_timeout(request.timeout)?;
             validate_common(
                 &request.call_id,
                 request.target_id.as_deref(),
@@ -876,6 +878,15 @@ fn validate_runtime_request(
     }
     if pty.is_some_and(|size| size.rows == 0 || size.cols == 0) {
         return Err(invalid("PTY rows and cols must be non-zero"));
+    }
+    Ok(())
+}
+
+fn validate_timeout(timeout: Option<Duration>) -> Result<()> {
+    if timeout.is_some_and(|timeout| timeout > MAX_RUNTIME_REQUEST_TIMEOUT) {
+        return Err(invalid(format!(
+            "request timeout exceeds hard bound {MAX_RUNTIME_REQUEST_TIMEOUT:?}"
+        )));
     }
     Ok(())
 }

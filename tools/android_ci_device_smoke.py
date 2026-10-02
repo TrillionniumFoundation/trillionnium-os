@@ -18,6 +18,7 @@ import math
 import os
 from pathlib import Path
 import re
+import selectors
 import shutil
 import signal
 import stat
@@ -37,6 +38,7 @@ REPOSITORY_RE = re.compile(
 SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 MAX_CAPTURE_BYTES = 16 * 1024
+MAX_PROCESS_OUTPUT_BYTES = 2 * MAX_CAPTURE_BYTES
 MAX_RECEIPT_BYTES = 2 * 1024 * 1024
 DEFAULT_PACKAGES = (
     "org.trillionnium.aishell",
@@ -143,11 +145,10 @@ def _run_adb(adb: Path, serial: str | None, arguments: list[str], timeout: float
     try:
         process = subprocess.Popen(
             command,
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
+            close_fds=True,
             start_new_session=True,
         )
     except OSError as error:
@@ -157,40 +158,91 @@ def _run_adb(adb: Path, serial: str | None, arguments: list[str], timeout: float
             "stdout": "",
             "stderr": _capture(str(error)),
             "timed_out": False,
+            "output_limit_exceeded": False,
             "spawn_error": True,
             "seconds": round(time.monotonic() - started, 3),
         }
+    assert process.stdout is not None and process.stderr is not None
+    stdout_fd, stderr_fd = process.stdout.fileno(), process.stderr.fileno()
+    streams = {stdout_fd: bytearray(), stderr_fd: bytearray()}
+    selector = None
+    deadline = started + timeout
+    timed_out = False
+    output_limit_exceeded = False
+    capture_error = None
+    total = 0
     try:
-        stdout, stderr = process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        # ``adb`` can leave a child transport helper behind.  It is started in
-        # its own process group so a timeout cannot leak a command into the
-        # next device job.
+        selector = selectors.DefaultSelector()
+        for stream in (process.stdout, process.stderr):
+            os.set_blocking(stream.fileno(), False)
+            selector.register(stream, selectors.EVENT_READ)
+        while selector.get_map():
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                timed_out = True
+                break
+            for key, _ in selector.select(min(remaining, 0.1)):
+                try:
+                    chunk = os.read(key.fd, 4096)
+                except BlockingIOError:
+                    continue
+                if not chunk:
+                    selector.unregister(key.fileobj)
+                    continue
+                budget = MAX_PROCESS_OUTPUT_BYTES - total
+                streams[key.fd].extend(chunk[:budget])
+                total += min(len(chunk), budget)
+                if len(chunk) > budget:
+                    output_limit_exceeded = True
+                    break
+            if output_limit_exceeded:
+                break
+        if not timed_out and not output_limit_exceeded:
+            try:
+                process.wait(timeout=max(0.001, deadline - time.monotonic()))
+            except subprocess.TimeoutExpired:
+                timed_out = True
+    except OSError as error:
+        capture_error = str(error)
+    finally:
+        # Kill the whole group even when its leader has exited: a child may
+        # still hold one of the pipes.  Never drain unbounded output here.
+        if capture_error or timed_out or output_limit_exceeded or process.poll() is None:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except (OSError, ProcessLookupError):
+                if process.poll() is None:
+                    process.kill()
         try:
-            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-        except (OSError, ProcessLookupError):
+            process.wait(timeout=2)
+        except subprocess.TimeoutExpired:
             pass
-        stdout, stderr = process.communicate()
-        return {
-            "argv": command,
-            "returncode": None,
-            "stdout": _capture(stdout or ""),
-            "stderr": _capture(stderr or ""),
-            "timed_out": True,
-            "seconds": round(time.monotonic() - started, 3),
-        }
+        if selector is not None:
+            selector.close()
+        process.stdout.close()
+        process.stderr.close()
     return {
         "argv": command,
-        "returncode": process.returncode,
-        "stdout": _capture(stdout),
-        "stderr": _capture(stderr),
-        "timed_out": False,
+        "returncode": None if capture_error or timed_out or output_limit_exceeded else process.returncode,
+        "stdout": _capture(streams[stdout_fd].decode("utf-8", errors="replace")),
+        "stderr": _capture(
+            streams[stderr_fd].decode("utf-8", errors="replace")
+            + (f"\noutput capture failed: {capture_error}" if capture_error else "")
+        ),
+        "timed_out": timed_out,
+        "output_limit_exceeded": output_limit_exceeded,
+        "capture_error": capture_error is not None,
         "seconds": round(time.monotonic() - started, 3),
     }
 
 
 def _successful(observation: dict[str, Any]) -> bool:
-    return observation.get("returncode") == 0 and not observation.get("timed_out")
+    return (
+        observation.get("returncode") == 0
+        and not observation.get("timed_out")
+        and not observation.get("output_limit_exceeded")
+        and not observation.get("capture_error")
+    )
 
 
 def _write_exclusive(path: Path, data: bytes) -> None:

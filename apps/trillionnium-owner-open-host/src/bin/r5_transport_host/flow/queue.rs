@@ -78,18 +78,22 @@ impl StreamDelivery {
             // that actually crosses two independent cursor spaces.  Fold
             // every queued frame and fail closed as soon as any domain differs.
             let mut cursor_domain = first.cursor_domain.clone();
+            let mut cursor_scope = first.cursor_scope.clone();
             let mut mixed_cursor_domains = false;
             for frame in self.queue.iter().skip(1) {
-                if frame.cursor_domain != cursor_domain {
+                if frame.cursor_domain != cursor_domain || frame.cursor_scope != cursor_scope {
                     mixed_cursor_domains = true;
                     cursor_domain = None;
+                    cursor_scope = None;
                     break;
                 }
             }
             let cursor_range_complete = !mixed_cursor_domains
+                && cursor_scope.is_some()
                 && self.queue.iter().all(|frame| frame.cursor.is_some());
             let gap = ResyncGap {
                 cursor_domain,
+                cursor_scope,
                 first_cursor: cursor_range_complete.then_some(first.cursor).flatten(),
                 last_cursor: cursor_range_complete.then_some(last.cursor).flatten(),
                 cursor_range_complete,
@@ -168,10 +172,9 @@ impl BufferedFrame {
             // runtime/journal domain without a durable cursor is therefore an
             // intentionally non-numeric observation, even when its opaque ID
             // happens to end in `-event-<number>`.
-            None
-                if explicit_domain
-                    .as_deref()
-                    .is_some_and(|domain| domain != TRANSPORT_CURSOR_DOMAIN) =>
+            None if explicit_domain
+                .as_deref()
+                .is_some_and(|domain| domain != TRANSPORT_CURSOR_DOMAIN) =>
             {
                 None
             }
@@ -182,12 +185,14 @@ impl BufferedFrame {
             (Some(_), None) => Some(TRANSPORT_CURSOR_DOMAIN.to_string()),
             (None, domain) => domain,
         };
+        let cursor_scope = CursorScope::from_frame(&frame, cursor_domain.as_deref());
         let event_id = frame.event_id.clone();
         Ok(Self {
             frame,
             encoded_bytes,
             cursor,
             cursor_domain,
+            cursor_scope,
             event_id,
         })
     }

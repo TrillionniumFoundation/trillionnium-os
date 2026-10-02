@@ -560,8 +560,8 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
-          "sha256": "7b8546da83c2b2df6555d55a5171d832b0bb4f503125093bb352f2791c95450e",
-          "size": 33921
+          "sha256": "433ac00f4d1912dc02f7419f0b376c883074dfad23f903ac4b260b82244c3b61",
+          "size": 35306
         }
       ],
       "logical_labels": {
@@ -606,8 +606,8 @@
         },
         {
           "path": "planned/crates/trillionnium-global-control-plane/src/lib.rs",
-          "sha256": "7374151610b0285c633e3eb48c1a7064cbdc583df192ee1ae16de7fe332199d1",
-          "size": 129822
+          "sha256": "00ce5d64a189f4ee2985465e3726eee8226d0b9fbe8fe95c99655f1789b48505",
+          "size": 131711
         }
       ],
       "logical_labels": {
@@ -692,13 +692,13 @@
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
-          "sha256": "e684e3007cbaacc64d1b302f65a45ad03add1fc063f463c12e2bb23aaf4ff039",
-          "size": 111963
+          "sha256": "09bc14b27f4bd1776d3540eda438263f5a888e72ae9beb614259187a5b6f2e13",
+          "size": 115142
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/process.rs",
-          "sha256": "46f0e7dc71d9f797fe4ddefbf018abf2a7ead5c6c89ff8334c1462dfdf72cf88",
-          "size": 62044
+          "sha256": "5aa48e019b0b8c61a7eb72ddb94ceed75cf28325dfc5ac3e85fc706fa3ece485",
+          "size": 62259
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/types.rs",
@@ -729,8 +729,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
-          "sha256": "a1733b2110b8dd1b43ab6676800b76c8042bd99a329adf1c3ebce3d72d85dadd",
-          "size": 20073
+          "sha256": "a8da82f793015f1d97c071e8d9d2992b04da45ae64c93f64a6b97be811a3cbba",
+          "size": 20954
         },
         {
           "path": "tools/tests/test_module_contracts.py",
@@ -1069,8 +1069,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-          "sha256": "50276548f8fd083c0823e32e48d994fc25e8e01930639ccdb9e5b2c6f4c22a55",
-          "size": 36688
+          "sha256": "302efe534ac5346c1239dcb8a77e064996489108c790badc1a0d5dbab0c96658",
+          "size": 37104
         }
       ],
       "logical_labels": {
@@ -1091,8 +1091,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-tool-bridge/tests/failure_closure.rs",
-          "sha256": "22552226e0521d4bf3297f11dc3a3d30efd956393a331c92f82b1965e725f0e9",
-          "size": 3629
+          "sha256": "99155dd5f91da9e973c9d653f62df971a274465b682b9716ed582206f9298f89",
+          "size": 5005
         },
         {
           "path": "tools/tests/test_module_contracts.py",
@@ -1145,8 +1145,8 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/queue.rs",
-          "sha256": "c95ea2f7e6e3096d07301a86d1c3cfcdd621508cbde31a5e5fb0497b666298d0",
-          "size": 8961
+          "sha256": "9a41e5d9a8f2072950e491544c3f056eb4850f69eeed48084068b912cc1e3024",
+          "size": 9263
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs",
@@ -1155,8 +1155,8 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/types.rs",
-          "sha256": "1d321e4f4c19a5dbbb8e1d670357177b72decbc1883ed3138176724747657748",
-          "size": 5214
+          "sha256": "f6ecf2c412a97c09a8ce14a6d3617764ae50b32ea76901ec93ef5679e2c3b5dc",
+          "size": 6850
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/window.rs",
@@ -1207,8 +1207,8 @@
       "test_sources": [
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/tests.rs",
-          "sha256": "518914fd27d654249ffbc9ce858bb9ffb464af9e97638e326ffbd6f908a96fc1",
-          "size": 11773
+          "sha256": "a7fb44ae60875fbc9ee113273f3988678f6799b2296199e3572b0601a058d61b",
+          "size": 16021
         },
         {
           "path": "tools/tests/test_module_contracts.py",

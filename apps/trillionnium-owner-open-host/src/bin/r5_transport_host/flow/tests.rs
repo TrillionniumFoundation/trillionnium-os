@@ -66,12 +66,28 @@ mod flow_tests {
         frame
     }
 
+    fn runtime_job_output(job_id: &str, cursor: u64, bytes: usize) -> RunTurnFrame {
+        let mut frame = job_output(cursor, bytes);
+        frame.job_id = Some(job_id.to_string());
+        frame.event_id = Some(format!("opaque-{job_id}-{cursor}"));
+        frame
+            .extensions
+            .insert("durable_cursor".to_string(), json!(cursor));
+        frame
+            .extensions
+            .insert("cursor_domain".to_string(), json!(RUNTIME_CURSOR_DOMAIN));
+        frame
+    }
+
     #[test]
     fn pause_credit_and_resume_release_queued_frames_in_order() {
         let mut flow = StreamDelivery::new(&options(4096));
         flow.apply_control(&control(0, StreamControl::Pause, "pause"))
             .unwrap();
-        assert!(matches!(flow.submit(data(1, 32)).unwrap(), SubmitResult::Queued));
+        assert!(matches!(
+            flow.submit(data(1, 32)).unwrap(),
+            SubmitResult::Queued
+        ));
         flow.apply_control(&control(
             1,
             StreamControl::WindowUpdate { credit_bytes: 1024 },
@@ -121,10 +137,9 @@ mod flow_tests {
         frame
             .extensions
             .insert("durable_cursor".to_string(), json!(41));
-        frame.extensions.insert(
-            "cursor_domain".to_string(),
-            json!(RUNTIME_CURSOR_DOMAIN),
-        );
+        frame
+            .extensions
+            .insert("cursor_domain".to_string(), json!(RUNTIME_CURSOR_DOMAIN));
         let result = flow.submit(frame).unwrap();
         let gap = match result {
             SubmitResult::GapStarted(gap) => gap,
@@ -133,7 +148,10 @@ mod flow_tests {
         assert_eq!(gap.first_cursor, Some(41));
         assert_eq!(gap.last_cursor, Some(41));
         assert_eq!(gap.required_resume_cursor(), Some(42));
-        assert_eq!(gap.first_event_id.as_deref(), Some("job-event-opaque-content-bound-id"));
+        assert_eq!(
+            gap.first_event_id.as_deref(),
+            Some("job-event-opaque-content-bound-id")
+        );
     }
 
     #[test]
@@ -145,7 +163,9 @@ mod flow_tests {
         frame
             .extensions
             .insert("durable_cursor".to_string(), json!("not-a-cursor"));
-        let error = flow.submit(frame).expect_err("malformed cursor must be rejected");
+        let error = flow
+            .submit(frame)
+            .expect_err("malformed cursor must be rejected");
         assert!(error.to_string().contains("durable_cursor"));
     }
 
@@ -168,10 +188,9 @@ mod flow_tests {
         flow.apply_control(&control(0, StreamControl::Pause, "pause"))
             .unwrap();
         let mut frame = job_output(7, 512);
-        frame.extensions.insert(
-            "cursor_domain".to_string(),
-            json!(RUNTIME_CURSOR_DOMAIN),
-        );
+        frame
+            .extensions
+            .insert("cursor_domain".to_string(), json!(RUNTIME_CURSOR_DOMAIN));
         let gap = match flow.submit(frame).unwrap() {
             SubmitResult::GapStarted(gap) => gap,
             other => panic!("unexpected submit result: {other:?}"),
@@ -201,10 +220,9 @@ mod flow_tests {
     #[test]
     fn explicit_transport_domain_may_derive_legacy_event_cursor() {
         let mut frame = data(9, 16);
-        frame.extensions.insert(
-            "cursor_domain".to_string(),
-            json!(TRANSPORT_CURSOR_DOMAIN),
-        );
+        frame
+            .extensions
+            .insert("cursor_domain".to_string(), json!(TRANSPORT_CURSOR_DOMAIN));
         let buffered = BufferedFrame::new(frame).expect("valid transport cursor");
         assert_eq!(buffered.cursor, Some(9));
         assert_eq!(
@@ -224,10 +242,9 @@ mod flow_tests {
         second
             .extensions
             .insert("durable_cursor".to_string(), json!(42));
-        second.extensions.insert(
-            "cursor_domain".to_string(),
-            json!(RUNTIME_CURSOR_DOMAIN),
-        );
+        second
+            .extensions
+            .insert("cursor_domain".to_string(), json!(RUNTIME_CURSOR_DOMAIN));
         let gap = match flow.submit(second).unwrap() {
             SubmitResult::GapStarted(gap) => gap,
             other => panic!("unexpected submit result: {other:?}"),
@@ -236,6 +253,88 @@ mod flow_tests {
         assert_eq!(gap.cursor_domain, None);
         assert_eq!(gap.required_resume_cursor(), None);
         assert_eq!(gap.payload()["mixed_cursor_domains"], Value::Bool(true));
+    }
+
+    #[test]
+    fn overflow_gap_checks_every_queued_cursor_domain() {
+        let mut flow = StreamDelivery::new(&options(4096));
+        flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+            .unwrap();
+        assert!(matches!(
+            flow.submit(data(1, 8)).unwrap(),
+            SubmitResult::Queued
+        ));
+        let mut middle = job_output(2, 8);
+        middle
+            .extensions
+            .insert("durable_cursor".to_string(), json!(42));
+        middle
+            .extensions
+            .insert("cursor_domain".to_string(), json!(RUNTIME_CURSOR_DOMAIN));
+        assert!(matches!(flow.submit(middle).unwrap(), SubmitResult::Queued));
+        // The endpoints both use transport_event. The middle job cursor is
+        // independent, so even this overflow must not publish a numeric range.
+        let gap = match flow.submit(data(3, 4096)).unwrap() {
+            SubmitResult::GapStarted(gap) => gap,
+            other => panic!("unexpected submit result: {other:?}"),
+        };
+        assert!(gap.mixed_cursor_domains);
+        assert!(!gap.cursor_range_complete);
+        assert_eq!(gap.cursor_domain, None);
+        assert_eq!(gap.required_resume_cursor(), None);
+        let mut resume = control(1, StreamControl::Resume, "resume");
+        resume.resumed_through_cursor = Some(100);
+        assert!(flow.apply_control(&resume).is_err());
+    }
+
+    #[test]
+    fn different_jobs_never_share_one_numeric_runtime_resume_range() {
+        for cut in ["overflow", "terminal", "extend"] {
+            let mut flow = StreamDelivery::new(&options(4096));
+            flow.apply_control(&control(0, StreamControl::Pause, "pause"))
+                .unwrap();
+            let gap = match cut {
+                "overflow" => {
+                    assert!(matches!(
+                        flow.submit(runtime_job_output("job-a", 42, 8)).unwrap(),
+                        SubmitResult::Queued
+                    ));
+                    match flow.submit(runtime_job_output("job-b", 3, 1024)).unwrap() {
+                        SubmitResult::GapStarted(gap) => gap,
+                        other => panic!("unexpected overflow result: {other:?}"),
+                    }
+                }
+                "terminal" => {
+                    assert!(matches!(
+                        flow.submit(runtime_job_output("job-a", 42, 8)).unwrap(),
+                        SubmitResult::Queued
+                    ));
+                    assert!(matches!(
+                        flow.submit(runtime_job_output("job-b", 3, 8)).unwrap(),
+                        SubmitResult::Queued
+                    ));
+                    flow.terminal_gap().expect("terminal leaves a missing run")
+                }
+                "extend" => {
+                    assert!(matches!(
+                        flow.submit(runtime_job_output("job-a", 42, 1024)).unwrap(),
+                        SubmitResult::GapStarted(_)
+                    ));
+                    assert!(matches!(
+                        flow.submit(runtime_job_output("job-b", 3, 8)).unwrap(),
+                        SubmitResult::Suppressed
+                    ));
+                    flow.gap.clone().unwrap()
+                }
+                _ => unreachable!(),
+            };
+            assert!(gap.mixed_cursor_domains, "{cut} combined independent jobs");
+            assert!(!gap.cursor_range_complete);
+            assert_eq!(gap.required_resume_cursor(), None);
+            let mut resume = control(1, StreamControl::Resume, "resume");
+            resume.resumed_through_cursor = Some(100);
+            assert!(flow.apply_control(&resume).is_err());
+        }
     }
 
     #[test]
@@ -289,13 +388,15 @@ mod flow_tests {
     #[test]
     fn duplicate_sequence_is_bound_to_exact_payload_fingerprint() {
         let mut flow = StreamDelivery::new(&options(4096));
-        let first = control(
-            0,
-            StreamControl::WindowUpdate { credit_bytes: 100 },
-            "same",
+        let first = control(0, StreamControl::WindowUpdate { credit_bytes: 100 }, "same");
+        assert_eq!(
+            flow.apply_control(&first).unwrap().0,
+            ApplyDisposition::Applied
         );
-        assert_eq!(flow.apply_control(&first).unwrap().0, ApplyDisposition::Applied);
-        assert_eq!(flow.apply_control(&first).unwrap().0, ApplyDisposition::Existing);
+        assert_eq!(
+            flow.apply_control(&first).unwrap().0,
+            ApplyDisposition::Existing
+        );
         let drift = control(
             0,
             StreamControl::WindowUpdate { credit_bytes: 100 },

@@ -37,6 +37,14 @@ a queue send does not establish durability. Store failure inhibits admission,
 sets `runtime_ready=false` and reports uncertain effect outcome while retaining the
 observed terminal status. See the execution-core contract for recovery handling.
 
+Transport overflow and terminal gaps check every suppressed frame's cursor
+domain and owning turn/job scope before publishing a numeric resume range.
+Different jobs never share one runtime/journal range. A mixed run, including a
+different domain between matching endpoints, requires explicit inspection;
+numeric resume cannot silently clear it. This internal recovery fix preserves
+the wire/state schemas and needs no migration. Installed recovery and memory
+budgets still require target evidence.
+
 ## Build and verification
 
 The required G1 source qualification uses Rust 1.93 with:

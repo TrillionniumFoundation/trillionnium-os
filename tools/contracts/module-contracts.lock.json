@@ -26,7 +26,7 @@
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 55011,
-      "sha256": "448f6edcf7d7d11647a082aed0264064a8bb2f80e6b37348be0ca86ef98cd7a6"
+      "sha256": "2801733992bbad558120833af86141cd62391dc9065fb8580bed92146b96c77a"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -658,7 +658,7 @@
     },
     "schemas/modules/execution-core/compatibility.json": {
       "bytes": 5220,
-      "sha256": "5ca4fb92c2ed904f575249d04653ad7527640ef3caa0cd6b6044d26b383cb409"
+      "sha256": "0b11c75018268cdd455d3c264740094bc56d97462d3fa62dec257b5321d198ac"
     },
     "schemas/modules/execution-core/errors-v1.schema.json": {
       "bytes": 3106,
@@ -782,7 +782,7 @@
     },
     "schemas/modules/global-control/compatibility.json": {
       "bytes": 4739,
-      "sha256": "bc6d8561be8fba02ae1a7e171a34dc711cbb9febf8cced0503956a78ea6d3bce"
+      "sha256": "c989dfa562dadef125ffa0568a033c3e6781b32158cc142dd9fa7259d7a86479"
     },
     "schemas/modules/global-control/errors-v1.schema.json": {
       "bytes": 3102,
@@ -906,7 +906,7 @@
     },
     "schemas/modules/job-runtime/compatibility.json": {
       "bytes": 7241,
-      "sha256": "a2edcdc8aa6aa4421cfcac6ff8cd2d65df992cb6e865570f42e00fd18f2f0ded"
+      "sha256": "10d58d54a7b39da2bca54aee6f1695ce5a400addc2ae8111bcc84614edf06bac"
     },
     "schemas/modules/job-runtime/errors-v1.schema.json": {
       "bytes": 3088,
@@ -1650,7 +1650,7 @@
     },
     "schemas/modules/tool-runtime/compatibility.json": {
       "bytes": 5084,
-      "sha256": "6718ecdb17de5511de78a5d43107f4c452bf54bb254456a8f298904d6a33a03b"
+      "sha256": "d240a18ce2e6a6de2d5398d5f1915e8579c991d9e6a44fe86d66f92709aad43d"
     },
     "schemas/modules/tool-runtime/errors-v1.schema.json": {
       "bytes": 3092,
@@ -1774,7 +1774,7 @@
     },
     "schemas/modules/transport/compatibility.json": {
       "bytes": 7662,
-      "sha256": "9f3847918e6bb02f14fe876c38517a434ceb30ebce518600c7d62973fec78720"
+      "sha256": "e86643fe1702df1a5ed8e150bbc51e81739c0f1c630fb89e1b00032855a39729"
     },
     "schemas/modules/transport/errors-v1.schema.json": {
       "bytes": 3096,

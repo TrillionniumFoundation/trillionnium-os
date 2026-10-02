@@ -74,6 +74,9 @@ The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
 `Controller`, `Lease`, `ResourceBudget`, `ModuleInstanceRegistry` and `ShadowPolicy` are the concrete mechanical contracts. The crate refuses active modes. Registry/audit state must observe a consistent control epoch; no shadow recommendation is an effect authorization.
+Shadow projection history commits only after all observations and the decision
+digest are valid. A rejected projection leaves safety latches, dwell timers and
+cooldown state unchanged; a failed audit append also rolls back those changes.
 
 ## 6. State model and ownership
 

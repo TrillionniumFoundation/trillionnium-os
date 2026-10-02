@@ -122,13 +122,13 @@
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
-      "sha256": "e684e3007cbaacc64d1b302f65a45ad03add1fc063f463c12e2bb23aaf4ff039",
-      "size": 111963
+      "sha256": "09bc14b27f4bd1776d3540eda438263f5a888e72ae9beb614259187a5b6f2e13",
+      "size": 115142
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/process.rs",
-      "sha256": "46f0e7dc71d9f797fe4ddefbf018abf2a7ead5c6c89ff8334c1462dfdf72cf88",
-      "size": 62044
+      "sha256": "5aa48e019b0b8c61a7eb72ddb94ceed75cf28325dfc5ac3e85fc706fa3ece485",
+      "size": 62259
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/types.rs",
@@ -201,8 +201,8 @@
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
-      "sha256": "a1733b2110b8dd1b43ab6676800b76c8042bd99a329adf1c3ebce3d72d85dadd",
-      "size": 20073
+      "sha256": "a8da82f793015f1d97c071e8d9d2992b04da45ae64c93f64a6b97be811a3cbba",
+      "size": 20954
     },
     {
       "path": "tools/tests/test_module_contracts.py",

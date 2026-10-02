@@ -103,6 +103,35 @@ fn reopen_after_dispatcher_shutdown(journal: &std::path::Path) -> JobManager {
 }
 
 #[test]
+fn argv_job_preserves_empty_arguments_after_the_executable() {
+    let directory = secure_tempdir();
+    let journal = directory.path().join("jobs.jsonl");
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    let job = key("job-empty-argument");
+    let mut start = start_request(
+        job.clone(),
+        request('a', "pipe"),
+        "start-empty",
+        ":".to_string(),
+        None,
+    );
+    start.invocation = JobInvocation::Argv {
+        argv: vec![
+            "/bin/sh".to_string(),
+            "-c".to_string(),
+            "printf '%s:<%s>' \"$#\" \"$1\"".to_string(),
+            "job".to_string(),
+            String::new(),
+        ],
+    };
+    assert_eq!(
+        manager.start(start).unwrap().disposition,
+        StartDisposition::Started
+    );
+    assert_eq!(wait_terminal(&manager, &job), b"1:<>");
+}
+
+#[test]
 fn pipe_job_supports_write_close_inspect_and_durable_terminal() {
     let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");
