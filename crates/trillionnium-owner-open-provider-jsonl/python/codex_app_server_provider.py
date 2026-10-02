@@ -78,10 +78,14 @@ def identifier(value: Any, label: str) -> str:
 def private_directory(path: Path, *, private: bool = True) -> int:
     if not path.is_absolute() or ".." in path.parts:
         raise ProviderRuntimeError("state directory must be canonical and absolute")
-    fd = os.open("/", os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+    parts = path.parts[1:]
+    # Traversal needs search permission on ancestors, not directory listing.
+    # The selected directory still needs a readable descriptor for state I/O.
+    fd = os.open("/", (os.O_PATH if parts else os.O_RDONLY) | os.O_DIRECTORY | os.O_CLOEXEC)
     try:
-        for part in path.parts[1:]:
-            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
+        for index, part in enumerate(parts):
+            access = os.O_RDONLY if index == len(parts) - 1 else os.O_PATH
+            child = os.open(part, access | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
                             dir_fd=fd)
             os.close(fd)
             fd = child
@@ -439,6 +443,27 @@ class HostInput:
                 raise ProviderRuntimeError("host reader retirement unconfirmed")
 
 
+def native_command(executable_fd: int) -> list[str]:
+    # Frozen 0.144.1 defaults include goals, browser and orchestrator tools.
+    # Native extensions must not create execution/continuation lanes beside
+    # the two durable Host callbacks. Planning notifications remain native.
+    disabled = (
+        "shell_tool", "unified_exec", "image_generation", "hooks", "plugins",
+        "apps", "enable_mcp_apps", "multi_agent", "multi_agent_v2", "enable_fanout",
+        "js_repl", "code_mode", "code_mode_host", "memories", "goals",
+        "in_app_browser", "browser_use", "browser_use_full_cdp_access",
+        "tool_suggest", "skill_mcp_dependency_install", "remote_models",
+    )
+    command = [f"/proc/self/fd/{executable_fd}", "app-server", "--strict-config"]
+    for feature in disabled:
+        command.extend(["-c", f"features.{feature}=false"])
+    for setting in ("notify=[]", 'web_search="disabled"',
+                    "tools.experimental_request_user_input.enabled=false",
+                    "orchestrator.skills.enabled=false", "orchestrator.mcp.enabled=false"):
+        command.extend(["-c", setting])
+    return command
+
+
 def direct_tools(typed: bool) -> list[dict[str, Any]]:
     fields = {
         "command": {"type": "string"}, "argv": {"type": "array", "items": {"type": "string"}},
@@ -696,10 +721,7 @@ def main(argv: list[str]) -> int:
         # These overrides are defense in depth. Installed qualification must
         # still bind every native configuration/managed-requirement layer;
         # pinned managed features can override ordinary CLI feature values.
-        terminal = run_provider([f"/proc/self/fd/{executable_fd}", "app-server", "--strict-config",
-                                 "-c", "features.shell_tool=false", "-c", "features.unified_exec=false",
-                                 "-c", "features.image_generation=false", "-c", "features.hooks=false",
-                                 "-c", "notify=[]", "-c", "features.plugins=false", "-c", "features.apps=false"],
+        terminal = run_provider(native_command(executable_fd),
             initial_stdin=bridge.initial(), event_handler=bridge.handle, cancellation=token,
             pass_fds=(executable_fd,), environment=environment, cwd=cwd,
             limits=ProcessLimits(max_event_line_bytes=MAX_LINE, max_stdout_bytes=8 * 1024 * 1024,

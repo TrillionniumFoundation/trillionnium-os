@@ -71,6 +71,15 @@ impl DurableEventStore {
     ) -> Result<std::result::Result<(), E>> {
         self.0.visit_records(visit)
     }
+
+    pub fn visit_scope_records<E>(
+        &self,
+        scope: &TurnScope,
+        inclusive_turn_seq: u64,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_scope_records(scope, inclusive_turn_seq, visit)
+    }
 }
 
 #[derive(Debug)]
@@ -118,6 +127,15 @@ impl SegmentedEventStore {
         visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
     ) -> Result<std::result::Result<(), E>> {
         self.0.visit_records(visit)
+    }
+
+    pub fn visit_scope_records<E>(
+        &self,
+        scope: &TurnScope,
+        inclusive_turn_seq: u64,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_scope_records(scope, inclusive_turn_seq, visit)
     }
 
     pub fn flush(&self) -> Result<()> {

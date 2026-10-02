@@ -1,6 +1,6 @@
 //! Logical owned-buffer admission, separate from allocator and child RSS.
 use std::ffi::OsString;
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::{Arc, Mutex, MutexGuard, TryLockError};
 
 use crate::{JobInvocation, JobRuntimeConfig, JobRuntimeError, JobStartRequest, Result};
 use trillionnium_owner_open_job_registry::JobMemoryLease;
@@ -30,6 +30,14 @@ pub(crate) fn working_lane() -> Result<MutexGuard<'static, ()>> {
     WORKING_LANE
         .lock()
         .map_err(|_| JobRuntimeError::StatePoisoned)
+}
+
+pub(crate) fn try_working_lane() -> Result<Option<MutexGuard<'static, ()>>> {
+    match WORKING_LANE.try_lock() {
+        Ok(guard) => Ok(Some(guard)),
+        Err(TryLockError::WouldBlock) => Ok(None),
+        Err(TryLockError::Poisoned(_)) => Err(JobRuntimeError::StatePoisoned),
+    }
 }
 
 /// Arc clones share one charge. Workers keep their own Arc so detaching a

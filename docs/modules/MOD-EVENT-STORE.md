@@ -101,6 +101,12 @@ Only this module may perform authoritative writes for its state families. Read m
 
 Per-key operations are linearized while unrelated keys may progress concurrently. Process spawn, external I/O, fsync and provider waits are slow paths and must not execute under a global registry lock. At capacity, admission is rejected before starting a process or publishing an accepted effect.
 
+The concrete EventStore source additionally serializes codecs/response builds
+across stores on its shared temporary working lane. Metadata-only operations
+retain their per-store locks. This conservative memory gate does not establish
+the declared concurrency/latency SLO: callbacks and filesystem barriers still
+require bounded embedding behavior and target measurements.
+
 ## 8. Effect, cancellation and uncertainty semantics
 
 Automatic redispatch: **forbidden**.
@@ -160,31 +166,72 @@ changing its offset. The existing segment mutex, before/after identity checks,
 and public-read append gate remain in place. Concurrent callers are serialized
 at that gate so they cannot observe a partially published WAL append.
 
-This gate bounds module-owned descriptor reservations across instances, not
-unrelated OS/module descriptors or measured process RSS. The32/64 MiB logical
-RAM envelope remains per store; memory shared across stores and caller-owned
-returned/cloned Values still needs separate admission and installed evidence.
+RAM now uses two linked-module pools shared by every v1/v2 instance:32 MiB
+resident plus32 MiB temporary, for a64 MiB combined source admission envelope.
+State owns its noncloneable resident lease; pinned segments charge metadata,
+pathnames and short read/sync path copies. Initial admission occurs before path
+creation, append acquires growth before WAL/rotation, and partial recovery
+returns every acquired lease. Arc clones preserve the same reservation until
+the final owning handle drops. Accepted/uncertain IDs are never evicted.
 
-V2 retains only authenticated record headers and location/key/scope indexes,
-with a conservative 32 MiB resident reservation. Payloads are read from pinned
+Memory-intensive codecs/response builds serialize on a separate working lane;
+the 32 MiB lease lasts across I/O/callbacks and unwinds on error/panic. The pool
+accounting atomics never span those slow operations. An owned append argument
+waiting for the lane first reserves its actual String/Value capacities in the
+resident pool; capacity refusal prevents unbounded queued buffers. Caller-built
+unadmitted arguments still require the caller's ingress budget. Callback code
+must be bounded and must not call allocating EventStore APIs or blocking
+JOB/EventStore working locks. Direct EventStore reentry fails capacity before
+waiting; arbitrary cross-module callbacks do not gain a deadlock-free guarantee.
+
+V2 retains only authenticated record headers and location/key/scope indexes.
+Payloads are read from pinned
 segments on demand, strictly decoded and digest-checked against those headers.
 WAL recovery authenticates the whole chain while retaining only headers. V1
-keeps its full read model within the same 32 MiB gate. Reservations charge owned
+keeps its full read model within the same shared32 MiB gate. Reservations charge owned
 capacities, repeated index strings and container growth; dense JSON has a
-quote/escape-aware lexical allocation check before DOM decoding. A 64 MiB
-logical single-operation working budget bounds returned Vecs and snapshot work;
+quote/escape-aware lexical allocation check before DOM decoding. The separate
+shared32 MiB temporary pool bounds response construction and snapshot work;
 `replay`/`all_records` may return `CapacityExhausted` before allocation.
 `visit_records` reads one record at a time and supports journal recovery without
-a whole-lineage payload clone. The effective encoded record/read and sidecar
-bounds are at most 16 MiB. Snapshot/read-budget refusal happens before snapshot
+a whole-lineage payload clone. `visit_scope_records(scope, inclusive_turn_seq, callback)`
+uses existing v2 scope-index ordinals and reads only that suffix, without cloning
+all headers; v1 filters borrowed validated records. Both fence live identities
+and lengths. Startup still authenticates the complete WAL chain; scoped reads
+authenticate selected payloads against those startup headers and cannot grant
+missing-prefix/restart coverage. Same-length drift in another scope is detected
+by a read of that scope or full recovery; selected inspection does not reread it.
+
+Encoding counts bytes without a DOM/Vec before allocation and preflights owned
+input plus overlapping encoder buffers. New WAL records must also pass the
+same combined encoded-buffer/JSON decode gate used at recovery. Duplicate v2
+lookup counts the owned input beside the decoded payload; temporary refusal
+never poisons or evicts its existing identity. Bounded read-line growth/shrink
+reserves old/new buffers plus64 KiB fixed codec scratch. The record/read ceiling
+is16 MiB minus32 KiB and two read-ahead bytes. Sidecars retain a16 MiB encoded
+ceiling and a stricter combined decoder gate. Index encoding borrows headers
+in store-sequence order instead of cloning the entire key table. Checkpoint
+preflights its payload Vec and encoder growth and drops snapshot bytes before
+index encoding. Snapshot/read-budget refusal happens before snapshot
 publication and leaves the authoritative WAL unchanged. Schema byte/count limits do not override these
 resident/working gates.
+
+Migration fresh-scans each source record against the retained authenticated v1
+view while preserving its writer fence, and borrows that view to reconcile one
+destination payload at a time. Export moves one decoded payload to the v1
+writer and freshly rescans the destination before reporting the export; neither
+retains another full payload lineage. Both writer/resident/FD
+leases remain required and joint capacity can refuse while preserving both WALs.
 
 No uncertain key or accepted record is evicted. Over-budget historical WAL or
 sidecars fail closed and are retained for reviewed migration; a new empty
 journal must not substitute for that lineage. These source reservations do not
-prove process RSS: multiple stores, caller-held responses, allocator overhead
-and the rest of the host require aggregate accounting and installed evidence.
+prove process RSS. Ordinary returned EventRecord/Value/Vec APIs transfer
+ownership to the caller; an internal lease cannot follow an arbitrary later
+clone/retention. Caller-owned responses/inputs/callback allocations, other
+modules, allocator overhead and host/child RSS require their owners' budgets
+and installed evidence. The conservative shared working lane also needs target
+throughput/latency measurements before any concurrency/P99 objective is claimed.
 
 ## 10. Persistence, recovery and reconciliation
 

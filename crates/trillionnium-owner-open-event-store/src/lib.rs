@@ -6,13 +6,16 @@
 //! whether the owner-open lineage continues as best-effort/unreplayable.
 
 mod resources;
-pub use resources::{EVENT_STORE_CONTROL_DESCRIPTORS, MAX_EVENT_PROCESS_DESCRIPTORS};
+pub use resources::{
+    EVENT_STORE_CONTROL_DESCRIPTORS, MAX_EVENT_PROCESS_DESCRIPTORS,
+    MAX_EVENT_PROCESS_TEMPORARY_BYTES,
+};
 mod strict_json;
 
 use std::collections::{BTreeMap, HashMap};
 use std::fs::{File, OpenOptions};
 use std::hash::Hash;
-use std::io::{BufRead, BufReader, Read, Seek, SeekFrom, Write};
+use std::io::{BufRead, BufReader, Seek, SeekFrom, Write};
 use std::os::fd::AsRawFd;
 use std::os::unix::fs::{FileExt, MetadataExt, OpenOptionsExt, PermissionsExt};
 use std::path::{Component, Path, PathBuf};
@@ -83,9 +86,10 @@ pub const MAX_EVENT_RECORDS: usize = 1_048_576;
 pub const MAX_EVENT_ID_BYTES: usize = 4 * 1024;
 /// Schema-level ceiling for the event kind string.
 pub const MAX_EVENT_KIND_BYTES: usize = 4 * 1024;
-/// Conservative resident reservations, independent of encoded WAL bytes.
+/// Shared resident reservations across every v1/v2 store in this linked module.
 pub const MAX_EVENT_RESIDENT_BYTES: usize = 32 * 1024 * 1024;
-/// Single operation's logical working envelope; not a process RSS guarantee.
+/// Combined shared resident + temporary envelope, retained for API compatibility.
+/// Caller-owned returned Values/Vecs and allocator/process RSS are separate.
 pub const MAX_EVENT_WORKING_BYTES: usize = 64 * 1024 * 1024;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -370,6 +374,7 @@ struct State {
     byte_count: u64,
     last_record_sha256: String,
     poisoned: bool,
+    _resident_lease: resources::ResidentLease,
 }
 
 #[derive(Debug)]
@@ -413,6 +418,9 @@ impl DurableEventStore {
         create_if_missing: bool,
     ) -> Result<Self> {
         limits.validate()?;
+        let _working = resources::WorkingGuard::acquire()?;
+        let resident_lease = resources::ResidentLease::acquire(resources::FIXED_RESIDENT_RESERVE)?;
+        validate_store_path(path.as_ref())?;
         let descriptor_lease =
             resources::DescriptorLease::acquire(EVENT_STORE_CONTROL_DESCRIPTORS)?;
         let path = path.as_ref().to_path_buf();
@@ -524,7 +532,7 @@ impl DurableEventStore {
         }
         file.seek(SeekFrom::Start(0))
             .map_err(|error| EventStoreError::Io(error.to_string()))?;
-        let recovered = recover_records(&file, &limits)?;
+        let recovered = recover_records(&file, &limits, resident_lease)?;
         validate_directory_identity(parent, parent_before, &parent_dir, "store parent")?;
         validate_segment_identity(
             &path,
@@ -563,6 +571,7 @@ impl DurableEventStore {
                 byte_count: recovered.byte_count,
                 last_record_sha256: recovered.last_record_sha256,
                 poisoned: false,
+                _resident_lease: recovered._resident_lease,
             }),
             _descriptor_lease: descriptor_lease,
         })
@@ -574,6 +583,11 @@ impl DurableEventStore {
     }
 
     pub fn append(&self, input: EventInput) -> Result<AppendResult> {
+        let _working = resources::WorkingGuard::acquire_input(&input)?;
+        self.append_under_working(input)
+    }
+
+    fn append_under_working(&self, input: EventInput) -> Result<AppendResult> {
         validate_event_input(&input, &self.limits)?;
         resources::validate_input_allocation(&input)?;
         let payload_sha256 = resources::json_digest(&input.payload)?;
@@ -588,6 +602,11 @@ impl DurableEventStore {
                 && existing.payload_sha256 == payload_sha256
                 && existing.payload == input.payload
             {
+                resources::reserve(
+                    0,
+                    resources::copy_reservation(existing)?,
+                    resources::MAX_TEMPORARY_ALLOCATION,
+                )?;
                 return Ok(AppendResult {
                     disposition: AppendDisposition::Existing,
                     record: existing.clone(),
@@ -634,17 +653,16 @@ impl DurableEventStore {
             record_sha256,
         };
         validate_record(&record, &self.limits)?;
-        let mut encoded = resources::encode_bounded(
+        let mut encoded = resources::encode_record(
             &record,
             self.limits
                 .max_record_bytes
-                .min(MAX_EVENT_RESIDENT_BYTES / 2),
+                .min(resources::MAX_ENCODED_RECORD_BYTES),
         )?;
-        let resident_bytes = resources::reserve(
-            state.resident_bytes,
-            resources::record_reservation(&record, &encoded)?,
-            MAX_EVENT_RESIDENT_BYTES,
-        )?;
+        let delta = resources::record_reservation(&record, &encoded)?;
+        let resident_bytes =
+            resources::reserve(state.resident_bytes, delta, MAX_EVENT_RESIDENT_BYTES)?;
+        let resident_delta = resources::ResidentLease::acquire(delta)?;
         if encoded.is_empty() || encoded.len() > self.limits.max_record_bytes {
             return Err(EventStoreError::CapacityExhausted);
         }
@@ -683,6 +701,7 @@ impl DurableEventStore {
             return Err(EventStoreError::Poisoned);
         }
 
+        state._resident_lease.merge(resident_delta);
         let index = state.records.len();
         state.by_key.insert(key, index);
         state
@@ -699,40 +718,53 @@ impl DurableEventStore {
     }
 
     pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
+        let _working = resources::WorkingGuard::acquire()?;
         validate_scope(scope, &self.limits)?;
         let state = self.lock_live()?;
-        resources::reserve(
-            state.resident_bytes,
-            state.resident_bytes,
-            MAX_EVENT_WORKING_BYTES,
-        )?;
-        Ok(state
+        let selected = state
             .records
             .iter()
-            .filter(|record| &record.scope == scope && record.turn_seq >= inclusive_turn_seq)
-            .cloned()
-            .collect())
+            .filter(|record| &record.scope == scope && record.turn_seq >= inclusive_turn_seq);
+        selected.clone().try_fold(0, |sum, record| {
+            resources::reserve(
+                sum,
+                resources::copy_reservation(record)?,
+                resources::MAX_TEMPORARY_ALLOCATION,
+            )
+        })?;
+        Ok(selected.cloned().collect())
     }
 
     pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
+        let _working = resources::WorkingGuard::acquire()?;
         validate_scope(scope, &self.limits)?;
         validate_id("event_id", event_id, self.limits.max_id_bytes)?;
         let state = self.lock_live()?;
         let key = EventKey::new(scope.clone(), event_id.to_string());
-        Ok(state
+        let record = state
             .by_key
             .get(&key)
-            .and_then(|index| state.records.get(*index))
-            .cloned())
+            .and_then(|index| state.records.get(*index));
+        if let Some(record) = record {
+            resources::reserve(
+                0,
+                resources::copy_reservation(record)?,
+                resources::MAX_TEMPORARY_ALLOCATION,
+            )?;
+        }
+        Ok(record.cloned())
     }
 
     pub fn all_records(&self) -> Result<Vec<EventRecord>> {
+        let _working = resources::WorkingGuard::acquire()?;
         let state = self.lock_live()?;
-        resources::reserve(
-            state.resident_bytes,
-            state.resident_bytes,
-            MAX_EVENT_WORKING_BYTES,
-        )?;
+        state.records.iter().try_fold(0, |sum, record| {
+            resources::reserve(
+                sum,
+                resources::copy_reservation(record)?,
+                resources::MAX_TEMPORARY_ALLOCATION,
+            )
+        })?;
         Ok(state.records.clone())
     }
 
@@ -741,8 +773,27 @@ impl DurableEventStore {
         &self,
         mut visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
     ) -> Result<std::result::Result<(), E>> {
+        let _working = resources::WorkingGuard::acquire()?;
         let state = self.lock_live()?;
         Ok(state.records.iter().try_for_each(&mut visit))
+    }
+
+    /// Visit a selected scope in sequence order, borrowing its validated v1
+    /// read model. The callback must not reenter EventStore allocating APIs.
+    pub fn visit_scope_records<E>(
+        &self,
+        scope: &TurnScope,
+        inclusive_turn_seq: u64,
+        mut visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        validate_scope(scope, &self.limits)?;
+        let _working = resources::WorkingGuard::acquire()?;
+        let state = self.lock_live()?;
+        Ok(state
+            .records
+            .iter()
+            .filter(|record| &record.scope == scope && record.turn_seq >= inclusive_turn_seq)
+            .try_for_each(&mut visit))
     }
 
     pub fn resident_bytes(&self) -> Result<usize> {
@@ -756,7 +807,12 @@ impl DurableEventStore {
     /// detects same-length content edits as well as appended/truncated bytes;
     /// any discrepancy poisons the handle so a caller cannot continue with an
     /// ambiguous source.
-    fn reread_live_records(&self) -> Result<Vec<EventRecord>> {
+    fn reread_live_records(&self) -> Result<()> {
+        let _working = resources::WorkingGuard::acquire()?;
+        self.reread_live_records_under_working()
+    }
+
+    fn reread_live_records_under_working(&self) -> Result<()> {
         let mut state = self.lock()?;
         if state.poisoned {
             return Err(EventStoreError::Poisoned);
@@ -770,8 +826,7 @@ impl DurableEventStore {
                 .map_err(|error| EventStoreError::Io(error.to_string()))?
                 .len();
 
-            // `recover_records` consumes a cloned descriptor.  Seek that
-            // clone explicitly because the append handle normally sits at the
+            // Seek a cloned descriptor explicitly because the append handle sits at the
             // end of the WAL, then restore the live descriptor for callers
             // that continue to inspect the source after a successful check.
             let mut scan_file = state
@@ -781,7 +836,32 @@ impl DurableEventStore {
             scan_file
                 .seek(SeekFrom::Start(0))
                 .map_err(|error| EventStoreError::Io(error.to_string()))?;
-            let recovered = recover_records(&scan_file, &self.limits)?;
+            let mut reader = BufReader::new(scan_file);
+            let mut index = 0;
+            let mut bytes = 0_u64;
+            while let Some((encoded, consumed)) = read_record_line(
+                &mut reader,
+                self.limits
+                    .max_record_bytes
+                    .min(resources::MAX_ENCODED_RECORD_BYTES),
+            )? {
+                resources::check_record_decode(&encoded, encoded.capacity())?;
+                let record: EventRecord =
+                    strict_json::decode(&encoded).map_err(EventStoreError::InvalidRecord)?;
+                validate_record(&record, &self.limits)?;
+                // Equality to the authenticated full v1 view binds every
+                // sequence, scope, payload and hash-chain link without another
+                // retained recovery table or a cloned complete payload lineage.
+                if state.records.get(index) != Some(&record) {
+                    return Err(EventStoreError::EventConflict);
+                }
+                index = index
+                    .checked_add(1)
+                    .ok_or(EventStoreError::CapacityExhausted)?;
+                bytes = bytes
+                    .checked_add(consumed)
+                    .ok_or(EventStoreError::CapacityExhausted)?;
+            }
             let length_after = state
                 .file
                 .metadata()
@@ -789,8 +869,8 @@ impl DurableEventStore {
                 .len();
             validate_segment_identity(&self.path, state.identity, &state.file, "store file")?;
             if length_before != length_after
-                || recovered.byte_count != length_after
-                || recovered.records != state.records
+                || bytes != length_after
+                || index != state.records.len()
             {
                 return Err(EventStoreError::EventConflict);
             }
@@ -798,9 +878,12 @@ impl DurableEventStore {
                 .file
                 .seek(SeekFrom::End(0))
                 .map_err(|error| EventStoreError::Io(error.to_string()))?;
-            Ok(recovered.records)
+            Ok(())
         })();
-        if result.is_err() {
+        if result
+            .as_ref()
+            .is_err_and(|error| !matches!(error, EventStoreError::CapacityExhausted))
+        {
             state.poisoned = true;
         }
         result
@@ -892,6 +975,7 @@ struct SegmentMeta {
     pending_records: usize,
     pending_bytes: u64,
     _descriptor_lease: resources::DescriptorLease,
+    _memory_lease: resources::ResidentLease,
 }
 
 #[derive(Debug)]
@@ -912,6 +996,7 @@ struct SegmentedState {
     pending_bytes: u64,
     last_sync: Instant,
     poisoned: bool,
+    _resident_lease: resources::ResidentLease,
 }
 
 #[derive(Debug)]
@@ -921,6 +1006,7 @@ struct OpenSegment {
     file: Arc<Mutex<File>>,
     identity: FileIdentity,
     _descriptor_lease: resources::DescriptorLease,
+    _memory_lease: resources::ResidentLease,
 }
 
 /// Segmented, indexed v2 event durability.
@@ -963,8 +1049,56 @@ struct IndexManifest<'a> {
     record_count: usize,
     byte_count: u64,
     last_record_sha256: &'a str,
-    segments: Vec<IndexManifestSegment>,
-    entries: Vec<IndexManifestEntry>,
+    segments: IndexManifestSegments<'a>,
+    entries: IndexManifestEntries<'a>,
+}
+
+#[derive(Debug)]
+struct IndexManifestSegments<'a>(&'a SegmentedState);
+impl Serialize for IndexManifestSegments<'_> {
+    fn serialize<S: serde::Serializer>(
+        &self,
+        serializer: S,
+    ) -> std::result::Result<S::Ok, S::Error> {
+        use serde::ser::SerializeSeq;
+        let mut sequence = serializer.serialize_seq(Some(self.0.segments.len()))?;
+        for segment in self.0.segments.values() {
+            sequence.serialize_element(&IndexManifestSegment {
+                id: segment.id,
+                byte_count: segment.byte_count,
+                record_count: segment.record_count,
+            })?;
+        }
+        sequence.end()
+    }
+}
+
+#[derive(Debug)]
+struct IndexManifestEntries<'a>(&'a SegmentedState);
+impl Serialize for IndexManifestEntries<'_> {
+    fn serialize<S: serde::Serializer>(
+        &self,
+        serializer: S,
+    ) -> std::result::Result<S::Ok, S::Error> {
+        use serde::ser::SerializeSeq;
+        let mut sequence = serializer.serialize_seq(Some(self.0.records.len()))?;
+        for record in &self.0.records {
+            // Only bounded header strings are cloned for one key lookup, never
+            // a full manifest/table. Scope payloads remain borrowed.
+            let key = EventKey::new(record.scope.clone(), record.event_id.clone());
+            let location = self
+                .0
+                .locations
+                .get(&key)
+                .ok_or_else(|| serde::ser::Error::custom("event index location missing"))?;
+            sequence.serialize_element(&IndexManifestEntry {
+                scope: &record.scope,
+                event_id: &record.event_id,
+                location: *location,
+            })?;
+        }
+        sequence.end()
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -975,9 +1109,9 @@ struct IndexManifestSegment {
 }
 
 #[derive(Debug, Serialize)]
-struct IndexManifestEntry {
-    scope: TurnScope,
-    event_id: String,
+struct IndexManifestEntry<'a> {
+    scope: &'a TurnScope,
+    event_id: &'a str,
     location: SegmentLocation,
 }
 
@@ -1035,6 +1169,8 @@ impl SegmentedEventStore {
     /// Open or create a v2 store rooted at a dedicated service-owned directory.
     pub fn open(root: impl AsRef<Path>, config: SegmentedEventStoreConfig) -> Result<Self> {
         config.validate()?;
+        let _working = resources::WorkingGuard::acquire()?;
+        let resident_lease = resources::ResidentLease::acquire(resources::FIXED_RESIDENT_RESERVE)?;
         let descriptor_lease =
             resources::DescriptorLease::acquire(EVENT_STORE_CONTROL_DESCRIPTORS)?;
         let (root, root_dir, root_identity) = prepare_segment_root(root.as_ref())?;
@@ -1072,8 +1208,14 @@ impl SegmentedEventStore {
             segments.push(create_segment(&root, root_identity, &root_dir, 1)?);
         }
 
-        let recovered =
-            recover_segmented_segments(&root, root_identity, &root_dir, &segments, &config)?;
+        let recovered = recover_segmented_segments(
+            &root,
+            root_identity,
+            &root_dir,
+            &segments,
+            &config,
+            resident_lease,
+        )?;
         // Sidecars are rebuildable read-models, but an on-disk sidecar that is
         // present must still be authenticated against the WAL.  Accepting a
         // valid stale prefix keeps crash recovery idempotent; malformed or
@@ -1097,6 +1239,7 @@ impl SegmentedEventStore {
                     path: segment.path,
                     file: segment.file,
                     _descriptor_lease: segment._descriptor_lease,
+                    _memory_lease: segment._memory_lease,
                     identity: segment.identity,
                     byte_count: summary.byte_count,
                     record_count: summary.record_count,
@@ -1135,6 +1278,7 @@ impl SegmentedEventStore {
                 pending_bytes: 0,
                 last_sync: Instant::now(),
                 poisoned: false,
+                _resident_lease: recovered._resident_lease,
             }),
             append_gate: Mutex::new(()),
             _descriptor_lease: descriptor_lease,
@@ -1186,14 +1330,14 @@ impl SegmentedEventStore {
         // writer can append a tail that the v2 snapshot never sees.
         let legacy =
             DurableEventStore::open_existing(legacy_path, config.limits.clone(), SyncPolicy::Full)?;
-        let legacy_records = legacy.all_records()?;
+        let legacy_snapshot = legacy.snapshot()?;
         let store = Self::open(root, config)?;
         // Revalidate the source after the destination has been opened while
         // retaining the original v1 writer lease.  A pathname replacement or
         // an out-of-band source mutation in that interval must never leave us
         // reconciling a stale snapshot into the v2 store.
-        let stable_legacy_records = verify_legacy_snapshot(&legacy, &legacy_records)?;
-        reconcile_legacy_prefix(&store, &stable_legacy_records, false)?;
+        verify_legacy_snapshot(&legacy, &legacy_snapshot)?;
+        reconcile_legacy_prefix(&store, &legacy, false)?;
         Ok(store)
     }
 
@@ -1241,7 +1385,7 @@ impl SegmentedEventStore {
         // see the method-level safety contract above.
         let legacy =
             DurableEventStore::open_existing(legacy_path, config.limits.clone(), SyncPolicy::Full)?;
-        let legacy_records = legacy.all_records()?;
+        let legacy_snapshot = legacy.snapshot()?;
         // Test callers use this hook to exercise the exact interleaving that
         // previously allowed a legacy append between snapshot and destination
         // open.  Production passes a no-op, while the source lease remains
@@ -1252,8 +1396,8 @@ impl SegmentedEventStore {
         // the source lease.  Read/validate the source again at this final
         // boundary so a rename/recreate or newly visible record cannot make a
         // stale pre-open snapshot authoritative.
-        let stable_legacy_records = verify_legacy_snapshot(&legacy, &legacy_records)?;
-        reconcile_legacy_prefix(&store, &stable_legacy_records, true)?;
+        verify_legacy_snapshot(&legacy, &legacy_snapshot)?;
+        reconcile_legacy_prefix(&store, &legacy, true)?;
         Ok(store)
     }
 
@@ -1276,31 +1420,47 @@ impl SegmentedEventStore {
         sync_policy: SyncPolicy,
     ) -> Result<()> {
         self.flush()?;
-        let records = self.all_records()?;
         let legacy = DurableEventStore::open(legacy_path, self.config.limits.clone(), sync_policy)?;
-        let existing = legacy.all_records()?;
-        if existing.len() > records.len()
-            || existing
-                .iter()
-                .zip(records.iter())
-                .any(|(actual, expected)| actual != expected)
-        {
+        let _working = resources::WorkingGuard::acquire()?;
+        let _gate = self
+            .append_gate
+            .lock()
+            .map_err(|_| EventStoreError::StatePoisoned)?;
+        self.validate_all_segments_current()?;
+        let count = self.read_state()?.records.len();
+        let existing = legacy.lock_live()?.records.len();
+        if existing > count {
             return Err(EventStoreError::EventConflict);
         }
-        for record in records.iter().skip(existing.len()) {
-            let result = legacy.append(EventInput {
-                scope: record.scope.clone(),
-                event_id: record.event_id.clone(),
-                kind: record.kind.clone(),
-                payload: record.payload.clone(),
-            })?;
-            if result.record != *record {
-                return Err(EventStoreError::InvalidRecord(
-                    "legacy export changed an event record".to_string(),
-                ));
+        for index in 0..count {
+            let read_result = {
+                let state = self.read_state()?;
+                self.read_record(&state, index)
+            };
+            let record = self.finish_record_read(read_result)?;
+            if index < existing {
+                if legacy.lock_live()?.records.get(index) != Some(&record) {
+                    return Err(EventStoreError::EventConflict);
+                }
+            } else {
+                let expected_digest = record.record_sha256.clone();
+                // Transfer the decoded payload; do not clone a second lineage
+                // while destination records remain resident under their lease.
+                let result = legacy.append_under_working(EventInput {
+                    scope: record.scope,
+                    event_id: record.event_id,
+                    kind: record.kind,
+                    payload: record.payload,
+                })?;
+                if result.record.record_sha256 != expected_digest {
+                    return Err(EventStoreError::InvalidRecord(
+                        "legacy export changed an event record".to_owned(),
+                    ));
+                }
             }
         }
-        Ok(())
+        self.validate_all_segments_current()?;
+        legacy.reread_live_records_under_working()
     }
 
     /// Alias for callers that name the reverse migration explicitly.
@@ -1361,6 +1521,11 @@ impl SegmentedEventStore {
     }
 
     pub fn append(&self, input: EventInput) -> Result<AppendResult> {
+        let _working = resources::WorkingGuard::acquire_input(&input)?;
+        self.append_under_working(input)
+    }
+
+    fn append_under_working(&self, input: EventInput) -> Result<AppendResult> {
         validate_event_input(&input, &self.config.limits)?;
         resources::validate_input_allocation(&input)?;
         let payload_sha256 = resources::json_digest(&input.payload)?;
@@ -1375,20 +1540,23 @@ impl SegmentedEventStore {
             .lock()
             .map_err(|_| EventStoreError::StatePoisoned)?;
         self.require_root_identity_current()?;
-        let (record, encoded, key, next_turn_seq, resident_bytes, working_bytes) = {
+        let (record, encoded, key, next_turn_seq, resident_bytes, working_bytes, resident_delta) = {
             let state = self.read_state()?;
             if state.poisoned {
                 return Err(EventStoreError::Poisoned);
             }
             if let Some(index) = state.by_key.get(&key).copied() {
-                let existing = match self.read_record(&state, index) {
-                    Ok(existing) => existing,
-                    Err(error) => {
-                        drop(state);
-                        self.mark_poisoned();
-                        return Err(error);
-                    }
-                };
+                let existing =
+                    match self.read_record_beside(&state, index, resources::input_heap(&input)?) {
+                        Ok(existing) => existing,
+                        Err(error) => {
+                            drop(state);
+                            if !matches!(error, EventStoreError::CapacityExhausted) {
+                                self.mark_poisoned();
+                            }
+                            return Err(error);
+                        }
+                    };
                 if existing.kind == input.kind
                     && existing.payload_sha256 == payload_sha256
                     && existing.payload == input.payload
@@ -1437,21 +1605,24 @@ impl SegmentedEventStore {
                 record_sha256,
             };
             validate_record(&record, &self.config.limits)?;
-            let mut encoded = resources::encode_bounded(
+            let mut encoded = resources::encode_record(
                 &record,
                 self.config
                     .limits
                     .max_record_bytes
-                    .min(MAX_EVENT_RESIDENT_BYTES / 2),
+                    .min(resources::MAX_ENCODED_RECORD_BYTES),
             )?;
             let working_bytes = resources::record_reservation(&record, &encoded)?;
             resources::reserve(0, working_bytes, MAX_EVENT_RESIDENT_BYTES)?;
-            let resident_bytes = resources::reserve(
-                state.resident_bytes,
-                resources::header_reservation(&record)?,
-                MAX_EVENT_RESIDENT_BYTES,
+            let delta = resources::header_reservation(&record)?;
+            let resident_bytes =
+                resources::reserve(state.resident_bytes, delta, MAX_EVENT_RESIDENT_BYTES)?;
+            let resident_delta = resources::ResidentLease::acquire(delta)?;
+            let working_bytes = resources::reserve(
+                working_bytes,
+                encoded.capacity(),
+                resources::MAX_TEMPORARY_ALLOCATION,
             )?;
-            resources::reserve(resident_bytes, working_bytes, MAX_EVENT_WORKING_BYTES)?;
             if encoded.is_empty() || encoded.len() > self.config.limits.max_record_bytes {
                 return Err(EventStoreError::CapacityExhausted);
             }
@@ -1470,6 +1641,7 @@ impl SegmentedEventStore {
                 next_turn_seq,
                 resident_bytes,
                 working_bytes,
+                resident_delta,
             )
         };
 
@@ -1575,6 +1747,7 @@ impl SegmentedEventStore {
                 .pending_bytes
                 .checked_add(encoded_len)
                 .ok_or(EventStoreError::CapacityExhausted)?;
+            state._resident_lease.merge(resident_delta);
             let index = state.records.len();
             state.by_key.insert(key.clone(), index);
             state
@@ -1689,10 +1862,37 @@ impl SegmentedEventStore {
         })
     }
 
+    /// Visit only the existing scope-index entries at/after a turn sequence.
+    /// Startup still authenticates the complete WAL chain; each selected
+    /// payload is freshly authenticated against that recovered header.
+    pub fn visit_scope_records<E>(
+        &self,
+        scope: &TurnScope,
+        inclusive_turn_seq: u64,
+        mut visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        validate_scope(scope, &self.config.limits)?;
+        self.with_live_records(|state| {
+            if let Some(indexes) = state.by_scope.get(scope) {
+                for &index in indexes {
+                    if state.records[index].turn_seq < inclusive_turn_seq {
+                        continue;
+                    }
+                    let record = self.read_record(state, index)?;
+                    if let Err(error) = visit(&record) {
+                        return Ok(Err(error));
+                    }
+                }
+            }
+            Ok(Ok(()))
+        })
+    }
+
     fn with_live_records<T>(
         &self,
         operation: impl FnOnce(&SegmentedState) -> Result<T>,
     ) -> Result<T> {
+        let _working = resources::WorkingGuard::acquire()?;
         self.finish_record_read(self.with_live_state(operation)?)
     }
 
@@ -1717,24 +1917,31 @@ impl SegmentedEventStore {
     ) -> Result<Vec<EventRecord>> {
         // Refuse a whole-lineage Vec before allocating its payloads. Callers
         // can use visit_records for histories above this working envelope.
-        indexes
-            .clone()
-            .try_fold(state.resident_bytes, |sum, index| {
-                resources::reserve(
-                    sum,
-                    *state
-                        .record_working_bytes
-                        .get(index)
-                        .ok_or(EventStoreError::StatePoisoned)?,
-                    MAX_EVENT_WORKING_BYTES,
-                )
-            })?;
+        indexes.clone().try_fold(0, |sum, index| {
+            resources::reserve(
+                sum,
+                *state
+                    .record_working_bytes
+                    .get(index)
+                    .ok_or(EventStoreError::StatePoisoned)?,
+                resources::MAX_TEMPORARY_ALLOCATION,
+            )
+        })?;
         indexes
             .map(|index| self.read_record(state, index))
             .collect()
     }
 
     fn read_record(&self, state: &SegmentedState, index: usize) -> Result<EventRecord> {
+        self.read_record_beside(state, index, 0)
+    }
+
+    fn read_record_beside(
+        &self,
+        state: &SegmentedState,
+        index: usize,
+        retained_bytes: usize,
+    ) -> Result<EventRecord> {
         let header = state
             .records
             .get(index)
@@ -1751,7 +1958,7 @@ impl SegmentedEventStore {
         let length =
             usize::try_from(location.byte_len).map_err(|_| EventStoreError::CapacityExhausted)?;
         if length > self.config.limits.max_record_bytes.saturating_add(1)
-            || length > MAX_EVENT_RESIDENT_BYTES / 2 + 1
+            || length > resources::MAX_ENCODED_RECORD_BYTES + 1
         {
             return Err(EventStoreError::CapacityExhausted);
         }
@@ -1761,13 +1968,23 @@ impl SegmentedEventStore {
         // change the append file's shared offset. Public reads currently hold
         // append_gate as well as this segment mutex; no per-read descriptor
         // clone or extra temporary descriptor reservation is needed.
+        resources::reserve(retained_bytes, length, resources::MAX_TEMPORARY_ALLOCATION)?;
         let mut encoded = vec![0; length];
         file.read_exact_at(&mut encoded, location.offset)
             .map_err(|error| EventStoreError::Io(error.to_string()))?;
         if encoded.pop() != Some(b'\n') {
             return Err(EventStoreError::TruncatedRecord);
         }
-        resources::check_decode(state.resident_bytes, &encoded, MAX_EVENT_WORKING_BYTES)?;
+        let retained_and_encoded = resources::reserve(
+            retained_bytes,
+            encoded.capacity(),
+            resources::MAX_TEMPORARY_ALLOCATION,
+        )?;
+        resources::check_decode(
+            retained_and_encoded,
+            &encoded,
+            resources::MAX_TEMPORARY_ALLOCATION,
+        )?;
         let record: EventRecord =
             strict_json::decode(&encoded).map_err(EventStoreError::InvalidRecord)?;
         validate_record(&record, &self.config.limits)?;
@@ -1782,7 +1999,14 @@ impl SegmentedEventStore {
 
     /// Conservative logical reservation, including record/index growth slots.
     pub fn resident_bytes(&self) -> Result<usize> {
-        self.with_live_state(|state| state.resident_bytes)
+        self.with_live_state(|state| {
+            state.resident_bytes
+                + state
+                    .segments
+                    .values()
+                    .map(|segment| segment._memory_lease.bytes())
+                    .sum::<usize>()
+        })
     }
 
     pub fn snapshot(&self) -> Result<SegmentedEventStoreSnapshot> {
@@ -1791,6 +2015,7 @@ impl SegmentedEventStore {
 
     /// Sync pending segment bytes and atomically publish the rebuildable index.
     pub fn flush(&self) -> Result<()> {
+        let _working = resources::WorkingGuard::acquire()?;
         let _gate = self
             .append_gate
             .lock()
@@ -1809,7 +2034,8 @@ impl SegmentedEventStore {
                 "append_durable requires Data or Full sync policy",
             ));
         }
-        let result = self.append(input)?;
+        let _working = resources::WorkingGuard::acquire_input(&input)?;
+        let result = self.append_under_working(input)?;
         self.sync_pending()?;
         Ok(result)
     }
@@ -1835,6 +2061,7 @@ impl SegmentedEventStore {
     /// method is explicit so deployments can choose a checkpoint cadence
     /// appropriate to their recovery budget without inflating every append.
     pub fn checkpoint(&self) -> Result<SegmentedEventStoreSnapshot> {
+        let _working = resources::WorkingGuard::acquire()?;
         let _gate = self
             .append_gate
             .lock()
@@ -1851,10 +2078,9 @@ impl SegmentedEventStore {
             let working = state
                 .record_working_bytes
                 .iter()
-                .try_fold(state.resident_bytes, |sum, bytes| {
-                    resources::reserve(sum, *bytes, MAX_EVENT_WORKING_BYTES)
+                .try_fold(0, |sum, bytes| {
+                    resources::reserve(sum, *bytes, resources::MAX_TEMPORARY_ALLOCATION)
                 })?;
-            resources::reserve(working, MAX_SIDECAR_BYTES as usize, MAX_EVENT_WORKING_BYTES)?;
             let records = self.read_records(&state, 0..state.records.len())?;
             let manifest = SnapshotManifest {
                 schema: SEGMENT_SNAPSHOT_SCHEMA,
@@ -1863,9 +2089,16 @@ impl SegmentedEventStore {
                 last_record_sha256: &state.last_record_sha256,
                 records: &records,
             };
-            let encoded = resources::encode_bounded(&manifest, MAX_SIDECAR_BYTES as usize)?;
+            let size = resources::encoded_size(&manifest, MAX_SIDECAR_BYTES as usize)?;
+            resources::reserve(
+                working,
+                size.checked_mul(2)
+                    .ok_or(EventStoreError::CapacityExhausted)?,
+                resources::MAX_TEMPORARY_ALLOCATION,
+            )?;
+            let encoded = resources::encode_bounded(&manifest, size)?;
             // A snapshot we create must also be readable under restart's bound.
-            resources::check_sidecar(state.resident_bytes, &encoded)?;
+            resources::check_sidecar(0, &encoded)?;
             Ok(encoded)
         })();
         let encoded = self.finish_record_read(encoded_result)?;
@@ -1875,6 +2108,7 @@ impl SegmentedEventStore {
             &encoded,
             "event snapshot",
         )?;
+        drop(encoded);
         self.write_index_manifest()?;
         self.validate_all_segments_current()?;
         let state = self.read_state()?;
@@ -1935,6 +2169,7 @@ impl SegmentedEventStore {
                 path: segment.path,
                 file: segment.file,
                 _descriptor_lease: segment._descriptor_lease,
+                _memory_lease: segment._memory_lease,
                 identity: segment.identity,
                 byte_count: 0,
                 record_count: 0,
@@ -2077,45 +2312,26 @@ impl SegmentedEventStore {
 
     fn write_index_manifest(&self) -> Result<()> {
         self.validate_all_segments_current()?;
-        let (mut entries, segments, record_count, byte_count, last_hash) = {
+        let encoded = {
             let state = self.read_state()?;
-            let mut entries = state
-                .locations
-                .iter()
-                .map(|(key, location)| IndexManifestEntry {
-                    scope: key.scope.clone(),
-                    event_id: key.event_id.clone(),
-                    location: *location,
-                })
-                .collect::<Vec<_>>();
-            entries.sort_by_key(|entry| entry.location.store_seq);
-            let segments = state
-                .segments
-                .values()
-                .map(|segment| IndexManifestSegment {
-                    id: segment.id,
-                    byte_count: segment.byte_count,
-                    record_count: segment.record_count,
-                })
-                .collect::<Vec<_>>();
-            (
-                entries,
-                segments,
-                state.records.len(),
-                state.byte_count,
-                state.last_record_sha256.clone(),
-            )
+            let manifest = IndexManifest {
+                schema: SEGMENT_INDEX_SCHEMA,
+                record_count: state.records.len(),
+                byte_count: state.byte_count,
+                last_record_sha256: &state.last_record_sha256,
+                segments: IndexManifestSegments(&state),
+                entries: IndexManifestEntries(&state),
+            };
+            let size = resources::encoded_size(&manifest, MAX_SIDECAR_BYTES as usize)?;
+            resources::reserve(
+                0,
+                size.checked_mul(2)
+                    .ok_or(EventStoreError::CapacityExhausted)?,
+                resources::MAX_TEMPORARY_ALLOCATION,
+            )?;
+            resources::encode_bounded(&manifest, size)?
         };
-        let manifest = IndexManifest {
-            schema: SEGMENT_INDEX_SCHEMA,
-            record_count,
-            byte_count,
-            last_record_sha256: &last_hash,
-            segments,
-            entries: std::mem::take(&mut entries),
-        };
-        let encoded = resources::encode_bounded(&manifest, MAX_SIDECAR_BYTES as usize)?;
-        resources::check_sidecar(self.read_state()?.resident_bytes, &encoded)?;
+        resources::check_sidecar(0, &encoded)?;
         self.atomic_sidecar_write(
             SEGMENT_INDEX_FILE,
             SEGMENT_INDEX_TEMP_FILE,
@@ -2369,46 +2585,42 @@ fn reject_published_sidecar(error: EventStoreError) -> Result<()> {
 /// duration of this function.
 fn verify_legacy_snapshot(
     legacy: &DurableEventStore,
-    initial_records: &[EventRecord],
-) -> Result<Vec<EventRecord>> {
-    // The fresh scan performs live pathname/descriptor/length checks while
-    // the v1 lease is still held, and also re-authenticates the bytes on disk.
-    // Comparing the returned sequence catches a source tail that became
-    // visible after the first snapshot (for example, an out-of-band writer
-    // that bypassed flock).
-    let current_records = legacy.reread_live_records()?;
-    if current_records != initial_records {
+    initial_snapshot: &EventStoreSnapshot,
+) -> Result<()> {
+    legacy.reread_live_records()?;
+    if legacy.snapshot()? != *initial_snapshot {
         return Err(EventStoreError::EventConflict);
     }
-    Ok(current_records)
+    Ok(())
 }
 
 fn reconcile_legacy_prefix(
     store: &SegmentedEventStore,
-    legacy_records: &[EventRecord],
+    legacy: &DurableEventStore,
     allow_destination_tail: bool,
 ) -> Result<()> {
-    let existing = store.all_records()?;
-    let prefix_matches = existing
-        .iter()
-        .zip(legacy_records.iter())
-        .all(|(actual, expected)| actual == expected);
-
-    if existing.len() > legacy_records.len() {
-        if allow_destination_tail && prefix_matches {
-            return Ok(());
+    let _working = resources::WorkingGuard::acquire()?;
+    // Borrow the original source read model while retaining its writer fence.
+    // The separate working lease covers one fresh destination decode/append.
+    let source = legacy.lock_live()?;
+    let existing = store.finish_record_read(store.with_live_state(|state| {
+        if state.records.len() > source.records.len() && !allow_destination_tail {
+            return Err(EventStoreError::EventConflict);
         }
-        return Err(EventStoreError::EventConflict);
-    }
-    if !prefix_matches {
-        return Err(EventStoreError::EventConflict);
-    }
-
-    // A crash during migration leaves a valid prefix in the destination.
-    // Resume from that prefix rather than silently replacing or re-appending
-    // it; divergent bytes have already failed closed above.
-    for record in legacy_records.iter().skip(existing.len()) {
-        let result = store.append(EventInput {
+        for index in 0..state.records.len() {
+            let actual = store.read_record(state, index)?;
+            if let Some(expected) = source.records.get(index)
+                && actual != *expected
+            {
+                return Err(EventStoreError::EventConflict);
+            }
+        }
+        Ok(state.records.len())
+    })?)?;
+    // Complete a crash-surviving exact prefix, one payload at a time. All
+    // cloned arguments stay inside this working lease; no callback reentry.
+    for record in source.records.iter().skip(existing) {
+        let result = store.append_under_working(EventInput {
             scope: record.scope.clone(),
             event_id: record.event_id.clone(),
             kind: record.kind.clone(),
@@ -2416,11 +2628,16 @@ fn reconcile_legacy_prefix(
         })?;
         if result.record != *record {
             return Err(EventStoreError::InvalidRecord(
-                "legacy migration changed an event record".to_string(),
+                "legacy migration changed an event record".to_owned(),
             ));
         }
     }
-    store.flush()
+    let _gate = store
+        .append_gate
+        .lock()
+        .map_err(|_| EventStoreError::StatePoisoned)?;
+    store.sync_pending_under_gate()?;
+    store.write_index_manifest()
 }
 
 /// Open a fresh sidecar temporary file without a path-check/truncate race.
@@ -2480,6 +2697,7 @@ struct SegmentedRecovered {
     segment_summaries: BTreeMap<u64, SegmentSummary>,
     byte_count: u64,
     last_record_sha256: String,
+    _resident_lease: resources::ResidentLease,
 }
 
 // A sidecar is derived state, but it is still untrusted input at startup.
@@ -2498,7 +2716,7 @@ fn validate_recovery_sidecars(
     validate_root_identity(root, root_identity, root_dir)?;
     let maximum = MAX_SIDECAR_BYTES;
     if let Some(encoded) = read_sidecar(&root.join(SEGMENT_INDEX_FILE), "event index", maximum)? {
-        resources::check_sidecar(recovered.resident_bytes, &encoded)?;
+        resources::check_sidecar(0, &encoded)?;
         let manifest: IndexManifestOwned =
             strict_json::decode(&encoded).map_err(|error| invalid_sidecar("event index", error))?;
         validate_index_manifest(&manifest, recovered, config)?;
@@ -2507,7 +2725,7 @@ fn validate_recovery_sidecars(
     if let Some(encoded) =
         read_sidecar(&root.join(SEGMENT_SNAPSHOT_FILE), "event snapshot", maximum)?
     {
-        resources::check_sidecar(recovered.resident_bytes, &encoded)?;
+        resources::check_sidecar(0, &encoded)?;
         let manifest: SnapshotManifestOwned = strict_json::decode(&encoded)
             .map_err(|error| invalid_sidecar("event snapshot", error))?;
         validate_snapshot_manifest(&manifest, recovered, config)?;
@@ -2549,25 +2767,9 @@ fn read_sidecar(path: &Path, label: &str, maximum: u64) -> Result<Option<Vec<u8>
     let capacity = usize::try_from(length).map_err(|_| {
         invalid_sidecar(label, "sidecar length is not addressable on this platform")
     })?;
-    let mut bytes = Vec::with_capacity(capacity);
-    let reader = file
-        .try_clone()
+    let mut bytes = vec![0; capacity];
+    file.read_exact_at(&mut bytes, 0)
         .map_err(|error| EventStoreError::Io(error.to_string()))?;
-    let read_limit = maximum
-        .checked_add(1)
-        .ok_or_else(|| invalid_sidecar(label, "sidecar read bound overflow"))?;
-    let read = reader
-        .take(read_limit)
-        .read_to_end(&mut bytes)
-        .map_err(|error| EventStoreError::Io(error.to_string()))?;
-    if u64::try_from(read).unwrap_or(u64::MAX) > maximum
-        || u64::try_from(read).unwrap_or(0) != length
-    {
-        return Err(invalid_sidecar(
-            label,
-            "sidecar changed or exceeded its bound while being read",
-        ));
-    }
     let (final_metadata, final_path_metadata) =
         validate_opened_path_identity(path, path_before.as_ref(), &file, label)?;
     validate_store_file_metadata(&final_metadata, label)?;
@@ -2576,7 +2778,6 @@ fn read_sidecar(path: &Path, label: &str, maximum: u64) -> Result<Option<Vec<u8>
     if final_length != length {
         return Err(invalid_sidecar(label, "sidecar changed while being read"));
     }
-    debug_assert_eq!(read, bytes.len());
     Ok(Some(bytes))
 }
 
@@ -3087,6 +3288,8 @@ fn discover_segments(
     }
     let mut segments = Vec::with_capacity(paths.len());
     for (id, path, path_metadata) in paths {
+        let memory_lease =
+            resources::ResidentLease::acquire(resources::segment_reservation(&path)?)?;
         let descriptor_lease = resources::DescriptorLease::acquire(1)?;
         let file = OpenOptions::new()
             .read(true)
@@ -3104,6 +3307,7 @@ fn discover_segments(
             file: Arc::new(Mutex::new(file)),
             identity: (descriptor_metadata.dev(), descriptor_metadata.ino()),
             _descriptor_lease: descriptor_lease,
+            _memory_lease: memory_lease,
         });
     }
     validate_root_identity(root, root_identity, root_dir)?;
@@ -3168,6 +3372,7 @@ fn create_segment(
 ) -> Result<OpenSegment> {
     validate_root_identity(root, root_identity, root_dir)?;
     let path = root.join(segment_file_name(id));
+    let memory_lease = resources::ResidentLease::acquire(resources::segment_reservation(&path)?)?;
     let descriptor_lease = resources::DescriptorLease::acquire(1)?;
     let file = OpenOptions::new()
         .read(true)
@@ -3190,6 +3395,7 @@ fn create_segment(
         file: Arc::new(Mutex::new(file)),
         identity: (descriptor_metadata.dev(), descriptor_metadata.ino()),
         _descriptor_lease: descriptor_lease,
+        _memory_lease: memory_lease,
     })
 }
 
@@ -3254,6 +3460,7 @@ fn recover_segmented_segments(
     root_dir: &File,
     segments: &[OpenSegment],
     config: &SegmentedEventStoreConfig,
+    mut resident_lease: resources::ResidentLease,
 ) -> Result<SegmentedRecovered> {
     validate_root_identity(root, root_identity, root_dir)?;
     let mut records = Vec::new();
@@ -3286,7 +3493,7 @@ fn recover_segmented_segments(
             config
                 .limits
                 .max_record_bytes
-                .min(MAX_EVENT_RESIDENT_BYTES / 2),
+                .min(resources::MAX_ENCODED_RECORD_BYTES),
         )? {
             if !terminated {
                 if !(is_last && config.recovery == RecoveryPolicy::RepairTrailingPartial) {
@@ -3320,18 +3527,17 @@ fn recover_segmented_segments(
             {
                 return Err(EventStoreError::CapacityExhausted);
             }
-            resources::check_decode(0, &line, MAX_EVENT_RESIDENT_BYTES)?;
-            resources::check_decode(resident_bytes, &line, MAX_EVENT_WORKING_BYTES)?;
+            resources::check_record_decode(&line, line.capacity())?;
             let record: EventRecord =
                 strict_json::decode(&line).map_err(EventStoreError::InvalidRecord)?;
-            let working_bytes = resources::record_reservation(&record, &line)?;
-            resources::reserve(0, working_bytes, MAX_EVENT_RESIDENT_BYTES)?;
-            resident_bytes = resources::reserve(
-                resident_bytes,
-                resources::header_reservation(&record)?,
-                MAX_EVENT_RESIDENT_BYTES,
+            let working_bytes = resources::reserve(
+                resources::record_reservation(&record, &line)?,
+                line.capacity(),
+                resources::MAX_TEMPORARY_ALLOCATION,
             )?;
-            resources::reserve(resident_bytes, working_bytes, MAX_EVENT_WORKING_BYTES)?;
+            let delta = resources::header_reservation(&record)?;
+            resident_bytes = resources::reserve(resident_bytes, delta, MAX_EVENT_RESIDENT_BYTES)?;
+            resident_lease.merge(resources::ResidentLease::acquire(delta)?);
             validate_record(&record, &config.limits)?;
             let expected_store_seq =
                 u64::try_from(records.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
@@ -3417,6 +3623,7 @@ fn recover_segmented_segments(
         segment_summaries,
         byte_count,
         last_record_sha256: previous,
+        _resident_lease: resident_lease,
     })
 }
 
@@ -3424,11 +3631,8 @@ fn read_segment_line(
     reader: &mut impl BufRead,
     maximum: usize,
 ) -> Result<Option<(Vec<u8>, usize, bool)>> {
-    let mut line = Vec::new();
-    let read_ahead = read_ahead_limit(maximum)?;
-    let read = std::io::Read::take(reader, read_ahead)
-        .read_until(b'\n', &mut line)
-        .map_err(|error| EventStoreError::Io(error.to_string()))?;
+    let mut line = resources::read_line(reader, maximum)?;
+    let read = line.len();
     if read == 0 {
         return Ok(None);
     }
@@ -3457,9 +3661,14 @@ struct Recovered {
     next_turn_seq: HashMap<TurnScope, u64>,
     byte_count: u64,
     last_record_sha256: String,
+    _resident_lease: resources::ResidentLease,
 }
 
-fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> {
+fn recover_records(
+    file: &File,
+    limits: &EventStoreLimits,
+    mut resident_lease: resources::ResidentLease,
+) -> Result<Recovered> {
     let mut reader = BufReader::new(
         file.try_clone()
             .map_err(|error| EventStoreError::Io(error.to_string()))?,
@@ -3472,7 +3681,9 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
     let mut previous = ZERO_SHA256.to_string();
     while let Some((encoded, consumed)) = read_record_line(
         &mut reader,
-        limits.max_record_bytes.min(MAX_EVENT_RESIDENT_BYTES / 2),
+        limits
+            .max_record_bytes
+            .min(resources::MAX_ENCODED_RECORD_BYTES),
     )? {
         byte_count = byte_count
             .checked_add(consumed)
@@ -3481,14 +3692,12 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
         if records.len() >= limits.max_records {
             return Err(EventStoreError::CapacityExhausted);
         }
-        resources::check_decode(resident_bytes, &encoded, MAX_EVENT_RESIDENT_BYTES)?;
+        resources::check_record_decode(&encoded, encoded.capacity())?;
         let record: EventRecord =
             strict_json::decode(&encoded).map_err(EventStoreError::InvalidRecord)?;
-        resident_bytes = resources::reserve(
-            resident_bytes,
-            resources::record_reservation(&record, &encoded)?,
-            MAX_EVENT_RESIDENT_BYTES,
-        )?;
+        let delta = resources::record_reservation(&record, &encoded)?;
+        resident_bytes = resources::reserve(resident_bytes, delta, MAX_EVENT_RESIDENT_BYTES)?;
+        resident_lease.merge(resources::ResidentLease::acquire(delta)?);
         validate_record(&record, limits)?;
         let expected_store_seq =
             u64::try_from(records.len()).map_err(|_| EventStoreError::CapacityExhausted)?;
@@ -3530,16 +3739,13 @@ fn recover_records(file: &File, limits: &EventStoreLimits) -> Result<Recovered> 
         next_turn_seq,
         byte_count,
         last_record_sha256: previous,
+        _resident_lease: resident_lease,
     })
 }
 
 fn read_record_line(reader: &mut impl BufRead, maximum: usize) -> Result<Option<(Vec<u8>, u64)>> {
-    let mut line = Vec::new();
-    let read_ahead = read_ahead_limit(maximum)?;
-    let mut limited = std::io::Read::take(reader, read_ahead);
-    let read = limited
-        .read_until(b'\n', &mut line)
-        .map_err(|error| EventStoreError::Io(error.to_string()))?;
+    let mut line = resources::read_line(reader, maximum)?;
+    let read = line.len();
     if read == 0 {
         return Ok(None);
     }
@@ -3736,6 +3942,9 @@ fn require_sha256(value: &str, label: &str) -> Result<()> {
 }
 
 fn validate_store_path(path: &Path) -> Result<()> {
+    if path.as_os_str().len() > 4096 {
+        return Err(EventStoreError::CapacityExhausted);
+    }
     if !path.is_absolute() {
         return Err(EventStoreError::UnsafePath(
             "store path must be absolute".to_string(),

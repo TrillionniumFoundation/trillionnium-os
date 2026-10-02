@@ -89,6 +89,17 @@ installed effects or all native configuration layers. Managed feature
 requirements, MCP, legacy notify and startup plugins require a trusted installed
 configuration boundary before production promotion.
 
+Private state/configuration directory traversal uses Linux `O_PATH` descriptors
+for intermediate directories, so a searchable parent need not permit directory
+listing. This supports ordinary uid 2000 probe paths beneath Android `/data`,
+where the parent is searchable but not readable. The selected directory still
+uses `O_RDONLY`; its existing owner/mode checks and every component's
+`O_DIRECTORY | O_NOFOLLOW` checks remain enforced. This changes no filesystem
+permissions or authority. A temporary physical ARM protocol probe with a local
+synthetic model and fixed Host observations demonstrates runtime compatibility;
+it does not establish installed RootLinux, authenticated provider, native effect
+isolation or release qualification.
+
 The source bridge also rejects known unbound filesystem layers before launching
 native Codex: `/etc/codex`, legacy managed requirements, hooks/plugins, and
 ancestor project/repository configuration. Its digest-bound public TOML is
@@ -98,6 +109,14 @@ before native startup. This closes a reproduced system-MCP startup path even
 when ordinary shell/hooks/plugins CLI flags are false. The checks do not make
 filesystem paths immutable or attest cloud requirements and persisted thread
 layers. Those remain installed/authenticated configuration qualification holds.
+
+The frozen native launch also disables goal continuation, memories, code/JS
+execution, browsers, web search, subagents, extension installation, native input
+requests and orchestrator skills/MCP. Ordinary defaults must not create a second
+execution lane beside the durable Host callbacks. A real 0.144.1 synthetic
+backend probe retains only native `update_plan` notifications and the two Host
+tools in the model-visible inventory. This probe does not attest managed/cloud
+feature constraints or another native release.
 
 `crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py` handles the distinct Host and
 native callback byte bounds. A Host tool-result frame may occupy one borrowed

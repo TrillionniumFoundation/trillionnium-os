@@ -303,7 +303,8 @@ impl JobManager {
         // across journal I/O, process spawn, or dispatcher creation, so
         // unrelated keys can start concurrently while one key remains
         // linearizable.
-        let _start_guard = self.start_guard(&request.key)?;
+        // Bind owned input last so its buffers retire before its reservation.
+        let (_start_guard, _pending_input, request) = self.start_input_guard(request)?;
         if let Some(running) = self.running()?.get(&request.key).cloned() {
             if running.request != request.request {
                 return Err(JobRuntimeError::JobConflict);
@@ -366,9 +367,9 @@ impl JobManager {
         // Compute the exact operation identity before the registry accepts the
         // key.  A serialization/digest failure must not leave an Accepted
         // entry that has no corresponding journal operation.
-        // Existing keys must remain inspectable even when new process capacity
-        // is exhausted. Only a new identity reserves owned staging, and its
-        // charge precedes the first digest DOM and every durable acceptance.
+        // Existing keys need no new process reservation. Every moved request
+        // already holds its owned-input charge; only a new identity reserves
+        // process/digest staging before durable acceptance.
         let start_resources = if registry_entry_exists {
             None
         } else {
@@ -2070,6 +2071,25 @@ impl JobManager {
         stable_start_shard_index(key, self.inner.start_shards.len())
     }
 
+    fn start_input_guard(
+        &self,
+        request: JobStartRequest,
+    ) -> Result<(MutexGuard<'_, ()>, JobMemoryLease, JobStartRequest)> {
+        // Even an idle start shard can later wait for recovery, startup or
+        // other shared lanes. Admit every moved input before the first wait.
+        let heap = start_spec_bytes(&request, &self.inner.config)?
+            .saturating_sub(std::mem::size_of::<JobStartRequest>())
+            .checked_add(request.initial_stdin.capacity())
+            .ok_or_else(|| {
+                JobRuntimeError::InvalidRequest("owned start memory size overflow".to_string())
+            })?;
+        let pending = JobMemoryLease::acquire(heap).map_err(registry_error)?;
+        // Parameters otherwise outlive local guards, including lock errors.
+        #[allow(clippy::redundant_locals)]
+        let request = request;
+        Ok((self.start_guard(&request.key)?, pending, request))
+    }
+
     fn start_guard(&self, key: &JobKey) -> Result<MutexGuard<'_, ()>> {
         self.inner.start_shards[self.start_shard_index(key)]
             .lock()
@@ -2796,6 +2816,57 @@ mod tests {
             initial_stdin: Vec::new(),
             pty: None,
         }
+    }
+
+    #[test]
+    fn queued_owned_start_refuses_at_resident_capacity_before_waiting() {
+        const ISOLATED: &str = "TRILLIONNIUM_START_QUEUED_INPUT_CHILD";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "manager::tests::queued_owned_start_refuses_at_resident_capacity_before_waiting", "--nocapture"])
+                .env(ISOLATED, "1").output().unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+        let manager =
+            JobManager::new(JobRuntimeConfig::default(), JobJournal::memory_only()).unwrap();
+        let owner = rollback_test_key();
+        let guard = manager.start_guard(&owner).unwrap();
+        let mut pressure = JobMemoryLease::acquire(0).unwrap();
+        let (mut low, mut high) = (0, 48 * 1024 * 1024 + 1);
+        while low + 1 < high {
+            let middle = low + (high - low) / 2;
+            if pressure.resize(middle).is_ok() {
+                low = middle;
+            } else {
+                high = middle;
+            }
+        }
+        pressure.resize(low).unwrap();
+        let mut request = stale_start_request(owner.clone(), rollback_test_request(), "start");
+        let mut command = String::with_capacity(512 * 1024);
+        command.push(':');
+        request.invocation = JobInvocation::Command { command };
+        let clone = manager.clone();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            sender.send(clone.start(request).is_err()).unwrap();
+        });
+        let refused = receiver.recv_timeout(std::time::Duration::from_millis(500));
+        drop(guard);
+        worker.join().unwrap();
+        drop(pressure);
+        assert!(
+            matches!(refused, Ok(true)),
+            "owned start waited without memory admission: {refused:?}"
+        );
+        assert!(manager.registry().snapshot(&owner).is_err());
+        assert!(!manager.has_live_or_pending_jobs());
     }
 
     #[test]

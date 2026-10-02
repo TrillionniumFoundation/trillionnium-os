@@ -117,8 +117,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_ingress_proxy.cpp",
-          "sha256": "d10716008a26558910b22001816e7fa22ef38f89aa8962d5ff4ce557c9186501",
-          "size": 18361
+          "sha256": "10469c60aa516c3924b6bc19ad6cb4d16004cffb96ded64c414af9f43ea28631",
+          "size": 19671
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/product.mk",
@@ -452,13 +452,13 @@
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/src/lib.rs",
-          "sha256": "1092bb15557ec0e86b9196b12984db4df969ee6bf70d9f24139d622bfc2ab007",
-          "size": 177035
+          "sha256": "b93fa8d9a445aafda0bcc6ccc52a5f0b47e60ce4bdba4f37275229b33c2c2a50",
+          "size": 185923
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/src/resources.rs",
-          "sha256": "83394e99c55ca52e6f92ca6d8fd3b056d5d5d694223e86b6c14ff3a8e6bfeb57",
-          "size": 10369
+          "sha256": "984cd51e8a7761108dec2695372fd6ab7f5eae88af6cb19872e8cde84097fea5",
+          "size": 19181
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/src/strict_json.rs",
@@ -484,8 +484,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/tests/resources.rs",
-          "sha256": "fde20b7e6e266de83af337ed5108b280b0999261e3fd81803b4386ce8e3ae3dc",
-          "size": 13173
+          "sha256": "6952afc8e6cd78d801e38f93e512b98fe03d7340531b87b5df96c8154503d5ae",
+          "size": 32578
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/tests/segmented.rs",
@@ -697,13 +697,13 @@
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
-          "sha256": "8f4e1bac58c83dbb642089e860e89f872f1bc3c2ddcf8af6da51e044c152a498",
-          "size": 6577
+          "sha256": "4cba3066bb891e994e56d4222a34d328045adc4901bb6e2a309a8e098c406c7a",
+          "size": 7183
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/journal.rs",
-          "sha256": "a39a6737450481b775266ec2b091226d9eb1bc58934aaa76472060063e086aa4",
-          "size": 93928
+          "sha256": "28ba79a191222e8b6e5eb451de504def6199f676e93c9743707e743cf518d82c",
+          "size": 106592
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/lib.rs",
@@ -712,8 +712,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
-          "sha256": "450e11c3ac9845dbcf1a9040403048fd02d342db534ba9dfc2fb0d9f64f34fd7",
-          "size": 136283
+          "sha256": "be3edc5713eb51f56044e6dddf43000890ecc06774690f182a194573e0bb14e2",
+          "size": 139550
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/process.rs",
@@ -722,8 +722,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/resources.rs",
-          "sha256": "e4ebbee5adcfb0f137defa13523f917f77e838a6f541314c966bb2d6eb988b6f",
-          "size": 6251
+          "sha256": "aade322e725644118785a0a614e00f06e917db772353b69cb6bb1564e07a716f",
+          "size": 6556
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/types.rs",
@@ -751,6 +751,11 @@
           "path": "crates/trillionnium-owner-open-job-registry/tests/registry.rs",
           "sha256": "db15a361ffa8accd5af89ce1545c05691f8db87eb11ebcfdf9bb2a07fe0f219c",
           "size": 9633
+        },
+        {
+          "path": "crates/trillionnium-owner-open-job-runtime/tests/queued_input.rs",
+          "sha256": "2f8bb3ddabc38e5c40b68a735c2613404f62f81585563dbb54c791132ab2fbd3",
+          "size": 7399
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/tests/runtime.rs",
@@ -837,8 +842,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py",
-          "sha256": "dd0e0b9e7f918f520e34f8e10c891f59fd080d1f0dbf9110a9ee9966ecd4e8b0",
-          "size": 38909
+          "sha256": "39820dd73fe528423cc38bb5a3a4dd39a58f64f9b4c73ef1e699b9810f72fe17",
+          "size": 39977
         },
         {
           "path": "crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py",

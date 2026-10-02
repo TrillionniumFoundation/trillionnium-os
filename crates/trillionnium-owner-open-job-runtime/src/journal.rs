@@ -159,6 +159,17 @@ impl EventStoreBackend {
         }
     }
 
+    fn visit_scope_records<E>(
+        &self,
+        scope: &TurnScope,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> trillionnium_owner_open_event_store::Result<std::result::Result<(), E>> {
+        match self {
+            Self::Legacy(store) => store.visit_scope_records(scope, 0, visit),
+            Self::Segmented(store) => store.visit_scope_records(scope, 0, visit),
+        }
+    }
+
     fn flush(&self) -> trillionnium_owner_open_event_store::Result<()> {
         match self {
             // v1 journal appends use SyncPolicy::Full, so there is no pending
@@ -454,8 +465,7 @@ impl JobJournal {
         operation_sha256: &str,
         details: Value,
     ) -> Result<OperationBegin> {
-        let _working_lane = crate::resources::working_lane()?;
-        let _working_lease = journal_working_charge(key, request, &details)?;
+        let (_working_lane, _working_lease, details) = journal_input_lane(key, request, details)?;
         validate_operation(operation_id, operation_kind, operation_sha256)?;
         // A key shard preserves the linearizable begin/append transition for
         // this job while allowing unrelated jobs to release the global state
@@ -625,8 +635,7 @@ impl JobJournal {
         operation_sha256: &str,
         result: Value,
     ) -> Result<()> {
-        let _working_lane = crate::resources::working_lane()?;
-        let _working_lease = journal_working_charge(key, request, &result)?;
+        let (_working_lane, _working_lease, result) = journal_input_lane(key, request, result)?;
         validate_operation(operation_id, operation_kind, operation_sha256)?;
         let _key_guard = self.key_guard(key)?;
         let operation_key = OperationKey {
@@ -754,8 +763,7 @@ impl JobJournal {
         kind: &str,
         payload: Value,
     ) -> Result<()> {
-        let _working_lane = crate::resources::working_lane()?;
-        let _working_lease = journal_working_charge(key, request, &payload)?;
+        let (_working_lane, _working_lease, payload) = journal_input_lane(key, request, payload)?;
         self.append_observation_reserved(key, request, event_seq, kind, payload)
     }
 
@@ -977,8 +985,7 @@ impl JobJournal {
         event_seq: u64,
         payload: Value,
     ) -> Result<()> {
-        let _working_lane = crate::resources::working_lane()?;
-        let _working_lease = journal_working_charge(key, request, &payload)?;
+        let (_working_lane, _working_lease, payload) = journal_input_lane(key, request, payload)?;
         let next_cursor = event_seq.checked_add(1).ok_or_else(|| {
             JobRuntimeError::InvalidRequest("runtime observation sequence exhausted".to_string())
         })?;
@@ -1178,15 +1185,19 @@ impl JobJournal {
             (Arc::clone(store), expected_request)
         };
         let scope = turn_scope(key);
-        // Replay is read-only but can scan a large legacy store.  Keep it out
-        // of the global journal-state mutex; the key shard still prevents a
-        // same-key mutation from racing the request-binding checks below.
+        // Startup authenticates the complete history. Inspection uses the
+        // existing turn-scope index and reads only that scope's payloads; jobs
+        // sharing one turn scope still need the job_id filter below. Keep I/O
+        // outside the journal-state mutex while the key shard fences same-key
+        // mutations. This does not reauthenticate unrelated live payloads.
         let mut matching = Vec::new();
         let mut working: usize = 64 * 1024;
         store
-            .visit_records(|record| {
+            .visit_scope_records(&scope, |record| {
                 if record.scope != scope {
-                    return Ok(());
+                    return Err(JobRuntimeError::Journal(
+                        "durable scoped journal reader returned another scope".to_string(),
+                    ));
                 }
                 let envelope = journal_header(&record.payload)?;
                 if envelope.schema != JOURNAL_SCHEMA {
@@ -1644,6 +1655,35 @@ fn journal_metadata_charge(
     JobMemoryLease::acquire(bytes).map_err(|error| JobRuntimeError::Journal(error.to_string()))
 }
 
+fn journal_input_lane(
+    key: &JobKey,
+    request: &JobRequest,
+    payload: Value,
+) -> Result<(MutexGuard<'static, ()>, JobMemoryLease, Value)> {
+    if let Some(lane) = crate::resources::try_working_lane()? {
+        return Ok((lane, journal_working_charge(key, request, &payload)?, payload));
+    }
+    // The moved payload remains owned by this call while waiting. Reserve
+    // its actual heap (including spare capacity) before a blocking lock.
+    // A free lane uses working headroom directly so a full resident registry
+    // does not make zero-heap exact-identity requests unreadable.
+    let owned = value_owned_bytes(&payload, 0)?;
+    if owned > crate::MAX_OBSERVATION_STAGING_BYTES / 4 {
+        return Err(journal_capacity());
+    }
+    let pending = JobMemoryLease::acquire(owned)
+        .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
+    // Own the input in a later local so even a poisoned lane or working
+    // admission error destroys its heap before releasing the pending lease.
+    #[allow(clippy::redundant_locals)]
+    let payload = payload;
+    let lane = crate::resources::working_lane()?;
+    let working = journal_working_charge(key, request, &payload)?;
+    drop(pending);
+    // Callers bind the returned input after its guards, preserving drop order.
+    Ok((lane, working, payload))
+}
+
 fn journal_working_charge(
     key: &JobKey,
     request: &JobRequest,
@@ -1951,6 +1991,160 @@ mod tests {
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))
             .expect("harden temporary directory");
         directory
+    }
+
+    #[test]
+    fn oversized_owned_payloads_refuse_before_waiting_for_the_working_lane() {
+        const ISOLATED: &str = "TRILLIONNIUM_JOURNAL_QUEUED_INPUT_CHILD";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "journal::tests::oversized_owned_payloads_refuse_before_waiting_for_the_working_lane", "--nocapture"])
+                .env(ISOLATED, "1").output().unwrap();
+            assert!(output.status.success(), "{}\n{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+            return;
+        }
+        let journal = Arc::new(JobJournal::memory_only());
+        let held = crate::resources::working_lane().unwrap();
+        let mut waiting = Vec::new();
+        for operation in 0..4 {
+            let journal = Arc::clone(&journal);
+            let (sender, receiver) = std::sync::mpsc::channel();
+            let worker = std::thread::spawn(move || {
+                let mut spare = String::with_capacity(8 * 1024 * 1024);
+                spare.push('x');
+                let payload = Value::String(spare);
+                let owner = key("queued");
+                let request = request('a');
+                let digest = "d".repeat(64);
+                let result = match operation {
+                    0 => journal.begin_operation(&owner, &request, "start", "start", &digest, payload).map(|_| ()),
+                    1 => journal.complete_operation(&owner, &request, "start", "start", &digest, payload),
+                    2 => journal.append_observation(&owner, &request, 0, "job.output", payload),
+                    _ => journal.record_job_terminal(&owner, &request, 0, payload),
+                };
+                sender.send(result.is_err()).unwrap();
+            });
+            waiting.push((worker, receiver));
+        }
+        let rejected: Vec<_> = waiting.iter().map(|(_, receiver)|
+            receiver.recv_timeout(std::time::Duration::from_millis(250))).collect();
+        // Release before asserting so a regression cannot poison the global
+        // lane or strand test workers while reporting its real failure.
+        drop(held);
+        for (worker, _) in waiting { worker.join().unwrap(); }
+        assert!(rejected.iter().all(|result| matches!(result, Ok(true))),
+                "owned oversized input was retained without admission while queued: {rejected:?}");
+        assert!(journal.lock().unwrap().operations.is_empty());
+        assert!(journal.lock().unwrap().jobs.is_empty());
+    }
+
+    #[test]
+    fn queued_small_heap_is_not_treated_as_stack_storage() {
+        const ISOLATED: &str = "TRILLIONNIUM_JOURNAL_SMALL_PENDING_CHILD";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "journal::tests::queued_small_heap_is_not_treated_as_stack_storage", "--nocapture"])
+                .env(ISOLATED, "1").output().unwrap();
+            assert!(output.status.success(), "{}\n{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+            return;
+        }
+        let lane = crate::resources::working_lane().unwrap();
+        let mut pressure = JobMemoryLease::acquire(0).unwrap();
+        let (mut low, mut high) = (0, 48 * 1024 * 1024 + 1);
+        while low + 1 < high {
+            let middle = low + (high - low) / 2;
+            if pressure.resize(middle).is_ok() { low = middle; } else { high = middle; }
+        }
+        pressure.resize(low).unwrap();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            let mut value = String::with_capacity(std::mem::size_of::<Value>());
+            value.push('x');
+            let result = journal_input_lane(&key("small"), &request('a'), Value::String(value));
+            sender.send(result.is_err()).unwrap();
+        });
+        let refused = receiver.recv_timeout(std::time::Duration::from_millis(500));
+        drop(lane);
+        worker.join().unwrap();
+        drop(pressure);
+        assert!(matches!(refused, Ok(true)), "small heap bypassed queued admission: {refused:?}");
+    }
+
+    #[test]
+    fn queued_valid_payloads_share_resident_admission_and_release_it() {
+        const ISOLATED: &str = "TRILLIONNIUM_JOURNAL_PENDING_LEASE_CHILD";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "journal::tests::queued_valid_payloads_share_resident_admission_and_release_it", "--nocapture"])
+                .env(ISOLATED, "1").output().unwrap();
+            assert!(output.status.success(), "{}\n{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+            return;
+        }
+        let journal = Arc::new(JobJournal::memory_only());
+        let lane = crate::resources::working_lane().unwrap();
+        let mut pressure = JobMemoryLease::acquire(0).unwrap();
+        let (mut low, mut high) = (0, 48 * 1024 * 1024 + 1);
+        while low + 1 < high {
+            let middle = low + (high - low) / 2;
+            if pressure.resize(middle).is_ok() { low = middle; } else { high = middle; }
+        }
+        pressure.resize(low - 512 * 1024).unwrap();
+        let clone = Arc::clone(&journal);
+        let (ready_sender, ready_receiver) = std::sync::mpsc::channel();
+        let (done_sender, done_receiver) = std::sync::mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            ready_sender.send(()).unwrap();
+            let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+            loop {
+                let mut spare = String::with_capacity(256 * 1024);
+                spare.push('x');
+                let result = clone.complete_operation(&key("pending"), &request('a'), "missing", "write", &"d".repeat(64), Value::String(spare));
+                // The observer itself briefly reserves capacity. Retry only
+                // that real admission refusal so it cannot race the first
+                // request into an early exit before its lease is observable.
+                if matches!(&result, Err(JobRuntimeError::Journal(error))
+                    if *error == trillionnium_owner_open_job_registry::JobRegistryError::CapacityExhausted.to_string())
+                    && std::time::Instant::now() < deadline
+                {
+                    std::thread::sleep(std::time::Duration::from_millis(1));
+                    continue;
+                }
+                done_sender.send(result.is_err()).unwrap();
+                break;
+            }
+        });
+        ready_receiver.recv_timeout(std::time::Duration::from_secs(1)).unwrap();
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        let admitted = loop {
+            match JobMemoryLease::acquire(384 * 1024) {
+                Ok(probe) => { drop(probe); }
+                Err(_) => break true,
+            }
+            if std::time::Instant::now() >= deadline { break false; }
+            std::thread::sleep(std::time::Duration::from_millis(1));
+        };
+        let mut oversized = String::with_capacity(384 * 1024);
+        oversized.push('x');
+        let owner = key("second");
+        let req = request('a');
+        let (second_sender, second_receiver) = std::sync::mpsc::channel();
+        let second = std::thread::spawn(move || {
+            let refusal = journal_input_lane(&owner, &req, Value::String(oversized));
+            second_sender.send(refusal.is_err()).unwrap();
+        });
+        let refused = second_receiver.recv_timeout(std::time::Duration::from_millis(500));
+        // Release the shared lane even on regression before assertions.
+        drop(lane);
+        worker.join().unwrap();
+        second.join().unwrap();
+        let done = done_receiver.recv_timeout(std::time::Duration::from_secs(1)).unwrap();
+        assert!(matches!(refused, Ok(true)), "aggregate queued input was not refused: {refused:?}");
+        assert!(admitted, "waiting input never consumed shared resident capacity");
+        assert!(done, "fixture must remain effect-free for the missing operation");
+        let released = JobMemoryLease::acquire(512 * 1024).expect("pending capacity returned after error");
+        drop(released);
+        drop(pressure);
+        assert!(journal.lock().unwrap().operations.is_empty());
     }
 
     #[test]
@@ -2286,6 +2480,50 @@ mod tests {
         let reopened = JobJournal::open_best_effort(Some(&path));
         assert!(matches!(reopened.status().unwrap(), JournalStatus::Durable));
         assert_eq!(reopened.runtime_next_cursor(&owner).unwrap(), 8);
+    }
+
+    #[test]
+    fn scoped_inspection_does_not_skip_other_scopes_during_restart_authentication() {
+        for segmented in [false, true] {
+            let directory = secure_tempdir();
+            let path = directory.path().join("all-scopes");
+            let open = || {
+                if segmented {
+                    JobJournal::open_best_effort_segmented(Some(&path), None)
+                } else {
+                    JobJournal::open_best_effort(Some(&path))
+                }
+            };
+            let journal = open();
+            let owner = key("selected");
+            let other = JobKey::new(
+                JobScope::new("other-session", "owner-open", "other-task", "other-turn", "other-stream"),
+                "unselected",
+            );
+            let request = request('a');
+            journal.record_job_terminal(&owner, &request, 0, json!({"result": "selected-value"})).unwrap();
+            journal.record_job_terminal(&other, &request, 0, json!({"result": "other-scope-value"})).unwrap();
+            let selected = journal.inspect_records_with_metadata(&owner).unwrap();
+            assert_eq!(selected.len(), 1);
+            assert_eq!(selected[0]["payload"]["job_id"], "selected");
+            assert_eq!(selected[0]["scope"]["session_id"], "session-1");
+            drop(journal);
+            let wal = if segmented {
+                fs::read_dir(&path).unwrap().map(|entry| entry.unwrap().path())
+                    .find(|file| file.file_name().unwrap().to_string_lossy().starts_with("segment-")).unwrap()
+            } else {
+                path.clone()
+            };
+            let mut bytes = fs::read(&wal).unwrap();
+            let offset = bytes.windows(b"other-scope-value".len())
+                .position(|value| value == b"other-scope-value").unwrap();
+            bytes[offset] = b'X';
+            fs::write(&wal, &bytes).unwrap();
+            let reopened = open();
+            assert!(matches!(reopened.status().unwrap(), JournalStatus::Unavailable { .. }));
+            assert!(reopened.begin_operation(&owner, &request, "fresh", "start", &"c".repeat(64), json!({})).is_err());
+            assert_eq!(fs::read(&wal).unwrap(), bytes);
+        }
     }
 
     #[test]

@@ -64,11 +64,24 @@ without cloning payloads. Metadata pressure refuses before WAL acceptance and
 preserves uncertain identities. Memory-only development terminal caches have an
 8 KiB owned-storage bound and share one Arc rather than copying the same Value.
 
+Moved journal Values waiting for the working lane reserve actual heap capacity
+from the shared resident pool before blocking. Every moved start request also
+reserves its actual heap before any start/recovery/startup wait, including when
+its start shard is idle. Refusal releases input without durable acceptance or
+process effects. At resident capacity an owned start may therefore fail even
+for an existing identity; borrowed inspection and registry identity reads keep
+their separate admission behavior. The journal idle lane still uses working
+headroom directly. Inputs retire before their leases on early/error/duplicate
+returns. The start-input charge overlaps conservatively with a later process
+reservation until the request retires.
+
 Numeric output DOMs and JSON escaping are preflighted before cloning/encoding
 under the shared working lane. The default 64 KiB output chunk remains valid;
 larger profiles can fail the working bound before journal creation. Inspection
-streams and filters records with a bounded working envelope, but still scans
-unrelated scopes until an indexed scope visitor is available. Refusal is an
+uses the indexed turn-scope visitor with a bounded working envelope. Jobs that
+share one turn scope still filter by job identity; startup recovery authenticates
+the complete history, including unrelated scopes. Live scoped inspection does
+not reauthenticate unrelated payload bytes. Refusal is an
 explicit error and never means that a missing prefix was recovered.
 
 These logical charges do not prove a whole-process 64 MiB RSS bound. Allocator

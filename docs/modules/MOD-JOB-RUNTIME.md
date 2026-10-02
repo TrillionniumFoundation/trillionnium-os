@@ -33,7 +33,7 @@ Operationally, the required flow is:
 
 A start reserves finite capacity before spawn, creates durable accepted state, performs process setup outside global registry locks, then publishes running identity. Stop, signal, observe and attach operations are serialized by job ID while unrelated shards progress independently.
 
-Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
+Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins. Every owned start request reserves its actual heap, including spare capacity, before any shard, recovery or startup wait. Resident exhaustion can reject an owned duplicate start without changing the existing identity; borrowed inspection remains a separate path. Journal waiting Values reserve heap before the codec lane, and owned buffers retire before their leases on early returns.
 
 ## 3. Non-goals and authority boundary
 

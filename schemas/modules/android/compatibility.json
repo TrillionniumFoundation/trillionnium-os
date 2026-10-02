@@ -136,8 +136,8 @@
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_ingress_proxy.cpp",
-      "sha256": "d10716008a26558910b22001816e7fa22ef38f89aa8962d5ff4ce557c9186501",
-      "size": 18361
+      "sha256": "10469c60aa516c3924b6bc19ad6cb4d16004cffb96ded64c414af9f43ea28631",
+      "size": 19671
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/product.mk",

@@ -59,6 +59,22 @@ class FakeHost:
 
 
 class CodexBridgeTest(unittest.TestCase):
+    def test_native_command_disables_default_effect_and_continuation_lanes(self):
+        command = PROVIDER.native_command(42)
+        self.assertEqual(command[:3], ["/proc/self/fd/42", "app-server", "--strict-config"])
+        self.assertTrue(all(command[index] == "-c" for index in range(3, len(command), 2)))
+        settings = dict(value.split("=", 1) for value in command[4::2])
+        for feature in ("shell_tool", "unified_exec", "goals", "memories", "multi_agent",
+                        "multi_agent_v2", "enable_fanout", "code_mode", "code_mode_host",
+                        "js_repl", "in_app_browser", "browser_use", "plugins", "apps",
+                        "tool_suggest", "skill_mcp_dependency_install", "remote_models"):
+            self.assertEqual(settings["features." + feature], "false", feature)
+        self.assertEqual(settings["web_search"], '"disabled"')
+        self.assertEqual(settings["notify"], "[]")
+        for setting in ("tools.experimental_request_user_input.enabled",
+                        "orchestrator.skills.enabled", "orchestrator.mcp.enabled"):
+            self.assertEqual(settings[setting], "false")
+
     def setUp(self):
         self.token = PROVIDER.CancellationToken()
         self.host = FakeHost()
@@ -464,6 +480,85 @@ class CodexHostInputTest(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 host.start()
         host.close()
+
+
+class CodexPrivateDirectoryTest(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.ancestor = self.root / "ancestor"
+        self.selected = self.ancestor / "selected"
+        self.ancestor.mkdir(mode=0o700)
+        self.selected.mkdir(mode=0o700)
+
+    def tearDown(self):
+        self.ancestor.chmod(0o700)
+        self.selected.chmod(0o700)
+        self.temp.cleanup()
+
+    @unittest.skipIf(os.geteuid() == 0, "search/read permission regression requires an ordinary uid")
+    def test_search_only_parent_supports_readable_private_state_directory(self):
+        state = self.selected / "state.json"
+        state.write_bytes(b'{"fixture":"bounded state"}')
+        state.chmod(0o600)
+        self.ancestor.chmod(0o111)
+        with self.assertRaises(PermissionError):
+            os.open(self.ancestor, os.O_RDONLY | os.O_DIRECTORY)
+        descriptor = PROVIDER.private_directory(self.selected)
+        try:
+            self.assertEqual(os.fstat(descriptor).st_ino, self.selected.stat().st_ino)
+            self.assertFalse(os.get_inheritable(descriptor))
+            self.assertEqual(os.listdir(descriptor), ["state.json"])
+            self.assertEqual(PROVIDER.read_private_at(descriptor, "state.json"), {"fixture": "bounded state"})
+        finally:
+            os.close(descriptor)
+
+    @unittest.skipIf(os.geteuid() == 0, "selected-directory read regression requires an ordinary uid")
+    def test_selected_directory_still_requires_read_permission(self):
+        self.selected.chmod(0o111)
+        with self.assertRaises(PermissionError):
+            PROVIDER.private_directory(self.selected)
+
+    def test_intermediate_and_final_symlinks_never_adopt_target(self):
+        alias = self.root / "alias"
+        alias.symlink_to(self.ancestor, target_is_directory=True)
+        final_alias = self.ancestor / "final-alias"
+        final_alias.symlink_to(self.selected, target_is_directory=True)
+        for path in [alias / "selected", final_alias]:
+            with self.subTest(path=path), self.assertRaises(OSError):
+                PROVIDER.private_directory(path)
+
+    def test_selected_mode_and_canonical_path_guards_are_retained(self):
+        self.selected.chmod(0o777)
+        for private in [True, False]:
+            with self.subTest(private=private), self.assertRaises(PROVIDER.ProviderRuntimeError):
+                PROVIDER.private_directory(self.selected, private=private)
+        self.selected.chmod(0o755)
+        with self.assertRaises(PROVIDER.ProviderRuntimeError):
+            PROVIDER.private_directory(self.selected)
+        descriptor = PROVIDER.private_directory(self.selected, private=False)
+        os.close(descriptor)
+        for path in [Path("relative"), self.root / ".." / "selected"]:
+            with self.subTest(path=path), self.assertRaises(PROVIDER.ProviderRuntimeError):
+                PROVIDER.private_directory(path)
+        descriptor = PROVIDER.private_directory(Path("/"), private=False)
+        os.close(descriptor)
+
+    def test_failed_traversal_closes_all_ancestor_descriptors(self):
+        alias = self.ancestor / "alias"
+        alias.symlink_to(self.selected, target_is_directory=True)
+        opened = []
+        original_open = os.open
+        def observed_open(*args, **kwargs):
+            descriptor = original_open(*args, **kwargs)
+            opened.append(descriptor)
+            return descriptor
+        with mock.patch.object(PROVIDER.os, "open", side_effect=observed_open), self.assertRaises(OSError):
+            PROVIDER.private_directory(alias)
+        self.assertTrue(opened)
+        for descriptor in set(opened):
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
 
 
 class CodexNativeConfigurationTest(unittest.TestCase):

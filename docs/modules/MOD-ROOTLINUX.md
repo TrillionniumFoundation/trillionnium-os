@@ -363,6 +363,9 @@ must be nonempty, and launch paths must have execute permission. Other ordinary
 payload files may be empty only with the exact empty-file digest and no execute
 bits. These checks establish payload admission and source closure; provider
 authentication, native tool isolation and installed qualification remain HOLD.
+The native ingress creates detached POSIX workers without C++ exceptions;
+allocation or thread-setup failure closes the accepted socket and returns its
+connection admission slot.
 
 Reproduce the selected staging/build tests with:
 
