@@ -245,10 +245,12 @@ by locked source metadata; the runner image's moving default is not the pin.
 The synthetic-merge job declares job-level `cache-mode: none`. A manual dispatch
 may run a selected fork while its run is scoped to `main`; `contents: read` and
 disabled checkout credential persistence do not restrict the separate Actions
-cache token. The cache service denies restores and saves for this job. Before
-any candidate checkout, a fixed script outside the worktree requires the hosted
-runner's effective `ACTIONS_CACHE_MODE` to equal `none`; absent or broader access
-stops the job. This observation grants no target or release evidence.
+cache token. The cache service denies restores and saves for this job. Verify
+the effective mode from the runner's `Set up job` observation `Cache mode: none`.
+The runner exposes `ACTIONS_CACHE_MODE` to Node actions, not Bash `run` steps;
+absence in a shell is not a failure of the native restriction. Never substitute
+a workflow environment variable for job-level token enforcement. This
+observation grants no target or release evidence.
 
 Before candidate checkout, each lane installs the distribution `acl` package
 using fixed absolute system commands from `RUNNER_TEMP`. This privileged step

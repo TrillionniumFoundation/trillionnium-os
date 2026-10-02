@@ -51,15 +51,6 @@ jobs:
     cache-mode: none
     timeout-minutes: 120
     steps:
-      - name: Require no Actions cache access for candidate execution
-        working-directory: ${{ runner.temp }}
-        timeout-minutes: 1
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ "${ACTIONS_CACHE_MODE:-}" == none ]]
-          printf '%s\n' 'ACTIONS_CACHE_MODE=none'
-
       - name: Install declared source-test system tools
         working-directory: ${{ runner.temp }}
         timeout-minutes: 10

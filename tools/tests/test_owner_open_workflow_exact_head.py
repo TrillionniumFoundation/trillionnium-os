@@ -37,33 +37,11 @@ class OwnerOpenWorkflowExactHeadTest(unittest.TestCase):
             ["none"],
             "manual candidate execution must have no cache token capability",
         )
-
-    def test_candidate_cache_guard_rejects_missing_or_granted_access(self) -> None:
-        workflow = (WORKFLOW_ROOT / "g1-synthetic-merge.yml").read_text(
-            encoding="utf-8"
-        )
-        job = SourcePrerequisiteWorkflowTests.job_text(workflow, "synthetic-merge")
-        name = "Require no Actions cache access for candidate execution"
-        step = SourcePrerequisiteWorkflowTests.step_text(job, name)
-        self.assertLess(job.index(step), job.index("uses: actions/checkout@"))
-        self.assertIn("working-directory: ${{ runner.temp }}", step)
-        script = SourcePrerequisiteWorkflowTests.script(job, name)
-        bash = shutil.which("bash")
-        self.assertIsNotNone(bash, "cache guard regression requires real bash")
-        for mode in (None, "", "read", "write", "write-only", "none"):
-            with self.subTest(mode=mode):
-                environment = dict(os.environ)
-                environment.pop("ACTIONS_CACHE_MODE", None)
-                if mode is not None:
-                    environment["ACTIONS_CACHE_MODE"] = mode
-                result = subprocess.run(
-                    [bash, "-c", script], env=environment,
-                    capture_output=True, text=True, timeout=5,
-                )
-                self.assertEqual(result.returncode == 0, mode == "none")
-                self.assertEqual(
-                    result.stdout, "ACTIONS_CACHE_MODE=none\n" if mode == "none" else ""
-                )
+        # The runner exposes this variable to Node actions, not Bash run
+        # steps. A shell assertion would fail even when service isolation is
+        # active; setting a pretend environment value would prove nothing.
+        self.assertNotIn("${ACTIONS_CACHE_MODE", job)
+        self.assertNotRegex(workflow, r"(?m)^\s*ACTIONS_CACHE_MODE\s*:")
 
     def test_direct_verifier_invocations_bind_checkout_pair(self) -> None:
         paths = workflow_paths()
