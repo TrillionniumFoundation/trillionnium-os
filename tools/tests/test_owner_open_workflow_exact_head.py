@@ -22,6 +22,49 @@ def workflow_paths() -> list[Path]:
 
 
 class OwnerOpenWorkflowExactHeadTest(unittest.TestCase):
+    def test_manual_synthetic_source_job_cannot_access_actions_cache(self) -> None:
+        workflow = (WORKFLOW_ROOT / "g1-synthetic-merge.yml").read_text(
+            encoding="utf-8"
+        )
+        job = SourcePrerequisiteWorkflowTests.job_text(workflow, "synthetic-merge")
+        # A dispatch on main may intentionally run a fork's selected source.
+        # A job-level service restriction must apply regardless of trigger or
+        # workflow-level defaults; an environment variable is not sufficient.
+        self.assertIn("  workflow_dispatch:\n", workflow)
+        self.assertIn("repository: ${{ env.EVENT_HEAD_REPOSITORY }}", job)
+        self.assertEqual(
+            re.findall(r"(?m)^    cache-mode:\s*(\S+)\s*$", job),
+            ["none"],
+            "manual candidate execution must have no cache token capability",
+        )
+
+    def test_candidate_cache_guard_rejects_missing_or_granted_access(self) -> None:
+        workflow = (WORKFLOW_ROOT / "g1-synthetic-merge.yml").read_text(
+            encoding="utf-8"
+        )
+        job = SourcePrerequisiteWorkflowTests.job_text(workflow, "synthetic-merge")
+        name = "Require no Actions cache access for candidate execution"
+        step = SourcePrerequisiteWorkflowTests.step_text(job, name)
+        self.assertLess(job.index(step), job.index("uses: actions/checkout@"))
+        self.assertIn("working-directory: ${{ runner.temp }}", step)
+        script = SourcePrerequisiteWorkflowTests.script(job, name)
+        bash = shutil.which("bash")
+        self.assertIsNotNone(bash, "cache guard regression requires real bash")
+        for mode in (None, "", "read", "write", "write-only", "none"):
+            with self.subTest(mode=mode):
+                environment = dict(os.environ)
+                environment.pop("ACTIONS_CACHE_MODE", None)
+                if mode is not None:
+                    environment["ACTIONS_CACHE_MODE"] = mode
+                result = subprocess.run(
+                    [bash, "-c", script], env=environment,
+                    capture_output=True, text=True, timeout=5,
+                )
+                self.assertEqual(result.returncode == 0, mode == "none")
+                self.assertEqual(
+                    result.stdout, "ACTIONS_CACHE_MODE=none\n" if mode == "none" else ""
+                )
+
     def test_direct_verifier_invocations_bind_checkout_pair(self) -> None:
         paths = workflow_paths()
         self.assertTrue(paths, f"no G1 workflows found under {WORKFLOW_ROOT}")

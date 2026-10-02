@@ -242,6 +242,14 @@ regression subset. Each job explicitly selects Python 3.13 and Rust/Cargo 1.93.0
 The Rust identity is required by the Python performance-harness tests as well as
 by locked source metadata; the runner image's moving default is not the pin.
 
+The synthetic-merge job declares job-level `cache-mode: none`. A manual dispatch
+may run a selected fork while its run is scoped to `main`; `contents: read` and
+disabled checkout credential persistence do not restrict the separate Actions
+cache token. The cache service denies restores and saves for this job. Before
+any candidate checkout, a fixed script outside the worktree requires the hosted
+runner's effective `ACTIONS_CACHE_MODE` to equal `none`; absent or broader access
+stops the job. This observation grants no target or release evidence.
+
 Before candidate checkout, each lane installs the distribution `acl` package
 using fixed absolute system commands from `RUNNER_TEMP`. This privileged step
 executes no repository script. Repository tests run as the ordinary hosted user,

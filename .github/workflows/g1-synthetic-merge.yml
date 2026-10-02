@@ -45,8 +45,21 @@ jobs:
   synthetic-merge:
     name: L1 exact two-parent merge source qualification
     runs-on: ubuntu-24.04
+    # Manual dispatch can execute a selected fork while the run is scoped to
+    # main. Repository-token permissions do not restrict the cache token.
+    # These source gates need no Actions cache; enforce this at the service.
+    cache-mode: none
     timeout-minutes: 120
     steps:
+      - name: Require no Actions cache access for candidate execution
+        working-directory: ${{ runner.temp }}
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${ACTIONS_CACHE_MODE:-}" == none ]]
+          printf '%s\n' 'ACTIONS_CACHE_MODE=none'
+
       - name: Install declared source-test system tools
         working-directory: ${{ runner.temp }}
         timeout-minutes: 10
