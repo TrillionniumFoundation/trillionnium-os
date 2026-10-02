@@ -140,6 +140,13 @@ an L1 source fixture but makes an L2 decision impossible; it is never converted
 to zero. WL-11 remains an L4 physical-device hold and WL-12 remains an L5
 destructive-fault hold.
 
+`GAP-PERF-L2-BASELINE-001` records the installed WL-01 through WL-10
+baseline phase. The aggregate `GAP-PERF-SYSTEM-BASELINE-001` exits at L5:
+it also requires physical WL-11 at L4 and destructive WL-12 at L5, bound by
+one exact subject and continuous evidence lineage. An L2 comparison cannot
+close the aggregate, and this split removes none of the twelve workloads or
+their required measurements.
+
 The qualification policy is loaded from the checked-in, closed-world registry
 `tools/perf/performance_qualification_policy_registry.v1.json`. Every batch and
 report records its exact registry version and byte SHA-256; caller-supplied

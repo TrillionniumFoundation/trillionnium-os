@@ -60,8 +60,16 @@ impl DurableEventStore {
         self.0.replay(scope, inclusive_turn_seq)
     }
 
+    #[cfg(test)]
     pub fn all_records(&self) -> Result<Vec<EventRecord>> {
         self.0.all_records()
+    }
+
+    pub fn visit_records<E>(
+        &self,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_records(visit)
     }
 }
 
@@ -105,8 +113,11 @@ impl SegmentedEventStore {
         self.0.replay(scope, inclusive_turn_seq)
     }
 
-    pub fn all_records(&self) -> Result<Vec<EventRecord>> {
-        self.0.all_records()
+    pub fn visit_records<E>(
+        &self,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_records(visit)
     }
 
     pub fn flush(&self) -> Result<()> {

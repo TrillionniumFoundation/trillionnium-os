@@ -1,4 +1,5 @@
 use std::collections::{HashMap, VecDeque};
+use std::ops::{Deref, DerefMut};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Condvar, Mutex, MutexGuard};
@@ -8,7 +9,7 @@ use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_job_registry::{
     BeginDisposition, JobEffectiveState, JobEvent, JobKey, JobRegistry, JobRegistryError,
-    JobRequest, JobTerminal, SpawnClaim,
+    JobRegistryLimits, JobRequest, JobTerminal, SpawnClaim,
 };
 
 use crate::journal::{JournalStatus, OperationBegin};
@@ -16,8 +17,9 @@ use crate::process::{ProcessControl, StdinCloseEffect, spawn_process, validate_s
 use crate::{
     ControlDisposition, EventLogStatus, InternalProcessEvent, JobInspection, JobJournal,
     JobObservationGap, JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult,
-    ProcessIdentity, PtySize, ReplayStatus, Result, RuntimeJobEvent, RuntimeJobEventKind,
-    StartDisposition,
+    MAX_JOB_RUNTIME_REGISTRY_EVENTS_PER_JOB, MAX_JOB_RUNTIME_RETAINED_KEYS,
+    OBSERVATION_METADATA_RESERVE, ProcessIdentity, PtySize, ReplayStatus, Result, RuntimeJobEvent,
+    RuntimeJobEventKind, StartDisposition,
 };
 
 const START_SHARD_COUNT: usize = 64;
@@ -183,6 +185,26 @@ struct ObservationState {
     next_seq: u64,
     byte_count: usize,
     journal_unavailable_emitted: bool,
+    last_update: u64,
+}
+
+#[derive(Default)]
+struct Observations {
+    states: HashMap<JobKey, ObservationState>,
+    update_clock: u64,
+}
+
+impl Deref for Observations {
+    type Target = HashMap<JobKey, ObservationState>;
+    fn deref(&self) -> &Self::Target {
+        &self.states
+    }
+}
+
+impl DerefMut for Observations {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.states
+    }
 }
 
 struct Inner {
@@ -192,7 +214,10 @@ struct Inner {
     running: Mutex<HashMap<JobKey, Arc<RunningJob>>>,
     admission: Arc<AdmissionPool>,
     start_shards: Vec<Mutex<()>>,
-    observations: Mutex<HashMap<JobKey, ObservationState>>,
+    observations: Mutex<Observations>,
+    // Serialize resident terminal archival against snapshot/history reads.
+    // No journal I/O is performed while a registry shard lock is held.
+    retention: Mutex<()>,
     durability_error: Mutex<Option<String>>,
 }
 
@@ -208,18 +233,27 @@ impl JobManager {
         Ok(Self {
             inner: Arc::new(Inner {
                 config,
-                registry: Arc::new(JobRegistry::default()),
+                registry: Arc::new(
+                    JobRegistry::new(JobRegistryLimits {
+                        max_entries: MAX_JOB_RUNTIME_RETAINED_KEYS,
+                        max_history_per_job: MAX_JOB_RUNTIME_REGISTRY_EVENTS_PER_JOB,
+                        ..JobRegistryLimits::default()
+                    })
+                    .map_err(registry_error)?,
+                ),
                 journal: Arc::new(journal),
                 running: Mutex::new(HashMap::new()),
                 admission: Arc::new(AdmissionPool::new(max_jobs)),
                 start_shards: (0..START_SHARD_COUNT).map(|_| Mutex::new(())).collect(),
-                observations: Mutex::new(HashMap::new()),
+                observations: Mutex::new(Observations::default()),
+                retention: Mutex::new(()),
                 durability_error: Mutex::new(None),
             }),
         })
     }
 
     pub fn open(config: JobRuntimeConfig, journal_path: Option<&Path>) -> Result<Self> {
+        config.validate()?;
         Self::new(config, JobJournal::open_best_effort(journal_path))
     }
 
@@ -230,6 +264,7 @@ impl JobManager {
     /// at `events.jsonl.jobs` must never share one segmented root. Callers
     /// that still need the v1 file API can continue using [`Self::open`].
     pub fn open_segmented(config: JobRuntimeConfig, journal_path: Option<&Path>) -> Result<Self> {
+        config.validate()?;
         let root: Option<PathBuf> = journal_path.map(|path| {
             let mut root = path.as_os_str().to_os_string();
             root.push(".segments");
@@ -359,6 +394,13 @@ impl JobManager {
         } else {
             Some(self.inner.admission.try_acquire()?)
         };
+
+        // Registry capacity includes terminal history, whereas process slots
+        // count only owned children. Archive only a durable terminal under
+        // pressure; the journal remains the exact-key deduplication authority.
+        if !registry_entry_exists {
+            self.archive_durable_terminal_at_capacity()?;
+        }
 
         let begin = self
             .inner
@@ -1099,6 +1141,11 @@ impl JobManager {
                 "job inspect limit is outside the configured bound".to_string(),
             ));
         }
+        let retention = self
+            .inner
+            .retention
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
         let snapshot = self.inner.registry.snapshot(key).ok();
         let registry_events = match &snapshot {
             Some(_) => self
@@ -1108,6 +1155,8 @@ impl JobManager {
                 .map_err(registry_error)?,
             None => Vec::<JobEvent>::new(),
         };
+        drop(retention);
+        let durable_next_seq = self.inner.journal.runtime_next_cursor(key)?;
         // Copy the bounded resident window out before consulting the journal.
         // Journal failure reporting takes the durability lock and then the
         // observation lock; releasing this guard avoids a lock-order cycle
@@ -1116,7 +1165,9 @@ impl JobManager {
         let (total, oldest_available_cursor, gap, events, next_cursor) = {
             let observations = self.observations()?;
             let state = observations.get(key);
-            let total = state.map_or(0, |state| state.next_seq);
+            let total = state.map_or(durable_next_seq, |state| {
+                state.next_seq.max(durable_next_seq)
+            });
             if inclusive_cursor > total {
                 return Err(JobRuntimeError::InvalidRequest(format!(
                     "inclusive cursor {inclusive_cursor} is after next cursor {total}"
@@ -1793,7 +1844,10 @@ impl JobManager {
         // in-memory degradation event without holding the observation lock.
         let (seq, event, payload) = {
             let mut observations = self.observations()?;
+            observations.update_clock = observations.update_clock.saturating_add(1);
+            let update = observations.update_clock;
             let state = observations.entry(key.clone()).or_default();
+            state.last_update = update;
             let seq = state.next_seq;
             // Observation cursors are persisted/replayed semantic ordering,
             // not a bounded resource counter.  Wrapping would make a new
@@ -1817,6 +1871,7 @@ impl JobManager {
                 self.inner.config.max_observations_per_job,
                 self.inner.config.max_observation_bytes_per_job,
             );
+            enforce_global_observation_budget(&mut observations, &self.inner.config);
             (seq, event, payload)
         };
         let journal_result = self.inner.journal.append_observation(
@@ -1858,6 +1913,8 @@ impl JobManager {
     /// failed journal.
     fn note_journal_degraded_for_job(&self, key: &JobKey, error: String) -> Result<()> {
         let mut observations = self.observations()?;
+        observations.update_clock = observations.update_clock.saturating_add(1);
+        let update = observations.update_clock;
         let state = observations.entry(key.clone()).or_default();
         if state.journal_unavailable_emitted {
             return Ok(());
@@ -1867,6 +1924,7 @@ impl JobManager {
             JobRuntimeError::Journal("runtime observation sequence exhausted".to_string())
         })?;
         state.journal_unavailable_emitted = true;
+        state.last_update = update;
         state.next_seq = next_seq;
         retain_runtime_event(
             state,
@@ -1880,6 +1938,7 @@ impl JobManager {
             self.inner.config.max_observations_per_job,
             self.inner.config.max_observation_bytes_per_job,
         );
+        enforce_global_observation_budget(&mut observations, &self.inner.config);
         Ok(())
     }
 
@@ -1970,11 +2029,69 @@ impl JobManager {
         self.running().map(|jobs| !jobs.is_empty()).unwrap_or(true)
     }
 
-    fn observations(&self) -> Result<MutexGuard<'_, HashMap<JobKey, ObservationState>>> {
+    fn observations(&self) -> Result<MutexGuard<'_, Observations>> {
         self.inner
             .observations
             .lock()
             .map_err(|_| JobRuntimeError::StatePoisoned)
+    }
+
+    fn archive_durable_terminal_at_capacity(&self) -> Result<()> {
+        let _retention = self
+            .inner
+            .retention
+            .lock()
+            .map_err(|_| JobRuntimeError::StatePoisoned)?;
+        // This manager owns the registry's fixed default entry ceiling.
+        if self.inner.registry.len().map_err(registry_error)? < MAX_JOB_RUNTIME_RETAINED_KEYS
+            || !matches!(self.inner.journal.status()?, JournalStatus::Durable)
+            || self.durability_error()?.is_some()
+        {
+            return Ok(());
+        }
+        for key in self.inner.registry.keys().map_err(registry_error)? {
+            if self.running()?.contains_key(&key) {
+                continue;
+            }
+            let snapshot = self.inner.registry.snapshot(&key).map_err(registry_error)?;
+            let JobEffectiveState::Terminal {
+                generation,
+                terminal,
+            } = snapshot.state
+            else {
+                continue;
+            };
+            let Some(recovered) = self.inner.journal.recovered_job(&key)? else {
+                continue;
+            };
+            let expected = serde_json::to_value(RuntimeJobEventKind::Terminal {
+                generation,
+                terminal_kind: terminal.terminal_kind,
+                exit_code: terminal.exit_code,
+                signal: terminal.signal,
+                observation_sha256: terminal.observation_sha256,
+                stdout_bytes: terminal.stdout_bytes,
+                stderr_bytes: terminal.stderr_bytes,
+            })
+            .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
+            if recovered.request != snapshot.request
+                || recovered.terminal.as_ref() != Some(&expected)
+            {
+                continue;
+            }
+            if self
+                .inner
+                .registry
+                .remove_terminal(&key)
+                .map_err(registry_error)?
+            {
+                // The durable cursor remains available from the journal, so
+                // inspection reports an explicit whole-prefix gap on archive.
+                self.observations()?.remove(&key);
+                return Ok(());
+            }
+        }
+        Ok(())
     }
 }
 
@@ -2026,6 +2143,73 @@ fn retain_runtime_event(
             .byte_count
             .saturating_sub(runtime_event_bytes(&removed));
     }
+}
+
+fn resident_window_bytes(state: &ObservationState) -> usize {
+    state
+        .events
+        .capacity()
+        .saturating_mul(std::mem::size_of::<RuntimeJobEvent>())
+        .saturating_add(
+            state
+                .events
+                .iter()
+                .map(runtime_event_owned_bytes)
+                .sum::<usize>(),
+        )
+}
+
+fn enforce_global_observation_budget(observations: &mut Observations, config: &JobRuntimeConfig) {
+    let available = config.max_observation_bytes - OBSERVATION_METADATA_RESERVE;
+    loop {
+        let slots: usize = observations.values().map(|state| state.events.len()).sum();
+        let bytes: usize = observations.values().map(resident_window_bytes).sum();
+        if slots <= config.max_observations && bytes <= available {
+            break;
+        }
+        let oldest = observations
+            .iter()
+            .filter(|(_, state)| !state.events.is_empty())
+            .min_by_key(|(_, state)| state.last_update)
+            .map(|(key, _)| key.clone());
+        let Some(key) = oldest else {
+            break;
+        };
+        let state = observations
+            .get_mut(&key)
+            .expect("selected observation exists");
+        if let Some(removed) = state.events.pop_front() {
+            state.byte_count = state
+                .byte_count
+                .saturating_sub(runtime_event_bytes(&removed));
+        }
+        // Empty/high-water VecDeque capacity is resident memory too. Return
+        // it when a prefix is evicted rather than counting only logical len.
+        state.events.shrink_to_fit();
+    }
+}
+
+fn runtime_event_owned_bytes(event: &RuntimeJobEvent) -> usize {
+    let fields = match &event.event {
+        RuntimeJobEventKind::Output {
+            bytes,
+            stream,
+            sha256,
+            ..
+        } => bytes.capacity() + stream.capacity() + sha256.capacity(),
+        RuntimeJobEventKind::ProcessIdentityBound { identity, .. } => identity.boot_id.capacity(),
+        RuntimeJobEventKind::Terminal {
+            terminal_kind,
+            observation_sha256,
+            ..
+        } => terminal_kind.capacity() + observation_sha256.capacity(),
+        RuntimeJobEventKind::ProcessFault { phase, error } => phase.capacity() + error.capacity(),
+        RuntimeJobEventKind::JournalUnavailable { error } => {
+            error.as_ref().map_or(0, String::capacity)
+        }
+        RuntimeJobEventKind::Started { .. } => 0,
+    };
+    event.job_id.capacity() + fields
 }
 
 const MAX_JOURNAL_ERROR_CHARS: usize = 4096;
@@ -2221,6 +2405,304 @@ mod tests {
             "pipe",
             Some("rootlinux".to_string()),
         )
+    }
+
+    #[test]
+    fn cross_job_observation_metadata_has_an_aggregate_bound() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .unwrap();
+        let request = rollback_test_request();
+        for index in 0..5000 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("job-{}", index % 8);
+            manager
+                .push_runtime_event(
+                    &key,
+                    &request,
+                    RuntimeJobEventKind::ProcessFault {
+                        phase: "fixture".to_string(),
+                        error: "bounded diagnostic".to_string(),
+                    },
+                )
+                .unwrap();
+        }
+        let observations = manager.observations().unwrap();
+        let slots: usize = observations.values().map(|state| state.events.len()).sum();
+        assert!(slots <= 4096, "retained across jobs: {slots}");
+    }
+
+    #[test]
+    fn excessive_concurrency_is_rejected_before_journal_creation() {
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        for segmented in [false, true] {
+            let journal = directory.path().join(format!("invalid-{segmented}.jsonl"));
+            let config = JobRuntimeConfig {
+                max_jobs: 9,
+                ..JobRuntimeConfig::default()
+            };
+            let result = if segmented {
+                JobManager::open_segmented(config, Some(&journal))
+            } else {
+                JobManager::open(config, Some(&journal))
+            };
+            assert!(matches!(result, Err(JobRuntimeError::InvalidRequest(_))));
+            assert!(!journal.exists());
+            assert!(
+                !journal
+                    .with_file_name(format!("invalid-{segmented}.jsonl.segments"))
+                    .exists()
+            );
+        }
+    }
+
+    #[test]
+    fn global_window_eviction_preserves_uncertain_identity_and_exact_gaps() {
+        let config = JobRuntimeConfig {
+            max_observation_bytes: OBSERVATION_METADATA_RESERVE + 256 * 1024,
+            ..JobRuntimeConfig::development_unsafe()
+        };
+        let manager = JobManager::new(config.clone(), JobJournal::memory_only()).unwrap();
+        let request = rollback_test_request();
+        for index in 0..8 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("window-{index}");
+            manager
+                .registry()
+                .begin(key.clone(), request.clone())
+                .unwrap();
+            manager
+                .registry()
+                .claim_spawn(&key, &request.request_sha256)
+                .unwrap();
+            manager.registry().mark_restart_uncertain(&key).unwrap();
+            for output_seq in 0..2 {
+                manager
+                    .push_runtime_event(
+                        &key,
+                        &request,
+                        RuntimeJobEventKind::Output {
+                            generation: 1,
+                            output_seq,
+                            stream: "stdout".to_string(),
+                            bytes: vec![0; 32 * 1024],
+                            sha256: "a".repeat(64),
+                        },
+                    )
+                    .unwrap();
+            }
+        }
+        let observations = manager.observations().unwrap();
+        let bytes: usize = observations.values().map(resident_window_bytes).sum();
+        assert!(bytes <= config.max_observation_bytes - OBSERVATION_METADATA_RESERVE);
+        drop(observations);
+        let mut evicted = rollback_test_key();
+        evicted.job_id = "window-0".to_string();
+        let view = manager.inspect(&evicted, 0, 4096).unwrap();
+        assert_eq!(view.total_events, 2);
+        assert_eq!(
+            view.gap,
+            Some(JobObservationGap {
+                first_missing_cursor: 0,
+                last_missing_cursor: 1
+            })
+        );
+        assert!(matches!(
+            view.snapshot.unwrap().state,
+            JobEffectiveState::UnknownAfterRestart { .. }
+        ));
+        assert!(!matches!(
+            manager
+                .registry()
+                .claim_spawn(&evicted, &request.request_sha256)
+                .unwrap(),
+            SpawnClaim::Granted { .. }
+        ));
+        assert_eq!(manager.registry().len().unwrap(), 8);
+    }
+
+    fn fill_registry_with_uncertain_jobs(manager: &JobManager, first: usize) {
+        let request = rollback_test_request();
+        for index in first..256 {
+            let mut key = rollback_test_key();
+            key.job_id = format!("retained-{index:03}");
+            manager
+                .registry()
+                .begin(key.clone(), request.clone())
+                .unwrap();
+            let SpawnClaim::Granted { generation, .. } = manager
+                .registry()
+                .claim_spawn(&key, &request.request_sha256)
+                .unwrap()
+            else {
+                panic!("new claim");
+            };
+            manager
+                .registry()
+                .record_started(&key, generation, 1000 + index as u32, false)
+                .unwrap();
+            manager.registry().mark_restart_uncertain(&key).unwrap();
+        }
+    }
+
+    #[test]
+    fn durable_terminal_archival_releases_capacity_without_redispatch_or_cursor_loss() {
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let journal = directory.path().join("jobs.jsonl");
+        let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+        let mut terminal_key = rollback_test_key();
+        terminal_key.job_id = "retained-000".to_string();
+        let request = rollback_test_request();
+        manager
+            .registry()
+            .begin(terminal_key.clone(), request.clone())
+            .unwrap();
+        let SpawnClaim::Granted { generation, .. } = manager
+            .registry()
+            .claim_spawn(&terminal_key, &request.request_sha256)
+            .unwrap()
+        else {
+            panic!("new claim");
+        };
+        manager
+            .registry()
+            .record_started(&terminal_key, generation, 1000, false)
+            .unwrap();
+        manager
+            .journal()
+            .begin_operation(
+                &terminal_key,
+                &request,
+                "start",
+                "start",
+                &"c".repeat(64),
+                json!({}),
+            )
+            .unwrap();
+        let terminal = JobTerminal {
+            terminal_kind: "exited".to_string(),
+            exit_code: Some(0),
+            signal: None,
+            observation_sha256: "d".repeat(64),
+            stdout_bytes: 0,
+            stderr_bytes: 0,
+        };
+        manager
+            .registry()
+            .complete(&terminal_key, generation, terminal.clone())
+            .unwrap();
+        manager
+            .push_runtime_event(
+                &terminal_key,
+                &request,
+                RuntimeJobEventKind::Terminal {
+                    generation,
+                    terminal_kind: terminal.terminal_kind,
+                    exit_code: terminal.exit_code,
+                    signal: terminal.signal,
+                    observation_sha256: terminal.observation_sha256,
+                    stdout_bytes: 0,
+                    stderr_bytes: 0,
+                },
+            )
+            .unwrap();
+        fill_registry_with_uncertain_jobs(&manager, 1);
+        let mut new_key = rollback_test_key();
+        new_key.job_id = "new-after-archive".to_string();
+        assert_eq!(
+            manager
+                .start(stale_start_request(new_key, request.clone(), "start-new"))
+                .unwrap()
+                .disposition,
+            StartDisposition::Started
+        );
+        assert!(matches!(
+            manager.registry().snapshot(&terminal_key),
+            Err(JobRegistryError::NotFound)
+        ));
+        let view = manager.inspect(&terminal_key, 0, 4096).unwrap();
+        assert_eq!(view.total_events, 1);
+        assert_eq!(
+            view.gap,
+            Some(JobObservationGap {
+                first_missing_cursor: 0,
+                last_missing_cursor: 0
+            })
+        );
+        assert!(view.durable_fallback_available);
+        assert_eq!(
+            manager
+                .start(stale_start_request(
+                    terminal_key.clone(),
+                    request,
+                    "duplicate"
+                ))
+                .unwrap()
+                .disposition,
+            StartDisposition::ExistingTerminal
+        );
+        let mut conflict = rollback_test_request();
+        conflict.request_sha256 = "e".repeat(64);
+        assert!(matches!(
+            manager.start(stale_start_request(terminal_key, conflict, "conflict")),
+            Err(JobRuntimeError::JobConflict)
+        ));
+        let mut unknown = rollback_test_key();
+        unknown.job_id = "retained-001".to_string();
+        assert!(matches!(
+            manager.registry().snapshot(&unknown).unwrap().state,
+            JobEffectiveState::UnknownAfterRestart { .. }
+        ));
+    }
+
+    #[test]
+    fn capacity_pressure_never_archives_unknown_or_undurable_terminal() {
+        let manager = JobManager::new(
+            JobRuntimeConfig::development_unsafe(),
+            JobJournal::memory_only(),
+        )
+        .unwrap();
+        fill_registry_with_uncertain_jobs(&manager, 0);
+        let mut terminal_key = rollback_test_key();
+        terminal_key.job_id = "retained-000".to_string();
+        let JobEffectiveState::UnknownAfterRestart { generation, .. } =
+            manager.registry().snapshot(&terminal_key).unwrap().state
+        else {
+            panic!("uncertain");
+        };
+        manager
+            .registry()
+            .complete(
+                &terminal_key,
+                generation,
+                JobTerminal {
+                    terminal_kind: "exited".to_string(),
+                    exit_code: Some(0),
+                    signal: None,
+                    observation_sha256: "d".repeat(64),
+                    stdout_bytes: 0,
+                    stderr_bytes: 0,
+                },
+            )
+            .unwrap();
+        let mut new_key = rollback_test_key();
+        new_key.job_id = "must-not-archive".to_string();
+        assert!(
+            manager
+                .start(stale_start_request(
+                    new_key.clone(),
+                    rollback_test_request(),
+                    "start"
+                ))
+                .is_err()
+        );
+        assert_eq!(manager.registry().len().unwrap(), 256);
+        assert!(manager.registry().snapshot(&terminal_key).is_ok());
+        assert!(manager.registry().snapshot(&new_key).is_err());
     }
 
     fn stale_start_request(

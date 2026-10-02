@@ -9,8 +9,8 @@
   },
   "generator": {
     "path": "tools/contracts/generate_module_contracts.py",
-    "sha256": "80617485e01212f065621e228e242e208e282851ac1765a468451697213f7cf1",
-    "size": 105904
+    "sha256": "70190d1d78194100e1a72766bc690a9471e72dc5a745cbf4b2640ab9c62eb4b7",
+    "size": 110483
   },
   "module_count": 16,
   "modules": [
@@ -52,8 +52,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -76,24 +76,29 @@
       ],
       "implementation_sources": [
         {
+          "path": "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
+          "sha256": "c3df02e4a2ac4f8997204019e995c8965f87988761d493eb68fe0507a0794cea",
+          "size": 3786
+        },
+        {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/Android.bp",
           "sha256": "40a128c8bf2822b1dcf7804c7106808119c88dcb41cbd827d390b8d79b0838e7",
           "size": 3929
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClient.java",
-          "sha256": "29c1b5fc2849aecb807aed69a26dcdb35e285e5a623f40c4e1ffb1f32b34fad4",
-          "size": 7275
+          "sha256": "e18a8ccba314b47e5c5559ad1ad03df76a1506702462c1eea018fc474e9e2e6c",
+          "size": 8710
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
-          "sha256": "b5d8b4d89582363fb77647881183f4db8b159111adfeb1f1cf46f883228c25b6",
-          "size": 9834
+          "sha256": "80fae64b4c9880db7b4b56498091ed4d59479948c0ce96f7de21efb41e73133a",
+          "size": 23744
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
-          "sha256": "8e0c42ce70c68b6507728a9e664cf2bacef0b912f6524ddbbb650c318e0de074",
-          "size": 5890
+          "sha256": "b0de3335920c7f0788087b84d509281c7167d6588f48b9de1512f9bc32da8ec9",
+          "size": 21230
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json",
@@ -102,8 +107,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_bootstrap.cpp",
-          "sha256": "abc3326b642dad91a23d8d9f7f80b671d14e56811f7ab816e4895dbbc3b06bd4",
-          "size": 35051
+          "sha256": "a3df0af67a7a696523e09d62a9c1958a687501ee7563bc869451b6ae35bd0742",
+          "size": 38103
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_emergency_stop.cpp",
@@ -157,8 +162,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/tools/verify_owner_open_materialized_payload.py",
-          "sha256": "3fe86e3598dc7191129eaa980e5e3d1c7b2f89f2e93277153918ce663fa8eb18",
-          "size": 17242
+          "sha256": "97f594e705c993075087d36a74f161fec87844a6deb2c4999de722e265e56bff",
+          "size": 20837
         }
       ],
       "logical_labels": {
@@ -174,8 +179,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -247,8 +252,8 @@
         },
         {
           "path": "tools/owner-open/jsonl_provider_runtime.py",
-          "sha256": "055697e7564af0d0c76c64064b28104d5cec95a46ad3e53df964ab09f438cbcd",
-          "size": 24165
+          "sha256": "0af52321deb1c06b1576e669b583875c8ffb86c868f758433fdaaadc3d6796f4",
+          "size": 25733
         },
         {
           "path": "tools/owner-open/owner_open_adb_relay.py",
@@ -277,8 +282,8 @@
         },
         {
           "path": "tools/owner-open/owner_open_broker_client.py",
-          "sha256": "d4fdbad3154902c3dd3f9f976abb328a69ca5dbf57842359ee1cd21eb8fcb94a",
-          "size": 8801
+          "sha256": "a45f2d58823a54cfb47b21084d483c2baf172ec2bd16019b5c17615c1b30c0f6",
+          "size": 8957
         },
         {
           "path": "tools/owner-open/owner_open_broker_common.py",
@@ -297,8 +302,8 @@
         },
         {
           "path": "tools/owner-open/owner_open_broker_mux.py",
-          "sha256": "b19b5bc571f5a5a7314fa929bd0ea888fcbdc40b37af86ff664a06ef9b13d7c3",
-          "size": 31138
+          "sha256": "ec189ff86148a80408ec7b1c92977b6eb09f2f762453fcfe3b220bff4fbf4c3d",
+          "size": 31195
         },
         {
           "path": "tools/owner-open/owner_open_broker_runtime.py",
@@ -382,8 +387,8 @@
         },
         {
           "path": "tools/owner-open/stage_owner_open_rootfs_payload_release.py",
-          "sha256": "4b8ef698b75dad9153c528936d15d2778757b01bcf6aed8ec0cd732edb2dac30",
-          "size": 18328
+          "sha256": "2c7695b273c4cebc1787ef67f318e6fa24e1348d2e86d3a3775709fc990567c1",
+          "size": 18833
         },
         {
           "path": "tools/owner-open/supervise_codex_mcp_qualification.py",
@@ -402,8 +407,8 @@
         },
         {
           "path": "tools/owner-open/verify_owner_open_materialized_payload.py",
-          "sha256": "f4a754344a0ba8e233817462bc517d6df9835604ac34590aaf5c30643d482a14",
-          "size": 17244
+          "sha256": "dc5eb33131abb3b9a6bd43118cf995536bb19406d3869b54b45e5f6a5a8d7531",
+          "size": 20839
         }
       ],
       "logical_labels": {
@@ -419,8 +424,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -447,13 +452,18 @@
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/src/lib.rs",
-          "sha256": "99b2f280ba4798cd8ee3f74fa9e9c901893c3a4949800dc13083d5842ac38018",
-          "size": 166377
+          "sha256": "1092bb15557ec0e86b9196b12984db4df969ee6bf70d9f24139d622bfc2ab007",
+          "size": 177035
+        },
+        {
+          "path": "crates/trillionnium-owner-open-event-store/src/resources.rs",
+          "sha256": "83394e99c55ca52e6f92ca6d8fd3b056d5d5d694223e86b6c14ff3a8e6bfeb57",
+          "size": 10369
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/src/strict_json.rs",
-          "sha256": "11aae2509a860f09e533e071873f87ad48d9591fb611086fdda25e8cbc645445",
-          "size": 3176
+          "sha256": "c1db1ad154777933091613ec563e3afa88fb27dd50f5aa997c6020d1246581f5",
+          "size": 3417
         }
       ],
       "logical_labels": {
@@ -473,14 +483,19 @@
           "size": 8401
         },
         {
+          "path": "crates/trillionnium-owner-open-event-store/tests/resources.rs",
+          "sha256": "fde20b7e6e266de83af337ed5108b280b0999261e3fd81803b4386ce8e3ae3dc",
+          "size": 13173
+        },
+        {
           "path": "crates/trillionnium-owner-open-event-store/tests/segmented.rs",
-          "sha256": "9e6f45f72177706ca0ddff76dfbc92f0814f0c63422784707bc364f15be10533",
-          "size": 22671
+          "sha256": "30130f07cdfa1748a82d6b69bad92c61775fe3042b6f4c5289665d8b5a5d489b",
+          "size": 29632
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -519,8 +534,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -577,8 +592,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -623,8 +638,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -677,13 +692,13 @@
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/event_store_adapter.rs",
-          "sha256": "b5cfed9000227dc28aa5e1cf44e43ca03974950a64cdc681f77fc24d5a86bbb8",
-          "size": 6292
+          "sha256": "3a153be44f3bce8f7b137b98f7e3610391e82fa2f67e1f3cc5e9b5bd97d98edc",
+          "size": 6621
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/journal.rs",
-          "sha256": "89e9f44f958d3f029dda3f624a379fc461ec913f5960dc57510edc683865e9ea",
-          "size": 58688
+          "sha256": "41c443139dcac54c50b01a34beac68e597175c78fa3195f6b08d9b24804f763a",
+          "size": 61998
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/lib.rs",
@@ -692,18 +707,18 @@
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/manager.rs",
-          "sha256": "09bc14b27f4bd1776d3540eda438263f5a888e72ae9beb614259187a5b6f2e13",
-          "size": 115142
+          "sha256": "1fff77347e832211fe4cb870f846a217bd0d3e0a81c207f1870bc3b1b4dee759",
+          "size": 133206
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/process.rs",
-          "sha256": "5aa48e019b0b8c61a7eb72ddb94ceed75cf28325dfc5ac3e85fc706fa3ece485",
-          "size": 62259
+          "sha256": "6c705751607413ffa234d7c782fa6ce0aa663fbb57bab01fa21369b5e49d43ad",
+          "size": 62269
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/types.rs",
-          "sha256": "50b865eda53260dcd18a9b3db92a67b69c4e1696b83e3de76b4b8a2485fdd61d",
-          "size": 11986
+          "sha256": "5b7827e78d0703b6276d0dccdf8b57558b58987c1c752f69c6e08b2554a4121a",
+          "size": 15429
         },
         {
           "path": "crates/trillionnium-owner-open-job-runtime/src/validate.rs",
@@ -734,8 +749,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -782,8 +797,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -811,9 +826,19 @@
           "size": 719
         },
         {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py",
+          "sha256": "c3b8efa21e0c608d49ea72f38a6b014fd2bba022f71b0c285ec54418052a9149",
+          "size": 35086
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py",
+          "sha256": "84326d90cf5a44c9092894a5680a5927235eb23bf85f797222ad936d277cb2ba",
+          "size": 19855
+        },
+        {
           "path": "crates/trillionnium-owner-open-provider-jsonl/src/lib.rs",
-          "sha256": "df2ccb8fc10c2ccf53b46dc48bf3b96be1526848dff548d718ee7b35c4be54ae",
-          "size": 41933
+          "sha256": "49dd692d5fac3ae5da987146496c64061f1b64778d9ce6a5a69411d0f0bba8f9",
+          "size": 49654
         },
         {
           "path": "crates/trillionnium-owner-open-provider-jsonl/src/process.rs",
@@ -827,13 +852,18 @@
         },
         {
           "path": "crates/trillionnium-owner-open-provider-jsonl/src/protocol.rs",
-          "sha256": "a77c06e761e06f858d56c1dbe5b372317ebed86bd4304f44cf3da50a8c5ba64f",
-          "size": 34226
+          "sha256": "1162f1d16ece926e35e0fd567097252dcc0c016557d8c7e964b544fe05b488d4",
+          "size": 32764
         },
         {
           "path": "crates/trillionnium-owner-open-provider-jsonl/src/strict_json.rs",
-          "sha256": "2aace9fb080c5401a7f3147c48afc6303599f69419d347870d651f2c9ac159e1",
-          "size": 3196
+          "sha256": "00f7f70aab59713e2327a465d6ae7939b6dcc502e7c95dddefd03a14a75e3ff1",
+          "size": 7387
+        },
+        {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/src/tool_result.rs",
+          "sha256": "f1d79a458aa73f75eba5c6ad8a0e9d712f4e9ae873057d9e9fd345904ceb3b9f",
+          "size": 10281
         }
       ],
       "logical_labels": {
@@ -863,14 +893,19 @@
           "size": 7984
         },
         {
+          "path": "crates/trillionnium-owner-open-provider-jsonl/tests/resources.rs",
+          "sha256": "1af9d8788337dba256c687cb59973a5b22da8b0b28260c5d797702b288a75abe",
+          "size": 3339
+        },
+        {
           "path": "crates/trillionnium-owner-open-provider-jsonl/tests/terminal_ordering.rs",
           "sha256": "084d3b9ee2788fad373e58c1824b9544910c9d7724e92e1f283db82e97827e5c",
           "size": 1841
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -931,8 +966,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -976,8 +1011,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -1041,8 +1076,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -1069,8 +1104,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-          "sha256": "302efe534ac5346c1239dcb8a77e064996489108c790badc1a0d5dbab0c96658",
-          "size": 37104
+          "sha256": "97cf82184a58b4e8157e8c02692048061357273c59c623b17a4443d9d0015bfb",
+          "size": 40002
         }
       ],
       "logical_labels": {
@@ -1095,9 +1130,14 @@
           "size": 5005
         },
         {
+          "path": "crates/trillionnium-owner-open-tool-bridge/tests/resources.rs",
+          "sha256": "72d87ca80142e3225fe58ac89c12ebdecd729c61d2f318dcea97341d83004ad6",
+          "size": 4431
+        },
+        {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -1135,8 +1175,8 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/entry/state.rs",
-          "sha256": "a428eb1f1cef57b34e695f5ebe335497c5d6a741a25ece59cd41be99e85bf3d7",
-          "size": 55175
+          "sha256": "665377a07695b3aa4e560c2b2d24418c8afb43216bf0bd9a58e3f96f81d567f5",
+          "size": 55275
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow.rs",
@@ -1145,23 +1185,28 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/queue.rs",
-          "sha256": "9a41e5d9a8f2072950e491544c3f056eb4850f69eeed48084068b912cc1e3024",
-          "size": 9263
+          "sha256": "a656cc8de3154001e753a812d2c1c94ff360d0d356470c5dbe7c368e2d1ed382",
+          "size": 7997
+        },
+        {
+          "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/recovery.rs",
+          "sha256": "8e1d5c1eb049a8cb2da28af73aa95b3c53f137c21fdb28f3c9b8736b8bf5637a",
+          "size": 5851
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/state.rs",
-          "sha256": "8de194696916e6be4c90292746f1c86545d7280a2cc58a22f00445d64cd36892",
-          "size": 45
+          "sha256": "24a58ceb8df6f1a2b6c729ee15b6e4388e8c2d11b14782c78fe032db2d256073",
+          "size": 70
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/types.rs",
-          "sha256": "f6ecf2c412a97c09a8ce14a6d3617764ae50b32ea76901ec93ef5679e2c3b5dc",
-          "size": 6850
+          "sha256": "674858865cc177ec9c56f7b412e6e65f6dc636ebed342b05879022e4866a6c03",
+          "size": 12095
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/window.rs",
-          "sha256": "070174eedda80bc4b338278ff281e0056dacea880ffcf067b0d26e1be546c395",
-          "size": 5023
+          "sha256": "a6f0acbba1dc53b2c2dc12b8c6d7387df369ef7a8cf84b430a19969111052664",
+          "size": 4317
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/journal.rs",
@@ -1175,8 +1220,8 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/handlers.rs",
-          "sha256": "e7c67dfcc149bd3d6371021644f69f59d955d84ef5d58b79524cb5b1bdb81c31",
-          "size": 74960
+          "sha256": "341850372b347a051133a9c1b00b62b8bcf66e8c3d7f079786247cba38c797ad",
+          "size": 75362
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/io.rs",
@@ -1185,13 +1230,13 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/run.rs",
-          "sha256": "e5c34544dbe7bd2a42c08415f9bea02ce91e880c74cbdf197d05d7ac001210a6",
-          "size": 76122
+          "sha256": "2a88de88da4ac1bee01ce29a2bae792de1e6ae69b0b71b7a69ba7c445b164b30",
+          "size": 76595
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/protocol.rs",
-          "sha256": "1389f95d40b3e6ceef252823ecf1d893b115d3ce5e73e558db3bae268ee6c0cd",
-          "size": 11332
+          "sha256": "f0f8133c0f7fb823cd88709751682b8199d83498fcbc376d472b2358088fe739",
+          "size": 12901
         }
       ],
       "logical_labels": {
@@ -1207,13 +1252,13 @@
       "test_sources": [
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/flow/tests.rs",
-          "sha256": "a7fb44ae60875fbc9ee113273f3988678f6799b2296199e3572b0601a058d61b",
-          "size": 16021
+          "sha256": "c80ddd1ab3f4002874d7530e8f319a73da3958496ae99f091144a2bee265d606",
+          "size": 23681
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [
@@ -1268,8 +1313,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-          "size": 37209
+          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
+          "size": 41737
         }
       ],
       "write_versions": [

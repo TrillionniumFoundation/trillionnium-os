@@ -37,13 +37,16 @@ a queue send does not establish durability. Store failure inhibits admission,
 sets `runtime_ready=false` and reports uncertain effect outcome while retaining the
 observed terminal status. See the execution-core contract for recovery handling.
 
-Transport overflow and terminal gaps check every suppressed frame's cursor
-domain and owning turn/job scope before publishing a numeric resume range.
-Different jobs never share one runtime/journal range. A mixed run, including a
-different domain between matching endpoints, requires explicit inspection;
-numeric resume cannot silently clear it. This internal recovery fix preserves
-the wire/state schemas and needs no migration. Installed recovery and memory
-budgets still require target evidence.
+Transport overflow and terminal gaps expose complete turn/job identities and
+separate ranges for each cursor domain under the advertised `scoped_cursor_v1`
+recovery extension. Each range must be covered by contiguous read-only
+`turn.inspect` or `job.inspect` pages, followed by an explicit scoped client
+acknowledgement. Credit or a bare numeric resume cannot clear a gap. Runtime
+retention gaps, unknown cursors and more than 64 independent ranges remain
+reconciliation-required; a journal cursor cannot stand in for a runtime cursor.
+See [MOD-TRANSPORT](../../docs/modules/MOD-TRANSPORT.md) for wire fields,
+negotiation, finite budgets and rolling compatibility. The source tests do not
+establish installed recovery or device memory qualification.
 
 ## Build and verification
 

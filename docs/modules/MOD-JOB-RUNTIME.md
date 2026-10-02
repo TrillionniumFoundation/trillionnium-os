@@ -137,6 +137,42 @@ Measurement status: **unmeasured until qualified evidence**.
 
 These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
+The runtime enforces aggregate resident observation retention of 16 MiB and
+4096 events across keys, rather than multiplying a per-job allowance by retained
+jobs. It counts owned byte/string capacities and deque slots and reserves 1 MiB
+for bounded key/cursor metadata. Eviction frees prefix capacity and exposes the
+exact missing cursor range; it does not authorize effect replay or remove an
+uncertain registry identity. The manager retains at most 256 registry keys and
+16 registry history events per key. Native process channels have 16 entries.
+Default and maximum concurrent process ownership are eight; the checked raw
+buffer reservation (two initial-input copies, channel, readers, blocked sends
+and dispatcher staging) must fit 32 MiB before opening a journal or spawning.
+This is a public configuration/default change from the prior 256-job default.
+
+At registry pressure a full, request-matching durable terminal may release its
+resident registry/history/window only after its running/pending owner is gone.
+The authoritative journal is retained and remains the duplicate/conflict gate.
+Inspection derives archived runtime high-water from the existing envelope
+`event_seq` and exposes the archived prefix as a gap. Unknown or undurable
+terminals are never removed by this capacity path. Capacity remains exhausted
+when no safe durable terminal can be archived. Rollback to the previous binary
+must retain the journal and must not reinterpret a missing resident entry as
+permission to spawn.
+
+Runtime and journal observations use independent cursor domains. A true
+`durable_fallback_available` means the journal can be read; it does not prove
+that a missing runtime prefix has been recovered. See the scoped recovery
+contract in [MOD-TRANSPORT](MOD-TRANSPORT.md).
+
+These named sub-budgets are source invariants. They do not establish a total
+64 MiB RSS limit: journal state, serialization and other host modules remain
+additional allocations. V2 event-store payloads now use bounded indexed/on-demand
+reads, and journal recovery visits one record at a time; see
+[MOD-EVENT-STORE](MOD-EVENT-STORE.md). Whole-history Vec inspections can explicitly
+refuse their working budget; this refusal does not establish recovery coverage.
+Total qualification still needs process-wide accounting of stores/caller-held
+responses and measured target resources. The table is not raised to hide this gap.
+
 ## 10. Persistence, recovery and reconciliation
 
 Recovery replays the accepted/running/terminal journal, probes retained process identity, fences stale epochs and classifies ambiguous spawn or termination as unknown. Reservation release never grants permission to start a replacement.
@@ -218,7 +254,7 @@ Standard deployment sequence:
 
 ## 17. Open gaps and exit criteria
 
-Open machine gaps: `GAP-PROCESS-LIFECYCLE-001`, `GAP-STREAM-RECOVERY-001`, `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-JOB-START-HOTLOCK-001`, `GAP-CONC-REGISTRY-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
+Open machine gaps: `GAP-PROCESS-LIFECYCLE-001`, `GAP-STREAM-RECOVERY-001`, `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-JOB-START-HOTLOCK-001`, `GAP-CONC-REGISTRY-001`, `GAP-PERF-L2-BASELINE-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
 
 ### GAP-PROCESS-LIFECYCLE-001 — exit L2
 
@@ -267,12 +303,19 @@ Exit evidence must demonstrate:
 - bounded capacity.
 - contention benchmark.
 
-### GAP-PERF-SYSTEM-BASELINE-001 — exit L2
+### GAP-PERF-L2-BASELINE-001 — exit L2
+
+Installed WL-01 through WL-10 retain raw A1/A2/A3 and C1/C2/C3 batches,
+complete applicable stage/resource counters and qualified stability/comparison.
+WL-11 remains an L4 hold and WL-12 remains an L5 hold.
+
+### GAP-PERF-SYSTEM-BASELINE-001 — exit L5
 
 Mixed-workload throughput, latency, resource and recovery baselines are repeatable.
 
 Exit evidence must demonstrate:
-- WL-01 through WL-12 run.
+- WL-01 through WL-10 have installed L2 evidence, WL-11 has physical L4 evidence and WL-12 has destructive L5 evidence.
+- The exact subject and continuous L1 through L5 evidence lineage bind every phase.
 - P50, P95, P99 and maximum are recorded.
 - CPU, RSS, FD, thread, process and I/O are recorded.
 - system-objective delta gates changes.

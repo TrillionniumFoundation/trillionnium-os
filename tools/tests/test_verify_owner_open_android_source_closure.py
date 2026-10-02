@@ -124,6 +124,51 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
         report = module.verify(self.root)
         self.assertTrue(any("bootstrap does not bind" in error for error in report.errors))
 
+    def test_required_config_cannot_be_satisfied_by_a_native_comment(self) -> None:
+        self.rewrite(
+            module.ANDROID_ROOT / "native/owner_open_bootstrap.cpp",
+            '      "/etc/trillionnium/codex-provider.json",',
+            '      /* "/etc/trillionnium/codex-provider.json", */',
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("payload admission inventory" in error for error in report.errors), report.errors)
+
+    def test_missing_transitive_provider_helper_fails_source_closure(self) -> None:
+        helper = self.root / "crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py"
+        helper.unlink()
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("codex_callback_observation" in error for error in report.errors), report.errors)
+
+    def test_mirrored_payload_gate_cannot_drop_native_configuration(self) -> None:
+        self.rewrite(
+            module.ANDROID_ROOT / "tools/verify_owner_open_materialized_payload.py",
+            '    "/etc/trillionnium/codex-provider.json",', "",
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("payload admission required inventory differs" in error for error in report.errors), report.errors)
+
+    def test_private_state_directory_mode_or_presence_is_required(self) -> None:
+        for child in ("home", "codex-home", "provider-sessions"):
+            relative = module.ANDROID_ROOT / "init/trillionnium-owner-open.rc"
+            path = self.root / relative
+            original = path.read_text()
+            self.rewrite(relative, f"state/{child} 0700 root root", f"state/{child} 0755 root root")
+            report = module.verify(self.root)
+            self.assertFalse(report.ok)
+            self.assertTrue(any("private state directory before data_ready" in error for error in report.errors), report.errors)
+            path.write_text(original)
+
+    def test_new_unbound_python_import_cannot_silently_pass(self) -> None:
+        relative = "crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py"
+        path = self.root / relative
+        path.write_text(path.read_text() + "\nimport unbound_native_provider_helper\n")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("runtime Python import is unbound" in error for error in report.errors), report.errors)
+
     def test_missing_selinux_boundary_fails_closed(self) -> None:
         (self.root / module.ANDROID_ROOT / "sepolicy/private/types.te").unlink()
         report = module.verify(self.root)

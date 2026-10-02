@@ -19,6 +19,7 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `android-integration/working-tree/vendor/trillionnium/owner-open`
+- `android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -33,6 +34,11 @@ Operationally, the required flow is:
 The dogfood or userdebug product graph explicitly selects owner-open packages and policy, compiles the service graph, records target-files inventory, boots an authorized image and verifies installed identities. User/release variants fail closed unless separately authorized.
 
 Every accepted transition must carry enough identity to correlate input, state mutation, output and terminal classification. Capacity is reserved before a slow or externally visible operation begins.
+
+The native ADB restart-service overlay returns an explicit failure when its
+optional root service is missing or fails. It grants no root access. Its frozen
+upstream baseline must match before application; the isolated diagnostic view
+does not qualify a dirty Android source tree or installed target.
 
 ## 3. Non-goals and authority boundary
 

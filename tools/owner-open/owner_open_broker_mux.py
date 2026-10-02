@@ -49,7 +49,7 @@ _JOB_EFFECT_KINDS = frozenset(
     }
 )
 _JOB_ATTACHMENT_KINDS = frozenset({"job.attach", "job.detach"})
-_TURN_KINDS = frozenset({"turn.inspect", "turn.cancel"})
+_TURN_KINDS = frozenset({"turn.inspect", "turn.cancel", "stream.pause", "stream.resume", "stream.window_update"})
 _CALL_KINDS = frozenset({"call.inspect", "tool.cancel"})
 _IDENTITY_FIELDS = frozenset(
     {

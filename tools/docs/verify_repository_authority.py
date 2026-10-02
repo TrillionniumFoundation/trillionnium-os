@@ -76,10 +76,13 @@ PROFILE_ENTRY_KEYS = {
     "id", "status", "default", "activation_allowed", "claim_ceiling",
     "selected_modules", "selected_cargo_components", "selected_implementation_paths",
     "offered_capabilities", "retained_components", "blocked_capabilities",
-    "evidence_requirements",
+    "evidence_requirements", "deferred_dependencies",
 }
 CAPABILITY_KEYS = {"id", "owner_module", "implementation_paths"}
 BLOCKED_CAPABILITY_KEYS = {"id", "reason"}
+DEFERRED_DEPENDENCY_KEYS = {
+    "source_module", "dependency_module", "classification", "blocking_gap", "reason",
+}
 
 
 class VerificationError(ValueError):
@@ -592,6 +595,83 @@ def paths_overlap(left: str, right: str) -> bool:
     return path_is_within(left, right) or path_is_within(right, left)
 
 
+def verify_profile_dependencies(
+    root: Path,
+    profile: dict[str, Any],
+    module_map: dict[str, dict[str, Any]],
+    module_paths: dict[str, list[str]],
+    selected_paths: list[str],
+) -> None:
+    """Check the selected source graph, never mint installed/runtime authority.
+
+    A missing target may be deferred only as a named planned-only edge with an
+    unresolved target-qualification gap owned by its selected source module.
+    There is no wildcard, optional runtime dependency, or fallback behavior.
+    """
+    profile_id = profile["id"]
+    selected = set(profile["selected_modules"])
+    edges: set[tuple[str, str]] = set()
+    for source in sorted(selected):
+        for target in string_list(
+            module_map[source].get("dependencies"), f"{source}.dependencies", allow_empty=True
+        ):
+            require(target in module_map, f"{source} has unknown dependency {target}")
+            require(target != source, f"{source} has a self dependency")
+            edges.add((source, target))
+    missing = {(source, target) for source, target in edges if target not in selected}
+    deferred = profile["deferred_dependencies"]
+    require(isinstance(deferred, list), f"{profile_id}.deferred_dependencies must be an array")
+    require(len(deferred) <= len(edges), f"{profile_id} has too many deferred dependencies")
+    gap_catalog = load_json(root / "docs/machine/gap-register.v2.json")
+    gap_items = gap_catalog.get("gaps")
+    require(isinstance(gap_items, list), "gap register must contain a gaps array")
+    gaps: dict[str, dict[str, Any]] = {}
+    for gap in gap_items:
+        require(isinstance(gap, dict), "gap entry must be an object")
+        gap_id = text(gap.get("id"), "gap id")
+        require(gap_id not in gaps, "gap register repeats an id")
+        gaps[gap_id] = gap
+    observed: set[tuple[str, str]] = set()
+    for index, entry in enumerate(deferred):
+        label = f"{profile_id}.deferred_dependencies[{index}]"
+        require(isinstance(entry, dict), f"{label} must be an object")
+        exact_keys(entry, DEFERRED_DEPENDENCY_KEYS, label)
+        source = text(entry["source_module"], f"{label}.source_module")
+        target = text(entry["dependency_module"], f"{label}.dependency_module")
+        edge = (source, target)
+        require(edge not in observed, f"{label} duplicates a deferred edge")
+        require(edge in missing, f"{label} is not a missing selected-source dependency")
+        require(entry["classification"] == "PLANNED_ONLY", f"{label} classification must be PLANNED_ONLY")
+        maturity = module_map[target].get("maturity")
+        require(isinstance(maturity, str) and maturity.startswith("PLANNED_"),
+                f"{label} cannot defer a non-planned module")
+        require(all(path.startswith("planned/") for path in module_paths[target]),
+                f"{label} planned module has a non-planned source path")
+        require(not any(paths_overlap(path, planned) for path in selected_paths
+                        for planned in module_paths[target]),
+                f"{label} planned source is already selected")
+        gap_id = text(entry["blocking_gap"], f"{label}.blocking_gap")
+        require(gap_id in gaps, f"{label} references an unknown blocking gap")
+        gap = gaps[gap_id]
+        require(gap.get("status") in {"OPEN", "SOURCE_CLOSED_PENDING_EVIDENCE", "EXTERNAL_HOLD"},
+                f"{label} blocking gap is not unresolved")
+        require(gap.get("exit_level") in {"L2", "L3", "L4", "L5", "L6"},
+                f"{label} blocking gap is not target qualification")
+        owners = string_list(gap.get("modules"), f"{gap_id}.modules")
+        require(source in owners, f"{label} blocking gap does not cover the source module")
+        reason = text(entry["reason"], f"{label}.reason")
+        try:
+            reason_bytes = reason.encode("utf-8", "strict")
+        except UnicodeError as error:
+            raise VerificationError(f"{label} reason is not valid UTF-8") from error
+        require(len(reason_bytes) <= 1024
+                and not any(ord(char) < 32 or 127 <= ord(char) <= 159 for char in reason),
+                f"{label} reason exceeds bounded single-line text")
+        observed.add(edge)
+    require(observed == missing,
+            f"{profile_id} undeclared missing dependencies: {sorted(missing-observed)}")
+
+
 def verify_profiles(root: Path) -> dict[str, Any]:
     catalog = load_json(root / PROFILE_PATH)
     exact_keys(catalog, PROFILE_KEYS, "product profile catalog")
@@ -700,6 +780,8 @@ def verify_profiles(root: Path) -> dict[str, Any]:
                 )
                 require(covered,
                         f"{profile_id} selects {module_id} without complete path {owner_path}")
+
+        verify_profile_dependencies(root, raw, module_map, module_paths, selected_paths)
 
         capabilities = raw["offered_capabilities"]
         require(isinstance(capabilities, list), f"{profile_id}.offered_capabilities must be an array")

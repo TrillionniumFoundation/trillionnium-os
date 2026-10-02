@@ -89,6 +89,7 @@ struct JobState {
     request: JobRequest,
     start_result: Option<Value>,
     terminal: Option<Value>,
+    next_runtime_cursor: u64,
 }
 
 type OperationStates = HashMap<OperationKey, OperationState>;
@@ -116,10 +117,11 @@ impl EventStoreBackend {
         }
     }
 
-    fn all_records(&self) -> trillionnium_owner_open_event_store::Result<Vec<EventRecord>> {
+    fn visit_records<E>(&self, visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>)
+        -> trillionnium_owner_open_event_store::Result<std::result::Result<(), E>> {
         match self {
-            Self::Legacy(store) => store.all_records(),
-            Self::Segmented(store) => store.all_records(),
+            Self::Legacy(store) => store.visit_records(visit),
+            Self::Segmented(store) => store.visit_records(visit),
         }
     }
 
@@ -345,6 +347,14 @@ impl JobJournal {
         }))
     }
 
+    /// Retained authoritative high-water for a resident window that was
+    /// archived. This is derived from existing v1 envelope event_seq fields;
+    /// no journal or wire schema change is required.
+    pub fn runtime_next_cursor(&self, key: &JobKey) -> Result<u64> {
+        let _key_guard = self.key_guard(key)?;
+        Ok(self.lock()?.jobs.get(key).map_or(0, |job| job.next_runtime_cursor))
+    }
+
     pub fn begin_operation(
         &self,
         key: &JobKey,
@@ -411,6 +421,7 @@ impl JobJournal {
                             request: request.clone(),
                             start_result: None,
                             terminal: None,
+                            next_runtime_cursor: 0,
                         },
                     );
                 }
@@ -479,6 +490,7 @@ impl JobJournal {
                     request: request.clone(),
                     start_result: None,
                     terminal: None,
+                    next_runtime_cursor: 0,
                 },
             );
         }
@@ -601,6 +613,9 @@ impl JobJournal {
         kind: &str,
         payload: Value,
     ) -> Result<()> {
+        let next_cursor = event_seq.checked_add(1).ok_or_else(|| {
+            JobRuntimeError::Journal("runtime observation sequence exhausted".to_string())
+        })?;
         require_text(kind, "observation kind", 256, false)
             .map_err(|error| JobRuntimeError::InvalidRequest(error.to_string()))?;
         let terminal_payload = if kind == "job.terminal.observation" {
@@ -639,7 +654,9 @@ impl JobJournal {
                     request: request.clone(),
                     start_result: None,
                     terminal: None,
+                    next_runtime_cursor: 0,
                 });
+                job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
                 if let Some(terminal_payload) = terminal_payload {
                     if let Some(existing) = &job.terminal {
                         if existing != &terminal_payload {
@@ -692,11 +709,13 @@ impl JobJournal {
         // subsequent terminal append fails, the request identity still
         // remains recorded in memory and future calls fail closed instead of
         // mixing another request into this job's journal lineage.
-        state.jobs.entry(key.clone()).or_insert(JobState {
+        let job = state.jobs.entry(key.clone()).or_insert(JobState {
             request: request.clone(),
             start_result: None,
             terminal: None,
+            next_runtime_cursor: 0,
         });
+        job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
         if state.store.is_none() {
             return Err(JobRuntimeError::Journal(
                 state.error.clone().unwrap_or_else(|| {
@@ -755,6 +774,7 @@ impl JobJournal {
                 request: request.clone(),
                 start_result: None,
                 terminal: Some(terminal_payload),
+                next_runtime_cursor: 0,
             });
         Ok(())
     }
@@ -766,6 +786,8 @@ impl JobJournal {
         event_seq: u64,
         payload: Value,
     ) -> Result<()> {
+        let next_cursor = event_seq.checked_add(1).ok_or_else(||
+            JobRuntimeError::InvalidRequest("runtime observation sequence exhausted".to_string()))?;
         let _key_guard = self.key_guard(key)?;
         let (store, envelope) = {
             let mut state = self.lock()?;
@@ -788,11 +810,12 @@ impl JobJournal {
                 state
                     .jobs
                     .entry(key.clone())
-                    .and_modify(|job| job.terminal = Some(payload.clone()))
+                    .and_modify(|job| { job.terminal = Some(payload.clone()); job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor); })
                     .or_insert(JobState {
                         request: request.clone(),
                         start_result: None,
                         terminal: Some(payload),
+                        next_runtime_cursor: next_cursor,
                     });
                 return Ok(());
             };
@@ -838,11 +861,12 @@ impl JobJournal {
         state
             .jobs
             .entry(key.clone())
-            .and_modify(|job| job.terminal = Some(envelope.payload.clone()))
+            .and_modify(|job| { job.terminal = Some(envelope.payload.clone()); job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor); })
             .or_insert(JobState {
                 request: request.clone(),
                 start_result: None,
                 terminal: Some(envelope.payload),
+                next_runtime_cursor: next_cursor,
             });
         Ok(())
     }
@@ -1014,7 +1038,7 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
     let mut operations = HashMap::new();
     let mut jobs = HashMap::<JobKey, JobState>::new();
     let mut requests = HashMap::<JobKey, JobRequest>::new();
-    for record in store.all_records().map_err(|error| error.to_string())? {
+    store.visit_records(|record| {
         let envelope: JournalEnvelope =
             serde_json::from_value(record.payload.clone()).map_err(|error| error.to_string())?;
         if envelope.schema != JOURNAL_SCHEMA {
@@ -1040,6 +1064,11 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
         } else {
             requests.insert(key.clone(), envelope.request.clone());
         }
+        let cursor_key = key.clone();
+        let next_cursor = if matches!(envelope.record.as_str(), "observation" | "job.terminal") {
+            Some(envelope.event_seq.ok_or_else(|| "job observation has no event_seq".to_string())?
+                .checked_add(1).ok_or_else(|| "runtime observation sequence exhausted".to_string())?)
+        } else { None };
         match envelope.record.as_str() {
             "operation.accepted" => {
                 let operation_id = envelope
@@ -1074,6 +1103,7 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
                         request: envelope.request,
                         start_result: None,
                         terminal: None,
+                        next_runtime_cursor: 0,
                     });
                 }
             }
@@ -1111,6 +1141,7 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
                             request: envelope.request,
                             start_result: Some(envelope.payload),
                             terminal: None,
+                            next_runtime_cursor: 0,
                         });
                 }
             }
@@ -1119,6 +1150,7 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
                     request: envelope.request,
                     start_result: None,
                     terminal: None,
+                    next_runtime_cursor: 0,
                 });
             }
             "job.terminal" => {
@@ -1126,6 +1158,7 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
                     request: envelope.request,
                     start_result: None,
                     terminal: None,
+                    next_runtime_cursor: 0,
                 });
                 if job.terminal.replace(envelope.payload).is_some() {
                     return Err("job terminal record is duplicated".to_string());
@@ -1133,7 +1166,12 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
             }
             other => return Err(format!("unsupported job journal record {other}")),
         }
-    }
+        if let Some(next_cursor) = next_cursor {
+            let job = jobs.get_mut(&cursor_key).expect("observation binds its job");
+            job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
+        }
+        Ok::<(), String>(())
+    }).map_err(|error| error.to_string())??;
     Ok((operations, jobs))
 }
 
@@ -1334,6 +1372,24 @@ mod tests {
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))
             .expect("harden temporary directory");
         directory
+    }
+
+    #[test]
+    fn direct_terminal_cursor_survives_restart_and_exhaustion_precedes_wal() {
+        let directory = secure_tempdir();
+        let path = directory.path().join("cursor.jsonl");
+        let journal = JobJournal::open_best_effort(Some(&path));
+        let owner = key("terminal"); let request = request('a');
+        let before = fs::read(&path).unwrap();
+        assert!(matches!(journal.record_job_terminal(&owner, &request, u64::MAX,
+            json!({"terminal": true})), Err(JobRuntimeError::InvalidRequest(_))));
+        assert_eq!(fs::read(&path).unwrap(), before);
+        journal.record_job_terminal(&owner, &request, 7, json!({"terminal": true})).unwrap();
+        assert_eq!(journal.runtime_next_cursor(&owner).unwrap(), 8);
+        drop(journal);
+        let reopened = JobJournal::open_best_effort(Some(&path));
+        assert!(matches!(reopened.status().unwrap(), JournalStatus::Durable));
+        assert_eq!(reopened.runtime_next_cursor(&owner).unwrap(), 8);
     }
 
     #[test]

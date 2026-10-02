@@ -18,7 +18,7 @@ use crate::{
     InternalProcessEvent, JobInvocation, JobRuntimeError, JobStartRequest, PtySize, Result,
 };
 
-const PROCESS_EVENT_QUEUE: usize = 256;
+pub(crate) const PROCESS_EVENT_QUEUE: usize = 16;
 const DESCENDANT_TERM_GRACE: Duration = Duration::from_millis(100);
 const DESCENDANT_KILL_GRACE: Duration = Duration::from_millis(100);
 const SPAWN_GUARD_REAP_GRACE: Duration = Duration::from_millis(500);

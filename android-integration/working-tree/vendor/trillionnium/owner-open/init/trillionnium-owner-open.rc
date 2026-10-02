@@ -14,6 +14,9 @@ on post-fs-data
     mkdir /data/trillionnium/owner-open/root 0700 root root
     mkdir /data/trillionnium/owner-open/state 0700 root root
     mkdir /data/trillionnium/owner-open/state/broker 0700 root root
+    mkdir /data/trillionnium/owner-open/state/home 0700 root root
+    mkdir /data/trillionnium/owner-open/state/codex-home 0700 root root
+    mkdir /data/trillionnium/owner-open/state/provider-sessions 0700 root root
     restorecon_recursive /data/trillionnium/owner-open
     # The combined property trigger below can fire in either property order,
     # but only after this action has completed its mkdir/restorecon sequence.

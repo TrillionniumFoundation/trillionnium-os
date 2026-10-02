@@ -56,6 +56,39 @@ Dependencies must form a directed acyclic graph. Composition roots may depend
 on lower-level modules, but lower-level mechanism modules must not import
 product semantic policy.
 
+### 2.1 Selected source versus target architecture
+
+The four-plane diagram and module dependency catalog include planned modules.
+The default product profile is the selected source subset recorded in
+`machine/product-profile-catalog.v1.json`; its checked projection is
+`generated/PRODUCT_PROFILE_STATUS.md`. It is not evidence of an installed
+runtime process graph.
+
+Each profile now requires `deferred_dependencies`, including an empty array
+when no dependency is deferred. Older profile records without that field fail
+closed and must be regenerated/reviewed with the verifier and projection. Every
+dependency of a selected module must also be selected unless one exact
+`PLANNED_ONLY` edge names an unresolved L2-or-higher gap covering its source
+module. The target must have a planned maturity and only `planned/` source
+paths, and none of those paths may already be selected. Unknown, duplicated,
+stale or overbroad exceptions are rejected; a closed gap cannot retain its
+planned-edge exception.
+
+The present explicit edge is `MOD-ROOTLINUX -> MOD-GLOBAL-CONTROL`, held by
+`GAP-ROOTLINUX-PLACEMENT-001`. Root Linux's normative `module_instance_lease`
+contract is unchanged. This source-profile declaration does not invent a local
+lease provider or demonstrate that lease admission works without a controller.
+Before installed qualification, either select and qualify the required
+implementation, or make an explicit reviewed architecture/contract change and
+qualify the resulting installed behavior. Remove the exception only with the
+corresponding source and evidence transition. No control mode is activated here.
+
+Cargo feature/dependency checks, Android evaluated build graphs and installed
+identity remain separate gates. A selected logical edge is not proof of a Rust
+import or a running service, and a planned logical edge never excuses an actual
+unselected product dependency. This distinction prevents source selection from
+silently becoming a claim of target completeness.
+
 ## 3. State ownership
 
 Every mutable state family has one authoritative owner:

@@ -48,6 +48,16 @@ The provider remains the sole semantic principal. This module may reject malform
 
 Direct dependencies: `MOD-EXECUTION-CORE`, `MOD-PROVIDER`, `MOD-GLOBAL-CONTROL`.
 
+This logical graph includes the planned control-plane edge. The default source
+profile records that edge as `PLANNED_ONLY`, held by
+`GAP-ROOTLINUX-PLACEMENT-001`; see `docs/GLOBAL_ARCHITECTURE.md` section 2.1 and
+`docs/generated/PRODUCT_PROFILE_STATUS.md`. It does not select a controller,
+replace the `module_instance_lease` contract with an invented local lease, or
+establish an installed admission path. The profile verifier rejects a missing
+selected dependency without its explicit planned-edge declaration. Installed
+qualification must reconcile this edge by selecting the required implementation
+or by a separately reviewed contract change backed by target evidence.
+
 The normal data-flow boundary is: validate the versioned input; bind identity and ordering metadata; reserve finite capacity; make the minimal authoritative transition; execute or forward the exact mechanical action; retain bounded observations; publish one terminal or explicit unknown classification.
 
 Dependencies are consumed through their declared APIs. A dependency outage cannot be converted into success. Cycles are prohibited by the machine catalog, and slow external work remains outside broad registry or global-control locks.
@@ -324,6 +334,31 @@ filesystem durability, Android inclusion and installed inventory require the
 existing L2/L3/L5 evidence. No manifest schema or evidence ceiling is promoted.
 The extra hashing passes trade bounded I/O for provenance checks; no performance
 improvement or installed latency claim is made.
+
+The selected stager preserves zero-byte ordinary files when their exact digest,
+single-link identity and mode satisfy the same checks as other payload entries;
+Python package initializers can legitimately be empty. An entry requiring an
+AArch64 ELF still rejects empty bytes. The credential-name guard has only three
+exact public-code exceptions for the frozen Python 3.11 standard library:
+`/usr/lib/python3.11/secrets.py`, `/usr/lib/python3.11/token.py` and
+`/usr/lib/python3.11/tokenize.py`. Other versions, alternative extensions,
+similarly named files and child paths remain rejected. These names alone do not
+authenticate the inputs: the payload plan must bind the public module bytes to
+their reviewed source/package digests. Staging these modules grants no installed
+runtime or release qualification.
+
+Android init prepares `broker`, `home`, `codex-home` and `provider-sessions`
+under the owner-open state directory as root-owned mode `0700` before publishing
+`data_ready`; the native bootstrap checks those directories before binding state.
+The native bootstrap, both materialization verifiers and the authored source
+profile bind the same 34 required runtime paths: seven executable launch paths,
+25 local Python modules and two configuration files, including
+`/etc/trillionnium/codex-provider.json`. The source-closure gate follows local
+Python imports and rejects missing helper bindings. Required runtime entries
+must be nonempty, and launch paths must have execute permission. Other ordinary
+payload files may be empty only with the exact empty-file digest and no execute
+bits. These checks establish payload admission and source closure; provider
+authentication, native tool isolation and installed qualification remain HOLD.
 
 Reproduce the selected staging/build tests with:
 

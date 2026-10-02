@@ -136,6 +136,56 @@ Measurement status: **unmeasured until qualified evidence**.
 
 These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
+The segmented store retains at most 240 segment descriptors, leaving 16 of the
+256-descriptor source ceiling for its root/lease, recovery and sidecar work.
+Previously the hard segment ceiling was 1024. Rotation rejects an additional
+segment before creating it; exact duplicates and retained replay remain usable.
+Recovery rejects an over-ceiling directory before opening its segment set. This
+is a compatibility restriction: an older store with more than 240 segments is
+retained and fails closed; no automatic WAL deletion, effect replay or silent
+compaction is permitted. Recovery requires an explicitly reviewed migration
+that preserves every identity and hash-chain record.
+
+V1/v2 handles now share a linked-module256-descriptor RAII pool:16 control/
+recovery slots are acquired before touching the path and one slot before each
+segment create/open. A capacity failure returns every partial-open reservation;
+cloned Arc owners retain the same lease, and closed files return slots only
+when the last owning handle drops. New handles/segments fail rather than evicting
+an active reader. Concurrent source/destination migration/export can refuse
+joint capacity; retain both WALs and the original writer fence. No temporary
+budget bypass, deletion or redispatch is allowed to force that migration.
+On-demand payload reads use the crate's existing Unix platform boundary and
+`FileExt::read_exact_at` on the pinned File, without cloning a descriptor or
+changing its offset. The existing segment mutex, before/after identity checks,
+and public-read append gate remain in place. Concurrent callers are serialized
+at that gate so they cannot observe a partially published WAL append.
+
+This gate bounds module-owned descriptor reservations across instances, not
+unrelated OS/module descriptors or measured process RSS. The32/64 MiB logical
+RAM envelope remains per store; memory shared across stores and caller-owned
+returned/cloned Values still needs separate admission and installed evidence.
+
+V2 retains only authenticated record headers and location/key/scope indexes,
+with a conservative 32 MiB resident reservation. Payloads are read from pinned
+segments on demand, strictly decoded and digest-checked against those headers.
+WAL recovery authenticates the whole chain while retaining only headers. V1
+keeps its full read model within the same 32 MiB gate. Reservations charge owned
+capacities, repeated index strings and container growth; dense JSON has a
+quote/escape-aware lexical allocation check before DOM decoding. A 64 MiB
+logical single-operation working budget bounds returned Vecs and snapshot work;
+`replay`/`all_records` may return `CapacityExhausted` before allocation.
+`visit_records` reads one record at a time and supports journal recovery without
+a whole-lineage payload clone. The effective encoded record/read and sidecar
+bounds are at most 16 MiB. Snapshot/read-budget refusal happens before snapshot
+publication and leaves the authoritative WAL unchanged. Schema byte/count limits do not override these
+resident/working gates.
+
+No uncertain key or accepted record is evicted. Over-budget historical WAL or
+sidecars fail closed and are retained for reviewed migration; a new empty
+journal must not substitute for that lineage. These source reservations do not
+prove process RSS: multiple stores, caller-held responses, allocator overhead
+and the rest of the host require aggregate accounting and installed evidence.
+
 ## 10. Persistence, recovery and reconciliation
 
 Startup validates segment headers, record checksums, hash-chain continuity and indexes. A repairable torn tail is truncated under an explicit recovery record; interior corruption is quarantined or causes fail-closed startup.
@@ -217,7 +267,7 @@ Standard deployment sequence:
 
 ## 17. Open gaps and exit criteria
 
-Open machine gaps: `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-EVENT-STORE-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
+Open machine gaps: `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-EVENT-STORE-001`, `GAP-PERF-L2-BASELINE-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
 
 ### GAP-JOURNAL-CONVERGENCE-001 — exit L5
 
@@ -239,12 +289,19 @@ Exit evidence must demonstrate:
 - bounded recovery time.
 - schema migration.
 
-### GAP-PERF-SYSTEM-BASELINE-001 — exit L2
+### GAP-PERF-L2-BASELINE-001 — exit L2
+
+Installed WL-01 through WL-10 retain raw A1/A2/A3 and C1/C2/C3 batches,
+complete applicable stage/resource counters and qualified stability/comparison.
+WL-11 remains an L4 hold and WL-12 remains an L5 hold.
+
+### GAP-PERF-SYSTEM-BASELINE-001 — exit L5
 
 Mixed-workload throughput, latency, resource and recovery baselines are repeatable.
 
 Exit evidence must demonstrate:
-- WL-01 through WL-12 run.
+- WL-01 through WL-10 have installed L2 evidence, WL-11 has physical L4 evidence and WL-12 has destructive L5 evidence.
+- The exact subject and continuous L1 through L5 evidence lineage bind every phase.
 - P50, P95, P99 and maximum are recorded.
 - CPU, RSS, FD, thread, process and I/O are recorded.
 - system-objective delta gates changes.

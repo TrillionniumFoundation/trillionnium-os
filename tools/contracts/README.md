@@ -10,6 +10,32 @@ and the Android build-host consumer execute the same vectors. A schema success
 is L1 source evidence only and cannot mint installed-target, device, destructive,
 signing or release evidence.
 
+## Validation profile and scope
+
+The generated Draft-07 schemas assert uint64 minima/maxima, control-free text,
+exact digests and the uncertainty/retry equivalence with standard keywords.
+Do not rely on the optional `format` keyword to bound an integer. The text
+patterns explicitly reject trailing control characters, including a final newline.
+
+Complete wire admission still requires the strict parser and the companion
+`x-trillionnium-maxUtf8Bytes` / `x-trillionnium-forbidUnicodeControls` assertions.
+`maxLength` counts characters, not UTF-8 bytes. A generic Draft-07 pass alone
+cannot validate duplicate JSON members, wire byte/depth ceilings, valid UTF-8 or
+lexical integer encoding. Do not coerce an integer through IEEE-754 double
+precision. Existing Rust and Python consumers retain their stricter checks.
+
+The API/state `payload` is currently an opaque bounded object, not a typed
+operation contract. Passing an envelope does NOT prove JobStart, Signal, Wait,
+Attach, shell/ADB arguments or a state transition are valid. The actual selected
+consumer must validate those separately. Producer/consumer version intersections
+are not end-to-end codec or installed interoperability evidence.
+
+Schema tightening needs the existing BREAKING_MIGRATION packet even when it
+only exposes rules already enforced by Rust/Python. Packets bind exact old/new
+schema bytes and migration/rollback metadata with `approval_asserted=false`.
+No author or generator can manufacture the independent protected-head review.
+No state bytes, runtime command semantics, control mode or release flags change.
+
 Commands:
 
 ```sh

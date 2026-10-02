@@ -70,38 +70,12 @@ impl StreamDelivery {
 
     fn terminal_gap(&mut self) -> Option<ResyncGap> {
         if self.gap.is_none() && !self.queue.is_empty() {
-            let first = self.queue.front().cloned().expect("queue is not empty");
-            let last = self.queue.back().cloned().expect("queue is not empty");
-            // Do not infer domain uniformity from only the endpoints.  A
-            // queued stream can contain A, B, A; treating that as one A
-            // range would publish a numerically valid-looking resume cursor
-            // that actually crosses two independent cursor spaces.  Fold
-            // every queued frame and fail closed as soon as any domain differs.
-            let mut cursor_domain = first.cursor_domain.clone();
-            let mut cursor_scope = first.cursor_scope.clone();
-            let mut mixed_cursor_domains = false;
+            let first = self.queue.front().expect("queue is not empty");
+            let empty = VecDeque::new();
+            let mut gap = ResyncGap::from_buffer(&empty, first);
             for frame in self.queue.iter().skip(1) {
-                if frame.cursor_domain != cursor_domain || frame.cursor_scope != cursor_scope {
-                    mixed_cursor_domains = true;
-                    cursor_domain = None;
-                    cursor_scope = None;
-                    break;
-                }
+                gap.extend(frame);
             }
-            let cursor_range_complete = !mixed_cursor_domains
-                && cursor_scope.is_some()
-                && self.queue.iter().all(|frame| frame.cursor.is_some());
-            let gap = ResyncGap {
-                cursor_domain,
-                cursor_scope,
-                first_cursor: cursor_range_complete.then_some(first.cursor).flatten(),
-                last_cursor: cursor_range_complete.then_some(last.cursor).flatten(),
-                cursor_range_complete,
-                first_event_id: first.event_id,
-                last_event_id: last.event_id,
-                suppressed_frames: u64::try_from(self.queue.len()).unwrap_or(u64::MAX),
-                mixed_cursor_domains,
-            };
             self.queue.clear();
             self.queued_bytes = 0;
             self.gap = Some(gap);
@@ -175,6 +149,14 @@ impl BufferedFrame {
             None if explicit_domain
                 .as_deref()
                 .is_some_and(|domain| domain != TRANSPORT_CURSOR_DOMAIN) =>
+            {
+                None
+            }
+            None if frame
+                .extensions
+                .get("transport_generated_event_id")
+                .and_then(Value::as_bool)
+                == Some(true) =>
             {
                 None
             }

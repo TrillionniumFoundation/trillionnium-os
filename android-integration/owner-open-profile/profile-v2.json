@@ -97,6 +97,111 @@
         "role": "rootlinux_supervisor_config",
         "path": "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
         "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "rootlinux_shell",
+        "path": "/bin/sh",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_adb_smart_socket_relay_selected",
+        "path": "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_selected.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_codex_app_server_provider",
+        "path": "/usr/libexec/trillionnium/owner-open/codex_app_server_provider.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_codex_callback_observation",
+        "path": "/usr/libexec/trillionnium/owner-open/codex_callback_observation.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_jsonl_provider_runtime",
+        "path": "/usr/libexec/trillionnium/owner-open/jsonl_provider_runtime.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_admission_v2",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_admission_v2.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_audit",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_audit.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_base_v2",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_base_v2.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_common",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_common.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_connections",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_connections.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_convergence_v2",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_convergence_v2.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_mux",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_mux.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_runtime",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_runtime.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_broker_server_v2",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_broker_server_v2.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_connection_broker_v2",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker_v2.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_mcp_common",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_mcp_common.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_mcp_host",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_mcp_host.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_owner_open_mcp_jobs",
+        "path": "/usr/libexec/trillionnium/owner-open/owner_open_mcp_jobs.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_qualify_owner_open_adb_selected",
+        "path": "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_selected.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "runtime_python_supervise_codex_mcp_qualification",
+        "path": "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification.py",
+        "state": "UNBOUND_ROOTFS_ENTRY"
+      },
+      {
+        "role": "codex_provider_config",
+        "path": "/etc/trillionnium/codex-provider.json",
+        "state": "UNBOUND_ROOTFS_ENTRY"
       }
     ]
   },
@@ -212,6 +317,90 @@
     {
       "role": "android_adbroot_system_server_policy",
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/adbroot/system_server.te"
+    },
+    {
+      "role": "runtime_python_adb_smart_socket_relay_selected",
+      "path": "tools/owner-open/adb_smart_socket_relay_selected.py"
+    },
+    {
+      "role": "runtime_python_codex_app_server_provider",
+      "path": "crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py"
+    },
+    {
+      "role": "runtime_python_codex_callback_observation",
+      "path": "crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py"
+    },
+    {
+      "role": "runtime_python_jsonl_provider_runtime",
+      "path": "tools/owner-open/jsonl_provider_runtime.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_admission_v2",
+      "path": "tools/owner-open/owner_open_broker_admission_v2.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_audit",
+      "path": "tools/owner-open/owner_open_broker_audit.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_base_v2",
+      "path": "tools/owner-open/owner_open_broker_base_v2.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_common",
+      "path": "tools/owner-open/owner_open_broker_common.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_connections",
+      "path": "tools/owner-open/owner_open_broker_connections.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_convergence_v2",
+      "path": "tools/owner-open/owner_open_broker_convergence_v2.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_mux",
+      "path": "tools/owner-open/owner_open_broker_mux.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_runtime",
+      "path": "tools/owner-open/owner_open_broker_runtime.py"
+    },
+    {
+      "role": "runtime_python_owner_open_broker_server_v2",
+      "path": "tools/owner-open/owner_open_broker_server_v2.py"
+    },
+    {
+      "role": "runtime_python_owner_open_connection_broker_v2",
+      "path": "tools/owner-open/owner_open_connection_broker_v2.py"
+    },
+    {
+      "role": "runtime_python_owner_open_mcp_common",
+      "path": "tools/owner-open/owner_open_mcp_common.py"
+    },
+    {
+      "role": "runtime_python_owner_open_mcp_host",
+      "path": "tools/owner-open/owner_open_mcp_host.py"
+    },
+    {
+      "role": "runtime_python_owner_open_mcp_jobs",
+      "path": "tools/owner-open/owner_open_mcp_jobs.py"
+    },
+    {
+      "role": "runtime_python_qualify_owner_open_adb_selected",
+      "path": "tools/owner-open/qualify_owner_open_adb_selected.py"
+    },
+    {
+      "role": "runtime_python_supervise_codex_mcp_qualification",
+      "path": "tools/owner-open/supervise_codex_mcp_qualification.py"
+    },
+    {
+      "role": "rootfs_payload_admission_host",
+      "path": "tools/owner-open/verify_owner_open_materialized_payload.py"
+    },
+    {
+      "role": "rootfs_payload_admission_android",
+      "path": "android-integration/working-tree/vendor/trillionnium/owner-open/tools/verify_owner_open_materialized_payload.py"
     }
   ],
   "optional_dogfood_product_modules": [

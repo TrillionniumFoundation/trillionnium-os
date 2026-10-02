@@ -33,6 +33,7 @@ ANDROID_README_PATH = "android-integration/module-contracts/README.md"
 TEST_PATH = "tools/tests/test_module_contracts.py"
 README_PATH = "tools/contracts/README.md"
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
+INVALID_VECTOR_COUNT = 32
 REVIEW_PACKET_PATH = re.compile(
     r"^docs/reviews/module-contracts/([0-9a-f]{64})[.]json$"
 )
@@ -918,6 +919,32 @@ and the Android build-host consumer execute the same vectors. A schema success
 is L1 source evidence only and cannot mint installed-target, device, destructive,
 signing or release evidence.
 
+## Validation profile and scope
+
+The generated Draft-07 schemas assert uint64 minima/maxima, control-free text,
+exact digests and the uncertainty/retry equivalence with standard keywords.
+Do not rely on the optional `format` keyword to bound an integer. The text
+patterns explicitly reject trailing control characters, including a final newline.
+
+Complete wire admission still requires the strict parser and the companion
+`x-trillionnium-maxUtf8Bytes` / `x-trillionnium-forbidUnicodeControls` assertions.
+`maxLength` counts characters, not UTF-8 bytes. A generic Draft-07 pass alone
+cannot validate duplicate JSON members, wire byte/depth ceilings, valid UTF-8 or
+lexical integer encoding. Do not coerce an integer through IEEE-754 double
+precision. Existing Rust and Python consumers retain their stricter checks.
+
+The API/state `payload` is currently an opaque bounded object, not a typed
+operation contract. Passing an envelope does NOT prove JobStart, Signal, Wait,
+Attach, shell/ADB arguments or a state transition are valid. The actual selected
+consumer must validate those separately. Producer/consumer version intersections
+are not end-to-end codec or installed interoperability evidence.
+
+Schema tightening needs the existing BREAKING_MIGRATION packet even when it
+only exposes rules already enforced by Rust/Python. Packets bind exact old/new
+schema bytes and migration/rollback metadata with `approval_asserted=false`.
+No author or generator can manufacture the independent protected-head review.
+No state bytes, runtime command semantics, control mode or release flags change.
+
 Commands:
 
 ```sh
@@ -999,21 +1026,51 @@ def specialize_schemars_schema(
                 "maxLength": maximum,
                 "x-trillionnium-maxUtf8Bytes": maximum,
                 "x-trillionnium-forbidUnicodeControls": True,
+                "pattern": r"^[^\u0000-\u001f\u007f-\u009f]+(?![\s\S])",
             }
         )
 
     direct("schema").update({"type": "string", "const": label})
     direct("module_id").update({"type": "string", "const": module})
     bounded_text("operation_id", 256)
-    direct("request_digest").update({"type": "string", "pattern": "^[0-9a-f]{64}$"})
+    direct("request_digest").update({"type": "string", "pattern": r"^[0-9a-f]{64}(?![\s\S])"})
     if kind in {"api", "state"}:
         bounded_text("fencing_token", 512)
         properties["payload"] = {"type": "object", "maxProperties": 64}
+        integer_fields = ["host_epoch", "writer_epoch"]
+        if kind == "state":
+            integer_fields += ["durable_sequence", "monotonic_ns"]
+        for field in integer_fields:
+            # Draft-07 format is optional; uint64 is not a portable assertion.
+            direct(field).update({"type": "integer", "minimum": 0, "maximum": (1 << 64) - 1})
     if kind == "api":
         bounded_text("ordering_key", 512)
     elif kind == "errors":
         bounded_text("code", 128)
         bounded_text("original_cause", 4096)
+        # Express the same equivalence enforced by Rust/Python in ordinary
+        # Draft-07 assertions, not only in a companion semantic validator.
+        result["allOf"] = [{
+            "if": {
+                "type": "object",
+                "required": ["effect_uncertain"],
+                "properties": {"effect_uncertain": {"type": "boolean", "const": True}},
+            },
+            "then": {
+                "type": "object",
+                "properties": {
+                    "class": {"type": "string", "const": "EFFECT_UNCERTAIN"},
+                    "retry_disposition": {"type": "string", "const": "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH"},
+                },
+            },
+            "else": {
+                "type": "object",
+                "properties": {
+                    "class": {"type": "string", "enum": ["REJECTED_BEFORE_EFFECT", "TRANSIENT_BEFORE_EFFECT", "TERMINAL_FAILURE", "INTERNAL_INVARIANT"]},
+                    "retry_disposition": {"type": "string", "enum": ["MAY_RETRY_BEFORE_EFFECT", "DO_NOT_RETRY"]},
+                },
+            },
+        }]
     result["$id"] = identifier
     result["title"] = title
     result["x-trillionnium-binding"] = binding
@@ -1032,6 +1089,15 @@ def validate_schema(instance: Any, schema: Any, path: str = "$", root: dict[str,
         return
     for child in schema.get("allOf", []):
         validate_schema(instance, child, path, root)
+    if "if" in schema:
+        try:
+            validate_schema(instance, schema["if"], path, root)
+        except ContractError:
+            branch = "else"
+        else:
+            branch = "then"
+        if branch in schema:
+            validate_schema(instance, schema[branch], path, root)
     kind = schema.get("type")
     if kind == "object":
         require(isinstance(instance, dict), f"{path} must be object")
@@ -1079,10 +1145,14 @@ def validate_schema(instance: Any, schema: Any, path: str = "$", root: dict[str,
         require(isinstance(instance, int) and not isinstance(instance, bool), f"{path} must be integer")
         if "minimum" in schema:
             require(instance >= schema["minimum"], f"{path} below minimum")
+        if "maximum" in schema:
+            require(instance <= schema["maximum"], f"{path} above maximum")
         if schema.get("format") == "uint64":
             require(instance <= (1 << 64) - 1, f"{path} exceeds uint64")
     elif kind == "boolean":
         require(isinstance(instance, bool), f"{path} must be boolean")
+        if "const" in schema:
+            require(instance is schema["const"], f"{path} const differs")
     elif kind == "array":
         require(isinstance(instance, list), f"{path} must be array")
         for index, value in enumerate(instance):
@@ -1614,6 +1684,21 @@ def generated(root: Path, schemars_raw: bytes) -> dict[str, bytes]:
         invalid = dict(valid_error)
         invalid["original_cause"] = "cause\u0085control"
         outputs[f"{base}/golden/invalid/errors-cause-unicode-control.json"] = canonical_json(invalid)
+        for vector_kind, valid, fields in (
+            ("api", valid_api, ("host_epoch", "writer_epoch")),
+            ("state", valid_state, ("host_epoch", "writer_epoch", "durable_sequence", "monotonic_ns")),
+        ):
+            for field in fields:
+                invalid = dict(valid)
+                invalid[field] = 1 << 64
+                suffix = field.replace("_", "-")
+                outputs[f"{base}/golden/invalid/{vector_kind}-{suffix}-overflow.json"] = canonical_json(invalid)
+        invalid = dict(valid_api)
+        invalid["operation_id"] = "operation\n"
+        outputs[f"{base}/golden/invalid/api-operation-final-newline.json"] = canonical_json(invalid)
+        invalid = dict(valid_api)
+        invalid["request_digest"] = request_digest + "\n"
+        outputs[f"{base}/golden/invalid/api-digest-final-newline.json"] = canonical_json(invalid)
         compatibility_path=f"{base}/compatibility.json"
         compatibility={
             "schema":"org.trillionnium.module-contract-compatibility.v1",
@@ -1694,7 +1779,7 @@ def generated(root: Path, schemars_raw: bytes) -> dict[str, bytes]:
         "claim_ceiling":"L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
     }
     outputs[CONTRACT_CATALOG_PATH]=canonical_json(machine)
-    lines=["# Module Contract Status","","<!-- GENERATED BY tools/contracts/generate_module_contracts.py. DO NOT EDIT. -->","",f"- Modules: `{len(records)}`","- API/state/error schemas: `3 per module`","- Shared valid vectors: `3 per module`","- Shared invalid vectors: `24 per module`",f"- Producer/consumer pairs: `{len(pairs)}`","- Schemars projection: `byte-bound`","- Automatic redispatch after uncertainty: `false`","- Public release: `false`","","| Module | API | State | Errors | Compatibility |","| --- | --- | --- | --- | --- |"]
+    lines=["# Module Contract Status","","<!-- GENERATED BY tools/contracts/generate_module_contracts.py. DO NOT EDIT. -->","",f"- Modules: `{len(records)}`","- API/state/error schemas: `3 per module`","- Shared valid vectors: `3 per module`",f"- Shared invalid vectors: `{INVALID_VECTOR_COUNT} per module`",f"- Producer/consumer pairs: `{len(pairs)}`","- Schemars projection: `byte-bound`","- Automatic redispatch after uncertainty: `false`","- Public release: `false`","","| Module | API | State | Errors | Compatibility |","| --- | --- | --- | --- | --- |"]
     for record in records:
         a=record["artifacts"]
         lines.append(f"| `{record['module_id']}` | `{a['api']}` | `{a['state']}` | `{a['errors']}` | `{a['compatibility']}` |")
@@ -1759,7 +1844,7 @@ def verify_outputs(root: Path, outputs: dict[str, bytes]) -> None:
                 rejected+=1
             else:
                 raise ContractError(f"invalid vector accepted: {path}")
-        require(rejected==24,f"{record['module_id']} invalid vector count differs: {rejected}")
+        require(rejected==INVALID_VECTOR_COUNT,f"{record['module_id']} invalid vector count differs: {rejected}")
     subprocess.run([sys.executable,str(root / ANDROID_VERIFY_PATH)],cwd=root,check=True,timeout=60)
 
 

@@ -1155,6 +1155,7 @@ fn process_core_frame_body<W: Write>(
     journal: &mut TransportJournal,
     handshake: &mut TransportHandshake,
 ) -> Result<(), String> {
+    flow.observe_inspection(&frame);
     update_durable_ready(&frame, durable_ready);
 
     if frame_reports_unavailable(&frame) && flow.is_active() {
@@ -1196,7 +1197,7 @@ fn process_core_frame_body<W: Write>(
         let resync_already_announced = flow.gap.is_some();
         if let Some(gap) = flow.terminal_gap() {
             if !resync_already_announced {
-                write_resync_required(delivery, output, active.as_ref(), &gap)?;
+                write_resync_required(delivery, output, active.as_ref(), &gap, flow.snapshot().map(|snapshot| snapshot.next_control_seq))?;
             }
             attach_gap_to_payload(&mut frame.payload, &gap);
         }
@@ -1244,7 +1245,7 @@ fn process_core_frame_body<W: Write>(
         Ok(SubmitResult::Deliver(frame)) => delivery.send(&frame)?,
         Ok(SubmitResult::Queued | SubmitResult::Suppressed) => {}
         Ok(SubmitResult::GapStarted(gap)) => {
-            write_resync_required(delivery, output, active.as_ref(), &gap)?;
+            write_resync_required(delivery, output, active.as_ref(), &gap, flow.snapshot().map(|snapshot| snapshot.next_control_seq))?;
         }
         Err(error) => {
             let released = flow.disable_and_release();
@@ -1512,6 +1513,9 @@ fn handle_flow_control<W: Write>(
     let (disposition, snapshot) = match flow.apply_control(&parsed) {
         Ok(result) => result,
         Err(error) => {
+            if let Some(gap) = flow.gap.as_ref() {
+                write_resync_required(delivery, output, Some(context), gap, flow.snapshot().map(|snapshot| snapshot.next_control_seq))?;
+            }
             return write_local_error_or_defer(
                 delivery,
                 output,
@@ -1534,6 +1538,8 @@ fn handle_flow_control<W: Write>(
         "buffered_frames": flow.queue.len(),
         "buffered_bytes": flow.queued_bytes,
         "resync_required": flow.gap.is_some(),
+        "stream_gap": flow.gap.as_ref().map(ResyncGap::payload),
+        "resync_protocol": SCOPED_RESYNC_PROTOCOL,
         "persist_before_flow": true,
         "automatic_redispatch": false
     });

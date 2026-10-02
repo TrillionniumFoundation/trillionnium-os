@@ -46,6 +46,7 @@ pub(crate) fn validate_shell_request(
         ShellInvocation::Argv(argv) => validate_argv(argv, limits, "shell argv")?,
     }
     let _normalized_timeout = normalized_timeout(request.timeout, limits)?;
+    crate::resources::shell_owned(request, limits)?;
     Ok(())
 }
 
@@ -108,6 +109,7 @@ pub(crate) fn validate_adb_request(
         true,
     )?;
     let _normalized_timeout = normalized_timeout(request.timeout, limits)?;
+    crate::resources::adb_owned(request, limits)?;
     Ok(())
 }
 

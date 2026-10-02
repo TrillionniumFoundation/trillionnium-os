@@ -146,12 +146,19 @@ pub fn execute_shell<F>(
     request: ShellExecRequest,
     limits: &MechanicalLimits,
     cancellation: &CancellationToken,
+    inherited_environment: &[(std::ffi::OsString, std::ffi::OsString)],
     sink: F,
 ) -> Result<ExecutionTerminal>
 where
     F: FnMut(ExecutionEvent),
 {
-    execute_process(shell_spec(request, limits)?, limits, cancellation, sink)
+    execute_process(
+        shell_spec(request, limits)?,
+        limits,
+        cancellation,
+        inherited_environment,
+        sink,
+    )
 }
 
 /// Execute a shell request attached to a real POSIX pseudo-terminal.
@@ -165,6 +172,7 @@ pub fn execute_shell_pty<F>(
     size: PtySize,
     limits: &MechanicalLimits,
     cancellation: &CancellationToken,
+    inherited_environment: &[(std::ffi::OsString, std::ffi::OsString)],
     sink: F,
 ) -> Result<ExecutionTerminal>
 where
@@ -173,13 +181,14 @@ where
     size.validate()?;
     let mut spec = shell_spec(request, limits)?;
     spec.io_mode = ProcessIoMode::Pty(size);
-    execute_process(spec, limits, cancellation, sink)
+    execute_process(spec, limits, cancellation, inherited_environment, sink)
 }
 
 pub(crate) fn execute_process<F>(
     spec: ProcessSpec,
     limits: &MechanicalLimits,
     cancellation: &CancellationToken,
+    inherited_environment: &[(std::ffi::OsString, std::ffi::OsString)],
     mut sink: F,
 ) -> Result<ExecutionTerminal>
 where
@@ -246,6 +255,11 @@ where
     };
 
     let mut command = Command::new(&spec.program);
+    command.env_clear().envs(
+        inherited_environment
+            .iter()
+            .map(|(key, value)| (key, value)),
+    );
     command.env_clear();
     for &key in PROCESS_INHERITED_ENV_ALLOWLIST {
         if let Some(value) = std::env::var_os(key) {

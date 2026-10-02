@@ -9,8 +9,8 @@ use serde_json::{Map, Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_call_registry::{CallKey, CallSnapshot};
 use trillionnium_owner_open_runtime::{
-    AdbExecRequest, ExecutionEvent, ExecutionEventKind, ExecutionTerminal,
-    MAX_RUNTIME_REQUEST_TIMEOUT, PtySize, ShellExecRequest, ShellInvocation, StreamKind,
+    AdbExecRequest, ExecutionTerminal, MAX_RUNTIME_REQUEST_TIMEOUT, PtySize, ShellExecRequest,
+    ShellInvocation,
 };
 use trillionnium_owner_open_tool_bridge::{BoundToolCall, DirectToolRequest};
 use trillionnium_owner_open_turn_loop::{ProviderEvent, ProviderHost, ToolOutcome, TurnRequest};
@@ -56,14 +56,15 @@ pub(crate) fn handle_provider_event(value: &Value, host: &mut ProviderHost<'_>) 
 }
 
 pub(crate) fn decode_bound_tool_call(
-    envelope: &Value,
+    mut envelope: Value,
     turn: &TurnRequest,
     config: &JsonlProviderConfig,
 ) -> Result<BoundToolCall> {
     let raw_call = envelope
-        .get("call")
-        .cloned()
+        .get_mut("call")
+        .map(Value::take)
         .ok_or_else(|| JsonlProviderError::Protocol("tool.call has no call object".to_string()))?;
+    drop(envelope);
     let raw_object = raw_call.as_object().ok_or_else(|| {
         JsonlProviderError::Protocol("tool.call call member must be an object".to_string())
     })?;
@@ -97,7 +98,14 @@ pub(crate) fn decode_bound_tool_call(
     let claimed_binding = call.binding_fingerprint.clone();
     call.request_sha256 = None;
     call.binding_fingerprint = None;
-    let canonical_request = canonical_request_bytes(&call, raw_object)?;
+    let presence = CanonicalPresence {
+        null_target: raw_object.get("target").is_some_and(Value::is_null)
+            || raw_object.get("target_id").is_some_and(Value::is_null),
+        env_object: raw_object.get("env").is_some_and(Value::is_object),
+        null_cwd: raw_object.get("cwd").is_some_and(Value::is_null),
+    };
+    drop(raw_call);
+    let canonical_request = canonical_request_bytes(&call, presence)?;
     let binding_fingerprint = configuration_fingerprint(&call, config)?;
     if claimed_binding
         .as_deref()
@@ -151,54 +159,26 @@ pub(crate) fn decode_bound_tool_call(
     }
 }
 
-pub(crate) fn encode_tool_outcome(seq: u64, call_id: &str, outcome: ToolOutcome) -> Value {
-    match outcome {
-        ToolOutcome::Executed {
-            generation,
-            events,
-            terminal,
-            observation_sha256,
-            snapshot,
-        } => json!({
-            "protocol": PROVIDER_PROTOCOL,
-            "kind": "tool.result",
-            "seq": seq,
-            "call_id": call_id,
-            "status": "terminal",
-            "generation": generation,
-            "events": events.iter().map(encode_execution_event).collect::<Vec<_>>(),
-            "terminal": encode_terminal(&terminal),
-            "observation_sha256": observation_sha256,
-            "registry": encode_snapshot(&snapshot)
-        }),
-        ToolOutcome::Existing(snapshot) => json!({
-            "protocol": PROVIDER_PROTOCOL,
-            "kind": "tool.result",
-            "seq": seq,
-            "call_id": call_id,
-            "status": "existing",
-            "registry": encode_snapshot(&snapshot)
-        }),
-        ToolOutcome::Inhibited(snapshot) => json!({
-            "protocol": PROVIDER_PROTOCOL,
-            "kind": "tool.result",
-            "seq": seq,
-            "call_id": call_id,
-            "status": "inhibited",
-            "registry": encode_snapshot(&snapshot)
-        }),
-    }
+pub(crate) fn encode_tool_outcome(
+    seq: u64,
+    call_id: &str,
+    outcome: ToolOutcome,
+) -> super::tool_result::Response {
+    super::tool_result::Response::Tool(Box::new(super::tool_result::ToolResult::new(
+        seq, call_id, outcome,
+    )))
 }
 
-pub(crate) fn encode_tool_error(seq: u64, call_id: &str, status: &str, error: &str) -> Value {
-    json!({
-        "protocol": PROVIDER_PROTOCOL,
-        "kind": "tool.result",
-        "seq": seq,
-        "call_id": call_id,
-        "status": status,
-        "error": error
-    })
+pub(crate) fn encode_tool_error(
+    seq: u64,
+    call_id: &str,
+    status: &str,
+    error: &str,
+) -> super::tool_result::Response {
+    super::tool_result::Response::Value(json!({
+        "protocol": PROVIDER_PROTOCOL, "kind": "tool.result", "seq": seq,
+        "call_id": call_id, "status": status, "error": error
+    }))
 }
 
 pub(crate) fn required_string<'a>(value: &'a Value, field: &str) -> Result<&'a str> {
@@ -650,12 +630,25 @@ const VOLATILE_CALL_MEMBERS: &[&str] = &[
     "resolved_target",
 ];
 
-fn canonical_request_bytes(call: &ToolCall, raw_object: &Map<String, Value>) -> Result<Vec<u8>> {
+struct CanonicalPresence {
+    null_target: bool,
+    env_object: bool,
+    null_cwd: bool,
+}
+
+fn canonical_request_bytes(call: &ToolCall, presence: CanonicalPresence) -> Result<Vec<u8>> {
     let value = serde_json::to_value(call)
         .map_err(|error| JsonlProviderError::Protocol(error.to_string()))?;
-    let mut object = value.as_object().cloned().ok_or_else(|| {
-        JsonlProviderError::Protocol("normalized tool.call is not an object".to_string())
-    })?;
+    if super::strict_json::owned_bytes(&value)? > super::MAX_JSONL_PROVIDER_JSON_BYTES {
+        return Err(JsonlProviderError::Protocol(
+            "normalized tool.call exceeds its owned JSON budget".into(),
+        ));
+    }
+    let Value::Object(mut object) = value else {
+        return Err(JsonlProviderError::Protocol(
+            "normalized tool.call is not an object".into(),
+        ));
+    };
 
     for member in VOLATILE_CALL_MEMBERS {
         object.remove(*member);
@@ -663,21 +656,18 @@ fn canonical_request_bytes(call: &ToolCall, raw_object: &Map<String, Value>) -> 
     // The direct-tools schema has one canonical target spelling.  Explicit
     // null is retained when the caller sent only the alias; an omitted target
     // remains omitted, so a configured target is never invented here.
-    if (raw_object.get("target").is_some_and(Value::is_null)
-        || raw_object.get("target_id").is_some_and(Value::is_null))
-        && !object.contains_key("target_id")
-    {
+    if presence.null_target && !object.contains_key("target_id") {
         object.insert("target_id".to_string(), Value::Null);
     }
     // serde's skip-if-empty representation cannot distinguish an explicitly
     // supplied empty env object from omission.  Preserve that wire choice;
     // it is an extension-compatible value and costs no execution semantics.
-    if raw_object.get("env").is_some_and(Value::is_object) && !object.contains_key("env") {
-        object.insert("env".to_string(), raw_object["env"].clone());
+    if presence.env_object && !object.contains_key("env") {
+        object.insert("env".to_string(), Value::Object(Map::new()));
     }
     // An explicit null cwd is meaningful under the schema's null-preservation
     // rule even though ToolCall stores it as None.
-    if raw_object.get("cwd").is_some_and(Value::is_null) {
+    if presence.null_cwd {
         object.insert("cwd".to_string(), Value::Null);
     }
 
@@ -693,8 +683,9 @@ fn canonical_request_bytes(call: &ToolCall, raw_object: &Map<String, Value>) -> 
         json!(DIRECT_PROTOCOL_VERSION),
     );
 
-    serde_jcs::to_vec(&Value::Object(object))
-        .map_err(|error| JsonlProviderError::Protocol(error.to_string()))
+    let value = Value::Object(object);
+    super::encoded_line_size(&value, super::MAX_JSONL_PROVIDER_JSON_BYTES)?;
+    serde_jcs::to_vec(&value).map_err(|error| JsonlProviderError::Protocol(error.to_string()))
 }
 
 fn decode_timeout(value: Option<i64>) -> Result<Option<Duration>> {
@@ -744,37 +735,7 @@ fn configuration_fingerprint(call: &ToolCall, config: &JsonlProviderConfig) -> R
     Ok(hex_lower(&hasher.finalize()))
 }
 
-fn encode_execution_event(event: &ExecutionEvent) -> Value {
-    let body = match &event.kind {
-        ExecutionEventKind::Accepted => json!({"kind": "accepted"}),
-        ExecutionEventKind::Started { pid } => json!({"kind": "started", "pid": pid}),
-        ExecutionEventKind::Output { stream, bytes } => json!({
-            "kind": "output",
-            "stream": match stream {
-                StreamKind::Stdout => "stdout",
-                StreamKind::Stderr => "stderr",
-                StreamKind::Pty => "pty",
-            },
-            "encoding": "base64",
-            "data": BASE64_STANDARD.encode(bytes),
-            "byte_count": bytes.len()
-        }),
-        ExecutionEventKind::Terminal(terminal) => json!({
-            "kind": "terminal",
-            "terminal": encode_terminal(terminal)
-        }),
-    };
-    json!({
-        "call_id": &event.call_id,
-        "target_id": &event.target_id,
-        "tool": event.tool.as_str(),
-        "seq": event.seq,
-        "elapsed_ms": event.elapsed_ms,
-        "event": body
-    })
-}
-
-fn encode_terminal(terminal: &ExecutionTerminal) -> Value {
+pub(crate) fn encode_terminal(terminal: &ExecutionTerminal) -> Value {
     json!({
         "kind": terminal.kind.as_str(),
         "exit_code": terminal.exit_code,
@@ -787,7 +748,7 @@ fn encode_terminal(terminal: &ExecutionTerminal) -> Value {
     })
 }
 
-fn encode_snapshot(snapshot: &CallSnapshot) -> Value {
+pub(crate) fn encode_snapshot(snapshot: &CallSnapshot) -> Value {
     json!({
         "call_id": &snapshot.key.call_id,
         "request_sha256": &snapshot.request.request_sha256,
@@ -852,8 +813,8 @@ mod tests {
                 "pty": {"enabled": true, "rows": 24, "cols": 80, "term": "xterm-256color"}
             }
         });
-        let first = decode_bound_tool_call(&boolean, &turn(), &config).unwrap();
-        let second = decode_bound_tool_call(&object, &turn(), &config).unwrap();
+        let first = decode_bound_tool_call(boolean, &turn(), &config).unwrap();
+        let second = decode_bound_tool_call(object, &turn(), &config).unwrap();
         assert_eq!(first.canonical_request, second.canonical_request);
         assert_eq!(first.request_sha256, second.request_sha256);
         assert_eq!(first.pty, second.pty);
@@ -871,7 +832,7 @@ mod tests {
                 "pty": {"enabled": true}
             }
         });
-        let bound = decode_bound_tool_call(&call, &turn(), &config).unwrap();
+        let bound = decode_bound_tool_call(call, &turn(), &config).unwrap();
         let canonical: Value = serde_json::from_slice(&bound.canonical_request).unwrap();
         assert_eq!(canonical["env"]["TERM"], Value::Null);
         assert_eq!(canonical["pty"]["term"], Value::Null);
@@ -889,7 +850,7 @@ mod tests {
                 "target_id": null
             }
         });
-        let bound = decode_bound_tool_call(&call, &turn(), &config).unwrap();
+        let bound = decode_bound_tool_call(call, &turn(), &config).unwrap();
         let canonical: Value = serde_json::from_slice(&bound.canonical_request).unwrap();
         assert_eq!(canonical["target_id"], Value::Null);
         assert!(canonical.get("target").is_none());

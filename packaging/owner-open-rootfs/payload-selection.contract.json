@@ -13,7 +13,10 @@
     "workflow": ".github/workflows/g1-exact-head-source.yml"
   },
   "implementation_helpers": [
-    "tools/owner-open/build_owner_open_rootfs_image_release.py"
+    "tools/owner-open/build_owner_open_rootfs_image_release.py",
+    "crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py",
+    "tools/owner-open/jsonl_provider_runtime.py",
+    "crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py"
   ],
   "superseded_drafts": [
     "tools/owner-open/stage_owner_open_rootfs_payload.py",

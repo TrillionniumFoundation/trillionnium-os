@@ -6,13 +6,15 @@
     "fencing_token": {
       "maxLength": 512,
       "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+(?![\\s\\S])",
       "type": "string",
       "x-trillionnium-forbidUnicodeControls": true,
       "x-trillionnium-maxUtf8Bytes": 512
     },
     "host_epoch": {
       "format": "uint64",
-      "minimum": 0.0,
+      "maximum": 18446744073709551615,
+      "minimum": 0,
       "type": "integer"
     },
     "module_id": {
@@ -22,6 +24,7 @@
     "operation_id": {
       "maxLength": 256,
       "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+(?![\\s\\S])",
       "type": "string",
       "x-trillionnium-forbidUnicodeControls": true,
       "x-trillionnium-maxUtf8Bytes": 256
@@ -29,6 +32,7 @@
     "ordering_key": {
       "maxLength": 512,
       "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+(?![\\s\\S])",
       "type": "string",
       "x-trillionnium-forbidUnicodeControls": true,
       "x-trillionnium-maxUtf8Bytes": 512
@@ -38,7 +42,7 @@
       "type": "object"
     },
     "request_digest": {
-      "pattern": "^[0-9a-f]{64}$",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
       "type": "string"
     },
     "schema": {
@@ -47,7 +51,8 @@
     },
     "writer_epoch": {
       "format": "uint64",
-      "minimum": 0.0,
+      "maximum": 18446744073709551615,
+      "minimum": 0,
       "type": "integer"
     }
   },

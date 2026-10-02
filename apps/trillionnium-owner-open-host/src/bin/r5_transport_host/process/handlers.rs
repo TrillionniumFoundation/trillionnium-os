@@ -15,6 +15,9 @@ fn augment_core_frame(
             Value::String(HOST_IMPLEMENTATION_V5.to_string()),
         );
         payload.insert("transport_flow_control".to_string(), Value::Bool(true));
+        payload.insert("resync_protocols".to_string(), json!([SCOPED_RESYNC_PROTOCOL]));
+        payload.insert("legacy_numeric_resume_after_gap".to_string(), Value::Bool(false));
+        payload.insert("max_resync_cursor_scopes".to_string(), json!(MAX_RESYNC_CURSOR_SCOPES));
         payload.insert(
             "flow_control_requires_durable_store".to_string(),
             Value::Bool(true),
@@ -116,8 +119,11 @@ fn write_resync_required<W: Write>(
     output: &mut TransportOutput,
     context: Option<&TurnContext>,
     gap: &ResyncGap,
+    next_control_seq: Option<u64>,
 ) -> Result<(), String> {
-    let frame = output.local_frame(FRAME_STREAM_RESYNC_REQUIRED, gap.payload(), context);
+    let mut payload = gap.payload();
+    payload["next_control_seq"] = json!(next_control_seq);
+    let frame = output.local_frame(FRAME_STREAM_RESYNC_REQUIRED, payload, context);
     delivery.send(&frame)
 }
 

@@ -2,9 +2,9 @@
 
 <!-- GENERATED. DO NOT EDIT. -->
 
-- Total: `21`
+- Total: `22`
 - OPEN: `0`
-- SOURCE_CLOSED_PENDING_EVIDENCE: `13`
+- SOURCE_CLOSED_PENDING_EVIDENCE: `14`
 - EXTERNAL_HOLD: `7`
 - CLOSED: `1`
 
@@ -21,7 +21,8 @@
 | `GAP-INSTALLED-CODEX-001` | `P0` | `integration` | `EXTERNAL_HOLD` | `L2` | MOD-PROVIDER, MOD-ROOTLINUX | Qualify exact installed Codex bytes, identity and same-turn tool callbacks. |
 | `GAP-JOB-ADMISSION-001` | `P0` | `correctness` | `CLOSED` | `L1` | MOD-JOB-RUNTIME | Reserve finite capacity before spawn and converge every post-spawn failure. |
 | `GAP-JOURNAL-CONVERGENCE-001` | `P0` | `correctness` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L5` | MOD-EVENT-STORE, MOD-JOB-RUNTIME | Prove storage failure and corruption converge without false no-start claims. |
-| `GAP-PERF-SYSTEM-BASELINE-001` | `P0` | `performance` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-TELEMETRY, MOD-GLOBAL-CONTROL, MOD-BROKER, MOD-JOB-RUNTIME, MOD-EVENT-STORE | Establish repeatable mixed-workload throughput, latency, resource and recovery baselines. |
+| `GAP-PERF-L2-BASELINE-001` | `P0` | `performance` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-TELEMETRY, MOD-GLOBAL-CONTROL, MOD-BROKER, MOD-JOB-RUNTIME, MOD-EVENT-STORE | Establish repeatable installed WL-01 through WL-10 latency, resource and recovery baselines. |
+| `GAP-PERF-SYSTEM-BASELINE-001` | `P0` | `performance` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L5` | MOD-TELEMETRY, MOD-GLOBAL-CONTROL, MOD-BROKER, MOD-JOB-RUNTIME, MOD-EVENT-STORE | Complete all twelve system workloads with installed, physical and destructive evidence at their declared levels. |
 | `GAP-PHYSICAL-ADB-001` | `P0` | `integration` | `EXTERNAL_HOLD` | `L4` | MOD-ADB, MOD-ANDROID | Prove ordinary ADB and visible effects on an authorized physical device. |
 | `GAP-PROCESS-LIFECYCLE-001` | `P0` | `correctness` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L2` | MOD-TOOL-RUNTIME, MOD-JOB-RUNTIME, MOD-PROVIDER | Prove parent-death, reader-before-writer and descendant cleanup on installed target. |
 | `GAP-PRODUCT-ENTRYPOINT-001` | `P0` | `integration` | `SOURCE_CLOSED_PENDING_EVIDENCE` | `L3` | MOD-TRANSPORT, MOD-EXECUTION-CORE, MOD-ROOTLINUX, MOD-ANDROID | One install manifest must select the product entrypoint and internal children. |

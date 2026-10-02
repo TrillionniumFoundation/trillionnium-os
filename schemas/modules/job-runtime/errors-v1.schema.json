@@ -2,6 +2,56 @@
   "$id": "urn:trillionnium:job_error_v1",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "class": {
+            "enum": [
+              "REJECTED_BEFORE_EFFECT",
+              "TRANSIENT_BEFORE_EFFECT",
+              "TERMINAL_FAILURE",
+              "INTERNAL_INVARIANT"
+            ],
+            "type": "string"
+          },
+          "retry_disposition": {
+            "enum": [
+              "MAY_RETRY_BEFORE_EFFECT",
+              "DO_NOT_RETRY"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "if": {
+        "properties": {
+          "effect_uncertain": {
+            "const": true,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "effect_uncertain"
+        ],
+        "type": "object"
+      },
+      "then": {
+        "properties": {
+          "class": {
+            "const": "EFFECT_UNCERTAIN",
+            "type": "string"
+          },
+          "retry_disposition": {
+            "const": "RECONCILE_REQUIRED_NO_AUTOMATIC_REDISPATCH",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  ],
   "definitions": {
     "ModuleErrorClassV1": {
       "enum": [
@@ -29,6 +79,7 @@
     "code": {
       "maxLength": 128,
       "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+(?![\\s\\S])",
       "type": "string",
       "x-trillionnium-forbidUnicodeControls": true,
       "x-trillionnium-maxUtf8Bytes": 128
@@ -43,6 +94,7 @@
     "operation_id": {
       "maxLength": 256,
       "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+(?![\\s\\S])",
       "type": "string",
       "x-trillionnium-forbidUnicodeControls": true,
       "x-trillionnium-maxUtf8Bytes": 256
@@ -50,12 +102,13 @@
     "original_cause": {
       "maxLength": 4096,
       "minLength": 1,
+      "pattern": "^[^\\u0000-\\u001f\\u007f-\\u009f]+(?![\\s\\S])",
       "type": "string",
       "x-trillionnium-forbidUnicodeControls": true,
       "x-trillionnium-maxUtf8Bytes": 4096
     },
     "request_digest": {
-      "pattern": "^[0-9a-f]{64}$",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
       "type": "string"
     },
     "retry_disposition": {

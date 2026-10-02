@@ -9,6 +9,7 @@ physical effect occurred.
 from __future__ import annotations
 
 import argparse
+import ast
 from dataclasses import dataclass, field
 import json
 from pathlib import Path
@@ -39,6 +40,43 @@ RUNTIME_CLAIM = "ANDROID_OWNER_OPEN_SOURCE_IMPLEMENTED_NOT_BUILT"
 MODULE_PATTERN = re.compile(r'^\s*name:\s*"([A-Za-z0-9_.+-]+)"\s*,?\s*$', re.MULTILINE)
 SERVICE_PATTERN = re.compile(r"^service\s+([A-Za-z0-9_.-]+)\s+", re.MULTILINE)
 SECLABEL_PATTERN = re.compile(r"^\s*seclabel\s+(u:r:[A-Za-z0-9_]+:s0)\s*$", re.MULTILINE)
+STATE_SUBDIRECTORIES = ("broker", "home", "codex-home", "provider-sessions")
+RUNTIME_PYTHON_ROOTS = (
+    "owner_open_rootlinux_supervisor", "owner_open_connection_broker",
+    "codex_owner_open_mcp", "supervise_codex_mcp_qualification_release",
+    "adb_smart_socket_relay_release", "qualify_owner_open_adb_release",
+    "codex_app_server_provider",
+)
+
+
+def cpp_inventory(text: str, name: str) -> set[str]:
+    tokens = re.compile(r'"(?:\\.|[^"\\])*"|//[^\n]*|/\*.*?\*/', re.DOTALL)
+    visible = tokens.sub(lambda match: match[0] if match[0].startswith('"') else "", text)
+    match = re.search(
+        rf"std::array<std::string_view,\s*(\d+)>\s+{re.escape(name)}\s*=\s*\{{(.*?)\}};",
+        visible, re.DOTALL,
+    )
+    if match is None:
+        raise ValueError(f"missing literal {name} inventory")
+    literals = re.findall(r'"(?:\\.|[^"\\])*"', match[2])
+    values = [json.loads(value) for value in literals]
+    residue = re.sub(r'"(?:\\.|[^"\\])*"|,|\s+', "", match[2])
+    if residue or len(values) != int(match[1]) or len(set(values)) != len(values):
+        raise ValueError(f"invalid literal {name} inventory")
+    return set(values)
+
+
+def python_inventory(text: str, name: str) -> set[str]:
+    for node in ast.parse(text).body:
+        if isinstance(node, ast.Assign) and any(
+            isinstance(target, ast.Name) and target.id == name for target in node.targets
+        ):
+            values = ast.literal_eval(node.value)
+            if (not isinstance(values, tuple) or any(not isinstance(value, str) for value in values)
+                    or len(values) != len(set(values))):
+                raise ValueError(f"invalid literal {name} inventory")
+            return set(values)
+    raise ValueError(f"missing literal {name} inventory")
 
 
 class DuplicateMember(ValueError):
@@ -423,6 +461,83 @@ def verify(root: Path) -> Report:
     missing_bootstrap = sorted(value for value in bootstrap_required if value not in bootstrap_text)
     if missing_bootstrap:
         report.errors.append(f"bootstrap does not bind required payload paths: {missing_bootstrap}")
+    # Read the actual admission inventory, rather than letting a required path
+    # mentioned in a comment or an unrelated executable list satisfy closure.
+    expected_inventory = {
+        str(item.get("path")) for item in
+        object_list(payload.get("required_entries"), "rootlinux required_entries", report)
+    }
+    try:
+        native_inventory = cpp_inventory(bootstrap_text, "kRequiredPaths")
+        native_executables = cpp_inventory(bootstrap_text, "kRequiredExecutablePaths")
+        if native_inventory != expected_inventory:
+            report.errors.append("bootstrap does not bind required payload paths: inventory differs from profile")
+        for relative in (
+            Path("tools/owner-open/verify_owner_open_materialized_payload.py"),
+            ANDROID_ROOT / "tools/verify_owner_open_materialized_payload.py",
+        ):
+            text = load_text(root / relative, "payload admission verifier")
+            if python_inventory(text, "REQUIRED_PAYLOAD_PATHS") != native_inventory:
+                report.errors.append(f"payload admission required inventory differs: {relative}")
+            if python_inventory(text, "REQUIRED_EXECUTABLE_PATHS") != native_executables:
+                report.errors.append(f"payload admission executable inventory differs: {relative}")
+    except (OSError, ValueError, SyntaxError, TypeError) as error:
+        report.errors.append(f"payload admission inventory is invalid: {error}")
+
+    # The supervisor's flattened Python directory must contain every project
+    # import. The declared sources cover the tools and the provider-owned crate;
+    # unknown non-stdlib imports cannot silently become external dependencies.
+    python_sources = {
+        Path(item["path"]).stem: Path(item["path"])
+        for item in object_list(profile.get("required_source_artifacts"), "required sources", report)
+        if isinstance(item.get("path"), str) and item["path"].endswith(".py")
+    }
+    pending = list(RUNTIME_PYTHON_ROOTS)
+    visited: set[str] = set()
+    while pending:
+        name = pending.pop()
+        if name in visited:
+            continue
+        visited.add(name)
+        relative = python_sources.get(name)
+        destination = f"/usr/libexec/trillionnium/owner-open/{name}.py"
+        if relative is None or destination not in expected_inventory:
+            report.errors.append(f"runtime Python helper is not bound in source/payload inventory: {name}")
+            continue
+        try:
+            parsed = ast.parse(load_text(root / relative, "runtime Python helper"))
+        except (OSError, ValueError, SyntaxError) as error:
+            report.errors.append(f"runtime Python helper cannot be inspected: {name}: {error}")
+            continue
+        for node in ast.walk(parsed):
+            if isinstance(node, ast.Import):
+                imports = [item.name.split(".")[0] for item in node.names]
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                imports = [node.module.split(".")[0]]
+            else:
+                continue
+            for imported in imports:
+                if imported in python_sources:
+                    pending.append(imported)
+                elif imported not in sys.stdlib_module_names:
+                    report.errors.append(f"runtime Python import is unbound: {name} -> {imported}")
+
+    # These private state children are prepared by init before data_ready and
+    # by the bootstrap before binding state into the immutable rootfs image.
+    post_fs = re.search(r"(?ms)^on post-fs-data\s*\n(.*?)(?=^on |^service |\Z)", init_text)
+    commands = [] if post_fs is None else [
+        line.split("#", 1)[0].strip() for line in post_fs[1].splitlines()
+    ]
+    ready_index = commands.index("setprop trillionnium.owner_open.data_ready 1") if (
+        "setprop trillionnium.owner_open.data_ready 1" in commands
+    ) else -1
+    for child in STATE_SUBDIRECTORIES:
+        path = f"/data/trillionnium/owner-open/state/{child}"
+        command = f"mkdir {path} 0700 root root"
+        if command not in commands or ready_index < 0 or commands.index(command) >= ready_index:
+            report.errors.append(f"init does not prepare private state directory before data_ready: {path}")
+        if f'EnsureDirectory("{path}", 0700)' not in bootstrap_text:
+            report.errors.append(f"bootstrap does not prepare private state directory: {path}")
     for marker in (
         "unsetenv(\"ANDROID_SERIAL\")",
         "unsetenv(\"ADB_SERVER_PORT\")",
@@ -530,6 +645,8 @@ def verify(root: Path) -> Report:
         "ready_property": runtime_profile.get("ready_property"),
         "emergency_stop_property": runtime_profile.get("emergency_stop_property"),
         "source_artifact_count": len(source_paths),
+        "runtime_python_helper_count": len(visited),
+        "rootfs_required_entry_count": len(expected_inventory),
         "required_module_count": len(module_names),
         "android_bp_modules": sorted(bp_modules),
         "product_modules": sorted(product_modules),

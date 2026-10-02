@@ -2,7 +2,7 @@
 
 Status: **ACTIVE CANDIDATE**  
 Program revision: **2026-08-31-g1**  
-Documentation revision: **1.3.0**
+Documentation revision: **1.4.0**
 Semantic authority: **owner-open-semantic-v1**  
 Architecture authority: **modular-control-plane-v1**  
 Machine catalog navigation: `machine/`
