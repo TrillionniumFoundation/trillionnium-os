@@ -9,8 +9,8 @@
   },
   "generator": {
     "path": "tools/contracts/generate_module_contracts.py",
-    "sha256": "70190d1d78194100e1a72766bc690a9471e72dc5a745cbf4b2640ab9c62eb4b7",
-    "size": 110483
+    "sha256": "4248615720b4fd7e03eb915d8de8f87ef6a032199a647112a2992c2e28b92017",
+    "size": 110605
   },
   "module_count": 16,
   "modules": [
@@ -52,8 +52,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -179,8 +179,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -424,8 +424,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -494,8 +494,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -534,8 +534,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -592,8 +592,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -638,8 +638,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -764,8 +764,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -812,8 +812,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -919,8 +919,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -981,8 +981,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -1026,8 +1026,8 @@
       "test_sources": [
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -1091,8 +1091,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -1151,8 +1151,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -1272,8 +1272,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [
@@ -1328,8 +1328,8 @@
         },
         {
           "path": "tools/tests/test_module_contracts.py",
-          "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-          "size": 41737
+          "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+          "size": 43851
         }
       ],
       "write_versions": [

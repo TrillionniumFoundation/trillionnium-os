@@ -307,8 +307,7 @@ jobs:
           test "$(git --no-replace-objects rev-parse HEAD^1)" = "$EVENT_BASE_SHA"
           test "$(git --no-replace-objects rev-parse HEAD^2)" = "$EVENT_HEAD_SHA"
 
-          python3 -m py_compile tools/docs/generate_global_docs.py tools/docs/verify_global_docs.py
-          python3 tools/docs/generate_global_docs.py --check
+          # The verifier includes byte-exact generated-document checks.
           python3 tools/docs/verify_global_docs.py
           TLC_JAR="${RUNNER_TEMP:?}/tla2tools-1.7.4.jar"
           curl --proto '=https' --tlsv1.2 --fail --show-error --location --retry 3 \
@@ -320,17 +319,10 @@ jobs:
             '936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88' "$TLC_JAR" | sha256sum --check --strict
           python3 tools/docs/verify_effect_lifecycle.py --model-check --tlc-jar "$TLC_JAR" --json \
             | tee "${RUNNER_TEMP:?}/g1-merge-effect-lifecycle-tlc.json"
-          # Run every repository-contained Python contract on the exact
-          # synthetic merge object.  The focused invocations below retain
-          # readable logs for the highest-risk broker/document boundaries.
+          # Run every repository-contained Python contract once on this exact
+          # synthetic merge object. Verbose output retains focused case names,
+          # including broker/document boundaries and real local process groups.
           python3 -m unittest discover -s tools/tests -p 'test*.py' -v 2>&1 | tee "${RUNNER_TEMP}/g1-merge-python.log"
-          python3 -m unittest discover -s tools/tests -p 'test_verify_global_docs_contracts.py' -v
-          python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v
-          python3 -m unittest discover -s tools/tests -p 'test_owner_open_connection_broker.py' -v
-          python3 -m unittest discover -s tools/tests -p 'test_owner_open_ingress_contract.py' -v
-          python3 -m unittest tools.tests.test_run_global_baseline -v
-          # Real local process groups; not installed-target qualification.
-          python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v
 
           cargo fmt --all -- --check
           cargo test --locked --all-targets

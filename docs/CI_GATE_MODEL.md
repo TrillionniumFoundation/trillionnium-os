@@ -50,6 +50,14 @@ evidence, not target, device or release evidence. A failed merge, changed
 ordered parent, changed merge tree, changed canonical commit, rerun-attempt
 movement or artifact movement invalidates the aggregate.
 
+Each source subject runs the complete verbose Python discovery once per job.
+Focused broker, protocol, documentation and process-lifecycle cases remain in
+that matrix; repeating them in the same job adds no independent evidence.
+Retained verbose logs identify individual cases, and pipeline failure remains
+blocking. Direct-head and canonical synthetic-merge runs are distinct subjects
+and both remain mandatory. The global documentation verifier owns its
+byte-exact generator check; callers need not repeat it first.
+
 A source gate must report the failing source property directly. It must not
 require unrelated workflows to manufacture receipts merely to prove that those
 workflows ran.

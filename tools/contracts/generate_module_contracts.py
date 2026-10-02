@@ -1809,7 +1809,10 @@ def update_setup(root: Path) -> None:
             if any(item=="docs/START_HERE.md" for item in value) and STATUS_PATH not in value: value.append(STATUS_PATH)
     visit(docset); docset_path.write_bytes(canonical_json(docset))
     start=root / "docs/START_HERE.md"; source=start.read_text(encoding="utf-8")
-    if STATUS_PATH not in source: start.write_text(source.rstrip()+f"\n\n- Executable module-contract status: [`{STATUS_PATH}`](MODULE_CONTRACT_STATUS.md)\n",encoding="utf-8")
+    # Navigation identity is the canonical relative target, not its display label.
+    target = PurePosixPath(STATUS_PATH).name
+    if f"]({target})" not in source:
+        start.write_text(source.rstrip()+f"\n\n- Executable module-contract status: [`{STATUS_PATH}`]({target})\n",encoding="utf-8")
 
 
 def write_outputs(root: Path, outputs: dict[str, bytes]) -> None:

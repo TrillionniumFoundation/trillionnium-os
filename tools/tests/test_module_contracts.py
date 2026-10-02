@@ -57,6 +57,44 @@ class ModuleContractTest(unittest.TestCase):
             self.assertTrue(module["implementation_sources"])
             self.assertTrue(module["test_sources"])
 
+    def setup_fixture(self, root: Path, navigation: str) -> Path:
+        files = {
+            "crates/trillionnium-owner-open-types/src/lib.rs": "pub mod module_contract;\n",
+            "crates/trillionnium-owner-open-types/Cargo.toml":
+                "[dependencies]\nserde.workspace = true\nserde_json.workspace = true\nschemars.workspace = true\n",
+            "docs/machine/doc-set.v1.json": json.dumps({
+                "required_files": ["docs/START_HERE.md", self.contracts.STATUS_PATH],
+                "authority_order": [self.contracts.CATALOG_PATH, self.contracts.CONTRACT_CATALOG_PATH],
+            }),
+            "docs/START_HERE.md": navigation,
+        }
+        for relative, content in files.items():
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+        return root / "docs/START_HERE.md"
+
+    def test_setup_preserves_existing_canonical_target_and_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            original = "# Start\n\n[My contract label](MODULE_CONTRACT_STATUS.md)\n\nKeep this order.\n"
+            start = self.setup_fixture(root, original)
+            self.contracts.update_setup(root)
+            self.contracts.update_setup(root)
+            self.assertEqual(start.read_text(encoding="utf-8"), original)
+
+    def test_setup_distinguishes_same_label_with_a_different_target(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            original = "# Start\n\n[`docs/MODULE_CONTRACT_STATUS.md`](OTHER_STATUS.md)\n"
+            start = self.setup_fixture(root, original)
+            self.contracts.update_setup(root)
+            first = start.read_text(encoding="utf-8")
+            self.assertTrue(first.startswith(original))
+            self.assertEqual(first.count("](" + Path(self.contracts.STATUS_PATH).name + ")"), 1)
+            self.contracts.update_setup(root)
+            self.assertEqual(start.read_text(encoding="utf-8"), first)
+
     def test_strict_parser_rejects_duplicate_nonfinite_depth_and_oversize(self) -> None:
         with self.assertRaises(self.contracts.ContractError):
             self.contracts.strict_load(b'{"a":1,"a":2}', "duplicate")

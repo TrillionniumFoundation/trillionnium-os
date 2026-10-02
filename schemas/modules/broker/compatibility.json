@@ -356,8 +356,8 @@
   "test_sources": [
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-      "size": 41737
+      "sha256": "254689dfb252b48fc7dc1cbd533b21b4437ebac16d32c9d5a304c410a9065aaf",
+      "size": 43851
     }
   ],
   "unknown_fields": "REJECT"
