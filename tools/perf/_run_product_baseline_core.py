@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import base64
+import ctypes
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
@@ -17,6 +18,7 @@ import math
 import os
 from pathlib import Path
 import platform
+import re
 import selectors
 import shlex
 import shutil
@@ -89,6 +91,10 @@ OPEN_ADMITTED_FILE: Any = None
 REOPEN_ADMITTED_IDENTITY: Any = None
 SAME_ADMITTED_OBJECT: Any = None
 MAX_PINNED_EXECUTABLE_BYTES = 512 * 1024 * 1024
+STORAGE_IDENTITY_SCHEMA = "org.trillionnium.product-host-storage-identity.v1"
+STORAGE_IDENTITY_SCOPE = "same-boot-observed-mount-filesystem-only"
+EXECUTION_CUSTODY = "verified-private-single-link-copies-v1"
+PINNED_EXECUTABLE_CUSTODY = "descriptor-rooted-private-single-link-copy-v2"
 
 
 class BenchmarkError(ValueError):
@@ -480,6 +486,251 @@ def finite_env() -> dict[str, str]:
             "HOME": "/nonexistent", "PYTHONDONTWRITEBYTECODE": "1"}
 
 
+def _read_storage_proc(path: Path, maximum: int) -> bytes:
+    with path.open("rb") as stream:
+        raw = stream.read(maximum + 1)
+    require(0 < len(raw) <= maximum, "storage metadata capture exceeded bound")
+    return raw
+
+
+def _storage_mount_id(raw: bytes) -> int:
+    values = [line.split(b":", 1)[1].strip() for line in raw.splitlines()
+              if line.startswith(b"mnt_id:")]
+    require(len(values) == 1 and values[0].isdigit() and len(values[0]) <= 20,
+            "storage descriptor mount identity is unavailable")
+    result = int(values[0])
+    require(0 < result < 2**64, "storage descriptor mount identity is invalid")
+    return result
+
+
+def _storage_mount_record(raw: bytes, mount_id: int, device: int) -> dict[str, Any]:
+    lines = raw.splitlines()
+    require(len(lines) <= 4096, "storage mount inventory exceeded bound")
+    records = []
+    seen = set()
+    for line in lines:
+        require(len(line) <= 16384, "storage mount record exceeded bound")
+        fields = line.split(b" ")
+        require(len(fields) >= 10 and fields[0].isdigit() and len(fields[0]) <= 20,
+                "storage mount record is malformed")
+        identity = int(fields[0])
+        require(0 < identity < 2**64 and identity not in seen,
+                "storage mount inventory has ambiguous identities")
+        seen.add(identity)
+        if identity == mount_id:
+            records.append((line, fields))
+    require(len(records) == 1, "storage descriptor mount is absent or ambiguous")
+    line, fields = records[0]
+    require(fields.count(b"-") == 1, "storage mount separator is ambiguous")
+    separator = fields.index(b"-")
+    require(separator >= 6 and len(fields) == separator + 4,
+            "storage mount fields are incomplete")
+    require(fields[1].isdigit() and len(fields[1]) <= 20 and
+            0 < int(fields[1]) < 2**64 and
+            all(field and not any(byte <= 32 or byte == 127 for byte in field)
+                for field in fields), "storage mount fields are malformed")
+    for encoded in fields[3:5]:
+        require(encoded.startswith(b"/"), "storage mount path is not absolute")
+        remainder = re.sub(rb"\\(?:040|011|012|134)", b"", encoded)
+        require(b"\\" not in remainder, "storage mount path escape is malformed")
+    major_minor = fields[2].split(b":")
+    require(len(major_minor) == 2 and all(value.isdigit() and len(value) <= 20
+                                        for value in major_minor),
+            "storage mount device is malformed")
+    require(tuple(map(int, major_minor)) == (os.major(device), os.minor(device)),
+            "storage descriptor and mount device disagree")
+    fs_type = fields[separator + 1]
+    require(re.fullmatch(rb"[A-Za-z0-9_.-]{1,128}", fs_type) is not None,
+            "storage filesystem type is malformed")
+    # Hash the complete kernel record, including root, source, mount options,
+    # superoptions and overlay backing paths. Do not expose those paths or
+    # potential mount-source credentials in the public artifact.
+    return {"filesystem_type": fs_type.decode("ascii"),
+            "mountinfo_record_sha256": digest(line)}
+
+
+def _storage_statfs(descriptor: int) -> dict[str, Any]:
+    # Linux LP64 statfs: seven native-word fields, two 32-bit fsid words,
+    # three native-word fields and four spare words, total 120 bytes. Never
+    # call the native function with a guessed layout on another ABI.
+    require(sys.platform == "linux" and platform.machine().lower() in
+            {"x86_64", "amd64", "aarch64", "arm64"} and
+            ctypes.sizeof(ctypes.c_void_p) == ctypes.sizeof(ctypes.c_long) == 8 and
+            ctypes.sizeof(ctypes.c_int) == 4,
+            "storage statfs ABI is unsupported")
+
+    class StatFs(ctypes.Structure):
+        _fields_ = [("kind", ctypes.c_long), ("block_size", ctypes.c_long),
+                    ("blocks", ctypes.c_ulong), ("free", ctypes.c_ulong),
+                    ("available", ctypes.c_ulong), ("files", ctypes.c_ulong),
+                    ("free_files", ctypes.c_ulong), ("fsid", ctypes.c_int * 2),
+                    ("name_length", ctypes.c_long), ("fragment_size", ctypes.c_long),
+                    ("flags", ctypes.c_long), ("spare", ctypes.c_long * 4)]
+
+    require(ctypes.sizeof(StatFs) == 120, "storage statfs layout differs")
+    function = ctypes.CDLL(None, use_errno=True).fstatfs
+    function.argtypes = [ctypes.c_int, ctypes.POINTER(StatFs)]
+    function.restype = ctypes.c_int
+    result = StatFs()
+    require(function(descriptor, ctypes.byref(result)) == 0,
+            "storage statfs probe failed")
+    fsid = [int(word) & 0xffffffff for word in result.fsid]
+    require(any(fsid) and result.block_size > 0,
+            "storage filesystem identity is unavailable")
+    return {"type_magic": int(result.kind) & 0xffffffffffffffff,
+            "fsid": fsid, "block_size": int(result.block_size),
+            "flags": int(result.flags) & 0xffffffffffffffff}
+
+
+def scratch_storage_identity(directory: Path) -> dict[str, Any]:
+    base = {"schema": STORAGE_IDENTITY_SCHEMA, "scope": STORAGE_IDENTITY_SCOPE}
+    descriptor = None
+    try:
+        descriptor = os.open(directory, os.O_RDONLY | os.O_CLOEXEC |
+                             os.O_DIRECTORY | os.O_NOFOLLOW)
+        before = os.fstat(descriptor)
+        namespace = Path("/proc/thread-self/ns/mnt").stat()
+        boot = _read_storage_proc(Path("/proc/sys/kernel/random/boot_id"), 128).strip()
+        require(re.fullmatch(rb"[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}", boot)
+                is not None, "storage boot identity is invalid")
+        fdinfo = Path(f"/proc/thread-self/fdinfo/{descriptor}")
+        mount_id = _storage_mount_id(_read_storage_proc(fdinfo, 4096))
+        mountinfo = Path("/proc/thread-self/mountinfo")
+        mount = _storage_mount_record(_read_storage_proc(mountinfo, 1024 * 1024),
+                                      mount_id, before.st_dev)
+        filesystem = _storage_statfs(descriptor)
+        after_namespace = Path("/proc/thread-self/ns/mnt").stat()
+        after = os.fstat(descriptor)
+        require((before.st_dev, before.st_ino) == (after.st_dev, after.st_ino) and
+                (namespace.st_dev, namespace.st_ino) ==
+                (after_namespace.st_dev, after_namespace.st_ino) and
+                _storage_mount_id(_read_storage_proc(fdinfo, 4096)) == mount_id and
+                _storage_mount_record(_read_storage_proc(mountinfo, 1024 * 1024),
+                                      mount_id, after.st_dev) == mount and
+                _storage_statfs(descriptor) == filesystem and
+                _read_storage_proc(Path("/proc/sys/kernel/random/boot_id"), 128).strip() == boot,
+                "storage identity changed during capture")
+        return {**base, "status": "known", "boot_id_sha256": digest(boot),
+                "mount_namespace": {"device": namespace.st_dev, "inode": namespace.st_ino},
+                "mount_id": mount_id,
+                "device": {"major": os.major(before.st_dev), "minor": os.minor(before.st_dev)},
+                "filesystem": filesystem, **mount}
+    except (BenchmarkError, OSError, ValueError, AttributeError):
+        return {**base, "status": "unavailable", "reason": "storage_probe_unavailable"}
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+
+
+def validate_storage_projection(artifact: dict[str, Any], *, known: bool = False) -> None:
+    environment = artifact.get("environment")
+    comparison = artifact.get("comparison_identity")
+    require(isinstance(environment, dict) and isinstance(comparison, dict) and
+            comparison.get("environment") == environment,
+            "storage comparison environment projection differs")
+    value = environment.get("scratch_storage_identity")
+    require(isinstance(value, dict) and value.get("schema") == STORAGE_IDENTITY_SCHEMA and
+            value.get("scope") == STORAGE_IDENTITY_SCOPE,
+            "storage identity is missing or has a different schema")
+    if value.get("status") == "unavailable":
+        require(set(value) == {"schema", "scope", "status", "reason"} and
+                value["reason"] == "storage_probe_unavailable" and
+                environment.get("scratch_filesystem") == "unavailable" and not known,
+                "storage identity is unavailable for comparison")
+        return
+    require(value.get("status") == "known" and set(value) ==
+            {"schema", "scope", "status", "boot_id_sha256", "mount_namespace", "mount_id",
+             "device", "filesystem", "filesystem_type", "mountinfo_record_sha256"},
+            "storage known identity fields differ")
+    for field in ("boot_id_sha256", "mountinfo_record_sha256"):
+        require(isinstance(value[field], str) and
+                re.fullmatch(r"[0-9a-f]{64}", value[field]) is not None,
+                "storage identity digest is invalid")
+    require(type(value["mount_id"]) is int and 0 < value["mount_id"] < 2**64,
+            "storage mount identity is invalid")
+    for field, members, minimum in (("mount_namespace", {"device", "inode"}, 1),
+                                     ("device", {"major", "minor"}, 0)):
+        item = value[field]
+        require(isinstance(item, dict) and set(item) == members and
+                all(type(number) is int and minimum <= number < 2**64
+                    for number in item.values()), "storage numeric identity is invalid")
+    fs = value["filesystem"]
+    require(isinstance(fs, dict) and set(fs) == {"type_magic", "fsid", "block_size", "flags"} and
+            all(type(fs[field]) is int and 0 <= fs[field] < 2**64
+                for field in ("type_magic", "block_size", "flags")) and fs["block_size"] > 0 and
+            isinstance(fs["fsid"], list) and len(fs["fsid"]) == 2 and
+            all(type(word) is int and 0 <= word < 2**32 for word in fs["fsid"]) and any(fs["fsid"]),
+            "storage filesystem identity is invalid")
+    require(isinstance(value["filesystem_type"], str) and
+            re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", value["filesystem_type"]) is not None and
+            environment.get("scratch_filesystem") == value["filesystem_type"],
+            "storage filesystem type is invalid")
+
+
+def validate_comparison_projection(artifact: dict[str, Any], *, known_storage: bool = False) -> None:
+    validate_storage_projection(artifact, known=known_storage)
+    configuration = artifact.get("configuration")
+    require(isinstance(configuration, dict) and set(configuration) ==
+            {"workloads", "build_profile", "concurrency", "output_bytes", "slow_read_ms",
+             "timeout_seconds", "max_regression_percent", "gate_policy_version", "repetitions", "warmup"},
+            "comparison configuration fields differ")
+    workloads = configuration["workloads"]
+    require(isinstance(workloads, list) and workloads and
+            all(isinstance(name, str) and name in WORKLOADS for name in workloads) and
+            len(set(workloads)) == len(workloads) and
+            type(configuration["repetitions"]) is int and 1 <= configuration["repetitions"] <= 100 and
+            type(configuration["warmup"]) is int and 0 <= configuration["warmup"] <= 10,
+            "comparison sampling configuration is invalid")
+    require(isinstance(configuration["build_profile"], str) and
+            configuration["build_profile"] in {"debug", "release", "custom"} and
+            type(configuration["concurrency"]) is int and 1 <= configuration["concurrency"] <= 16 and
+            type(configuration["output_bytes"]) is int and 65536 <= configuration["output_bytes"] <= 1048576,
+            "comparison configuration values are invalid")
+    for field, low, high in (("slow_read_ms", .1, 10), ("timeout_seconds", 1, 60)):
+        number = configuration[field]
+        require(type(number) in {int, float} and math.isfinite(number) and low <= number <= high,
+                "comparison numeric configuration is invalid")
+    manifest = validate_implementation_manifest(artifact.get("implementation_manifest"))
+    bootstrap = validate_bootstrap_attestation(artifact.get("bootstrap_attestation"), manifest)
+    policy = validate_gate_policy(artifact.get("gate_policy"))
+    require(configuration["max_regression_percent"] == policy["max_regression_percent"] and
+            configuration["gate_policy_version"] == policy["version"],
+            "comparison configuration does not bind gate policy")
+    executables = artifact.get("executables")
+    require(isinstance(executables, dict) and set(executables) == {"host", "core", "python", "shell", "harness"},
+            "comparison executable fields differ")
+    for name in ("host", "core", "python", "shell"):
+        item = executables[name]
+        require(isinstance(item, dict) and set(item) ==
+                {"path", "requested_path", "size", "sha256", "execution_custody"} and
+                isinstance(item["path"], str) and Path(item["path"]).is_absolute() and
+                isinstance(item["requested_path"], str) and Path(item["requested_path"]).is_absolute() and
+                type(item["size"]) is int and 0 < item["size"] <= MAX_PINNED_EXECUTABLE_BYTES and
+                isinstance(item["sha256"], str) and re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) is not None and
+                item["execution_custody"] == PINNED_EXECUTABLE_CUSTODY,
+                "comparison executable identity is invalid")
+    harness = next(item for item in manifest["files"]
+                   if item["path"] == "tools/perf/run_product_baseline.py")
+    require(executables["harness"] == harness, "comparison harness differs from implementation manifest")
+    environment = artifact["environment"]
+    require(environment.get("execution_custody") == EXECUTION_CUSTODY,
+            "comparison environment execution custody differs")
+    expected = {
+        "environment": environment,
+        "configuration": {key: value for key, value in configuration.items()
+                          if key not in {"repetitions", "warmup"}},
+        "python_sha256": executables["python"]["sha256"],
+        "shell_sha256": executables["shell"]["sha256"],
+        "harness_sha256": harness["sha256"],
+        "implementation_manifest_sha256": manifest["manifest_sha256"],
+        "bootstrap_attestation_sha256": digest(canonical(bootstrap)),
+        "gate_policy_sha256": digest(canonical(policy)),
+        "execution_custody": EXECUTION_CUSTODY,
+    }
+    require(artifact["comparison_identity"] == expected,
+            "comparison identity does not project the declared environment, configuration and executables")
+
+
 def _execution_path(name: str, fallback: Path | str) -> str:
     value = EXECUTION_PATHS.get(name, str(fallback))
     require(isinstance(value, str) and value.startswith("/") and "\n" not in value,
@@ -789,6 +1040,7 @@ def validate_artifact(value: Any) -> dict:
     policy = validate_gate_policy(value.get("gate_policy"))
     identity = value.get("comparison_identity")
     require(isinstance(identity, dict), "missing comparison identity")
+    validate_comparison_projection(value)
     require(identity.get("implementation_manifest_sha256") == manifest["manifest_sha256"],
             "comparison identity does not bind implementation manifest")
     require(identity.get("bootstrap_attestation_sha256") == digest(canonical(bootstrap)),
@@ -838,6 +1090,8 @@ def regression_gate(current: dict, previous: dict | None,
         return {"status": "FAIL_CORRECTNESS", "passed": False, "regressions": []}
     if previous is None:
         return {"status": "BASELINE_RECORDED_NO_COMPARISON", "passed": False, "regressions": []}
+    validate_comparison_projection(current, known_storage=True)
+    validate_comparison_projection(previous, known_storage=True)
     previous_policy = validate_gate_policy(previous.get("gate_policy"))
     require(policy == previous_policy, "baseline gate policy differs")
     require(current["comparison_identity"] == previous["comparison_identity"], "incompatible environment or workload configuration")
@@ -1001,12 +1255,9 @@ def _run_with_custody(
         prefix="tos-perf-work-", dir=args.scratch_parent
     ) as temporary:
         root = Path(temporary)
-        filesystem = subprocess.check_output(
-            ["stat", "-f", "-c", "%T", str(root)],
-            env=finite_env(),
-            timeout=5,
-        ).decode().strip()
-        artifact["environment"]["scratch_filesystem"] = filesystem
+        storage = scratch_storage_identity(root)
+        artifact["environment"]["scratch_filesystem"] = storage.get("filesystem_type", "unavailable")
+        artifact["environment"]["scratch_storage_identity"] = storage
         for name in args.workloads:
             for index in range(args.warmup + args.repetitions):
                 warmup = index < args.warmup
@@ -1086,6 +1337,8 @@ def _run_with_custody(
                 finally:
                     if sample_root.exists():
                         shutil.rmtree(sample_root)
+        if scratch_storage_identity(root) != artifact["environment"]["scratch_storage_identity"]:
+            artifact["failures"].append({"error": "scratch storage identity changed during benchmark"})
     artifact["source_after"] = source_identity()
     if artifact["source_after"] != source:
         artifact["failures"].append({"error": "source changed during benchmark"})

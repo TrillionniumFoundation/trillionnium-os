@@ -81,6 +81,14 @@ source navigation alone does not prove wire compatibility.
 
 `product.mk`, `Android.bp`, the init rc and the SELinux domain/context files under the owned Android overlay are the composition inputs. This verifier checks source selection only. Real Soong/policy compilation, target-files inventory and installed image binding remain distinct L3 operations.
 
+The empty `android-integration/.find-ignore` is a registered Soong Finder
+template boundary. If this control repository is present inside an Android
+checkout, Finder prunes only this release-input mirror; apply its working-tree
+files to their declared Android project paths before building. The actual SDK,
+Authority, Shell and owner-open module directories remain discoverable. Do not
+place the marker at the control-repository root or an actual Android project
+root. This build rule does not qualify a source BOM or an installed image.
+
 ## 6. State model and ownership
 
 - State schema: `org.trillionnium.mod_android.state.v1`

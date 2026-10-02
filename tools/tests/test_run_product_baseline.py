@@ -36,6 +36,16 @@ def reseal(value: dict) -> dict:
     return value
 
 
+def storage_fixture() -> dict:
+    # Test-only observation bytes; never a real storage/runner qualification.
+    return {"schema": BENCH.STORAGE_IDENTITY_SCHEMA, "scope": BENCH.STORAGE_IDENTITY_SCOPE,
+            "status": "known", "boot_id_sha256": "a" * 64,
+            "mount_namespace": {"device": 4, "inode": 123}, "mount_id": 17,
+            "device": {"major": 8, "minor": 1}, "filesystem_type": "ext4",
+            "filesystem": {"type_magic": 0xef53, "fsid": [1, 2], "block_size": 4096, "flags": 0},
+            "mountinfo_record_sha256": "b" * 64}
+
+
 def artifact(latencies: list[int] | None = None) -> dict:
     latencies = latencies or [10, 11, 12, 13, 14]
     samples = [{"workload": "short_turn", "repetition": i, "warmup": False,
@@ -44,14 +54,33 @@ def artifact(latencies: list[int] | None = None) -> dict:
     manifest = BENCH.implementation_manifest()
     bootstrap = BENCH.bootstrap_attestation()
     policy = BENCH.gate_policy()
+    environment = {"controlled_environment": "fixture",
+                   "execution_custody": BENCH.EXECUTION_CUSTODY,
+                   "scratch_filesystem": "ext4",
+                   "scratch_storage_identity": storage_fixture()}
+    configuration = {"workloads": ["short_turn"], "repetitions": len(samples), "warmup": 0,
+                     "max_regression_percent": policy["max_regression_percent"],
+                     "gate_policy_version": policy["version"], "build_profile": "custom",
+                     "concurrency": 4, "output_bytes": 65536, "slow_read_ms": 1.0, "timeout_seconds": 15.0}
+    executables = {name: {"path": f"/test-only/{name}", "requested_path": f"/test-only/{name}",
+                          "size": 1, "sha256": str(index) * 64,
+                          "execution_custody": BENCH.PINNED_EXECUTABLE_CUSTODY}
+                   for index, name in enumerate(("host", "core", "python", "shell"), 1)}
+    executables["harness"] = next(dict(item) for item in manifest["files"]
+                                  if item["path"] == LOGICAL_PATH)
     return reseal({"schema": BENCH.SCHEMA, "qualification": "L1_HOST_SOURCE_BENCHMARK_ONLY",
         "public_release": False, "samples": samples, "summaries": BENCH.summarize(samples),
         "implementation_manifest": manifest, "bootstrap_attestation": bootstrap,
+        "environment": environment,
         "gate_policy": policy,
-        "configuration": {"workloads": ["short_turn"], "repetitions": len(samples), "warmup": 0,
-                          "max_regression_percent": policy["max_regression_percent"],
-                          "gate_policy_version": policy["version"]},
-        "comparison_identity": {"controlled_environment": "fixture",
+        "configuration": configuration, "executables": executables,
+        "comparison_identity": {"configuration": {key: value for key, value in configuration.items()
+                                                    if key not in {"repetitions", "warmup"}},
+                                "environment": copy.deepcopy(environment),
+                                "python_sha256": executables["python"]["sha256"],
+                                "shell_sha256": executables["shell"]["sha256"],
+                                "harness_sha256": executables["harness"]["sha256"],
+                                "execution_custody": BENCH.EXECUTION_CUSTODY,
                                 "implementation_manifest_sha256": manifest["manifest_sha256"],
                                 "bootstrap_attestation_sha256": BENCH.digest(BENCH.canonical(bootstrap)),
                                 "gate_policy_sha256": BENCH.digest(BENCH.canonical(policy))},
@@ -59,6 +88,146 @@ def artifact(latencies: list[int] | None = None) -> dict:
 
 
 class ProductBaselineContractTests(unittest.TestCase):
+    def test_real_same_mount_directories_have_equal_storage_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            first, second = root / "one", root / "two"
+            first.mkdir(); second.mkdir()
+            a, b = BENCH.scratch_storage_identity(first), BENCH.scratch_storage_identity(second)
+            self.assertEqual(a["status"], "known", a)
+            self.assertEqual(a, b)
+            self.assertNotIn(str(root), json.dumps(a))
+            value = artifact()
+            value["environment"]["scratch_storage_identity"] = a
+            value["environment"]["scratch_filesystem"] = a["filesystem_type"]
+            value["comparison_identity"]["environment"] = copy.deepcopy(value["environment"])
+            BENCH.validate_artifact(reseal(value))
+
+    def test_storage_mount_selection_uses_fd_id_and_complete_record(self) -> None:
+        outer = b"17 1 8:1 / /data rw - ext4 /dev/vda rw\n"
+        inner = b"18 17 8:1 /sub /data/covered ro - ext4 /dev/vda ro\n"
+        actual = BENCH._storage_mount_record(outer + inner, 17, os.makedev(8, 1))
+        self.assertEqual(actual["mountinfo_record_sha256"], BENCH.digest(outer.rstrip()))
+        self.assertNotEqual(actual, BENCH._storage_mount_record(outer + inner, 18, os.makedev(8, 1)))
+        overlay = b"19 1 0:42 / /data rw - overlay overlay rw,lowerdir=/lower-one,upperdir=/upper,workdir=/work\n"
+        changed = overlay.replace(b"/lower-one", b"/lower-two")
+        self.assertNotEqual(BENCH._storage_mount_record(overlay, 19, os.makedev(0, 42)),
+                            BENCH._storage_mount_record(changed, 19, os.makedev(0, 42)))
+        private_source = outer.replace(b"/dev/vda", b"server:fake-secret")
+        self.assertNotIn("fake-secret", repr(BENCH._storage_mount_record(private_source, 17, os.makedev(8, 1))))
+        for raw, selected, device in ((outer + outer, 17, os.makedev(8, 1)),
+                                       (outer, 18, os.makedev(8, 1)),
+                                       (outer, 17, os.makedev(8, 2)),
+                                       (outer.replace(b"17 1", b"17 garbage"), 17, os.makedev(8, 1)),
+                                       (outer.replace(b"8:1 / /data", b"8:1 relative /data"), 17, os.makedev(8, 1)),
+                                       (outer.replace(b"/data", b"/bad\\077path"), 17, os.makedev(8, 1)),
+                                       (outer.replace(b" rw -", b"  -"), 17, os.makedev(8, 1)),
+                                       (b"17 1 8:1 incomplete\n", 17, os.makedev(8, 1))):
+            with self.subTest(raw=raw), self.assertRaises(BENCH.BenchmarkError):
+                BENCH._storage_mount_record(raw, selected, device)
+        for raw in (b"mnt_id: 17\nmnt_id: 18\n", b"mnt_id: true\n", b"pos: 0\n"):
+            with self.subTest(raw=raw), self.assertRaises(BENCH.BenchmarkError):
+                BENCH._storage_mount_id(raw)
+
+    def test_unsupported_statfs_abi_never_calls_native_function(self) -> None:
+        with mock.patch.object(BENCH.CORE.platform, "machine", return_value="unknown"), \
+             mock.patch.object(BENCH.CORE.ctypes, "CDLL") as library:
+            with self.assertRaisesRegex(BENCH.BenchmarkError, "ABI"):
+                BENCH._storage_statfs(0)
+            library.assert_not_called()
+
+    def test_unavailable_storage_can_be_recorded_but_cannot_compare(self) -> None:
+        value = artifact()
+        unknown = {"schema": BENCH.STORAGE_IDENTITY_SCHEMA, "scope": BENCH.STORAGE_IDENTITY_SCOPE,
+                   "status": "unavailable", "reason": "storage_probe_unavailable"}
+        value["environment"]["scratch_storage_identity"] = unknown
+        value["environment"]["scratch_filesystem"] = "unavailable"
+        value["comparison_identity"]["environment"] = copy.deepcopy(value["environment"])
+        value = reseal(value)
+        BENCH.validate_artifact(value)
+        self.assertFalse(BENCH.regression_gate(value, None)["passed"])
+        with self.assertRaisesRegex(BENCH.BenchmarkError, "unavailable"):
+            BENCH.regression_gate(value, copy.deepcopy(value))
+        with tempfile.TemporaryDirectory() as directory, \
+             mock.patch.object(BENCH.CORE, "_read_storage_proc", side_effect=OSError("private detail")):
+            captured = BENCH.scratch_storage_identity(Path(directory))
+        self.assertEqual(captured, unknown)
+
+    def test_changed_storage_same_type_and_mount_context_cannot_compare(self) -> None:
+        for field, replacement in (("device", {"major": 259, "minor": 2}),
+                                    ("mount_id", 18), ("boot_id_sha256", "c" * 64),
+                                    ("mount_namespace", {"device": 4, "inode": 124}),
+                                    ("mountinfo_record_sha256", "d" * 64),
+                                    ("filesystem", {"type_magic": 0xef53, "fsid": [3, 4], "block_size": 4096, "flags": 0})):
+            with self.subTest(field=field):
+                current = artifact()
+                current["environment"]["scratch_storage_identity"][field] = replacement
+                current["comparison_identity"]["environment"] = copy.deepcopy(current["environment"])
+                current = reseal(current)
+                BENCH.validate_artifact(current)
+                with self.assertRaisesRegex(BENCH.BenchmarkError, "incompatible"):
+                    BENCH.regression_gate(current, artifact())
+
+    def test_storage_projection_and_closed_metadata_reject_resealed_tampering(self) -> None:
+        for mutation in ("top", "comparison", "missing", "boolean", "zero_fsid", "extra"):
+            with self.subTest(mutation=mutation):
+                value = artifact()
+                selected = value["environment"]["scratch_storage_identity"]
+                if mutation == "top": selected["device"]["minor"] = 2
+                elif mutation == "comparison": value["comparison_identity"]["environment"]["scratch_storage_identity"]["mount_id"] = 18
+                elif mutation == "missing": value["environment"].pop("scratch_storage_identity")
+                else:
+                    if mutation == "boolean": selected["mount_id"] = True
+                    elif mutation == "zero_fsid": selected["filesystem"]["fsid"] = [0, 0]
+                    else: selected["unexpected"] = "field"
+                    value["comparison_identity"]["environment"] = copy.deepcopy(value["environment"])
+                with self.assertRaisesRegex(BENCH.BenchmarkError, "storage"):
+                    BENCH.validate_artifact(reseal(value))
+
+    def test_full_comparison_projection_rejects_resealed_metadata_changes(self) -> None:
+        for field in ("output_bytes", "concurrency", "timeout_seconds", "build_profile",
+                      "python", "shell", "harness", "comparison_only", "custody"):
+            with self.subTest(field=field):
+                value = artifact()
+                if field in {"python", "shell", "harness"}:
+                    value["executables"][field]["sha256"] = "0" * 64
+                elif field == "comparison_only":
+                    value["comparison_identity"]["configuration"]["concurrency"] = 2
+                elif field == "custody":
+                    value["environment"]["execution_custody"] = "unadmitted"
+                    value["comparison_identity"]["environment"] = copy.deepcopy(value["environment"])
+                    value["comparison_identity"]["execution_custody"] = "unadmitted"
+                else:
+                    value["configuration"][field] = {
+                        "output_bytes": 131072, "concurrency": 2,
+                        "timeout_seconds": 1.0, "build_profile": "debug",
+                    }[field]
+                with self.assertRaisesRegex(BENCH.BenchmarkError, "comparison"):
+                    BENCH.validate_artifact(reseal(value))
+
+    def test_sampling_counts_may_differ_and_selected_products_may_change(self) -> None:
+        previous = artifact([10, 11, 12, 13, 14])
+        current = artifact([8, 9, 10, 11, 12, 13])
+        current["configuration"]["warmup"] = 1
+        current["samples"].append({"workload": "short_turn", "repetition": 0, "warmup": True,
+                                   "elapsed_ns": 1000, "operations": 1, "correctness_validated": True})
+        current["executables"]["host"]["sha256"] = "8" * 64
+        current["executables"]["core"]["sha256"] = "9" * 64
+        current = reseal(current)
+        BENCH.validate_artifact(current)
+        self.assertTrue(BENCH.regression_gate(current, previous)["passed"])
+
+    def test_direct_comparison_rejects_invalid_sampling_metadata(self) -> None:
+        for field, replacement in (("workloads", ["short_turn", "short_turn"]),
+                                    ("workloads", ["missing_workload"]),
+                                    ("repetitions", True), ("repetitions", 0),
+                                    ("warmup", False), ("warmup", 11)):
+            with self.subTest(field=field, replacement=replacement):
+                value = artifact()
+                value["configuration"][field] = replacement
+                with self.assertRaisesRegex(BENCH.BenchmarkError, "sampling"):
+                    BENCH.regression_gate(value, artifact())
+
     def test_broker_manifest_covers_actual_transitive_sibling_imports(self) -> None:
         modules = {Path(path).stem: path for path in BENCH.BROKER_SOURCE_PATHS}
         pending = ["owner_open_connection_broker"]
@@ -181,7 +350,8 @@ class ProductBaselineContractTests(unittest.TestCase):
 
     def test_changed_environment_or_parameters_rejected(self) -> None:
         current = artifact()
-        current["comparison_identity"]["controlled_environment"] = "different"
+        current["environment"]["controlled_environment"] = "different"
+        current["comparison_identity"]["environment"] = copy.deepcopy(current["environment"])
         with self.assertRaisesRegex(BENCH.BenchmarkError, "incompatible"):
             BENCH.regression_gate(current, artifact(), 25)
 

@@ -261,6 +261,26 @@ requires a new baseline; an artifact with the previous manifest cannot provide
 a comparison pass. Canonical compiler/build receipts, exact-head source CI,
 protected runner authorization and target evidence remain separate requirements.
 
+Product baseline comparisons also bind the effective scratch mount through
+its opened directory descriptor, kernel mount ID and complete mount-record
+digest, device/filesystem identity, boot and mount namespace. Ordinary
+directories on one mount remain comparable; other mounts, overlay backing
+options, boots or namespaces differ. Incomplete metadata, zero filesystem IDs
+or an unsupported native statfs ABI remain unavailable and reject comparisons
+while permitting an explicitly unqualified baseline observation. The supported
+layout is Linux LP64 x86-64/aarch64. Top-level environment, configuration and
+Python/shell/harness observations must exactly match the closed comparison
+projection; resealing contradictory metadata cannot make it admissible.
+Sampling counts may differ only with complete raw samples on each side.
+
+These start/end snapshots describe observable same-boot mount/filesystem
+identity. They do not prove physical storage topology, detect a change restored
+between snapshots or prevent device-mapper remapping or same-ID cloned media.
+Independent storage custody, protected-runner approval and controlled installed
+workload/resource evidence remain holds. Adding this identity changes the
+harness manifest and requires a fresh baseline; earlier filesystem-type-only
+reports cannot establish a comparison against it.
+
 ### Reproduction entrypoint
 
 - Verification source: `tools/tests/test_g1_evidence.py`

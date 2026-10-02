@@ -93,6 +93,28 @@ caller-supplied binaries were built from that source; CI must retain the actual
 build command, toolchain identity and build logs alongside the measurement.
 `--build-profile` is the caller's declared Cargo profile, not ELF introspection.
 
+Storage comparison uses the actual scratch directory descriptor's mount ID,
+device, filesystem ID/type/flags, boot and mount namespace. A bounded kernel
+mount record binds the effective mount's root, source, options and overlay
+backing paths by digest without publishing those paths or possible mount-source
+credentials. Random scratch paths are excluded: ordinary directories on the
+same mount remain comparable. Different mounts, options, filesystem identities,
+boots or namespaces reject comparison. The native `fstatfs` layout is supported
+only on Linux LP64 x86-64/aarch64; unsupported or incomplete observations are
+recorded as unavailable and cannot supply a comparison pass.
+
+The report's comparison identity must exactly project its environment,
+configuration, Python/shell/harness digests, implementation/bootstrap/policy
+digests and fixed execution custody. Repetitions and warmup counts are excluded
+from configuration equality; each artifact still supplies all its declared raw
+samples and comparisons require at least five measured samples per workload.
+Host/Core subject bytes may change between candidates. Older artifacts without
+the complete storage identity require a fresh baseline. These are start/end,
+same-boot observations, not continuous storage monitoring or independent
+physical-device provenance: device-mapper remapping, cloned filesystem IDs or
+changes restored between snapshots still require an independent custodian and
+controlled runner. Self-reported metadata and self-hashes grant no such authority.
+
 ## What is actually measured
 
 | Workload | Measurement and correctness condition |
