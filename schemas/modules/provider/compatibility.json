@@ -25,14 +25,14 @@
     ],
     "migration_review_sha256": "32b71694a9459ffab112fd2dd06c750e7e56eb4d597966f1e3e1ddd01c19f733",
     "review_authority": "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED",
-    "review_packet": "docs/reviews/module-contracts/5fede1e083e114eac3afc3e05da0102ebc2381401d8d7d9e6b3ccb515cc3c5d5.json",
-    "review_packet_sha256": "5fede1e083e114eac3afc3e05da0102ebc2381401d8d7d9e6b3ccb515cc3c5d5",
+    "review_packet": "docs/reviews/module-contracts/9203618b0d7a87ba0a8e7ee9de74eb32493be634fde5502e9936d98f28f21d27.json",
+    "review_packet_sha256": "9203618b0d7a87ba0a8e7ee9de74eb32493be634fde5502e9936d98f28f21d27",
     "reviewer": "Tomasrgbsf",
     "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
     "target_contract_sha256": {
-      "api": "f0af3185f00fb262f03867ed4ca7edf31f556b11d18e1168f9128c9dae522ad0",
-      "errors": "d6b13143e6773408d04c1b415a92713db1c553c2d1ce1e32e2597258906f723e",
-      "state": "e2bf6935a67344b68fd5c8357c617490871b5fca322bf3749fde293c137c6f7e"
+      "api": "09e329585e808c926b207f13d5e4eb0a338367ad7666c23247ccd1f0a7d43380",
+      "errors": "a9e9aca27f0eecd9ebbfedf5e0377871b73abc1d8d457ec747fd203d16b913ac",
+      "state": "9736042e18009aea50d3ee2f25fc2384fb2c12bd970549f91d3a1cdebbcaa806"
     }
   },
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
@@ -49,8 +49,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-      "size": 25928
+      "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+      "size": 27954
     }
   ],
   "contracts": {
@@ -173,8 +173,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-        "size": 25928
+        "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+        "size": 27954
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -218,8 +218,8 @@
     },
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "da42414cb764d1af5045866ccc8cb78c14e14cee7b55eb01c2204f7a831e9b8e",
-      "size": 41737
+      "sha256": "6419413c1a48bb966b26ed48ee04c6b05ba8008ccb131dcad7ea1c2264b83334",
+      "size": 49445
     }
   ],
   "unknown_fields": "REJECT"

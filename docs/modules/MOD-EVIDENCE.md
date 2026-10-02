@@ -185,6 +185,16 @@ Rolling compatibility is supported under the explicit compatibility and fencing 
 
 Evidence schemas are append-only and versioned. A new verifier may accept older packages only through an explicit compatibility matrix; signed subjects are never rewritten.
 
+Executable module-contract compatibility reads a base migration packet from
+the exact ancestor Git commit. Its path and content digest must agree; the Git
+entry must be a regular blob of at most 64 KiB; module identity and the reviewed
+target schema must match the base version. Diagnostic labels do not change the
+module ID. A missing, replaced or retired current-tree copy cannot substitute
+for that historical object. Current migration packets retain the separate
+descriptor-bound working-tree checks. Unchanged schemas require `NO_CHANGE`,
+and a further semantic change needs a new exact packet. Neither the base packet
+nor source metadata can assert independent approval of the current head.
+
 EventStore's tighter process-shared memory admission can refuse a previously
 accepted history without changing its bytes. A source behavior probe built the
 exact EventStore sources from `723b718937f0503c44054b1e28d478cab8f81575` and the

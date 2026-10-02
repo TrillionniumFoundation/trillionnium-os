@@ -674,6 +674,138 @@ raise SystemExit(6)
             with self.assertRaisesRegex(ValueError, "stale breaking review"):
                 self.checker.evaluate(root, base)
 
+    def test_base_breaking_review_uses_exact_git_provenance(self) -> None:
+        # A real second-generation base carries a prior breaking packet. The
+        # next worktree retires it and must not supply historical provenance.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root).decode().strip()
+
+            def write(path, value):
+                raw = self.checker.canonical_packet(value)
+                destination = root / path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(raw)
+                return raw
+
+            git("init", "-q")
+            git("config", "user.name", "fixture")
+            git("config", "user.email", "fixture@example.invalid")
+            paths = {kind: f"schemas/{kind}.json" for kind in
+                     ("api", "state", "errors", "compatibility")}
+            catalog = {"module_count": 1, "modules": [
+                {"module_id": "MOD-FIXTURE", "artifacts": paths}]}
+            catalog_raw = write(self.checker.CATALOG, catalog)
+            migration = {"strategy": "fixture-fenced-prefix"}
+            rollback = {"fail_closed": True, "procedure": "retain-compatible-state"}
+            no_change = {
+                "class": "NO_CHANGE", "contracts": [], "families": [],
+                "review_packet": None, "review_packet_sha256": None,
+                "reviewer": None, "review_authority": None, "approval_asserted": False,
+                "migration_review_sha256": self.checker.sha256_bytes(self.checker.canonical(migration)),
+                "rollback_review_sha256": self.checker.sha256_bytes(self.checker.canonical(rollback)),
+                "base_catalog_sha256": None, "base_contract_sha256": {},
+                "target_contract_sha256": {},
+            }
+
+            def compatibility(review):
+                return {"introduction_review_class": "INITIAL_V1", "change_review": review,
+                        "migration_review": migration, "rollback_review": rollback}
+
+            api = {"type": "string", "maxLength": 32}
+            api_before = write(paths["api"], api)
+            for kind in ("state", "errors"):
+                write(paths[kind], {"type": "object"})
+            write(paths["compatibility"], compatibility(no_change))
+            git("add", ".")
+            git("commit", "-qm", "initial schema")
+            initial = git("rev-parse", "HEAD")
+            api["maxLength"] = 16
+            api_after = write(paths["api"], api)
+            packet = {
+                "schema": self.checker.REVIEW_PACKET_SCHEMA, "module_id": "MOD-FIXTURE",
+                "contracts": ["api"], "families": ["other"],
+                "base_catalog_sha256": self.checker.sha256_bytes(catalog_raw),
+                "base_contract_sha256": {"api": self.checker.sha256_bytes(api_before)},
+                "target_contract_sha256": {"api": self.checker.sha256_bytes(api_after)},
+                "migration_review_sha256": no_change["migration_review_sha256"],
+                "rollback_review_sha256": no_change["rollback_review_sha256"],
+                "reviewer": "Tomasrgbsf", "review_authority": self.checker.REVIEW_AUTHORITY,
+                "approval_asserted": False, "automatic_redispatch": False,
+                "claim_ceiling": self.checker.CLAIM_CEILING, "public_release": False,
+            }
+            packet_raw = self.checker.canonical_packet(packet)
+            digest = self.checker.sha256_bytes(packet_raw)
+            packet_path = f"docs/reviews/module-contracts/{digest}.json"
+            write(packet_path, packet)
+            reviewed = copy.deepcopy(no_change)
+            reviewed.update({key: packet[key] for key in (
+                "contracts", "families", "base_catalog_sha256", "base_contract_sha256",
+                "target_contract_sha256", "reviewer", "review_authority")})
+            reviewed.update({"class": "BREAKING_MIGRATION", "review_packet": packet_path,
+                             "review_packet_sha256": digest})
+            write(paths["compatibility"], compatibility(reviewed))
+            self.assertEqual(self.checker.evaluate(root, initial)["semantic_changes"], ["MOD-FIXTURE:api"])
+            git("add", ".")
+            git("commit", "-qm", "reviewed schema migration")
+            accepted = git("rev-parse", "HEAD")
+            write(paths["compatibility"], compatibility(no_change))
+            (root / packet_path).unlink()
+            self.assertEqual(self.checker.evaluate(root, accepted)["semantic_changes"], [])
+
+            # A different live file cannot replace the accepted Git packet.
+            (root / packet_path).write_bytes(b"unrelated current bytes")
+            self.assertEqual(self.checker.evaluate(root, accepted)["semantic_changes"], [])
+            write(paths["compatibility"], compatibility(reviewed))
+            (root / packet_path).write_bytes(packet_raw)
+            with self.assertRaisesRegex(ValueError, "stale breaking review"):
+                self.checker.evaluate(root, accepted)
+            write(paths["compatibility"], compatibility(no_change))
+
+            # Base validation still rejects missing, nonregular, oversized and
+            # inconsistent provenance, even when a valid current copy exists.
+            for case in ("missing", "symlink", "oversized", "wrong-module", "wrong-target"):
+                with self.subTest(case=case):
+                    git("reset", "--hard", "-q", accepted)
+                    destination = root / packet_path
+                    if case == "missing":
+                        destination.unlink()
+                    elif case == "symlink":
+                        destination.unlink()
+                        destination.symlink_to("../outside")
+                    elif case == "oversized":
+                        destination.write_bytes(b"x" * (self.checker.REVIEW_PACKET_MAX_BYTES + 1))
+                    elif case == "wrong-module":
+                        wrong = copy.deepcopy(packet)
+                        wrong["module_id"] = "MOD-OTHER"
+                        wrong_raw = self.checker.canonical_packet(wrong)
+                        wrong_digest = self.checker.sha256_bytes(wrong_raw)
+                        wrong_path = f"docs/reviews/module-contracts/{wrong_digest}.json"
+                        write(wrong_path, wrong)
+                        wrong_review = copy.deepcopy(reviewed)
+                        wrong_review.update({"review_packet": wrong_path, "review_packet_sha256": wrong_digest})
+                        write(paths["compatibility"], compatibility(wrong_review))
+                    else:
+                        write(paths["api"], {"type": "string", "maxLength": 15})
+                    git("add", ".")
+                    git("commit", "-qm", "invalid base provenance " + case)
+                    bad_base = git("rev-parse", "HEAD")
+                    write(paths["compatibility"], compatibility(no_change))
+                    if destination.is_symlink():
+                        destination.unlink()
+                    destination.write_bytes(packet_raw)
+                    expected_error = {
+                        "missing": "base path is absent",
+                        "symlink": "regular tracked file",
+                        "oversized": "byte bound",
+                        "wrong-module": "module differs",
+                        "wrong-target": "bind target api",
+                    }[case]
+                    with self.assertRaisesRegex(ValueError, expected_error):
+                        self.checker.evaluate(root, bad_base)
+
     def test_generator_review_packet_is_content_addressed_and_non_authorizing(self) -> None:
         migration = {
             "from_versions": [],

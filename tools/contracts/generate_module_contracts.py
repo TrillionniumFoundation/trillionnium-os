@@ -903,7 +903,81 @@ def compatibility_checker_source() -> bytes:
     start = source.find(start_marker)
     end = source.find(end_marker, start)
     replacement = '    required_flags = ("O_CLOEXEC", "O_DIRECTORY", "O_NOFOLLOW", "O_NONBLOCK")\n    if any(not hasattr(os, name) for name in required_flags) or not hasattr(os, "pread"):\n        raise ValueError(f"{label}: review packet safe acquisition is unavailable")\n    if (\n        os.open not in os.supports_dir_fd\n        or os.stat not in os.supports_dir_fd\n        or os.stat not in os.supports_follow_symlinks\n    ):\n        raise ValueError(f"{label}: descriptor-relative review packet acquisition is unavailable")\n\n    directory_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_DIRECTORY | os.O_NOFOLLOW\n    file_flags = os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK\n    directory_descriptors: list[int] = []\n    descriptor: int | None = None\n    try:\n        directory_descriptors.append(os.open(root, directory_flags))\n        for part in pure.parts[:-1]:\n            directory_descriptors.append(\n                os.open(part, directory_flags, dir_fd=directory_descriptors[-1])\n            )\n        parent_descriptor = directory_descriptors[-1]\n        leaf = pure.parts[-1]\n        descriptor = os.open(leaf, file_flags, dir_fd=parent_descriptor)\n        before = os.fstat(descriptor)\n        if (\n            not stat.S_ISREG(before.st_mode)\n            or before.st_nlink != 1\n            or before.st_size <= 0\n            or before.st_size > REVIEW_PACKET_MAX_BYTES\n        ):\n            raise ValueError(f"{label}: review packet is not one bounded regular file")\n        chunks: list[bytes] = []\n        offset = 0\n        while offset < before.st_size:\n            chunk = os.pread(\n                descriptor,\n                min(65536, before.st_size - offset),\n                offset,\n            )\n            if not chunk:\n                raise ValueError(f"{label}: review packet short read")\n            chunks.append(chunk)\n            offset += len(chunk)\n        raw = b"".join(chunks)\n        after = os.fstat(descriptor)\n        current = os.stat(leaf, dir_fd=parent_descriptor, follow_symlinks=False)\n    except ValueError:\n        raise\n    except OSError as error:\n        raise ValueError(f"{label}: review packet descriptor acquisition failed") from error\n    finally:\n        if descriptor is not None:\n            os.close(descriptor)\n        for directory_descriptor in reversed(directory_descriptors):\n            os.close(directory_descriptor)\n\n    if (\n        len(raw) != before.st_size\n        or len(raw) > REVIEW_PACKET_MAX_BYTES\n        or stable_file_identity(after) != stable_file_identity(before)\n        or stable_file_identity(current) != stable_file_identity(before)\n    ):\n        raise ValueError(f"{label}: review packet changed while being read")\n'
-    return (source[:start] + replacement + source[end:]).encode("utf-8")
+    source = source[:start] + replacement + source[end:]
+    edits = {
+        '    rollback_sha256: str,\n) -> None:\n':
+            '    rollback_sha256: str,\n    *,\n    module_id: str,\n) -> None:\n',
+        '    if packet.get("module_id") != label:\n':
+            '    if packet.get("module_id") != module_id:\n',
+        '    allow_absent: bool = False,\n    root: Path = ROOT,\n':
+            '    allow_absent: bool = False,\n    maximum_bytes: int | None = None,\n    root: Path = ROOT,\n',
+        '    return git(["cat-file", "blob", object_id], f"read verified base file {path}", root=root)\n':
+            '''    size = None
+    if maximum_bytes is not None:
+        size_raw = git(["cat-file", "-s", object_id], "inspect base blob size", root=root)
+        if re.fullmatch(rb"[0-9]{1,20}\\n", size_raw) is None:
+            raise ValueError("base blob size is malformed")
+        size = int(size_raw)
+        if not 0 < size <= maximum_bytes:
+            raise ValueError("base review packet exceeds its byte bound")
+    raw = git(["cat-file", "blob", object_id], f"read verified base file {path}", root=root)
+    if size is not None and len(raw) != size:
+        raise ValueError("base blob size differs from its immutable object")
+    return raw
+''',
+        '    root: Path,\n) -> dict[str, Any]:\n':
+            '    root: Path,\n    module_id: str | None = None,\n    base_commit: str | None = None,\n) -> dict[str, Any]:\n',
+        '''        packet_raw = read_review_packet(
+            root,
+            review.get("review_packet"),
+            review.get("review_packet_sha256"),
+            label,
+        )
+''':
+            '''        if base_commit is None:
+            packet_raw = read_review_packet(
+                root,
+                review.get("review_packet"),
+                review.get("review_packet_sha256"),
+                label,
+            )
+        else:
+            relative = review.get("review_packet")
+            if not isinstance(relative, str):
+                raise ValueError(f"{label}: review packet path is not text")
+            match = REVIEW_PACKET_PATH.fullmatch(relative)
+            if match is None:
+                raise ValueError(f"{label}: review packet path is not canonical")
+            if match.group(1) != review.get("review_packet_sha256"):
+                raise ValueError(f"{label}: review packet path and digest differ")
+            packet_raw = show(
+                base_commit, relative, maximum_bytes=REVIEW_PACKET_MAX_BYTES, root=root
+            )
+            if sha256_bytes(packet_raw) != review["review_packet_sha256"]:
+                raise ValueError(f"{label}: review packet digest differs")
+''',
+        '            rollback_sha256,\n        )\n':
+            '            rollback_sha256,\n            module_id=module_id if module_id is not None else label,\n        )\n',
+        '        validate_change_review(old_compatibility, f"base {module_id}", root=root)\n':
+            '''        old_review = validate_change_review(
+            old_compatibility, f"base {module_id}", root=root,
+            module_id=module_id, base_commit=base_commit,
+        )
+''',
+        '            old_contract_raw[kind] = old_schema_raw\n':
+            '''            if (
+                old_review["class"] == "BREAKING_MIGRATION"
+                and kind in old_review["contracts"]
+                and old_review["target_contract_sha256"][kind] != sha256_bytes(old_schema_raw)
+            ):
+                raise ValueError(f"base {module_id}: review does not bind target {kind}")
+            old_contract_raw[kind] = old_schema_raw
+''',
+    }
+    for before, after in edits.items():
+        require(source.count(before) == 1, "base review custody template anchor differs")
+        source = source.replace(before, after)
+    return source.encode("utf-8")
 
 
 def contract_readme() -> bytes:
@@ -944,6 +1018,13 @@ only exposes rules already enforced by Rust/Python. Packets bind exact old/new
 schema bytes and migration/rollback metadata with `approval_asserted=false`.
 No author or generator can manufacture the independent protected-head review.
 No state bytes, runtime command semantics, control mode or release flags change.
+
+Base-version migration packets are read from bounded regular Git blobs in the
+exact ancestor commit, with their content digest, module identity and reviewed
+target schema checked. Current packets use the descriptor-bound working-tree
+reader. Retiring a historical packet from the current tree does not invalidate
+the base version or let a current file substitute for its provenance. Every new
+change still needs its own packet; unchanged schemas require NO_CHANGE.
 
 Commands:
 

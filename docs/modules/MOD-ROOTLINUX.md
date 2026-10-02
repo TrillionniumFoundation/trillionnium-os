@@ -302,6 +302,20 @@ command-result format. The library timeout is finite, 0.001..1800 seconds; the
 CLI retains its stricter existing probe/build intervals. Booleans, NaN and
 infinite budgets are rejected before starting a process.
 
+The absolute execution deadline is checked before and after terminal observation,
+after selector return, before every ready descriptor, and after each bounded
+read. A zero exit observed after that deadline is still a timeout. Draining
+checks its separate absolute deadline before declaring capture complete and
+after the final output-byte copies and SHA-256 result construction, immediately
+before returning a result. Those copies and hashes share the drain budget;
+late result construction cannot recover success. Retirement checks the end of each procfs scan,
+the second quiet observation and final exit/wait against the KILL phase deadline;
+late confirmation cannot publish success. Real-process regressions delay these
+observer callbacks without replacing the clock, including a 75 ms child with a
+30 ms execution budget and a selector that returns after 120 ms. These host
+fixtures verify rejection and owned-anchor cleanup; they do not establish an
+installed-target timing bound or preempt a blocked synchronous kernel call.
+
 Normal leader exit, execution deadline, output overflow, read/selector failure
 and setup failure all retire the original group. TERM (1 second) is followed by
 KILL (2 seconds) while the leader remains waitable. Two quiet procfs observations

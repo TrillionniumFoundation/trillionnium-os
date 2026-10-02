@@ -277,6 +277,17 @@ This command qualifies only the source behavior that its assertions exercise.
 It neither installs the product nor grants L2-L6 evidence. Reproduce the specific
 failure before changing a timeout, disabling an assertion or modifying a budget.
 
+The terminal-generation control test waits for the real child to reach its
+stdin readiness barrier before committing the competing terminal transition.
+After the write attempt, the fixture closes the owned stdin pipe and requires
+the child's read-completion marker and the manager's actual running-map
+retirement. Only then does it assert `NotLive` and absence of the forbidden
+write marker. This makes a slow reader observable instead of accepting an
+arbitrary delay as proof that no bytes reached it. Fixture failure cleanup
+reports the close and signal results and retains uncertainty when the finite
+retirement deadline expires. These host barriers do not measure an installed
+cleanup SLO or prove descendant containment outside the owned process group.
+
 ## 16. Deployment and runbook
 
 On job-state disagreement, stop starts for the affected shard, bind registry, journal and process observations to the same job ID and epoch, then reconcile before capacity is returned.

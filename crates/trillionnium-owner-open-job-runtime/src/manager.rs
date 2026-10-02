@@ -3169,21 +3169,69 @@ mod tests {
 
     #[test]
     fn control_rechecks_terminal_generation_before_process_effect() {
+        struct FixtureCleanup<'a> {
+            manager: &'a JobManager,
+            key: &'a JobKey,
+            armed: bool,
+        }
+
+        impl Drop for FixtureCleanup<'_> {
+            fn drop(&mut self) {
+                if !self.armed {
+                    return;
+                }
+                let control = self
+                    .manager
+                    .running()
+                    .ok()
+                    .and_then(|jobs| jobs.get(self.key).map(|job| job.control.clone()));
+                if let Some(control) = control {
+                    let close = control.close_stdin();
+                    let kill = control.kill(libc::SIGKILL);
+                    eprintln!("terminal-race fixture cleanup: close={close:?}, kill={kill:?}");
+                }
+                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
+                while self.manager.has_live_or_pending_jobs()
+                    && std::time::Instant::now() < deadline
+                {
+                    std::thread::sleep(std::time::Duration::from_millis(10));
+                }
+                if self.manager.has_live_or_pending_jobs() {
+                    eprintln!(
+                        "terminal-race fixture cleanup remained uncertain: {:?}",
+                        self.manager.inspect(self.key, 0, 64),
+                    );
+                }
+            }
+        }
+
         let directory = tempdir().expect("temporary directory");
         let marker = directory.path().join("post-terminal-write");
+        let ready = directory.path().join("stdin-ready");
+        let drained = directory.path().join("stdin-drained");
         let manager = JobManager::new(
             JobRuntimeConfig::development_unsafe(),
             JobJournal::memory_only(),
         )
         .expect("memory-only manager");
         let key = rollback_test_key();
+        let mut fixture_cleanup = FixtureCleanup {
+            manager: &manager,
+            key: &key,
+            armed: true,
+        };
         manager
             .start(JobStartRequest {
                 key: key.clone(),
                 request: rollback_test_request(),
                 operation_id: "start-terminal-race".to_string(),
                 invocation: JobInvocation::Command {
-                    command: format!("IFS= read -r _ && touch '{}' ; sleep 30", marker.display()),
+                    command: format!(
+                        "touch '{}' && {{ if IFS= read -r _; then touch '{}'; fi; touch '{}'; }}",
+                        ready.display(),
+                        marker.display(),
+                        drained.display(),
+                    ),
                 },
                 shell_executable: PathBuf::from("/bin/sh"),
                 cwd: None,
@@ -3198,6 +3246,17 @@ mod tests {
             .get(&key)
             .cloned()
             .expect("live running job");
+        let ready_deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+        while !ready.exists() && std::time::Instant::now() < ready_deadline {
+            std::thread::sleep(std::time::Duration::from_millis(5));
+        }
+        if !ready.exists() {
+            running
+                .control
+                .kill(libc::SIGKILL)
+                .expect("retire fixture that did not reach its stdin barrier");
+            panic!("child did not reach its stdin barrier");
+        }
         manager
             .registry()
             .complete(
@@ -3214,19 +3273,35 @@ mod tests {
             )
             .expect("simulate terminal transition winning lifecycle race");
 
-        assert!(matches!(
+        let write_rejected = matches!(
             manager.write(&key, "write-after-terminal", b"must-not-cross\n"),
             Err(JobRuntimeError::NotLive)
-        ));
-        std::thread::sleep(std::time::Duration::from_millis(50));
-        assert!(!marker.exists(), "post-terminal bytes reached the child");
+        );
+        // This private fixture control only closes the owned input pipe.  EOF
+        // makes the child finish its read before we inspect the marker, so a
+        // slow child cannot make an incorrectly forwarded write look absent.
+        running
+            .control
+            .close_stdin()
+            .expect("close fixture stdin to observe the read result");
 
-        let _ = running.control.kill(libc::SIGKILL);
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        // The process reaper may spend more than two seconds in its bounded
+        // descendant proof and I/O-worker cleanup before publishing Exited.
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
         while manager.has_live_or_pending_jobs() && std::time::Instant::now() < deadline {
             std::thread::sleep(std::time::Duration::from_millis(10));
         }
-        assert!(!manager.has_live_or_pending_jobs());
+        if manager.has_live_or_pending_jobs() {
+            let cleanup = running.control.kill(libc::SIGKILL);
+            panic!(
+                "fixture terminal publication exceeded its bounded deadline: cleanup={cleanup:?}, inspection={:?}",
+                manager.inspect(&key, 0, 64),
+            );
+        }
+        assert!(write_rejected, "post-terminal write must return NotLive");
+        assert!(drained.exists(), "child did not finish its stdin read");
+        assert!(!marker.exists(), "post-terminal bytes reached the child");
+        fixture_cleanup.armed = false;
     }
 
     #[test]

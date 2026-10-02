@@ -36,6 +36,13 @@ schema bytes and migration/rollback metadata with `approval_asserted=false`.
 No author or generator can manufacture the independent protected-head review.
 No state bytes, runtime command semantics, control mode or release flags change.
 
+Base-version migration packets are read from bounded regular Git blobs in the
+exact ancestor commit, with their content digest, module identity and reviewed
+target schema checked. Current packets use the descriptor-bound working-tree
+reader. Retiring a historical packet from the current tree does not invalidate
+the base version or let a current file substitute for its provenance. Every new
+change still needs its own packet; unchanged schemas require NO_CHANGE.
+
 Commands:
 
 ```sh
