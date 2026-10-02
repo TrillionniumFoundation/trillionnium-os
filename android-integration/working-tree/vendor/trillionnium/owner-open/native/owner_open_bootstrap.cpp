@@ -527,33 +527,104 @@ bool HashImage(int fd, std::string* digest, std::size_t* bytes) {
   return true;
 }
 
-bool EnsureDirectory(const char* path, mode_t mode) {
-  std::string current;
-  for (const char* cursor = path; *cursor != '\0'; ++cursor) {
-    current.push_back(*cursor);
-    if (*cursor != '/' || current.size() == 1) continue;
-    current.pop_back();
+class DirectoryDescriptor {
+ public:
+  explicit DirectoryDescriptor(int descriptor) : descriptor_(descriptor) {}
+  DirectoryDescriptor(const DirectoryDescriptor&) = delete;
+  DirectoryDescriptor& operator=(const DirectoryDescriptor&) = delete;
+  ~DirectoryDescriptor() { reset(-1); }
+  int get() const { return descriptor_; }
+  int release() {
+    const int result = descriptor_;
+    descriptor_ = -1;
+    return result;
+  }
+  void reset(int descriptor) {
+    const int saved = errno;
+    if (descriptor_ >= 0) close(descriptor_);
+    descriptor_ = descriptor;
+    errno = saved;
+  }
+
+ private:
+  int descriptor_;
+};
+
+bool EnsureDirectoryAtRoot(int root, std::string_view path, mode_t mode) {
+  if (path.size() < 2 || path.size() > 4095 || path.front() != '/' ||
+      path.back() == '/' || path.find('\0') != std::string_view::npos || (mode & ~0777) != 0) {
+    errno = EINVAL;
+    return false;
+  }
+  // Validate the complete path before creating any component. The fixed /data
+  // ancestor belongs to Android system; only the target private directory must
+  // be root:root, and ancestor modes are never changed.
+  std::size_t begin = 1;
+  while (begin < path.size()) {
+    const std::size_t end = path.find('/', begin);
+    const std::size_t length = end == std::string_view::npos ? path.size() - begin : end - begin;
+    const std::string_view component = path.substr(begin, length);
+    if (length == 0 || length > 255 || component == "." || component == "..") {
+      errno = EINVAL;
+      return false;
+    }
+    if (end == std::string_view::npos) break;
+    begin = end + 1;
+  }
+  DirectoryDescriptor current(fcntl(root, F_DUPFD_CLOEXEC, 0));
+  if (current.get() < 0) return false;
+  begin = 1;
+  while (begin < path.size()) {
+    const std::size_t end = path.find('/', begin);
+    const std::string component(path.substr(
+        begin, end == std::string_view::npos ? path.size() - begin : end - begin));
+    int descriptor = openat(current.get(), component.c_str(),
+                            O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+    if (descriptor < 0 && errno == ENOENT) {
+      if (mkdirat(current.get(), component.c_str(), mode) != 0 && errno != EEXIST) return false;
+      descriptor = openat(current.get(), component.c_str(),
+                          O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+    }
+    DirectoryDescriptor next(descriptor);
+    if (next.get() < 0) return false;
     struct stat metadata {};
-    if (lstat(current.c_str(), &metadata) != 0) {
-      if (errno != ENOENT || mkdir(current.c_str(), mode) != 0) return false;
-    } else if (!S_ISDIR(metadata.st_mode) || S_ISLNK(metadata.st_mode)) {
+    if (fstat(next.get(), &metadata) != 0) return false;
+    if (!S_ISDIR(metadata.st_mode)) {
       errno = ENOTDIR;
       return false;
     }
-    current.push_back('/');
+    if (end == std::string_view::npos) {
+      if (metadata.st_uid != 0 || metadata.st_gid != 0) {
+        errno = EACCES;
+        return false;
+      }
+      // Ownership and chmod refer to this opened directory, even if its former
+      // pathname is concurrently replaced with a symlink or a different inode.
+      if (fchmod(next.get(), mode) != 0) return false;
+      struct stat named {};
+      if (fstatat(current.get(), component.c_str(), &named, AT_SYMLINK_NOFOLLOW) != 0) return false;
+      if (!S_ISDIR(named.st_mode) || named.st_dev != metadata.st_dev ||
+          named.st_ino != metadata.st_ino) {
+        errno = ESTALE;
+        return false;
+      }
+      return true;
+    }
+    current.reset(next.release());
+    begin = end + 1;
   }
-  struct stat metadata {};
-  if (lstat(path, &metadata) != 0) {
-    if (errno != ENOENT || mkdir(path, mode) != 0) return false;
-  } else if (!S_ISDIR(metadata.st_mode) || S_ISLNK(metadata.st_mode)) {
-    errno = ENOTDIR;
+  errno = EINVAL;
+  return false;
+}
+
+bool EnsureDirectory(const char* path, mode_t mode) {
+  if (path == nullptr) {
+    errno = EINVAL;
     return false;
   }
-  if (lstat(path, &metadata) != 0 || metadata.st_uid != 0 || metadata.st_gid != 0) {
-    errno = EACCES;
-    return false;
-  }
-  return chmod(path, mode) == 0;
+  DirectoryDescriptor root(open("/", O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
+  if (root.get() < 0) return false;
+  return EnsureDirectoryAtRoot(root.get(), path, mode);
 }
 
 bool EmergencyStopPresent() {

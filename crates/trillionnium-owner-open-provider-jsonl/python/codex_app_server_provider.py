@@ -20,6 +20,7 @@ import stat
 import sys
 import threading
 import time
+import tomllib
 from typing import Any, BinaryIO, Callable
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -43,6 +44,19 @@ SESSION_SCHEMA = "org.trillionnium.owner-open.codex-app-server-session.v1"
 MAX_LINE = 256 * 1024
 MAX_SESSIONS = 256
 MAX_NATIVE_RPC_ID_BYTES = 256
+MAX_NATIVE_PUBLIC_CONFIG_BYTES = 16 * 1024
+PUBLIC_NATIVE_CONFIG_KEYS = frozenset({
+    "model", "model_provider", "model_providers", "model_reasoning_effort",
+    "model_reasoning_summary", "model_verbosity", "model_context_window",
+    "model_auto_compact_token_limit", "model_supports_reasoning_summaries",
+    "disable_response_storage", "web_search", "features",
+})
+PUBLIC_MODEL_PROVIDER_KEYS = frozenset({
+    "name", "base_url", "wire_api", "requires_openai_auth", "env_key",
+    "env_key_instructions", "query_params", "env_http_headers",
+    "request_max_retries", "stream_max_retries", "stream_idle_timeout_ms",
+    "websocket_connect_timeout_ms", "supports_websockets",
+})
 SCOPE_FIELDS = ("session_id", "profile_id", "task_id", "turn_id", "turn_stream_id")
 
 
@@ -111,6 +125,60 @@ def read_private_at(parent: int, name: str) -> dict[str, Any]:
     return decode_strict_event(read_private_bytes_at(parent, name))
 
 
+def reject_unbound_native_layers(codex_home: Path, home: Path) -> None:
+    """Reject known filesystem contributors before native startup.
+
+    These absence checks do not make paths immutable or bind remote/cloud
+    requirements. The installed namespace and authenticated resume still need
+    independent qualification. Never open authentication files here.
+    """
+    candidates = {Path("/etc/codex"), codex_home / "managed_config.toml",
+                  codex_home / "requirements.toml", codex_home / "hooks.json",
+                  codex_home / "plugins", home / ".codex"}
+    # The selected CODEX_HOME may itself be HOME/.codex; its public config is
+    # already digest-bound below. Other ancestors' project layers are not.
+    candidates.discard(codex_home)
+    for ancestor in (codex_home, *codex_home.parents):
+        project = ancestor / ".codex"
+        if project != codex_home:
+            candidates.add(project)
+        candidates.add(ancestor / ".git")
+    for path in sorted(candidates):
+        try:
+            os.lstat(path)
+        except FileNotFoundError:
+            continue
+        raise ProviderRuntimeError("unbound native configuration source present; startup refused")
+
+
+def validate_public_native_config(raw: bytes) -> None:
+    # TOML has no native JSON allocation preflight. Keep this public model-only
+    # input small before decoding/parsing, and exclude extension/profile inputs.
+    if len(raw) > MAX_NATIVE_PUBLIC_CONFIG_BYTES:
+        raise ProviderRuntimeError("native public model configuration exceeds its byte bound")
+    try:
+        value = tomllib.loads(raw.decode("utf-8"))
+    except (ValueError, UnicodeError) as error:
+        raise ProviderRuntimeError("invalid native public model configuration") from error
+    if set(value) - PUBLIC_NATIVE_CONFIG_KEYS:
+        raise ProviderRuntimeError("unbound native extension/profile configuration")
+    features = value.get("features", {})
+    if not isinstance(features, dict) or any(enabled is not False for enabled in features.values()):
+        raise ProviderRuntimeError("native effect features must be explicitly disabled")
+    if "web_search" in value and value["web_search"] != "disabled":
+        raise ProviderRuntimeError("unbound native web tool configuration")
+    providers = value.get("model_providers", {})
+    if not isinstance(providers, dict) or len(providers) > 16:
+        raise ProviderRuntimeError("invalid native public model provider table")
+    for name, provider in providers.items():
+        identifier(name, "native model provider name")
+        if not isinstance(provider, dict) or set(provider) - PUBLIC_MODEL_PROVIDER_KEYS:
+            # Frozen ModelProviderInfo.auth runs a configured subprocess. AWS
+            # credential providers and inline bearer/header material are not
+            # public model settings and cannot enter this callback-only bridge.
+            raise ProviderRuntimeError("unbound native model authentication/extension configuration")
+
+
 def native_configuration(config: dict[str, Any]) -> tuple[dict[str, str], Path]:
     """Bind native config and neutral cwd; never inspect credential contents.
 
@@ -122,6 +190,7 @@ def native_configuration(config: dict[str, Any]) -> tuple[dict[str, str], Path]:
     for directory in (home, codex_home):
         fd = private_directory(directory)
         os.close(fd)
+    reject_unbound_native_layers(codex_home, home)
     parent = private_directory(codex_home)
     try:
         try:
@@ -132,6 +201,8 @@ def native_configuration(config: dict[str, Any]) -> tuple[dict[str, str], Path]:
             measured = hashlib.sha256(raw).hexdigest()
         if config["codex_config_sha256"] != measured:
             raise ProviderRuntimeError("native Codex configuration digest/absence conflict")
+        if measured is not None:
+            validate_public_native_config(raw)
     finally:
         os.close(parent)
     # Native authentication stays owned by Codex. Do not copy the ambient

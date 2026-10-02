@@ -103,6 +103,238 @@ fn reopen_after_dispatcher_shutdown(journal: &std::path::Path) -> JobManager {
 }
 
 #[test]
+fn tiny_job_input_with_excessive_owned_capacity_is_rejected_before_wal_or_effect() {
+    let directory = secure_tempdir();
+    let journal = directory.path().join("capacity.jsonl");
+    let marker = directory.path().join("effect");
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    let job = key("spare-input");
+    let mut start = start_request(
+        job.clone(),
+        request('a', "pipe"),
+        "start-capacity",
+        format!("printf effect > '{}'", marker.display()),
+        None,
+    );
+    start.initial_stdin = Vec::with_capacity(64 * 1024 * 1024);
+    let result = manager.start(start);
+    if result.is_ok() {
+        wait_terminal(&manager, &job);
+    }
+    assert!(result.is_err(), "a zero-length 64 MiB input was accepted");
+    assert!(
+        !marker.exists(),
+        "rejected input crossed the effect boundary"
+    );
+    assert!(manager.registry().is_empty().unwrap());
+    assert!(std::fs::read(&journal).unwrap().is_empty());
+}
+
+#[test]
+fn job_spec_spare_capacities_and_dense_nodes_are_rejected_before_admission() {
+    let directory = secure_tempdir();
+    let journal = directory.path().join("spec-capacity.jsonl");
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    for fixture in 0..10 {
+        let job = key(&format!("spec-capacity-{fixture}"));
+        let mut start = start_request(
+            job.clone(),
+            request('a', "pipe"),
+            "start-capacity",
+            "true".to_string(),
+            None,
+        );
+        match fixture {
+            0 => start.key.job_id.reserve(2 * 1024 * 1024),
+            1 => start.operation_id.reserve(2 * 1024 * 1024),
+            2 => start
+                .request
+                .target_id
+                .as_mut()
+                .unwrap()
+                .reserve(2 * 1024 * 1024),
+            3 => start.shell_executable.reserve(2 * 1024 * 1024),
+            4 => {
+                let mut cwd = PathBuf::from("/tmp");
+                cwd.reserve(2 * 1024 * 1024);
+                start.cwd = Some(cwd);
+            }
+            5 => {
+                let mut command = String::with_capacity(2 * 1024 * 1024);
+                command.push_str("true");
+                start.invocation = JobInvocation::Command { command };
+            }
+            6 => {
+                let mut argv = Vec::with_capacity(4097);
+                argv.push("/bin/true".to_string());
+                start.invocation = JobInvocation::Argv { argv };
+            }
+            7 => {
+                let mut argument = String::with_capacity(2 * 1024 * 1024);
+                argument.push('x');
+                start.invocation = JobInvocation::Argv {
+                    argv: vec!["/bin/true".to_string(), argument],
+                };
+            }
+            8 => {
+                let mut value = String::with_capacity(2 * 1024 * 1024);
+                value.push('x');
+                start.env.insert("BOUND".to_string(), Some(value));
+            }
+            9 => {
+                for index in 0..1025 {
+                    start.env.insert(format!("BOUND_{index}"), None);
+                }
+            }
+            _ => unreachable!(),
+        }
+        assert!(
+            manager.start(start).is_err(),
+            "fixture {fixture} was admitted"
+        );
+        assert!(manager.registry().is_empty().unwrap());
+        assert!(std::fs::read(&journal).unwrap().is_empty());
+    }
+}
+
+#[test]
+fn inherited_job_environment_is_bounded_before_durable_acceptance() {
+    const ISOLATED: &str = "TRILLIONNIUM_JOB_ENV_BOUND_CHILD";
+    if std::env::var_os(ISOLATED).is_none() {
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "inherited_job_environment_is_bounded_before_durable_acceptance",
+                "--nocapture",
+            ])
+            .env(ISOLATED, "1")
+            .env("HOME", "x".repeat(70 * 1024))
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        return;
+    }
+    let directory = secure_tempdir();
+    let journal = directory.path().join("environment.jsonl");
+    let marker = directory.path().join("effect");
+    let manager = JobManager::open(JobRuntimeConfig::default(), Some(&journal)).unwrap();
+    let start = start_request(
+        key("bounded-env"),
+        request('a', "pipe"),
+        "start-env",
+        format!("printf effect > '{}'", marker.display()),
+        None,
+    );
+    assert!(manager.start(start).is_err());
+    assert!(!marker.exists());
+    assert!(manager.registry().is_empty().unwrap());
+    assert!(std::fs::read(&journal).unwrap().is_empty());
+}
+
+#[test]
+fn independent_managers_share_active_capacity_and_duplicates_do_not_redispatch() {
+    const ISOLATED: &str = "TRILLIONNIUM_JOB_SHARED_POOL_CHILD";
+    if std::env::var_os(ISOLATED).is_none() {
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "independent_managers_share_active_capacity_and_duplicates_do_not_redispatch",
+                "--nocapture",
+            ])
+            .env(ISOLATED, "1")
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        return;
+    }
+    let directory = secure_tempdir();
+    let config = JobRuntimeConfig {
+        max_jobs: 1,
+        max_input_bytes: 8 * 1024 * 1024,
+        ..JobRuntimeConfig::default()
+    };
+    let managers: Vec<_> = (0..4)
+        .map(|index| {
+            JobManager::open(
+                config.clone(),
+                Some(&directory.path().join(format!("{index}.jsonl"))),
+            )
+            .unwrap()
+        })
+        .collect();
+    let make_start = |index: usize| {
+        let mut start = start_request(
+            key(&format!("pool-{index}")),
+            request('a', "pipe"),
+            "start-pool",
+            "exec sleep 30".to_string(),
+            None,
+        );
+        start.initial_stdin = Vec::with_capacity(8 * 1024 * 1024);
+        start
+    };
+    for (index, manager) in managers.iter().enumerate().take(3) {
+        assert_eq!(
+            manager.start(make_start(index)).unwrap().disposition,
+            StartDisposition::Started
+        );
+    }
+    let refused = managers[3].start(make_start(3));
+    // Always clean up the owned children, including a faulty pre-fix admission.
+    for (index, manager) in managers.iter().enumerate().take(3) {
+        assert_eq!(
+            manager.start(make_start(index)).unwrap().disposition,
+            StartDisposition::ExistingLive
+        );
+        let mut conflicting = make_start(index);
+        conflicting.request.request_sha256 = "c".repeat(64);
+        assert!(manager.start(conflicting).is_err());
+        manager
+            .kill(&key(&format!("pool-{index}")), "kill-pool", libc::SIGKILL)
+            .unwrap();
+        wait_terminal(manager, &key(&format!("pool-{index}")));
+    }
+    if refused.is_ok() {
+        managers[3]
+            .kill(&key("pool-3"), "kill-pool", libc::SIGKILL)
+            .unwrap();
+        wait_terminal(&managers[3], &key("pool-3"));
+    }
+    assert!(
+        refused.is_err(),
+        "four independent managers exceeded the shared 32 MiB pool"
+    );
+    assert!(managers[3].registry().is_empty().unwrap());
+    assert!(
+        std::fs::read(directory.path().join("3.jsonl"))
+            .unwrap()
+            .is_empty()
+    );
+    assert_eq!(
+        managers[0].start(make_start(0)).unwrap().disposition,
+        StartDisposition::ExistingTerminal
+    );
+    assert_eq!(
+        managers[3].start(make_start(3)).unwrap().disposition,
+        StartDisposition::Started
+    );
+    managers[3]
+        .kill(&key("pool-3"), "kill-pool", libc::SIGKILL)
+        .unwrap();
+    wait_terminal(&managers[3], &key("pool-3"));
+}
+
+#[test]
 fn argv_job_preserves_empty_arguments_after_the_executable() {
     let directory = secure_tempdir();
     let journal = directory.path().join("jobs.jsonl");

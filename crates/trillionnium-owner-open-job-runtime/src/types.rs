@@ -55,6 +55,9 @@ pub const MAX_JOB_RUNTIME_OBSERVATIONS: usize = 4096;
 pub const MAX_JOB_RUNTIME_PROCESS_BUFFER_BYTES: usize = 32 * 1024 * 1024;
 pub const MAX_JOB_RUNTIME_RETAINED_KEYS: usize = 256;
 pub const MAX_JOB_RUNTIME_REGISTRY_EVENTS_PER_JOB: usize = 16;
+pub(crate) const MAX_OBSERVATION_STAGING_BYTES: usize = 16 * 1024 * 1024;
+pub(crate) const OBSERVATION_STAGING_FIXED_BYTES: usize = 1024 * 1024;
+pub(crate) const OUTPUT_VALUE_STAGING_PER_BYTE: usize = 224;
 // Covers 256 bounded keys, hash buckets and cursor/gap state even when their
 // event prefixes have been evicted. Registry identity is never budget-evicted.
 pub(crate) const OBSERVATION_METADATA_RESERVE: usize = 1024 * 1024;
@@ -173,6 +176,19 @@ impl JobRuntimeConfig {
                 "aggregate process buffers exceed the runtime budget".to_string(),
             ));
         }
+        // Runtime output is carried as a numeric Value array. Bound the
+        // existing schema's DOM/clone/encoder staging as well as raw buffers;
+        // its shared serialization lane is reserved before the first DOM.
+        if self
+            .max_output_chunk_bytes
+            .checked_mul(OUTPUT_VALUE_STAGING_PER_BYTE)
+            .and_then(|bytes| bytes.checked_add(OBSERVATION_STAGING_FIXED_BYTES))
+            .is_none_or(|bytes| bytes > MAX_OBSERVATION_STAGING_BYTES)
+        {
+            return Err(JobRuntimeError::InvalidRequest(
+                "observation Value staging exceeds the runtime budget".to_string(),
+            ));
+        }
         Ok(())
     }
 }
@@ -264,6 +280,22 @@ mod tests {
                 .unwrap_err()
                 .to_string()
                 .contains("aggregate process buffers")
+        );
+    }
+
+    #[test]
+    fn numeric_output_dom_staging_rejects_a_profile_before_journal_or_spawn() {
+        let config = JobRuntimeConfig {
+            max_jobs: 1,
+            max_output_chunk_bytes: 128 * 1024,
+            ..JobRuntimeConfig::default()
+        };
+        assert!(
+            config
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("Value staging")
         );
     }
 }

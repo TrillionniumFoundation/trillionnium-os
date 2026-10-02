@@ -56,8 +56,8 @@ impl DurableEventStore {
         self.0.append(input)
     }
 
-    pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
-        self.0.replay(scope, inclusive_turn_seq)
+    pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
+        self.0.get(scope, event_id)
     }
 
     #[cfg(test)]
@@ -109,8 +109,8 @@ impl SegmentedEventStore {
         self.0.append_durable(input)
     }
 
-    pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
-        self.0.replay(scope, inclusive_turn_seq)
+    pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
+        self.0.get(scope, event_id)
     }
 
     pub fn visit_records<E>(

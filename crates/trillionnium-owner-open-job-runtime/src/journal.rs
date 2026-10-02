@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::io::{self, Write};
 use std::path::Path;
 use std::sync::{Arc, Mutex, MutexGuard};
 
@@ -9,7 +10,7 @@ use trillionnium_owner_open_event_store::{
     DurableEventStore, EventInput, EventRecord, EventStoreLimits, SegmentedEventStore,
     SegmentedEventStoreConfig, SyncPolicy, TurnScope,
 };
-use trillionnium_owner_open_job_registry::{JobKey, JobRequest};
+use trillionnium_owner_open_job_registry::{JobKey, JobMemoryLease, JobRequest};
 
 use crate::validate::{require_id, require_sha256, require_text};
 use crate::{JobRuntimeError, Result};
@@ -76,7 +77,7 @@ struct OperationState {
     request: JobRequest,
     operation_kind: String,
     operation_sha256: String,
-    terminal: Option<Value>,
+    terminal: Option<CachedPayload>,
     preexisting: bool,
     /// True only when the accepted record was committed to the durable store.
     /// This prevents a later journal outage from being mistaken for a
@@ -87,14 +88,23 @@ struct OperationState {
 #[derive(Debug, Clone)]
 struct JobState {
     request: JobRequest,
-    start_result: Option<Value>,
-    terminal: Option<Value>,
+    start_result: Option<CachedPayload>,
+    terminal: Option<CachedPayload>,
     next_runtime_cursor: u64,
 }
 
 type OperationStates = HashMap<OperationKey, OperationState>;
 type JobStates = HashMap<JobKey, JobState>;
-type RecoveredState = (OperationStates, JobStates);
+type RecoveredState = (OperationStates, JobStates, Vec<JobMemoryLease>);
+
+#[derive(Debug, Clone, PartialEq)]
+enum CachedPayload {
+    Memory(Arc<Value>),
+    Durable {
+        event_id: String,
+        record_sha256: String,
+    },
+}
 
 #[derive(Debug)]
 enum EventStoreBackend {
@@ -103,36 +113,49 @@ enum EventStoreBackend {
 }
 
 impl EventStoreBackend {
-    fn append(&self, input: EventInput) -> trillionnium_owner_open_event_store::Result<()> {
+    fn append(&self, input: EventInput) -> trillionnium_owner_open_event_store::Result<String> {
         match self {
-            Self::Legacy(store) => store.append(input).map(|_| ()),
-            Self::Segmented(store) => store.append(input).map(|_| ()),
+            Self::Legacy(store) => store
+                .append(input)
+                .map(|result| result.record.record_sha256),
+            Self::Segmented(store) => store
+                .append(input)
+                .map(|result| result.record.record_sha256),
         }
     }
 
-    fn append_durable(&self, input: EventInput) -> trillionnium_owner_open_event_store::Result<()> {
+    fn append_durable(
+        &self,
+        input: EventInput,
+    ) -> trillionnium_owner_open_event_store::Result<String> {
         match self {
-            Self::Legacy(store) => store.append(input).map(|_| ()),
-            Self::Segmented(store) => store.append_durable(input).map(|_| ()),
+            Self::Legacy(store) => store
+                .append(input)
+                .map(|result| result.record.record_sha256),
+            Self::Segmented(store) => store
+                .append_durable(input)
+                .map(|result| result.record.record_sha256),
         }
     }
 
-    fn visit_records<E>(&self, visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>)
-        -> trillionnium_owner_open_event_store::Result<std::result::Result<(), E>> {
+    fn get(
+        &self,
+        scope: &TurnScope,
+        event_id: &str,
+    ) -> trillionnium_owner_open_event_store::Result<Option<EventRecord>> {
+        match self {
+            Self::Legacy(store) => store.get(scope, event_id),
+            Self::Segmented(store) => store.get(scope, event_id),
+        }
+    }
+
+    fn visit_records<E>(
+        &self,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> trillionnium_owner_open_event_store::Result<std::result::Result<(), E>> {
         match self {
             Self::Legacy(store) => store.visit_records(visit),
             Self::Segmented(store) => store.visit_records(visit),
-        }
-    }
-
-    fn replay(
-        &self,
-        scope: &TurnScope,
-        inclusive_turn_seq: u64,
-    ) -> trillionnium_owner_open_event_store::Result<Vec<EventRecord>> {
-        match self {
-            Self::Legacy(store) => store.replay(scope, inclusive_turn_seq),
-            Self::Segmented(store) => store.replay(scope, inclusive_turn_seq),
         }
     }
 
@@ -153,6 +176,7 @@ struct State {
     error: Option<String>,
     operations: HashMap<OperationKey, OperationState>,
     jobs: HashMap<JobKey, JobState>,
+    charges: Vec<JobMemoryLease>,
     #[cfg(test)]
     fail_next_accept: bool,
     #[cfg(test)]
@@ -163,6 +187,7 @@ struct State {
 pub struct JobJournal {
     state: Mutex<State>,
     key_shards: Vec<Mutex<()>>,
+    _fixed_lease: Option<JobMemoryLease>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -183,11 +208,42 @@ struct JournalEnvelope {
     payload: Value,
 }
 
+/// Decode only the fixed envelope identity while borrowing a store record.
+/// IgnoredAny avoids cloning a large terminal/output payload during recovery.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct JournalHeader {
+    schema: String,
+    record: String,
+    job_id: String,
+    request: JobRequest,
+    #[serde(default)]
+    operation_id: Option<String>,
+    #[serde(default)]
+    operation_kind: Option<String>,
+    #[serde(default)]
+    operation_sha256: Option<String>,
+    #[serde(default)]
+    event_seq: Option<u64>,
+    #[serde(rename = "payload")]
+    _payload: serde::de::IgnoredAny,
+}
+
 impl JobJournal {
-    fn from_state(state: State) -> Self {
+    fn from_state(mut state: State) -> Self {
+        let fixed_lease = JobMemoryLease::acquire(64 * 1024);
+        if let Err(error) = &fixed_lease {
+            state.store = None;
+            state.configured = true;
+            state.error = Some(error.to_string());
+            state.operations.clear();
+            state.jobs.clear();
+            state.charges.clear();
+        }
         Self {
             state: Mutex::new(state),
             key_shards: (0..JOURNAL_SHARD_COUNT).map(|_| Mutex::new(())).collect(),
+            _fixed_lease: fixed_lease.ok(),
         }
     }
 
@@ -199,6 +255,7 @@ impl JobJournal {
             error: None,
             operations: HashMap::new(),
             jobs: HashMap::new(),
+            charges: Vec::new(),
             #[cfg(test)]
             fail_next_accept: false,
             #[cfg(test)]
@@ -242,12 +299,13 @@ impl JobJournal {
     ) -> Self {
         match result {
             Ok(store) => match recover(&store) {
-                Ok((operations, jobs)) => Self::from_state(State {
+                Ok((operations, jobs, charges)) => Self::from_state(State {
                     store: Some(store),
                     configured: true,
                     error: None,
                     operations,
                     jobs,
+                    charges,
                     #[cfg(test)]
                     fail_next_accept: false,
                     #[cfg(test)]
@@ -259,6 +317,7 @@ impl JobJournal {
                     error: Some(error),
                     operations: HashMap::new(),
                     jobs: HashMap::new(),
+                    charges: Vec::new(),
                     #[cfg(test)]
                     fail_next_accept: false,
                     #[cfg(test)]
@@ -271,6 +330,7 @@ impl JobJournal {
                 error: Some(error.to_string()),
                 operations: HashMap::new(),
                 jobs: HashMap::new(),
+                charges: Vec::new(),
                 #[cfg(test)]
                 fail_next_accept: false,
                 #[cfg(test)]
@@ -338,12 +398,26 @@ impl JobJournal {
 
     pub fn recovered_job(&self, key: &JobKey) -> Result<Option<RecoveredJob>> {
         let _key_guard = self.key_guard(key)?;
-        let state = self.lock()?;
-        Ok(state.jobs.get(key).map(|job| RecoveredJob {
+        let (store, job) = {
+            let state = self.lock()?;
+            (state.store.clone(), state.jobs.get(key).cloned())
+        };
+        let Some(job) = job else {
+            return Ok(None);
+        };
+        Ok(Some(RecoveredJob {
             key: key.clone(),
-            request: job.request.clone(),
-            start_result: job.start_result.clone(),
-            terminal: job.terminal.clone(),
+            start_result: job
+                .start_result
+                .as_ref()
+                .map(|cached| self.resolve_payload(store.as_ref(), key, &job.request, cached))
+                .transpose()?,
+            terminal: job
+                .terminal
+                .as_ref()
+                .map(|cached| self.resolve_payload(store.as_ref(), key, &job.request, cached))
+                .transpose()?,
+            request: job.request,
         }))
     }
 
@@ -352,7 +426,23 @@ impl JobJournal {
     /// no journal or wire schema change is required.
     pub fn runtime_next_cursor(&self, key: &JobKey) -> Result<u64> {
         let _key_guard = self.key_guard(key)?;
-        Ok(self.lock()?.jobs.get(key).map_or(0, |job| job.next_runtime_cursor))
+        Ok(self
+            .lock()?
+            .jobs
+            .get(key)
+            .map_or(0, |job| job.next_runtime_cursor))
+    }
+
+    /// Inspection needs presence, not a retained copy of every terminal DOM.
+    /// A degraded backend does not erase already observed registry/runtime
+    /// truth; full payload retrieval still fails explicitly when unavailable.
+    pub(crate) fn recovered_nonterminal(&self, key: &JobKey) -> Result<bool> {
+        let _key_guard = self.key_guard(key)?;
+        Ok(self
+            .lock()?
+            .jobs
+            .get(key)
+            .is_some_and(|job| job.terminal.is_none()))
     }
 
     pub fn begin_operation(
@@ -364,6 +454,8 @@ impl JobJournal {
         operation_sha256: &str,
         details: Value,
     ) -> Result<OperationBegin> {
+        let _working_lane = crate::resources::working_lane()?;
+        let _working_lease = journal_working_charge(key, request, &details)?;
         validate_operation(operation_id, operation_kind, operation_sha256)?;
         // A key shard preserves the linearizable begin/append transition for
         // this job while allowing unrelated jobs to release the global state
@@ -373,7 +465,7 @@ impl JobJournal {
             job: key.clone(),
             operation_id: operation_id.to_string(),
         };
-        let (store, envelope) = {
+        let (store, envelope, charge) = {
             let mut state = self.lock()?;
             ensure_request_for_key(&state, key, request)?;
             if let Some(existing) = state.operations.get(&operation_key) {
@@ -383,11 +475,16 @@ impl JobJournal {
                 {
                     return Err(JobRuntimeError::JobConflict);
                 }
-                return Ok(match &existing.terminal {
-                    Some(terminal) => OperationBegin::ExistingTerminal(terminal.clone()),
-                    None => OperationBegin::ExistingAccepted {
-                        restart_uncertain: existing.preexisting,
-                    },
+                if let Some(terminal) = &existing.terminal {
+                    let terminal = terminal.clone();
+                    let store = state.store.clone();
+                    drop(state);
+                    return self
+                        .resolve_payload(store.as_ref(), key, request, &terminal)
+                        .map(OperationBegin::ExistingTerminal);
+                }
+                return Ok(OperationBegin::ExistingAccepted {
+                    restart_uncertain: existing.preexisting,
                 });
             }
 
@@ -402,7 +499,23 @@ impl JobJournal {
                 });
             }
 
+            let charge = journal_metadata_charge(
+                key,
+                request,
+                operation_id,
+                operation_kind,
+                !state.jobs.contains_key(key) && operation_kind == "start",
+                state.store.is_none(),
+            )?;
             if state.store.is_none() {
+                if state.configured {
+                    return Err(JobRuntimeError::Journal(
+                        state.error.clone().unwrap_or_else(|| {
+                            "configured job journal is unavailable before acceptance".to_string()
+                        }),
+                    ));
+                }
+                state.charges.push(charge);
                 state.operations.insert(
                     operation_key,
                     OperationState {
@@ -448,7 +561,7 @@ impl JobJournal {
                 payload: details,
             };
             let store = Arc::clone(state.store.as_ref().expect("store presence checked"));
-            (store, envelope)
+            (store, envelope, charge)
         };
 
         // Do not hold the global journal-state mutex while serializing and
@@ -472,6 +585,7 @@ impl JobJournal {
         // but report it as restart-uncertain so the caller cannot dispatch an
         // effect while the journal is globally degraded.
         let degraded = state.store.is_none();
+        state.charges.push(charge);
         state.operations.insert(
             operation_key,
             OperationState {
@@ -511,12 +625,38 @@ impl JobJournal {
         operation_sha256: &str,
         result: Value,
     ) -> Result<()> {
+        let _working_lane = crate::resources::working_lane()?;
+        let _working_lease = journal_working_charge(key, request, &result)?;
         validate_operation(operation_id, operation_kind, operation_sha256)?;
         let _key_guard = self.key_guard(key)?;
         let operation_key = OperationKey {
             job: key.clone(),
             operation_id: operation_id.to_string(),
         };
+        let previous = {
+            let state = self.lock()?;
+            if let Some(existing) = state.operations.get(&operation_key) {
+                if existing.request != *request
+                    || existing.operation_kind != operation_kind
+                    || existing.operation_sha256 != operation_sha256
+                {
+                    return Err(JobRuntimeError::JobConflict);
+                }
+                existing
+                    .terminal
+                    .clone()
+                    .map(|terminal| (state.store.clone(), terminal))
+            } else {
+                None
+            }
+        };
+        if let Some((store, previous)) = previous {
+            return if self.resolve_payload(store.as_ref(), key, request, &previous)? == result {
+                Ok(())
+            } else {
+                Err(JobRuntimeError::JobConflict)
+            };
+        }
         let (store, envelope) = {
             let mut state = self.lock()?;
             ensure_request_for_key(&state, key, request)?;
@@ -525,12 +665,6 @@ impl JobJournal {
                     || existing.operation_kind != operation_kind
                     || existing.operation_sha256 != operation_sha256
                 {
-                    return Err(JobRuntimeError::JobConflict);
-                }
-                if let Some(terminal) = &existing.terminal {
-                    if terminal == &result {
-                        return Ok(());
-                    }
                     return Err(JobRuntimeError::JobConflict);
                 }
                 existing.durable_accept
@@ -558,6 +692,7 @@ impl JobJournal {
                 }
                 // Deliberate memory-only mode has no filesystem operation.  A
                 // terminal transition is still idempotent and request-bound.
+                let result = memory_payload(result)?;
                 commit_operation_terminal(&mut state, &operation_key, key, operation_kind, result)?;
                 return Ok(());
             };
@@ -584,10 +719,13 @@ impl JobJournal {
             AppendMode::Durable,
         );
         let mut state = self.lock()?;
-        if let Err(error) = append_result {
-            mark_operation_uncertain(&mut state, &operation_key);
-            return Err(disable(&mut state, error));
-        }
+        let record_sha256 = match append_result {
+            Ok(hash) => hash,
+            Err(error) => {
+                mark_operation_uncertain(&mut state, &operation_key);
+                return Err(disable(&mut state, error));
+            }
+        };
         if state.store.is_none() {
             mark_operation_uncertain(&mut state, &operation_key);
             return Err(JobRuntimeError::Journal(
@@ -601,11 +739,28 @@ impl JobJournal {
             &operation_key,
             key,
             operation_kind,
-            envelope.payload,
+            CachedPayload::Durable {
+                event_id: event_id("terminal", key, operation_id),
+                record_sha256,
+            },
         )
     }
 
     pub fn append_observation(
+        &self,
+        key: &JobKey,
+        request: &JobRequest,
+        event_seq: u64,
+        kind: &str,
+        payload: Value,
+    ) -> Result<()> {
+        let _working_lane = crate::resources::working_lane()?;
+        let _working_lease = journal_working_charge(key, request, &payload)?;
+        self.append_observation_reserved(key, request, event_seq, kind, payload)
+    }
+
+    /// Manager already holds the matching shared working lane/reservation.
+    pub(crate) fn append_observation_reserved(
         &self,
         key: &JobKey,
         request: &JobRequest,
@@ -635,9 +790,36 @@ impl JobJournal {
         };
 
         let _key_guard = self.key_guard(key)?;
-        let (store, envelope) = {
+        if let Some(payload) = terminal_payload.as_ref() {
+            let previous = {
+                let state = self.lock()?;
+                state
+                    .jobs
+                    .get(key)
+                    .and_then(|job| job.terminal.clone())
+                    .map(|cached| (state.store.clone(), cached))
+            };
+            if let Some((store, previous)) = previous
+                && self.resolve_payload(store.as_ref(), key, request, &previous)? != *payload
+            {
+                return Err(JobRuntimeError::JobConflict);
+            }
+        }
+        let (store, envelope, charge) = {
             let mut state = self.lock()?;
             ensure_request_for_key(&state, key, request)?;
+            let charge = if !state.jobs.contains_key(key) {
+                Some(journal_metadata_charge(
+                    key,
+                    request,
+                    "",
+                    "",
+                    true,
+                    state.store.is_none(),
+                )?)
+            } else {
+                None
+            };
             let Some(store) = state.store.as_ref() else {
                 if state.configured {
                     return Err(JobRuntimeError::Journal(
@@ -650,6 +832,9 @@ impl JobJournal {
                 // the request binding in the in-process state so a later call
                 // cannot append an observation for different request bytes
                 // under the same job key.
+                if let Some(charge) = charge {
+                    state.charges.push(charge);
+                }
                 let job = state.jobs.entry(key.clone()).or_insert(JobState {
                     request: request.clone(),
                     start_result: None,
@@ -657,14 +842,10 @@ impl JobJournal {
                     next_runtime_cursor: 0,
                 });
                 job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
-                if let Some(terminal_payload) = terminal_payload {
-                    if let Some(existing) = &job.terminal {
-                        if existing != &terminal_payload {
-                            return Err(JobRuntimeError::JobConflict);
-                        }
-                    } else {
-                        job.terminal = Some(terminal_payload);
-                    }
+                if let Some(terminal_payload) = terminal_payload
+                    && job.terminal.is_none()
+                {
+                    job.terminal = Some(memory_payload(terminal_payload)?);
                 }
                 return Ok(());
             };
@@ -687,7 +868,7 @@ impl JobJournal {
                 event_seq: Some(event_seq),
                 payload,
             };
-            (Arc::clone(store), envelope)
+            (Arc::clone(store), envelope, charge)
         };
 
         // The key shard keeps this append ordered for the job, while the
@@ -703,6 +884,9 @@ impl JobJournal {
         let mut state = self.lock()?;
         if let Err(error) = append_result {
             return Err(disable(&mut state, error));
+        }
+        if let Some(charge) = charge {
+            state.charges.push(charge);
         }
 
         // Bind the request as soon as the observation append succeeds.  If a
@@ -727,11 +911,13 @@ impl JobJournal {
         let Some(terminal_payload) = terminal_payload else {
             return Ok(());
         };
-        if let Some(existing) = state.jobs.get(key).and_then(|job| job.terminal.as_ref()) {
-            if existing == &terminal_payload {
-                return Ok(());
-            }
-            return Err(JobRuntimeError::JobConflict);
+        if state
+            .jobs
+            .get(key)
+            .and_then(|job| job.terminal.as_ref())
+            .is_some()
+        {
+            return Ok(());
         }
         let terminal_envelope = JournalEnvelope {
             schema: JOURNAL_SCHEMA.to_string(),
@@ -756,9 +942,10 @@ impl JobJournal {
             AppendMode::Durable,
         );
         let mut state = self.lock()?;
-        if let Err(error) = terminal_append_result {
-            return Err(disable(&mut state, error));
-        }
+        let record_sha256 = match terminal_append_result {
+            Ok(hash) => hash,
+            Err(error) => return Err(disable(&mut state, error)),
+        };
         if state.store.is_none() {
             return Err(JobRuntimeError::Journal(
                 state.error.clone().unwrap_or_else(|| {
@@ -766,14 +953,18 @@ impl JobJournal {
                 }),
             ));
         }
+        let cached = CachedPayload::Durable {
+            event_id: event_id("job-terminal", key, "terminal"),
+            record_sha256,
+        };
         state
             .jobs
             .entry(key.clone())
-            .and_modify(|job| job.terminal = Some(terminal_payload.clone()))
+            .and_modify(|job| job.terminal = Some(cached.clone()))
             .or_insert(JobState {
                 request: request.clone(),
                 start_result: None,
-                terminal: Some(terminal_payload),
+                terminal: Some(cached),
                 next_runtime_cursor: 0,
             });
         Ok(())
@@ -786,18 +977,42 @@ impl JobJournal {
         event_seq: u64,
         payload: Value,
     ) -> Result<()> {
-        let next_cursor = event_seq.checked_add(1).ok_or_else(||
-            JobRuntimeError::InvalidRequest("runtime observation sequence exhausted".to_string()))?;
+        let _working_lane = crate::resources::working_lane()?;
+        let _working_lease = journal_working_charge(key, request, &payload)?;
+        let next_cursor = event_seq.checked_add(1).ok_or_else(|| {
+            JobRuntimeError::InvalidRequest("runtime observation sequence exhausted".to_string())
+        })?;
         let _key_guard = self.key_guard(key)?;
-        let (store, envelope) = {
+        let previous = {
+            let state = self.lock()?;
+            state
+                .jobs
+                .get(key)
+                .and_then(|job| job.terminal.clone())
+                .map(|cached| (state.store.clone(), cached))
+        };
+        if let Some((store, previous)) = previous {
+            return if self.resolve_payload(store.as_ref(), key, request, &previous)? == payload {
+                Ok(())
+            } else {
+                Err(JobRuntimeError::JobConflict)
+            };
+        }
+        let (store, envelope, charge) = {
             let mut state = self.lock()?;
             ensure_request_for_key(&state, key, request)?;
-            if let Some(existing) = state.jobs.get(key).and_then(|job| job.terminal.as_ref()) {
-                if existing == &payload {
-                    return Ok(());
-                }
-                return Err(JobRuntimeError::JobConflict);
-            }
+            let charge = if !state.jobs.contains_key(key) {
+                Some(journal_metadata_charge(
+                    key,
+                    request,
+                    "",
+                    "",
+                    true,
+                    state.store.is_none(),
+                )?)
+            } else {
+                None
+            };
 
             let Some(store) = state.store.as_ref() else {
                 if state.configured {
@@ -807,10 +1022,17 @@ impl JobJournal {
                         }),
                     ));
                 }
+                let payload = memory_payload(payload)?;
+                if let Some(charge) = charge {
+                    state.charges.push(charge);
+                }
                 state
                     .jobs
                     .entry(key.clone())
-                    .and_modify(|job| { job.terminal = Some(payload.clone()); job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor); })
+                    .and_modify(|job| {
+                        job.terminal = Some(payload.clone());
+                        job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
+                    })
                     .or_insert(JobState {
                         request: request.clone(),
                         start_result: None,
@@ -830,7 +1052,7 @@ impl JobJournal {
                 event_seq: Some(event_seq),
                 payload,
             };
-            (Arc::clone(store), envelope)
+            (Arc::clone(store), envelope, charge)
         };
 
         let append_result = append_envelope(
@@ -842,9 +1064,10 @@ impl JobJournal {
             AppendMode::Durable,
         );
         let mut state = self.lock()?;
-        if let Err(error) = append_result {
-            return Err(disable(&mut state, error));
-        }
+        let record_sha256 = match append_result {
+            Ok(hash) => hash,
+            Err(error) => return Err(disable(&mut state, error)),
+        };
         if state.store.is_none() {
             return Err(JobRuntimeError::Journal(
                 state.error.clone().unwrap_or_else(|| {
@@ -852,20 +1075,24 @@ impl JobJournal {
                 }),
             ));
         }
-        if let Some(existing) = state.jobs.get(key).and_then(|job| job.terminal.as_ref()) {
-            if existing == &envelope.payload {
-                return Ok(());
-            }
-            return Err(JobRuntimeError::JobConflict);
+        if let Some(charge) = charge {
+            state.charges.push(charge);
         }
+        let cached = CachedPayload::Durable {
+            event_id: event_id("job-terminal", key, "terminal"),
+            record_sha256,
+        };
         state
             .jobs
             .entry(key.clone())
-            .and_modify(|job| { job.terminal = Some(envelope.payload.clone()); job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor); })
+            .and_modify(|job| {
+                job.terminal = Some(cached.clone());
+                job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
+            })
             .or_insert(JobState {
                 request: request.clone(),
                 start_result: None,
-                terminal: Some(envelope.payload),
+                terminal: Some(cached),
                 next_runtime_cursor: next_cursor,
             });
         Ok(())
@@ -878,6 +1105,9 @@ impl JobJournal {
     /// compatibility API can never accidentally receive a sibling job's
     /// records from the same turn.
     pub fn inspect_records(&self, key: &JobKey) -> Result<Vec<Value>> {
+        let _staging_lane = crate::resources::working_lane()?;
+        let _staging_lease = JobMemoryLease::acquire_working(crate::MAX_OBSERVATION_STAGING_BYTES)
+            .map_err(|error| JobRuntimeError::Registry(error.to_string()))?;
         self.replay_job_records(key)
             .map(|records| records.into_iter().map(|record| record.payload).collect())
     }
@@ -892,6 +1122,9 @@ impl JobJournal {
     /// able to verify scope, event identity and hash-chain position without
     /// changing the long-standing payload-only API above.
     pub fn inspect_records_with_metadata(&self, key: &JobKey) -> Result<Vec<Value>> {
+        let _staging_lane = crate::resources::working_lane()?;
+        let _staging_lease = JobMemoryLease::acquire_working(crate::MAX_OBSERVATION_STAGING_BYTES)
+            .map_err(|error| JobRuntimeError::Registry(error.to_string()))?;
         self.replay_job_records(key)?
             .into_iter()
             .enumerate()
@@ -948,45 +1181,104 @@ impl JobJournal {
         // Replay is read-only but can scan a large legacy store.  Keep it out
         // of the global journal-state mutex; the key shard still prevents a
         // same-key mutation from racing the request-binding checks below.
-        let records = store
-            .replay(&scope, 0)
-            .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
-        let mut matching = Vec::with_capacity(records.len());
-        for record in records {
-            if record.scope != scope {
-                return Err(JobRuntimeError::Journal(
-                    "durable job journal record scope metadata does not match replay scope"
-                        .to_string(),
-                ));
-            }
-            let envelope: JournalEnvelope = serde_json::from_value(record.payload.clone())
-                .map_err(|error| {
-                    JobRuntimeError::Journal(format!(
-                        "durable job journal record envelope is invalid: {error}"
-                    ))
-                })?;
-            if envelope.schema != JOURNAL_SCHEMA {
-                return Err(JobRuntimeError::Journal(
-                    "durable job journal record schema does not match".to_string(),
-                ));
-            }
-            if envelope.job_id.is_empty() {
-                return Err(JobRuntimeError::Journal(
-                    "durable job journal record has an empty job_id".to_string(),
-                ));
-            }
-            if envelope.job_id == key.job_id {
-                if let Some(expected) = expected_request.as_ref() {
-                    if expected != &envelope.request {
-                        return Err(JobRuntimeError::JobConflict);
-                    }
-                } else {
-                    expected_request = Some(envelope.request.clone());
+        let mut matching = Vec::new();
+        let mut working: usize = 64 * 1024;
+        store
+            .visit_records(|record| {
+                if record.scope != scope {
+                    return Ok(());
                 }
-                matching.push(record);
-            }
-        }
+                let envelope = journal_header(&record.payload)?;
+                if envelope.schema != JOURNAL_SCHEMA {
+                    return Err(JobRuntimeError::Journal(
+                        "durable job journal record schema does not match".to_string(),
+                    ));
+                }
+                if envelope.job_id.is_empty() {
+                    return Err(JobRuntimeError::Journal(
+                        "durable job journal record has an empty job_id".to_string(),
+                    ));
+                }
+                if envelope.job_id == key.job_id {
+                    if let Some(expected) = expected_request.as_ref() {
+                        if expected != &envelope.request {
+                            return Err(JobRuntimeError::JobConflict);
+                        }
+                    } else {
+                        expected_request = Some(envelope.request.clone());
+                    }
+                    let reservation = value_owned_bytes(&record.payload, 0)?
+                        .checked_mul(4)
+                        .and_then(|bytes| bytes.checked_add(16 * 1024))
+                        .ok_or_else(journal_capacity)?;
+                    working = working
+                        .checked_add(reservation)
+                        .ok_or_else(journal_capacity)?;
+                    if working > crate::MAX_OBSERVATION_STAGING_BYTES {
+                        return Err(journal_capacity());
+                    }
+                    matching.push(record.clone());
+                }
+                Ok::<(), JobRuntimeError>(())
+            })
+            .map_err(|error| JobRuntimeError::Journal(error.to_string()))??;
         Ok(matching)
+    }
+
+    fn resolve_payload(
+        &self,
+        store: Option<&Arc<EventStoreBackend>>,
+        key: &JobKey,
+        request: &JobRequest,
+        cached: &CachedPayload,
+    ) -> Result<Value> {
+        let result = match cached {
+            CachedPayload::Memory(value) => Ok(value.as_ref().clone()),
+            CachedPayload::Durable {
+                event_id,
+                record_sha256,
+            } => (|| {
+                let store = store.ok_or_else(|| {
+                    JobRuntimeError::Journal(
+                        "referenced terminal backend is unavailable".to_string(),
+                    )
+                })?;
+                let record = store
+                    .get(&turn_scope(key), event_id)
+                    .map_err(|error| JobRuntimeError::Journal(error.to_string()))?
+                    .ok_or_else(|| {
+                        JobRuntimeError::Journal("referenced terminal is missing".to_string())
+                    })?;
+                if record.scope != turn_scope(key)
+                    || record.event_id != *event_id
+                    || record.record_sha256 != *record_sha256
+                {
+                    return Err(JobRuntimeError::Journal(
+                        "referenced terminal identity/hash conflicts".to_string(),
+                    ));
+                }
+                let envelope: JournalEnvelope = serde_json::from_value(record.payload)
+                    .map_err(|error| JobRuntimeError::Journal(error.to_string()))?;
+                if envelope.schema != JOURNAL_SCHEMA
+                    || envelope.job_id != key.job_id
+                    || envelope.request != *request
+                    || !matches!(
+                        envelope.record.as_str(),
+                        "operation.terminal" | "job.terminal"
+                    )
+                {
+                    return Err(JobRuntimeError::Journal(
+                        "referenced terminal envelope conflicts".to_string(),
+                    ));
+                }
+                Ok(envelope.payload)
+            })(),
+        };
+        if let Err(error) = &result {
+            let mut state = self.lock()?;
+            return Err(disable(&mut state, error.to_string()));
+        }
+        result
     }
 
     fn lock(&self) -> Result<MutexGuard<'_, State>> {
@@ -1038,67 +1330,178 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
     let mut operations = HashMap::new();
     let mut jobs = HashMap::<JobKey, JobState>::new();
     let mut requests = HashMap::<JobKey, JobRequest>::new();
-    store.visit_records(|record| {
-        let envelope: JournalEnvelope =
-            serde_json::from_value(record.payload.clone()).map_err(|error| error.to_string())?;
-        if envelope.schema != JOURNAL_SCHEMA {
-            return Err("job journal schema does not match".to_string());
-        }
-        let key = JobKey::new(
-            trillionnium_owner_open_job_registry::JobScope::new(
-                record.scope.session_id.clone(),
-                record.scope.profile_id.clone(),
-                record.scope.task_id.clone(),
-                record.scope.turn_id.clone(),
-                record.scope.turn_stream_id.clone(),
-            ),
-            envelope.job_id.clone(),
-        );
-        if record.scope != turn_scope(&key) {
-            return Err("job journal record scope does not match payload".to_string());
-        }
-        if let Some(existing) = requests.get(&key) {
-            if existing != &envelope.request {
-                return Err("job journal request binding conflicts for job".to_string());
+    let mut charges = Vec::new();
+    let mut request_charges = Vec::new();
+    store
+        .visit_records(|record| {
+            let envelope = journal_header(&record.payload).map_err(|error| error.to_string())?;
+            if envelope.schema != JOURNAL_SCHEMA {
+                return Err("job journal schema does not match".to_string());
             }
-        } else {
-            requests.insert(key.clone(), envelope.request.clone());
-        }
-        let cursor_key = key.clone();
-        let next_cursor = if matches!(envelope.record.as_str(), "observation" | "job.terminal") {
-            Some(envelope.event_seq.ok_or_else(|| "job observation has no event_seq".to_string())?
-                .checked_add(1).ok_or_else(|| "runtime observation sequence exhausted".to_string())?)
-        } else { None };
-        match envelope.record.as_str() {
-            "operation.accepted" => {
-                let operation_id = envelope
-                    .operation_id
-                    .ok_or_else(|| "accepted operation has no operation_id".to_string())?;
-                let operation_kind = envelope
-                    .operation_kind
-                    .ok_or_else(|| "accepted operation has no kind".to_string())?;
-                let operation_sha256 = envelope
-                    .operation_sha256
-                    .ok_or_else(|| "accepted operation has no digest".to_string())?;
-                let operation_key = OperationKey {
-                    job: key.clone(),
-                    operation_id,
-                };
-                if operations.contains_key(&operation_key) {
-                    return Err("job operation accepted record is duplicated".to_string());
+            let key = JobKey::new(
+                trillionnium_owner_open_job_registry::JobScope::new(
+                    record.scope.session_id.clone(),
+                    record.scope.profile_id.clone(),
+                    record.scope.task_id.clone(),
+                    record.scope.turn_id.clone(),
+                    record.scope.turn_stream_id.clone(),
+                ),
+                envelope.job_id.clone(),
+            );
+            if record.scope != turn_scope(&key) {
+                return Err("job journal record scope does not match payload".to_string());
+            }
+            if let Some(existing) = requests.get(&key) {
+                if existing != &envelope.request {
+                    return Err("job journal request binding conflicts for job".to_string());
                 }
-                operations.insert(
-                    operation_key,
-                    OperationState {
-                        request: envelope.request.clone(),
-                        operation_kind: operation_kind.clone(),
-                        operation_sha256,
-                        terminal: None,
-                        preexisting: true,
-                        durable_accept: true,
-                    },
+            } else {
+                request_charges.push(
+                    journal_metadata_charge(&key, &envelope.request, "", "", true, false)
+                        .map_err(|error| error.to_string())?,
                 );
-                if operation_kind == "start" {
+                requests.insert(key.clone(), envelope.request.clone());
+            }
+            let cursor_key = key.clone();
+            let next_cursor = if matches!(envelope.record.as_str(), "observation" | "job.terminal")
+            {
+                Some(
+                    envelope
+                        .event_seq
+                        .ok_or_else(|| "job observation has no event_seq".to_string())?
+                        .checked_add(1)
+                        .ok_or_else(|| "runtime observation sequence exhausted".to_string())?,
+                )
+            } else {
+                None
+            };
+            match envelope.record.as_str() {
+                "operation.accepted" => {
+                    let operation_id = envelope
+                        .operation_id
+                        .ok_or_else(|| "accepted operation has no operation_id".to_string())?;
+                    let operation_kind = envelope
+                        .operation_kind
+                        .ok_or_else(|| "accepted operation has no kind".to_string())?;
+                    let operation_sha256 = envelope
+                        .operation_sha256
+                        .ok_or_else(|| "accepted operation has no digest".to_string())?;
+                    let operation_key = OperationKey {
+                        job: key.clone(),
+                        operation_id,
+                    };
+                    if operations.contains_key(&operation_key) {
+                        return Err("job operation accepted record is duplicated".to_string());
+                    }
+                    charges.push(
+                        journal_metadata_charge(
+                            &key,
+                            &envelope.request,
+                            &operation_key.operation_id,
+                            &operation_kind,
+                            false,
+                            false,
+                        )
+                        .map_err(|error| error.to_string())?,
+                    );
+                    operations.insert(
+                        operation_key,
+                        OperationState {
+                            request: envelope.request.clone(),
+                            operation_kind: operation_kind.clone(),
+                            operation_sha256,
+                            terminal: None,
+                            preexisting: true,
+                            durable_accept: true,
+                        },
+                    );
+                    if operation_kind == "start" {
+                        if !jobs.contains_key(&key) {
+                            charges.push(
+                                journal_metadata_charge(
+                                    &key,
+                                    &envelope.request,
+                                    "",
+                                    "",
+                                    true,
+                                    false,
+                                )
+                                .map_err(|error| error.to_string())?,
+                            );
+                        }
+                        jobs.entry(key).or_insert(JobState {
+                            request: envelope.request,
+                            start_result: None,
+                            terminal: None,
+                            next_runtime_cursor: 0,
+                        });
+                    }
+                }
+                "operation.terminal" => {
+                    let operation_id = envelope
+                        .operation_id
+                        .ok_or_else(|| "terminal operation has no operation_id".to_string())?;
+                    let operation_kind = envelope
+                        .operation_kind
+                        .ok_or_else(|| "terminal operation has no kind".to_string())?;
+                    let operation_sha256 = envelope
+                        .operation_sha256
+                        .ok_or_else(|| "terminal operation has no digest".to_string())?;
+                    let operation_key = OperationKey {
+                        job: key.clone(),
+                        operation_id,
+                    };
+                    let operation = operations
+                        .get_mut(&operation_key)
+                        .ok_or_else(|| "operation terminal precedes acceptance".to_string())?;
+                    if operation.request != envelope.request
+                        || operation.operation_kind != operation_kind
+                        || operation.operation_sha256 != operation_sha256
+                        || operation
+                            .terminal
+                            .replace(CachedPayload::Durable {
+                                event_id: record.event_id.clone(),
+                                record_sha256: record.record_sha256.clone(),
+                            })
+                            .is_some()
+                    {
+                        return Err("job operation terminal conflicts".to_string());
+                    }
+                    if operation_kind == "start" {
+                        if !jobs.contains_key(&key) {
+                            charges.push(
+                                journal_metadata_charge(
+                                    &key,
+                                    &envelope.request,
+                                    "",
+                                    "",
+                                    true,
+                                    false,
+                                )
+                                .map_err(|error| error.to_string())?,
+                            );
+                        }
+                        let cached = CachedPayload::Durable {
+                            event_id: record.event_id.clone(),
+                            record_sha256: record.record_sha256.clone(),
+                        };
+                        jobs.entry(key)
+                            .and_modify(|job| job.start_result = Some(cached.clone()))
+                            .or_insert(JobState {
+                                request: envelope.request,
+                                start_result: Some(cached),
+                                terminal: None,
+                                next_runtime_cursor: 0,
+                            });
+                    }
+                }
+                "observation" => {
+                    if !jobs.contains_key(&key) {
+                        charges.push(
+                            journal_metadata_charge(&key, &envelope.request, "", "", true, false)
+                                .map_err(|error| error.to_string())?,
+                        );
+                    }
                     jobs.entry(key).or_insert(JobState {
                         request: envelope.request,
                         start_result: None,
@@ -1106,73 +1509,42 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
                         next_runtime_cursor: 0,
                     });
                 }
-            }
-            "operation.terminal" => {
-                let operation_id = envelope
-                    .operation_id
-                    .ok_or_else(|| "terminal operation has no operation_id".to_string())?;
-                let operation_kind = envelope
-                    .operation_kind
-                    .ok_or_else(|| "terminal operation has no kind".to_string())?;
-                let operation_sha256 = envelope
-                    .operation_sha256
-                    .ok_or_else(|| "terminal operation has no digest".to_string())?;
-                let operation_key = OperationKey {
-                    job: key.clone(),
-                    operation_id,
-                };
-                let operation = operations
-                    .get_mut(&operation_key)
-                    .ok_or_else(|| "operation terminal precedes acceptance".to_string())?;
-                if operation.request != envelope.request
-                    || operation.operation_kind != operation_kind
-                    || operation.operation_sha256 != operation_sha256
-                    || operation
+                "job.terminal" => {
+                    if !jobs.contains_key(&key) {
+                        charges.push(
+                            journal_metadata_charge(&key, &envelope.request, "", "", true, false)
+                                .map_err(|error| error.to_string())?,
+                        );
+                    }
+                    let job = jobs.entry(key).or_insert(JobState {
+                        request: envelope.request,
+                        start_result: None,
+                        terminal: None,
+                        next_runtime_cursor: 0,
+                    });
+                    if job
                         .terminal
-                        .replace(envelope.payload.clone())
+                        .replace(CachedPayload::Durable {
+                            event_id: record.event_id.clone(),
+                            record_sha256: record.record_sha256.clone(),
+                        })
                         .is_some()
-                {
-                    return Err("job operation terminal conflicts".to_string());
+                    {
+                        return Err("job terminal record is duplicated".to_string());
+                    }
                 }
-                if operation_kind == "start" {
-                    jobs.entry(key)
-                        .and_modify(|job| job.start_result = Some(envelope.payload.clone()))
-                        .or_insert(JobState {
-                            request: envelope.request,
-                            start_result: Some(envelope.payload),
-                            terminal: None,
-                            next_runtime_cursor: 0,
-                        });
-                }
+                other => return Err(format!("unsupported job journal record {other}")),
             }
-            "observation" => {
-                jobs.entry(key).or_insert(JobState {
-                    request: envelope.request,
-                    start_result: None,
-                    terminal: None,
-                    next_runtime_cursor: 0,
-                });
+            if let Some(next_cursor) = next_cursor {
+                let job = jobs
+                    .get_mut(&cursor_key)
+                    .expect("observation binds its job");
+                job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
             }
-            "job.terminal" => {
-                let job = jobs.entry(key).or_insert(JobState {
-                    request: envelope.request,
-                    start_result: None,
-                    terminal: None,
-                    next_runtime_cursor: 0,
-                });
-                if job.terminal.replace(envelope.payload).is_some() {
-                    return Err("job terminal record is duplicated".to_string());
-                }
-            }
-            other => return Err(format!("unsupported job journal record {other}")),
-        }
-        if let Some(next_cursor) = next_cursor {
-            let job = jobs.get_mut(&cursor_key).expect("observation binds its job");
-            job.next_runtime_cursor = job.next_runtime_cursor.max(next_cursor);
-        }
-        Ok::<(), String>(())
-    }).map_err(|error| error.to_string())??;
-    Ok((operations, jobs))
+            Ok::<(), String>(())
+        })
+        .map_err(|error| error.to_string())??;
+    Ok((operations, jobs, charges))
 }
 
 fn validate_operation(operation_id: &str, kind: &str, digest: &str) -> Result<()> {
@@ -1182,6 +1554,213 @@ fn validate_operation(operation_id: &str, kind: &str, digest: &str) -> Result<()
         .map_err(|error| JobRuntimeError::InvalidRequest(error.to_string()))?;
     require_sha256(digest, "operation_sha256")
         .map_err(|error| JobRuntimeError::InvalidRequest(error.to_string()))
+}
+
+fn journal_capacity() -> JobRuntimeError {
+    JobRuntimeError::Journal("job journal owned memory capacity is exhausted".to_string())
+}
+
+fn journal_header(payload: &Value) -> Result<JournalHeader> {
+    let mut bytes: usize = 1024;
+    for field in [
+        "schema",
+        "record",
+        "job_id",
+        "operation_id",
+        "operation_kind",
+        "operation_sha256",
+    ] {
+        if let Some(value) = payload.get(field).and_then(Value::as_str) {
+            bytes = bytes
+                .checked_add(value.len())
+                .ok_or_else(journal_capacity)?;
+        }
+    }
+    if let Some(request) = payload.get("request").and_then(Value::as_object) {
+        for value in request.values() {
+            if let Some(value) = value.as_str() {
+                bytes = bytes
+                    .checked_add(value.len())
+                    .ok_or_else(journal_capacity)?;
+            }
+        }
+    }
+    if bytes > crate::resources::MAX_START_SPEC_BYTES {
+        return Err(journal_capacity());
+    }
+    JournalHeader::deserialize(payload).map_err(|error| {
+        JobRuntimeError::Journal(format!("durable job journal header is invalid: {error}"))
+    })
+}
+
+const MEMORY_TERMINAL_BYTES: usize = 8 * 1024;
+
+fn journal_metadata_charge(
+    key: &JobKey,
+    request: &JobRequest,
+    operation_id: &str,
+    operation_kind: &str,
+    new_job: bool,
+    memory: bool,
+) -> Result<JobMemoryLease> {
+    let mut bytes = 2048usize;
+    for value in [
+        &key.scope.session_id,
+        &key.scope.profile_id,
+        &key.scope.task_id,
+        &key.scope.turn_id,
+        &key.scope.turn_stream_id,
+        &key.job_id,
+        &request.request_sha256,
+        &request.binding_fingerprint,
+        &request.tool,
+        &request.mode,
+    ] {
+        bytes = bytes
+            .checked_add(value.len())
+            .ok_or_else(journal_capacity)?;
+    }
+    bytes = bytes
+        .checked_add(request.target_id.as_ref().map_or(0, String::len))
+        .ok_or_else(journal_capacity)?;
+    bytes = bytes
+        .checked_add(operation_id.len())
+        .and_then(|bytes| bytes.checked_add(operation_kind.len()))
+        .ok_or_else(journal_capacity)?;
+    if bytes > crate::resources::MAX_START_SPEC_BYTES {
+        return Err(journal_capacity());
+    }
+    // Four copies cover keys/requests in derived maps, growth buckets and
+    // reference/index metadata. Future terminal references are pre-reserved.
+    bytes = bytes.checked_mul(4).ok_or_else(journal_capacity)?;
+    if new_job {
+        bytes = bytes.checked_mul(2).ok_or_else(journal_capacity)?;
+    }
+    if memory {
+        bytes = bytes
+            .checked_add(MEMORY_TERMINAL_BYTES * if new_job { 3 } else { 1 })
+            .ok_or_else(journal_capacity)?;
+    }
+    JobMemoryLease::acquire(bytes).map_err(|error| JobRuntimeError::Journal(error.to_string()))
+}
+
+fn journal_working_charge(
+    key: &JobKey,
+    request: &JobRequest,
+    payload: &Value,
+) -> Result<JobMemoryLease> {
+    let mut metadata = 64 * 1024usize;
+    for value in [
+        &key.scope.session_id,
+        &key.scope.profile_id,
+        &key.scope.task_id,
+        &key.scope.turn_id,
+        &key.scope.turn_stream_id,
+        &key.job_id,
+        &request.request_sha256,
+        &request.binding_fingerprint,
+        &request.tool,
+        &request.mode,
+    ] {
+        metadata = metadata
+            .checked_add(value.len().checked_mul(12).ok_or_else(journal_capacity)?)
+            .ok_or_else(journal_capacity)?;
+    }
+    metadata = metadata
+        .checked_add(
+            request
+                .target_id
+                .as_ref()
+                .map_or(0, String::len)
+                .checked_mul(12)
+                .ok_or_else(journal_capacity)?,
+        )
+        .ok_or_else(journal_capacity)?;
+    let owned = value_owned_bytes(payload, 0)?
+        .checked_mul(4)
+        .ok_or_else(journal_capacity)?;
+    if owned > crate::MAX_OBSERVATION_STAGING_BYTES {
+        return Err(journal_capacity());
+    }
+    // Count real JSON escaping into a bounded sink before DOM/encoder copies.
+    // Encoded length can be six times a control-character string's capacity;
+    // a plain heap multiplier alone would miss that legal input shape.
+    let mut counter = CountingWriter {
+        bytes: 0,
+        maximum: crate::MAX_OBSERVATION_STAGING_BYTES / 2,
+    };
+    serde_json::to_writer(&mut counter, payload).map_err(|_| journal_capacity())?;
+    let bytes = counter
+        .bytes
+        .checked_mul(2)
+        .and_then(|encoded| owned.checked_add(encoded))
+        .and_then(|bytes| bytes.checked_add(metadata))
+        .ok_or_else(journal_capacity)?;
+    JobMemoryLease::acquire_working(bytes)
+        .map_err(|error| JobRuntimeError::Journal(error.to_string()))
+}
+
+struct CountingWriter {
+    bytes: usize,
+    maximum: usize,
+}
+impl Write for CountingWriter {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        let next = self
+            .bytes
+            .checked_add(bytes.len())
+            .filter(|next| *next <= self.maximum)
+            .ok_or_else(|| io::Error::other("job JSON staging exceeds its bound"))?;
+        self.bytes = next;
+        Ok(bytes.len())
+    }
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+fn value_owned_bytes(value: &Value, depth: usize) -> Result<usize> {
+    if depth > 64 {
+        return Err(journal_capacity());
+    }
+    let add = |left: usize, right: usize| left.checked_add(right).ok_or_else(journal_capacity);
+    match value {
+        Value::String(value) => Ok(value.capacity()),
+        Value::Array(values) => {
+            let mut bytes = values
+                .capacity()
+                .checked_mul(std::mem::size_of::<Value>())
+                .ok_or_else(journal_capacity)?;
+            if bytes > crate::MAX_OBSERVATION_STAGING_BYTES {
+                return Err(journal_capacity());
+            }
+            for value in values {
+                bytes = add(bytes, value_owned_bytes(value, depth + 1)?)?;
+            }
+            Ok(bytes)
+        }
+        Value::Object(values) => {
+            let mut bytes = values.len().checked_mul(256).ok_or_else(journal_capacity)?;
+            if bytes > crate::MAX_OBSERVATION_STAGING_BYTES {
+                return Err(journal_capacity());
+            }
+            for (key, value) in values {
+                bytes = add(
+                    add(bytes, key.capacity())?,
+                    value_owned_bytes(value, depth + 1)?,
+                )?;
+            }
+            Ok(bytes)
+        }
+        _ => Ok(0),
+    }
+}
+
+fn memory_payload(value: Value) -> Result<CachedPayload> {
+    if value_owned_bytes(&value, 0)? > MEMORY_TERMINAL_BYTES {
+        return Err(journal_capacity());
+    }
+    Ok(CachedPayload::Memory(Arc::new(value)))
 }
 
 /// Map a complete job key to one of the fixed journal serialization lanes.
@@ -1243,7 +1822,7 @@ fn append_envelope(
     event_id: String,
     envelope: &JournalEnvelope,
     mode: AppendMode,
-) -> std::result::Result<(), String> {
+) -> std::result::Result<String, String> {
     let payload = serde_json::to_value(envelope).map_err(|error| error.to_string())?;
     let input = EventInput {
         scope: turn_scope(key),
@@ -1255,7 +1834,7 @@ fn append_envelope(
         AppendMode::Durable => store.append_durable(input),
         AppendMode::Grouped => store.append(input),
     };
-    append_result.map(|_| ()).map_err(|error| error.to_string())
+    append_result.map_err(|error| error.to_string())
 }
 
 fn turn_scope(key: &JobKey) -> TurnScope {
@@ -1315,7 +1894,7 @@ fn commit_operation_terminal(
     operation_key: &OperationKey,
     key: &JobKey,
     operation_kind: &str,
-    result: Value,
+    result: CachedPayload,
 ) -> Result<()> {
     {
         let operation = state.operations.get_mut(operation_key).ok_or_else(|| {
@@ -1375,16 +1954,333 @@ mod tests {
     }
 
     #[test]
+    fn durable_terminals_are_references_and_large_payloads_survive_recovery() {
+        let directory = secure_tempdir();
+        let root = directory.path().join("references-v2");
+        let journal = JobJournal::open_best_effort_segmented(Some(&root), None);
+        let owner = key("large-terminals");
+        let request = request('a');
+        let digest = "d".repeat(64);
+        for index in 0..12 {
+            let operation = format!("operation-{index}");
+            let kind = if index == 0 { "start" } else { "write" };
+            assert_eq!(
+                journal
+                    .begin_operation(
+                        &owner,
+                        &request,
+                        &operation,
+                        kind,
+                        &digest,
+                        json!({"index": index})
+                    )
+                    .unwrap(),
+                OperationBegin::New
+            );
+            journal
+                .complete_operation(
+                    &owner,
+                    &request,
+                    &operation,
+                    kind,
+                    &digest,
+                    json!({"result": "x".repeat(512 * 1024), "index": index}),
+                )
+                .unwrap();
+        }
+        {
+            let state = journal.lock().unwrap();
+            assert_eq!(state.operations.len(), 12);
+            assert!(state.operations.values().all(|operation| matches!(
+                operation.terminal,
+                Some(CachedPayload::Durable { .. })
+            )));
+            assert!(matches!(
+                state.jobs.get(&owner).unwrap().start_result,
+                Some(CachedPayload::Durable { .. })
+            ));
+        }
+        assert_eq!(
+            journal
+                .begin_operation(
+                    &owner,
+                    &request,
+                    "operation-11",
+                    "write",
+                    &digest,
+                    json!({"index": 11})
+                )
+                .unwrap(),
+            OperationBegin::ExistingTerminal(
+                json!({"result": "x".repeat(512 * 1024), "index": 11})
+            )
+        );
+        drop(journal);
+        let reopened = JobJournal::open_best_effort_segmented(Some(&root), None);
+        assert_eq!(reopened.status().unwrap(), JournalStatus::Durable);
+        assert!(
+            reopened
+                .lock()
+                .unwrap()
+                .operations
+                .values()
+                .all(|operation| matches!(operation.terminal, Some(CachedPayload::Durable { .. })))
+        );
+        assert_eq!(
+            reopened
+                .recovered_job(&owner)
+                .unwrap()
+                .unwrap()
+                .start_result
+                .unwrap()
+                .get("result")
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .len(),
+            512 * 1024
+        );
+    }
+
+    fn fill_resident_pool() -> Vec<JobMemoryLease> {
+        let mut leases = Vec::new();
+        let mut bytes = 1024 * 1024;
+        while bytes > 0 {
+            match JobMemoryLease::acquire(bytes) {
+                Ok(lease) => leases.push(lease),
+                Err(_) => bytes /= 2,
+            }
+        }
+        leases
+    }
+
+    #[test]
+    fn escaped_and_spare_capacity_journal_payloads_refuse_before_any_wal_acceptance() {
+        let directory = secure_tempdir();
+        let path = directory.path().join("staging.jsonl");
+        let journal = JobJournal::open_best_effort(Some(&path));
+        let before = fs::read(&path).unwrap();
+        let owner = key("staging");
+        let request = request('a');
+        let digest = "d".repeat(64);
+        for payload in [
+            Value::String("\n".repeat(2 * 1024 * 1024)),
+            Value::Array(Vec::with_capacity(1024 * 1024)),
+        ] {
+            assert!(
+                journal
+                    .begin_operation(&owner, &request, "start", "start", &digest, payload)
+                    .is_err()
+            );
+            assert!(journal.lock().unwrap().operations.is_empty());
+            assert_eq!(fs::read(&path).unwrap(), before);
+            assert_eq!(journal.status().unwrap(), JournalStatus::Durable);
+        }
+    }
+
+    #[test]
+    fn journal_capacity_precedes_wal_and_recovery_refusal_preserves_original_bytes() {
+        const ISOLATED: &str = "TRILLIONNIUM_JOURNAL_POOL_CHILD";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", "journal::tests::journal_capacity_precedes_wal_and_recovery_refusal_preserves_original_bytes", "--nocapture"])
+                .env(ISOLATED, "1").output().unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+        let directory = secure_tempdir();
+        let path = directory.path().join("capacity.jsonl");
+        let journal = JobJournal::open_best_effort(Some(&path));
+        let owner = key("capacity");
+        let request = request('a');
+        let digest = "d".repeat(64);
+        let before = fs::read(&path).unwrap();
+        let pressure = fill_resident_pool();
+        assert!(
+            journal
+                .begin_operation(
+                    &owner,
+                    &request,
+                    "start",
+                    "start",
+                    &digest,
+                    json!({"start": true})
+                )
+                .is_err()
+        );
+        assert_eq!(fs::read(&path).unwrap(), before);
+        assert!(journal.lock().unwrap().operations.is_empty());
+        assert_eq!(journal.status().unwrap(), JournalStatus::Durable);
+        drop(pressure);
+        assert_eq!(
+            journal
+                .begin_operation(
+                    &owner,
+                    &request,
+                    "start",
+                    "start",
+                    &digest,
+                    json!({"start": true})
+                )
+                .unwrap(),
+            OperationBegin::New
+        );
+        let pressure = fill_resident_pool();
+        assert!(matches!(
+            journal
+                .begin_operation(
+                    &owner,
+                    &request,
+                    "start",
+                    "start",
+                    &digest,
+                    json!({"start": true})
+                )
+                .unwrap(),
+            OperationBegin::ExistingAccepted { .. }
+        ));
+        journal
+            .complete_operation(
+                &owner,
+                &request,
+                "start",
+                "start",
+                &digest,
+                json!({"result": "x".repeat(512 * 1024)}),
+            )
+            .unwrap();
+        assert!(matches!(
+            journal
+                .begin_operation(
+                    &owner,
+                    &request,
+                    "start",
+                    "start",
+                    &digest,
+                    json!({"start": true})
+                )
+                .unwrap(),
+            OperationBegin::ExistingTerminal(_)
+        ));
+        drop(pressure);
+        drop(journal);
+        let before = fs::read(&path).unwrap();
+        let pressure = fill_resident_pool();
+        let refused = JobJournal::open_best_effort(Some(&path));
+        assert!(matches!(
+            refused.status().unwrap(),
+            JournalStatus::Unavailable { .. }
+        ));
+        assert_eq!(fs::read(&path).unwrap(), before);
+        assert!(
+            refused
+                .begin_operation(&key("new"), &request, "new", "start", &digest, json!({}))
+                .is_err()
+        );
+        assert_eq!(fs::read(&path).unwrap(), before);
+        drop(refused);
+        drop(pressure);
+        let reopened = JobJournal::open_best_effort(Some(&path));
+        assert_eq!(reopened.status().unwrap(), JournalStatus::Durable);
+        assert!(matches!(
+            reopened
+                .begin_operation(
+                    &owner,
+                    &request,
+                    "start",
+                    "start",
+                    &digest,
+                    json!({"start": true})
+                )
+                .unwrap(),
+            OperationBegin::ExistingTerminal(_)
+        ));
+    }
+
+    #[test]
+    fn referenced_terminal_tampering_disables_the_journal_and_never_accepts_a_new_identity() {
+        let directory = secure_tempdir();
+        let root = directory.path().join("tamper-v2");
+        let journal = JobJournal::open_best_effort_segmented(Some(&root), None);
+        let owner = key("tamper");
+        let request = request('a');
+        let digest = "d".repeat(64);
+        journal
+            .begin_operation(&owner, &request, "start", "start", &digest, json!({}))
+            .unwrap();
+        journal
+            .complete_operation(
+                &owner,
+                &request,
+                "start",
+                "start",
+                &digest,
+                json!({"result": "original-terminal-value"}),
+            )
+            .unwrap();
+        let segment = fs::read_dir(&root)
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .find(|path| {
+                path.file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .starts_with("segment-")
+            })
+            .unwrap();
+        let mut bytes = fs::read(&segment).unwrap();
+        let offset = bytes
+            .windows(b"original-terminal-value".len())
+            .position(|part| part == b"original-terminal-value")
+            .unwrap();
+        bytes[offset] = b'X';
+        fs::write(&segment, &bytes).unwrap();
+        assert!(
+            journal
+                .begin_operation(&owner, &request, "start", "start", &digest, json!({}))
+                .is_err()
+        );
+        assert!(matches!(
+            journal.status().unwrap(),
+            JournalStatus::Unavailable { .. }
+        ));
+        assert!(
+            journal
+                .begin_operation(
+                    &key("fresh"),
+                    &request,
+                    "fresh",
+                    "start",
+                    &digest,
+                    json!({})
+                )
+                .is_err()
+        );
+        assert_eq!(journal.lock().unwrap().operations.len(), 1);
+        assert_eq!(fs::read(&segment).unwrap(), bytes);
+    }
+
+    #[test]
     fn direct_terminal_cursor_survives_restart_and_exhaustion_precedes_wal() {
         let directory = secure_tempdir();
         let path = directory.path().join("cursor.jsonl");
         let journal = JobJournal::open_best_effort(Some(&path));
-        let owner = key("terminal"); let request = request('a');
+        let owner = key("terminal");
+        let request = request('a');
         let before = fs::read(&path).unwrap();
-        assert!(matches!(journal.record_job_terminal(&owner, &request, u64::MAX,
-            json!({"terminal": true})), Err(JobRuntimeError::InvalidRequest(_))));
+        assert!(matches!(
+            journal.record_job_terminal(&owner, &request, u64::MAX, json!({"terminal": true})),
+            Err(JobRuntimeError::InvalidRequest(_))
+        ));
         assert_eq!(fs::read(&path).unwrap(), before);
-        journal.record_job_terminal(&owner, &request, 7, json!({"terminal": true})).unwrap();
+        journal
+            .record_job_terminal(&owner, &request, 7, json!({"terminal": true}))
+            .unwrap();
         assert_eq!(journal.runtime_next_cursor(&owner).unwrap(), 8);
         drop(journal);
         let reopened = JobJournal::open_best_effort(Some(&path));

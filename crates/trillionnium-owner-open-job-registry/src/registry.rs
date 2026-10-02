@@ -13,8 +13,8 @@ const FNV_PRIME: u64 = 0x00000100000001b3;
 use crate::validate::{invalid, require_id, require_sha256, require_text, validate_terminal};
 use crate::{
     BeginDisposition, BeginResult, JobEffectiveState, JobEvent, JobEventKind, JobKey,
-    JobRegistryError, JobRegistryLimits, JobRequest, JobSnapshot, JobTerminal, MutationOutcome,
-    Result, SpawnClaim,
+    JobMemoryLease, JobRegistryError, JobRegistryLimits, JobRequest, JobSnapshot, JobTerminal,
+    MutationOutcome, Result, SpawnClaim,
 };
 
 #[derive(Debug, Clone)]
@@ -38,7 +38,7 @@ enum DispatchState {
     },
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct Entry {
     key: JobKey,
     request: JobRequest,
@@ -49,6 +49,7 @@ struct Entry {
     next_output_seq: u64,
     history: VecDeque<JobEvent>,
     next_event_seq: u64,
+    _owned_lease: JobMemoryLease,
 }
 
 impl Entry {
@@ -147,12 +148,14 @@ pub struct JobRegistry {
     entry_count: AtomicUsize,
     next_spawn_generation: AtomicU64,
     state_poisoned: AtomicBool,
+    _owned_lease: JobMemoryLease,
 }
 
 impl JobRegistry {
     pub fn new(limits: JobRegistryLimits) -> Result<Self> {
         limits.validate()?;
         Ok(Self {
+            _owned_lease: JobMemoryLease::acquire(64 * 1024)?,
             limits,
             shards: (0..REGISTRY_SHARD_COUNT)
                 .map(|_| {
@@ -181,6 +184,7 @@ impl JobRegistry {
                 snapshot: entry.snapshot(),
             });
         }
+        let owned_lease = JobMemoryLease::acquire(self.entry_reservation(&key, &request)?)?;
         self.reserve_entry()?;
         let mut entry = Entry {
             key: key.clone(),
@@ -194,6 +198,7 @@ impl JobRegistry {
             next_output_seq: 0,
             history: VecDeque::new(),
             next_event_seq: 0,
+            _owned_lease: owned_lease,
         };
         entry.push(JobEventKind::Accepted, self.limits.max_history_per_job);
         let snapshot = entry.snapshot();
@@ -361,6 +366,8 @@ impl JobRegistry {
         let sha256 = sha256.into();
         require_text(&stream, "stream", 64, false)?;
         require_sha256(&sha256, "sha256")?;
+        require_capacity(&stream, 64)?;
+        require_capacity(&sha256, 64)?;
         let mut state = self.lock_shard(key)?;
         let entry = state
             .entries
@@ -410,6 +417,7 @@ impl JobRegistry {
         self.ensure_healthy()?;
         let sha256 = sha256.into();
         require_sha256(&sha256, "sha256")?;
+        require_capacity(&sha256, 64)?;
         let mut state = self.lock_shard(key)?;
         let entry = state
             .entries
@@ -501,6 +509,7 @@ impl JobRegistry {
         self.ensure_healthy()?;
         let attachment_id = attachment_id.into();
         require_id(&attachment_id, "attachment_id", self.limits.max_id_bytes)?;
+        require_capacity(&attachment_id, self.limits.max_id_bytes)?;
         let mut state = self.lock_shard(key)?;
         let entry = state
             .entries
@@ -581,6 +590,8 @@ impl JobRegistry {
     ) -> Result<MutationOutcome> {
         self.ensure_healthy()?;
         validate_terminal(&terminal)?;
+        require_capacity(&terminal.terminal_kind, 128)?;
+        require_capacity(&terminal.observation_sha256, 64)?;
         let mut state = self.lock_shard(key)?;
         let entry = state
             .entries
@@ -802,6 +813,16 @@ impl JobRegistry {
         ] {
             require_id(value, label, self.limits.max_id_bytes)?;
         }
+        for value in [
+            &key.scope.session_id,
+            &key.scope.profile_id,
+            &key.scope.task_id,
+            &key.scope.turn_id,
+            &key.scope.turn_stream_id,
+            &key.job_id,
+        ] {
+            require_capacity(value, self.limits.max_id_bytes)?;
+        }
         Ok(())
     }
 
@@ -810,11 +831,73 @@ impl JobRegistry {
         require_sha256(&request.binding_fingerprint, "binding_fingerprint")?;
         require_text(&request.tool, "tool", self.limits.max_tool_bytes, false)?;
         require_text(&request.mode, "mode", 64, false)?;
+        require_capacity(&request.request_sha256, 64)?;
+        require_capacity(&request.binding_fingerprint, 64)?;
+        require_capacity(&request.tool, self.limits.max_tool_bytes)?;
+        require_capacity(&request.mode, 64)?;
         if let Some(target_id) = &request.target_id {
             require_text(target_id, "target_id", self.limits.max_target_bytes, true)?;
+            require_capacity(target_id, self.limits.max_target_bytes)?;
         }
         Ok(())
     }
+
+    fn entry_reservation(&self, key: &JobKey, request: &JobRequest) -> Result<usize> {
+        fn add(left: usize, right: usize) -> Result<usize> {
+            left.checked_add(right)
+                .ok_or(JobRegistryError::CapacityExhausted)
+        }
+        fn mul(left: usize, right: usize) -> Result<usize> {
+            left.checked_mul(right)
+                .ok_or(JobRegistryError::CapacityExhausted)
+        }
+        let mut bytes = 1024;
+        for value in [
+            &key.scope.session_id,
+            &key.scope.profile_id,
+            &key.scope.task_id,
+            &key.scope.turn_id,
+            &key.scope.turn_stream_id,
+            &key.job_id,
+        ] {
+            bytes = add(bytes, mul(value.capacity(), 2)?)?;
+        }
+        for value in [
+            &request.request_sha256,
+            &request.binding_fingerprint,
+            &request.tool,
+            &request.mode,
+        ] {
+            bytes = add(bytes, value.capacity())?;
+        }
+        if let Some(target) = &request.target_id {
+            bytes = add(bytes, target.capacity())?;
+        }
+        // Reserve future terminal, attachments, and the full bounded history
+        // before Accepted. Container growth/spare slots and the current push
+        // coexist with the old prefix; no after-effect transition needs a new
+        // resident reservation. No uncertain identity is evicted for memory.
+        let event = add(
+            std::mem::size_of::<JobEvent>(),
+            self.limits.max_id_bytes.max(256),
+        )?;
+        bytes = add(bytes, mul(mul(self.limits.max_history_per_job, 4)?, event)?)?;
+        bytes = add(
+            bytes,
+            mul(
+                mul(self.limits.max_attachments_per_job, 4)?,
+                add(self.limits.max_id_bytes, 128)?,
+            )?,
+        )?;
+        add(bytes, 1024)
+    }
+}
+
+fn require_capacity(value: &String, maximum: usize) -> Result<()> {
+    if value.capacity() > maximum {
+        return Err(JobRegistryError::CapacityExhausted);
+    }
+    Ok(())
 }
 
 impl Default for JobRegistry {

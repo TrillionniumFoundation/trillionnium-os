@@ -89,6 +89,16 @@ installed effects or all native configuration layers. Managed feature
 requirements, MCP, legacy notify and startup plugins require a trusted installed
 configuration boundary before production promotion.
 
+The source bridge also rejects known unbound filesystem layers before launching
+native Codex: `/etc/codex`, legacy managed requirements, hooks/plugins, and
+ancestor project/repository configuration. Its digest-bound public TOML is
+limited to 16 KiB of model/provider settings and explicitly disabled feature
+flags; extension/profile selectors, MCP commands and notify commands fail
+before native startup. This closes a reproduced system-MCP startup path even
+when ordinary shell/hooks/plugins CLI flags are false. The checks do not make
+filesystem paths immutable or attest cloud requirements and persisted thread
+layers. Those remain installed/authenticated configuration qualification holds.
+
 `crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py` handles the distinct Host and
 native callback byte bounds. A Host tool-result frame may occupy one borrowed
 32 MiB raw buffer. Large events are validated without constructing their DOM;

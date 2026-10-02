@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::ffi::OsString;
 use std::fs::{self, File};
 use std::io::Read;
 use std::os::fd::{AsRawFd, FromRawFd};
@@ -12,6 +13,7 @@ use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
 
+use crate::resources::{MAX_INHERITED_ENV_BYTES, MAX_INHERITED_ENV_VALUE_BYTES, ProcessLease};
 use sha2::{Digest, Sha256};
 
 use crate::{
@@ -140,6 +142,7 @@ struct SpawnGuard {
     child: Option<Child>,
     pid: u32,
     identity: Option<ProcessIdentity>,
+    _process_lease: Option<Arc<ProcessLease>>,
 }
 
 impl SpawnGuard {
@@ -149,6 +152,7 @@ impl SpawnGuard {
             child: Some(child),
             pid,
             identity: None,
+            _process_lease: None,
         }
     }
 
@@ -333,16 +337,23 @@ impl ProcessControl {
 pub(crate) fn spawn_process(
     request: &JobStartRequest,
     maximum_chunk: usize,
+    inherited: &[(OsString, OsString)],
+    lease: Arc<ProcessLease>,
 ) -> Result<SpawnedProcess> {
     validate_start(request)?;
     match request.pty {
-        Some(size) => spawn_pty(request, size, maximum_chunk),
-        None => spawn_pipe(request, maximum_chunk),
+        Some(size) => spawn_pty(request, size, maximum_chunk, inherited, lease),
+        None => spawn_pipe(request, maximum_chunk, inherited, lease),
     }
 }
 
-fn spawn_pipe(request: &JobStartRequest, maximum_chunk: usize) -> Result<SpawnedProcess> {
-    let mut command = base_command(request)?;
+fn spawn_pipe(
+    request: &JobStartRequest,
+    maximum_chunk: usize,
+    inherited: &[(OsString, OsString)],
+    lease: Arc<ProcessLease>,
+) -> Result<SpawnedProcess> {
+    let mut command = base_command(request, inherited)?;
     command
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -369,6 +380,7 @@ fn spawn_pipe(request: &JobStartRequest, maximum_chunk: usize) -> Result<Spawned
         .spawn()
         .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
     let mut guard = SpawnGuard::new(child);
+    guard._process_lease = Some(Arc::clone(&lease));
     let identity = capture_process_identity(guard.pid).map_err(|error| {
         post_fork_error(JobRuntimeError::Io(format!(
             "failed to capture child process identity: {error}"
@@ -399,21 +411,34 @@ fn spawn_pipe(request: &JobStartRequest, maximum_chunk: usize) -> Result<Spawned
         .map_err(post_fork_error)?;
     let input = Arc::new(Mutex::new(Some(InputHandle::Pipe(stdin))));
     let (sender, receiver) = sync_channel(PROCESS_EVENT_QUEUE);
-    let stdout_thread =
-        spawn_reader(stdout, "stdout", maximum_chunk, sender.clone()).map_err(post_fork_error)?;
-    let stderr_thread =
-        spawn_reader(stderr, "stderr", maximum_chunk, sender.clone()).map_err(post_fork_error)?;
+    let stdout_thread = spawn_reader(
+        stdout,
+        "stdout",
+        maximum_chunk,
+        sender.clone(),
+        Arc::clone(&lease),
+    )
+    .map_err(post_fork_error)?;
+    let stderr_thread = spawn_reader(
+        stderr,
+        "stderr",
+        maximum_chunk,
+        sender.clone(),
+        Arc::clone(&lease),
+    )
+    .map_err(post_fork_error)?;
     let mut workers = vec![stdout_thread, stderr_thread];
     if let Some(writer) = spawn_initial_writer(
         Arc::clone(&input),
         request.initial_stdin.clone(),
         sender.clone(),
+        Arc::clone(&lease),
     )
     .map_err(post_fork_error)?
     {
         workers.push(writer);
     }
-    spawn_reaper(guard, workers, sender).map_err(post_fork_error)?;
+    spawn_reaper(guard, workers, sender, lease).map_err(post_fork_error)?;
     Ok(SpawnedProcess {
         control: Arc::new(ProcessControl {
             pid,
@@ -434,6 +459,8 @@ fn spawn_pty(
     request: &JobStartRequest,
     size: PtySize,
     maximum_chunk: usize,
+    inherited: &[(OsString, OsString)],
+    lease: Arc<ProcessLease>,
 ) -> Result<SpawnedProcess> {
     if size.rows == 0 || size.cols == 0 {
         return Err(JobRuntimeError::InvalidRequest(
@@ -451,7 +478,7 @@ fn spawn_pty(
     let stderr_slave = slave
         .try_clone()
         .map_err(|error| JobRuntimeError::Io(error.to_string()))?;
-    let mut command = base_command(request)?;
+    let mut command = base_command(request, inherited)?;
     command
         .stdin(Stdio::from(stdin_slave))
         .stdout(Stdio::from(stdout_slave))
@@ -481,6 +508,7 @@ fn spawn_pty(
         .spawn()
         .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
     let mut guard = SpawnGuard::new(child);
+    guard._process_lease = Some(Arc::clone(&lease));
     let identity = capture_process_identity(guard.pid).map_err(|error| {
         post_fork_error(JobRuntimeError::Io(format!(
             "failed to capture child process identity: {error}"
@@ -498,19 +526,26 @@ fn spawn_pty(
         .map_err(|error| post_fork_error(JobRuntimeError::Io(error.to_string())))?;
     let input = Arc::new(Mutex::new(Some(InputHandle::Pty(writer))));
     let (sender, receiver) = sync_channel(PROCESS_EVENT_QUEUE);
-    let reader_thread =
-        spawn_reader(reader, "pty", maximum_chunk, sender.clone()).map_err(post_fork_error)?;
+    let reader_thread = spawn_reader(
+        reader,
+        "pty",
+        maximum_chunk,
+        sender.clone(),
+        Arc::clone(&lease),
+    )
+    .map_err(post_fork_error)?;
     let mut workers = vec![reader_thread];
     if let Some(writer) = spawn_initial_writer(
         Arc::clone(&input),
         request.initial_stdin.clone(),
         sender.clone(),
+        Arc::clone(&lease),
     )
     .map_err(post_fork_error)?
     {
         workers.push(writer);
     }
-    spawn_reaper(guard, workers, sender).map_err(post_fork_error)?;
+    spawn_reaper(guard, workers, sender, lease).map_err(post_fork_error)?;
     Ok(SpawnedProcess {
         control: Arc::new(ProcessControl {
             pid,
@@ -527,7 +562,7 @@ fn spawn_pty(
     })
 }
 
-fn base_command(request: &JobStartRequest) -> Result<Command> {
+fn base_command(request: &JobStartRequest, inherited: &[(OsString, OsString)]) -> Result<Command> {
     let mut command = match &request.invocation {
         JobInvocation::Command { command: value } => {
             let mut command = Command::new(&request.shell_executable);
@@ -544,16 +579,37 @@ fn base_command(request: &JobStartRequest) -> Result<Command> {
         }
     };
     command.env_clear();
-    for &key in JOB_INHERITED_ENV_ALLOWLIST {
-        if let Some(value) = std::env::var_os(key) {
-            command.env(key, value);
-        }
-    }
+    command.envs(inherited.iter().map(|(key, value)| (key, value)));
     if let Some(cwd) = &request.cwd {
         command.current_dir(cwd);
     }
     apply_environment(&mut command, &request.env);
     Ok(command)
+}
+
+/// Capture the allowlist before accepted/hash staging. Command must consume
+/// this exact snapshot; a later host environment mutation cannot widen it.
+/// std::env::var_os itself allocates before we can inspect capacity, so this
+/// is not a preallocation guarantee against arbitrary in-process host code.
+pub(crate) fn inherited_environment() -> Result<Vec<(OsString, OsString)>> {
+    let mut output = Vec::with_capacity(JOB_INHERITED_ENV_ALLOWLIST.len());
+    let mut bytes = JOB_INHERITED_ENV_ALLOWLIST.len() * 128;
+    for &key in JOB_INHERITED_ENV_ALLOWLIST {
+        if let Some(value) = std::env::var_os(key) {
+            bytes = bytes.checked_add(value.capacity()).ok_or_else(|| {
+                JobRuntimeError::InvalidRequest(
+                    "inherited job environment exceeds owned memory bound".to_string(),
+                )
+            })?;
+            if value.capacity() > MAX_INHERITED_ENV_VALUE_BYTES || bytes > MAX_INHERITED_ENV_BYTES {
+                return Err(JobRuntimeError::InvalidRequest(
+                    "inherited job environment exceeds owned memory bound".to_string(),
+                ));
+            }
+            output.push((OsString::from(key), value));
+        }
+    }
+    Ok(output)
 }
 
 fn apply_environment(command: &mut Command, env: &BTreeMap<String, Option<String>>) {
@@ -741,6 +797,7 @@ fn spawn_initial_writer(
     input: Arc<Mutex<Option<InputHandle>>>,
     bytes: Vec<u8>,
     sender: SyncSender<InternalProcessEvent>,
+    lease: Arc<ProcessLease>,
 ) -> Result<Option<ProcessWorker>> {
     if bytes.is_empty() {
         return Ok(None);
@@ -750,19 +807,24 @@ fn spawn_initial_writer(
     let handle = thread::Builder::new()
         .name("owner-open-job-initial-stdin".to_string())
         .spawn(move || {
+            let _process_lease = lease;
+            // Captured buffers become locals, dropped before the lease on every exit.
+            let owned_input = bytes;
+            let owned_sender = sender;
+            let owned_input_handle = input;
             if worker_stop.load(Ordering::Acquire) {
                 return;
             }
-            let result = match input.lock() {
+            let result = match owned_input_handle.lock() {
                 Ok(mut guard) => match guard.as_mut() {
-                    Some(handle) => write_input(handle, &bytes),
+                    Some(handle) => write_input(handle, &owned_input),
                     None => Err(JobRuntimeError::NotLive),
                 },
                 Err(_) => Err(JobRuntimeError::StatePoisoned),
             };
             if let Err(error) = result {
                 let _ = send_process_event(
-                    &sender,
+                    &owned_sender,
                     InternalProcessEvent::InputFailed {
                         error: error.to_string(),
                     },
@@ -1140,10 +1202,11 @@ fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Re
 }
 
 fn spawn_reader<R>(
-    mut reader: R,
+    reader: R,
     stream: &'static str,
     maximum_chunk: usize,
     sender: SyncSender<InternalProcessEvent>,
+    lease: Arc<ProcessLease>,
 ) -> Result<ProcessWorker>
 where
     R: Read + AsRawFd + Send + 'static,
@@ -1153,6 +1216,9 @@ where
     let handle = thread::Builder::new()
         .name(format!("owner-open-job-{stream}"))
         .spawn(move || {
+            let _process_lease = lease;
+            let mut owned_reader = reader;
+            let owned_sender = sender;
             let mut buffer = vec![0_u8; maximum_chunk];
             loop {
                 if worker_stop.load(Ordering::Acquire) {
@@ -1163,7 +1229,7 @@ where
                 // bound lets the reaper request cooperative shutdown and
                 // still drains normal output as it arrives.
                 let mut poll_fd = libc::pollfd {
-                    fd: reader.as_raw_fd(),
+                    fd: owned_reader.as_raw_fd(),
                     events: libc::POLLIN | libc::POLLHUP | libc::POLLERR,
                     revents: 0,
                 };
@@ -1176,7 +1242,7 @@ where
                         continue;
                     }
                     let _ = send_process_event(
-                        &sender,
+                        &owned_sender,
                         InternalProcessEvent::ReaderFailed {
                             stream: stream.to_string(),
                             error: error.to_string(),
@@ -1193,7 +1259,7 @@ where
                 }
                 if poll_fd.revents & libc::POLLNVAL != 0 {
                     let _ = send_process_event(
-                        &sender,
+                        &owned_sender,
                         InternalProcessEvent::ReaderFailed {
                             stream: stream.to_string(),
                             error: "output descriptor became invalid".to_string(),
@@ -1202,11 +1268,11 @@ where
                     );
                     return;
                 }
-                match reader.read(&mut buffer) {
+                match owned_reader.read(&mut buffer) {
                     Ok(0) => return,
                     Ok(read) => {
                         if !send_process_event(
-                            &sender,
+                            &owned_sender,
                             InternalProcessEvent::Output {
                                 stream: stream.to_string(),
                                 bytes: buffer[..read].to_vec(),
@@ -1222,7 +1288,7 @@ where
                     }
                     Err(error) => {
                         let _ = send_process_event(
-                            &sender,
+                            &owned_sender,
                             InternalProcessEvent::ReaderFailed {
                                 stream: stream.to_string(),
                                 error: error.to_string(),
@@ -1270,6 +1336,7 @@ fn spawn_reaper(
     guard: SpawnGuard,
     workers: Vec<ProcessWorker>,
     sender: SyncSender<InternalProcessEvent>,
+    lease: Arc<ProcessLease>,
 ) -> Result<()> {
     let pid = guard.pid;
     let identity = guard
@@ -1279,12 +1346,16 @@ fn spawn_reaper(
     thread::Builder::new()
         .name(format!("owner-open-job-reaper-{pid}"))
         .spawn(move || {
-            let status = guard.wait();
+            let _process_lease = lease;
+            let owned_guard = guard;
+            let owned_workers = workers;
+            let owned_sender = sender;
+            let status = owned_guard.wait();
             let mut cleanup_errors = Vec::new();
             if let Err(error) = cleanup_process_group(&identity) {
                 cleanup_errors.push(error);
             }
-            cleanup_errors.extend(join_workers_bounded(workers));
+            cleanup_errors.extend(join_workers_bounded(owned_workers));
             let cleanup_error = (!cleanup_errors.is_empty()).then(|| cleanup_errors.join("; "));
             let event = match status {
                 Ok(status) => InternalProcessEvent::Exited {
@@ -1314,7 +1385,7 @@ fn spawn_reaper(
                     }),
                 },
             };
-            let _ = sender.send(event);
+            let _ = owned_sender.send(event);
         })
         .map(|_| ())
         .map_err(|error| JobRuntimeError::Io(format!("failed to spawn job reaper: {error}")))

@@ -350,6 +350,10 @@ runtime or release qualification.
 Android init prepares `broker`, `home`, `codex-home` and `provider-sessions`
 under the owner-open state directory as root-owned mode `0700` before publishing
 `data_ready`; the native bootstrap checks those directories before binding state.
+Directory creation walks canonical absolute paths from a root descriptor with
+`openat`/`mkdirat` and rejects symlink traversal. Ownership checks and `fchmod`
+use the same opened target directory; detected pathname replacement returns
+HOLD. Existing ancestor modes and Android's system-owned `/data` are preserved.
 The native bootstrap, both materialization verifiers and the authored source
 profile bind the same 34 required runtime paths: seven executable launch paths,
 25 local Python modules and two configuration files, including

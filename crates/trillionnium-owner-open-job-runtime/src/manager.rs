@@ -8,12 +8,15 @@ use std::thread;
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
 use trillionnium_owner_open_job_registry::{
-    BeginDisposition, JobEffectiveState, JobEvent, JobKey, JobRegistry, JobRegistryError,
-    JobRegistryLimits, JobRequest, JobTerminal, SpawnClaim,
+    BeginDisposition, JobEffectiveState, JobEvent, JobKey, JobMemoryLease, JobRegistry,
+    JobRegistryError, JobRegistryLimits, JobRequest, JobTerminal, SpawnClaim,
 };
 
 use crate::journal::{JournalStatus, OperationBegin};
-use crate::process::{ProcessControl, StdinCloseEffect, spawn_process, validate_start};
+use crate::process::{
+    ProcessControl, StdinCloseEffect, inherited_environment, spawn_process, validate_start,
+};
+use crate::resources::{ProcessLease, process_reservation, start_spec_bytes};
 use crate::{
     ControlDisposition, EventLogStatus, InternalProcessEvent, JobInspection, JobJournal,
     JobObservationGap, JobRuntimeConfig, JobRuntimeError, JobStartRequest, JobStartResult,
@@ -27,6 +30,8 @@ const START_SHARD_HASH_VERSION: u8 = 1;
 const START_SHARD_DOMAIN: &[u8] = b"owner-open-job-manager-start";
 const FNV_OFFSET_BASIS: u64 = 0xcbf29ce484222325;
 const FNV_PRIME: u64 = 0x00000100000001b3;
+// One bounded numeric-array/DOM pipeline across independent managers.
+// Never hold the accounting-pool mutex across serialization, callbacks or I/O.
 
 struct AdmissionPool {
     active: AtomicUsize,
@@ -82,6 +87,7 @@ struct RunningJob {
     request: JobRequest,
     generation: u64,
     _admission_permit: AdmissionPermit,
+    _process_lease: Arc<ProcessLease>,
     startup: Arc<StartupGate>,
     lifecycle: Mutex<()>,
     stdout_bytes: Mutex<u64>,
@@ -188,10 +194,10 @@ struct ObservationState {
     last_update: u64,
 }
 
-#[derive(Default)]
 struct Observations {
     states: HashMap<JobKey, ObservationState>,
     update_clock: u64,
+    owned_lease: JobMemoryLease,
 }
 
 impl Deref for Observations {
@@ -245,7 +251,12 @@ impl JobManager {
                 running: Mutex::new(HashMap::new()),
                 admission: Arc::new(AdmissionPool::new(max_jobs)),
                 start_shards: (0..START_SHARD_COUNT).map(|_| Mutex::new(())).collect(),
-                observations: Mutex::new(Observations::default()),
+                observations: Mutex::new(Observations {
+                    states: HashMap::new(),
+                    update_clock: 0,
+                    owned_lease: JobMemoryLease::acquire(OBSERVATION_METADATA_RESERVE)
+                        .map_err(registry_error)?,
+                }),
                 retention: Mutex::new(()),
                 durability_error: Mutex::new(None),
             }),
@@ -355,7 +366,21 @@ impl JobManager {
         // Compute the exact operation identity before the registry accepts the
         // key.  A serialization/digest failure must not leave an Accepted
         // entry that has no corresponding journal operation.
-        let operation_sha256 = start_operation_sha256(&request)?;
+        // Existing keys must remain inspectable even when new process capacity
+        // is exhausted. Only a new identity reserves owned staging, and its
+        // charge precedes the first digest DOM and every durable acceptance.
+        let start_resources = if registry_entry_exists {
+            None
+        } else {
+            let inherited = inherited_environment()?;
+            let lease = ProcessLease::acquire(process_reservation(
+                &request,
+                &self.inner.config,
+                &inherited,
+            )?)?;
+            let digest = start_operation_sha256(&request)?;
+            Some((inherited, lease, digest))
+        };
 
         // Fail closed before the registry accepts the job.  An unavailable or
         // deliberately memory-only journal must not leave an Accepted entry
@@ -443,6 +468,11 @@ impl JobManager {
                 replay_status,
             });
         }
+        let (inherited, process_lease, operation_sha256) = start_resources.ok_or_else(|| {
+            JobRuntimeError::Registry(
+                "new job registry entry was created without an owned memory lease".to_string(),
+            )
+        })?;
         if matches!(&journal_status, JournalStatus::Unavailable { .. }) {
             let _ = self.note_journal_degraded_for_job(
                 &request.key,
@@ -636,7 +666,12 @@ impl JobManager {
             }
         };
 
-        let spawned = match spawn_process(&request, self.inner.config.max_output_chunk_bytes) {
+        let spawned = match spawn_process(
+            &request,
+            self.inner.config.max_output_chunk_bytes,
+            &inherited,
+            Arc::clone(&process_lease),
+        ) {
             Ok(spawned) => spawned,
             Err(error) => {
                 let effect_may_have_started = matches!(&error, JobRuntimeError::SpawnAfterFork(_));
@@ -711,6 +746,7 @@ impl JobManager {
             request: request.request.clone(),
             generation,
             _admission_permit: admission_permit,
+            _process_lease: process_lease,
             startup: Arc::new(StartupGate::new()),
             lifecycle: Mutex::new(()),
             stdout_bytes: Mutex::new(0),
@@ -1199,9 +1235,8 @@ impl JobManager {
             };
             (total, oldest_available_cursor, gap, events, next_cursor)
         };
-        let recovered = self.inner.journal.recovered_job(key)?;
         let replay_status =
-            if snapshot.is_none() && recovered.as_ref().is_some_and(|job| job.terminal.is_none()) {
+            if snapshot.is_none() && self.inner.journal.recovered_nonterminal(key)? {
                 ReplayStatus::UnknownAfterRestart
             } else {
                 self.replay_status(false)?
@@ -1838,6 +1873,27 @@ impl JobManager {
         request: &JobRequest,
         kind: RuntimeJobEventKind,
     ) -> Result<u64> {
+        let _staging_lane = crate::resources::working_lane()?;
+        let staging = match &kind {
+            RuntimeJobEventKind::Output { bytes, .. } => {
+                if bytes.capacity() > self.inner.config.max_output_chunk_bytes {
+                    return Err(JobRuntimeError::InvalidRequest(
+                        "runtime output exceeds the owned chunk bound".to_string(),
+                    ));
+                }
+                bytes
+                    .capacity()
+                    .checked_mul(crate::OUTPUT_VALUE_STAGING_PER_BYTE)
+                    .and_then(|bytes| bytes.checked_add(crate::OBSERVATION_STAGING_FIXED_BYTES))
+                    .ok_or_else(|| {
+                        JobRuntimeError::InvalidRequest(
+                            "runtime output Value staging overflow".to_string(),
+                        )
+                    })?
+            }
+            _ => crate::OBSERVATION_STAGING_FIXED_BYTES,
+        };
+        let _staging_lease = JobMemoryLease::acquire_working(staging).map_err(registry_error)?;
         // Reserve and retain the resident event before touching the journal.
         // This keeps the inspection cursor monotonic even when the append
         // fails, and (critically) lets the failure path publish a synthetic
@@ -1871,10 +1927,10 @@ impl JobManager {
                 self.inner.config.max_observations_per_job,
                 self.inner.config.max_observation_bytes_per_job,
             );
-            enforce_global_observation_budget(&mut observations, &self.inner.config);
+            enforce_global_observation_budget(&mut observations, &self.inner.config)?;
             (seq, event, payload)
         };
-        let journal_result = self.inner.journal.append_observation(
+        let journal_result = self.inner.journal.append_observation_reserved(
             key,
             request,
             seq,
@@ -1938,7 +1994,7 @@ impl JobManager {
             self.inner.config.max_observations_per_job,
             self.inner.config.max_observation_bytes_per_job,
         );
-        enforce_global_observation_budget(&mut observations, &self.inner.config);
+        enforce_global_observation_budget(&mut observations, &self.inner.config)?;
         Ok(())
     }
 
@@ -2087,7 +2143,9 @@ impl JobManager {
             {
                 // The durable cursor remains available from the journal, so
                 // inspection reports an explicit whole-prefix gap on archive.
-                self.observations()?.remove(&key);
+                let mut observations = self.observations()?;
+                observations.remove(&key);
+                enforce_global_observation_budget(&mut observations, &self.inner.config)?;
                 return Ok(());
             }
         }
@@ -2159,12 +2217,21 @@ fn resident_window_bytes(state: &ObservationState) -> usize {
         )
 }
 
-fn enforce_global_observation_budget(observations: &mut Observations, config: &JobRuntimeConfig) {
+fn enforce_global_observation_budget(
+    observations: &mut Observations,
+    config: &JobRuntimeConfig,
+) -> Result<()> {
     let available = config.max_observation_bytes - OBSERVATION_METADATA_RESERVE;
     loop {
         let slots: usize = observations.values().map(|state| state.events.len()).sum();
         let bytes: usize = observations.values().map(resident_window_bytes).sum();
-        if slots <= config.max_observations && bytes <= available {
+        if slots <= config.max_observations
+            && bytes <= available
+            && observations
+                .owned_lease
+                .resize(OBSERVATION_METADATA_RESERVE + bytes)
+                .is_ok()
+        {
             break;
         }
         let oldest = observations
@@ -2173,6 +2240,10 @@ fn enforce_global_observation_budget(observations: &mut Observations, config: &J
             .min_by_key(|(_, state)| state.last_update)
             .map(|(key, _)| key.clone());
         let Some(key) = oldest else {
+            observations
+                .owned_lease
+                .resize(OBSERVATION_METADATA_RESERVE)
+                .map_err(registry_error)?;
             break;
         };
         let state = observations
@@ -2187,6 +2258,7 @@ fn enforce_global_observation_budget(observations: &mut Observations, config: &J
         // it when a prefix is evicted rather than counting only logical len.
         state.events.shrink_to_fit();
     }
+    Ok(())
 }
 
 fn runtime_event_owned_bytes(event: &RuntimeJobEvent) -> usize {
@@ -2238,6 +2310,7 @@ fn journal_status_reason(status: &JournalStatus) -> String {
 }
 
 fn validate_start_request(request: &JobStartRequest, config: &JobRuntimeConfig) -> Result<()> {
+    start_spec_bytes(request, config)?;
     validate_operation_id(&request.operation_id, config.max_operation_id_bytes)?;
     if request.initial_stdin.len() > config.max_input_bytes {
         return Err(JobRuntimeError::InvalidRequest(

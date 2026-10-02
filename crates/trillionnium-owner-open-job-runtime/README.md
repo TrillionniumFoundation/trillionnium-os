@@ -48,9 +48,30 @@ request drift remains a conflict. Unknown and observed-but-undurable terminals
 remain fenced and may exhaust admission until explicitly reconciled. No WAL or
 identity record is deleted. These changes preserve existing journal/wire bytes.
 
-The budgets bound these named resident structures and raw process buffers. They
-do not prove a whole-process 64 MiB RSS bound: journal state, serialization and
-other host modules still allocate additional memory. V2 journal recovery now
-visits authenticated on-demand records one at a time; bounded whole-history
-inspections can explicitly refuse capacity without claiming recovered coverage.
-Process-wide accounting and installed resource measurements remain required.
+The linked job module now shares a 48 MiB active/retained pool and an independent
+16 MiB working pool across manager and registry constructors. The process
+reservation also has a 32 MiB/16-owner ceiling and is charged against the same
+48 MiB pool. Start preflight counts actual spare capacities, argv/env nodes,
+path storage and initial stdin before digest serialization. Inherited settings
+are bounded and snapshotted before acceptance. I/O workers and reapers retain
+their own Arc of the process charge through buffer retirement and cleanup.
+
+Registry future history/attachment/terminal headroom, journal derived identities
+and actual observation windows consume that shared resident pool. Durable
+terminals retain event IDs and authenticated record hashes; their payloads load
+on demand and no longer accumulate as full cached DOMs. Recovery borrows headers
+without cloning payloads. Metadata pressure refuses before WAL acceptance and
+preserves uncertain identities. Memory-only development terminal caches have an
+8 KiB owned-storage bound and share one Arc rather than copying the same Value.
+
+Numeric output DOMs and JSON escaping are preflighted before cloning/encoding
+under the shared working lane. The default 64 KiB output chunk remains valid;
+larger profiles can fail the working bound before journal creation. Inspection
+streams and filters records with a bounded working envelope, but still scans
+unrelated scopes until an indexed scope visitor is available. Refusal is an
+explicit error and never means that a missing prefix was recovered.
+
+These logical charges do not prove a whole-process 64 MiB RSS bound. Allocator
+overhead, independently owned event stores, other host modules, the initial host
+environment lookup and caller-retained/cloned Vec/Value responses need their
+separate boundaries and installed measurements. No qualification is promoted.

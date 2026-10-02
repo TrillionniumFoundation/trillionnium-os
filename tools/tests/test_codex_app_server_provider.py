@@ -513,6 +513,53 @@ class CodexNativeConfigurationTest(unittest.TestCase):
             PROVIDER.native_configuration(self.config)
 
 
+    def test_user_extension_inputs_fail_before_native_startup(self):
+        inputs = [
+            '[mcp_servers.unbound]\ncommand = "must-never-run"\n',
+            'notify = ["must-never-run"]\n',
+            'profile = "unbound"\n',
+            '[features]\nhooks = true\n',
+            '[features]\nplugins = "false"\n',
+            'web_search = "live"\n',
+            '[model_providers.unbound.auth]\ncommand = "must-never-run"\n',
+            '[model_providers.unbound]\nexperimental_bearer_token = "fixture-not-credential"\n',
+            '[model_providers.unbound.aws]\nprofile = "unbound"\n',
+        ]
+        for source in inputs:
+            with self.subTest(source=source), self.assertRaises(PROVIDER.ProviderRuntimeError):
+                PROVIDER.validate_public_native_config(source.encode())
+        PROVIDER.validate_public_native_config(
+            b'model = "fixture"\n[features]\nhooks = false\nplugins = false\n')
+        PROVIDER.validate_public_native_config(
+            b'[model_providers.fixture]\nname = "public fixture"\nwire_api = "responses"\n')
+
+    def test_unbound_project_layer_and_dangling_source_fail(self):
+        project = self.root / ".codex"
+        project.mkdir()
+        with self.assertRaisesRegex(PROVIDER.ProviderRuntimeError, "unbound native configuration"):
+            PROVIDER.native_configuration(self.config)
+        project.rmdir()
+        (self.native / "managed_config.toml").symlink_to(self.root / "absent")
+        with self.assertRaisesRegex(PROVIDER.ProviderRuntimeError, "unbound native configuration"):
+            PROVIDER.native_configuration(self.config)
+
+    def test_system_contributor_is_rejected_without_opening_contents(self):
+        lstat = PROVIDER.os.lstat
+        def observed(path):
+            if path == Path("/etc/codex"):
+                return object()
+            return lstat(path)
+        with mock.patch.object(PROVIDER.os, "lstat", side_effect=observed), \
+                mock.patch.object(PROVIDER, "read_private_bytes_at", side_effect=AssertionError("must not open")), \
+                self.assertRaisesRegex(PROVIDER.ProviderRuntimeError, "startup refused"):
+            PROVIDER.native_configuration(self.config)
+
+    def test_native_toml_byte_bound_applies_before_parser(self):
+        with mock.patch.object(PROVIDER.tomllib, "loads", side_effect=AssertionError("must not allocate")), \
+                self.assertRaisesRegex(PROVIDER.ProviderRuntimeError, "byte bound"):
+            PROVIDER.validate_public_native_config(b" " * (PROVIDER.MAX_NATIVE_PUBLIC_CONFIG_BYTES + 1))
+
+
 class CodexSessionTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()

@@ -164,14 +164,53 @@ Runtime and journal observations use independent cursor domains. A true
 that a missing runtime prefix has been recovered. See the scoped recovery
 contract in [MOD-TRANSPORT](MOD-TRANSPORT.md).
 
-These named sub-budgets are source invariants. They do not establish a total
-64 MiB RSS limit: journal state, serialization and other host modules remain
-additional allocations. V2 event-store payloads now use bounded indexed/on-demand
-reads, and journal recovery visits one record at a time; see
-[MOD-EVENT-STORE](MOD-EVENT-STORE.md). Whole-history Vec inspections can explicitly
-refuse their working budget; this refusal does not establish recovery coverage.
-Total qualification still needs process-wide accounting of stores/caller-held
-responses and measured target resources. The table is not raised to hide this gap.
+All linked job-manager and job-registry instances now share one logical 64 MiB
+reservation: 48 MiB for active/retained owned state and 16 MiB for working
+copies. The active process reservation has an additional 32 MiB/16-owner
+ceiling and consumes the same 48 MiB pool; it is not another independent
+allowance. Registry entries reserve their future bounded history, attachments
+and terminal before acceptance. Observation windows charge their actual owned
+capacities to this pool. Shared pressure evicts only observation prefixes with
+their explicit cursor gaps; an uncertain identity is never evicted.
+
+Start preflight checks every owned string/path capacity, argv slots (4096),
+environment nodes (1024), total spec storage (1 MiB), and initial-stdin capacity
+before building its digest DOM. The inherited allowlist is captured before
+acceptance with 64 KiB per-value and 1 MiB aggregate limits; Command uses that
+snapshot and then applies the exact requested delta. The standard-library host
+environment lookup itself may allocate before validation, so this is not a
+preallocation guarantee against arbitrary in-process environment mutation.
+Reader, writer and reaper threads share the process reservation until their
+owned buffers/cleanup owners have dropped, including detached-worker error paths.
+
+Output's existing numeric-array JSON schema is preserved. A shared working
+lane and pre-DOM capacity reservation bound concurrent serialization across
+managers; profiles whose chunk DOM/encoder staging exceeds 16 MiB refuse before
+journal creation. The 64 KiB default remains valid. Generic journal writes also
+count JSON escaping through a bounded writer before cloning/encoding payloads.
+No resource refusal changes the producer terminal's output byte counts or
+pretends that an observation gap is output truncation.
+
+Durable operation/start/job terminals retain authenticated event references,
+not full payload DOMs. New derived identities reserve metadata and future
+reference headroom before WAL acceptance. Recovery borrows fixed headers and
+ignores payload DOM construction; reads load a reference on demand and verify
+scope, request and record hash. Capacity refusal preserves the WAL and a
+referenced-terminal integrity failure disables new journal acceptance. Explicit
+development memory-only mode shares terminal Values and limits each cached
+terminal to 8 KiB of owned storage. Qualified production continues to require
+the durable backend.
+
+Bulk job inspection visits one authenticated record at a time, preflights owned
+clones/metadata before retention, and can refuse its 16 MiB working envelope.
+It currently scans the journal and filters scope/job; an indexed scoped visitor
+is still needed to remove unrelated-record work. A refusal never establishes
+missing-prefix recovery coverage. See [MOD-EVENT-STORE](MOD-EVENT-STORE.md).
+These are logical reservations, not a measured whole-process 64 MiB RSS result:
+allocator overhead, event-store instances, other host modules, inherited host
+lookup, and caller-retained/cloned ordinary Vec/Value responses remain separate
+boundaries. Installed resource measurements and end-to-end allocation custody
+remain required; the catalog budget and qualification status are not raised.
 
 ## 10. Persistence, recovery and reconciliation
 
