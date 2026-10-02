@@ -126,8 +126,8 @@
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_bootstrap.cpp",
-      "sha256": "a3df0af67a7a696523e09d62a9c1958a687501ee7563bc869451b6ae35bd0742",
-      "size": 38103
+      "sha256": "adf506b5fe5f153b3c8d89b4ea2fc37e88cb5036384a9c2d70b4111b52d54b95",
+      "size": 40819
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_emergency_stop.cpp",
