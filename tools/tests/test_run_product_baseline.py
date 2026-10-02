@@ -8,14 +8,18 @@ from __future__ import annotations
 import ast
 import contextlib
 import copy
+import fcntl
 import io
 import json
 import os
 from pathlib import Path
+import select
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -722,6 +726,174 @@ class ProductBaselineContractTests(unittest.TestCase):
                 self.assertEqual(
                     source.read_bytes()[:4], Path(sys.executable).read_bytes()[:4]
                 )
+
+
+@unittest.skipUnless(sys.platform == "linux" and hasattr(os, "pidfd_open") and hasattr(os, "WNOWAIT"),
+                     "owned process group fixtures require Linux pidfd and WNOWAIT")
+class ProductProcessCleanupTests(unittest.TestCase):
+    def _exercise(self, mode: str, *, broker: bool = False) -> None:
+        fd_before = len(os.listdir("/proc/self/fd"))
+        owned = []
+        original_spawn = BENCH.CORE.subprocess.Popen
+
+        def own_process(*args, **kwargs):
+            process = original_spawn(*args, **kwargs)
+            owned.append(process)
+            if mode in {"unread_stdin", "partial_stdin"}:
+                fcntl.fcntl(process.stdin.fileno(), fcntl.F_SETPIPE_SZ, 4096)
+                self.assertEqual(fcntl.fcntl(process.stdin.fileno(), fcntl.F_GETPIPE_SZ), 4096)
+            return process
+
+        with tempfile.TemporaryDirectory(prefix="perf-owned-process-") as directory:
+            root = Path(directory)
+            pid_path, release = root / "child.json", root / "release"
+            child = (
+                "import json,os,signal,sys,time\n"
+                + ("signal.signal(signal.SIGTERM,signal.SIG_IGN)\n"
+                   if mode in {"ignore_term", "flood"} else "")
+                + "with open(sys.argv[1]+'.tmp','x') as stream:\n"
+                  " stream.write(json.dumps({'pid':os.getpid(),'pgid':os.getpgrp(),'sid':os.getsid(0)}))\n"
+                  "os.replace(sys.argv[1]+'.tmp',sys.argv[1])\n"
+                  "while not os.path.exists(sys.argv[2]): time.sleep(.01)\n"
+                + ("print('{\"kind\":\"fixture.normal\"}',flush=True)\n" if mode == "normal" else
+                   "import hashlib\ndata=sys.stdin.buffer.read()\nprint(json.dumps({'kind':'fixture.read','sha256':hashlib.sha256(data).hexdigest()}),flush=True)\n" if mode == "partial_stdin" else
+                   "os.write(1,b'x'*(17*1024*1024))\ntime.sleep(60)\n" if mode == "flood" else
+                   "time.sleep(60)\n")
+            )
+            leader = (
+                "import os,subprocess,sys,time\n"
+                f"subprocess.Popen([sys.executable,'-I','-c',{child!r},{str(pid_path)!r},{str(release)!r}])\n"
+                f"while not os.path.exists({str(pid_path)!r}): time.sleep(.005)\n"
+                "raise SystemExit(0)\n"
+            )
+            input_frames = []
+            if broker:
+                wrapper = root / "python-fixture"
+                wrapper.write_text("#!" + sys.executable + "\n" + leader)
+                wrapper.chmod(0o700)
+                selected = mock.patch.dict(BENCH.CORE.EXECUTION_PATHS, {"python": str(wrapper)})
+                invoke = lambda: BENCH.run_broker_sample(
+                    Path(sys.executable), Path(sys.executable), root / "broker", 1, 2
+                )
+            else:
+                selected = contextlib.nullcontext()
+                if mode in {"unread_stdin", "partial_stdin"}:
+                    if os.sysconf("SC_PAGE_SIZE") > 4096:
+                        self.skipTest("legal 16KiB input cannot exceed this kernel's minimum pipe size")
+                    input_frames = [{"kind": "fixture.valid-bounded-input", "payload": "x" * 12000}]
+                invoke = lambda: BENCH.collect([sys.executable, "-I", "-c", leader], input_frames,
+                                               6 if mode in {"normal", "partial_stdin"} else 2)
+            pidfd = None
+            try:
+                with selected, mock.patch.object(BENCH.CORE.subprocess, "Popen", side_effect=own_process), \
+                        BENCH.ThreadPoolExecutor(max_workers=1) as executor:
+                    future = executor.submit(invoke)
+                    deadline = time.monotonic() + 2
+                    while not pid_path.exists() and time.monotonic() < deadline:
+                        time.sleep(.01)
+                    self.assertTrue(pid_path.exists(), "owned descendant fixture did not start")
+                    identity = json.loads(pid_path.read_bytes())
+                    self.assertEqual(identity["pgid"], identity["sid"])
+                    pidfd = os.pidfd_open(identity["pid"], 0)
+                    release.touch()
+                    if mode in {"normal", "partial_stdin"}:
+                        frames, observation = future.result(timeout=12)
+                        if mode == "normal":
+                            self.assertEqual(frames, [{"kind": "fixture.normal"}])
+                        else:
+                            raw = b"".join(json.dumps(value, sort_keys=True, separators=(",", ":")).encode() + b"\n"
+                                           for value in input_frames)
+                            self.assertGreater(len(raw), 4096)
+                            self.assertLessEqual(len(raw), 16384)
+                            self.assertEqual(frames, [{"kind": "fixture.read", "sha256": BENCH.digest(raw)}])
+                        self.assertEqual(observation["exit_code"], 0)
+                    else:
+                        expected = ("broker exited during startup" if broker else
+                                    "product output exceeded capture bound" if mode == "flood" else
+                                    "product process timed out")
+                        with self.assertRaisesRegex(BENCH.BenchmarkError, expected):
+                            future.result(timeout=12)
+                    self.assertTrue(select.select([pidfd], [], [], 1)[0],
+                                    "exact owned descendant outlived product cleanup")
+                    self.assertEqual(len(owned), 1)
+                    self.assertIsNotNone(owned[0].returncode, "owned leader was not reaped after group cleanup")
+            finally:
+                if pidfd is not None:
+                    if not select.select([pidfd], [], [], 0)[0]:
+                        signal.pidfd_send_signal(pidfd, signal.SIGKILL)
+                        self.assertTrue(select.select([pidfd], [], [], 3)[0])
+                    os.close(pidfd)
+        self.assertEqual(len(os.listdir("/proc/self/fd")), fd_before)
+
+    def test_normal_group_is_terminal_before_return(self) -> None:
+        self._exercise("normal")
+
+    def test_exited_leader_child_holding_stdout_is_stopped(self) -> None:
+        self._exercise("held_stdout")
+
+    def test_exited_leader_child_ignoring_term_is_killed(self) -> None:
+        self._exercise("ignore_term")
+
+    def test_output_flood_stops_exact_owned_descendant(self) -> None:
+        self._exercise("flood")
+
+    def test_broker_startup_exit_does_not_reap_before_child_cleanup(self) -> None:
+        self._exercise("ignore_term", broker=True)
+
+    def test_bounded_input_above_real_pipe_capacity_times_out(self) -> None:
+        self._exercise("unread_stdin")
+
+    def test_nonblocking_partial_input_is_delivered_exactly(self) -> None:
+        self._exercise("partial_stdin")
+
+    def test_terminal_reap_error_closes_all_pipes_and_remains_error(self) -> None:
+        fd_before = len(os.listdir("/proc/self/fd"))
+        owned = []
+        spawn = BENCH.CORE.subprocess.Popen
+        reaper = BENCH.CORE.REAP_PROCESS_ANCHOR
+
+        def own_process(*args, **kwargs):
+            process = spawn(*args, **kwargs)
+            owned.append(process)
+            return process
+
+        try:
+            with mock.patch.object(BENCH.CORE.subprocess, "Popen", side_effect=own_process), \
+                    mock.patch.object(BENCH.CORE, "REAP_PROCESS_ANCHOR", side_effect=OSError("fixture reap failure")):
+                with self.assertRaisesRegex(OSError, "fixture reap failure"):
+                    BENCH.collect([sys.executable, "-I", "-c", "pass"], [], 2)
+            self.assertEqual(len(owned), 1)
+            self.assertTrue(all(pipe.closed for pipe in (owned[0].stdin, owned[0].stdout, owned[0].stderr)))
+            self.assertIsNone(owned[0].returncode, "failed reaping was silently accepted")
+            self.assertIsNotNone(os.waitid(os.P_PID, owned[0].pid, os.WEXITED | os.WNOHANG | os.WNOWAIT))
+        finally:
+            for process in owned:
+                if process.returncode is None:
+                    reaper(process)
+                for pipe in (process.stdin, process.stdout, process.stderr):
+                    pipe.close()
+        self.assertEqual(len(os.listdir("/proc/self/fd")), fd_before)
+
+    def test_sigchld_ignore_rejects_before_spawn_in_isolated_interpreter(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="perf-sigchld-") as directory:
+            marker = Path(directory) / "spawned"
+            source = BENCH.CORE.PINNED_IMPLEMENTATION_SOURCES["tools/perf/_run_product_baseline_core.py"]
+            script = (
+                "import json,signal,sys\n"
+                "namespace={'__name__':'isolated_source_fixture','__file__':sys.argv[1]}\n"
+                "exec(compile(sys.stdin.buffer.read(),sys.argv[1],'exec'),namespace)\n"
+                "signal.signal(signal.SIGCHLD,signal.SIG_IGN)\n"
+                "try:\n"
+                " namespace['collect']([sys.executable,'-I','-c',\"from pathlib import Path;Path(\"+repr(sys.argv[2])+\").write_text('spawned')\"],[],1)\n"
+                "except namespace['BenchmarkError'] as error:\n"
+                " print(json.dumps({'error':str(error)}))\n"
+                "else: raise SystemExit('SIGCHLD ignore accepted')\n"
+            )
+            result = subprocess.run([sys.executable, "-I", "-c", script, str(PATH), str(marker)],
+                                    input=source, capture_output=True, timeout=5)
+            self.assertEqual(result.returncode, 0, result.stderr.decode())
+            self.assertIn("requires Linux WNOWAIT and default SIGCHLD", json.loads(result.stdout)["error"])
+            self.assertFalse(marker.exists())
 
 
 @unittest.skipUnless(os.environ.get("TRILLIONNIUM_PERF_HOST") and os.environ.get("TRILLIONNIUM_PERF_CORE"),

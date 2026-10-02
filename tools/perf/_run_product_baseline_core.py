@@ -738,24 +738,138 @@ def _execution_path(name: str, fallback: Path | str) -> str:
     return value
 
 
-def stop(process: subprocess.Popen[bytes]) -> None:
-    if process.poll() is None:
-        process.terminate()
+def _require_owned_process_environment() -> None:
+    require(platform.system() == "Linux" and hasattr(os, "WNOWAIT") and hasattr(os, "waitid") and
+            signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL,
+            "product process ownership requires Linux WNOWAIT and default SIGCHLD")
+
+
+def _leader_exit_unreaped(process: subprocess.Popen[bytes]) -> Any:
+    # Reaping releases the numeric PID/PGID for reuse. Every caller creates a
+    # new session and must retain its leader until all possible group signals
+    # have finished, including when that leader already exited successfully.
+    require(process.returncode is None, "product process leader was already reaped")
+    require(os.getpgid(process.pid) == process.pid and os.getsid(process.pid) == process.pid,
+            "product process group is not the owned session")
+    status = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+    require(status is None or status.si_code in (os.CLD_EXITED, os.CLD_KILLED, os.CLD_DUMPED),
+            "unexpected product process wait status")
+    return status
+
+
+class _ProcessObservationDeadline(BenchmarkError):
+    pass
+
+
+def _group_live_members(process: subprocess.Popen[bytes], deadline: float) -> list[int]:
+    members = []
+    anchor_seen = False
+    with os.scandir("/proc") as entries:
+        for count, entry in enumerate(entries, 1):
+            require(count <= 131072, "product process membership exceeds finite bound")
+            if time.monotonic() >= deadline:
+                raise _ProcessObservationDeadline("product process membership deadline exceeded")
+            if not entry.name.isdecimal():
+                continue
+            try:
+                with open(Path(entry.path) / "stat", "rb") as stream:
+                    raw = stream.read(4097)
+                require(len(raw) <= 4096, "product process stat exceeds finite bound")
+                fields = raw.rsplit(b") ", 1)[1].split()
+                if int(entry.name) == process.pid:
+                    require(int(fields[2]) == process.pid and int(fields[3]) == process.pid,
+                            "product process anchor identity changed")
+                    anchor_seen = True
+                if int(fields[2]) == process.pid:
+                    require(int(fields[3]) == process.pid, "product process group session changed")
+                    if fields[0] not in {b"Z", b"X"}:
+                        members.append(int(entry.name))
+            except (FileNotFoundError, ProcessLookupError):
+                continue
+    require(anchor_seen, "product process anchor is not observable")
+    if time.monotonic() >= deadline:
+        raise _ProcessObservationDeadline("product process membership deadline exceeded")
+    return members
+
+
+def _group_terminal(process: subprocess.Popen[bytes], deadline: float) -> Any:
+    quiet_once = False
+    while True:
+        if time.monotonic() >= deadline:
+            return None
+        exited = _leader_exit_unreaped(process)
         try:
-            process.wait(timeout=3)
-        except subprocess.TimeoutExpired:
-            # The still-owned leader has not been reaped; only its created group.
-            os.killpg(process.pid, signal.SIGKILL)
-            process.wait(timeout=3)
-    for pipe in (process.stdin, process.stdout, process.stderr):
-        if pipe:
-            pipe.close()
+            quiet = exited is not None and not _group_live_members(process, deadline)
+        except _ProcessObservationDeadline:
+            # A partial scan supplies no terminal proof. The caller escalates
+            # or rejects at its existing deadline; it never accepts a partial
+            # empty membership set as successful cleanup.
+            return None
+        if quiet and quiet_once:
+            return exited
+        quiet_once = quiet
+        if time.monotonic() >= deadline:
+            return None
+        time.sleep(min(.01, max(0, deadline - time.monotonic())))
+
+
+def _signal_owned_group(process: subprocess.Popen[bytes], selected: int) -> None:
+    _leader_exit_unreaped(process)
+    try:
+        os.killpg(process.pid, selected)
+    except ProcessLookupError:
+        pass
+
+
+def _reap_process_anchor(process: subprocess.Popen[bytes]) -> None:
+    # The authenticated facade supplies the only trusted replacement. Its
+    # OwnedSessionPopen.wait observes without reaping; direct core fixtures use
+    # ordinary Popen.wait. Neither runs until the last group signal is done.
+    reaper = globals().get("REAP_PROCESS_ANCHOR")
+    if reaper is None:
+        process.wait(timeout=1)
+    else:
+        reaper(process)
+
+
+def stop(process: subprocess.Popen[bytes]) -> None:
+    terminal = False
+    try:
+        _signal_owned_group(process, signal.SIGTERM)
+        terminal = _group_terminal(process, time.monotonic() + 1) is not None
+        if not terminal:
+            _signal_owned_group(process, signal.SIGKILL)
+            terminal = _group_terminal(process, time.monotonic() + 3) is not None
+        require(terminal, "product process group cleanup did not reach terminal state")
+    except (BenchmarkError, OSError, ValueError, IndexError):
+        # Even observation/setup failures must stop this still-anchored group.
+        # Failure to inspect its members remains an error; it never becomes a
+        # successful cleanup or product sample. No already-reaped PID is used.
+        _signal_owned_group(process, signal.SIGKILL)
+        deadline = time.monotonic() + 3
+        while _leader_exit_unreaped(process) is None and time.monotonic() < deadline:
+            time.sleep(.01)
+        if _leader_exit_unreaped(process) is not None:
+            _reap_process_anchor(process)
+        raise
+    finally:
+        try:
+            if terminal:
+                _reap_process_anchor(process)
+        finally:
+            for pipe in (process.stdin, process.stdout, process.stderr):
+                if pipe:
+                    try:
+                        pipe.close()
+                    except OSError:
+                        pass
 
 
 def collect(command: list[str], frames: list[dict], timeout: float,
             read_delay_ms: float = 0) -> tuple[list[dict], dict]:
     payload = b"".join(canonical(frame) + b"\n" for frame in frames)
     require(len(payload) <= 16 * 1024, "benchmark input exceeded fixed bound")
+    _require_owned_process_environment()
     started = time.perf_counter_ns()
     process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, env=finite_env(), start_new_session=True)
@@ -765,9 +879,13 @@ def collect(command: list[str], frames: list[dict], timeout: float,
     next_read = 0.0
     try:
         assert process.stdin and process.stdout and process.stderr
-        process.stdin.write(payload)
-        process.stdin.close()
+        os.set_blocking(process.stdin.fileno(), False)
+        input_offset = 0
         with selectors.DefaultSelector() as selector:
+            if payload:
+                selector.register(process.stdin, selectors.EVENT_WRITE, "stdin")
+            else:
+                process.stdin.close()
             for name, pipe in (("stdout", process.stdout), ("stderr", process.stderr)):
                 os.set_blocking(pipe.fileno(), False)
                 selector.register(pipe, selectors.EVENT_READ, name)
@@ -777,6 +895,17 @@ def collect(command: list[str], frames: list[dict], timeout: float,
                     time.sleep(min(0.01, next_read - time.monotonic()))
                 for key, _ in selector.select(timeout=0.01):
                     name = key.data
+                    if name == "stdin":
+                        try:
+                            written = os.write(key.fileobj.fileno(), payload[input_offset:])
+                        except BlockingIOError:
+                            continue
+                        require(written > 0, "product stdin made no progress")
+                        input_offset += written
+                        if input_offset == len(payload):
+                            selector.unregister(key.fileobj)
+                            process.stdin.close()
+                        continue
                     if name == "stdout" and time.monotonic() < next_read:
                         continue
                     data = os.read(key.fileobj.fileno(), 4096 if read_delay_ms else 65536)
@@ -797,7 +926,9 @@ def collect(command: list[str], frames: list[dict], timeout: float,
                                              "kind": value["kind"], "frame_sha256": digest(line)})
         remaining = timeout - (time.perf_counter_ns() - started) / 1e9
         require(remaining > 0, "product process exceeded deadline")
-        code = process.wait(timeout=remaining)
+        exited = _group_terminal(process, time.monotonic() + remaining)
+        require(exited is not None, "product process group exceeded deadline")
+        code = exited.si_status if exited.si_code == os.CLD_EXITED else -exited.si_status
         require(code == 0, f"product exit {code}: {bytes(output['stderr'])[:2048]!r}")
         require(not pending, "incomplete host JSONL frame")
         decoded = [strict_json(line) for line in output["stdout"].splitlines()]
@@ -949,13 +1080,14 @@ def run_broker_sample(host: Path, core: Path, root: Path, clients: int, timeout:
     for arg in host_command(upstream, core, root, provider)[1:]:
         command.append("--upstream-arg=" + arg)
     with tempfile.TemporaryFile() as diagnostic:
+        _require_owned_process_environment()
         process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=diagnostic, stderr=diagnostic,
                                    env=finite_env(), start_new_session=True)
         try:
             deadline = time.monotonic() + timeout
             descriptor = root / "descriptor.json"
             while not descriptor.exists():
-                require(process.poll() is None, "broker exited during startup")
+                require(_leader_exit_unreaped(process) is None, "broker exited during startup")
                 require(time.monotonic() < deadline, "broker startup timed out")
                 time.sleep(0.01)
             identity = strict_json(descriptor.read_bytes())

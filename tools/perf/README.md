@@ -24,7 +24,7 @@ python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   "$PWD/tools/perf/run_product_baseline.py" \
   tools/perf/run_product_baseline.py \
-  b4b991e19bf39979bbe565ea7f7675fae430bb391ca35f33f0dc9bcdcd3a7cd5 \
+  69a0adb3006f76d22a0a2d4a44441de7f8d574b3729d55b17b0d6048fbb47d6a \
   -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \
@@ -59,6 +59,32 @@ mode 0600. `--scratch-parent /controlled/filesystem` chooses the scratch storage
 used for measured persistence; otherwise the system temporary directory is used.
 Each sample gets a fresh private directory and reclaims it after measuring and
 reaping its carriers. Existing event/job stores are never consumed.
+
+Process ownership requires Linux `waitid(..., WNOWAIT)` and default
+`SIGCHLD` disposition before spawning. The runner must be the exclusive reaper
+of its direct children. Both product collection and broker startup retain their
+original session leader through TERM/KILL, bounded membership observations and
+final reaping, including when the leader exits before a descendant holding a
+pipe. The authenticated facade preserves inherited execution descriptors and
+uses the same cleanup implementation as the core. stdin is nonblocking and
+shares the stdout/stderr selector deadline; a legal input larger than an
+available pipe cannot block before the timeout loop starts.
+
+Membership observations require a complete same-namespace `/proc` view, the
+retained anchor, at most 131072 directory entries, 4096 bytes per process stat
+and the cleanup phase deadline. Missing transient processes may disappear;
+unreadable or invalid observations cannot produce successful cleanup. A partial
+scan at the deadline triggers escalation or failure. Real fixtures cover a
+leader exiting with held stdout, TERM refusal, output flooding, normal cleanup,
+4096-byte stdin pipes with unread and fully delivered inputs, and isolated
+`SIGCHLD=SIG_IGN` rejection. They verify exact descendant pidfds, final leader
+reaping and descriptor counts. A real terminal-process fixture injects a reaper
+error: pipes still close, the retained anchor remains available for reconciliation
+and the error cannot become a successful sample. This does not prove cleanup of descendants that
+escape their original session/group, defeat an external reaper, or provide a
+hard bound on a kernel syscall stuck in uninterruptible I/O. Protected runner
+and installed process-tree evidence remain separate requirements. These changes
+also require a fresh implementation manifest and baseline.
 
 Use explicit host/core paths. Before any workload, the tool opens each selected
 Host, Core, Python and shell executable once, reads and hashes those admitted
@@ -154,7 +180,7 @@ python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   "$PWD/tools/perf/run_product_baseline.py" \
   tools/perf/run_product_baseline.py \
-  b4b991e19bf39979bbe565ea7f7675fae430bb391ca35f33f0dc9bcdcd3a7cd5 \
+  69a0adb3006f76d22a0a2d4a44441de7f8d574b3729d55b17b0d6048fbb47d6a \
   -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \

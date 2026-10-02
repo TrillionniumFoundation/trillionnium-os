@@ -236,6 +236,21 @@ Evidence ceiling: **SOURCE_ONLY_UNTIL_EXACT_HEAD_CI**.
 
 The module documentation verifier checks this document against the machine catalog, verifies required sections and source paths, binds the API and state schema identifiers, checks the provisional budget record and rejects unregistered or misleading documentation.
 
+Source-control archive validation checks members incrementally, retaining names
+for duplicate detection without accumulating decoded TarInfo objects. The
+compressed archive limit is 64 MiB, with at most 100,000 members, 512 MiB of
+ordinary file content and 64 MiB of headers/extension/name metadata. Before
+tarfile decodes extensions, each payload is limited to 64 KiB and nesting to 16.
+Decoded local/global PAX state permits at most 1,024 fields and 64 KiB of UTF-8
+key/value text. Sparse records, links, special files and global size overrides
+are rejected. After the tar end marker, only one 10,240-byte zero-padding record
+is allowed; reading to gzip EOF also checks the compressed footer. These are
+input and parser-state bounds, not an installed or whole-process RSS claim.
+Real compressed metadata and limited-address-space regressions exercise early
+rejection; canonical Git source packages and bounded PAX/GNU long names remain
+supported. Manifest hashes still provide integrity rather than independent
+source or builder authorization.
+
 ### Product workload implementation admission
 
 The selected-product performance harness captures a closed manifest of 16
@@ -260,6 +275,27 @@ Adding the omitted broker implementations changes the manifest digest and
 requires a new baseline; an artifact with the previous manifest cannot provide
 a comparison pass. Canonical compiler/build receipts, exact-head source CI,
 protected runner authorization and target evidence remain separate requirements.
+
+Product collection and broker startup require Linux WNOWAIT and default
+SIGCHLD before spawn, with this runner as the exclusive direct-child reaper.
+Their original session leader remains unreaped through TERM/KILL and bounded
+same-namespace procfs observations; the authenticated facade preserves its
+execution descriptors and delegates to that common cleanup path before final
+anchor reaping. stdin writes share the nonblocking stdout/stderr selector and
+operation deadline. Membership checks retain the observable anchor and bound
+entries, stat bytes and scan time; incomplete or unreadable observations fail
+closed, and a partial deadline scan cannot supply terminal proof. Real local
+process fixtures exercise held stdout after leader exit, TERM refusal, output
+flooding, small-pipe input backpressure, complete partial writes, normal cleanup
+and pre-spawn SIGCHLD-ignore rejection, with exact descendant pidfd and FD checks.
+A terminal-process reaper-failure fixture verifies that pipes close while the
+error and retained anchor remain available for reconciliation.
+These tests do not establish cleanup for escaped sessions/groups, a hostile
+external reaper or an uninterruptible kernel syscall. They do not qualify a
+protected runner or installed process graph. The revised harness needs a fresh
+manifest and baseline. Earlier direct-core cleanup probes are source/API
+fixtures: the earlier authenticated facade already had a retained-anchor cleanup
+override, so those probes do not establish the same failure in that entrypoint.
 
 Product baseline comparisons also bind the effective scratch mount through
 its opened directory descriptor, kernel mount ID and complete mount-record
