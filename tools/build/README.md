@@ -38,7 +38,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOAD
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   /work/reviewed-checkout/tools/build/verify_host_reproducibility.py \
   tools/build/verify_host_reproducibility.py \
-  0c29bc8946c276c28b7c2e1ba7d27a34c6471be82649448161788ff82493ee51 \
+  6347b4ba541b25c5fe6a64918ccb6fa467e64eb4a4f922aa7c9a67a88a695724 \
   -- \
   --repo-root /work/reviewed-checkout \
   --expected-commit FULL_REVIEWED_COMMIT_SHA \
@@ -99,17 +99,22 @@ can receive ordinary Cargo cache metadata writes.
 
 The JSON report includes the source commit/tree, commit timestamp, lockfile and
 manifest identities, direct tool hashes and versions, platform and Rust sysroot,
-verifier identity, a closed implementation manifest covering the minimal build
+verifier identity, a closed implementation manifest including the full broker
+module closure admitted by the nested performance cleanup harness and the minimal build
 launcher, authenticated build facade, private recipe core, minimal performance
 launcher, authenticated cleanup facade/private core and Root Linux supervisor,
 complete build commands and environments, elapsed times, raw-log identities, and
 both binary identities.
 
-Every behavior-bearing Python dependency is read, hashed, compiled and executed
-from one admitted source snapshot. The inline loader authenticates the bootstrap, and the bootstrap authenticates
-each launcher before any launcher code executes. Each launcher then authenticates
-its facade bytes before compilation. Every Python and tool path is opened component by
-component with descriptor-relative `O_NOFOLLOW` lookups. Cargo, rustc, cc and ar
+Python code executed by the verifier and nested cleanup runs from admitted
+source snapshots. The nested performance harness also admits the full broker
+module inventory; those modules run from private copies when broker samples are
+requested. The inline loader authenticates the bootstrap, and the bootstrap
+then authenticates each launcher before launcher code executes. Each launcher
+authenticates its facade bytes before compilation. Registered project Python
+sources and selected tool paths use component-wise, descriptor-relative
+`O_NOFOLLOW` opens. System Python libraries remain outside this project-source
+custody closure. Cargo, rustc, cc and ar
 are each copied from the opened descriptor into a Linux memfd, write/grow/shrink
 sealing is applied, and a private basename-preserving link is used for all version
 probes and both builds. The actual SDK `lib` directory must contain one ordinary

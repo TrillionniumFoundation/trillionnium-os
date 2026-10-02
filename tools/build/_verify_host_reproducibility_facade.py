@@ -219,19 +219,20 @@ if not isinstance(cleanup_files, dict):
     raise RuntimeError("cleanup implementation is not snapshot-bound")
 if cleanup_files.get("tools/perf/run_product_baseline.py") != _CLEANUP_IDENTITY:
     raise RuntimeError("cleanup launcher executed bytes differ from its nested identity")
+_BUILD_ONLY_PATHS = {
+    "tools/build/_verify_host_reproducibility_core.py",
+    "tools/build/_verify_host_reproducibility_facade.py",
+    "tools/build/verify_host_reproducibility.py",
+}
+if set(cleanup_files) != set(CORE.IMPLEMENTATION_PATHS) - _BUILD_ONLY_PATHS:
+    raise RuntimeError("cleanup implementation transitive snapshot is incomplete")
+if cleanup_files.get("tools/owner-open/authenticated_python_bootstrap.py") != _BOOTSTRAP_IDENTITY:
+    raise RuntimeError("cleanup bootstrap identity differs from the outer bootstrap")
 PINNED_IMPLEMENTATION_FILES = {
-    "tools/owner-open/authenticated_python_bootstrap.py": _BOOTSTRAP_IDENTITY,
+    **cleanup_files,
     "tools/build/_verify_host_reproducibility_core.py": _CORE_IDENTITY,
     "tools/build/_verify_host_reproducibility_facade.py": _FACADE_IDENTITY,
     "tools/build/verify_host_reproducibility.py": _LAUNCHER_IDENTITY,
-    "tools/owner-open/owner_open_rootlinux_supervisor.py": cleanup_files[
-        "tools/owner-open/owner_open_rootlinux_supervisor.py"],
-    "tools/perf/_run_product_baseline_core.py": cleanup_files[
-        "tools/perf/_run_product_baseline_core.py"],
-    "tools/perf/_run_product_baseline_facade.py": cleanup_files[
-        "tools/perf/_run_product_baseline_facade.py"],
-    "tools/perf/run_product_baseline.py": cleanup_files[
-        "tools/perf/run_product_baseline.py"],
 }
 if set(PINNED_IMPLEMENTATION_FILES) != set(CORE.IMPLEMENTATION_PATHS):
     raise RuntimeError("reproducibility implementation snapshot is incomplete")

@@ -24,7 +24,7 @@ python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   "$PWD/tools/perf/run_product_baseline.py" \
   tools/perf/run_product_baseline.py \
-  2ab7c93fa12e88325e8d280782b043f0fe9c1af5e7597e15639f5c50836de8cc \
+  b4b991e19bf39979bbe565ea7f7675fae430bb391ca35f33f0dc9bcdcd3a7cd5 \
   -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \
@@ -73,10 +73,18 @@ small and cannot be executed directly. It walks every
 facade path component from the filesystem root with descriptor-relative opens and
 `O_NOFOLLOW`, verifies a fixed facade SHA-256, compiles those same bytes, and only
 then transfers control. The authenticated facade applies the same component-wise
-open discipline to every behavior-bearing Python source. Its closed implementation
+open discipline to each registered repository Python source. Its closed implementation
 manifest covers the launcher, authenticated facade, private core, Root Linux
-supervisor and source broker. The broker workload executes a private script made
-from the same admitted snapshot. The report additionally records the source
+supervisor and the broker entrypoint plus its ten transitive sibling sources.
+The broker workload imports private copies of that complete captured closure.
+Missing, changed, symlinked or additional custody files refuse startup; there is
+no repository import path or `PYTHONPATH` fallback. The system Python standard
+library remains an interpreter dependency; this repository manifest does not
+independently attest that runtime. The same custody check runs before
+reporting results. Adding these previously omitted broker sources changes the
+implementation identity and requires a new baseline; older artifacts cannot
+establish a comparison against this harness. The report additionally records the
+source
 commit/tree, dirty tracked diff and untracked inputs, lockfile, Python and shell
 identities. Changing any manifest member changes comparison identity; changing a
 source path during a run fails it. A dirty but stable checkout is allowed unless
@@ -124,7 +132,7 @@ python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   "$PWD/tools/perf/run_product_baseline.py" \
   tools/perf/run_product_baseline.py \
-  2ab7c93fa12e88325e8d280782b043f0fe9c1af5e7597e15639f5c50836de8cc \
+  b4b991e19bf39979bbe565ea7f7675fae430bb391ca35f33f0dc9bcdcd3a7cd5 \
   -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \

@@ -41,9 +41,22 @@ GATE_POLICY_SCHEMA = "org.trillionnium.product-host-baseline-gate-policy.v1"
 GATE_POLICY_VERSION = "2026-09-09-v1"
 IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.product-host-baseline-implementation.v1"
 GATE_METRICS = ("latency_p50_ms", "latency_p95_ms")
+BROKER_SOURCE_PATHS = (
+    "tools/owner-open/owner_open_connection_broker.py",
+    "tools/owner-open/owner_open_connection_broker_v2.py",
+    "tools/owner-open/owner_open_broker_admission_v2.py",
+    "tools/owner-open/owner_open_broker_audit.py",
+    "tools/owner-open/owner_open_broker_base_v2.py",
+    "tools/owner-open/owner_open_broker_common.py",
+    "tools/owner-open/owner_open_broker_connections.py",
+    "tools/owner-open/owner_open_broker_convergence_v2.py",
+    "tools/owner-open/owner_open_broker_mux.py",
+    "tools/owner-open/owner_open_broker_runtime.py",
+    "tools/owner-open/owner_open_broker_server_v2.py",
+)
 IMPLEMENTATION_PATHS = (
     "tools/owner-open/authenticated_python_bootstrap.py",
-    "tools/owner-open/owner_open_connection_broker.py",
+    *BROKER_SOURCE_PATHS,
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
     "tools/perf/_run_product_baseline_core.py",
     "tools/perf/_run_product_baseline_facade.py",
@@ -274,6 +287,50 @@ def _write_pinned_source(
             observed["sha256"] == identity["sha256"],
             f"pinned source custody bytes differ: {identity['path']}")
     return target
+
+
+def _assert_broker_custody(directory: Path) -> None:
+    require(PINNED_IMPLEMENTATION_FILES is not None,
+            "broker source identities are not snapshot-bound")
+    directory_value = directory.stat(follow_symlinks=False)
+    require(stat.S_ISDIR(directory_value.st_mode) and
+            directory_value.st_uid == os.geteuid() and
+            directory_value.st_mode & 0o077 == 0,
+            "broker custody directory is not private")
+    expected_names = {Path(relative).name for relative in BROKER_SOURCE_PATHS}
+    require({path.name for path in directory.iterdir()} == expected_names,
+            "broker custody inventory differs from the closed implementation")
+    for relative in BROKER_SOURCE_PATHS:
+        path = directory / Path(relative).name
+        _, actual, internal = OPEN_ADMITTED_FILE(
+            path, relative, maximum=8 * 1024 * 1024, executable=False
+        )
+        expected = PINNED_IMPLEMENTATION_FILES[relative]
+        value = path.stat(follow_symlinks=False)
+        require(value.st_nlink == 1 and value.st_uid == os.geteuid() and
+                value.st_mode & 0o077 == 0 and
+                (value.st_dev, value.st_ino) == (internal["device"], internal["inode"]),
+                f"broker source custody is not private and single-link: {relative}")
+        require(actual == expected,
+                f"broker custody bytes differ from the admitted snapshot: {relative}")
+
+
+def _write_broker_custody(parent: Path) -> Path:
+    require(PINNED_IMPLEMENTATION_FILES is not None and
+            PINNED_IMPLEMENTATION_SOURCES is not None and
+            set(PINNED_IMPLEMENTATION_FILES) == set(IMPLEMENTATION_PATHS) and
+            set(PINNED_IMPLEMENTATION_SOURCES) == set(IMPLEMENTATION_PATHS),
+            "broker implementation snapshot is incomplete")
+    directory = parent / "broker-python"
+    directory.mkdir(mode=0o700)
+    for relative in BROKER_SOURCE_PATHS:
+        _write_pinned_source(
+            directory, Path(relative).name,
+            PINNED_IMPLEMENTATION_SOURCES[relative],
+            PINNED_IMPLEMENTATION_FILES[relative],
+        )
+    _assert_broker_custody(directory)
+    return directory / Path(BROKER_SOURCE_PATHS[0]).name
 
 
 def _live_repository_file_identity(relative: str) -> dict[str, Any]:
@@ -627,13 +684,17 @@ def run_broker_sample(host: Path, core: Path, root: Path, clients: int, timeout:
     upstream = root / "host"
     shutil.copyfile(host, upstream)
     upstream.chmod(0o700)
+    broker = (Path(EXECUTION_PATHS["broker"]) if "broker" in EXECUTION_PATHS
+              else _write_broker_custody(root))
+    _assert_broker_custody(broker.parent)
     command = [_execution_path("python", Path(sys.executable).resolve()),
-               _execution_path("broker", ROOT / "tools/owner-open/owner_open_connection_broker.py"),
+               str(broker),
                "--socket", str(root / "socket"), "--descriptor", str(root / "descriptor.json"),
                "--token-file", str(root / "token"), "--broker-id", "product-benchmark",
                "--upstream", str(upstream), "--max-clients", str(clients),
                "--max-inflight-requests", str(clients)]
-    # The broker imports sibling source modules under a finite clean environment.
+    # Sibling imports resolve only from this exact private snapshot closure.
+    # There is no mutable repository path or PYTHONPATH fallback.
     for arg in host_command(upstream, core, root, provider)[1:]:
         command.append("--upstream-arg=" + arg)
     with tempfile.TemporaryFile() as diagnostic:
@@ -1080,13 +1141,7 @@ def run(args: argparse.Namespace) -> dict:
         require(PINNED_IMPLEMENTATION_FILES is not None and
                 PINNED_IMPLEMENTATION_SOURCES is not None,
                 "performance Python implementation is not snapshot-bound")
-        broker_relative = "tools/owner-open/owner_open_connection_broker.py"
-        broker = _write_pinned_source(
-            custody_root,
-            "owner_open_connection_broker.py",
-            PINNED_IMPLEMENTATION_SOURCES[broker_relative],
-            PINNED_IMPLEMENTATION_FILES[broker_relative],
-        )
+        broker = _write_broker_custody(custody_root)
         prior_paths, prior_fds = EXECUTION_PATHS, EXECUTION_PASS_FDS
         EXECUTION_PATHS = {
             name: str(pin.execution_path) for name, pin in pins.items()
@@ -1094,7 +1149,9 @@ def run(args: argparse.Namespace) -> dict:
         EXECUTION_PATHS["broker"] = str(broker)
         EXECUTION_PASS_FDS = ()
         try:
-            return _run_with_custody(args, pins, custody_root)
+            result = _run_with_custody(args, pins, custody_root)
+            _assert_broker_custody(broker.parent)
+            return result
         finally:
             EXECUTION_PATHS = prior_paths
             EXECUTION_PASS_FDS = prior_fds

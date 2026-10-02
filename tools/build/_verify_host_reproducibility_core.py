@@ -38,6 +38,17 @@ IMPLEMENTATION_PATHS = (
     "tools/perf/_run_product_baseline_core.py",
     "tools/perf/_run_product_baseline_facade.py",
     "tools/perf/run_product_baseline.py",
+    "tools/owner-open/owner_open_connection_broker.py",
+    "tools/owner-open/owner_open_connection_broker_v2.py",
+    "tools/owner-open/owner_open_broker_admission_v2.py",
+    "tools/owner-open/owner_open_broker_audit.py",
+    "tools/owner-open/owner_open_broker_base_v2.py",
+    "tools/owner-open/owner_open_broker_common.py",
+    "tools/owner-open/owner_open_broker_connections.py",
+    "tools/owner-open/owner_open_broker_convergence_v2.py",
+    "tools/owner-open/owner_open_broker_mux.py",
+    "tools/owner-open/owner_open_broker_runtime.py",
+    "tools/owner-open/owner_open_broker_server_v2.py",
 )
 
 

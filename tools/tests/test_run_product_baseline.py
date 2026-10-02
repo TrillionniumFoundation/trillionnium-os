@@ -5,6 +5,7 @@ The CLI itself always requires real binaries and cannot substitute fixtures.
 """
 from __future__ import annotations
 
+import ast
 import contextlib
 import copy
 import io
@@ -58,6 +59,107 @@ def artifact(latencies: list[int] | None = None) -> dict:
 
 
 class ProductBaselineContractTests(unittest.TestCase):
+    def test_broker_manifest_covers_actual_transitive_sibling_imports(self) -> None:
+        modules = {Path(path).stem: path for path in BENCH.BROKER_SOURCE_PATHS}
+        pending = ["owner_open_connection_broker"]
+        reached = set()
+        while pending:
+            name = pending.pop()
+            if name in reached:
+                continue
+            self.assertIn(name, modules, f"unadmitted broker sibling import: {name}")
+            reached.add(name)
+            source = BENCH.PINNED_IMPLEMENTATION_SOURCES[modules[name]]
+            for node in ast.walk(ast.parse(source)):
+                imports = []
+                if isinstance(node, ast.Import):
+                    imports = [item.name.split(".")[0] for item in node.names]
+                elif isinstance(node, ast.ImportFrom) and node.module:
+                    imports = [node.module.split(".")[0]]
+                pending.extend(item for item in imports if item.startswith("owner_open_"))
+        self.assertEqual(reached, set(modules))
+        self.assertTrue(set(BENCH.BROKER_SOURCE_PATHS).issubset(BENCH.IMPLEMENTATION_PATHS))
+
+    def test_private_broker_closure_starts_without_repository_import_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            entrypoint = BENCH._write_broker_custody(Path(directory))
+            result = subprocess.run(
+                [sys.executable, str(entrypoint), "--help"],
+                cwd=directory, env=BENCH.finite_env(),
+                capture_output=True, text=True, timeout=10,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("--max-inflight-requests", result.stdout)
+            BENCH._assert_broker_custody(entrypoint.parent)
+
+    def test_private_broker_executes_all_admitted_siblings_after_source_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            selected = root / "source"
+            for relative in BENCH.BROKER_SOURCE_PATHS:
+                path = selected / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(BENCH.PINNED_IMPLEMENTATION_SOURCES[relative])
+            with mock.patch.object(BENCH, "REPOSITORY_ROOT", selected):
+                captured = BENCH._snapshot_broker_sources()
+            # Source modules move after descriptor admission. Execution must
+            # use the captured closure, including imports below the wrapper.
+            for relative in BENCH.BROKER_SOURCE_PATHS:
+                (selected / relative).write_text("raise RuntimeError('changed source executed')\n")
+            sources = dict(BENCH.PINNED_IMPLEMENTATION_SOURCES)
+            identities = dict(BENCH.PINNED_IMPLEMENTATION_FILES)
+            for relative, (source, identity) in captured.items():
+                sources[relative] = source
+                identities[relative] = identity
+            with mock.patch.object(BENCH.CORE, "PINNED_IMPLEMENTATION_SOURCES", sources), \
+                 mock.patch.object(BENCH.CORE, "PINNED_IMPLEMENTATION_FILES", identities):
+                entrypoint = BENCH._write_broker_custody(root)
+                result = subprocess.run(
+                    [sys.executable, str(entrypoint), "--help"],
+                    cwd=directory, env=BENCH.finite_env(),
+                    capture_output=True, text=True, timeout=10,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                BENCH._assert_broker_custody(entrypoint.parent)
+
+    def test_missing_or_tampered_private_broker_source_refuses_before_spawn(self) -> None:
+        for mutation in ("missing", "tampered", "extra", "symlink", "hardlink", "public_parent"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                entrypoint = BENCH._write_broker_custody(root)
+                source = entrypoint.parent / "owner_open_broker_common.py"
+                if mutation == "missing":
+                    source.unlink()
+                elif mutation == "tampered":
+                    source.chmod(0o600)
+                    source.write_text("raise RuntimeError('unadmitted source executed')\n")
+                    source.chmod(0o400)
+                elif mutation == "extra":
+                    (entrypoint.parent / "owner_open_unadmitted.py").write_text("VALUE = 1\n")
+                elif mutation == "symlink":
+                    source.unlink()
+                    source.symlink_to(BENCH.CORE.ROOT / "tools/owner-open/owner_open_broker_common.py")
+                elif mutation == "hardlink":
+                    os.link(source, root / "outside-custody.py")
+                else:
+                    entrypoint.parent.chmod(0o777)
+                with mock.patch.object(BENCH.CORE, "EXECUTION_PATHS", {"broker": str(entrypoint)}), \
+                     mock.patch.object(BENCH.CORE.subprocess, "Popen") as spawn:
+                    with self.assertRaises((BENCH.BenchmarkError, OSError)):
+                        BENCH.run_broker_sample(Path(sys.executable), Path(sys.executable),
+                                               root / "sample", 2, 2)
+                    spawn.assert_not_called()
+
+    def test_incomplete_broker_snapshot_refuses_custody_publication(self) -> None:
+        for field in ("PINNED_IMPLEMENTATION_SOURCES", "PINNED_IMPLEMENTATION_FILES"):
+            with self.subTest(field=field), tempfile.TemporaryDirectory() as directory:
+                incomplete = dict(getattr(BENCH.CORE, field))
+                incomplete.pop("tools/owner-open/owner_open_broker_mux.py")
+                with mock.patch.object(BENCH.CORE, field, incomplete):
+                    with self.assertRaisesRegex(BENCH.BenchmarkError, "snapshot is incomplete"):
+                        BENCH._write_broker_custody(Path(directory))
+                self.assertEqual(list(Path(directory).iterdir()), [])
+
     def test_warmup_excluded_and_raw_percentiles_recomputed(self) -> None:
         value = artifact()
         value["samples"].append({"workload": "short_turn", "repetition": 0, "warmup": True,
@@ -456,6 +558,23 @@ class ProductBaselineContractTests(unittest.TestCase):
                      "set TRILLIONNIUM_PERF_HOST and TRILLIONNIUM_PERF_CORE for real-binary integration")
 
 class RealProductBaselineTests(unittest.TestCase):
+    def test_real_selected_products_all_workloads_with_private_custody(self) -> None:
+        host = Path(os.environ["TRILLIONNIUM_PERF_HOST"]).resolve(strict=True)
+        core = Path(os.environ["TRILLIONNIUM_PERF_CORE"]).resolve(strict=True)
+        with tempfile.TemporaryDirectory(prefix="perf-private-integration-") as directory:
+            args = BENCH.parse_args([
+                "--host", str(host), "--core", str(core),
+                "--output", str(Path(directory) / "report.json"),
+                "--scratch-parent", directory,
+                "--repetitions", "1", "--warmup", "0", "--output-bytes", "65536",
+            ])
+            report = BENCH.run(args)
+            self.assertEqual(report["failures"], [])
+            self.assertEqual({row["workload"] for row in report["samples"]}, set(BENCH.WORKLOADS))
+            self.assertTrue(all(row["correctness_validated"] for row in report["samples"]))
+            self.assertFalse(report["gate"]["passed"])
+            self.assertFalse(report["public_release"])
+
     def test_real_selected_products_all_workloads(self) -> None:
         host = Path(os.environ["TRILLIONNIUM_PERF_HOST"]).resolve(strict=True)
         core = Path(os.environ["TRILLIONNIUM_PERF_CORE"]).resolve(strict=True)

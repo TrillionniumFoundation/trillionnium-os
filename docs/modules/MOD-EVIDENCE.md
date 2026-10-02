@@ -185,6 +185,22 @@ Rolling compatibility is supported under the explicit compatibility and fencing 
 
 Evidence schemas are append-only and versioned. A new verifier may accept older packages only through an explicit compatibility matrix; signed subjects are never rewritten.
 
+EventStore's tighter process-shared memory admission can refuse a previously
+accepted history without changing its bytes. A source behavior probe built the
+exact EventStore sources from `723b718937f0503c44054b1e28d478cab8f81575` and the
+sources from `3bca589c5b8febf9a3420e568eaa872ec478aaf7` in one independent Cargo
+harness. A plain 12 MiB JSON string appended and reopened with the earlier
+source, while both current default v1 and v2 readers returned
+`CapacityExhausted`; the v1 WAL and v2 segment/sidecar bytes stayed unchanged.
+That harness used its own retained dependency lock and local Rust 1.95, not the
+earlier release binaries, repository lock or canonical Rust 1.93 build. It
+demonstrates a source admission boundary, not a release compatibility matrix.
+Before rollout, preflight actual retained histories against the selected
+reader and memory configuration. A refusal leaves admission inhibited; retain
+the original history and compatible reader until an explicitly reviewed
+migration or rollback path is proven. Passing bounded streaming tests does not
+establish that all histories accepted by an earlier reader will reopen.
+
 Rollback is fail-closed. Stateful modules restore the last compatible durable state, fence newer writers and reconcile external effects before admission. A rollback may restore software and state compatibility; it cannot erase an effect already attempted outside the module.
 
 ## 14. Observability
@@ -219,6 +235,31 @@ Source qualification must include unit, concurrency, migration and negative test
 Evidence ceiling: **SOURCE_ONLY_UNTIL_EXACT_HEAD_CI**.
 
 The module documentation verifier checks this document against the machine catalog, verifies required sections and source paths, binds the API and state schema identifiers, checks the provisional budget record and rejects unregistered or misleading documentation.
+
+### Product workload implementation admission
+
+The selected-product performance harness captures a closed manifest of 16
+repository Python files. This includes the broker entrypoint and all ten of its
+transitive sibling implementations. The host reproducibility verifier captures
+19 files, including that complete nested performance manifest. Nested verifier
+and cleanup execution uses admitted snapshots; broker sibling imports execute
+from the captured owner-only, single-link private copies only for broker
+workloads. Missing, modified, symlinked, multiply linked or additional broker
+custody files, or a nonprivate custody directory, stop startup before process
+creation. The custody is checked again before reporting. There is no repository
+import fallback or added `PYTHONPATH`. The manifest does not separately attest
+the system Python standard library or a hostile same-UID execution environment.
+
+The original wrapper-only private copy failed startup with
+`ModuleNotFoundError`. Regression tests exercise actual private-copy startup,
+source mutation after capture, incomplete manifests and custody rejection,
+plus all eight workloads through the complete private execution path using
+selected debug Host/Core binaries. These local behavior tests do not qualify
+an installed target or authenticate the origin of caller-selected binaries.
+Adding the omitted broker implementations changes the manifest digest and
+requires a new baseline; an artifact with the previous manifest cannot provide
+a comparison pass. Canonical compiler/build receipts, exact-head source CI,
+protected runner authorization and target evidence remain separate requirements.
 
 ### Reproduction entrypoint
 

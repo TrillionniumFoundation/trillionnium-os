@@ -259,14 +259,19 @@ SUPERVISOR, _SUPERVISOR_SOURCE, _SUPERVISOR_IDENTITY = _load_snapshot(
     SUPERVISOR_PATH,
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
 )
-_BROKER_SOURCE, _BROKER_IDENTITY = _snapshot_source(
-    BROKER_PATH, "tools/owner-open/owner_open_connection_broker.py"
-)
+def _snapshot_broker_sources() -> dict[str, tuple[bytes, dict[str, Any]]]:
+    return {
+        relative: _snapshot_source(REPOSITORY_ROOT / relative, relative)
+        for relative in CORE.BROKER_SOURCE_PATHS
+    }
+
+
+_BROKER_SNAPSHOTS = _snapshot_broker_sources()
 PINNED_IMPLEMENTATION_FILES = {
     item["path"]: dict(item)
     for item in (
         _BOOTSTRAP_IDENTITY,
-        _BROKER_IDENTITY,
+        *(identity for _, identity in _BROKER_SNAPSHOTS.values()),
         _SUPERVISOR_IDENTITY,
         _CORE_IDENTITY,
         _FACADE_IDENTITY,
@@ -275,7 +280,7 @@ PINNED_IMPLEMENTATION_FILES = {
 }
 PINNED_IMPLEMENTATION_SOURCES = {
     "tools/owner-open/authenticated_python_bootstrap.py": _BOOTSTRAP_SOURCE,
-    "tools/owner-open/owner_open_connection_broker.py": _BROKER_SOURCE,
+    **{relative: source for relative, (source, _) in _BROKER_SNAPSHOTS.items()},
     "tools/owner-open/owner_open_rootlinux_supervisor.py": _SUPERVISOR_SOURCE,
     "tools/perf/_run_product_baseline_core.py": _CORE_SOURCE,
     "tools/perf/_run_product_baseline_facade.py": _FACADE_SOURCE,
