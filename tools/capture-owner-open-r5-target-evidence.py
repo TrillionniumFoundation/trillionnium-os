@@ -5,9 +5,9 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timedelta, timezone
 import json
+import math
 import os
 from pathlib import Path
-import signal
 import subprocess
 import sys
 from typing import Any
@@ -32,6 +32,10 @@ from owner_open_r5_evidence_bundle import (  # noqa: E402
     read_json_object,
     sha256_file,
     validate_target_attestation,
+)
+from owner_open_bounded_process import (  # noqa: E402
+    BoundedProcessError,
+    run_bounded,
 )
 
 ROOT = Path("/opt/owner-open-r5")
@@ -110,42 +114,31 @@ def run_harness(
         source_tree,
     ]
     started = utc_now()
-    process = subprocess.Popen(
-        argv,
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env=environment,
-        start_new_session=True,
-        close_fds=True,
-    )
     try:
-        stdout, stderr = process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired as error:
-        try:
-            os.killpg(process.pid, signal.SIGTERM)
-        except ProcessLookupError:
-            pass
-        try:
-            stdout, stderr = process.communicate(timeout=3)
-        except subprocess.TimeoutExpired:
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            stdout, stderr = process.communicate(timeout=5)
-        raise EvidenceError(f"target harness timed out after {timeout}s") from error
+        result = run_bounded(
+            argv,
+            timeout_seconds=timeout,
+            maximum_output=64 * 1024 * 1024,
+            env=environment,
+        )
+    except BoundedProcessError as error:
+        if error.timed_out:
+            detail = f"target harness timed out after {timeout}s"
+        elif error.output_limit_exceeded:
+            detail = "target harness stdout/stderr exceeded 64 MiB"
+        else:
+            detail = f"target harness capture failed: {error}"
+        raise EvidenceError(detail) from error
     finished = utc_now()
-    if len(stdout) + len(stderr) > 64 * 1024 * 1024:
-        raise EvidenceError("target harness stdout/stderr exceeded 64 MiB")
+    stdout, stderr = result.stdout, result.stderr
     (raw_dir / "harness-stdout.bin").write_bytes(stdout)
     (raw_dir / "harness-stderr.bin").write_bytes(stderr)
-    if process.returncode != 0:
+    if result.returncode != 0:
         detail = stderr.decode("utf-8", errors="replace")[-4096:]
-        raise EvidenceError(f"target harness failed with {process.returncode}: {detail}")
+        raise EvidenceError(f"target harness failed with {result.returncode}: {detail}")
     return {
         "argv": argv,
-        "returncode": process.returncode,
+        "returncode": result.returncode,
         "started_at": utc_text(started),
         "finished_at": utc_text(finished),
         "stdout_bytes": len(stdout),
@@ -180,7 +173,7 @@ def main(argv: list[str]) -> int:
         policy = KIND_POLICIES[args.kind]
         if not set(args.gap_id) <= set(policy["allowed_gaps"]):
             raise EvidenceError("requested gap IDs exceed the selected kind policy")
-        if args.timeout < 1 or args.timeout > 12 * 3600:
+        if not math.isfinite(args.timeout) or args.timeout < 1 or args.timeout > 12 * 3600:
             raise EvidenceError("capture timeout is outside 1..43200 seconds")
         if args.retention_days < 1 or args.retention_days > 90:
             raise EvidenceError("retention-days is outside 1..90")

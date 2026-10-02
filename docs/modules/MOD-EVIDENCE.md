@@ -251,6 +251,36 @@ rejection; canonical Git source packages and bounded PAX/GNU long names remain
 supported. Manifest hashes still provide integrity rather than independent
 source or builder authorization.
 
+### Source and device command capture
+
+The cross-repository BOM collector, Android smoke and P0.1 collectors use the
+same host-only `tools/owner_open_bounded_process.py` implementation. It requires
+Linux WNOWAIT, default SIGCHLD and exclusive direct-child reaping before spawn.
+All pipe, selector and nonblocking setup is inside the cleanup guard. stdout
+and stderr share one byte ceiling, including the BOM collector's declared
+maximum; this tightens its former independent per-stream ceilings. Capture
+stops while reading at overflow and keeps only bounded partial output.
+
+The new session leader stays unreaped until all possible group signals finish.
+A normal leader exit is insufficient for success when a same-group worker is
+still live, even if that worker closed its output pipes. Cleanup requires two
+complete same-namespace procfs observations of an exited leader and no live
+group members; it bounds scans to 65,536 entries, 4,096 bytes per stat record
+and a one-second cleanup deadline. Incomplete observations, setup failures,
+cleanup failures and nonfinite timeouts cannot produce a successful receipt.
+The collectors map failures to their existing evidence-error classifications.
+Cleanup retries an interrupted owned wait or close once within its finite
+budget, attempts the remaining resources and propagates the first interruption.
+Persistent interruption or close/reaper failure does not prove resources closed.
+
+The retained R5 target-harness collector also uses this helper to enforce its
+combined 64 MiB capture limit while reading. Its R5-GAP vocabulary is separate
+from current G1 gap intake; repairing it does not qualify a G1 target. Real
+process tests cover setup failures, early leader exit, held and closed pipes,
+output overflow and refusal before spawn. These bounds describe captured bytes
+and local owned-group observation, not total interpreter RSS, escaped sessions,
+uninterruptible I/O, a protected operator or installed/release qualification.
+
 ### Product workload implementation admission
 
 The selected-product performance harness captures a closed manifest of 16

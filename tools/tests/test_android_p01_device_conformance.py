@@ -642,7 +642,7 @@ class AndroidP01DeviceConformanceTest(unittest.TestCase):
                          tool.os, "set_blocking",
                          side_effect=OSError("blocking failed") if failure == "blocking" else None,
                      ):
-                    with self.assertRaises(OSError):
+                    with self.assertRaises(tool.ConformanceError):
                         tool.run_bounded(
                             [sys.executable, "-c", "import time; time.sleep(20)"],
                             timeout_seconds=5,

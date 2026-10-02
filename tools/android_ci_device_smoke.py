@@ -12,6 +12,7 @@ code was installed.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 from datetime import datetime, timezone
 import json
 import math
@@ -26,6 +27,16 @@ import subprocess
 import sys
 import time
 from typing import Any, Iterable
+
+_PROCESS_SPEC = importlib.util.spec_from_file_location(
+    "owner_open_bounded_process", Path(__file__).with_name("owner_open_bounded_process.py")
+)
+assert _PROCESS_SPEC is not None and _PROCESS_SPEC.loader is not None
+_OWNED_PROCESS = importlib.util.module_from_spec(_PROCESS_SPEC)
+_PROCESS_SPEC.loader.exec_module(_OWNED_PROCESS)
+BoundedProcessError = _OWNED_PROCESS.BoundedProcessError
+run_bounded = _OWNED_PROCESS.run_bounded
+
 
 
 SCHEMA = "org.trillionnium.android-ci.device-smoke.v1"
@@ -142,96 +153,28 @@ def _run_adb(adb: Path, serial: str | None, arguments: list[str], timeout: float
         command.extend(["-s", serial])
     command.extend(arguments)
     started = time.monotonic()
+    failure = None
     try:
-        process = subprocess.Popen(
-            command,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            close_fds=True,
-            start_new_session=True,
+        result = run_bounded(
+            command, timeout_seconds=timeout,
+            maximum_output=MAX_PROCESS_OUTPUT_BYTES,
         )
-    except OSError as error:
-        return {
-            "argv": command,
-            "returncode": None,
-            "stdout": "",
-            "stderr": _capture(str(error)),
-            "timed_out": False,
-            "output_limit_exceeded": False,
-            "spawn_error": True,
-            "seconds": round(time.monotonic() - started, 3),
-        }
-    assert process.stdout is not None and process.stderr is not None
-    stdout_fd, stderr_fd = process.stdout.fileno(), process.stderr.fileno()
-    streams = {stdout_fd: bytearray(), stderr_fd: bytearray()}
-    selector = None
-    deadline = started + timeout
-    timed_out = False
-    output_limit_exceeded = False
-    capture_error = None
-    total = 0
-    try:
-        selector = selectors.DefaultSelector()
-        for stream in (process.stdout, process.stderr):
-            os.set_blocking(stream.fileno(), False)
-            selector.register(stream, selectors.EVENT_READ)
-        while selector.get_map():
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                timed_out = True
-                break
-            for key, _ in selector.select(min(remaining, 0.1)):
-                try:
-                    chunk = os.read(key.fd, 4096)
-                except BlockingIOError:
-                    continue
-                if not chunk:
-                    selector.unregister(key.fileobj)
-                    continue
-                budget = MAX_PROCESS_OUTPUT_BYTES - total
-                streams[key.fd].extend(chunk[:budget])
-                total += min(len(chunk), budget)
-                if len(chunk) > budget:
-                    output_limit_exceeded = True
-                    break
-            if output_limit_exceeded:
-                break
-        if not timed_out and not output_limit_exceeded:
-            try:
-                process.wait(timeout=max(0.001, deadline - time.monotonic()))
-            except subprocess.TimeoutExpired:
-                timed_out = True
-    except OSError as error:
-        capture_error = str(error)
-    finally:
-        # Kill the whole group even when its leader has exited: a child may
-        # still hold one of the pipes.  Never drain unbounded output here.
-        if capture_error or timed_out or output_limit_exceeded or process.poll() is None:
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except (OSError, ProcessLookupError):
-                if process.poll() is None:
-                    process.kill()
-        try:
-            process.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            pass
-        if selector is not None:
-            selector.close()
-        process.stdout.close()
-        process.stderr.close()
+        returncode, stdout, stderr = result
+    except BoundedProcessError as error:
+        failure = error
+        returncode, stdout, stderr = None, error.stdout, error.stderr
+    capture_error = bool(failure and (failure.capture_error or failure.cleanup_error))
+    if failure and (capture_error or failure.spawn_error):
+        stderr += ("\noutput capture failed: " + str(failure)).encode("utf-8", errors="replace")
     return {
         "argv": command,
-        "returncode": None if capture_error or timed_out or output_limit_exceeded else process.returncode,
-        "stdout": _capture(streams[stdout_fd].decode("utf-8", errors="replace")),
-        "stderr": _capture(
-            streams[stderr_fd].decode("utf-8", errors="replace")
-            + (f"\noutput capture failed: {capture_error}" if capture_error else "")
-        ),
-        "timed_out": timed_out,
-        "output_limit_exceeded": output_limit_exceeded,
-        "capture_error": capture_error is not None,
+        "returncode": returncode,
+        "stdout": _capture(stdout.decode("utf-8", errors="replace")),
+        "stderr": _capture(stderr.decode("utf-8", errors="replace")),
+        "timed_out": bool(failure and failure.timed_out),
+        "output_limit_exceeded": bool(failure and failure.output_limit_exceeded),
+        "spawn_error": bool(failure and failure.spawn_error),
+        "capture_error": capture_error,
         "seconds": round(time.monotonic() - started, 3),
     }
 
