@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 from contextlib import ExitStack
+import ctypes
 import errno
 import importlib.util
 import os
 from pathlib import Path
 import signal
+import shlex
 import subprocess
 import sys
 import time
+import tempfile
 import unittest
 from unittest import mock
 
@@ -505,6 +508,99 @@ class BoundedProcessTests(unittest.TestCase):
         killpg.assert_not_called()
         self.assertTrue(processes[0].stdout.closed)
         self.assertTrue(processes[0].stderr.closed)
+
+    def test_live_thread_below_zombie_descendant_leader_rejects_success(self):
+        isolated = "TRILLIONNIUM_BOUNDED_TASK_CHILD"
+        if os.environ.get(isolated) != "1":
+            completed = subprocess.run(
+                [sys.executable, str(__file__), "BoundedProcessTests.test_live_thread_below_zombie_descendant_leader_rejects_success"],
+                env={**os.environ, isolated: "1"}, capture_output=True, timeout=10, check=False,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stdout.decode() + completed.stderr.decode())
+            return
+        libc = ctypes.CDLL(None, use_errno=True)
+        self.assertEqual(libc.prctl(36, 1, 0, 0, 0), 0, "own observer becomes subreaper")
+        source = r"""#include <pthread.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+static const char *ready;
+static void *worker(void *unused) {
+    (void)unused; char raw[8192];
+    for (;;) {
+        FILE *input=fopen("/proc/self/stat","r"); if (!input) _exit(3);
+        size_t n=fread(raw,1,sizeof(raw)-1,input); fclose(input); raw[n]=0;
+        char *end=strrchr(raw,')');
+        if (end && end[1]==' ' && end[2]=='Z') {
+            FILE *file=fopen(ready,"w"); if (!file) _exit(4);
+            fprintf(file,"%ld\n%s",(long)getpid(),raw); fclose(file); break;
+        }
+        usleep(1000);
+    }
+    for (;;) pause();
+    return NULL;
+}
+int main(int argc,char **argv) {
+    if (argc!=2) return 2;
+    ready=argv[1]; pthread_t thread;
+    if (pthread_create(&thread,NULL,worker,NULL)!=0) return 5;
+    pthread_exit(NULL);
+}
+"""
+        with tempfile.TemporaryDirectory(prefix="own-task-observation-") as directory:
+            temporary = Path(directory)
+            fixture_source, fixture, ready = temporary / "fixture.c", temporary / "fixture", temporary / "ready"
+            fixture_source.write_text(source)
+            compiler = subprocess.run(["cc", "-pthread", "-Wall", "-Wextra", "-Werror", "-O0", str(fixture_source), "-o", str(fixture)], capture_output=True, timeout=5, check=False)
+            self.assertEqual(compiler.returncode, 0, compiler.stderr.decode())
+            command = f"{shlex.quote(str(fixture))} {shlex.quote(str(ready))} >/dev/null 2>&1 & while [ ! -s {shlex.quote(str(ready))} ]; do sleep 0.005; done; exit 0"
+            pid = None
+            try:
+                with self.assertRaises(RUNNER.BoundedProcessError) as raised:
+                    RUNNER.run_bounded(["/bin/sh", "-c", command], timeout_seconds=3, maximum_output=1024)
+                self.assertTrue(raised.exception.cleanup_error)
+                self.assertIn("left live group members", str(raised.exception.__cause__))
+                lines = ready.read_text().splitlines()
+                pid = int(lines[0])
+                fields = lines[1].rsplit(")", 1)[1].split()
+                self.assertEqual(fields[0], "Z")
+                self.assertEqual(fields[17], "2", "actual zombie TGID still owned two threads")
+            finally:
+                if pid is None and ready.exists():
+                    pid = int(ready.read_text().splitlines()[0])
+                if pid is not None:
+                    try:
+                        os.kill(pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    observed, status = os.waitpid(pid, 0)
+                    self.assertEqual(observed, pid)
+                    self.assertEqual(status, signal.SIGKILL)
+
+    def test_incomplete_task_directory_refuses_success(self):
+        real_scandir = os.scandir
+        def scandir(path):
+            if str(path).endswith("/task"):
+                raise PermissionError(errno.EACCES, "owned task observation unavailable")
+            return real_scandir(path)
+        self.assert_real_failure([mock.patch.object(RUNNER.os, "scandir", side_effect=scandir)], source="pass", flag="cleanup_error")
+
+    def test_procfs_task_entry_budget_refuses_success(self):
+        self.assert_real_failure([mock.patch.object(RUNNER, "MAX_PROC_TASK_ENTRIES", 0)], source="pass", flag="cleanup_error")
+
+    def test_late_actual_task_stat_observation_refuses_success(self):
+        real_read = RUNNER._read_proc_state
+        delayed = False
+        def read(path, deadline):
+            nonlocal delayed
+            observed = real_read(path, deadline)
+            if "/task/" in str(path) and not delayed:
+                delayed = True
+                time.sleep(1.05)
+            return observed
+        self.assert_real_failure([mock.patch.object(RUNNER, "_read_proc_state", side_effect=read)], source="pass", flag="cleanup_error")
+        self.assertTrue(delayed)
 
 
 if __name__ == "__main__":

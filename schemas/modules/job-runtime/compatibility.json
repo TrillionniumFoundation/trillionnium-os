@@ -150,8 +150,8 @@
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/process.rs",
-      "sha256": "3923d18b4e3a2271f2b09cc347dea86281a491f9dea8125d05609f551d4bd1a6",
-      "size": 64996
+      "sha256": "40d9ea033493da85dcce4087082d46fd6d5e96b7167c16791554c31c24a72866",
+      "size": 122480
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/resources.rs",

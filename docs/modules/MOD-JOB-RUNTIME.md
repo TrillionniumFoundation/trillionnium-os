@@ -288,6 +288,43 @@ reports the close and signal results and retains uncertainty when the finite
 retirement deadline expires. These host barriers do not measure an installed
 cleanup SLO or prove descendant containment outside the owned process group.
 
+The process implementation requires Linux or Android `waitid(..., WNOWAIT)`,
+default `SIGCHLD` without `SA_NOCLDWAIT`, exclusive direct-child wait ownership,
+and a procfs namespace that exposes every member of the owned group. The
+original child remains unreaped through all group signals and two complete
+quiet observations. Each observation examines every matching process and all
+of its tasks: a zombie thread-group leader can still have live worker threads.
+Missing, unreadable, malformed or late observations retain uncertainty.
+Descendants that change their process group or session require separate
+installed cgroup containment evidence.
+
+Writes, stdin close, PTY resize, signals and the initial stdin writer share one
+control gate. Retirement closes admission before waiting for its admitted
+effect, and closes the gate before consuming the original child status. New
+controls return `NotLive` even if the manager has not consumed the terminal
+event. Gate acquisition has a three-second attempt budget; stdin writes check
+their two-second deadline around every write, including progress and `EINTR`.
+A late write reports failure with a possible partial effect. These are attempt
+budgets, with no hard completion guarantee during kernel or caller suspension.
+
+Cleanup failure publishes the existing unknown terminal classification while
+retaining the exact child, process identity and resource lease. Recovery uses
+bounded attempts and releases ownership only after complete quiet observations
+and a consuming wait. Loss of wait ownership or an unbound identity retains a
+quarantine; elapsed time, numeric PID disappearance and a successful no-op
+cannot release its charge. The shared process pool admits at most sixteen
+owners and 32 MiB of logical process staging, including retained cleanup
+owners. Persistent quarantine requires inhibited admission, full offline
+service and cgroup cleanup, external reconciliation and Host restart. There
+is no production quarantine-unlock API, and restarting alone supplies no
+cleanup proof.
+
+Source tests exercise real pipe and PTY retirement, a zombie leader with a
+live pthread, delayed writes, controls blocked behind an admitted effect,
+poisoned gates, lost wait ownership, and retained child/lease ownership after
+an actual injected cleanup error. Their barriers and child observations do
+not close the installed process-lifecycle gap.
+
 ## 16. Deployment and runbook
 
 On job-state disagreement, stop starts for the affected shard, bind registry, journal and process observations to the same job ID and epoch, then reconcile before capacity is returned.

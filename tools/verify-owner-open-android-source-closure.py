@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import ast
 from dataclasses import dataclass, field
+import importlib.util
 import json
 from pathlib import Path
 from pathlib import PurePosixPath
@@ -29,6 +30,20 @@ ANDROID_ROOT = Path(
 COMMON_OWNER_OPEN = Path(
     "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk"
 )
+COMMON_SEALED = COMMON_OWNER_OPEN.with_name("common.mk")
+COMMON_BASE = COMMON_OWNER_OPEN.with_name("common_owner_open_base.mk")
+_GENERATOR_SPEC = importlib.util.spec_from_file_location(
+    "owner_open_common_base_generator", Path(__file__).with_name("generate-owner-open-common-base.py")
+)
+assert _GENERATOR_SPEC is not None and _GENERATOR_SPEC.loader is not None
+COMMON_GENERATOR = importlib.util.module_from_spec(_GENERATOR_SPEC)
+_GENERATOR_SPEC.loader.exec_module(COMMON_GENERATOR)
+_SDK_SPEC = importlib.util.spec_from_file_location(
+    "owner_open_sdk_selection", Path(__file__).with_name("verify-owner-open-sdk-selection.py")
+)
+assert _SDK_SPEC is not None and _SDK_SPEC.loader is not None
+SDK_SELECTION = importlib.util.module_from_spec(_SDK_SPEC)
+_SDK_SPEC.loader.exec_module(SDK_SELECTION)
 SUPERVISOR_CONFIG = Path("packaging/owner-open-rootfs/rootlinux-supervisor.json")
 MAX_JSON_BYTES = 8 * 1024 * 1024
 MAX_TEXT_BYTES = 32 * 1024 * 1024
@@ -242,6 +257,8 @@ def added_product_packages(product_text: str) -> set[str]:
 
 def verify(root: Path) -> Report:
     report = Report()
+    sdk_selection = SDK_SELECTION.verify(root)
+    report.errors.extend(f"owner-open SDK selection: {error}" for error in sdk_selection["errors"])
     try:
         profile = load_json(root / PROFILE, "owner-open Android profile")
     except (OSError, ValueError) as error:
@@ -325,6 +342,8 @@ def verify(root: Path) -> Report:
         bp_text = load_text(root / ANDROID_ROOT / "Android.bp", "owner-open Android.bp")
         product_text = load_text(root / ANDROID_ROOT / "product.mk", "owner-open product.mk")
         supplement_text = load_text(root / COMMON_OWNER_OPEN, "owner-open product supplement")
+        sealed_text = load_text(root / COMMON_SEALED, "sealed common source")
+        common_base_text = load_text(root / COMMON_BASE, "owner-open shared common base")
         fragment_text = load_text(root / GENERATED_FRAGMENT, "generated owner-open package fragment")
         init_text = load_text(
             root / ANDROID_ROOT / "init/trillionnium-owner-open.rc", "owner-open init rc"
@@ -362,12 +381,22 @@ def verify(root: Path) -> Report:
             f"extra={sorted(generated_modules - module_names)}"
         )
 
-    common_include = "vendor/trillionnium/config/common.mk"
+    common_include = "vendor/trillionnium/config/common_owner_open_base.mk"
     product_include = "vendor/trillionnium/owner-open/product.mk"
-    if supplement_text.count(common_include) != 1 or supplement_text.count(product_include) != 1:
-        report.errors.append("common_owner_open.mk must inherit common and owner-open product exactly once")
-    elif supplement_text.index(common_include) > supplement_text.index(product_include):
-        report.errors.append("common_owner_open.mk must apply owner-open graph cut after common.mk")
+    active_supplement = tuple(
+        line.strip() for line in supplement_text.splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    )
+    if active_supplement != (
+        f"$(call inherit-product, {common_include})",
+        f"$(call inherit-product, {product_include})",
+    ):
+        report.errors.append("common_owner_open.mk must inherit generated shared base and owner-open product exactly once")
+    try:
+        if common_base_text != COMMON_GENERATOR.render(sealed_text):
+            report.errors.append("owner-open shared common base differs from generated source")
+    except COMMON_GENERATOR.GenerationError as error:
+        report.errors.append(f"owner-open shared common base: {error}")
 
     forbidden = string_set(
         profile.get("forbidden_product_packages"), "forbidden_product_packages", report
@@ -645,6 +674,7 @@ def verify(root: Path) -> Report:
         "ready_property": runtime_profile.get("ready_property"),
         "emergency_stop_property": runtime_profile.get("emergency_stop_property"),
         "source_artifact_count": len(source_paths),
+        "sdk_selection": sdk_selection["facts"],
         "runtime_python_helper_count": len(visited),
         "rootfs_required_entry_count": len(expected_inventory),
         "required_module_count": len(module_names),

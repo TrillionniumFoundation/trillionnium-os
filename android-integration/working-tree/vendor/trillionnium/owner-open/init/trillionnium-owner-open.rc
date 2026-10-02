@@ -3,6 +3,9 @@
 # namespace, binds only the writable state directory, chroots and execs the
 # finite Root Linux supervisor. No Authority/lease/P01 service participates.
 
+on init
+    export TERMINFO /system_ext/etc/terminfo
+
 on early-init
     # Keep the readiness barrier false until post-fs-data has created and
     # relabeled every private state directory.
@@ -64,3 +67,13 @@ service trillionnium_owner_open_emergency_stop /system_ext/bin/trillionnium-owne
     oneshot
     seclabel u:r:trillionnium_owner_open_emergency_stop:s0
     capabilities KILL
+
+# Preserve the platform bugreport key chord without installing the sealed
+# init.trillionnium-system_ext.rc runtime and its six legacy control services.
+service trillionnium-bugreport /system/bin/dumpstate -d -p -z
+    socket dumpstate stream 0660 shell log
+    class main
+    user root
+    disabled
+    oneshot
+    keycodes 114 115 116

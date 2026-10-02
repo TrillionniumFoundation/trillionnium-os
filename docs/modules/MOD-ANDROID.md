@@ -20,6 +20,12 @@ Source ownership paths:
 
 - `android-integration/working-tree/vendor/trillionnium/owner-open`
 - `android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk`
+- `tools/generate-owner-open-common-base.py`
+- `android-integration/working-tree/trillionnium-sdk/Android.bp`
+- `android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml`
+- `tools/verify-owner-open-sdk-selection.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -80,6 +86,56 @@ The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
 `product.mk`, `Android.bp`, the init rc and the SELinux domain/context files under the owned Android overlay are the composition inputs. This verifier checks source selection only. Real Soong/policy compilation, target-files inventory and installed image binding remain distinct L3 operations.
+
+Android defers `inherit-product` expansion until it has evaluated each product
+node. A local `filter-out` cannot remove a sibling's inherited packages.
+`common_owner_open.mk` therefore inherits the generated
+`config/common_owner_open_base.mk` and the owner-open product node. Run
+`python3 tools/generate-owner-open-common-base.py --check` before composition.
+The generator preserves shared Android configuration from the sealed
+`config/common.mk`, removes its complete legacy Agent/RootFS/P01/debug-ADB
+section and excludes the old init module before inheritance. Sealed products
+retain their original common input. The owner-open init separately preserves
+TERMINFO and the ordinary bugreport key chord; it does not select the six old
+runtime control services. Same-source regression tests execute pinned Android
+inheritance macros under GNU Make for all variant/adb-root combinations. These
+tests use empty unrelated audio/version fixture includes with SDK disabled and
+cannot qualify a complete Android product. Rebuild target-files and inspect
+actual packages, init, SELinux and selected artifact identities after this
+graph change; an older image is not a compatible evidence substitute.
+Generator reads use bounded regular-file descriptors with identity checks;
+publication rejects a preexisting output symlink and replaces its directory
+entry with a completed private temporary inode. Publication is not a
+compare-and-swap against concurrent hostile writers. A late error can leave a
+complete output visible, so admission requires a successful standalone exit
+and a subsequent `--check`. Raw directory closure gets one attempt; unknown
+closure or asynchronous interruption requires the generator process to exit.
+
+The shared SDK library is also part of the product closure. Its sealed
+`required` feature XML, platform resource array and SystemServer dispatch can
+select the old Direct System API service even when no legacy runtime package
+appears in the local product list. The owner-open product exports the build
+boolean `trillionnium_owner_open.enabled`. The guarded SDK module definitions
+then remove the Agent identity/Binder static edges, the System API feature XML
+and the old Agent/Capability Lease/Open URI/plugin implementation sources.
+Unset or false uses the original sealed module inputs. The SDK's owner resource
+directory overlays only the external service array, retaining seven ordinary
+profile, hardware, display, trust, settings, global-action and health services.
+Ordinary shared SDK types and services can retain their platform namespace;
+that namespace alone is not proof of a legacy semantic service.
+
+Run `python3 tools/verify-owner-open-sdk-selection.py` with the other source
+gates. The constrained Blueprint/source regression is not a Soong evaluator.
+It checks typed literal properties and a restricted owned-product Make grammar,
+including one unconditional registered bool export. Dynamic setters, unknown
+conditional bodies, definitions and other namespace writes are rejected.
+Licensed upstream macro fixtures exercise the actual GNU Make export; the
+complete inherited Kati product and Soong configuration remain build gates.
+Full compilation must validate all remaining Java dependencies and prove the
+installed platform jar excludes the old implementation class definitions,
+the compiled resource array contains exactly the seven ordinary services,
+and the legacy feature XML is absent. Source tests, a stubbed Java startup
+fixture and package-name filtering do not qualify those built artifacts.
 
 The empty `android-integration/.find-ignore` is a registered Soong Finder
 template boundary. If this control repository is present inside an Android

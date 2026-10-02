@@ -82,6 +82,40 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
             report.errors,
         )
 
+    def test_deferred_sealed_common_inheritance_cannot_pass_as_owner_open(self) -> None:
+        self.rewrite(module.COMMON_OWNER_OPEN, "config/common_owner_open_base.mk", "config/common.mk")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("inherit generated shared base" in error for error in report.errors), report.errors)
+
+    def test_generated_common_base_cannot_reintroduce_a_legacy_runtime(self) -> None:
+        relative = module.COMMON_OWNER_OPEN.with_name("common_owner_open_base.mk")
+        path = self.root / relative
+        path.write_text(path.read_text() + "\nPRODUCT_PACKAGES += trillionniumd\n")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("common base differs" in error for error in report.errors), report.errors)
+
+    def test_shared_sdk_legacy_service_cannot_pass_source_closure(self) -> None:
+        self.rewrite(
+            Path("android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml"),
+            "    </string-array>",
+            "        <item>org.trillionnium.platform.internal.AgentSystemApiService</item>\n    </string-array>",
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open SDK selection" in error for error in report.errors), report.errors)
+
+    def test_shared_sdk_owner_selector_must_be_exported(self) -> None:
+        self.rewrite(
+            module.ANDROID_ROOT / "product.mk",
+            "$(call soong_config_set_bool,trillionnium_owner_open,enabled,true)",
+            "# disabled owner selector",
+        )
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open SDK selection" in error for error in report.errors), report.errors)
+
     def test_profile_reference_traversal_fails_closed(self) -> None:
         path = self.root / module.PROFILE
         value = json.loads(path.read_text(encoding="utf-8"))

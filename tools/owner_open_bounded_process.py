@@ -21,6 +21,7 @@ from typing import Mapping, NamedTuple
 
 
 MAX_PROC_ENTRIES = 65_536
+MAX_PROC_TASK_ENTRIES = 65_536
 MAX_PROC_STAT_BYTES = 4096
 CLEANUP_TIMEOUT_SECONDS = 1.0
 
@@ -83,42 +84,86 @@ def _leader_exit_unreaped(process: subprocess.Popen[bytes]) -> int | None:
     raise BoundedProcessError("command wait status is invalid", cleanup_error=True)
 
 
+def _read_proc_state(path: Path, deadline: float) -> tuple[bytes, int, int] | None:
+    if time.monotonic() >= deadline:
+        raise BoundedProcessError("command procfs scan budget exceeded", cleanup_error=True)
+    try:
+        with open(path, "rb") as stream:
+            raw = stream.read(MAX_PROC_STAT_BYTES + 1)
+    except (FileNotFoundError, ProcessLookupError):
+        return None
+    if time.monotonic() >= deadline:
+        raise BoundedProcessError("command procfs observation exceeded deadline", cleanup_error=True)
+    if len(raw) > MAX_PROC_STAT_BYTES:
+        raise BoundedProcessError("command procfs stat exceeds bound", cleanup_error=True)
+    try:
+        fields = raw.rsplit(b") ", 1)[1].split()
+        state, group, session = fields[0], int(fields[2]), int(fields[3])
+        if state not in (b"R", b"S", b"D", b"Z", b"T", b"t", b"X", b"x", b"K", b"W", b"P", b"I") or group < 0 or session < 0:
+            raise ValueError("invalid process state/group/session")
+    except (IndexError, ValueError) as error:
+        raise BoundedProcessError("command procfs stat is malformed", cleanup_error=True) from error
+    return state, group, session
+
+
 def _group_live_members(process: subprocess.Popen[bytes], deadline: float) -> list[int]:
-    live = []
+    live: set[int] = set()
     anchor_seen = False
+    anchor_task_seen = False
+    task_count = 0
     with os.scandir("/proc") as entries:
         for count, entry in enumerate(entries, 1):
             if count > MAX_PROC_ENTRIES or time.monotonic() >= deadline:
                 raise BoundedProcessError("command procfs scan budget exceeded", cleanup_error=True)
             if not entry.name.isascii() or not entry.name.isdecimal():
                 continue
-            try:
-                with open(Path(entry.path) / "stat", "rb") as stream:
-                    raw = stream.read(MAX_PROC_STAT_BYTES + 1)
-            except (FileNotFoundError, ProcessLookupError):
+            observed = _read_proc_state(Path(entry.path) / "stat", deadline)
+            if observed is None:
                 continue
-            if len(raw) > MAX_PROC_STAT_BYTES:
-                raise BoundedProcessError("command procfs stat exceeds bound", cleanup_error=True)
-            try:
-                fields = raw.rsplit(b") ", 1)[1].split()
-                group, session = int(fields[2]), int(fields[3])
-            except (IndexError, ValueError) as error:
-                raise BoundedProcessError("command procfs stat is malformed", cleanup_error=True) from error
+            state, group, session = observed
             pid = int(entry.name)
             if pid == process.pid:
                 if group != process.pid or session != process.pid:
                     raise BoundedProcessError("command anchor identity changed", cleanup_error=True)
                 anchor_seen = True
-            if group == process.pid:
-                if session != process.pid:
-                    raise BoundedProcessError("command group session changed", cleanup_error=True)
-                if fields[0] not in (b"Z", b"X"):
-                    live.append(pid)
-    if not anchor_seen:
-        raise BoundedProcessError("command anchor is not observable", cleanup_error=True)
+            if group != process.pid:
+                continue
+            if session != process.pid:
+                raise BoundedProcessError("command group session changed", cleanup_error=True)
+            if state not in (b"Z", b"X", b"x"):
+                live.add(pid)
+            # A process leader may be Z while other threads in its TGID are
+            # live. Every matching process needs a complete bounded task scan;
+            # group membership is shared by its Linux thread group.
+            try:
+                tasks = os.scandir(Path(entry.path) / "task")
+            except (FileNotFoundError, ProcessLookupError):
+                if pid == process.pid:
+                    raise BoundedProcessError("command anchor task directory is unavailable", cleanup_error=True)
+                continue
+            with tasks:
+                for task in tasks:
+                    task_count += 1
+                    if task_count > MAX_PROC_TASK_ENTRIES or time.monotonic() >= deadline:
+                        raise BoundedProcessError("command procfs task scan budget exceeded", cleanup_error=True)
+                    if not task.name.isascii() or not task.name.isdecimal():
+                        raise BoundedProcessError("command procfs task entry is malformed", cleanup_error=True)
+                    observed_task = _read_proc_state(Path(task.path) / "stat", deadline)
+                    if observed_task is None:
+                        continue
+                    task_state, task_group, task_session = observed_task
+                    if (task_group, task_session) != (group, session):
+                        raise BoundedProcessError("command task group/session changed", cleanup_error=True)
+                    tid = int(task.name)
+                    if pid == process.pid and tid == process.pid:
+                        anchor_task_seen = True
+                    if task_state not in (b"Z", b"X", b"x"):
+                        live.add(tid)
+    if not anchor_seen or not anchor_task_seen:
+        raise BoundedProcessError("command anchor is not fully observable", cleanup_error=True)
     if time.monotonic() >= deadline:
         raise BoundedProcessError("command procfs scan budget exceeded", cleanup_error=True)
-    return live
+    return sorted(live)
 
 
 def _retire_group(process: subprocess.Popen[bytes], *, expect_quiet: bool) -> None:

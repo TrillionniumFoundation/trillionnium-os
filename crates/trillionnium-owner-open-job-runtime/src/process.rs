@@ -9,7 +9,7 @@ use std::path::Path;
 use std::process::{Child, ChildStdin, Command, ExitStatus, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, SyncSender, TrySendError, sync_channel};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, MutexGuard, TryLockError};
 use std::thread::{self, JoinHandle};
 use std::time::{Duration, Instant};
 
@@ -25,8 +25,6 @@ const DESCENDANT_TERM_GRACE: Duration = Duration::from_millis(100);
 const DESCENDANT_KILL_GRACE: Duration = Duration::from_millis(100);
 const SPAWN_GUARD_REAP_GRACE: Duration = Duration::from_millis(500);
 const PROCESS_GROUP_SCAN_BUDGET: Duration = Duration::from_millis(500);
-const PROCESS_GROUP_PROOF_RETRY_BUDGET: Duration = Duration::from_secs(1);
-const PROCESS_GROUP_PROOF_RETRY_DELAY: Duration = Duration::from_millis(5);
 const READER_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const WORKER_NATURAL_JOIN_GRACE: Duration = Duration::from_millis(250);
 const WORKER_CANCEL_JOIN_GRACE: Duration = Duration::from_secs(2);
@@ -58,6 +56,112 @@ const JOB_INHERITED_ENV_ALLOWLIST: &[&str] = &[
 // serialized write and polled up to this bound; callers receive a terminal
 // operation failure rather than an unbounded write_all wait.
 const INPUT_WRITE_TIMEOUT: Duration = Duration::from_secs(2);
+const CONTROL_GATE_TIMEOUT: Duration = Duration::from_secs(3);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ProcessPhase {
+    Active,
+    Retiring,
+    Retired,
+}
+
+struct ProcessLifecycle {
+    retirement_requested: AtomicBool,
+    phase: Mutex<ProcessPhase>,
+}
+
+impl ProcessLifecycle {
+    fn new() -> Self {
+        Self {
+            retirement_requested: AtomicBool::new(false),
+            phase: Mutex::new(ProcessPhase::Active),
+        }
+    }
+
+    fn control(&self) -> Result<MutexGuard<'_, ProcessPhase>> {
+        let deadline = Instant::now() + CONTROL_GATE_TIMEOUT;
+        loop {
+            if self.retirement_requested.load(Ordering::Acquire) {
+                return Err(JobRuntimeError::NotLive);
+            }
+            match self.phase.try_lock() {
+                Ok(guard) => {
+                    if self.retirement_requested.load(Ordering::Acquire)
+                        || *guard != ProcessPhase::Active
+                    {
+                        return Err(JobRuntimeError::NotLive);
+                    }
+                    if Instant::now() >= deadline {
+                        return Err(JobRuntimeError::Control(
+                            "process control gate deadline exceeded".to_string(),
+                        ));
+                    }
+                    return Ok(guard);
+                }
+                Err(TryLockError::Poisoned(_)) => return Err(JobRuntimeError::StatePoisoned),
+                Err(TryLockError::WouldBlock) => {}
+            }
+            if Instant::now() >= deadline {
+                return Err(JobRuntimeError::Control(
+                    "process control gate deadline exceeded".to_string(),
+                ));
+            }
+            thread::sleep(Duration::from_millis(5));
+        }
+    }
+
+    fn retirement_lock(&self) -> std::result::Result<(MutexGuard<'_, ProcessPhase>, bool), String> {
+        self.retirement_requested.store(true, Ordering::Release);
+        let deadline = Instant::now() + CONTROL_GATE_TIMEOUT;
+        loop {
+            let acquired = match self.phase.try_lock() {
+                Ok(guard) => Some((guard, false)),
+                Err(TryLockError::Poisoned(error)) => Some((error.into_inner(), true)),
+                Err(TryLockError::WouldBlock) => None,
+            };
+            if let Some(acquired) = acquired {
+                if Instant::now() >= deadline {
+                    return Err("process retirement gate acquired after deadline; anchor ownership retained".to_string());
+                }
+                return Ok(acquired);
+            }
+            if Instant::now() >= deadline {
+                return Err(
+                    "process retirement gate deadline exceeded; anchor ownership retained"
+                        .to_string(),
+                );
+            }
+            thread::sleep(Duration::from_millis(5));
+        }
+    }
+
+    fn begin_retirement(&self) -> std::result::Result<bool, String> {
+        // Atomic admission closure prevents a stream of later controls from
+        // starving the same mutex used by each actual effect. The only
+        // admitted writer is bounded; retirement never waits for I/O workers
+        // while holding this gate.
+        let (mut phase, poisoned) = self.retirement_lock()?;
+        if *phase == ProcessPhase::Active {
+            *phase = ProcessPhase::Retiring;
+        }
+        Ok(poisoned)
+    }
+
+    fn finish_retirement(&self) -> std::result::Result<bool, String> {
+        let (mut phase, poisoned) = self.retirement_lock()?;
+        *phase = ProcessPhase::Retired;
+        Ok(poisoned)
+    }
+
+    fn is_retired(&self) -> bool {
+        let phase = match self.phase.lock() {
+            Ok(guard) => guard,
+            Err(error) => error.into_inner(),
+        };
+        self.retirement_requested.load(Ordering::Acquire) && *phase == ProcessPhase::Retired
+    }
+}
+
 enum InputHandle {
     Pipe(ChildStdin),
     Pty(File),
@@ -88,6 +192,7 @@ pub(crate) struct ProcessControl {
     input: Arc<Mutex<Option<InputHandle>>>,
     pty_master: Option<Arc<File>>,
     pty_eof_sent: AtomicBool,
+    lifecycle: Arc<ProcessLifecycle>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -143,6 +248,7 @@ struct SpawnGuard {
     pid: u32,
     identity: Option<ProcessIdentity>,
     _process_lease: Option<Arc<ProcessLease>>,
+    lifecycle: Arc<ProcessLifecycle>,
 }
 
 impl SpawnGuard {
@@ -153,6 +259,7 @@ impl SpawnGuard {
             pid,
             identity: None,
             _process_lease: None,
+            lifecycle: Arc::new(ProcessLifecycle::new()),
         }
     }
 
@@ -168,11 +275,58 @@ impl SpawnGuard {
     }
 
     fn wait(mut self) -> std::io::Result<ExitStatus> {
-        self.child
-            .take()
-            .ok_or_else(|| std::io::Error::other("spawn guard no longer owns its child"))?
-            .wait()
+        if !self.lifecycle.is_retired() {
+            return Err(std::io::Error::other(
+                "child wait before control retirement barrier",
+            ));
+        }
+        if !observe_owned_child(self.pid, true)? {
+            return Err(std::io::Error::other(
+                "child is not terminal at final consuming wait",
+            ));
+        }
+        let status = self.child_mut()?.wait();
+        if status.is_ok() {
+            self.child.take();
+        }
+        status
     }
+}
+
+// Production quarantines are never cleared by elapsed time, numeric PID
+// disappearance, or a successful no-op. Their charge requires full offline
+// service/cgroup cleanup and external reconciliation before Host restart.
+// Every production guard owns a ProcessLease; the shared 16-owner admission
+// bound therefore bounds retained quarantines as well as live processes.
+type QuarantinedChild = (
+    Child,
+    Option<ProcessIdentity>,
+    Arc<ProcessLifecycle>,
+    Option<Arc<ProcessLease>>,
+    String,
+);
+static UNCERTAIN_CHILD_QUARANTINE: Mutex<Vec<QuarantinedChild>> = Mutex::new(Vec::new());
+
+enum AbortFailure {
+    Unsupported(String),
+    Retryable(String),
+}
+
+fn quarantine_owned_child(
+    child: Child,
+    identity: Option<ProcessIdentity>,
+    lifecycle: Arc<ProcessLifecycle>,
+    lease: Option<Arc<ProcessLease>>,
+    reason: String,
+) {
+    lifecycle
+        .retirement_requested
+        .store(true, Ordering::Release);
+    let _ = lifecycle.finish_retirement();
+    UNCERTAIN_CHILD_QUARANTINE
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+        .push((child, identity, lifecycle, lease, reason));
 }
 
 impl Drop for SpawnGuard {
@@ -180,52 +334,265 @@ impl Drop for SpawnGuard {
         let Some(mut child) = self.child.take() else {
             return;
         };
-        // A `SpawnGuard` normally drops immediately after `spawn`, but an
-        // error path can be delayed long enough for the leader PID to be
-        // recycled.  Check the bound generation before broadcasting SIGKILL
-        // to its process group.  The exact `Child` handle remains safe to
-        // kill on its own, so it is still used as a conservative fallback
-        // when the identity check cannot prove that the group is ours.
-        // Never fall back to treating the raw PID as a process-group ID when
-        // identity capture itself failed.  A PID is not proof of its current
-        // process group and may have been recycled; in that state the exact
-        // `Child` handle below is the only safe cleanup primitive.
-        if guarded_group_signal_target(self.identity.as_ref()).is_some()
-            && let Some(identity) = self.identity.as_ref()
-        {
-            // The target probe above is only a cheap preflight.  Revalidate
-            // the complete generation/PGID/SID binding in the helper directly
-            // before the group syscall so a delayed Drop cannot broadcast to
-            // a recycled process group.
-            let _ = send_bound_process_group_signal(identity, libc::SIGKILL);
+        if let Err(error) = self.lifecycle.begin_retirement() {
+            defer_guard_cleanup(
+                child,
+                self.identity.take(),
+                Arc::clone(&self.lifecycle),
+                self._process_lease.take(),
+                error,
+            );
+            return;
         }
-        let _ = child.kill();
-
-        let deadline = Instant::now()
-            .checked_add(SPAWN_GUARD_REAP_GRACE)
-            .unwrap_or_else(Instant::now);
-        loop {
-            match child.try_wait() {
-                Ok(Some(_)) => return,
-                Ok(None) if Instant::now() < deadline => {
-                    thread::sleep(Duration::from_millis(5));
-                }
-                Ok(None) => break,
-                Err(_) => return,
+        match abort_owned_child(&mut child, self.identity.as_ref()) {
+            Ok(()) => {}
+            Err(AbortFailure::Unsupported(reason)) => {
+                quarantine_owned_child(
+                    child,
+                    self.identity.take(),
+                    Arc::clone(&self.lifecycle),
+                    self._process_lease.take(),
+                    reason,
+                );
+                return;
+            }
+            Err(AbortFailure::Retryable(reason)) => {
+                defer_guard_cleanup(
+                    child,
+                    self.identity.take(),
+                    Arc::clone(&self.lifecycle),
+                    self._process_lease.take(),
+                    reason,
+                );
+                return;
             }
         }
+        if let Err(error) = self.lifecycle.finish_retirement() {
+            defer_guard_cleanup(
+                child,
+                self.identity.take(),
+                Arc::clone(&self.lifecycle),
+                self._process_lease.take(),
+                error,
+            );
+            return;
+        }
+        reap_owned_child_bounded(
+            child,
+            self.pid,
+            self.identity.take(),
+            Arc::clone(&self.lifecycle),
+            self._process_lease.take(),
+        );
+    }
+}
 
-        // Preserve eventual wait(2) ownership without allowing Drop to wedge
-        // an error-return path indefinitely.
-        let name = format!("owner-open-job-abort-reaper-{}", self.pid);
-        let _ = thread::Builder::new().name(name).spawn(move || {
-            let _ = child.wait();
+fn abort_owned_child(
+    child: &mut Child,
+    identity: Option<&ProcessIdentity>,
+) -> std::result::Result<(), AbortFailure> {
+    // Unix Child is a numeric-PID handle, not a pidfd. Never use Child.kill or
+    // Child.wait after loss of exclusive wait ownership or SIGCHLD support.
+    observe_owned_child(child.id(), true).map_err(|error| {
+        AbortFailure::Unsupported(format!(
+            "direct-child wait ownership is unavailable; child/lease quarantined: {error}"
+        ))
+    })?;
+    let Some(identity) = identity else {
+        let kill_result = child.kill();
+        return Err(AbortFailure::Unsupported(format!(
+            "group identity was never bound; exact owned Child.kill result={kill_result:?}; group quiet unproven; child/lease quarantined"
+        )));
+    };
+    ensure_bound_process_group(identity).map_err(|error| AbortFailure::Unsupported(format!("bound leader anchor unavailable; no numeric group recovery; child/lease quarantined: {error}")))?;
+    send_bound_process_group_signal(identity, libc::SIGKILL).map_err(AbortFailure::Retryable)?;
+    let deadline = Instant::now() + Duration::from_secs(2);
+    match wait_group_quiet(identity, SPAWN_GUARD_REAP_GRACE, deadline)
+        .map_err(AbortFailure::Retryable)?
+    {
+        true => Ok(()),
+        false => Err(AbortFailure::Retryable(
+            "abort group quiet is unproven; owned anchor/identity/lease retained for recovery"
+                .to_string(),
+        )),
+    }
+}
+
+fn reap_owned_child_bounded(
+    mut child: Child,
+    pid: u32,
+    identity: Option<ProcessIdentity>,
+    lifecycle: Arc<ProcessLifecycle>,
+    lease: Option<Arc<ProcessLease>>,
+) {
+    let deadline = Instant::now() + SPAWN_GUARD_REAP_GRACE;
+    loop {
+        // A successful group proof did not transfer wait ownership. Recheck
+        // before every consuming primitive; external wait/SIGCHLD mutation is
+        // unsupported and must never target a later numeric PID generation.
+        if let Err(error) = observe_owned_child(child.id(), true) {
+            quarantine_owned_child(
+                child,
+                identity,
+                lifecycle,
+                lease,
+                format!("wait ownership lost after group quiet proof: {error}"),
+            );
+            return;
+        }
+        match child.try_wait() {
+            Ok(Some(_)) => return,
+            Err(error) => {
+                quarantine_owned_child(
+                    child,
+                    identity,
+                    lifecycle,
+                    lease,
+                    format!("consuming abort wait failed: {error}"),
+                );
+                return;
+            }
+            Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
+            Ok(None) => break,
+        }
+    }
+    // Kernel/caller suspension can exceed the foreground attempt. This
+    // eventual waiter still owns the exact Child and lease; it is unknown,
+    // not a promise of finite cleanup or reclaimed resource capacity.
+    let retained = Arc::new(Mutex::new(Some((child, identity, lifecycle, lease))));
+    let worker_retained = Arc::clone(&retained);
+    let spawned = thread::Builder::new()
+        .name(format!("owner-open-job-abort-reaper-{pid}"))
+        .spawn(move || {
+            let (mut child, identity, lifecycle, lease) = worker_retained
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .take()
+                .expect("abort reaper owns child");
+            match observe_owned_child(child.id(), true) {
+                Err(error) => quarantine_owned_child(
+                    child,
+                    identity,
+                    lifecycle,
+                    lease,
+                    format!("eventual wait ownership observation failed: {error}"),
+                ),
+                Ok(_) => match child.wait() {
+                    Ok(_) => {}
+                    Err(error) => quarantine_owned_child(
+                        child,
+                        identity,
+                        lifecycle,
+                        lease,
+                        format!("eventual consuming wait failed: {error}"),
+                    ),
+                },
+            }
         });
+    if let Err(error) = spawned {
+        let (child, identity, lifecycle, lease) = retained
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .take()
+            .expect("failed waiter retains child");
+        quarantine_owned_child(
+            child,
+            identity,
+            lifecycle,
+            lease,
+            format!("eventual abort waiter could not be started: {error}"),
+        );
+    }
+}
+
+fn defer_guard_cleanup(
+    child: Child,
+    identity: Option<ProcessIdentity>,
+    lifecycle: Arc<ProcessLifecycle>,
+    lease: Option<Arc<ProcessLease>>,
+    first_error: String,
+) {
+    // Repeated attempts each have a gate/scan budget; no total recovery time
+    // is claimed. The anchor, identity and resource charge stay retained
+    // through every signal and scan. Only a complete owned quiet proof
+    // authorizes consuming wait; unsupported ownership goes to quarantine.
+    let retained = Arc::new(Mutex::new(Some((
+        child,
+        identity,
+        lifecycle,
+        lease,
+        first_error,
+    ))));
+    let worker_retained = Arc::clone(&retained);
+    let spawned = thread::Builder::new()
+        .name("owner-open-job-retirement-recovery".to_string())
+        .spawn(move || {
+            let (mut child, identity, lifecycle, lease, first_error) = worker_retained
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .take()
+                .expect("recovery owns child");
+            let mut recovery_errors = vec![first_error];
+            loop {
+                if let Err(error) = lifecycle.begin_retirement() {
+                    if recovery_errors.len() < 8 {
+                        recovery_errors.push(error);
+                    }
+                    thread::sleep(Duration::from_millis(5));
+                    continue;
+                }
+                match abort_owned_child(&mut child, identity.as_ref()) {
+                    Ok(()) => {
+                        if let Err(error) = lifecycle.finish_retirement() {
+                            if recovery_errors.len() < 8 {
+                                recovery_errors.push(error);
+                            }
+                            thread::sleep(Duration::from_millis(5));
+                            continue;
+                        }
+                        let pid = child.id();
+                        reap_owned_child_bounded(child, pid, identity, lifecycle, lease);
+                        return;
+                    }
+                    Err(AbortFailure::Unsupported(reason)) => {
+                        recovery_errors.push(reason);
+                        quarantine_owned_child(
+                            child,
+                            identity,
+                            lifecycle,
+                            lease,
+                            recovery_errors.join("; "),
+                        );
+                        return;
+                    }
+                    Err(AbortFailure::Retryable(reason)) => {
+                        if recovery_errors.len() < 8 {
+                            recovery_errors.push(reason);
+                        }
+                        thread::sleep(Duration::from_millis(5));
+                    }
+                }
+            }
+        });
+    if let Err(error) = spawned {
+        let (child, identity, lifecycle, lease, first_error) = retained
+            .lock()
+            .unwrap_or_else(|error| error.into_inner())
+            .take()
+            .expect("failed recovery retains child");
+        quarantine_owned_child(
+            child,
+            identity,
+            lifecycle,
+            lease,
+            format!("{first_error}; retirement recovery worker could not be started: {error}"),
+        );
     }
 }
 
 impl ProcessControl {
     pub fn write(&self, bytes: &[u8]) -> Result<()> {
+        let _effect_gate = self.lifecycle.control()?;
         let mut guard = self
             .input
             .lock()
@@ -239,6 +606,7 @@ impl ProcessControl {
     }
 
     pub fn close_stdin(&self) -> Result<StdinCloseEffect> {
+        let _effect_gate = self.lifecycle.control()?;
         let mut guard = self
             .input
             .lock()
@@ -267,6 +635,7 @@ impl ProcessControl {
     }
 
     pub fn resize(&self, size: PtySize) -> Result<()> {
+        let _effect_gate = self.lifecycle.control()?;
         let master = self
             .pty_master
             .as_ref()
@@ -294,8 +663,9 @@ impl ProcessControl {
     }
 
     pub fn kill(&self, signal: i32) -> Result<()> {
+        let _effect_gate = self.lifecycle.control()?;
         // Never signal a process group solely by a recycled PID.  A vanished
-        // leader is treated as an idempotent no-op; a different live process
+        // leader is an uncertainty; a different live process
         // generation is a hard control failure and is left for reconciliation.
         let identity = self.identity();
         match observe_process_identity(self.pid)
@@ -308,16 +678,9 @@ impl ProcessControl {
             }
             Some(_) => {}
             None => {
-                // The leader may have exited just before a control request
-                // arrived while descendants still own the original group.
-                // Prove that group/session lineage before signalling it; if
-                // the group is already gone this is an idempotent no-op.
-                ensure_bound_process_group(&identity).map_err(JobRuntimeError::Control)?;
-                if !process_group_exists(identity.process_group)
-                    .map_err(JobRuntimeError::Control)?
-                {
-                    return Ok(());
-                }
+                return Err(JobRuntimeError::Control(
+                    "original process leader anchor unavailable before signal".to_string(),
+                ));
             }
         }
         send_bound_process_group_signal(&identity, signal).map_err(JobRuntimeError::Control)
@@ -341,6 +704,8 @@ pub(crate) fn spawn_process(
     lease: Arc<ProcessLease>,
 ) -> Result<SpawnedProcess> {
     validate_start(request)?;
+    ensure_sigchld_ownership_configuration()
+        .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
     match request.pty {
         Some(size) => spawn_pty(request, size, maximum_chunk, inherited, lease),
         None => spawn_pipe(request, maximum_chunk, inherited, lease),
@@ -429,6 +794,7 @@ fn spawn_pipe(
     .map_err(post_fork_error)?;
     let mut workers = vec![stdout_thread, stderr_thread];
     if let Some(writer) = spawn_initial_writer(
+        Arc::clone(&guard.lifecycle),
         Arc::clone(&input),
         request.initial_stdin.clone(),
         sender.clone(),
@@ -438,6 +804,7 @@ fn spawn_pipe(
     {
         workers.push(writer);
     }
+    let lifecycle = Arc::clone(&guard.lifecycle);
     spawn_reaper(guard, workers, sender, lease).map_err(post_fork_error)?;
     Ok(SpawnedProcess {
         control: Arc::new(ProcessControl {
@@ -450,6 +817,7 @@ fn spawn_pipe(
             input,
             pty_master: None,
             pty_eof_sent: AtomicBool::new(false),
+            lifecycle,
         }),
         events: receiver,
     })
@@ -536,6 +904,7 @@ fn spawn_pty(
     .map_err(post_fork_error)?;
     let mut workers = vec![reader_thread];
     if let Some(writer) = spawn_initial_writer(
+        Arc::clone(&guard.lifecycle),
         Arc::clone(&input),
         request.initial_stdin.clone(),
         sender.clone(),
@@ -545,6 +914,7 @@ fn spawn_pty(
     {
         workers.push(writer);
     }
+    let lifecycle = Arc::clone(&guard.lifecycle);
     spawn_reaper(guard, workers, sender, lease).map_err(post_fork_error)?;
     Ok(SpawnedProcess {
         control: Arc::new(ProcessControl {
@@ -557,6 +927,7 @@ fn spawn_pty(
             input,
             pty_master: Some(master),
             pty_eof_sent: AtomicBool::new(false),
+            lifecycle,
         }),
         events: receiver,
     })
@@ -726,19 +1097,36 @@ fn write_nonblocking_fd(fd: i32, bytes: &[u8]) -> Result<()> {
 }
 
 fn write_nonblocking_loop(fd: i32, bytes: &[u8]) -> Result<()> {
+    write_nonblocking_loop_with(fd, bytes, |fd, remaining| unsafe {
+        libc::write(
+            fd,
+            remaining.as_ptr().cast::<libc::c_void>(),
+            remaining.len(),
+        )
+    })
+}
+
+fn write_nonblocking_loop_with<F>(fd: i32, bytes: &[u8], mut write: F) -> Result<()>
+where
+    F: FnMut(i32, &[u8]) -> isize,
+{
     let deadline = Instant::now()
         .checked_add(INPUT_WRITE_TIMEOUT)
         .unwrap_or_else(Instant::now);
     let mut offset = 0usize;
     while offset < bytes.len() {
+        if Instant::now() >= deadline {
+            return Err(JobRuntimeError::Control(
+                "stdin write deadline exceeded; partial effect may exist".to_string(),
+            ));
+        }
         let remaining = &bytes[offset..];
-        let written = unsafe {
-            libc::write(
-                fd,
-                remaining.as_ptr().cast::<libc::c_void>(),
-                remaining.len(),
-            )
-        };
+        let written = write(fd, remaining);
+        if Instant::now() >= deadline {
+            return Err(JobRuntimeError::Control(
+                "stdin write deadline exceeded; partial effect may exist".to_string(),
+            ));
+        }
         if written > 0 {
             let written = usize::try_from(written).map_err(|_| {
                 JobRuntimeError::Io("stdin write returned an invalid byte count".to_string())
@@ -790,10 +1178,16 @@ fn write_nonblocking_loop(fd: i32, bytes: &[u8]) -> Result<()> {
             _ => return Err(JobRuntimeError::Io(error.to_string())),
         }
     }
+    if Instant::now() >= deadline {
+        return Err(JobRuntimeError::Control(
+            "stdin final write exceeded deadline; partial effect may exist".to_string(),
+        ));
+    }
     Ok(())
 }
 
 fn spawn_initial_writer(
+    lifecycle: Arc<ProcessLifecycle>,
     input: Arc<Mutex<Option<InputHandle>>>,
     bytes: Vec<u8>,
     sender: SyncSender<InternalProcessEvent>,
@@ -815,13 +1209,14 @@ fn spawn_initial_writer(
             if worker_stop.load(Ordering::Acquire) {
                 return;
             }
-            let result = match owned_input_handle.lock() {
-                Ok(mut guard) => match guard.as_mut() {
-                    Some(handle) => write_input(handle, &owned_input),
-                    None => Err(JobRuntimeError::NotLive),
-                },
-                Err(_) => Err(JobRuntimeError::StatePoisoned),
-            };
+            let result = (|| {
+                let _effect_gate = lifecycle.control()?;
+                let mut guard = owned_input_handle
+                    .lock()
+                    .map_err(|_| JobRuntimeError::StatePoisoned)?;
+                let handle = guard.as_mut().ok_or(JobRuntimeError::NotLive)?;
+                write_input(handle, &owned_input)
+            })();
             if let Err(error) = result {
                 let _ = send_process_event(
                     &owned_sender,
@@ -1063,6 +1458,7 @@ fn identity_matches(expected: &ProcessIdentity, observed: &ProcessIdentity) -> b
 /// Return a process-group target for a guarded abort only after the child
 /// identity is present and still live.  In particular, `None` means identity
 /// capture failed and must never be interpreted as "use the raw PID".
+#[cfg(test)]
 fn guarded_group_signal_target(identity: Option<&ProcessIdentity>) -> Option<u32> {
     let identity = identity?;
     ensure_bound_process_group(identity)
@@ -1071,40 +1467,11 @@ fn guarded_group_signal_target(identity: Option<&ProcessIdentity>) -> Option<u32
 }
 
 fn ensure_bound_process_group(identity: &ProcessIdentity) -> std::result::Result<(), String> {
-    let observed = observe_process_identity(identity.pid).map_err(|error| error.to_string())?;
-    let Some(observed) = observed else {
-        // The leader has already been reaped.  A non-empty process group keeps
-        // its original PGID until its members leave, so cleanup may still
-        // target the bound group only when a member with the bound session is
-        // observable.  If a recycled PGID has no such member, refuse the
-        // broadcast and report cleanup uncertainty instead of risking an
-        // unrelated process group.
-        if process_group_exists(identity.process_group)? {
-            let deadline = Instant::now()
-                .checked_add(PROCESS_GROUP_PROOF_RETRY_BUDGET)
-                .unwrap_or_else(Instant::now);
-            let mut last_error =
-                "process-group identity cannot be proven after leader exit".to_string();
-            loop {
-                match bound_process_group_has_member(identity) {
-                    Ok(true) => return Ok(()),
-                    Ok(false) => {}
-                    Err(error) => last_error = error,
-                }
-                if Instant::now() >= deadline {
-                    return Err(last_error);
-                }
-                thread::sleep(PROCESS_GROUP_PROOF_RETRY_DELAY);
-                // A group can disappear while the scan is in progress.  In
-                // that case there is nothing left to signal and the cleanup
-                // proof succeeds idempotently.
-                if !process_group_exists(identity.process_group)? {
-                    return Ok(());
-                }
-            }
-        }
-        return Ok(());
-    };
+    let observed = observe_process_identity(identity.pid)
+        .map_err(|error| error.to_string())?
+        .ok_or_else(|| {
+            "original process leader anchor is unavailable; group cleanup uncertain".to_string()
+        })?;
     if !identity_matches(identity, &observed) {
         return Err("job process identity changed before group cleanup".to_string());
     }
@@ -1112,66 +1479,86 @@ fn ensure_bound_process_group(identity: &ProcessIdentity) -> std::result::Result
 }
 
 #[cfg(any(target_os = "linux", target_os = "android"))]
-fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Result<bool, String> {
-    let entries = fs::read_dir("/proc").map_err(|error| error.to_string())?;
-    let deadline = Instant::now()
-        .checked_add(PROCESS_GROUP_SCAN_BUDGET)
-        .unwrap_or_else(Instant::now);
-    for entry in entries {
-        if Instant::now() >= deadline {
-            return Err("job process-group member scan exceeded its bounded deadline".to_string());
-        }
-        let entry = entry.map_err(|error| error.to_string())?;
-        let Some(pid) = entry
-            .file_name()
-            .to_str()
-            .and_then(|name| name.parse::<u32>().ok())
-        else {
-            continue;
-        };
-        // The leader is already known to be absent (or was separately
-        // validated by `ensure_bound_process_group`); only a distinct member
-        // can prove that the old group is still populated.
-        if pid == identity.pid {
-            continue;
-        }
-        match read_proc_group_identity(pid) {
-            Ok(Some((process_group, session_id)))
-                if process_group == identity.process_group && session_id == identity.session_id =>
-            {
-                return Ok(true);
-            }
-            Ok(Some(_)) | Ok(None) => {}
-            // `/proc` is inherently racy when a task disappears, which is
-            // represented by `Ok(None)`.  Any other read/parse failure means
-            // the old group cannot be positively identified, so propagate it
-            // instead of treating an incomplete scan as an empty group.
-            Err(error) => {
-                return Err(format!(
-                    "job process-group member identity probe failed: {error}"
-                ));
-            }
-        }
+fn ensure_sigchld_ownership_configuration() -> std::io::Result<()> {
+    let mut action: libc::sigaction = unsafe { std::mem::zeroed() };
+    if unsafe { libc::sigaction(libc::SIGCHLD, std::ptr::null(), &mut action) } != 0 {
+        return Err(std::io::Error::last_os_error());
     }
-    Ok(false)
+    if action.sa_sigaction != libc::SIG_DFL || action.sa_flags & libc::SA_NOCLDWAIT != 0 {
+        return Err(std::io::Error::other(
+            "exclusive child wait ownership requires default SIGCHLD without SA_NOCLDWAIT",
+        ));
+    }
+    Ok(())
 }
 
-/// Read only the process-group/session fields needed while proving that a
-/// bound group still has a member after its leader has exited.
-///
-/// `/proc` also exposes kernel worker threads.  Their stat records use zero
-/// for both pgrp and session, which is not a valid userspace process-group
-/// identity and must not abort an otherwise valid scan.  Keep the strict
-/// [`read_proc_stat_identity`] parser for the leader-generation checks; this
-/// tolerant projection skips those known non-candidates while still
-/// propagating malformed records for real processes.
+#[cfg(not(any(target_os = "linux", target_os = "android")))]
+fn ensure_sigchld_ownership_configuration() -> std::io::Result<()> {
+    Err(std::io::Error::new(
+        std::io::ErrorKind::Unsupported,
+        "retained child anchor requires Linux/Android waitid WNOWAIT",
+    ))
+}
+
+fn observe_owned_child(pid: u32, nonblocking: bool) -> std::io::Result<bool> {
+    observe_owned_child_status(pid, nonblocking).map(|status| status.is_some())
+}
+
 #[cfg(any(target_os = "linux", target_os = "android"))]
-fn read_proc_group_identity(pid: u32) -> std::io::Result<Option<(u32, u32)>> {
-    let stat = match fs::read_to_string(format!("/proc/{pid}/stat")) {
-        Ok(stat) => stat,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error),
-    };
+fn observe_owned_child_status(pid: u32, nonblocking: bool) -> std::io::Result<Option<ExitStatus>> {
+    ensure_sigchld_ownership_configuration()?;
+    let mut info: libc::siginfo_t = unsafe { std::mem::zeroed() };
+    let flags = libc::WEXITED | libc::WNOWAIT | if nonblocking { libc::WNOHANG } else { 0 };
+    let deadline = Instant::now() + PROCESS_GROUP_SCAN_BUDGET;
+    loop {
+        if nonblocking && Instant::now() >= deadline {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::TimedOut,
+                "child wait ownership observation deadline exceeded",
+            ));
+        }
+        let result = unsafe { libc::waitid(libc::P_PID, pid as libc::id_t, &mut info, flags) };
+        if nonblocking && Instant::now() >= deadline {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::TimedOut,
+                "child wait ownership observation completed too late",
+            ));
+        }
+        if result == 0 {
+            let observed_pid = unsafe { info.si_pid() };
+            if observed_pid == 0 {
+                return Ok(None);
+            }
+            if observed_pid != pid as libc::pid_t {
+                return Err(std::io::Error::other("waitid child identity differs"));
+            }
+            let status = unsafe { info.si_status() };
+            let raw = match info.si_code {
+                libc::CLD_EXITED => status << 8,
+                libc::CLD_KILLED => status,
+                libc::CLD_DUMPED => status | 0x80,
+                _ => return Err(std::io::Error::other("waitid terminal kind is invalid")),
+            };
+            return Ok(Some(ExitStatus::from_raw(raw)));
+        }
+        let error = std::io::Error::last_os_error();
+        if error.raw_os_error() != Some(libc::EINTR) {
+            return Err(error);
+        }
+    }
+}
+
+#[cfg(not(any(target_os = "linux", target_os = "android")))]
+fn observe_owned_child_status(
+    _pid: u32,
+    _nonblocking: bool,
+) -> std::io::Result<Option<ExitStatus>> {
+    ensure_sigchld_ownership_configuration()?;
+    unreachable!()
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn parse_proc_group_state(stat: &str) -> std::io::Result<Option<(u32, u32, u8)>> {
     let command_end = stat
         .rfind(')')
         .ok_or_else(|| std::io::Error::other("proc stat omitted command terminator"))?;
@@ -1180,6 +1567,12 @@ fn read_proc_group_identity(pid: u32) -> std::io::Result<Option<(u32, u32)>> {
         .ok_or_else(|| std::io::Error::other("proc stat is truncated"))?
         .split_ascii_whitespace()
         .collect::<Vec<_>>();
+    let state = fields
+        .first()
+        .filter(|field| field.len() == 1)
+        .and_then(|field| field.bytes().next())
+        .filter(|state| b"RSDZTtXxKWPI".contains(state))
+        .ok_or_else(|| std::io::Error::other("proc stat state is invalid"))?;
     let process_group = fields
         .get(2)
         .ok_or_else(|| std::io::Error::other("proc stat omitted process group"))?
@@ -1193,12 +1586,134 @@ fn read_proc_group_identity(pid: u32) -> std::io::Result<Option<(u32, u32)>> {
     if process_group == 0 || session_id == 0 {
         return Ok(None);
     }
-    Ok(Some((process_group, session_id)))
+    Ok(Some((process_group, session_id, state)))
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn read_proc_task_stat(path: &Path) -> std::io::Result<Option<String>> {
+    let file = match File::open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    let mut stat = String::new();
+    file.take(8193).read_to_string(&mut stat)?;
+    if stat.len() > 8192 {
+        return Err(std::io::Error::other("proc task stat exceeds bounded size"));
+    }
+    Ok(Some(stat))
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn process_group_is_quiet(
+    identity: &ProcessIdentity,
+    deadline: Instant,
+) -> std::result::Result<bool, String> {
+    process_group_is_quiet_with(identity, deadline, read_proc_task_stat)
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn process_group_is_quiet_with<F>(
+    identity: &ProcessIdentity,
+    deadline: Instant,
+    mut read_stat: F,
+) -> std::result::Result<bool, String>
+where
+    F: FnMut(&Path) -> std::io::Result<Option<String>>,
+{
+    let deadline = deadline.min(Instant::now() + PROCESS_GROUP_SCAN_BUDGET);
+    ensure_bound_process_group(identity)?;
+    let entries = fs::read_dir("/proc").map_err(|error| error.to_string())?;
+    let mut live = false;
+    let require_deadline = || {
+        if Instant::now() >= deadline {
+            Err("job process-group observation exceeded deadline".to_string())
+        } else {
+            Ok(())
+        }
+    };
+    for entry in entries {
+        require_deadline()?;
+        let entry = entry.map_err(|error| error.to_string())?;
+        let Some(pid) = entry
+            .file_name()
+            .to_str()
+            .and_then(|name| name.parse::<u32>().ok())
+        else {
+            continue;
+        };
+        let Some(stat) = read_stat(&entry.path().join("stat"))
+            .map_err(|error| format!("incomplete job process-group scan: {error}"))?
+        else {
+            require_deadline()?;
+            continue;
+        };
+        require_deadline()?;
+        let Some((pgid, sid, state)) =
+            parse_proc_group_state(&stat).map_err(|error| error.to_string())?
+        else {
+            continue;
+        };
+        if pgid != identity.process_group || sid != identity.session_id {
+            continue;
+        }
+        if !matches!(state, b'Z' | b'X' | b'x') {
+            live = true;
+        }
+        // A TGID leader can be Z while other threads are live. Linux group
+        // membership is shared by its task group, so inspect every task of
+        // every matching process, including zombie process leaders.
+        let tasks = match fs::read_dir(format!("/proc/{pid}/task")) {
+            Ok(tasks) => tasks,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+                require_deadline()?;
+                continue;
+            }
+            Err(error) => return Err(format!("incomplete job task scan: {error}")),
+        };
+        for task in tasks {
+            require_deadline()?;
+            let task = task.map_err(|error| error.to_string())?;
+            let Some(tid) = task
+                .file_name()
+                .to_str()
+                .and_then(|name| name.parse::<u32>().ok())
+            else {
+                return Err("proc task entry is not a numeric TID".to_string());
+            };
+            let Some(stat) = read_stat(&task.path().join("stat"))
+                .map_err(|error| format!("incomplete job task observation: {error}"))?
+            else {
+                require_deadline()?;
+                continue;
+            };
+            require_deadline()?;
+            let Some((task_pgid, task_sid, task_state)) =
+                parse_proc_group_state(&stat).map_err(|error| error.to_string())?
+            else {
+                return Err(
+                    "userspace group task has zero process group/session identity".to_string(),
+                );
+            };
+            if task_pgid != pgid || task_sid != sid {
+                return Err(format!("job task {tid} group/session changed during scan"));
+            }
+            if !matches!(task_state, b'Z' | b'X' | b'x') {
+                live = true;
+            }
+        }
+    }
+    ensure_bound_process_group(identity)?;
+    require_deadline()?;
+    Ok(!live)
 }
 
 #[cfg(not(any(target_os = "linux", target_os = "android")))]
-fn bound_process_group_has_member(identity: &ProcessIdentity) -> std::result::Result<bool, String> {
-    process_group_exists(identity.process_group)
+fn process_group_is_quiet(
+    _identity: &ProcessIdentity,
+    _deadline: Instant,
+) -> std::result::Result<bool, String> {
+    Err("complete retained-anchor group scan requires Linux/Android procfs".to_string())
 }
 
 fn spawn_reader<R>(
@@ -1338,6 +1853,19 @@ fn spawn_reaper(
     sender: SyncSender<InternalProcessEvent>,
     lease: Arc<ProcessLease>,
 ) -> Result<()> {
+    spawn_reaper_with_cleanup(guard, workers, sender, lease, cleanup_process_group)
+}
+
+fn spawn_reaper_with_cleanup<F>(
+    guard: SpawnGuard,
+    workers: Vec<ProcessWorker>,
+    sender: SyncSender<InternalProcessEvent>,
+    lease: Arc<ProcessLease>,
+    cleanup: F,
+) -> Result<()>
+where
+    F: FnOnce(&ProcessIdentity) -> std::result::Result<(), String> + Send + 'static,
+{
     let pid = guard.pid;
     let identity = guard
         .identity
@@ -1350,11 +1878,37 @@ fn spawn_reaper(
             let owned_guard = guard;
             let owned_workers = workers;
             let owned_sender = sender;
-            let status = owned_guard.wait();
+            // waitid WNOWAIT observes exit without consuming the anchor.
+            // All effects share the retirement gate; close it before group
+            // cleanup, and finish it before any consuming Child.wait.
+            let observed = observe_owned_child_status(pid, false).and_then(|status| status.ok_or_else(|| std::io::Error::other("blocking WNOWAIT observation was not terminal")));
             let mut cleanup_errors = Vec::new();
-            if let Err(error) = cleanup_process_group(&identity) {
-                cleanup_errors.push(error);
-            }
+            let status = match owned_guard.lifecycle.begin_retirement() {
+                Ok(poisoned) => {
+                    if poisoned { cleanup_errors.push("process retirement gate was poisoned".to_string()); }
+                    let cleanup_proven = if observed.is_ok() {
+                        match cleanup(&identity) {
+                            Ok(()) => true,
+                            Err(error) => { cleanup_errors.push(format!("{error}; unreaped leader/identity/lease retained for bounded-attempt recovery")); false }
+                        }
+                    } else {
+                        cleanup_errors.push("child wait ownership/anchor could not be observed; no group signals attempted; child/lease quarantined".to_string());
+                        false
+                    };
+                    match owned_guard.lifecycle.finish_retirement() {
+                        Ok(poisoned) => {
+                            if poisoned { cleanup_errors.push("process retirement gate was poisoned".to_string()); }
+                            match observed {
+                                Ok(_status) if cleanup_proven => owned_guard.wait(),
+                                Ok(status) => Ok(status), // WNOWAIT status; guard remains owned for recovery.
+                                Err(error) => Err(error),
+                            }
+                        }
+                        Err(error) => { cleanup_errors.push(error); Err(std::io::Error::other("retirement barrier did not close")) }
+                    }
+                }
+                Err(error) => { cleanup_errors.push(error); Err(std::io::Error::other("retirement gate unavailable; retained ownership recovery required")) }
+            };
             cleanup_errors.extend(join_workers_bounded(owned_workers));
             let cleanup_error = (!cleanup_errors.is_empty()).then(|| cleanup_errors.join("; "));
             let event = match status {
@@ -1463,54 +2017,70 @@ fn join_workers_bounded(mut workers: Vec<ProcessWorker>) -> Vec<String> {
     errors
 }
 
-fn cleanup_process_group(identity: &ProcessIdentity) -> std::result::Result<(), String> {
-    ensure_bound_process_group(identity)?;
-    if !process_group_exists(identity.process_group)? {
-        return Ok(());
+fn quiet_twice(identity: &ProcessIdentity, deadline: Instant) -> std::result::Result<bool, String> {
+    if !process_group_is_quiet(identity, deadline)? {
+        return Ok(false);
     }
-    send_bound_process_group_signal(identity, libc::SIGTERM)?;
-    let term_deadline = Instant::now()
-        .checked_add(DESCENDANT_TERM_GRACE)
-        .unwrap_or_else(Instant::now);
-    while Instant::now() < term_deadline {
-        if !process_group_exists(identity.process_group)? {
-            return Ok(());
-        }
-        thread::sleep(Duration::from_millis(5));
+    thread::sleep(Duration::from_millis(5));
+    let quiet = process_group_is_quiet(identity, deadline)?;
+    if Instant::now() >= deadline {
+        return Err("process-group final quiet proof exceeded deadline".to_string());
     }
-    // Revalidate the bound leader/member lineage immediately before the
-    // escalation.  A bare PGID probe here would permit a recycled group to be
-    // killed after the original descendants had already disappeared.
-    ensure_bound_process_group(identity)?;
-    send_bound_process_group_signal(identity, libc::SIGKILL)?;
-    let kill_deadline = Instant::now()
-        .checked_add(DESCENDANT_KILL_GRACE)
-        .unwrap_or_else(Instant::now);
-    while Instant::now() < kill_deadline {
-        if !process_group_exists(identity.process_group)? {
-            return Ok(());
-        }
-        thread::sleep(Duration::from_millis(5));
-    }
-    if process_group_exists(identity.process_group)? {
-        Err("process group remains observable after SIGKILL grace".to_string())
-    } else {
-        Ok(())
-    }
+    Ok(quiet)
 }
 
-fn process_group_exists(process_group: u32) -> std::result::Result<bool, String> {
-    let process_group = i32::try_from(process_group)
-        .map_err(|_| "child pid does not fit a POSIX process-group id".to_string())?;
-    let result = unsafe { libc::kill(-process_group, 0) };
-    if result == 0 {
-        return Ok(true);
+fn wait_group_quiet(
+    identity: &ProcessIdentity,
+    grace: Duration,
+    cleanup_deadline: Instant,
+) -> std::result::Result<bool, String> {
+    let grace_deadline = Instant::now() + grace;
+    while Instant::now() < grace_deadline {
+        // The grace controls escalation, while a full /proc scan has its own
+        // existing 500ms bound inside the absolute overall cleanup deadline.
+        if quiet_twice(identity, cleanup_deadline)? {
+            return Ok(true);
+        }
+        thread::sleep(Duration::from_millis(5));
     }
-    let error = std::io::Error::last_os_error();
-    match error.raw_os_error() {
-        Some(libc::ESRCH) => Ok(false),
-        Some(libc::EPERM) => Ok(true),
-        _ => Err(format!("process group existence check failed: {error}")),
+    Ok(false)
+}
+
+fn cleanup_process_group(identity: &ProcessIdentity) -> std::result::Result<(), String> {
+    let deadline = Instant::now() + Duration::from_secs(2);
+    ensure_bound_process_group(identity)?;
+    // A retained zombie keeps kill(-pgid, 0) true. Only two complete bounded
+    // scans with no live same-group/session task can establish quiet.
+    match quiet_twice(identity, deadline) {
+        Ok(true) => return Ok(()),
+        Ok(false) => {}
+        Err(error) => {
+            // Incomplete scans are never proof of cleanup. Still make one
+            // best-effort anchored kill; never recover a lost numeric PGID.
+            let kill = send_bound_process_group_signal(identity, libc::SIGKILL);
+            return Err(format!("{error}; bounded cleanup kill result: {kill:?}"));
+        }
+    }
+    send_bound_process_group_signal(identity, libc::SIGTERM)?;
+    let term_error = match wait_group_quiet(identity, DESCENDANT_TERM_GRACE, deadline) {
+        Ok(true) => return Ok(()),
+        Ok(false) => None,
+        Err(error) => Some(error),
+    };
+    send_bound_process_group_signal(identity, libc::SIGKILL)?;
+    let kill_result = wait_group_quiet(identity, DESCENDANT_KILL_GRACE, deadline);
+    if let Some(error) = term_error {
+        return Err(format!(
+            "{error}; cleanup quiet after kill: {kill_result:?}"
+        ));
+    }
+    if Instant::now() >= deadline {
+        return Err("process-group final cleanup deadline exceeded".to_string());
+    }
+    match kill_result {
+        Ok(true) => Ok(()),
+        Ok(false) => Err("live process-group members remain after SIGKILL grace".to_string()),
+        Err(error) => Err(error),
     }
 }
 
@@ -1539,6 +2109,8 @@ fn send_bound_process_group_signal(
     identity: &ProcessIdentity,
     signal: i32,
 ) -> std::result::Result<(), String> {
+    observe_owned_child(identity.pid, true)
+        .map_err(|error| format!("direct-child wait ownership is unavailable: {error}"))?;
     ensure_bound_process_group(identity)?;
     send_process_group_signal(identity.process_group, signal)
 }
@@ -1612,6 +2184,44 @@ mod tests {
         assert_eq!(guarded_group_signal_target(None), None);
     }
 
+    fn reconcile_quarantine_fixture(pid: u32) -> String {
+        // Explicit test-only offline reconciliation after fixture teardown.
+        // No production method unlocks quarantine from elapsed/PID/no-op.
+        let (mut child, _identity, lifecycle, _lease, reason) = {
+            let mut quarantine = UNCERTAIN_CHILD_QUARANTINE
+                .lock()
+                .unwrap_or_else(|error| error.into_inner());
+            let index = quarantine
+                .iter()
+                .position(|entry| entry.0.id() == pid)
+                .expect("fixture quarantine exists");
+            quarantine.remove(index)
+        };
+        assert!(lifecycle.retirement_requested.load(Ordering::Acquire));
+        let deadline = Instant::now() + Duration::from_secs(1);
+        let observed = loop {
+            match observe_owned_child(pid, true) {
+                Ok(false) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
+                observed => break observed,
+            }
+        };
+        match observed {
+            Ok(true) => {
+                // This explicit external fixture observer still owns the
+                // unreaped child, and every owned member was torn down.
+                let fixture_identity = capture_process_identity(pid).unwrap();
+                assert!(
+                    quiet_twice(&fixture_identity, Instant::now() + Duration::from_secs(1))
+                        .unwrap()
+                );
+                child.wait().unwrap();
+            }
+            Err(error) if error.raw_os_error() == Some(libc::ECHILD) => {}
+            observed => panic!("fixture is not offline for reconciliation: {observed:?}"),
+        }
+        reason
+    }
+
     #[test]
     fn spawn_guard_without_identity_does_not_kill_a_group_member() {
         // Exercise the Drop path itself: make an unbound leader and a second
@@ -1680,6 +2290,9 @@ mod tests {
         let _ = member.kill();
         let _ = member.wait();
         assert!(
+            reconcile_quarantine_fixture(leader_pid).contains("group identity was never bound")
+        );
+        assert!(
             member_alive,
             "unbound SpawnGuard broadcast to the whole group"
         );
@@ -1707,5 +2320,854 @@ mod tests {
             libc::close(read_fd);
             libc::close(write_fd);
         }
+    }
+    struct OwnedTestChild(Child);
+    impl Drop for OwnedTestChild {
+        fn drop(&mut self) {
+            let _ = self.0.kill();
+            let _ = self.0.wait();
+        }
+    }
+
+    fn leader_fixture() -> SpawnGuard {
+        let mut command = Command::new("/bin/sh");
+        command
+            .args(["-c", "IFS= read -r line || :"])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null());
+        unsafe {
+            command.pre_exec(|| {
+                if libc::setpgid(0, 0) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+        let mut guard = SpawnGuard::new(command.spawn().unwrap());
+        guard.bind_identity(capture_process_identity(guard.pid).unwrap());
+        guard
+    }
+
+    fn fixture_control(guard: &SpawnGuard) -> Arc<ProcessControl> {
+        let identity = guard.identity.as_ref().unwrap();
+        Arc::new(ProcessControl {
+            pid: identity.pid,
+            process_group: identity.process_group,
+            session_id: identity.session_id,
+            start_time_ticks: identity.start_time_ticks,
+            boot_id_sha256: identity.boot_id_sha256.clone(),
+            pty: false,
+            input: Arc::new(Mutex::new(None)),
+            pty_master: None,
+            pty_eof_sent: AtomicBool::new(false),
+            lifecycle: Arc::clone(&guard.lifecycle),
+        })
+    }
+
+    fn assert_all_controls_retired(control: &ProcessControl) {
+        assert!(matches!(
+            control.write(b"forbidden"),
+            Err(JobRuntimeError::NotLive)
+        ));
+        assert!(matches!(
+            control.close_stdin(),
+            Err(JobRuntimeError::NotLive)
+        ));
+        assert!(matches!(
+            control.resize(PtySize::default()),
+            Err(JobRuntimeError::NotLive)
+        ));
+        assert!(matches!(
+            control.kill(libc::SIGKILL),
+            Err(JobRuntimeError::NotLive)
+        ));
+    }
+
+    #[test]
+    fn retained_leader_survives_all_group_signals_then_controls_stay_retired() {
+        let mut guard = leader_fixture();
+        let identity = guard.identity.clone().unwrap();
+        let control = fixture_control(&guard);
+        let mut command = Command::new("/bin/sleep");
+        command
+            .arg("10")
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null());
+        let pgid = identity.process_group as libc::pid_t;
+        unsafe {
+            command.pre_exec(move || {
+                if libc::setpgid(0, pgid) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                if libc::signal(libc::SIGTERM, libc::SIG_IGN) == libc::SIG_ERR {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+        let mut member = OwnedTestChild(command.spawn().unwrap());
+        let member_pid = member.0.id();
+        assert_eq!(unsafe { libc::getpgid(member_pid as libc::pid_t) }, pgid);
+        drop(guard.child_mut().unwrap().stdin.take());
+        assert!(observe_owned_child(guard.pid, false).unwrap());
+        assert!(identity_matches(
+            &identity,
+            &observe_process_identity(guard.pid).unwrap().unwrap()
+        ));
+        guard.lifecycle.begin_retirement().unwrap();
+        assert_all_controls_retired(&control);
+        cleanup_process_group(&identity).unwrap();
+        assert!(
+            identity_matches(
+                &identity,
+                &observe_process_identity(guard.pid).unwrap().unwrap()
+            ),
+            "leader anchor survives TERM and KILL cleanup"
+        );
+        assert!(
+            observe_owned_child(member_pid, true).unwrap(),
+            "member terminal before consuming anchor"
+        );
+        guard.lifecycle.finish_retirement().unwrap();
+        let status = guard.wait().unwrap();
+        assert_eq!(status.code(), Some(0));
+        assert!(observe_process_identity(identity.pid).unwrap().is_none());
+        let member_status = member.0.wait().unwrap();
+        assert_eq!(member_status.signal(), Some(libc::SIGKILL));
+        assert_all_controls_retired(&control);
+        eprintln!(
+            "actual_retained_leader: wait0, member_SIGKILL, all_control_methods_rejected_before_and_after_wait"
+        );
+    }
+
+    #[test]
+    fn controls_reject_after_wait_before_terminal_event_can_be_delivered() {
+        let mut guard = leader_fixture();
+        let control = fixture_control(&guard);
+        let pid = guard.pid;
+        let lifecycle = Arc::clone(&guard.lifecycle);
+        let (sender, receiver) = sync_channel(1);
+        sender
+            .send(InternalProcessEvent::Output {
+                stream: "fixture".to_string(),
+                bytes: b"occupy-terminal-queue".to_vec(),
+            })
+            .unwrap();
+        drop(guard.child_mut().unwrap().stdin.take());
+        spawn_reaper(
+            guard,
+            Vec::new(),
+            sender,
+            ProcessLease::acquire(1024).unwrap(),
+        )
+        .unwrap();
+        let deadline = Instant::now() + Duration::from_secs(3);
+        while !(lifecycle.is_retired() && observe_process_identity(pid).unwrap().is_none()) {
+            assert!(
+                Instant::now() < deadline,
+                "real reaper did not retire and consume child"
+            );
+            thread::sleep(Duration::from_millis(5));
+        }
+        assert_all_controls_retired(&control);
+        assert!(matches!(
+            receiver.recv_timeout(Duration::from_secs(1)).unwrap(),
+            InternalProcessEvent::Output { .. }
+        ));
+        assert!(
+            matches!(receiver.recv_timeout(Duration::from_secs(1)).unwrap(), InternalProcessEvent::Exited { terminal_kind, exit_code: Some(0), cleanup_error: None, .. } if terminal_kind == "exited")
+        );
+        eprintln!(
+            "actual_terminal_delivery_window: leader_consumed, terminal_queue_full, cloned_controls_rejected"
+        );
+    }
+
+    #[test]
+    fn retirement_waits_for_the_one_admitted_effect_and_closes_new_admission() {
+        let mut guard = leader_fixture();
+        let control = fixture_control(&guard);
+        let lifecycle = Arc::clone(&guard.lifecycle);
+        let held_gate = lifecycle.control().unwrap();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let worker_lifecycle = Arc::clone(&lifecycle);
+        let worker = thread::spawn(move || {
+            sender.send(worker_lifecycle.begin_retirement()).unwrap();
+        });
+        let deadline = Instant::now() + Duration::from_secs(1);
+        while !lifecycle.retirement_requested.load(Ordering::Acquire) {
+            assert!(Instant::now() < deadline);
+            thread::yield_now();
+        }
+        assert!(
+            receiver.try_recv().is_err(),
+            "retirement cannot pass admitted effect gate"
+        );
+        assert_all_controls_retired(&control);
+        assert!(observe_process_identity(guard.pid).unwrap().is_some());
+        // Real admitted child effect occurs while it still owns the gate.
+        drop(guard.child_mut().unwrap().stdin.take());
+        drop(held_gate);
+        receiver
+            .recv_timeout(Duration::from_secs(1))
+            .unwrap()
+            .unwrap();
+        worker.join().unwrap();
+        assert!(observe_owned_child(guard.pid, false).unwrap());
+        cleanup_process_group(guard.identity.as_ref().unwrap()).unwrap();
+        lifecycle.finish_retirement().unwrap();
+        assert_eq!(guard.wait().unwrap().code(), Some(0));
+        assert_all_controls_retired(&control);
+    }
+
+    #[test]
+    fn poisoned_retirement_gate_seals_controls_and_guard_still_reaps_exact_child() {
+        let guard = leader_fixture();
+        let pid = guard.pid;
+        let control = fixture_control(&guard);
+        let lifecycle = Arc::clone(&guard.lifecycle);
+        let worker_lifecycle = Arc::clone(&lifecycle);
+        assert!(
+            thread::spawn(move || {
+                let _gate = worker_lifecycle.control().unwrap();
+                panic!("intentional isolated lifecycle poison");
+            })
+            .join()
+            .is_err()
+        );
+        assert!(matches!(
+            control.kill(libc::SIGKILL),
+            Err(JobRuntimeError::StatePoisoned)
+        ));
+        drop(guard);
+        assert!(lifecycle.is_retired());
+        assert!(observe_process_identity(pid).unwrap().is_none());
+        assert_all_controls_retired(&control);
+    }
+
+    #[test]
+    fn missing_original_anchor_refuses_numeric_group_fallback_with_live_member() {
+        let mut guard = leader_fixture();
+        let identity = guard.identity.clone().unwrap();
+        let pgid = identity.process_group as libc::pid_t;
+        let mut command = Command::new("/bin/sleep");
+        command.arg("10");
+        unsafe {
+            command.pre_exec(move || {
+                if libc::setpgid(0, pgid) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+        let mut member = OwnedTestChild(command.spawn().unwrap());
+        drop(guard.child_mut().unwrap().stdin.take());
+        assert!(observe_owned_child(guard.pid, false).unwrap());
+        // Deliberate external consumption models an unsupported competing
+        // reaper, not PID reuse. Original numeric PGID is still populated.
+        guard.child_mut().unwrap().wait().unwrap();
+        assert!(observe_process_identity(identity.pid).unwrap().is_none());
+        assert!(ensure_bound_process_group(&identity).is_err());
+        assert!(send_bound_process_group_signal(&identity, libc::SIGKILL).is_err());
+        assert!(
+            member.0.try_wait().unwrap().is_none(),
+            "lost-anchor path signaled original numeric group"
+        );
+        drop(guard);
+        assert!(
+            member.0.try_wait().unwrap().is_none(),
+            "guard fallback signaled group without direct-child anchor"
+        );
+        member
+            .0
+            .kill()
+            .expect("stop exact owned unsupported fixture member");
+        member
+            .0
+            .wait()
+            .expect("reap fixture member before explicit reconciliation");
+        let reason = reconcile_quarantine_fixture(identity.pid);
+        assert!(reason.contains("wait ownership"));
+    }
+
+    #[test]
+    fn continuous_real_fd_writes_reject_late_completion_and_preserve_partial_effect() {
+        let mut file = tempfile::tempfile().unwrap();
+        let fd = file.as_raw_fd();
+        let started = Instant::now();
+        let mut calls = 0;
+        let result = write_nonblocking_loop_with(fd, b"four", |fd, bytes| {
+            thread::sleep(Duration::from_millis(650));
+            calls += 1;
+            unsafe { libc::write(fd, bytes.as_ptr().cast(), 1) }
+        });
+        assert!(
+            matches!(result, Err(JobRuntimeError::Control(ref message)) if message.contains("deadline") && message.contains("partial"))
+        );
+        use std::io::{Seek, SeekFrom};
+        file.seek(SeekFrom::Start(0)).unwrap();
+        let mut actual = Vec::new();
+        file.read_to_end(&mut actual).unwrap();
+        assert_eq!(
+            actual.len(),
+            calls,
+            "real bytes remain despite returned timeout"
+        );
+        assert_eq!(
+            actual, b"four",
+            "same four real callbacks reproduce old late success but now reject"
+        );
+        assert!(started.elapsed() >= INPUT_WRITE_TIMEOUT);
+        eprintln!(
+            "actual_late_write: elapsed={:?}, calls={}, actual_bytes={:?}, result={:?}",
+            started.elapsed(),
+            calls,
+            actual,
+            result
+        );
+    }
+
+    #[test]
+    fn late_final_real_fd_write_is_timeout_with_unknown_effect() {
+        let mut file = tempfile::tempfile().unwrap();
+        let fd = file.as_raw_fd();
+        let started = Instant::now();
+        let result = write_nonblocking_loop_with(fd, b"done", |fd, bytes| {
+            thread::sleep(INPUT_WRITE_TIMEOUT + Duration::from_millis(100));
+            unsafe { libc::write(fd, bytes.as_ptr().cast(), bytes.len()) }
+        });
+        use std::io::{Seek, SeekFrom};
+        file.seek(SeekFrom::Start(0)).unwrap();
+        let mut actual = Vec::new();
+        file.read_to_end(&mut actual).unwrap();
+        assert_eq!(actual, b"done");
+        assert!(
+            matches!(result, Err(JobRuntimeError::Control(ref message)) if message.contains("partial"))
+        );
+        eprintln!(
+            "actual_late_final_write: elapsed={:?}, actual_bytes={:?}, result={:?}",
+            started.elapsed(),
+            actual,
+            result
+        );
+    }
+
+    fn test_start_request(pty: bool, command: &str, input: Vec<u8>) -> JobStartRequest {
+        use trillionnium_owner_open_job_registry::{JobKey, JobRequest, JobScope};
+        JobStartRequest {
+            key: JobKey::new(
+                JobScope::new("session", "owner-open", "task", "turn", "stream"),
+                "actual-retirement-fixture",
+            ),
+            request: JobRequest::new(
+                "a".repeat(64),
+                "b".repeat(64),
+                "shell.job",
+                if pty { "pty" } else { "pipe" },
+                Some("rootlinux".to_string()),
+            ),
+            operation_id: "start".to_string(),
+            invocation: JobInvocation::Command {
+                command: command.to_string(),
+            },
+            shell_executable: "/bin/sh".into(),
+            cwd: None,
+            env: BTreeMap::new(),
+            initial_stdin: input,
+            pty: pty.then(PtySize::default),
+        }
+    }
+
+    #[test]
+    fn real_pipe_and_pty_reapers_close_cloned_controls() {
+        for pty in [false, true] {
+            let request = test_start_request(
+                pty,
+                "printf ready; IFS= read -r line; printf drained",
+                Vec::new(),
+            );
+            let spawned = spawn_process(
+                &request,
+                1024,
+                &[],
+                ProcessLease::acquire(64 * 1024).unwrap(),
+            )
+            .unwrap();
+            let control = Arc::clone(&spawned.control);
+            let deadline = Instant::now() + Duration::from_secs(3);
+            let mut output = Vec::new();
+            while !output.windows(5).any(|part| part == b"ready") {
+                match spawned
+                    .events
+                    .recv_timeout(deadline.saturating_duration_since(Instant::now()))
+                    .unwrap()
+                {
+                    InternalProcessEvent::Output { bytes, .. } => output.extend(bytes),
+                    event => panic!("unexpected readiness event: {event:?}"),
+                }
+            }
+            control.write(b"line\n").unwrap();
+            let deadline = Instant::now() + Duration::from_secs(3);
+            loop {
+                match spawned
+                    .events
+                    .recv_timeout(deadline.saturating_duration_since(Instant::now()))
+                    .unwrap()
+                {
+                    InternalProcessEvent::Exited {
+                        exit_code: Some(0),
+                        cleanup_error: None,
+                        ..
+                    } => break,
+                    InternalProcessEvent::Output { bytes, .. } => output.extend(bytes),
+                    event => panic!("unexpected terminal event: {event:?}"),
+                }
+            }
+            assert!(output.windows(7).any(|part| part == b"drained"));
+            assert_all_controls_retired(&control);
+            assert!(observe_process_identity(control.pid).unwrap().is_none());
+            eprintln!("actual_spawn_retirement: pty={pty}, exit0, drained, controls_closed");
+        }
+    }
+
+    #[test]
+    fn initial_writer_and_retirement_gate_use_one_lock_order_without_deadlock() {
+        let request = test_start_request(
+            false,
+            "printf ready; IFS= read -r line; printf drained",
+            b"initial\n".to_vec(),
+        );
+        let spawned = spawn_process(
+            &request,
+            1024,
+            &[],
+            ProcessLease::acquire(64 * 1024).unwrap(),
+        )
+        .unwrap();
+        let deadline = Instant::now() + Duration::from_secs(3);
+        let mut output = Vec::new();
+        loop {
+            match spawned
+                .events
+                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
+                .unwrap()
+            {
+                InternalProcessEvent::Output { bytes, .. } => output.extend(bytes),
+                InternalProcessEvent::Exited {
+                    exit_code: Some(0),
+                    cleanup_error: None,
+                    ..
+                } => break,
+                event => panic!("unexpected initial writer event: {event:?}"),
+            }
+        }
+        assert!(output.windows(7).any(|part| part == b"drained"));
+        assert_all_controls_retired(&spawned.control);
+    }
+
+    #[test]
+    fn unsupported_sigchld_is_refused_in_isolated_real_process() {
+        const CHILD: &str = "TRILLIONNIUM_REAL_SIGCHLD_BOUNDARY";
+        if std::env::var_os(CHILD).is_none() {
+            let output = Command::new(std::env::current_exe().unwrap())
+                .args([
+                    "--exact",
+                    "process::tests::unsupported_sigchld_is_refused_in_isolated_real_process",
+                    "--nocapture",
+                ])
+                .env(CHILD, "1")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+        let mut original: libc::sigaction = unsafe { std::mem::zeroed() };
+        assert_eq!(
+            unsafe { libc::sigaction(libc::SIGCHLD, std::ptr::null(), &mut original) },
+            0
+        );
+        let mut action = original;
+        for ignored in [true, false] {
+            action.sa_sigaction = if ignored {
+                libc::SIG_IGN
+            } else {
+                libc::SIG_DFL
+            };
+            action.sa_flags = if ignored { 0 } else { libc::SA_NOCLDWAIT };
+            assert_eq!(
+                unsafe { libc::sigaction(libc::SIGCHLD, &action, std::ptr::null_mut()) },
+                0
+            );
+            assert!(ensure_sigchld_ownership_configuration().is_err());
+            let request = test_start_request(false, ":", Vec::new());
+            assert!(
+                matches!(spawn_process(&request, 1024, &[], ProcessLease::acquire(1024).unwrap()), Err(JobRuntimeError::Spawn(message)) if message.contains("SIGCHLD"))
+            );
+        }
+        assert_eq!(
+            unsafe { libc::sigaction(libc::SIGCHLD, &original, std::ptr::null_mut()) },
+            0
+        );
+        assert!(ensure_sigchld_ownership_configuration().is_ok());
+    }
+
+    #[test]
+    fn proc_scan_terminal_states_and_expired_deadline_never_fake_quiet() {
+        for state in ["Z", "X", "R", "S"] {
+            let stat = format!("17 (worker (nested)) {state} 1 1234 5678");
+            assert_eq!(
+                parse_proc_group_state(&stat).unwrap(),
+                Some((1234, 5678, state.as_bytes()[0]))
+            );
+        }
+        assert!(parse_proc_group_state("17 (bad) ? 1 1234 5678").is_err());
+        let guard = leader_fixture();
+        let identity = guard.identity.as_ref().unwrap();
+        assert!(
+            !process_group_is_quiet(identity, Instant::now() + Duration::from_secs(1)).unwrap()
+        );
+        assert!(process_group_is_quiet(identity, Instant::now()).is_err());
+    }
+    #[test]
+    fn complete_task_scan_finds_live_thread_below_zombie_member_leader() {
+        let mut guard = leader_fixture();
+        let identity = guard.identity.clone().unwrap();
+        let fixture_dir = tempfile::tempdir().unwrap();
+        let fixture = fixture_dir.path().join("task_leader_fixture");
+        let fixture_source = fixture_dir.path().join("task_leader_fixture.c");
+        fs::write(&fixture_source, r#"#include <pthread.h>
+#include <unistd.h>
+#include <stdio.h>
+static void *worker(void *unused) { (void)unused; char data[16]; while (read(STDIN_FILENO, data, sizeof(data)) > 0) {} return NULL; }
+int main(void) { pthread_t thread; if (pthread_create(&thread, NULL, worker, NULL) != 0) return 2; puts("ready"); fflush(stdout); pthread_exit(NULL); }
+"#).unwrap();
+        let compiler = Command::new("cc")
+            .args(["-pthread", "-Wall", "-Wextra", "-Werror", "-O0"])
+            .arg(&fixture_source)
+            .arg("-o")
+            .arg(&fixture)
+            .output()
+            .unwrap();
+        assert!(
+            compiler.status.success(),
+            "{}",
+            String::from_utf8_lossy(&compiler.stderr)
+        );
+        let mut command = Command::new(fixture);
+        command.stdin(Stdio::piped()).stdout(Stdio::piped());
+        let pgid = identity.process_group as libc::pid_t;
+        unsafe {
+            command.pre_exec(move || {
+                if libc::setpgid(0, pgid) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+        let mut member = OwnedTestChild(command.spawn().unwrap());
+        let member_pid = member.0.id();
+        use std::io::BufRead;
+        let mut line = String::new();
+        std::io::BufReader::new(member.0.stdout.take().unwrap())
+            .read_line(&mut line)
+            .unwrap();
+        assert_eq!(line, "ready\n");
+        let deadline = Instant::now() + Duration::from_secs(3);
+        loop {
+            let stat = fs::read_to_string(format!("/proc/{member_pid}/stat")).unwrap();
+            if parse_proc_group_state(&stat).unwrap().unwrap().2 == b'Z' {
+                break;
+            }
+            assert!(Instant::now() < deadline);
+            thread::sleep(Duration::from_millis(5));
+        }
+        drop(guard.child_mut().unwrap().stdin.take());
+        assert!(observe_owned_child(guard.pid, false).unwrap());
+        assert!(
+            !observe_owned_child(member_pid, true).unwrap(),
+            "member still owns a live thread"
+        );
+        let quiet =
+            process_group_is_quiet(&identity, Instant::now() + Duration::from_secs(1)).unwrap();
+        assert!(
+            !quiet,
+            "complete task scan must refuse quiet with a live member thread"
+        );
+        guard.lifecycle.begin_retirement().unwrap();
+        cleanup_process_group(&identity).unwrap();
+        assert!(observe_process_identity(identity.pid).unwrap().is_some());
+        assert!(observe_owned_child(member_pid, true).unwrap());
+        let status = member.0.wait().unwrap();
+        assert!(matches!(
+            status.signal(),
+            Some(libc::SIGTERM | libc::SIGKILL)
+        ));
+        guard.lifecycle.finish_retirement().unwrap();
+        assert_eq!(guard.wait().unwrap().code(), Some(0));
+        eprintln!(
+            "actual_fixed_task_quiet: initial_quiet=false, member_leader_Z_with_live_task, group_signal={:?}, retained_anchor_consumed_last",
+            status.signal()
+        );
+    }
+    #[test]
+    fn delayed_actual_proc_stat_observation_and_incomplete_scan_refuse_quiet() {
+        let mut guard = leader_fixture();
+        let identity = guard.identity.clone().unwrap();
+        drop(guard.child_mut().unwrap().stdin.take());
+        assert!(observe_owned_child(guard.pid, false).unwrap());
+        let started = Instant::now();
+        let mut actual_reads = 0;
+        let result =
+            process_group_is_quiet_with(&identity, started + Duration::from_millis(30), |path| {
+                let stat = read_proc_task_stat(path)?;
+                actual_reads += 1;
+                thread::sleep(Duration::from_millis(75));
+                Ok(stat)
+            });
+        assert!(
+            result
+                .as_ref()
+                .is_err_and(|error| error.contains("deadline"))
+        );
+        assert!(actual_reads > 0);
+        assert!(started.elapsed() >= Duration::from_millis(75));
+        let incomplete =
+            process_group_is_quiet_with(&identity, Instant::now() + Duration::from_secs(1), |_| {
+                Err(std::io::Error::from_raw_os_error(libc::EACCES))
+            });
+        assert!(
+            incomplete
+                .as_ref()
+                .is_err_and(|error| error.contains("incomplete"))
+        );
+        guard.lifecycle.begin_retirement().unwrap();
+        cleanup_process_group(&identity).unwrap();
+        guard.lifecycle.finish_retirement().unwrap();
+        assert_eq!(guard.wait().unwrap().code(), Some(0));
+        eprintln!(
+            "actual_delayed_proc_scan: elapsed={:?}, reads={}, result={:?}; incomplete=EACCES_refused",
+            started.elapsed(),
+            actual_reads,
+            result
+        );
+    }
+    #[test]
+    fn admitted_gate_timeout_retains_real_child_and_lease_until_recovery() {
+        let mut guard = leader_fixture();
+        let pid = guard.pid;
+        let control = fixture_control(&guard);
+        let lifecycle = Arc::clone(&guard.lifecycle);
+        let lease = ProcessLease::acquire(1024).unwrap();
+        let weak = Arc::downgrade(&lease);
+        guard._process_lease = Some(lease);
+        let held_gate = lifecycle.control().unwrap();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let worker = thread::spawn(move || {
+            let started = Instant::now();
+            drop(guard);
+            sender.send(started.elapsed()).unwrap();
+        });
+        let elapsed = receiver
+            .recv_timeout(CONTROL_GATE_TIMEOUT + Duration::from_secs(2))
+            .unwrap();
+        assert!(elapsed >= CONTROL_GATE_TIMEOUT);
+        assert!(
+            observe_process_identity(pid).unwrap().is_some(),
+            "cannot consume anchor through admitted effect"
+        );
+        assert!(
+            weak.upgrade().is_some(),
+            "recovery must retain resource ownership"
+        );
+        assert_all_controls_retired(&control);
+        drop(held_gate);
+        worker.join().unwrap();
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while observe_process_identity(pid).unwrap().is_some() || weak.upgrade().is_some() {
+            assert!(
+                Instant::now() < deadline,
+                "recovery failed after admitted effect released its real gate"
+            );
+            thread::sleep(Duration::from_millis(5));
+        }
+        assert!(lifecycle.is_retired());
+        assert_all_controls_retired(&control);
+        eprintln!(
+            "actual_gate_timeout: elapsed={elapsed:?}, anchor_and_lease_retained_until_gate_release_then_reaped"
+        );
+    }
+
+    #[test]
+    fn poisoned_real_reaper_emits_cleanup_uncertainty_and_blocks_all_controls() {
+        let mut guard = leader_fixture();
+        let control = fixture_control(&guard);
+        let lifecycle = Arc::clone(&guard.lifecycle);
+        let worker_lifecycle = Arc::clone(&lifecycle);
+        assert!(
+            thread::spawn(move || {
+                let _held = worker_lifecycle.control().unwrap();
+                panic!("intentional reaper poison");
+            })
+            .join()
+            .is_err()
+        );
+        drop(guard.child_mut().unwrap().stdin.take());
+        let (sender, receiver) = sync_channel(1);
+        spawn_reaper(
+            guard,
+            Vec::new(),
+            sender,
+            ProcessLease::acquire(1024).unwrap(),
+        )
+        .unwrap();
+        let event = receiver.recv_timeout(Duration::from_secs(3)).unwrap();
+        assert!(
+            matches!(event,InternalProcessEvent::Exited{ref terminal_kind,exit_code:Some(0),cleanup_error:Some(ref error),..} if terminal_kind=="unknown_after_cleanup_failure" && error.contains("poisoned"))
+        );
+        assert_all_controls_retired(&control);
+        assert!(observe_process_identity(control.pid).unwrap().is_none());
+    }
+    #[test]
+    fn unbound_abort_retains_owned_anchor_and_charge_until_explicit_fixture_reconciliation() {
+        let mut guard = leader_fixture();
+        let identity = guard.identity.take().unwrap();
+        let pid = guard.pid;
+        let lease = ProcessLease::acquire(1024).unwrap();
+        let weak = Arc::downgrade(&lease);
+        guard._process_lease = Some(lease);
+        let lifecycle = Arc::clone(&guard.lifecycle);
+        drop(guard);
+        let deadline = Instant::now() + Duration::from_secs(1);
+        while !observe_owned_child(pid, true).unwrap() {
+            assert!(Instant::now() < deadline);
+            thread::sleep(Duration::from_millis(5));
+        }
+        assert!(identity_matches(
+            &identity,
+            &observe_process_identity(pid).unwrap().unwrap()
+        ));
+        assert!(lifecycle.is_retired());
+        assert!(weak.upgrade().is_some());
+        // Elapsed time and an already-terminal numeric PID do not release
+        // quarantined charge or consume its exact owned child.
+        thread::sleep(Duration::from_millis(30));
+        assert!(observe_process_identity(pid).unwrap().is_some());
+        assert!(weak.upgrade().is_some());
+        assert!(
+            process_group_is_quiet(&identity, Instant::now() + Duration::from_secs(1)).unwrap()
+        );
+        let reason = reconcile_quarantine_fixture(pid);
+        assert!(reason.contains("quiet unproven"));
+        assert!(observe_process_identity(pid).unwrap().is_none());
+        assert!(weak.upgrade().is_none());
+        eprintln!(
+            "actual_unbound_quarantine: terminal_anchor_and_charge_retained_before_explicit_fixture_offline_reconciliation"
+        );
+    }
+
+    #[test]
+    fn bound_abort_requires_complete_quiet_before_consuming_anchor_and_dropping_charge() {
+        let mut guard = leader_fixture();
+        let identity = guard.identity.clone().unwrap();
+        let pid = guard.pid;
+        let lease = ProcessLease::acquire(1024).unwrap();
+        let weak = Arc::downgrade(&lease);
+        guard._process_lease = Some(lease);
+        let mut command = Command::new("/bin/sleep");
+        command.arg("10");
+        let pgid = identity.process_group as libc::pid_t;
+        unsafe {
+            command.pre_exec(move || {
+                if libc::setpgid(0, pgid) != 0 {
+                    return Err(std::io::Error::last_os_error());
+                }
+                Ok(())
+            });
+        }
+        let mut member = OwnedTestChild(command.spawn().unwrap());
+        assert!(
+            !process_group_is_quiet(&identity, Instant::now() + Duration::from_secs(1)).unwrap()
+        );
+        guard.lifecycle.begin_retirement().unwrap();
+        assert!(abort_owned_child(guard.child_mut().unwrap(), Some(&identity)).is_ok());
+        assert!(observe_owned_child(pid, true).unwrap());
+        assert!(observe_process_identity(pid).unwrap().is_some());
+        assert!(weak.upgrade().is_some());
+        assert!(quiet_twice(&identity, Instant::now() + Duration::from_secs(1)).unwrap());
+        assert!(observe_owned_child(member.0.id(), true).unwrap());
+        drop(guard);
+        assert!(observe_process_identity(pid).unwrap().is_none());
+        assert!(weak.upgrade().is_none());
+        assert_eq!(member.0.wait().unwrap().signal(), Some(libc::SIGKILL));
+    }
+
+    #[test]
+    fn real_cleanup_error_keeps_wnowait_anchor_and_charge_before_event_then_recovery() {
+        use std::os::unix::fs::PermissionsExt;
+        let temporary = tempfile::tempdir().unwrap();
+        let inaccessible = temporary.path().join("denied");
+        fs::write(&inaccessible, b"owned fixture").unwrap();
+        fs::set_permissions(&inaccessible, fs::Permissions::from_mode(0o0)).unwrap();
+        let actual_error = File::open(&inaccessible).unwrap_err();
+        assert_eq!(actual_error.kind(), std::io::ErrorKind::PermissionDenied);
+        let mut guard = leader_fixture();
+        let pid = guard.pid;
+        let control = fixture_control(&guard);
+        let lease = ProcessLease::acquire(1024).unwrap();
+        let weak = Arc::downgrade(&lease);
+        guard._process_lease = Some(Arc::clone(&lease));
+        let (sender, receiver) = sync_channel(1);
+        sender
+            .send(InternalProcessEvent::Output {
+                stream: "fixture".into(),
+                bytes: b"hold terminal delivery".to_vec(),
+            })
+            .unwrap();
+        let (observed_sender, observed_receiver) = std::sync::mpsc::channel();
+        drop(guard.child_mut().unwrap().stdin.take());
+        spawn_reaper_with_cleanup(guard, Vec::new(), sender, lease, move |identity| {
+            let error = File::open(&inaccessible).unwrap_err();
+            observed_sender.send(identity.clone()).unwrap();
+            Err(format!("actual owned observation fixture failed: {error}"))
+        })
+        .unwrap();
+        let identity = observed_receiver
+            .recv_timeout(Duration::from_secs(2))
+            .unwrap();
+        let deadline = Instant::now() + Duration::from_secs(1);
+        while !control.lifecycle.is_retired() {
+            assert!(Instant::now() < deadline);
+            thread::sleep(Duration::from_millis(5));
+        }
+        assert!(identity_matches(
+            &identity,
+            &observe_process_identity(pid).unwrap().unwrap()
+        ));
+        assert!(observe_owned_child(pid, true).unwrap());
+        assert!(weak.upgrade().is_some());
+        assert_all_controls_retired(&control);
+        assert!(matches!(
+            receiver.recv_timeout(Duration::from_secs(1)).unwrap(),
+            InternalProcessEvent::Output { .. }
+        ));
+        let event = receiver.recv_timeout(Duration::from_secs(2)).unwrap();
+        assert!(
+            matches!(event,InternalProcessEvent::Exited{ref terminal_kind,exit_code:Some(0),cleanup_error:Some(ref error),..} if terminal_kind=="unknown_after_cleanup_failure"&&error.contains("Permission denied")&&error.contains("retained"))
+        );
+        let deadline = Instant::now() + Duration::from_secs(2);
+        while observe_process_identity(pid).unwrap().is_some() || weak.upgrade().is_some() {
+            assert!(Instant::now() < deadline);
+            thread::sleep(Duration::from_millis(5));
+        }
+        assert_all_controls_retired(&control);
+        eprintln!(
+            "actual_cleanup_error: owned_EACCES, WNOWAIT_status0, terminal_unknown, anchor_charge_retained_through_delivery_then_owned_complete_recovery"
+        );
     }
 }

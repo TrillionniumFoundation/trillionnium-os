@@ -401,6 +401,30 @@
     {
       "role": "rootfs_payload_admission_android",
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/tools/verify_owner_open_materialized_payload.py"
+    },
+    {
+      "role": "android_shared_common_base",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk"
+    },
+    {
+      "role": "android_sealed_common_source",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+    },
+    {
+      "role": "android_common_base_generator",
+      "path": "tools/generate-owner-open-common-base.py"
+    },
+    {
+      "role": "android_shared_sdk_selector",
+      "path": "android-integration/working-tree/trillionnium-sdk/Android.bp"
+    },
+    {
+      "role": "android_owner_sdk_services",
+      "path": "android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml"
+    },
+    {
+      "role": "android_owner_sdk_selection_verifier",
+      "path": "tools/verify-owner-open-sdk-selection.py"
     }
   ],
   "optional_dogfood_product_modules": [
@@ -520,6 +544,12 @@
       "owner": "rootlinux_supervisor",
       "purpose": "transport ordinary adb smart-socket bytes over the selected topology",
       "state": "SOURCE_IMPLEMENTED_UNBOUND_ROOTLINUX_SERVICE"
+    },
+    {
+      "name": "trillionnium-bugreport",
+      "owner": "android_init",
+      "purpose": "retain the ordinary platform bugreport key chord without starting the sealed runtime",
+      "state": "SOURCE_IMPLEMENTED_UNBOUND_INIT_SERVICE"
     }
   ],
   "required_local_endpoints": [

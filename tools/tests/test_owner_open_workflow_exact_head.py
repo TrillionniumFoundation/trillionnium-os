@@ -340,6 +340,8 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
         self.tool("python3", 'exit "${TEST_PYTHON_STATUS:-0}"\n')
         self.tool("rustc", 'printf "%s\\n" "${TEST_RUST_VERSION:-rustc 1.93.0 (fixture)}"\nexit "${TEST_RUST_STATUS:-0}"\n')
         self.tool("cargo", 'printf "%s\\n" "${TEST_CARGO_VERSION:-cargo 1.93.0 (fixture)}"\nexit "${TEST_CARGO_STATUS:-0}"\n')
+        self.tool("cc", 'exit 0\n')
+        self.tool("make", 'exit 0\n')
         self.tool("setfacl", 'exit "${TEST_ACL_STATUS:-0}"\n')
         self.tool("getfacl", 'printf "%s\\n" "${TEST_ACL_RECORD:-user:0:r--}"\nexit "${TEST_ACL_READ_STATUS:-0}"\n')
 
@@ -365,7 +367,7 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
             self.assertLess(job.index(install), job.index("uses: actions/checkout@"))
             self.assertIn("working-directory: ${{ runner.temp }}", install)
             self.assertIn("/usr/bin/sudo /usr/bin/apt-get", install)
-            self.assertIn("install --yes --no-install-recommends acl", install)
+            self.assertIn("install --yes --no-install-recommends acl gcc make", install)
             self.assertNotIn("continue-on-error", install)
             self.assertNotIn("|| true", install)
             self.assertNotIn("python3", install)
@@ -437,7 +439,7 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
         self.run_guards(success=False, TEST_CARGO_STATUS="24")
 
     def test_missing_required_tool_is_rejected(self) -> None:
-        for command in ("python3", "rustc", "cargo", "setfacl", "getfacl"):
+        for command in ("python3", "rustc", "cargo", "setfacl", "getfacl", "cc", "make"):
             target = self.bin / command
             saved = target.read_text()
             target.unlink()

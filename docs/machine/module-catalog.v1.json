@@ -2190,7 +2190,13 @@
       "owner_team": "team-android",
       "paths": [
         "android-integration/working-tree/vendor/trillionnium/owner-open",
-        "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp"
+        "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk",
+        "tools/generate-owner-open-common-base.py",
+        "android-integration/working-tree/trillionnium-sdk/Android.bp",
+        "android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml",
+        "tools/verify-owner-open-sdk-selection.py"
       ],
       "plane": "platform",
       "resource_contract": {

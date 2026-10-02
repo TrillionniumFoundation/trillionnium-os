@@ -170,6 +170,38 @@ fairness and unknown rate currently have `value: null`, `status: unavailable` an
 an explanation. No missing measurement is replaced with zero or an ideal value.
 Observed output/store byte counts are not disk-I/O amplification or fsync counts.
 
+`collect_linux_resource_snapshot.py` records seven raw cgroup v2 counters:
+CPU usage, charged current/peak memory, cumulative read/write bytes and
+current/peak task counts. Run the observer outside a dedicated workload cgroup
+while that cgroup still exists:
+
+```sh
+python3 tools/perf/collect_linux_resource_snapshot.py \
+  --cgroup /sys/fs/cgroup/controlled-workload.service \
+  --seconds 2 --require-all-cgroup-counters \
+  --output /existing/private/resource-snapshot.json
+```
+
+The output must be new and its parent private. Descriptor-bound, bounded
+sequential reads retain raw bytes, inode identities and explicit unavailable
+values for the other 19 resources. Charged cgroup memory is not RSS, and kernel
+task counts are not distinct process or per-process thread peaks. Cumulative
+CPU/I/O is not a per-operation delta. The collector does not reset peaks,
+establish workload/source identity, produce an atomic snapshot or supply L2
+qualification. The caller must preserve the cgroup and independently bind its
+placement and sample boundaries. Completion after the observation/publication
+deadline returns failure even if the final file has become visible; preserve
+that file for inspection instead of reusing its path as a successful sample.
+Run the collector as a standalone observer and retain its actual process
+termination. Regular counter and report files have native `FileIO` ownership;
+cleanup retries the same object rather than a released descriptor number.
+Directory traversal records both parent and child across closure, with one
+close attempt per raw descriptor. A close exception can leave that attempt
+unknown, so it never retries a possibly reused number. Abort the observer
+then; the kernel retires its descriptor table on process exit. An interrupted
+long-lived library caller has no descriptor-closure guarantee and must not be
+reused for further observations.
+
 ## Comparison and CI decisions
 
 Keep a reviewed baseline on a controlled performance runner, then use:

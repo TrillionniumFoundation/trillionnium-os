@@ -57,7 +57,13 @@
         "packaging/owner-open-adb",
         "android-integration/working-tree/vendor/trillionnium/owner-open",
         "docs/machine/evidence-index.v1.json",
-        "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp"
+        "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk",
+        "tools/generate-owner-open-common-base.py",
+        "android-integration/working-tree/trillionnium-sdk/Android.bp",
+        "android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml",
+        "tools/verify-owner-open-sdk-selection.py"
       ],
       "offered_capabilities": [
         {

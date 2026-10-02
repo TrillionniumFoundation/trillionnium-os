@@ -276,7 +276,13 @@ A normal leader exit is insufficient for success when a same-group worker is
 still live, even if that worker closed its output pipes. Cleanup requires two
 complete same-namespace procfs observations of an exited leader and no live
 group members; it bounds scans to 65,536 entries, 4,096 bytes per stat record
-and a one-second cleanup deadline. Incomplete observations, setup failures,
+and a one-second cleanup deadline. Every matching TGID also requires a complete
+task-directory scan, with at most 65,536 task entries under the same deadline.
+A zombie process leader can still have live sibling threads; its `Z` state
+alone never proves group quiescence. The source regression uses a real pthread
+member whose leader is zombie while its worker remains alive after closing
+output pipes, and refuses a successful normal-leader receipt. Incomplete
+process/task observations, setup failures,
 cleanup failures and nonfinite timeouts cannot produce a successful receipt.
 The collectors map failures to their existing evidence-error classifications.
 Cleanup retries an interrupted owned wait or close once within its finite
