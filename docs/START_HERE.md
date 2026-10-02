@@ -103,5 +103,3 @@ until its exact source, deterministic synthetic merge, workflow attempts,
 artifacts and non-author reviews are current and mutually consistent.
 
 - Executable module-contract status: [`MODULE_CONTRACT_STATUS.md`](MODULE_CONTRACT_STATUS.md)
-
-- Executable module-contract status: [`docs/MODULE_CONTRACT_STATUS.md`](MODULE_CONTRACT_STATUS.md)

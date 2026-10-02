@@ -26,7 +26,7 @@
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 57679,
-      "sha256": "320f77cc70a7b9759fd4409f4952cba6f6cc415a580263b596d2dfe671724042"
+      "sha256": "1f44b02c790a54b12ac895def4d86668d40c792df928d656377a0dddc5d2c39f"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -38,7 +38,7 @@
     },
     "schemas/modules/adb/compatibility.json": {
       "bytes": 5581,
-      "sha256": "f84ffe90188710aae0b55cb7331a77a460369839bdaebeb889469451f285f120"
+      "sha256": "01bf47538f4febfb32261252a7f173863ce7cc77272f0857c50a88a8c3f81ec9"
     },
     "schemas/modules/adb/errors-v1.schema.json": {
       "bytes": 4408,
@@ -194,7 +194,7 @@
     },
     "schemas/modules/android/compatibility.json": {
       "bytes": 9380,
-      "sha256": "031ae8783c36577fb43af2b689acec53b21d7de4226d5a130e5fdac94fdb2852"
+      "sha256": "bcddc4d019570fb49a3160ea47b40a096727a3d14f7bb5b5191a5c57cfeaa4c6"
     },
     "schemas/modules/android/errors-v1.schema.json": {
       "bytes": 4424,
@@ -350,7 +350,7 @@
     },
     "schemas/modules/broker/compatibility.json": {
       "bytes": 12813,
-      "sha256": "e67172c1e541539846001b08ac7bda34930e1652aaeaf107a7629a2601924117"
+      "sha256": "83428c2b69fed0a2e66d17e2a6deae7a64ac1317e0349f3fed27a9fff05e60d4"
     },
     "schemas/modules/broker/errors-v1.schema.json": {
       "bytes": 4420,
@@ -506,7 +506,7 @@
     },
     "schemas/modules/event-store/compatibility.json": {
       "bytes": 6617,
-      "sha256": "36a7b12dd77d0a9ace6712fee14c01e3cc947243f9313d9cc60926dfa55dd22d"
+      "sha256": "566745586b16dec1058c76b95a57a4897e2bf8f1b20de681565b6a6092167101"
     },
     "schemas/modules/event-store/errors-v1.schema.json": {
       "bytes": 4440,
@@ -662,7 +662,7 @@
     },
     "schemas/modules/evidence/compatibility.json": {
       "bytes": 5382,
-      "sha256": "5f108e67a9839c9d23263045f114a36d71754ca532a8f9e29f2f67598c040c16"
+      "sha256": "42dd0995f12d7f031d3263e65d2ee59871db28a6a2565acbce5a79eb8c042c11"
     },
     "schemas/modules/evidence/errors-v1.schema.json": {
       "bytes": 4428,
@@ -818,7 +818,7 @@
     },
     "schemas/modules/execution-core/compatibility.json": {
       "bytes": 6136,
-      "sha256": "7e4780866ed71f7064347c44a386fe8d25fcc57dbc1b2825e68010e7457f6252"
+      "sha256": "92244acd9a61741ad014f2991a8eba694505bcb8d2222e4e5cf5dcabb2d48958"
     },
     "schemas/modules/execution-core/errors-v1.schema.json": {
       "bytes": 4442,
@@ -974,7 +974,7 @@
     },
     "schemas/modules/global-control/compatibility.json": {
       "bytes": 5655,
-      "sha256": "5a8af5c01f7fdd93b1fd01d696c7445dfdf9580a9a3d54b4fe7212c277b8a155"
+      "sha256": "b62ddf39ef333639e98bc62451867ee236a657c808be0b9ed6baa5023deeafe4"
     },
     "schemas/modules/global-control/errors-v1.schema.json": {
       "bytes": 4438,
@@ -1130,7 +1130,7 @@
     },
     "schemas/modules/job-runtime/compatibility.json": {
       "bytes": 8743,
-      "sha256": "161f991f19ee6580badad7cccf37230e10ddacb134995519b92e6b2659c41334"
+      "sha256": "3dc095c51c870a09ef97746459a6af942761a66392cd27a2629c5b73f18873c7"
     },
     "schemas/modules/job-runtime/errors-v1.schema.json": {
       "bytes": 4424,
@@ -1286,7 +1286,7 @@
     },
     "schemas/modules/protocol/compatibility.json": {
       "bytes": 5737,
-      "sha256": "20a2ed985365d92726409c78a389668b50db5290195055a51d2578aa55f1a813"
+      "sha256": "30c4c5629873076fbdae2e7d6575358fa734538abcdc7b71927f1c900960d7bc"
     },
     "schemas/modules/protocol/errors-v1.schema.json": {
       "bytes": 4428,
@@ -1442,7 +1442,7 @@
     },
     "schemas/modules/provider/compatibility.json": {
       "bytes": 8061,
-      "sha256": "187ef836ac5a204fae4c7cc6d966208fe7b28e36996f4da3e21e03c2ef8391bf"
+      "sha256": "2bcda0ad616995a18b8653397e717d406dd8d864e1cf65ed9ff738f8950800d7"
     },
     "schemas/modules/provider/errors-v1.schema.json": {
       "bytes": 4428,
@@ -1598,7 +1598,7 @@
     },
     "schemas/modules/rootlinux/compatibility.json": {
       "bytes": 6243,
-      "sha256": "45c5d7d7c0fdb9b4b8e2c60b07113b457351c8402b250004dd35f7e32632cb39"
+      "sha256": "7946ce56dcc14b0f56ad834c5011a179333bd40fa3a48a549b76cd69c71e6133"
     },
     "schemas/modules/rootlinux/errors-v1.schema.json": {
       "bytes": 4432,
@@ -1754,7 +1754,7 @@
     },
     "schemas/modules/stream/compatibility.json": {
       "bytes": 5576,
-      "sha256": "5be6bab61365102ebd1438b6ce8d3cd4362e8ff240e01ce042f3cf671ccc2bc4"
+      "sha256": "15cb4cbe66fa2436ea2d6cc300cd524b1ebff15342f2c19e6992ce33fdcad726"
     },
     "schemas/modules/stream/errors-v1.schema.json": {
       "bytes": 4420,
@@ -1910,7 +1910,7 @@
     },
     "schemas/modules/telemetry/compatibility.json": {
       "bytes": 6364,
-      "sha256": "2930ec8c8bd6d28a5bb72145fc518b49efd664108fcc1f67f1a63a76c856b05f"
+      "sha256": "55b75e5908891017d1e0ad93649109a858da142667827f325005c44161bf41b6"
     },
     "schemas/modules/telemetry/errors-v1.schema.json": {
       "bytes": 4432,
@@ -2066,7 +2066,7 @@
     },
     "schemas/modules/tool-runtime/compatibility.json": {
       "bytes": 6195,
-      "sha256": "d5ad1c44b2f82b5d69027302e0576cb547980adc6d72657a8dc5e0eeaa8f1770"
+      "sha256": "8b8a4b30ec1041e99bfa978c8eb39dcc11e099b85f7f1e3ef5ae928b94de33cf"
     },
     "schemas/modules/tool-runtime/errors-v1.schema.json": {
       "bytes": 4428,
@@ -2222,7 +2222,7 @@
     },
     "schemas/modules/transport/compatibility.json": {
       "bytes": 8789,
-      "sha256": "3e973035c5a76f09addc29626288ff564506966b2054a404a845b8a11d3a97ed"
+      "sha256": "4c0897f451dcda9240e90f3307b13f0f2ee9651d04776be1a7fed1b04a2abcbc"
     },
     "schemas/modules/transport/errors-v1.schema.json": {
       "bytes": 4432,
@@ -2378,7 +2378,7 @@
     },
     "schemas/modules/turn-engine/compatibility.json": {
       "bytes": 6018,
-      "sha256": "02708fa25239d6525316303f946df05c331f91b3d69f25a3a80e6573fab6e4c6"
+      "sha256": "bfb1261afe444e2b79e8967dd907d00af0e20720ca2097e269129c4cab091c11"
     },
     "schemas/modules/turn-engine/errors-v1.schema.json": {
       "bytes": 4426,
