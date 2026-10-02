@@ -434,7 +434,9 @@ class RootLinuxGroupLifecycleTest(SupervisorFixture):
 
     def test_lifecycle_suite_remains_in_both_source_workflows(self) -> None:
         workflows = SCRIPT.parents[2] / ".github" / "workflows"
-        command = "python3 -m unittest tools.tests.test_owner_open_rootlinux_supervisor -v"
+        # Full discovery includes this lifecycle module on each distinct source
+        # subject; a second focused invocation is not independent coverage.
+        command = "python3 -m unittest discover -s tools/tests -p 'test*.py' -v"
         for filename in ("g1-exact-head-source.yml", "g1-synthetic-merge.yml"):
             with self.subTest(workflow=filename):
                 self.assertIn(command, (workflows / filename).read_text())

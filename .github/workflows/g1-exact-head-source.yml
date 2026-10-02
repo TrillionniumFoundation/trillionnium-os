@@ -98,12 +98,8 @@ jobs:
       - name: Verify G1 machine truth and generated documents
         run: |
           set -euo pipefail
-          python3 -m py_compile \
-            tools/docs/generate_global_docs.py \
-            tools/docs/verify_global_docs.py
-          python3 tools/docs/generate_global_docs.py --check
+          # The verifier includes byte-exact generated-document checks.
           python3 tools/docs/verify_global_docs.py
-          python3 -m unittest tools.tests.test_verify_global_docs_contracts -v
       - name: Execute content-pinned TLC effect-lifecycle model
         shell: bash
         run: |
@@ -123,25 +119,19 @@ jobs:
             exit 1
           fi
           test -z "$worktree_status"
-          python3 -m unittest tools.tests.test_owner_open_workflow_exact_head -v
           python3 -m compileall -q tools
-      - name: Verify bounded broker mux and protocol contracts
+      - name: Run the complete Python source matrix
+        shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v
-          python3 -m unittest discover -s tools/tests -p 'test_owner_open_connection_broker.py' -v
-          python3 -m unittest discover -s tools/tests -p 'test_owner_open_ingress_contract.py' -v
-          python3 -m unittest tools.tests.test_jsonl_provider_runtime tools.tests.test_execute_codex_exec_plan -v
+          # Verbose discovery retains each broker, protocol and workflow result
+          # without rerunning those same cases in focused subprocesses.
+          python3 -m unittest discover -s tools/tests -p 'test*.py' -v 2>&1 | tee "${RUNNER_TEMP}/g1-source-python.log"
           if ! worktree_status="$(git --no-replace-objects -C "${GITHUB_WORKSPACE:?}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)"; then
             printf '%s\n' 'Cannot verify repository worktree state' >&2
             exit 1
           fi
           test -z "$worktree_status"
-      - name: Run the complete Python source matrix
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m unittest discover -s tools/tests -p 'test*.py' -v 2>&1 | tee "${RUNNER_TEMP}/g1-source-python.log"
 
       - name: Capture locked source graph
         run: |

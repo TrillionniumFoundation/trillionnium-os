@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from pathlib import Path
+import argparse
 import os
 import re
 import shutil
+import shlex
 import subprocess
 import tempfile
 import textwrap
@@ -385,6 +387,39 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
             self.assertLess(job.index("- name: Verify source-test prerequisites"),
                             job.index("python3 -m unittest discover -s tools/tests -p 'test*.py'"))
             self.assertNotIn("continue-on-error:", job)
+
+    def test_each_source_subject_runs_one_complete_python_matrix(self) -> None:
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-s", "--start-directory", required=True)
+        parser.add_argument("-p", "--pattern", required=True)
+        parser.add_argument("-v", "--verbose", action="store_true")
+        for job in self.jobs:
+            commands = [shlex.split(line.strip()) for line in job.splitlines()
+                        if line.strip().startswith("python3 -m unittest ")]
+            self.assertEqual(len(commands), 1, commands)
+            command = commands[0]
+            self.assertEqual(command[:4], ["python3", "-m", "unittest", "discover"])
+            pipe = command.index("|")
+            self.assertEqual(command[pipe - 1], "2>&1")
+            options = parser.parse_args(command[4:pipe - 1])
+            self.assertEqual(options.start_directory, "tools/tests")
+            self.assertEqual(options.pattern, "test*.py")
+            self.assertTrue(options.verbose)
+            self.assertEqual(command[pipe + 1], "tee")
+            self.assertNotIn("python3 tools/docs/generate_global_docs.py --check", job)
+            self.assertEqual(job.count("python3 tools/docs/verify_global_docs.py"), 1)
+
+    def test_both_complete_matrix_pipelines_propagate_failure(self) -> None:
+        self.tool("python3", 'printf "%s\\n" "test-only matrix failure"\nexit 23\n')
+        for job in self.jobs:
+            command = next(line.strip() for line in job.splitlines()
+                           if "python3 -m unittest discover" in line)
+            result = subprocess.run(
+                [self.bash, "-c", "set -euo pipefail\n" + command],
+                cwd=self.runner, env=self.env, capture_output=True, text=True, timeout=5,
+            )
+            self.assertEqual(result.returncode, 23, result.stdout + result.stderr)
+            self.assertIn("test-only matrix failure", result.stdout)
 
     def test_failure_diagnostics_have_no_qualification_authority(self) -> None:
         for job in self.jobs:

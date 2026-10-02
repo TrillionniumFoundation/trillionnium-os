@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import json
+import contextlib
+import io
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -28,6 +31,22 @@ def evidence_index() -> dict:
 
 
 class ModuleContractVerificationTests(unittest.TestCase):
+    def test_global_verifier_requires_the_generator_byte_check(self) -> None:
+        # Workflow callers can rely on this entrypoint instead of repeating
+        # its generator invocation. A stale projection must still stop the gate.
+        with mock.patch.object(verifier.subprocess, "run") as run, contextlib.redirect_stdout(io.StringIO()):
+            run.return_value = subprocess.CompletedProcess([], 0)
+            self.assertEqual(verifier.main(), 0)
+            generator_calls = [call for call in run.call_args_list
+                               if str(generator.__file__) in call.args[0]]
+            self.assertEqual(len(generator_calls), 1)
+            self.assertEqual(generator_calls[0].args[0][-1], "--check")
+        with mock.patch.object(verifier.subprocess, "run") as run, contextlib.redirect_stderr(io.StringIO()):
+            run.return_value = subprocess.CompletedProcess([], 1)
+            self.assertEqual(verifier.main(), 1)
+            run.assert_called_once()
+            self.assertEqual(run.call_args.args[0][-2:], [str(generator.__file__), "--check"])
+
     def test_active_documentation_revision_is_consistent(self) -> None:
         docset = json.loads((ROOT / "docs/machine/doc-set.v1.json").read_text())
         program = json.loads((ROOT / "docs/machine/program-state.v1.json").read_text())

@@ -48,18 +48,6 @@
       "tests": [
         {
           "kind": "source",
-          "path": "tools/docs/generate_global_docs.py",
-          "target": "tools/docs/generate_global_docs.py",
-          "command": [
-            "python3",
-            "tools/docs/generate_global_docs.py",
-            "--check"
-          ],
-          "workflow": ".github/workflows/g1-exact-head-source.yml",
-          "workflow_job": "docs-graph"
-        },
-        {
-          "kind": "source",
           "path": "tools/docs/verify_global_docs.py",
           "target": "tools/docs/verify_global_docs.py",
           "command": [
@@ -188,7 +176,7 @@
         {
           "kind": "source",
           "path": "tools/tests/test_owner_open_broker_mux.py",
-          "target": "test_owner_open_broker*.py",
+          "target": "test*.py",
           "command": [
             "python3",
             "-m",
@@ -197,7 +185,8 @@
             "-s",
             "tools/tests",
             "-p",
-            "test_owner_open_broker*.py"
+            "test*.py",
+            "-v"
           ],
           "workflow": ".github/workflows/g1-exact-head-source.yml",
           "workflow_job": "docs-graph"
@@ -205,7 +194,7 @@
         {
           "kind": "source",
           "path": "tools/tests/test_owner_open_connection_broker.py",
-          "target": "test_owner_open_connection_broker.py",
+          "target": "test*.py",
           "command": [
             "python3",
             "-m",
@@ -214,7 +203,8 @@
             "-s",
             "tools/tests",
             "-p",
-            "test_owner_open_connection_broker.py"
+            "test*.py",
+            "-v"
           ],
           "workflow": ".github/workflows/g1-exact-head-source.yml",
           "workflow_job": "docs-graph"
@@ -222,7 +212,7 @@
         {
           "kind": "source",
           "path": "tools/tests/test_owner_open_ingress_contract.py",
-          "target": "test_owner_open_ingress_contract.py",
+          "target": "test*.py",
           "command": [
             "python3",
             "-m",
@@ -231,7 +221,8 @@
             "-s",
             "tools/tests",
             "-p",
-            "test_owner_open_ingress_contract.py"
+            "test*.py",
+            "-v"
           ],
           "workflow": ".github/workflows/g1-exact-head-source.yml",
           "workflow_job": "docs-graph"
@@ -239,7 +230,7 @@
         {
           "kind": "source",
           "path": "tools/tests/test_owner_open_broker_connections.py",
-          "target": "test_owner_open_broker*.py",
+          "target": "test*.py",
           "command": [
             "python3",
             "-m",
@@ -248,7 +239,8 @@
             "-s",
             "tools/tests",
             "-p",
-            "test_owner_open_broker*.py"
+            "test*.py",
+            "-v"
           ],
           "workflow": ".github/workflows/g1-exact-head-source.yml",
           "workflow_job": "docs-graph"
@@ -421,12 +413,16 @@
         {
           "kind": "source",
           "path": "tools/tests/test_owner_open_rootlinux_supervisor.py",
-          "target": "tools.tests.test_owner_open_rootlinux_supervisor",
+          "target": "test*.py",
           "command": [
             "python3",
             "-m",
             "unittest",
-            "tools.tests.test_owner_open_rootlinux_supervisor",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-p",
+            "test*.py",
             "-v"
           ],
           "workflow": ".github/workflows/g1-synthetic-merge.yml",
