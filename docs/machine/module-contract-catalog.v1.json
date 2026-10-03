@@ -252,7 +252,7 @@
         },
         {
           "path": "tools/verify_owner_target_files_binding.py",
-          "sha256": "f2a0bf8015c4b4d9f6b5e6f8d6df66d0fcc0ebe7c0e8bc0ccc8c55f3824ee5b3",
+          "sha256": "b35b4ee9b134dcd153af99084d48f157da0d9bebf1468d95ff18b4d8ff8c3520",
           "size": 18538
         }
       ],
@@ -617,8 +617,8 @@
         },
         {
           "path": "tools/collect_owner_source_vector.py",
-          "sha256": "d9156e3f38ec38316f367659a0f02232cbf9ac0f14f32c224b47130d36fd9d73",
-          "size": 11049
+          "sha256": "6430b69e0e6365c391545923d9410f39a14ca0894b333161bb354a559207bf03",
+          "size": 11462
         },
         {
           "path": "tools/owner_bom_bounded_process.py",
@@ -627,8 +627,8 @@
         },
         {
           "path": "tools/owner_source_provenance.py",
-          "sha256": "4a2fb2158b1c473e6c18ea2518f020288e69c27cb8e2de4923b89c52c584f7f4",
-          "size": 75919
+          "sha256": "7d4f0cacf715200884abbbbab69550cac882e03a59acf4f8063566baa14fa77c",
+          "size": 76458
         }
       ],
       "logical_labels": {

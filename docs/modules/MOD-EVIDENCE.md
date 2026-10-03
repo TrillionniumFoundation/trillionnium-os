@@ -119,6 +119,18 @@ are at most 7200 seconds and 4096 MiB. Build META publication has a separate
 termination and deadline checks remain finite. Partial or timed-out evidence
 cannot be promoted by an empty stdout or a later successful shell marker.
 
+The `collect-git` subcommand and original-vector CLI accept
+`--git-query-seconds`, defaulting to 30 seconds with a finite 1..300-second
+range. Library entry points enforce the same range, rejecting booleans and
+non-numeric values before querying Git. Each query receives the lesser of
+that limit and the remaining whole-operation deadline; completing one query
+does not renew the whole deadline. The option belongs to `collect-git`, after
+the subcommand, and does not change the 30-second manifest-projection queries.
+Selecting 120 seconds for a slow full-source collection requires retaining
+the actual invocation and terminal receipt. Existing output, filter, memory,
+cleanup and source-content checks still apply. There is no receipt-schema
+migration, automatic retry or qualification from a partial collection.
+
 `tools/android_release_ota.py` consumes owner provenance only with
 `--require-owner-source-bom-binding`, `--owner-source-bom` and
 `--owner-build-source-inputs`. The legacy and owner modes are mutually

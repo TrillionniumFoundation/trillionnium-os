@@ -184,6 +184,14 @@ index or source modifications, uncommitted attributes, unhydrated pointers and
 missing projects reject the graph. No external filter or network hydration is
 run to make a checkout appear clean.
 
+For a slow complete checkout, `collect-git` and the original-vector collector
+can select `--git-query-seconds 120` within the finite 1..300-second range.
+The default remains 30 seconds, and every Git call is also capped by the
+remaining collection deadline. This changes no content, status or LFS
+admission rule. Manifest-projection queries keep their separate 30-second
+limit; retain actual collection invocations and failures with their source
+subject before running the image build.
+
 The v3 private set adds `packages/modules/Nfc` to the previous 15 projects;
 it replaces that project's selected revision without adding a manifest project.
 The source input, BOM, build-time META and release consumer require the v3

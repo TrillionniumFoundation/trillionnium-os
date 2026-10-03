@@ -228,7 +228,12 @@ def bounded_module(deadline):
     spec=importlib.util.spec_from_file_location('owner_bom_bound',path);m=importlib.util.module_from_spec(spec)
     exec(compile(raw,str(path),'exec'),m.__dict__)
     require(sha(read_stable(path,256*1024,deadline))==BOUNDED_HELPER_SHA,'child observer moved on import');return m
-def collect_git_checkout(root, expected_head, expected_tree, deadline, project=None):
+def validate_git_query_seconds(seconds):
+    require(type(seconds) in (int,float) and 1<=seconds<=300 and math.isfinite(seconds),'Git query deadline requires finite 1..300 seconds')
+    return seconds
+
+def collect_git_checkout(root, expected_head, expected_tree, deadline, project=None, git_query_seconds=30):
+    validate_git_query_seconds(git_query_seconds)
     root=Path(root);require(root.is_absolute() and root.resolve(strict=True)==root and root.is_dir(),'canonical checkout root required');project=relative(project) if project is not None else str(root)
     m=bounded_module(deadline)
     env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8','GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null','GIT_TERMINAL_PROMPT':'0','GIT_OPTIONAL_LOCKS':'0','GIT_ATTR_NOSYSTEM':'1','GIT_ALLOW_PROTOCOL':''}
@@ -236,7 +241,7 @@ def collect_git_checkout(root, expected_head, expected_tree, deadline, project=N
     def git(args, maximum=32*1024*1024, allowed=(0,)):
         check(deadline)
         try:
-            r=m.run_bounded(['/usr/bin/git',*GIT_PACK_OPTIONS,'-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','core.attributesFile=/dev/null','-c','credential.helper=',*filter_options,'-C',str(root),*args],timeout_seconds=min(30,deadline-time.monotonic()),maximum_output=maximum,env=env)
+            r=m.run_bounded(['/usr/bin/git',*GIT_PACK_OPTIONS,'-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','core.attributesFile=/dev/null','-c','credential.helper=',*filter_options,'-C',str(root),*args],timeout_seconds=min(git_query_seconds,deadline-time.monotonic()),maximum_output=maximum,env=env)
         except m.BoundedProcessError as error:
             raise SourceError(git_query_failure('actual Git capture failed',project,root,args,error)) from error
         require(r.returncode in allowed,git_query_failure('actual Git query failed',project,root,args,r));check(deadline);return r.stdout
@@ -714,7 +719,7 @@ def bound_standalone_memory(mebibytes):
 
 def main():
     p=argparse.ArgumentParser();sub=p.add_subparsers(dest='mode',required=True)
-    c=sub.add_parser('collect-git');c.add_argument('root',type=Path);c.add_argument('head');c.add_argument('tree');c.add_argument('--project',help='logical manifest project label for bounded Git failure diagnostics')
+    c=sub.add_parser('collect-git');c.add_argument('root',type=Path);c.add_argument('head');c.add_argument('tree');c.add_argument('--project',help='logical manifest project label for bounded Git failure diagnostics');c.add_argument('--git-query-seconds',type=float,default=30,help='per-Git query deadline, finite 1..300 seconds, capped by remaining whole deadline')
     t=sub.add_parser('collect-blob-tree');t.add_argument('root',type=Path);t.add_argument('label')
     s=sub.add_parser('shard-inventory');s.add_argument('project');s.add_argument('inventory',type=Path);s.add_argument('directory',type=Path)
     r=sub.add_parser('collect-projections');r.add_argument('packet',type=Path);r.add_argument('view',type=Path)
@@ -722,8 +727,9 @@ def main():
     p.add_argument('--seconds',type=float,default=3600);p.add_argument('--memory-mib',type=int,default=1024);a=p.parse_args()
     require(math.isfinite(a.seconds) and 0<a.seconds<=7200,'finite collection budget required');deadline=time.monotonic()+a.seconds
     try:
+        if a.mode=='collect-git':validate_git_query_seconds(a.git_query_seconds)
         bound_standalone_memory(a.memory_mib)
-        if a.mode=='collect-git':result=collect_git_checkout(a.root,a.head,a.tree,deadline,a.project)
+        if a.mode=='collect-git':result=collect_git_checkout(a.root,a.head,a.tree,deadline,a.project,a.git_query_seconds)
         elif a.mode=='collect-blob-tree':result=collect_blob_tree(a.root,a.label,deadline)
         elif a.mode=='shard-inventory':result=publish_sharded_inventory(a.project,parse(read_stable(a.inventory,128*1024*1024,deadline)),a.directory,deadline)
         elif a.mode=='collect-projections':result=inspect_projection_collection(a.packet,a.view,deadline)
