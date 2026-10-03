@@ -79,7 +79,9 @@ pub struct Recorder {
     sample_id: String,
     role: String,
     capacity: usize,
-    records: Mutex<Vec<Record>>,
+    // A claimed slot belongs to one span for this recorder's entire lifetime.
+    // Producers never contend for another producer's publication mutex.
+    slots: Vec<Mutex<Option<Record>>>,
     next: AtomicU64,
     lost: AtomicU64,
     open: AtomicU64,
@@ -131,7 +133,7 @@ impl Recorder {
             sample_id: sample_id.into(),
             role: role.into(),
             capacity,
-            records: Mutex::new(Vec::with_capacity(capacity)),
+            slots: (0..capacity).map(|_| Mutex::new(None)).collect(),
             next: AtomicU64::new(0),
             lost: AtomicU64::new(0),
             open: AtomicU64::new(0),
@@ -147,29 +149,11 @@ impl Recorder {
             increment(&self.lost);
             return Span(None);
         };
-        // Reserve bounded in-flight capacity under the same nonblocking gate
-        // used by snapshot/close. A producer never waits for an exporter.
-        let Ok(records) = self.records.try_lock() else {
-            increment(&self.lost);
-            return Span(None);
-        };
-        if records
-            .len()
-            .saturating_add(self.open.load(Ordering::Acquire) as usize)
-            >= self.capacity
-        {
-            increment(&self.lost);
-            return Span(None);
-        }
-        let Ok(sequence) = self
-            .next
-            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| n.checked_add(1))
-        else {
+        let Some(sequence) = self.claim_slot() else {
             increment(&self.lost);
             return Span(None);
         };
         increment(&self.open);
-        drop(records);
         Span(Some(Box::new(Pending {
             recorder: Arc::clone(self),
             deferred,
@@ -186,16 +170,43 @@ impl Recorder {
         })))
     }
 
+    fn claim_slot(&self) -> Option<u64> {
+        let mut next = self.next.load(Ordering::Acquire);
+        // A failed strong CAS witnesses a different successful claim. There
+        // can be at most capacity claims; this loop has a fixed iteration bound.
+        for _ in 0..self.capacity {
+            if next >= self.capacity as u64 {
+                return None;
+            }
+            match self
+                .next
+                .compare_exchange(next, next + 1, Ordering::AcqRel, Ordering::Acquire)
+            {
+                Ok(_) => return Some(next),
+                Err(observed) => next = observed,
+            }
+        }
+        None
+    }
+
     /// Call outside all product locks. Refuses to block behind a hook.
     pub fn snapshot(&self) -> Result<Snapshot, String> {
-        let guard = self
-            .records
-            .try_lock()
-            .map_err(|_| "trace snapshot busy/poisoned")?;
-        let records = guard.clone();
+        let claimed = self.next.load(Ordering::Acquire) as usize;
+        let mut records = Vec::with_capacity(claimed);
+        for slot in &self.slots[..claimed] {
+            let guard = slot
+                .try_lock()
+                .map_err(|_| "trace snapshot busy/poisoned")?;
+            if let Some(record) = guard.as_ref() {
+                records.push(record.clone());
+            }
+        }
         let lost = self.lost.load(Ordering::Acquire);
         let open = self.open.load(Ordering::Acquire);
-        drop(guard);
+        // A slot read before publication stays missing from this snapshot even
+        // if its producer closes before the counters are read. Never call that
+        // captured prefix loss-free. Claims after `claimed` are outside it.
+        let prefix_published = records.len() == claimed;
         Ok(Snapshot {
             schema: "org.trillionnium.actual-monotonic-stage-trace.v1",
             sample_id: self.sample_id.clone(),
@@ -206,7 +217,7 @@ impl Recorder {
             lost_records: Some(lost),
             lost_count_semantics: "lower_bound",
             open_spans: open,
-            snapshot_without_observed_loss: lost == 0 && open == 0,
+            snapshot_without_observed_loss: lost == 0 && open == 0 && prefix_published,
             snapshot_only: true,
             producer_quiescence_proven: false,
             trace_complete: false,
@@ -244,10 +255,10 @@ impl Span {
         }
         p.record.end_ns = now.unwrap_or(p.record.start_ns);
         p.record.end = end;
-        match recorder.records.try_lock() {
-            Ok(mut records) => {
-                if records.len() < recorder.capacity {
-                    records.push(p.record);
+        match recorder.slots[p.record.sequence as usize].try_lock() {
+            Ok(mut slot) => {
+                if slot.is_none() {
+                    *slot = Some(p.record);
                 } else {
                     increment(&recorder.lost);
                 }
@@ -271,7 +282,8 @@ impl Drop for Span {
     }
 }
 
-/// No clocks, key hashing, allocation or syscalls when unconfigured.
+/// No clocks, key hashing, allocation or syscalls inside this primitive when
+/// unconfigured. Rust still evaluates caller arguments before entering it.
 pub fn span(stage: Stage, key: &str) -> Span {
     ACTIVE
         .get()
@@ -455,6 +467,7 @@ mod tests {
     fn layout_and_encoded_record_have_explicit_local_bounds() {
         // Bound addressed payload, not allocator/RSS or all producer processes.
         assert!(std::mem::size_of::<Record>() <= 128);
+        assert!(std::mem::size_of::<Mutex<Option<Record>>>() <= 160);
         assert!(std::mem::size_of::<Pending>() <= 160);
         assert!(std::mem::size_of::<Span>() <= 8);
         let record = Record {
@@ -470,8 +483,9 @@ mod tests {
         let encoded = serde_json::to_vec(&record).unwrap();
         assert!(encoded.len() < 512);
         println!(
-            "trace local layout Record={} Pending={} Span={} encoded_worst_record={}",
+            "trace local layout Record={} Slot={} Pending={} Span={} encoded_worst_record={}",
             std::mem::size_of::<Record>(),
+            std::mem::size_of::<Mutex<Option<Record>>>(),
             std::mem::size_of::<Pending>(),
             std::mem::size_of::<Span>(),
             encoded.len()
@@ -504,7 +518,9 @@ mod tests {
     #[test]
     fn actual_contention_and_abandoned_span_are_fail_closed() {
         let r = Recorder::new("contention", "test", 4).unwrap();
-        let guard = r.records.lock().unwrap();
+        // Synthetic snapshot-reader scheduling, using a real owned slot lock.
+        // Another producer cannot own this slot's publication mutex.
+        let guard = r.slots[0].lock().unwrap();
         let other = Arc::clone(&r);
         std::thread::spawn(move || {
             other
@@ -518,6 +534,78 @@ mod tests {
         let s = r.snapshot().unwrap();
         assert_eq!(s.lost_records, Some(2));
         assert!(!s.snapshot_without_observed_loss);
+    }
+    #[test]
+    fn simultaneous_producers_have_unique_slots_without_publication_loss() {
+        let r = Recorder::new("synthetic-producer-burst", "test", MAX_RECORDS).unwrap();
+        let ready = Arc::new(std::sync::Barrier::new(8));
+        let workers = (0..8)
+            .map(|_| {
+                let r = Arc::clone(&r);
+                let ready = Arc::clone(&ready);
+                std::thread::spawn(move || {
+                    for _ in 0..512 {
+                        ready.wait();
+                        let span = r.start(Stage::ToolOutput, "synthetic-owned-burst", false);
+                        ready.wait();
+                        span.finish();
+                    }
+                })
+            })
+            .collect::<Vec<_>>();
+        for worker in workers {
+            worker.join().unwrap();
+        }
+        let snapshot = r.snapshot().unwrap();
+        assert_eq!(snapshot.records.len(), 4096);
+        assert_eq!(snapshot.lost_records, Some(0));
+        assert_eq!(snapshot.open_spans, 0);
+        assert!(snapshot.snapshot_without_observed_loss);
+        for (sequence, record) in snapshot.records.iter().enumerate() {
+            assert_eq!(record.sequence, sequence as u64);
+            assert!(record.end_ns >= record.start_ns);
+        }
+        assert!(!snapshot.trace_complete);
+        assert!(!snapshot.producer_quiescence_proven);
+    }
+    #[test]
+    fn publication_holes_never_claim_a_complete_captured_prefix() {
+        let r = Recorder::new("synthetic-hole", "test", 4).unwrap();
+        let pending = r.start(Stage::ToolExit, "pending-first", true);
+        r.start(Stage::ToolOutput, "completed-second", false)
+            .finish();
+        let early = r.snapshot().unwrap();
+        assert_eq!(early.records.len(), 1);
+        assert_eq!(early.records[0].sequence, 1);
+        assert_eq!(early.open_spans, 1);
+        assert_eq!(early.lost_records, Some(0));
+        assert!(!early.snapshot_without_observed_loss);
+        pending.finish();
+        let later = r.snapshot().unwrap();
+        assert_eq!(later.records.len(), 2);
+        assert_eq!(later.records[0].sequence, 0);
+        assert_eq!(later.records[1].sequence, 1);
+        assert!(later.snapshot_without_observed_loss);
+        assert!(!later.trace_complete);
+    }
+    #[test]
+    fn snapshot_reader_contention_loses_a_record_without_reusing_its_slot() {
+        let r = Recorder::new("synthetic-reader-contention", "test", 2).unwrap();
+        let pending = r.start(Stage::ToolExit, "first-slot", true);
+        let reader = r.slots[0].lock().unwrap();
+        assert!(r.snapshot().is_err());
+        std::thread::spawn(move || pending.finish()).join().unwrap();
+        drop(reader);
+        r.start(Stage::ToolOutput, "second-slot", false).finish();
+        let partial = r.snapshot().unwrap();
+        assert_eq!(partial.records.len(), 1);
+        assert_eq!(partial.records[0].sequence, 1);
+        assert_eq!(partial.lost_records, Some(1));
+        assert_eq!(partial.open_spans, 0);
+        assert!(!partial.snapshot_without_observed_loss);
+        r.start(Stage::ToolSpawn, "cannot-reuse-first", false)
+            .finish();
+        assert_eq!(r.snapshot().unwrap().lost_records, Some(2));
     }
     #[test]
     fn default_off_and_closed_identifiers() {

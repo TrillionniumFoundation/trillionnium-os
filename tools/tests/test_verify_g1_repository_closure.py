@@ -56,8 +56,8 @@ Candidate checkout content is inert content-addressed data only.
         self.assertEqual(
             report["status"], "PASS_REPOSITORY_CONTROLLED_TOPOLOGY_ONLY"
         )
-        self.assertEqual(report["workspace_members"], 24)
-        self.assertEqual(report["default_members"], 11)
+        self.assertEqual(report["workspace_members"], 25)
+        self.assertEqual(report["default_members"], 12)
         self.assertEqual(report["non_product_members"], 13)
         self.assertEqual(report["catalog_modules"], 16)
         self.assertEqual(
