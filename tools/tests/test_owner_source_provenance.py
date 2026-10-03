@@ -28,12 +28,13 @@ def fixture_source_root():
 
 def graph_fixture(control_count=CONTROL_FIXTURE_FILES):
     actual_root=fixture_source_root()
-    control_files=[(m.SOURCE_CHECKER,(actual_root/m.SOURCE_CHECKER).read_bytes(),'100644'),(m.SDK_CHECKER,(actual_root/m.SDK_CHECKER).read_bytes(),'100644'),('android-integration/working-tree/p0000/owner.txt',b'owner source','100644')]
+    control_files=[(m.SOURCE_CHECKER,(actual_root/m.SOURCE_CHECKER).read_bytes(),'100644'),(m.SDK_CHECKER,(actual_root/m.SDK_CHECKER).read_bytes(),'100644'),('android-integration/working-tree/vendor/trillionnium/owner.txt',b'owner source','100644')]
     control_files += [('source/f'+str(i),b'ordinary','100644') for i in range(control_count-len(control_files))]
     control=inventory(control_files);ordinary=inventory([('owner.txt',b'owner source','100644')])
     candidate=dict(commit=control['head'],tree=control['tree'],archive_sha256='a'*64,control_regular_files=control_count)
     projection_projects=sorted({r['project'] for r in m.MANIFEST_PROJECTIONS})
-    invs={'p'+str(i).zfill(4):copy.deepcopy(ordinary) for i in range(m.MANIFEST_COUNT-1-len(projection_projects))};invs['trillionnium-os']=control
+    fixed_projects=set(projection_projects)|m.PRIVATE_PROJECT_PATHS
+    invs={'p'+str(i).zfill(4):copy.deepcopy(ordinary) for i in range(m.MANIFEST_COUNT-1-len(fixed_projects))};invs.update({p:copy.deepcopy(ordinary) for p in fixed_projects});invs['trillionnium-os']=control
     for project in projection_projects:
         sources={r['source'] for r in m.MANIFEST_PROJECTIONS if r['project']==project}
         invs[project]=inventory([(source+'/ordinary.txt' if project=='build/make' and source in ('core','target','tools') else source,b'projection source: '+source.encode(),'100644') for source in sorted(sources)])
@@ -41,7 +42,7 @@ def graph_fixture(control_count=CONTROL_FIXTURE_FILES):
         projections=''.join('<'+r['kind']+' src="'+r['source']+'" dest="'+r['destination']+'"/>' for r in m.MANIFEST_PROJECTIONS if r['project']==project)
         return ('<project name="fixture/'+project+'" path="'+project+'" revision="'+inv['head']+'">'+projections+'</project>').encode()
     manifest=b'<manifest>'+b''.join(project_xml(p,inv) for p,inv in invs.items())+b'</manifest>'
-    private=['p'+str(i).zfill(4) for i in range(m.PRIVATE_COUNT-1)]+['build/make']
+    private=sorted(m.PRIVATE_PROJECT_PATHS)
     rows=[dict(path=p,head=inv['head'],tree=inv['tree'],query_resolved=True,raw_git_status_base64='',git_status_bytes=0,git_status_sha256=m.sha(b'')) for p,inv in invs.items() if p not in set(private)|{'trillionnium-os'}]
     vector=dict(schema=m.VECTOR_SCHEMA,source_commit=candidate['commit'],source_tree=candidate['tree'],source_archive_sha256=candidate['archive_sha256'],resolved_manifest_sha256=m.sha(manifest),projects=rows,complete=True)
     manifest_inv=inventory([('trillionnium-fogos.xml',manifest,'100644')])
@@ -79,6 +80,16 @@ class ActualCollectorTests(unittest.TestCase):
     def test_real_ignored_generated_rejected(self):
         (self.root/'generated.tmp').write_text('not waived');self.assertRaises(m.SourceError,self.collect)
     def test_actual_wrong_head_rejected(self):self.assertRaises(m.SourceError,m.collect_git_checkout,self.root,'0'*40,self.tree,time.monotonic()+10)
+    def test_actual_git_failure_keeps_project_returncode_and_stderr_digest(self):
+        (self.root/'.git/config').write_bytes(b'[core\n')
+        expected=subprocess.run(['/usr/bin/git','-C',str(self.root),'config','--local','--name-only','--get-regexp',r'^filter\.'],env=self.env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5)
+        self.assertNotEqual(expected.returncode,0)
+        with self.assertRaises(m.SourceError) as caught:
+            m.collect_git_checkout(self.root,self.head,self.tree,time.monotonic()+10,'packages/modules/Nfc')
+        message=str(caught.exception)
+        self.assertIn("project='packages/modules/Nfc'",message);self.assertIn('actual_rc='+str(expected.returncode),message)
+        self.assertIn('stderr_bytes='+str(len(expected.stderr)),message);self.assertIn('stderr_sha256='+m.sha(expected.stderr),message)
+        self.assertIn(repr(expected.stderr[:512])[2:-1],message)
     def test_real_symlink_input_rejected(self):self.assertRaises(m.SourceError,m.measure_regular,self.root/'alias',100,time.monotonic()+1)
     def test_actual_read_bound_rejected(self):self.assertRaises(m.SourceError,m.measure_regular,self.root/'a',1,time.monotonic()+1)
     def test_fd_hash_late_completion_rejected(self):
@@ -101,6 +112,24 @@ class GraphMechanismTests(unittest.TestCase):
     def value(self):return copy.deepcopy(self.fixture)
     def test_mechanism_complete1170_positive_not_release(self):
         value=m.validate_graph(*self.value());self.assertEqual(value['decision'],'PASS_MEASURED_OWNER_GRAPH');self.assertFalse(value['production_ready']);self.assertFalse(value['clean_public_source_claim'])
+    def test_v3_exact16_includes_nfc_and_original1153(self):
+        graph=self.value();value=m.validate_graph(*graph)
+        self.assertEqual(m.PRIVATE_COUNT,16);self.assertEqual(m.ORIGINAL_COUNT,1153)
+        self.assertEqual(set(value['private_project_paths']),m.PRIVATE_PROJECT_PATHS)
+        self.assertIn('packages/modules/Nfc',value['private_project_paths'])
+        self.assertEqual(len(graph[3]['projects']),1153)
+    def test_old_private15_not_accepted_by_v3(self):
+        self.reject(lambda v:v[5].remove('packages/modules/Nfc'))
+    def test_sixteenth_unrelated_private_project_not_substitute_for_nfc(self):
+        def wrong(v):v[5][v[5].index('packages/modules/Nfc')]='p0000'
+        self.reject(wrong)
+    def test_old_v2_profile_or_input_schema_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp)/'input.json'
+            for schema,profile in ((m.INPUT_SCHEMA,'owner-open-whole-control-v2'),('org.trillionnium.owner-source-provenance-input.v2',m.PROFILE)):
+                with self.subTest(schema=schema,profile=profile):
+                    path.write_bytes(m.canonical(dict(schema=schema,profile_id=profile,candidate={},documents={},private_project_paths=[])))
+                    with self.assertRaisesRegex(m.SourceError,'wrong owner profile/schema'):m.inspect_packet(path,time.monotonic()+1)
     def test_new_control_tree_exact1595_supported_without_count_waiver(self):
         value=m.validate_graph(*graph_fixture(1595));self.assertEqual(value['control_regular_files'],1595)
     def test_wrong_explicit_control_count_not_inferred_or_waived(self):self.reject(lambda v:v[0].update(control_regular_files=1595))
@@ -124,7 +153,7 @@ class GraphMechanismTests(unittest.TestCase):
     def test_multiple_codex_rejected(self):self.reject(lambda v:v[9]['selected_role_counts'].update(codex=2))
     def test_checker_nonzero_actual_rc_rejected(self):self.reject(lambda v:v[9].update(checker_returncode=7))
     def test_checker_stdout_moved(self):self.reject(lambda v:v[9].update(checker_stdout_sha256='0'*64))
-    def test_overlay_not_in_actual_private_tree(self):self.reject(lambda v:v[2]['p0000'].update(source_files=[]))
+    def test_overlay_not_in_actual_private_tree(self):self.reject(lambda v:v[2]['vendor/trillionnium'].update(source_files=[]))
     def test_manifest_git_source_splice(self):self.reject(lambda v:v[6].update(source_files=[]))
     def test_forged_raw_commit_rejected(self):self.reject(lambda v:v[2]['p0999'].update(raw_commit_base64=base64.b64encode(b'tree '+b'0'*40+b'\n').decode()))
     def test_missing_tracked_file_rejected(self):self.reject(lambda v:v[2]['trillionnium-os']['source_files'].pop())

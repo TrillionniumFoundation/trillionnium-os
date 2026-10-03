@@ -169,9 +169,9 @@ MAX_SANITIZED_LOG_BYTES = 128 * 1024 * 1024
 MAX_SOURCE_BOM_BYTES = 16 * 1024 * 1024
 MAX_OWNER_SOURCE_BOM_BYTES = 64 * 1024 * 1024
 OWNER_BINDING_MEMBER = "META/trillionnium-owner-source-bom-binding.json"
-OWNER_BINDING_SCHEMA = "org.trillionnium.owner-android-source-bom-binding.v2"
-OWNER_BOM_SCHEMA = "org.trillionnium.owner-source-bom.v2"
-OWNER_PROFILE = "owner-open-whole-control-v2"
+OWNER_BINDING_SCHEMA = "org.trillionnium.owner-android-source-bom-binding.v3"
+OWNER_BOM_SCHEMA = "org.trillionnium.owner-source-bom.v3"
+OWNER_PROFILE = "owner-open-whole-control-v3"
 OWNER_PROJECTION_SCHEMA = "org.trillionnium.host-owner-source-binding-projection.v1"
 OWNER_AUTHORITY = "local_measured_provenance_not_release_authority"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
@@ -2096,7 +2096,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     parser.add_argument(
         "--require-owner-source-bom-binding", action="store_true",
-        help="require the owner v2 META member and complete measured owner source BOM",
+        help="require the owner v3 META member and complete measured owner source BOM",
     )
     parser.add_argument("--owner-source-bom", type=Path)
     parser.add_argument("--owner-build-source-inputs", type=Path)

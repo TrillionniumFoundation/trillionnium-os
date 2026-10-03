@@ -80,7 +80,8 @@
         "android-integration/owner-open-profile/profile-v2.json",
         "android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk",
         "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk",
-        "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk"
+        "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk",
+        "android-integration/security-patches"
       ],
       "offered_capabilities": [
         {

@@ -2209,7 +2209,8 @@
         "tools/owner-open-phone-chain.v1.json",
         "tools/verify-owner-open-android-source-closure.py",
         "tools/verify-owner-open-android-source-closure-v2.py",
-        "android-integration/owner-open-profile/profile-v2.json"
+        "android-integration/owner-open-profile/profile-v2.json",
+        "android-integration/security-patches"
       ],
       "plane": "platform",
       "resource_contract": {

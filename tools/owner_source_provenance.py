@@ -3,7 +3,7 @@
 
 Git observations are sequential, not an atomic snapshot. A checkout collector
 reads every tracked object and retains raw commit/tree/status evidence. The
-graph gate requires all 1170 inventories, before/after vectors, 15 private
+graph gate requires all 1170 inventories, before/after vectors, the exact 16 private
 projects, manifest-repository evidence, two non-Git Motorola trees and a
 measured empty generated-source delta. Generated source is held until a
 separate generator/input/content contract is implemented; elapsed time or
@@ -14,18 +14,32 @@ import argparse, base64, datetime, hashlib, importlib.util, io, json, math, os
 from pathlib import Path, PurePosixPath
 import posixpath, re, stat, sys, tarfile, time, xml.etree.ElementTree as ET
 
-PROFILE = 'owner-open-whole-control-v2'
-INPUT_SCHEMA = 'org.trillionnium.owner-source-provenance-input.v2'
-BOM_SCHEMA = 'org.trillionnium.owner-source-bom.v2'
+PROFILE = 'owner-open-whole-control-v3'
+INPUT_SCHEMA = 'org.trillionnium.owner-source-provenance-input.v3'
+BOM_SCHEMA = 'org.trillionnium.owner-source-bom.v3'
 INVENTORY_SCHEMA = 'org.trillionnium.owner-git-content-inventory.v2'
 VECTOR_SCHEMA = 'org.trillionnium.owner-source-observation-vector.v1'
-MANIFEST_COUNT, PRIVATE_COUNT = 1170, 15
+MANIFEST_COUNT, PRIVATE_COUNT = 1170, 16
+ORIGINAL_COUNT = MANIFEST_COUNT - PRIVATE_COUNT - 1
+PRIVATE_PROJECT_PATHS = frozenset({
+    'build/make', 'device/motorola/fogos', 'device/motorola/sm6375-common',
+    'device/trillionnium/sepolicy', 'external/aws-sdk-java-v2',
+    'external/libopenapv', 'frameworks/base', 'frameworks/layoutlib',
+    'packages/apps/Seedvault', 'packages/apps/TrillionniumAiAuthority',
+    'packages/apps/TrillionniumAiShell', 'packages/modules/adb',
+    'packages/modules/Nfc', 'system/extras', 'trillionnium-sdk',
+    'vendor/trillionnium',
+})
 MAX_GRAPH_FILES=5_000_000
 MAX_GRAPH_METADATA=2*1024*1024*1024
 MAX_RETAINED_METADATA=128*1024*1024
 MAX_RETAINED_FILES=500_000
 MOTOROLA_PATHS = {'vendor/motorola/fogos', 'vendor/motorola/sm6375-common'}
 BOUNDED_HELPER_SHA = '9f9b40baa7855a92bac2e29ca612704ff85516a41b310e2a481c5c3a29923cf5'
+# Pack windows/cache stay finite within the separate process address-space
+# ceiling. These Git settings are not a hard RSS or whole-process quota.
+GIT_PACK_OPTIONS = ('-c', 'core.packedGitWindowSize=32m',
+                    '-c', 'core.packedGitLimit=128m')
 HEX40, HEX64 = re.compile('[0-9a-f]{40}'), re.compile('[0-9a-f]{64}')
 LEGACY_ROLES = {'ai_shell', 'ai_authority', 'capability_lease', 'p01_runtime', 'legacy_shell_broker'}
 SOURCE_CHECKER='tools/verify-owner-open-android-source-closure.py'
@@ -37,6 +51,25 @@ MANIFEST_PROJECTIONS=json.loads('[{"project":"build/make","kind":"linkfile","sou
 class SourceError(ValueError): pass
 def require(condition, message):
     if not condition: raise SourceError(message)
+def validate_private_paths(value):
+    require(type(value) in (list, set, frozenset) and len(value)==PRIVATE_COUNT,
+            'v3 exact16 private project count required')
+    require(all(type(path) is str for path in value) and
+            len(set(value))==PRIVATE_COUNT and set(value)==PRIVATE_PROJECT_PATHS,
+            'v3 exact16 private project namespace required')
+    return set(value)
+def git_query_failure(label, project, root, args, result):
+    # Only bounded public Git diagnostics. Each escaped byte expands to at
+    # most four ASCII characters, so the retained excerpt is at most 2 KiB.
+    stderr=result.stderr
+    excerpt=repr(stderr[:512])[2:-1]
+    flags={key:getattr(result,key,False) for key in
+           ('timed_out','output_limit_exceeded','spawn_error','capture_error','cleanup_error')}
+    return (label+': project='+repr(project)+' root='+repr(str(root))+
+            ' argv='+repr(args)+' actual_rc='+repr(result.returncode)+
+            ' stderr_bytes='+str(len(stderr))+' stderr_sha256='+sha(stderr)+
+            ' stderr_escaped='+excerpt+' stderr_excerpt_truncated='+str(len(stderr)>512)+
+            ' process_flags='+repr(flags))
 def check(deadline):
     if time.monotonic() >= deadline: raise TimeoutError('owner source observer absolute deadline')
 def canonical(value):
@@ -195,14 +228,18 @@ def bounded_module(deadline):
     spec=importlib.util.spec_from_file_location('owner_bom_bound',path);m=importlib.util.module_from_spec(spec)
     exec(compile(raw,str(path),'exec'),m.__dict__)
     require(sha(read_stable(path,256*1024,deadline))==BOUNDED_HELPER_SHA,'child observer moved on import');return m
-def collect_git_checkout(root, expected_head, expected_tree, deadline):
-    root=Path(root);require(root.is_absolute() and root.resolve(strict=True)==root and root.is_dir(),'canonical checkout root required')
+def collect_git_checkout(root, expected_head, expected_tree, deadline, project=None):
+    root=Path(root);require(root.is_absolute() and root.resolve(strict=True)==root and root.is_dir(),'canonical checkout root required');project=relative(project) if project is not None else str(root)
     m=bounded_module(deadline)
     env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8','GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null','GIT_TERMINAL_PROMPT':'0','GIT_OPTIONAL_LOCKS':'0','GIT_ATTR_NOSYSTEM':'1','GIT_ALLOW_PROTOCOL':''}
     filter_options=[]
     def git(args, maximum=32*1024*1024, allowed=(0,)):
-        check(deadline);r=m.run_bounded(['/usr/bin/git','-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','core.attributesFile=/dev/null','-c','credential.helper=',*filter_options,'-C',str(root),*args],timeout_seconds=min(30,deadline-time.monotonic()),maximum_output=maximum,env=env)
-        require(r.returncode in allowed,'actual Git query failed: '+repr(args));check(deadline);return r.stdout
+        check(deadline)
+        try:
+            r=m.run_bounded(['/usr/bin/git',*GIT_PACK_OPTIONS,'-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','core.attributesFile=/dev/null','-c','credential.helper=',*filter_options,'-C',str(root),*args],timeout_seconds=min(30,deadline-time.monotonic()),maximum_output=maximum,env=env)
+        except m.BoundedProcessError as error:
+            raise SourceError(git_query_failure('actual Git capture failed',project,root,args,error)) from error
+        require(r.returncode in allowed,git_query_failure('actual Git query failed',project,root,args,r));check(deadline);return r.stdout
     names=git(['config','--local','--name-only','--get-regexp',r'^filter\.'],1024*1024,(0,1)).decode().splitlines();filters={'lfs'}
     for name in names:
         match=re.fullmatch(r'filter\.([A-Za-z0-9_.-]{1,128})\.[A-Za-z0-9_.-]+',name);require(match is not None,'unsupported local Git filter key');filters.add(match[1])
@@ -387,8 +424,13 @@ def _projection_git_generation(root,inventory,deadline,process):
     """Only Git built-in read queries, with the measured work tree explicit."""
     root=Path(root);require(root.resolve(strict=True)==root and root.is_dir(),'canonical projection project work tree required')
     env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8','GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null','GIT_TERMINAL_PROMPT':'0','GIT_OPTIONAL_LOCKS':'0','GIT_ALLOW_PROTOCOL':'','GIT_WORK_TREE':str(root)}
-    check(deadline);result=process.run_bounded(['/usr/bin/git','-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-C',str(root),'rev-parse','HEAD','HEAD^{tree}'],timeout_seconds=min(30,deadline-time.monotonic()),maximum_output=1024,env=env)
-    require(result.returncode==0 and result.stdout==(inventory['head']+'\n'+inventory['tree']+'\n').encode(),'physical projection checkout is not the selected private/original generation');check(deadline);return result.stdout
+    check(deadline);args=['rev-parse','HEAD','HEAD^{tree}']
+    try:
+        result=process.run_bounded(['/usr/bin/git',*GIT_PACK_OPTIONS,'-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-C',str(root),*args],timeout_seconds=min(30,deadline-time.monotonic()),maximum_output=1024,env=env)
+    except process.BoundedProcessError as error:
+        raise SourceError(git_query_failure('actual projection Git capture failed',str(root),root,args,error)) from error
+    require(result.returncode==0,git_query_failure('actual projection Git query failed',str(root),root,args,result))
+    require(result.stdout==(inventory['head']+'\n'+inventory['tree']+'\n').encode(),'physical projection checkout is not the selected private/original generation');check(deadline);return result.stdout
 def collect_manifest_projections(view,manifest_raw,inventories,candidate,deadline):
     view=Path(view);require(view.is_absolute() and view.resolve(strict=True)==view and view.is_dir(),'canonical actual merged projection view required');rows=[];old_view=view.lstat();process=bounded_module(deadline);declared=manifest_projections(manifest_raw);generations={}
     for project in sorted({r['project'] for r in declared}):
@@ -419,13 +461,14 @@ def validate_custody(value,candidate):
     archive=value.get('source_archive');require(type(archive) is dict and archive.get('sha256')==candidate['archive_sha256'] and type(archive.get('bytes')) is int and 0<archive['bytes']<=128*1024*1024,'canonical custody archive differs')
     return value
 def validate_composition(value,candidate,manifest_raw,inventories,private_paths,manifest_inventory=None):
-    require(value.get('schema')=='org.trillionnium.audit.actual-exact-private-android-source-binding.v1','actual final15 private composition receipt required');check_tuple(value,candidate)
-    require(value.get('actual_refreshed13_composition_candidate_bound') is True and value.get('private_project_count')==PRIVATE_COUNT and type(value.get('private_project_count')) is int and value.get('private1170_static_manifest_sha256')==sha(manifest_raw),'actual final15/private1170 composition tuple differs')
-    rows=value.get('private_projects');require(type(rows) is list and len(rows)==PRIVATE_COUNT,'actual15 private repository generation bindings missing');seen=set()
+    validate_private_paths(private_paths)
+    require(value.get('schema')=='org.trillionnium.audit.actual-exact-private-android-source-binding.v1','actual final16 private composition receipt required');check_tuple(value,candidate)
+    require(value.get('actual_refreshed13_composition_candidate_bound') is True and value.get('private_project_count')==PRIVATE_COUNT and type(value.get('private_project_count')) is int and value.get('private1170_static_manifest_sha256')==sha(manifest_raw),'actual final16/private1170 composition tuple differs')
+    rows=value.get('private_projects');require(type(rows) is list and len(rows)==PRIVATE_COUNT,'actual16 private repository generation bindings missing');seen=set()
     for row in rows:
         project=relative(row.get('path'));require(project in private_paths and project not in seen,'private composition namespace differs');seen.add(project);require(row.get('private_head')==inventories[project]['head'] and row.get('private_tree')==inventories[project]['tree'],'actual private generation differs from full measured inventory')
         require(type(row.get('private_repository')) is str and Path(row['private_repository']).is_absolute(),'actual private physical repository binding missing')
-    require(seen==set(private_paths),'private composition whole15 set differs')
+    require(seen==set(private_paths),'private composition whole16 set differs')
     if manifest_inventory is not None:require(value.get('manifest_head')==manifest_inventory['head'] and value.get('manifest_tree')==manifest_inventory['tree'],'actual final private manifest repository generation differs')
     for name in ('source_bom_qualified','independent_migration_approval_asserted','canonical_source_authority_modified','installed','release_qualified'):require(value.get(name) is False,'private composition receipt exceeds precursor scope')
     return value
@@ -591,9 +634,10 @@ def validate_selection(selection,candidate,inventories):
 def validate_graph(candidate,manifest_raw,inventories,before,after,private_paths,manifest_inventory,motorola,generated,selection,archive_report,canonical_custody,projections,private_composition):
     validate_candidate(candidate);validate_custody(canonical_custody,candidate)
     manifest=parse_manifest(manifest_raw);require(manifest['trillionnium-os']['revision']==candidate['commit'],'whole control not current candidate')
-    require(type(private_paths) is list and len(private_paths)==PRIVATE_COUNT and len(set(private_paths))==PRIVATE_COUNT,'exact15 private project paths required')
-    private={relative(x) for x in private_paths};require(private<=set(manifest) and 'trillionnium-os' not in private,'private scope overlaps/escapes manifest')
+    require(type(private_paths) is list,'v3 exact16 private project list required')
+    private=validate_private_paths(private_paths);require(private<=set(manifest) and 'trillionnium-os' not in private,'private scope overlaps/escapes manifest')
     excluded=private|{'trillionnium-os'};original=set(manifest)-excluded
+    require(len(original)==ORIGINAL_COUNT,'v3 exact1153 original source namespace required')
     b=vector(before,candidate,manifest,original);a=vector(after,candidate,manifest,original)
     require(before.get('resolved_manifest_sha256')==after.get('resolved_manifest_sha256')==sha(manifest_raw),'before/after exact manifest custody missing/different')
     require(all((b[p]['head'],b[p]['tree'],b[p]['git_status_sha256'])==(a[p]['head'],a[p]['tree'],a[p]['git_status_sha256']) for p in original),'before/after source generation differs')
@@ -670,7 +714,7 @@ def bound_standalone_memory(mebibytes):
 
 def main():
     p=argparse.ArgumentParser();sub=p.add_subparsers(dest='mode',required=True)
-    c=sub.add_parser('collect-git');c.add_argument('root',type=Path);c.add_argument('head');c.add_argument('tree')
+    c=sub.add_parser('collect-git');c.add_argument('root',type=Path);c.add_argument('head');c.add_argument('tree');c.add_argument('--project',help='logical manifest project label for bounded Git failure diagnostics')
     t=sub.add_parser('collect-blob-tree');t.add_argument('root',type=Path);t.add_argument('label')
     s=sub.add_parser('shard-inventory');s.add_argument('project');s.add_argument('inventory',type=Path);s.add_argument('directory',type=Path)
     r=sub.add_parser('collect-projections');r.add_argument('packet',type=Path);r.add_argument('view',type=Path)
@@ -679,7 +723,7 @@ def main():
     require(math.isfinite(a.seconds) and 0<a.seconds<=7200,'finite collection budget required');deadline=time.monotonic()+a.seconds
     try:
         bound_standalone_memory(a.memory_mib)
-        if a.mode=='collect-git':result=collect_git_checkout(a.root,a.head,a.tree,deadline)
+        if a.mode=='collect-git':result=collect_git_checkout(a.root,a.head,a.tree,deadline,a.project)
         elif a.mode=='collect-blob-tree':result=collect_blob_tree(a.root,a.label,deadline)
         elif a.mode=='shard-inventory':result=publish_sharded_inventory(a.project,parse(read_stable(a.inventory,128*1024*1024,deadline)),a.directory,deadline)
         elif a.mode=='collect-projections':result=inspect_projection_collection(a.packet,a.view,deadline)

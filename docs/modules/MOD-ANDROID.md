@@ -162,11 +162,11 @@ root. This build rule does not qualify a source BOM or an installed image.
 ### Owner source provenance and build-time META
 
 `tools/owner_source_provenance.py` produces the distinct
-`org.trillionnium.owner-source-bom.v2` receipt for
-`owner-open-whole-control-v2`. Its candidate includes the exact control commit,
+`org.trillionnium.owner-source-bom.v3` receipt for
+`owner-open-whole-control-v3`. Its candidate includes the exact control commit,
 tree, source-archive digest and actual regular-file count. A new control tree
 must supply a newly measured count; a prior candidate count is not reusable.
-The current profile covers exactly 1170 resolved projects, with 15 explicitly
+The current profile covers exactly 1170 resolved projects, with 16 explicitly
 bound private project generations and one whole control repository. This is a
 local measured composition. It does not migrate the canonical public manifest
 or assert that an unapproved private composition is a clean public source.
@@ -175,7 +175,7 @@ Graph qualification requires all twelve exact input descriptors: resolved
 manifest, control archive, inventory index, canonical custody, original
 before/after vectors, manifest repository inventory, Motorola blob trees,
 generated source delta, owner source selection, manifest projections and
-private composition. `collect_owner_source_vector.py` measures the 1154
+private composition. `collect_owner_source_vector.py` measures the 1153
 original project work trees with Git filters, hooks and fsmonitor disabled.
 The raw status remains evidence: a hydrated LFS payload may appear modified
 under this policy. The content verifier must prove its canonical committed LFS
@@ -183,6 +183,25 @@ pointer, committed attributes and complete actual payload size/SHA. Ordinary
 index or source modifications, uncommitted attributes, unhydrated pointers and
 missing projects reject the graph. No external filter or network hydration is
 run to make a checkout appear clean.
+
+The v3 private set adds `packages/modules/Nfc` to the previous 15 projects;
+it replaces that project's selected revision without adding a manifest project.
+The source input, BOM, build-time META and release consumer require the v3
+profile together. A v2 receipt or a 15-project composition is rejected, even
+when its control commit or file names look current. Retain prior v2 evidence
+under its original source rather than relabeling it.
+
+The `android-integration/security-patches` directory contains the exact
+defensive patch inputs and `manifest.v1.json`. The Frameworks image
+header guard and NFC failure-state fix must be applied to complete exclusive
+private project forks; patch files must not be copied into Android working
+trees as overlays. The manifest binds before generations and file contents,
+ordered patches and expected after contents. The constrained image API returns
+null after rejecting a header, so its two new regression tests assert null;
+the upstream production guard is unchanged. Actual compiled tests, new whole
+fork generations, the source BOM and installed behavior remain required.
+These selected fixes do not establish complete bulletin, kernel or SoC coverage
+and do not authorize changing a security-patch date.
 
 The measured graph also binds the complete two Motorola non-Git trees, each
 manifest copy/link projection and actual destination bytes or directory
@@ -192,7 +211,7 @@ nonempty delta needs a new generator/input contract. Observations are
 sequential and explicitly do not claim a globally atomic snapshot.
 
 `tools/verify_owner_target_files_binding.py` materializes the distinct
-`org.trillionnium.owner-android-source-bom-binding.v2` projection from the exact
+`org.trillionnium.owner-android-source-bom-binding.v3` projection from the exact
 BOM and `org.trillionnium.owner-android-build-source-inputs.v1`. Build inputs
 bind the same candidate, resolved manifest, raw BOM digest and finite ASCII
 stage ID. The owned `build/make/core/Makefile` overlay selects this path only

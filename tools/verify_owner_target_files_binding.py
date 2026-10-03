@@ -11,7 +11,7 @@ import argparse, hashlib, io, json, math, os, re
 from pathlib import Path, PurePosixPath
 import stat, struct, sys, time, types, zipfile
 
-PROVENANCE_SOURCE_SHA='e7dd25c0219e81f63bef09b1feb02798aaca55dfeae0988dd94b955c957a5604'
+PROVENANCE_SOURCE_SHA='4a2fb2158b1c473e6c18ea2518f020288e69c27cb8e2de4923b89c52c584f7f4'
 
 def _load_measured_provenance():
     """CLI and library use actual sibling bytes, never ambient/cache code.
@@ -39,7 +39,7 @@ def _load_measured_provenance():
 
 p=_load_measured_provenance()
 
-SCHEMA='org.trillionnium.owner-android-source-bom-binding.v2'
+SCHEMA='org.trillionnium.owner-android-source-bom-binding.v3'
 MEMBER='META/trillionnium-owner-source-bom-binding.json'
 AUTHORITY='local_measured_provenance_not_release_authority'
 MAX_ZIP=16*1024**3
@@ -57,7 +57,7 @@ def validate_bom(raw):
     tuple_=p.validate_candidate(value.get('candidate'));p.require(type(value['control_regular_files']) is int and value['control_regular_files']==tuple_['control_regular_files'],'owner source exact candidate count differs')
     inventories=value['git_content_inventory_sha256'];p.require(type(inventories) is dict and len(inventories)==p.MANIFEST_COUNT and 'trillionnium-os' in inventories,'whole owner source inventory descriptor set absent')
     for path,digest in inventories.items():p.relative(path);p.hexvalue(digest,p.HEX64,'Git inventory')
-    paths=value['private_project_paths'];p.require(type(paths) is list and len(paths)==p.PRIVATE_COUNT and len(set(paths))==p.PRIVATE_COUNT and set(paths)<=set(inventories) and 'trillionnium-os' not in paths,'private15 source graph differs')
+    paths=value['private_project_paths'];p.require(type(paths) is list,'v3 exact16 private project list required');p.validate_private_paths(paths);p.require(set(paths)<=set(inventories) and 'trillionnium-os' not in paths,'private16 source graph differs')
     p.require(type(value['motorola_tree_inventory_sha256']) is dict and set(value['motorola_tree_inventory_sha256'])==p.MOTOROLA_PATHS,'Motorola descriptor scope differs')
     for digest in value['motorola_tree_inventory_sha256'].values():p.hexvalue(digest,p.HEX64,'Motorola inventory')
     for key in ('manifest_sha256','canonical_custody_sha256','manifest_repository_inventory_sha256','generated_source_delta_sha256','owner_source_selection_sha256','manifest_projection_observations_sha256','private_composition_sha256','input_packet_sha256'):p.hexvalue(value[key],p.HEX64,key)

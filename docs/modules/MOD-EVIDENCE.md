@@ -84,13 +84,25 @@ The CLI delegates to strict package verification; `verify-g1-evidence-live.py` b
 
 The owner source producer, bounded Git subprocess helper and original-vector
 collector belong to `MOD-EVIDENCE`; Android owns the build-time META writer and
-target-files consumer. Their `owner-open-whole-control-v2` profile is separate
+target-files consumer. Their `owner-open-whole-control-v3` profile is separate
 from the retained legacy P0 source-BOM profile. It has a content identifier and
 complete measured input closure, with local provenance authority only. A
 self-consistent JSON receipt is not an authenticated builder, a signature,
 independent review, an installed target or permission to release. See the
 [Android producer contract](MOD-ANDROID.md#owner-source-provenance-and-build-time-meta)
 for its graph and build inputs.
+
+The v3 profile binds exactly 16 private projects and the remaining 1153 original
+projects in the 1170-project graph. All producer and consumer versions advance
+together; v2 inputs and BOMs cannot qualify this composition. A Git query
+failure preserves the actual exit code, affected project and a finite escaped
+stderr excerpt with the original length and digest. Diagnostic output remains
+a failed observation; it cannot qualify a partial vector or source inventory.
+All three Git observation paths use explicit 32 MiB pack windows and a
+128 MiB packed-window cache limit. These command-local settings leave source
+configuration unchanged and complement the process address-space ceiling;
+they are not a hard RSS or cgroup memory quota. A successful limited replay
+does not replace the required whole-graph before/after measurements.
 
 Source measurement uses bounded project records and indexed shards rather than
 one whole-graph JSON allocation. The admission ceilings are 250000 rows and

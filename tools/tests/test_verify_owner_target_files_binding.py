@@ -42,6 +42,17 @@ class OwnerMetaTests(unittest.TestCase):
         bom=copy.deepcopy(self.bom);bom['git_content_inventory_sha256'].pop('p0999');bom.pop('receipt_id');bom['receipt_id']='sha256:'+p.sha(p.canonical(bom));self.assertRaises(p.SourceError,m.validate_bom,p.canonical(bom))
     def test_source_bom_old_schema_rejected(self):
         bom=copy.deepcopy(self.bom);bom['schema']='org.trillionnium.local-cross-repo-source-bom.v2';self.assertRaises(p.SourceError,m.validate_bom,p.canonical(bom))
+    def test_owner_v2_schema_or_profile_cannot_be_mixed_with_v3(self):
+        for changed in (dict(schema='org.trillionnium.owner-source-bom.v2'),dict(profile_id='owner-open-whole-control-v2')):
+            with self.subTest(changed=changed):
+                bom=copy.deepcopy(self.bom);bom.update(changed);bom.pop('receipt_id');bom['receipt_id']='sha256:'+p.sha(p.canonical(bom))
+                with self.assertRaisesRegex(p.SourceError,'qualified owner graph receipt required'):m.validate_bom(p.canonical(bom))
+    def test_old15_or_unrelated_sixteenth_private_project_is_held(self):
+        for replacement in (None,'p0000'):
+            with self.subTest(replacement=replacement):
+                bom=copy.deepcopy(self.bom);paths=bom['private_project_paths'];paths.remove('packages/modules/Nfc')
+                if replacement is not None:paths.append(replacement)
+                bom.pop('receipt_id');bom['receipt_id']='sha256:'+p.sha(p.canonical(bom));self.assertRaises(p.SourceError,m.validate_bom,p.canonical(bom))
     def test_source_bom_bad_content_id(self):
         bom=copy.deepcopy(self.bom);bom['receipt_id']='sha256:'+'0'*64;self.assertRaises(p.SourceError,m.validate_bom,p.canonical(bom))
     def test_source_bom_production_claim_rejected(self):

@@ -81,6 +81,11 @@
           "size": 24760
         },
         {
+          "path": "android-integration/security-patches/manifest.v1.json",
+          "sha256": "478b7c97acfbdcd39bebbaeb536ecdcaaf321a411cb15fdb979910b3bf42c0b9",
+          "size": 3950
+        },
+        {
           "path": "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
           "sha256": "c3df02e4a2ac4f8997204019e995c8965f87988761d493eb68fe0507a0794cea",
           "size": 3786
@@ -247,8 +252,8 @@
         },
         {
           "path": "tools/verify_owner_target_files_binding.py",
-          "sha256": "d4b18e5f18fa63f0a2b3c7d21dad48e5becf45ce7688e768f517c58a9691ac50",
-          "size": 18525
+          "sha256": "f2a0bf8015c4b4d9f6b5e6f8d6df66d0fcc0ebe7c0e8bc0ccc8c55f3824ee5b3",
+          "size": 18538
         }
       ],
       "logical_labels": {
@@ -607,13 +612,13 @@
         },
         {
           "path": "tools/android_release_ota.py",
-          "sha256": "cd1e218d21b25c256ac4eaaf9163d674837bac2d039c374bf1df8c5deffce979",
+          "sha256": "1328aaa9cc1230b19d59efb76525d81cd651fd44f01dcb61ec2e35c683761da7",
           "size": 114549
         },
         {
           "path": "tools/collect_owner_source_vector.py",
-          "sha256": "417ccf9fa8a0069534e797447bc8ba489c74019291cd6bbe0a22a6c5cccf9add",
-          "size": 10682
+          "sha256": "d9156e3f38ec38316f367659a0f02232cbf9ac0f14f32c224b47130d36fd9d73",
+          "size": 11049
         },
         {
           "path": "tools/owner_bom_bounded_process.py",
@@ -622,8 +627,8 @@
         },
         {
           "path": "tools/owner_source_provenance.py",
-          "sha256": "e7dd25c0219e81f63bef09b1feb02798aaca55dfeae0988dd94b955c957a5604",
-          "size": 73165
+          "sha256": "4a2fb2158b1c473e6c18ea2518f020288e69c27cb8e2de4923b89c52c584f7f4",
+          "size": 75919
         }
       ],
       "logical_labels": {

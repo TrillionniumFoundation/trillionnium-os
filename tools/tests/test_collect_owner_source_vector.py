@@ -24,6 +24,13 @@ class ActualGitVectorTests(unittest.TestCase):
     def test_untracked_and_ignored_status_not_hidden(self):
         (self.root/'.gitignore').write_bytes(b'generated\n');self.commit();(self.root/'generated').write_bytes(b'generated');(self.root/'untracked').write_bytes(b'untracked');raw=base64.b64decode(self.observe()['raw_git_status_base64']);self.assertIn(b'!! generated\0',raw);self.assertIn(b'?? untracked\0',raw)
     def test_wrong_expected_head_is_held(self):self.assertRaises(m.SourceError,v.observe_project,m,self.process,self.root,'project','0'*40,time.monotonic()+10)
+    def test_actual_git_failure_retains_logical_project_returncode_and_stderr(self):
+        (self.root/'.git/config').write_bytes(b'[core\n')
+        expected=subprocess.run(['/usr/bin/git','-C',str(self.root),'config','--local','--name-only','--get-regexp',r'^filter\.'],env=self.env,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=5)
+        self.assertNotEqual(expected.returncode,0)
+        with self.assertRaises(m.SourceError) as caught:self.observe()
+        message=str(caught.exception);self.assertIn("project='project'",message);self.assertIn('actual_rc='+str(expected.returncode),message)
+        self.assertIn('stderr_bytes='+str(len(expected.stderr)),message);self.assertIn('stderr_sha256='+m.sha(expected.stderr),message)
     def test_actual_project_symlink_is_held(self):
         alias=Path(self.temp.name)/'alias';alias.symlink_to(self.root);self.assertRaises(m.SourceError,v.observe_project,m,self.process,alias,'project',self.head,time.monotonic()+10)
     def test_real_late_builtin_query_rejects_deadline(self):
@@ -34,10 +41,14 @@ class ActualGitVectorTests(unittest.TestCase):
 class VectorPacketBoundaryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):cls.graph=graph_fixture()
-    def test_all_original1154_physical_roots_required_before_query(self):
+    def test_all_original1153_physical_roots_required_before_query(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);manifest=root/'manifest';manifest.write_bytes(self.graph[1]);composition=root/'composition';composition.write_bytes(m.canonical(self.graph[13]));packet=root/'packet';value=dict(schema=v.INPUT_SCHEMA,profile_id=m.PROFILE,candidate=self.graph[0],resolved_manifest=m.descriptor(manifest,manifest.read_bytes()),private_composition=m.descriptor(composition,composition.read_bytes()),original_source_root=str(root),original_repository_paths=[]);packet.write_bytes(m.canonical(value));self.assertRaises(m.SourceError,v.inspect_packet,m,packet,time.monotonic()+5)
     def test_pinned3_module_byte_load_is_actual(self):
-        module,directory,raws=v.load_source();self.assertEqual(module.PROFILE,'owner-open-whole-control-v2');self.assertEqual(set(raws),set(v.MODULE_SHAS))
+        module,directory,raws=v.load_source();self.assertEqual(module.PROFILE,'owner-open-whole-control-v3');self.assertEqual(set(raws),set(v.MODULE_SHAS))
+    def test_old_v2_vector_profile_rejected_before_documents_or_git(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp)/'packet';path.write_bytes(m.canonical(dict(schema=v.INPUT_SCHEMA,profile_id='owner-open-whole-control-v2',candidate={},resolved_manifest={},private_composition={},original_source_root=str(Path(temp)),original_repository_paths=[])))
+            with self.assertRaisesRegex(m.SourceError,'distinct vector owner input/profile required'):v.inspect_packet(m,path,time.monotonic()+1)
 
 if __name__=='__main__':unittest.main()

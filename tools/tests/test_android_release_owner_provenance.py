@@ -22,11 +22,13 @@ RELEASE = legacy.RELEASE
 def bom_fixture():
     candidate = dict(commit="1" * 40, tree="2" * 40, archive_sha256="3" * 64,
                      control_regular_files=1600)
-    paths = ["trillionnium-os", *("p%04d" % n for n in range(1169))]
+    from test_owner_source_provenance import m as provenance
+    private = sorted(provenance.PRIVATE_PROJECT_PATHS)
+    paths = ['trillionnium-os', *private, *('p%04d' % n for n in range(provenance.ORIGINAL_COUNT))]
     bom = dict(schema=RELEASE.OWNER_BOM_SCHEMA, profile_id=RELEASE.OWNER_PROFILE,
                decision="PASS_MEASURED_OWNER_GRAPH", candidate=candidate,
                manifest_sha256="4" * 64, manifest_project_count=1170,
-               private_project_paths=paths[1:16], control_regular_files=1600,
+               private_project_paths=private, control_regular_files=1600,
                git_content_inventory_sha256={p: "5" * 64 for p in paths},
                canonical_custody_sha256="6" * 64,
                manifest_repository_inventory_sha256="7" * 64,

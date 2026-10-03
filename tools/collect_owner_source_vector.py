@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only original1170-minus-private15/control vector with no Git filters.
+"""Read-only original1170-minus-private16/control vector with no Git filters.
 
 This collector retains dirty raw status; a content inventory must separately
 prove every LFS payload and the graph verifier rejects ordinary dirty source.
@@ -8,9 +8,9 @@ No source-BOM, immutable snapshot, build or release qualification is granted.
 import argparse,base64,hashlib,importlib.util,io,json,math,os,re,stat,sys,time
 from pathlib import Path
 
-SOURCE_SHA='e7dd25c0219e81f63bef09b1feb02798aaca55dfeae0988dd94b955c957a5604'
+SOURCE_SHA='4a2fb2158b1c473e6c18ea2518f020288e69c27cb8e2de4923b89c52c584f7f4'
 HELPER_SHA='9f9b40baa7855a92bac2e29ca612704ff85516a41b310e2a481c5c3a29923cf5'
-META_SHA='d4b18e5f18fa63f0a2b3c7d21dad48e5becf45ce7688e768f517c58a9691ac50'
+META_SHA='f2a0bf8015c4b4d9f6b5e6f8d6df66d0fcc0ebe7c0e8bc0ccc8c55f3824ee5b3'
 MODULE_SHAS={'owner_source_provenance.py':SOURCE_SHA,'owner_bom_bounded_process.py':HELPER_SHA,'verify_owner_target_files_binding.py':META_SHA}
 INPUT_SCHEMA='org.trillionnium.owner-source-vector-input.v1'
 STATUS_ARGS=['status','--porcelain=v1','-z','--untracked-files=all','--ignored=matching']
@@ -37,7 +37,12 @@ def observe_project(module,process,root,project,expected_head,deadline):
     root=Path(root);module.require(root.is_absolute() and root.resolve(strict=True)==root and root.is_dir(),'canonical original source work tree required');before_entry=root.lstat();options=[]
     env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8','GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null','GIT_TERMINAL_PROMPT':'0','GIT_OPTIONAL_LOCKS':'0','GIT_ATTR_NOSYSTEM':'1','GIT_ALLOW_PROTOCOL':'','GIT_WORK_TREE':str(root)}
     def git(args,maximum=1024,allowed=(0,)):
-        module.check(deadline);result=process.run_bounded(['/usr/bin/git','-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','core.attributesFile=/dev/null','-c','credential.helper=',*options,'-C',str(root),*args],timeout_seconds=min(30,deadline-time.monotonic()),maximum_output=maximum,env=env);module.require(result.returncode in allowed,'actual vector Git query failed: '+repr(args));module.check(deadline);return result.stdout
+        module.check(deadline)
+        try:
+            result=process.run_bounded(['/usr/bin/git',*module.GIT_PACK_OPTIONS,'-c','core.hooksPath=/dev/null','-c','core.fsmonitor=false','-c','gc.auto=0','-c','maintenance.auto=false','-c','core.attributesFile=/dev/null','-c','credential.helper=',*options,'-C',str(root),*args],timeout_seconds=min(30,deadline-time.monotonic()),maximum_output=maximum,env=env)
+        except process.BoundedProcessError as error:
+            raise module.SourceError(module.git_query_failure('actual vector Git capture failed',project,root,args,error)) from error
+        module.require(result.returncode in allowed,module.git_query_failure('actual vector Git query failed',project,root,args,result));module.check(deadline);return result.stdout
     keys=git(['config','--local','--name-only','--get-regexp',r'^filter\.'],1024*1024,(0,1)).decode().splitlines();filters={'lfs'}
     for key in keys:
         match=re.fullmatch(r'filter\.([A-Za-z0-9_.-]{1,128})\.[A-Za-z0-9_.-]+',key);module.require(match is not None,'unsupported local Git filter key');filters.add(match[1])
@@ -51,13 +56,14 @@ def observe_project(module,process,root,project,expected_head,deadline):
 def inspect_packet(module,packet_path,deadline):
     raw=module.read_stable(packet_path,8*1024*1024,deadline);packet=module.parse(raw);module.exact(packet,('schema','profile_id','candidate','resolved_manifest','private_composition','original_source_root','original_repository_paths'),'vector input packet');module.require(packet['schema']==INPUT_SCHEMA and packet['profile_id']==module.PROFILE,'distinct vector owner input/profile required');module.validate_candidate(packet['candidate'])
     manifest_raw=module.read_descriptor(packet['resolved_manifest'],deadline,8*1024*1024);manifest=module.parse_manifest(manifest_raw);composition_raw=module.read_descriptor(packet['private_composition'],deadline,8*1024*1024);composition=module.parse(composition_raw);module.require(composition.get('schema')=='org.trillionnium.audit.actual-exact-private-android-source-binding.v1' and composition.get('actual_refreshed13_composition_candidate_bound') is True,'actual final private composition required');module.check_tuple(composition,packet['candidate']);module.require(composition.get('private1170_static_manifest_sha256')==module.sha(manifest_raw) and manifest['trillionnium-os']['revision']==packet['candidate']['commit'],'vector manifest/control composition differs')
-    private_rows=composition.get('private_projects');module.require(type(private_rows) is list and len(private_rows)==module.PRIVATE_COUNT and type(composition.get('private_project_count')) is int and composition['private_project_count']==module.PRIVATE_COUNT,'vector private15 scope unavailable');private=set()
+    private_rows=composition.get('private_projects');module.require(type(private_rows) is list and len(private_rows)==module.PRIVATE_COUNT and type(composition.get('private_project_count')) is int and composition['private_project_count']==module.PRIVATE_COUNT,'vector private16 scope unavailable');private=set()
     for row in private_rows:
         project=module.relative(row.get('path'));module.require(project not in private and project in manifest and project!='trillionnium-os' and row.get('private_head')==manifest[project]['revision'],'vector private source disposition differs');private.add(project)
+    module.validate_private_paths(private)
     source_root=Path(packet['original_source_root']);module.require(source_root.is_absolute() and source_root.resolve(strict=True)==source_root and source_root.is_dir(),'canonical physical original source root required');old_root=source_root.lstat();entries=packet['original_repository_paths'];module.require(type(entries) is list,'actual original physical repository mapping required');original=set(manifest)-private-{'trillionnium-os'};roots={}
     for entry in entries:
         module.exact(entry,('project','root'),'original physical mapping');project=module.relative(entry['project']);module.require(project in original and project not in roots and entry['root']==str(source_root/project),'original physical source namespace differs');roots[project]=entry['root']
-    module.require(set(roots)==original,'full original1154 source mapping missing/extra');process=module.bounded_module(deadline);rows=[]
+    module.require(len(original)==module.ORIGINAL_COUNT and set(roots)==original,'full original1153 source mapping missing/extra');process=module.bounded_module(deadline);rows=[]
     for project in sorted(original):rows.append(observe_project(module,process,roots[project],project,manifest[project]['revision'],deadline))
     for name,old in (('resolved_manifest',manifest_raw),('private_composition',composition_raw)):module.require(module.read_descriptor(packet[name],deadline,8*1024*1024)==old,'fixed vector source input moved')
     module.require(module.read_stable(packet_path,8*1024*1024,deadline)==raw and module.identity(source_root.lstat())==module.identity(old_root),'vector packet/original root moved')

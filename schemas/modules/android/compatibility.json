@@ -100,6 +100,11 @@
       "size": 24760
     },
     {
+      "path": "android-integration/security-patches/manifest.v1.json",
+      "sha256": "478b7c97acfbdcd39bebbaeb536ecdcaaf321a411cb15fdb979910b3bf42c0b9",
+      "size": 3950
+    },
+    {
       "path": "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
       "sha256": "c3df02e4a2ac4f8997204019e995c8965f87988761d493eb68fe0507a0794cea",
       "size": 3786
@@ -266,8 +271,8 @@
     },
     {
       "path": "tools/verify_owner_target_files_binding.py",
-      "sha256": "d4b18e5f18fa63f0a2b3c7d21dad48e5becf45ce7688e768f517c58a9691ac50",
-      "size": 18525
+      "sha256": "f2a0bf8015c4b4d9f6b5e6f8d6df66d0fcc0ebe7c0e8bc0ccc8c55f3824ee5b3",
+      "size": 18538
     }
   ],
   "introduction_review_class": "INITIAL_V1",
