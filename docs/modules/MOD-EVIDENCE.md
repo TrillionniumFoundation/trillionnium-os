@@ -21,6 +21,7 @@ Source ownership paths:
 - `docs/machine/evidence-index.v1.json`
 
 - `tools/owner_source_provenance.py`
+- `tools/owner_source_surface.py`
 - `tools/owner_bom_bounded_process.py`
 - `tools/collect_owner_source_vector.py`
 - `tools/android_release_ota.py`
@@ -103,6 +104,22 @@ All three Git observation paths use explicit 32 MiB pack windows and a
 configuration unchanged and complement the process address-space ceiling;
 they are not a hard RSS or cgroup memory quota. A successful limited replay
 does not replace the required whole-graph before/after measurements.
+
+Inventory v3 separates gitlink commit references from blob payloads. Each
+unmaterialized reference binds its parent tree/index and two identical physical
+missing/empty observations; no synthetic size, content SHA or LFS proof is
+assigned to it. Indexed project metadata retains the references, while source
+shards contain measured blobs. The namespace observer independently checks the
+selected view and rejects materialized, aliased, special or changed gitlinks.
+An exact worktree-only ` D` status is allowed solely for a committed gitlink
+whose two physical observations prove the same missing state. Ordinary blob
+deletion, staged changes, and deletion reports for an empty present directory
+remain holds; original-vector status must match the complete inventory status.
+There are at most 1024 references per project, 40 path components per reference
+and 2 MiB of reference metadata. Older inventory v2 records do not qualify this
+producer. The outer whole-control v3 BOM remains bound to each complete inventory
+digest and raw evidence descriptor; its local authority does not establish
+submodule commit content availability, installed behavior or release approval.
 
 Source measurement uses bounded project records and indexed shards rather than
 one whole-graph JSON allocation. The admission ceilings are 250000 rows and

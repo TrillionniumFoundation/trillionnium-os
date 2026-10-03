@@ -17,7 +17,7 @@ import posixpath, re, stat, sys, tarfile, time, xml.etree.ElementTree as ET
 PROFILE = 'owner-open-whole-control-v3'
 INPUT_SCHEMA = 'org.trillionnium.owner-source-provenance-input.v3'
 BOM_SCHEMA = 'org.trillionnium.owner-source-bom.v3'
-INVENTORY_SCHEMA = 'org.trillionnium.owner-git-content-inventory.v2'
+INVENTORY_SCHEMA = 'org.trillionnium.owner-git-content-inventory.v3'
 VECTOR_SCHEMA = 'org.trillionnium.owner-source-observation-vector.v1'
 MANIFEST_COUNT, PRIVATE_COUNT = 1170, 16
 ORIGINAL_COUNT = MANIFEST_COUNT - PRIVATE_COUNT - 1
@@ -34,6 +34,8 @@ MAX_GRAPH_FILES=5_000_000
 MAX_GRAPH_METADATA=2*1024*1024*1024
 MAX_RETAINED_METADATA=128*1024*1024
 MAX_RETAINED_FILES=500_000
+MAX_GITLINKS=1024
+MAX_GITLINK_DEPTH=40
 MOTOROLA_PATHS = {'vendor/motorola/fogos', 'vendor/motorola/sm6375-common'}
 BOUNDED_HELPER_SHA = '9f9b40baa7855a92bac2e29ca612704ff85516a41b310e2a481c5c3a29923cf5'
 # Pack windows/cache stay finite within the separate process address-space
@@ -147,12 +149,12 @@ def tree_oid(rows):
     root={}
     for row in rows:
         path=relative(row['path']);parts=path.split('/');node=root
-        require(row['git_mode'] in ('100644','100755','120000'),'unsupported Git mode/gitlink')
-        hexvalue(row['git_blob'],HEX40,'blob')
+        require(row['git_mode'] in ('100644','100755','120000','160000'),'unsupported Git mode')
+        oid=hexvalue(row['git_commit'] if row['git_mode']=='160000' else row['git_blob'],HEX40,'tracked object')
         for component in parts[:-1]:
             if component not in node:node[component]={}
             require(type(node[component]) is dict,'source file/directory collision');node=node[component]
-        require(parts[-1] not in node,'duplicate source path');node[parts[-1]]=(row['git_mode'],row['git_blob'])
+        require(parts[-1] not in node,'duplicate source path');node[parts[-1]]=(row['git_mode'],oid)
     def build(node):
         entries=[]
         for name,item in node.items():
@@ -168,23 +170,93 @@ def parse_ls_tree(raw):
     for field in raw.split(b'\0')[:-1]:
         try: header,path=field.split(b'\t',1);mode,kind,oid=header.decode().split(' ');path=path.decode()
         except (ValueError,UnicodeError) as e:raise SourceError('invalid raw Git ls-tree') from e
-        require(kind=='blob' and mode in ('100644','100755','120000'),'unsupported tracked Git object')
-        rows.append(dict(path=relative(path),git_mode=mode,git_blob=hexvalue(oid,HEX40,'raw blob')))
+        require((kind=='blob' and mode in ('100644','100755','120000')) or
+                (kind=='commit' and mode=='160000'),'unsupported tracked Git object')
+        row=dict(path=relative(path),git_mode=mode)
+        row['git_commit' if mode=='160000' else 'git_blob']=hexvalue(oid,HEX40,'raw tracked object')
+        rows.append(row)
     require(len(rows)<=250000 and len({r['path'] for r in rows})==len(rows),'tracked count/duplicate bound')
+    return rows
+
+def observe_unmaterialized_gitlink(root,path,deadline):
+    """Observe an absent or empty gitlink, without opening submodule contents.
+
+    A commit reference is not a measured commit body or a source payload.
+    Materialized submodules require a separate recursive content contract.
+    """
+    root=Path(root);parts=relative(path).split('/')
+    require(len(parts)<=MAX_GITLINK_DEPTH,'gitlink path depth bound')
+    require(root.is_absolute() and root.resolve(strict=True)==root,'canonical gitlink checkout required')
+    opened=[];parents=[];entry=None;absent=None
+    try:
+        old=root.lstat();fd=os.open(root,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+        opened.append((root,fd,identity(old)))
+        require(identity(os.fstat(fd))==identity(old),'gitlink root FD differs')
+        for number,part in enumerate(parts):
+            check(deadline);parent=opened[-1][1]
+            if number==0:parents.append(dict(path='',identity=list(opened[-1][2])))
+            name='/'.join(parts[:number+1])
+            try:s=os.stat(part,dir_fd=parent,follow_symlinks=False)
+            except FileNotFoundError:
+                absent=name;break
+            require(stat.S_ISDIR(s.st_mode),'gitlink replaced by symlink or special entry: '+path)
+            child=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parent)
+            opened.append((root/name,child,identity(s)))
+            require(identity(os.fstat(child))==identity(s),'gitlink directory FD differs')
+            if number==len(parts)-1:
+                entry=list(identity(s))
+                with os.scandir(child) as scan:
+                    check(deadline)
+                    require(next(scan,None) is None,'materialized gitlink requires recursive content contract: '+path)
+                break
+            parents.append(dict(path=name,identity=list(identity(s))))
+        if absent is not None:
+            try:os.stat(parts[len(parents)-1],dir_fd=opened[-1][1],follow_symlinks=False)
+            except FileNotFoundError:pass
+            else:raise SourceError('missing gitlink entry appeared during observation')
+        for directory,fd,old in opened:
+            check(deadline);require(identity(os.fstat(fd))==old and identity(directory.lstat())==old,'gitlink parent or entry changed')
+        return dict(state='missing' if absent is not None else 'empty',absent_path=absent,parent_entries=parents,entry_identity=entry,entries=[])
+    finally:
+        for _,fd,_ in reversed(opened):os.close(fd)
+
+def validate_gitlinks(rows,expected):
+    require(type(rows) is list and len(rows)<=MAX_GITLINKS and len(canonical(rows))<=2*1024*1024,'bounded explicit gitlink references required')
+    refs={}
+    for row in rows:
+        exact(row,('path','git_mode','git_commit','worktree_before','worktree_after','submodule_content_measured'),'gitlink reference')
+        path=relative(row['path']);parts=path.split('/');require(len(parts)<=MAX_GITLINK_DEPTH and path not in refs,'duplicate/deep gitlink reference')
+        require(row['git_mode']=='160000' and row['submodule_content_measured'] is False,'commit reference is not a measured blob/submodule')
+        hexvalue(row['git_commit'],HEX40,'gitlink commit')
+        require(row['worktree_before']==row['worktree_after'],'gitlink worktree state changed')
+        value=row['worktree_before'];exact(value,('state','absent_path','parent_entries','entry_identity','entries'),'gitlink worktree state')
+        require(value['state'] in ('missing','empty') and value['entries']==[],'unmeasured materialized gitlink held')
+        parents=value['parent_entries'];require(type(parents) is list and 1<=len(parents)<=len(parts),'gitlink physical parent closure required')
+        for number,parent in enumerate(parents):
+            exact(parent,('path','identity'),'gitlink parent');require(parent['path']=='/'.join(parts[:number]),'gitlink parent namespace differs')
+            ident=parent['identity'];require(type(ident) is list and len(ident)==9 and all(type(n) is int for n in ident) and stat.S_ISDIR(ident[2]),'gitlink held-parent identity unavailable')
+        if value['state']=='missing':
+            require(value['entry_identity'] is None and value['absent_path']=='/'.join(parts[:len(parents)]),'gitlink absence boundary differs')
+        else:
+            ident=value['entry_identity'];require(value['absent_path'] is None and len(parents)==len(parts) and type(ident) is list and len(ident)==9 and all(type(n) is int for n in ident) and stat.S_ISDIR(ident[2]),'gitlink empty-directory identity unavailable')
+        refs[path]=row
+    require(set(refs)=={r['path'] for r in expected},'whole tracked gitlink reference set differs')
+    for ref in expected:require(all(refs[ref['path']][k]==v for k,v in ref.items()),'gitlink commit/mode differs from raw tree')
     return rows
 def parse_lfs_pointer(raw):
     require(type(raw) is bytes and len(raw)<=1024,'bounded canonical LFS pointer required')
     match=re.fullmatch(rb'version https://git-lfs.github.com/spec/v1\noid sha256:([0-9a-f]{64})\nsize (0|[1-9][0-9]*)\n',raw)
     require(match is not None,'unsupported/noncanonical LFS pointer')
     size=int(match[2]);require(size<=2*1024**3,'LFS payload byte boundary');return match[1].decode(),size
-def validate_status(raw,lfs_paths):
+def validate_status(raw,lfs_paths,missing_gitlinks=()):
     require(not raw or raw.endswith(b'\0'),'raw Git status truncated')
     seen=set()
     for item in raw.split(b'\0')[:-1]:
-        require(item.startswith(b' M ') and len(item)>3,'dirty/staged/untracked/ignored source held')
+        require(len(item)>3 and item[:3] in (b' M ',b' D '),'dirty/staged/untracked/ignored source held')
         try:path=relative(item[3:].decode())
         except UnicodeError as e:raise SourceError('status path encoding') from e
-        require(path in lfs_paths and path not in seen,'ordinary dirty source or duplicate status held');seen.add(path)
+        allowed=lfs_paths if item[:3]==b' M ' else missing_gitlinks
+        require(path in allowed and path not in seen,'ordinary dirty source or duplicate status held');seen.add(path)
     return seen
 
 def validate_inventory(value):
@@ -192,11 +264,14 @@ def validate_inventory(value):
     head=hexvalue(value.get('head'),HEX40,'head');tree=hexvalue(value.get('tree'),HEX40,'tree')
     commit=decode64(value.get('raw_commit_base64'),1024*1024,'commit')
     require(git_oid('commit',commit)==head and commit.startswith(('tree '+tree+'\n').encode()),'raw commit/head/tree mismatch')
-    raw=decode64(value.get('raw_ls_tree_base64'),32*1024*1024,'ls-tree');expected=parse_ls_tree(raw)
+    raw=decode64(value.get('raw_ls_tree_base64'),32*1024*1024,'ls-tree');all_expected=parse_ls_tree(raw)
+    gitlinks=validate_gitlinks(value.get('gitlinks'),[r for r in all_expected if r['git_mode']=='160000'])
+    expected=[r for r in all_expected if r['git_mode']!='160000']
     rows=value.get('source_files');require(type(rows) is list and len(rows)==len(expected),'whole tracked content inventory missing')
     observed={}
     for row in rows:
         exact(row,('path','git_mode','git_blob','bytes','sha256','symlink_target','lfs'),'tracked content row')
+        require(row['git_mode'] in ('100644','100755','120000'),'tracked payload must be a blob, not a gitlink')
         path=relative(row['path']);require(path not in observed,'duplicate measured source path')
         require(type(row['bytes']) is int and 0<=row['bytes']<=2*1024**3,'tracked file byte bound')
         hexvalue(row['sha256'],HEX64,'content');observed[path]=row
@@ -210,11 +285,12 @@ def validate_inventory(value):
     require({r['path'] for r in expected}==set(observed),'tracked path set differs')
     for row in expected:
         actual=observed[row['path']];require(all(actual[k]==row[k] for k in row),'tracked blob/mode mismatch')
-    require(tree_oid(rows)==tree,'whole tracked Git tree mismatch')
+    require(tree_oid(rows+gitlinks)==tree,'whole tracked Git tree mismatch')
     require(value.get('status_query')==['status','--porcelain=v1','-z','--untracked-files=all','--ignored=matching'],'full raw status query required')
     lfs={p for p,r in observed.items() if r['lfs'] is not None}
     before=decode64(value.get('raw_status_before_base64'),8*1024*1024,'status');after=decode64(value.get('raw_status_after_base64'),8*1024*1024,'status')
-    validate_status(before,lfs);validate_status(after,lfs);require(before==after,'raw source status changed during observation')
+    missing={r['path'] for r in gitlinks if r['worktree_before']['state']=='missing'}
+    validate_status(before,lfs,missing);validate_status(after,lfs,missing);require(before==after,'raw source status changed during observation')
     require(value.get('external_git_filters_disabled') is True and value.get('index_matches_committed_tree') is True and value.get('uncommitted_attributes_empty') is True,'committed-only attribute/filter boundary unavailable')
     require(value.get('head_after')==head and value.get('tree_after')==tree,'checkout generation changed')
     require(type(value.get('source_bytes')) is int and value['source_bytes']==sum(r['bytes'] for r in rows),'measured source aggregate differs')
@@ -255,11 +331,13 @@ def collect_git_checkout(root, expected_head, expected_tree, deadline, project=N
     require((head,tree)==(expected_head,expected_tree),'actual checkout candidate differs')
     status_args=['status','--porcelain=v1','-z','--untracked-files=all','--ignored=matching']
     before=git(status_args,8*1024*1024)
-    commit=git(['cat-file','commit',head],1024*1024);raw_tree=git(['ls-tree','-rz','--full-tree',head]);rows=parse_ls_tree(raw_tree);total=0
+    commit=git(['cat-file','commit',head],1024*1024);raw_tree=git(['ls-tree','-rz','--full-tree',head]);tracked=parse_ls_tree(raw_tree);rows=[r for r in tracked if r['git_mode']!='160000'];refs=[r for r in tracked if r['git_mode']=='160000'];total=0
+    require(len(refs)<=MAX_GITLINKS,'gitlink reference count bound')
+    gitlinks=[dict(r,worktree_before=observe_unmaterialized_gitlink(root,r['path'],deadline),submodule_content_measured=False) for r in refs]
     index_raw=git(['ls-files','--stage','-z','--full-name']);indexed=[]
     for field in index_raw.split(b'\0')[:-1]:
-        header,path=field.split(b'\t',1);mode,oid,stage=header.decode().split(' ');require(stage=='0','unmerged/sparse source index held');indexed.append(dict(path=path.decode(),git_mode=mode,git_blob=oid))
-    require(sorted(indexed,key=lambda r:r['path'])==sorted(rows,key=lambda r:r['path']),'index differs from committed raw tree')
+        header,path=field.split(b'\t',1);mode,oid,stage=header.decode().split(' ');require(stage=='0','unmerged/sparse source index held');row=dict(path=path.decode(),git_mode=mode);row['git_commit' if mode=='160000' else 'git_blob']=oid;indexed.append(row)
+    require(sorted(indexed,key=lambda r:r['path'])==sorted(tracked,key=lambda r:r['path']),'index differs from committed raw tree')
     attribute_path=Path(git(['rev-parse','--git-path','info/attributes']).decode().strip());attribute_path=attribute_path if attribute_path.is_absolute() else root/attribute_path
     if attribute_path.exists() or attribute_path.is_symlink():require(read_stable(attribute_path,1024*1024,deadline)==b'','uncommitted Git attributes held')
     attributes={};has_attributes=any(PurePosixPath(r['path']).name=='.gitattributes' for r in rows)
@@ -288,8 +366,9 @@ def collect_git_checkout(root, expected_head, expected_tree, deadline, project=N
             require(git_oid('blob',raw)==row['git_blob'],'tracked symlink content differs');measured=dict(bytes=len(raw),sha256=sha(raw))
         total+=measured['bytes'];require(total<=128*1024**3,'whole tracked byte bound');row.update(bytes=measured['bytes'],sha256=measured['sha256'],symlink_target=target,lfs=lfs)
     after=git(status_args,8*1024*1024);head_after=git(['rev-parse','HEAD']).decode().strip();tree_after=git(['rev-parse','HEAD^{tree}']).decode().strip()
+    for row in gitlinks:row['worktree_after']=observe_unmaterialized_gitlink(root,row['path'],deadline)
     if attribute_path.exists() or attribute_path.is_symlink():require(read_stable(attribute_path,1024*1024,deadline)==b'','uncommitted Git attributes changed')
-    result=dict(schema=INVENTORY_SCHEMA,root=str(root),head=head,tree=tree,raw_commit_base64=base64.b64encode(commit).decode(),raw_ls_tree_base64=base64.b64encode(raw_tree).decode(),status_query=status_args,raw_status_before_base64=base64.b64encode(before).decode(),raw_status_after_base64=base64.b64encode(after).decode(),head_after=head_after,tree_after=tree_after,source_files=rows,source_bytes=total,complete=True,external_git_filters_disabled=True,index_matches_committed_tree=True,uncommitted_attributes_empty=True,sequential_not_globally_atomic=True,external_global_immutability_proven=False,source_bom_qualified=False,independent_approval_asserted=False)
+    result=dict(schema=INVENTORY_SCHEMA,root=str(root),head=head,tree=tree,raw_commit_base64=base64.b64encode(commit).decode(),raw_ls_tree_base64=base64.b64encode(raw_tree).decode(),status_query=status_args,raw_status_before_base64=base64.b64encode(before).decode(),raw_status_after_base64=base64.b64encode(after).decode(),head_after=head_after,tree_after=tree_after,source_files=rows,gitlinks=gitlinks,source_bytes=total,complete=True,external_git_filters_disabled=True,index_matches_committed_tree=True,uncommitted_attributes_empty=True,sequential_not_globally_atomic=True,external_global_immutability_proven=False,source_bom_qualified=False,independent_approval_asserted=False)
     validate_inventory(result);check(deadline);return result
 
 def collect_blob_tree(root,label,deadline):
@@ -316,6 +395,7 @@ def collect_blob_tree(root,label,deadline):
     require(after,'empty Motorola source held');digest=sha(canonical(after));result=dict(schema='org.trillionnium.owner-non-git-content-tree.v1',path=label,root=str(root),entries=after,before_inventory_sha256=digest,after_inventory_sha256=digest,complete=True,observations_sequential_not_globally_atomic=True,external_global_immutability_proven=False,source_bom_qualified=False);check(deadline);return result
 
 def verify_control_archive(raw, inventory, expected_sha, expected_count, deadline):
+    require(inventory.get('gitlinks')==[],'control archive cannot reproduce unmaterialized gitlinks')
     validate_inventory(inventory);require(sha(raw)==expected_sha,'control archive bytes differ')
     expected={r['path']:r for r in inventory['source_files']};observed={};total=0;directories=set()
     with tarfile.open(fileobj=io.BytesIO(raw),mode='r:gz') as t:
@@ -360,6 +440,7 @@ def manifest_projections(raw):
     return rows
 def projected_source_rows(declaration,inventories):
     project,source=declaration['project'],declaration['source'];require(project in inventories,'projection source project not measured');inv=inventories[project];exact_rows=[r for r in inv['source_files'] if r['path']==source]
+    require(not any(source==r['path'] or source.startswith(r['path']+'/') or r['path'].startswith(source+'/') for r in inv['gitlinks']),'gitlink cannot supply projection contents')
     directory=not exact_rows;selected=[r for r in inv['source_files'] if r['path'].startswith(source+'/')] if directory else exact_rows
     require(selected,'manifest projection source missing');require(not directory or declaration['kind']=='linkfile','copyfile cannot project an unmeasured directory')
     rows=[]
@@ -565,6 +646,7 @@ class InventoryStore(dict):
             for _ in range(40):
                 check(self.deadline);require(current not in seen,'cyclic tracked source symlink');seen.add(current);require(target and not target.startswith('/') and '\\' not in target and not any(ord(c)<32 for c in target),'unsafe tracked source symlink');current=posixpath.normpath(posixpath.join(posixpath.dirname(current),target));require(current!='..' and not current.startswith('../'),'tracked source symlink escapes graph')
                 current=map_projection_path(current,projections,self);projects=[p for p in self if current==p or current.startswith(p+'/')];require(projects,'tracked source symlink project unavailable');project=max(projects,key=len);path=current[len(project):].lstrip('/');inv=self[project];matches=[r for r in inv['source_files'] if r['path']==path]
+                require(not any(path==r['path'] or path.startswith(r['path']+'/') for r in inv['gitlinks']),'unmaterialized gitlink is not an available source link target')
                 if not matches:require(not path or any(r['path'].startswith(path+'/') for r in inv['source_files']),'tracked source symlink target unavailable');break
                 row=matches[0]
                 if row['git_mode']!='120000':break
@@ -585,8 +667,9 @@ def vector(value,candidate,manifest,expected_paths):
     require(set(by)==expected_paths,'incomplete vector project set');return by
 
 def source_link_closure(inventories,projections=()):
-    entries={};directories={''}
+    entries={};directories={''};gitlinks=set()
     for project,inv in inventories.items():
+        gitlinks.update(project+'/'+r['path'] for r in inv['gitlinks'])
         for row in inv['source_files']:
             name=project+'/'+row['path'];require(name not in entries,'overlapping manifest source namespaces');entries[name]=row
             parent=posixpath.dirname(name)
@@ -599,6 +682,7 @@ def source_link_closure(inventories,projections=()):
             require(current not in seen,'cyclic tracked source symlink');seen.add(current);link=entries[current]['symlink_target']
             require(link and not link.startswith('/') and '\\' not in link and not any(ord(c)<32 for c in link),'unsafe tracked source symlink')
             current=posixpath.normpath(posixpath.join(posixpath.dirname(current),link));current=map_projection_path(current,projections,inventories)
+            require(not any(current==name or current.startswith(name+'/') for name in gitlinks),'unmaterialized gitlink is not an available source link target')
             require(current!='..' and not current.startswith('../') and (current in entries or current in directories),'source symlink unavailable or escapes complete graph')
             if current in directories or entries[current]['git_mode']!='120000':break
         else:raise SourceError('source symlink chain bound')
@@ -653,7 +737,7 @@ def validate_graph(candidate,manifest_raw,inventories,before,after,private_paths
             require(inv['tree']==a[path]['tree'],'inventory/vector Git tree differs')
             observed=decode64(inv['raw_status_before_base64'],8*1024*1024,'inventory status');lfs={r['path'] for r in inv['source_files'] if r['lfs'] is not None}
             for observation in (b[path],a[path]):
-                raw_status=decode64(observation['raw_git_status_base64'],8*1024*1024,'vector status');validate_status(raw_status,lfs);require(raw_status==observed,'vector/actual content status differs')
+                raw_status=decode64(observation['raw_git_status_base64'],8*1024*1024,'vector status');missing={r['path'] for r in inv['gitlinks'] if r['worktree_before']['state']=='missing'};validate_status(raw_status,lfs,missing);require(raw_status==observed,'vector/actual content status differs')
     validate_projections(projections,candidate,manifest_raw,inventories);declarations=manifest_projections(manifest_raw)
     if type(inventories) is InventoryStore:inventories.check_links(declarations)
     else:source_link_closure(inventories,declarations)

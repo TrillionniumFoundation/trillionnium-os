@@ -252,7 +252,7 @@
         },
         {
           "path": "tools/verify_owner_target_files_binding.py",
-          "sha256": "b35b4ee9b134dcd153af99084d48f157da0d9bebf1468d95ff18b4d8ff8c3520",
+          "sha256": "9b673e4b5b33ec32f904e70bc098bad09763abd26ba8d7fa9231ff85a2ac2618",
           "size": 18538
         }
       ],
@@ -617,7 +617,7 @@
         },
         {
           "path": "tools/collect_owner_source_vector.py",
-          "sha256": "6430b69e0e6365c391545923d9410f39a14ca0894b333161bb354a559207bf03",
+          "sha256": "228f020ff41e3496e91f8c42351982a9f08c94fae33e97969db934c64253d652",
           "size": 11462
         },
         {
@@ -627,8 +627,13 @@
         },
         {
           "path": "tools/owner_source_provenance.py",
-          "sha256": "7d4f0cacf715200884abbbbab69550cac882e03a59acf4f8063566baa14fa77c",
-          "size": 76458
+          "sha256": "404e050d27d11b91df590d8a894a3c7999057c19785b2230d6809514482fa7d2",
+          "size": 83326
+        },
+        {
+          "path": "tools/owner_source_surface.py",
+          "sha256": "7d0f3d51d913317f01c75ee6d25cb56e3748ed79ea1a59635b4ca32bc929839b",
+          "size": 16184
         }
       ],
       "logical_labels": {

@@ -14,7 +14,7 @@ def inventory(files):
     rows=[dict(path=p,git_mode=mode,git_blob=m.git_oid('blob',raw),bytes=len(raw),sha256=m.sha(raw),symlink_target=raw.decode() if mode=='120000' else None,lfs=None) for p,raw,mode in files]
     tree=m.tree_oid(rows);commit=('tree '+tree+'\nauthor Fixture <fixture@local.invalid> 1 +0000\ncommitter Fixture <fixture@local.invalid> 1 +0000\n\nmechanism only\n').encode();head=m.git_oid('commit',commit)
     raw=b''.join((r['git_mode']+' blob '+r['git_blob']+'\t'+r['path']).encode()+b'\0' for r in rows)
-    return dict(schema=m.INVENTORY_SCHEMA,root='/unexecuted/mechanism',head=head,tree=tree,raw_commit_base64=base64.b64encode(commit).decode(),raw_ls_tree_base64=base64.b64encode(raw).decode(),status_query=['status','--porcelain=v1','-z','--untracked-files=all','--ignored=matching'],raw_status_before_base64='',raw_status_after_base64='',head_after=head,tree_after=tree,source_files=rows,source_bytes=sum(r['bytes'] for r in rows),complete=True,external_git_filters_disabled=True,index_matches_committed_tree=True,uncommitted_attributes_empty=True)
+    return dict(schema=m.INVENTORY_SCHEMA,root='/unexecuted/mechanism',head=head,tree=tree,raw_commit_base64=base64.b64encode(commit).decode(),raw_ls_tree_base64=base64.b64encode(raw).decode(),status_query=['status','--porcelain=v1','-z','--untracked-files=all','--ignored=matching'],raw_status_before_base64='',raw_status_after_base64='',head_after=head,tree_after=tree,source_files=rows,gitlinks=[],source_bytes=sum(r['bytes'] for r in rows),complete=True,external_git_filters_disabled=True,index_matches_committed_tree=True,uncommitted_attributes_empty=True)
 
 def fixture_source_root():
     root=TOOLS.parent

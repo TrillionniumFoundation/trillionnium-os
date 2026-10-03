@@ -2523,7 +2523,8 @@
         "tools/owner_source_provenance.py",
         "tools/owner_bom_bounded_process.py",
         "tools/collect_owner_source_vector.py",
-        "tools/android_release_ota.py"
+        "tools/android_release_ota.py",
+        "tools/owner_source_surface.py"
       ],
       "plane": "evidence",
       "resource_contract": {

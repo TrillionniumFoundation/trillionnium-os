@@ -184,6 +184,26 @@ index or source modifications, uncommitted attributes, unhydrated pointers and
 missing projects reject the graph. No external filter or network hydration is
 run to make a checkout appear clean.
 
+Git content inventories use `org.trillionnium.owner-git-content-inventory.v3`.
+They keep `160000 commit` gitlinks separate from the measured `source_files`:
+the parent raw tree and committed index must retain each exact path and commit
+object name. A gitlink is not a blob, an empty payload or a measured child commit.
+An unmaterialized reference must have the same physical missing or empty state
+before and after collection, with held parent/directory identities and an
+explicit `submodule_content_measured=false`. The selected source view repeats
+these checks through `tools/owner_source_surface.py`; every other unknown
+directory, file or generated input remains a hold. Materialized submodules,
+symlink or special-file substitutes and changed references are rejected until
+a separate recursive content contract exists. No submodule is initialized or
+downloaded. A source graph receipt describes this exact checkout state; it does
+not prove the referenced child commit's contents, build usage or historical
+unreachability. Gitlinks cannot supply ordinary source files or manifest
+projection contents. Worktree-only ` D` status is accepted only for an exact
+committed gitlink with two identical physical missing observations, including
+its absence boundary. Ordinary blob deletion, staged changes and empty-directory
+deletion reports remain holds, and the original before/after vectors must retain
+the same full raw status as the measured inventory.
+
 For a slow complete checkout, `collect-git` and the original-vector collector
 can select `--git-query-seconds 120` within the finite 1..300-second range.
 The default remains 30 seconds, and every Git call is also capped by the
