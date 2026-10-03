@@ -20,6 +20,11 @@ Source ownership paths:
 
 - `docs/machine/evidence-index.v1.json`
 
+- `tools/owner_source_provenance.py`
+- `tools/owner_bom_bounded_process.py`
+- `tools/collect_owner_source_vector.py`
+- `tools/android_release_ota.py`
+
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
 ## 2. Responsibilities
@@ -74,6 +79,65 @@ The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
 The CLI delegates to strict package verification; `verify-g1-evidence-live.py` binds current external objects. The checked-in evidence index is navigation, not a durable runtime journal or signer. A source fixture is never a substitute for an independent operator, reviewer, detached attestation or release decision.
+
+### Owner provenance inputs and signed-output custody
+
+The owner source producer, bounded Git subprocess helper and original-vector
+collector belong to `MOD-EVIDENCE`; Android owns the build-time META writer and
+target-files consumer. Their `owner-open-whole-control-v2` profile is separate
+from the retained legacy P0 source-BOM profile. It has a content identifier and
+complete measured input closure, with local provenance authority only. A
+self-consistent JSON receipt is not an authenticated builder, a signature,
+independent review, an installed target or permission to release. See the
+[Android producer contract](MOD-ANDROID.md#owner-source-provenance-and-build-time-meta)
+for its graph and build inputs.
+
+Source measurement uses bounded project records and indexed shards rather than
+one whole-graph JSON allocation. The admission ceilings are 250000 rows and
+128 MiB metadata per project, 32 MiB raw Git tree, 4096 rows and 8 MiB per shard,
+5 million graph rows, 2 GiB unique raw evidence, 128 GiB tracked Git source bytes,
+100000 descriptors and 32 MiB descriptor-path bytes. Retained cross-project
+metadata is bounded at 500000 files and 128 MiB. Each of the two Motorola
+non-Git inputs has a separate 16 GiB and 250000-entry ceiling. These are rejection
+ceilings, not measured production resource use. Core collection defaults to a
+3600-second whole-operation deadline; the original-vector CLI defaults to
+1800 seconds. Both default to a 1024 MiB address-space limit; requested ceilings
+are at most 7200 seconds and 4096 MiB. Build META publication has a separate
+120-second default and 600-second maximum. Child output, process-group
+termination and deadline checks remain finite. Partial or timed-out evidence
+cannot be promoted by an empty stdout or a later successful shell marker.
+
+`tools/android_release_ota.py` consumes owner provenance only with
+`--require-owner-source-bom-binding`, `--owner-source-bom` and
+`--owner-build-source-inputs`. The legacy and owner modes are mutually
+exclusive. Owner admission validates exact source modules, raw inputs and
+whole target ZIP before material validation or signing. It verifies the same
+binding on the actual signed target-files; an optional legacy member cannot
+substitute. Its typed receipt links both actual ZIP digests to one owner
+binding and retains all host-only negative claims. Existing timestamp bytecode
+caches cannot override either provenance checker.
+
+Signed target-files, OTA and metadata are measured before validation and
+published as one checked set. After each rename and after the complete output
+scan, the original provenance inputs, original target-files and every host
+tool must still match their admitted baselines. Each published member must
+match its verified bytes, digest and inode. A mismatch retracts every promoted
+member to its partial path and returns a failure receipt; incomplete rollback
+is reported as failure. Consumers must require successful terminal execution,
+recheck the three actual artifacts against the receipt and retain the source
+inputs. Publication consists of sequential filesystem operations, not a global
+transaction against concurrent hostile writers. A receipt describes that
+observed subject and cannot be reused after its inputs or artifacts change.
+
+Reproduction covers actual temporary Git/LFS trees, projections, GNU Make META
+packaging, tiny ZIP signing fixtures, timestamp-cache substitutions, input
+movement during publication and whole-output retraction. Test fixture host
+tools and mocked cryptography cannot qualify real signing, Kati/Soong, a full
+Android image, performance or a physical device. Run the focused test modules
+from the current repository; portable fixtures use the registered source
+checkers and owned Makefile directly and do not require an external audit
+workspace. Full graph, built artifact, independent review and release evidence
+must bind the newly changed candidate rather than inherit an older green run.
 
 ## 6. State model and ownership
 

@@ -63,7 +63,13 @@
         "tools/generate-owner-open-common-base.py",
         "android-integration/working-tree/trillionnium-sdk/Android.bp",
         "android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml",
-        "tools/verify-owner-open-sdk-selection.py"
+        "tools/verify-owner-open-sdk-selection.py",
+        "android-integration/working-tree/build/make/core/Makefile",
+        "tools/verify_owner_target_files_binding.py",
+        "tools/owner_source_provenance.py",
+        "tools/owner_bom_bounded_process.py",
+        "tools/collect_owner_source_vector.py",
+        "tools/android_release_ota.py"
       ],
       "offered_capabilities": [
         {

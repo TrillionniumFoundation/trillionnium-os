@@ -96,6 +96,26 @@
       "path": "docs/machine/evidence-index.v1.json",
       "sha256": "8c3e5024c19e26ab03613f1ce145a667142c57dcd773ce291324bbda33a684e7",
       "size": 13308
+    },
+    {
+      "path": "tools/android_release_ota.py",
+      "sha256": "cd1e218d21b25c256ac4eaaf9163d674837bac2d039c374bf1df8c5deffce979",
+      "size": 114549
+    },
+    {
+      "path": "tools/collect_owner_source_vector.py",
+      "sha256": "53287545cd2bde1e9d748f4c75fc8b0e314efe8f97b926f871b9ecdb44ea5af1",
+      "size": 10682
+    },
+    {
+      "path": "tools/owner_bom_bounded_process.py",
+      "sha256": "9f9b40baa7855a92bac2e29ca612704ff85516a41b310e2a481c5c3a29923cf5",
+      "size": 16240
+    },
+    {
+      "path": "tools/owner_source_provenance.py",
+      "sha256": "a7622d5d099264801404de45d1df2390176ee661171b2042e357d4e868232373",
+      "size": 73165
     }
   ],
   "introduction_review_class": "INITIAL_V1",

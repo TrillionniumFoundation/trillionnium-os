@@ -208,6 +208,11 @@
       "path": "tools/verify-owner-open-sdk-selection.py",
       "sha256": "159eaff813ab1ffdb34e50477d0b339bd7b0d12a1a92fee8f40ac30939fabf7e",
       "size": 18281
+    },
+    {
+      "path": "tools/verify_owner_target_files_binding.py",
+      "sha256": "d37203923bdc54f7b14a5c04d7b113f6917b1ba2cd21102c4e153dc1e7beac31",
+      "size": 18525
     }
   ],
   "introduction_review_class": "INITIAL_V1",

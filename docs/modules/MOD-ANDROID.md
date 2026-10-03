@@ -27,6 +27,9 @@ Source ownership paths:
 - `android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml`
 - `tools/verify-owner-open-sdk-selection.py`
 
+- `android-integration/working-tree/build/make/core/Makefile`
+- `tools/verify_owner_target_files_binding.py`
+
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
 ## 2. Responsibilities
@@ -144,6 +147,77 @@ files to their declared Android project paths before building. The actual SDK,
 Authority, Shell and owner-open module directories remain discoverable. Do not
 place the marker at the control-repository root or an actual Android project
 root. This build rule does not qualify a source BOM or an installed image.
+
+### Owner source provenance and build-time META
+
+`tools/owner_source_provenance.py` produces the distinct
+`org.trillionnium.owner-source-bom.v2` receipt for
+`owner-open-whole-control-v2`. Its candidate includes the exact control commit,
+tree, source-archive digest and actual regular-file count. A new control tree
+must supply a newly measured count; a prior candidate count is not reusable.
+The current profile covers exactly 1170 resolved projects, with 15 explicitly
+bound private project generations and one whole control repository. This is a
+local measured composition. It does not migrate the canonical public manifest
+or assert that an unapproved private composition is a clean public source.
+
+Graph qualification requires all twelve exact input descriptors: resolved
+manifest, control archive, inventory index, canonical custody, original
+before/after vectors, manifest repository inventory, Motorola blob trees,
+generated source delta, owner source selection, manifest projections and
+private composition. `collect_owner_source_vector.py` measures the 1154
+original project work trees with Git filters, hooks and fsmonitor disabled.
+The raw status remains evidence: a hydrated LFS payload may appear modified
+under this policy. The content verifier must prove its canonical committed LFS
+pointer, committed attributes and complete actual payload size/SHA. Ordinary
+index or source modifications, uncommitted attributes, unhydrated pointers and
+missing projects reject the graph. No external filter or network hydration is
+run to make a checkout appear clean.
+
+The measured graph also binds the complete two Motorola non-Git trees, each
+manifest copy/link projection and actual destination bytes or directory
+closure, private/control generations and the complete selected source inputs.
+The current generated-delta contract accepts only a proved empty delta; a
+nonempty delta needs a new generator/input contract. Observations are
+sequential and explicitly do not claim a globally atomic snapshot.
+
+`tools/verify_owner_target_files_binding.py` materializes the distinct
+`org.trillionnium.owner-android-source-bom-binding.v2` projection from the exact
+BOM and `org.trillionnium.owner-android-build-source-inputs.v1`. Build inputs
+bind the same candidate, resolved manifest, raw BOM digest and finite ASCII
+stage ID. The owned `build/make/core/Makefile` overlay selects this path only
+when merged `PRODUCT_SYSTEM_EXT_PROPERTIES` contains
+`ro.trillionnium.owner_open.enabled=true`. It requires three explicit build
+inputs:
+
+```text
+TRILLINNIUM_OWNER_SOURCE_BOM_JSON
+TRILLINNIUM_OWNER_SOURCE_BUILD_INPUTS_JSON
+TRILLINNIUM_OWNER_SOURCE_BOM_BINDING_JSON
+```
+
+The target-files rule depends on these files and the three observer modules.
+Immediately after creating its private META directory, it runs
+`stage-binding-env` with a 120-second budget. The writer verifies the expected
+projection, rejects unsafe existing entries and publishes one new regular
+`META/trillionnium-owner-source-bom-binding.json` through its held directory
+descriptor. It runs before the META member list and final ZIP are generated.
+Failure terminates the rule. An existing target-files ZIP may not be patched
+afterward to claim this build provenance. Sealed products retain their existing
+rule and require no owner inputs.
+
+The ZIP reader checks the entire current ZIP digest on one stable descriptor,
+canonical unique members, finite central-directory allocation and the exact
+owner META bytes. A missing, duplicated or spliced projection rejects the
+artifact. This check does not prove every image entry's semantics, executable
+ART behavior, compiled SELinux policy, release signature or installed identity.
+Those remain separate Android and physical-target gates. The old P0 member and
+schema remain available only through their separate legacy mode.
+
+Observer code is executed from the same bounded FD-stable source bytes that
+were checked against its source contract. Existing Python bytecode caches and
+ambient modules cannot supply the executed implementation. Missing code,
+changed source or deadlines fail closed, including a late deadline after an
+otherwise complete observation.
 
 ## 6. State model and ownership
 
