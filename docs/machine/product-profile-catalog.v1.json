@@ -84,7 +84,9 @@
         "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk",
         "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk",
         "android-integration/security-patches",
-        "crates/trillionnium-owner-open-trace"
+        "crates/trillionnium-owner-open-trace",
+        "tools/perf/inspect_monotonic_stream.py",
+        "tools/tests/test_owner_open_monotonic_stream.py"
       ],
       "offered_capabilities": [
         {
