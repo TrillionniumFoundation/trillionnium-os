@@ -184,12 +184,26 @@ must be bounded and must not call allocating EventStore APIs or blocking
 JOB/EventStore working locks. Direct EventStore reentry fails capacity before
 waiting; arbitrary cross-module callbacks do not gain a deadlock-free guarantee.
 
-V2 retains only authenticated record headers and location/key/scope indexes.
+V2 retains compact authenticated headers and a single per-scope event-ID/ordinal
+index. One immutable full-content scope Arc is shared by all headers in its
+turn; each event ID is shared by header and key. Location and working reservation
+belong to the header, and three validated lowercase SHA-256 strings become
+fixed 32-byte arrays. Next sequence uses checked last-header arithmetic and
+must equal the ordinal index length; empty/inconsistent scope indexes refuse.
+No internal Arc escapes the existing public record APIs.
 Payloads are read from pinned
 segments on demand, strictly decoded and digest-checked against those headers.
 WAL recovery authenticates the whole chain while retaining only headers. V1
-keeps its full read model within the same shared32 MiB gate. Reservations charge owned
-capacities, repeated index strings and container growth; dense JSON has a
+keeps its full read model within the same shared32 MiB gate. Compact reservations
+charge four header/ordinal growth slots for Vec overlap, eight bucket slots for
+map rehash/control slack, explicit Arc counters, and two owned copies with64-byte
+logical alignment/allocator allowance per allocation. A first scope also charges
+its five strings, Arc and map entry; subsequent records share them. Legacy
+full-record reservations are unchanged. Credit precedes compact allocation and
+outlives it; a post-WAL fallible growth failure retains its credit and poisons the
+live store. Public schemas, sidecar order/fields, whole recovery, duplicate/full
+scope identity and durability fences remain unchanged. These reservations do not
+establish allocator metadata, RSS or a complete Host-family budget. Dense JSON has a
 quote/escape-aware lexical allocation check before DOM decoding. The separate
 shared32 MiB temporary pool bounds response construction and snapshot work;
 `replay`/`all_records` may return `CapacityExhausted` before allocation.

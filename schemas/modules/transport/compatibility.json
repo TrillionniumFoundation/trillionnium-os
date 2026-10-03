@@ -165,8 +165,8 @@
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/process/run.rs",
-      "sha256": "a2685746414be1c14c49fcd5bcce6f252081cdb94bf4996c7453ddac87e0ec99",
-      "size": 77367
+      "sha256": "f976acf7acee9e6839378e44aa0df288d3cd69158fb9eb7cf9b36016ee780586",
+      "size": 77598
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_transport_host/protocol.rs",

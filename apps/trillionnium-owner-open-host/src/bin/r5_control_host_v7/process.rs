@@ -504,6 +504,10 @@ fn process_job_host<W: IoWrite>(
     hello_barrier.configure_control_seq(control_seq, connection_id);
 
     loop {
+        // Dispatch and inspection helpers from the previous iteration have
+        // returned and released product locks. The streaming writer retains
+        // no stdout mutex while performing the separate evidence drain.
+        trillionnium_owner_open_trace::drain_stream_at_caller_boundary();
         match receiver.recv_timeout(JOB_POLL_INTERVAL) {
             Ok(JobHostMessage::Input(encoded)) => match trillionnium_owner_open_trace::measure(trillionnium_owner_open_trace::Stage::HostDecode, "core.selected-inbound", || RunTurnFrame::decode(&encoded, &limits)) {
                 Ok(frame) if frame.kind == FRAME_HELLO => {

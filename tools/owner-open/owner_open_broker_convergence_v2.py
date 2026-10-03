@@ -722,6 +722,10 @@ class BrokerConvergenceMixin:
 
     def _request_worker(self) -> None:
         while not self.stopping.is_set():
+            # Previous forward/convergence returned and released request,
+            # transition and upstream writer locks before this evidence I/O.
+            from owner_open_broker_common import drain_performance_stream_at_caller_boundary
+            drain_performance_stream_at_caller_boundary()
             request = self.mux.acquire(timeout=0.1)
             if request is None:
                 continue

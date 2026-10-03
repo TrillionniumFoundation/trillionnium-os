@@ -294,19 +294,54 @@ pub(crate) fn encoded_size(value: &impl Serialize, maximum: usize) -> Result<usi
     Ok(counter.bytes)
 }
 
-pub(crate) fn header_reservation(record: &EventRecord) -> Result<usize> {
-    let mut heap = scope_heap(&record.scope)?;
-    for value in [
-        &record.schema,
-        &record.event_id,
-        &record.kind,
-        &record.payload_sha256,
-        &record.previous_record_sha256,
-        &record.record_sha256,
-    ] {
-        heap = add(heap, value.capacity())?;
+pub(crate) fn compact_header_reservation(record: &EventRecord, new_scope: bool) -> Result<usize> {
+    // This is a different resident structure, not a smaller coefficient on the
+    // legacy full-record model. Four growth slots cover each compact header
+    // and per-scope ordinal, including simultaneous old/new Vec buffers.
+    // Eight bucket slots retain the previous map's conservative rehash/control
+    // allowance, now for ONE shared event-ID map rather than two full keys.
+    let vector = mul(
+        4,
+        add(
+            std::mem::size_of::<compact::Header>(),
+            std::mem::size_of::<usize>(),
+        )?,
+    )?;
+    let event_bucket = add(
+        add(
+            std::mem::size_of::<Arc<str>>(),
+            std::mem::size_of::<usize>(),
+        )?,
+        1,
+    )?;
+    let maps = mul(8, event_bucket)?;
+    // Arc's two atomic counters are charged explicitly. Each owned allocation
+    // also carries 64 bytes of logical alignment/allocator slack; two copies
+    // cover construction/shrink overlap. This is not a process RSS guarantee.
+    const ALLOCATION_SLACK: usize = 64;
+    let event = add(
+        add(record.event_id.len(), 2 * std::mem::size_of::<usize>())?,
+        ALLOCATION_SLACK,
+    )?;
+    let kind = add(record.kind.len(), ALLOCATION_SLACK)?;
+    let mut bytes = add(add(vector, maps)?, mul(2, add(event, kind)?)?)?;
+    if new_scope {
+        // One Arc<TurnScope> with five owned strings, shared by every header
+        // and the scope map. No next-sequence/key map owns another scope.
+        let scope = add(
+            add(std::mem::size_of::<TurnScope>(), scope_heap(&record.scope)?)?,
+            add(2 * std::mem::size_of::<usize>(), mul(6, ALLOCATION_SLACK)?)?,
+        )?;
+        let bucket = add(
+            add(
+                std::mem::size_of::<Arc<TurnScope>>(),
+                std::mem::size_of::<compact::ScopeIndex>(),
+            )?,
+            1,
+        )?;
+        bytes = add(bytes, add(mul(2, scope)?, mul(8, bucket)?)?)?;
     }
-    add(mul(2, heap)?, index_reserve(record)?)
+    Ok(bytes)
 }
 
 pub(crate) fn reserve(current: usize, additional: usize, maximum: usize) -> Result<usize> {

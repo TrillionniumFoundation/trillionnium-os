@@ -5,6 +5,7 @@
 //! journal: append failure is reported to the embedding Host, which decides
 //! whether the owner-open lineage continues as best-effort/unreplayable.
 
+mod compact;
 mod resources;
 pub use resources::{
     EVENT_STORE_CONTROL_DESCRIPTORS, MAX_EVENT_PROCESS_DESCRIPTORS,
@@ -986,14 +987,10 @@ struct SegmentMeta {
 struct SegmentedState {
     segments: BTreeMap<u64, SegmentMeta>,
     active_id: u64,
-    // Authenticated headers only; payload Null never escapes public APIs.
-    records: Vec<EventRecord>,
-    record_working_bytes: Vec<usize>,
+    // Compact authenticated headers; full payloads are read from retained WAL.
+    records: Vec<compact::Header>,
     resident_bytes: usize,
-    by_key: HashMap<EventKey, usize>,
-    by_scope: HashMap<TurnScope, Vec<usize>>,
-    locations: HashMap<EventKey, SegmentLocation>,
-    next_turn_seq: HashMap<TurnScope, u64>,
+    by_scope: HashMap<Arc<TurnScope>, compact::ScopeIndex>,
     byte_count: u64,
     last_record_sha256: String,
     pending_records: usize,
@@ -1087,14 +1084,7 @@ impl Serialize for IndexManifestEntries<'_> {
         use serde::ser::SerializeSeq;
         let mut sequence = serializer.serialize_seq(Some(self.0.records.len()))?;
         for record in &self.0.records {
-            // Only bounded header strings are cloned for one key lookup, never
-            // a full manifest/table. Scope payloads remain borrowed.
-            let key = EventKey::new(record.scope.clone(), record.event_id.clone());
-            let location = self
-                .0
-                .locations
-                .get(&key)
-                .ok_or_else(|| serde::ser::Error::custom("event index location missing"))?;
+            let location = &record.location;
             sequence.serialize_element(&IndexManifestEntry {
                 scope: &record.scope,
                 event_id: &record.event_id,
@@ -1270,12 +1260,8 @@ impl SegmentedEventStore {
                 segments: segment_meta,
                 active_id,
                 records: recovered.records,
-                record_working_bytes: recovered.record_working_bytes,
                 resident_bytes: recovered.resident_bytes,
-                by_key: recovered.by_key,
                 by_scope: recovered.by_scope,
-                locations: recovered.locations,
-                next_turn_seq: recovered.next_turn_seq,
                 byte_count: recovered.byte_count,
                 last_record_sha256: recovered.last_record_sha256,
                 pending_records: 0,
@@ -1537,7 +1523,6 @@ impl SegmentedEventStore {
         validate_event_input(&input, &self.config.limits)?;
         resources::validate_input_allocation(&input)?;
         let payload_sha256 = resources::json_digest(&input.payload)?;
-        let key = EventKey::new(input.scope.clone(), input.event_id.clone());
 
         // The gate orders global sequence/hash reservations.  It is separate
         // from the read/write state lock, so no state lock spans file I/O or
@@ -1548,12 +1533,17 @@ impl SegmentedEventStore {
             .lock()
             .map_err(|_| EventStoreError::StatePoisoned)?;
         self.require_root_identity_current()?;
-        let (record, encoded, key, next_turn_seq, resident_bytes, working_bytes, resident_delta) = {
+        let (record, encoded, mut pending, resident_bytes) = {
             let state = self.read_state()?;
             if state.poisoned {
                 return Err(EventStoreError::Poisoned);
             }
-            if let Some(index) = state.by_key.get(&key).copied() {
+            if let Some(index) = state
+                .by_scope
+                .get(&input.scope)
+                .and_then(|scope| scope.by_event.get(input.event_id.as_str()))
+                .copied()
+            {
                 let existing =
                     match self.read_record_beside(&state, index, resources::input_heap(&input)?) {
                         Ok(existing) => existing,
@@ -1581,11 +1571,12 @@ impl SegmentedEventStore {
             }
             let store_seq = u64::try_from(state.records.len())
                 .map_err(|_| EventStoreError::CapacityExhausted)?;
-            let turn_seq = state.next_turn_seq.get(&input.scope).copied().unwrap_or(0);
+            let turn_seq =
+                compact::next_sequence(state.by_scope.get(&input.scope), &state.records)?;
             // This is a semantic sequence.  Saturating at MAX would permit a
             // duplicate MAX ordinal after exhaustion, so fail before
             // reserving/writing the record.
-            let next_turn_seq = turn_seq
+            let _next_turn_seq = turn_seq
                 .checked_add(1)
                 .ok_or(EventStoreError::CapacityExhausted)?;
             let previous_record_sha256 = state.last_record_sha256.clone();
@@ -1622,7 +1613,8 @@ impl SegmentedEventStore {
             )?;
             let working_bytes = resources::record_reservation(&record, &encoded)?;
             resources::reserve(0, working_bytes, MAX_EVENT_RESIDENT_BYTES)?;
-            let delta = resources::header_reservation(&record)?;
+            let new_scope = !state.by_scope.contains_key(&record.scope);
+            let delta = resources::compact_header_reservation(&record, new_scope)?;
             let resident_bytes =
                 resources::reserve(state.resident_bytes, delta, MAX_EVENT_RESIDENT_BYTES)?;
             let resident_delta = resources::ResidentLease::acquire(delta)?;
@@ -1642,14 +1634,20 @@ impl SegmentedEventStore {
                 .checked_add(encoded_len)
                 .filter(|value| *value <= self.config.limits.max_store_bytes)
                 .ok_or(EventStoreError::CapacityExhausted)?;
+            let scope = state
+                .by_scope
+                .get_key_value(&record.scope)
+                .map(|(scope, _)| Arc::clone(scope))
+                .unwrap_or_else(|| Arc::new(record.scope.clone()));
+            let header = compact::Header::new(&record, scope, working_bytes)?;
             (
                 record,
                 encoded,
-                key,
-                next_turn_seq,
+                compact::ReservedHeader {
+                    header,
+                    credit: resident_delta,
+                },
                 resident_bytes,
-                working_bytes,
-                resident_delta,
             )
         };
 
@@ -1755,31 +1753,46 @@ impl SegmentedEventStore {
                 .pending_bytes
                 .checked_add(encoded_len)
                 .ok_or(EventStoreError::CapacityExhausted)?;
-            state._resident_lease.merge(resident_delta);
-            let index = state.records.len();
-            state.by_key.insert(key.clone(), index);
+            state._resident_lease.merge(pending.credit);
+            // Credit is retained even if a fallible growth operation below
+            // fails after WAL publication: the store is poisoned, and already
+            // grown resident containers must remain charged until drop.
+            state.resident_bytes = resident_bytes;
             state
+                .records
+                .try_reserve(1)
+                .map_err(|_| EventStoreError::CapacityExhausted)?;
+            if !state.by_scope.contains_key(pending.header.scope.as_ref()) {
+                state
+                    .by_scope
+                    .try_reserve(1)
+                    .map_err(|_| EventStoreError::CapacityExhausted)?;
+            }
+            let scope_index = state
                 .by_scope
-                .entry(record.scope.clone())
-                .or_default()
-                .push(index);
-            state
-                .next_turn_seq
-                .insert(record.scope.clone(), next_turn_seq);
-            state.locations.insert(
-                key,
-                SegmentLocation {
-                    segment_id,
-                    offset,
-                    byte_len: encoded_len,
-                    store_seq: record.store_seq,
-                },
-            );
+                .entry(Arc::clone(&pending.header.scope))
+                .or_default();
+            scope_index.reserve_event()?;
+            let index = state.records.len();
+            // Header scope and ID are shared by the only identity/scope index.
+            let scope_index = state
+                .by_scope
+                .get_mut(pending.header.scope.as_ref())
+                .ok_or(EventStoreError::StatePoisoned)?;
+            scope_index
+                .by_event
+                .insert(Arc::clone(&pending.header.event_id), index);
+            scope_index.records.push(index);
+            pending.header.location = SegmentLocation {
+                segment_id,
+                offset,
+                byte_len: encoded_len,
+                store_seq: record.store_seq,
+            };
             state.byte_count = next_store_byte_count;
             state.last_record_sha256 = record.record_sha256.clone();
             state.resident_bytes = resident_bytes;
-            state.records.push(record_header(&record));
-            state.record_working_bytes.push(working_bytes);
+            state.records.push(pending.header);
             let segment = state
                 .segments
                 .get_mut(&segment_id)
@@ -1822,7 +1835,7 @@ impl SegmentedEventStore {
                 .by_scope
                 .get(scope)
                 .into_iter()
-                .flat_map(|indexes| indexes.iter())
+                .flat_map(|indexes| indexes.records.iter())
                 .copied()
                 .filter(|index| state.records[*index].turn_seq >= inclusive_turn_seq);
             self.read_records(state, indexes)
@@ -1832,11 +1845,11 @@ impl SegmentedEventStore {
     pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
         validate_scope(scope, &self.config.limits)?;
         validate_id("event_id", event_id, self.config.limits.max_id_bytes)?;
-        let key = EventKey::new(scope.clone(), event_id.to_string());
         self.with_live_records(|state| {
             state
-                .by_key
-                .get(&key)
+                .by_scope
+                .get(scope)
+                .and_then(|index| index.by_event.get(event_id))
                 .map(|index| self.read_record(state, *index))
                 .transpose()
         })
@@ -1845,8 +1858,13 @@ impl SegmentedEventStore {
     pub fn location(&self, scope: &TurnScope, event_id: &str) -> Result<Option<SegmentLocation>> {
         validate_scope(scope, &self.config.limits)?;
         validate_id("event_id", event_id, self.config.limits.max_id_bytes)?;
-        let key = EventKey::new(scope.clone(), event_id.to_string());
-        self.with_live_state(|state| state.locations.get(&key).copied())
+        self.with_live_state(|state| {
+            state
+                .by_scope
+                .get(scope)
+                .and_then(|index| index.by_event.get(event_id))
+                .map(|index| state.records[*index].location)
+        })
     }
 
     pub fn all_records(&self) -> Result<Vec<EventRecord>> {
@@ -1882,7 +1900,7 @@ impl SegmentedEventStore {
         validate_scope(scope, &self.config.limits)?;
         self.with_live_records(|state| {
             if let Some(indexes) = state.by_scope.get(scope) {
-                for &index in indexes {
+                for &index in &indexes.records {
                     if state.records[index].turn_seq < inclusive_turn_seq {
                         continue;
                     }
@@ -1928,10 +1946,11 @@ impl SegmentedEventStore {
         indexes.clone().try_fold(0, |sum, index| {
             resources::reserve(
                 sum,
-                *state
-                    .record_working_bytes
+                state
+                    .records
                     .get(index)
-                    .ok_or(EventStoreError::StatePoisoned)?,
+                    .ok_or(EventStoreError::StatePoisoned)?
+                    .working_bytes,
                 resources::MAX_TEMPORARY_ALLOCATION,
             )
         })?;
@@ -1954,11 +1973,10 @@ impl SegmentedEventStore {
             .records
             .get(index)
             .ok_or(EventStoreError::StatePoisoned)?;
-        let key = EventKey::new(header.scope.clone(), header.event_id.clone());
-        let location = state
-            .locations
-            .get(&key)
-            .ok_or(EventStoreError::StatePoisoned)?;
+        let location = &header.location;
+        if location.store_seq != header.store_seq {
+            return Err(EventStoreError::StatePoisoned);
+        }
         let segment = state
             .segments
             .get(&location.segment_id)
@@ -1998,7 +2016,7 @@ impl SegmentedEventStore {
         validate_record(&record, &self.config.limits)?;
         let working_bytes = resources::record_reservation(&record, &encoded)?;
         resources::reserve(0, working_bytes, MAX_EVENT_RESIDENT_BYTES)?;
-        if record_header(&record) != *header {
+        if !header.matches(&record)? {
             return Err(EventStoreError::EventConflict);
         }
         validate_segment_identity(&segment.path, segment.identity, &file, "segment read")?;
@@ -2083,12 +2101,13 @@ impl SegmentedEventStore {
         self.validate_all_segments_current()?;
         let encoded_result = (|| {
             let state = self.read_state()?;
-            let working = state
-                .record_working_bytes
-                .iter()
-                .try_fold(0, |sum, bytes| {
-                    resources::reserve(sum, *bytes, resources::MAX_TEMPORARY_ALLOCATION)
-                })?;
+            let working = state.records.iter().try_fold(0, |sum, header| {
+                resources::reserve(
+                    sum,
+                    header.working_bytes,
+                    resources::MAX_TEMPORARY_ALLOCATION,
+                )
+            })?;
             let records = self.read_records(&state, 0..state.records.len())?;
             let manifest = SnapshotManifest {
                 schema: SEGMENT_SNAPSHOT_SCHEMA,
@@ -2513,7 +2532,11 @@ fn snapshot_from_state(state: &SegmentedState) -> SegmentedEventStoreSnapshot {
     SegmentedEventStoreSnapshot {
         segment_count: state.segments.len(),
         record_count: state.records.len(),
-        indexed_count: state.locations.len(),
+        indexed_count: state
+            .by_scope
+            .values()
+            .map(|scope| scope.by_event.len())
+            .sum(),
         byte_count: state.byte_count,
         pending_records: state.pending_records,
         pending_bytes: state.pending_bytes,
@@ -2694,14 +2717,10 @@ struct SegmentSummary {
 
 #[derive(Debug)]
 struct SegmentedRecovered {
-    // Authenticated headers only; payload is Null internally and never exposed.
-    records: Vec<EventRecord>,
-    record_working_bytes: Vec<usize>,
+    // Compact authenticated headers, never exposed through public record APIs.
+    records: Vec<compact::Header>,
     resident_bytes: usize,
-    by_key: HashMap<EventKey, usize>,
-    by_scope: HashMap<TurnScope, Vec<usize>>,
-    locations: HashMap<EventKey, SegmentLocation>,
-    next_turn_seq: HashMap<TurnScope, u64>,
+    by_scope: HashMap<Arc<TurnScope>, compact::ScopeIndex>,
     segment_summaries: BTreeMap<u64, SegmentSummary>,
     byte_count: u64,
     last_record_sha256: String,
@@ -2879,11 +2898,11 @@ fn validate_index_manifest(
                 "entries are not a contiguous store-sequence prefix",
             ));
         }
-        let key = EventKey::new(entry.scope.clone(), entry.event_id.clone());
-        let expected_location = recovered
-            .locations
-            .get(&key)
-            .ok_or_else(|| invalid_sidecar("event index", "entry key is absent from the WAL"))?;
+        let expected_location = &recovered
+            .records
+            .get(position)
+            .ok_or_else(|| invalid_sidecar("event index", "entry key is absent from the WAL"))?
+            .location;
         if expected_location != &entry.location {
             return Err(invalid_sidecar(
                 "event index",
@@ -2894,7 +2913,7 @@ fn validate_index_manifest(
             .records
             .get(position)
             .ok_or_else(|| invalid_sidecar("event index", "entry points beyond the WAL"))?;
-        if record.scope != entry.scope || record.event_id != entry.event_id {
+        if record.scope.as_ref() != &entry.scope || record.event_id.as_ref() != entry.event_id {
             return Err(invalid_sidecar(
                 "event index",
                 "entry identity does not match the WAL sequence",
@@ -2980,7 +2999,12 @@ fn validate_snapshot_manifest(
         // fields and the hash chain. Recovered headers omit payloads; validate
         // the sidecar's complete record before matching its authenticated header.
         validate_record(record, &config.limits)?;
-        if recovered.records.get(position) != Some(&record_header(record)) {
+        if !recovered
+            .records
+            .get(position)
+            .ok_or(EventStoreError::StatePoisoned)?
+            .matches(record)?
+        {
             return Err(invalid_sidecar(
                 "event snapshot",
                 "record array diverges from the WAL prefix",
@@ -2999,11 +3023,7 @@ fn recovered_prefix_metadata(
     }
     let mut byte_count = 0_u64;
     for record in recovered.records.iter().take(count) {
-        let key = EventKey::new(record.scope.clone(), record.event_id.clone());
-        let location = recovered
-            .locations
-            .get(&key)
-            .ok_or(EventStoreError::StatePoisoned)?;
+        let location = &record.location;
         if location.store_seq != record.store_seq {
             return Err(EventStoreError::StatePoisoned);
         }
@@ -3014,10 +3034,7 @@ fn recovered_prefix_metadata(
     let last_hash = count
         .checked_sub(1)
         .and_then(|index| recovered.records.get(index))
-        .map_or_else(
-            || ZERO_SHA256.to_string(),
-            |record| record.record_sha256.clone(),
-        );
+        .map_or_else(|| ZERO_SHA256.to_string(), |record| record.record_digest());
     Ok((byte_count, last_hash))
 }
 
@@ -3478,12 +3495,8 @@ fn recover_segmented_segments(
 ) -> Result<SegmentedRecovered> {
     validate_root_identity(root, root_identity, root_dir)?;
     let mut records = Vec::new();
-    let mut record_working_bytes = Vec::new();
     let mut resident_bytes = resources::FIXED_RESIDENT_RESERVE;
-    let mut by_key = HashMap::new();
-    let mut by_scope = HashMap::<TurnScope, Vec<usize>>::new();
-    let mut locations = HashMap::new();
-    let mut next_turn_seq = HashMap::<TurnScope, u64>::new();
+    let mut by_scope = HashMap::<Arc<TurnScope>, compact::ScopeIndex>::new();
     let mut segment_summaries = BTreeMap::new();
     let mut byte_count = 0_u64;
     let mut previous = ZERO_SHA256.to_string();
@@ -3549,7 +3562,8 @@ fn recover_segmented_segments(
                 line.capacity(),
                 resources::MAX_TEMPORARY_ALLOCATION,
             )?;
-            let delta = resources::header_reservation(&record)?;
+            let new_scope = !by_scope.contains_key(&record.scope);
+            let delta = resources::compact_header_reservation(&record, new_scope)?;
             resident_bytes = resources::reserve(resident_bytes, delta, MAX_EVENT_RESIDENT_BYTES)?;
             resident_lease.merge(resources::ResidentLease::acquire(delta)?);
             validate_record(&record, &config.limits)?;
@@ -3560,7 +3574,7 @@ fn recover_segmented_segments(
                     "store sequence is not contiguous across segments".to_string(),
                 ));
             }
-            let expected_turn_seq = next_turn_seq.get(&record.scope).copied().unwrap_or(0);
+            let expected_turn_seq = compact::next_sequence(by_scope.get(&record.scope), &records)?;
             if record.turn_seq != expected_turn_seq {
                 return Err(EventStoreError::InvalidRecord(
                     "turn sequence is not contiguous".to_string(),
@@ -3571,34 +3585,43 @@ fn recover_segmented_segments(
                     "previous record digest does not match the chain".to_string(),
                 ));
             }
-            let key = EventKey::new(record.scope.clone(), record.event_id.clone());
-            if by_key.contains_key(&key) {
+            if by_scope
+                .get(&record.scope)
+                .is_some_and(|scope| scope.by_event.contains_key(record.event_id.as_str()))
+            {
                 return Err(EventStoreError::InvalidRecord(
                     "event identity is duplicated on disk".to_string(),
                 ));
             }
-            let index = records.len();
-            by_key.insert(key.clone(), index);
-            by_scope
-                .entry(record.scope.clone())
-                .or_default()
-                .push(index);
-            locations.insert(
-                key,
-                SegmentLocation {
-                    segment_id: segment.id,
-                    offset,
-                    byte_len: consumed_u64,
-                    store_seq: record.store_seq,
-                },
-            );
-            let next = expected_turn_seq.checked_add(1).ok_or_else(|| {
+            expected_turn_seq.checked_add(1).ok_or_else(|| {
                 EventStoreError::InvalidRecord("turn sequence exhausted".to_string())
             })?;
-            next_turn_seq.insert(record.scope.clone(), next);
+            let scope = by_scope
+                .get_key_value(&record.scope)
+                .map(|(scope, _)| Arc::clone(scope))
+                .unwrap_or_else(|| Arc::new(record.scope.clone()));
+            let mut header = compact::Header::new(&record, scope, working_bytes)?;
+            header.location = SegmentLocation {
+                segment_id: segment.id,
+                offset,
+                byte_len: consumed_u64,
+                store_seq: record.store_seq,
+            };
+            records
+                .try_reserve(1)
+                .map_err(|_| EventStoreError::CapacityExhausted)?;
+            by_scope
+                .try_reserve(1)
+                .map_err(|_| EventStoreError::CapacityExhausted)?;
+            let scope_index = by_scope.entry(Arc::clone(&header.scope)).or_default();
+            scope_index.reserve_event()?;
+            let index = records.len();
+            scope_index
+                .by_event
+                .insert(Arc::clone(&header.event_id), index);
+            scope_index.records.push(index);
             previous = record.record_sha256.clone();
-            records.push(record_header(&record));
-            record_working_bytes.push(working_bytes);
+            records.push(header);
             segment_records = segment_records
                 .checked_add(1)
                 .ok_or(EventStoreError::CapacityExhausted)?;
@@ -3628,12 +3651,8 @@ fn recover_segmented_segments(
     validate_root_identity(root, root_identity, root_dir)?;
     Ok(SegmentedRecovered {
         records,
-        record_working_bytes,
         resident_bytes,
-        by_key,
         by_scope,
-        locations,
-        next_turn_seq,
         segment_summaries,
         byte_count,
         last_record_sha256: previous,
@@ -3815,22 +3834,6 @@ fn validate_event_input(input: &EventInput, limits: &EventStoreLimits) -> Result
         ));
     }
     Ok(())
-}
-
-// Internal read-model headers never escape through the public record APIs.
-fn record_header(record: &EventRecord) -> EventRecord {
-    EventRecord {
-        schema: record.schema.clone(),
-        store_seq: record.store_seq,
-        turn_seq: record.turn_seq,
-        scope: record.scope.clone(),
-        event_id: record.event_id.clone(),
-        kind: record.kind.clone(),
-        payload: Value::Null,
-        payload_sha256: record.payload_sha256.clone(),
-        previous_record_sha256: record.previous_record_sha256.clone(),
-        record_sha256: record.record_sha256.clone(),
-    }
 }
 
 fn validate_record(record: &EventRecord, limits: &EventStoreLimits) -> Result<()> {
@@ -4616,10 +4619,16 @@ mod tests {
             .expect("segmented event store");
         let scope = TurnScope::new("session", "profile", "task", "turn", "stream");
         store
-            .write_state()
-            .expect("state lock")
-            .next_turn_seq
-            .insert(scope.clone(), u64::MAX);
+            .append(EventInput {
+                scope: scope.clone(),
+                event_id: "existing-event".into(),
+                kind: "observation".into(),
+                payload: serde_json::json!({"existing": true}),
+            })
+            .expect("one admitted scope");
+        // The compact model derives its checked semantic sequence from the
+        // authenticated last header, rather than an independent sequence map.
+        store.write_state().expect("state lock").records[0].turn_seq = u64::MAX;
         let segment = store
             .segment_paths()
             .expect("segment paths")
@@ -4638,7 +4647,7 @@ mod tests {
             .expect_err("semantic sequence exhaustion must fail closed");
         assert!(matches!(error, EventStoreError::CapacityExhausted));
         assert_eq!(std::fs::read(&segment).expect("read segment"), before);
-        assert_eq!(store.snapshot().expect("snapshot").record_count, 0);
+        assert_eq!(store.snapshot().expect("snapshot").record_count, 1);
     }
 
     #[test]

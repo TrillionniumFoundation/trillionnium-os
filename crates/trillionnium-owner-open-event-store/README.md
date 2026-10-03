@@ -33,12 +33,28 @@ metadata and pathname capacity have separate charges. Arc clones share these
 leases until the final owner drops. An append reserves growth before WAL bytes
 or a rotated segment are written; recovery charges each retained record/header
 and releases every partial reservation on refusal. Capacity never evicts an
-accepted or uncertain identity. V2 retains authenticated headers and location/key/
-scope indexes; payloads are read from pinned segments on demand and their full
+accepted or uncertain identity. V2 retains compact authenticated headers and one
+per-scope event-ID/ordinal index; payloads are read from pinned segments on demand and their full
 record digests are checked against the recovered headers. Startup still scans
 and authenticates the complete WAL chain. V1 retains its payload read model
-under the same shared resident gate. Reservations include owned capacities,
-repeated index strings and container growth slots. Heavy codecs/response builds
+under the same shared resident gate. Each V2 turn shares one immutable full-content
+`Arc<TurnScope>` with its headers. Event-ID Arcs are shared by header and key;
+physical location and working reservation live in the header. The three validated
+lowercase digests occupy fixed 32-byte arrays. Next turn sequence is checked from
+the last authenticated header and compared to the ordinal index length. Public
+records, WAL bytes and sidecar schemas remain unchanged; every read validates the
+full WAL record and every header field. Internal Arcs do not escape public APIs.
+
+V2 growth reserves four compact header/ordinal slots for old/new Vec overlap,
+eight slots per compact hash-map bucket for rehash/control slack, and two copies
+of owned allocation bytes with explicit Arc counters and 64 bytes of logical
+alignment/allocator slack per allocation. A first scope additionally charges its
+five owned strings, Arc and scope-map bucket; later records share that allocation.
+No coefficient of the legacy full-record reservation was reduced. Credit is
+acquired before compact allocations and is dropped after them. If fallible index
+growth fails after WAL write, retained credit covers already grown containers
+and the live store is poisoned. These conservative reservations do not measure
+allocator metadata or process RSS. Heavy codecs/response builds
 serialize on a separate working lane whose lease survives callbacks, I/O and
 unwind; accounting atomics are never locked across those operations. An owned
 append argument waiting for that lane first reserves its actual input capacity

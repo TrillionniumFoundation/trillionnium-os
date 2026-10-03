@@ -25,8 +25,8 @@
       "sha256": "fe3086490d3f4b146fccbe93ed76ee2d69adb91022673424523fb216ddee9222"
     },
     "docs/machine/module-contract-catalog.v1.json": {
-      "bytes": 62930,
-      "sha256": "6baa4dadaf8d21a638f34e3427772925f67a657180f33d7a686746588463e033"
+      "bytes": 65059,
+      "sha256": "0661bc0cd05718ebc2cbab138e3c166ff4e52342f5ec66107f6d61784ea7ed9d"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -350,7 +350,7 @@
     },
     "schemas/modules/broker/compatibility.json": {
       "bytes": 12813,
-      "sha256": "84ca4ad928f4310a127f19bc5d0a604a64ba3bca9972a16f758c5243bc16c3e8"
+      "sha256": "a2f051c1fd9fa0fba7accaa0a9cedcb16f5d17332e80581e621faf100f428ede"
     },
     "schemas/modules/broker/errors-v1.schema.json": {
       "bytes": 4420,
@@ -505,8 +505,8 @@
       "sha256": "efd24a17d8f4298c47c9090009be4ad6ac6644cfa560e49981692913589cf5c8"
     },
     "schemas/modules/event-store/compatibility.json": {
-      "bytes": 6617,
-      "sha256": "6b1bab9a423531cc938726e5407bf95393f8e742b57ba33f0655f6d8c480a154"
+      "bytes": 6809,
+      "sha256": "8376f8655cec654eb8e27b8eef155a4bd71b7bc2e05374529b70a357d0424c93"
     },
     "schemas/modules/event-store/errors-v1.schema.json": {
       "bytes": 4440,
@@ -817,8 +817,8 @@
       "sha256": "82621bf5e1dde077969cbc707402734bf78635357a66ed315ec2f523f16a61f1"
     },
     "schemas/modules/execution-core/compatibility.json": {
-      "bytes": 6498,
-      "sha256": "c271fe3fddb907f1c4230765516230702a30651ad7e5e3d2bfdc0720358f7185"
+      "bytes": 8235,
+      "sha256": "2170821383ea4b66a13a64f467b08dcf11e37519889075188f905a6e8e7dd11c"
     },
     "schemas/modules/execution-core/errors-v1.schema.json": {
       "bytes": 4442,
@@ -2222,7 +2222,7 @@
     },
     "schemas/modules/transport/compatibility.json": {
       "bytes": 8789,
-      "sha256": "54be9b034fc9b1c24f50287cb474dfb81019816bd8757332533f5635fa998dc3"
+      "sha256": "75a891d26eecd00c2b65eb977d2f794ae8c059a0b9a8beb8e224b71e37aa15f9"
     },
     "schemas/modules/transport/errors-v1.schema.json": {
       "bytes": 4432,

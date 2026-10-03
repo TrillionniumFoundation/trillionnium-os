@@ -83,3 +83,130 @@ rounds according to its predeclared batch protocol, rather than cherry-pick
 loss-free snapshots or splice them into a batch. The Rust slot collector removes
 the shared producer publication lock, but snapshot contention, other loss causes
 and whole-batch collection reliability still require explicit qualification.
+
+
+## Completion streaming v2
+
+`TRILLIONNIUM_OWNER_TRACE_MODE=streaming-completion` selects a separate codec.
+It requires `TRILLIONNIUM_OWNER_TRACE_SAMPLE` and an absolute
+`TRILLIONNIUM_OWNER_TRACE_STREAM_OUTPUT` prefix in an existing owner-private
+directory. Snapshot output and stream output cannot be mixed. A stream output
+without a valid mode, an unsupported mode, or a missing sample is rejected;
+entrypoints do not silently fall back to snapshot or default-off success.
+Snapshot mode and its 8192-record per-process lifetime are unchanged. The
+older begin-order streaming v1 prototype has no compatibility fallback.
+
+Each physical producer names its evidence with role, real PID, Linux process
+start ticks and a SHA256 of its boot identifier. This distinguishes Core
+process generations under one prefix. Context creation is exclusive; no file
+is overwritten. A physical role cannot reinitialize the same generation to
+reset a trace. None of these fields proves installed source identity.
+
+The four independent closed-world object schemas are
+[context v2](schemas/context.v2.schema.json),
+[chunk v2](schemas/chunk.v2.schema.json),
+[ACK v2](schemas/ack.v2.schema.json) and
+[terminator v2](schemas/terminator.v2.schema.json).
+`tools/perf/inspect_monotonic_stream.py` is the strict read consumer. Schemas
+validate individual JSON shapes; they do not alone prove file custody,
+matching generation/PID, cross-object identity, ordering or complete scope.
+The consumer rejects duplicate members, unknown keys, old or mixed versions,
+changes during held-FD reads, extra generation files, missing records and
+contradictory counts. Use the exact immutable consumer bytes:
+
+```sh
+python3 -B tools/perf/inspect_monotonic_stream.py /absolute/private/prefix.role.pid.ticks.boot.context.json
+python3 -B -m unittest tools.tests.test_owner_open_monotonic_stream
+```
+
+### Start, completion and reuse contract
+
+A successful span start receives one immutable `start_claim_id` and one
+resident credit. Pending starts and completed records waiting for ACK share
+exactly 1024 credits. They never hold an output bank merely because a scope is
+long. `completion_sequence` is assigned when a closed record is admitted to a
+bank; it is not a sort of cross-thread end timestamps. A real listener accept
+can start first and publish last without renumbering its start identity.
+
+There are two 512-slot completion banks. Sealing preserves every claimed
+range; a partially sealed epoch explicitly declares its unused tail through
+slot 512. Unused slots are not allocated starts, dropped records or implicit
+loss-free records. Before exposing a chunk, all admitted publications must be
+closed and present. A publisher retaining a former active bank reselects an
+actual available bank within the same finite 512-attempt admission bound;
+it does not wait for an exporter, retry an effect or erase a failed span.
+
+Only an immutable exclusive chunk and matching ACK that have passed write,
+file fsync, held parent/leaf identity and SHA checks, directory fsync and final
+custody/loss checks permit slot clearing and credit return. Slot guards are
+dropped before publishing FREE. This ordering is explicit; it does not prove
+that a prior observed loss was caused by an early FREE transition. A failed
+publication, write, fsync, custody check or late loss retains an incomplete
+scope. No drain restarts or silently resumes a sticky failed exporter.
+
+Final source close rejects pending/abandoned/invalid spans, observed loss,
+unacknowledged banks and unequal started/published/acknowledged counts. The
+consumer verifies unique start IDs exactly cover `[0, started_count)`, ACKs
+bind physical chunk FD9/bytes/SHA, and the terminator binds every generation
+file and byte. All artifact `trace_complete`, `installed_qualified` and
+`producer_quiescence_proven` fields remain false: source close does not prove
+whole-process-family quiescence or independent installed custody.
+
+### Separate disk and RAM bounds
+
+Each physical producer has lifetime bounds of 65,536 starts, 256 epochs,
+514 files (one context, at most 256 chunk/ACK pairs, one terminator) and 16 MiB
+of total physical evidence bytes. Every context, chunk, ACK and terminator is
+counted. Metadata objects are capped at 4096 bytes and each chunk at 512 KiB.
+Short seals consume an epoch without resetting start IDs; these are ceilings,
+not a promise that any workload can reach every ceiling without loss.
+
+RAM admission is independent of that disk bound. Rust owns 1024 slot mutexes
+and at most 1024 pending-plus-unACKed bounded records, each with a 64-byte
+scope SHA string, bounded sample/role identifiers, and finite parent handles.
+The single active exporter may hold up to 512 record clones, a serialized
+chunk, ACK metadata and a file-verification read buffer. Python holds at most
+1024 pending-plus-unACKed records, each with its bounded record dictionary,
+integer objects, SHA string and span object. Its single exporter additionally
+holds up to 512 copied record dictionaries and JSON string/UTF-8/read buffers.
+The two languages have different object and allocator costs; a record count
+is not a one-MiB byte quota. Source-local allocation probes measure requested
+Rust allocations and Python `tracemalloc` separately, including a real
+1024-pending/512-completed export overlap. They do not measure allocator
+metadata, physical RSS, simultaneous producer/exporter families or caller
+wire queues and threads.
+
+The proposed aggregate 16 MiB **RAM** budget remains HOLD. It is not this
+16 MiB per-producer **disk** bound and is not the planned telemetry module's
+resource allowance. Independent accounting must include the actual broker
+process, every physical Host/Core generation, simultaneous exporters,
+allocator staging, queues and process/thread lifecycle. No new product
+background thread or effect resource authority is introduced; the existing
+16-owner/32 MiB effect pool remains unchanged.
+
+### Failure and qualification boundary
+
+Rust preserves a saturating lower-bound loss count and an independently
+admitted first finite loss phase. Python preserves observed loss with an
+unavailable numeric count. Final exporter acquisition busy/poisoned and
+physical write/custody failures retain their first phase and bounded message;
+an exporter acquiring a lock later cannot replace that cause with a generic
+loss error and acknowledge or reuse the retained banks.
+
+These changes preserve the earlier real failed rounds. A prior Host 300-turn
+round ended with trace loss whose first loss mechanism was not retained and
+remains unknown. A separate deterministic retained-active-index counterexample
+proves the bank handoff defect; it does not assign that cause to the historical
+round. New source-local 300-turn and Python 1000-request observations are
+limited owned protocol evidence. The actual Host 1000-turn run stopped after
+420 terminal observations with journal capacity exhaustion and a subsequent
+`turn_journal_unavailable`; its exact capacity branch requires separate
+resident/read-model diagnosis. It is not replaced by a passing 300-turn run.
+
+Finite buffers can still lose evidence under slow export, insufficient drain
+points or long pending spans. Preserve and reject the entire incomplete round;
+do not restart/reset producers, discard records, select loss-free fragments or
+splice them into a batch. Complete 6000 raw workload samples, workload reset
+contracts, real installed execution, full resource lifecycle, family RAM and
+L2 remain separate unclosed gates. Normal source contract generation and
+accurate fresh candidate verification are also required before integration.

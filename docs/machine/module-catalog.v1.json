@@ -633,7 +633,9 @@
       "owner_team": "team-execution-core",
       "paths": [
         "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7",
-        "crates/trillionnium-owner-open-trace"
+        "crates/trillionnium-owner-open-trace",
+        "tools/perf/inspect_monotonic_stream.py",
+        "tools/tests/test_owner_open_monotonic_stream.py"
       ],
       "plane": "execution",
       "resource_contract": {

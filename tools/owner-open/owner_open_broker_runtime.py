@@ -14,7 +14,7 @@ import threading
 import time
 from typing import Any
 
-from owner_open_broker_common import BrokerError, canonical, require_id, performance_span, performance_stage, performance_trace_enabled
+from owner_open_broker_common import BrokerError, canonical, require_id, performance_span, performance_stage, performance_trace_enabled, drain_performance_stream_at_caller_boundary
 
 CORRELATION_FIELDS = (
     "session_id",
@@ -533,6 +533,9 @@ class Client:
     def writer(self) -> None:
         try:
             while not self.closed.is_set():
+                # Prior send returned; its delivery span and Client.lock are
+                # released. Queue.get owns no mutex across this boundary.
+                drain_performance_stream_at_caller_boundary()
                 try:
                     encoded = self.queue.get(timeout=0.1)
                     wait = getattr(encoded, "performance_wait", None)

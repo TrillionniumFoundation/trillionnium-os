@@ -193,6 +193,23 @@ fn index_and_long_id_capacity_never_evict_accepted_identity() {
 #[ignore = "real linked-module long-identity capacity fixture"]
 fn index_long_id_fixture() {
     let directory = secure_dir();
+    // Keep genuine resident pressure below the independent sidecar codec
+    // ceiling. Compact headers admit more long IDs than the old duplicated
+    // model; this test targets shared resident refusal, not sidecar refusal.
+    let pressure = DurableEventStore::open(
+        directory.path().join("pressure-v1"),
+        EventStoreLimits::default(),
+        SyncPolicy::None,
+    )
+    .unwrap();
+    for index in 0..12 {
+        pressure
+            .append(input(
+                &format!("pressure-{index}"),
+                json!({"value": "x".repeat(512 * 1024)}),
+            ))
+            .unwrap();
+    }
     let root = directory.path().join("store");
     let mut config = SegmentedEventStoreConfig::default();
     config.limits.max_id_bytes = 4096;
@@ -210,15 +227,37 @@ fn index_long_id_fixture() {
         payload: json!({"accepted": true}),
     };
     let mut accepted = 0;
-    for index in 0..256 {
+    let mut last_delta = None;
+    for index in 0..1024 {
+        let before = store.snapshot().unwrap();
+        let resident_before = store.resident_bytes().unwrap();
         match store.append(make(index)) {
-            Ok(_) => accepted += 1,
-            Err(EventStoreError::CapacityExhausted) => break,
+            Ok(_) => {
+                accepted += 1;
+                let delta = store.resident_bytes().unwrap() - resident_before;
+                if let Some(previous) = last_delta {
+                    assert_eq!(delta, previous);
+                }
+                last_delta = Some(delta);
+            }
+            Err(EventStoreError::CapacityExhausted) => {
+                assert_eq!(store.snapshot().unwrap(), before);
+                let shared = resident_before + pressure.resident_bytes().unwrap();
+                let next_credit = last_delta.expect("an accepted measured delta");
+                assert!(MAX_EVENT_RESIDENT_BYTES - shared < next_credit);
+                println!(
+                    "long_id_resident_before={shared} next_credit={next_credit} maximum={MAX_EVENT_RESIDENT_BYTES} accepted={accepted}"
+                );
+                break;
+            }
             Err(error) => panic!("unexpected {error}"),
         }
     }
-    assert!((2..256).contains(&accepted));
-    assert!(store.resident_bytes().unwrap() <= MAX_EVENT_RESIDENT_BYTES);
+    assert!((2..1024).contains(&accepted));
+    assert!(
+        store.resident_bytes().unwrap() + pressure.resident_bytes().unwrap()
+            <= MAX_EVENT_RESIDENT_BYTES
+    );
     assert_eq!(
         store.append(make(0)).unwrap().disposition,
         AppendDisposition::Existing
@@ -551,13 +590,28 @@ fn shared_resident_fixture() {
         payload: json!({"accepted": true}),
     };
     let mut accepted = 0;
-    for index in 0..128 {
+    let mut last_delta = None;
+    for index in 0..1024 {
         let before = b.snapshot().unwrap();
+        let resident_before = b.resident_bytes().unwrap();
         let bytes = fs::read(b.segment_paths().unwrap().last().unwrap()).unwrap();
         match b.append(make(index)) {
-            Ok(_) => accepted += 1,
+            Ok(_) => {
+                accepted += 1;
+                let delta = b.resident_bytes().unwrap() - resident_before;
+                if let Some(previous) = last_delta {
+                    assert_eq!(delta, previous);
+                }
+                last_delta = Some(delta);
+            }
             Err(EventStoreError::CapacityExhausted) => {
                 assert_eq!(b.snapshot().unwrap(), before);
+                let shared = resident_before + a.resident_bytes().unwrap();
+                let next_credit = last_delta.expect("an accepted measured delta");
+                assert!(MAX_EVENT_RESIDENT_BYTES - shared < next_credit);
+                println!(
+                    "shared_resident_before={shared} next_credit={next_credit} maximum={MAX_EVENT_RESIDENT_BYTES} accepted={accepted}"
+                );
                 assert_eq!(
                     fs::read(b.segment_paths().unwrap().last().unwrap()).unwrap(),
                     bytes
@@ -727,9 +781,10 @@ fn partial_recovery_fixture() {
         kind: "fixture".into(),
         payload: json!({"accepted": true}),
     };
-    for index in 0..64 {
+    for index in 0..320 {
         history.append(make(index)).unwrap();
     }
+    let history_reservation = history.resident_bytes().unwrap();
     history.flush().unwrap();
     let segment = history.segment_paths().unwrap().pop().unwrap();
     drop(history);
@@ -749,6 +804,14 @@ fn partial_recovery_fixture() {
             ))
             .unwrap();
     }
+    assert!(
+        history_reservation + blocker.resident_bytes().unwrap() > MAX_EVENT_RESIDENT_BYTES,
+        "fixture must cause genuine shared-pool recovery pressure"
+    );
+    println!(
+        "recovery_history_credit={history_reservation} blocker_credit={} maximum={MAX_EVENT_RESIDENT_BYTES}",
+        blocker.resident_bytes().unwrap()
+    );
     for _ in 0..3 {
         assert!(matches!(
             DurableEventStore::open(&legacy_path, EventStoreLimits::default(), SyncPolicy::None),
@@ -776,7 +839,7 @@ fn partial_recovery_fixture() {
     assert_eq!(recovered.snapshot().unwrap().record_count, 16);
     drop(recovered);
     let recovered = SegmentedEventStore::open(&root, config).unwrap();
-    assert_eq!(recovered.snapshot().unwrap().record_count, 64);
+    assert_eq!(recovered.snapshot().unwrap().record_count, 320);
     assert_eq!(
         recovered.append(make(0)).unwrap().disposition,
         AppendDisposition::Existing

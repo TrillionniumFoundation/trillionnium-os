@@ -97,8 +97,8 @@
   "implementation_sources": [
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/entry.rs",
-      "sha256": "0ba35b039601b7e02ac3e969b6b26cb8280b11747ab8b7f8ca385564080085e6",
-      "size": 7190
+      "sha256": "19eeb52297a07c9a0a519fdecc6bf5b82f006e8dc8da8e250b0ef0979dd1877d",
+      "size": 7187
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/imports.rs",
@@ -107,8 +107,8 @@
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
-      "sha256": "2169537237de988ba9d94ef4883108e7961899d6dd8d6c8175179452211b5de6",
-      "size": 115066
+      "sha256": "5c9b6ec5e864612981a5a79e9a03d09ea109239cb8cc275bb25016c251482190",
+      "size": 115366
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
@@ -121,9 +121,44 @@
       "size": 352
     },
     {
+      "path": "crates/trillionnium-owner-open-trace/examples/stream_allocation_probe.rs",
+      "sha256": "3e5d941bff8dc5e056f92d351b58f485a66b19e0e3ead1690c1f4a462887ff15",
+      "size": 4326
+    },
+    {
+      "path": "crates/trillionnium-owner-open-trace/schemas/ack.v2.schema.json",
+      "sha256": "13a237a23dfa2add266735640986c190d8fd208997adc347b24f10e0217868ee",
+      "size": 2917
+    },
+    {
+      "path": "crates/trillionnium-owner-open-trace/schemas/chunk.v2.schema.json",
+      "sha256": "b00bb7d6398703f18e2424e973432e2b8a91c20a0c7fa24e84b7bed726f3260e",
+      "size": 5669
+    },
+    {
+      "path": "crates/trillionnium-owner-open-trace/schemas/context.v2.schema.json",
+      "sha256": "af0ad12e077b919fff773fe2932044ae15c6b44c428c6cb496123585112a83cb",
+      "size": 2605
+    },
+    {
+      "path": "crates/trillionnium-owner-open-trace/schemas/terminator.v2.schema.json",
+      "sha256": "f3db8a373817bb368a1d42b38a941e77bf16bdba8f64e4d193a45970dab76710",
+      "size": 3043
+    },
+    {
       "path": "crates/trillionnium-owner-open-trace/src/lib.rs",
-      "sha256": "0f8ddcfcaa8d4993d751d2fcd852aa8a6b51fb784278c3e16e2e88b3940747b1",
-      "size": 22231
+      "sha256": "fd1d71bd02be91c4ef9d3dce30580319bb286a380fc44feef9f76d6e51c00dac",
+      "size": 26119
+    },
+    {
+      "path": "crates/trillionnium-owner-open-trace/src/stream.rs",
+      "sha256": "564b09369dc301226155e12b62a9f0697eca7fd98d47769fea37078ddc09a790",
+      "size": 34196
+    },
+    {
+      "path": "tools/perf/inspect_monotonic_stream.py",
+      "sha256": "a7e0ddc2a9ee6f741be39a29916e2b112d6dec696db90b0220e762bbd6ce2e1d",
+      "size": 14390
     }
   ],
   "introduction_review_class": "INITIAL_V1",
@@ -178,9 +213,19 @@
   "state_schema_version": "1",
   "test_sources": [
     {
+      "path": "crates/trillionnium-owner-open-trace/src/stream/tests.rs",
+      "sha256": "beaa24793acbb6cf7b2064cc810c58489fbab7250e97c4bdc7e8c344845ecb16",
+      "size": 8961
+    },
+    {
       "path": "tools/tests/test_module_contracts.py",
       "sha256": "6419413c1a48bb966b26ed48ee04c6b05ba8008ccb131dcad7ea1c2264b83334",
       "size": 49445
+    },
+    {
+      "path": "tools/tests/test_owner_open_monotonic_stream.py",
+      "sha256": "7ca25744ca477921e89af83968747c5c306ade9d99b9660c920cba9137b99849",
+      "size": 13343
     }
   ],
   "unknown_fields": "REJECT"

@@ -20,6 +20,8 @@ Source ownership paths:
 
 - `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7`
 - `crates/trillionnium-owner-open-trace`
+- `tools/perf/inspect_monotonic_stream.py`
+- `tools/tests/test_owner_open_monotonic_stream.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -252,3 +254,32 @@ observes existing behavior; it does not implement or activate the planned
 telemetry module, alter effect admission, or upgrade installed/WL/L2 evidence.
 Every exported snapshot remains provisional; producer quiescence and an
 aggregate producer/memory bound require independent outer evidence.
+
+
+### Optional completion-stream v2 compatibility
+
+The separate `streaming-completion` mode preserves physical start identities
+while assigning completion sequence at closed publication admission. The four
+closed JSON Schemas live under `crates/trillionnium-owner-open-trace/schemas`;
+`tools/perf/inspect_monotonic_stream.py` additionally checks physical FD custody,
+exact start-ID closure, explicit unused epoch tails and the durable chunk/ACK
+chain. It rejects snapshot v1, begin-order stream v1, mixed versions, unknown
+members, loss, pending starts and unacknowledged records. No old artifact is
+migrated, renumbered or relabelled.
+
+This is an opt-in source recorder owned by execution core. The catalog API and
+authoritative state v1 contracts retain their existing read/write matrix; the
+optional trace codec is not authoritative product state and activates none of
+`MOD-TELEMETRY`. Snapshot v1 retains its 8192-record lifetime and default-off
+behavior. Completion v2 has 1024 resident credits, two 512-slot banks, 65,536
+starts, 256 epochs, 514 files and a separate 16 MiB lifetime disk ceiling. These
+are per physical producer, not an aggregate RAM guarantee. Slow export, long
+pending spans or exhausted limits explicitly leave incomplete evidence;
+durable ACK is required before credits are returned. Caller drain points are
+outside product locks and add no product background thread.
+
+Current source mechanism and limited owned protocol tests do not close the
+actual Host 1000-turn event-store capacity blocker, whole-family RAM accounting,
+six 1000-sample batches, installed custody, physical workloads or L2. Preserve
+failed rounds and their first observable phase. Read the detailed trace README
+for the mode selection, resources, failure and retention contract.

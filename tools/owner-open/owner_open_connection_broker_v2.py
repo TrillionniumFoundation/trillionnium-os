@@ -83,6 +83,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str]) -> int:
     try:
+        if "TRILLIONNIUM_OWNER_TRACE_SAMPLE" not in os.environ and (
+                "TRILLIONNIUM_OWNER_TRACE_MODE" in os.environ or
+                "TRILLIONNIUM_OWNER_TRACE_STREAM_OUTPUT" in os.environ):
+            raise ValueError("explicit trace mode/output requires sample")
         if "TRILLIONNIUM_OWNER_TRACE_SAMPLE" in os.environ:
             configure_performance_trace(os.environ["TRILLIONNIUM_OWNER_TRACE_SAMPLE"], "broker")
     except ValueError as error:

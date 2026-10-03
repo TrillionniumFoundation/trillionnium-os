@@ -12,6 +12,7 @@ use std::os::unix::fs::MetadataExt;
 use std::path::Path;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, OnceLock};
+mod stream;
 
 pub const MAX_RECORDS: usize = 8192;
 pub const MAX_EXPORT_BYTES: usize = 8 * 1024 * 1024;
@@ -85,6 +86,7 @@ pub struct Recorder {
     next: AtomicU64,
     lost: AtomicU64,
     open: AtomicU64,
+    stream: Option<stream::Stream>,
 }
 
 fn identifier(value: &str) -> bool {
@@ -137,19 +139,46 @@ impl Recorder {
             next: AtomicU64::new(0),
             lost: AtomicU64::new(0),
             open: AtomicU64::new(0),
+            stream: None,
         }))
+    }
+
+    fn new_stream(sample_id: &str, role: &str, prefix: &Path) -> Result<Arc<Self>, String> {
+        let stream = stream::Stream::new(sample_id, role, prefix)?;
+        Ok(Arc::new(Self {
+            sample_id: sample_id.into(),
+            role: role.into(),
+            capacity: 2 * stream::BANK_SLOTS,
+            slots: Vec::new(),
+            next: AtomicU64::new(0),
+            lost: AtomicU64::new(0),
+            open: AtomicU64::new(0),
+            stream: Some(stream),
+        }))
+    }
+
+    fn record_loss(&self) {
+        increment(&self.lost);
+        if let Some(stream) = &self.stream {
+            stream.record_loss();
+        }
     }
 
     pub fn start(self: &Arc<Self>, stage: Stage, key: &str, deferred: bool) -> Span {
         if key.len() > MAX_KEY_BYTES {
-            increment(&self.lost);
+            self.record_loss();
             return Span(None);
         }
         let Some(start_ns) = monotonic_ns() else {
-            increment(&self.lost);
+            self.record_loss();
             return Span(None);
         };
-        let Some(sequence) = self.claim_slot() else {
+        let Some(sequence) = self
+            .stream
+            .as_ref()
+            .map_or_else(|| self.claim_slot(), |s| s.claim())
+        else {
+            // Stream claim already preserves its own lower-bound loss.
             increment(&self.lost);
             return Span(None);
         };
@@ -191,6 +220,9 @@ impl Recorder {
 
     /// Call outside all product locks. Refuses to block behind a hook.
     pub fn snapshot(&self) -> Result<Snapshot, String> {
+        if self.stream.is_some() {
+            return Err("streaming evidence is not snapshot v1".into());
+        }
         let claimed = self.next.load(Ordering::Acquire) as usize;
         let mut records = Vec::with_capacity(claimed);
         for slot in &self.slots[..claimed] {
@@ -251,10 +283,17 @@ impl Span {
         let recorder = p.recorder;
         let now = monotonic_ns();
         if end == "abandoned" || now.is_none() || now.is_some_and(|n| n < p.record.start_ns) {
-            increment(&recorder.lost);
+            recorder.record_loss();
         }
         p.record.end_ns = now.unwrap_or(p.record.start_ns);
         p.record.end = end;
+        if let Some(stream) = &recorder.stream {
+            if !stream.publish(p.record) {
+                increment(&recorder.lost);
+            }
+            recorder.open.fetch_sub(1, Ordering::Release);
+            return;
+        }
         match recorder.slots[p.record.sequence as usize].try_lock() {
             Ok(mut slot) => {
                 if slot.is_none() {
@@ -299,11 +338,30 @@ pub fn measure<T>(stage: Stage, key: &str, f: impl FnOnce() -> T) -> T {
     f()
 }
 pub fn configure_from_env(role: &str) -> Result<(), String> {
+    let mode = std::env::var("TRILLIONNIUM_OWNER_TRACE_MODE").ok();
+    let stream_output = std::env::var_os("TRILLIONNIUM_OWNER_TRACE_STREAM_OUTPUT");
+    if mode
+        .as_deref()
+        .is_some_and(|m| m != "snapshot" && m != "streaming-completion")
+    {
+        return Err("invalid explicit trace mode".into());
+    }
+    if stream_output.is_some() && mode.as_deref() != Some("streaming-completion") {
+        return Err("stream output requires explicit streaming mode".into());
+    }
     let Some(sample) = std::env::var_os("TRILLIONNIUM_OWNER_TRACE_SAMPLE") else {
+        if mode.is_some() || stream_output.is_some() {
+            return Err("explicit trace mode/output requires sample".into());
+        }
         return Ok(());
     };
     let sample = sample.to_str().ok_or("non-UTF8 trace sample")?;
-    let recorder = Recorder::new(sample, role, MAX_RECORDS)?;
+    let recorder = if mode.as_deref() == Some("streaming-completion") {
+        let path = stream_output.ok_or("streaming mode requires dedicated output prefix")?;
+        Recorder::new_stream(sample, role, Path::new(&path))?
+    } else {
+        Recorder::new(sample, role, MAX_RECORDS)?
+    };
     install(recorder)
 }
 pub fn install(recorder: Arc<Recorder>) -> Result<(), String> {
@@ -315,10 +373,61 @@ pub fn active_snapshot() -> Result<Option<Snapshot>, String> {
     ACTIVE.get().map(|r| r.snapshot()).transpose()
 }
 
+/// Call only at an explicitly reviewed outer boundary with product locks
+/// released. This is off-default, never invoked by a stage hook.
+pub fn drain_stream_from_env() -> Result<(), String> {
+    ACTIVE
+        .get()
+        .and_then(|r| r.stream.as_ref())
+        .map_or(Ok(()), |s| s.drain(false))
+}
+pub fn streaming_enabled() -> bool {
+    ACTIVE.get().is_some_and(|r| r.stream.is_some())
+}
+
+/// The source integrations call this only between product operations, with
+/// their mutexes and stdout guards released. Sticky export failure is reported
+/// by final export; it never rewrites the independent effect result.
+pub fn drain_stream_at_caller_boundary() {
+    let _ = drain_stream_from_env();
+}
+
+/// The snapshot/default path retains its original whole-run stdout guard.
+/// Streaming uses the same sole writer but releases the standard stdout mutex
+/// after each write/flush, before the outer caller can perform durable drain.
+pub enum CallerStdout {
+    Snapshot(std::io::StdoutLock<'static>),
+    Streaming(std::io::Stdout),
+}
+impl std::io::Write for CallerStdout {
+    fn write(&mut self, raw: &[u8]) -> std::io::Result<usize> {
+        match self {
+            Self::Snapshot(w) => w.write(raw),
+            Self::Streaming(w) => w.write(raw),
+        }
+    }
+    fn flush(&mut self) -> std::io::Result<()> {
+        match self {
+            Self::Snapshot(w) => w.flush(),
+            Self::Streaming(w) => w.flush(),
+        }
+    }
+}
+pub fn caller_stdout() -> CallerStdout {
+    if streaming_enabled() {
+        CallerStdout::Streaming(std::io::stdout())
+    } else {
+        CallerStdout::Snapshot(std::io::stdout().lock())
+    }
+}
+
 /// Optional evidence export; not called by hooks. Existing private parent only.
 /// Every ancestor is opened no-follow, output is a fresh owned inode. A failure
 /// may leave a partial file, which cannot qualify without caller zero/complete.
 pub fn export_from_env() -> Result<(), String> {
+    if let Some(stream) = ACTIVE.get().and_then(|r| r.stream.as_ref()) {
+        return stream.drain(true);
+    }
     use std::os::fd::{AsRawFd, FromRawFd};
     use std::os::unix::ffi::OsStrExt;
     let started = std::time::Instant::now();

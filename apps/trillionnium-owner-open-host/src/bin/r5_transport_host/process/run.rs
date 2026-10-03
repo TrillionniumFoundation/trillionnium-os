@@ -139,8 +139,7 @@ pub(crate) fn run() -> Result<(), String> {
     spawn_core_reader(core_stdout, sender.clone(), limits.max_frame_bytes)?;
     spawn_core_waiter(child, sender)?;
 
-    let stdout = io::stdout();
-    let mut delivery = ClientDelivery::new(stdout.lock(), limits.max_frame_bytes);
+    let mut delivery = ClientDelivery::new(trillionnium_owner_open_trace::caller_stdout(), limits.max_frame_bytes);
     let mut output = TransportOutput::new();
     let mut flow = StreamDelivery::new(&options);
     let mut journal = TransportJournal::open(options.event_store.as_deref());
@@ -166,6 +165,9 @@ pub(crate) fn run() -> Result<(), String> {
     let mut client_priority_streak = 0usize;
 
     while core_reader_open || core_wait_open {
+        // The preceding frame helper returned; its queue/journal guards are
+        // released. Streaming stdout has no retained guard at this boundary.
+        trillionnium_owner_open_trace::drain_stream_at_caller_boundary();
         if !core_input_open || handshake.failed() || !client_open {
             discard_queued_client_messages(&mut pending_messages);
         }

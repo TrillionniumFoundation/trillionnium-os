@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org.trillionnium.actual-monotonic-completion-stream-ack.v2",
+  "title": "Owner monotonic completion stream ack v2",
+  "description": "Closed source-recorder evidence. This schema validates one JSON object only; tools/perf/inspect_monotonic_stream.py must additionally check physical custody, cross-file identity, ACK chain, ranges, counters, exact start-ID closure and file/byte ceilings. It grants no installed, whole-family or L2 qualification.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "org.trillionnium.actual-monotonic-completion-stream-ack.v2"
+    },
+    "sample_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:/-]{1,128}$(?![\\s\\S])"
+    },
+    "producer_role": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,128}$(?![\\s\\S])",
+      "not": {
+        "enum": [
+          ".",
+          ".."
+        ]
+      }
+    },
+    "generation": {
+      "type": "object",
+      "properties": {
+        "pid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295
+        },
+        "start_time_ticks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "boot_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "pid",
+        "start_time_ticks",
+        "boot_id_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "trace_complete": {
+      "const": false
+    },
+    "installed_qualified": {
+      "const": false
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "chunk_file": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255,
+      "pattern": "^[A-Za-z0-9_.:-]+\\.e(?:0|[1-9][0-9]{0,2})\\.chunk\\.json$(?![\\s\\S])"
+    },
+    "chunk_bytes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 524288
+    },
+    "chunk_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "chunk_fd9": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "integer"
+      }
+    },
+    "claimed_start": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 130560
+    },
+    "claimed_end_exclusive": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 131072
+    },
+    "previous_ack_sha256": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{64})?$(?![\\s\\S])"
+    }
+  },
+  "required": [
+    "schema",
+    "sample_id",
+    "producer_role",
+    "generation",
+    "trace_complete",
+    "installed_qualified",
+    "epoch",
+    "chunk_file",
+    "chunk_bytes",
+    "chunk_sha256",
+    "chunk_fd9",
+    "claimed_start",
+    "claimed_end_exclusive",
+    "previous_ack_sha256"
+  ],
+  "additionalProperties": false
+}
