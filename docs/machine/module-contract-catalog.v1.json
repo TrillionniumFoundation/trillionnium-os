@@ -397,8 +397,8 @@
         },
         {
           "path": "tools/owner-open/owner_open_broker_runtime.py",
-          "sha256": "16bc3ba56294295ca2eab21977119face6ebc32d69567fff491bc8ce897329a7",
-          "size": 21751
+          "sha256": "3ba96b2d128778a8640e92bcdd469403e643cb3e62918edf2c53e4c97da5b63f",
+          "size": 22356
         },
         {
           "path": "tools/owner-open/owner_open_broker_server_v2.py",
