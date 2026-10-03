@@ -379,7 +379,20 @@ where
         return Ok(terminal);
     }
 
-    let child = match command.spawn() {
+    let (child, mut exit_trace) = match trillionnium_owner_open_trace::measure(
+        trillionnium_owner_open_trace::Stage::ToolSpawn,
+        &spec.call_id,
+        || {
+            command.spawn().map(|child| {
+                // Begin at the actual spawn return, before retained/setup work.
+                let exit_trace = trillionnium_owner_open_trace::deferred(
+                    trillionnium_owner_open_trace::Stage::ToolExit,
+                    &spec.call_id,
+                );
+                (child, Some(exit_trace))
+            })
+        },
+    ) {
         Ok(child) => child,
         Err(error) => {
             let kind = if error.raw_os_error() == Some(libc::ETIMEDOUT) {
@@ -544,6 +557,9 @@ where
         if child_status.is_none() {
             match child.try_wait() {
                 Ok(Some(status)) => {
+                    if let Some(trace) = exit_trace.take() {
+                        trace.finish();
+                    }
                     child_status = Some(status);
                     post_exit_deadline = Instant::now().checked_add(post_exit_grace(limits));
                     match bound_process_group_exists(&identity) {
@@ -583,11 +599,21 @@ where
         if forced_kind.is_some() && !termination_attempted {
             termination_attempted = true;
             match terminate_process_group(&mut child, &identity, limits.terminate_grace) {
-                Ok(status) => child_status = Some(status),
+                Ok(status) => {
+                    if let Some(trace) = exit_trace.take() {
+                        trace.finish();
+                    }
+                    child_status = Some(status);
+                }
                 Err(error) => {
                     runtime_error = Some(join_error(runtime_error, error));
                     forced_kind = Some(TerminalKind::IoError);
                     child_status = child.try_wait().ok().flatten();
+                    if child_status.is_some()
+                        && let Some(trace) = exit_trace.take()
+                    {
+                        trace.finish();
+                    }
                 }
             }
             post_exit_deadline = Instant::now().checked_add(post_exit_grace(limits));
@@ -662,15 +688,29 @@ where
 
     if child_status.is_none() {
         match terminate_process_group(&mut child, &identity, limits.terminate_grace) {
-            Ok(status) => child_status = Some(status),
+            Ok(status) => {
+                if let Some(trace) = exit_trace.take() {
+                    trace.finish();
+                }
+                child_status = Some(status);
+            }
             Err(error) => {
                 runtime_error = Some(join_error(runtime_error, error));
                 forced_kind = Some(TerminalKind::IoError);
                 child_status = child.try_wait().ok().flatten();
+                if child_status.is_some()
+                    && let Some(trace) = exit_trace.take()
+                {
+                    trace.finish();
+                }
             }
         }
     }
 
+    let cleanup_trace = trillionnium_owner_open_trace::span(
+        trillionnium_owner_open_trace::Stage::ToolCleanup,
+        &spec.call_id,
+    );
     if !retire_reader(stdout_thread, &mut runtime_error, "stdout_reader") {
         forced_kind = Some(TerminalKind::IoError);
     }
@@ -698,6 +738,12 @@ where
             }
         }
     }
+    if status.is_some()
+        && let Some(trace) = exit_trace.take()
+    {
+        trace.finish();
+    }
+    cleanup_trace.finish();
     let status_kind =
         forced_kind.unwrap_or_else(|| match status.as_ref().and_then(ExitStatusExt::signal) {
             Some(_) => TerminalKind::Signaled,
@@ -861,7 +907,11 @@ where
         loop {
             let result = wait_io(reader.as_raw_fd(), libc::POLLIN, &stop).and_then(|ready| {
                 if ready {
-                    reader.read(&mut buffer)
+                    trillionnium_owner_open_trace::measure(
+                        trillionnium_owner_open_trace::Stage::ToolOutput,
+                        "runtime.reader",
+                        || reader.read(&mut buffer),
+                    )
                 } else {
                     Ok(0)
                 }
@@ -1015,6 +1065,10 @@ fn terminate_process_group(
     identity: &ProcessIdentity,
     grace: Duration,
 ) -> std::result::Result<ExitStatus, String> {
+    let _trace = trillionnium_owner_open_trace::span(
+        trillionnium_owner_open_trace::Stage::ToolCleanup,
+        "runtime.bound-group-cleanup",
+    );
     let grace = grace.max(Duration::from_millis(250));
     let mut status = match child.try_wait() {
         Ok(status) => status,

@@ -9,6 +9,9 @@ from pathlib import Path
 import re
 import secrets
 import stat
+import functools
+import threading
+import time
 from typing import Any, BinaryIO
 
 MAX_LINE_BYTES = 1024 * 1024
@@ -20,6 +23,235 @@ MAX_ARGUMENT_BYTES = 64 * 1024
 MAX_TOTAL_ARGV_BYTES = 1024 * 1024
 ID_RE = re.compile(r"^[A-Za-z0-9_.:-]{1,256}$")
 TOKEN_RE = re.compile(r"^[0-9a-f]{64}$")
+
+# Evidence only: off until explicitly configured by the service entrypoint.
+# Hooks never do file I/O and never wait behind a product/trace lock. Export is
+# a separate outer operation after workers stopped; loss/open spans reject it
+# as complete evidence. No semantic success or installed qualification is minted.
+TRACE_STAGES = frozenset({
+    "broker_accept", "broker_auth", "broker_queue_wait", "broker_forward",
+    "host_decode", "host_capacity_wait", "journal_append", "journal_fsync",
+    "provider_spawn", "provider_first_event", "provider_wait", "callback_admission",
+    "tool_spawn", "tool_output", "tool_exit", "tool_cleanup", "terminal_persistence",
+    "delivery_queue_wait", "client_delivery",
+})
+TRACE_MAX_RECORDS = 8192
+TRACE_MAX_EXPORT_BYTES = 8 * 1024 * 1024
+_PERFORMANCE_TRACE = None
+
+
+class PerformanceTrace:
+    def __init__(self, sample_id: str, role: str, capacity: int = TRACE_MAX_RECORDS):
+        pattern = r"[A-Za-z0-9_.:/-]{1,128}"
+        if (not isinstance(sample_id, str) or not re.fullmatch(pattern, sample_id)
+                or not isinstance(role, str) or not re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", role) or role in {".", ".."}
+                or type(capacity) is not int or not 1 <= capacity <= TRACE_MAX_RECORDS):
+            raise ValueError("trace identifier/capacity outside fixed bounds")
+        self.sample_id, self.role, self.capacity = sample_id, role, capacity
+        self.records = []
+        self.open = self.next = 0
+        self.loss_observed = False
+        self.lock = threading.Lock()
+
+    def start(self, stage: str, key: str, deferred: bool = False):
+        if stage not in TRACE_STAGES or not isinstance(key, str) or len(key) > 4096:
+            self.loss_observed = True
+            return _NO_PERFORMANCE_SPAN
+        try:
+            encoded = key.encode()
+        except UnicodeError:
+            self.loss_observed = True
+            return _NO_PERFORMANCE_SPAN
+        if len(encoded) > 4096:
+            self.loss_observed = True
+            return _NO_PERFORMANCE_SPAN
+        start = time.monotonic_ns()
+        pid, tid = os.getpid(), threading.get_native_id()
+        if not (0 <= start < (1 << 64) and 0 < pid < (1 << 32) and 0 < tid < (1 << 63)):
+            self.loss_observed = True
+            return _NO_PERFORMANCE_SPAN
+        scope = hashlib.sha256(encoded).hexdigest()
+        if not self.lock.acquire(blocking=False):
+            self.loss_observed = True
+            return _NO_PERFORMANCE_SPAN
+        try:
+            if self.next >= (1 << 64) - 1 or self.open + len(self.records) >= self.capacity:
+                self.loss_observed = True
+                return _NO_PERFORMANCE_SPAN
+            sequence = self.next; self.next += 1; self.open += 1
+        finally:
+            self.lock.release()
+        return PerformanceSpan(self, {
+            "sequence": sequence, "stage": stage, "scope_sha256": scope,
+            "pid": pid, "tid": tid,
+            "start_ns": start, "end_ns": None, "end": "unfinished",
+        }, deferred)
+
+    def snapshot(self):
+        if not self.lock.acquire(blocking=False):
+            raise ValueError("trace snapshot busy")
+        try:
+            return {
+                "schema": "org.trillionnium.actual-monotonic-stage-trace.v1",
+                "sample_id": self.sample_id, "producer_role": self.role,
+                "clock": "CLOCK_MONOTONIC", "capacity_records": self.capacity,
+                "loss_observed": self.loss_observed, "lost_records": None,
+                "lost_count_semantics": "unavailable", "open_spans": self.open,
+                "snapshot_without_observed_loss": not self.loss_observed and self.open == 0,
+                "snapshot_only": True, "producer_quiescence_proven": False,
+                "trace_complete": False,
+                "installed_qualified": False,
+                "records": [dict(record) for record in self.records],
+            }
+        finally:
+            self.lock.release()
+
+
+class PerformanceSpan:
+    def __init__(self, recorder=None, record=None, deferred=False):
+        self.recorder, self.record, self.deferred = recorder, record, deferred
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, kind, value, traceback):
+        self.finish("exception" if kind else "scope_exit_unclassified")
+        return False
+
+    def finish(self, end="observed_boundary"):
+        recorder, record = self.recorder, self.record
+        self.recorder = self.record = None
+        if recorder is None:
+            return
+        if end not in {"observed_boundary", "abandoned", "exception", "scope_exit_unclassified"}:
+            end = "abandoned"
+        now = time.monotonic_ns()
+        if end == "abandoned" or not record["start_ns"] <= now < (1 << 64):
+            recorder.loss_observed = True
+        if not record["start_ns"] <= now < (1 << 64):
+            now = record["start_ns"]
+        record["end_ns"], record["end"] = now, end
+        if not recorder.lock.acquire(blocking=False):
+            # Open count is intentionally not guessed down after loss.
+            recorder.loss_observed = True
+            return
+        try:
+            recorder.open -= 1
+            if len(recorder.records) >= recorder.capacity:
+                recorder.loss_observed = True
+            else:
+                recorder.records.append(record)
+        finally:
+            recorder.lock.release()
+
+
+class _NoPerformanceSpan:
+    __slots__ = ()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, kind, value, traceback):
+        return False
+
+    def finish(self, end="observed_boundary"):
+        pass
+
+
+_NO_PERFORMANCE_SPAN = _NoPerformanceSpan()
+
+
+def performance_span(stage: str, key: str = "", deferred: bool = False):
+    recorder = _PERFORMANCE_TRACE
+    return _NO_PERFORMANCE_SPAN if recorder is None else recorder.start(stage, key, deferred)
+
+
+def performance_trace_enabled():
+    return _PERFORMANCE_TRACE is not None
+
+
+def performance_stage(stage: str):
+    def decorate(function):
+        @functools.wraps(function)
+        def call(*args, **kwargs):
+            # Disabled hooks do not inspect caller properties or arguments.
+            if _PERFORMANCE_TRACE is None:
+                return function(*args, **kwargs)
+            key = kwargs.get("label", function.__qualname__)
+            for arg in args:
+                digest = getattr(arg, "request_sha256", None)
+                if isinstance(digest, str):
+                    key = digest; break
+            with performance_span(stage, key):
+                return function(*args, **kwargs)
+        return call
+    return decorate
+
+
+def configure_performance_trace(sample_id: str, role: str, capacity=TRACE_MAX_RECORDS):
+    global _PERFORMANCE_TRACE
+    if _PERFORMANCE_TRACE is not None:
+        raise ValueError("trace already configured")
+    _PERFORMANCE_TRACE = PerformanceTrace(sample_id, role, capacity)
+    return _PERFORMANCE_TRACE
+
+
+def export_performance_trace_from_env():
+    if _PERFORMANCE_TRACE is None or "TRILLIONNIUM_OWNER_TRACE_OUTPUT" not in os.environ:
+        return
+    deadline = time.monotonic_ns() + 5_000_000_000
+    def budget():
+        if time.monotonic_ns() >= deadline:
+            raise ValueError("trace export deadline exceeded")
+    path = Path(os.environ["TRILLIONNIUM_OWNER_TRACE_OUTPUT"] + "." + _PERFORMANCE_TRACE.role)
+    if not path.is_absolute() or '..' in path.parts or len(os.fsencode(path)) > 4096 or len(path.parts) > 64:
+        raise ValueError("trace output must be a bounded physical absolute path")
+    payload = json.dumps(_PERFORMANCE_TRACE.snapshot(), allow_nan=False, separators=(",", ":")).encode()
+    if len(payload) > TRACE_MAX_EXPORT_BYTES:
+        raise ValueError("trace export exceeds fixed cap")
+    parents = [os.open('/', os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)]
+    names = []
+    def fixed(metadata):
+        return metadata.st_dev, metadata.st_ino, metadata.st_mode, metadata.st_uid, metadata.st_gid
+    try:
+        for part in path.parts[1:-1]:
+            budget()
+            child = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parents[-1])
+            parents.append(child); names.append(part)
+        parent = parents[-1]
+        metadata = os.fstat(parent)
+        if metadata.st_uid != os.geteuid() or metadata.st_mode & 0o077:
+            raise ValueError("trace parent must be private and owned")
+        import io
+        budget()
+        with io.FileIO(os.open(path.name, os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600, dir_fd=parent), 'wb', closefd=True) as output:
+            if output.write(payload) != len(payload):
+                raise OSError("trace export short write")
+            output.flush(); os.fsync(output.fileno())
+            actual = os.fstat(output.fileno())
+            entry = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
+            if (fixed(actual) != fixed(entry) or not stat.S_ISREG(actual.st_mode)
+                    or actual.st_nlink != 1 or actual.st_size != len(payload)
+                    or actual.st_mode & 0o777 != 0o600):
+                raise ValueError("trace output identity/size changed")
+            for index, name in enumerate(names):
+                budget()
+                held = os.fstat(parents[index + 1])
+                entry = os.stat(name, dir_fd=parents[index], follow_symlinks=False)
+                if fixed(held) != fixed(entry):
+                    raise ValueError("trace parent entry changed")
+    finally:
+        # Attempt each raw directory FD once, never retry a released number.
+        first_error = None
+        while parents:
+            fd = parents.pop()
+            try:
+                os.close(fd)
+            except OSError as error:
+                first_error = first_error or error
+        if first_error:
+            raise first_error
+    budget()
 
 
 class DuplicateMember(ValueError):

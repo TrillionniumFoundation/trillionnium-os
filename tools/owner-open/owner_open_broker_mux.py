@@ -11,7 +11,7 @@ import threading
 import time
 from typing import Any, Callable, Iterable
 
-from owner_open_broker_common import canonical, require_id
+from owner_open_broker_common import canonical, require_id, performance_span
 
 MAX_WEIGHT = 1_024
 # A request's ordering identity is a complete immutable lineage, not a
@@ -346,6 +346,8 @@ class WeightedFairMux:
                 self._owners.append(owner)
                 self._credits[owner] = self._weight(owner)
             queue.append(request)
+            if hasattr(request, "performance_queue_span"):
+                request.performance_queue_span = performance_span("broker_queue_wait", request.request_sha256, deferred=True)
             self._pending_count += 1
             self._condition.notify_all()
 
@@ -424,6 +426,9 @@ class WeightedFairMux:
                             raise MuxError("scheduler activation invariant failed")
                         self._active[seq] = request
                         self._active_keys[request.ordering_key] = seq
+                        wait = getattr(request, "performance_queue_span", None)
+                        if wait is not None:
+                            wait.finish(); request.performance_queue_span = None
                         return request
                 if deadline is not None:
                     remaining = deadline - time.monotonic()
@@ -496,6 +501,9 @@ class WeightedFairMux:
                 queue.remove(request)
             except ValueError:
                 return False
+            wait = getattr(request, "performance_queue_span", None)
+            if wait is not None:
+                wait.finish("abandoned"); request.performance_queue_span = None
             self._pending_count -= 1
             self._remove_owner_if_empty(request.owner_id)
             self._remember_retired(request, reason)
@@ -528,6 +536,9 @@ class WeightedFairMux:
                 queue.remove(request)
             except ValueError:
                 return False
+            wait = getattr(request, "performance_queue_span", None)
+            if wait is not None:
+                wait.finish("abandoned"); request.performance_queue_span = None
             self._pending_count -= 1
             self._remove_owner_if_empty(request.owner_id)
             self._held_keys[request.ordering_key] = (
@@ -688,6 +699,9 @@ class WeightedFairMux:
             requests = list(self._active.values())
             requests.extend(request for queue in self._pending.values() for request in queue)
             for request in requests:
+                wait = getattr(request, "performance_queue_span", None)
+                if wait is not None:
+                    wait.finish("abandoned"); request.performance_queue_span = None
                 self._remember_retired(request, reason)
             self._active.clear()
             self._active_keys.clear()

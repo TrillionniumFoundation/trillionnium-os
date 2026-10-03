@@ -83,8 +83,9 @@ impl MissingCursorRange {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 struct BufferedFrame {
+    performance_wait: Option<trillionnium_owner_open_trace::Span>,
     frame: RunTurnFrame,
     encoded_bytes: u64,
     cursor: Option<u64>,

@@ -94,13 +94,13 @@
   "implementation_sources": [
     {
       "path": "crates/trillionnium-owner-open-tool-bridge/Cargo.toml",
-      "sha256": "dfbb5ed4b5f1d2c80f35389183a8843a207aba2d0e2aec7978a59d62ed622d96",
-      "size": 442
+      "sha256": "f2c6d7762a0b77931724fadc97b8db0ba92ed55aae87a1afaac52f47e7d26a4a",
+      "size": 489
     },
     {
       "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-      "sha256": "97cf82184a58b4e8157e8c02692048061357273c59c623b17a4443d9d0015bfb",
-      "size": 40002
+      "sha256": "12974b0589534825896d4b27626466fdd085cac5aa63436a2b727b249a269202",
+      "size": 40217
     }
   ],
   "introduction_review_class": "INITIAL_V1",

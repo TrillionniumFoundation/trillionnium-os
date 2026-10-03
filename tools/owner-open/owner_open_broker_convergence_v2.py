@@ -5,7 +5,7 @@ import hashlib
 import time
 from typing import Any
 
-from owner_open_broker_common import BrokerError, canonical, read_line, strict_json
+from owner_open_broker_common import BrokerError, canonical, read_line, strict_json, performance_stage
 from owner_open_broker_base_v2 import (
     DIRECT_ERROR_KINDS as _DIRECT_ERROR_KINDS,
     TIMEOUT_SCAN_SECONDS as _TIMEOUT_SCAN_SECONDS,
@@ -590,6 +590,7 @@ class BrokerConvergenceMixin:
             retire_reason=reason,
         )
 
+    @performance_stage("broker_forward")
     def _forward_request(self, request: Request) -> None:
         """Forward one active request while keeping global locks metadata-only."""
 

@@ -444,8 +444,21 @@ impl JsonlProvider {
         if Instant::now() >= deadline {
             return Err(JsonlProviderError::TimedOut);
         }
-        let child = match command.spawn() {
-            Ok(child) => child,
+        let (child, mut first_event_trace) = match trillionnium_owner_open_trace::measure(
+            trillionnium_owner_open_trace::Stage::ProviderSpawn,
+            &request.turn_id,
+            || {
+                let child = command.spawn()?;
+                // Start immediately on the successful Command::spawn observation,
+                // before retained-child setup. Not the kernel exec timestamp.
+                let first = trillionnium_owner_open_trace::deferred(
+                    trillionnium_owner_open_trace::Stage::ProviderFirstEvent,
+                    &request.turn_id,
+                );
+                Ok::<_, std::io::Error>((child, Some(first)))
+            },
+        ) {
+            Ok(value) => value,
             Err(error) if error.raw_os_error() == Some(libc::ETIMEDOUT) => {
                 return Err(JsonlProviderError::TimedOut);
             }
@@ -563,11 +576,18 @@ impl JsonlProvider {
                     continue;
                 }
 
-                match receiver.recv_timeout(
-                    self.config
-                        .poll_interval
-                        .min(deadline.saturating_duration_since(Instant::now())),
-                ) {
+                let received = trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::ProviderWait,
+                    &request.turn_id,
+                    || {
+                        receiver.recv_timeout(
+                            self.config
+                                .poll_interval
+                                .min(deadline.saturating_duration_since(Instant::now())),
+                        )
+                    },
+                );
+                match received {
                     Ok(ProviderOutput::Line(raw)) => {
                         if Instant::now() >= deadline {
                             return Err(JsonlProviderError::TimedOut);
@@ -581,9 +601,17 @@ impl JsonlProvider {
                         let value = strict_json::decode_object(&raw)
                             .map_err(JsonlProviderError::Protocol)?;
                         validate_envelope(&value, inbound_seq)?;
+                        // The first event is the first protocol-valid JSONL
+                        // envelope (including tool.call/terminal/opaque), not
+                        // only model output. Payload/effect success is separate.
+                        if let Some(trace) = first_event_trace.take() {
+                            trace.finish();
+                        }
                         inbound_seq = inbound_seq.saturating_add(1);
                         match required_string(&value, "kind")? {
-                            "provider.event" => handle_provider_event(&value, host)?,
+                            "provider.event" => {
+                                handle_provider_event(&value, host)?;
+                            }
                             "tool.call" => {
                                 let call_id = value
                                     .get("call")

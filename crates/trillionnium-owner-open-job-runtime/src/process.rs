@@ -249,6 +249,7 @@ struct SpawnGuard {
     identity: Option<ProcessIdentity>,
     _process_lease: Option<Arc<ProcessLease>>,
     lifecycle: Arc<ProcessLifecycle>,
+    exit_trace: Option<trillionnium_owner_open_trace::Span>,
 }
 
 impl SpawnGuard {
@@ -260,6 +261,12 @@ impl SpawnGuard {
             identity: None,
             _process_lease: None,
             lifecycle: Arc::new(ProcessLifecycle::new()),
+            // The constructor runs immediately after owned spawn returns.
+            // No consuming wait or signal ownership is changed by this span.
+            exit_trace: Some(trillionnium_owner_open_trace::deferred(
+                trillionnium_owner_open_trace::Stage::ToolExit,
+                "job.owned-child-WNOWAIT",
+            )),
         }
     }
 
@@ -741,9 +748,12 @@ fn spawn_pipe(
             Ok(())
         });
     }
-    let child = command
-        .spawn()
-        .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
+    let child = trillionnium_owner_open_trace::measure(
+        trillionnium_owner_open_trace::Stage::ToolSpawn,
+        &request.operation_id,
+        || command.spawn(),
+    )
+    .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
     let mut guard = SpawnGuard::new(child);
     guard._process_lease = Some(Arc::clone(&lease));
     let identity = capture_process_identity(guard.pid).map_err(|error| {
@@ -872,9 +882,12 @@ fn spawn_pty(
             Ok(())
         });
     }
-    let child = command
-        .spawn()
-        .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
+    let child = trillionnium_owner_open_trace::measure(
+        trillionnium_owner_open_trace::Stage::ToolSpawn,
+        &request.operation_id,
+        || command.spawn(),
+    )
+    .map_err(|error| JobRuntimeError::Spawn(error.to_string()))?;
     let mut guard = SpawnGuard::new(child);
     guard._process_lease = Some(Arc::clone(&lease));
     let identity = capture_process_identity(guard.pid).map_err(|error| {
@@ -1783,7 +1796,11 @@ where
                     );
                     return;
                 }
-                match owned_reader.read(&mut buffer) {
+                match trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::ToolOutput,
+                    stream,
+                    || owned_reader.read(&mut buffer),
+                ) {
                     Ok(0) => return,
                     Ok(read) => {
                         if !send_process_event(
@@ -1875,13 +1892,17 @@ where
         .name(format!("owner-open-job-reaper-{pid}"))
         .spawn(move || {
             let _process_lease = lease;
-            let owned_guard = guard;
+            let mut owned_guard = guard;
             let owned_workers = workers;
             let owned_sender = sender;
             // waitid WNOWAIT observes exit without consuming the anchor.
             // All effects share the retirement gate; close it before group
             // cleanup, and finish it before any consuming Child.wait.
+            let exit_trace = owned_guard.exit_trace.take();
             let observed = observe_owned_child_status(pid, false).and_then(|status| status.ok_or_else(|| std::io::Error::other("blocking WNOWAIT observation was not terminal")));
+            if let Some(exit_trace) = exit_trace {
+                if observed.is_ok() { exit_trace.finish(); } else { exit_trace.abandon(); }
+            }
             let mut cleanup_errors = Vec::new();
             let status = match owned_guard.lifecycle.begin_retirement() {
                 Ok(poisoned) => {
@@ -2047,6 +2068,10 @@ fn wait_group_quiet(
 }
 
 fn cleanup_process_group(identity: &ProcessIdentity) -> std::result::Result<(), String> {
+    let _trace = trillionnium_owner_open_trace::span(
+        trillionnium_owner_open_trace::Stage::ToolCleanup,
+        "job.retained-anchor-cleanup",
+    );
     let deadline = Instant::now() + Duration::from_secs(2);
     ensure_bound_process_group(identity)?;
     // A retained zombie keeps kill(-pgid, 0) true. Only two complete bounded

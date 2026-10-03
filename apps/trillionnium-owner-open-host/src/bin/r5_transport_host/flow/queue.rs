@@ -3,7 +3,7 @@ impl StreamDelivery {
         if !is_flow_controlled_kind(&frame.kind) || self.window.is_none() {
             return Ok(SubmitResult::Deliver(Box::new(frame)));
         }
-        let buffered = BufferedFrame::new(frame)?;
+        let mut buffered = BufferedFrame::new(frame)?;
         if let Some(gap) = &mut self.gap {
             gap.extend(&buffered);
             return Ok(SubmitResult::Suppressed);
@@ -31,6 +31,13 @@ impl StreamDelivery {
                     self.gap = Some(gap.clone());
                     Ok(SubmitResult::GapStarted(gap))
                 } else {
+                    buffered.performance_wait = Some(trillionnium_owner_open_trace::deferred(
+                        trillionnium_owner_open_trace::Stage::DeliveryQueueWait,
+                        buffered
+                            .event_id
+                            .as_deref()
+                            .unwrap_or("transport.queued-frame"),
+                    ));
                     self.queued_bytes += encoded;
                     self.queue.push_back(buffered);
                     Ok(SubmitResult::Queued)
@@ -47,7 +54,10 @@ impl StreamDelivery {
         while let Some(front) = self.queue.front() {
             match self.reserve(front.encoded_bytes)? {
                 ReserveDisposition::Granted { .. } => {
-                    let item = self.queue.pop_front().expect("front exists");
+                    let mut item = self.queue.pop_front().expect("front exists");
+                    if let Some(trace) = item.performance_wait.take() {
+                        trace.finish();
+                    }
                     let encoded = usize::try_from(item.encoded_bytes)
                         .map_err(|_| "encoded frame length does not fit usize".to_string())?;
                     self.queued_bytes = self.queued_bytes.saturating_sub(encoded);
@@ -65,7 +75,15 @@ impl StreamDelivery {
         // storage cannot make already-suppressed delivery magically complete.
         self.control_fingerprints.clear();
         self.queued_bytes = 0;
-        self.queue.drain(..).map(|item| item.frame).collect()
+        self.queue
+            .drain(..)
+            .map(|mut item| {
+                if let Some(trace) = item.performance_wait.take() {
+                    trace.finish();
+                }
+                item.frame
+            })
+            .collect()
     }
 
     fn terminal_gap(&mut self) -> Option<ResyncGap> {
@@ -170,6 +188,7 @@ impl BufferedFrame {
         let cursor_scope = CursorScope::from_frame(&frame, cursor_domain.as_deref());
         let event_id = frame.event_id.clone();
         Ok(Self {
+            performance_wait: None,
             frame,
             encoded_bytes,
             cursor,

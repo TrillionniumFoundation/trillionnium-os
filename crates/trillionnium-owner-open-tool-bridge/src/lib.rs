@@ -463,6 +463,10 @@ impl DirectToolBridge {
         E: Display,
         I: IntoIterator<Item = Arc<AtomicBool>>,
     {
+        let admission_trace = trillionnium_owner_open_trace::span(
+            trillionnium_owner_open_trace::Stage::CallbackAdmission,
+            &call.request_sha256,
+        );
         limits.validate()?;
         call.validate()?;
         let runtime_limits = limits.effective_runtime();
@@ -625,6 +629,7 @@ impl DirectToolBridge {
             }
         };
 
+        admission_trace.finish();
         let tool_kind = call.request.tool_kind();
         // Move the exact request into the runtime. Keeping a clone here would
         // retain a second stdin/environment/argv allocation for the whole call.

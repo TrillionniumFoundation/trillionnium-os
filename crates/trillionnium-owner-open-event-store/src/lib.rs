@@ -588,6 +588,10 @@ impl DurableEventStore {
     }
 
     fn append_under_working(&self, input: EventInput) -> Result<AppendResult> {
+        let _trace = trillionnium_owner_open_trace::span(
+            trillionnium_owner_open_trace::Stage::JournalAppend,
+            &input.event_id,
+        );
         validate_event_input(&input, &self.limits)?;
         resources::validate_input_allocation(&input)?;
         let payload_sha256 = resources::json_digest(&input.payload)?;
@@ -1526,6 +1530,10 @@ impl SegmentedEventStore {
     }
 
     fn append_under_working(&self, input: EventInput) -> Result<AppendResult> {
+        let _trace = trillionnium_owner_open_trace::span(
+            trillionnium_owner_open_trace::Stage::JournalAppend,
+            &input.event_id,
+        );
         validate_event_input(&input, &self.config.limits)?;
         resources::validate_input_allocation(&input)?;
         let payload_sha256 = resources::json_digest(&input.payload)?;
@@ -3411,12 +3419,18 @@ impl SyncFile for File {
     fn sync_for(&self, policy: SyncPolicy) -> Result<()> {
         match policy {
             SyncPolicy::None => Ok(()),
-            SyncPolicy::Data => self
-                .sync_data()
-                .map_err(|error| EventStoreError::Io(error.to_string())),
-            SyncPolicy::Full => self
-                .sync_all()
-                .map_err(|error| EventStoreError::Io(error.to_string())),
+            SyncPolicy::Data => trillionnium_owner_open_trace::measure(
+                trillionnium_owner_open_trace::Stage::JournalFsync,
+                "journal.data",
+                || self.sync_data(),
+            )
+            .map_err(|error| EventStoreError::Io(error.to_string())),
+            SyncPolicy::Full => trillionnium_owner_open_trace::measure(
+                trillionnium_owner_open_trace::Stage::JournalFsync,
+                "journal.full",
+                || self.sync_all(),
+            )
+            .map_err(|error| EventStoreError::Io(error.to_string())),
         }
     }
 }
@@ -4242,9 +4256,12 @@ fn lock_writer_with_bounded_wait(file: &File, maximum_wait: Duration) -> Result<
 }
 
 fn sync_directory_fd(directory: &File) -> Result<()> {
-    directory
-        .sync_all()
-        .map_err(|error| EventStoreError::Io(error.to_string()))
+    trillionnium_owner_open_trace::measure(
+        trillionnium_owner_open_trace::Stage::JournalFsync,
+        "journal.directory",
+        || directory.sync_all(),
+    )
+    .map_err(|error| EventStoreError::Io(error.to_string()))
 }
 
 fn invalid_config(message: impl Into<String>) -> EventStoreError {

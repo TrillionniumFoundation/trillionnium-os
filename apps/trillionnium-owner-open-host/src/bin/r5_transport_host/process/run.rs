@@ -183,7 +183,11 @@ pub(crate) fn run() -> Result<(), String> {
                     // not produce a secondary error for the upstream peer.
                     continue;
                 }
-                let frame = match RunTurnFrame::decode(&encoded, &limits) {
+                let frame = match trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::HostDecode,
+                    "transport.frame",
+                    || RunTurnFrame::decode(&encoded, &limits),
+                ) {
                     Ok(frame) => frame,
                     Err(error) => {
                         // Even an undecodable first line consumes the
@@ -535,7 +539,11 @@ pub(crate) fn run() -> Result<(), String> {
                     // from a draining core cannot be admitted as effects.
                     continue;
                 }
-                let mut frame = match RunTurnFrame::decode(&encoded, &limits) {
+                let mut frame = match trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::HostDecode,
+                    "transport.frame",
+                    || RunTurnFrame::decode(&encoded, &limits),
+                ) {
                     Ok(frame) => frame,
                     Err(error) => {
                         if handshake.late_turn_core_is_quarantined() {
@@ -1292,8 +1300,12 @@ fn release_handshake_queues<W: Write>(
         while let Some(action) = actions.pop_front() {
             match action {
                 DeferredHandshakeAction::Core(encoded) => {
-                    let frame = RunTurnFrame::decode(&encoded, limits)
-                        .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
+                    let frame = trillionnium_owner_open_trace::measure(
+                        trillionnium_owner_open_trace::Stage::HostDecode,
+                        "transport.frame",
+                        || RunTurnFrame::decode(&encoded, limits),
+                    )
+                    .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
                     if turn_gate_resolution(&frame) || frame.kind == FRAME_TURN_ACCEPTED {
                         // A resolver is meaningful only for the currently
                         // admitted turn.  Do not let a delayed error or
@@ -1467,8 +1479,12 @@ fn release_handshake_queues<W: Write>(
                 }
             }
             DeferredHandshakeAction::Core(encoded) => {
-                let frame = RunTurnFrame::decode(&encoded, limits)
-                    .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
+                let frame = trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::HostDecode,
+                    "transport.frame",
+                    || RunTurnFrame::decode(&encoded, limits),
+                )
+                .map_err(|error| format!("deferred core frame became invalid: {error}"))?;
                 let frame = output.rewrite_core_with_context(frame, active.as_ref());
                 process_core_frame_body(
                     frame,

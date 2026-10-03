@@ -10,7 +10,7 @@ import stat
 import threading
 
 from owner_open_broker_base_v2 import terminate_upstream_bounded
-from owner_open_broker_common import BrokerError, atomic_write_private, validate_socket_path
+from owner_open_broker_common import BrokerError, atomic_write_private, validate_socket_path, performance_span
 
 
 class BrokerServerMixin:
@@ -201,7 +201,8 @@ class BrokerServerMixin:
             self._start_workers()
             while not self.stopping.is_set():
                 try:
-                    connection, _ = listener.accept()
+                    with performance_span("broker_accept", "listener.accept"):
+                        connection, _ = listener.accept()
                 except socket.timeout:
                     continue
                 # Reserve before Thread.start, including silent/unauthenticated peers.

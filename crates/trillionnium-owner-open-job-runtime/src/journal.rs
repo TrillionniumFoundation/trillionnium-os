@@ -776,6 +776,12 @@ impl JobJournal {
         kind: &str,
         payload: Value,
     ) -> Result<()> {
+        let _terminal_trace = (kind == "job.terminal.observation").then(|| {
+            trillionnium_owner_open_trace::span(
+                trillionnium_owner_open_trace::Stage::TerminalPersistence,
+                &key.job_id,
+            )
+        });
         let next_cursor = event_seq.checked_add(1).ok_or_else(|| {
             JobRuntimeError::Journal("runtime observation sequence exhausted".to_string())
         })?;
@@ -2509,8 +2515,16 @@ mod tests {
             assert_eq!(selected[0]["scope"]["session_id"], "session-1");
             drop(journal);
             let wal = if segmented {
-                fs::read_dir(&path).unwrap().map(|entry| entry.unwrap().path())
-                    .find(|file| file.file_name().unwrap().to_string_lossy().starts_with("segment-")).unwrap()
+                fs::read_dir(&path)
+                    .unwrap()
+                    .map(|entry| entry.unwrap().path())
+                    .find(|file| {
+                        file.file_name()
+                            .unwrap()
+                            .to_string_lossy()
+                            .starts_with("segment-")
+                    })
+                    .unwrap()
             } else {
                 path.clone()
             };

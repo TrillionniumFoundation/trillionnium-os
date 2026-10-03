@@ -2,8 +2,8 @@
 
 <!-- GENERATED. DO NOT EDIT. -->
 
-- Workspace members: `24`
-- Default source closure: `11`
+- Workspace members: `25`
+- Default source closure: `12`
 - Sealed non-product members: `13`
 
 | Path | Package | Selection | Classification | Replacement | Documentation | Local source test | Rationale |
@@ -18,6 +18,7 @@
 | `crates/trillionnium-owner-open-stream-window` | `trillionnium-owner-open-stream-window` | `default-source-closure` | `active_default_component` | none | `crates/trillionnium-owner-open-stream-window/README.md` | `cargo test --locked -p trillionnium-owner-open-stream-window --all-targets` | Selected by Cargo default-members and module-catalog default_source_closure. |
 | `crates/trillionnium-owner-open-tool-bridge` | `trillionnium-owner-open-tool-bridge` | `default-source-closure` | `active_default_component` | none | `crates/trillionnium-owner-open-tool-bridge/README.md` | `cargo test --locked -p trillionnium-owner-open-tool-bridge --all-targets` | Selected by Cargo default-members and module-catalog default_source_closure. |
 | `crates/trillionnium-owner-open-turn-loop` | `trillionnium-owner-open-turn-loop` | `default-source-closure` | `active_default_component` | none | `crates/trillionnium-owner-open-turn-loop/README.md` | `cargo test --locked -p trillionnium-owner-open-turn-loop --all-targets` | Selected by Cargo default-members and module-catalog default_source_closure. |
+| `crates/trillionnium-owner-open-trace` | `trillionnium-owner-open-trace` | `default-source-closure` | `active_default_component` | none | `crates/trillionnium-owner-open-trace/README.md` | `cargo test --locked -p trillionnium-owner-open-trace --all-targets` | Selected by Cargo default-members and module-catalog default_source_closure. |
 | `crates/trillionnium-owner-open-types` | `trillionnium-owner-open-types` | `default-source-closure` | `active_default_component` | none | `crates/trillionnium-owner-open-types/README.md` | `cargo test --locked -p trillionnium-owner-open-types --all-targets` | Selected by Cargo default-members and module-catalog default_source_closure. |
 | `crates/trillionnium-owner-open-runtime` | `trillionnium-owner-open-runtime` | `default-source-closure` | `active_default_component` | none | `crates/trillionnium-owner-open-runtime/README.md` | `cargo test --locked -p trillionnium-owner-open-runtime --all-targets` | Selected by Cargo default-members and module-catalog default_source_closure. |
 | `crates/trillionnium-os-types` | `trillionnium-os-types` | `sealed-explicit-only` | `sealed_legacy_contracts` | crates/trillionnium-owner-open-types | `crates/trillionnium-os-types/README.md` | `cargo test --locked -p trillionnium-os-types --all-targets` | The G1 owner-open protocol crate is the active default contract surface. |

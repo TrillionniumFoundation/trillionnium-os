@@ -14,7 +14,7 @@ import threading
 import time
 from typing import Any
 
-from owner_open_broker_common import BrokerError, canonical, require_id
+from owner_open_broker_common import BrokerError, canonical, require_id, performance_span, performance_stage, performance_trace_enabled
 
 CORRELATION_FIELDS = (
     "session_id",
@@ -261,6 +261,7 @@ def write_all_bounded(
             pass
 
 
+@performance_stage("client_delivery")
 def send_all_bounded(
     connection: socket.socket,
     data: bytes,
@@ -463,6 +464,23 @@ def peer_credentials(connection: socket.socket) -> tuple[int, int, int]:
     return struct.unpack("3i", raw)
 
 
+class _TracedPayload(bytes):
+    """Same wire bytes; no span exists until accepted queue insertion."""
+
+
+class _ClientOutboundQueue(queue.Queue):
+    def _put(self, item):
+        # Queue.put has already accepted its capacity under the existing queue
+        # mutex. Client.enqueue still owns its original metadata lock. Attach
+        # before append/dequeue; a rejected put never creates a queue span.
+        if isinstance(item, _TracedPayload):
+            item.performance_wait = performance_span(
+                "delivery_queue_wait", item.performance_key, deferred=True,
+            )
+            del item.performance_key  # Retain only the bounded hash/span after insertion.
+        super()._put(item)
+
+
 @dataclass
 class Client:
     client_id: str
@@ -484,7 +502,7 @@ class Client:
     closed: threading.Event = field(default_factory=threading.Event)
 
     def __post_init__(self) -> None:
-        self.queue = queue.Queue(maxsize=self.maximum_frames)
+        self.queue = _ClientOutboundQueue(maxsize=self.maximum_frames)
 
     def accept_sequence(self, value: Any) -> int:
         if isinstance(value, bool) or not isinstance(value, int) or value < 0:
@@ -498,6 +516,10 @@ class Client:
 
     def enqueue(self, value: dict[str, Any]) -> bool:
         encoded = canonical(value) + b"\n"
+        if performance_trace_enabled():
+            encoded = _TracedPayload(encoded)
+            encoded.performance_wait = None
+            encoded.performance_key = f"client {self.client_id}"
         with self.lock:
             if self.closed.is_set() or self.queued_bytes + len(encoded) > self.maximum_bytes:
                 return False
@@ -513,6 +535,9 @@ class Client:
             while not self.closed.is_set():
                 try:
                     encoded = self.queue.get(timeout=0.1)
+                    wait = getattr(encoded, "performance_wait", None)
+                    if wait is not None:
+                        wait.finish()
                 except queue.Empty:
                     continue
                 with self.lock:
@@ -572,3 +597,4 @@ class Request:
     # ``broker.forwarded`` append fails, so convergence must not infer
     # no-effect solely from the audit stage.
     effect_attempted: bool = field(default=False, repr=False, compare=False)
+    performance_queue_span: Any = field(default=None, repr=False, compare=False)

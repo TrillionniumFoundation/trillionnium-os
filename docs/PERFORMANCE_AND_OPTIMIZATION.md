@@ -172,6 +172,18 @@ files before bounded descriptor reads. Passing source mode returns
 `SOURCE_COMPARISON_PASS_NOT_L2`; it does not install a target, close an external
 gap or authorize release.
 
+`tools/perf/collect_process_resource_snapshot.py` retains explicit
+PID/start-ticks/UID/boot-bound process and live-task kernel observations with
+finite time, process, task, descriptor and byte limits. It preserves raw CPU,
+I/O, context-switch and RSS fields without discovering a complete process
+family or inferring per-sample deltas. `VmRSS` is approximate; `smaps_rollup`
+is a separate sequential observation. Individual lifetime `VmHWM` and stable
+task/FD sets at two endpoints cannot establish a simultaneous family peak.
+The standalone observer requires actual zero exit; its report provides no
+installed qualification or complete lifetime coverage. Installed L2 still
+requires the complete resource lifecycle, work-end barrier and raw stage
+evidence from the same subject.
+
 ## 8. Control stability
 
 Global decisions use hysteresis, maximum adjustment rate, minimum dwell time,

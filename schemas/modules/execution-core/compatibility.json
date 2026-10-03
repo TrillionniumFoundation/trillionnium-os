@@ -107,13 +107,23 @@
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
-      "sha256": "97cf1bd7b5669a384647f8b5f04cbe7dd73ef6d28334d795d20c344c95510339",
-      "size": 114832
+      "sha256": "2169537237de988ba9d94ef4883108e7961899d6dd8d6c8175179452211b5de6",
+      "size": 115066
     },
     {
       "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
       "sha256": "433ac00f4d1912dc02f7419f0b376c883074dfad23f903ac4b260b82244c3b61",
       "size": 35306
+    },
+    {
+      "path": "crates/trillionnium-owner-open-trace/Cargo.toml",
+      "sha256": "b2a7c7057ae4be8ba473c2fb46ad67cf729258351ae4ee3cecd7af2ab3396da2",
+      "size": 352
+    },
+    {
+      "path": "crates/trillionnium-owner-open-trace/src/lib.rs",
+      "sha256": "c7f442ed1f64686caedb2243487917769e54c10511d8c7c30c4239015b5de2d1",
+      "size": 17894
     }
   ],
   "introduction_review_class": "INITIAL_V1",

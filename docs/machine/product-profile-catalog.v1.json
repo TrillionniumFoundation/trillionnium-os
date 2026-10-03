@@ -37,6 +37,7 @@
         "crates/trillionnium-owner-open-stream-window",
         "crates/trillionnium-owner-open-tool-bridge",
         "crates/trillionnium-owner-open-turn-loop",
+        "crates/trillionnium-owner-open-trace",
         "crates/trillionnium-owner-open-types",
         "crates/trillionnium-owner-open-runtime"
       ],
@@ -82,7 +83,8 @@
         "android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk",
         "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk",
         "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk",
-        "android-integration/security-patches"
+        "android-integration/security-patches",
+        "crates/trillionnium-owner-open-trace"
       ],
       "offered_capabilities": [
         {

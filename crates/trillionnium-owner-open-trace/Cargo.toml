@@ -1,5 +1,5 @@
 [package]
-name = "trillionnium-owner-open-runtime"
+name = "trillionnium-owner-open-trace"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -7,13 +7,11 @@ authors.workspace = true
 rust-version.workspace = true
 publish = false
 
-[features]
-default = []
-
 [dependencies]
-trillionnium-owner-open-trace.workspace = true
 libc.workspace = true
-thiserror.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

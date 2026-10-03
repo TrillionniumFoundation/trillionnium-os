@@ -19,6 +19,7 @@ This document is the detailed source-development, integration and qualification 
 Source ownership paths:
 
 - `apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7`
+- `crates/trillionnium-owner-open-trace`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -239,3 +240,15 @@ Exit evidence must demonstrate:
 - contention benchmark.
 
 A source change may reduce implementation risk, but the status stays open or source-closed-pending-evidence until an immutable, current, independently authorized receipt reaches the declared exit level.
+
+### Optional monotonic stage observations
+
+The selected owner implementation also owns the off-default
+`trillionnium-owner-open-trace` primitive used by Host/Core, provider, journal
+and process hooks. Its [source contract](../../crates/trillionnium-owner-open-trace/README.md)
+binds the nineteen actual boundaries, nonblocking loss semantics, bounded
+completed-plus-in-flight records and snapshot/export space. The primitive
+observes existing behavior; it does not implement or activate the planned
+telemetry module, alter effect admission, or upgrade installed/WL/L2 evidence.
+Every exported snapshot remains provisional; producer quiescence and an
+aggregate producer/memory bound require independent outer evidence.

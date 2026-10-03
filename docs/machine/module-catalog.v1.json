@@ -59,6 +59,7 @@
     "crates/trillionnium-owner-open-stream-window",
     "crates/trillionnium-owner-open-tool-bridge",
     "crates/trillionnium-owner-open-turn-loop",
+    "crates/trillionnium-owner-open-trace",
     "crates/trillionnium-owner-open-types",
     "crates/trillionnium-owner-open-runtime"
   ],
@@ -631,7 +632,8 @@
       ],
       "owner_team": "team-execution-core",
       "paths": [
-        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7"
+        "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7",
+        "crates/trillionnium-owner-open-trace"
       ],
       "plane": "execution",
       "resource_contract": {

@@ -595,9 +595,10 @@ impl BrokerBindingRouter {
         // retain one terminal response per exact broker identity.
         let mut unique = Vec::with_capacity(bindings.len());
         for binding in bindings {
-            if !unique.iter().any(|candidate: &BrokerRequestBinding| {
-                candidate == &binding
-            }) {
+            if !unique
+                .iter()
+                .any(|candidate: &BrokerRequestBinding| candidate == &binding)
+            {
                 unique.push(binding);
             }
         }
@@ -698,9 +699,7 @@ fn host_error_explicitly_targets(
             saw_binding = true;
             let matches = match name {
                 "broker_request_id" => value.as_str() == Some(binding.request_id.as_str()),
-                "broker_request_sha256" => {
-                    value.as_str() == Some(binding.request_sha256.as_str())
-                }
+                "broker_request_sha256" => value.as_str() == Some(binding.request_sha256.as_str()),
                 "broker_request_upstream_seq" => value.as_u64() == Some(binding.upstream_seq),
                 _ => false,
             };
@@ -984,12 +983,16 @@ impl<W: Write> ClientDelivery<W> {
         if !self.attached {
             return Ok(());
         }
-        if let Err(error) = self
-            .writer
-            .write_all(&encoded)
-            .and_then(|_| self.writer.write_all(b"\n"))
-            .and_then(|_| self.writer.flush())
-        {
+        if let Err(error) = trillionnium_owner_open_trace::measure(
+            trillionnium_owner_open_trace::Stage::ClientDelivery,
+            frame.event_id.as_deref().unwrap_or("transport.response"),
+            || {
+                self.writer
+                    .write_all(&encoded)
+                    .and_then(|_| self.writer.write_all(b"\n"))
+                    .and_then(|_| self.writer.flush())
+            },
+        ) {
             self.attached = false;
             self.error = Some(error.to_string());
         }
