@@ -24,7 +24,7 @@ python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   "$PWD/tools/perf/run_product_baseline.py" \
   tools/perf/run_product_baseline.py \
-  2ab7c93fa12e88325e8d280782b043f0fe9c1af5e7597e15639f5c50836de8cc \
+  69a0adb3006f76d22a0a2d4a44441de7f8d574b3729d55b17b0d6048fbb47d6a \
   -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \
@@ -60,6 +60,32 @@ used for measured persistence; otherwise the system temporary directory is used.
 Each sample gets a fresh private directory and reclaims it after measuring and
 reaping its carriers. Existing event/job stores are never consumed.
 
+Process ownership requires Linux `waitid(..., WNOWAIT)` and default
+`SIGCHLD` disposition before spawning. The runner must be the exclusive reaper
+of its direct children. Both product collection and broker startup retain their
+original session leader through TERM/KILL, bounded membership observations and
+final reaping, including when the leader exits before a descendant holding a
+pipe. The authenticated facade preserves inherited execution descriptors and
+uses the same cleanup implementation as the core. stdin is nonblocking and
+shares the stdout/stderr selector deadline; a legal input larger than an
+available pipe cannot block before the timeout loop starts.
+
+Membership observations require a complete same-namespace `/proc` view, the
+retained anchor, at most 131072 directory entries, 4096 bytes per process stat
+and the cleanup phase deadline. Missing transient processes may disappear;
+unreadable or invalid observations cannot produce successful cleanup. A partial
+scan at the deadline triggers escalation or failure. Real fixtures cover a
+leader exiting with held stdout, TERM refusal, output flooding, normal cleanup,
+4096-byte stdin pipes with unread and fully delivered inputs, and isolated
+`SIGCHLD=SIG_IGN` rejection. They verify exact descendant pidfds, final leader
+reaping and descriptor counts. A real terminal-process fixture injects a reaper
+error: pipes still close, the retained anchor remains available for reconciliation
+and the error cannot become a successful sample. This does not prove cleanup of descendants that
+escape their original session/group, defeat an external reaper, or provide a
+hard bound on a kernel syscall stuck in uninterruptible I/O. Protected runner
+and installed process-tree evidence remain separate requirements. These changes
+also require a fresh implementation manifest and baseline.
+
 Use explicit host/core paths. Before any workload, the tool opens each selected
 Host, Core, Python and shell executable once, reads and hashes those admitted
 bytes, and writes them to owner-only, single-link execution files in a private
@@ -73,10 +99,18 @@ small and cannot be executed directly. It walks every
 facade path component from the filesystem root with descriptor-relative opens and
 `O_NOFOLLOW`, verifies a fixed facade SHA-256, compiles those same bytes, and only
 then transfers control. The authenticated facade applies the same component-wise
-open discipline to every behavior-bearing Python source. Its closed implementation
+open discipline to each registered repository Python source. Its closed implementation
 manifest covers the launcher, authenticated facade, private core, Root Linux
-supervisor and source broker. The broker workload executes a private script made
-from the same admitted snapshot. The report additionally records the source
+supervisor and the broker entrypoint plus its ten transitive sibling sources.
+The broker workload imports private copies of that complete captured closure.
+Missing, changed, symlinked or additional custody files refuse startup; there is
+no repository import path or `PYTHONPATH` fallback. The system Python standard
+library remains an interpreter dependency; this repository manifest does not
+independently attest that runtime. The same custody check runs before
+reporting results. Adding these previously omitted broker sources changes the
+implementation identity and requires a new baseline; older artifacts cannot
+establish a comparison against this harness. The report additionally records the
+source
 commit/tree, dirty tracked diff and untracked inputs, lockfile, Python and shell
 identities. Changing any manifest member changes comparison identity; changing a
 source path during a run fails it. A dirty but stable checkout is allowed unless
@@ -84,6 +118,28 @@ source path during a run fails it. A dirty but stable checkout is allowed unless
 caller-supplied binaries were built from that source; CI must retain the actual
 build command, toolchain identity and build logs alongside the measurement.
 `--build-profile` is the caller's declared Cargo profile, not ELF introspection.
+
+Storage comparison uses the actual scratch directory descriptor's mount ID,
+device, filesystem ID/type/flags, boot and mount namespace. A bounded kernel
+mount record binds the effective mount's root, source, options and overlay
+backing paths by digest without publishing those paths or possible mount-source
+credentials. Random scratch paths are excluded: ordinary directories on the
+same mount remain comparable. Different mounts, options, filesystem identities,
+boots or namespaces reject comparison. The native `fstatfs` layout is supported
+only on Linux LP64 x86-64/aarch64; unsupported or incomplete observations are
+recorded as unavailable and cannot supply a comparison pass.
+
+The report's comparison identity must exactly project its environment,
+configuration, Python/shell/harness digests, implementation/bootstrap/policy
+digests and fixed execution custody. Repetitions and warmup counts are excluded
+from configuration equality; each artifact still supplies all its declared raw
+samples and comparisons require at least five measured samples per workload.
+Host/Core subject bytes may change between candidates. Older artifacts without
+the complete storage identity require a fresh baseline. These are start/end,
+same-boot observations, not continuous storage monitoring or independent
+physical-device provenance: device-mapper remapping, cloned filesystem IDs or
+changes restored between snapshots still require an independent custodian and
+controlled runner. Self-reported metadata and self-hashes grant no such authority.
 
 ## What is actually measured
 
@@ -114,6 +170,38 @@ fairness and unknown rate currently have `value: null`, `status: unavailable` an
 an explanation. No missing measurement is replaced with zero or an ideal value.
 Observed output/store byte counts are not disk-I/O amplification or fsync counts.
 
+`collect_linux_resource_snapshot.py` records seven raw cgroup v2 counters:
+CPU usage, charged current/peak memory, cumulative read/write bytes and
+current/peak task counts. Run the observer outside a dedicated workload cgroup
+while that cgroup still exists:
+
+```sh
+python3 tools/perf/collect_linux_resource_snapshot.py \
+  --cgroup /sys/fs/cgroup/controlled-workload.service \
+  --seconds 2 --require-all-cgroup-counters \
+  --output /existing/private/resource-snapshot.json
+```
+
+The output must be new and its parent private. Descriptor-bound, bounded
+sequential reads retain raw bytes, inode identities and explicit unavailable
+values for the other 19 resources. Charged cgroup memory is not RSS, and kernel
+task counts are not distinct process or per-process thread peaks. Cumulative
+CPU/I/O is not a per-operation delta. The collector does not reset peaks,
+establish workload/source identity, produce an atomic snapshot or supply L2
+qualification. The caller must preserve the cgroup and independently bind its
+placement and sample boundaries. Completion after the observation/publication
+deadline returns failure even if the final file has become visible; preserve
+that file for inspection instead of reusing its path as a successful sample.
+Run the collector as a standalone observer and retain its actual process
+termination. Regular counter and report files have native `FileIO` ownership;
+cleanup retries the same object rather than a released descriptor number.
+Directory traversal records both parent and child across closure, with one
+close attempt per raw descriptor. A close exception can leave that attempt
+unknown, so it never retries a possibly reused number. Abort the observer
+then; the kernel retires its descriptor table on process exit. An interrupted
+long-lived library caller has no descriptor-closure guarantee and must not be
+reused for further observations.
+
 ## Comparison and CI decisions
 
 Keep a reviewed baseline on a controlled performance runner, then use:
@@ -124,7 +212,7 @@ python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOADER_V1" \
   cfa3971d8932c00525a616ba84d6e67be33a166b3d3ca01a6071743b68efaf96 \
   "$PWD/tools/perf/run_product_baseline.py" \
   tools/perf/run_product_baseline.py \
-  2ab7c93fa12e88325e8d280782b043f0fe9c1af5e7597e15639f5c50836de8cc \
+  69a0adb3006f76d22a0a2d4a44441de7f8d574b3729d55b17b0d6048fbb47d6a \
   -- \
   --host "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-host" \
   --core "$CARGO_TARGET_DIR/release/trillionnium-owner-open-r5-core" \

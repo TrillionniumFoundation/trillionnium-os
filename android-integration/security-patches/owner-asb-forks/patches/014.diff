@@ -1,0 +1,10 @@
+--- actual-captured/external/wpa_supplicant_8/wpa_supplicant/Android.bp
++++ owned-final/external/wpa_supplicant_8/wpa_supplicant/Android.bp
+@@ -683,6 +683,7 @@
+         misc_undefined: [
+             "unsigned-integer-overflow",
+             "signed-integer-overflow",
++            "bounds",
+         ],
+         cfi: true,
+     },

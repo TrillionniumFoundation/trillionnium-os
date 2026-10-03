@@ -16,6 +16,7 @@ from owner_open_broker_base_v2 import (
 )
 from owner_open_broker_common import (
     BrokerError,
+    performance_stage,
     canonical,
     compare_token,
     read_line,
@@ -122,6 +123,7 @@ class BrokerAdmissionMixin:
             return "admission_fenced"
         return None
 
+    @performance_stage("broker_auth")
     def _authenticate(self, connection: socket.socket, stream: Any) -> Client:
         pid, uid, gid = peer_credentials(connection)
         if uid != os.geteuid():

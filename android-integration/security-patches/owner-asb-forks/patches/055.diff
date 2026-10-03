@@ -1,0 +1,18 @@
+--- actual-captured/packages/apps/Settings/src/com/android/settings/nfc/PaymentDefaultDialog.java
++++ owned-final/packages/apps/Settings/src/com/android/settings/nfc/PaymentDefaultDialog.java
+@@ -58,14 +58,7 @@
+         ComponentName component = intent.getParcelableExtra(
+                 CardEmulation.EXTRA_SERVICE_COMPONENT);
+         String category = intent.getStringExtra(CardEmulation.EXTRA_CATEGORY);
+-        UserHandle userHandle = intent.getParcelableExtra(Intent.EXTRA_USER);
+-
+-        int userId;
+-        if (userHandle == null) {
+-            userId = UserHandle.myUserId();
+-        } else {
+-            userId = userHandle.getIdentifier();
+-        }
++        int userId = UserHandle.myUserId();
+ 
+         setResult(RESULT_CANCELED);
+         if (!buildDialog(component, category, userId)) {

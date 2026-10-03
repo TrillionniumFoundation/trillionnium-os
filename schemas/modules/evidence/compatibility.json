@@ -4,18 +4,36 @@
   "breaking_change_review": "REQUIRED_FOR_REQUIRED_TYPE_ENUM_DEFAULT_IDENTITY_ORDERING_STATE_OR_ERROR_CHANGE",
   "change_review": {
     "approval_asserted": false,
-    "base_catalog_sha256": null,
-    "base_contract_sha256": {},
-    "class": "NO_CHANGE",
-    "contracts": [],
-    "families": [],
+    "base_catalog_sha256": "448f6edcf7d7d11647a082aed0264064a8bb2f80e6b37348be0ca86ef98cd7a6",
+    "base_contract_sha256": {
+      "api": "d6eb52daf54ce98dab5db780b16fb80fb5d1052f8f31ad09585bd4ef77b58669",
+      "errors": "ef21d2957852530750ec4debc8b56f57057b7dd43f6e4fe683f2777a468d6ab6",
+      "state": "ddf5bd53bb63c605edeaf4f8a2ba7c60b77f205081afbd22a93af5761cce17e5"
+    },
+    "class": "BREAKING_MIGRATION",
+    "contracts": [
+      "api",
+      "errors",
+      "state"
+    ],
+    "families": [
+      "error",
+      "identity",
+      "ordering",
+      "other",
+      "state"
+    ],
     "migration_review_sha256": "32b71694a9459ffab112fd2dd06c750e7e56eb4d597966f1e3e1ddd01c19f733",
-    "review_authority": null,
-    "review_packet": null,
-    "review_packet_sha256": null,
-    "reviewer": null,
+    "review_authority": "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED",
+    "review_packet": "docs/reviews/module-contracts/fc9716a5d44d2b0b388387288e8351cd2f9f15d29b3311368ed5815173d7acb1.json",
+    "review_packet_sha256": "fc9716a5d44d2b0b388387288e8351cd2f9f15d29b3311368ed5815173d7acb1",
+    "reviewer": "Tomasrgbsf",
     "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
-    "target_contract_sha256": {}
+    "target_contract_sha256": {
+      "api": "0b0e17e921b525b0fbbd56038ca89527b97812d18a5cfc8baf22f0e49606bf92",
+      "errors": "9ab1f716d9bab4dd725954e67d1948136174f820fbe26e26d9ff526be5a67146",
+      "state": "dc92b98c97adeddc215b4c900eac045ec3e31018d4cad2d19528fc2a0f3cbc24"
+    }
   },
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
   "contract_tests": [
@@ -31,8 +49,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-      "size": 25928
+      "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+      "size": 27954
     }
   ],
   "contracts": {
@@ -78,6 +96,41 @@
       "path": "docs/machine/evidence-index.v1.json",
       "sha256": "8c3e5024c19e26ab03613f1ce145a667142c57dcd773ce291324bbda33a684e7",
       "size": 13308
+    },
+    {
+      "path": "tools/android_release_ota.py",
+      "sha256": "b6d3205d350f522d6b353084ae152ebc9335c6f6594219e12a2e27d43221e468",
+      "size": 114549
+    },
+    {
+      "path": "tools/collect_owner_source_vector.py",
+      "sha256": "69f416371fbbd52ee9a9216e155f0ecb6846f0d4470eecacbd5523cc6f92f7c4",
+      "size": 11682
+    },
+    {
+      "path": "tools/owner_asb_fork_catalog.py",
+      "sha256": "fea8c1d1fb459f5f124fb11d563cc6282cee0bc9b49608c0412b8b3c904036c4",
+      "size": 23094
+    },
+    {
+      "path": "tools/owner_bom_bounded_process.py",
+      "sha256": "9f9b40baa7855a92bac2e29ca612704ff85516a41b310e2a481c5c3a29923cf5",
+      "size": 16240
+    },
+    {
+      "path": "tools/owner_source_provenance.py",
+      "sha256": "6340050e53cc0374c26e7f602c1b9d2bd58c59953bafa4ea7eb6962f06c6ee94",
+      "size": 87392
+    },
+    {
+      "path": "tools/owner_source_surface.py",
+      "sha256": "7d0f3d51d913317f01c75ee6d25cb56e3748ed79ea1a59635b4ca32bc929839b",
+      "size": 16184
+    },
+    {
+      "path": "tools/prepare_owner_asb_fullforks.py",
+      "sha256": "0acde2c2b50b9f1e79c69ee4bb9f12a2a55c461ee775752515f91ced723be6bc",
+      "size": 25569
     }
   ],
   "introduction_review_class": "INITIAL_V1",
@@ -113,8 +166,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-        "size": 25928
+        "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+        "size": 27954
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -132,9 +185,24 @@
   "state_schema_version": "1",
   "test_sources": [
     {
+      "path": "tools/tests/owner_asb38_fixtures.py",
+      "sha256": "41fd5ab293b1cf532a3e7ad3849a8ff1174b537a29eb45a5dcbbe00e67e61d2e",
+      "size": 12503
+    },
+    {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-      "size": 37209
+      "sha256": "6419413c1a48bb966b26ed48ee04c6b05ba8008ccb131dcad7ea1c2264b83334",
+      "size": 49445
+    },
+    {
+      "path": "tools/tests/test_owner_asb_fullforks.py",
+      "sha256": "998194e2c890656fa0b86ff8333ec40096f7ff89c8d4a86ffd71be6ff1efd6ad",
+      "size": 19230
+    },
+    {
+      "path": "tools/tests/test_owner_asb_telephony_suggestions.py",
+      "sha256": "8d521958f64c4e17c0cd817cc9aad59ca56fc77f1fcbcc33a7c31eed69f052ce",
+      "size": 11962
     }
   ],
   "unknown_fields": "REJECT"

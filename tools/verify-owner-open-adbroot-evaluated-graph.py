@@ -31,7 +31,7 @@ PRODUCT_PATH = Path(
     "android-integration/working-tree/vendor/trillionnium/owner-open/product.mk"
 )
 COMMON_PATH = Path(
-    "android-integration/working-tree/vendor/trillionnium/config/common.mk"
+    "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk"
 )
 COMMON_OWNER_OPEN_PATH = Path(
     "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk"
@@ -54,7 +54,7 @@ OPT_IN_CASES: tuple[tuple[str, str | None], ...] = (
 )
 
 COMMON_OWNER_OPEN_ACTIVE_LINES = (
-    "$(call inherit-product, vendor/trillionnium/config/common.mk)",
+    "$(call inherit-product, vendor/trillionnium/config/common_owner_open_base.mk)",
     "$(call inherit-product, vendor/trillionnium/owner-open/product.mk)",
 )
 
@@ -218,7 +218,7 @@ def _security_slices(
 ) -> tuple[str, str]:
     _require(
         _active_lines(common_owner_open_text) == COMMON_OWNER_OPEN_ACTIVE_LINES,
-        "common_owner_open.mk must unconditionally inherit common.mk then owner-open/product.mk exactly once",
+        "common_owner_open.mk must unconditionally inherit shared base then owner-open/product.mk exactly once",
     )
 
     common_block, common_start, common_end = _conditional_block(

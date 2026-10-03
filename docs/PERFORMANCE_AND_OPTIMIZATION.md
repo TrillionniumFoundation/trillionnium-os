@@ -135,10 +135,24 @@ full Broker/Host/journal/Provider/tool/delivery stage matrix and every core
 resource counter, including CPU user/system time, current/peak RSS,
 FD/thread/process peaks, context switches, cgroup CPU/memory/I/O/pids, read and
 write bytes, fsync count, queue depth/wait, lock wait/hold, unknown rate, zero
-automatic redispatch and fairness. An explicit `unavailable` value is valid for
+automatic redispatch and fairness. Observed raw counters with `ns`, `usec`,
+`bytes` or `count` units are exact JSON integers in `0..2^64-1`; fractional
+values, integral floats such as `0.0`, booleans and overflow are rejected.
+Ratio observations remain finite numbers in `[0,1]`, and redispatch is
+exactly integer zero. These domains are explicit in policy v3 and registry
+version `2026-10-03-v3`. The numeric policy change requires fresh baseline
+and candidate batches; previous v2-policy artifacts remain historical inputs.
+An explicit `unavailable` value is valid for
 an L1 source fixture but makes an L2 decision impossible; it is never converted
 to zero. WL-11 remains an L4 physical-device hold and WL-12 remains an L5
 destructive-fault hold.
+
+`GAP-PERF-L2-BASELINE-001` records the installed WL-01 through WL-10
+baseline phase. The aggregate `GAP-PERF-SYSTEM-BASELINE-001` exits at L5:
+it also requires physical WL-11 at L4 and destructive WL-12 at L5, bound by
+one exact subject and continuous evidence lineage. An L2 comparison cannot
+close the aggregate, and this split removes none of the twelve workloads or
+their required measurements.
 
 The qualification policy is loaded from the checked-in, closed-world registry
 `tools/perf/performance_qualification_policy_registry.v1.json`. Every batch and
@@ -157,6 +171,18 @@ opened nonblocking and no-follow, then accepted only as singly-linked regular
 files before bounded descriptor reads. Passing source mode returns
 `SOURCE_COMPARISON_PASS_NOT_L2`; it does not install a target, close an external
 gap or authorize release.
+
+`tools/perf/collect_process_resource_snapshot.py` retains explicit
+PID/start-ticks/UID/boot-bound process and live-task kernel observations with
+finite time, process, task, descriptor and byte limits. It preserves raw CPU,
+I/O, context-switch and RSS fields without discovering a complete process
+family or inferring per-sample deltas. `VmRSS` is approximate; `smaps_rollup`
+is a separate sequential observation. Individual lifetime `VmHWM` and stable
+task/FD sets at two endpoints cannot establish a simultaneous family peak.
+The standalone observer requires actual zero exit; its report provides no
+installed qualification or complete lifetime coverage. Installed L2 still
+requires the complete resource lifecycle, work-end barrier and raw stage
+evidence from the same subject.
 
 ## 8. Control stability
 

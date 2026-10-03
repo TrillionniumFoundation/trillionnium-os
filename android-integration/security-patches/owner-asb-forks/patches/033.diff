@@ -1,0 +1,86 @@
+--- actual-captured/frameworks/base/services/core/java/com/android/server/wm/ActivityStarter.java
++++ owned-final/frameworks/base/services/core/java/com/android/server/wm/ActivityStarter.java
+@@ -591,6 +591,23 @@
+                 intent.setComponent(null /* component */);
+             }
+ 
++            // Check if the Intent was redirected
++            if ((intent.getExtendedFlags() & Intent.EXTENDED_FLAG_MISSING_CREATOR_OR_INVALID_TOKEN)
++                    != 0) {
++                logAndThrowExceptionForIntentRedirect(supervisor.mService.mContext,
++                        ActivityStarter.INTENT_REDIRECT_EXCEPTION_MISSING_OR_INVALID_TOKEN, intent,
++                        intentCreatorUid, intentCreatorPackage, resolvedCallingUid,
++                        resolvedCallingPackage, null);
++            }
++            if (IntentCreatorToken.isValid(intent)) {
++                IntentCreatorToken creatorToken = (IntentCreatorToken) intent.getCreatorToken();
++                if (creatorToken.getCreatorUid() != resolvedCallingUid) {
++                    intentCreatorUid = creatorToken.getCreatorUid();
++                    intentCreatorPackage = creatorToken.getCreatorPackage();
++                }
++                // leave intentCreatorUid as -1 if the intent creator is the same as the launcher
++            }
++
+             resolveInfo = supervisor.resolveIntent(intent, resolvedType, userId,
+                     0 /* matchFlags */,
+                     computeResolveFilterUid(callingUid, realCallingUid, filterCallingUid),
+@@ -606,22 +623,6 @@
+             // Collect information about the target of the Intent.
+             activityInfo = supervisor.resolveActivity(intent, resolveInfo, startFlags,
+                     profilerInfo);
+-            // Check if the Intent was redirected
+-            if ((intent.getExtendedFlags() & Intent.EXTENDED_FLAG_MISSING_CREATOR_OR_INVALID_TOKEN)
+-                    != 0) {
+-                logAndThrowExceptionForIntentRedirect(supervisor.mService.mContext,
+-                        ActivityStarter.INTENT_REDIRECT_EXCEPTION_MISSING_OR_INVALID_TOKEN, intent,
+-                        intentCreatorUid, intentCreatorPackage, resolvedCallingUid,
+-                        resolvedCallingPackage, null);
+-            }
+-            if (IntentCreatorToken.isValid(intent)) {
+-                IntentCreatorToken creatorToken = (IntentCreatorToken) intent.getCreatorToken();
+-                if (creatorToken.getCreatorUid() != resolvedCallingUid) {
+-                    intentCreatorUid = creatorToken.getCreatorUid();
+-                    intentCreatorPackage = creatorToken.getCreatorPackage();
+-                }
+-                // leave intentCreatorUid as -1 if the intent creator is the same as the launcher
+-            }
+             // Carefully collect grants without holding lock
+             if (activityInfo != null) {
+                 if (android.security.Flags.contentUriPermissionApis()) {
+@@ -639,10 +640,9 @@
+                                             UserHandle.getUserId(activityInfo.applicationInfo.uid),
+                                             activityInfo.requireContentUriPermissionFromCaller,
+                                             /* requestHashCode */ this.hashCode());
+-                            if (intentGrants == null) {
+-                                intentGrants = creatorIntentGrants;
+-                            } else {
+-                                intentGrants.merge(creatorIntentGrants);
++                            // Both calling UID and creator UID must have permission to grant.
++                            if (intentGrants == null || creatorIntentGrants == null) {
++                                intentGrants = null;
+                             }
+                         } catch (SecurityException securityException) {
+                             logAndThrowExceptionForIntentRedirect(supervisor.mService.mContext,
+@@ -663,10 +663,9 @@
+                                             activityInfo.applicationInfo.packageName,
+                                             UserHandle.getUserId(
+                                                     activityInfo.applicationInfo.uid));
+-                            if (intentGrants == null) {
+-                                intentGrants = creatorIntentGrants;
+-                            } else {
+-                                intentGrants.merge(creatorIntentGrants);
++                            // Both calling UID and creator UID must have permission to grant.
++                            if (intentGrants == null || creatorIntentGrants == null) {
++                                intentGrants = null;
+                             }
+                         } catch (SecurityException securityException) {
+                             logAndThrowExceptionForIntentRedirect(supervisor.mService.mContext,
+@@ -3743,7 +3742,7 @@
+         }
+     }
+ 
+-    private static boolean logAndAbortForIntentRedirect(@NonNull Context context,
++    static boolean logAndAbortForIntentRedirect(@NonNull Context context,
+             @IntentRedirectErrorCode int errorCode, @NonNull Intent intent, int intentCreatorUid,
+             @Nullable String intentCreatorPackage, int callingUid,
+             @Nullable String callingPackage) {

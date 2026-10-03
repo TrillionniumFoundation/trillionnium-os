@@ -673,6 +673,20 @@ class ProviderRetirementTest(unittest.TestCase):
         value = {'x':'[' * 200 + '\\"' + ']' * 200, 'nested':{'valid':True}}
         self.assertEqual(RUNTIME.decode_strict_event(json.dumps(value).encode()), value)
 
+    def test_dense_json_is_rejected_before_dom_allocation(self):
+        raw = b'{"values":[' + b'0,' * RUNTIME.MAX_JSON_VALUE_COUNT + b'0]}'
+        with mock.patch.object(RUNTIME.json, 'loads') as loads, self.assertRaisesRegex(
+                RUNTIME.ProviderRuntimeError, 'allocation budget'):
+            RUNTIME.decode_strict_event(raw)
+        loads.assert_not_called()
+
+    def test_large_string_working_capacity_is_rejected_before_decode(self):
+        raw = b'{"text":"' + b'x' * (2 * 1024 * 1024) + b'"}'
+        with mock.patch.object(RUNTIME.json, 'loads') as loads, self.assertRaisesRegex(
+                RUNTIME.ProviderRuntimeError, 'allocation budget'):
+            RUNTIME.decode_strict_event(raw)
+        loads.assert_not_called()
+
     def test_all_count_limits_reject_boolean_fraction_and_extreme(self):
         for field in fields(RUNTIME.ProcessLimits):
             if field.name.endswith('_seconds'):

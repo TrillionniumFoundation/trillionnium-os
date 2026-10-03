@@ -1,0 +1,30 @@
+--- actual-captured/hardware/nxp/secure_element/pn8x/1.1/SecureElement.cpp
++++ owned-final/hardware/nxp/secure_element/pn8x/1.1/SecureElement.cpp
+@@ -203,10 +203,14 @@
+   } else if (rspApdu.p_data[rspApdu.len - 2] == 0x90 &&
+              rspApdu.p_data[rspApdu.len - 1] == 0x00) {
+     /*ManageChannel successful*/
+-    resApduBuff.channelNumber = rspApdu.p_data[0];
+-    mOpenedchannelCount++;
+-    mOpenedChannels[resApduBuff.channelNumber] = true;
+-    sestatus = SecureElementStatus::SUCCESS;
++    if (rspApdu.p_data[0] < MAX_LOGICAL_CHANNELS && rspApdu.p_data[0] > 0) {
++      resApduBuff.channelNumber = rspApdu.p_data[0];
++      mOpenedchannelCount++;
++      mOpenedChannels[resApduBuff.channelNumber] = true;
++      sestatus = SecureElementStatus::SUCCESS;
++    } else {
++      sestatus = SecureElementStatus::CHANNEL_NOT_AVAILABLE;
++    }
+   } else if (rspApdu.p_data[rspApdu.len - 2] == 0x6A &&
+              rspApdu.p_data[rspApdu.len - 1] == 0x81) {
+     sestatus = SecureElementStatus::CHANNEL_NOT_AVAILABLE;
+@@ -397,7 +401,7 @@
+   if ((channelNumber >= MAX_LOGICAL_CHANNELS) ||
+       (mOpenedChannels[channelNumber] == false)) {
+     ALOGE("%s: invalid channel!!!", __func__);
+-    sestatus = SecureElementStatus::FAILED;
++    return SecureElementStatus::FAILED;
+   } else if (channelNumber > DEFAULT_BASIC_CHANNEL) {
+     phNxpEse_memset(&cmdApdu, 0x00, sizeof(phNxpEse_data));
+     phNxpEse_memset(&rspApdu, 0x00, sizeof(phNxpEse_data));

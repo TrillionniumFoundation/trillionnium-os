@@ -39,6 +39,11 @@ MAX_ARCHIVE_MEMBERS = 100_000
 MAX_MEMBER_NAME_BYTES = 4096
 MAX_MANIFEST_BYTES = 256 * 1024
 MAX_UNCOMPRESSED_BYTES = 512 * 1024 * 1024
+MAX_ARCHIVE_METADATA_BYTES = 64 * 1024 * 1024
+MAX_EXTENDED_HEADER_BYTES = 64 * 1024
+MAX_EXTENDED_HEADER_DEPTH = 16
+MAX_PAX_FIELDS = 1024
+MAX_PAX_TEXT_BYTES = 64 * 1024
 
 
 class PackageError(RuntimeError):
@@ -202,38 +207,118 @@ def _validate_member_name(name: str) -> None:
         raise PackageError(f"archive member has an unsafe path: {name!r}")
 
 
-def _inspect_archive(path: Path) -> int:
-    """Validate a gzip tar without extracting it and return file count."""
+def _charge_archive_metadata(archive: tarfile.TarFile, size: int) -> None:
+    total = getattr(archive, "_source_metadata_bytes", 0) + size
+    if total > MAX_ARCHIVE_METADATA_BYTES:
+        raise PackageError("archive metadata exceeds size ceiling")
+    archive._source_metadata_bytes = total
+
+
+class _SourceTarInfo(tarfile.TarInfo):
+    """Bound extension parsing before tarfile reads or expands its payload.
+
+    Checking yielded member names is too late for PAX/GNU metadata, and GNU
+    sparse maps can allocate while that member is still being decoded. Source
+    packages need ordinary files/directories and bounded name/PAX extensions.
+    """
+
+    def _proc_member(self, archive: tarfile.TarFile) -> tarfile.TarInfo:
+        _validate_pax_headers(archive.pax_headers)
+        _charge_archive_metadata(archive, tarfile.BLOCKSIZE)
+        if self.size < 0:
+            raise PackageError("archive header has a negative size")
+        extensions = (tarfile.XHDTYPE, tarfile.XGLTYPE,
+                      tarfile.SOLARIS_XHDTYPE, tarfile.GNUTYPE_LONGNAME)
+        if self.type in extensions:
+            if self.size > MAX_EXTENDED_HEADER_BYTES:
+                raise PackageError("archive extended header exceeds size ceiling")
+            _charge_archive_metadata(archive, self._block(self.size))
+            depth = getattr(archive, "_source_extended_depth", 0)
+            if depth >= MAX_EXTENDED_HEADER_DEPTH:
+                raise PackageError("archive extended headers exceed nesting ceiling")
+            archive._source_extended_depth = depth + 1
+            try:
+                return super()._proc_member(archive)
+            finally:
+                archive._source_extended_depth = depth
+        if self.type not in (tarfile.REGTYPE, tarfile.AREGTYPE,
+                             tarfile.CONTTYPE, tarfile.DIRTYPE):
+            raise PackageError("archive header is not an ordinary file or directory")
+        # tarfile can seek across the raw extent while exposing a different
+        # global size to callers. Canonical git global headers carry comments,
+        # never a content-size override; refuse that ambiguous composition.
+        if "size" in archive.pax_headers:
+            raise PackageError("archive global size overrides are not allowed")
+        return super()._proc_member(archive)
+
+    def _apply_pax_info(self, pax_headers: dict[str, str], encoding: str, errors: str) -> None:
+        _validate_pax_headers(pax_headers)
+        if any(key.startswith("GNU.sparse.") for key in pax_headers):
+            raise PackageError("archive sparse metadata is not allowed")
+        return super()._apply_pax_info(pax_headers, encoding, errors)
+
+    def _proc_gnusparse_00(self, *args: Any) -> None:
+        raise PackageError("archive sparse metadata is not allowed")
+
+    def _proc_gnusparse_01(self, *args: Any) -> None:
+        raise PackageError("archive sparse metadata is not allowed")
+
+    def _proc_gnusparse_10(self, *args: Any) -> None:
+        raise PackageError("archive sparse metadata is not allowed")
+
+
+def _validate_pax_headers(headers: dict[str, str]) -> None:
+    if len(headers) > MAX_PAX_FIELDS:
+        raise PackageError("archive PAX field count exceeds ceiling")
     try:
-        with tarfile.open(path, mode="r:gz") as archive:
-            members = archive.getmembers()
-    except (OSError, tarfile.TarError) as error:
-        raise PackageError(f"cannot inspect source archive {path}: {error}") from error
-    if len(members) > MAX_ARCHIVE_MEMBERS:
-        raise PackageError(f"archive has too many members: {len(members)}")
+        text_bytes = sum(len(key.encode("utf-8")) + len(value.encode("utf-8"))
+                         for key, value in headers.items())
+    except UnicodeError as error:
+        raise PackageError("archive PAX fields are not valid UTF-8") from error
+    if text_bytes > MAX_PAX_TEXT_BYTES:
+        raise PackageError("archive PAX text exceeds size ceiling")
+
+
+def _inspect_archive(path: Path) -> int:
+    """Validate incrementally; bounds apply before extension allocations.
+
+    File content is bounded separately from the 64 MiB metadata allowance.
+    Each extension is at most 64 KiB, with at most 16 nested extensions. PAX
+    state has at most 1024 fields and 64 KiB of decoded UTF-8 key/value text.
+    These are input/state bounds, not a whole-process RSS qualification. The
+    parser retains names for duplicate detection, but no list of TarInfo objects.
+    """
     file_count = 0
+    member_count = 0
     uncompressed_bytes = 0
     names: set[str] = set()
-    for member in members:
-        _validate_member_name(member.name)
-        if member.name in names:
-            raise PackageError(f"archive contains a duplicate member: {member.name!r}")
-        names.add(member.name)
-        # A source package must be safe to materialize in a future build
-        # workspace.  Git links, symlinks and device nodes are not needed here
-        # and would create an avoidable extraction ambiguity.
-        if member.isdir():
-            continue
-        if not member.isfile():
-            raise PackageError(
-                f"archive member {member.name!r} is not a regular file or directory"
-            )
-        if member.size < 0:
-            raise PackageError(f"archive member {member.name!r} has a negative size")
-        uncompressed_bytes += member.size
-        if uncompressed_bytes > MAX_UNCOMPRESSED_BYTES:
-            raise PackageError("archive uncompressed content exceeds size ceiling")
-        file_count += 1
+    try:
+        with tarfile.open(path, mode="r:gz", tarinfo=_SourceTarInfo) as archive:
+            while (member := archive.next()) is not None:
+                archive.members.clear()
+                member_count += 1
+                if member_count > MAX_ARCHIVE_MEMBERS:
+                    raise PackageError("archive has too many members")
+                _validate_member_name(member.name)
+                _charge_archive_metadata(archive, len(member.name.encode("utf-8")))
+                if member.name in names:
+                    raise PackageError(f"archive contains a duplicate member: {member.name!r}")
+                names.add(member.name)
+                if member.isdir() and member.size == 0:
+                    continue
+                if not member.isfile() or member.issparse() or member.size < 0:
+                    raise PackageError("archive member is not an ordinary file or empty directory")
+                uncompressed_bytes += member.size
+                if uncompressed_bytes > MAX_UNCOMPRESSED_BYTES:
+                    raise PackageError("archive uncompressed content exceeds size ceiling")
+                file_count += 1
+            # Read the bounded zero padding through gzip EOF so a truncated or
+            # corrupt gzip footer cannot hide behind tar's first end marker.
+            tail = archive.fileobj.read(tarfile.RECORDSIZE + 1)
+            if len(tail) > tarfile.RECORDSIZE or tail.strip(b"\0"):
+                raise PackageError("archive has noncanonical trailing content")
+    except (OSError, EOFError, tarfile.TarError) as error:
+        raise PackageError(f"cannot inspect source archive {path}: {error}") from error
     return file_count
 
 

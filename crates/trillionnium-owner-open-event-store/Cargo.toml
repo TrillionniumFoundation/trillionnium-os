@@ -11,6 +11,7 @@ publish = false
 default = []
 
 [dependencies]
+trillionnium-owner-open-trace.workspace = true
 libc.workspace = true
 serde.workspace = true
 serde_json.workspace = true

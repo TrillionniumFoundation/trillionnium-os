@@ -1,0 +1,144 @@
+--- actual-captured/packages/providers/TelephonyProvider/src/com/android/providers/telephony/MmsSmsProvider.java
++++ owned-final/packages/providers/TelephonyProvider/src/com/android/providers/telephony/MmsSmsProvider.java
+@@ -189,10 +189,6 @@
+ 
+     private static final String[] EMPTY_STRING_ARRAY = new String[0];
+ 
+-    private static final String[] SEARCH_STRING = new String[1];
+-    private static final String SEARCH_QUERY = "SELECT snippet(words, '', ' ', '', 1, 1) as " +
+-            "snippet FROM words WHERE index_text MATCH ? ORDER BY snippet LIMIT 50;";
+-
+     private static final String SMS_CONVERSATION_CONSTRAINT = "(" +
+             Sms.TYPE + " != " + Sms.MESSAGE_TYPE_DRAFT + ")";
+ 
+@@ -202,7 +198,31 @@
+             Mms.MESSAGE_TYPE + " = " + PduHeaders.MESSAGE_TYPE_RETRIEVE_CONF + " OR " +
+             Mms.MESSAGE_TYPE + " = " + PduHeaders.MESSAGE_TYPE_NOTIFICATION_IND + "))";
+ 
+-    private static String getTextSearchQuery(String smsTable, String pduTable) {
++    // Bind suggestions to the live, caller-visible parent, not the stale FTS sub_id.
++    private static String getSearchSuggestionsQuery(String smsTable, String pduTable,
++            String selectionBySubIds) {
++        if (selectionBySubIds == null || selectionBySubIds.isEmpty()) {
++            throw new IllegalArgumentException("subscription selection is required");
++        }
++        String subscriptionSelection = selectionBySubIds.replace("'", "");
++        return "SELECT snippet(words, '', ' ', '', 1, 1) as snippet FROM words "
++                + "WHERE index_text MATCH ? AND ((words.table_to_use=1 AND EXISTS ("
++                + "SELECT 1 FROM " + smsTable + " WHERE " + smsTable
++                + "._id=words.source_id AND " + smsTable + "." + subscriptionSelection
++                + ")) OR (words.table_to_use=2 AND EXISTS (SELECT 1 FROM part INNER JOIN "
++                + pduTable + " ON part.mid=" + pduTable + "._id WHERE part._id=words.source_id"
++                + " AND " + pduTable + "." + subscriptionSelection
++                + "))) ORDER BY snippet LIMIT 50;";
++    }
++
++    private static String[] getSearchSuggestionArgs(String pattern) {
++        return new String[] { pattern + '*' };
++    }
++
++    private static String getTextSearchQuery(String smsTable, String pduTable,
++            String selectionBySubIds) {
++        String smsSubIdClause = !TextUtils.isEmpty(selectionBySubIds)
++                ? " AND " + smsTable + "." + selectionBySubIds.replace("'", "") + " " : "";
+         // Search on the words table but return the rows from the corresponding sms table
+         final String smsQuery = "SELECT "
+                 + smsTable + "._id AS _id,"
+@@ -216,8 +236,11 @@
+                 + "FROM " + smsTable + ",words "
+                 + "WHERE (index_text MATCH ? "
+                 + "AND " + smsTable + "._id=words.source_id "
++                + smsSubIdClause
+                 + "AND words.table_to_use=1)";
+ 
++        String mmsSubIdClause = !TextUtils.isEmpty(selectionBySubIds)
++                ? " AND " + pduTable + "." + selectionBySubIds.replace("'", "") + " " : "";
+         // Search on the words table but return the rows from the corresponding parts table
+         final String mmsQuery = "SELECT "
+                 + pduTable + "._id,"
+@@ -235,6 +258,7 @@
+                 + "AND (part.ct='text/plain') "
+                 + "AND (index_text MATCH ?) "
+                 + "AND (part._id = words.source_id) "
++                + mmsSubIdClause
+                 + "AND (words.table_to_use=2))";
+ 
+         // This code queries the sms and mms tables and returns a unified result set
+@@ -411,6 +435,12 @@
+                             break;
+                         }
+                     }
++                    if (selectionBySubIds == null) {
++                        Log.d(LOG_TAG, "URI_CONVERSATIONS - subId not associated with user.");
++                        return emptyCursor;
++                    }
++                    selection = DatabaseUtils.concatenateWhere(selection, selectionBySubIds);
++
+                     cursor = getSimpleConversations(
+                             projection, selection, selectionArgs, sortOrder);
+                 } else {
+@@ -435,11 +465,23 @@
+                         selection, sortOrder, smsTable, pduTable);
+                 break;
+             case URI_CONVERSATIONS_RECIPIENTS:
++                if (selectionBySubIds == null) {
++                    Log.d(LOG_TAG, "URI_CONVERSATIONS_RECIPIENTS - subId not associated with user.");
++                    return emptyCursor;
++                }
++                selection = DatabaseUtils.concatenateWhere(selection, selectionBySubIds);
++
+                 cursor = getConversationById(
+                         uri.getPathSegments().get(1), projection, selection,
+                         selectionArgs, sortOrder);
+                 break;
+             case URI_CONVERSATIONS_SUBJECT:
++                if (selectionBySubIds == null) {
++                    Log.d(LOG_TAG, "URI_CONVERSATIONS_SUBJECT - subId not associated with user.");
++                    return emptyCursor;
++                }
++                selection = DatabaseUtils.concatenateWhere(selection, selectionBySubIds);
++
+                 cursor = getConversationById(
+                         uri.getPathSegments().get(1), projection, selection,
+                         selectionArgs, sortOrder);
+@@ -493,7 +535,10 @@
+                         sortOrder);
+                 break;
+             case URI_SEARCH_SUGGEST: {
+-                SEARCH_STRING[0] = uri.getQueryParameter("pattern") + '*' ;
++                if (selectionBySubIds == null) {
++                    Log.d(LOG_TAG, "URI_CONVERSATIONS_SUGGEST - subId not associated with user.");
++                    return emptyCursor;
++                }
+ 
+                 // find the words which match the pattern using the snippet function.  The
+                 // snippet function parameters mainly describe how to format the result.
+@@ -507,7 +552,10 @@
+                             "with this query");
+                 }
+ 
+-                cursor = db.rawQuery(SEARCH_QUERY, SEARCH_STRING);
++                String searchQuery = getSearchSuggestionsQuery(smsTable, pduTable,
++                        selectionBySubIds);
++                cursor = db.rawQuery(searchQuery,
++                        getSearchSuggestionArgs(uri.getQueryParameter("pattern")));
+                 break;
+             }
+             case URI_MESSAGE_ID_TO_THREAD: {
+@@ -549,10 +597,15 @@
+                             "with this query");
+                 }
+ 
++                if (selectionBySubIds == null) {
++                    Log.d(LOG_TAG, "URI_SEARCH - subId not associated with user.");
++                    return emptyCursor;
++                }
++
+                 String searchString = uri.getQueryParameter("pattern") + "*";
+ 
+                 try {
+-                    cursor = db.rawQuery(getTextSearchQuery(smsTable, pduTable),
++                    cursor = db.rawQuery(getTextSearchQuery(smsTable, pduTable, selectionBySubIds),
+                             new String[] { searchString, searchString });
+                 } catch (Exception ex) {
+                     Log.e(LOG_TAG, "got exception: " + ex.toString());

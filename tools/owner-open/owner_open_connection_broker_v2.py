@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 import subprocess
 import sys
 
 from owner_open_broker_admission_v2 import BrokerAdmissionMixin
 from owner_open_broker_base_v2 import BrokerBase
-from owner_open_broker_common import BrokerError, require_id
+from owner_open_broker_common import (BrokerError, require_id, configure_performance_trace, export_performance_trace_from_env)
 from owner_open_broker_convergence_v2 import BrokerConvergenceMixin
 from owner_open_broker_mux import MuxError
 from owner_open_broker_server_v2 import BrokerServerMixin
@@ -82,10 +83,27 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str]) -> int:
     try:
+        if "TRILLIONNIUM_OWNER_TRACE_SAMPLE" not in os.environ and (
+                "TRILLIONNIUM_OWNER_TRACE_MODE" in os.environ or
+                "TRILLIONNIUM_OWNER_TRACE_STREAM_OUTPUT" in os.environ):
+            raise ValueError("explicit trace mode/output requires sample")
+        if "TRILLIONNIUM_OWNER_TRACE_SAMPLE" in os.environ:
+            configure_performance_trace(os.environ["TRILLIONNIUM_OWNER_TRACE_SAMPLE"], "broker")
+    except ValueError as error:
+        print(f"owner-open trace configuration failed: {error}", file=sys.stderr)
+        return 2
+    try:
         return Broker(parse_args(argv)).serve()
     except (BrokerError, MuxError, OSError, subprocess.SubprocessError) as error:
         print(f"owner-open broker failed: {error}", file=sys.stderr)
         return 2
+    finally:
+        # Service cleanup joins workers before this outer evidence export.
+        try:
+            export_performance_trace_from_env()
+        except (ValueError, OSError) as error:
+            print(f"owner-open trace unavailable: {error}", file=sys.stderr)
+            return 2
 
 
 if __name__ == "__main__":

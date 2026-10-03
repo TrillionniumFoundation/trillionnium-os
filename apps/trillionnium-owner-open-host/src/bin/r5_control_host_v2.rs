@@ -367,6 +367,10 @@ fn send_turn_event_with_timeout(
     event: &TurnEvent,
     timeout: Duration,
 ) -> Result<(), String> {
+    let _trace = trillionnium_owner_open_trace::span(
+        trillionnium_owner_open_trace::Stage::HostCapacityWait,
+        "core.persistence-receipt",
+    );
     let deadline = Instant::now() + timeout;
     let expired = || "Host persistence receipt was not received; effect admission is fenced".to_string();
     let (receipt, received) = sync_channel(1);
@@ -467,7 +471,11 @@ fn process_messages_with_control_seq<W: Write>(
         }
         match receiver.recv_timeout(HOST_POLL_INTERVAL) {
             Ok(HostMessage::Inbound(encoded)) => {
-                let frame = match RunTurnFrame::decode(&encoded, &limits) {
+                let frame = match trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::HostDecode,
+                    "core.inbound",
+                    || RunTurnFrame::decode(&encoded, &limits),
+                ) {
                     Ok(frame) => frame,
                     Err(error) => {
                         deliver_host_error(
