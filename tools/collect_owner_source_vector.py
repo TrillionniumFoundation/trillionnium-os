@@ -8,9 +8,9 @@ No source-BOM, immutable snapshot, build or release qualification is granted.
 import argparse,base64,hashlib,importlib.util,io,json,math,os,re,stat,sys,time
 from pathlib import Path
 
-SOURCE_SHA='a7622d5d099264801404de45d1df2390176ee661171b2042e357d4e868232373'
+SOURCE_SHA='e7dd25c0219e81f63bef09b1feb02798aaca55dfeae0988dd94b955c957a5604'
 HELPER_SHA='9f9b40baa7855a92bac2e29ca612704ff85516a41b310e2a481c5c3a29923cf5'
-META_SHA='d37203923bdc54f7b14a5c04d7b113f6917b1ba2cd21102c4e153dc1e7beac31'
+META_SHA='d4b18e5f18fa63f0a2b3c7d21dad48e5becf45ce7688e768f517c58a9691ac50'
 MODULE_SHAS={'owner_source_provenance.py':SOURCE_SHA,'owner_bom_bounded_process.py':HELPER_SHA,'verify_owner_target_files_binding.py':META_SHA}
 INPUT_SCHEMA='org.trillionnium.owner-source-vector-input.v1'
 STATUS_ARGS=['status','--porcelain=v1','-z','--untracked-files=all','--ignored=matching']

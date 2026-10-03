@@ -11,7 +11,7 @@ import argparse, hashlib, io, json, math, os, re
 from pathlib import Path, PurePosixPath
 import stat, struct, sys, time, types, zipfile
 
-PROVENANCE_SOURCE_SHA='a7622d5d099264801404de45d1df2390176ee661171b2042e357d4e868232373'
+PROVENANCE_SOURCE_SHA='e7dd25c0219e81f63bef09b1feb02798aaca55dfeae0988dd94b955c957a5604'
 
 def _load_measured_provenance():
     """CLI and library use actual sibling bytes, never ambient/cache code.

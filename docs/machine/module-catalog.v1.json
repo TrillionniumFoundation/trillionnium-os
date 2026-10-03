@@ -2198,7 +2198,18 @@
         "android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml",
         "tools/verify-owner-open-sdk-selection.py",
         "android-integration/working-tree/build/make/core/Makefile",
-        "tools/verify_owner_target_files_binding.py"
+        "tools/verify_owner_target_files_binding.py",
+        "android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile_full.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_full_phone.mk",
+        "tools/generate-owner-open-phone-config.py",
+        "tools/owner-open-phone-chain.v1.json",
+        "tools/verify-owner-open-android-source-closure.py",
+        "tools/verify-owner-open-android-source-closure-v2.py",
+        "android-integration/owner-open-profile/profile-v2.json"
       ],
       "plane": "platform",
       "resource_contract": {

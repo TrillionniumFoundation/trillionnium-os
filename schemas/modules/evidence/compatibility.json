@@ -104,7 +104,7 @@
     },
     {
       "path": "tools/collect_owner_source_vector.py",
-      "sha256": "53287545cd2bde1e9d748f4c75fc8b0e314efe8f97b926f871b9ecdb44ea5af1",
+      "sha256": "417ccf9fa8a0069534e797447bc8ba489c74019291cd6bbe0a22a6c5cccf9add",
       "size": 10682
     },
     {
@@ -114,7 +114,7 @@
     },
     {
       "path": "tools/owner_source_provenance.py",
-      "sha256": "a7622d5d099264801404de45d1df2390176ee661171b2042e357d4e868232373",
+      "sha256": "e7dd25c0219e81f63bef09b1feb02798aaca55dfeae0988dd94b955c957a5604",
       "size": 73165
     }
   ],

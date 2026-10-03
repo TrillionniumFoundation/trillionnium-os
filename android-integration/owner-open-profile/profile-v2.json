@@ -425,6 +425,38 @@
     {
       "role": "android_owner_sdk_selection_verifier",
       "path": "tools/verify-owner-open-sdk-selection.py"
+    },
+    {
+      "role": "android_sealed_mobile_source",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk"
+    },
+    {
+      "role": "android_sealed_mobile_full_source",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk"
+    },
+    {
+      "role": "android_sealed_full_phone_source",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk"
+    },
+    {
+      "role": "android_owner_mobile",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile.mk"
+    },
+    {
+      "role": "android_owner_mobile_full",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile_full.mk"
+    },
+    {
+      "role": "android_owner_full_phone",
+      "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_full_phone.mk"
+    },
+    {
+      "role": "android_phone_chain_generator",
+      "path": "tools/generate-owner-open-phone-config.py"
+    },
+    {
+      "role": "android_phone_chain_source_rules",
+      "path": "tools/owner-open-phone-chain.v1.json"
     }
   ],
   "optional_dogfood_product_modules": [

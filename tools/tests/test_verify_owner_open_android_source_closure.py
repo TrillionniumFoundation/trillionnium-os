@@ -96,6 +96,19 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
         self.assertFalse(report.ok)
         self.assertTrue(any("common base differs" in error for error in report.errors), report.errors)
 
+    def test_phone_chain_cannot_restore_sealed_inheritance(self) -> None:
+        relative = module.COMMON_OWNER_OPEN.with_name("common_owner_open_mobile.mk")
+        self.rewrite(relative, "config/common_owner_open.mk)", "config/common.mk)")
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open phone chain" in error for error in report.errors), report.errors)
+
+    def test_missing_phone_source_rules_fail_the_complete_source_closure(self) -> None:
+        (self.root / "tools/owner-open-phone-chain.v1.json").unlink()
+        report = module.verify(self.root)
+        self.assertFalse(report.ok)
+        self.assertTrue(any("owner-open phone chain" in error for error in report.errors), report.errors)
+
     def test_shared_sdk_legacy_service_cannot_pass_source_closure(self) -> None:
         self.rewrite(
             Path("android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml"),

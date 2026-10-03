@@ -11,7 +11,10 @@ from __future__ import annotations
 import argparse
 import ast
 from dataclasses import dataclass, field
-import importlib.util
+import hashlib
+import os
+import time
+import types
 import json
 from pathlib import Path
 from pathlib import PurePosixPath
@@ -32,18 +35,79 @@ COMMON_OWNER_OPEN = Path(
 )
 COMMON_SEALED = COMMON_OWNER_OPEN.with_name("common.mk")
 COMMON_BASE = COMMON_OWNER_OPEN.with_name("common_owner_open_base.mk")
-_GENERATOR_SPEC = importlib.util.spec_from_file_location(
-    "owner_open_common_base_generator", Path(__file__).with_name("generate-owner-open-common-base.py")
-)
-assert _GENERATOR_SPEC is not None and _GENERATOR_SPEC.loader is not None
-COMMON_GENERATOR = importlib.util.module_from_spec(_GENERATOR_SPEC)
-_GENERATOR_SPEC.loader.exec_module(COMMON_GENERATOR)
-_SDK_SPEC = importlib.util.spec_from_file_location(
-    "owner_open_sdk_selection", Path(__file__).with_name("verify-owner-open-sdk-selection.py")
-)
-assert _SDK_SPEC is not None and _SDK_SPEC.loader is not None
-SDK_SELECTION = importlib.util.module_from_spec(_SDK_SPEC)
-_SDK_SPEC.loader.exec_module(SDK_SELECTION)
+def bind_helper(name,path,expected_sha,register=False):
+ """Execute the exact measured source bytes; never consult a bytecode cache."""
+ path=Path(path)
+ if not path.is_absolute() or '..' in path.parts or '.' in path.parts:raise RuntimeError('absolute canonical helper path required')
+ deadline=time.monotonic()+5
+ def budget():
+  if time.monotonic()>=deadline:raise RuntimeError('whole source helper binding deadline')
+ def identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_gid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)
+ parent=os.open('/',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+ fd=None
+ registered_obj=None
+ previous=None
+ had_previous=False
+ try:
+  for part in path.parts[1:-1]:
+   budget();next_fd=os.open(part,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=parent)
+   os.close(parent);parent=next_fd
+  before=os.stat(path.name,dir_fd=parent,follow_symlinks=False)
+  if not stat.S_ISREG(before.st_mode) or before.st_nlink!=1 or not 0<before.st_size<=1024*1024:raise RuntimeError('single-link bounded ordinary helper source required')
+  fd=os.open(path.name,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK|os.O_CLOEXEC,dir_fd=parent)
+  if identity(os.fstat(fd))!=identity(before):raise RuntimeError('helper FD differs from entry')
+  pieces=[];count=0
+  while True:
+   budget();block=os.read(fd,min(65536,1024*1024-count+1))
+   if not block:break
+   count+=len(block)
+   if count>before.st_size or count>1024*1024:raise RuntimeError('helper source byte bound')
+   pieces.append(block)
+  raw=b''.join(pieces)
+  if count!=before.st_size or hashlib.sha256(raw).hexdigest()!=expected_sha:raise RuntimeError('exact helper source SHA mismatch')
+  if identity(os.fstat(fd))!=identity(before) or identity(os.stat(path.name,dir_fd=parent,follow_symlinks=False))!=identity(before):raise RuntimeError('helper source changed before execution')
+  budget();obj=types.ModuleType(name);obj.__file__=str(path)
+  if register:
+   previous=sys.modules.get(name);had_previous=name in sys.modules
+   sys.modules[name]=obj;registered_obj=obj
+  exec(compile(raw,str(path),'exec'),obj.__dict__)
+  budget();os.lseek(fd,0,os.SEEK_SET);after_digest=hashlib.sha256();count=0
+  while True:
+   budget();block=os.read(fd,min(65536,1024*1024-count+1))
+   if not block:break
+   count+=len(block)
+   if count>before.st_size or count>1024*1024:raise RuntimeError('helper source grew after execution')
+   after_digest.update(block)
+  if count!=before.st_size or after_digest.hexdigest()!=expected_sha or identity(os.fstat(fd))!=identity(before) or identity(os.stat(path.name,dir_fd=parent,follow_symlinks=False))!=identity(before):raise RuntimeError('helper source changed after execution')
+  budget();return obj
+ except BaseException:
+  if registered_obj is not None and sys.modules.get(name) is registered_obj:
+   if had_previous:sys.modules[name]=previous
+   else:sys.modules.pop(name,None)
+  raise
+ finally:
+  try:
+   try:
+    if fd is not None:os.close(fd)
+   finally:os.close(parent)
+  except BaseException:
+   if registered_obj is not None and sys.modules.get(name) is registered_obj:
+    if had_previous:sys.modules[name]=previous
+    else:sys.modules.pop(name,None)
+   raise
+
+COMMON_GENERATOR_SHA256 = "8299a29e3b9166394bb87e740e33f26e8e8ae65c767e53e09a9a0a76077cf191"
+SDK_SELECTION_SHA256 = "159eaff813ab1ffdb34e50477d0b339bd7b0d12a1a92fee8f40ac30939fabf7e"
+COMMON_GENERATOR = bind_helper(
+    "owner_open_common_base_generator", Path(__file__).with_name("generate-owner-open-common-base.py"),
+    COMMON_GENERATOR_SHA256)
+SDK_SELECTION = bind_helper(
+    "owner_open_sdk_selection", Path(__file__).with_name("verify-owner-open-sdk-selection.py"),
+    SDK_SELECTION_SHA256)
+PHONE_GENERATOR_SHA256 = "422d922bb24ac75f3a0bc5e50190f40cd173c9f4a65628f98f4f23d002905974"
+PHONE_GENERATOR = bind_helper(
+    "owner_open_phone_chain_generator", Path(__file__).with_name("generate-owner-open-phone-config.py"),
+    PHONE_GENERATOR_SHA256)
 SUPERVISOR_CONFIG = Path("packaging/owner-open-rootfs/rootlinux-supervisor.json")
 MAX_JSON_BYTES = 8 * 1024 * 1024
 MAX_TEXT_BYTES = 32 * 1024 * 1024
@@ -257,6 +321,11 @@ def added_product_packages(product_text: str) -> set[str]:
 
 def verify(root: Path) -> Report:
     report = Report()
+    phone_chain = None
+    try:
+        phone_chain = PHONE_GENERATOR.check(root)
+    except (OSError, ValueError) as error:
+        report.errors.append(f"owner-open phone chain: {error}")
     sdk_selection = SDK_SELECTION.verify(root)
     report.errors.extend(f"owner-open SDK selection: {error}" for error in sdk_selection["errors"])
     try:
@@ -674,6 +743,8 @@ def verify(root: Path) -> Report:
         "ready_property": runtime_profile.get("ready_property"),
         "emergency_stop_property": runtime_profile.get("emergency_stop_property"),
         "source_artifact_count": len(source_paths),
+        "phone_chain_source": phone_chain,
+        "actual_phone_entrypoint_evaluated_graph_qualified": False,
         "sdk_selection": sdk_selection["facts"],
         "runtime_python_helper_count": len(visited),
         "rootfs_required_entry_count": len(expected_inventory),

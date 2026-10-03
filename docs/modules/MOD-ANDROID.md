@@ -23,6 +23,17 @@ Source ownership paths:
 - `android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk`
 - `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk`
 - `tools/generate-owner-open-common-base.py`
+- `android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile_full.mk`
+- `android-integration/working-tree/vendor/trillionnium/config/common_owner_open_full_phone.mk`
+- `tools/generate-owner-open-phone-config.py`
+- `tools/owner-open-phone-chain.v1.json`
+- `android-integration/owner-open-profile/profile-v2.json`
+- `tools/verify-owner-open-android-source-closure.py`
+- `tools/verify-owner-open-android-source-closure-v2.py`
 - `android-integration/working-tree/trillionnium-sdk/Android.bp`
 - `android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml`
 - `tools/verify-owner-open-sdk-selection.py`
@@ -218,6 +229,56 @@ were checked against its source contract. Existing Python bytecode caches and
 ambient modules cannot supply the executed implementation. Missing code,
 changed source or deadlines fail closed, including a late deadline after an
 otherwise complete observation.
+
+
+The phone entrypoint must inherit `config/common_owner_open_full_phone.mk`,
+which retains the ordinary full-phone and mobile configuration through
+`common_owner_open_mobile_full.mk` and `common_owner_open_mobile.mk`. Only
+its final common edge selects `common_owner_open.mk`. The three sealed
+mobile/full/phone snapshots remain byte-for-byte unchanged. Run
+`python3 tools/generate-owner-open-phone-config.py --check`; its fixed
+`tools/owner-open-phone-chain.v1.json` rules bind each snapshot to its
+project/head/tree/blob, byte count and SHA-256. Each owner output rewrites
+exactly one inherit edge. The generator bounds each source at 128 KiB,
+metadata at 16 KiB and the whole check at 15 seconds, rejects aliases,
+multiple links, changed inputs and duplicate metadata, and verifies every
+output and the unchanged inputs before returning success. A failed write
+is not a qualified source generation; rerun the check on all three outputs.
+
+For the declared private Fogos entrypoint, source composition must replace
+its sealed full-phone edge and remove its known appended owner product
+suffix, retaining every other byte, including its userdebug ADB opt-in.
+The closed before/after rule rejects unknown or already rewritten inputs.
+Importing the generic owner node in isolation cannot prove this actual
+phone entrypoint. The source fixture exercises the retained Android
+inherit macros across user/userdebug/eng, with unrelated hardware/core/audio
+inputs stubbed and SDK disabled; it does not qualify full Kati or Soong.
+Before image batches, inspect the actual generated product selection with
+the active main/debug/eng package fields: require the nine owner product
+modules, retain ordinary phone/SDK modules, and reject the complete retired
+runtime/P01/init selection. A typed owner boolean alone is insufficient.
+
+The source profile lists all three sealed baselines, owner outputs and
+phone generator/rules as required inputs; the source-closure check also
+runs the exact phone generator check. A source-only success keeps the
+actual phone entrypoint and compiled graph qualification false.
+The profile's implementation-path catalog covers the full module source,
+including those baseline inputs. Listing a baseline there does not select
+its sealed Make product edge; the generated owner phone wrappers determine
+the actual inheritance edges, which require a fresh compiled graph check.
+
+The source-closure verifier executes its common generator, phone generator and SDK checker
+from pinned raw source bytes, and its v2 facade admits the core verifier
+in the same way. Each single-link helper is bounded at 1 MiB with a five
+second whole binding deadline; every parent is opened without following
+symlinks, and the held descriptor, directory entry, SHA-256 and file
+identity are checked before and after execution. Bytecode caches supply
+no code to these entries. The facade registers only the admitted core
+namespace for dataclass annotation resolution and restores any prior
+namespace if admission fails. The cache regression includes an actual
+retired init in the source fixture: stale helper code must not turn that
+source rejection into success. These are source checks, and cannot replace
+the actual product graph, compiled SDK, target-files or installed tests.
 
 ## 6. State model and ownership
 

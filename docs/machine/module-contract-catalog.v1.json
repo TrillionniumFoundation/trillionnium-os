@@ -76,6 +76,11 @@
       ],
       "implementation_sources": [
         {
+          "path": "android-integration/owner-open-profile/profile-v2.json",
+          "sha256": "7ea0dee2bd88910ce3c5c0da8068cdd9f389b6696225e0299fe373a620d1dcdb",
+          "size": 24760
+        },
+        {
           "path": "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
           "sha256": "c3df02e4a2ac4f8997204019e995c8965f87988761d493eb68fe0507a0794cea",
           "size": 3786
@@ -86,6 +91,21 @@
           "size": 70177
         },
         {
+          "path": "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk",
+          "sha256": "4832c01e08517f2bb697bb527090a0e5fdbfecae43d47d926c23fdaf8cf9d6f9",
+          "size": 294
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk",
+          "sha256": "edfb5cffbef72a74c813e43cb71f17407cc9251c5c10f3fb20d819682b5e7226",
+          "size": 1949
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk",
+          "sha256": "69a6dcd1f46c0c9011655962facdeb947bdb1919c7888ac87075b02221ccd6d9",
+          "size": 864
+        },
+        {
           "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk",
           "sha256": "e4681ea75489c8218cd614bc47202ab2a42a2cc81ea5c8dcc599d1c9764c14b1",
           "size": 490
@@ -94,6 +114,21 @@
           "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk",
           "sha256": "04c220994f0627accb0aa2438fb097beab0a1ebb3b842f6fc46d541a8bd15ee5",
           "size": 8872
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_full_phone.mk",
+          "sha256": "0bdc4e01db5a8c531971eb70892db4e4c426890547155f56434a19b43947550a",
+          "size": 305
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile.mk",
+          "sha256": "4fc9f1e1d62a9735c66b2bff35ce043743bfb5c9d3c765cd25f78c4f467b568d",
+          "size": 1960
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile_full.mk",
+          "sha256": "7cccb730e9c549a8f5b4f50c46bb6ba7828bc99fc0fa03af94efa9be54206eea",
+          "size": 875
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/Android.bp",
@@ -186,13 +221,33 @@
           "size": 10746
         },
         {
+          "path": "tools/generate-owner-open-phone-config.py",
+          "sha256": "422d922bb24ac75f3a0bc5e50190f40cd173c9f4a65628f98f4f23d002905974",
+          "size": 11569
+        },
+        {
+          "path": "tools/owner-open-phone-chain.v1.json",
+          "sha256": "ba2693dd794a142d8e836a9fb8c1bce87f07e800b76e55c653af1a9e66e10a2b",
+          "size": 3967
+        },
+        {
+          "path": "tools/verify-owner-open-android-source-closure-v2.py",
+          "sha256": "9183e5bd2c46d55ccb906fb19db268ebdb61db7c009da25679d6583fd019b826",
+          "size": 5719
+        },
+        {
+          "path": "tools/verify-owner-open-android-source-closure.py",
+          "sha256": "003a8c6e6097d83e900b15429afb497dfbadb1171c76d2abfc7152b0d6671d17",
+          "size": 37356
+        },
+        {
           "path": "tools/verify-owner-open-sdk-selection.py",
           "sha256": "159eaff813ab1ffdb34e50477d0b339bd7b0d12a1a92fee8f40ac30939fabf7e",
           "size": 18281
         },
         {
           "path": "tools/verify_owner_target_files_binding.py",
-          "sha256": "d37203923bdc54f7b14a5c04d7b113f6917b1ba2cd21102c4e153dc1e7beac31",
+          "sha256": "d4b18e5f18fa63f0a2b3c7d21dad48e5becf45ce7688e768f517c58a9691ac50",
           "size": 18525
         }
       ],
@@ -557,7 +612,7 @@
         },
         {
           "path": "tools/collect_owner_source_vector.py",
-          "sha256": "53287545cd2bde1e9d748f4c75fc8b0e314efe8f97b926f871b9ecdb44ea5af1",
+          "sha256": "417ccf9fa8a0069534e797447bc8ba489c74019291cd6bbe0a22a6c5cccf9add",
           "size": 10682
         },
         {
@@ -567,7 +622,7 @@
         },
         {
           "path": "tools/owner_source_provenance.py",
-          "sha256": "a7622d5d099264801404de45d1df2390176ee661171b2042e357d4e868232373",
+          "sha256": "e7dd25c0219e81f63bef09b1feb02798aaca55dfeae0988dd94b955c957a5604",
           "size": 73165
         }
       ],
