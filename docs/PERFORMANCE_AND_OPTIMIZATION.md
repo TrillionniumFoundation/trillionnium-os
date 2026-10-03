@@ -135,7 +135,14 @@ full Broker/Host/journal/Provider/tool/delivery stage matrix and every core
 resource counter, including CPU user/system time, current/peak RSS,
 FD/thread/process peaks, context switches, cgroup CPU/memory/I/O/pids, read and
 write bytes, fsync count, queue depth/wait, lock wait/hold, unknown rate, zero
-automatic redispatch and fairness. An explicit `unavailable` value is valid for
+automatic redispatch and fairness. Observed raw counters with `ns`, `usec`,
+`bytes` or `count` units are exact JSON integers in `0..2^64-1`; fractional
+values, integral floats such as `0.0`, booleans and overflow are rejected.
+Ratio observations remain finite numbers in `[0,1]`, and redispatch is
+exactly integer zero. These domains are explicit in policy v3 and registry
+version `2026-10-03-v3`. The numeric policy change requires fresh baseline
+and candidate batches; previous v2-policy artifacts remain historical inputs.
+An explicit `unavailable` value is valid for
 an L1 source fixture but makes an L2 decision impossible; it is never converted
 to zero. WL-11 remains an L4 physical-device hold and WL-12 remains an L5
 destructive-fault hold.
