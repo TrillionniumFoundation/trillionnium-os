@@ -46,9 +46,11 @@ fn one_lifetime_13000_keeps_all_start_ids_and_closed_publication_ranges() {
         .collect();
     ids.sort_unstable();
     assert_eq!(ids, (0..13000).collect::<Vec<_>>());
-    assert!(values
-        .windows(2)
-        .all(|v| v[0]["completion_sequence"].as_u64() < v[1]["completion_sequence"].as_u64()));
+    assert!(
+        values
+            .windows(2)
+            .all(|v| v[0]["completion_sequence"].as_u64() < v[1]["completion_sequence"].as_u64())
+    );
     assert_eq!(stream(&r).lost(), 0);
     assert_eq!(stream(&r).open(), 0);
     assert_eq!(resident(stream(&r).claims.load(Ordering::Acquire)), 0);
@@ -95,11 +97,12 @@ fn pending_and_closed_share_exact1024_credit_limit_without_overwrite() {
     }
     assert!(stream(&r).drain(true).is_err());
     assert_eq!(resident(stream(&r).claims.load(Ordering::Acquire)), 1024);
-    assert!(std::fs::read_dir(p.path()).unwrap().all(|e| !e
-        .unwrap()
-        .file_name()
-        .to_string_lossy()
-        .ends_with(".ack.json")));
+    assert!(std::fs::read_dir(p.path()).unwrap().all(|e| {
+        !e.unwrap()
+            .file_name()
+            .to_string_lossy()
+            .ends_with(".ack.json")
+    }));
 }
 #[test]
 fn actual_ack_exclusive_collision_retains_credits_and_first_phase() {
@@ -154,19 +157,21 @@ fn final_close_with_actual_pending_span_and_later_start_cannot_fake_completion()
     };
     ready.wait();
     assert!(stream(&r).drain(true).is_err());
-    assert!(r
-        .start(Stage::HostDecode, "after source close", false)
-        .0
-        .is_none());
+    assert!(
+        r.start(Stage::HostDecode, "after source close", false)
+            .0
+            .is_none()
+    );
     resume.wait();
     child.join().unwrap();
     assert!(stream(&r).lost() > 0);
     assert!(stream(&r).drain(true).is_err());
-    assert!(!std::fs::read_dir(p.path()).unwrap().any(|e| e
-        .unwrap()
-        .file_name()
-        .to_string_lossy()
-        .ends_with(".terminator.json")));
+    assert!(!std::fs::read_dir(p.path()).unwrap().any(|e| {
+        e.unwrap()
+            .file_name()
+            .to_string_lossy()
+            .ends_with(".terminator.json")
+    }));
 }
 #[test]
 fn exact_physical_generation_role_names_and_context_exclusive_identity() {
@@ -227,15 +232,17 @@ fn final_busy_exporter_preserves_first_atomic_phase_and_never_acknowledges_later
     let guard = s.output.lock().unwrap();
     assert_eq!(s.drain(true).unwrap_err(), "exporter.acquire: final busy");
     drop(guard);
-    assert!(s
-        .drain(false)
-        .unwrap_err()
-        .contains("exporter.acquire: final busy"));
+    assert!(
+        s.drain(false)
+            .unwrap_err()
+            .contains("exporter.acquire: final busy")
+    );
     assert_eq!(s.first_failure.load(Ordering::Acquire), 1);
     assert!(s.lost() > 0);
-    assert!(!std::fs::read_dir(p.path()).unwrap().any(|e| e
-        .unwrap()
-        .file_name()
-        .to_string_lossy()
-        .ends_with(".ack.json")));
+    assert!(!std::fs::read_dir(p.path()).unwrap().any(|e| {
+        e.unwrap()
+            .file_name()
+            .to_string_lossy()
+            .ends_with(".ack.json")
+    }));
 }

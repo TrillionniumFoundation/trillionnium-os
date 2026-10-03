@@ -2,7 +2,7 @@
 //! Two banks are reusable only after their immutable chunk and ACK are durable.
 //! A start retains a resident credit and identity, not a completion bank.
 //! Completion sequence is closed-publication admission order, not end timestamp order.
-use super::{identifier, increment, Record};
+use super::{Record, identifier, increment};
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 use std::fs::File;
@@ -11,8 +11,8 @@ use std::os::fd::{AsRawFd, FromRawFd};
 use std::os::unix::ffi::OsStrExt;
 use std::os::unix::fs::MetadataExt;
 use std::path::Path;
-use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::time::{Duration, Instant};
 
 pub(crate) const BANK_SLOTS: usize = 512;
