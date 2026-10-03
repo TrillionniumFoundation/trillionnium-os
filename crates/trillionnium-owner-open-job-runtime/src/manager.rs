@@ -1,7 +1,7 @@
 use std::collections::{HashMap, VecDeque};
 use std::ops::{Deref, DerefMut};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Condvar, Mutex, MutexGuard};
 use std::thread;
 
@@ -63,6 +63,7 @@ impl AdmissionPool {
                 Ok(_) => {
                     return Ok(AdmissionPermit {
                         pool: Arc::clone(self),
+                        held: AtomicBool::new(true),
                     });
                 }
                 Err(observed) => current = observed,
@@ -73,12 +74,24 @@ impl AdmissionPool {
 
 struct AdmissionPermit {
     pool: Arc<AdmissionPool>,
+    held: AtomicBool,
+}
+
+impl AdmissionPermit {
+    fn release(&self) {
+        // A retained control or dispatcher Arc can outlive process truth.
+        // Release only this manager-private slot; the process/memory lease
+        // remains independently owned until its existing cleanup path ends.
+        if self.held.swap(false, Ordering::AcqRel) {
+            let previous = self.pool.active.fetch_sub(1, Ordering::AcqRel);
+            debug_assert!(previous > 0, "job admission permit underflow");
+        }
+    }
 }
 
 impl Drop for AdmissionPermit {
     fn drop(&mut self) {
-        let previous = self.pool.active.fetch_sub(1, Ordering::AcqRel);
-        debug_assert!(previous > 0, "job admission permit underflow");
+        self.release();
     }
 }
 
@@ -213,6 +226,21 @@ impl DerefMut for Observations {
     }
 }
 
+#[cfg(test)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum TestTerminalPublicationPoint {
+    BeforeObservation,
+    AfterObservation,
+}
+
+#[cfg(test)]
+struct TestTerminalPublicationGate {
+    key: JobKey,
+    point: TestTerminalPublicationPoint,
+    reached: std::sync::mpsc::SyncSender<()>,
+    resume: Mutex<std::sync::mpsc::Receiver<()>>,
+}
+
 struct Inner {
     config: JobRuntimeConfig,
     registry: Arc<JobRegistry>,
@@ -225,6 +253,8 @@ struct Inner {
     // No journal I/O is performed while a registry shard lock is held.
     retention: Mutex<()>,
     durability_error: Mutex<Option<String>>,
+    #[cfg(test)]
+    test_terminal_publication: Mutex<Option<Arc<TestTerminalPublicationGate>>>,
 }
 
 #[derive(Clone)]
@@ -233,6 +263,29 @@ pub struct JobManager {
 }
 
 impl JobManager {
+    #[cfg(test)]
+    fn test_pause_terminal_publication(&self, key: &JobKey, point: TestTerminalPublicationPoint) {
+        let gate = {
+            let mut configured = self.inner.test_terminal_publication.lock().unwrap();
+            if configured
+                .as_ref()
+                .is_some_and(|gate| gate.key == *key && gate.point == point)
+            {
+                configured.take()
+            } else {
+                None
+            }
+        };
+        if let Some(gate) = gate {
+            gate.reached.send(()).unwrap();
+            gate.resume
+                .lock()
+                .unwrap()
+                .recv_timeout(std::time::Duration::from_secs(5))
+                .expect("owned publication gate must be resumed");
+        }
+    }
+
     pub fn new(config: JobRuntimeConfig, journal: JobJournal) -> Result<Self> {
         config.validate()?;
         let max_jobs = config.max_jobs;
@@ -259,6 +312,8 @@ impl JobManager {
                 }),
                 retention: Mutex::new(()),
                 durability_error: Mutex::new(None),
+                #[cfg(test)]
+                test_terminal_publication: Mutex::new(None),
             }),
         })
     }
@@ -1682,6 +1737,7 @@ impl JobManager {
                                     return;
                                 }
                             };
+                            let process_cleanup_complete = cleanup_error.is_none();
                             if let Some(error) = cleanup_error {
                                 let _ = manager.push_runtime_event(
                                     &key,
@@ -1792,6 +1848,14 @@ impl JobManager {
                                     },
                                 );
                             }
+                            // The normal Exited event follows a consumed wait and joined
+                            // output workers.  Release admission before making terminal
+                            // truth visible, even while the dispatcher/control Arcs and
+                            // durable-terminal marker stay retained.  An uncertain cleanup
+                            // keeps its original RAII release timing instead.
+                            if process_cleanup_complete {
+                                running._admission_permit.release();
+                            }
                             // `push_runtime_event` retains the terminal observation and attempts
                             // the observation/`job.terminal` append.  If persistence fails, it
                             // publishes an explicit in-memory degradation marker; do not write the
@@ -1799,14 +1863,18 @@ impl JobManager {
                             // keeps the exclusive writer lease alive after a consumer can observe
                             // completion and makes an immediate in-process manager handoff
                             // spuriously fail closed.
+                            #[cfg(test)]
+                            manager.test_pause_terminal_publication(&key, TestTerminalPublicationPoint::BeforeObservation);
                             if let Err(error) = manager.push_runtime_event(&key, &request, event) {
                                 let _ =
                                     manager.note_journal_failure_for_job(&key, error.to_string());
                             }
+                            #[cfg(test)]
+                            manager.test_pause_terminal_publication(&key, TestTerminalPublicationPoint::AfterObservation);
                             // Keep the owned process marker until the durable
                             // terminal record has been attempted.  The
-                            // registry is already terminal above, so admission
-                            // capacity is free; the marker only prevents the
+                            // normal process admission is already released above;
+                            // the marker still prevents the
                             // Host loop from exiting in the small interval
                             // between publishing the terminal observation and
                             // recording `job.terminal`.
@@ -3497,5 +3565,441 @@ mod concurrency_tests {
         gate.terminal().expect("mark terminal");
         gate.ready().expect("late ready is a harmless no-op");
         assert!(matches!(gate.wait(), Err(super::JobRuntimeError::NotLive)));
+    }
+
+    // These cases own durable managers/processes against process-global
+    // bounded pools. Isolate them like the existing resource-pressure cases;
+    // the child retains the real publication barrier and default pool bounds.
+    fn isolated_admission_case(name: &str) -> bool {
+        const CHILD: &str = "TRILLIONNIUM_ADMISSION_PUBLICATION_TEST_CHILD";
+        if std::env::var(CHILD).as_deref() == Ok(name) {
+            return false;
+        }
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", name, "--nocapture"])
+            .env(CHILD, name)
+            .output()
+            .unwrap();
+        print!("{}", String::from_utf8_lossy(&output.stdout));
+        eprint!("{}", String::from_utf8_lossy(&output.stderr));
+        println!(
+            "isolated_admission_case={name} actual_exit={:?}",
+            output.status.code()
+        );
+        assert!(
+            output.status.success(),
+            "real isolated admission child failed: {}",
+            output.status
+        );
+        true
+    }
+
+    struct PublicationResume(Option<mpsc::SyncSender<()>>);
+
+    impl PublicationResume {
+        fn now(&mut self) {
+            if let Some(sender) = self.0.take() {
+                let _ = sender.try_send(());
+            }
+        }
+    }
+
+    impl Drop for PublicationResume {
+        fn drop(&mut self) {
+            self.now();
+        }
+    }
+
+    fn publication_gate(
+        manager: &JobManager,
+        key: &JobKey,
+        point: super::TestTerminalPublicationPoint,
+    ) -> (mpsc::Receiver<()>, PublicationResume) {
+        let (reached, receiver) = mpsc::sync_channel(1);
+        let (resume, resume_receiver) = mpsc::sync_channel(1);
+        *manager.inner.test_terminal_publication.lock().unwrap() =
+            Some(std::sync::Arc::new(super::TestTerminalPublicationGate {
+                key: key.clone(),
+                point,
+                reached,
+                resume: std::sync::Mutex::new(resume_receiver),
+            }));
+        (receiver, PublicationResume(Some(resume)))
+    }
+
+    fn owned_request(job: JobKey, operation: &str, command: &str) -> crate::JobStartRequest {
+        crate::JobStartRequest {
+            key: job,
+            request: trillionnium_owner_open_job_registry::JobRequest::new(
+                "a".repeat(64),
+                "b".repeat(64),
+                "shell.job",
+                "pipe",
+                Some("rootlinux".into()),
+            ),
+            operation_id: operation.into(),
+            invocation: crate::JobInvocation::Command {
+                command: command.into(),
+            },
+            shell_executable: std::path::PathBuf::from("/bin/sh"),
+            cwd: None,
+            env: std::collections::BTreeMap::new(),
+            initial_stdin: Vec::new(),
+            pty: None,
+        }
+    }
+
+    fn wait_owned_markers_retired(manager: &JobManager) {
+        let deadline = std::time::Instant::now() + Duration::from_secs(5);
+        while manager.has_live_or_pending_jobs() {
+            assert!(
+                std::time::Instant::now() < deadline,
+                "owned dispatcher markers must retire"
+            );
+            std::thread::yield_now();
+        }
+    }
+
+    #[test]
+    fn terminal_visible_retained_dispatcher_has_released_admission() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::terminal_visible_retained_dispatcher_has_released_admission",
+        ) {
+            return;
+        }
+        use std::os::unix::fs::PermissionsExt;
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let manager = JobManager::open(
+            JobRuntimeConfig {
+                max_jobs: 1,
+                ..JobRuntimeConfig::default()
+            },
+            Some(&directory.path().join("jobs.jsonl")),
+        )
+        .unwrap();
+        let first = key("first-real-child");
+        let second = key("second-real-child");
+        let (reached, mut resume) = publication_gate(
+            &manager,
+            &first,
+            super::TestTerminalPublicationPoint::AfterObservation,
+        );
+        manager
+            .start(owned_request(
+                first.clone(),
+                "first-start",
+                "printf out; printf err >&2; exit 0",
+            ))
+            .unwrap();
+        reached
+            .recv_timeout(Duration::from_secs(5))
+            .expect("real child terminal is published");
+        let retained = manager.running().unwrap().get(&first).cloned().unwrap();
+        let inspection = manager.inspect(&first, 0, 64).unwrap();
+        assert!(inspection.runtime_events.iter().any(|e| matches!(&e.event,
+            crate::RuntimeJobEventKind::Terminal { terminal_kind, exit_code: Some(0), .. } if terminal_kind == "exited")));
+        let mut stdout = Vec::<u8>::new();
+        let mut stderr = Vec::<u8>::new();
+        for event in &inspection.runtime_events {
+            if let crate::RuntimeJobEventKind::Output { stream, bytes, .. } = &event.event {
+                if stream == "stdout" {
+                    stdout.extend_from_slice(bytes);
+                } else if stream == "stderr" {
+                    stderr.extend_from_slice(bytes);
+                }
+            }
+            assert!(!matches!(
+                event.event,
+                crate::RuntimeJobEventKind::ProcessFault { .. }
+            ));
+        }
+        assert_eq!(stdout, b"out");
+        assert_eq!(stderr, b"err");
+        assert!(matches!(
+            retained.control.kill(libc::SIGTERM),
+            Err(crate::JobRuntimeError::NotLive)
+        ));
+        assert!(
+            manager.has_live_or_pending_jobs(),
+            "first dispatcher is deliberately still held"
+        );
+        let result = manager.start(owned_request(
+            second.clone(),
+            "second-start",
+            "printf next; exit 0",
+        ));
+        println!(
+            "terminal_visible=true old_dispatcher_held=true retired_control=true first_stdout=out first_stderr=err second_start={result:?}"
+        );
+        resume.now();
+        wait_owned_markers_retired(&manager);
+        assert!(
+            result.is_ok(),
+            "terminal visibility must already release manager process capacity: {result:?}"
+        );
+        let inspection = manager.inspect(&second, 0, 64).unwrap();
+        assert!(inspection.runtime_events.iter().any(|e| matches!(
+            e.event,
+            crate::RuntimeJobEventKind::Terminal {
+                exit_code: Some(0),
+                ..
+            }
+        )));
+        drop(retained);
+    }
+
+    #[test]
+    fn concurrent_explicit_release_and_drop_do_not_expand_capacity() {
+        use std::sync::atomic::Ordering;
+        use std::sync::{Arc, Barrier};
+        let pool = Arc::new(AdmissionPool::new(1));
+        let permit = Arc::new(pool.try_acquire().unwrap());
+        let gate = Arc::new(Barrier::new(9));
+        let workers: Vec<_> = (0..8)
+            .map(|_| {
+                let permit = Arc::clone(&permit);
+                let gate = Arc::clone(&gate);
+                std::thread::spawn(move || {
+                    gate.wait();
+                    permit.release();
+                    permit.release();
+                })
+            })
+            .collect();
+        gate.wait();
+        for worker in workers {
+            worker.join().unwrap();
+        }
+        assert_eq!(pool.active.load(Ordering::Acquire), 0);
+        let next = pool.try_acquire().unwrap();
+        assert!(pool.try_acquire().is_err());
+        drop(permit);
+        assert_eq!(pool.active.load(Ordering::Acquire), 1);
+        assert!(
+            pool.try_acquire().is_err(),
+            "old permit Drop must not release a new owner"
+        );
+        next.release();
+        next.release();
+        drop(next);
+        assert_eq!(pool.active.load(Ordering::Acquire), 0);
+        let final_owner = pool.try_acquire().unwrap();
+        assert!(pool.try_acquire().is_err());
+        drop(final_owner);
+    }
+
+    fn terminal_fault_scenario(mode: &str) {
+        use std::os::unix::fs::PermissionsExt;
+        use std::sync::atomic::Ordering;
+        let directory = tempfile::tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let manager = JobManager::open(
+            JobRuntimeConfig {
+                max_jobs: 1,
+                ..JobRuntimeConfig::default()
+            },
+            Some(&directory.path().join("jobs.jsonl")),
+        )
+        .unwrap();
+        let first = key("first-fault-child");
+        let second = key("second-fault-child");
+        let point = if mode == "journal" {
+            super::TestTerminalPublicationPoint::BeforeObservation
+        } else {
+            super::TestTerminalPublicationPoint::AfterObservation
+        };
+        let configured_gate = if mode == "poison" {
+            None
+        } else {
+            Some(publication_gate(&manager, &first, point))
+        };
+        manager
+            .start(owned_request(
+                first.clone(),
+                "first-fault-start",
+                "IFS= read -r line; printf out; printf err >&2; exit 0",
+            ))
+            .unwrap();
+        let retained = manager.running().unwrap().get(&first).cloned().unwrap();
+        if mode == "registry" {
+            manager
+                .inner
+                .registry
+                .complete(
+                    &first,
+                    retained.generation,
+                    trillionnium_owner_open_job_registry::JobTerminal {
+                        terminal_kind: "exited".into(),
+                        exit_code: Some(41),
+                        signal: None,
+                        observation_sha256: "c".repeat(64),
+                        stdout_bytes: 0,
+                        stderr_bytes: 0,
+                    },
+                )
+                .unwrap();
+        } else if mode == "poison" {
+            let clone = std::sync::Arc::clone(&retained);
+            assert!(
+                std::thread::spawn(move || {
+                    let _counter = clone.stdout_bytes.lock().unwrap();
+                    panic!("owned stdout-counter poison fixture");
+                })
+                .join()
+                .is_err()
+            );
+        }
+        retained.control.close_stdin().unwrap();
+        if let Some((reached, mut resume)) = configured_gate {
+            reached.recv_timeout(Duration::from_secs(5)).unwrap();
+            assert_eq!(
+                manager.inner.admission.active.load(Ordering::Acquire),
+                0,
+                "real reaper completion releases only the manager-private slot"
+            );
+            if mode == "journal" {
+                manager
+                    .inner
+                    .journal
+                    .fail_next_observation_for_test()
+                    .unwrap();
+                resume.now();
+                wait_owned_markers_retired(&manager);
+                let inspection = manager.inspect(&first, 0, 64).unwrap();
+                assert!(
+                    inspection
+                        .runtime_events
+                        .iter()
+                        .any(|e| matches!(e.event, crate::RuntimeJobEventKind::Terminal { .. }))
+                );
+                assert!(inspection.runtime_events.iter().any(|e| matches!(
+                    e.event,
+                    crate::RuntimeJobEventKind::JournalUnavailable { .. }
+                )));
+                let marker = directory.path().join("must-not-run");
+                let error = manager
+                    .start(owned_request(
+                        second.clone(),
+                        "must-not-run",
+                        &format!("touch '{}'", marker.display()),
+                    ))
+                    .unwrap_err();
+                assert!(matches!(error, crate::JobRuntimeError::Journal(_)));
+                assert!(!marker.exists());
+                assert!(manager.registry().snapshot(&second).is_err());
+            } else {
+                let inspection = manager.inspect(&first, 0, 64).unwrap();
+                assert!(inspection.runtime_events.iter().any(|e| matches!(&e.event,
+                    crate::RuntimeJobEventKind::ProcessFault { phase, .. } if phase == "registry_terminal")));
+                // A committed registry terminal is immutable even when this
+                // later real reaper observation conflicts. It must remain
+                // terminal, not become redispatchable or be relabelled unknown.
+                assert!(matches!(
+                    manager.registry().snapshot(&first).unwrap().state,
+                    trillionnium_owner_open_job_registry::JobEffectiveState::Terminal {
+                        terminal: trillionnium_owner_open_job_registry::JobTerminal {
+                            exit_code: Some(41),
+                            ..
+                        },
+                        ..
+                    }
+                ));
+                let result = manager.start(owned_request(
+                    second.clone(),
+                    "after-registry-conflict",
+                    "exit 0",
+                ));
+                resume.now();
+                wait_owned_markers_retired(&manager);
+                assert!(
+                    result.is_ok(),
+                    "unrelated key must not inherit consumed child capacity: {result:?}"
+                );
+                let duplicate = manager
+                    .start(owned_request(
+                        first.clone(),
+                        "first-fault-start",
+                        "IFS= read -r line; printf out; printf err >&2; exit 0",
+                    ))
+                    .unwrap();
+                assert_eq!(
+                    duplicate.disposition,
+                    crate::StartDisposition::ExistingTerminal
+                );
+                assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+                println!(
+                    "registry_terminal_conflict=true unrelated_key_accepted=true old_key_redispatched=false"
+                );
+            }
+        } else {
+            wait_owned_markers_retired(&manager);
+            let inspection = manager.inspect(&first, 0, 64).unwrap();
+            assert!(inspection.runtime_events.iter().any(|e| matches!(&e.event,
+                crate::RuntimeJobEventKind::ProcessFault { phase, .. } if phase == "stdout_counter")));
+            assert!(
+                !inspection
+                    .runtime_events
+                    .iter()
+                    .any(|e| matches!(e.event, crate::RuntimeJobEventKind::Terminal { .. }))
+            );
+            assert_eq!(
+                manager.inner.admission.active.load(Ordering::Acquire),
+                1,
+                "poison return must retain the permit while the RunningJob Arc is owned"
+            );
+            let error = manager
+                .start(owned_request(
+                    second.clone(),
+                    "while-poison-owner-retained",
+                    "exit 0",
+                ))
+                .unwrap_err();
+            assert!(matches!(error, crate::JobRuntimeError::InvalidRequest(_)));
+            drop(retained);
+            assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+            manager
+                .start(owned_request(second, "after-poison-owner-drop", "exit 0"))
+                .unwrap();
+            wait_owned_markers_retired(&manager);
+            return;
+        }
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        drop(retained);
+        assert_eq!(
+            manager.inner.admission.active.load(Ordering::Acquire),
+            0,
+            "retained Arc Drop cannot release twice"
+        );
+    }
+
+    #[test]
+    fn registry_terminal_conflict_releases_consumed_child_slot_without_redispatch() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::registry_terminal_conflict_releases_consumed_child_slot_without_redispatch",
+        ) {
+            return;
+        }
+        terminal_fault_scenario("registry");
+    }
+
+    #[test]
+    fn failed_terminal_journal_append_releases_slot_but_inhibits_new_effects() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::failed_terminal_journal_append_releases_slot_but_inhibits_new_effects",
+        ) {
+            return;
+        }
+        terminal_fault_scenario("journal");
+    }
+
+    #[test]
+    fn poisoned_counter_retains_raii_capacity_without_false_terminal() {
+        if isolated_admission_case(
+            "manager::concurrency_tests::poisoned_counter_retains_raii_capacity_without_false_terminal",
+        ) {
+            return;
+        }
+        terminal_fault_scenario("poison");
     }
 }
