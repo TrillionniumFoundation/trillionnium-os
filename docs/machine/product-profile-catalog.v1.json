@@ -86,7 +86,12 @@
         "android-integration/security-patches",
         "crates/trillionnium-owner-open-trace",
         "tools/perf/inspect_monotonic_stream.py",
-        "tools/tests/test_owner_open_monotonic_stream.py"
+        "tools/tests/test_owner_open_monotonic_stream.py",
+        "tools/owner_asb_fork_catalog.py",
+        "tools/prepare_owner_asb_fullforks.py",
+        "tools/tests/owner_asb38_fixtures.py",
+        "tools/tests/test_owner_asb_fullforks.py",
+        "tools/tests/test_owner_asb_telephony_suggestions.py"
       ],
       "offered_capabilities": [
         {

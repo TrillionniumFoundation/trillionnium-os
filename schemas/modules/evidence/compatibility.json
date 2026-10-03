@@ -99,13 +99,18 @@
     },
     {
       "path": "tools/android_release_ota.py",
-      "sha256": "1328aaa9cc1230b19d59efb76525d81cd651fd44f01dcb61ec2e35c683761da7",
+      "sha256": "b6d3205d350f522d6b353084ae152ebc9335c6f6594219e12a2e27d43221e468",
       "size": 114549
     },
     {
       "path": "tools/collect_owner_source_vector.py",
-      "sha256": "228f020ff41e3496e91f8c42351982a9f08c94fae33e97969db934c64253d652",
-      "size": 11462
+      "sha256": "69f416371fbbd52ee9a9216e155f0ecb6846f0d4470eecacbd5523cc6f92f7c4",
+      "size": 11682
+    },
+    {
+      "path": "tools/owner_asb_fork_catalog.py",
+      "sha256": "fea8c1d1fb459f5f124fb11d563cc6282cee0bc9b49608c0412b8b3c904036c4",
+      "size": 23094
     },
     {
       "path": "tools/owner_bom_bounded_process.py",
@@ -114,13 +119,18 @@
     },
     {
       "path": "tools/owner_source_provenance.py",
-      "sha256": "404e050d27d11b91df590d8a894a3c7999057c19785b2230d6809514482fa7d2",
-      "size": 83326
+      "sha256": "6340050e53cc0374c26e7f602c1b9d2bd58c59953bafa4ea7eb6962f06c6ee94",
+      "size": 87392
     },
     {
       "path": "tools/owner_source_surface.py",
       "sha256": "7d0f3d51d913317f01c75ee6d25cb56e3748ed79ea1a59635b4ca32bc929839b",
       "size": 16184
+    },
+    {
+      "path": "tools/prepare_owner_asb_fullforks.py",
+      "sha256": "0acde2c2b50b9f1e79c69ee4bb9f12a2a55c461ee775752515f91ced723be6bc",
+      "size": 25569
     }
   ],
   "introduction_review_class": "INITIAL_V1",
@@ -175,9 +185,24 @@
   "state_schema_version": "1",
   "test_sources": [
     {
+      "path": "tools/tests/owner_asb38_fixtures.py",
+      "sha256": "41fd5ab293b1cf532a3e7ad3849a8ff1174b537a29eb45a5dcbbe00e67e61d2e",
+      "size": 12503
+    },
+    {
       "path": "tools/tests/test_module_contracts.py",
       "sha256": "6419413c1a48bb966b26ed48ee04c6b05ba8008ccb131dcad7ea1c2264b83334",
       "size": 49445
+    },
+    {
+      "path": "tools/tests/test_owner_asb_fullforks.py",
+      "sha256": "998194e2c890656fa0b86ff8333ec40096f7ff89c8d4a86ffd71be6ff1efd6ad",
+      "size": 19230
+    },
+    {
+      "path": "tools/tests/test_owner_asb_telephony_suggestions.py",
+      "sha256": "8d521958f64c4e17c0cd817cc9aad59ca56fc77f1fcbcc33a7c31eed69f052ce",
+      "size": 11962
     }
   ],
   "unknown_fields": "REJECT"

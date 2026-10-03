@@ -1,6 +1,6 @@
 {
   "schema": "org.trillionnium.android.defensive-source-patches.v1",
-  "profile_id": "owner-open-whole-control-v3",
+  "profile_id": "owner-open-whole-control-v4",
   "bulletin": "https://source.android.com/docs/security/bulletin/2026/2026-09-01",
   "projects": [
     {

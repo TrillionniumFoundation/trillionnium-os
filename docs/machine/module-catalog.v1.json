@@ -2528,7 +2528,12 @@
         "tools/owner_bom_bounded_process.py",
         "tools/collect_owner_source_vector.py",
         "tools/android_release_ota.py",
-        "tools/owner_source_surface.py"
+        "tools/owner_source_surface.py",
+        "tools/owner_asb_fork_catalog.py",
+        "tools/prepare_owner_asb_fullforks.py",
+        "tools/tests/owner_asb38_fixtures.py",
+        "tools/tests/test_owner_asb_fullforks.py",
+        "tools/tests/test_owner_asb_telephony_suggestions.py"
       ],
       "plane": "evidence",
       "resource_contract": {

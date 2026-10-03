@@ -3,7 +3,7 @@
 
 Git observations are sequential, not an atomic snapshot. A checkout collector
 reads every tracked object and retains raw commit/tree/status evidence. The
-graph gate requires all 1170 inventories, before/after vectors, the exact 16 private
+graph gate requires all 1170 inventories, before/after vectors, the exact 38 private
 projects, manifest-repository evidence, two non-Git Motorola trees and a
 measured empty generated-source delta. Generated source is held until a
 separate generator/input/content contract is implemented; elapsed time or
@@ -14,22 +14,16 @@ import argparse, base64, datetime, hashlib, importlib.util, io, json, math, os
 from pathlib import Path, PurePosixPath
 import posixpath, re, stat, sys, tarfile, time, xml.etree.ElementTree as ET
 
-PROFILE = 'owner-open-whole-control-v3'
-INPUT_SCHEMA = 'org.trillionnium.owner-source-provenance-input.v3'
-BOM_SCHEMA = 'org.trillionnium.owner-source-bom.v3'
+PROFILE = 'owner-open-whole-control-v4'
+INPUT_SCHEMA = 'org.trillionnium.owner-source-provenance-input.v4'
+BOM_SCHEMA = 'org.trillionnium.owner-source-bom.v4'
 INVENTORY_SCHEMA = 'org.trillionnium.owner-git-content-inventory.v3'
 VECTOR_SCHEMA = 'org.trillionnium.owner-source-observation-vector.v1'
-MANIFEST_COUNT, PRIVATE_COUNT = 1170, 16
+MANIFEST_COUNT, PRIVATE_COUNT = 1170, 38
 ORIGINAL_COUNT = MANIFEST_COUNT - PRIVATE_COUNT - 1
-PRIVATE_PROJECT_PATHS = frozenset({
-    'build/make', 'device/motorola/fogos', 'device/motorola/sm6375-common',
-    'device/trillionnium/sepolicy', 'external/aws-sdk-java-v2',
-    'external/libopenapv', 'frameworks/base', 'frameworks/layoutlib',
-    'packages/apps/Seedvault', 'packages/apps/TrillionniumAiAuthority',
-    'packages/apps/TrillionniumAiShell', 'packages/modules/adb',
-    'packages/modules/Nfc', 'system/extras', 'trillionnium-sdk',
-    'vendor/trillionnium',
-})
+PRIVATE_PROJECT_PATHS=frozenset({'packages/apps/Settings', 'packages/providers/TelephonyProvider', 'external/exfatprogs', 'device/trillionnium/sepolicy', 'packages/modules/adb', 'hardware/interfaces', 'device/motorola/fogos', 'packages/modules/Bluetooth', 'packages/providers/MediaProvider', 'packages/modules/Uwb', 'packages/apps/Seedvault', 'system/core', 'frameworks/base', 'external/libcupsfilters', 'packages/apps/TV', 'build/make', 'vendor/trillionnium', 'external/freetype', 'external/libhevc', 'hardware/nxp/secure_element', 'frameworks/layoutlib', 'packages/apps/TrillionniumAiShell', 'trillionnium-sdk', 'external/aws-sdk-java-v2', 'packages/modules/Wifi', 'bionic', 'external/libpng', 'packages/apps/TrillionniumAiAuthority', 'device/motorola/sm6375-common', 'packages/modules/Nfc', 'art', 'external/libppd', 'kernel/motorola/sm6375', 'packages/services/Telephony', 'external/wpa_supplicant_8', 'system/extras', 'external/libopenapv', 'frameworks/av'})
+ASB_CATALOG_HELPER_SHA='fea8c1d1fb459f5f124fb11d563cc6282cee0bc9b49608c0412b8b3c904036c4'
+ASB_CATALOG_SHA = 'c4436eb8f68adc50235e4b549e74a4337d17b4ce8f99b216e3aa189030263f3c'
 MAX_GRAPH_FILES=5_000_000
 MAX_GRAPH_METADATA=2*1024*1024*1024
 MAX_RETAINED_METADATA=128*1024*1024
@@ -55,10 +49,10 @@ def require(condition, message):
     if not condition: raise SourceError(message)
 def validate_private_paths(value):
     require(type(value) in (list, set, frozenset) and len(value)==PRIVATE_COUNT,
-            'v3 exact16 private project count required')
+            'v4 exact38 private project count required')
     require(all(type(path) is str for path in value) and
             len(set(value))==PRIVATE_COUNT and set(value)==PRIVATE_PROJECT_PATHS,
-            'v3 exact16 private project namespace required')
+            'v4 exact38 private project namespace required')
     return set(value)
 def git_query_failure(label, project, root, args, result):
     # Only bounded public Git diagnostics. Each escaped byte expands to at
@@ -546,17 +540,52 @@ def validate_custody(value,candidate):
     require(value.get('tracked_files_verified')==candidate['control_regular_files'] and type(value.get('tracked_files_verified')) is int and value.get('every_archive_file_matches_tested_frozen_git_blob') is True,'actual custody count/blob closure missing')
     archive=value.get('source_archive');require(type(archive) is dict and archive.get('sha256')==candidate['archive_sha256'] and type(archive.get('bytes')) is int and 0<archive['bytes']<=128*1024*1024,'canonical custody archive differs')
     return value
-def validate_composition(value,candidate,manifest_raw,inventories,private_paths,manifest_inventory=None):
+def _asb_catalog_helper(deadline):
+    path=Path(__file__).with_name('owner_asb_fork_catalog.py')
+    raw=read_stable(path,256*1024,deadline);require(sha(raw)==ASB_CATALOG_HELPER_SHA,'pinned exact fork catalog helper changed')
+    spec=importlib.util.spec_from_file_location('owner_asb_catalog',path);m=importlib.util.module_from_spec(spec)
+    exec(compile(raw,str(path),'exec'),m.__dict__)
+    require(read_stable(path,256*1024,deadline)==raw,'retained catalog helper moved during compile/exec');return m
+
+def validate_asb_fork_binding(value,candidate,inventories,deadline):
+    # All nested raw proofs enter the unchanged 2GiB whole metadata budget.
+    check(deadline);cat=_asb_catalog_helper(deadline);fixed={};metadata_bytes=0
+    def read(desc,maximum):
+        nonlocal metadata_bytes
+        raw=inventories.read(desc,maximum) if isinstance(inventories,InventoryStore) else read_descriptor(desc,deadline,maximum)
+        key=desc['path'];require(key not in fixed or fixed[key][0]==desc,'fork evidence path assigned conflicting descriptor')
+        if key not in fixed:metadata_bytes+=len(raw);require(metadata_bytes<=MAX_GRAPH_METADATA,'fork receipt/raw inventories whole metadata bound')
+        fixed[key]=(desc,maximum,raw);return raw
+    receipt=parse(read(value['asb24_fullfork_receipt'],32*1024*1024));catalog_raw=read(receipt['catalog_descriptor'],128*1024*1024)
+    require(sha(catalog_raw)==ASB_CATALOG_SHA==receipt.get('catalog_sha256'),'current exact catalog source differs');catalog=cat.validate_catalog(cat.parse(catalog_raw))
+    evidence=receipt.get('scoped_evidence_descriptors');require(type(evidence) is list and len(evidence)==len(catalog['scoped_evidence']),'all declared scoped witness descriptors required')
+    for spec,desc in zip(catalog['scoped_evidence'],evidence):
+        require(desc['path']==receipt['stage']+'/control/'+spec['canonical_path'] and desc['bytes']==spec['bytes'] and desc['sha256']==spec['sha256'],'scoped witness descriptor canonical mapping differs');read(desc,cat.MAX_FILE)
+    if inventories is not None:
+        cat.validate_control_catalog(catalog,catalog_raw,inventories['trillionnium-os'])
+    def read_inventory(desc):
+        inv=parse(read(desc,128*1024*1024));validate_inventory(inv);return inv
+    source4=cat.validate_source4_baselines(parse(read(receipt['source4_composition_descriptor'],8*1024*1024)),parse(read(receipt['source4_defensive_descriptor'],8*1024*1024)),candidate)
+    cat.validate_fork_receipt(receipt,candidate,catalog,read_inventory,lambda d:parse(read(d,128*1024*1024)),inventories,source4)
+    rows={r['path']:r for r in value['private_projects']}
+    for r in receipt['projects']:
+        require((rows[r['path']]['private_head'],rows[r['path']]['private_tree'],rows[r['path']]['private_repository'])==(r['private_head'],r['private_tree'],r['private_repository']),'final composition substitutes another complete fork')
+    for desc,maximum,raw in fixed.values():require(read_descriptor(desc,deadline,maximum)==raw,'nested complete fork evidence moved')
+    check(deadline);return [x[0] for x in fixed.values()]
+
+def validate_composition(value,candidate,manifest_raw,inventories,private_paths,manifest_inventory=None,deadline=None):
+    if deadline is None:deadline=time.monotonic()+1800
     validate_private_paths(private_paths)
-    require(value.get('schema')=='org.trillionnium.audit.actual-exact-private-android-source-binding.v1','actual final16 private composition receipt required');check_tuple(value,candidate)
-    require(value.get('actual_refreshed13_composition_candidate_bound') is True and value.get('private_project_count')==PRIVATE_COUNT and type(value.get('private_project_count')) is int and value.get('private1170_static_manifest_sha256')==sha(manifest_raw),'actual final16/private1170 composition tuple differs')
-    rows=value.get('private_projects');require(type(rows) is list and len(rows)==PRIVATE_COUNT,'actual16 private repository generation bindings missing');seen=set()
+    require(value.get('schema')=='org.trillionnium.audit.actual-exact-private-android-source-binding.v2','actual final38 private composition receipt required');check_tuple(value,candidate)
+    require(value.get('actual_refreshed13_composition_candidate_bound') is True and value.get('actual_asb24_fullfork_candidate_bound') is True and value.get('private_project_count')==PRIVATE_COUNT and type(value.get('private_project_count')) is int and value.get('private1170_static_manifest_sha256')==sha(manifest_raw),'actual final38/private1170 composition tuple differs')
+    rows=value.get('private_projects');require(type(rows) is list and len(rows)==PRIVATE_COUNT,'actual38 private repository generation bindings missing');seen=set()
     for row in rows:
         project=relative(row.get('path'));require(project in private_paths and project not in seen,'private composition namespace differs');seen.add(project);require(row.get('private_head')==inventories[project]['head'] and row.get('private_tree')==inventories[project]['tree'],'actual private generation differs from full measured inventory')
         require(type(row.get('private_repository')) is str and Path(row['private_repository']).is_absolute(),'actual private physical repository binding missing')
-    require(seen==set(private_paths),'private composition whole16 set differs')
+    require(seen==set(private_paths),'private composition whole38 set differs')
     if manifest_inventory is not None:require(value.get('manifest_head')==manifest_inventory['head'] and value.get('manifest_tree')==manifest_inventory['tree'],'actual final private manifest repository generation differs')
     for name in ('source_bom_qualified','independent_migration_approval_asserted','canonical_source_authority_modified','installed','release_qualified'):require(value.get(name) is False,'private composition receipt exceeds precursor scope')
+    validate_asb_fork_binding(value,candidate,inventories,deadline)
     return value
 
 def _publish_new(directory,name,raw,deadline):
@@ -720,13 +749,14 @@ def validate_selection(selection,candidate,inventories):
         require(len(found)==1 and all(found[0][k]==row[k] for k in ('bytes','sha256','git_mode','git_blob')),'actual private project differs from owned Android overlay')
     require(selection.get('actual_overlay_files')==len(overlay),'actual owner overlay scope/count differs')
 
-def validate_graph(candidate,manifest_raw,inventories,before,after,private_paths,manifest_inventory,motorola,generated,selection,archive_report,canonical_custody,projections,private_composition):
+def validate_graph(candidate,manifest_raw,inventories,before,after,private_paths,manifest_inventory,motorola,generated,selection,archive_report,canonical_custody,projections,private_composition,deadline=None):
+    if deadline is None:deadline=time.monotonic()+1800
     validate_candidate(candidate);validate_custody(canonical_custody,candidate)
     manifest=parse_manifest(manifest_raw);require(manifest['trillionnium-os']['revision']==candidate['commit'],'whole control not current candidate')
-    require(type(private_paths) is list,'v3 exact16 private project list required')
+    require(type(private_paths) is list,'v4 exact38 private project list required')
     private=validate_private_paths(private_paths);require(private<=set(manifest) and 'trillionnium-os' not in private,'private scope overlaps/escapes manifest')
     excluded=private|{'trillionnium-os'};original=set(manifest)-excluded
-    require(len(original)==ORIGINAL_COUNT,'v3 exact1153 original source namespace required')
+    require(len(original)==ORIGINAL_COUNT,'v4 exact1131 original source namespace required')
     b=vector(before,candidate,manifest,original);a=vector(after,candidate,manifest,original)
     require(before.get('resolved_manifest_sha256')==after.get('resolved_manifest_sha256')==sha(manifest_raw),'before/after exact manifest custody missing/different')
     require(all((b[p]['head'],b[p]['tree'],b[p]['git_status_sha256'])==(a[p]['head'],a[p]['tree'],a[p]['git_status_sha256']) for p in original),'before/after source generation differs')
@@ -744,7 +774,7 @@ def validate_graph(candidate,manifest_raw,inventories,before,after,private_paths
     control=inventories['trillionnium-os'];count=candidate['control_regular_files'];require(control['tree']==candidate['tree'] and len(control['source_files'])==count,'whole candidate control tree/count required')
     require(archive_report.get('all_archive_bytes_match_measured_git_tree') is True and archive_report.get('sha256')==candidate['archive_sha256'] and archive_report.get('regular_files')==count,'actual control archive closure required')
     validate_inventory(manifest_inventory)
-    validate_composition(private_composition,candidate,manifest_raw,inventories,private,manifest_inventory)
+    validate_composition(private_composition,candidate,manifest_raw,inventories,private,manifest_inventory,deadline)
     manifest_files=[r for r in manifest_inventory['source_files'] if r['path']=='trillionnium-fogos.xml']
     require(len(manifest_files)==1 and manifest_files[0]['sha256']==sha(manifest_raw),'private manifest Git content not exact resolved XML')
     require(type(motorola) is list and len(motorola)==2,'two Motorola blob-tree observations required')
@@ -777,7 +807,7 @@ def inspect_packet(packet_path,deadline):
     validate_candidate(packet['candidate']);validate_custody(docs['canonical_custody'],packet['candidate'])
     inventories=InventoryStore(docs['inventory_index'],packet['candidate'],reads['resolved_manifest'],packet['private_project_paths'],deadline)
     archive=verify_control_archive(reads['control_archive'],inventories['trillionnium-os'],packet['candidate']['archive_sha256'],packet['candidate']['control_regular_files'],deadline)
-    result=validate_graph(packet['candidate'],reads['resolved_manifest'],inventories,docs['original_before'],docs['original_after'],packet['private_project_paths'],docs['manifest_repository_inventory'],docs['motorola_blob_trees'],docs['generated_source_delta'],docs['owner_source_selection'],archive,docs['canonical_custody'],docs['manifest_projections'],docs['private_composition'])
+    result=validate_graph(packet['candidate'],reads['resolved_manifest'],inventories,docs['original_before'],docs['original_after'],packet['private_project_paths'],docs['manifest_repository_inventory'],docs['motorola_blob_trees'],docs['generated_source_delta'],docs['owner_source_selection'],archive,docs['canonical_custody'],docs['manifest_projections'],docs['private_composition'],deadline)
     # Reopen actual inputs; a descriptor digest is not proof of continued ownership.
     for k,value in packet['documents'].items():require(read_descriptor(value,deadline)==reads[k],'fixed graph input moved')
     require(read_stable(packet_path,8*1024*1024,deadline)==raw,'owner packet moved')
@@ -788,7 +818,7 @@ def inspect_projection_collection(packet_path,view,deadline):
     raw=read_stable(packet_path,8*1024*1024,deadline);packet=parse(raw);exact(packet,('schema','profile_id','candidate','resolved_manifest','inventory_index','private_composition','private_project_paths'),'projection collection packet')
     require(packet['schema']=='org.trillionnium.owner-projection-collection-input.v1' and packet['profile_id']==PROFILE,'distinct projection collection profile required');validate_candidate(packet['candidate'])
     manifest=read_descriptor(packet['resolved_manifest'],deadline,8*1024*1024);index_raw=read_descriptor(packet['inventory_index'],deadline,8*1024*1024);store=InventoryStore(parse(index_raw),packet['candidate'],manifest,packet['private_project_paths'],deadline)
-    composition_raw=read_descriptor(packet['private_composition'],deadline,8*1024*1024);validate_composition(parse(composition_raw),packet['candidate'],manifest,store,packet['private_project_paths'])
+    composition_raw=read_descriptor(packet['private_composition'],deadline,8*1024*1024);validate_composition(parse(composition_raw),packet['candidate'],manifest,store,packet['private_project_paths'],deadline=deadline)
     result=collect_manifest_projections(view,manifest,store,packet['candidate'],deadline);store.reverify()
     require(read_descriptor(packet['resolved_manifest'],deadline,8*1024*1024)==manifest and read_descriptor(packet['inventory_index'],deadline,8*1024*1024)==index_raw and read_descriptor(packet['private_composition'],deadline,8*1024*1024)==composition_raw and read_stable(packet_path,8*1024*1024,deadline)==raw,'projection collection inputs moved')
     result['input_packet_sha256']=sha(raw);result['input_descriptors']={k:packet[k] for k in ('resolved_manifest','inventory_index','private_composition')};result['raw_project_evidence_descriptors']=list(store.fixed.values());check(deadline);return result

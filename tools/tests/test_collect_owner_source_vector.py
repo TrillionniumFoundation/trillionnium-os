@@ -40,12 +40,12 @@ class ActualGitVectorTests(unittest.TestCase):
 
 class VectorPacketBoundaryTests(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):cls.graph=graph_fixture()
+    def setUpClass(cls):cls.graph=graph_fixture(provenance=m)
     def test_all_original1153_physical_roots_required_before_query(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp);manifest=root/'manifest';manifest.write_bytes(self.graph[1]);composition=root/'composition';composition.write_bytes(m.canonical(self.graph[13]));packet=root/'packet';value=dict(schema=v.INPUT_SCHEMA,profile_id=m.PROFILE,candidate=self.graph[0],resolved_manifest=m.descriptor(manifest,manifest.read_bytes()),private_composition=m.descriptor(composition,composition.read_bytes()),original_source_root=str(root),original_repository_paths=[]);packet.write_bytes(m.canonical(value));self.assertRaises(m.SourceError,v.inspect_packet,m,packet,time.monotonic()+5)
     def test_pinned3_module_byte_load_is_actual(self):
-        module,directory,raws=v.load_source();self.assertEqual(module.PROFILE,'owner-open-whole-control-v3');self.assertEqual(set(raws),set(v.MODULE_SHAS))
+        module,directory,raws=v.load_source();self.assertEqual(module.PROFILE,'owner-open-whole-control-v4');self.assertEqual(set(raws),set(v.MODULE_SHAS))
     def test_old_v2_vector_profile_rejected_before_documents_or_git(self):
         with tempfile.TemporaryDirectory() as temp:
             path=Path(temp)/'packet';path.write_bytes(m.canonical(dict(schema=v.INPUT_SCHEMA,profile_id='owner-open-whole-control-v2',candidate={},resolved_manifest={},private_composition={},original_source_root=str(Path(temp)),original_repository_paths=[])))

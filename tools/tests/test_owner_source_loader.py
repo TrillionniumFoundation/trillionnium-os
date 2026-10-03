@@ -55,7 +55,7 @@ class ActualMeasuredModuleLoaderTests(unittest.TestCase):
             control=self.run_real(root,"import owner_source_provenance as p,json\nprint(json.dumps(dict(marker=getattr(p,'_peer_source_cache_body',False))))\n")
             self.assertTrue(control['marker'])
             actual=self.run_real(root,"import sys,types,json\nambient=types.ModuleType('owner_source_provenance');ambient.PROFILE='ambient unbound body';sys.modules['owner_source_provenance']=ambient\nimport verify_owner_target_files_binding as c\nprint(json.dumps(dict(profile=c.p.PROFILE,marker=getattr(c.p,'_peer_source_cache_body',False),ambient_used=c.p is ambient)))\n")
-            self.assertEqual(actual['profile'],'owner-open-whole-control-v3');self.assertFalse(actual['marker']);self.assertFalse(actual['ambient_used']);self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),digest)
+            self.assertEqual(actual['profile'],'owner-open-whole-control-v4');self.assertFalse(actual['marker']);self.assertFalse(actual['ambient_used']);self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),digest)
 
     def test_actual_meta_cli_ignores_timestamp_cache_during_publication(self):
         from test_verify_owner_target_files_binding import bom_fixture

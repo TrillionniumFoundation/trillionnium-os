@@ -101,8 +101,23 @@
     },
     {
       "path": "android-integration/security-patches/manifest.v1.json",
-      "sha256": "478b7c97acfbdcd39bebbaeb536ecdcaaf321a411cb15fdb979910b3bf42c0b9",
+      "sha256": "32ea9c909e7eb38ee030420324504a305423fb4371afe525c57582aa0123acbf",
       "size": 3950
+    },
+    {
+      "path": "android-integration/security-patches/owner-asb-fork-catalog.v1.json",
+      "sha256": "c4436eb8f68adc50235e4b549e74a4337d17b4ce8f99b216e3aa189030263f3c",
+      "size": 92415
+    },
+    {
+      "path": "android-integration/security-patches/owner-asb-forks/evidence/000.json",
+      "sha256": "0c411d0c8563a81f3303b54227c86b0a69c48d72121f919a568cf42dea374a26",
+      "size": 397693
+    },
+    {
+      "path": "android-integration/security-patches/owner-asb-forks/evidence/001.json",
+      "sha256": "7d972b09ac1f92a071f262f6bdc94482701bacf904da7d6392a01d88258df5d8",
+      "size": 37377
     },
     {
       "path": "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
@@ -271,7 +286,7 @@
     },
     {
       "path": "tools/verify_owner_target_files_binding.py",
-      "sha256": "9b673e4b5b33ec32f904e70bc098bad09763abd26ba8d7fa9231ff85a2ac2618",
+      "sha256": "d0b3a4991b8c744abbf4b439ea58dab6d3d892dda0fcd02ec32b3a7826eb3b0e",
       "size": 18538
     }
   ],

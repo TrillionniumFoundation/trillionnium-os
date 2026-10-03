@@ -26,7 +26,7 @@ def fixture_source_root():
         m.require(m.sha(m.read_stable(root/name,1024*1024,time.monotonic()+10))==digest,'fixture checker byte/hash differs from source profile')
     return root
 
-def graph_fixture(control_count=CONTROL_FIXTURE_FILES):
+def graph_fixture(control_count=CONTROL_FIXTURE_FILES, provenance=None):
     actual_root=fixture_source_root()
     control_files=[(m.SOURCE_CHECKER,(actual_root/m.SOURCE_CHECKER).read_bytes(),'100644'),(m.SDK_CHECKER,(actual_root/m.SDK_CHECKER).read_bytes(),'100644'),('android-integration/working-tree/vendor/trillionnium/owner.txt',b'owner source','100644')]
     control_files += [('source/f'+str(i),b'ordinary','100644') for i in range(control_count-len(control_files))]
@@ -62,7 +62,9 @@ def graph_fixture(control_count=CONTROL_FIXTURE_FILES):
     view='/unexecuted/mechanism/view';generations={p:dict(physical_work_tree=view+'/'+p,raw_before_base64=base64.b64encode((invs[p]['head']+'\n'+invs[p]['tree']+'\n').encode()).decode(),raw_after_base64=base64.b64encode((invs[p]['head']+'\n'+invs[p]['tree']+'\n').encode()).decode()) for p in projection_projects}
     projections=dict(common,schema='org.trillionnium.owner-manifest-projection-observations.v1',resolved_manifest_sha256=m.sha(manifest),physical_view_root=view,project_git_observations=generations,projections=observations)
     composition=dict(common,schema='org.trillionnium.audit.actual-exact-private-android-source-binding.v1',actual_refreshed13_composition_candidate_bound=True,private_project_count=m.PRIVATE_COUNT,private1170_static_manifest_sha256=m.sha(manifest),manifest_head=manifest_inv['head'],manifest_tree=manifest_inv['tree'],private_projects=[dict(path=p,private_repository='/unexecuted/mechanism/private/'+p,private_head=invs[p]['head'],private_tree=invs[p]['tree']) for p in private],source_bom_qualified=False,independent_migration_approval_asserted=False,canonical_source_authority_modified=False,installed=False,release_qualified=False)
-    return [candidate,manifest,invs,copy.deepcopy(vector),copy.deepcopy(vector),private,manifest_inv,blobs,generated,selection,archive,custody,projections,composition]
+    from owner_asb38_fixtures import upgrade_graph_fixture
+    graph=[candidate,manifest,invs,copy.deepcopy(vector),copy.deepcopy(vector),private,manifest_inv,blobs,generated,selection,archive,custody,projections,composition]
+    return upgrade_graph_fixture(graph, provenance or m, actual_root)
 
 class ActualCollectorTests(unittest.TestCase):
     def setUp(self):
@@ -112,12 +114,12 @@ class GraphMechanismTests(unittest.TestCase):
     def value(self):return copy.deepcopy(self.fixture)
     def test_mechanism_complete1170_positive_not_release(self):
         value=m.validate_graph(*self.value());self.assertEqual(value['decision'],'PASS_MEASURED_OWNER_GRAPH');self.assertFalse(value['production_ready']);self.assertFalse(value['clean_public_source_claim'])
-    def test_v3_exact16_includes_nfc_and_original1153(self):
+    def test_v4_exact38_includes24affected_and_original1131(self):
         graph=self.value();value=m.validate_graph(*graph)
-        self.assertEqual(m.PRIVATE_COUNT,16);self.assertEqual(m.ORIGINAL_COUNT,1153)
+        self.assertEqual(m.PRIVATE_COUNT,38);self.assertEqual(m.ORIGINAL_COUNT,1131)
         self.assertEqual(set(value['private_project_paths']),m.PRIVATE_PROJECT_PATHS)
         self.assertIn('packages/modules/Nfc',value['private_project_paths'])
-        self.assertEqual(len(graph[3]['projects']),1153)
+        self.assertEqual(len(graph[3]['projects']),1131)
     def test_old_private15_not_accepted_by_v3(self):
         self.reject(lambda v:v[5].remove('packages/modules/Nfc'))
     def test_sixteenth_unrelated_private_project_not_substitute_for_nfc(self):

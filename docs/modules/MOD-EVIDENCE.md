@@ -25,6 +25,11 @@ Source ownership paths:
 - `tools/owner_bom_bounded_process.py`
 - `tools/collect_owner_source_vector.py`
 - `tools/android_release_ota.py`
+- `tools/owner_asb_fork_catalog.py`
+- `tools/prepare_owner_asb_fullforks.py`
+- `tools/tests/owner_asb38_fixtures.py`
+- `tools/tests/test_owner_asb_fullforks.py`
+- `tools/tests/test_owner_asb_telephony_suggestions.py`
 
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
@@ -85,7 +90,7 @@ The CLI delegates to strict package verification; `verify-g1-evidence-live.py` b
 
 The owner source producer, bounded Git subprocess helper and original-vector
 collector belong to `MOD-EVIDENCE`; Android owns the build-time META writer and
-target-files consumer. Their `owner-open-whole-control-v3` profile is separate
+target-files consumer. Their `owner-open-whole-control-v4` profile is separate
 from the retained legacy P0 source-BOM profile. It has a content identifier and
 complete measured input closure, with local provenance authority only. A
 self-consistent JSON receipt is not an authenticated builder, a signature,
@@ -93,7 +98,34 @@ independent review, an installed target or permission to release. See the
 [Android producer contract](MOD-ANDROID.md#owner-source-provenance-and-build-time-meta)
 for its graph and build inputs.
 
-The v3 profile binds exactly 16 private projects and the remaining 1153 original
+`tools/owner_asb_fork_catalog.py` validates the exact declared ASB fork catalog,
+its 80 source transforms and bound control witnesses.
+`tools/prepare_owner_asb_fullforks.py` makes complete isolated project clones,
+applies the declared transforms and retains complete inventories, source
+surfaces and raw metadata before and after each stage. Unhydrated LFS objects,
+materialized gitlinks, changed original inputs and undeclared output paths
+remain explicit holds. The catalog and nested receipt must bind the same
+canonical control generation; neither is release authority.
+
+`tools/tests/owner_asb38_fixtures.py` supplies explicitly synthetic catalog and
+graph data for parser tests. `tools/tests/test_owner_asb_fullforks.py` also
+creates real disposable Git clones to verify preservation of ordinary files,
+executable modes, symlinks and unmaterialized gitlink references, plus LFS
+hydration and receipt-binding rejection cases. Run this maintained coverage
+with `python3 -B -m unittest discover -s tools/tests -p test_owner_asb_fullforks.py`.
+These host fixtures do not qualify an Android source graph, compiled image or
+installed device.
+
+`tools/tests/test_owner_asb_telephony_suggestions.py` compiles the complete Java
+query and request-argument helpers from the declared production patch. SQLite
+fixtures verify live caller-visible SMS/MMS parent filtering, stale subscription
+indices, restricted views, orphaned or reassociated messages and request-local
+pattern arrays. This tests the declared source fragment and finite SQL behavior;
+Android API permissions, complete-project compilation and installed behavior
+still require their own evidence. Run with a JDK using
+`python3 -B -m unittest discover -s tools/tests -p test_owner_asb_telephony_suggestions.py`.
+
+The v4 profile binds exactly 38 private projects and the remaining 1131 original
 projects in the 1170-project graph. All producer and consumer versions advance
 together; v2 inputs and BOMs cannot qualify this composition. A Git query
 failure preserves the actual exit code, affected project and a finite escaped
@@ -117,7 +149,7 @@ deletion, staged changes, and deletion reports for an empty present directory
 remain holds; original-vector status must match the complete inventory status.
 There are at most 1024 references per project, 40 path components per reference
 and 2 MiB of reference metadata. Older inventory v2 records do not qualify this
-producer. The outer whole-control v3 BOM remains bound to each complete inventory
+producer. The outer whole-control v4 BOM remains bound to each complete inventory
 digest and raw evidence descriptor; its local authority does not establish
 submodule commit content availability, installed behavior or release approval.
 
@@ -672,3 +704,5 @@ Exit evidence must demonstrate:
 - public release is explicitly enabled.
 
 A source change may reduce implementation risk, but the status stays open or source-closed-pending-evidence until an immutable, current, independently authorized receipt reaches the declared exit level.
+
+Proposed private38 source-only migration requires the exact retained16 union 24 declared affected projects (two overlaps), original1131 plus control1 and manifest1170. The 80 declared ordinary transforms (77 platform plus 3 kernel) are fixed in `android-integration/security-patches/owner-asb-fork-catalog.v1.json`. This catalog and its patches/evidence are declared canonical inputs, never working-tree overlay files. `prepare_owner_asb_fullforks.py` must produce all24 exclusive complete clones, full before/after inventories, unchanged original metadata maps, no unknown source surfaces, and an actual receipt. The final composition.v2 binds that receipt; vector/provenance/META/release consume v4 together. Inventory.v3, 128GiB whole content, 2GiB metadata, 120s recipe Git query, bounded helper9f9 and the source no-write guards remain binding. All whole-CVE, cumulative ASB, applicability, build/device/install and release claims remain unqualified. New candidate/source4/native/RootFS/final38/BOM observations must be actual; historical d9 captures or previews do not provide them.

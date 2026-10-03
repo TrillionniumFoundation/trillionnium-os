@@ -162,11 +162,11 @@ root. This build rule does not qualify a source BOM or an installed image.
 ### Owner source provenance and build-time META
 
 `tools/owner_source_provenance.py` produces the distinct
-`org.trillionnium.owner-source-bom.v3` receipt for
-`owner-open-whole-control-v3`. Its candidate includes the exact control commit,
+`org.trillionnium.owner-source-bom.v4` receipt for
+`owner-open-whole-control-v4`. Its candidate includes the exact control commit,
 tree, source-archive digest and actual regular-file count. A new control tree
 must supply a newly measured count; a prior candidate count is not reusable.
-The current profile covers exactly 1170 resolved projects, with 16 explicitly
+The current profile covers exactly 1170 resolved projects, with 38 explicitly
 bound private project generations and one whole control repository. This is a
 local measured composition. It does not migrate the canonical public manifest
 or assert that an unapproved private composition is a clean public source.
@@ -175,7 +175,7 @@ Graph qualification requires all twelve exact input descriptors: resolved
 manifest, control archive, inventory index, canonical custody, original
 before/after vectors, manifest repository inventory, Motorola blob trees,
 generated source delta, owner source selection, manifest projections and
-private composition. `collect_owner_source_vector.py` measures the 1153
+private composition. `collect_owner_source_vector.py` measures the 1131
 original project work trees with Git filters, hooks and fsmonitor disabled.
 The raw status remains evidence: a hydrated LFS payload may appear modified
 under this policy. The content verifier must prove its canonical committed LFS
@@ -212,12 +212,13 @@ admission rule. Manifest-projection queries keep their separate 30-second
 limit; retain actual collection invocations and failures with their source
 subject before running the image build.
 
-The v3 private set adds `packages/modules/Nfc` to the previous 15 projects;
-it replaces that project's selected revision without adding a manifest project.
-The source input, BOM, build-time META and release consumer require the v3
-profile together. A v2 receipt or a 15-project composition is rejected, even
-when its control commit or file names look current. Retain prior v2 evidence
-under its original source rather than relabeling it.
+The v4 proposed set is the exact retained16 union affected24 in the fork catalog,
+with Frameworks and Nfc as the two overlaps: 38 private, 1131 original and one
+whole control project. It does not add manifest projects. The source input,
+BOM, build-time META and release consumer advance to v4 together; inventory.v3
+remains unchanged. Older outer profiles and 16-project compositions cannot
+qualify the new graph. The final composition.v2 must bind every actual complete
+fork receipt and the newly generated native/carrier subject, not prior evidence.
 
 The `android-integration/security-patches` directory contains the exact
 defensive patch inputs and `manifest.v1.json`. The Frameworks image
@@ -239,7 +240,7 @@ nonempty delta needs a new generator/input contract. Observations are
 sequential and explicitly do not claim a globally atomic snapshot.
 
 `tools/verify_owner_target_files_binding.py` materializes the distinct
-`org.trillionnium.owner-android-source-bom-binding.v3` projection from the exact
+`org.trillionnium.owner-android-source-bom-binding.v4` projection from the exact
 BOM and `org.trillionnium.owner-android-build-source-inputs.v1`. Build inputs
 bind the same candidate, resolved manifest, raw BOM digest and finite ASCII
 stage ID. The owned `build/make/core/Makefile` overlay selects this path only
@@ -509,3 +510,5 @@ Exit evidence must demonstrate:
 - public release is explicitly enabled.
 
 A source change may reduce implementation risk, but the status stays open or source-closed-pending-evidence until an immutable, current, independently authorized receipt reaches the declared exit level.
+
+Proposed private38 source-only migration requires the exact retained16 union 24 declared affected projects (two overlaps), original1131 plus control1 and manifest1170. The 80 declared ordinary transforms (77 platform plus 3 kernel) are fixed in `android-integration/security-patches/owner-asb-fork-catalog.v1.json`. This catalog and its patches/evidence are declared canonical inputs, never working-tree overlay files. `prepare_owner_asb_fullforks.py` must produce all24 exclusive complete clones, full before/after inventories, unchanged original metadata maps, no unknown source surfaces, and an actual receipt. The final composition.v2 binds that receipt; vector/provenance/META/release consume v4 together. Inventory.v3, 128GiB whole content, 2GiB metadata, 120s recipe Git query, bounded helper9f9 and the source no-write guards remain binding. All whole-CVE, cumulative ASB, applicability, build/device/install and release claims remain unqualified. New candidate/source4/native/RootFS/final38/BOM observations must be actual; historical d9 captures or previews do not provide them.

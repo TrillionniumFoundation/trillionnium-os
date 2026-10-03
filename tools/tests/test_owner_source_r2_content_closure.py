@@ -174,14 +174,17 @@ class CompletePacketMechanismTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp=tempfile.TemporaryDirectory();cls.root=Path(cls.temp.name);cls.root.chmod(0o700);graph=graph_fixture();archive_stream=io.BytesIO()
+        from owner_asb38_fixtures import synthetic_catalog,rebind_graph_archive_sha
+        declared_bodies=synthetic_catalog(fixture_source_root(),m)[1]
         with tarfile.open(fileobj=archive_stream,mode='w:gz') as archive:
             for row in graph[2]['trillionnium-os']['source_files']:
                 if row['path'] in (m.SOURCE_CHECKER,m.SDK_CHECKER):raw=(fixture_source_root()/row['path']).read_bytes()
+                elif row['path'] in declared_bodies:raw=declared_bodies[row['path']]
                 elif row['path'].startswith('android-integration/'):raw=b'owner source'
                 else:raw=b'ordinary'
                 assert m.sha(raw)==row['sha256'];member=tarfile.TarInfo(row['path']);member.mode=0o644;member.size=len(raw);archive.addfile(member,io.BytesIO(raw))
-        archive=archive_stream.getvalue();digest=m.sha(archive);graph[0]['archive_sha256']=digest
-        for index in (3,4,8,9,12,13):graph[index]['source_archive_sha256']=digest
+        archive=archive_stream.getvalue();digest=m.sha(archive)
+        rebind_graph_archive_sha(graph,m,digest)
         graph[11]['source_archive']=dict(bytes=len(archive),sha256=digest);entries=[];deadline=time.monotonic()+60
         for number,(project,inv) in enumerate(graph[2].items()):
             directory=cls.root/('project-'+str(number));directory.mkdir(mode=0o700);entries.append(dict(project=project,record=m.publish_sharded_inventory(project,inv,directory,deadline)))
