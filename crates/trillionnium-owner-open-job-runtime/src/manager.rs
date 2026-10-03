@@ -3160,11 +3160,29 @@ mod tests {
                 .iter()
                 .any(|event| matches!(event.event, RuntimeJobEventKind::JournalUnavailable { .. }))
         );
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
+        // Retirement has separate finite control, group-scan and worker-join
+        // phases. This fixture checks memory-only journal semantics; its
+        // wait must cover those phases and does not establish a latency SLO.
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(15);
         while manager.has_live_or_pending_jobs() && std::time::Instant::now() < deadline {
             std::thread::sleep(std::time::Duration::from_millis(10));
         }
-        assert!(!manager.has_live_or_pending_jobs());
+        let terminal_inspection = manager.inspect(&key, 0, 64).expect("terminal inspection");
+        assert!(
+            !manager.has_live_or_pending_jobs(),
+            "memory-only fixture still pending after bounded retirement: {terminal_inspection:?}"
+        );
+        assert!(
+            terminal_inspection
+                .runtime_events
+                .iter()
+                .any(|event| matches!(
+                    &event.event,
+                    RuntimeJobEventKind::Terminal { terminal_kind, exit_code: Some(0), .. }
+                        if terminal_kind == "exited"
+                )),
+            "memory-only fixture lacks a successful, fully observed terminal: {terminal_inspection:?}"
+        );
     }
 
     #[test]
