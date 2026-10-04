@@ -2938,6 +2938,203 @@ mod tests {
     }
 
     #[test]
+    fn failed_journal_admissions_bound_unaccepted_observation_identities() {
+        const ISOLATED: &str = "TRILLIONNIUM_FAILED_JOURNAL_ADMISSION_CHILD";
+        const CASE: &str =
+            "manager::tests::failed_journal_admissions_bound_unaccepted_observation_identities";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", CASE, "--nocapture"])
+                .env_clear()
+                .env(ISOLATED, "1")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+
+        // Measure the real shared resident lane in this fresh child. The
+        // combined limit is only the binary-search ceiling, not a guessed
+        // registry-entry size, allocator charge or RSS measurement.
+        fn resident_headroom() -> usize {
+            let mut probe = JobMemoryLease::acquire(0).unwrap();
+            let (mut low, mut high) = (
+                0,
+                trillionnium_owner_open_job_registry::MAX_JOB_OWNED_BYTES + 1,
+            );
+            while low + 1 < high {
+                let middle = low + (high - low) / 2;
+                if probe.resize(middle).is_ok() {
+                    low = middle;
+                } else {
+                    high = middle;
+                }
+            }
+            low
+        }
+        fn input_bytes(request: &JobStartRequest, config: &JobRuntimeConfig) -> usize {
+            start_spec_bytes(request, config)
+                .unwrap()
+                .saturating_sub(std::mem::size_of::<JobStartRequest>())
+                .checked_add(request.initial_stdin.capacity())
+                .unwrap()
+        }
+        fn request_at(index: usize, executable: &Path) -> JobStartRequest {
+            let mut key = rollback_test_key();
+            key.job_id = format!("admission-{index:04}")
+                .into_boxed_str()
+                .into_string();
+            let mut request = stale_start_request(key, rollback_test_request(), "start");
+            // The intended failure precedes spawn. If this premise regresses,
+            // a nonexistent executable cannot accidentally run a real shell.
+            request.shell_executable = executable.to_path_buf();
+            request
+        }
+
+        let complete_resident_lane = resident_headroom();
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let journal_path = directory.path().join("jobs");
+        let executable = directory.path().join("must-not-exist");
+        assert!(!executable.exists());
+        let manager =
+            JobManager::open_segmented(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        assert!(matches!(
+            manager.inner.journal.status().unwrap(),
+            JournalStatus::Durable
+        ));
+        assert!(manager.durability_error().unwrap().is_none());
+        let available_before_calibration = resident_headroom();
+        let prototype = request_at(0, &executable);
+        let inherited = inherited_environment().unwrap();
+        assert!(
+            inherited.is_empty(),
+            "fresh child has no inherited allowlist values"
+        );
+        let input_charge = input_bytes(&prototype, &manager.inner.config);
+        let process_charge =
+            process_reservation(&prototype, &manager.inner.config, &inherited).unwrap();
+        let input_lease = JobMemoryLease::acquire(input_charge).unwrap();
+        let process_lease = ProcessLease::acquire(process_charge).unwrap();
+        let begun = manager
+            .registry()
+            .begin(prototype.key.clone(), prototype.request.clone())
+            .unwrap();
+        assert_eq!(begun.disposition, BeginDisposition::New);
+        drop(begun);
+        let pressure_bytes = resident_headroom();
+        assert!(pressure_bytes > 0);
+        let pressure = JobMemoryLease::acquire(pressure_bytes).unwrap();
+        assert_eq!(resident_headroom(), 0);
+        assert!(
+            manager
+                .registry()
+                .rollback_accept(&prototype.key, &prototype.request)
+                .unwrap()
+        );
+        drop(process_lease);
+        drop(input_lease);
+        assert_eq!(manager.registry().len().unwrap(), 0);
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        assert!(!manager.has_live_or_pending_jobs());
+        assert!(
+            manager
+                .inner
+                .journal
+                .recovered_job(&prototype.key)
+                .unwrap()
+                .is_none()
+        );
+        assert!(manager.durable_records(&prototype.key).unwrap().is_empty());
+        assert!(manager.observations().unwrap().is_empty());
+        assert!(manager.durability_error().unwrap().is_none());
+        let transient_headroom = resident_headroom();
+        assert_eq!(
+            transient_headroom + pressure_bytes,
+            available_before_calibration
+        );
+
+        let mut peak_identities = 0;
+        for index in 0..1024 {
+            let request = request_at(index, &executable);
+            assert_eq!(request.key.job_id.len(), prototype.key.job_id.len());
+            assert_eq!(
+                request.key.job_id.capacity(),
+                prototype.key.job_id.capacity()
+            );
+            assert_eq!(request.operation_id.len(), prototype.operation_id.len());
+            assert_eq!(
+                request.operation_id.capacity(),
+                prototype.operation_id.capacity()
+            );
+            assert_eq!(input_bytes(&request, &manager.inner.config), input_charge);
+            assert_eq!(
+                process_reservation(&request, &manager.inner.config, &inherited).unwrap(),
+                process_charge
+            );
+            let key = request.key.clone();
+            let error = manager
+                .start(request)
+                .expect_err("no durable acceptance headroom");
+            if index == 0 {
+                assert!(
+                    matches!(&error, JobRuntimeError::Journal(reason)
+                        if reason == "owner-open job registry capacity is exhausted"),
+                    "fixture missed the journal-metadata resident-admission boundary: {error:?}"
+                );
+                println!(
+                    "FAILED_ADMISSION_BOUNDARY_CONFIRMED pressure_bytes={pressure_bytes} transient_headroom={transient_headroom} input_charge={input_charge} process_charge={process_charge}"
+                );
+            } else {
+                // A conservative future global-degradation fence may reject
+                // later keys earlier; do not require it to repeat the defect.
+                assert!(matches!(&error, JobRuntimeError::Journal(_)), "{error:?}");
+            }
+            assert_eq!(manager.registry().len().unwrap(), 0);
+            assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+            assert!(!manager.has_live_or_pending_jobs());
+            assert!(manager.inner.journal.recovered_job(&key).unwrap().is_none());
+            assert!(manager.durable_records(&key).unwrap().is_empty());
+            assert!(matches!(
+                manager.inner.journal.status().unwrap(),
+                JournalStatus::Durable
+            ));
+            assert_eq!(resident_headroom(), transient_headroom);
+            peak_identities = peak_identities.max(manager.observations().unwrap().len());
+        }
+        let (identities, retained_key_capacity) = {
+            let observations = manager.observations().unwrap();
+            let capacity: usize = observations
+                .keys()
+                .map(|key| {
+                    key.scope.session_id.capacity()
+                        + key.scope.profile_id.capacity()
+                        + key.scope.task_id.capacity()
+                        + key.scope.turn_id.capacity()
+                        + key.scope.turn_stream_id.capacity()
+                        + key.job_id.capacity()
+                })
+                .sum();
+            (observations.len(), capacity)
+        };
+        println!(
+            "FAILED_ADMISSION_OBSERVATIONS attempts=1024 identities={identities} peak_identities={peak_identities} retained_key_capacity={retained_key_capacity} limit={MAX_JOB_RUNTIME_RETAINED_KEYS}"
+        );
+        drop(pressure);
+        drop(manager);
+        assert_eq!(resident_headroom(), complete_resident_lane);
+        assert!(
+            peak_identities <= MAX_JOB_RUNTIME_RETAINED_KEYS,
+            "failed admissions retained {identities} unaccepted observation identities (peak {peak_identities})"
+        );
+    }
+
+    #[test]
     fn rejected_unjournaled_starts_do_not_retain_attacker_selected_job_keys() {
         let manager = JobManager::new(JobRuntimeConfig::default(), JobJournal::memory_only())
             .expect("fail-closed manager");
