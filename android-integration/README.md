@@ -1,19 +1,31 @@
 # Android integration audit overlay
 
-This directory records the Android repo-manifest inputs and the uncommitted
-Trillionnium integration files that were present in the canonical
-`lineage-fogos` checkout when the audit snapshot was published.
+This directory retains Android repo-manifest capture inputs and Trillionnium
+integration source. Start current development and qualification from
+[the G1 entrypoint](../docs/START_HERE.md).
 
-The Android checkout is a repo-manifest workspace with 1,172 independent Git
-projects; it is not flattened into this repository. The complete source
-baseline is reproducible from the pinned manifest files under
-`../docs/audit/android-manifest/`. The `working-tree/` subtree contains the
-current Trillionnium dirty overlay (modified and untracked source files),
-with generated `__pycache__` files excluded. `PROJECT_STATUS.tsv` records each
-overlay path, its project HEAD, worktree status, and content SHA-256.
+The [capture metadata](manifest/CAPTURE.txt) describes the 2026-08-27
+`lineage-fogos` observation. Its [resolved project manifest](manifest/manifests/trillionnium-fogos.xml)
+records 1,172 exact Git revisions; the project contents are not flattened into
+this repository. The `working-tree/` subtree contains integration overlays;
+`PROJECT_STATUS.tsv` retains the captured path, project HEAD, worktree status
+and content SHA-256. These capture records do not establish the current
+checkout, overlay byte equality, private-fork state or Android build inputs.
 
-This overlay is evidence for external audit and is not an approval gate. It
-does not claim that a live Android build, device effect, or OTA has passed.
+The [current owner source gate](../tools/owner_source_provenance.py) selects
+`owner-open-whole-control-v4`: 1,170 measured projects comprising 38 exact
+private projects, 1,131 original projects and one control project. Its current
+resolved manifest, complete content inventories, before/after vectors and
+private-fork receipts must bind the same candidate; the older 1,172-project
+capture cannot substitute for them. The two Motorola non-Git vendor trees and
+generated-source checks remain additional inputs. Follow the existing
+[owner Android contract](../docs/modules/MOD-ANDROID.md) and
+[target-files binding consumer](../tools/verify_owner_target_files_binding.py)
+for their separate contracts.
+
+Neither a retained manifest nor a control-repository source archive proves a
+complete current Android checkout or built image. Installed-target, device,
+fault, signing and release evidence remain separate qualification gates.
 
 The `packages/modules/adb/daemon/restart_service.cpp` overlay is based on Android
 project commit `318bdb11c42125779a6fc4338da7c2885d277624` and the original file
