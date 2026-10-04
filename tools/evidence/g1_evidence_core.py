@@ -681,8 +681,8 @@ def _verify_evidence_snapshot(
 
     unresolved = sorted(
         gap_id
-        for gap_id, spec in gap_specs.items()
-        if spec.status != "CLOSED" and gap_id not in promotable_gaps
+        for gap_id in gap_specs
+        if gap_id not in promotable_gaps
     )
     report = {
         "schema": "org.trillionnium.g1.evidence-verification-report.v1",
@@ -751,6 +751,15 @@ def promotion_plan(
         "gap definition snapshot differs from the verified report; re-run intake",
     )
     promotable = _mapping(report.get("promotable_gaps"), "report.promotable_gaps")
+    _require(set(promotable) <= set(gap_specs), "report contains unknown promotable gaps")
+    for evidence_id in promotable.values():
+        _require(isinstance(evidence_id, str) and PACKAGE_ID_RE.fullmatch(evidence_id),
+                 "report promotable gap has an invalid evidence package identity")
+    # Repository-authored status is a declaration, never an attestation. Even
+    # previously CLOSED gaps need live exact-subject evidence on this intake.
+    # Derive the result again instead of trusting a report's cached boolean or
+    # unresolved list, which may have been produced by an older verifier.
+    unresolved = sorted(set(gap_specs) - set(promotable))
     transitions = []
     for gap_id in sorted(gap_specs):
         spec = gap_specs[gap_id]
@@ -770,8 +779,8 @@ def promotion_plan(
         "gap_specs_sha256": snapshot_digest,
         "current_source_commit": report.get("current_source_commit"),
         "transitions": transitions,
-        "unresolved_gaps": list(report.get("unresolved_gaps", [])),
-        "zero_gap_after_plan": not report.get("unresolved_gaps"),
+        "unresolved_gaps": unresolved,
+        "zero_gap_after_plan": not unresolved,
         "public_release_after_plan": False,
         "automatic_redispatch": False,
     }

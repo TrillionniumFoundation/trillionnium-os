@@ -1,0 +1,22 @@
+{
+  "schema": "org.trillionnium.test.android-product-inheritance-fixture.v1",
+  "repository": "LineageOS/android_build",
+  "commit": "246a9f2ae5188e76d8f94077c8d4bb91485c0c46",
+  "upstream_files": {
+    "core/node_fns.mk": "ea999b1e8a81ad41255e8760664dd16bbd4005b404382227e9d33c84f3a5de05",
+    "core/product.mk": "6cd4e999a569b5efe5864b1e1ec7a3f988383576e7c57b32df56f5cba0f0712f"
+  },
+  "fixture_files": [
+    {
+      "file": "node_fns.mk",
+      "bytes": 8057,
+      "sha256": "ea999b1e8a81ad41255e8760664dd16bbd4005b404382227e9d33c84f3a5de05"
+    },
+    {
+      "file": "inherit-product.mk",
+      "bytes": 1422,
+      "sha256": "1919f0945daba2527702946b7fbe91631e72adce11a13c5ebb25c27685ab1405"
+    }
+  ],
+  "scope": "Full node_fns.mk and exact inherit-product / inherit-product-if-exists macros from the pinned product.mk, with original Apache-2.0 license. Local GNU make checks deferred package inheritance only; unrelated audio/version empty and SDK disabled. Kati, Soong, target-files, installed behavior and release are not qualified."
+}

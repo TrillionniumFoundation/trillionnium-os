@@ -359,6 +359,9 @@ class AndroidReleaseOtaTests(unittest.TestCase):
             "build_type": signed_build_type,
             "post_build": signed_fingerprint,
         }
+        def fake_ota_inspect(path: Path, *args: object) -> dict[str, object]:
+            actual = RELEASE.measure_file(path, "fixture OTA")
+            return {**ota_facts, "bytes": actual["bytes"], "sha256": actual["sha256"]}
         output = io.StringIO()
         with (
             mock.patch.object(
@@ -371,7 +374,7 @@ class AndroidReleaseOtaTests(unittest.TestCase):
                 return_value=crypto_facts,
             ),
             mock.patch.object(
-                RELEASE, "verify_signed_ota", return_value=ota_facts
+                RELEASE, "verify_signed_ota", side_effect=fake_ota_inspect
             ),
             redirect_stdout(output),
         ):
@@ -455,6 +458,34 @@ class AndroidReleaseOtaTests(unittest.TestCase):
             RELEASE.ReleaseError, "requires --require-source-bom-binding"
         ):
             self.run_dry("--source-bom-binding-bom", str(bom_path))
+
+    def test_legacy_source_checker_ignores_existing_timestamp_cache(self) -> None:
+        import marshal
+        import struct
+        checker = self.root / "verify_source_bom_binding.py"
+        raw = RELEASE.SOURCE_BOM_BINDING_CHECKER.read_bytes()
+        checker.write_bytes(raw)
+        cached = compile(
+            raw + b"\ndef inspect_target_files_source_bom_binding(*args, **kwargs):\n"
+                  b"    return dict(valid=True, present=True, binding_id='cache-only')\n",
+            str(checker), "exec",
+        )
+        entry = checker.stat()
+        cache = Path(importlib.util.cache_from_source(str(checker)))
+        cache.parent.mkdir()
+        cache.write_bytes(importlib.util.MAGIC_NUMBER + struct.pack(
+            "<III", 0, int(entry.st_mtime) & 0xffffffff, entry.st_size
+        ) + marshal.dumps(cached))
+        bom_path, _ = self.source_bom_binding_fixture()
+        # The standard loader positive control really consumes that cache.
+        spec = importlib.util.spec_from_file_location("legacy_cache_positive_control", checker)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertEqual(module.inspect_target_files_source_bom_binding()["binding_id"], "cache-only")
+        with mock.patch.object(RELEASE, "SOURCE_BOM_BINDING_CHECKER", checker):
+            with self.assertRaisesRegex(RELEASE.ReleaseError, "target_files_source_bom_binding_missing"):
+                RELEASE.inspect_required_source_bom_binding(self.target, bom_path)
+        self.assertEqual(checker.read_bytes(), raw)
 
     def test_source_bom_binding_strict_mode_rejects_missing_member(self) -> None:
         bom_path, _ = self.source_bom_binding_fixture()

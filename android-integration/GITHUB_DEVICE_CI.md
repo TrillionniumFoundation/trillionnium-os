@@ -67,8 +67,10 @@ receipt when the helper reached the output step, and the job remains failed.
 
 ## Why this is not yet a full remote Android build
 
-`android-integration/` contains a pinned repo-manifest and the Trillionnium
-overlay; it does not contain the roughly 1,172 independent LineageOS projects.
+`android-integration/` contains captured repo-manifest inputs and Trillionnium
+integration source; it does not contain the independent Android project trees.
+The [source navigation](README.md) distinguishes the retained 1,172-project
+capture from the current 1,170-project owner graph with 38 private projects.
 The complete local Android checkout is hundreds of gigabytes. A normal
 GitHub-hosted runner and standard artifact storage are therefore not a viable
 place to archive or transfer the whole tree. A target-files archive is also
@@ -76,7 +78,8 @@ multi-gigabyte and is not a suitable ordinary GitHub artifact for this repo.
 
 To test newly built code, add a separately provisioned, trusted Android
 builder (a large-disk runner or an external object-storage-backed build
-service). That builder must consume the pinned manifest and overlay, emit an
+service). That builder must consume a newly verified exact candidate graph,
+its resolved manifest and measured integration inputs, emit an
 APK/target-files artifact with its own source/tree/tool digests, and expose a
 workflow-call or run-ID artifact contract. The existing device job is the
 consumer boundary for that future artifact; it must remain behind the same

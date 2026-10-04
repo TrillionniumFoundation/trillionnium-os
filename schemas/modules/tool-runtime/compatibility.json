@@ -4,18 +4,36 @@
   "breaking_change_review": "REQUIRED_FOR_REQUIRED_TYPE_ENUM_DEFAULT_IDENTITY_ORDERING_STATE_OR_ERROR_CHANGE",
   "change_review": {
     "approval_asserted": false,
-    "base_catalog_sha256": null,
-    "base_contract_sha256": {},
-    "class": "NO_CHANGE",
-    "contracts": [],
-    "families": [],
+    "base_catalog_sha256": "448f6edcf7d7d11647a082aed0264064a8bb2f80e6b37348be0ca86ef98cd7a6",
+    "base_contract_sha256": {
+      "api": "3c614b973b9b2dfc8a0bca1c56b8fae6770221c030f62a0e75cb41247c3e3086",
+      "errors": "5df88666578c5bb675404f4d9132b03fd30a8cb8e441a3b47f2e7997fa0eeb3e",
+      "state": "39376140829443bc764c04593cbf32a3496123a8625bb1b0ab4eb30f1df35d67"
+    },
+    "class": "BREAKING_MIGRATION",
+    "contracts": [
+      "api",
+      "errors",
+      "state"
+    ],
+    "families": [
+      "error",
+      "identity",
+      "ordering",
+      "other",
+      "state"
+    ],
     "migration_review_sha256": "32b71694a9459ffab112fd2dd06c750e7e56eb4d597966f1e3e1ddd01c19f733",
-    "review_authority": null,
-    "review_packet": null,
-    "review_packet_sha256": null,
-    "reviewer": null,
+    "review_authority": "GITHUB_PROTECTED_EXACT_HEAD_REVIEW_REQUIRED",
+    "review_packet": "docs/reviews/module-contracts/6684cfae5092c7d4c7cc60e037d547f89fbd41a94c99bf6a01b6a3b58d01e736.json",
+    "review_packet_sha256": "6684cfae5092c7d4c7cc60e037d547f89fbd41a94c99bf6a01b6a3b58d01e736",
+    "reviewer": "Tomasrgbsf",
     "rollback_review_sha256": "fe0e88734baa74769232a4accec0634199db328878d2d44edd817837db563351",
-    "target_contract_sha256": {}
+    "target_contract_sha256": {
+      "api": "cf6e7542d94b35301da398eb178d5a90382936a9df5c9d37ad42f2ffce919756",
+      "errors": "53abeed7c5e1faf696722d73998b843da1b2bfc5bf256f5a59608a0e47741c31",
+      "state": "ecebd9e82fa9ca760909a4d3ffa237fdfac348df1fafb2dd77099554a2502f26"
+    }
   },
   "claim_ceiling": "L1_EXECUTABLE_CONTRACT_SOURCE_ONLY_NO_TARGET_OR_RELEASE_AUTHORITY",
   "contract_tests": [
@@ -31,8 +49,8 @@
     },
     {
       "path": "tools/contracts/check_module_contract_compatibility.py",
-      "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-      "size": 25928
+      "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+      "size": 27954
     }
   ],
   "contracts": {
@@ -76,13 +94,13 @@
   "implementation_sources": [
     {
       "path": "crates/trillionnium-owner-open-tool-bridge/Cargo.toml",
-      "sha256": "dfbb5ed4b5f1d2c80f35389183a8843a207aba2d0e2aec7978a59d62ed622d96",
-      "size": 442
+      "sha256": "f2c6d7762a0b77931724fadc97b8db0ba92ed55aae87a1afaac52f47e7d26a4a",
+      "size": 489
     },
     {
       "path": "crates/trillionnium-owner-open-tool-bridge/src/lib.rs",
-      "sha256": "50276548f8fd083c0823e32e48d994fc25e8e01930639ccdb9e5b2c6f4c22a55",
-      "size": 36688
+      "sha256": "12974b0589534825896d4b27626466fdd085cac5aa63436a2b727b249a269202",
+      "size": 40217
     }
   ],
   "introduction_review_class": "INITIAL_V1",
@@ -118,8 +136,8 @@
       },
       {
         "path": "tools/contracts/check_module_contract_compatibility.py",
-        "sha256": "36d7676fc919a336df73f555f3824b619cab4f1509a0f349a21133caff712d50",
-        "size": 25928
+        "sha256": "6ee46341b90debd6da8f8f6952d002922cf9ef297e824a36b91a02cb2c68ab9b",
+        "size": 27954
       }
     ],
     "error_symbol": "ModuleErrorEnvelopeV1",
@@ -143,13 +161,18 @@
     },
     {
       "path": "crates/trillionnium-owner-open-tool-bridge/tests/failure_closure.rs",
-      "sha256": "22552226e0521d4bf3297f11dc3a3d30efd956393a331c92f82b1965e725f0e9",
-      "size": 3629
+      "sha256": "99155dd5f91da9e973c9d653f62df971a274465b682b9716ed582206f9298f89",
+      "size": 5005
+    },
+    {
+      "path": "crates/trillionnium-owner-open-tool-bridge/tests/resources.rs",
+      "sha256": "72d87ca80142e3225fe58ac89c12ebdecd729c61d2f318dcea97341d83004ad6",
+      "size": 4431
     },
     {
       "path": "tools/tests/test_module_contracts.py",
-      "sha256": "b060cf3066af3d5b60e073e6277b371aa5497cee10c4042fddab9e6919327cd8",
-      "size": 37209
+      "sha256": "6419413c1a48bb966b26ed48ee04c6b05ba8008ccb131dcad7ea1c2264b83334",
+      "size": 49445
     }
   ],
   "unknown_fields": "REJECT"

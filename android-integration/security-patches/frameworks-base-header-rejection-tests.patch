@@ -1,0 +1,34 @@
+--- a/core/tests/coretests/src/com/android/internal/widget/LocalImageResolverTest.java
++++ b/core/tests/coretests/src/com/android/internal/widget/LocalImageResolverTest.java
+@@ -290,12 +290,12 @@
+         LocalImageResolver.resolveImage(uri, mContext);
+     }
+ 
+-    @Test(expected = RuntimeException.class)
+-    public void resolveImage_withSize_veryLargeResource_throwsException() {
+-        // Passing in an unreasonably large image should throw an exception.
++    @Test
++    public void resolveImage_withSize_veryLargeResource_returnsNull() {
++        // The size-constrained API rejects an unreasonable header with a null result.
+         Uri uri = Uri.parse("android.resource://"
+                 + mContext.getPackageName() + "/" + R.drawable.test16000x16000);
+-        LocalImageResolver.resolveImage(uri, mContext, 480, 480);
++        assertThat(LocalImageResolver.resolveImage(uri, mContext, 480, 480)).isNull();
+     }
+ 
+     @Test
+@@ -351,11 +351,11 @@
+         LocalImageResolver.resolveImage(uri, mContext);
+     }
+ 
+-    @Test(expected = RuntimeException.class)
+-    public void resolveImage_asset_invalidMimeType_withSize() {
++    @Test
++    public void resolveImage_asset_invalidMimeType_withSize_returnsNull() {
+         // dng mimetype is not supported
+         Uri uri = Uri.parse("android.resource://"
+                 + mContext.getPackageName() + "/" + R.raw.dng_opcode_MapTable_ProcessArea);
+-        LocalImageResolver.resolveImage(uri, mContext, 480, 480);
++        assertThat(LocalImageResolver.resolveImage(uri, mContext, 480, 480)).isNull();
+     }
+ }

@@ -13,6 +13,8 @@ reclaimed only when a later timestamp is observed.  Module registration is
 epoch/fencing checked and heartbeat updates are monotonic.  Shadow decisions
 can be recorded in a bounded hash-chained `DecisionAuditLog`; rollback appends
 an auditable marker and never erases history or grants semantic authority.
+Rejected shadow projections leave recommendation history unchanged, including
+when a later module has a future observation or an expired lease.
 
 The telemetry candidate includes bounded module read models and sorted,
 content-addressed cost curves in addition to the WL-01..WL-12 baseline

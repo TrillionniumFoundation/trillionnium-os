@@ -75,6 +75,62 @@ source navigation alone does not prove wire compatibility.
 
 The selected `trillionnium-owner-open-r5-host` binary composes transport flow control, the core child and a delivery journal. Data cursors and control-frame sequences are different domains. Inspect the `src/bin/r5_transport_host/` implementation before changing replay or broker correlation.
 
+### Scoped cursor recovery extension
+
+The direct Host envelope remains `trillionnium.agent.turn.v1`. Its bounded
+payload extension is separately identified by `scoped_cursor_v1`; the abstract
+module API/state/error envelope schemas do not acquire new required fields.
+`hello.ack.payload.resync_protocols` advertises this extension, with
+`legacy_numeric_resume_after_gap=false` and `max_resync_cursor_scopes=64`.
+The client opts into it by sending `resync_protocol="scoped_cursor_v1"` on the
+recovering `stream.resume`; an unknown extension is rejected explicitly.
+
+`stream.resync_required.payload.required_resumes` is a bounded array. Each
+member contains `cursor_domain`, `cursor_scope`, `first_missing_cursor`,
+`last_missing_cursor` and the exclusive `required_resume_cursor`. The scope
+contains all five `session_id`, `profile_id`, `task_id`, `turn_id` and
+`turn_stream_id` values, plus `job_id` for `job_runtime_event` or
+`job_journal_record`. `transport_event` has no job identity. Different jobs,
+including jobs from an older turn still emitting during the active turn, retain
+separate ranges. Interleaving A/B/A never merges unrelated ordinals. Legacy
+single-range fields remain diagnostic; only `required_resumes` authorizes the
+new recovery path.
+
+A consumer inspects `transport_event` through `turn.inspect` with the accepted
+turn request digest, and job domains through `job.inspect` with that job's
+complete scope. Runtime requests use `inclusive_cursor`; journal requests use
+`durable_inclusive_cursor`. The returned `next_cursor` or `durable_next_cursor`
+is exclusive. Pages must start at the previous exclusive cursor and contain
+every ordinal up to the next cursor, without a missing prefix. Transport event
+IDs must agree with their durable turn ordinals. Runtime inspection with
+`resync_required=true`, a non-null `gap`, or an older unavailable prefix does not
+cover that runtime range. `durable_fallback_available` offers observations in a
+different domain and does not prove that a missing runtime ordinal was recovered.
+An unavailable journal or exhausted cursor remains unresolved.
+
+The transport records coverage only from actual read-only inspector responses
+with the exact scope and domain. A `stream.resume` then supplies
+`resumed_cursors`, one member per required range, containing `cursor_domain`,
+`cursor_scope` and `resumed_through_cursor`. Every claim must reach its required
+exclusive cursor and be no further than contiguous server-issued coverage.
+Missing, duplicate, stale, cross-job or cross-domain acknowledgements fail before
+mutating control history or clearing the gap. New output can extend the range
+while inspection is in progress; a rejected resume publishes the current gap
+again, including `next_control_seq`, so a consumer can inspect the new suffix. The explicit acknowledgement is
+the client's claim that it consumed the pages; server issuance alone does not
+prove client consumption. Neither step dispatches or retries an effect.
+
+The range table is capped at 64 entries. Any missing scope/cursor, ordinal
+exhaustion or table overflow sets `cursor_scopes_complete=false`; partial known
+ranges cannot authorize whole-gap recovery. The peer must preserve uncertainty
+and perform explicit reconciliation. Terminal gaps retain this description but
+a retired turn has no active flow window to resume. The Android codec's
+`OwnerOpenFrame.RecoveryPlan` validates each page before constructing resume;
+it permits at most 4096 pages, 256 observations per request and signed 64-bit
+cursors. Unsupported larger ordinals fail explicitly. Client callers consume
+returned observations before acknowledging them; these source mechanisms do
+not supply installed-target qualification.
+
 ## 6. State model and ownership
 
 - State schema: `org.trillionnium.mod_transport.state.v1`
@@ -168,6 +224,19 @@ The degraded state is `fail_closed`. Recovery is `reconcile_before_resume`, and 
 Rolling compatibility is supported under the explicit compatibility and fencing contract. Read/write compatibility currently accepts `v1` and writes `v1` unless the module-specific migration below states otherwise.
 
 v1 JSONL state migrates to v2 segmented state through fenced-prefix reconciliation; dual read and dual write are disabled.
+
+For `scoped_cursor_v1`, the durable state version is unchanged: coverage and
+credit are connection/turn-local, and existing journals retain bounded opaque
+payloads. Upgrade the Host and recovery-aware client together. Older clients can
+still pause, add credit and resume a gap-free window, but receive an explicit
+conflict if they attempt bare numeric recovery after a gap. A new client must
+check the advertised protocol before building a recovery plan; against an older
+Host it leaves the gap unresolved. There is no automatic downgrade to unscoped
+recovery. Rollback fences the connection and reinspects durable observations;
+it does not carry volatile recovery coverage into the older binary. This is an
+explicitly versioned wire behavior change, not a migration/release approval or
+an assertion that rolling installed recovery has been tested.
+
 
 Rollback is fail-closed. Stateful modules restore the last compatible durable state, fence newer writers and reconcile external effects before admission. A rollback may restore software and state compatibility; it cannot erase an effect already attempted outside the module.
 

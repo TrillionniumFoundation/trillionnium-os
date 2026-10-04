@@ -56,12 +56,29 @@ impl DurableEventStore {
         self.0.append(input)
     }
 
-    pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
-        self.0.replay(scope, inclusive_turn_seq)
+    pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
+        self.0.get(scope, event_id)
     }
 
+    #[cfg(test)]
     pub fn all_records(&self) -> Result<Vec<EventRecord>> {
         self.0.all_records()
+    }
+
+    pub fn visit_records<E>(
+        &self,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_records(visit)
+    }
+
+    pub fn visit_scope_records<E>(
+        &self,
+        scope: &TurnScope,
+        inclusive_turn_seq: u64,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_scope_records(scope, inclusive_turn_seq, visit)
     }
 }
 
@@ -101,12 +118,24 @@ impl SegmentedEventStore {
         self.0.append_durable(input)
     }
 
-    pub fn replay(&self, scope: &TurnScope, inclusive_turn_seq: u64) -> Result<Vec<EventRecord>> {
-        self.0.replay(scope, inclusive_turn_seq)
+    pub fn get(&self, scope: &TurnScope, event_id: &str) -> Result<Option<EventRecord>> {
+        self.0.get(scope, event_id)
     }
 
-    pub fn all_records(&self) -> Result<Vec<EventRecord>> {
-        self.0.all_records()
+    pub fn visit_records<E>(
+        &self,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_records(visit)
+    }
+
+    pub fn visit_scope_records<E>(
+        &self,
+        scope: &TurnScope,
+        inclusive_turn_seq: u64,
+        visit: impl FnMut(&EventRecord) -> std::result::Result<(), E>,
+    ) -> Result<std::result::Result<(), E>> {
+        self.0.visit_scope_records(scope, inclusive_turn_seq, visit)
     }
 
     pub fn flush(&self) -> Result<()> {

@@ -7,6 +7,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -116,6 +117,105 @@ class DeviceSmokeTests(unittest.TestCase):
             arguments[arguments.index("SERIAL")] = "bad serial"
             self.assertEqual(tool.main(arguments), 2)
             self.assertFalse((root / "receipt.json").exists())
+
+    def test_subprocess_captures_both_streams_and_exit_status(self) -> None:
+        observation = tool._run_adb(
+            Path(sys.executable),
+            None,
+            ["-c", "import sys; print('out'); print('err', file=sys.stderr); sys.exit(7)"],
+            5,
+        )
+        self.assertEqual(observation["returncode"], 7)
+        self.assertEqual(observation["stdout"], "out\n")
+        self.assertEqual(observation["stderr"], "err\n")
+        self.assertFalse(observation["timed_out"])
+        self.assertFalse(observation["output_limit_exceeded"])
+
+    def test_subprocess_output_is_bounded_while_streaming(self) -> None:
+        observation = tool._run_adb(
+            Path(sys.executable),
+            None,
+            ["-c", "import os\nwhile True: os.write(1, b'x' * 4096)"],
+            5,
+        )
+        self.assertTrue(observation["output_limit_exceeded"])
+        self.assertFalse(observation["timed_out"])
+        self.assertIsNone(observation["returncode"])
+        self.assertFalse(tool._successful(observation))
+        self.assertLessEqual(len(observation["stdout"].encode()), tool.MAX_CAPTURE_BYTES + 32)
+
+    def test_subprocess_bounds_combined_stdout_and_stderr(self) -> None:
+        observation = tool._run_adb(
+            Path(sys.executable),
+            None,
+            ["-c", "import os; os.write(1, b'o'*20000); os.write(2, b'e'*20000)"],
+            5,
+        )
+        self.assertTrue(observation["output_limit_exceeded"])
+        self.assertFalse(tool._successful(observation))
+
+    def test_timeout_still_applies_after_output_pipes_close(self) -> None:
+        observation = tool._run_adb(
+            Path(sys.executable),
+            None,
+            ["-c", "import os,time; os.close(1); os.close(2); time.sleep(5)"],
+            0.2,
+        )
+        self.assertTrue(observation["timed_out"])
+        self.assertIsNone(observation["returncode"])
+        self.assertLess(observation["seconds"], 2)
+
+    def test_oversized_adb_result_writes_failure_receipt(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            adb = root / "adb"
+            adb.write_text(
+                "#!/usr/bin/env python3\nimport os\nos.write(1, b'x' * 100000)\n",
+                encoding="utf-8",
+            )
+            adb.chmod(0o755)
+            output = root / "receipt.json"
+            with mock.patch("sys.stdout"):
+                self.assertEqual(tool.main(self._arguments(adb, output)), 2)
+            receipt = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(receipt["result"], "FAIL_READ_ONLY")
+            self.assertTrue(all(item["output_limit_exceeded"] for item in receipt["observations"]))
+
+    def test_capture_setup_failures_reap_process_and_close_pipes(self) -> None:
+        for failure in ("selector", "blocking", "register"):
+            with self.subTest(failure=failure):
+                processes = []
+                original_popen = tool.subprocess.Popen
+
+                def spawn(*args, **kwargs):
+                    process = original_popen(*args, **kwargs)
+                    processes.append(process)
+                    return process
+
+                selector = mock.Mock()
+                if failure == "register":
+                    selector.register.side_effect = OSError("register failed")
+                with mock.patch.object(tool.subprocess, "Popen", side_effect=spawn), \
+                     mock.patch.object(
+                         tool.selectors, "DefaultSelector", return_value=selector,
+                         side_effect=OSError("EMFILE") if failure == "selector" else None,
+                     ), \
+                     mock.patch.object(
+                         tool.os, "set_blocking",
+                         side_effect=OSError("blocking failed") if failure == "blocking" else None,
+                     ):
+                    observation = tool._run_adb(
+                        Path(sys.executable), None,
+                        ["-c", "import time; time.sleep(20)"], 5,
+                    )
+                self.assertTrue(observation["capture_error"])
+                self.assertFalse(tool._successful(observation))
+                self.assertEqual(len(processes), 1)
+                self.assertIsNotNone(processes[0].poll())
+                self.assertTrue(processes[0].stdout.closed)
+                self.assertTrue(processes[0].stderr.closed)
+                if failure != "selector":
+                    selector.close.assert_called_once()
 
 
 if __name__ == "__main__":

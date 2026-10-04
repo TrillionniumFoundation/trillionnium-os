@@ -143,8 +143,8 @@ def verify_evidence_directory(
 
     unresolved = sorted(
         gap_id
-        for gap_id, spec in gap_specs.items()
-        if spec.status != "CLOSED" and gap_id not in promotable_gaps
+        for gap_id in gap_specs
+        if gap_id not in promotable_gaps
     )
     structural.update(
         schema="org.trillionnium.g1.evidence-verification-report.v2",

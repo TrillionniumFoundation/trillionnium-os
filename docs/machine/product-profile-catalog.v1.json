@@ -37,6 +37,7 @@
         "crates/trillionnium-owner-open-stream-window",
         "crates/trillionnium-owner-open-tool-bridge",
         "crates/trillionnium-owner-open-turn-loop",
+        "crates/trillionnium-owner-open-trace",
         "crates/trillionnium-owner-open-types",
         "crates/trillionnium-owner-open-runtime"
       ],
@@ -56,7 +57,41 @@
         "packaging/root-linux",
         "packaging/owner-open-adb",
         "android-integration/working-tree/vendor/trillionnium/owner-open",
-        "docs/machine/evidence-index.v1.json"
+        "docs/machine/evidence-index.v1.json",
+        "android-integration/working-tree/packages/modules/adb/daemon/restart_service.cpp",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_base.mk",
+        "tools/generate-owner-open-common-base.py",
+        "android-integration/working-tree/trillionnium-sdk/Android.bp",
+        "android-integration/working-tree/trillionnium-sdk/owner-open/res/values/config.xml",
+        "tools/verify-owner-open-sdk-selection.py",
+        "android-integration/working-tree/build/make/core/Makefile",
+        "tools/verify_owner_target_files_binding.py",
+        "tools/owner_source_provenance.py",
+        "tools/owner_source_surface.py",
+        "tools/owner_bom_bounded_process.py",
+        "tools/collect_owner_source_vector.py",
+        "tools/android_release_ota.py",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_mobile_full.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_owner_open_full_phone.mk",
+        "tools/generate-owner-open-phone-config.py",
+        "tools/owner-open-phone-chain.v1.json",
+        "tools/verify-owner-open-android-source-closure.py",
+        "tools/verify-owner-open-android-source-closure-v2.py",
+        "android-integration/owner-open-profile/profile-v2.json",
+        "android-integration/working-tree/vendor/trillionnium/config/common_mobile.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_mobile_full.mk",
+        "android-integration/working-tree/vendor/trillionnium/config/common_full_phone.mk",
+        "android-integration/security-patches",
+        "crates/trillionnium-owner-open-trace",
+        "tools/perf/inspect_monotonic_stream.py",
+        "tools/tests/test_owner_open_monotonic_stream.py",
+        "tools/owner_asb_fork_catalog.py",
+        "tools/prepare_owner_asb_fullforks.py",
+        "tools/tests/owner_asb38_fixtures.py",
+        "tools/tests/test_owner_asb_fullforks.py",
+        "tools/tests/test_owner_asb_telephony_suggestions.py"
       ],
       "offered_capabilities": [
         {
@@ -109,6 +144,15 @@
         "L2 installed Root Linux",
         "L3 Android image",
         "L4 authorized physical device"
+      ],
+      "deferred_dependencies": [
+        {
+          "source_module": "MOD-ROOTLINUX",
+          "dependency_module": "MOD-GLOBAL-CONTROL",
+          "classification": "PLANNED_ONLY",
+          "blocking_gap": "GAP-ROOTLINUX-PLACEMENT-001",
+          "reason": "The default source profile does not select the planned control-plane implementation. Installed admission, lease and resource behavior remain unqualified; this declaration neither supplies a local lease substitute nor authorizes runtime activation."
+        }
       ]
     },
     {
@@ -160,7 +204,8 @@
         "privacy review",
         "compiled SELinux evidence",
         "authorized device evidence"
-      ]
+      ],
+      "deferred_dependencies": []
     }
   ]
 }

@@ -49,6 +49,15 @@ FORBIDDEN_DESTINATION_TOKENS = (
     "secret",
     "token",
 )
+# These frozen Python 3.11 standard-library module names describe public code,
+# not credential material. Exact paths avoid opening other versions, extensions,
+# directories or similarly named files. Source identity still requires the plan's
+# exact digest and all ordinary-file ownership/link/mode checks.
+PUBLIC_PYTHON_STDLIB_DESTINATIONS = frozenset((
+    "/usr/lib/python3.11/secrets.py",
+    "/usr/lib/python3.11/token.py",
+    "/usr/lib/python3.11/tokenize.py",
+))
 
 
 class StageError(RuntimeError):
@@ -155,7 +164,8 @@ def require_destination(value: Any) -> str:
     if not any(value.startswith(prefix) for prefix in ALLOWED_PREFIXES):
         raise StageError(f"entry destination is outside allowed payload prefixes: {value}")
     lowered = value.lower()
-    if any(token in lowered for token in FORBIDDEN_DESTINATION_TOKENS):
+    if (value not in PUBLIC_PYTHON_STDLIB_DESTINATIONS
+            and any(token in lowered for token in FORBIDDEN_DESTINATION_TOKENS)):
         raise StageError(f"entry destination appears credential-bearing: {value}")
     return value
 
@@ -227,7 +237,6 @@ def inspect_source(
         stat.S_ISLNK(before.st_mode)
         or not stat.S_ISREG(before.st_mode)
         or before.st_nlink != 1
-        or before.st_size <= 0
         or before.st_size > MAX_FILE_BYTES
         or before.st_mode & 0o022
     ):

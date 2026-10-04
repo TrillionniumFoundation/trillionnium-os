@@ -322,10 +322,9 @@ class JobBridge:
                 raise InvalidArguments("command must be nonempty and NUL-free")
             payload["command"] = command
         else:
-            if not isinstance(argv, list) or not argv or any(
-                not isinstance(item, str) or not item or "\0" in item for item in argv
-            ):
-                raise InvalidArguments("argv must contain nonempty NUL-free strings")
+            if (not isinstance(argv, list) or not argv or not argv[0]
+                    or any(not isinstance(item, str) or "\0" in item for item in argv)):
+                raise InvalidArguments("argv requires a nonempty executable and NUL-free strings")
             payload["argv"] = list(argv)
         if "cwd" in args:
             cwd = args["cwd"]

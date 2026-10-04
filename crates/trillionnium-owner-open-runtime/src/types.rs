@@ -226,6 +226,7 @@ impl MechanicalLimits {
                 "stream_chunk_bytes * reader_queue_depth exceeds hard bound {MAX_RUNTIME_READER_BUFFER_BYTES}"
             )));
         }
+        crate::resources::profile_reservation(self)?;
         Ok(())
     }
 }
