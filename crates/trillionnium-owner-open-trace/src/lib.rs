@@ -612,7 +612,10 @@ mod tests {
                     });
                 }
             });
-            assert_eq!(counter.load(Ordering::Relaxed), initial.saturating_add(1024));
+            assert_eq!(
+                counter.load(Ordering::Relaxed),
+                initial.saturating_add(1024)
+            );
         }
     }
     #[test]
