@@ -26,7 +26,7 @@
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 66699,
-      "sha256": "52269d1329e71ecb34372ddcf39fa747a9c6fb09f55f648e3637680da2d66eaf"
+      "sha256": "e82795412237c4e5bf433e3c6b380d83df7cd0313a8cb523680f0f697af5cc7b"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -506,7 +506,7 @@
     },
     "schemas/modules/event-store/compatibility.json": {
       "bytes": 5893,
-      "sha256": "841625a1394ee0b3bddf1e8546fe21f648e0e695e3f7607c515aba94dc30fe9b"
+      "sha256": "1b5a9f99da5d7e4113f91d98f6cf0b9c0616ffb3b41fd62a8c7fccded1228158"
     },
     "schemas/modules/event-store/errors-v1.schema.json": {
       "bytes": 4440,

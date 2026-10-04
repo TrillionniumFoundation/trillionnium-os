@@ -160,8 +160,8 @@
     },
     {
       "path": "crates/trillionnium-owner-open-event-store/tests/resources.rs",
-      "sha256": "807c7e49eaafa62f276895895f92cdd98bd44e51075bdfa3b3d3acf39451e2e2",
-      "size": 35385
+      "sha256": "6d56fe8b199d75d88bb47a63d4c44928b9b53001d6d10b3e44d3933cd88d1df2",
+      "size": 41357
     },
     {
       "path": "crates/trillionnium-owner-open-event-store/tests/segmented.rs",
