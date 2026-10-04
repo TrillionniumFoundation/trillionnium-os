@@ -1,6 +1,6 @@
 //! Borrowed serialization of tool observations; base64 never builds a whole DOM.
 use crate::protocol::{encode_snapshot, encode_terminal};
-use crate::{MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES, PROVIDER_PROTOCOL, encoded_line_size};
+use crate::{MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES, PROVIDER_PROTOCOL};
 use base64::{display::Base64Display, engine::general_purpose::STANDARD};
 use serde::{
     Serialize, Serializer,
@@ -33,7 +33,8 @@ impl ToolResult {
         };
         // Observation overflow must not erase effectful terminal/identity truth
         // or invent runtime truncation. Publish an explicit event-domain gap.
-        if encoded_line_size(&result, MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES).is_err() {
+        let mut counter = CallbackCounter::default();
+        if serde_json::to_writer(&mut counter, &result).is_err() || !counter.fits() {
             result.truncated = true;
         }
         result
@@ -96,6 +97,227 @@ impl Serialize for ToolResult {
         map.end()
     }
 }
+// Admission against the shipped Python callback reader, not a second JSON
+// decoder. serde_json owns syntax/Unicode/numeric validity; this fixed-size
+// observer counts actual serialized bytes without allocating a result DOM.
+const CALLBACK_JSON_BYTES: u64 = 256 * 1024;
+const CALLBACK_JSON_WORK_BYTES: u64 = 16 * 1024 * 1024;
+const CALLBACK_VALUE_NODES: u64 = 32768;
+const CALLBACK_KEY_WORK_BYTES: u64 = 4 * 1024 * 1024;
+const CALLBACK_STRING_ESCAPES: u64 = 32768;
+const CALLBACK_DEPTH: usize = 64;
+
+struct JsonBudget {
+    bytes: u64,
+    nodes: u64,
+    owned: u64,
+    non_ascii: bool,
+    depth: usize,
+    max_depth: usize,
+    quoted: bool,
+    escaped: bool,
+    scalar: bool,
+    scalar_bytes: u64,
+    max_scalar_bytes: u64,
+    string_bytes: u64,
+    last_string_bytes: u64,
+    keys: u64,
+    key_work: u64,
+    max_key_bytes: u64,
+    object_keys: [u64; CALLBACK_DEPTH + 1],
+    max_object_keys: u64,
+    escapes: u64,
+}
+impl Default for JsonBudget {
+    fn default() -> Self {
+        Self {
+            bytes: 0,
+            nodes: 0,
+            owned: 0,
+            non_ascii: false,
+            depth: 0,
+            max_depth: 0,
+            quoted: false,
+            escaped: false,
+            scalar: false,
+            scalar_bytes: 0,
+            max_scalar_bytes: 0,
+            string_bytes: 0,
+            last_string_bytes: 0,
+            keys: 0,
+            key_work: 0,
+            max_key_bytes: 0,
+            object_keys: [0; CALLBACK_DEPTH + 1],
+            max_object_keys: 0,
+            escapes: 0,
+        }
+    }
+}
+impl JsonBudget {
+    fn observe(&mut self, byte: u8) {
+        // The writer stops at 32 MiB, so all u64 counters stay finite even for
+        // the densest possible token stream. No input-sized storage is kept.
+        self.bytes += 1;
+        self.non_ascii |= byte >= 128;
+        if self.quoted {
+            self.owned += 4;
+            self.string_bytes += 1;
+            if self.escaped {
+                self.escaped = false;
+            } else if byte == b'\\' {
+                self.escaped = true;
+                self.escapes += 1;
+            } else if byte == b'"' {
+                self.quoted = false;
+                self.last_string_bytes = self.string_bytes;
+            }
+            return;
+        }
+        match byte {
+            b'"' => {
+                self.quoted = true;
+                self.scalar = false;
+                self.string_bytes = 1;
+                self.nodes += 1;
+                self.owned += 256;
+            }
+            b'[' | b'{' => {
+                self.scalar = false;
+                self.depth += 1;
+                self.max_depth = self.max_depth.max(self.depth);
+                if self.depth <= CALLBACK_DEPTH {
+                    self.object_keys[self.depth] = 0;
+                }
+                self.nodes += 1;
+                self.owned += 512;
+            }
+            b']' | b'}' => {
+                self.depth = self.depth.saturating_sub(1);
+                self.scalar = false;
+            }
+            b':' => {
+                self.scalar = false;
+                self.keys += 1;
+                self.key_work += self.last_string_bytes * 4 + 128;
+                self.max_key_bytes = self.max_key_bytes.max(self.last_string_bytes);
+                if self.depth <= CALLBACK_DEPTH {
+                    self.object_keys[self.depth] += 1;
+                    self.max_object_keys = self.max_object_keys.max(self.object_keys[self.depth]);
+                }
+            }
+            b',' | b' ' | b'\t' | b'\r' | b'\n' => self.scalar = false,
+            _ => {
+                if !self.scalar {
+                    self.scalar = true;
+                    self.scalar_bytes = 0;
+                    self.nodes += 1;
+                    self.owned += 128;
+                }
+                self.scalar_bytes += 1;
+                self.max_scalar_bytes = self.max_scalar_bytes.max(self.scalar_bytes);
+            }
+        }
+    }
+    fn scanner_fits(&self) -> bool {
+        self.max_depth <= CALLBACK_DEPTH
+            && self.nodes.saturating_sub(self.keys) <= CALLBACK_VALUE_NODES
+            && self.key_work <= CALLBACK_KEY_WORK_BYTES
+            && self.max_key_bytes <= 16 * 1024
+            && self.max_object_keys <= 4096
+            && self.escapes <= CALLBACK_STRING_ESCAPES
+            && self.max_scalar_bytes <= 128
+    }
+    fn generic_fits(&self) -> bool {
+        self.max_depth <= CALLBACK_DEPTH
+            && self.nodes <= CALLBACK_VALUE_NODES
+            && self.bytes * (if self.non_ascii { 5 } else { 2 }) + 2 * self.owned
+                <= CALLBACK_JSON_WORK_BYTES
+    }
+}
+
+#[derive(Default)]
+struct CallbackCounter {
+    full: JsonBudget,
+    metadata: JsonBudget,
+    root_string: [u8; 6],
+    root_string_bytes: usize,
+    capturing_root_string: bool,
+    last_root_string_is_events: bool,
+    events_value_pending: bool,
+    omitted_array_depth: Option<usize>,
+}
+impl CallbackCounter {
+    fn fits(&self) -> bool {
+        self.full.scanner_fits()
+            // The final raw size selects the consumer route. A short prefix's
+            // generic budget cannot reject a later valid borrowed large frame.
+            && if self.full.bytes <= CALLBACK_JSON_BYTES {
+                self.full.generic_fits()
+            } else {
+                self.metadata.bytes <= CALLBACK_JSON_BYTES && self.metadata.generic_fits()
+            }
+    }
+    fn observe(&mut self, byte: u8) {
+        let quoted = self.full.quoted;
+        let escaped = self.full.escaped;
+        let depth = self.full.depth;
+        if !quoted && byte == b'"' && depth == 1 {
+            self.capturing_root_string = true;
+            self.root_string_bytes = 0;
+        } else if quoted && self.capturing_root_string {
+            if byte == b'"' && !escaped {
+                self.last_root_string_is_events =
+                    self.root_string_bytes == 6 && self.root_string == *b"events";
+                self.capturing_root_string = false;
+            } else {
+                if self.root_string_bytes < self.root_string.len() {
+                    self.root_string[self.root_string_bytes] = byte;
+                }
+                self.root_string_bytes += 1;
+            }
+        }
+        if !quoted && depth == 1 && byte == b':' {
+            self.events_value_pending = self.last_root_string_is_events;
+        }
+        let omit = match self.omitted_array_depth {
+            Some(array_depth) if !quoted && depth == array_depth && byte == b']' => {
+                self.omitted_array_depth = None;
+                false
+            }
+            Some(_) => true,
+            None => false,
+        };
+        if !omit {
+            self.metadata.observe(byte);
+        }
+        if self.events_value_pending && !quoted && byte != b':' && !byte.is_ascii_whitespace() {
+            if byte == b'[' {
+                // Keep an empty events array in the metadata reservation. The
+                // consumer drops that member entirely, so this is conservative.
+                self.omitted_array_depth = Some(depth + 1);
+            }
+            self.events_value_pending = false;
+        }
+        self.full.observe(byte);
+    }
+}
+impl std::io::Write for CallbackCounter {
+    fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+        for &byte in bytes {
+            if self.full.bytes + 1 >= MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES as u64 {
+                return Err(std::io::Error::other(
+                    "provider outbound observation exceeds its bound",
+                ));
+            }
+            self.observe(byte);
+        }
+        Ok(bytes.len())
+    }
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
+}
+
 struct Events<'a>(&'a [ExecutionEvent]);
 impl Serialize for Events<'_> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
@@ -163,6 +385,7 @@ impl Serialize for EncodedBytes<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::encoded_line_size;
     use base64::Engine as _;
     use trillionnium_owner_open_call_registry::{
         CallKey, CallRequest, CallSnapshot, EffectiveState, TurnScope,
@@ -280,7 +503,7 @@ mod tests {
         outcome
     }
 
-    fn assert_native_consumer_preserves_metadata(response: &ToolResult, should_accept: bool) {
+    fn assert_native_consumer_preserves_metadata(response: &impl Serialize, should_accept: bool) {
         use std::io::Write;
         use std::process::{Command, Stdio};
         let source = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
@@ -388,5 +611,87 @@ assert len(reply) <= observation.MAX_NATIVE_REPLY_BYTES
             300 * 1024
         );
         assert_eq!(value["terminal"]["output_truncated"], false);
+    }
+    #[test]
+    fn callback_counter_uses_final_route_and_does_not_skip_nested_or_escaped_keys() {
+        let mut value = serde_json::to_value(ToolResult::new(1, "call", fixture(vec![1]))).unwrap();
+        value["unknown_metadata"] = json!({
+            "escaped\"键": "literal \\\"events\": [ and Unicode 🙂",
+            "nested": {"events": [1, 2, 3]}
+        });
+        let mut counter = CallbackCounter::default();
+        serde_json::to_writer(&mut counter, &value).unwrap();
+        assert!(counter.fits());
+        assert!(counter.full.non_ascii);
+        assert!(counter.metadata.non_ascii);
+        assert_native_consumer_preserves_metadata(&value, true);
+
+        value["unknown_metadata"]["nested"]["events"] = json!("M".repeat(300 * 1024));
+        let mut counter = CallbackCounter::default();
+        serde_json::to_writer(&mut counter, &value).unwrap();
+        assert!(counter.metadata.bytes > CALLBACK_JSON_BYTES);
+        assert!(!counter.fits());
+        assert_native_consumer_preserves_metadata(&value, false);
+    }
+
+    #[test]
+    fn callback_counter_checks_every_structural_ceiling() {
+        fn fits(value: Value) -> bool {
+            let mut counter = CallbackCounter::default();
+            serde_json::to_writer(&mut counter, &value).unwrap();
+            counter.fits()
+        }
+        assert!(!fits(json!({"key": "\\".repeat(32769)})));
+        assert!(!fits(json!({"key": vec![0; 32769]})));
+        assert!(!fits(Value::Object(
+            [("K".repeat(16 * 1024), Value::Null)].into_iter().collect()
+        )));
+        let dense = (0..4097)
+            .map(|index| (index.to_string(), Value::Null))
+            .collect::<serde_json::Map<_, _>>();
+        assert!(!fits(Value::Object(dense)));
+        let mut nested = Value::Null;
+        for _ in 0..65 {
+            nested = json!([nested]);
+        }
+        assert!(!fits(nested));
+    }
+    #[test]
+    fn callback_counter_constants_match_the_shipped_consumer() {
+        use std::process::Command;
+        let program = r#"
+import json, pathlib, sys
+root = pathlib.Path(sys.argv[1]).resolve().parents[1]
+sys.path[:0] = [str(root / 'tools/owner-open'), str(root / 'crates/trillionnium-owner-open-provider-jsonl/python')]
+import codex_callback_observation as observation
+import jsonl_provider_runtime as runtime
+print(json.dumps([observation.MAX_HOST_FRAME_BYTES, observation.MAX_NATIVE_REPLY_BYTES, runtime.MAX_JSON_DECODE_WORKING_BYTES,
+ observation.MAX_VALUE_NODES, runtime.MAX_JSON_VALUE_COUNT, observation.MAX_KEY_WORKING_BYTES,
+ observation.MAX_STRING_ESCAPES, observation.MAX_DEPTH, observation.MAX_METADATA_BYTES,
+ observation.MAX_KEY_BYTES, observation.MAX_OBJECT_KEYS, observation.MAX_NUMBER_BYTES]))
+"#;
+        let output = Command::new("python3")
+            .args(["-c", program, env!("CARGO_MANIFEST_DIR")])
+            .output()
+            .expect("Python callback constants");
+        assert!(output.status.success());
+        let actual: Vec<u64> = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(
+            actual,
+            vec![
+                MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES as u64,
+                CALLBACK_JSON_BYTES,
+                CALLBACK_JSON_WORK_BYTES,
+                CALLBACK_VALUE_NODES,
+                CALLBACK_VALUE_NODES,
+                CALLBACK_KEY_WORK_BYTES,
+                CALLBACK_STRING_ESCAPES,
+                CALLBACK_DEPTH as u64,
+                CALLBACK_JSON_BYTES,
+                16 * 1024,
+                4096,
+                128,
+            ]
+        );
     }
 }

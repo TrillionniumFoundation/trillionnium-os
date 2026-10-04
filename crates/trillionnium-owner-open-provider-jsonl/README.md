@@ -40,6 +40,18 @@ claim that a terminal response includes every observation. Consumers must expose
 that gap. This optional response extension leaves the ordinary complete-result
 shape intact. Disconnect/write failure still reports its real failure.
 
+The outbound count pass also checks the shipped Python callback reader's
+structural budgets over the actual serialized bytes, using fixed-size counters.
+It counts JSON value nodes, cumulative key work, escapes, depth and the generic
+JSON decode reservation. The final frame size selects the small-frame decoder
+or the large-frame borrowed scanner; a temporarily small prefix never decides
+that route. For the large route, a separate counter keeps all control metadata
+and replaces only the root events array with an empty array as a conservative
+metadata reservation. Fragmented observations that cannot enter the reader use
+the same explicit observation gap above. No consumer budget or validation is
+relaxed. If control metadata alone cannot fit, the existing consumer still
+fails closed; terminal and identity fields are never dropped to force admission.
+
 These are named per-session source allocations, not full process/child RSS
 qualification. Runtime outcome/turn retention, multiple sessions, caller-held
 responses, allocator overhead and external Codex memory need shared admission
