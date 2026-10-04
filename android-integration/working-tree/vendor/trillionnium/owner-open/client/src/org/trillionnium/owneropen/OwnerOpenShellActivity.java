@@ -88,7 +88,9 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
         controls.addView(reconnect);
         root.addView(controls, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        root.addView(button(R.string.recover_output, view -> recoverOutput()));
+        root.addView(button(R.string.recover_output, view -> recoverOutput()),
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         transcript = new TextView(this);
         transcript.setTextIsSelectable(true);
