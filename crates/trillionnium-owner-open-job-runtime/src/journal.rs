@@ -1343,42 +1343,70 @@ fn open_segmented_job_store(
     SegmentedEventStore::open_or_migrate_with_legacy_prefix(root, legacy_path, config)
 }
 
-fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, String> {
-    let mut operations = HashMap::new();
-    let mut jobs = HashMap::<JobKey, JobState>::new();
-    let mut requests = HashMap::<JobKey, JobRequest>::new();
+/// Validate cross-record request bindings without overlapping this temporary
+/// index with recovered operation/job state. Each entry owns only one key and
+/// request, so the ordinary metadata charge (not a combined new-job charge)
+/// covers it. Every legal live history reserved at least that much per key.
+fn validate_recovery_requests(store: &EventStoreBackend) -> std::result::Result<(), String> {
+    // Locals drop in reverse order: owned keys/requests retire before credit.
     let mut charges = Vec::new();
-    let mut request_charges = Vec::new();
+    let mut requests = HashMap::<JobKey, JobRequest>::new();
     store
         .visit_records(|record| {
-            let envelope = journal_header(&record.payload).map_err(|error| error.to_string())?;
-            if envelope.schema != JOURNAL_SCHEMA {
-                return Err("job journal schema does not match".to_string());
-            }
-            let key = JobKey::new(
-                trillionnium_owner_open_job_registry::JobScope::new(
-                    record.scope.session_id.clone(),
-                    record.scope.profile_id.clone(),
-                    record.scope.task_id.clone(),
-                    record.scope.turn_id.clone(),
-                    record.scope.turn_stream_id.clone(),
-                ),
-                envelope.job_id.clone(),
-            );
-            if record.scope != turn_scope(&key) {
-                return Err("job journal record scope does not match payload".to_string());
-            }
+            let (envelope, key) = recovery_record_identity(record)?;
             if let Some(existing) = requests.get(&key) {
                 if existing != &envelope.request {
                     return Err("job journal request binding conflicts for job".to_string());
                 }
             } else {
-                request_charges.push(
-                    journal_metadata_charge(&key, &envelope.request, "", "", true, false)
+                charges.push(
+                    journal_metadata_charge(&key, &envelope.request, "", "", false, false)
                         .map_err(|error| error.to_string())?,
                 );
-                requests.insert(key.clone(), envelope.request.clone());
+                requests.insert(key, envelope.request);
             }
+            Ok::<(), String>(())
+        })
+        .map_err(|error| error.to_string())??;
+    Ok(())
+}
+
+fn recovery_record_identity(
+    record: &EventRecord,
+) -> std::result::Result<(JournalHeader, JobKey), String> {
+    let envelope = journal_header(&record.payload).map_err(|error| error.to_string())?;
+    if envelope.schema != JOURNAL_SCHEMA {
+        return Err("job journal schema does not match".to_string());
+    }
+    let key = JobKey::new(
+        trillionnium_owner_open_job_registry::JobScope::new(
+            record.scope.session_id.clone(),
+            record.scope.profile_id.clone(),
+            record.scope.task_id.clone(),
+            record.scope.turn_id.clone(),
+            record.scope.turn_stream_id.clone(),
+        ),
+        envelope.job_id.clone(),
+    );
+    if record.scope != turn_scope(&key) {
+        return Err("job journal record scope does not match payload".to_string());
+    }
+    Ok((envelope, key))
+}
+
+fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, String> {
+    // The backend is not exposed until recovery returns. Each visitor pass
+    // authenticates records through the held store; no second-pass payload is
+    // trusted solely because a first-pass request matched. Release the entire
+    // temporary binding index before admitting long-term derived ownership.
+    validate_recovery_requests(store)?;
+    // Keep data-before-lease drop order on every partial-recovery error too.
+    let mut charges = Vec::new();
+    let mut operations = HashMap::new();
+    let mut jobs = HashMap::<JobKey, JobState>::new();
+    store
+        .visit_records(|record| {
+            let (envelope, key) = recovery_record_identity(record)?;
             let cursor_key = key.clone();
             let next_cursor = if matches!(envelope.record.as_str(), "observation" | "job.terminal")
             {
@@ -1416,7 +1444,7 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
                             &envelope.request,
                             &operation_key.operation_id,
                             &operation_kind,
-                            false,
+                            operation_kind == "start" && !jobs.contains_key(&key),
                             false,
                         )
                         .map_err(|error| error.to_string())?,
@@ -1433,19 +1461,8 @@ fn recover(store: &EventStoreBackend) -> std::result::Result<RecoveredState, Str
                         },
                     );
                     if operation_kind == "start" {
-                        if !jobs.contains_key(&key) {
-                            charges.push(
-                                journal_metadata_charge(
-                                    &key,
-                                    &envelope.request,
-                                    "",
-                                    "",
-                                    true,
-                                    false,
-                                )
-                                .map_err(|error| error.to_string())?,
-                            );
-                        }
+                        // The accepted transition reserved both maps together,
+                        // exactly as live begin_operation does before append.
                         jobs.entry(key).or_insert(JobState {
                             request: envelope.request,
                             start_result: None,

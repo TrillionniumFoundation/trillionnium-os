@@ -60,8 +60,13 @@ Registry future history/attachment/terminal headroom, journal derived identities
 and actual observation windows consume that shared resident pool. Durable
 terminals retain event IDs and authenticated record hashes; their payloads load
 on demand and no longer accumulate as full cached DOMs. Recovery borrows headers
-without cloning payloads. Metadata pressure refuses before WAL acceptance and
-preserves uncertain identities. Memory-only development terminal caches have an
+without cloning payloads. It first authenticates cross-record request bindings,
+then releases that bounded temporary index before a second authenticated pass
+reconstructs operations and jobs. An accepted start reserves their combined
+ownership once, matching live admission rather than charging the same job
+again. Together the passes preserve full conflict, transition and cursor checks.
+The extra sequential scan has not been qualified as an installed recovery-latency result.
+Metadata pressure refuses before WAL acceptance and preserves uncertain identities. Memory-only development terminal caches have an
 8 KiB owned-storage bound and share one Arc rather than copying the same Value.
 
 Moved journal Values waiting for the working lane reserve actual heap capacity
