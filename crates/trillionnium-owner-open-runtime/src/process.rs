@@ -255,14 +255,14 @@ where
     };
 
     let mut command = Command::new(&spec.program);
-    command.env_clear().envs(
-        inherited_environment
-            .iter()
-            .map(|(key, value)| (key, value)),
-    );
     command.env_clear();
+    // Admission freezes all host entries within a bounded snapshot. Apply
+    // only the existing inheritance allowlist, without reading live values.
     for &key in PROCESS_INHERITED_ENV_ALLOWLIST {
-        if let Some(value) = std::env::var_os(key) {
+        if let Some((_, value)) = inherited_environment
+            .iter()
+            .find(|(name, _)| name.as_os_str() == std::ffi::OsStr::new(key))
+        {
             command.env(key, value);
         }
     }
