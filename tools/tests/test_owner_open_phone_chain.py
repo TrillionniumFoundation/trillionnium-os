@@ -14,6 +14,7 @@ import tempfile
 import time
 import types
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).absolute().parents[2]
 TOOL = ROOT / 'tools/generate-owner-open-phone-config.py'
@@ -129,6 +130,73 @@ class GeneratorTests(unittest.TestCase):
             GEN.read_source(p, time.monotonic() + 5)
         with self.assertRaises(TimeoutError):
             GEN.check(self.root, seconds=0)
+
+
+class PublicationOwnershipTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.output = self.root / 'generated.mk'
+        self.output.write_bytes(b'previous-output\n')
+        self.temporary = self.root / ('.generated.mk.owner-open-' + str(os.getpid()) + '.tmp')
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def publish(self):
+        GEN.write_generated(self.output, b'replacement-output\n', time.monotonic() + 5)
+
+    def test_preexisting_regular_temporary_retains_bytes_and_identity(self):
+        self.temporary.write_bytes(b'preexisting-not-owned\n')
+        before = GEN.identity(self.temporary.lstat())
+        with self.assertRaises(FileExistsError):
+            self.publish()
+        self.assertEqual(self.temporary.read_bytes(), b'preexisting-not-owned\n')
+        self.assertEqual(GEN.identity(self.temporary.lstat()), before)
+        self.assertEqual(self.output.read_bytes(), b'previous-output\n')
+
+    def test_preexisting_symlink_temporary_is_preserved(self):
+        self.temporary.symlink_to(self.output)
+        before = GEN.identity(self.temporary.lstat())
+        with self.assertRaises(FileExistsError):
+            self.publish()
+        self.assertTrue(self.temporary.is_symlink())
+        self.assertEqual(GEN.identity(self.temporary.lstat()), before)
+        self.assertEqual(self.output.read_bytes(), b'previous-output\n')
+
+    def test_preexisting_directory_temporary_preserves_original_refusal(self):
+        self.temporary.mkdir()
+        before = GEN.identity(self.temporary.lstat())
+        with self.assertRaises(FileExistsError):
+            self.publish()
+        self.assertEqual(GEN.identity(self.temporary.lstat()), before)
+
+    def test_failed_owned_write_removes_only_created_temporary(self):
+        with mock.patch.object(GEN.os, 'write', side_effect=OSError('fixture write failure')):
+            with self.assertRaisesRegex(OSError, 'fixture write failure'):
+                self.publish()
+        self.assertFalse(self.temporary.exists())
+        self.assertEqual(self.output.read_bytes(), b'previous-output\n')
+
+    def test_replaced_temporary_is_not_removed_during_failed_write_cleanup(self):
+        displaced = self.root / 'displaced-owned-temporary'
+        replacement_identity = []
+        def replace_then_fail(*_):
+            self.temporary.rename(displaced)
+            self.temporary.write_bytes(b'other-writer\n')
+            replacement_identity.append(GEN.identity(self.temporary.lstat()))
+            raise OSError('fixture write failure')
+        with mock.patch.object(GEN.os, 'write', side_effect=replace_then_fail):
+            with self.assertRaisesRegex(OSError, 'fixture write failure'):
+                self.publish()
+        self.assertEqual(self.temporary.read_bytes(), b'other-writer\n')
+        self.assertEqual(GEN.identity(self.temporary.lstat()), replacement_identity[0])
+        self.assertEqual(self.output.read_bytes(), b'previous-output\n')
+
+    def test_fresh_publication_replaces_output_and_retires_temporary(self):
+        self.publish()
+        self.assertEqual(self.output.read_bytes(), b'replacement-output\n')
+        self.assertFalse(self.temporary.exists())
 
 
 class FogosEntryTests(unittest.TestCase):

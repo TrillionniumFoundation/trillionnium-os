@@ -186,8 +186,8 @@
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
-      "sha256": "b0de3335920c7f0788087b84d509281c7167d6588f48b9de1512f9bc32da8ec9",
-      "size": 21230
+      "sha256": "5301ea244d21ec6be009da281a029921384cfee8ecb1a8d0c6c3c4b30331bf2c",
+      "size": 23781
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json",
@@ -261,8 +261,8 @@
     },
     {
       "path": "tools/generate-owner-open-phone-config.py",
-      "sha256": "422d922bb24ac75f3a0bc5e50190f40cd173c9f4a65628f98f4f23d002905974",
-      "size": 11569
+      "sha256": "405cbd2cbf0cd632bb7026c39fec0231401e824e3557cc05f1c11a7bdeec1e50",
+      "size": 11915
     },
     {
       "path": "tools/owner-open-phone-chain.v1.json",
@@ -271,12 +271,12 @@
     },
     {
       "path": "tools/verify-owner-open-android-source-closure-v2.py",
-      "sha256": "9183e5bd2c46d55ccb906fb19db268ebdb61db7c009da25679d6583fd019b826",
+      "sha256": "0b3400a0b0dcff7f5ec465fa88f695f67892ded5329eec3e39ae0942f4e4fb35",
       "size": 5719
     },
     {
       "path": "tools/verify-owner-open-android-source-closure.py",
-      "sha256": "003a8c6e6097d83e900b15429afb497dfbadb1171c76d2abfc7152b0d6671d17",
+      "sha256": "82fb466f6a11116c45d147c8f0b41060aefe9cbe6020defeb3c12b83761a341f",
       "size": 37356
     },
     {
@@ -286,7 +286,7 @@
     },
     {
       "path": "tools/verify_owner_target_files_binding.py",
-      "sha256": "d0b3a4991b8c744abbf4b439ea58dab6d3d892dda0fcd02ec32b3a7826eb3b0e",
+      "sha256": "eb859a928f8f8851d994747e4198e68c6df1d43562a8cf2c40303f25d4b915e4",
       "size": 18538
     }
   ],

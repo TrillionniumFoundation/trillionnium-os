@@ -79,7 +79,7 @@ class Reader:
             need(fd9(os.fstat(fd))==record['fd9']==fd9(os.stat(name,dir_fd=self.parents[-1],follow_symlinks=False)),'retained leaf changed')
     def read(self,name,cap):
         need(len(self.files)<MAX_FILES and '/' not in name and len(os.fsencode(name))<=255,'file name/count bound')
-        self.custody(); fd=os.open(name,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=self.parents[-1])
+        self.custody(); fd=os.open(name,os.O_RDONLY|os.O_NONBLOCK|os.O_NOFOLLOW|os.O_CLOEXEC,dir_fd=self.parents[-1])
         try:
             m=os.fstat(fd); need(stat.S_ISREG(m.st_mode) and m.st_nlink==1 and stat.S_IMODE(m.st_mode)==0o600 and m.st_uid==os.geteuid() and 0<m.st_size<=cap,'stream regular owner leaf bound')
             need(fd9(m)==fd9(os.stat(name,dir_fd=self.parents[-1],follow_symlinks=False)), 'leaf entry before')

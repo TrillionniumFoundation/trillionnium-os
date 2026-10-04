@@ -185,4 +185,153 @@ class ActualStreamTests(unittest.TestCase):
     def test_empty_source_scope_terminates_without_fabricated_record(self):
         r=self.recorder();r.drain(final=True);self.assertEqual(self.report(r)['acknowledged_records'],0)
 
+class StreamReaderLeafAdmissionTests(unittest.TestCase):
+    """Owned local-file probes; never product/native or installed evidence."""
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.root.chmod(0o700)
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def reader(self):
+        return V.Reader(self.root / 'fixture.context.json', 1)
+
+    def regular(self, name='fixture.context.json', raw=b'{"source_only":true}'):
+        path = self.root / name
+        path.write_bytes(raw)
+        path.chmod(0o600)
+        return path
+
+    def test_writerless_fifo_rejects_before_reader_deadline_for_every_leaf_kind(self):
+        for suffix in ('context', 'terminator', 'e0.chunk', 'e0.ack'):
+            with self.subTest(suffix=suffix):
+                name = 'fixture.' + suffix + '.json'
+                fifo = self.root / name
+                # Do not replace a denied IPC operation with another route.
+                os.mkfifo(fifo, 0o600)
+                reader = self.reader()
+                finished = threading.Event()
+                errors = []
+
+                def read_fifo():
+                    try:
+                        reader.read(name, V.MAX_META)
+                    except BaseException as error:
+                        errors.append(error)
+                    finally:
+                        finished.set()
+
+                worker = threading.Thread(target=read_fifo, daemon=True)
+                writer = None
+                try:
+                    worker.start()
+                    # Reader has a one-second budget. A FIFO without a writer
+                    # must be rejected without waiting for another participant.
+                    returned = finished.wait(1.25)
+                finally:
+                    if not finished.is_set():
+                        # Release only this test-owned FIFO on the red path.
+                        # O_RDWR|NONBLOCK also avoids a race with reader entry.
+                        writer = os.open(fifo, os.O_RDWR | os.O_NONBLOCK | os.O_CLOEXEC)
+                    worker.join(2)
+                    if writer is not None:
+                        os.close(writer)
+                    reader.close()
+                    fifo.unlink()
+                self.assertFalse(worker.is_alive(), 'test-owned FIFO reader did not retire')
+                self.assertTrue(returned, 'FIFO acquisition outlived the reader deadline')
+                self.assertEqual(len(errors), 1)
+                self.assertIsInstance(errors[0], V.StreamError)
+                self.assertIn('stream regular owner leaf bound', str(errors[0]))
+
+    def test_regular_private_leaf_preserves_exact_bytes_hash_and_custody(self):
+        raw = b'{"source_only":true}'
+        path = self.regular(raw=raw)
+        reader = self.reader()
+        try:
+            value, descriptor = reader.read(path.name, V.MAX_META)
+            self.assertEqual(value, {'source_only': True})
+            self.assertEqual(descriptor['bytes'], len(raw))
+            self.assertEqual(descriptor['sha256'], hashlib.sha256(raw).hexdigest())
+            self.assertEqual(descriptor['fd9'], V.fd9(path.stat()))
+            reader.custody()
+        finally:
+            reader.close()
+
+    def test_directory_and_symlink_leaves_are_still_rejected(self):
+        directory = self.root / 'directory.context.json'
+        directory.mkdir(mode=0o700)
+        target = self.regular('target.json')
+        link = self.root / 'link.context.json'
+        link.symlink_to(target.name)
+        for path, error in ((directory, V.StreamError), (link, OSError)):
+            with self.subTest(name=path.name):
+                reader = self.reader()
+                try:
+                    with self.assertRaises(error):
+                        reader.read(path.name, V.MAX_META)
+                finally:
+                    reader.close()
+
+    def test_hardlinked_and_nonprivate_leaves_are_still_rejected(self):
+        linked = self.regular('linked.context.json')
+        os.link(linked, self.root / 'second-name')
+        exposed = self.regular('exposed.context.json')
+        exposed.chmod(0o640)
+        for path in (linked, exposed):
+            with self.subTest(name=path.name):
+                reader = self.reader()
+                try:
+                    with self.assertRaisesRegex(V.StreamError, 'regular owner leaf bound'):
+                        reader.read(path.name, V.MAX_META)
+                finally:
+                    reader.close()
+
+    def test_leaf_replacement_during_read_is_still_rejected(self):
+        path = self.regular()
+        reader = self.reader()
+        real_read = os.read
+        changed = False
+
+        def replace_after_read(fd, count):
+            nonlocal changed
+            raw = real_read(fd, count)
+            if not changed:
+                changed = True
+                path.rename(self.root / 'retained-original')
+                self.regular()
+            return raw
+
+        try:
+            with patch.object(V.os, 'read', side_effect=replace_after_read):
+                with self.assertRaisesRegex(V.StreamError, 'leaf changed during read'):
+                    reader.read(path.name, V.MAX_META)
+        finally:
+            reader.close()
+
+    def test_expired_deadline_rejects_before_open(self):
+        path = self.regular()
+        reader = self.reader()
+        reader.deadline = 0
+        try:
+            with patch.object(V.os, 'open') as opened:
+                with self.assertRaisesRegex(V.StreamError, 'whole reader deadline'):
+                    reader.read(path.name, V.MAX_META)
+                opened.assert_not_called()
+        finally:
+            reader.close()
+
+    def test_oversized_regular_leaf_is_rejected_before_read(self):
+        path = self.regular(raw=b'x' * (V.MAX_META + 1))
+        reader = self.reader()
+        try:
+            with patch.object(V.os, 'read') as read:
+                with self.assertRaisesRegex(V.StreamError, 'regular owner leaf bound'):
+                    reader.read(path.name, V.MAX_META)
+                read.assert_not_called()
+        finally:
+            reader.close()
+
 if __name__=='__main__':unittest.main()

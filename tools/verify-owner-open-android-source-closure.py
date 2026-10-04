@@ -104,7 +104,7 @@ COMMON_GENERATOR = bind_helper(
 SDK_SELECTION = bind_helper(
     "owner_open_sdk_selection", Path(__file__).with_name("verify-owner-open-sdk-selection.py"),
     SDK_SELECTION_SHA256)
-PHONE_GENERATOR_SHA256 = "422d922bb24ac75f3a0bc5e50190f40cd173c9f4a65628f98f4f23d002905974"
+PHONE_GENERATOR_SHA256 = "405cbd2cbf0cd632bb7026c39fec0231401e824e3557cc05f1c11a7bdeec1e50"
 PHONE_GENERATOR = bind_helper(
     "owner_open_phone_chain_generator", Path(__file__).with_name("generate-owner-open-phone-config.py"),
     PHONE_GENERATOR_SHA256)

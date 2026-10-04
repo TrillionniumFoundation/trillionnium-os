@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import java.util.concurrent.ExecutorService;
@@ -35,6 +36,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
     private final ExecutorService operations = new ThreadPoolExecutor(1, 1, 0,
             TimeUnit.MILLISECONDS, new ArrayBlockingQueue<>(16));
     private final AtomicBoolean destroyed = new AtomicBoolean();
+    private final AtomicReference<String> turnInFlight = new AtomicReference<>();
     private final AtomicLong latestGeneration = new AtomicLong();
     private final Object displayLock = new Object();
     private final StringBuilder pendingDisplay = new StringBuilder();
@@ -52,6 +54,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
     private final String taskId = id("task");
     private OwnerOpenClient client;
     private volatile String turnId;
+    private String pendingStartRequest;
     private EditText prompt;
     private TextView transcript;
 
@@ -88,7 +91,9 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
         controls.addView(reconnect);
         root.addView(controls, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        root.addView(button(R.string.recover_output, view -> recoverOutput()));
+        root.addView(button(R.string.recover_output, view -> recoverOutput()),
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         transcript = new TextView(this);
         transcript.setTextIsSelectable(true);
@@ -116,10 +121,14 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
             return;
         }
         String selectedTurn = id("turn");
+        if (!turnInFlight.compareAndSet(null, selectedTurn)) {
+            append("A task is pending or running. Cancel or inspect it before sending another prompt.");
+            return;
+        }
         turnId = selectedTurn;
         runOperation("turn.start", () -> {
             ensureConnected();
-            client.startTurn(sessionId, taskId, selectedTurn, value);
+            pendingStartRequest = client.startTurn(sessionId, taskId, selectedTurn, value);
             append("Task submitted.");
         });
     }
@@ -238,6 +247,19 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
                     append("Connected.");
                     return;
                 }
+                if ("result".equals(envelope.optString("kind"))) {
+                    // Only a correlated Host refusal resolves this pending start.
+                    // Timeout, disconnect and broker errors can leave its outcome
+                    // unknown, so they must not authorize another UI submission.
+                    if (pendingStartRequest != null
+                            && pendingStartRequest.equals(envelope.get("request_id"))
+                            && "host.error".equals(envelope.getJSONObject("frame").optString("kind"))) {
+                        pendingStartRequest = null;
+                        finishTurn(turnId);
+                        append("The task was rejected before acceptance. You can send a new prompt.");
+                    }
+                    return;
+                }
                 JSONObject host = "observation".equals(envelope.optString("kind"))
                         ? envelope.getJSONObject("frame") : envelope;
                 handleHostFrame(object(decode(host)), generation);
@@ -257,11 +279,23 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
             if (lastGap != null) append("The previous task still has an unresolved output gap.");
             acceptedScope = turnScope(frame);
             acceptedDigest = (String) object(frame.get("payload")).get("turn_request_sha256");
+            pendingStartRequest = null;
             lastGap = null;
             recovery = null;
             recoveryRunning = false;
             turnEnded = false;
             append("Task started.");
+            return;
+        }
+        if (isTurnTerminal(kind) && sessionId.equals(frame.get("session_id"))
+                && taskId.equals(frame.get("task_id")) && turnId.equals(frame.get("turn_id"))
+                && (acceptedScope == null || !sameTurn(frame, acceptedScope))) {
+            // The Host can resolve startup before emitting turn.accepted.
+            // Keep unrelated or earlier turn outcomes from releasing this slot.
+            pendingStartRequest = null;
+            turnEnded = true;
+            finishTurn((String) frame.get("turn_id"));
+            append("The task ended before acceptance. You can send a new prompt.");
             return;
         }
         if (acceptedScope == null || (!sameTurn(frame, acceptedScope)
@@ -307,8 +341,9 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
                 lastGap = null;
                 append("Saved output recovered. Live delivery resumed.");
             }
-        } else if ("turn.end".equals(kind)) {
+        } else if (isTurnTerminal(kind)) {
             turnEnded = true;
+            finishTurn((String) frame.get("turn_id"));
             if (payload.get("stream_gap") instanceof Map) {
                 Map<String, Object> gap = new LinkedHashMap<>(frame);
                 gap.put("payload",payload.get("stream_gap"));
@@ -325,6 +360,18 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
             append("The request was not confirmed. Inspect saved output before retrying recovery.");
         } else {
             renderObservation(frame);
+        }
+    }
+
+    private static boolean isTurnTerminal(String kind) {
+        return "turn.end".equals(kind) || "turn.failed".equals(kind)
+                || "turn.rejected".equals(kind) || "turn.cancelled".equals(kind);
+    }
+
+    private void finishTurn(String selectedTurn) {
+        String current = turnInFlight.get();
+        if (current != null && current.equals(selectedTurn)) {
+            turnInFlight.compareAndSet(current, null);
         }
     }
 

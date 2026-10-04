@@ -184,6 +184,7 @@ def write_generated(path, body, deadline):
     fd = None
     temp_name = '.' + path.name + '.owner-open-' + str(os.getpid()) + '.tmp'
     published = False
+    owned_identity = None
     try:
         try:
             before = os.stat(path.name, dir_fd=parent, follow_symlinks=False)
@@ -194,6 +195,8 @@ def write_generated(path, body, deadline):
         budget(deadline)
         fd = os.open(temp_name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
                      0o644, dir_fd=parent)
+        created = os.fstat(fd)
+        owned_identity = (created.st_dev, created.st_ino)
         os.fchmod(fd, 0o644)
         offset = 0
         while offset < len(body):
@@ -222,11 +225,14 @@ def write_generated(path, body, deadline):
                 os.close(fd)
         finally:
             try:
-                if not published:
+                if not published and owned_identity is not None:
                     try:
-                        os.unlink(temp_name, dir_fd=parent)
+                        current = os.stat(temp_name, dir_fd=parent, follow_symlinks=False)
                     except FileNotFoundError:
                         pass
+                    else:
+                        if (current.st_dev, current.st_ino) == owned_identity:
+                            os.unlink(temp_name, dir_fd=parent)
             finally:
                 os.close(parent)
 

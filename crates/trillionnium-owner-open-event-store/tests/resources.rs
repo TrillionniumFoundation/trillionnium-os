@@ -436,6 +436,167 @@ fn on_demand_read_authenticates_same_length_payload_drift_and_poison_is_sticky()
 }
 
 #[test]
+fn same_length_dense_payload_drift_poison_is_sticky() {
+    isolated_fixture("same_length_dense_payload_drift_fixture");
+}
+
+#[test]
+#[ignore = "isolated large-record decode-integrity fixture"]
+fn same_length_dense_payload_drift_fixture() {
+    // Cover both an encoded+DOM overflow below the lexical scanner's own
+    // ceiling and a dense DOM that exceeds that scanner ceiling directly.
+    // Dense zeros cost two Value slots plus six encoded/input bytes per
+    // element. Target a 40 MiB combined reservation without assuming a
+    // 32-byte Value; its lexical estimate stays below the 64 MiB ceiling.
+    let elements = (40 * 1024 * 1024) / (2 * std::mem::size_of::<serde_json::Value>() + 6);
+    let combined_overflow_bytes = 2 * elements - 1;
+    for (string_bytes, duplicate_read) in [
+        (combined_overflow_bytes, false),
+        (8 * 1024 * 1024 - 1, false),
+        (8 * 1024 * 1024 - 1, true),
+    ] {
+        assert_same_length_dense_payload_drift(string_bytes, duplicate_read);
+    }
+}
+
+fn assert_same_length_dense_payload_drift(string_bytes: usize, duplicate_read: bool) {
+    use std::os::unix::fs::MetadataExt;
+
+    let directory = secure_dir();
+    let store = SegmentedEventStore::open(
+        directory.path().join("store"),
+        SegmentedEventStoreConfig::default(),
+    )
+    .unwrap();
+    let scope = input("unused", json!({})).scope;
+    store
+        .append(input(
+            "accepted",
+            json!({"value": "x".repeat(string_bytes)}),
+        ))
+        .expect("the original sparse record must pass every append budget");
+    assert!(store.get(&scope, "accepted").unwrap().is_some());
+    let path = store.segment_paths().unwrap().pop().unwrap();
+    let metadata = fs::metadata(&path).unwrap();
+    let mut bytes = fs::read(&path).unwrap();
+    let original = bytes.clone();
+    let marker = b"\"value\":";
+    let start = bytes
+        .windows(marker.len())
+        .position(|window| window == marker)
+        .unwrap()
+        + marker.len();
+    let end = start + string_bytes + 2;
+    assert_eq!(bytes[start], b'"');
+    assert_eq!(bytes[end - 1], b'"');
+    assert!(bytes[start + 1..end - 1].iter().all(|byte| *byte == b'x'));
+    // A quoted odd-length string and this array occupy exactly the same
+    // bytes. Preserve all stored hashes and metadata; the raw decode budget
+    // must reject this drift before building its DOM.
+    bytes[start] = b'[';
+    bytes[end - 1] = b']';
+    for (index, byte) in bytes[start + 1..end - 1].iter_mut().enumerate() {
+        *byte = if index % 2 == 0 { b'0' } else { b',' };
+    }
+    fs::write(&path, &bytes).unwrap();
+    let changed = fs::metadata(&path).unwrap();
+    assert_eq!(changed.ino(), metadata.ino());
+    assert_eq!(changed.len(), metadata.len());
+
+    let error = if duplicate_read {
+        // Existing-identity lookup reads the WAL before comparing this small
+        // input's payload, so it must classify the same corruption identically.
+        store.append(input("accepted", json!({}))).unwrap_err()
+    } else {
+        store.get(&scope, "accepted").unwrap_err()
+    };
+    assert!(matches!(
+        error,
+        EventStoreError::InvalidRecord(message)
+            if message.contains("authenticated decode budget")
+    ));
+    assert!(matches!(store.snapshot(), Err(EventStoreError::Poisoned)));
+    assert!(matches!(
+        store.append(input("next", json!({}))),
+        Err(EventStoreError::Poisoned)
+    ));
+    assert_eq!(fs::read(&path).unwrap(), bytes);
+    // Restoring bytes cannot clear the original handle's sticky poison.
+    fs::write(&path, &original).unwrap();
+    assert!(matches!(
+        store.get(&scope, "accepted"),
+        Err(EventStoreError::Poisoned)
+    ));
+    drop(store);
+    let reopened = SegmentedEventStore::open(
+        directory.path().join("store"),
+        SegmentedEventStoreConfig::default(),
+    )
+    .unwrap();
+    assert!(reopened.get(&scope, "accepted").unwrap().is_some());
+}
+
+#[test]
+fn retained_duplicate_decode_capacity_refusal_keeps_store_usable() {
+    isolated_fixture("retained_duplicate_decode_capacity_fixture");
+}
+
+#[test]
+#[ignore = "isolated retained-input decode-capacity fixture"]
+fn retained_duplicate_decode_capacity_fixture() {
+    const STRING_BYTES: usize = 6 * 1024 * 1024 - 1;
+    let directory = secure_dir();
+    let store = SegmentedEventStore::open(
+        directory.path().join("store"),
+        SegmentedEventStoreConfig::default(),
+    )
+    .unwrap();
+    let scope = input("unused", json!({})).scope;
+    store
+        .append(input(
+            "accepted",
+            json!({"value": "x".repeat(STRING_BYTES)}),
+        ))
+        .unwrap();
+    let path = store.segment_paths().unwrap().pop().unwrap();
+    let before = fs::read(&path).unwrap();
+    let mut padded = String::with_capacity(15 * 1024 * 1024);
+    padded.extend(std::iter::repeat_n('x', STRING_BYTES));
+    let payload = serde_json::Value::Object(
+        [("value".to_owned(), serde_json::Value::String(padded))]
+            .into_iter()
+            .collect(),
+    );
+    // The WAL alone fits its decode budget. Only its overlap with this
+    // caller-owned spare capacity exceeds the temporary envelope.
+    assert!(matches!(
+        store.append(input("accepted", payload)),
+        Err(EventStoreError::CapacityExhausted)
+    ));
+    assert_eq!(store.snapshot().unwrap().record_count, 1);
+    assert_eq!(
+        store.get(&scope, "accepted").unwrap().unwrap().payload["value"]
+            .as_str()
+            .unwrap()
+            .len(),
+        STRING_BYTES
+    );
+    assert_eq!(
+        store
+            .append(input(
+                "accepted",
+                json!({"value": "x".repeat(STRING_BYTES)})
+            ))
+            .unwrap()
+            .disposition,
+        AppendDisposition::Existing
+    );
+    assert_eq!(fs::read(&path).unwrap(), before);
+    store.append(input("next", json!({}))).unwrap();
+    assert_eq!(store.snapshot().unwrap().record_count, 2);
+}
+
+#[test]
 fn shared_descriptor_budget_is_retained_until_last_store_owner_drops() {
     let output = std::process::Command::new(std::env::current_exe().unwrap())
         .args(["--exact", "shared_descriptor_fixture", "--ignored"])

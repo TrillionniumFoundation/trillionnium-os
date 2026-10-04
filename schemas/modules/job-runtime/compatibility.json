@@ -135,8 +135,8 @@
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/journal.rs",
-      "sha256": "f12cdb2e5db828f8f8ba863f3033aea43a1769dedc8f234c8bc111bfd14cf3c8",
-      "size": 107046
+      "sha256": "0af841c62c2c379adad5c2d6b8cdf953e2f033d4ba3dbc4a3fa46d37fff8c376",
+      "size": 120592
     },
     {
       "path": "crates/trillionnium-owner-open-job-runtime/src/lib.rs",

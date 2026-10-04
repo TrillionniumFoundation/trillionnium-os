@@ -13,16 +13,103 @@ CLIENT = ROOT / "android-integration/working-tree/vendor/trillionnium/owner-open
 
 class AndroidRecoveryUiTest(unittest.TestCase):
     def test_activity_recovery_display_bounds_and_connection_generation(self):
+        self._run_ui_harness("")
+
+    def test_pending_and_active_send_preserve_first_turn_and_routes(self):
+        self._run_ui_harness(r'''
+            ByteArrayOutputStream wire=new ByteArrayOutputStream();OwnerOpenShellActivity sender=sender(wire);
+            CountDownLatch held=new CountDownLatch(1);executor(sender).execute(()->{try{held.await();}catch(Exception e){throw new RuntimeException(e);}});
+            String first=send(sender);String duplicate=send(sender);held.countDown();barrier(sender);sender.flushUi();
+            check(first.equals(duplicate));check(starts(wire)==1);
+            observe(sender,"turn.accepted",first,Map.of("turn_request_sha256","a".repeat(64)));
+            observe(sender,"model.delta",first,Map.of("text","FIRST_TURN_VISIBLE"));
+            check(((TextView)get(sender,"transcript")).getText().toString().contains("FIRST_TURN_VISIBLE"));
+            check(first.equals(send(sender)));barrier(sender);check(starts(wire)==1);
+            wire.reset();call(sender,"inspectTurn",new Class[]{});call(sender,"cancelTurn",new Class[]{});barrier(sender);
+            String routes=wire.toString("UTF-8");check(routes.contains("turn.inspect"));check(routes.contains("turn.cancel"));check(routes.contains(first));
+            close(sender);
+        ''')
+
+    def test_single_send_and_current_terminal_allow_next_explicit_send(self):
+        self._run_ui_harness(r'''
+            ByteArrayOutputStream wire=new ByteArrayOutputStream();OwnerOpenShellActivity sender=sender(wire);
+            String first=send(sender);barrier(sender);check(starts(wire)==1);
+            observe(sender,"turn.accepted",first,Map.of("turn_request_sha256","a".repeat(64)));
+            observe(sender,"turn.end","different-turn",Map.of());check(first.equals(send(sender)));barrier(sender);check(starts(wire)==1);
+            observe(sender,"turn.end",first,Map.of());
+            String next=send(sender);barrier(sender);check(!first.equals(next));check(starts(wire)==2);
+            observe(sender,"turn.end",first,Map.of());check(next.equals(send(sender)));barrier(sender);check(starts(wire)==2);
+            close(sender);
+        ''')
+
+    def test_correlated_start_refusal_allows_next_explicit_send(self):
+        self._run_ui_harness(r'''
+            ByteArrayOutputStream wire=new ByteArrayOutputStream();OwnerOpenShellActivity sender=sender(wire);
+            String first=send(sender);barrier(sender);String request=startRequest(sender);
+            startResult(sender,"unrelated-request",first,"host.error");check(first.equals(send(sender)));barrier(sender);check(starts(wire)==1);
+            startResult(sender,request,first,"host.error");
+            String next=send(sender);barrier(sender);check(!first.equals(next));check(starts(wire)==2);
+            observe(sender,"turn.accepted",next,Map.of("turn_request_sha256","b".repeat(64)));
+            startResult(sender,request,first,"host.error");check(next.equals(send(sender)));barrier(sender);check(starts(wire)==2);
+            close(sender);
+        ''')
+
+    def test_uncertain_start_error_or_disconnect_never_releases_send(self):
+        self._run_ui_harness(r'''
+            ByteArrayOutputStream wire=new ByteArrayOutputStream();OwnerOpenShellActivity sender=sender(wire);
+            String first=send(sender);barrier(sender);String request=startRequest(sender);
+            JSONObject.fixtures.put("timeout",Map.of("kind","error","request_id",request,"code","request_timeout"));
+            sender.onFrame(0,"timeout");barrier(sender);
+            sender.onDisconnected(0,"ordinary test disconnect");barrier(sender);
+            check(first.equals(send(sender)));barrier(sender);check(starts(wire)==1);
+            check(get(sender,"acceptedScope")==null);close(sender);
+        ''')
+
+    def test_current_terminal_before_acceptance_resolves_pending_send(self):
+        self._run_ui_harness(r'''
+            for(String terminal:List.of("turn.end","turn.failed","turn.rejected","turn.cancelled")) {
+                ByteArrayOutputStream wire=new ByteArrayOutputStream();OwnerOpenShellActivity sender=sender(wire);
+                String first=send(sender);barrier(sender);
+                observe(sender,terminal,"different-turn",Map.of());check(first.equals(send(sender)));barrier(sender);check(starts(wire)==1);
+                observe(sender,terminal,first,Map.of());
+                String next=send(sender);barrier(sender);check(!first.equals(next));check(starts(wire)==2);
+                close(sender);
+            }
+        ''')
+
+    def test_late_terminal_cannot_release_next_submission(self):
+        self._run_ui_harness(r'''
+            ByteArrayOutputStream wire=new ByteArrayOutputStream();OwnerOpenShellActivity sender=sender(wire);
+            String first=send(sender);barrier(sender);
+            observe(sender,"turn.accepted",first,Map.of("turn_request_sha256","a".repeat(64)));
+            observe(sender,"turn.end",first,Map.of());
+            CountDownLatch comparison=new CountDownLatch(1),resume=new CountDownLatch(1);
+            Map<String,Object> late=new LinkedHashMap<String,Object>(frame(sender,"turn.end",Map.of())) {
+                int reads;
+                @Override public Object get(Object key) {
+                    if("turn_id".equals(key) && ++reads==4) {
+                        comparison.countDown();try{if(!resume.await(2,TimeUnit.SECONDS))throw new AssertionError("late terminal was not resumed");}catch(InterruptedException e){throw new RuntimeException(e);}
+                    }
+                    return super.get(key);
+                }
+            };
+            late.put("turn_id",first);
+            Future<?> callback=executor(sender).submit(()->{try{call(sender,"handleHostFrame",new Class[]{Map.class,long.class},late,0L);}catch(Exception e){throw new RuntimeException(e);}});
+            check(comparison.await(2,TimeUnit.SECONDS));String next=send(sender);resume.countDown();callback.get(2,TimeUnit.SECONDS);barrier(sender);
+            check(!first.equals(next));check(next.equals(send(sender)));barrier(sender);check(starts(wire)==2);close(sender);
+        ''')
+
+    def _run_ui_harness(self, extra):
         compiler, java = shutil.which("javac"), shutil.which("java")
         if not compiler or not java:
             self.skipTest("JDK required for source UI recovery harness")
-        # These stubs exercise app state and asynchronous ownership only. They
+        # These stubs exercise layout parameters, app state and async ownership. They
         # are not Android target, rendering, SELinux, or installation evidence.
         stubs = {
             "android/os/Bundle.java": "package android.os; public class Bundle {}",
             "android/text/InputType.java": "package android.text; public class InputType {public static final int TYPE_CLASS_TEXT=1, TYPE_TEXT_FLAG_MULTI_LINE=2;}",
-            "android/view/View.java": "package android.view; public class View {public interface OnClickListener {void onClick(View v);}}",
-            "android/view/ViewGroup.java": "package android.view; public class ViewGroup extends View {public static class LayoutParams {public static final int MATCH_PARENT=-1,WRAP_CONTENT=-2; public LayoutParams(int a,int b){}}}",
+            "android/view/View.java": "package android.view; public class View {public ViewGroup parent;private ViewGroup.LayoutParams params;public void setLayoutParams(ViewGroup.LayoutParams p){params=p;}public ViewGroup.LayoutParams getLayoutParams(){return params;}public interface OnClickListener {void onClick(View v);}}",
+            "android/view/ViewGroup.java": "package android.view; public class ViewGroup extends View {public static class LayoutParams {public static final int MATCH_PARENT=-1,WRAP_CONTENT=-2;public final int width,height; public LayoutParams(int a,int b){width=a;height=b;}}}",
             "android/app/Activity.java": """package android.app; import java.util.*; public class Activity {
                 public final Queue<Runnable> ui=new ArrayDeque<>();
                 public void runOnUiThread(Runnable r){synchronized(ui){ui.add(r);}}
@@ -33,8 +120,8 @@ class AndroidRecoveryUiTest(unittest.TestCase):
             """,
             "android/widget/TextView.java": "package android.widget; public class TextView extends android.view.View {String text=\"\";public TextView(Object a){} public void setTextIsSelectable(boolean b){} public void setText(CharSequence s){text=s.toString();}public CharSequence getText(){return text;}}",
             "android/widget/EditText.java": "package android.widget;public class EditText extends TextView {public EditText(Object a){super(a);}public void setHint(int s){}public void setMinLines(int n){}public void setInputType(int t){}}",
-            "android/widget/Button.java": "package android.widget;public class Button extends TextView {public Button(Object a){super(a);}public void setText(int s){}public void setOnClickListener(android.view.View.OnClickListener l){}public void setAllCaps(boolean b){}public void setLayoutParams(Object o){}}",
-            "android/widget/LinearLayout.java": "package android.widget;public class LinearLayout extends android.view.ViewGroup {public static final int VERTICAL=1,HORIZONTAL=2;public LinearLayout(Object a){}public void setOrientation(int n){}public void setPadding(int a,int b,int c,int d){}public void addView(Object v){}public void addView(Object v,Object p){}public static class LayoutParams extends android.view.ViewGroup.LayoutParams {public LayoutParams(int a,int b){super(a,b);}public LayoutParams(int a,int b,int c){super(a,b);}}}",
+            "android/widget/Button.java": "package android.widget;public class Button extends TextView {public int label;public Button(Object a){super(a);}public void setText(int s){label=s;}public void setOnClickListener(android.view.View.OnClickListener l){}public void setAllCaps(boolean b){}}",
+            "android/widget/LinearLayout.java": "package android.widget;public class LinearLayout extends android.view.ViewGroup {public static final int VERTICAL=1,HORIZONTAL=2;public int orientation;public final java.util.List<android.view.View> children=new java.util.ArrayList<>();public LinearLayout(Object a){}public void setOrientation(int n){orientation=n;}public void setPadding(int a,int b,int c,int d){}public void addView(android.view.View v){v.parent=this;children.add(v);}public void addView(android.view.View v,android.view.ViewGroup.LayoutParams p){v.setLayoutParams(p);addView(v);}public static class LayoutParams extends android.view.ViewGroup.LayoutParams {public final float weight;public LayoutParams(int a,int b){this(a,b,0);}public LayoutParams(int a,int b,float c){super(a,b);weight=c;}}}",
             "android/widget/ScrollView.java": "package android.widget;public class ScrollView extends android.view.ViewGroup {public ScrollView(Object a){}public void addView(Object v,Object p){} public static class LayoutParams extends android.view.ViewGroup.LayoutParams {public LayoutParams(int a,int b){super(a,b);}}}",
             "android/net/LocalSocketAddress.java": "package android.net;public class LocalSocketAddress {public enum Namespace {ABSTRACT}public LocalSocketAddress(String s,Namespace n){}}",
             "android/net/LocalSocket.java": "package android.net;import java.io.*;public class LocalSocket {public void connect(LocalSocketAddress a)throws IOException{}public InputStream getInputStream()throws IOException{return new ByteArrayInputStream(new byte[0]);}public OutputStream getOutputStream()throws IOException{return new ByteArrayOutputStream();}public void close()throws IOException{}}",
@@ -51,7 +138,8 @@ class AndroidRecoveryUiTest(unittest.TestCase):
         harness = textwrap.dedent(r'''
             import java.util.*;import java.util.concurrent.*;import java.util.concurrent.atomic.*;
             import java.io.*;import java.lang.reflect.*;import org.trillionnium.owneropen.*;
-            import android.widget.TextView;import org.json.JSONObject;
+            import android.widget.TextView;import android.widget.Button;import android.widget.LinearLayout;
+            import android.view.ViewGroup;import org.json.JSONObject;
             public class UiHarness {
                 static void put(Object o,String n,Object v)throws Exception {Field f=o.getClass().getDeclaredField(n);f.setAccessible(true);f.set(o,v);}
                 static Object get(Object o,String n)throws Exception {Field f=o.getClass().getDeclaredField(n);f.setAccessible(true);return f.get(o);}
@@ -64,7 +152,38 @@ class AndroidRecoveryUiTest(unittest.TestCase):
                 static OwnerOpenShellActivity activity()throws Exception {OwnerOpenShellActivity a=new OwnerOpenShellActivity();put(a,"transcript",new TextView(a));put(a,"turnId","turn");put(a,"acceptedScope",scope(a));put(a,"acceptedDigest","a".repeat(64));return a;}
                 static Map<String,Object> frame(OwnerOpenShellActivity a,String kind,Map<String,Object> p)throws Exception{Map<String,Object> f=scope(a);f.put("kind",kind);f.put("payload",p);return f;}
                 static void close(OwnerOpenShellActivity a)throws Exception {call(a,"onDestroy",new Class[]{});}
+                static OwnerOpenShellActivity sender(ByteArrayOutputStream wire)throws Exception {
+                    OwnerOpenShellActivity a=new OwnerOpenShellActivity();call(a,"buildView",new Class[]{});
+                    OwnerOpenClient client=new OwnerOpenClient(a);put(client,"output",wire);((AtomicBoolean)get(client,"closed")).set(false);put(a,"client",client);
+                    ((TextView)get(a,"prompt")).setText("ordinary test prompt");return a;
+                }
+                static String send(OwnerOpenShellActivity a)throws Exception {call(a,"sendPrompt",new Class[]{});return (String)get(a,"turnId");}
+                static long starts(ByteArrayOutputStream wire)throws Exception {return wire.toString("UTF-8").lines().filter(line->line.contains("\"kind\":\"turn.start\"")).count();}
+                static String startRequest(OwnerOpenShellActivity a)throws Exception {Object client=get(a,"client");return get(client,"clientInstance")+":"+(((AtomicLong)get(client,"requestSequence")).get()-1);}
+                static void observe(OwnerOpenShellActivity a,String kind,String turn,Map<String,Object> payload)throws Exception {
+                    Map<String,Object> f=frame(a,kind,payload);f.put("turn_id",turn);JSONObject.fixtures.put("test-observation",f);a.onFrame(0,"test-observation");barrier(a);a.flushUi();
+                }
+                static void startResult(OwnerOpenShellActivity a,String request,String turn,String kind)throws Exception {
+                    Map<String,Object> f=frame(a,kind,Map.of("code","connection_state"));f.put("turn_id",turn);
+                    JSONObject.fixtures.put("test-result",Map.of("kind","result","request_id",request,"frame",f));a.onFrame(0,"test-result");barrier(a);a.flushUi();
+                }
                 public static void main(String[] ignored)throws Exception {try {
+                    OwnerOpenShellActivity layout=new OwnerOpenShellActivity();
+                    put(layout,"client",new OwnerOpenClient(layout));
+                    LinearLayout root=(LinearLayout)call(layout,"buildView",new Class[]{});
+                    check(root.orientation==LinearLayout.VERTICAL);check(root.children.size()==4);
+                    Button recover=(Button)root.children.get(2);check(recover.parent==root);check(recover.label==R.string.recover_output);
+                    LinearLayout.LayoutParams params=(LinearLayout.LayoutParams)recover.getLayoutParams();
+                    check(params.width==ViewGroup.LayoutParams.MATCH_PARENT);
+                    check(params.height==ViewGroup.LayoutParams.WRAP_CONTENT);check(params.weight==0);
+                    LinearLayout controls=(LinearLayout)root.children.get(1);check(controls.orientation==LinearLayout.HORIZONTAL);
+                    check(controls.children.size()==4);int[] labels={R.string.send,R.string.cancel,R.string.inspect,R.string.reconnect};
+                    for(int i=0;i<labels.length;i++){
+                        Button button=(Button)controls.children.get(i);check(button.parent==controls);check(button.label==labels[i]);
+                        LinearLayout.LayoutParams horizontal=(LinearLayout.LayoutParams)button.getLayoutParams();
+                        check(horizontal.width==0);check(horizontal.height==ViewGroup.LayoutParams.WRAP_CONTENT);check(horizontal.weight==1);
+                    }
+                    close(layout);
                     OwnerOpenShellActivity a=activity();OwnerOpenClient client=new OwnerOpenClient(a);
                     ByteArrayOutputStream out=new ByteArrayOutputStream();put(client,"output",out);((AtomicBoolean)get(client,"closed")).set(false);put(a,"client",client);
                     put(a,"helloPayload",Map.of("resync_protocols",List.of("scoped_cursor_v1")));
@@ -92,10 +211,11 @@ class AndroidRecoveryUiTest(unittest.TestCase):
                     for(int i=0;i<20;i++)full.onFrame(1,"stale");
                     check(((ThreadPoolExecutor)executor(full)).getQueue().size()<=16);check(((Long)get(full,"rejectedGeneration"))==1);
                     check(!owned.isConnected());stuck.countDown();barrier(full);full.flushUi();close(full);
-                    System.out.println("UI recovery, bounded histories, queue overflow and stale generation PASS");
+                    System.out.println("UI layout, recovery, bounded histories, queue overflow and stale generation PASS");
                 }catch(Throwable failure){failure.printStackTrace();System.exit(1);}}
             }
         ''')
+        harness = harness.replace('System.out.println("UI layout,', extra + '\nSystem.out.println("UI layout,')
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             sources = []

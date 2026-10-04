@@ -26,7 +26,7 @@
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 66699,
-      "sha256": "c712ee2bb2c9409a22f641323e098c2489d885f0c89b7dc9de53b13b2671ae44"
+      "sha256": "cafadca727dd00141c815de464a4a08edb51b5ce84b54cc4bc639b211396976f"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -194,7 +194,7 @@
     },
     "schemas/modules/android/compatibility.json": {
       "bytes": 13546,
-      "sha256": "b45225953cad31f80b8a59f4a0d57ad22693f1b32d84783fbe2d90f1904e7264"
+      "sha256": "9e72697eb8f7e8a13be842065d2dcbcd46f4ac4791b40de2fe325991f7426cda"
     },
     "schemas/modules/android/errors-v1.schema.json": {
       "bytes": 4424,
@@ -350,7 +350,7 @@
     },
     "schemas/modules/broker/compatibility.json": {
       "bytes": 12813,
-      "sha256": "a2f051c1fd9fa0fba7accaa0a9cedcb16f5d17332e80581e621faf100f428ede"
+      "sha256": "517dd800e687c7c4581cfd1d9743ee9c0cf00e62f89a6c1defa8abece01278cd"
     },
     "schemas/modules/broker/errors-v1.schema.json": {
       "bytes": 4420,
@@ -506,7 +506,7 @@
     },
     "schemas/modules/event-store/compatibility.json": {
       "bytes": 6809,
-      "sha256": "8376f8655cec654eb8e27b8eef155a4bd71b7bc2e05374529b70a357d0424c93"
+      "sha256": "4f44b082976ae29869cbd3f1be22569fb84060a6017dab911b78004ee81b6ca0"
     },
     "schemas/modules/event-store/errors-v1.schema.json": {
       "bytes": 4440,
@@ -662,7 +662,7 @@
     },
     "schemas/modules/evidence/compatibility.json": {
       "bytes": 7084,
-      "sha256": "aafea1041694c8dddb42484f0262f20ce3427b976f50fd81defae93029155d3f"
+      "sha256": "b716ab2f02ee88d22e6019457c3b76617039629fa20888758890ba1e7c29940a"
     },
     "schemas/modules/evidence/errors-v1.schema.json": {
       "bytes": 4428,
@@ -818,7 +818,7 @@
     },
     "schemas/modules/execution-core/compatibility.json": {
       "bytes": 8235,
-      "sha256": "3e0fa7c48a87849ca15fe601d439786368c6add77174a8f911df6e2ef6f5b80a"
+      "sha256": "89793094d7b7ed20ac8936697f37eb228789a6ac413a5d19df61e5ada5a844a9"
     },
     "schemas/modules/execution-core/errors-v1.schema.json": {
       "bytes": 4442,
@@ -1130,7 +1130,7 @@
     },
     "schemas/modules/job-runtime/compatibility.json": {
       "bytes": 8744,
-      "sha256": "5406128d243df9c925dc18b2803aae1cf3c7640e064904dc1426d0e31b42df65"
+      "sha256": "48396ad9f91ec2dd5ec6d9198873a3d21e8607afaa5239c04e51a165513b8a9e"
     },
     "schemas/modules/job-runtime/errors-v1.schema.json": {
       "bytes": 4424,
@@ -1442,7 +1442,7 @@
     },
     "schemas/modules/provider/compatibility.json": {
       "bytes": 8061,
-      "sha256": "feb6cb09932c64a94c8b74531c98ab4c15fb50262e8b9a0a54eae258771607b3"
+      "sha256": "c620aab95feeee6111c41fee5000256c02c897c23bb7414ebdfff37091c38733"
     },
     "schemas/modules/provider/errors-v1.schema.json": {
       "bytes": 4428,

@@ -152,8 +152,9 @@ new process capacity or authorize redispatch. Capacity tokens are consumed once
 and rechecked against actual request/limit reservations before acceptance.
 
 Inherited host environment is snapshotted and checked at1 MiB before admission,
-then applied unchanged with the explicit request delta; no later host-env lookup
-can widen the admitted Command. Three MiB of fixed staging covers its normalized
+then only the existing inheritance allowlist is copied from that snapshot before
+the explicit request delta is applied; no later host-env lookup can widen the
+admitted Command. Three MiB of fixed staging covers its normalized
 copies and operation controls. Standard-library snapshot capture may first
 allocate host-owned environment values before rejection; this is not a complete
 pre-allocation guarantee for arbitrary in-process environment mutation.

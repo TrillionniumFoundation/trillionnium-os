@@ -9,7 +9,7 @@ import argparse,datetime,hashlib,json,os,resource,stat,sys,time,types
 from pathlib import Path
 HERE=Path(__file__).absolute().parent
 CATALOG_HELPER_SHA='fea8c1d1fb459f5f124fb11d563cc6282cee0bc9b49608c0412b8b3c904036c4'
-PROVENANCE_SHA='6340050e53cc0374c26e7f602c1b9d2bd58c59953bafa4ea7eb6962f06c6ee94'
+PROVENANCE_SHA='053b906f9a347e7018e978d52ddf323c7d52de4b8d2a4eea15e56a64212869dc'
 SURFACE_SHA='7d0f3d51d913317f01c75ee6d25cb56e3748ed79ea1a59635b4ca32bc929839b'
 SOURCE=Path('/media/qian-qi/TOSHIBA_DEV_1TB/TrillionniumOS/rootfs/home/qian-qi/android/lineage-fogos')
 MAX_METADATA=2*1024**3

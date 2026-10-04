@@ -76,7 +76,7 @@ def bind_helper(name,path,expected_sha,register=False):
     else:sys.modules.pop(name,None)
    raise
 
-BASE_SHA256 = "003a8c6e6097d83e900b15429afb497dfbadb1171c76d2abfc7152b0d6671d17"
+BASE_SHA256 = "82fb466f6a11116c45d147c8f0b41060aefe9cbe6020defeb3c12b83761a341f"
 BASE = bind_helper("owner_open_android_source_closure_v1_base", BASE_PATH, BASE_SHA256, register=True)
 
 PROFILE = BASE.PROFILE

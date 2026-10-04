@@ -17,3 +17,8 @@ thiserror.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
+
+[[test]]
+name = "admitted_environment"
+path = "tests/admitted_environment.rs"
+harness = false

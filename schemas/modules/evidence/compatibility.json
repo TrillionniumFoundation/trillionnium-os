@@ -104,7 +104,7 @@
     },
     {
       "path": "tools/collect_owner_source_vector.py",
-      "sha256": "69f416371fbbd52ee9a9216e155f0ecb6846f0d4470eecacbd5523cc6f92f7c4",
+      "sha256": "4a1a4a03842d3f04a180118bcf03218ce287e2c4274e5c52e0a4838e1e041575",
       "size": 11682
     },
     {
@@ -119,7 +119,7 @@
     },
     {
       "path": "tools/owner_source_provenance.py",
-      "sha256": "6340050e53cc0374c26e7f602c1b9d2bd58c59953bafa4ea7eb6962f06c6ee94",
+      "sha256": "053b906f9a347e7018e978d52ddf323c7d52de4b8d2a4eea15e56a64212869dc",
       "size": 87392
     },
     {
@@ -129,7 +129,7 @@
     },
     {
       "path": "tools/prepare_owner_asb_fullforks.py",
-      "sha256": "0acde2c2b50b9f1e79c69ee4bb9f12a2a55c461ee775752515f91ced723be6bc",
+      "sha256": "b765f8fa88e8e5f5cde4e5e709966e47ea4a451cb94d92559ede3126bc8c5501",
       "size": 25569
     }
   ],
