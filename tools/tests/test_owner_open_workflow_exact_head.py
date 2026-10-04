@@ -338,8 +338,8 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
             raise RuntimeError("guard tests require bash")
         self.tool("id", 'printf "%s\\n" "${TEST_UID-65534}"\nexit "${TEST_ID_STATUS:-0}"\n')
         self.tool("python3", 'exit "${TEST_PYTHON_STATUS:-0}"\n')
-        self.tool("rustc", 'printf "%s\\n" "${TEST_RUST_VERSION:-rustc 1.93.0 (fixture)}"\nexit "${TEST_RUST_STATUS:-0}"\n')
-        self.tool("cargo", 'printf "%s\\n" "${TEST_CARGO_VERSION:-cargo 1.93.0 (fixture)}"\nexit "${TEST_CARGO_STATUS:-0}"\n')
+        self.tool("rustc", 'printf "%s\\n" "${TEST_RUST_VERSION:-rustc 1.99.0 (fixture)}"\nexit "${TEST_RUST_STATUS:-0}"\n')
+        self.tool("cargo", 'printf "%s\\n" "${TEST_CARGO_VERSION:-cargo 1.99.0 (fixture)}"\nexit "${TEST_CARGO_STATUS:-0}"\n')
         self.tool("cc", 'exit 0\n')
         self.tool("make", 'exit 0\n')
         self.tool("setfacl", 'exit "${TEST_ACL_STATUS:-0}"\n')
@@ -375,8 +375,8 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
     def test_both_lanes_pin_rust_and_python_before_preflight(self) -> None:
         for job in self.jobs:
             self.assertIn('python-version: "3.13"', job)
-            self.assertIn('toolchain: "1.93.0"', job)
-            self.assertLess(job.index('toolchain: "1.93.0"'), job.index("- name: Verify source-test prerequisites"))
+            self.assertIn('toolchain: "1.99.0"', job)
+            self.assertLess(job.index('toolchain: "1.99.0"'), job.index("- name: Verify source-test prerequisites"))
             step = self.step_text(job, "Verify source-test prerequisites")
             self.assertIn("working-directory: ${{ runner.temp }}", step)
             self.assertNotIn("sudo", step)
@@ -425,7 +425,7 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
         self.run_guards(success=False, TEST_PYTHON_STATUS="1")
 
     def test_wrong_or_prerelease_rust_is_rejected(self) -> None:
-        for value in ("rustc 1.92.0 (fixture)", "rustc 1.93.0-nightly (fixture)", "rustc 1.93.00 (fixture)"):
+        for value in ("rustc 1.92.0 (fixture)", "rustc 1.99.0-nightly (fixture)", "rustc 1.99.00 (fixture)"):
             with self.subTest(version=value):
                 self.run_guards(success=False, TEST_RUST_VERSION=value)
 
@@ -469,6 +469,83 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
                                 capture_output=True, text=True, timeout=5)
         self.assertEqual(result.returncode, 23)
         self.assertIn("test-only unittest failure", (self.runner / "g1-source-python.log").read_text())
+
+
+
+
+class CurrentBuildAndMsrvWorkflowTests(unittest.TestCase):
+    """Source/guard regressions only; these do not compile either toolchain."""
+
+    def setUp(self) -> None:
+        self.workflow = (WORKFLOW_ROOT / "g1-exact-head-source.yml").read_text()
+        self.msrv = SourcePrerequisiteWorkflowTests.job_text(self.workflow, "rust-runtime")
+        self.current = SourcePrerequisiteWorkflowTests.job_text(self.workflow, "rust-current-runtime")
+        self.aggregate = SourcePrerequisiteWorkflowTests.job_text(self.workflow, "aggregate")
+
+    def test_root_current_pin_cannot_select_msrv_toolchain(self) -> None:
+        import tomllib
+        pin = tomllib.loads((WORKFLOW_ROOT.parents[1] / "rust-toolchain.toml").read_text())
+        self.assertEqual(pin["toolchain"]["channel"], "1.99.0")
+        # rustup's environment override must be explicit at job scope, above
+        # every cargo invocation, including nested planned-workspace commands.
+        self.assertIn('    env:\n      RUSTUP_TOOLCHAIN: "1.93.0"\n', self.msrv)
+        self.assertIn('toolchain: "1.93.0"', self.msrv)
+        self.assertIn('    env:\n      RUSTUP_TOOLCHAIN: "1.99.0"\n', self.current)
+        self.assertIn('toolchain: "1.99.0"', self.current)
+        for job in (self.msrv, self.current):
+            self.assertIn('ref: ${{ env.SOURCE_HEAD_SHA }}', job)
+            self.assertIn('cargo test --locked --all-targets', job)
+            self.assertIn('cargo clippy --locked --all-targets -- -D warnings', job)
+            self.assertNotIn('continue-on-error:', job)
+        self.assertIn('cargo test --locked --manifest-path planned/Cargo.toml --workspace --all-targets', self.msrv)
+
+    def test_required_protection_context_is_backward_compatible(self) -> None:
+        import ast
+        source = (WORKFLOW_ROOT.parents[1] / "tools/g1_pr_aggregate_common.py").read_text()
+        expected = {
+            "L1 graph, documentation, broker and MCP source closure",
+            "L1 Rust 1.93 selected Host, job, flow and recovery closure",
+            "L1 exact-source-head aggregate candidate",
+            "L1 protected-main and exact-head independent-review readiness",
+        }
+        node = next(n for n in ast.parse(source).body if isinstance(n, ast.Assign)
+                    and any(isinstance(t, ast.Name) and t.id == "REQUIRED_PROTECTION_CONTEXTS" for t in n.targets))
+        self.assertEqual(ast.literal_eval(node.value.args[0]), expected)
+        self.assertIn('name: L1 Rust 1.93 selected Host, job, flow and recovery closure', self.msrv)
+        self.assertIn('name: L1 Rust 1.99 current-build Host, job, flow and recovery closure', self.current)
+
+    def test_current_lane_is_mandatory_in_aggregate(self) -> None:
+        self.assertIn('      - rust-current-runtime\n', self.aggregate)
+        self.assertIn('CURRENT_RUST_RESULT: ${{ needs.rust-current-runtime.result }}', self.aggregate)
+        script = SourcePrerequisiteWorkflowTests.step_text(self.aggregate, "Require all source jobs")
+        script = script.split('run: |\n', 1)[1]
+        script = textwrap.dedent(script)
+        good = dict(os.environ, DOCS_RESULT='success', RUST_RESULT='success',
+                    CURRENT_RUST_RESULT='success', PLANNED_RESULT='success',
+                    GOVERNANCE_RESULT='success', ANDROID_PACKAGING_RESULT='success')
+        for result in ('success', 'failure', 'cancelled', 'skipped', ''):
+            with self.subTest(result=result):
+                observed = subprocess.run(['bash', '-c', script], env=dict(good, CURRENT_RUST_RESULT=result),
+                                          capture_output=True, timeout=5)
+                self.assertEqual(observed.returncode == 0, result == 'success')
+
+    def test_toolchain_guards_reject_current_compiler_in_msrv_lane(self) -> None:
+        for job, step, version, wrong in (
+            (self.msrv, 'Verify actual MSRV toolchain', '1.93.0', '1.99.0'),
+            (self.current, 'Verify actual current-build toolchain', '1.99.0', '1.93.0'),
+        ):
+            script = textwrap.dedent(SourcePrerequisiteWorkflowTests.step_text(job, step).split('run: |\n', 1)[1])
+            with tempfile.TemporaryDirectory() as temp:
+                for tool in ('rustc', 'cargo'):
+                    path = Path(temp) / tool
+                    path.write_text('#!/bin/bash\nprintf "%s %s (fixture)\\n" "' + tool + '" "$FAKE_VERSION"\n')
+                    path.chmod(0o700)
+                for observed_version in (version, wrong, version+'-nightly'):
+                    with self.subTest(lane=version, observed=observed_version):
+                        observed = subprocess.run(['bash', '-c', script],
+                            env=dict(os.environ, PATH=temp+os.pathsep+os.environ.get('PATH',''), FAKE_VERSION=observed_version),
+                            capture_output=True, timeout=5)
+                        self.assertEqual(observed.returncode == 0, observed_version == version)
 
 
 if __name__ == "__main__":

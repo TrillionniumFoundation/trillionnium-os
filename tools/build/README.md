@@ -3,7 +3,7 @@
 `verify_host_reproducibility.py` builds the selected
 `trillionnium-owner-open-r5-host` and `trillionnium-owner-open-r5-core` release
 binaries twice and compares their complete file sizes and SHA-256 byte digests.
-Both builds use one clean source commit, Rust/Cargo **1.93.0**, the committed
+Both builds use one clean source commit, Rust/Cargo **1.99.0**, the committed
 `Cargo.lock`, and separate, initially empty target directories. A successful
 report proves that these two local builds produced matching bytes under the
 recorded inputs. It does not qualify an installation, an Android device, an
@@ -12,7 +12,7 @@ image, a signature, a release, or an L2-or-higher lane.
 ## Prerequisites
 
 - Linux with an installed GNU GCC helper hierarchy, `ar`, Git, and Python 3.10 or newer.
-- Existing native Rust 1.93.0 compiler and Cargo executables. Pass their actual
+- Existing native Rust 1.99.0 compiler and Cargo executables. Pass their actual
   toolchain paths; a rustup proxy is not the compiler input to this recipe.
 - An existing Cargo dependency cache containing every locked dependency. The
   verifier never installs tools or downloads dependencies.
@@ -42,8 +42,8 @@ PYTHONDONTWRITEBYTECODE=1 python3 -I -c "$TRILLIONNIUM_AUTHENTICATED_PYTHON_LOAD
   -- \
   --repo-root /work/reviewed-checkout \
   --expected-commit FULL_REVIEWED_COMMIT_SHA \
-  --cargo /tools/rust/1.93.0/bin/cargo \
-  --rustc /tools/rust/1.93.0/bin/rustc \
+  --cargo /tools/rust/1.99.0/bin/cargo \
+  --rustc /tools/rust/1.99.0/bin/rustc \
   --cc /usr/bin/cc \
   --ar /usr/bin/ar \
   --cargo-home /work/existing-cargo-cache \

@@ -126,7 +126,7 @@ class ShellExecArtifactSetTests(unittest.TestCase):
         self.assertEqual(BUILD.TARGET, "aarch64-unknown-linux-musl")
         self.assertEqual(BUILD.HOST_TARGET, "x86_64-unknown-linux-gnu")
         self.assertEqual(BUILD.FEATURES, ("android-product",))
-        self.assertEqual(BUILD.RUST_VERSION, "1.95.0")
+        self.assertEqual(BUILD.RUST_VERSION, "1.99.0")
         self.assertEqual(BUILD.ZIG_VERSION, "0.14.1")
         self.assertEqual(BUILD.AARCH64_PRODUCT_USER_VA_LIMIT, 1 << 48)
         # Rust 1.95 accepts the legacy stable direct-LLD spelling.  The
@@ -197,7 +197,7 @@ class ShellExecArtifactSetTests(unittest.TestCase):
                 role: 100 + index
                 for index, role in enumerate(BUILD.BUILD_INPUT_ROLES)
             },
-            rust_toolchain_root=Path("/rust-1.95"),
+            rust_toolchain_root=Path("/rust-1.99"),
             zig_toolchain_root=Path("/zig-0.14.1"),
         )
         self.assertEqual(
@@ -1179,7 +1179,7 @@ version = "0.0.0"
     def test_qemu_input_is_explicitly_receipt_bound_before_publication(self) -> None:
         cargo = mock.Mock(initial_bytes=b"measured cargo", role="cargo")
         identity = BUILD.tool_identity_string(
-            "cargo 1.95.0 (0123456789 2026-01-01)",
+            "cargo 1.99.0 (0123456789 2026-01-01)",
             cargo,
             "closure",
             "1" * 64,

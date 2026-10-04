@@ -1452,7 +1452,7 @@ fn sha256_hex(input: &[u8]) -> String {
     padded[padded_len - 8..].copy_from_slice(&bit_length.to_be_bytes());
 
     let mut state = INITIAL;
-    for block in padded.chunks_exact(64) {
+    for block in padded.as_chunks::<64>().0 {
         let mut schedule = [0_u32; 64];
         for (index, word) in schedule.iter_mut().take(16).enumerate() {
             let offset = index * 4;

@@ -12,7 +12,12 @@ require their own exact evidence receipts.
 
 ## First source qualification
 
-The selected owner-open source closure uses Rust 1.93. From a clean checkout:
+The selected owner-open current-build source profile uses Rust 1.99. CI also
+retains a genuine Rust 1.93 compatibility lane for the declared MSRV, including
+the separately planned workspace. The frozen external Codex provider recipe
+remains Rust 1.95 pending a separately verified image and payload rebuild.
+These source profiles do not qualify Android images, devices or release builds.
+From a clean checkout:
 
 ```sh
 python3 tools/docs/generate_global_docs.py --check

@@ -354,7 +354,7 @@ impl HelloJobBarrier {
     }
 
     fn drain_release(&mut self, failure: Option<BarrierFailure>) -> BarrierRelease {
-        let actions = self.deferred.drain(..).collect();
+        let actions = std::mem::take(&mut self.deferred);
         let release = BarrierRelease {
             actions,
             dropped_jobs: self.dropped_jobs,
@@ -2575,6 +2575,45 @@ mod process_tests {
                 .collect::<Vec<_>>(),
             vec![1, 2]
         );
+    }
+
+    #[test]
+    fn hello_barrier_release_transfers_storage_and_resets_accounting() {
+        let mut barrier = HelloJobBarrier::default();
+        barrier.defer_protocol_error("first", "deferred");
+        assert_eq!(
+            barrier.defer(barrier_frame(7), 10),
+            DeferredAdmission::Dispatch
+        );
+        let capacity = barrier.deferred.capacity();
+        assert!(capacity > 0);
+        let release = barrier.drain_release(None);
+        assert_eq!(release.actions.capacity(), capacity);
+        assert_eq!(release.actions.len(), 2);
+        assert!(matches!(
+            release.actions.front(),
+            Some(DeferredAction::ProtocolError(error)) if error.code == "first"
+        ));
+        assert!(matches!(
+            release.actions.back(),
+            Some(DeferredAction::Job(job)) if job.frame.seq == 7
+        ));
+        assert!(barrier.deferred.is_empty());
+        assert_eq!(barrier.deferred.capacity(), 0);
+        assert_eq!(barrier.deferred_dispatch_count, 0);
+        assert_eq!(barrier.deferred_dispatch_bytes, 0);
+        assert_eq!(barrier.deferred_protocol_error_count, 0);
+        assert_eq!(barrier.deferred_protocol_error_bytes, 0);
+        assert!(barrier.drain_release(None).actions.is_empty());
+
+        barrier.defer_protocol_error("second", "refilled");
+        let next = barrier.drain_release(None);
+        assert_eq!(next.actions.len(), 1);
+        assert!(matches!(
+            next.actions.front(),
+            Some(DeferredAction::ProtocolError(error)) if error.code == "second"
+        ));
+        assert_eq!(release.actions.len(), 2);
     }
 
     #[test]

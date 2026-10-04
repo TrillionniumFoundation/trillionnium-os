@@ -557,8 +557,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/src/compact.rs",
-          "sha256": "55a9ba1e48ee0818f1d0fc9f6ea8fbc45cfd39f6e564113923509500444c8a0a",
-          "size": 11710
+          "sha256": "c7d4ba29843b5a60f49242d76733281fd5e553beb6f097d4a1df8c50f4f71596",
+          "size": 11713
         },
         {
           "path": "crates/trillionnium-owner-open-event-store/src/lib.rs",
@@ -730,8 +730,8 @@
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/process.rs",
-          "sha256": "5c9b6ec5e864612981a5a79e9a03d09ea109239cb8cc275bb25016c251482190",
-          "size": 115366
+          "sha256": "702fed526dc66240d4bb3e8307645b3fc4d9f83c2c631a9f3052307995bd39ba",
+          "size": 116974
         },
         {
           "path": "apps/trillionnium-owner-open-host/src/bin/r5_control_host_v7/wire.rs",
@@ -770,8 +770,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-trace/src/lib.rs",
-          "sha256": "fd1d71bd02be91c4ef9d3dce30580319bb286a380fc44feef9f76d6e51c00dac",
-          "size": 26119
+          "sha256": "edeb3d2a5006d5d5f8b30a31c12e2dcf0d1f9b1c3892b00b516f21156605b8d2",
+          "size": 27525
         },
         {
           "path": "crates/trillionnium-owner-open-trace/src/stream.rs",

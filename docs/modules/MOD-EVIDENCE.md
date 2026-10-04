@@ -518,7 +518,11 @@ failure before changing a timeout, disabling an assertion or modifying a budget.
 
 Both exact-source-head `docs-graph` and synthetic-merge qualification run the
 complete `tools/tests/test*.py` Python discovery set, not only a hand-picked
-regression subset. Each job explicitly selects Python 3.13 and Rust/Cargo 1.93.0.
+regression subset. Each of these Python-matrix jobs explicitly selects Python 3.13 and Rust/Cargo 1.99.0.
+The separate protected Rust 1.93 job remains a genuine MSRV compatibility check
+with an explicit `RUSTUP_TOOLCHAIN=1.93.0` override; the additional Rust 1.99
+current-build job is also required by the exact-head aggregate. Required
+branch-protection context names and their checks are unchanged.
 The Rust identity is required by the Python performance-harness tests as well as
 by locked source metadata; the runner image's moving default is not the pin.
 

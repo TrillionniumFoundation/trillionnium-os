@@ -28,7 +28,7 @@ VERIFY = load_authenticated_module("host_reproducibility", PATH, LOGICAL_PATH)
 def builds() -> list[dict]:
     item = {"exit_code": 0, "source_before": {"commit": "a", "lock": "locked"},
             "source_after": {"commit": "a", "lock": "locked"},
-            "tools_before": {"rustc": "1.93.0"}, "tools_after": {"rustc": "1.93.0"},
+            "tools_before": {"rustc": "1.99.0"}, "tools_after": {"rustc": "1.99.0"},
             "artifacts": {name: {"size": 16, "sha256": "a" * 64} for name in VERIFY.BINARIES}}
     return [copy.deepcopy(item), copy.deepcopy(item)]
 
@@ -461,7 +461,7 @@ os._exit(0)
     def test_fixed_toolchain_version_rejected_before_build(self) -> None:
         paths = [Path("/cargo"), Path("/rustc"), Path("/cc"), Path("/ar")]
         with mock.patch.object(VERIFY.CORE, "file_identity", return_value={"path": "/tool", "sha256": "x"}), \
-             mock.patch.object(VERIFY.CORE, "query", side_effect=["cargo 1.95.0 (x)", "rustc 1.93.0 (x)\nrelease: 1.93.0"]):
+             mock.patch.object(VERIFY.CORE, "query", side_effect=["cargo 1.95.0 (x)", "rustc 1.99.0 (x)\nrelease: 1.99.0"]):
             with self.assertRaisesRegex(VERIFY.VerificationError, "Cargo must"):
                 VERIFY.toolchain_identity(*paths, Path("/repo"))
 

@@ -537,7 +537,7 @@ must not be used as current Evidence Factory entrypoints.
 - `build_shell_exec_artifact_set.py` is the offline control-owned builder for
   the Root-Linux MCP adapter and Android broker/worker. It requires an explicit
   closed-v2 source BOM, Android tree, empty artifact root, resolved manifest,
-  fixed Rust 1.95 toolchain tree, Cargo home tree, direct
+  fixed Rust 1.99 toolchain tree, Cargo home tree, direct
   Cargo/Rustc/target-linker ELFs,
   an explicit static host-linker wrapper plus Zig 0.14.1 driver/toolchain tree,
   and one explicit static x86-64 `qemu-aarch64-static` ELF. It recreates the
@@ -626,7 +626,7 @@ must not be used as current Evidence Factory entrypoints.
 
 The shell artifact builder expects private, non-group/world-writable closure
 roots, and requires its Zig/Cargo trees to be owner-read-only. In particular,
-use a curated immutable Cargo home, Rust 1.95 toolchain copy,
+use a curated immutable Cargo home, Rust 1.99 toolchain copy,
 and exact Zig 0.14.1 distribution containing the prebuilt static wrapper; do
 not use mutable default caches, a `rustup` shim/symlink, `/usr/bin/cc`, a QEMU
 symlink, or a wrapper found through `PATH`. The output parent must be an

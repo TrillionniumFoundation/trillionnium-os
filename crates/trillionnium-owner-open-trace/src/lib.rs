@@ -98,9 +98,19 @@ fn identifier(value: &str) -> bool {
 }
 
 fn increment(counter: &AtomicU64) {
-    let _ = counter.fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| {
-        Some(n.saturating_add(1))
-    });
+    // Preserve the MSRV 1.93 fetch_update algorithm without its deprecated name.
+    let mut previous = counter.load(Ordering::Relaxed);
+    loop {
+        match counter.compare_exchange_weak(
+            previous,
+            previous.saturating_add(1),
+            Ordering::Relaxed,
+            Ordering::Relaxed,
+        ) {
+            Ok(_) => return,
+            Err(observed) => previous = observed,
+        }
+    }
 }
 
 fn monotonic_ns() -> Option<u64> {
@@ -572,6 +582,42 @@ pub fn export_from_env() -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn saturating_increment_preserves_zero_and_limits() {
+        for (initial, expected) in [
+            (0, 1),
+            (1, 2),
+            (u64::MAX - 1, u64::MAX),
+            (u64::MAX, u64::MAX),
+        ] {
+            let counter = AtomicU64::new(initial);
+            increment(&counter);
+            assert_eq!(counter.load(Ordering::Relaxed), expected);
+        }
+    }
+
+    #[test]
+    fn concurrent_saturating_increment_loses_no_updates_or_wraps() {
+        for initial in [0, u64::MAX - 17] {
+            let counter = AtomicU64::new(initial);
+            let start = std::sync::Barrier::new(8);
+            std::thread::scope(|scope| {
+                for _ in 0..8 {
+                    scope.spawn(|| {
+                        start.wait();
+                        for _ in 0..128 {
+                            increment(&counter);
+                        }
+                    });
+                }
+            });
+            assert_eq!(
+                counter.load(Ordering::Relaxed),
+                initial.saturating_add(1024)
+            );
+        }
+    }
     #[test]
     fn layout_and_encoded_record_have_explicit_local_bounds() {
         // Bound addressed payload, not allocator/RSS or all producer processes.
