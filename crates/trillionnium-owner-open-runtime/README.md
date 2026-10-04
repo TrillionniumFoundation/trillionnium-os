@@ -17,9 +17,10 @@ Capacity denial publishes no process event or durable effect acceptance.
 `execute_*_with_capacity` entry points let the bridge retain that reservation
 through its registry admission. The token is consumed once and actual capacity
 is checked again. Existing terminal/unknown identities require no new lease.
-Inherited environment values are preserved in a bounded1 MiB snapshot before
-admission, with request environment deltas applied afterward; later host-env
-mutation cannot widen the admitted child. Snapshot/Command staging is reserved.
+Host environment values are captured in a bounded1 MiB snapshot before
+admission. Only the existing inheritance allowlist is copied from that snapshot,
+with request environment deltas applied afterward; later host-env mutation cannot
+widen the admitted child. Snapshot/Command staging is reserved.
 
 These bounds cover owned substrate buffers/leaders. Caller-retained output,
 external processes/descendants, thread stacks and whole-process RSS require
