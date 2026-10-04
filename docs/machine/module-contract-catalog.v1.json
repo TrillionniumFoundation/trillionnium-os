@@ -780,8 +780,8 @@
         },
         {
           "path": "tools/perf/inspect_monotonic_stream.py",
-          "sha256": "a7e0ddc2a9ee6f741be39a29916e2b112d6dec696db90b0220e762bbd6ce2e1d",
-          "size": 14390
+          "sha256": "0e2594d592cfea868d60fa2d46165803f997e0b22f2c80af0875922b0a5c24a2",
+          "size": 14404
         }
       ],
       "logical_labels": {
