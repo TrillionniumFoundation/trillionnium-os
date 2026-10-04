@@ -249,4 +249,144 @@ mod tests {
             encoded_line_size(&response, MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES).unwrap() < 4096
         );
     }
+    fn fragmented_fixture(count: usize, bytes: usize) -> ToolOutcome {
+        let mut outcome = fixture(Vec::new());
+        if let ToolOutcome::Executed {
+            events, terminal, ..
+        } = &mut outcome
+        {
+            terminal.stdout_bytes = (count * bytes) as u64;
+            events.clear();
+            let mut push = |kind| {
+                events.push(ExecutionEvent {
+                    call_id: "call".into(),
+                    target_id: None,
+                    tool: trillionnium_owner_open_runtime::ToolKind::ShellExec,
+                    seq: events.len() as u64,
+                    elapsed_ms: 1,
+                    kind,
+                });
+            };
+            push(ExecutionEventKind::Accepted);
+            push(ExecutionEventKind::Started { pid: 123 });
+            for _ in 0..count {
+                push(ExecutionEventKind::Output {
+                    stream: StreamKind::Stdout,
+                    bytes: vec![b'x'; bytes],
+                });
+            }
+            push(ExecutionEventKind::Terminal(terminal.clone()));
+        }
+        outcome
+    }
+
+    fn assert_native_consumer_preserves_metadata(response: &ToolResult, should_accept: bool) {
+        use std::io::Write;
+        use std::process::{Command, Stdio};
+        let source = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+        let program = r#"
+import json, pathlib, sys
+root = pathlib.Path(sys.argv[1]).resolve().parents[1]
+sys.path[:0] = [str(root / 'tools/owner-open'), str(root / 'crates/trillionnium-owner-open-provider-jsonl/python')]
+import codex_callback_observation as observation
+raw = sys.stdin.buffer.read(32 * 1024 * 1024 + 1)
+source = json.loads(raw)
+projected = observation.decode_host_observation(raw)
+reply = observation.native_tool_result_reply(17, projected)
+result = json.loads(json.loads(reply)['result']['contentItems'][0]['text'])
+for key, value in source.items():
+    if key != 'events':
+        assert result[key] == value, key
+if source.get('events_truncated'):
+    assert source['events'] == []
+    assert source['observation_gap']['domain'] == 'tool_execution_event'
+    assert source['observation_gap']['call_id'] == source['call_id']
+assert len(reply) <= observation.MAX_NATIVE_REPLY_BYTES
+"#;
+        let mut child = Command::new("python3")
+            .args(["-c", program])
+            .arg(source)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .expect("Python consumer fixture");
+        let mut input = child.stdin.take().unwrap();
+        input
+            .write_all(&serde_json::to_vec(response).unwrap())
+            .unwrap();
+        drop(input);
+        let output = child.wait_with_output().unwrap();
+        assert_eq!(
+            output.status.success(),
+            should_accept,
+            "native callback consumer: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    }
+
+    #[test]
+    fn fragmented_callback_observations_fit_both_native_decoder_routes() {
+        for (count, bytes) in [
+            (1274, 1),
+            (1275, 1),
+            (1400, 1),
+            (1500, 1),
+            (2356, 64),
+            (2357, 64),
+            (3000, 64),
+            (4093, 1),
+        ] {
+            let response = ToolResult::new(1, "call", fragmented_fixture(count, bytes));
+            assert_native_consumer_preserves_metadata(&response, true);
+            if response.truncated {
+                let value = serde_json::to_value(&response).unwrap();
+                assert_eq!(value["observation_gap"]["event_count"], count + 3);
+                assert_eq!(value["observation_gap"]["output_bytes"], count * bytes);
+                assert_eq!(value["terminal"]["output_truncated"], false);
+            }
+        }
+    }
+
+    #[test]
+    fn default_fragmented_sixteen_mib_remains_complete_on_the_provider_wire() {
+        for (count, bytes) in [(1024, 16384), (2048, 8192)] {
+            let response = ToolResult::new(1, "call", fragmented_fixture(count, bytes));
+            assert!(!response.truncated);
+            assert_native_consumer_preserves_metadata(&response, true);
+        }
+    }
+
+    #[test]
+    fn callback_unicode_escaped_identity_and_long_metadata_keep_terminal_truth() {
+        let mut outcome = fragmented_fixture(1400, 1);
+        if let ToolOutcome::Executed {
+            events,
+            snapshot,
+            terminal,
+            ..
+        } = &mut outcome
+        {
+            snapshot.request.target_id = Some("目标\\\"".repeat(100));
+            terminal.error = Some("literal \"\\\n终端".repeat(32));
+            for event in events {
+                event.target_id.clone_from(&snapshot.request.target_id);
+            }
+        }
+        let response = ToolResult::new(1, "call", outcome);
+        assert_native_consumer_preserves_metadata(&response, true);
+
+        let mut outcome = fragmented_fixture(3000, 1);
+        if let ToolOutcome::Executed { terminal, .. } = &mut outcome {
+            terminal.error = Some("M".repeat(300 * 1024));
+        }
+        let response = ToolResult::new(1, "call", outcome);
+        assert_native_consumer_preserves_metadata(&response, false);
+        let value = serde_json::to_value(&response).unwrap();
+        assert_eq!(
+            value["terminal"]["error"].as_str().unwrap().len(),
+            300 * 1024
+        );
+        assert_eq!(value["terminal"]["output_truncated"], false);
+    }
 }
