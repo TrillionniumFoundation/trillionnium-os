@@ -32,6 +32,17 @@ Canonical entries:
   reasoning to the existing provider JSONL Host callbacks;
 - `prepare-adb-reverse-v1.sh` — explicit owner-host reverse bootstrap.
 
+## Exact MCP job arguments
+
+The MCP job bridge preserves every argument string, including empty arguments
+after `argv[0]`, for both pipe and PTY jobs. The executable must remain nonempty;
+non-string elements and embedded NUL are rejected before Host dispatch. This
+matches the selected v7 job wire without rewriting command or argument bytes.
+The focused regression is `JobArgvContractTest` in
+`tools/tests/test_codex_owner_open_mcp.py`; the same suite also exercises the
+actual STDIO MCP entrypoint against a recording Host fixture. These are source
+checks, not native Codex or installed-device qualification.
+
 ## Codex app-server adapter source boundary
 
 This is a source bridge candidate. The adapter forwards exact user text,

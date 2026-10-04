@@ -229,8 +229,8 @@
     },
     {
       "path": "tools/owner-open/owner_open_mcp_jobs.py",
-      "sha256": "b03fad573a6bc393cdba6c87faf64904e93302cc42f8b694d67653d1b970e59d",
-      "size": 17750
+      "sha256": "98ff13b48165ac9ab699f9d20648b55115fe2f8d3caad3feb8a8a052e9239430",
+      "size": 17758
     },
     {
       "path": "tools/owner-open/owner_open_rootlinux_supervisor.py",
