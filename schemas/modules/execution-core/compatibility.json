@@ -139,8 +139,8 @@
     },
     {
       "path": "tools/perf/inspect_monotonic_stream.py",
-      "sha256": "a7e0ddc2a9ee6f741be39a29916e2b112d6dec696db90b0220e762bbd6ce2e1d",
-      "size": 14390
+      "sha256": "0e2594d592cfea868d60fa2d46165803f997e0b22f2c80af0875922b0a5c24a2",
+      "size": 14404
     }
   ],
   "introduction_review_class": "INITIAL_V1",
@@ -206,8 +206,8 @@
     },
     {
       "path": "tools/tests/test_owner_open_monotonic_stream.py",
-      "sha256": "7ca25744ca477921e89af83968747c5c306ade9d99b9660c920cba9137b99849",
-      "size": 13343
+      "sha256": "ed3752fcf21c7eb66abe614ffb3a9e468c3f70412823be577624fcd3f3ac49e7",
+      "size": 19514
     }
   ],
   "unknown_fields": "REJECT"
