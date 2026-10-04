@@ -770,8 +770,8 @@
         },
         {
           "path": "crates/trillionnium-owner-open-trace/src/lib.rs",
-          "sha256": "fd1d71bd02be91c4ef9d3dce30580319bb286a380fc44feef9f76d6e51c00dac",
-          "size": 26119
+          "sha256": "42937f9f6f7f4be609c1c6fccf680f9094d409b2827a130195207b29244e7ef1",
+          "size": 27479
         },
         {
           "path": "crates/trillionnium-owner-open-trace/src/stream.rs",
