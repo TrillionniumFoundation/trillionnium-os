@@ -69,7 +69,7 @@ HOST_TARGET = "x86_64-unknown-linux-gnu"
 PROFILE = "release"
 FEATURES = ("android-product",)
 RUSTC_LINKER_FLAVOR = "ld.lld"
-RUST_VERSION = "1.95.0"
+RUST_VERSION = "1.99.0"
 ZIG_VERSION = "0.14.1"
 SOURCE_DATE_EPOCH = "1785110400"
 MAX_SOURCE_BOM_BYTES = 8 * 1024 * 1024
@@ -2873,7 +2873,7 @@ def build(args: argparse.Namespace) -> Path:
             or rustc_fields.get("release") != RUST_VERSION
             or rustc_fields.get("host") != HOST_TARGET
         ):
-            deny("Cargo/rustc differs from the fixed Rust 1.95 x86-64 closure")
+            deny("Cargo/rustc differs from the fixed Rust 1.99 x86-64 closure")
         zig_version_environment = {
             "LANG": "C",
             "LC_ALL": "C",

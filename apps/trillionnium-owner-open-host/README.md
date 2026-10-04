@@ -50,7 +50,9 @@ establish installed recovery or device memory qualification.
 
 ## Build and verification
 
-The required G1 source qualification uses Rust 1.93 with:
+The G1 current-build source lane uses Rust 1.99. The required Rust 1.93
+compatibility lane is retained and explicitly overrides the root toolchain pin.
+Both lanes check the selected Host source closure with:
 
 ```sh
 cargo fmt --all -- --check

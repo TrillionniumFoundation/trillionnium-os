@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare two clean-source, Rust 1.93 release builds of selected Host/Core.
+"""Compare two clean-source, Rust 1.99 release builds of selected Host/Core.
 
 This tests byte reproducibility for the recorded local inputs. It is not a
 hermetic build attestation, installation, signature, or release qualification.
@@ -26,7 +26,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = "org.trillionnium.host-build-reproducibility.v1"
 BINARIES = ("trillionnium-owner-open-r5-host", "trillionnium-owner-open-r5-core")
-RUST_VERSION = "1.93.0"
+RUST_VERSION = "1.99.0"
 MAX_LOG_BYTES = 32 * 1024 * 1024
 IMPLEMENTATION_MANIFEST_SCHEMA = "org.trillionnium.host-build-reproducibility-implementation.v1"
 IMPLEMENTATION_PATHS = (
@@ -544,9 +544,9 @@ def toolchain_identity(
         runtime=runtime,
     )
     require(cargo_version.startswith(f"cargo {RUST_VERSION} "),
-            "Cargo must be exactly 1.93.0")
+            "Cargo must be exactly 1.99.0")
     require(rust_version.splitlines()[0].startswith(f"rustc {RUST_VERSION} "),
-            "Rustc must be exactly 1.93.0")
+            "Rustc must be exactly 1.99.0")
     require(f"release: {RUST_VERSION}" in rust_version.splitlines(),
             "Rust release metadata differs")
     for name in ("cc", "ar"):
