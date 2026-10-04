@@ -2001,14 +2001,29 @@ impl SegmentedEventStore {
         if encoded.pop() != Some(b'\n') {
             return Err(EventStoreError::TruncatedRecord);
         }
-        let retained_and_encoded = resources::reserve(
+        // Every admitted WAL record already passed this intrinsic decode
+        // gate. A later raw-record budget failure is integrity drift, not
+        // temporary pressure from a caller's overlapping owned input.
+        let decode_bytes = resources::json_allocation_bound(&encoded)
+            .and_then(|bound| {
+                resources::reserve(
+                    encoded.capacity(),
+                    bound,
+                    resources::MAX_TEMPORARY_ALLOCATION,
+                )
+            })
+            .map_err(|error| {
+                if matches!(error, EventStoreError::CapacityExhausted) {
+                    EventStoreError::InvalidRecord(
+                        "stored event record exceeds its authenticated decode budget".to_string(),
+                    )
+                } else {
+                    error
+                }
+            })?;
+        resources::reserve(
             retained_bytes,
-            encoded.capacity(),
-            resources::MAX_TEMPORARY_ALLOCATION,
-        )?;
-        resources::check_decode(
-            retained_and_encoded,
-            &encoded,
+            decode_bytes,
             resources::MAX_TEMPORARY_ALLOCATION,
         )?;
         let record: EventRecord =
