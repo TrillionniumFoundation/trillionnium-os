@@ -1999,6 +1999,344 @@ mod tests {
         directory
     }
 
+    fn isolated_reopen_case(test_name: &str, count: usize) -> bool {
+        const CHILD: &str = "TRILLIONNIUM_JOURNAL_REOPEN_BUDGET_CHILD";
+        let child_count = count.to_string();
+        if std::env::var(CHILD).ok().as_deref() == Some(child_count.as_str()) {
+            return false;
+        }
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", test_name, "--nocapture"])
+            .env(CHILD, count.to_string())
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}\n{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
+        true
+    }
+
+    fn short_reopen_key(index: usize) -> JobKey {
+        JobKey::new(
+            JobScope::new("s", "p", "t", "u", "v"),
+            format!("job{index:04}"),
+        )
+    }
+
+    fn short_reopen_request() -> JobRequest {
+        JobRequest::new("a".repeat(64), "b".repeat(64), "shell.exec", "pipe", None)
+    }
+
+    fn assert_admitted_history_reopens(count: usize) {
+        let directory = secure_tempdir();
+        let root = directory.path().join("reopen-budget-v2");
+        let journal = JobJournal::open_best_effort_segmented(Some(&root), None);
+        let request = short_reopen_request();
+        let digest = "d".repeat(64);
+        assert_eq!(journal.status().unwrap(), JournalStatus::Durable);
+        for index in 0..count {
+            assert_eq!(
+                journal
+                    .begin_operation(
+                        &short_reopen_key(index),
+                        &request,
+                        "op",
+                        "start",
+                        &digest,
+                        json!({}),
+                    )
+                    .unwrap(),
+                OperationBegin::New,
+                "live admission failed at job {index}"
+            );
+        }
+        assert_eq!(journal.lock().unwrap().operations.len(), count);
+        assert_eq!(journal.lock().unwrap().jobs.len(), count);
+        journal.flush().unwrap();
+        let wal = root.join("segment-00000000000000000001.jsonl");
+        let before = fs::read(&wal).unwrap();
+        drop(journal);
+
+        let reopened = JobJournal::open_best_effort_segmented(Some(&root), None);
+        assert_eq!(
+            reopened.status().unwrap(),
+            JournalStatus::Durable,
+            "an admitted {count}-job history must reopen without external pressure"
+        );
+        assert_eq!(reopened.lock().unwrap().operations.len(), count);
+        assert_eq!(reopened.lock().unwrap().jobs.len(), count);
+        for index in 0..count {
+            let owner = short_reopen_key(index);
+            let recovered = reopened.recovered_job(&owner).unwrap().unwrap();
+            assert_eq!(recovered.request, request);
+            assert!(recovered.start_result.is_none());
+            assert!(recovered.terminal.is_none());
+            assert_eq!(reopened.runtime_next_cursor(&owner).unwrap(), 0);
+            assert_eq!(
+                reopened
+                    .begin_operation(&owner, &request, "op", "start", &digest, json!({}))
+                    .unwrap(),
+                OperationBegin::ExistingAccepted {
+                    restart_uncertain: true
+                }
+            );
+        }
+        assert_eq!(fs::read(wal).unwrap(), before);
+        drop(reopened);
+        let released = JobMemoryLease::acquire(48 * 1024 * 1024)
+            .expect("all live and recovered journal leases must return their capacity");
+        drop(released);
+    }
+
+    #[test]
+    fn admitted_1200_job_history_reopens_with_same_resident_budget() {
+        if isolated_reopen_case(
+            "journal::tests::admitted_1200_job_history_reopens_with_same_resident_budget",
+            1200,
+        ) {
+            return;
+        }
+        assert_admitted_history_reopens(1200);
+    }
+
+    #[test]
+    fn admitted_2000_job_history_reopens_with_same_resident_budget() {
+        if isolated_reopen_case(
+            "journal::tests::admitted_2000_job_history_reopens_with_same_resident_budget",
+            2000,
+        ) {
+            return;
+        }
+        assert_admitted_history_reopens(2000);
+    }
+
+    fn remaining_resident_capacity() -> usize {
+        let mut probe = JobMemoryLease::acquire(0).unwrap();
+        let (mut low, mut high) = (0, 48 * 1024 * 1024 + 1);
+        while low + 1 < high {
+            let middle = low + (high - low) / 2;
+            if probe.resize(middle).is_ok() {
+                low = middle;
+            } else {
+                high = middle;
+            }
+        }
+        low
+    }
+
+    #[test]
+    fn recovered_long_term_charge_matches_live_transition_ownership() {
+        if isolated_reopen_case(
+            "journal::tests::recovered_long_term_charge_matches_live_transition_ownership",
+            1,
+        ) {
+            return;
+        }
+        let directory = secure_tempdir();
+        let root = directory.path().join("ownership-v2");
+        let journal = JobJournal::open_best_effort_segmented(Some(&root), None);
+        let owner = short_reopen_key(0);
+        let request = short_reopen_request();
+        let digest = "d".repeat(64);
+        journal
+            .begin_operation(&owner, &request, "op", "start", &digest, json!({}))
+            .unwrap();
+        let live_available = remaining_resident_capacity();
+        drop(journal);
+        let reopened = JobJournal::open_best_effort_segmented(Some(&root), None);
+        assert_eq!(reopened.status().unwrap(), JournalStatus::Durable);
+        assert_eq!(remaining_resident_capacity(), live_available);
+        assert_eq!(reopened.lock().unwrap().operations.len(), 1);
+        assert_eq!(reopened.lock().unwrap().jobs.len(), 1);
+    }
+
+    fn recovery_fixture_envelope(
+        record: &str,
+        request: JobRequest,
+        operation: Option<(&str, &str)>,
+        event_seq: Option<u64>,
+    ) -> JournalEnvelope {
+        JournalEnvelope {
+            schema: JOURNAL_SCHEMA.to_string(),
+            record: record.to_string(),
+            job_id: "same-job".to_string(),
+            request,
+            operation_id: operation.map(|(id, _)| id.to_string()),
+            operation_kind: operation.map(|(_, kind)| kind.to_string()),
+            operation_sha256: operation.map(|_| "d".repeat(64)),
+            event_seq,
+            payload: json!({"source_fixture": true}),
+        }
+    }
+
+    fn assert_authenticated_recovery_refused(records: Vec<JournalEnvelope>, expected: &str) {
+        let directory = secure_tempdir();
+        let path = directory.path().join("authenticated-conflict.jsonl");
+        let store =
+            DurableEventStore::open(&path, EventStoreLimits::default(), SyncPolicy::Full).unwrap();
+        for (index, envelope) in records.into_iter().enumerate() {
+            store
+                .append(EventInput {
+                    scope: turn_scope(&key("same-job")),
+                    event_id: format!("fixture-{index}"),
+                    kind: format!("fixture.{}", envelope.record),
+                    payload: serde_json::to_value(envelope).unwrap(),
+                })
+                .unwrap();
+        }
+        drop(store);
+        let before = fs::read(&path).unwrap();
+        let journal = JobJournal::open_best_effort(Some(&path));
+        let JournalStatus::Unavailable { error } = journal.status().unwrap() else {
+            panic!("authenticated conflicting history was accepted");
+        };
+        assert!(error.contains(expected), "unexpected rejection: {error}");
+        assert_eq!(fs::read(path).unwrap(), before);
+    }
+
+    #[test]
+    fn recovery_request_consistency_covers_nonstart_and_mixed_records() {
+        let accepted = |seed, operation, kind| {
+            recovery_fixture_envelope(
+                "operation.accepted",
+                request(seed),
+                Some((operation, kind)),
+                None,
+            )
+        };
+        let observation =
+            |seed| recovery_fixture_envelope("observation", request(seed), None, Some(0));
+        for records in [
+            vec![
+                accepted('a', "write", "write"),
+                accepted('c', "resize", "resize"),
+            ],
+            vec![observation('a'), accepted('c', "start", "start")],
+            vec![accepted('a', "start", "start"), observation('c')],
+        ] {
+            assert_authenticated_recovery_refused(records, "request binding conflicts");
+        }
+    }
+
+    #[test]
+    fn recovery_transition_rejections_remain_distinct_from_request_consistency() {
+        let accepted = || {
+            recovery_fixture_envelope(
+                "operation.accepted",
+                request('a'),
+                Some(("op", "start")),
+                None,
+            )
+        };
+        let operation_terminal = || {
+            recovery_fixture_envelope(
+                "operation.terminal",
+                request('a'),
+                Some(("op", "start")),
+                None,
+            )
+        };
+        let job_terminal =
+            || recovery_fixture_envelope("job.terminal", request('a'), None, Some(7));
+        for (records, expected) in [
+            (
+                vec![accepted(), accepted()],
+                "accepted record is duplicated",
+            ),
+            (vec![operation_terminal()], "terminal precedes acceptance"),
+            (
+                vec![accepted(), operation_terminal(), operation_terminal()],
+                "operation terminal conflicts",
+            ),
+            (
+                vec![job_terminal(), job_terminal()],
+                "terminal record is duplicated",
+            ),
+            (
+                vec![recovery_fixture_envelope(
+                    "observation",
+                    request('a'),
+                    None,
+                    Some(u64::MAX),
+                )],
+                "observation sequence exhausted",
+            ),
+            (
+                vec![recovery_fixture_envelope(
+                    "unknown",
+                    request('a'),
+                    None,
+                    None,
+                )],
+                "unsupported job journal record",
+            ),
+        ] {
+            assert_authenticated_recovery_refused(records, expected);
+        }
+    }
+
+    #[test]
+    fn recovery_keeps_completed_cursor_and_nonstart_only_identity() {
+        let directory = secure_tempdir();
+        let root = directory.path().join("mixed-history-v2");
+        let journal = JobJournal::open_best_effort_segmented(Some(&root), None);
+        let owner = key("completed");
+        let orphan = key("control-only");
+        let request = request('a');
+        let digest = "d".repeat(64);
+        let start_result = json!({"status": "source-fixture-started"});
+        let terminal = json!({"kind": "terminal", "source_fixture": true});
+        journal
+            .begin_operation(&owner, &request, "start", "start", &digest, json!({}))
+            .unwrap();
+        journal
+            .complete_operation(
+                &owner,
+                &request,
+                "start",
+                "start",
+                &digest,
+                start_result.clone(),
+            )
+            .unwrap();
+        journal
+            .record_job_terminal(&owner, &request, 7, terminal.clone())
+            .unwrap();
+        for kind in ["write", "resize"] {
+            journal
+                .begin_operation(&orphan, &request, kind, kind, &digest, json!({}))
+                .unwrap();
+        }
+        drop(journal);
+        let reopened = JobJournal::open_best_effort_segmented(Some(&root), None);
+        assert_eq!(reopened.status().unwrap(), JournalStatus::Durable);
+        let recovered = reopened.recovered_job(&owner).unwrap().unwrap();
+        assert_eq!(recovered.request, request);
+        assert_eq!(recovered.start_result, Some(start_result.clone()));
+        assert_eq!(recovered.terminal, Some(terminal));
+        assert_eq!(reopened.runtime_next_cursor(&owner).unwrap(), 8);
+        assert_eq!(
+            reopened
+                .begin_operation(&owner, &request, "start", "start", &digest, json!({}))
+                .unwrap(),
+            OperationBegin::ExistingTerminal(start_result)
+        );
+        assert!(reopened.recovered_job(&orphan).unwrap().is_none());
+        for kind in ["write", "resize"] {
+            assert_eq!(
+                reopened
+                    .begin_operation(&orphan, &request, kind, kind, &digest, json!({}))
+                    .unwrap(),
+                OperationBegin::ExistingAccepted {
+                    restart_uncertain: true
+                }
+            );
+        }
+    }
+
     #[test]
     fn oversized_owned_payloads_refuse_before_waiting_for_the_working_lane() {
         const ISOLATED: &str = "TRILLIONNIUM_JOURNAL_QUEUED_INPUT_CHILD";
