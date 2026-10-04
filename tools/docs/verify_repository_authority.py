@@ -25,6 +25,10 @@ MARKDOWN_EXCLUDED_DIRECTORIES = frozenset({
     ".git", "target", ".venv", "venv", "__pycache__", ".pytest_cache",
 })
 PROFILE_PATH = "docs/machine/product-profile-catalog.v1.json"
+PROFILE_CLAIM_CEILINGS = {
+    "ACTIVE_DEFAULT": "SOURCE_PROFILE_SELECTION_ONLY_UNTIL_L2_L4_EVIDENCE",
+    "SEALED_OPTIONAL": "RETAINED_HISTORY_AND_SOURCE_ARCHAEOLOGY_ONLY",
+}
 LIFECYCLE_PATH = "governance/component-lifecycle.v1.json"
 CAPABILITY_BEGIN = "<!-- PROFILE_CAPABILITIES_BEGIN -->"
 CAPABILITY_END = "<!-- PROFILE_CAPABILITIES_END -->"
@@ -736,6 +740,10 @@ def verify_profiles(root: Path) -> dict[str, Any]:
         if raw["default"]:
             default_ids.append(profile_id)
         text(raw["claim_ceiling"], f"{profile_id}.claim_ceiling")
+        require(raw["claim_ceiling"] == PROFILE_CLAIM_CEILINGS[raw["status"]],
+                f"{profile_id} source-profile claim_ceiling must remain "
+                f"{PROFILE_CLAIM_CEILINGS[raw['status']]}; installed/runtime and release "
+                "qualification are separate evidence gates")
         selected_modules = string_list(raw["selected_modules"], f"{profile_id}.selected_modules", allow_empty=True)
         selected_cargo_raw = string_list(raw["selected_cargo_components"], f"{profile_id}.selected_cargo_components", allow_empty=True)
         selected_paths_raw = string_list(raw["selected_implementation_paths"], f"{profile_id}.selected_implementation_paths", allow_empty=True)

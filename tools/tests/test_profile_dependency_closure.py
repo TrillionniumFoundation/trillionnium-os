@@ -40,6 +40,17 @@ class ProfileDependencyClosureTest(unittest.TestCase):
         self.assertEqual(edges[0]["dependency_module"], "MOD-GLOBAL-CONTROL")
         self.assertEqual(profiles["profiles"][1]["deferred_dependencies"], [])
 
+    def test_source_profiles_cannot_relabel_themselves_as_installed_or_released(self) -> None:
+        _, baseline = self.profile()
+        for profile_index in (0, 1):
+            for ceiling in ("INSTALLED_L2_QUALIFIED", "PUBLIC_RELEASE_AUTHORIZED", "source-only"):
+                with self.subTest(profile=profile_index, ceiling=ceiling):
+                    value = deepcopy(baseline)
+                    value["profiles"][profile_index]["claim_ceiling"] = ceiling
+                    (self.root / VERIFY.PROFILE_PATH).write_text(json.dumps(value), encoding="utf-8")
+                    with self.assertRaisesRegex(VERIFY.VerificationError, "source-profile claim_ceiling"):
+                        VERIFY.verify_profiles(self.root)
+
     def test_missing_declaration_does_not_default_to_optional(self) -> None:
         _, value = self.profile()
         del value["profiles"][0]["deferred_dependencies"]

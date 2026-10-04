@@ -64,6 +64,12 @@ The default product profile is the selected source subset recorded in
 `generated/PRODUCT_PROFILE_STATUS.md`. It is not evidence of an installed
 runtime process graph.
 
+The verifier binds each profile status to its existing source-only claim
+ceiling. Relabeling a profile as installed-qualified or release-authorized is
+rejected, including when its planned-only dependency declaration is otherwise
+valid. Source selection and an open qualification gap never grant installed
+admission; this check does not observe or implement a runtime lease.
+
 Each profile now requires `deferred_dependencies`, including an empty array
 when no dependency is deferred. Older profile records without that field fail
 closed and must be regenerated/reviewed with the verifier and projection. Every
