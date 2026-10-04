@@ -16,13 +16,13 @@ class AndroidRecoveryUiTest(unittest.TestCase):
         compiler, java = shutil.which("javac"), shutil.which("java")
         if not compiler or not java:
             self.skipTest("JDK required for source UI recovery harness")
-        # These stubs exercise app state and asynchronous ownership only. They
+        # These stubs exercise layout parameters, app state and async ownership. They
         # are not Android target, rendering, SELinux, or installation evidence.
         stubs = {
             "android/os/Bundle.java": "package android.os; public class Bundle {}",
             "android/text/InputType.java": "package android.text; public class InputType {public static final int TYPE_CLASS_TEXT=1, TYPE_TEXT_FLAG_MULTI_LINE=2;}",
-            "android/view/View.java": "package android.view; public class View {public interface OnClickListener {void onClick(View v);}}",
-            "android/view/ViewGroup.java": "package android.view; public class ViewGroup extends View {public static class LayoutParams {public static final int MATCH_PARENT=-1,WRAP_CONTENT=-2; public LayoutParams(int a,int b){}}}",
+            "android/view/View.java": "package android.view; public class View {public ViewGroup parent;private ViewGroup.LayoutParams params;public void setLayoutParams(ViewGroup.LayoutParams p){params=p;}public ViewGroup.LayoutParams getLayoutParams(){return params;}public interface OnClickListener {void onClick(View v);}}",
+            "android/view/ViewGroup.java": "package android.view; public class ViewGroup extends View {public static class LayoutParams {public static final int MATCH_PARENT=-1,WRAP_CONTENT=-2;public final int width,height; public LayoutParams(int a,int b){width=a;height=b;}}}",
             "android/app/Activity.java": """package android.app; import java.util.*; public class Activity {
                 public final Queue<Runnable> ui=new ArrayDeque<>();
                 public void runOnUiThread(Runnable r){synchronized(ui){ui.add(r);}}
@@ -33,8 +33,8 @@ class AndroidRecoveryUiTest(unittest.TestCase):
             """,
             "android/widget/TextView.java": "package android.widget; public class TextView extends android.view.View {String text=\"\";public TextView(Object a){} public void setTextIsSelectable(boolean b){} public void setText(CharSequence s){text=s.toString();}public CharSequence getText(){return text;}}",
             "android/widget/EditText.java": "package android.widget;public class EditText extends TextView {public EditText(Object a){super(a);}public void setHint(int s){}public void setMinLines(int n){}public void setInputType(int t){}}",
-            "android/widget/Button.java": "package android.widget;public class Button extends TextView {public Button(Object a){super(a);}public void setText(int s){}public void setOnClickListener(android.view.View.OnClickListener l){}public void setAllCaps(boolean b){}public void setLayoutParams(Object o){}}",
-            "android/widget/LinearLayout.java": "package android.widget;public class LinearLayout extends android.view.ViewGroup {public static final int VERTICAL=1,HORIZONTAL=2;public LinearLayout(Object a){}public void setOrientation(int n){}public void setPadding(int a,int b,int c,int d){}public void addView(Object v){}public void addView(Object v,Object p){}public static class LayoutParams extends android.view.ViewGroup.LayoutParams {public LayoutParams(int a,int b){super(a,b);}public LayoutParams(int a,int b,int c){super(a,b);}}}",
+            "android/widget/Button.java": "package android.widget;public class Button extends TextView {public int label;public Button(Object a){super(a);}public void setText(int s){label=s;}public void setOnClickListener(android.view.View.OnClickListener l){}public void setAllCaps(boolean b){}}",
+            "android/widget/LinearLayout.java": "package android.widget;public class LinearLayout extends android.view.ViewGroup {public static final int VERTICAL=1,HORIZONTAL=2;public int orientation;public final java.util.List<android.view.View> children=new java.util.ArrayList<>();public LinearLayout(Object a){}public void setOrientation(int n){orientation=n;}public void setPadding(int a,int b,int c,int d){}public void addView(android.view.View v){v.parent=this;children.add(v);}public void addView(android.view.View v,android.view.ViewGroup.LayoutParams p){v.setLayoutParams(p);addView(v);}public static class LayoutParams extends android.view.ViewGroup.LayoutParams {public final float weight;public LayoutParams(int a,int b){this(a,b,0);}public LayoutParams(int a,int b,float c){super(a,b);weight=c;}}}",
             "android/widget/ScrollView.java": "package android.widget;public class ScrollView extends android.view.ViewGroup {public ScrollView(Object a){}public void addView(Object v,Object p){} public static class LayoutParams extends android.view.ViewGroup.LayoutParams {public LayoutParams(int a,int b){super(a,b);}}}",
             "android/net/LocalSocketAddress.java": "package android.net;public class LocalSocketAddress {public enum Namespace {ABSTRACT}public LocalSocketAddress(String s,Namespace n){}}",
             "android/net/LocalSocket.java": "package android.net;import java.io.*;public class LocalSocket {public void connect(LocalSocketAddress a)throws IOException{}public InputStream getInputStream()throws IOException{return new ByteArrayInputStream(new byte[0]);}public OutputStream getOutputStream()throws IOException{return new ByteArrayOutputStream();}public void close()throws IOException{}}",
@@ -51,7 +51,8 @@ class AndroidRecoveryUiTest(unittest.TestCase):
         harness = textwrap.dedent(r'''
             import java.util.*;import java.util.concurrent.*;import java.util.concurrent.atomic.*;
             import java.io.*;import java.lang.reflect.*;import org.trillionnium.owneropen.*;
-            import android.widget.TextView;import org.json.JSONObject;
+            import android.widget.TextView;import android.widget.Button;import android.widget.LinearLayout;
+            import android.view.ViewGroup;import org.json.JSONObject;
             public class UiHarness {
                 static void put(Object o,String n,Object v)throws Exception {Field f=o.getClass().getDeclaredField(n);f.setAccessible(true);f.set(o,v);}
                 static Object get(Object o,String n)throws Exception {Field f=o.getClass().getDeclaredField(n);f.setAccessible(true);return f.get(o);}
@@ -65,6 +66,22 @@ class AndroidRecoveryUiTest(unittest.TestCase):
                 static Map<String,Object> frame(OwnerOpenShellActivity a,String kind,Map<String,Object> p)throws Exception{Map<String,Object> f=scope(a);f.put("kind",kind);f.put("payload",p);return f;}
                 static void close(OwnerOpenShellActivity a)throws Exception {call(a,"onDestroy",new Class[]{});}
                 public static void main(String[] ignored)throws Exception {try {
+                    OwnerOpenShellActivity layout=new OwnerOpenShellActivity();
+                    put(layout,"client",new OwnerOpenClient(layout));
+                    LinearLayout root=(LinearLayout)call(layout,"buildView",new Class[]{});
+                    check(root.orientation==LinearLayout.VERTICAL);check(root.children.size()==4);
+                    Button recover=(Button)root.children.get(2);check(recover.parent==root);check(recover.label==R.string.recover_output);
+                    LinearLayout.LayoutParams params=(LinearLayout.LayoutParams)recover.getLayoutParams();
+                    check(params.width==ViewGroup.LayoutParams.MATCH_PARENT);
+                    check(params.height==ViewGroup.LayoutParams.WRAP_CONTENT);check(params.weight==0);
+                    LinearLayout controls=(LinearLayout)root.children.get(1);check(controls.orientation==LinearLayout.HORIZONTAL);
+                    check(controls.children.size()==4);int[] labels={R.string.send,R.string.cancel,R.string.inspect,R.string.reconnect};
+                    for(int i=0;i<labels.length;i++){
+                        Button button=(Button)controls.children.get(i);check(button.parent==controls);check(button.label==labels[i]);
+                        LinearLayout.LayoutParams horizontal=(LinearLayout.LayoutParams)button.getLayoutParams();
+                        check(horizontal.width==0);check(horizontal.height==ViewGroup.LayoutParams.WRAP_CONTENT);check(horizontal.weight==1);
+                    }
+                    close(layout);
                     OwnerOpenShellActivity a=activity();OwnerOpenClient client=new OwnerOpenClient(a);
                     ByteArrayOutputStream out=new ByteArrayOutputStream();put(client,"output",out);((AtomicBoolean)get(client,"closed")).set(false);put(a,"client",client);
                     put(a,"helloPayload",Map.of("resync_protocols",List.of("scoped_cursor_v1")));
@@ -92,7 +109,7 @@ class AndroidRecoveryUiTest(unittest.TestCase):
                     for(int i=0;i<20;i++)full.onFrame(1,"stale");
                     check(((ThreadPoolExecutor)executor(full)).getQueue().size()<=16);check(((Long)get(full,"rejectedGeneration"))==1);
                     check(!owned.isConnected());stuck.countDown();barrier(full);full.flushUi();close(full);
-                    System.out.println("UI recovery, bounded histories, queue overflow and stale generation PASS");
+                    System.out.println("UI layout, recovery, bounded histories, queue overflow and stale generation PASS");
                 }catch(Throwable failure){failure.printStackTrace();System.exit(1);}}
             }
         ''')

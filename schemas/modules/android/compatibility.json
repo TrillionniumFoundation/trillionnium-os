@@ -168,8 +168,8 @@
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenShellActivity.java",
-      "sha256": "b0de3335920c7f0788087b84d509281c7167d6588f48b9de1512f9bc32da8ec9",
-      "size": 21230
+      "sha256": "430a0d04ca2afbfe88125681f06e596b089c5eb8bd2b088a54cd58c2fb55c1f9",
+      "size": 21376
     },
     {
       "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json",
