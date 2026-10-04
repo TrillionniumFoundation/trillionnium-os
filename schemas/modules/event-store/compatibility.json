@@ -99,8 +99,8 @@
     },
     {
       "path": "crates/trillionnium-owner-open-event-store/src/compact.rs",
-      "sha256": "55a9ba1e48ee0818f1d0fc9f6ea8fbc45cfd39f6e564113923509500444c8a0a",
-      "size": 11710
+      "sha256": "c7d4ba29843b5a60f49242d76733281fd5e553beb6f097d4a1df8c50f4f71596",
+      "size": 11713
     },
     {
       "path": "crates/trillionnium-owner-open-event-store/src/lib.rs",

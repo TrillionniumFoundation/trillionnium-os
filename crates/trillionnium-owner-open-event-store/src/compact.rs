@@ -129,7 +129,7 @@ fn digest(raw: &str) -> Result<[u8; 32]> {
         _ => unreachable!("require_sha256 admits lowercase hexadecimal only"),
     };
     let mut value = [0_u8; 32];
-    for (slot, pair) in value.iter_mut().zip(raw.as_bytes().chunks_exact(2)) {
+    for (slot, pair) in value.iter_mut().zip(raw.as_bytes().as_chunks::<2>().0) {
         *slot = nibble(pair[0]) * 16 + nibble(pair[1]);
     }
     Ok(value)
