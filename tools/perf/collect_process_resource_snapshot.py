@@ -9,7 +9,9 @@ endpoint task/FD sets do not establish a peak or exclude transient activity.
 VmRSS is approximate; smaps_rollup is a separate sequential kernel observation.
 No individual HWM is summed or presented as a simultaneous process-family peak.
 Observe whole-process zero exit before admitting even a retained report. A
-deadline check cannot preempt a blocked synchronous kernel syscall.
+single deadline covers collection, serialization, a complete stdout write and
+flush. A late or partial publication may leave visible bytes, but is not an
+admissible receipt. Deadline checks cannot preempt a blocked synchronous syscall.
 """
 from __future__ import annotations
 
@@ -338,7 +340,12 @@ def observe_process(proc: Directory, pid: int, start_ticks: int, uid: int, budge
 
 
 def collect(subjects: list[tuple[int, int]], *, expected_uid: int, boot_id_sha256: str, seconds: float = 5.0) -> dict[str, Any]:
-    budget = Budget(seconds)
+    return _collect_with_budget(subjects, expected_uid=expected_uid, boot_id_sha256=boot_id_sha256,
+                                budget=Budget(seconds))
+
+
+def _collect_with_budget(subjects: list[tuple[int, int]], *, expected_uid: int,
+                         boot_id_sha256: str, budget: Budget) -> dict[str, Any]:
     if type(expected_uid) is not int or not 0 <= expected_uid < 1 << 32:
         raise SnapshotError('explicit uint32 process owner UID required')
     if not isinstance(boot_id_sha256, str) or not re.fullmatch(r'[0-9a-f]{64}', boot_id_sha256):
@@ -395,6 +402,22 @@ def collect(subjects: list[tuple[int, int]], *, expected_uid: int, boot_id_sha25
     return document
 
 
+def publish_stdout(document: dict[str, Any], budget: Budget) -> None:
+    # Keep the caller's original deadline. A blocked sink can outlive it, so
+    # recheck after each operation and never promote surviving bytes to success.
+    budget.check()
+    raw = (json.dumps(document, sort_keys=True, separators=(',', ':'), allow_nan=False) + '\n').encode()
+    if len(raw) > MAX_REPORT_BYTES:
+        raise SnapshotError('report byte bound exceeded')
+    budget.check()
+    written = sys.stdout.buffer.write(raw)
+    budget.check()
+    if type(written) is not int or written != len(raw):
+        raise SnapshotError('report stdout write incomplete')
+    sys.stdout.buffer.flush()
+    budget.check()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--subject', action='append', required=True, metavar='PID:START_TICKS')
@@ -403,18 +426,16 @@ def main() -> int:
     parser.add_argument('--seconds', type=float, default=MAX_SECONDS)
     args = parser.parse_args()
     try:
+        budget = Budget(args.seconds)
         subjects = []
         for value in args.subject:
             if not re.fullmatch(r'[1-9][0-9]{0,9}:(?:0|[1-9][0-9]{0,19})', value):
                 raise SnapshotError('subject must be PID:START_TICKS')
             pid, ticks = value.split(':')
             subjects.append((int(pid), int(ticks)))
-        result = collect(subjects, expected_uid=args.uid, boot_id_sha256=args.boot_id_sha256, seconds=args.seconds)
-        raw = (json.dumps(result, sort_keys=True, separators=(',', ':'), allow_nan=False) + '\n').encode()
-        if len(raw) > MAX_REPORT_BYTES:
-            raise SnapshotError('report byte bound exceeded')
-        sys.stdout.buffer.write(raw)
-        sys.stdout.buffer.flush()
+        result = _collect_with_budget(subjects, expected_uid=args.uid,
+                                      boot_id_sha256=args.boot_id_sha256, budget=budget)
+        publish_stdout(result, budget)
         return 0
     except (SnapshotError, OSError, ValueError) as error:
         print('process resource observer: ' + str(error), file=sys.stderr)

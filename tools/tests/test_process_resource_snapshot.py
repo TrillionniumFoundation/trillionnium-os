@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 import hashlib
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ import select
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -144,6 +146,33 @@ class ProcessResourceSnapshotTests(unittest.TestCase):
             self.assertEqual(negative.stdout, b'')
             self.assertIn(b'generation differs', negative.stderr)
 
+    def test_actual_cli_delayed_pipe_rejects_late_visible_report(self):
+        with owned_barrier_process() as (child, ticks):
+            argv = [sys.executable, '-B', str(PATH), '--subject', f'{child.pid}:{ticks}',
+                    '--uid', str(os.getuid()), '--boot-id-sha256', self.boot_sha, '--seconds', '2']
+            with subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                  pipesize=4096) as observer:
+                try:
+                    assert observer.stdout
+                    self.assertTrue(select.select([observer.stdout], [], [], 3)[0])
+                    first = os.read(observer.stdout.fileno(), 1)
+                    self.assertEqual(first, b'{')
+                    self.assertIsNone(observer.poll())
+                    # An ordinary finite sink delay holds publication, not the
+                    # observed workload. The report is larger than this pipe.
+                    time.sleep(2.1)
+                    self.assertIsNone(observer.poll())
+                    stdout, stderr = observer.communicate(timeout=3)
+                    visible = first + stdout
+                    self.assertGreater(len(visible), 4096)
+                    self.assertEqual(json.loads(visible)['decision'], 'SOURCE_PROCESS_SNAPSHOTS_RETAINED')
+                    self.assertEqual(observer.returncode, 2)
+                    self.assertIn(b'observer deadline exceeded', stderr)
+                finally:
+                    if observer.poll() is None:
+                        observer.kill()
+                        observer.communicate(timeout=3)
+
     def test_stat_comm_parsing_handles_parentheses_newlines_and_nonascii(self):
         fields = [b'S'] + [b'0'] * 49
         fields[11], fields[12], fields[17], fields[19] = b'12', b'34', b'3', b'56'
@@ -200,6 +229,111 @@ class ProcessResourceSnapshotTests(unittest.TestCase):
                 fds.close()
                 pid.close()
                 proc.close()
+
+
+class ProcessSnapshotPublicationTests(unittest.TestCase):
+    def setUp(self):
+        self.clock = 100.0
+        self.time_patch = mock.patch.object(OBSERVER.time, 'monotonic', side_effect=lambda: self.clock)
+        self.time_patch.start()
+        self.addCleanup(self.time_patch.stop)
+        self.budget = OBSERVER.Budget(1)
+        self.sink = mock.Mock()
+        self.sink.buffer.write.side_effect = lambda raw: len(raw)
+        self.stdout_patch = mock.patch.object(OBSERVER.sys, 'stdout', self.sink)
+        self.stdout_patch.start()
+        self.addCleanup(self.stdout_patch.stop)
+
+    def test_complete_write_and_flush_within_original_deadline_succeeds(self):
+        OBSERVER.publish_stdout({'source_only': True}, self.budget)
+        self.sink.buffer.write.assert_called_once_with(b'{"source_only":true}\n')
+        self.sink.buffer.flush.assert_called_once_with()
+
+    def test_expired_budget_prevents_serialization_and_output(self):
+        self.clock = 101.0
+        with mock.patch.object(OBSERVER.json, 'dumps') as dumps:
+            with self.assertRaisesRegex(OBSERVER.SnapshotError, 'deadline exceeded'):
+                OBSERVER.publish_stdout({}, self.budget)
+        dumps.assert_not_called()
+        self.sink.buffer.write.assert_not_called()
+
+    def test_slow_serialization_is_charged_before_output(self):
+        def serialize(*args, **kwargs):
+            self.clock = 101.0
+            return '{}'
+        with mock.patch.object(OBSERVER.json, 'dumps', side_effect=serialize):
+            with self.assertRaisesRegex(OBSERVER.SnapshotError, 'deadline exceeded'):
+                OBSERVER.publish_stdout({}, self.budget)
+        self.sink.buffer.write.assert_not_called()
+
+    def test_slow_write_or_flush_rejects_visible_bytes(self):
+        for delayed in ('write', 'flush'):
+            with self.subTest(delayed=delayed):
+                self.clock = 100.0
+                self.sink.reset_mock()
+                self.sink.buffer.write.side_effect = lambda raw: len(raw)
+                self.sink.buffer.flush.side_effect = None
+                def expire(*args):
+                    self.clock = 101.0
+                    return len(args[0]) if args else None
+                getattr(self.sink.buffer, delayed).side_effect = expire
+                with self.assertRaisesRegex(OBSERVER.SnapshotError, 'deadline exceeded'):
+                    OBSERVER.publish_stdout({}, self.budget)
+                self.sink.buffer.write.assert_called_once()
+                if delayed == 'write':
+                    self.sink.buffer.flush.assert_not_called()
+                else:
+                    self.sink.buffer.flush.assert_called_once()
+
+    def test_short_or_unknown_write_is_not_retried_or_flushed(self):
+        for count in (0, 1, None, True, 4):
+            with self.subTest(count=count):
+                self.sink.reset_mock()
+                self.sink.buffer.write.side_effect = lambda raw: count
+                with self.assertRaisesRegex(OBSERVER.SnapshotError, 'write incomplete'):
+                    OBSERVER.publish_stdout({}, self.budget)
+                self.sink.buffer.write.assert_called_once()
+                self.sink.buffer.flush.assert_not_called()
+
+    def test_publication_errors_and_cancellation_propagate_without_retry(self):
+        for stage in ('write', 'flush'):
+            for failure in (BrokenPipeError('closed sink'), KeyboardInterrupt()):
+                with self.subTest(stage=stage, failure=type(failure).__name__):
+                    self.sink.reset_mock()
+                    self.sink.buffer.write.side_effect = lambda raw: len(raw)
+                    self.sink.buffer.flush.side_effect = None
+                    getattr(self.sink.buffer, stage).side_effect = failure
+                    with self.assertRaises(type(failure)):
+                        OBSERVER.publish_stdout({}, self.budget)
+                    self.sink.buffer.write.assert_called_once()
+                    if stage == 'flush':
+                        self.sink.buffer.flush.assert_called_once()
+
+    def test_report_byte_limit_precedes_output(self):
+        with mock.patch.object(OBSERVER, 'MAX_REPORT_BYTES', 2):
+            with self.assertRaisesRegex(OBSERVER.SnapshotError, 'report byte bound'):
+                OBSERVER.publish_stdout({}, self.budget)
+        self.sink.buffer.write.assert_not_called()
+
+    def test_main_carries_collection_budget_into_publication(self):
+        budgets = []
+        def collect(subjects, *, expected_uid, boot_id_sha256, budget):
+            budgets.append(budget)
+            self.clock = 100.75
+            return {'source_only': True}
+        def publish(document, budget):
+            self.assertIs(budget, budgets[0])
+            self.assertEqual(budget.deadline, 101.0)
+            self.clock = 101.0
+            budget.check()
+        argv = [str(PATH), '--subject', '42:1', '--uid', '1000',
+                '--boot-id-sha256', '0' * 64, '--seconds', '1']
+        with mock.patch.object(OBSERVER.sys, 'argv', argv), \
+                mock.patch.object(OBSERVER, '_collect_with_budget', side_effect=collect), \
+                mock.patch.object(OBSERVER, 'publish_stdout', side_effect=publish), \
+                mock.patch.object(OBSERVER.sys, 'stderr', io.StringIO()) as stderr:
+            self.assertEqual(OBSERVER.main(), 2)
+            self.assertIn('observer deadline exceeded', stderr.getvalue())
 
 
 if __name__ == '__main__':

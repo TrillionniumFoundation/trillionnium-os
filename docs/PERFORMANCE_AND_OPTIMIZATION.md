@@ -180,7 +180,14 @@ family or inferring per-sample deltas. `VmRSS` is approximate; `smaps_rollup`
 is a separate sequential observation. Individual lifetime `VmHWM` and stable
 task/FD sets at two endpoints cannot establish a simultaneous family peak.
 The standalone observer requires actual zero exit; its report provides no
-installed qualification or complete lifetime coverage. Installed L2 still
+installed qualification or complete lifetime coverage. One original deadline
+covers collection, JSON serialization, the complete stdout write and flush.
+Completion means the local stdout buffer accepted every report byte and its
+flush returned before that deadline; it does not prove downstream receipt or
+durable storage. A delayed synchronous write cannot be preempted by this
+observer, but a late return, short write or publication failure cannot produce
+success. Partial or even complete visible JSON from a nonzero or interrupted
+observer is inadmissible; retain its actual exit outcome. Installed L2 still
 requires the complete resource lifecycle, work-end barrier and raw stage
 evidence from the same subject.
 
