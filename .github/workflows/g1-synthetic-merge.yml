@@ -45,6 +45,10 @@ jobs:
   synthetic-merge:
     name: L1 exact two-parent merge source qualification
     runs-on: ubuntu-24.04
+    # Manual dispatch can execute a selected fork while the run is scoped to
+    # main. Repository-token permissions do not restrict the cache token.
+    # These source gates need no Actions cache; enforce this at the service.
+    cache-mode: none
     timeout-minutes: 120
     steps:
       - name: Install declared source-test system tools
@@ -56,8 +60,8 @@ jobs:
           # Fixed distribution tools only, before any candidate checkout.
           # Do not run candidate scripts under sudo or silently skip ACL tests.
           /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
-          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
-          /usr/bin/dpkg-query --show --showformat='${Package} ${Version}\n' acl | tee "${RUNNER_TEMP}/g1-source-tools.log"
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl gcc make
+          /usr/bin/dpkg-query --show --showformat='${Package} ${Version}\n' acl gcc make | tee "${RUNNER_TEMP}/g1-source-tools.log"
 
       # A pull request's canonical hidden ref is served by the base repository
       # and remains fetchable even when the fork branch is renamed or private.
@@ -276,7 +280,7 @@ jobs:
           {
             source_uid="$(id -u)"
             [[ "$source_uid" =~ ^[1-9][0-9]*$ ]]
-            for tool in python3 rustc cargo setfacl getfacl; do
+            for tool in python3 rustc cargo setfacl getfacl cc make; do
               command -v "$tool"
             done
             python3 -I -c 'import sys; assert sys.version_info[:2] == (3, 13), sys.version'
@@ -319,6 +323,8 @@ jobs:
           # Run every repository-contained Python contract on the exact
           # synthetic merge object.  The focused invocations below retain
           # readable logs for the highest-risk broker/document boundaries.
+          python3 tools/generate-owner-open-common-base.py --check
+          python3 tools/verify-owner-open-sdk-selection.py
           python3 -m unittest discover -s tools/tests -p 'test*.py' -v 2>&1 | tee "${RUNNER_TEMP}/g1-merge-python.log"
           python3 -m unittest discover -s tools/tests -p 'test_verify_global_docs_contracts.py' -v
           python3 -m unittest discover -s tools/tests -p 'test_owner_open_broker*.py' -v

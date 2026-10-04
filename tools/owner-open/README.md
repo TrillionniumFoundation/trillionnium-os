@@ -28,7 +28,73 @@ Canonical entries:
   qualification runner;
 - `jsonl_provider_runtime.py` — provider-neutral bounded duplex JSONL process
   mechanics for W1 fixtures and bootstrap adapters;
+- `../../crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py` — source adapter from native Codex app-server
+  reasoning to the existing provider JSONL Host callbacks;
 - `prepare-adb-reverse-v1.sh` — explicit owner-host reverse bootstrap.
+
+## Codex app-server adapter source boundary
+
+This is a source bridge candidate. The adapter forwards exact user text,
+shell/ADB arguments and Host outcomes. It
+does not grant native approval requests, reinterpret unknown effect outcomes or
+retry an uncertain callback. Native request IDs retain their integer/string
+identity: integers must fit signed 64 bits, including both endpoints, and strings
+are limited to 256 UTF-8 bytes by this adapter's resource policy. The string bound
+is additional to the native schema; an empty string remains a valid request ID.
+Each turn admits at most 4096 distinct callback IDs and RPC request IDs. Reusing
+either identity fails before further Host dispatch. Requests carrying an ID are
+never accepted as notifications.
+
+Canonical v1 `tool.result` frames may omit scope because their per-turn channel
+and callback ID bind them. Any explicitly supplied session/profile/task/turn/
+stream field, including a `turn`, `scope` or registry scope, must match the
+accepted Host turn. EOF, cancellation and the two-frame input queue's exhaustion
+fence further delivery. The bounded fd reader can retire without waiting for
+the Host to close its pipe.
+
+Private session state binds the session/profile/task, measured configuration and
+native thread. A nonblocking per-session lease and serialized admission limit
+the registry to 256 sessions. Directory scanning stops after 528 entries;
+excess entries and crash leftovers require inspection rather than automatic
+removal or adoption. A resumed thread cannot change its bound native identity.
+The private bridge configuration explicitly names `home_directory`, `codex_home`
+and `codex_config_sha256` (or null for required absence). The native public
+configuration digest joins the session binding. Native cwd is the private
+CODEX_HOME, and ambient loader/Python/config environment injection is discarded.
+The adapter does not read native credentials. This file check does not prove
+immutable installed paths or bind other native configuration layers.
+
+Host callback input and native callback output use distinct limits. One borrowed
+Host raw frame may reach 32 MiB; its large event bodies are validated and
+projected before constructing a DOM. The native 256 KiB envelope preserves all
+bounded terminal/registry/control facts and any producer gap. A separate bridge
+observation gap identifies omitted events/output bytes, without changing the
+runtime output-truncation bit or permitting retry. This bridge projection is
+implemented in `codex_callback_observation.py` and is tested with the default
+16 MiB Host output through real local pipes.
+
+The frozen 0.144.1 `thread/start` and every `turn/start` use an empty native
+execution-environment list. `thread/resume` has no such field; the following
+turn supplies it again. Native final `agentMessage` items are delivered even
+when no delta notification occurred. Streaming prefix digests verify final
+text and publish only its remaining suffix, avoiding duplicate UI text;
+conflicting or unfinished messages cannot produce successful completion.
+Each turn retains at most 4096 message identities and 256 KiB per message.
+
+`python3 -m unittest tools.tests.test_codex_app_server_provider -v` exercises
+controlled native-message fixtures and local private-state mechanics. These
+tests do not demonstrate an authenticated native Codex reasoning/tool surface,
+installed provider isolation or Android effects. The native builtin effect
+surface remains unresolved: native launch flags do not establish that all
+independently registered native effect tools are disabled or contained. The
+provider remains `EXTERNAL_HOLD` and is not installed-qualified. Launch uses
+strict native configuration parsing, disables shell/unified execution, image
+generation, hooks, plugins and apps, and empties the legacy `notify` command.
+These overrides alone do not establish containment: managed feature requirements
+can override ordinary feature values, recursively merged `mcp_servers = {}`
+does not remove configured servers, and plugins can run during startup.
+Installed promotion must bind native HOME/CODEX_HOME, system/project/cloud
+configuration, requirements and any config lockfile before native startup.
 
 ## Codex MCP registration
 

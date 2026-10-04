@@ -944,6 +944,195 @@ class RootfsCommandBoundaryTest(unittest.TestCase):
             self.command("import os,time\nos.close(1);os.close(2);time.sleep(30)\n", 0.1)
         self.assertIsNotNone(self.children[0].returncode)
 
+    def test_selector_return_after_execution_deadline_cannot_accept_exit_zero(self):
+        selector = self.runtime.selectors.DefaultSelector()
+        original = selector.select
+
+        def delayed_select(timeout):
+            time.sleep(0.120)
+            return original(0)
+
+        with mock.patch.object(self.runtime.selectors, "DefaultSelector", return_value=selector), \
+                mock.patch.object(selector, "select", side_effect=delayed_select):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "timed out and was reaped"):
+                self.command("import time\ntime.sleep(0.075)\n", 0.030)
+        self.assertEqual(self.children[0].returncode, 0)
+        self.assertTrue(self.children[0].stdout.closed and self.children[0].stderr.closed)
+
+    def test_late_terminal_observation_cannot_accept_exit_zero(self):
+        original = self.runtime._observe_exit
+        delayed = False
+
+        def observe(child):
+            nonlocal delayed
+            if not delayed:
+                delayed = True
+                time.sleep(0.120)
+            return original(child)
+
+        with mock.patch.object(self.runtime, "_observe_exit", side_effect=observe):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "timed out and was reaped"):
+                self.command("import time\ntime.sleep(0.075)\n", 0.030)
+        self.assertEqual(self.children[0].returncode, 0)
+        self.assertTrue(self.children[0].stdout.closed and self.children[0].stderr.closed)
+
+    def test_late_last_eof_read_cannot_complete_drain(self):
+        original_observe, original_read = self.runtime._observe_exit, os.read
+        first_observation = True
+
+        def observe(child):
+            nonlocal first_observation
+            if first_observation:
+                first_observation = False
+                deadline = time.monotonic() + 1
+                while original_observe(child) is None:
+                    self.assertLess(time.monotonic(), deadline)
+                    time.sleep(0.005)
+            return original_observe(child)
+
+        def read(fd, amount):
+            data = original_read(fd, amount)
+            if self.children and fd in (
+                self.children[0].stdout.fileno(), self.children[0].stderr.fileno()
+            ) and not data:
+                time.sleep(0.080)
+            return data
+
+        with mock.patch.object(self.runtime, "_observe_exit", side_effect=observe), \
+                mock.patch.object(self.runtime.os, "read", side_effect=read):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "drain deadline"):
+                self.command("pass\n")
+        self.assertEqual(self.children[0].returncode, 0)
+        self.assertTrue(self.children[0].stdout.closed and self.children[0].stderr.closed)
+
+    def test_final_output_copy_after_drain_deadline_is_not_success(self):
+        original_bytes = bytes
+        copies = []
+
+        def delayed_bytes(value):
+            raw = original_bytes(value)
+            copies.append(len(raw))
+            time.sleep(0.080)
+            return raw
+
+        with mock.patch.object(self.runtime, "bytes", side_effect=delayed_bytes, create=True):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "drain deadline"):
+                self.command("pass\n")
+        self.assertEqual(copies, [0, 0])
+        self.assertEqual(self.children[0].returncode, 0)
+        self.assertTrue(self.children[0].stdout.closed and self.children[0].stderr.closed)
+
+    def test_final_output_hash_after_drain_deadline_is_not_success(self):
+        original_sha256 = hashlib.sha256
+        hashes = []
+
+        class DelayedHash:
+            def __init__(self, value):
+                self.inner = original_sha256(value)
+
+            def hexdigest(self):
+                digest = self.inner.hexdigest()
+                hashes.append(digest)
+                time.sleep(0.080)
+                return digest
+
+        with mock.patch.object(self.runtime.base.hashlib, "sha256", side_effect=DelayedHash):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "drain deadline"):
+                self.command("pass\n")
+        self.assertEqual(hashes, [original_sha256(b"").hexdigest()] * 2)
+        self.assertEqual(self.children[0].returncode, 0)
+        self.assertTrue(self.children[0].stdout.closed and self.children[0].stderr.closed)
+
+    def test_final_proc_stat_read_cannot_prove_quiet_after_scan_deadline(self):
+        child = self.runtime.subprocess.Popen(
+            [sys.executable, "-c", "pass"], start_new_session=True,
+            stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        )
+        deadline = time.monotonic() + 2
+        while self.runtime._observe_exit(child) is None:
+            self.assertLess(time.monotonic(), deadline)
+            time.sleep(0.005)
+        original_open = open
+        delayed = []
+
+        class LateFile:
+            def __init__(self, inner):
+                self.inner = inner
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                return self.inner.__exit__(*args)
+
+            def read(self, amount):
+                data = self.inner.read(amount)
+                delayed.append(True)
+                time.sleep(0.600)
+                return data
+
+        def delayed_open(path, *args, **kwargs):
+            inner = original_open(path, *args, **kwargs)
+            return LateFile(inner) if str(path) == f"/proc/{child.pid}/stat" else inner
+
+        with mock.patch.object(self.runtime, "open", side_effect=delayed_open, create=True):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "observation budget"):
+                self.runtime._quiet_group(child.pid, time.monotonic() + 0.5)
+        self.assertEqual(delayed, [True])
+        self.assertIsNone(child.returncode)  # the failed proof did not reap its anchor
+
+    def test_second_quiet_scan_after_kill_deadline_is_not_cleanup_success(self):
+        original_scan, original_signal = self.runtime._quiet_group, os.killpg
+        kill_phase, scans = False, 0
+
+        def signal_group(pid, sig):
+            nonlocal kill_phase
+            kill_phase = sig == signal.SIGKILL
+            return original_signal(pid, sig)
+
+        def scan(pid, deadline):
+            nonlocal scans
+            quiet = original_scan(pid, deadline)
+            if kill_phase:
+                scans += 1
+                if scans == 2:
+                    time.sleep(0.550)
+            return quiet
+
+        with mock.patch.object(self.runtime.os, "killpg", side_effect=signal_group), \
+                mock.patch.object(self.runtime, "_quiet_group", side_effect=scan):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "cleanup unconfirmed"):
+                self.command("pass\n")
+        self.assertEqual(scans, 2)
+        self.assertEqual(self.children[0].returncode, 0)
+        self.assertTrue(self.children[0].stdout.closed and self.children[0].stderr.closed)
+
+    def test_final_exit_observation_after_retirement_deadline_is_not_success(self):
+        original_scan, original_observe = self.runtime._quiet_group, self.runtime._observe_exit
+        scans, late_observations = 0, 0
+
+        def scan(pid, deadline):
+            nonlocal scans
+            quiet = original_scan(pid, deadline)
+            scans += 1
+            return quiet
+
+        def observe(child):
+            nonlocal late_observations
+            result = original_observe(child)
+            if scans == 4:
+                late_observations += 1
+                time.sleep(0.550)
+            return result
+
+        with mock.patch.object(self.runtime, "_quiet_group", side_effect=scan), \
+                mock.patch.object(self.runtime, "_observe_exit", side_effect=observe):
+            with self.assertRaisesRegex(self.runtime.base.ImageError, "retirement deadline"):
+                self.command("pass\n")
+        self.assertEqual(late_observations, 1)
+        self.assertEqual(self.children[0].returncode, 0)
+        self.assertTrue(self.children[0].stdout.closed and self.children[0].stderr.closed)
+
     def test_nonzero_exit_is_preserved(self):
         result = self.command("import os\nos.write(2,b'raw error');raise SystemExit(9)\n")
         self.assertEqual(result["returncode"], 9)

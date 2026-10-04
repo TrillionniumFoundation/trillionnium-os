@@ -64,6 +64,8 @@ def _quiet_group(pid: int, deadline: float) -> bool:
                 quiet = False
     if not anchor_seen:
         raise base.ImageError("image tool waitable anchor is not visible in procfs")
+    if time.monotonic() >= deadline:
+        raise base.ImageError("image tool process observation budget exhausted")
     return quiet
 
 
@@ -103,6 +105,8 @@ def terminate_group(process: subprocess.Popen[bytes]) -> None:
             try:
                 exited = _observe_exit(process) is not None
                 quiet = _quiet_group(process.pid, min(deadline, time.monotonic() + 1.0))
+                if time.monotonic() >= deadline:
+                    raise base.ImageError("image tool process observation budget exhausted")
             except Exception as error:
                 detail = f"observation: {str(error)[:256]}"
                 if str(error) == "image tool process observation budget exhausted":
@@ -122,7 +126,11 @@ def terminate_group(process: subprocess.Popen[bytes]) -> None:
         # All group signals are over. Even unconfirmed cleanup still attempts
         # bounded reaping, but it can never become a successful build result.
         exited = _observe_exit(process) is not None
+        if time.monotonic() >= deadline:
+            hard_errors.append("final exit observation exceeded retirement deadline")
         process.wait(timeout=0 if exited else KILL_GRACE)
+        if time.monotonic() >= deadline:
+            hard_errors.append("final child wait exceeded retirement deadline")
     except Exception as error:
         raise base.ImageError("image tool process group could not be reaped") from error
     if hard_errors or not settled:
@@ -142,6 +150,7 @@ def bounded_command(argv: list[str], timeout: float):
             or not hasattr(os, "WNOWAIT") or signal.getsignal(signal.SIGCHLD) != signal.SIG_DFL):
         raise base.ImageError("image command requires Linux WNOWAIT and exclusive default-SIGCHLD reaping")
     started = time.monotonic()
+    execution_deadline = started + timeout
     process = subprocess.Popen(
         argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         start_new_session=True, close_fds=True, bufsize=0,
@@ -154,6 +163,15 @@ def bounded_command(argv: list[str], timeout: float):
     drain_deadline = None
     failure = None
     timed_out = False
+
+    def require_deadline(deadline: float, *, draining: bool) -> None:
+        nonlocal timed_out
+        if time.monotonic() >= deadline:
+            if draining:
+                raise base.ImageError("image command pipe drain deadline exceeded; escaped writers may remain")
+            timed_out = True
+            raise base.ImageError("image command execution deadline expired")
+
     try:
         # Initialization errors receive exactly the same cleanup as pump errors.
         selector = selectors.DefaultSelector()
@@ -162,23 +180,27 @@ def bounded_command(argv: list[str], timeout: float):
             selector.register(pipe.fileno(), selectors.EVENT_READ, name)
         while True:
             if not retirement_attempted:
-                if _observe_exit(process) is not None:
+                require_deadline(execution_deadline, draining=False)
+                exited = _observe_exit(process) is not None
+                require_deadline(execution_deadline, draining=False)
+                if exited:
                     retirement_attempted = True
                     terminate_group(process)
                     drain_deadline = time.monotonic() + DRAIN_SECONDS
-                elif time.monotonic() >= started + timeout:
-                    timed_out = True
-                    raise base.ImageError("image command execution deadline expired")
-            if retirement_attempted and not selector.get_map():
+            deadline = drain_deadline if retirement_attempted else execution_deadline
+            require_deadline(deadline, draining=retirement_attempted)
+            pending = selector.get_map()
+            require_deadline(deadline, draining=retirement_attempted)
+            if retirement_attempted and not pending:
                 break
-            deadline = drain_deadline if retirement_attempted else started + timeout
-            if retirement_attempted and time.monotonic() >= deadline:
-                raise base.ImageError("image command pipe drain deadline exceeded; escaped writers may remain")
             delay = min(POLL_SECONDS, max(0.0, deadline - time.monotonic()))
-            if not selector.get_map():
+            if not pending:
                 time.sleep(delay)
                 continue
-            for key, _mask in selector.select(delay):
+            events = selector.select(delay)
+            require_deadline(deadline, draining=retirement_attempted)
+            for key, _mask in events:
+                require_deadline(deadline, draining=retirement_attempted)
                 # A sentinel byte distinguishes exact-boundary EOF from excess.
                 # Never collect unbounded output and check its length afterwards.
                 size = min(READ_BYTES, base.MAX_OUTPUT_BYTES - captured + 1)
@@ -186,6 +208,7 @@ def bounded_command(argv: list[str], timeout: float):
                     chunk = os.read(key.fd, size)
                 except BlockingIOError:
                     continue
+                require_deadline(deadline, draining=retirement_attempted)
                 if not chunk:
                     selector.unregister(key.fd)
                     continue
@@ -217,14 +240,17 @@ def bounded_command(argv: list[str], timeout: float):
                 failure = f"image pipe close failed: {str(error)[:512]}; prior={failure or 'none'}"
     if failure is not None:
         raise base.ImageError(failure[:2048])
+    require_deadline(drain_deadline, draining=True)
     stdout, stderr = bytes(streams["stdout"]), bytes(streams["stderr"])
-    return {
+    result = {
         "returncode": process.returncode,
-        "elapsed_ms": max(0, int((time.monotonic() - started) * 1000)),
         "stdout": stdout, "stderr": stderr,
         "stdout_sha256": base.hashlib.sha256(stdout).hexdigest(),
         "stderr_sha256": base.hashlib.sha256(stderr).hexdigest(),
     }
+    result["elapsed_ms"] = max(0, int((time.monotonic() - started) * 1000))
+    require_deadline(drain_deadline, draining=True)
+    return result
 
 
 def normalize_copy(source_root: Path, destination_root: Path) -> list[str]:

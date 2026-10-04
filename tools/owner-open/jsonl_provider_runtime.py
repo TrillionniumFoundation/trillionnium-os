@@ -27,6 +27,55 @@ class ProviderRuntimeError(ValueError):
     pass
 
 
+MAX_JSON_DECODE_WORKING_BYTES = 16 * 1024 * 1024
+MAX_JSON_VALUE_COUNT = 32768
+
+
+def preflight_json_allocation(raw: bytes) -> None:
+    """Reject excessive decoder work before UTF-8 text or dense DOM allocation.
+
+    This is a conservative reservation, not a complete JSON validator or RSS
+    proof. Strict decoding below still checks UTF-8, duplicates and numbers.
+    """
+    depth = nodes = owned = 0
+    quoted = escaped = token = False
+    # A decoded source string may use four-byte Python characters. The DOM
+    # reserve includes dictionary/pairs-hook staging and container growth.
+    text_width = 4 if any(byte >= 128 for byte in raw) else 1
+    source_bytes = len(raw) * (1 + text_width)
+    for byte in raw:
+        if quoted:
+            owned += 4
+            if escaped:
+                escaped = False
+            elif byte == 92:
+                escaped = True
+            elif byte == 34:
+                quoted = False
+        elif byte == 34:
+            quoted, token = True, False
+            nodes += 1
+            owned += 256
+        elif byte in (91, 123):
+            token = False
+            depth += 1
+            nodes += 1
+            owned += 512
+            if depth > 64:
+                raise ProviderRuntimeError("provider JSON nesting exceeds 64")
+        elif byte in (93, 125):
+            depth -= 1
+            token = False
+        elif byte in (9, 10, 13, 32, 44, 58):
+            token = False
+        elif not token:
+            token = True
+            nodes += 1
+            owned += 128
+        if nodes > MAX_JSON_VALUE_COUNT or source_bytes + 2 * owned > MAX_JSON_DECODE_WORKING_BYTES:
+            raise ProviderRuntimeError("provider JSON decoder allocation budget exhausted")
+
+
 @dataclass(frozen=True)
 class ProcessLimits:
     max_argv_items: int = 4096
@@ -159,28 +208,11 @@ def _reject_constant(text: str) -> None:
 def decode_strict_event(raw: bytes) -> dict[str, Any]:
     if not raw or len(raw) > 16 * 1024 * 1024:
         raise ProviderRuntimeError("provider JSONL record is empty or oversized")
+    preflight_json_allocation(raw)
     try:
         text = raw.decode("utf-8")
     except UnicodeDecodeError as error:
         raise ProviderRuntimeError("provider JSONL record is not UTF-8") from error
-    # Bound nesting before entering the recursive standard-library decoder.
-    depth, quoted, escaped = 0, False, False
-    for char in text:
-        if quoted:
-            if escaped:
-                escaped = False
-            elif char == "\\":
-                escaped = True
-            elif char == '"':
-                quoted = False
-        elif char == '"':
-            quoted = True
-        elif char in "[{":
-            depth += 1
-            if depth > 64:
-                raise ProviderRuntimeError("provider JSON nesting exceeds 64")
-        elif char in "]}":
-            depth -= 1
     try:
         value = json.loads(text, object_pairs_hook=_strict_object_pairs,
                            parse_constant=_reject_constant, parse_float=_finite_float)
@@ -343,11 +375,18 @@ def run_provider(
     cancellation: CancellationToken | None = None,
     environment: dict[str, str] | None = None,
     cwd: Path | None = None,
+    pass_fds: tuple[int, ...] = (),
 ) -> ProviderTerminal:
     limits = limits or ProcessLimits()
     limits.validate()
     cancellation = cancellation or CancellationToken()
     validate_argv(argv, limits)
+    if (not isinstance(pass_fds, tuple) or len(pass_fds) > 16
+            or any(type(fd) is not int or fd < 3 for fd in pass_fds)
+            or len(set(pass_fds)) != len(pass_fds)):
+        raise ProviderRuntimeError("provider inherited descriptors must be a bounded unique tuple")
+    for descriptor in pass_fds:
+        os.fstat(descriptor)
     if not isinstance(initial_stdin, bytes) or len(initial_stdin) > min(
         limits.max_initial_stdin_bytes, limits.max_outbound_bytes,
     ):
@@ -366,7 +405,7 @@ def run_provider(
         process = subprocess.Popen(
             argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             cwd=cwd, env=environment, shell=False, close_fds=True,
-            start_new_session=True, bufsize=0,
+            start_new_session=True, bufsize=0, pass_fds=pass_fds,
         )
     except OSError as failure:
         return ProviderTerminal("spawn_failed", None, None, 0, 0, b"", 0,

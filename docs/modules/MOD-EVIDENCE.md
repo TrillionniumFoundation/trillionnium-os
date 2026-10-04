@@ -20,6 +20,17 @@ Source ownership paths:
 
 - `docs/machine/evidence-index.v1.json`
 
+- `tools/owner_source_provenance.py`
+- `tools/owner_source_surface.py`
+- `tools/owner_bom_bounded_process.py`
+- `tools/collect_owner_source_vector.py`
+- `tools/android_release_ota.py`
+- `tools/owner_asb_fork_catalog.py`
+- `tools/prepare_owner_asb_fullforks.py`
+- `tools/tests/owner_asb38_fixtures.py`
+- `tools/tests/test_owner_asb_fullforks.py`
+- `tools/tests/test_owner_asb_telephony_suggestions.py`
+
 The maturity value is a source-state label, not an installed-target or release assertion. A later evidence package must bind the exact source, build, target and reviewer identities before a higher level is claimed.
 
 ## 2. Responsibilities
@@ -74,6 +85,132 @@ The bound implementation declaration and its codec tests define concrete fields;
 source navigation alone does not prove wire compatibility.
 
 The CLI delegates to strict package verification; `verify-g1-evidence-live.py` binds current external objects. The checked-in evidence index is navigation, not a durable runtime journal or signer. A source fixture is never a substitute for an independent operator, reviewer, detached attestation or release decision.
+
+### Owner provenance inputs and signed-output custody
+
+The owner source producer, bounded Git subprocess helper and original-vector
+collector belong to `MOD-EVIDENCE`; Android owns the build-time META writer and
+target-files consumer. Their `owner-open-whole-control-v4` profile is separate
+from the retained legacy P0 source-BOM profile. It has a content identifier and
+complete measured input closure, with local provenance authority only. A
+self-consistent JSON receipt is not an authenticated builder, a signature,
+independent review, an installed target or permission to release. See the
+[Android producer contract](MOD-ANDROID.md#owner-source-provenance-and-build-time-meta)
+for its graph and build inputs.
+
+`tools/owner_asb_fork_catalog.py` validates the exact declared ASB fork catalog,
+its 80 source transforms and bound control witnesses.
+`tools/prepare_owner_asb_fullforks.py` makes complete isolated project clones,
+applies the declared transforms and retains complete inventories, source
+surfaces and raw metadata before and after each stage. Unhydrated LFS objects,
+materialized gitlinks, changed original inputs and undeclared output paths
+remain explicit holds. The catalog and nested receipt must bind the same
+canonical control generation; neither is release authority.
+
+`tools/tests/owner_asb38_fixtures.py` supplies explicitly synthetic catalog and
+graph data for parser tests. `tools/tests/test_owner_asb_fullforks.py` also
+creates real disposable Git clones to verify preservation of ordinary files,
+executable modes, symlinks and unmaterialized gitlink references, plus LFS
+hydration and receipt-binding rejection cases. Run this maintained coverage
+with `python3 -B -m unittest discover -s tools/tests -p test_owner_asb_fullforks.py`.
+These host fixtures do not qualify an Android source graph, compiled image or
+installed device.
+
+`tools/tests/test_owner_asb_telephony_suggestions.py` compiles the complete Java
+query and request-argument helpers from the declared production patch. SQLite
+fixtures verify live caller-visible SMS/MMS parent filtering, stale subscription
+indices, restricted views, orphaned or reassociated messages and request-local
+pattern arrays. This tests the declared source fragment and finite SQL behavior;
+Android API permissions, complete-project compilation and installed behavior
+still require their own evidence. Run with a JDK using
+`python3 -B -m unittest discover -s tools/tests -p test_owner_asb_telephony_suggestions.py`.
+
+The v4 profile binds exactly 38 private projects and the remaining 1131 original
+projects in the 1170-project graph. All producer and consumer versions advance
+together; v2 inputs and BOMs cannot qualify this composition. A Git query
+failure preserves the actual exit code, affected project and a finite escaped
+stderr excerpt with the original length and digest. Diagnostic output remains
+a failed observation; it cannot qualify a partial vector or source inventory.
+All three Git observation paths use explicit 32 MiB pack windows and a
+128 MiB packed-window cache limit. These command-local settings leave source
+configuration unchanged and complement the process address-space ceiling;
+they are not a hard RSS or cgroup memory quota. A successful limited replay
+does not replace the required whole-graph before/after measurements.
+
+Inventory v3 separates gitlink commit references from blob payloads. Each
+unmaterialized reference binds its parent tree/index and two identical physical
+missing/empty observations; no synthetic size, content SHA or LFS proof is
+assigned to it. Indexed project metadata retains the references, while source
+shards contain measured blobs. The namespace observer independently checks the
+selected view and rejects materialized, aliased, special or changed gitlinks.
+An exact worktree-only ` D` status is allowed solely for a committed gitlink
+whose two physical observations prove the same missing state. Ordinary blob
+deletion, staged changes, and deletion reports for an empty present directory
+remain holds; original-vector status must match the complete inventory status.
+There are at most 1024 references per project, 40 path components per reference
+and 2 MiB of reference metadata. Older inventory v2 records do not qualify this
+producer. The outer whole-control v4 BOM remains bound to each complete inventory
+digest and raw evidence descriptor; its local authority does not establish
+submodule commit content availability, installed behavior or release approval.
+
+Source measurement uses bounded project records and indexed shards rather than
+one whole-graph JSON allocation. The admission ceilings are 250000 rows and
+128 MiB metadata per project, 32 MiB raw Git tree, 4096 rows and 8 MiB per shard,
+5 million graph rows, 2 GiB unique raw evidence, 128 GiB tracked Git source bytes,
+100000 descriptors and 32 MiB descriptor-path bytes. Retained cross-project
+metadata is bounded at 500000 files and 128 MiB. Each of the two Motorola
+non-Git inputs has a separate 16 GiB and 250000-entry ceiling. These are rejection
+ceilings, not measured production resource use. Core collection defaults to a
+3600-second whole-operation deadline; the original-vector CLI defaults to
+1800 seconds. Both default to a 1024 MiB address-space limit; requested ceilings
+are at most 7200 seconds and 4096 MiB. Build META publication has a separate
+120-second default and 600-second maximum. Child output, process-group
+termination and deadline checks remain finite. Partial or timed-out evidence
+cannot be promoted by an empty stdout or a later successful shell marker.
+
+The `collect-git` subcommand and original-vector CLI accept
+`--git-query-seconds`, defaulting to 30 seconds with a finite 1..300-second
+range. Library entry points enforce the same range, rejecting booleans and
+non-numeric values before querying Git. Each query receives the lesser of
+that limit and the remaining whole-operation deadline; completing one query
+does not renew the whole deadline. The option belongs to `collect-git`, after
+the subcommand, and does not change the 30-second manifest-projection queries.
+Selecting 120 seconds for a slow full-source collection requires retaining
+the actual invocation and terminal receipt. Existing output, filter, memory,
+cleanup and source-content checks still apply. There is no receipt-schema
+migration, automatic retry or qualification from a partial collection.
+
+`tools/android_release_ota.py` consumes owner provenance only with
+`--require-owner-source-bom-binding`, `--owner-source-bom` and
+`--owner-build-source-inputs`. The legacy and owner modes are mutually
+exclusive. Owner admission validates exact source modules, raw inputs and
+whole target ZIP before material validation or signing. It verifies the same
+binding on the actual signed target-files; an optional legacy member cannot
+substitute. Its typed receipt links both actual ZIP digests to one owner
+binding and retains all host-only negative claims. Existing timestamp bytecode
+caches cannot override either provenance checker.
+
+Signed target-files, OTA and metadata are measured before validation and
+published as one checked set. After each rename and after the complete output
+scan, the original provenance inputs, original target-files and every host
+tool must still match their admitted baselines. Each published member must
+match its verified bytes, digest and inode. A mismatch retracts every promoted
+member to its partial path and returns a failure receipt; incomplete rollback
+is reported as failure. Consumers must require successful terminal execution,
+recheck the three actual artifacts against the receipt and retain the source
+inputs. Publication consists of sequential filesystem operations, not a global
+transaction against concurrent hostile writers. A receipt describes that
+observed subject and cannot be reused after its inputs or artifacts change.
+
+Reproduction covers actual temporary Git/LFS trees, projections, GNU Make META
+packaging, tiny ZIP signing fixtures, timestamp-cache substitutions, input
+movement during publication and whole-output retraction. Test fixture host
+tools and mocked cryptography cannot qualify real signing, Kati/Soong, a full
+Android image, performance or a physical device. Run the focused test modules
+from the current repository; portable fixtures use the registered source
+checkers and owned Makefile directly and do not require an external audit
+workspace. Full graph, built artifact, independent review and release evidence
+must bind the newly changed candidate rather than inherit an older green run.
 
 ## 6. State model and ownership
 
@@ -185,6 +322,32 @@ Rolling compatibility is supported under the explicit compatibility and fencing 
 
 Evidence schemas are append-only and versioned. A new verifier may accept older packages only through an explicit compatibility matrix; signed subjects are never rewritten.
 
+Executable module-contract compatibility reads a base migration packet from
+the exact ancestor Git commit. Its path and content digest must agree; the Git
+entry must be a regular blob of at most 64 KiB; module identity and the reviewed
+target schema must match the base version. Diagnostic labels do not change the
+module ID. A missing, replaced or retired current-tree copy cannot substitute
+for that historical object. Current migration packets retain the separate
+descriptor-bound working-tree checks. Unchanged schemas require `NO_CHANGE`,
+and a further semantic change needs a new exact packet. Neither the base packet
+nor source metadata can assert independent approval of the current head.
+
+EventStore's tighter process-shared memory admission can refuse a previously
+accepted history without changing its bytes. A source behavior probe built the
+exact EventStore sources from `723b718937f0503c44054b1e28d478cab8f81575` and the
+sources from `3bca589c5b8febf9a3420e568eaa872ec478aaf7` in one independent Cargo
+harness. A plain 12 MiB JSON string appended and reopened with the earlier
+source, while both current default v1 and v2 readers returned
+`CapacityExhausted`; the v1 WAL and v2 segment/sidecar bytes stayed unchanged.
+That harness used its own retained dependency lock and local Rust 1.95, not the
+earlier release binaries, repository lock or canonical Rust 1.93 build. It
+demonstrates a source admission boundary, not a release compatibility matrix.
+Before rollout, preflight actual retained histories against the selected
+reader and memory configuration. A refusal leaves admission inhibited; retain
+the original history and compatible reader until an explicitly reviewed
+migration or rollback path is proven. Passing bounded streaming tests does not
+establish that all histories accepted by an earlier reader will reopen.
+
 Rollback is fail-closed. Stateful modules restore the last compatible durable state, fence newer writers and reconcile external effects before admission. A rollback may restore software and state compatibility; it cannot erase an effect already attempted outside the module.
 
 ## 14. Observability
@@ -220,6 +383,123 @@ Evidence ceiling: **SOURCE_ONLY_UNTIL_EXACT_HEAD_CI**.
 
 The module documentation verifier checks this document against the machine catalog, verifies required sections and source paths, binds the API and state schema identifiers, checks the provisional budget record and rejects unregistered or misleading documentation.
 
+Source-control archive validation checks members incrementally, retaining names
+for duplicate detection without accumulating decoded TarInfo objects. The
+compressed archive limit is 64 MiB, with at most 100,000 members, 512 MiB of
+ordinary file content and 64 MiB of headers/extension/name metadata. Before
+tarfile decodes extensions, each payload is limited to 64 KiB and nesting to 16.
+Decoded local/global PAX state permits at most 1,024 fields and 64 KiB of UTF-8
+key/value text. Sparse records, links, special files and global size overrides
+are rejected. After the tar end marker, only one 10,240-byte zero-padding record
+is allowed; reading to gzip EOF also checks the compressed footer. These are
+input and parser-state bounds, not an installed or whole-process RSS claim.
+Real compressed metadata and limited-address-space regressions exercise early
+rejection; canonical Git source packages and bounded PAX/GNU long names remain
+supported. Manifest hashes still provide integrity rather than independent
+source or builder authorization.
+
+### Source and device command capture
+
+The cross-repository BOM collector, Android smoke and P0.1 collectors use the
+same host-only `tools/owner_open_bounded_process.py` implementation. It requires
+Linux WNOWAIT, default SIGCHLD and exclusive direct-child reaping before spawn.
+All pipe, selector and nonblocking setup is inside the cleanup guard. stdout
+and stderr share one byte ceiling, including the BOM collector's declared
+maximum; this tightens its former independent per-stream ceilings. Capture
+stops while reading at overflow and keeps only bounded partial output.
+
+The new session leader stays unreaped until all possible group signals finish.
+A normal leader exit is insufficient for success when a same-group worker is
+still live, even if that worker closed its output pipes. Cleanup requires two
+complete same-namespace procfs observations of an exited leader and no live
+group members; it bounds scans to 65,536 entries, 4,096 bytes per stat record
+and a one-second cleanup deadline. Every matching TGID also requires a complete
+task-directory scan, with at most 65,536 task entries under the same deadline.
+A zombie process leader can still have live sibling threads; its `Z` state
+alone never proves group quiescence. The source regression uses a real pthread
+member whose leader is zombie while its worker remains alive after closing
+output pipes, and refuses a successful normal-leader receipt. Incomplete
+process/task observations, setup failures,
+cleanup failures and nonfinite timeouts cannot produce a successful receipt.
+The collectors map failures to their existing evidence-error classifications.
+Cleanup retries an interrupted owned wait or close once within its finite
+budget, attempts the remaining resources and propagates the first interruption.
+Persistent interruption or close/reaper failure does not prove resources closed.
+
+The retained R5 target-harness collector also uses this helper to enforce its
+combined 64 MiB capture limit while reading. Its R5-GAP vocabulary is separate
+from current G1 gap intake; repairing it does not qualify a G1 target. Real
+process tests cover setup failures, early leader exit, held and closed pipes,
+output overflow and refusal before spawn. These bounds describe captured bytes
+and local owned-group observation, not total interpreter RSS, escaped sessions,
+uninterruptible I/O, a protected operator or installed/release qualification.
+
+### Product workload implementation admission
+
+The selected-product performance harness captures a closed manifest of 16
+repository Python files. This includes the broker entrypoint and all ten of its
+transitive sibling implementations. The host reproducibility verifier captures
+19 files, including that complete nested performance manifest. Nested verifier
+and cleanup execution uses admitted snapshots; broker sibling imports execute
+from the captured owner-only, single-link private copies only for broker
+workloads. Missing, modified, symlinked, multiply linked or additional broker
+custody files, or a nonprivate custody directory, stop startup before process
+creation. The custody is checked again before reporting. There is no repository
+import fallback or added `PYTHONPATH`. The manifest does not separately attest
+the system Python standard library or a hostile same-UID execution environment.
+
+The original wrapper-only private copy failed startup with
+`ModuleNotFoundError`. Regression tests exercise actual private-copy startup,
+source mutation after capture, incomplete manifests and custody rejection,
+plus all eight workloads through the complete private execution path using
+selected debug Host/Core binaries. These local behavior tests do not qualify
+an installed target or authenticate the origin of caller-selected binaries.
+Adding the omitted broker implementations changes the manifest digest and
+requires a new baseline; an artifact with the previous manifest cannot provide
+a comparison pass. Canonical compiler/build receipts, exact-head source CI,
+protected runner authorization and target evidence remain separate requirements.
+
+Product collection and broker startup require Linux WNOWAIT and default
+SIGCHLD before spawn, with this runner as the exclusive direct-child reaper.
+Their original session leader remains unreaped through TERM/KILL and bounded
+same-namespace procfs observations; the authenticated facade preserves its
+execution descriptors and delegates to that common cleanup path before final
+anchor reaping. stdin writes share the nonblocking stdout/stderr selector and
+operation deadline. Membership checks retain the observable anchor and bound
+entries, stat bytes and scan time; incomplete or unreadable observations fail
+closed, and a partial deadline scan cannot supply terminal proof. Real local
+process fixtures exercise held stdout after leader exit, TERM refusal, output
+flooding, small-pipe input backpressure, complete partial writes, normal cleanup
+and pre-spawn SIGCHLD-ignore rejection, with exact descendant pidfd and FD checks.
+A terminal-process reaper-failure fixture verifies that pipes close while the
+error and retained anchor remain available for reconciliation.
+These tests do not establish cleanup for escaped sessions/groups, a hostile
+external reaper or an uninterruptible kernel syscall. They do not qualify a
+protected runner or installed process graph. The revised harness needs a fresh
+manifest and baseline. Earlier direct-core cleanup probes are source/API
+fixtures: the earlier authenticated facade already had a retained-anchor cleanup
+override, so those probes do not establish the same failure in that entrypoint.
+
+Product baseline comparisons also bind the effective scratch mount through
+its opened directory descriptor, kernel mount ID and complete mount-record
+digest, device/filesystem identity, boot and mount namespace. Ordinary
+directories on one mount remain comparable; other mounts, overlay backing
+options, boots or namespaces differ. Incomplete metadata, zero filesystem IDs
+or an unsupported native statfs ABI remain unavailable and reject comparisons
+while permitting an explicitly unqualified baseline observation. The supported
+layout is Linux LP64 x86-64/aarch64. Top-level environment, configuration and
+Python/shell/harness observations must exactly match the closed comparison
+projection; resealing contradictory metadata cannot make it admissible.
+Sampling counts may differ only with complete raw samples on each side.
+
+These start/end snapshots describe observable same-boot mount/filesystem
+identity. They do not prove physical storage topology, detect a change restored
+between snapshots or prevent device-mapper remapping or same-ID cloned media.
+Independent storage custody, protected-runner approval and controlled installed
+workload/resource evidence remain holds. Adding this identity changes the
+harness manifest and requires a fresh baseline; earlier filesystem-type-only
+reports cannot establish a comparison against it.
+
 ### Reproduction entrypoint
 
 - Verification source: `tools/tests/test_g1_evidence.py`
@@ -241,6 +521,16 @@ complete `tools/tests/test*.py` Python discovery set, not only a hand-picked
 regression subset. Each job explicitly selects Python 3.13 and Rust/Cargo 1.93.0.
 The Rust identity is required by the Python performance-harness tests as well as
 by locked source metadata; the runner image's moving default is not the pin.
+
+The synthetic-merge job declares job-level `cache-mode: none`. A manual dispatch
+may run a selected fork while its run is scoped to `main`; `contents: read` and
+disabled checkout credential persistence do not restrict the separate Actions
+cache token. The cache service denies restores and saves for this job. Verify
+the effective mode from the runner's `Set up job` observation `Cache mode: none`.
+The runner exposes `ACTIONS_CACHE_MODE` to Node actions, not Bash `run` steps;
+absence in a shell is not a failure of the native restriction. Never substitute
+a workflow environment variable for job-level token enforcement. This
+observation grants no target or release evidence.
 
 Before candidate checkout, each lane installs the distribution `acl` package
 using fixed absolute system commands from `RUNNER_TEMP`. This privileged step
@@ -414,3 +704,5 @@ Exit evidence must demonstrate:
 - public release is explicitly enabled.
 
 A source change may reduce implementation risk, but the status stays open or source-closed-pending-evidence until an immutable, current, independently authorized receipt reaches the declared exit level.
+
+Proposed private38 source-only migration requires the exact retained16 union 24 declared affected projects (two overlaps), original1131 plus control1 and manifest1170. The 80 declared ordinary transforms (77 platform plus 3 kernel) are fixed in `android-integration/security-patches/owner-asb-fork-catalog.v1.json`. This catalog and its patches/evidence are declared canonical inputs, never working-tree overlay files. `prepare_owner_asb_fullforks.py` must produce all24 exclusive complete clones, full before/after inventories, unchanged original metadata maps, no unknown source surfaces, and an actual receipt. The final composition.v2 binds that receipt; vector/provenance/META/release consume v4 together. Inventory.v3, 128GiB whole content, 2GiB metadata, 120s recipe Git query, bounded helper9f9 and the source no-write guards remain binding. All whole-CVE, cumulative ASB, applicability, build/device/install and release claims remain unqualified. New candidate/source4/native/RootFS/final38/BOM observations must be actual; historical d9 captures or previews do not provide them.

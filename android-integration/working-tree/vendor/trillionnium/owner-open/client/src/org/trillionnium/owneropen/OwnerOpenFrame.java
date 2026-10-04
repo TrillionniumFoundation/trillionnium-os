@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
@@ -62,6 +65,250 @@ public final class OwnerOpenFrame {
                 + "\"inclusive_cursor\":" + inclusiveCursor + ","
                 + "\"limit\":" + limit
                 + "}}";
+    }
+
+    public static String turnInspect(Map<String, Object> turnScope, String requestSha256,
+            long inclusiveCursor, int limit) {
+        if (inclusiveCursor < 0 || limit < 1 || limit > 4096
+                || requestSha256 == null || !requestSha256.matches("[0-9a-f]{64}")) {
+            throw new IllegalArgumentException("invalid scoped turn inspection");
+        }
+        return "{\"kind\":\"turn.inspect\",\"payload\":{" + RecoveryPlan.members(RecoveryPlan.scope(turnScope, false))
+                + ",\"request_sha256\":" + quote(requestSha256)
+                + ",\"inclusive_cursor\":" + inclusiveCursor + ",\"limit\":" + limit + "}}";
+    }
+
+    /** Explicit read-only recovery. Feed decoded Host objects, never substring matches.
+     * Unknown scopes and retained-prefix gaps stay unresolved; this never dispatches effects.
+     */
+    public static final class RecoveryPlan {
+        public static final String PROTOCOL = "scoped_cursor_v1";
+        private static final String[] TURN_FIELDS = {
+            "session_id", "profile_id", "task_id", "turn_id", "turn_stream_id"
+        };
+        private final Map<String, String> controlScope;
+        private final List<RecoveryRange> ranges = new ArrayList<>();
+        private final String requestSha256;
+        private int pages;
+        private RecoveryRange pending;
+
+        public RecoveryPlan(Map<String, Object> gapFrame, Map<String, Object> helloPayload,
+                String turnRequestSha256) {
+            if (!list(helloPayload.get("resync_protocols")).contains(PROTOCOL)) {
+                throw new IllegalArgumentException("Host has not advertised scoped cursor recovery");
+            }
+            Map<String, Object> gap = object(gapFrame.get("payload"));
+            if (!PROTOCOL.equals(gap.get("resync_protocol"))
+                    || !Boolean.TRUE.equals(gap.get("cursor_scopes_complete"))) {
+                throw new IllegalArgumentException("gap requires explicit reconciliation");
+            }
+            controlScope = scope(gapFrame, false);
+            requestSha256 = turnRequestSha256;
+            for (Object value : list(gap.get("required_resumes"))) {
+                Map<String, Object> range = object(value);
+                String domain = (String) range.get("cursor_domain");
+                boolean job = "job_runtime_event".equals(domain)
+                        || "job_journal_record".equals(domain);
+                if (!job && !"transport_event".equals(domain)) {
+                    throw new IllegalArgumentException("unknown cursor domain");
+                }
+                Map<String, String> selectedScope = scope(object(range.get("cursor_scope")), job);
+                long first = number(range.get("first_missing_cursor"));
+                long last = number(range.get("last_missing_cursor"));
+                long required = number(range.get("required_resume_cursor"));
+                if (last < first || last == Long.MAX_VALUE || required != last + 1) {
+                    throw new IllegalArgumentException("invalid missing cursor range");
+                }
+                for (RecoveryRange existing : ranges) {
+                    if (domain.equals(existing.domain) && selectedScope.equals(existing.scope)) {
+                        throw new IllegalArgumentException("duplicate cursor scope");
+                    }
+                }
+                ranges.add(new RecoveryRange(domain, selectedScope, first, required));
+            }
+            if (ranges.isEmpty() || ranges.size() > 64) {
+                throw new IllegalArgumentException("recovery requires 1..64 cursor scopes");
+            }
+        }
+
+        public String pendingCursorDomain() {
+            return pending == null ? null : pending.domain;
+        }
+
+        public boolean isComplete() {
+            for (RecoveryRange range : ranges) {
+                if (range.cursor < range.required) return false;
+            }
+            return true;
+        }
+
+        public String nextInspection() {
+            if (pending != null) throw new IllegalArgumentException("inspection request is already pending");
+            for (RecoveryRange range : ranges) {
+                if (range.cursor >= range.required) continue;
+                pending = range;
+                String members = members(range.scope) + ",\"limit\":256";
+                if ("transport_event".equals(range.domain)) {
+                    if (requestSha256 == null || !requestSha256.matches("[0-9a-f]{64}")) {
+                        throw new IllegalArgumentException("turn recovery needs the accepted request digest");
+                    }
+                    members += ",\"request_sha256\":" + quote(requestSha256)
+                            + ",\"inclusive_cursor\":" + range.cursor;
+                    return "{\"kind\":\"turn.inspect\",\"payload\":{" + members + "}}";
+                }
+                members += "job_journal_record".equals(range.domain)
+                        ? ",\"inclusive_cursor\":0,\"durable_inclusive_cursor\":" + range.cursor
+                        : ",\"inclusive_cursor\":" + range.cursor + ",\"durable_inclusive_cursor\":0";
+                return "{\"kind\":\"job.inspect\",\"payload\":{" + members + "}}";
+            }
+            return null;
+        }
+
+        public boolean observeInspection(Map<String, Object> frame) {
+            String kind = (String) frame.get("kind");
+            if (!"turn.inspect.result".equals(kind) && !"job.inspect.result".equals(kind)) return false;
+            Map<String, Object> payload = object(frame.get("payload"));
+            for (RecoveryRange range : ranges) {
+                if (range != pending) continue;
+                boolean job = !"transport_event".equals(range.domain);
+                if (!kind.equals(job ? "job.inspect.result" : "turn.inspect.result")
+                        || !scope(frame, job).equals(range.scope)) continue;
+                if (!"found".equals(payload.get("status"))
+                        || !Boolean.FALSE.equals(payload.get("side_effects"))
+                        || !Boolean.FALSE.equals(payload.get("automatic_redispatch"))) {
+                    throw new IllegalArgumentException("inspection did not return read-only durable observations");
+                }
+                Map<String, Object> page = payload;
+                String startField = "inclusive_cursor", nextField = "next_cursor", recordsField = "frames";
+                if ("job_runtime_event".equals(range.domain)) {
+                    if (!range.domain.equals(payload.get("runtime_cursor_domain"))) {
+                        throw new IllegalArgumentException("runtime cursor domain mismatch");
+                    }
+                    page = object(payload.get("inspection"));
+                    if (!Boolean.FALSE.equals(page.get("resync_required")) || page.get("gap") != null
+                            || number(page.get("oldest_available_cursor")) > range.cursor) {
+                        throw new IllegalArgumentException("retained runtime prefix is missing; reconcile explicitly");
+                    }
+                    recordsField = "runtime_events";
+                } else if ("job_journal_record".equals(range.domain)) {
+                    if (!range.domain.equals(payload.get("durable_cursor_domain"))
+                            || !"durable".equals(object(payload.get("inspection")).get("event_log_status"))) {
+                        throw new IllegalArgumentException("durable journal is unavailable");
+                    }
+                    startField = "durable_inclusive_cursor";
+                    nextField = "durable_next_cursor";
+                    recordsField = "durable_records";
+                } else if (!"durable_event_store".equals(payload.get("source"))) {
+                    throw new IllegalArgumentException("turn cursor source mismatch");
+                }
+                long start = number(page.get(startField)), next = number(page.get(nextField));
+                List<?> records = list(page.get(recordsField));
+                if (start != range.cursor || next <= start || next - start != records.size()) {
+                    throw new IllegalArgumentException("inspection omitted a prefix or made no contiguous progress");
+                }
+                if ("transport_event".equals(range.domain)) {
+                    for (int index = 0; index < records.size(); index++) {
+                        Object identity = object(records.get(index)).get("event_id");
+                        if (!(identity instanceof String) || !((String) identity).endsWith("-event-" + (start + index))) {
+                            throw new IllegalArgumentException("turn page event identity does not match its cursor");
+                        }
+                    }
+                }
+                if ("job_runtime_event".equals(range.domain)) {
+                    for (int index = 0; index < records.size(); index++) {
+                        if (number(object(records.get(index)).get("seq")) != start + index) {
+                            throw new IllegalArgumentException("runtime page has an ordinal gap");
+                        }
+                    }
+                }
+                if ("job_journal_record".equals(range.domain)) {
+                    for (int index = 0; index < records.size(); index++) {
+                        if (number(object(records.get(index)).get("job_record_seq")) != start + index) {
+                            throw new IllegalArgumentException("journal page has an ordinal gap");
+                        }
+                    }
+                }
+                if (++pages > 4096) throw new IllegalArgumentException("recovery page budget exhausted");
+                range.cursor = next;
+                pending = null;
+                return true;
+            }
+            return false;
+        }
+
+        public String resume(long controlSequence) {
+            if (controlSequence < 0 || pending != null || !isComplete()) {
+                throw new IllegalArgumentException("every recovery range must be inspected before resume");
+            }
+            StringBuilder cursors = new StringBuilder("[");
+            for (RecoveryRange range : ranges) {
+                if (cursors.length() > 1) cursors.append(',');
+                cursors.append("{\"cursor_domain\":").append(quote(range.domain))
+                        .append(",\"cursor_scope\":{").append(members(range.scope))
+                        .append("},\"resumed_through_cursor\":").append(range.cursor).append('}');
+            }
+            cursors.append(']');
+            return "{\"kind\":\"stream.resume\",\"payload\":{" + members(controlScope)
+                    + ",\"control_seq\":" + controlSequence + ",\"resync_protocol\":" + quote(PROTOCOL)
+                    + ",\"resumed_cursors\":" + cursors + "}}";
+        }
+
+        private static Map<String, String> scope(Map<String, Object> value, boolean job) {
+            Map<String, String> result = new LinkedHashMap<>();
+            for (String field : TURN_FIELDS) {
+                Object selected = value.get(field);
+                if (!(selected instanceof String)) throw new IllegalArgumentException("missing recovery scope " + field);
+                requireId((String) selected, field);
+                result.put(field, (String) selected);
+            }
+            if (value.get("stream_id") != null && !value.get("stream_id").equals(result.get("turn_stream_id"))) {
+                throw new IllegalArgumentException("conflicting recovery stream aliases");
+            }
+            if (job) {
+                Object selected = value.get("job_id");
+                if (!(selected instanceof String)) throw new IllegalArgumentException("missing recovery job_id");
+                requireId((String) selected, "job_id");
+                result.put("job_id", (String) selected);
+            } else if (value.get("job_id") != null) {
+                throw new IllegalArgumentException("turn cursor scope cannot include job_id");
+            }
+            return result;
+        }
+
+        @SuppressWarnings("unchecked")
+        private static Map<String, Object> object(Object value) {
+            if (!(value instanceof Map)) throw new IllegalArgumentException("expected recovery object");
+            return (Map<String, Object>) value;
+        }
+        private static List<?> list(Object value) {
+            if (!(value instanceof List)) throw new IllegalArgumentException("expected recovery list");
+            return (List<?>) value;
+        }
+        private static long number(Object value) {
+            if (!(value instanceof Long) && !(value instanceof Integer)) {
+                throw new IllegalArgumentException("cursor must be an integer");
+            }
+            long result = ((Number) value).longValue();
+            if (result < 0) throw new IllegalArgumentException("cursor outside client signed integer range");
+            return result;
+        }
+        private static String members(Map<String, String> scope) {
+            StringBuilder output = new StringBuilder();
+            for (Map.Entry<String, String> field : scope.entrySet()) {
+                if (output.length() > 0) output.append(',');
+                output.append(quote(field.getKey())).append(':').append(quote(field.getValue()));
+            }
+            return output.toString();
+        }
+        private static final class RecoveryRange {
+            final String domain;
+            final Map<String, String> scope;
+            final long required;
+            long cursor;
+            RecoveryRange(String domain, Map<String, String> scope, long cursor, long required) {
+                this.domain = domain; this.scope = scope; this.cursor = cursor; this.required = required;
+            }
+        }
     }
 
     public static String brokerRequest(

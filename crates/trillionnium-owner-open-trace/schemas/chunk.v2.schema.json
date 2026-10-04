@@ -1,0 +1,232 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org.trillionnium.actual-monotonic-completion-stream-chunk.v2",
+  "title": "Owner monotonic completion stream chunk v2",
+  "description": "Closed source-recorder evidence. This schema validates one JSON object only; tools/perf/inspect_monotonic_stream.py must additionally check physical custody, cross-file identity, ACK chain, ranges, counters, exact start-ID closure and file/byte ceilings. It grants no installed, whole-family or L2 qualification.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "org.trillionnium.actual-monotonic-completion-stream-chunk.v2"
+    },
+    "sample_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:/-]{1,128}$(?![\\s\\S])"
+    },
+    "producer_role": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,128}$(?![\\s\\S])",
+      "not": {
+        "enum": [
+          ".",
+          ".."
+        ]
+      }
+    },
+    "generation": {
+      "type": "object",
+      "properties": {
+        "pid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295
+        },
+        "start_time_ticks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "boot_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "pid",
+        "start_time_ticks",
+        "boot_id_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "trace_complete": {
+      "const": false
+    },
+    "installed_qualified": {
+      "const": false
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "claimed_start": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 130560
+    },
+    "claimed_end_exclusive": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 131072
+    },
+    "declared_unused_tail_start": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 131072
+    },
+    "declared_unused_tail_end_exclusive": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 131072
+    },
+    "loss_observed": {
+      "const": false
+    },
+    "lost_records_lower_bound": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 0
+    },
+    "lost_count_semantics": {
+      "enum": [
+        "saturating_lower_bound",
+        "unavailable"
+      ]
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "properties": {
+          "start_claim_id": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 65535
+          },
+          "completion_sequence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 131071
+          },
+          "stage": {
+            "enum": [
+              "broker_accept",
+              "broker_auth",
+              "broker_queue_wait",
+              "broker_forward",
+              "host_decode",
+              "host_capacity_wait",
+              "journal_append",
+              "journal_fsync",
+              "provider_spawn",
+              "provider_first_event",
+              "provider_wait",
+              "callback_admission",
+              "tool_spawn",
+              "tool_output",
+              "tool_exit",
+              "tool_cleanup",
+              "terminal_persistence",
+              "delivery_queue_wait",
+              "client_delivery"
+            ]
+          },
+          "scope_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+          },
+          "pid": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295
+          },
+          "tid": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          },
+          "start_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 18446744073709551615
+          },
+          "end_ns": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 18446744073709551615
+          },
+          "end": {
+            "enum": [
+              "observed_boundary",
+              "scope_exit_unclassified",
+              "exception"
+            ]
+          }
+        },
+        "required": [
+          "start_claim_id",
+          "completion_sequence",
+          "stage",
+          "scope_sha256",
+          "pid",
+          "tid",
+          "start_ns",
+          "end_ns",
+          "end"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "previous_ack_sha256": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{64})?$(?![\\s\\S])"
+    }
+  },
+  "required": [
+    "schema",
+    "sample_id",
+    "producer_role",
+    "generation",
+    "trace_complete",
+    "installed_qualified",
+    "epoch",
+    "claimed_start",
+    "claimed_end_exclusive",
+    "declared_unused_tail_start",
+    "declared_unused_tail_end_exclusive",
+    "loss_observed",
+    "lost_records_lower_bound",
+    "lost_count_semantics",
+    "records",
+    "previous_ack_sha256"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "lost_count_semantics": {
+            "const": "unavailable"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "lost_records_lower_bound": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "lost_records_lower_bound": {
+            "const": 0
+          }
+        }
+      }
+    }
+  ]
+}

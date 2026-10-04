@@ -12,13 +12,14 @@
 #include <limits>
 #include <poll.h>
 #include <memory>
+#include <new>
+#include <pthread.h>
 #include <string>
 #include <string_view>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/un.h>
-#include <thread>
 #include <unistd.h>
 
 #include <json/json.h>
@@ -443,6 +444,54 @@ void Pump(int client, struct ucred peer) {
   ReleaseConnection();
 }
 
+struct ConnectionContext {
+  int client;
+  struct ucred peer;
+};
+
+void* PumpThread(void* opaque) {
+  std::unique_ptr<ConnectionContext> context(static_cast<ConnectionContext*>(opaque));
+  const int client = context->client;
+  const struct ucred peer = context->peer;
+  context.reset();
+  Pump(client, peer);
+  return nullptr;
+}
+
+void StartPump(int client, const struct ucred& peer) {
+  // The caller already owns one admission slot. Android builds without C++
+  // exceptions: handle pthread setup/create failures directly and create the
+  // worker detached, so a failed detach cannot leave a joinable temporary.
+  auto reject = [client](int error) {
+    ReleaseConnection();
+    close(client);
+    errno = error;
+  };
+  std::unique_ptr<ConnectionContext> context(
+      new (std::nothrow) ConnectionContext{client, peer});
+  if (!context) {
+    reject(ENOMEM);
+    return;
+  }
+  pthread_attr_t attributes;
+  int result = pthread_attr_init(&attributes);
+  if (result != 0) {
+    reject(result);
+    return;
+  }
+  result = pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
+  if (result != 0) {
+    pthread_attr_destroy(&attributes);
+    reject(result);
+    return;
+  }
+  pthread_t worker;
+  result = pthread_create(&worker, &attributes, PumpThread, context.get());
+  if (result == 0) context.release();
+  pthread_attr_destroy(&attributes);
+  if (result != 0) reject(result);
+}
+
 int Listen() {
   const int fd = socket(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0);
   if (fd < 0) return -1;
@@ -488,12 +537,7 @@ int main() {
       close(client);
       continue;
     }
-    try {
-      std::thread(Pump, client, peer).detach();
-    } catch (...) {
-      ReleaseConnection();
-      close(client);
-    }
+    StartPump(client, peer);
   }
   close(listener);
   return 0;

@@ -1,0 +1,12 @@
+--- actual-captured/bionic/libc/bionic/malloc_limit.cpp
++++ owned-final/bionic/libc/bionic/malloc_limit.cpp
+@@ -200,8 +200,7 @@
+   if (bytes > old_usable_size && !CheckLimit(bytes - old_usable_size)) {
+     warning_log("malloc_limit: realloc(%p, %zu) exceeds limit %" PRId64, old_mem, bytes,
+                 gAllocLimit);
+-    // Free the old pointer.
+-    LimitFree(old_mem);
++    // Do not free the old pointer, it's still valid.
+     return nullptr;
+   }
+ 

@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "org.trillionnium.actual-monotonic-completion-stream-terminator.v2",
+  "title": "Owner monotonic completion stream terminator v2",
+  "description": "Closed source-recorder evidence. This schema validates one JSON object only; tools/perf/inspect_monotonic_stream.py must additionally check physical custody, cross-file identity, ACK chain, ranges, counters, exact start-ID closure and file/byte ceilings. It grants no installed, whole-family or L2 qualification.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "org.trillionnium.actual-monotonic-completion-stream-terminator.v2"
+    },
+    "sample_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.:/-]{1,128}$(?![\\s\\S])"
+    },
+    "producer_role": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,128}$(?![\\s\\S])",
+      "not": {
+        "enum": [
+          ".",
+          ".."
+        ]
+      }
+    },
+    "generation": {
+      "type": "object",
+      "properties": {
+        "pid": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295
+        },
+        "start_time_ticks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "boot_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+        }
+      },
+      "required": [
+        "pid",
+        "start_time_ticks",
+        "boot_id_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "trace_complete": {
+      "const": false
+    },
+    "installed_qualified": {
+      "const": false
+    },
+    "last_ack_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$(?![\\s\\S])"
+    },
+    "epochs": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256
+    },
+    "files_before_terminator": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 513
+    },
+    "bytes_before_terminator": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 16777216
+    },
+    "started_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65536
+    },
+    "published_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65536
+    },
+    "acknowledged_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65536
+    },
+    "pending_count": {
+      "const": 0
+    },
+    "resident_count": {
+      "const": 0
+    },
+    "source_stream_closed": {
+      "const": true
+    },
+    "producer_quiescence_proven": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "sample_id",
+    "producer_role",
+    "generation",
+    "trace_complete",
+    "installed_qualified",
+    "last_ack_sha256",
+    "epochs",
+    "files_before_terminator",
+    "bytes_before_terminator",
+    "started_count",
+    "published_count",
+    "acknowledged_count",
+    "pending_count",
+    "resident_count",
+    "source_stream_closed",
+    "producer_quiescence_proven"
+  ],
+  "additionalProperties": false
+}

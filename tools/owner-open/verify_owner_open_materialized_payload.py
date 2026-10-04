@@ -28,6 +28,55 @@ MAX_ENTRY_BYTES = 512 * 1024 * 1024
 MAX_ENTRIES = 4096
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
+# Fixed launcher/config plus every local Python import in the selected runtime.
+# These paths are a required source inventory; authentication remains external.
+REQUIRED_PAYLOAD_PATHS = (
+    "/bin/sh",
+    "/usr/bin/python3",
+    "/usr/bin/adb",
+    "/usr/bin/codex",
+    "/usr/libexec/trillionnium/trillionnium-owner-open-r5-host",
+    "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
+    "/usr/libexec/trillionnium/provider-adapter",
+    "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_release.py",
+    "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_selected.py",
+    "/usr/libexec/trillionnium/owner-open/codex_app_server_provider.py",
+    "/usr/libexec/trillionnium/owner-open/codex_callback_observation.py",
+    "/usr/libexec/trillionnium/owner-open/codex_owner_open_mcp.py",
+    "/usr/libexec/trillionnium/owner-open/jsonl_provider_runtime.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_admission_v2.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_audit.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_base_v2.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_common.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_connections.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_convergence_v2.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_mux.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_runtime.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_broker_server_v2.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker_v2.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_mcp_common.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_mcp_host.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_mcp_jobs.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+    "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_release.py",
+    "/usr/libexec/trillionnium/owner-open/qualify_owner_open_adb_selected.py",
+    "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification.py",
+    "/usr/libexec/trillionnium/owner-open/supervise_codex_mcp_qualification_release.py",
+    "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
+    "/etc/trillionnium/codex-provider.json",
+)
+REQUIRED_EXECUTABLE_PATHS = (
+    "/bin/sh",
+    "/usr/bin/python3",
+    "/usr/bin/adb",
+    "/usr/bin/codex",
+    "/usr/libexec/trillionnium/trillionnium-owner-open-r5-host",
+    "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
+    "/usr/libexec/trillionnium/provider-adapter",
+)
+EMPTY_FILE_SHA256 = hashlib.sha256(b"").hexdigest()
+
 
 class MaterializationError(RuntimeError):
     pass
@@ -187,13 +236,26 @@ def validate_entries(manifest: dict[str, Any]) -> None:
             or gid != 0
             or not isinstance(bytes_value, int)
             or isinstance(bytes_value, bool)
-            or not 1 <= bytes_value <= MAX_ENTRY_BYTES
+            or not 0 <= bytes_value <= MAX_ENTRY_BYTES
             or not isinstance(digest_value, str)
             or SHA256.fullmatch(digest_value) is None
         ):
             raise MaterializationError(f"image manifest entry {index} is malformed")
+        if bytes_value == 0 and (int(mode, 8) & 0o111 or digest_value != EMPTY_FILE_SHA256):
+            raise MaterializationError(f"image manifest entry {index} has an invalid empty-file contract")
         roles.add(role)
         destinations.add(destination)
+
+    missing = sorted(set(REQUIRED_PAYLOAD_PATHS) - destinations)
+    if missing:
+        raise MaterializationError(f"image manifest misses required runtime paths: {missing}")
+    by_path = {entry["destination"]: entry for entry in entries}
+    for required in REQUIRED_PAYLOAD_PATHS:
+        if by_path[required]["bytes"] == 0:
+            raise MaterializationError(f"required runtime entry is empty: {required}")
+    for required in REQUIRED_EXECUTABLE_PATHS:
+        if not int(by_path[required]["mode"], 8) & 0o111:
+            raise MaterializationError(f"required runtime entry is not executable: {required}")
 
 
 def validate(image: Path, manifest_path: Path) -> tuple[dict[str, Any], bytes, str, int]:

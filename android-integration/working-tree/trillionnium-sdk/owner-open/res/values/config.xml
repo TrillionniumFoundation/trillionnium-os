@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Build-selected owner-open platform services. The sealed resource stays intact. -->
+<resources>
+    <string-array name="config_externalTrillionniumServices">
+        <item>org.trillionnium.platform.internal.ProfileManagerService</item>
+        <item>org.trillionnium.platform.internal.TrillionniumHardwareService</item>
+        <item>org.trillionnium.platform.internal.display.LiveDisplayService</item>
+        <item>org.trillionnium.platform.internal.TrustInterfaceService</item>
+        <item>org.trillionnium.platform.internal.TrillionniumSettingsService</item>
+        <item>org.trillionnium.platform.internal.TrillionniumGlobalActionsService</item>
+        <item>org.trillionnium.platform.internal.health.HealthInterfaceService</item>
+    </string-array>
+</resources>

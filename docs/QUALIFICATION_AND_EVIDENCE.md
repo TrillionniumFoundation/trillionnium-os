@@ -213,6 +213,14 @@ infrastructure or signing material is absent.
 `public_release=true` additionally requires the release gap, all other gaps and
 explicit human authorization.
 
+The register's `CLOSED` status is a historical declaration, not an evidence
+receipt. Each intake requires live, trusted, exact-subject packages covering
+every gap, including previously closed gaps. An expired, missing or stale
+package leaves its gap unresolved in the current qualification report.
+Promotion planning recomputes this coverage and cannot inherit a zero-gap
+claim from a manually edited register or an older report. A plan does not
+change the register or authorize public release.
+
 ## 8. Current boundary
 
 An ordinary pull request must pass exact-head source checks and a real exact

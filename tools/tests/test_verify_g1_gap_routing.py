@@ -16,7 +16,7 @@ class GapRoutingTests(unittest.TestCase):
     def test_checked_in_routing_covers_every_gap(self) -> None:
         report = verifier.verify(ROOT)
         self.assertEqual(report["status"], "PASS_COMPLETE_LEVEL_CORRECT_ROUTING")
-        self.assertEqual(report["gap_count"], 21)
+        self.assertEqual(report["gap_count"], 22)
         self.assertEqual(
             report["reachable_target_evidence_kinds"],
             sorted(verifier.TARGET_KIND_LEVEL),
@@ -51,7 +51,7 @@ class GapRoutingTests(unittest.TestCase):
     def test_l5_and_l6_require_distinct_authorizers(self) -> None:
         routing = verifier.load(ROOT / "governance/gap-evidence-routing.v1.json")
         by_id = {route["gap_id"]: route for route in routing["routes"]}
-        for gap_id in ("GAP-JOURNAL-CONVERGENCE-001", "GAP-FAULT-MATRIX-001"):
+        for gap_id in ("GAP-JOURNAL-CONVERGENCE-001", "GAP-FAULT-MATRIX-001", "GAP-PERF-SYSTEM-BASELINE-001"):
             self.assertIn("destructive_authorizer", by_id[gap_id]["required_roles"])
         self.assertIn("release_authorizer", by_id["GAP-RELEASE-001"]["required_roles"])
         self.assertIn("signing_custodian", by_id["GAP-RELEASE-001"]["required_roles"])

@@ -1,0 +1,20 @@
+{
+  "schema": "org.trillionnium.test.owner-open-phone-chain-fixture.v1",
+  "source_project": "TrillionniumFoundation/android-vendor-trillionnium",
+  "source_git_commit": "f4d6c69727908d906d4854671140df6f533ec231",
+  "source_git_tree": "8b70d4c83afeac95d51069c3bc67dfebf02cbd77",
+  "upstream_file": "config/telephony.mk",
+  "git_blob": "688184679bec1627d149a90b3f16078512f65d03",
+  "fixture_file": "telephony.mk",
+  "bytes": 613,
+  "sha256": "4b855f95e099a4a28f4c975363b566ed9312f84e5653327db6410fec6d6a7840",
+  "license": {
+    "identifier": "Apache-2.0",
+    "source_file": "LICENSE",
+    "git_blob": "cdec959c8d679837df7ffb7bc79839189a661c38",
+    "bytes": 640,
+    "sha256": "6686cda24fdf8158112cea8bcea0ff7254696b09547374cc77c6f74d26744b46",
+    "notice_utf8": "   Copyright 2011-15 The CyanogenMod Project\n             2017    The LineageOS Project\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n"
+  },
+  "scope": "Exact pinned original Git blob copied as a test fixture only, not a new physical source overlay. Telephony and source LICENSE observations are Git blob reads, not fresh working-tree FD provenance. Actual GNU Make checks retain ordinary mobile/full/telephony selections with licensed deferred-inherit macros; unrelated core/device/audio/version stubs and disabled SDK do not qualify full Kati/Soong or installed behavior."
+}

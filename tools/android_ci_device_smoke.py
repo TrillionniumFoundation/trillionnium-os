@@ -12,12 +12,14 @@ code was installed.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 from datetime import datetime, timezone
 import json
 import math
 import os
 from pathlib import Path
 import re
+import selectors
 import shutil
 import signal
 import stat
@@ -25,6 +27,16 @@ import subprocess
 import sys
 import time
 from typing import Any, Iterable
+
+_PROCESS_SPEC = importlib.util.spec_from_file_location(
+    "owner_open_bounded_process", Path(__file__).with_name("owner_open_bounded_process.py")
+)
+assert _PROCESS_SPEC is not None and _PROCESS_SPEC.loader is not None
+_OWNED_PROCESS = importlib.util.module_from_spec(_PROCESS_SPEC)
+_PROCESS_SPEC.loader.exec_module(_OWNED_PROCESS)
+BoundedProcessError = _OWNED_PROCESS.BoundedProcessError
+run_bounded = _OWNED_PROCESS.run_bounded
+
 
 
 SCHEMA = "org.trillionnium.android-ci.device-smoke.v1"
@@ -37,6 +49,7 @@ REPOSITORY_RE = re.compile(
 SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 MAX_CAPTURE_BYTES = 16 * 1024
+MAX_PROCESS_OUTPUT_BYTES = 2 * MAX_CAPTURE_BYTES
 MAX_RECEIPT_BYTES = 2 * 1024 * 1024
 DEFAULT_PACKAGES = (
     "org.trillionnium.aishell",
@@ -140,57 +153,39 @@ def _run_adb(adb: Path, serial: str | None, arguments: list[str], timeout: float
         command.extend(["-s", serial])
     command.extend(arguments)
     started = time.monotonic()
+    failure = None
     try:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            start_new_session=True,
+        result = run_bounded(
+            command, timeout_seconds=timeout,
+            maximum_output=MAX_PROCESS_OUTPUT_BYTES,
         )
-    except OSError as error:
-        return {
-            "argv": command,
-            "returncode": None,
-            "stdout": "",
-            "stderr": _capture(str(error)),
-            "timed_out": False,
-            "spawn_error": True,
-            "seconds": round(time.monotonic() - started, 3),
-        }
-    try:
-        stdout, stderr = process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
-        # ``adb`` can leave a child transport helper behind.  It is started in
-        # its own process group so a timeout cannot leak a command into the
-        # next device job.
-        try:
-            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-        except (OSError, ProcessLookupError):
-            pass
-        stdout, stderr = process.communicate()
-        return {
-            "argv": command,
-            "returncode": None,
-            "stdout": _capture(stdout or ""),
-            "stderr": _capture(stderr or ""),
-            "timed_out": True,
-            "seconds": round(time.monotonic() - started, 3),
-        }
+        returncode, stdout, stderr = result
+    except BoundedProcessError as error:
+        failure = error
+        returncode, stdout, stderr = None, error.stdout, error.stderr
+    capture_error = bool(failure and (failure.capture_error or failure.cleanup_error))
+    if failure and (capture_error or failure.spawn_error):
+        stderr += ("\noutput capture failed: " + str(failure)).encode("utf-8", errors="replace")
     return {
         "argv": command,
-        "returncode": process.returncode,
-        "stdout": _capture(stdout),
-        "stderr": _capture(stderr),
-        "timed_out": False,
+        "returncode": returncode,
+        "stdout": _capture(stdout.decode("utf-8", errors="replace")),
+        "stderr": _capture(stderr.decode("utf-8", errors="replace")),
+        "timed_out": bool(failure and failure.timed_out),
+        "output_limit_exceeded": bool(failure and failure.output_limit_exceeded),
+        "spawn_error": bool(failure and failure.spawn_error),
+        "capture_error": capture_error,
         "seconds": round(time.monotonic() - started, 3),
     }
 
 
 def _successful(observation: dict[str, Any]) -> bool:
-    return observation.get("returncode") == 0 and not observation.get("timed_out")
+    return (
+        observation.get("returncode") == 0
+        and not observation.get("timed_out")
+        and not observation.get("output_limit_exceeded")
+        and not observation.get("capture_error")
+    )
 
 
 def _write_exclusive(path: Path, data: bytes) -> None:

@@ -20,7 +20,16 @@ mod base {
 }
 
 fn main() {
-    if let Err(error) = base::v4::jobs::run() {
+    if let Err(error) = trillionnium_owner_open_trace::configure_from_env("core") {
+        eprintln!("trace configuration refused: {error}");
+        std::process::exit(2);
+    }
+    let result = base::v4::jobs::run();
+    if let Err(error) = trillionnium_owner_open_trace::export_from_env() {
+        eprintln!("trace export unavailable: {error}");
+        std::process::exit(2);
+    }
+    if let Err(error) = result {
         eprintln!("trillionnium-owner-open-r5-core: {error}");
         std::process::exit(2);
     }

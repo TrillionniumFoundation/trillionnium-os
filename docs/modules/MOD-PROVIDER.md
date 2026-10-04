@@ -75,6 +75,65 @@ source navigation alone does not prove wire compatibility.
 
 `JsonlProviderConfig` supplies the executable, environment and bounded protocol configuration. `JsonlProvider` owns the child session. The protocol adapter validates scope and produces exact tool outcomes; restarting the process is not permission to replay a callback.
 
+`crates/trillionnium-owner-open-provider-jsonl/python/codex_app_server_provider.py` is the native app-server bridge
+source candidate. It verifies pinned executable bytes through an inherited
+read-only descriptor, binds a private leased session to its configuration and
+native thread, and forwards exact direct shell/ADB callbacks through the Host.
+An empty native execution environment is selected on thread creation and each
+turn; no unsupported field is sent on resume. Final native message items and
+verified streaming suffixes reach the UI without duplication. Native approval
+requests, identity conflicts, uncertain cleanup and callback replay fail closed.
+The payload adapter remains `EXTERNAL_HOLD`: source fixtures and a real frozen
+binary against a synthetic local backend do not qualify authentication,
+installed effects or all native configuration layers. Managed feature
+requirements, MCP, legacy notify and startup plugins require a trusted installed
+configuration boundary before production promotion.
+
+Private state/configuration directory traversal uses Linux `O_PATH` descriptors
+for intermediate directories, so a searchable parent need not permit directory
+listing. This supports ordinary uid 2000 probe paths beneath Android `/data`,
+where the parent is searchable but not readable. The selected directory still
+uses `O_RDONLY`; its existing owner/mode checks and every component's
+`O_DIRECTORY | O_NOFOLLOW` checks remain enforced. This changes no filesystem
+permissions or authority. A temporary physical ARM protocol probe with a local
+synthetic model and fixed Host observations demonstrates runtime compatibility;
+it does not establish installed RootLinux, authenticated provider, native effect
+isolation or release qualification.
+
+The source bridge also rejects known unbound filesystem layers before launching
+native Codex: `/etc/codex`, legacy managed requirements, hooks/plugins, and
+ancestor project/repository configuration. Its digest-bound public TOML is
+limited to 16 KiB of model/provider settings and explicitly disabled feature
+flags; extension/profile selectors, MCP commands and notify commands fail
+before native startup. This closes a reproduced system-MCP startup path even
+when ordinary shell/hooks/plugins CLI flags are false. The checks do not make
+filesystem paths immutable or attest cloud requirements and persisted thread
+layers. Those remain installed/authenticated configuration qualification holds.
+
+The frozen native launch also disables goal continuation, memories, code/JS
+execution, browsers, web search, subagents, extension installation, native input
+requests and orchestrator skills/MCP. Ordinary defaults must not create a second
+execution lane beside the durable Host callbacks. A real 0.144.1 synthetic
+backend probe retains only native `update_plan` notifications and the two Host
+tools in the model-visible inventory. This probe does not attest managed/cloud
+feature constraints or another native release.
+
+`crates/trillionnium-owner-open-provider-jsonl/python/codex_callback_observation.py` handles the distinct Host and
+native callback byte bounds. A Host tool-result frame may occupy one borrowed
+32 MiB raw buffer. Large events are validated without constructing their DOM;
+only bounded metadata is retained. If the native 256 KiB response envelope
+cannot carry all observations, a separate `bridge_observation_gap` identifies
+omitted event sequences, count and output bytes. Producer gaps, status,
+generation, terminal, registry and observation digest remain visible. Runtime
+`output_truncated` is not rewritten. A preexisting unknown field with the bridge
+gap name is preserved with the bridge gap in a separate native content item.
+Oversized control metadata fails closed and never authorizes redispatch.
+The borrowed scanner limits control metadata to 256 KiB, cumulative key
+working space to 4 MiB, values and string escapes to 32768 each, and nesting
+to 64. It validates finite bounded numeric tokens, UTF-8 and paired Unicode
+escapes even in discarded event bodies; size-dependent parsing cannot weaken
+these checks.
+
 ## 6. State model and ownership
 
 - State schema: `org.trillionnium.mod_provider.state.v1`
@@ -136,6 +195,34 @@ Measurement status: **unmeasured until qualified evidence**.
 
 These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
 
+Rust JSONL defaults now admit 1 MiB inbound frames, two queued lines and a
+512 KiB stderr prefix. Configuration validation precedes spawn and enforces
+16 MiB aggregate raw capacity (Vec growth, queued/reader/blocked/current line,
+channel metadata and stderr/text copies), 4 MiB owned configuration /12 MiB
+configuration staging, and 64 KiB per inherited environment value /1 MiB total.
+Dense JSON has a lexical allocation precheck and post-decode capacity check:
+2 MiB per DOM /16 MiB decode/canonical staging (up to eight bounded
+representations, including JCS byte/index buffers). Schema line/count ceilings do
+not override these aggregate gates. The catalog is not widened.
+
+Outbound results have a separate 32 MiB frame bound and fixed 64 KiB streaming
+write buffer. Tool event/base64 serialization borrows the raw outcome, counts
+before writing and shares one deadline across flushes. A default 16 MiB tool
+output remains complete even with the smaller inbound limit. Inbound raw/DOM
+values are dropped before invoking a tool. For larger nondefault histories,
+`events_truncated: true` plus a scoped `tool_execution_event` observation gap
+explicitly covers the omitted events/output bytes while full terminal,
+generation, registry identity and observation hash remain. The actual runtime
+`output_truncated` bit is preserved. Observation truncation never authorizes
+redispatch or proves a missing event did not occur; consumers must retain and
+expose that distinction. Ordinary complete-result fields remain unchanged.
+
+These logical per-session reservations do not qualify whole host/child RSS or
+all sessions: runtime/turn retention, caller-owned responses, allocator costs
+and external Codex resources still require process-wide admission and measured
+installed evidence. Python launch/bootstrap constraints are specified separately
+below; these Rust buffer checks do not qualify that adapter.
+
 ## 10. Persistence, recovery and reconciliation
 
 A provider exit terminates the session epoch. Pending callbacks are classified from durable acceptance and terminal evidence; a new process receives no implicit replay of uncertain effects.
@@ -143,6 +230,13 @@ A provider exit terminates the session epoch. Pending callbacks are classified f
 Durable writes use an explicit commit boundary. Startup validates schema, epoch and record integrity before admission. Corrupt or incompatible authoritative state is quarantined or causes fail-closed startup. Reconciliation observes external reality first; it never fills a missing record by blind effect replay.
 
 ### Python JSONL launch adapter: process retirement and callback fencing
+
+Before Python UTF-8 text/DOM decoding, a quote/escape-aware byte scan reserves
+source characters, container/value overhead and decoder staging. It rejects
+more than 32768 values or 16 MiB of conservative decoding work. Nesting remains
+limited to 64; strict UTF-8, duplicate-member and finite-number validation still
+follows. A line's hard byte ceiling does not override this allocation gate.
+This per-decode reservation is not a whole-process RSS or global-session proof.
 
 `tools/owner-open/jsonl_provider_runtime.py` is the Python launch/bootstrap
 adapter used by `execute_codex_exec_plan.py`, not the Rust Provider runtime.

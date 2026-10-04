@@ -1,0 +1,22 @@
+--- actual-captured/hardware/nxp/secure_element/snxxx/aidl/SecureElement.cpp
++++ owned-final/hardware/nxp/secure_element/snxxx/aidl/SecureElement.cpp
+@@ -418,10 +418,15 @@
+     sestatus = ISecureElement::CHANNEL_NOT_AVAILABLE;
+   } else if (rspApdu.p_data[rspApdu.len - 2] == 0x90 &&
+              rspApdu.p_data[rspApdu.len - 1] == 0x00) {
+-    resApduBuff.channelNumber = rspApdu.p_data[0];
+-    mOpenedchannelCount++;
+-    mOpenedChannels[resApduBuff.channelNumber] = true;
+-    sestatus = SESTATUS_SUCCESS;
++    if (rspApdu.p_data[0] < mMaxChannelCount && rspApdu.p_data[0] > 0) {
++      resApduBuff.channelNumber = rspApdu.p_data[0];
++      mOpenedchannelCount++;
++      mOpenedChannels[resApduBuff.channelNumber] = true;
++      sestatus = SESTATUS_SUCCESS;
++    } else {
++      resApduBuff.channelNumber = -1;
++      sestatus = ISecureElement::CHANNEL_NOT_AVAILABLE;
++    }
+   } else if (((rspApdu.p_data[rspApdu.len - 2] == 0x6E) ||
+               (rspApdu.p_data[rspApdu.len - 2] == 0x6D)) &&
+              rspApdu.p_data[rspApdu.len - 1] == 0x00) {

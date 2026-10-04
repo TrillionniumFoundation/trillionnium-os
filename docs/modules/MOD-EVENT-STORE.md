@@ -101,6 +101,12 @@ Only this module may perform authoritative writes for its state families. Read m
 
 Per-key operations are linearized while unrelated keys may progress concurrently. Process spawn, external I/O, fsync and provider waits are slow paths and must not execute under a global registry lock. At capacity, admission is rejected before starting a process or publishing an accepted effect.
 
+The concrete EventStore source additionally serializes codecs/response builds
+across stores on its shared temporary working lane. Metadata-only operations
+retain their per-store locks. This conservative memory gate does not establish
+the declared concurrency/latency SLO: callbacks and filesystem barriers still
+require bounded embedding behavior and target measurements.
+
 ## 8. Effect, cancellation and uncertainty semantics
 
 Automatic redispatch: **forbidden**.
@@ -135,6 +141,111 @@ Resource budget authority: `docs/machine/resource-budget-provenance.v1.json`.
 Measurement status: **unmeasured until qualified evidence**.
 
 These values are finite source-admission ceilings and provisional objectives, not benchmark results. They remain observe-only until workload profiles `WL-01` through `WL-12`, environment identity, samples, percentiles and resource observations are retained in a qualifying L2 package.
+
+The segmented store retains at most 240 segment descriptors, leaving 16 of the
+256-descriptor source ceiling for its root/lease, recovery and sidecar work.
+Previously the hard segment ceiling was 1024. Rotation rejects an additional
+segment before creating it; exact duplicates and retained replay remain usable.
+Recovery rejects an over-ceiling directory before opening its segment set. This
+is a compatibility restriction: an older store with more than 240 segments is
+retained and fails closed; no automatic WAL deletion, effect replay or silent
+compaction is permitted. Recovery requires an explicitly reviewed migration
+that preserves every identity and hash-chain record.
+
+V1/v2 handles now share a linked-module256-descriptor RAII pool:16 control/
+recovery slots are acquired before touching the path and one slot before each
+segment create/open. A capacity failure returns every partial-open reservation;
+cloned Arc owners retain the same lease, and closed files return slots only
+when the last owning handle drops. New handles/segments fail rather than evicting
+an active reader. Concurrent source/destination migration/export can refuse
+joint capacity; retain both WALs and the original writer fence. No temporary
+budget bypass, deletion or redispatch is allowed to force that migration.
+On-demand payload reads use the crate's existing Unix platform boundary and
+`FileExt::read_exact_at` on the pinned File, without cloning a descriptor or
+changing its offset. The existing segment mutex, before/after identity checks,
+and public-read append gate remain in place. Concurrent callers are serialized
+at that gate so they cannot observe a partially published WAL append.
+
+RAM now uses two linked-module pools shared by every v1/v2 instance:32 MiB
+resident plus32 MiB temporary, for a64 MiB combined source admission envelope.
+State owns its noncloneable resident lease; pinned segments charge metadata,
+pathnames and short read/sync path copies. Initial admission occurs before path
+creation, append acquires growth before WAL/rotation, and partial recovery
+returns every acquired lease. Arc clones preserve the same reservation until
+the final owning handle drops. Accepted/uncertain IDs are never evicted.
+
+Memory-intensive codecs/response builds serialize on a separate working lane;
+the 32 MiB lease lasts across I/O/callbacks and unwinds on error/panic. The pool
+accounting atomics never span those slow operations. An owned append argument
+waiting for the lane first reserves its actual String/Value capacities in the
+resident pool; capacity refusal prevents unbounded queued buffers. Caller-built
+unadmitted arguments still require the caller's ingress budget. Callback code
+must be bounded and must not call allocating EventStore APIs or blocking
+JOB/EventStore working locks. Direct EventStore reentry fails capacity before
+waiting; arbitrary cross-module callbacks do not gain a deadlock-free guarantee.
+
+V2 retains compact authenticated headers and a single per-scope event-ID/ordinal
+index. One immutable full-content scope Arc is shared by all headers in its
+turn; each event ID is shared by header and key. Location and working reservation
+belong to the header, and three validated lowercase SHA-256 strings become
+fixed 32-byte arrays. Next sequence uses checked last-header arithmetic and
+must equal the ordinal index length; empty/inconsistent scope indexes refuse.
+No internal Arc escapes the existing public record APIs.
+Payloads are read from pinned
+segments on demand, strictly decoded and digest-checked against those headers.
+WAL recovery authenticates the whole chain while retaining only headers. V1
+keeps its full read model within the same shared32 MiB gate. Compact reservations
+charge four header/ordinal growth slots for Vec overlap, eight bucket slots for
+map rehash/control slack, explicit Arc counters, and two owned copies with64-byte
+logical alignment/allocator allowance per allocation. A first scope also charges
+its five strings, Arc and map entry; subsequent records share them. Legacy
+full-record reservations are unchanged. Credit precedes compact allocation and
+outlives it; a post-WAL fallible growth failure retains its credit and poisons the
+live store. Public schemas, sidecar order/fields, whole recovery, duplicate/full
+scope identity and durability fences remain unchanged. These reservations do not
+establish allocator metadata, RSS or a complete Host-family budget. Dense JSON has a
+quote/escape-aware lexical allocation check before DOM decoding. The separate
+shared32 MiB temporary pool bounds response construction and snapshot work;
+`replay`/`all_records` may return `CapacityExhausted` before allocation.
+`visit_records` reads one record at a time and supports journal recovery without
+a whole-lineage payload clone. `visit_scope_records(scope, inclusive_turn_seq, callback)`
+uses existing v2 scope-index ordinals and reads only that suffix, without cloning
+all headers; v1 filters borrowed validated records. Both fence live identities
+and lengths. Startup still authenticates the complete WAL chain; scoped reads
+authenticate selected payloads against those startup headers and cannot grant
+missing-prefix/restart coverage. Same-length drift in another scope is detected
+by a read of that scope or full recovery; selected inspection does not reread it.
+
+Encoding counts bytes without a DOM/Vec before allocation and preflights owned
+input plus overlapping encoder buffers. New WAL records must also pass the
+same combined encoded-buffer/JSON decode gate used at recovery. Duplicate v2
+lookup counts the owned input beside the decoded payload; temporary refusal
+never poisons or evicts its existing identity. Bounded read-line growth/shrink
+reserves old/new buffers plus64 KiB fixed codec scratch. The record/read ceiling
+is16 MiB minus32 KiB and two read-ahead bytes. Sidecars retain a16 MiB encoded
+ceiling and a stricter combined decoder gate. Index encoding borrows headers
+in store-sequence order instead of cloning the entire key table. Checkpoint
+preflights its payload Vec and encoder growth and drops snapshot bytes before
+index encoding. Snapshot/read-budget refusal happens before snapshot
+publication and leaves the authoritative WAL unchanged. Schema byte/count limits do not override these
+resident/working gates.
+
+Migration fresh-scans each source record against the retained authenticated v1
+view while preserving its writer fence, and borrows that view to reconcile one
+destination payload at a time. Export moves one decoded payload to the v1
+writer and freshly rescans the destination before reporting the export; neither
+retains another full payload lineage. Both writer/resident/FD
+leases remain required and joint capacity can refuse while preserving both WALs.
+
+No uncertain key or accepted record is evicted. Over-budget historical WAL or
+sidecars fail closed and are retained for reviewed migration; a new empty
+journal must not substitute for that lineage. These source reservations do not
+prove process RSS. Ordinary returned EventRecord/Value/Vec APIs transfer
+ownership to the caller; an internal lease cannot follow an arbitrary later
+clone/retention. Caller-owned responses/inputs/callback allocations, other
+modules, allocator overhead and host/child RSS require their owners' budgets
+and installed evidence. The conservative shared working lane also needs target
+throughput/latency measurements before any concurrency/P99 objective is claimed.
 
 ## 10. Persistence, recovery and reconciliation
 
@@ -217,7 +328,7 @@ Standard deployment sequence:
 
 ## 17. Open gaps and exit criteria
 
-Open machine gaps: `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-EVENT-STORE-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
+Open machine gaps: `GAP-JOURNAL-CONVERGENCE-001`, `GAP-CONC-EVENT-STORE-001`, `GAP-PERF-L2-BASELINE-001`, `GAP-PERF-SYSTEM-BASELINE-001`, `GAP-FAULT-MATRIX-001`.
 
 ### GAP-JOURNAL-CONVERGENCE-001 — exit L5
 
@@ -239,12 +350,19 @@ Exit evidence must demonstrate:
 - bounded recovery time.
 - schema migration.
 
-### GAP-PERF-SYSTEM-BASELINE-001 — exit L2
+### GAP-PERF-L2-BASELINE-001 — exit L2
+
+Installed WL-01 through WL-10 retain raw A1/A2/A3 and C1/C2/C3 batches,
+complete applicable stage/resource counters and qualified stability/comparison.
+WL-11 remains an L4 hold and WL-12 remains an L5 hold.
+
+### GAP-PERF-SYSTEM-BASELINE-001 — exit L5
 
 Mixed-workload throughput, latency, resource and recovery baselines are repeatable.
 
 Exit evidence must demonstrate:
-- WL-01 through WL-12 run.
+- WL-01 through WL-10 have installed L2 evidence, WL-11 has physical L4 evidence and WL-12 has destructive L5 evidence.
+- The exact subject and continuous L1 through L5 evidence lineage bind every phase.
 - P50, P95, P99 and maximum are recorded.
 - CPU, RSS, FD, thread, process and I/O are recorded.
 - system-objective delta gates changes.

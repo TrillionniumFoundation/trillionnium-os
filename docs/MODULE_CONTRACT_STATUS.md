@@ -5,7 +5,7 @@
 - Modules: `16`
 - API/state/error schemas: `3 per module`
 - Shared valid vectors: `3 per module`
-- Shared invalid vectors: `24 per module`
+- Shared invalid vectors: `32 per module`
 - Producer/consumer pairs: `29`
 - Schemars projection: `byte-bound`
 - Automatic redispatch after uncertainty: `false`

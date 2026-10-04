@@ -361,6 +361,16 @@ impl Persistence {
         request_sha256: &str,
         frame: &RunTurnFrame,
     ) -> bool {
+        let _terminal_trace = matches!(
+            frame.kind.as_str(),
+            "tool.result" | "turn.end" | "turn.cancelled" | "turn.rejected" | "turn.failed"
+        )
+        .then(|| {
+            trillionnium_owner_open_trace::span(
+                trillionnium_owner_open_trace::Stage::TerminalPersistence,
+                request_sha256,
+            )
+        });
         if !self.is_durable() {
             return false;
         }

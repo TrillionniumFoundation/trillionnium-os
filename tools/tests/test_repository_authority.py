@@ -43,6 +43,20 @@ class RepositoryAuthorityTest(unittest.TestCase):
         self.assertGreaterEqual(report["markdown_files"], 84)
         self.assertGreater(report["local_links"], 50)
 
+    def test_android_source_navigation_binds_capture_and_current_gate(self) -> None:
+        readme = ROOT / "android-integration/README.md"
+        source = readme.read_text(encoding="utf-8")
+        for target in (
+            "manifest/CAPTURE.txt",
+            "manifest/manifests/trillionnium-fogos.xml",
+            "../docs/START_HERE.md",
+            "../tools/owner_source_provenance.py",
+        ):
+            with self.subTest(target=target):
+                self.assertIn(f"]({target})", source)
+                VERIFY.resolve_markdown_target(ROOT, readme, target, "Android source navigation")
+        self.assertNotIn("../docs/audit/android-manifest/", source)
+
     def test_root_markdown_is_in_closed_inventory(self) -> None:
         path = self.root / "README.md"
         path.write_text(path.read_text() + "\n[missing](docs/DOES_NOT_EXIST.md)\n")

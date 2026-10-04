@@ -1907,6 +1907,7 @@ dependencies = [
  "sha2",
  "tempfile",
  "thiserror",
+ "trillionnium-owner-open-trace",
 ]
 
 [[package]]
@@ -1927,6 +1928,7 @@ dependencies = [
  "trillionnium-owner-open-provider-jsonl",
  "trillionnium-owner-open-runtime",
  "trillionnium-owner-open-stream-window",
+ "trillionnium-owner-open-trace",
  "trillionnium-owner-open-turn-loop",
  "trillionnium-owner-open-types",
 ]
@@ -1951,6 +1953,7 @@ dependencies = [
  "thiserror",
  "trillionnium-owner-open-event-store",
  "trillionnium-owner-open-job-registry",
+ "trillionnium-owner-open-trace",
 ]
 
 [[package]]
@@ -1968,6 +1971,7 @@ dependencies = [
  "trillionnium-owner-open-call-registry",
  "trillionnium-owner-open-runtime",
  "trillionnium-owner-open-tool-bridge",
+ "trillionnium-owner-open-trace",
  "trillionnium-owner-open-turn-loop",
  "trillionnium-owner-open-types",
 ]
@@ -1979,6 +1983,7 @@ dependencies = [
  "libc",
  "tempfile",
  "thiserror",
+ "trillionnium-owner-open-trace",
 ]
 
 [[package]]
@@ -1997,6 +2002,18 @@ dependencies = [
  "tempfile",
  "trillionnium-owner-open-call-registry",
  "trillionnium-owner-open-runtime",
+ "trillionnium-owner-open-trace",
+]
+
+[[package]]
+name = "trillionnium-owner-open-trace"
+version = "0.1.0"
+dependencies = [
+ "libc",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
 ]
 
 [[package]]

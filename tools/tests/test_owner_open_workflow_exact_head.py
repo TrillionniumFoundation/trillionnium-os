@@ -22,6 +22,27 @@ def workflow_paths() -> list[Path]:
 
 
 class OwnerOpenWorkflowExactHeadTest(unittest.TestCase):
+    def test_manual_synthetic_source_job_cannot_access_actions_cache(self) -> None:
+        workflow = (WORKFLOW_ROOT / "g1-synthetic-merge.yml").read_text(
+            encoding="utf-8"
+        )
+        job = SourcePrerequisiteWorkflowTests.job_text(workflow, "synthetic-merge")
+        # A dispatch on main may intentionally run a fork's selected source.
+        # A job-level service restriction must apply regardless of trigger or
+        # workflow-level defaults; an environment variable is not sufficient.
+        self.assertIn("  workflow_dispatch:\n", workflow)
+        self.assertIn("repository: ${{ env.EVENT_HEAD_REPOSITORY }}", job)
+        self.assertEqual(
+            re.findall(r"(?m)^    cache-mode:\s*(\S+)\s*$", job),
+            ["none"],
+            "manual candidate execution must have no cache token capability",
+        )
+        # The runner exposes this variable to Node actions, not Bash run
+        # steps. A shell assertion would fail even when service isolation is
+        # active; setting a pretend environment value would prove nothing.
+        self.assertNotIn("${ACTIONS_CACHE_MODE", job)
+        self.assertNotRegex(workflow, r"(?m)^\s*ACTIONS_CACHE_MODE\s*:")
+
     def test_direct_verifier_invocations_bind_checkout_pair(self) -> None:
         paths = workflow_paths()
         self.assertTrue(paths, f"no G1 workflows found under {WORKFLOW_ROOT}")
@@ -319,6 +340,8 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
         self.tool("python3", 'exit "${TEST_PYTHON_STATUS:-0}"\n')
         self.tool("rustc", 'printf "%s\\n" "${TEST_RUST_VERSION:-rustc 1.93.0 (fixture)}"\nexit "${TEST_RUST_STATUS:-0}"\n')
         self.tool("cargo", 'printf "%s\\n" "${TEST_CARGO_VERSION:-cargo 1.93.0 (fixture)}"\nexit "${TEST_CARGO_STATUS:-0}"\n')
+        self.tool("cc", 'exit 0\n')
+        self.tool("make", 'exit 0\n')
         self.tool("setfacl", 'exit "${TEST_ACL_STATUS:-0}"\n')
         self.tool("getfacl", 'printf "%s\\n" "${TEST_ACL_RECORD:-user:0:r--}"\nexit "${TEST_ACL_READ_STATUS:-0}"\n')
 
@@ -344,7 +367,7 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
             self.assertLess(job.index(install), job.index("uses: actions/checkout@"))
             self.assertIn("working-directory: ${{ runner.temp }}", install)
             self.assertIn("/usr/bin/sudo /usr/bin/apt-get", install)
-            self.assertIn("install --yes --no-install-recommends acl", install)
+            self.assertIn("install --yes --no-install-recommends acl gcc make", install)
             self.assertNotIn("continue-on-error", install)
             self.assertNotIn("|| true", install)
             self.assertNotIn("python3", install)
@@ -416,7 +439,7 @@ class SourcePrerequisiteWorkflowTests(unittest.TestCase):
         self.run_guards(success=False, TEST_CARGO_STATUS="24")
 
     def test_missing_required_tool_is_rejected(self) -> None:
-        for command in ("python3", "rustc", "cargo", "setfacl", "getfacl"):
+        for command in ("python3", "rustc", "cargo", "setfacl", "getfacl", "cc", "make"):
             target = self.bin / command
             saved = target.read_text()
             target.unlink()

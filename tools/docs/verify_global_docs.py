@@ -12,6 +12,11 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+try:
+    from .verify_module_documentation import visible_prose, VerificationError as MarkdownError
+except ImportError:  # Direct CLI execution uses the sibling script directory.
+    from verify_module_documentation import visible_prose, VerificationError as MarkdownError
+
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
 MACHINE = DOCS / "machine"
@@ -221,6 +226,19 @@ def verify_doc_set(docset: dict[str, Any]) -> None:
     unique(authority, "authority path")
     for path in authority:
         require(path in required, f"authority path is not registered: {path}")
+
+def verify_documentation_revision(docset: dict[str, Any], program: dict[str, Any]) -> None:
+    """Bind the active documentation version without changing evidence claims."""
+    revision = require_semver(docset.get("documentation_revision"), "doc-set documentation_revision")
+    require(program.get("documentation_revision") == revision,
+            "program/documentation-set documentation revision drift")
+    entrypoint = (DOCS / "START_HERE.md").read_text(encoding="utf-8")
+    try:
+        prose = visible_prose(entrypoint)
+    except MarkdownError as error:
+        raise VerificationError(f"entrypoint Markdown is invalid: {error}") from error
+    actual = re.findall(r"^Documentation revision: \*\*([^*]+)\*\*\s*$", prose, re.M)
+    require(actual == [revision], "entrypoint documentation revision drift")
 
 def verify_modules(catalog: dict[str, Any]) -> set[str]:
     require_exact_keys(catalog, MODULE_CATALOG_KEYS, "module catalog")
@@ -1078,6 +1096,7 @@ def main() -> int:
             evidence["program_revision"],
         }
         require(len(revisions) == 1, f"program revision drift: {sorted(revisions)}")
+        verify_documentation_revision(docset, program)
 
         evidence_ids = verify_evidence_index(evidence)
         module_ids = verify_modules(catalog)

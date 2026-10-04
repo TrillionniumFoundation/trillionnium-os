@@ -1,0 +1,117 @@
+--- actual-captured/external/libppd/ppd/rastertops.c
++++ owned-final/external/libppd/ppd/rastertops.c
+@@ -245,18 +245,42 @@
+ 						   // output buffer
+   z_stream       strm;                             // Structure required
+ 						   // by deflate
+-  unsigned char  *pixdata,
+-                 *convertedpix;
+-  unsigned char  in[header.cupsBytesPerLine * 6],  // Input data buffer
+-                 out[header.cupsBytesPerLine * 6]; // Output data buffer
+-		
++  unsigned char  *pixdata = NULL,
++                 *convertedpix = NULL,
++                 *in = NULL,                       // Input data buffer
++                 *out = NULL;                      // Output data buffer
++  uint64_t expanded_size = (uint64_t)header.cupsBytesPerLine * 6;
++  int            deflate_initialized = 0;
++
++  if (expanded_size > INT32_MAX)
++  {
++    if (doc->logfunc) doc->logfunc(doc->logdata, CF_LOGLEVEL_ERROR,
++				  "ppdFilterRasterToPS: cupsBytesPerLine too large for pixel expansion (overflow)");
++    return (Z_MEM_ERROR);
++  }
++
++  in = malloc((size_t)expanded_size);
++  out = malloc((size_t)expanded_size);
++  pixdata = malloc(header.cupsBytesPerLine);
++  // Use the max size possibly needed for the loop below.
++  convertedpix = malloc((size_t)expanded_size);
++
++  if (!in || !out || !pixdata || !convertedpix)
++  {
++    if (doc->logfunc) doc->logfunc(doc->logdata, CF_LOGLEVEL_ERROR,
++				  "ppdFilterRasterToPS: memory allocation failed");
++    ret = Z_MEM_ERROR;
++    goto cleanup;
++  }
++
+   // allocate deflate state
+   strm.zalloc = Z_NULL;
+   strm.zfree = Z_NULL;
+   strm.opaque = Z_NULL;
+   ret = deflateInit(&strm, -1);
+   if (ret != Z_OK)
+-    return (ret);
++    goto cleanup;
++  deflate_initialized = 1;
+ 
+   if (header.cupsBitsPerColor == 1 &&
+       (header.cupsColorSpace == CUPS_CSPACE_RGB ||
+@@ -267,17 +291,14 @@
+   // compress until end of file
+   do
+   {
+-    pixdata = malloc(header.cupsBytesPerLine);
+     cupsRasterReadPixels(ras, pixdata, header.cupsBytesPerLine);
+     if (flag)
+     {
+-      convertedpix = malloc(header.cupsBytesPerLine * 6);
+       convert_pixels(pixdata,convertedpix, header.cupsBytesPerLine);
+-      alloc = header.cupsBytesPerLine * 6;
++      alloc = (int)expanded_size;
+     }
+     else
+     {
+-      convertedpix = malloc(header.cupsBytesPerLine);
+       memcpy(convertedpix, pixdata, header.cupsBytesPerLine);
+       alloc = header.cupsBytesPerLine;
+     }
+@@ -306,29 +327,34 @@
+       have = alloc - strm.avail_out;
+       if (fwrite(out, 1, have, doc->outputfp) != have)
+       {
+-	(void)deflateEnd(&strm);
+-	if (convertedpix != NULL)
+-	  free(convertedpix);
+-	return (Z_ERRNO);
++	ret = Z_ERRNO;
++	goto cleanup;
+       }
+     }
+     while (strm.avail_out == 0);
+ 
+     // all input will be used
+     DEBUG_assert(strm.avail_in == 0);
+-
+-    // done when last data in file processed
+-    free(pixdata);
+-    free(convertedpix);
+   }
+   while (flush != Z_FINISH);
+ 
+   // stream will be complete
+   DEBUG_assert(ret == Z_STREAM_END);
+-
+-  // clean up and return
+-  (void)deflateEnd(&strm);
+-  return (Z_OK);
++  ret = Z_OK;
++
++cleanup:
++  if (deflate_initialized)
++    (void)deflateEnd(&strm);
++  if (in != NULL)
++    free(in);
++  if (out != NULL)
++    free(out);
++  if (pixdata != NULL)
++    free(pixdata);
++  if (convertedpix != NULL)
++    free(convertedpix);
++
++  return (ret);
+ }
+ 
+ //
