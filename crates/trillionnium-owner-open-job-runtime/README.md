@@ -29,6 +29,16 @@ without an accepted job marker. These internal fixes preserve the v1 journal
 schema and require no migration. Rollback restores the prior rejection behavior;
 source tests alone do not qualify installed memory use or recovery latency.
 
+A journal resident-capacity refusal while the journal remains Durable also
+avoids creating a new observation identity when the untouched registry
+acceptance is rolled back. The manager-wide diagnostic remains available.
+Already-held observation identities retain their cursor and degradation
+semantics; an unproven rollback keeps the original conservative per-key marker.
+Existing accepted/uncertain registry entries and durable history are not
+removed or made redispatchable. Real append failures retain their prior
+diagnostic behavior. This narrow repair changes no limits or journal schema;
+fresh exact-head native regression and independent review remain required.
+
 The manager now accepts at most eight concurrent process owners (default and
 hard ceiling, previously a default of 256). Profiles above that ceiling or the
 32 MiB aggregate raw process-buffer reservation are rejected before opening a

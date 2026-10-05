@@ -557,20 +557,33 @@ impl JobManager {
             Ok(begin) => begin,
             Err(error) => {
                 let journal_error = error.to_string();
-                let _ = self.note_journal_failure_for_job(&request.key, journal_error);
+                let capacity_refusal = matches!(&error, JobRuntimeError::Journal(reason)
+                    if reason == &JobRegistryError::CapacityExhausted.to_string())
+                    && matches!(self.inner.journal.status(), Ok(JournalStatus::Durable));
+                // A pre-WAL capacity refusal owns no new observation identity.
+                // Keep existing observations and the manager-wide diagnostic;
+                // restore the per-key marker below unless rollback proves
+                // this acceptance was still untouched.
+                let _ = self.note_journal_failure_with_observation(
+                    &request.key,
+                    journal_error,
+                    !capacity_refusal,
+                );
                 // `registry.begin` ran first to reserve the exact key.  If
                 // durable acceptance fails, remove only that untouched
                 // Accepted entry; rollback_accept validates request and state
                 // while holding the registry lock.  If it cannot prove the
                 // entry is untouched, inhibit redispatch conservatively.
                 let original = error.to_string();
-                if let Err(rollback_error) = self
+                let rollback = self
                     .inner
                     .registry
                     .rollback_accept(&request.key, &request.request)
-                    .map(|_| ())
-                    .map_err(registry_error)
-                {
+                    .map_err(registry_error);
+                if capacity_refusal && !matches!(&rollback, Ok(true)) {
+                    let _ = self.note_journal_failure_for_job(&request.key, original.clone());
+                }
+                if let Err(rollback_error) = rollback {
                     let _ = self.inner.registry.mark_restart_uncertain(&request.key);
                     return Err(JobRuntimeError::Journal(format!(
                         "{original}; registry acceptance rollback failed: {rollback_error}"
@@ -2037,7 +2050,21 @@ impl JobManager {
     /// most once per key and is deliberately never sent back through the
     /// failed journal.
     fn note_journal_degraded_for_job(&self, key: &JobKey, error: String) -> Result<()> {
+        self.note_journal_degradation(key, error, true)
+    }
+
+    fn note_journal_degradation(
+        &self,
+        key: &JobKey,
+        error: String,
+        allow_new_identity: bool,
+    ) -> Result<()> {
         let mut observations = self.observations()?;
+        // Test and mutation share the same lock. Never remove an identity:
+        // an existing cursor/uncertainty marker must retain its old semantics.
+        if !allow_new_identity && !observations.contains_key(key) {
+            return Ok(());
+        }
         observations.update_clock = observations.update_clock.saturating_add(1);
         let update = observations.update_clock;
         let state = observations.entry(key.clone()).or_default();
@@ -2068,11 +2095,20 @@ impl JobManager {
     }
 
     fn note_journal_failure_for_job(&self, key: &JobKey, error: String) -> Result<()> {
+        self.note_journal_failure_with_observation(key, error, true)
+    }
+
+    fn note_journal_failure_with_observation(
+        &self,
+        key: &JobKey,
+        error: String,
+        allow_new_identity: bool,
+    ) -> Result<()> {
         self.note_journal_failure(error)?;
         let reason = self
             .durability_error()?
             .unwrap_or_else(|| "job journal is unavailable".to_string());
-        self.note_journal_degraded_for_job(key, reason)
+        self.note_journal_degradation(key, reason, allow_new_identity)
     }
 
     fn journal_degradation_reason(&self) -> Result<String> {
@@ -3132,6 +3168,273 @@ mod tests {
             peak_identities <= MAX_JOB_RUNTIME_RETAINED_KEYS,
             "failed admissions retained {identities} unaccepted observation identities (peak {peak_identities})"
         );
+    }
+
+    #[test]
+    fn journal_capacity_refusal_preserves_existing_observations_and_durable_unknowns() {
+        const ISOLATED: &str = "TRILLIONNIUM_ADMISSION_PRESERVATION_CHILD";
+        const CASE: &str = "manager::tests::journal_capacity_refusal_preserves_existing_observations_and_durable_unknowns";
+        if std::env::var_os(ISOLATED).is_none() {
+            let output = std::process::Command::new(std::env::current_exe().unwrap())
+                .args(["--exact", CASE, "--nocapture"])
+                .env_clear()
+                .env(ISOLATED, "1")
+                .output()
+                .unwrap();
+            assert!(
+                output.status.success(),
+                "{}\n{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            return;
+        }
+        fn resident_headroom() -> usize {
+            let mut probe = JobMemoryLease::acquire(0).unwrap();
+            let (mut low, mut high) = (
+                0,
+                trillionnium_owner_open_job_registry::MAX_JOB_OWNED_BYTES + 1,
+            );
+            while low + 1 < high {
+                let middle = low + (high - low) / 2;
+                if probe.resize(middle).is_ok() {
+                    low = middle;
+                } else {
+                    high = middle;
+                }
+            }
+            low
+        }
+        fn observation_snapshot(manager: &JobManager, key: &JobKey) -> (u64, bool, Value) {
+            let observations = manager.observations().unwrap();
+            let state = observations.get(key).expect("held observation identity");
+            (
+                state.next_seq,
+                state.journal_unavailable_emitted,
+                serde_json::to_value(&state.events).unwrap(),
+            )
+        }
+        let complete_resident_lane = resident_headroom();
+        let directory = tempdir().unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let journal_path = directory.path().join("jobs");
+        let executable = directory.path().join("must-not-exist");
+        let manager =
+            JobManager::open_segmented(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        let request = rollback_test_request();
+        let mut accepted = rollback_test_key();
+        accepted.job_id = "held-accepted".into();
+        let mut uncertain = rollback_test_key();
+        uncertain.job_id = "held-uncertain".into();
+        // Genuine durable acceptance and resident registry identities. No
+        // process is spawned: the uncertain key crosses only the registry's
+        // spawn-claim boundary, then receives its explicit uncertainty fence.
+        for key in [&accepted, &uncertain] {
+            assert!(matches!(
+                manager
+                    .journal()
+                    .begin_operation(
+                        key,
+                        &request,
+                        "held-start",
+                        "start",
+                        &"c".repeat(64),
+                        json!({"status": "accepted"}),
+                    )
+                    .unwrap(),
+                OperationBegin::New
+            ));
+            manager
+                .registry()
+                .begin(key.clone(), request.clone())
+                .unwrap();
+            manager
+                .push_runtime_event(
+                    key,
+                    &request,
+                    RuntimeJobEventKind::ProcessFault {
+                        phase: "preservation-fixture".into(),
+                        error: "held diagnostic".into(),
+                    },
+                )
+                .unwrap();
+        }
+        assert!(matches!(
+            manager
+                .registry()
+                .claim_spawn(&uncertain, &request.request_sha256)
+                .unwrap(),
+            SpawnClaim::Granted { .. }
+        ));
+        manager
+            .registry()
+            .mark_restart_uncertain(&uncertain)
+            .unwrap();
+        let accepted_state = manager.registry().snapshot(&accepted).unwrap().state;
+        let uncertain_state = manager.registry().snapshot(&uncertain).unwrap().state;
+        let accepted_records = manager.durable_records(&accepted).unwrap();
+        let uncertain_records = manager.durable_records(&uncertain).unwrap();
+        assert!(!accepted_records.is_empty());
+        assert!(!uncertain_records.is_empty());
+        let accepted_observations = observation_snapshot(&manager, &accepted);
+        let uncertain_observations = observation_snapshot(&manager, &uncertain);
+
+        let mut refused = rollback_test_key();
+        refused.job_id = "held-rejected".into();
+        // A pre-existing non-durable diagnostic for this otherwise unaccepted
+        // key is retained through the actual start failure, not recreated by
+        // direct mutation of the observation map or its cursor.
+        manager
+            .note_journal_degraded_for_job(&refused, "prior rejection".into())
+            .unwrap();
+        let prior = observation_snapshot(&manager, &refused);
+        assert!(prior.0 > 0 && prior.1);
+        assert!(manager.journal().recovered_job(&refused).unwrap().is_none());
+        assert!(manager.durability_error().unwrap().is_none());
+        let mut start = stale_start_request(refused.clone(), request.clone(), "refused-start");
+        start.shell_executable = executable.clone();
+        let inherited = inherited_environment().unwrap();
+        assert!(inherited.is_empty());
+        let input_charge = start_spec_bytes(&start, &manager.inner.config)
+            .unwrap()
+            .saturating_sub(std::mem::size_of::<JobStartRequest>())
+            .checked_add(start.initial_stdin.capacity())
+            .unwrap();
+        let input_lease = JobMemoryLease::acquire(input_charge).unwrap();
+        let process_lease = ProcessLease::acquire(
+            process_reservation(&start, &manager.inner.config, &inherited).unwrap(),
+        )
+        .unwrap();
+        drop(
+            manager
+                .registry()
+                .begin(start.key.clone(), start.request.clone())
+                .unwrap(),
+        );
+        let pressure_bytes = resident_headroom();
+        let pressure = JobMemoryLease::acquire(pressure_bytes).unwrap();
+        assert_eq!(resident_headroom(), 0);
+        assert!(
+            manager
+                .registry()
+                .rollback_accept(&start.key, &start.request)
+                .unwrap()
+        );
+        drop(process_lease);
+        drop(input_lease);
+        let transient_headroom = resident_headroom();
+        let error = manager.start(start).expect_err("journal capacity refusal");
+        assert!(
+            matches!(&error, JobRuntimeError::Journal(reason)
+            if reason == &JobRegistryError::CapacityExhausted.to_string()),
+            "{error:?}"
+        );
+        assert!(matches!(
+            manager.journal().status().unwrap(),
+            JournalStatus::Durable
+        ));
+        assert!(manager.durability_error().unwrap().is_some());
+        assert_eq!(resident_headroom(), transient_headroom);
+        assert_eq!(manager.registry().len().unwrap(), 2);
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        assert!(!manager.has_live_or_pending_jobs());
+        assert_eq!(
+            manager.registry().snapshot(&accepted).unwrap().state,
+            accepted_state
+        );
+        assert_eq!(
+            manager.registry().snapshot(&uncertain).unwrap().state,
+            uncertain_state
+        );
+        assert_eq!(
+            observation_snapshot(&manager, &accepted),
+            accepted_observations
+        );
+        assert_eq!(
+            observation_snapshot(&manager, &uncertain),
+            uncertain_observations
+        );
+        assert_eq!(observation_snapshot(&manager, &refused), prior);
+        assert_eq!(manager.observations().unwrap().len(), 3);
+        assert!(matches!(
+            manager.registry().snapshot(&refused),
+            Err(JobRegistryError::NotFound)
+        ));
+        assert!(manager.journal().recovered_job(&refused).unwrap().is_none());
+        assert!(manager.durable_records(&refused).unwrap().is_empty());
+        assert_eq!(
+            manager.durable_records(&accepted).unwrap(),
+            accepted_records
+        );
+        assert_eq!(
+            manager.durable_records(&uncertain).unwrap(),
+            uncertain_records
+        );
+        drop(pressure);
+
+        // Existing accepted/unknown jobs remain retry-fenced in the same
+        // manager; the failed new key cannot erase or reopen either lineage.
+        for key in [&accepted, &uncertain] {
+            let mut retry = stale_start_request(key.clone(), request.clone(), "held-retry");
+            retry.shell_executable = executable.clone();
+            let result = manager.start(retry).unwrap();
+            assert_eq!(result.disposition, StartDisposition::UnknownAfterRestart);
+        }
+        // Accepted-without-a-claim is inhibited. An already claimed unknown
+        // job remains Existing with its original generation, never Granted.
+        let SpawnClaim::Inhibited(accepted_snapshot) = manager
+            .registry()
+            .claim_spawn(&accepted, &request.request_sha256)
+            .unwrap()
+        else {
+            panic!("unclaimed accepted identity must remain spawn-inhibited");
+        };
+        assert_eq!(
+            accepted_snapshot.state,
+            JobEffectiveState::ProvenNotStartedAfterRestart
+        );
+        let SpawnClaim::Existing(uncertain_snapshot) = manager
+            .registry()
+            .claim_spawn(&uncertain, &request.request_sha256)
+            .unwrap()
+        else {
+            panic!("already claimed uncertain identity must not grant another spawn");
+        };
+        assert_eq!(uncertain_snapshot.state, uncertain_state);
+        assert!(!manager.has_live_or_pending_jobs());
+        assert_eq!(manager.inner.admission.active.load(Ordering::Acquire), 0);
+        assert_eq!(
+            manager.durable_records(&accepted).unwrap(),
+            accepted_records
+        );
+        assert_eq!(
+            manager.durable_records(&uncertain).unwrap(),
+            uncertain_records
+        );
+        drop(manager);
+        assert_eq!(resident_headroom(), complete_resident_lane);
+        let reopened =
+            JobManager::open_segmented(JobRuntimeConfig::default(), Some(&journal_path)).unwrap();
+        assert_eq!(
+            reopened.durable_records(&accepted).unwrap(),
+            accepted_records
+        );
+        assert_eq!(
+            reopened.durable_records(&uncertain).unwrap(),
+            uncertain_records
+        );
+        assert!(reopened.durable_records(&refused).unwrap().is_empty());
+        for key in [&accepted, &uncertain] {
+            let mut retry = stale_start_request(key.clone(), request.clone(), "restart-retry");
+            retry.shell_executable = executable.clone();
+            assert_eq!(
+                reopened.start(retry).unwrap().disposition,
+                StartDisposition::UnknownAfterRestart
+            );
+        }
+        assert!(!reopened.has_live_or_pending_jobs());
+        drop(reopened);
+        assert_eq!(resident_headroom(), complete_resident_lane);
     }
 
     #[test]
