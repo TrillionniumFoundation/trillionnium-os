@@ -4,12 +4,15 @@
 from __future__ import annotations
 
 import copy
+import errno
 import importlib.util
 import json
 import os
 from pathlib import Path
+import signal
 import struct
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
@@ -198,6 +201,207 @@ def write_variant_elf(path: Path, variant: str) -> None:
 def write_tree_file(path: Path, content: bytes) -> None:
     path.touch(mode=0o644, exist_ok=False)
     path.write_bytes(content)
+
+
+@unittest.skipUnless(
+    sys.platform.startswith("linux")
+    and hasattr(os, "WNOWAIT")
+    and hasattr(os, "pidfd_open"),
+    "Linux retained-session process fixtures",
+)
+class BoundedCommandProcessOwnershipTests(unittest.TestCase):
+    def test_capture_setup_failures_reap_leader_and_close_both_pipes(self) -> None:
+        real_spawn = subprocess.Popen
+        real_selector = BOM.BOUNDED_PROCESS.selectors.DefaultSelector
+        for failing_stage in ("construct", "set_blocking", "register_first", "register_second", "select"):
+            with self.subTest(stage=failing_stage):
+                processes = []
+                selectors = []
+
+                def spawn(*args, **kwargs):
+                    process = real_spawn(*args, **kwargs)
+                    processes.append(process)
+                    return process
+
+                def selector_factory():
+                    selector = real_selector()
+                    selectors.append(selector)
+                    proxy = mock.Mock(wraps=selector)
+                    if failing_stage.startswith("register"):
+                        successful_registrations = 0 if failing_stage == "register_first" else 1
+                        registrations = 0
+
+                        def register(*args, **kwargs):
+                            nonlocal registrations
+                            if registrations == successful_registrations:
+                                raise OSError(errno.EMFILE, "fixture registration failure")
+                            registrations += 1
+                            return selector.register(*args, **kwargs)
+
+                        proxy.register.side_effect = register
+                    if failing_stage == "select":
+                        proxy.select.side_effect = OSError(errno.EIO, "fixture selector failure")
+                    return proxy
+
+                selector_effect = (
+                    OSError(errno.EMFILE, "fixture selector failure")
+                    if failing_stage == "construct"
+                    else selector_factory
+                )
+                blocking_context = (
+                    mock.patch.object(
+                        BOM.os, "set_blocking", side_effect=OSError(errno.EIO, "fixture setup failure")
+                    )
+                    if failing_stage == "set_blocking"
+                    else mock.patch.object(BOM.os, "set_blocking", wraps=os.set_blocking)
+                )
+                with mock.patch.object(BOM.BOUNDED_PROCESS.subprocess, "Popen", side_effect=spawn), mock.patch.object(
+                    BOM.BOUNDED_PROCESS.selectors, "DefaultSelector", side_effect=selector_effect
+                ), blocking_context:
+                    with self.assertRaisesRegex(BOM.BomError, "capture fixture failed"):
+                        BOM.bounded_command(
+                            ["/usr/bin/python3", "-c", "import time; time.sleep(30)"],
+                            Path("/tmp"), "capture fixture", 1024, timeout=1,
+                        )
+                self.assertEqual(len(processes), 1)
+                process = processes[0]
+                try:
+                    self.assertIsNotNone(process.returncode)
+                    self.assertTrue(process.stdout.closed)
+                    self.assertTrue(process.stderr.closed)
+                    for selector in selectors:
+                        self.assertIsNone(selector.get_map())
+                finally:
+                    if process.returncode is None:
+                        os.killpg(process.pid, signal.SIGKILL)
+                        process.wait(timeout=2)
+                    process.stdout.close()
+                    process.stderr.close()
+
+    def _assert_exited_leader_descendant_cleanup(self, *, holds_pipes: bool) -> None:
+        real_spawn = subprocess.Popen
+        real_killpg = os.killpg
+        processes = []
+        child_handles = []
+        observed_kill = []
+        with tempfile.TemporaryDirectory(prefix="bom-descendant-cleanup.") as temporary:
+            pidfile = Path(temporary) / "descendant.pid"
+            source = (
+                "import os,pathlib,time\n"
+                f"pidfile = pathlib.Path({str(pidfile)!r})\n"
+                "child = os.fork()\n"
+                "if child == 0:\n"
+                + ("    os.close(1); os.close(2)\n" if not holds_pipes else "")
+                + "    pidfile.write_text(str(os.getpid()))\n"
+                "    time.sleep(30)\n"
+                "else:\n"
+                "    while not pidfile.exists(): time.sleep(0.001)\n"
+                "    print('complete', flush=True)\n"
+            )
+
+            def spawn(*args, **kwargs):
+                process = real_spawn(*args, **kwargs)
+                processes.append(process)
+                deadline = time.monotonic() + 2
+                child_text = ""
+                while not child_text and time.monotonic() < deadline:
+                    if pidfile.exists():
+                        child_text = pidfile.read_text().strip()
+                    time.sleep(0.001)
+                child = int(child_text)
+                self.assertEqual(os.getpgid(child), process.pid)
+                child_handles.append((child, os.pidfd_open(child)))
+                return process
+
+            def killpg(group, selected):
+                process = processes[0]
+                self.assertEqual(group, process.pid)
+                self.assertIsNone(process.returncode)
+                status = os.waitid(os.P_PID, process.pid, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+                self.assertIsNotNone(status)
+                self.assertEqual(status.si_status, 0)
+                observed_kill.append(selected)
+                return real_killpg(group, selected)
+
+            started = time.monotonic()
+            try:
+                with mock.patch.object(BOM.BOUNDED_PROCESS.subprocess, "Popen", side_effect=spawn), mock.patch.object(
+                    BOM.os, "killpg", side_effect=killpg
+                ):
+                    with self.assertRaisesRegex(BOM.BomError, "descendant fixture failed") as raised:
+                        BOM.bounded_command(
+                            ["/usr/bin/python3", "-c", source], Path("/tmp"),
+                            "descendant fixture", 1024, timeout=1,
+                        )
+                    error = raised.exception.__cause__
+                    self.assertEqual(error.stdout, b"complete\n")
+                    self.assertEqual(error.timed_out, holds_pipes)
+                    self.assertEqual(error.cleanup_error, not holds_pipes)
+                self.assertLess(time.monotonic() - started, 3)
+                self.assertEqual(observed_kill, [signal.SIGKILL])
+                process = processes[0]
+                self.assertEqual(process.returncode, 0)
+                self.assertTrue(process.stdout.closed)
+                self.assertTrue(process.stderr.closed)
+                child, _ = child_handles[0]
+                deadline = time.monotonic() + 1
+                while time.monotonic() < deadline:
+                    try:
+                        state = Path(f"/proc/{child}/stat").read_text().rsplit(")", 1)[1].split()[0]
+                    except FileNotFoundError:
+                        break
+                    if state in ("Z", "X"):
+                        break
+                    time.sleep(0.01)
+                else:
+                    self.fail("same-group descendant remained live")
+            finally:
+                for _, descriptor in child_handles:
+                    try:
+                        signal.pidfd_send_signal(descriptor, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    os.close(descriptor)
+                for process in processes:
+                    if process.returncode is None:
+                        real_killpg(process.pid, signal.SIGKILL)
+                        process.wait(timeout=2)
+                    process.stdout.close()
+                    process.stderr.close()
+
+    def test_exited_leader_keeps_anchor_until_held_pipe_descendant_is_killed(self) -> None:
+        self._assert_exited_leader_descendant_cleanup(holds_pipes=True)
+
+    def test_normal_leader_exit_with_live_descendant_fails_and_cleans_before_reaping(self) -> None:
+        self._assert_exited_leader_descendant_cleanup(holds_pipes=False)
+
+    def test_missing_waitid_is_rejected_before_spawn(self) -> None:
+        with mock.patch.object(BOM.os, "waitid", None), mock.patch.object(
+            BOM.BOUNDED_PROCESS.subprocess, "Popen"
+        ) as spawn, self.assertRaisesRegex(BOM.BomError, "ownership fixture failed"):
+            BOM.bounded_command(["/usr/bin/true"], Path("/tmp"), "ownership fixture", 1024)
+        spawn.assert_not_called()
+
+    def test_ignored_sigchld_is_rejected_before_spawn(self) -> None:
+        with mock.patch.object(BOM.BOUNDED_PROCESS.signal, "getsignal", return_value=signal.SIG_IGN), mock.patch.object(
+            BOM.BOUNDED_PROCESS.subprocess, "Popen"
+        ) as spawn, self.assertRaisesRegex(BOM.BomError, "ownership fixture failed"):
+            BOM.bounded_command(["/usr/bin/true"], Path("/tmp"), "ownership fixture", 1024)
+        spawn.assert_not_called()
+
+    def test_already_reaped_anchor_never_signals_numeric_group(self) -> None:
+        real_spawn = subprocess.Popen
+
+        def spawn(*args, **kwargs):
+            process = real_spawn(*args, **kwargs)
+            process.wait(timeout=2)
+            return process
+
+        with mock.patch.object(BOM.BOUNDED_PROCESS.subprocess, "Popen", side_effect=spawn), mock.patch.object(
+            BOM.os, "killpg"
+        ) as killpg, self.assertRaises(BOM.BomError):
+            BOM.bounded_command(["/usr/bin/true"], Path("/tmp"), "lost anchor fixture", 1024)
+        killpg.assert_not_called()
 
 
 class CrossRepoSourceBomTests(unittest.TestCase):

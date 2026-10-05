@@ -19,6 +19,10 @@ struct FlowControlPayload {
     credit_bytes: Option<u64>,
     #[serde(default)]
     resumed_through_cursor: Option<u64>,
+    #[serde(default)]
+    resync_protocol: Option<String>,
+    #[serde(default)]
+    resumed_cursors: Vec<ResumedCursor>,
     #[serde(default, flatten)]
     extensions: BTreeMap<String, Value>,
 }
@@ -28,6 +32,8 @@ struct ParsedFlowControl {
     control_seq: u64,
     command: StreamControl,
     resumed_through_cursor: Option<u64>,
+    resync_protocol: Option<String>,
+    resumed_cursors: Vec<ResumedCursor>,
     request_fingerprint: String,
 }
 
@@ -39,6 +45,39 @@ fn parse_flow_control(
     let payload: FlowControlPayload = serde_json::from_value(frame.payload.clone())
         .map_err(|error| format!("invalid {} payload: {error}", frame.kind))?;
     let turn_stream_id = validate_control_correlation(frame, &payload, context)?;
+    if payload
+        .resync_protocol
+        .as_deref()
+        .is_some_and(|protocol| protocol != SCOPED_RESYNC_PROTOCOL)
+    {
+        return Err("unsupported resync_protocol".to_string());
+    }
+    if payload.resumed_cursors.len() > MAX_RESYNC_CURSOR_SCOPES {
+        return Err("too many resumed cursor scopes".to_string());
+    }
+    if !payload.resumed_cursors.is_empty() && frame.kind != FRAME_STREAM_RESUME {
+        return Err("resumed_cursors is accepted only by stream.resume".to_string());
+    }
+    for cursor in &payload.resumed_cursors {
+        let scope = &cursor.cursor_scope;
+        for value in [
+            &scope.session_id,
+            &scope.profile_id,
+            &scope.task_id,
+            &scope.turn_id,
+            &scope.turn_stream_id,
+        ] {
+            if !valid_id(value) {
+                return Err("resume cursor scope contains a malformed identity".to_string());
+            }
+        }
+        match cursor.cursor_domain.as_str() {
+            TRANSPORT_CURSOR_DOMAIN if scope.job_id.is_none() => {}
+            RUNTIME_CURSOR_DOMAIN | JOURNAL_CURSOR_DOMAIN
+                if scope.job_id.as_deref().is_some_and(valid_id) => {}
+            _ => return Err("resume cursor domain requires its exact turn/job scope".to_string()),
+        }
+    }
     let command = match frame.kind.as_str() {
         FRAME_STREAM_WINDOW_UPDATE => {
             let credit_bytes = payload
@@ -94,6 +133,8 @@ fn parse_flow_control(
         control_seq: payload.control_seq,
         command,
         resumed_through_cursor: payload.resumed_through_cursor,
+        resync_protocol: payload.resync_protocol,
+        resumed_cursors: payload.resumed_cursors,
         request_fingerprint,
     })
 }
@@ -108,9 +149,7 @@ fn validate_control_correlation(
         payload.stream_id.as_deref(),
     ) {
         (Some(canonical), Some(legacy)) if canonical != legacy => {
-            return Err(
-                "flow-control payload stream_id conflicts with turn_stream_id".to_string(),
-            );
+            return Err("flow-control payload stream_id conflicts with turn_stream_id".to_string());
         }
         (Some(value), _) | (_, Some(value)) => value,
         (None, None) => {
@@ -123,14 +162,14 @@ fn validate_control_correlation(
         ("session_id", payload.session_id.as_str()),
         (
             "profile_id",
-            payload
-                .profile_id
-                .as_deref()
-                .unwrap_or(DEFAULT_PROFILE_ID),
+            payload.profile_id.as_deref().unwrap_or(DEFAULT_PROFILE_ID),
         ),
         (
             "task_id",
-            payload.task_id.as_deref().unwrap_or(context.task_id.as_str()),
+            payload
+                .task_id
+                .as_deref()
+                .unwrap_or(context.task_id.as_str()),
         ),
         ("turn_id", payload.turn_id.as_str()),
         ("turn_stream_id", payload_stream_id),
@@ -139,10 +178,7 @@ fn validate_control_correlation(
             return Err(format!("flow-control {label} is malformed"));
         }
     }
-    let effective_profile = payload
-        .profile_id
-        .as_deref()
-        .unwrap_or(DEFAULT_PROFILE_ID);
+    let effective_profile = payload.profile_id.as_deref().unwrap_or(DEFAULT_PROFILE_ID);
     let effective_task = payload
         .task_id
         .as_deref()
@@ -155,10 +191,7 @@ fn validate_control_correlation(
     {
         return Err("flow-control payload does not match the active turn".to_string());
     }
-    let envelope_stream_id = match (
-        frame.turn_stream_id.as_deref(),
-        frame.stream_id.as_deref(),
-    ) {
+    let envelope_stream_id = match (frame.turn_stream_id.as_deref(), frame.stream_id.as_deref()) {
         (Some(canonical), Some(legacy)) if canonical != legacy => {
             return Err(
                 "flow-control envelope stream_id conflicts with turn_stream_id".to_string(),
@@ -178,9 +211,21 @@ fn validate_control_correlation(
             frame.profile_id.as_deref(),
             context.profile_id.as_str(),
         ),
-        ("task_id", frame.task_id.as_deref(), context.task_id.as_str()),
-        ("turn_id", frame.turn_id.as_deref(), context.turn_id.as_str()),
-        ("turn_stream_id", envelope_stream_id, context.turn_stream_id.as_str()),
+        (
+            "task_id",
+            frame.task_id.as_deref(),
+            context.task_id.as_str(),
+        ),
+        (
+            "turn_id",
+            frame.turn_id.as_deref(),
+            context.turn_id.as_str(),
+        ),
+        (
+            "turn_stream_id",
+            envelope_stream_id,
+            context.turn_stream_id.as_str(),
+        ),
     ] {
         if envelope.is_some_and(|value| value != expected) {
             return Err(format!(
@@ -189,9 +234,7 @@ fn validate_control_correlation(
         }
     }
     if envelope_stream_id.is_some_and(|value| value != payload_stream_id) {
-        return Err(
-            "flow-control envelope and payload stream identifiers conflict".to_string(),
-        );
+        return Err("flow-control envelope and payload stream identifiers conflict".to_string());
     }
     Ok(payload_stream_id.to_string())
 }
@@ -279,21 +322,14 @@ mod protocol_tests {
         let mut canonical = payload();
         canonical["turn_stream_id"] = json!("stream-flow-alias");
 
-        let parsed_legacy = parse_flow_control(
-            &frame(legacy),
-            &context(),
-            DEFAULT_MAX_CREDIT_BYTES,
-        )
-        .expect("legacy stream_id alias should be accepted");
-        let parsed_canonical = parse_flow_control(
-            &frame(canonical),
-            &context(),
-            DEFAULT_MAX_CREDIT_BYTES,
-        )
-        .expect("canonical turn_stream_id should be accepted");
+        let parsed_legacy =
+            parse_flow_control(&frame(legacy), &context(), DEFAULT_MAX_CREDIT_BYTES)
+                .expect("legacy stream_id alias should be accepted");
+        let parsed_canonical =
+            parse_flow_control(&frame(canonical), &context(), DEFAULT_MAX_CREDIT_BYTES)
+                .expect("canonical turn_stream_id should be accepted");
         assert_eq!(
-            parsed_legacy.request_fingerprint,
-            parsed_canonical.request_fingerprint,
+            parsed_legacy.request_fingerprint, parsed_canonical.request_fingerprint,
             "alias spellings must identify the same control request"
         );
     }

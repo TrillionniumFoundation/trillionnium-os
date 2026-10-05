@@ -8,6 +8,7 @@
 mod process;
 mod protocol;
 mod strict_json;
+mod tool_result;
 
 use std::collections::BTreeMap;
 use std::env;
@@ -53,8 +54,19 @@ pub const MAX_JSONL_PROVIDER_EVENT_COUNT: usize = 1_048_576;
 pub const MAX_JSONL_PROVIDER_STDERR_BYTES: usize = 16 * 1024 * 1024;
 pub const MAX_JSONL_PROVIDER_OUTPUT_QUEUE_DEPTH: usize = 4_096;
 /// Worst-case bytes queued as complete stdout lines before the provider loop
-/// drains them. Two reader-side allocations remain finite under this ceiling.
-pub const MAX_JSONL_PROVIDER_QUEUE_BYTES: usize = 2 * 1024 * 1024 * 1024;
+/// drains them. The independent aggregate gate also counts readers and copies.
+pub const MAX_JSONL_PROVIDER_QUEUE_BYTES: usize = 16 * 1024 * 1024;
+/// Per-session raw Vec/queue/stderr reservation, including growth and copies.
+pub const MAX_JSONL_PROVIDER_RAW_BUFFER_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_JSONL_PROVIDER_JSON_BYTES: usize = 2 * 1024 * 1024;
+/// Decode/canonicalization working reservation; up to eight bounded representations.
+pub const MAX_JSONL_PROVIDER_JSON_WORK_BYTES: usize = 16 * 1024 * 1024;
+pub const MAX_JSONL_PROVIDER_CONFIG_BYTES: usize = 4 * 1024 * 1024;
+/// Configuration, Command copies and the bounded inherited-env snapshot.
+pub const MAX_JSONL_PROVIDER_CONFIG_WORK_BYTES: usize = 12 * 1024 * 1024;
+/// Outbound tool results are independent of the smaller inbound frame limit.
+pub const MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES: usize = 32 * 1024 * 1024;
+pub const JSONL_PROVIDER_WRITE_BUFFER_BYTES: usize = 64 * 1024;
 const PROVIDER_OUTPUT_DRAIN_GRACE_MINIMUM: Duration = Duration::from_secs(2);
 // Provider callbacks are mechanism-only, but a child that stops reading its
 // stdin must not be able to wedge the Host loop in `Write::write_all`.  Keep
@@ -121,6 +133,7 @@ pub struct JsonlProviderConfig {
     pub timeout: Duration,
     pub poll_interval: Duration,
     pub terminate_grace: Duration,
+    /// Maximum inbound provider stdout frame; outbound results use a separate bound.
     pub max_line_bytes: usize,
     pub max_stdout_bytes: usize,
     pub max_event_count: usize,
@@ -231,9 +244,81 @@ impl JsonlProviderConfig {
                 "provider max_line_bytes * output_queue_depth exceeds hard bound {MAX_JSONL_PROVIDER_QUEUE_BYTES}"
             )));
         }
+        self.raw_buffer_reservation()?;
+        self.validate_owned_configuration()?;
         validate_environment(&self.env)?;
         if let Some(generation) = &self.config_generation {
             validate_config_generation(generation)?;
+        }
+        Ok(())
+    }
+
+    pub fn raw_buffer_reservation(&self) -> Result<usize> {
+        // Queued lines, blocked sender, reader and current loop frame each
+        // retain Vec capacity up to twice the read bound. Stderr includes its
+        // growth, final clone, lossy UTF-8 and formatted error copies.
+        let raw = self
+            .output_queue_depth
+            .checked_add(3)
+            .and_then(|depth| {
+                self.max_line_bytes
+                    .checked_add(2)?
+                    .checked_mul(2)?
+                    .checked_mul(depth)
+            })
+            .and_then(|bytes| bytes.checked_add(self.max_stderr_bytes.checked_mul(9)?))
+            .and_then(|bytes| {
+                bytes.checked_add(
+                    self.output_queue_depth
+                        .checked_add(3)?
+                        .checked_mul(2 * std::mem::size_of::<ProviderOutput>())?,
+                )
+            })
+            .and_then(|bytes| bytes.checked_add(128 * 1024))
+            .ok_or_else(|| invalid_config("provider aggregate raw buffer reservation overflow"))?;
+        if raw > MAX_JSONL_PROVIDER_RAW_BUFFER_BYTES {
+            return Err(invalid_config(format!(
+                "provider aggregate raw buffer reservation exceeds {MAX_JSONL_PROVIDER_RAW_BUFFER_BYTES}"
+            )));
+        }
+        Ok(raw)
+    }
+
+    fn validate_owned_configuration(&self) -> Result<()> {
+        let mut owned = self
+            .args
+            .capacity()
+            .checked_mul(std::mem::size_of::<String>())
+            .and_then(|bytes| bytes.checked_add(self.executable.capacity()))
+            .and_then(|bytes| bytes.checked_add(self.shell_executable.capacity()))
+            .and_then(|bytes| bytes.checked_add(self.adb_executable.capacity()))
+            .ok_or_else(|| invalid_config("provider configuration capacity overflow"))?;
+        for capacity in self
+            .args
+            .iter()
+            .map(String::capacity)
+            .chain(self.cwd.iter().map(PathBuf::capacity))
+        {
+            owned = owned
+                .checked_add(capacity)
+                .ok_or_else(|| invalid_config("provider configuration capacity overflow"))?;
+        }
+        for (key, value) in &self.env {
+            owned = owned
+                .checked_add(256)
+                .and_then(|bytes| bytes.checked_add(key.capacity()))
+                .and_then(|bytes| bytes.checked_add(value.as_ref().map_or(0, String::capacity)))
+                .ok_or_else(|| invalid_config("provider configuration capacity overflow"))?;
+        }
+        if let Some(generation) = &self.config_generation {
+            owned = owned
+                .checked_add(strict_json::owned_bytes(generation)?)
+                .ok_or_else(|| invalid_config("provider configuration capacity overflow"))?;
+        }
+        if owned > MAX_JSONL_PROVIDER_CONFIG_BYTES {
+            return Err(invalid_config(
+                "provider owned configuration exceeds its capacity budget",
+            ));
         }
         Ok(())
     }
@@ -252,14 +337,11 @@ impl Default for JsonlProviderConfig {
             timeout: Duration::from_secs(300),
             poll_interval: Duration::from_millis(20),
             terminate_grace: Duration::from_millis(250),
-            // A bounded tool.result may contain 16 MiB of runtime output in
-            // base64 plus lifecycle metadata. Incremental result frames remain
-            // a later optimization; this first protocol keeps one finite line.
-            max_line_bytes: 32 * 1024 * 1024,
+            max_line_bytes: 1024 * 1024,
             max_stdout_bytes: 64 * 1024 * 1024,
             max_event_count: 4096,
-            max_stderr_bytes: 1024 * 1024,
-            output_queue_depth: 64,
+            max_stderr_bytes: 512 * 1024,
+            output_queue_depth: 2,
         }
     }
 }
@@ -290,12 +372,25 @@ impl JsonlProvider {
         let deadline = started
             .checked_add(self.config.timeout)
             .ok_or_else(|| invalid_config("provider deadline cannot be represented"))?;
-        let mut command = Command::new(&self.config.executable);
-        command.env_clear();
+        let mut inherited_environment = Vec::new();
+        let mut inherited_bytes = 0usize;
         for &key in PROVIDER_INHERITED_ENV_ALLOWLIST {
             if let Some(value) = env::var_os(key) {
-                command.env(key, value);
+                inherited_bytes = inherited_bytes.checked_add(value.len()).ok_or_else(|| {
+                    invalid_config("provider inherited environment byte overflow")
+                })?;
+                if value.len() > 64 * 1024 || inherited_bytes > 1024 * 1024 {
+                    return Err(invalid_config(
+                        "provider inherited environment exceeds its byte budget",
+                    ));
+                }
+                inherited_environment.push((key, value));
             }
+        }
+        let mut command = Command::new(&self.config.executable);
+        command.env_clear();
+        for (key, value) in inherited_environment {
+            command.env(key, value);
         }
         command
             .args(&self.config.args)
@@ -349,8 +444,21 @@ impl JsonlProvider {
         if Instant::now() >= deadline {
             return Err(JsonlProviderError::TimedOut);
         }
-        let child = match command.spawn() {
-            Ok(child) => child,
+        let (child, mut first_event_trace) = match trillionnium_owner_open_trace::measure(
+            trillionnium_owner_open_trace::Stage::ProviderSpawn,
+            &request.turn_id,
+            || {
+                let child = command.spawn()?;
+                // Start immediately on the successful Command::spawn observation,
+                // before retained-child setup. Not the kernel exec timestamp.
+                let first = trillionnium_owner_open_trace::deferred(
+                    trillionnium_owner_open_trace::Stage::ProviderFirstEvent,
+                    &request.turn_id,
+                );
+                Ok::<_, std::io::Error>((child, Some(first)))
+            },
+        ) {
+            Ok(value) => value,
             Err(error) if error.raw_os_error() == Some(libc::ETIMEDOUT) => {
                 return Err(JsonlProviderError::TimedOut);
             }
@@ -425,7 +533,7 @@ impl JsonlProvider {
                         "user_input": &request.user_input
                     }
                 }),
-                self.config.max_line_bytes,
+                MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES,
                 Some(deadline),
             )?;
             outbound_seq = outbound_seq.saturating_add(1);
@@ -454,7 +562,7 @@ impl JsonlProvider {
                                 "turn_stream_id": &request.turn_stream_id
                             }
                         }),
-                        self.config.max_line_bytes,
+                        MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES,
                         Some(deadline),
                     )?;
                     outbound_seq = outbound_seq.saturating_add(1);
@@ -468,11 +576,18 @@ impl JsonlProvider {
                     continue;
                 }
 
-                match receiver.recv_timeout(
-                    self.config
-                        .poll_interval
-                        .min(deadline.saturating_duration_since(Instant::now())),
-                ) {
+                let received = trillionnium_owner_open_trace::measure(
+                    trillionnium_owner_open_trace::Stage::ProviderWait,
+                    &request.turn_id,
+                    || {
+                        receiver.recv_timeout(
+                            self.config
+                                .poll_interval
+                                .min(deadline.saturating_duration_since(Instant::now())),
+                        )
+                    },
+                );
+                match received {
                     Ok(ProviderOutput::Line(raw)) => {
                         if Instant::now() >= deadline {
                             return Err(JsonlProviderError::TimedOut);
@@ -486,9 +601,17 @@ impl JsonlProvider {
                         let value = strict_json::decode_object(&raw)
                             .map_err(JsonlProviderError::Protocol)?;
                         validate_envelope(&value, inbound_seq)?;
+                        // The first event is the first protocol-valid JSONL
+                        // envelope (including tool.call/terminal/opaque), not
+                        // only model output. Payload/effect success is separate.
+                        if let Some(trace) = first_event_trace.take() {
+                            trace.finish();
+                        }
                         inbound_seq = inbound_seq.saturating_add(1);
                         match required_string(&value, "kind")? {
-                            "provider.event" => handle_provider_event(&value, host)?,
+                            "provider.event" => {
+                                handle_provider_event(&value, host)?;
+                            }
                             "tool.call" => {
                                 let call_id = value
                                     .get("call")
@@ -497,11 +620,12 @@ impl JsonlProvider {
                                     .and_then(Value::as_str)
                                     .unwrap_or("unknown-call")
                                     .to_string();
-                                let response =
-                                    match decode_bound_tool_call(&value, request, &self.config) {
-                                        Ok(call) => match host
-                                            .invoke_tool_with_deadline(call, Some(deadline))
-                                        {
+                                let decoded_call =
+                                    decode_bound_tool_call(value, request, &self.config);
+                                drop(raw);
+                                let response = match decoded_call {
+                                    Ok(call) => {
+                                        match host.invoke_tool_with_deadline(call, Some(deadline)) {
                                             Ok(outcome) => {
                                                 encode_tool_outcome(outbound_seq, &call_id, outcome)
                                             }
@@ -511,21 +635,22 @@ impl JsonlProvider {
                                                 "host_error",
                                                 &error.to_string(),
                                             ),
-                                        },
-                                        Err(error) => encode_tool_error(
-                                            outbound_seq,
-                                            &call_id,
-                                            "invalid_request",
-                                            &error.to_string(),
-                                        ),
-                                    };
+                                        }
+                                    }
+                                    Err(error) => encode_tool_error(
+                                        outbound_seq,
+                                        &call_id,
+                                        "invalid_request",
+                                        &error.to_string(),
+                                    ),
+                                };
                                 if Instant::now() >= deadline {
                                     return Err(JsonlProviderError::TimedOut);
                                 }
                                 write_json_line(
                                     &mut provider_stdin,
                                     &response,
-                                    self.config.max_line_bytes,
+                                    MAX_JSONL_PROVIDER_OUTBOUND_LINE_BYTES,
                                     Some(deadline),
                                 )?;
                                 outbound_seq = outbound_seq.saturating_add(1);
@@ -693,25 +818,86 @@ fn write_json_line<W: Write + AsRawFd>(
     maximum: usize,
     turn_deadline: Option<Instant>,
 ) -> Result<()> {
-    let encoded =
-        serde_json::to_vec(value).map_err(|error| JsonlProviderError::Io(error.to_string()))?;
-    // `max_line_bytes` bounds the complete JSONL frame, including its
-    // newline delimiter.  Check with a subtraction rather than `len() + 1`
-    // so a caller-provided maximum cannot wrap on an oversized value.
-    if encoded.is_empty() || maximum == 0 || encoded.len() >= maximum {
-        return Err(JsonlProviderError::Io(
-            "provider outbound JSONL record exceeds its bound".to_string(),
-        ));
-    }
-    let mut framed = encoded;
-    framed.push(b'\n');
+    // Count first without a serialized Vec: an oversized frame must never
+    // put a partial record on the wire. The actual encoder uses one fixed
+    // buffer, sharing a deadline across every flush.
+    encoded_line_size(value, maximum)?;
     let io_deadline = Instant::now() + PROVIDER_WRITE_TIMEOUT;
     let deadline = turn_deadline.map_or(io_deadline, |turn| turn.min(io_deadline));
-    let result = write_nonblocking(writer, &framed, deadline);
+    struct Streaming<'a, W> {
+        writer: &'a mut W,
+        buffer: Vec<u8>,
+        deadline: Instant,
+    }
+    impl<W: Write + AsRawFd> Write for Streaming<'_, W> {
+        fn write(&mut self, mut bytes: &[u8]) -> std::io::Result<usize> {
+            let original = bytes.len();
+            while !bytes.is_empty() {
+                let count = bytes
+                    .len()
+                    .min(JSONL_PROVIDER_WRITE_BUFFER_BYTES - self.buffer.len());
+                self.buffer.extend_from_slice(&bytes[..count]);
+                bytes = &bytes[count..];
+                if self.buffer.len() == JSONL_PROVIDER_WRITE_BUFFER_BYTES {
+                    self.flush()?;
+                }
+            }
+            Ok(original)
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            if !self.buffer.is_empty() {
+                write_nonblocking(self.writer, &self.buffer, self.deadline)
+                    .map_err(std::io::Error::other)?;
+                self.buffer.clear();
+            }
+            Ok(())
+        }
+    }
+    let mut stream = Streaming {
+        writer,
+        buffer: Vec::with_capacity(JSONL_PROVIDER_WRITE_BUFFER_BYTES),
+        deadline,
+    };
+    let result = (|| {
+        serde_json::to_writer(&mut stream, value)
+            .map_err(|error| JsonlProviderError::Io(error.to_string()))?;
+        stream
+            .write_all(b"\n")
+            .and_then(|()| stream.flush())
+            .map_err(|error| JsonlProviderError::Io(error.to_string()))
+    })();
     if turn_deadline.is_some_and(|turn| Instant::now() >= turn) {
         return Err(JsonlProviderError::TimedOut);
     }
     result
+}
+
+pub(crate) fn encoded_line_size(value: &impl Serialize, maximum: usize) -> Result<usize> {
+    struct Counter {
+        count: usize,
+        maximum: usize,
+    }
+    impl Write for Counter {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.count = self
+                .count
+                .checked_add(bytes.len())
+                .filter(|count| *count < self.maximum)
+                .ok_or_else(|| {
+                    std::io::Error::other("provider outbound JSONL record exceeds its bound")
+                })?;
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut counter = Counter { count: 0, maximum };
+    serde_json::to_writer(&mut counter, value)
+        .map_err(|error| JsonlProviderError::Io(error.to_string()))?;
+    counter.count.checked_add(1).ok_or_else(|| {
+        JsonlProviderError::Io("provider outbound JSONL record exceeds its bound".into())
+    })
 }
 
 /// Write one provider frame without an unbounded blocking syscall.  The
@@ -860,9 +1046,11 @@ fn validate_config_generation(value: &Value) -> Result<()> {
     match value {
         Value::Null => Ok(()),
         Value::Number(number) if number.as_i64().is_some() || number.as_u64().is_some() => Ok(()),
-        Value::String(value) if !value.as_bytes().contains(&0) => Ok(()),
+        Value::String(value) if value.capacity() <= 64 * 1024 && !value.as_bytes().contains(&0) => {
+            Ok(())
+        }
         _ => Err(invalid_config(
-            "provider config_generation must be an integer, string or null",
+            "provider config_generation must be an integer, bounded string or null",
         )),
     }
 }
@@ -915,6 +1103,35 @@ mod tests {
         let error = write_json_line(&mut writer, &value, encoded.len(), None)
             .expect_err("the delimiter must count against the frame bound");
         assert!(error.to_string().contains("exceeds its bound"));
+    }
+
+    #[test]
+    fn aggregate_raw_buffers_and_owned_configuration_are_rejected_before_spawn() {
+        let config = JsonlProviderConfig::default();
+        assert!(config.raw_buffer_reservation().unwrap() <= MAX_JSONL_PROVIDER_RAW_BUFFER_BYTES);
+        let oversized = JsonlProviderConfig {
+            max_line_bytes: 4 * 1024 * 1024,
+            output_queue_depth: 1,
+            ..config.clone()
+        };
+        assert!(
+            JsonlProvider::new(oversized)
+                .unwrap_err()
+                .to_string()
+                .contains("aggregate raw")
+        );
+        let mut argument = String::with_capacity(MAX_JSONL_PROVIDER_CONFIG_BYTES + 1);
+        argument.push('x');
+        let oversized = JsonlProviderConfig {
+            args: vec![argument],
+            ..config
+        };
+        assert!(
+            JsonlProvider::new(oversized)
+                .unwrap_err()
+                .to_string()
+                .contains("owned configuration")
+        );
     }
 
     #[test]

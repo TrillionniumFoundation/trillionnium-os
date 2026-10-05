@@ -24,7 +24,10 @@ class OwnerOpenRuntimeContractTest(unittest.TestCase):
 
         package = tomllib.loads((RUNTIME / "Cargo.toml").read_text(encoding="utf-8"))
         self.assertEqual(package["package"]["name"], "trillionnium-owner-open-runtime")
-        self.assertEqual(set(package.get("dependencies", {})), {"libc", "thiserror"})
+        self.assertEqual(
+            set(package.get("dependencies", {})),
+            {"libc", "thiserror", "trillionnium-owner-open-trace"},
+        )
         self.assertEqual(set(package.get("dev-dependencies", {})), {"tempfile"})
         self.assertEqual(package.get("features", {}).get("default"), [])
 

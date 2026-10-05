@@ -12,12 +12,11 @@ from __future__ import annotations
 import hashlib
 import os
 from pathlib import Path
-import signal
 import stat
 import subprocess as _stdlib_subprocess
 import sys
 import time
-from types import ModuleType, SimpleNamespace
+from types import ModuleType
 from typing import Any, Callable
 
 
@@ -259,14 +258,19 @@ SUPERVISOR, _SUPERVISOR_SOURCE, _SUPERVISOR_IDENTITY = _load_snapshot(
     SUPERVISOR_PATH,
     "tools/owner-open/owner_open_rootlinux_supervisor.py",
 )
-_BROKER_SOURCE, _BROKER_IDENTITY = _snapshot_source(
-    BROKER_PATH, "tools/owner-open/owner_open_connection_broker.py"
-)
+def _snapshot_broker_sources() -> dict[str, tuple[bytes, dict[str, Any]]]:
+    return {
+        relative: _snapshot_source(REPOSITORY_ROOT / relative, relative)
+        for relative in CORE.BROKER_SOURCE_PATHS
+    }
+
+
+_BROKER_SNAPSHOTS = _snapshot_broker_sources()
 PINNED_IMPLEMENTATION_FILES = {
     item["path"]: dict(item)
     for item in (
         _BOOTSTRAP_IDENTITY,
-        _BROKER_IDENTITY,
+        *(identity for _, identity in _BROKER_SNAPSHOTS.values()),
         _SUPERVISOR_IDENTITY,
         _CORE_IDENTITY,
         _FACADE_IDENTITY,
@@ -275,7 +279,7 @@ PINNED_IMPLEMENTATION_FILES = {
 }
 PINNED_IMPLEMENTATION_SOURCES = {
     "tools/owner-open/authenticated_python_bootstrap.py": _BOOTSTRAP_SOURCE,
-    "tools/owner-open/owner_open_connection_broker.py": _BROKER_SOURCE,
+    **{relative: source for relative, (source, _) in _BROKER_SNAPSHOTS.items()},
     "tools/owner-open/owner_open_rootlinux_supervisor.py": _SUPERVISOR_SOURCE,
     "tools/perf/_run_product_baseline_core.py": _CORE_SOURCE,
     "tools/perf/_run_product_baseline_facade.py": _FACADE_SOURCE,
@@ -296,6 +300,7 @@ class OwnedSessionPopen(_stdlib_subprocess.Popen[bytes]):
     """Popen whose poll/wait observes but does not reap its session anchor."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        CORE._require_owned_process_environment()
         if kwargs.get("start_new_session") is not True:
             raise CORE.BenchmarkError(
                 "product benchmark subprocesses require start_new_session=True"
@@ -378,63 +383,18 @@ class _SubprocessProxy:
 CORE.subprocess = _SubprocessProxy()
 
 
-def _managed(process: OwnedSessionPopen) -> SimpleNamespace:
-    return SimpleNamespace(process=process, group_cleaned=False)
+def _reap_process_anchor(process: OwnedSessionPopen) -> None:
+    if not isinstance(process, OwnedSessionPopen):
+        raise CORE.BenchmarkError("product cleanup requires its retained-session Popen")
+    process.reap_anchor()
 
 
-def _group_settled(managed: SimpleNamespace) -> bool:
-    exited = SUPERVISOR.Supervisor.observe_exit(managed) is not None
-    live = SUPERVISOR.Supervisor.live_group_members(managed.process.pid)
-    return exited and not live
-
-
-def _wait_group(managed: SimpleNamespace, timeout: float) -> bool:
-    deadline = time.monotonic() + timeout
-    quiet_once = False
-    while time.monotonic() < deadline:
-        quiet = _group_settled(managed)
-        if quiet and quiet_once:
-            return True
-        quiet_once = quiet
-        time.sleep(min(0.01, max(0.0, deadline - time.monotonic())))
-    return False
-
-
-def stop(process: OwnedSessionPopen) -> None:
-    """Terminate the complete original session, then reap its retained anchor."""
-    cleanup_error: BaseException | None = None
-    try:
-        if not isinstance(process, OwnedSessionPopen):
-            raise CORE.BenchmarkError(
-                "product cleanup requires its retained-session Popen"
-            )
-        managed = _managed(process)
-        SUPERVISOR.Supervisor.signal_group(managed, signal.SIGTERM)
-        _wait_group(managed, 1.0)
-        SUPERVISOR.Supervisor.signal_group(managed, signal.SIGKILL)
-        if not _wait_group(managed, 3.0):
-            raise CORE.BenchmarkError(
-                f"original product process group {process.pid} survived cleanup"
-            )
-        process.reap_anchor()
-        managed.group_cleaned = True
-    except BaseException as error:
-        cleanup_error = error
-    finally:
-        for pipe in (process.stdin, process.stdout, process.stderr):
-            if pipe is not None:
-                try:
-                    pipe.close()
-                except OSError:
-                    pass
-    if cleanup_error is not None:
-        raise cleanup_error
-
-
-CORE.stop = stop
+# Keep the immutable anchor until CORE.stop finishes its final group signal and
+# bounded membership observation. OwnedSessionPopen.wait is observation only.
+CORE.REAP_PROCESS_ANCHOR = _reap_process_anchor
 
 for _name in dir(CORE):
-    if not _name.startswith("__") and _name not in {"stop", "subprocess"}:
+    if not _name.startswith("__") and _name != "subprocess":
         globals()[_name] = getattr(CORE, _name)
 subprocess = CORE.subprocess
 

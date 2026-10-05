@@ -1,0 +1,2 @@
+# Unified-diff payloads retain exact source context, including whitespace.
+/android-integration/security-patches/owner-asb-forks/patches/*.diff -whitespace

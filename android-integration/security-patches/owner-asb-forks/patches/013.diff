@@ -1,0 +1,15 @@
+--- actual-captured/external/wpa_supplicant_8/src/p2p/p2p_pd.c
++++ owned-final/external/wpa_supplicant_8/src/p2p/p2p_pd.c
+@@ -766,6 +766,12 @@
+ 			p2p_dbg(p2p, "Truncated PBMA");
+ 			return;
+ 		}
++
++		if (cookie_len > sizeof(dev->bootstrap_params->cookie)) {
++			p2p_dbg(p2p, "Too long PBMA cookie");
++			return;
++		}
++
+ 		cookie = pos;
+ 
+ 		if (!dev->bootstrap_params ||

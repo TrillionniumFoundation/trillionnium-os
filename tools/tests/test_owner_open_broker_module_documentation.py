@@ -127,6 +127,94 @@ class ModuleDocumentationContractTests(unittest.TestCase):
             verifier.verify_headings(text.replace(heading, f"<!-- {heading} -->"),
                                      list(verifier.REQUIRED_SECTIONS), "MOD-PROTOCOL")
 
+    def test_hidden_html_and_unterminated_comment_cannot_hide_complete_module(self) -> None:
+        temporary, root = self._fixture()
+        self.addCleanup(temporary.cleanup)
+        path = root / "docs/modules/MOD-BROKER.md"
+        original = path.read_text(encoding="utf-8")
+        for changed in ("<div hidden>\n" + original + "\n</div>\n",
+                        "<!--\n" + original):
+            with self.subTest(prefix=changed[:20]):
+                path.write_text(changed, encoding="utf-8")
+                with self.assertRaisesRegex(verifier.VerificationError,
+                                            "raw HTML|unterminated HTML"):
+                    verifier.verify_index_and_documents(root)
+
+    def test_raw_html_after_containers_and_continuation_indent_is_rejected(self) -> None:
+        for prefix in ("", "    ", "\t", "> ", "- ", "1. ", "> - 1. ",
+                       ">     ", "-     "):
+            with self.subTest(prefix=prefix), self.assertRaisesRegex(
+                verifier.VerificationError, "raw HTML block opener"
+            ):
+                verifier.visible_prose(prefix + "<div hidden>\ncontract\n</div>\n")
+
+    def test_inline_html_cannot_open_a_hidden_container_around_contract(self) -> None:
+        original = (ROOT / "docs/modules/MOD-PROTOCOL.md").read_text(encoding="utf-8")
+        with self.assertRaisesRegex(verifier.VerificationError, "raw HTML outside code"):
+            verifier.verify_headings(
+                "Visible prefix <div hidden>\n\n" + original + "\nVisible suffix </div>\n",
+                list(verifier.REQUIRED_SECTIONS), "MOD-PROTOCOL",
+            )
+        self.assertIn("`<state_root>`", verifier.visible_prose("Use `<state_root>` literally."))
+
+    def test_indented_contract_values_cannot_receive_visible_credit(self) -> None:
+        module = verifier.load_json(ROOT / "docs/machine/module-catalog.v1.json")["modules"][0]
+        original = (ROOT / "docs/modules/MOD-PROTOCOL.md").read_text(encoding="utf-8")
+        field = "- Maximum declared concurrency: `16`"
+        for prefix in ("    ", "\t", " \t"):
+            with self.subTest(prefix=prefix), self.assertRaisesRegex(
+                verifier.VerificationError, "section 7 contract drift"
+            ):
+                verifier.verify_contract_prose(original.replace(field, prefix + field), module)
+
+    def test_short_fence_cannot_close_a_longer_code_example(self) -> None:
+        original = (ROOT / "docs/modules/MOD-PROTOCOL.md").read_text(encoding="utf-8")
+        # All apparent headings remain literal contents of the four-tick block.
+        changed = "````text\n```\n" + original + "\n````\n"
+        with self.assertRaisesRegex(verifier.VerificationError, "sections"):
+            verifier.verify_headings(changed, list(verifier.REQUIRED_SECTIONS), "MOD-PROTOCOL")
+
+    def test_fence_info_line_cannot_close_a_code_example(self) -> None:
+        original = (ROOT / "docs/modules/MOD-PROTOCOL.md").read_text(encoding="utf-8")
+        changed = "~~~text\n~~~still-code\n" + original + "\n~~~\n"
+        with self.assertRaisesRegex(verifier.VerificationError, "sections"):
+            verifier.verify_headings(changed, list(verifier.REQUIRED_SECTIONS), "MOD-PROTOCOL")
+
+    def test_nested_and_invalid_fences_fail_closed(self) -> None:
+        for prefix in ("> ", "- ", "1. ", "> - "):
+            with self.subTest(prefix=prefix), self.assertRaisesRegex(
+                verifier.VerificationError, "container-nested"
+            ):
+                verifier.visible_prose(prefix + "```text\ncontract\n```\n")
+        with self.assertRaisesRegex(verifier.VerificationError, "info string"):
+            verifier.visible_prose("```text`\ncontract\n```\n")
+
+    def test_raw_html_inside_root_code_example_is_allowed(self) -> None:
+        self.assertEqual(verifier.visible_prose(
+            "Visible before\n````text\n<div hidden>\n```\n<!-- complete -->\n</div>\n````\nVisible after"
+        ), "Visible before\nVisible after")
+
+    def test_multiline_inline_code_cannot_supply_contract_fields(self) -> None:
+        text = "Start ``literal\n- Module ID: `MOD-BROKER`\nend``\nVisible after"
+        self.assertNotIn("Module ID", verifier.visible_prose(text))
+        self.assertIn("Visible after", verifier.visible_prose(text))
+        with self.assertRaisesRegex(verifier.VerificationError, "inline code span"):
+            verifier.visible_prose("Start ``literal\n- Module ID: `MOD-BROKER`\n")
+
+    def test_claim_markers_hidden_only_in_comments_or_examples_fail_closed(self) -> None:
+        temporary, root = self._fixture()
+        self.addCleanup(temporary.cleanup)
+        path = root / "docs/modules/MOD-PROTOCOL.md"
+        original = path.read_text(encoding="utf-8")
+        for literal in ("Automatic redispatch: **forbidden**.",
+                        "Measurement status: **unmeasured until qualified evidence**.",
+                        "Evidence ceiling: **SOURCE_ONLY_UNTIL_EXACT_HEAD_CI**."):
+            for replacement in (f"<!-- {literal} -->", f"```text\n{literal}\n```"):
+                with self.subTest(literal=literal, replacement=replacement):
+                    path.write_text(original.replace(literal, replacement), encoding="utf-8")
+                    with self.assertRaisesRegex(verifier.VerificationError, "omits|container-nested"):
+                        verifier.verify_index_and_documents(root)
+
     def test_document_index_cannot_weaken_required_section_set(self) -> None:
         temporary, root = self._fixture()
         self.addCleanup(temporary.cleanup)

@@ -1,0 +1,1351 @@
+{
+  "schema": "org.trillionnium.audit.independent-root-kernel3-source-backport-review.v1",
+  "observed_utc": "2026-10-03T18:32:58.000084+00:00",
+  "interface": {
+    "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/kernel12-six-CVE-actual-source-site-review-interface-r1.json",
+    "bytes": 322871,
+    "sha256": "bc8f6072654b6add6573afd4b44a1abc5b01ae98f31aa5a2cb013be4b52d3d40",
+    "identity_before": [
+      66306,
+      40669509,
+      33204,
+      1,
+      1000,
+      1000,
+      322871,
+      1791051386522283516,
+      1791051386522283516
+    ],
+    "identity_after": [
+      66306,
+      40669509,
+      33204,
+      1,
+      1000,
+      1000,
+      322871,
+      1791051386522283516,
+      1791051386522283516
+    ]
+  },
+  "all37_fixed6_new_two_round43_FD9_equal": true,
+  "retained_R1_local_missing_positions_None_vs_empty_list_assumption_failure": true,
+  "missing_positions_remain_UNKNOWN_None": true,
+  "public10commits23hunks_complete_reconstructed": true,
+  "mechanical_counts_independently_reproduced": {
+    "divergent_or_ambiguous": 4,
+    "before_only": 4,
+    "MISSING_UNKNOWN": 15
+  },
+  "all_three_exact_full_before_to_preview_diffs_verified": true,
+  "source_local_controls": [
+    {
+      "relative": "drivers/hid/hid-logitech-hidpp.c",
+      "preview": {
+        "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/hid-proposed-selected-local-backport.owned-preview",
+        "bytes": 111361,
+        "sha256": "a0fe6480267cd5b8687c495e6e87f720e73e18873fda886f670c5a0e2b3475c7",
+        "identity_before": [
+          66306,
+          40669503,
+          33204,
+          1,
+          1000,
+          1000,
+          111361,
+          1791051386504097051,
+          1791051386504097051
+        ],
+        "identity_after": [
+          66306,
+          40669503,
+          33204,
+          1,
+          1000,
+          1000,
+          111361,
+          1791051386504097051,
+          1791051386504097051
+        ]
+      },
+      "public_commit_basis": [
+        "20130e92480a0cca90f69d9ccb1d42a06a6e07f0"
+      ],
+      "source_local_guard_admitted": true,
+      "whole_CVE_compilation_device_qualification": false
+    },
+    {
+      "relative": "net/tipc/msg.c",
+      "preview": {
+        "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/tipc-proposed-selected-local-backport.owned-preview",
+        "bytes": 21221,
+        "sha256": "0ea983628d26f6345a9b7860db32b14e6fdbcab1487b4508ef3ff4ccf23cf348",
+        "identity_before": [
+          66306,
+          40669505,
+          33204,
+          1,
+          1000,
+          1000,
+          21221,
+          1791051386509779998,
+          1791051386509779998
+        ],
+        "identity_after": [
+          66306,
+          40669505,
+          33204,
+          1,
+          1000,
+          1000,
+          21221,
+          1791051386509779998,
+          1791051386509779998
+        ]
+      },
+      "public_commit_basis": [
+        "18d3876842e1ef0c4fd796aab12fb4a31704830d"
+      ],
+      "source_local_guard_admitted": true,
+      "whole_CVE_compilation_device_qualification": false
+    },
+    {
+      "relative": "net/nfc/llcp_core.c",
+      "preview": {
+        "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/nfc-proposed-selected-local-backport.owned-preview",
+        "bytes": 36592,
+        "sha256": "6d153f50124e2a7baf84db67dda6fff98742a65ca474a6ee0530b2426c25007e",
+        "identity_before": [
+          66306,
+          40669507,
+          33204,
+          1,
+          1000,
+          1000,
+          36592,
+          1791051386510588831,
+          1791051386510588831
+        ],
+        "identity_after": [
+          66306,
+          40669507,
+          33204,
+          1,
+          1000,
+          1000,
+          36592,
+          1791051386510588831,
+          1791051386510588831
+        ]
+      },
+      "public_commit_basis": [
+        "3bcdd92440376888cb93464c916876a581e39ed6"
+      ],
+      "source_local_guard_admitted": true,
+      "whole_CVE_compilation_device_qualification": false
+    }
+  ],
+  "Root_source_local_composition_admitted": true,
+  "source_config_and_board_link_witnesses_verified": true,
+  "source_declared_version": "5.4.302",
+  "actual_effective_config": null,
+  "actual_device_exposure": null,
+  "missing_nvhe_three_CVE_UNKNOWN_not_NA": true,
+  "formal_kernel_fork_execution_admitted": false,
+  "actual_private_fork_k": null,
+  "whole_ASB_qualified": false,
+  "cumulative_previous_ASB_coverage": null,
+  "compiled": false,
+  "installed": false,
+  "production_ready": false,
+  "held_FD9_bindings": [
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/kernel12-six-CVE-actual-source-site-review-interface-r1.json",
+      "bytes": 322871,
+      "sha256": "bc8f6072654b6add6573afd4b44a1abc5b01ae98f31aa5a2cb013be4b52d3d40",
+      "identity_before": [
+        66306,
+        40669509,
+        33204,
+        1,
+        1000,
+        1000,
+        322871,
+        1791051386522283516,
+        1791051386522283516
+      ],
+      "identity_after": [
+        66306,
+        40669509,
+        33204,
+        1,
+        1000,
+        1000,
+        322871,
+        1791051386522283516,
+        1791051386522283516
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/actual-kernel14-source-content-results.json",
+      "bytes": 99099,
+      "sha256": "199c5596c32c34bff5a0a6b8090be002cc5e3ffeceef82a9df106480135a89fc",
+      "identity_before": [
+        66306,
+        55736180,
+        33152,
+        1,
+        1000,
+        1000,
+        99099,
+        1791051091838121776,
+        1791051091838121776
+      ],
+      "identity_after": [
+        66306,
+        55736180,
+        33152,
+        1,
+        1000,
+        1000,
+        99099,
+        1791051091838121776,
+        1791051091838121776
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/actual-terminal-custody.json",
+      "bytes": 124651,
+      "sha256": "c172660b4ed1c04db515b2e29550aa036e276ac246001582137980f4d4a47c8a",
+      "identity_before": [
+        66306,
+        55736198,
+        33204,
+        1,
+        1000,
+        1000,
+        124651,
+        1791051093332578414,
+        1791051093332578414
+      ],
+      "identity_after": [
+        66306,
+        55736198,
+        33204,
+        1,
+        1000,
+        1000,
+        124651,
+        1791051093332578414,
+        1791051093332578414
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/independent-root-kernel12-actual-body-terminal-review-r1.json",
+      "bytes": 27738,
+      "sha256": "49e010709be44ca6d38ff6ffae6274a2f8df437c2701d2ff663729a835308ee0",
+      "identity_before": [
+        66306,
+        55736686,
+        33204,
+        1,
+        1000,
+        1000,
+        27738,
+        1791051229520830379,
+        1791051229520830379
+      ],
+      "identity_after": [
+        66306,
+        55736686,
+        33204,
+        1,
+        1000,
+        1000,
+        27738,
+        1791051229520830379,
+        1791051229520830379
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/six-kernel-ten-public-captures-actual-r1.json",
+      "bytes": 81009,
+      "sha256": "4a695de57341e79b925d0fc3045c872877bcf19657761c12629f49654a2e3797",
+      "identity_before": [
+        66306,
+        38036357,
+        33204,
+        1,
+        1000,
+        1000,
+        81009,
+        1791046818781816105,
+        1791046818781816105
+      ],
+      "identity_after": [
+        66306,
+        38036357,
+        33204,
+        1,
+        1000,
+        1000,
+        81009,
+        1791046818781816105,
+        1791046818781816105
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/independent-root-six-kernel-primary-byte-review-r2.json",
+      "bytes": 47787,
+      "sha256": "68f5404de42a8042d1c0be883b540886797569773ca12511319fe7190aab7574",
+      "identity_before": [
+        66306,
+        38036391,
+        33204,
+        1,
+        1000,
+        1000,
+        47787,
+        1791046929541892353,
+        1791046929541892353
+      ],
+      "identity_after": [
+        66306,
+        38036391,
+        33204,
+        1,
+        1000,
+        1000,
+        47787,
+        1791046929541892353,
+        1791046929541892353
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-000.body",
+      "bytes": 111343,
+      "sha256": "e145eeed8928f6b253207193d3f39aac12928580703952e735ab9e66f2bbd08a",
+      "identity_before": [
+        66306,
+        55736181,
+        33152,
+        1,
+        1000,
+        1000,
+        111343,
+        1791051092063122975,
+        1791051092063122975
+      ],
+      "identity_after": [
+        66306,
+        55736181,
+        33152,
+        1,
+        1000,
+        1000,
+        111343,
+        1791051092063122975,
+        1791051092063122975
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-001.body",
+      "bytes": 21169,
+      "sha256": "61574cf8e0f3577218a1986f7715189fc7d02f02fd8d6a6aa2f0962cc35f9a68",
+      "identity_before": [
+        66306,
+        55736182,
+        33152,
+        1,
+        1000,
+        1000,
+        21169,
+        1791051092169123539,
+        1791051092169123539
+      ],
+      "identity_after": [
+        66306,
+        55736182,
+        33152,
+        1,
+        1000,
+        1000,
+        21169,
+        1791051092169123539,
+        1791051092169123539
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-002.body",
+      "bytes": 36572,
+      "sha256": "d424fbd22d00260e0ad27610249f1f24fae3e3100497100cab6230829d05095e",
+      "identity_before": [
+        66306,
+        55736183,
+        33152,
+        1,
+        1000,
+        1000,
+        36572,
+        1791051092328124387,
+        1791051092328124387
+      ],
+      "identity_after": [
+        66306,
+        55736183,
+        33152,
+        1,
+        1000,
+        1000,
+        36572,
+        1791051092328124387,
+        1791051092328124387
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-005.body",
+      "bytes": 67396,
+      "sha256": "834a85a2b9897e920f27c9a88b96c3a2f612cf18de2d2f6223d41702e4378d41",
+      "identity_before": [
+        66306,
+        55736184,
+        33152,
+        1,
+        1000,
+        1000,
+        67396,
+        1791051092410124824,
+        1791051092410124824
+      ],
+      "identity_after": [
+        66306,
+        55736184,
+        33152,
+        1,
+        1000,
+        1000,
+        67396,
+        1791051092410124824,
+        1791051092410124824
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-006.body",
+      "bytes": 22839,
+      "sha256": "755b82ca3f0473b75559eb6ab9f1e96fb70935bb6706829bd44e9ac20f77519b",
+      "identity_before": [
+        66306,
+        55736187,
+        33152,
+        1,
+        1000,
+        1000,
+        22839,
+        1791051092509125351,
+        1791051092509125351
+      ],
+      "identity_after": [
+        66306,
+        55736187,
+        33152,
+        1,
+        1000,
+        1000,
+        22839,
+        1791051092509125351,
+        1791051092509125351
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-007.body",
+      "bytes": 1186,
+      "sha256": "e32d3291bbb25c1f40b86348f7af44765005f9ea922c03618a42c08d208c9723",
+      "identity_before": [
+        66306,
+        55736188,
+        33152,
+        1,
+        1000,
+        1000,
+        1186,
+        1791051092562125634,
+        1791051092562125634
+      ],
+      "identity_after": [
+        66306,
+        55736188,
+        33152,
+        1,
+        1000,
+        1000,
+        1186,
+        1791051092562125634,
+        1791051092562125634
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-008.body",
+      "bytes": 2284,
+      "sha256": "adb13a6b47282532a24c35f95f146a1d1dbdcb4d260a6a60875e6a25f818ad60",
+      "identity_before": [
+        66306,
+        55736189,
+        33152,
+        1,
+        1000,
+        1000,
+        2284,
+        1791051092659126150,
+        1791051092659126150
+      ],
+      "identity_after": [
+        66306,
+        55736189,
+        33152,
+        1,
+        1000,
+        1000,
+        2284,
+        1791051092659126150,
+        1791051092659126150
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-009.body",
+      "bytes": 1764,
+      "sha256": "ef769b2f5c6ee8ecdfe9f64f5130c09eee92995d6eb9064815d34e21a6be8d46",
+      "identity_before": [
+        66306,
+        55736190,
+        33152,
+        1,
+        1000,
+        1000,
+        1764,
+        1791051092742126593,
+        1791051092742126593
+      ],
+      "identity_after": [
+        66306,
+        55736190,
+        33152,
+        1,
+        1000,
+        1000,
+        1764,
+        1791051092742126593,
+        1791051092742126593
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-010.body",
+      "bytes": 914,
+      "sha256": "e809550ae9af9259f58a2e2cc7ce304bbb9ad51400d72b89fa130cc2808462b1",
+      "identity_before": [
+        66306,
+        55736191,
+        33152,
+        1,
+        1000,
+        1000,
+        914,
+        1791051092891127387,
+        1791051092891127387
+      ],
+      "identity_after": [
+        66306,
+        55736191,
+        33152,
+        1,
+        1000,
+        1000,
+        914,
+        1791051092891127387,
+        1791051092891127387
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-011.body",
+      "bytes": 116,
+      "sha256": "862a5080fbc4edcb887de039b685e9b544dddb364cb8ddec8140738e41fd2b5b",
+      "identity_before": [
+        66306,
+        55736192,
+        33152,
+        1,
+        1000,
+        1000,
+        116,
+        1791051093003127983,
+        1791051093003127983
+      ],
+      "identity_after": [
+        66306,
+        55736192,
+        33152,
+        1,
+        1000,
+        1000,
+        116,
+        1791051093003127983,
+        1791051093003127983
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-012.body",
+      "bytes": 3254,
+      "sha256": "44c49b7a86cfe3588b321066f9ed6cdeaf3d5e70cdb1a649b0f36a6856499335",
+      "identity_before": [
+        66306,
+        55736193,
+        33152,
+        1,
+        1000,
+        1000,
+        3254,
+        1791051093105128527,
+        1791051093105128527
+      ],
+      "identity_after": [
+        66306,
+        55736193,
+        33152,
+        1,
+        1000,
+        1000,
+        3254,
+        1791051093105128527,
+        1791051093105128527
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/android-rog-review/asb-selected-kernel14-source-body-d9e85c4-preparation-r1/actual-terminal-r1/kernel-source-013.body",
+      "bytes": 5369,
+      "sha256": "0dd620f2fb8d79a3f8561d0ee2e7b1fd6434195d0a0d328c58befaa347ee5814",
+      "identity_before": [
+        66306,
+        55736194,
+        33152,
+        1,
+        1000,
+        1000,
+        5369,
+        1791051093216129118,
+        1791051093216129118
+      ],
+      "identity_after": [
+        66306,
+        55736194,
+        33152,
+        1,
+        1000,
+        1000,
+        5369,
+        1791051093216129118,
+        1791051093216129118
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__0e9b1ff406b1d9f5ad2a75e2377823928a1c71ea.diff",
+      "bytes": 510,
+      "sha256": "c54ed1aa5388e2b83fe21ef0431284240945b6470a8f1828a7a81808955bb615",
+      "identity_before": [
+        66306,
+        38036350,
+        33204,
+        1,
+        1000,
+        1000,
+        510,
+        1791046815004285096,
+        1791046815004285096
+      ],
+      "identity_after": [
+        66306,
+        38036350,
+        33204,
+        1,
+        1000,
+        1000,
+        510,
+        1791046815004285096,
+        1791046815004285096
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__0e9b1ff406b1d9f5ad2a75e2377823928a1c71ea.commit.json.raw",
+      "bytes": 2043,
+      "sha256": "ca10c2cab51d5c20420200b39c7aff3bdeb1c30579c7363f657d4338cda3e901",
+      "identity_before": [
+        66306,
+        38036343,
+        33204,
+        1,
+        1000,
+        1000,
+        2043,
+        1791046813491409699,
+        1791046813491409699
+      ],
+      "identity_after": [
+        66306,
+        38036343,
+        33204,
+        1,
+        1000,
+        1000,
+        2043,
+        1791046813491409699,
+        1791046813491409699
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__18d3876842e1ef0c4fd796aab12fb4a31704830d.diff",
+      "bytes": 840,
+      "sha256": "77130422745408f086f583570fb11db662d207ffa10f7707f058a4d66d6bdcce",
+      "identity_before": [
+        66306,
+        38036356,
+        33204,
+        1,
+        1000,
+        1000,
+        840,
+        1791046818779392275,
+        1791046818779392275
+      ],
+      "identity_after": [
+        66306,
+        38036356,
+        33204,
+        1,
+        1000,
+        1000,
+        840,
+        1791046818779392275,
+        1791046818779392275
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__18d3876842e1ef0c4fd796aab12fb4a31704830d.commit.json.raw",
+      "bytes": 1888,
+      "sha256": "482ee3793f335e9e062f643d992a440ad93b0a042af0faf6d71f64054f9965cb",
+      "identity_before": [
+        66306,
+        38036353,
+        33204,
+        1,
+        1000,
+        1000,
+        1888,
+        1791046816470012607,
+        1791046816470012607
+      ],
+      "identity_after": [
+        66306,
+        38036353,
+        33204,
+        1,
+        1000,
+        1000,
+        1888,
+        1791046816470012607,
+        1791046816470012607
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__20130e92480a0cca90f69d9ccb1d42a06a6e07f0.diff",
+      "bytes": 544,
+      "sha256": "8540566e543ee2ddaef3e4a3b3b049ea2dcabb6273826cdf8c4e4ba53bb21445",
+      "identity_before": [
+        66306,
+        38036347,
+        33204,
+        1,
+        1000,
+        1000,
+        544,
+        1791046813748031107,
+        1791046813748031107
+      ],
+      "identity_after": [
+        66306,
+        38036347,
+        33204,
+        1,
+        1000,
+        1000,
+        544,
+        1791046813748031107,
+        1791046813748031107
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__20130e92480a0cca90f69d9ccb1d42a06a6e07f0.commit.json.raw",
+      "bytes": 2043,
+      "sha256": "1e9dd52d3945d7d7ee8cc4040c027a9c93f05640db854c50816ee2726b647807",
+      "identity_before": [
+        66306,
+        38036340,
+        33204,
+        1,
+        1000,
+        1000,
+        2043,
+        1791046812069566250,
+        1791046812069566250
+      ],
+      "identity_after": [
+        66306,
+        38036340,
+        33204,
+        1,
+        1000,
+        1000,
+        2043,
+        1791046812069566250,
+        1791046812069566250
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__3bcdd92440376888cb93464c916876a581e39ed6.diff",
+      "bytes": 593,
+      "sha256": "6b7328dfdb82e7af264a2e5c24dc434ac9118440775c299c19d0ac1dcf4a9dc5",
+      "identity_before": [
+        66306,
+        38036327,
+        33204,
+        1,
+        1000,
+        1000,
+        593,
+        1791046803508959774,
+        1791046803508959774
+      ],
+      "identity_after": [
+        66306,
+        38036327,
+        33204,
+        1,
+        1000,
+        1000,
+        593,
+        1791046803508959774,
+        1791046803508959774
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__3bcdd92440376888cb93464c916876a581e39ed6.commit.json.raw",
+      "bytes": 1971,
+      "sha256": "117b09e4bc7170958bd622851af06933cf86c20a8f1061db047b3eb009118f89",
+      "identity_before": [
+        66306,
+        38036320,
+        33204,
+        1,
+        1000,
+        1000,
+        1971,
+        1791046800940950665,
+        1791046800940950665
+      ],
+      "identity_after": [
+        66306,
+        38036320,
+        33204,
+        1,
+        1000,
+        1000,
+        1971,
+        1791046800940950665,
+        1791046800940950665
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__4642ec2b3fdc3289192d3970b5baf6aa14031c32.diff",
+      "bytes": 593,
+      "sha256": "6b7328dfdb82e7af264a2e5c24dc434ac9118440775c299c19d0ac1dcf4a9dc5",
+      "identity_before": [
+        66306,
+        38036325,
+        33204,
+        1,
+        1000,
+        1000,
+        593,
+        1791046802758414478,
+        1791046802758414478
+      ],
+      "identity_after": [
+        66306,
+        38036325,
+        33204,
+        1,
+        1000,
+        1000,
+        593,
+        1791046802758414478,
+        1791046802758414478
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__4642ec2b3fdc3289192d3970b5baf6aa14031c32.commit.json.raw",
+      "bytes": 1971,
+      "sha256": "4ffc26143fd5cdbe1786a0cfe20df8d7a511bb1c77075932b013f879aa4c229b",
+      "identity_before": [
+        66306,
+        38036317,
+        33204,
+        1,
+        1000,
+        1000,
+        1971,
+        1791046800761577529,
+        1791046800761577529
+      ],
+      "identity_after": [
+        66306,
+        38036317,
+        33204,
+        1,
+        1000,
+        1000,
+        1971,
+        1791046800761577529,
+        1791046800761577529
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__6bc773e9c9f8ec6c5c431934462badbbb7d21767.diff",
+      "bytes": 721,
+      "sha256": "a00d17954b44d4f5f71acbeafb6a30da8b41747288b9cbfca5d169357d040377",
+      "identity_before": [
+        66306,
+        38036342,
+        33204,
+        1,
+        1000,
+        1000,
+        721,
+        1791046812350141023,
+        1791046812350141023
+      ],
+      "identity_after": [
+        66306,
+        38036342,
+        33204,
+        1,
+        1000,
+        1000,
+        721,
+        1791046812350141023,
+        1791046812350141023
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__6bc773e9c9f8ec6c5c431934462badbbb7d21767.commit.json.raw",
+      "bytes": 1073,
+      "sha256": "118df44a3d1c2a25f87755a49f0999669b2dedd1bae9315ba112d7ad94084e43",
+      "identity_before": [
+        66306,
+        38036336,
+        33204,
+        1,
+        1000,
+        1000,
+        1073,
+        1791046807623804678,
+        1791046807623804678
+      ],
+      "identity_after": [
+        66306,
+        38036336,
+        33204,
+        1,
+        1000,
+        1000,
+        1073,
+        1791046807623804678,
+        1791046807623804678
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__8f68185b8289dbe43e96f3d2b036c81c83cc58aa.diff",
+      "bytes": 4376,
+      "sha256": "bcafe922da841c54bca96f1a6648d53cb4a13cc1fb325db6095966f636726b45",
+      "identity_before": [
+        66306,
+        38036335,
+        33204,
+        1,
+        1000,
+        1000,
+        4376,
+        1791046807060115916,
+        1791046807060115916
+      ],
+      "identity_after": [
+        66306,
+        38036335,
+        33204,
+        1,
+        1000,
+        1000,
+        4376,
+        1791046807060115916,
+        1791046807060115916
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__8f68185b8289dbe43e96f3d2b036c81c83cc58aa.commit.json.raw",
+      "bytes": 1564,
+      "sha256": "dcb1013dff842ed6f9327f860a0605185a46ea17fe471e33a95cdda4372ec2e8",
+      "identity_before": [
+        66306,
+        38036331,
+        33204,
+        1,
+        1000,
+        1000,
+        1564,
+        1791046805328595954,
+        1791046805328595954
+      ],
+      "identity_after": [
+        66306,
+        38036331,
+        33204,
+        1,
+        1000,
+        1000,
+        1564,
+        1791046805328595954,
+        1791046805328595954
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__ad34d15396568919a8ddd306ce2120e76d111b7c.diff",
+      "bytes": 507,
+      "sha256": "48392121571db44d8fa8b9dac12ef38f78cd98c016a665d85878b85cfd087c20",
+      "identity_before": [
+        66306,
+        38036333,
+        33204,
+        1,
+        1000,
+        1000,
+        507,
+        1791046806556657046,
+        1791046806556657046
+      ],
+      "identity_after": [
+        66306,
+        38036333,
+        33204,
+        1,
+        1000,
+        1000,
+        507,
+        1791046806556657046,
+        1791046806556657046
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__ad34d15396568919a8ddd306ce2120e76d111b7c.commit.json.raw",
+      "bytes": 1260,
+      "sha256": "d843876340ea2252ab1de400206eb49674ca0e7da762bac5e292b1c4b4259a37",
+      "identity_before": [
+        66306,
+        38036330,
+        33204,
+        1,
+        1000,
+        1000,
+        1260,
+        1791046804319989227,
+        1791046804319989227
+      ],
+      "identity_after": [
+        66306,
+        38036330,
+        33204,
+        1,
+        1000,
+        1000,
+        1260,
+        1791046804319989227,
+        1791046804319989227
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__b5d8f34c67b13a33c18ef0bd652c1872b6c2ff3c.diff",
+      "bytes": 840,
+      "sha256": "77130422745408f086f583570fb11db662d207ffa10f7707f058a4d66d6bdcce",
+      "identity_before": [
+        66306,
+        38036352,
+        33204,
+        1,
+        1000,
+        1000,
+        840,
+        1791046816233405566,
+        1791046816233405566
+      ],
+      "identity_after": [
+        66306,
+        38036352,
+        33204,
+        1,
+        1000,
+        1000,
+        840,
+        1791046816233405566,
+        1791046816233405566
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__b5d8f34c67b13a33c18ef0bd652c1872b6c2ff3c.commit.json.raw",
+      "bytes": 1888,
+      "sha256": "4bac2170272b41b93fa036fc6dd8e8cd16182b81a5548b92a5e4395e098d0550",
+      "identity_before": [
+        66306,
+        38036348,
+        33204,
+        1,
+        1000,
+        1000,
+        1888,
+        1791046814900481564,
+        1791046814900481564
+      ],
+      "identity_after": [
+        66306,
+        38036348,
+        33204,
+        1,
+        1000,
+        1000,
+        1888,
+        1791046814900481564,
+        1791046814900481564
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__ba7833622fc3581c388d0da922aaab529aec43b3.diff",
+      "bytes": 1029,
+      "sha256": "8093d242d686c5afdfaade80888fada46d0a2aa9989d0150e77b6c7f278a33e3",
+      "identity_before": [
+        66306,
+        38036339,
+        33204,
+        1,
+        1000,
+        1000,
+        1029,
+        1791046810741790940,
+        1791046810741790940
+      ],
+      "identity_after": [
+        66306,
+        38036339,
+        33204,
+        1,
+        1000,
+        1000,
+        1029,
+        1791046810741790940,
+        1791046810741790940
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-six-kernel-public-capture-root-r1/public-captures/kernel__common__ba7833622fc3581c388d0da922aaab529aec43b3.commit.json.raw",
+      "bytes": 1073,
+      "sha256": "b37086dcc91599fc5e03a12d13f8f77fce01f9dc3a92db87d2216cc183e11d7e",
+      "identity_before": [
+        66306,
+        38036337,
+        33204,
+        1,
+        1000,
+        1000,
+        1073,
+        1791046809247534122,
+        1791046809247534122
+      ],
+      "identity_after": [
+        66306,
+        38036337,
+        33204,
+        1,
+        1000,
+        1000,
+        1073,
+        1791046809247534122,
+        1791046809247534122
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/hid-proposed-selected-local-backport.owned-preview",
+      "bytes": 111361,
+      "sha256": "a0fe6480267cd5b8687c495e6e87f720e73e18873fda886f670c5a0e2b3475c7",
+      "identity_before": [
+        66306,
+        40669503,
+        33204,
+        1,
+        1000,
+        1000,
+        111361,
+        1791051386504097051,
+        1791051386504097051
+      ],
+      "identity_after": [
+        66306,
+        40669503,
+        33204,
+        1,
+        1000,
+        1000,
+        111361,
+        1791051386504097051,
+        1791051386504097051
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/tipc-proposed-selected-local-backport.owned-preview",
+      "bytes": 21221,
+      "sha256": "0ea983628d26f6345a9b7860db32b14e6fdbcab1487b4508ef3ff4ccf23cf348",
+      "identity_before": [
+        66306,
+        40669505,
+        33204,
+        1,
+        1000,
+        1000,
+        21221,
+        1791051386509779998,
+        1791051386509779998
+      ],
+      "identity_after": [
+        66306,
+        40669505,
+        33204,
+        1,
+        1000,
+        1000,
+        21221,
+        1791051386509779998,
+        1791051386509779998
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/nfc-proposed-selected-local-backport.owned-preview",
+      "bytes": 36592,
+      "sha256": "6d153f50124e2a7baf84db67dda6fff98742a65ca474a6ee0530b2426c25007e",
+      "identity_before": [
+        66306,
+        40669507,
+        33204,
+        1,
+        1000,
+        1000,
+        36592,
+        1791051386510588831,
+        1791051386510588831
+      ],
+      "identity_after": [
+        66306,
+        40669507,
+        33204,
+        1,
+        1000,
+        1000,
+        36592,
+        1791051386510588831,
+        1791051386510588831
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/hid-proposed-selected-local-backport.full.diff",
+      "bytes": 389,
+      "sha256": "1427b6d042cade3cdaa5754eb8bcdac0b27aa99bccd675fba5be320f814dbad3",
+      "identity_before": [
+        66306,
+        40669504,
+        33204,
+        1,
+        1000,
+        1000,
+        389,
+        1791051386509591955,
+        1791051386509591955
+      ],
+      "identity_after": [
+        66306,
+        40669504,
+        33204,
+        1,
+        1000,
+        1000,
+        389,
+        1791051386509591955,
+        1791051386509591955
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/tipc-proposed-selected-local-backport.full.diff",
+      "bytes": 394,
+      "sha256": "0c84e471ed2dc5e115df0295a6407f66eda9d074444160dbbf1c9d019bee5060",
+      "identity_before": [
+        66306,
+        40669506,
+        33204,
+        1,
+        1000,
+        1000,
+        394,
+        1791051386510482418,
+        1791051386510482418
+      ],
+      "identity_after": [
+        66306,
+        40669506,
+        33204,
+        1,
+        1000,
+        1000,
+        394,
+        1791051386510482418,
+        1791051386510482418
+      ]
+    },
+    {
+      "path": "/home/alex/Documents/Codex/2026-10-02/github-hepta-private-ci-learning-artifacts/work/production-stage/asb-kernel12-six-CVE-captured-source-review-image-r1/nfc-proposed-selected-local-backport.full.diff",
+      "bytes": 413,
+      "sha256": "8b1401bea009c7eea727f27eaa16c4a47a299ed1ff96a8d7617f822003ee74bd",
+      "identity_before": [
+        66306,
+        40669508,
+        33204,
+        1,
+        1000,
+        1000,
+        413,
+        1791051386511934332,
+        1791051386511934332
+      ],
+      "identity_after": [
+        66306,
+        40669508,
+        33204,
+        1,
+        1000,
+        1000,
+        413,
+        1791051386511934332,
+        1791051386511934332
+      ]
+    }
+  ]
+}

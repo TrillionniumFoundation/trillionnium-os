@@ -2,7 +2,7 @@
 
 Status: **ACTIVE CANDIDATE**  
 Program revision: **2026-08-31-g1**  
-Documentation revision: **1.3.0**
+Documentation revision: **1.4.0**
 Semantic authority: **owner-open-semantic-v1**  
 Architecture authority: **modular-control-plane-v1**  
 Machine catalog navigation: `machine/`
@@ -32,12 +32,17 @@ performance evidence, rollout and compatibility rules.
 4. [`MODULE_DEVELOPMENT_STANDARD.md`](MODULE_DEVELOPMENT_STANDARD.md) — definition of a team-owned logical module.
 5. [`COMPONENT_DEVELOPMENT_STANDARD.md`](COMPONENT_DEVELOPMENT_STANDARD.md) — concrete build units, local documentation and sealed-component rules.
 6. [`CI_GATE_MODEL.md`](CI_GATE_MODEL.md) — source, promotion and release gate separation.
-6. [`EFFECT_AND_PROTOCOL_STANDARD.md`](EFFECT_AND_PROTOCOL_STANDARD.md) — identity, durability and no-redispatch rules.
+7. [`EFFECT_AND_PROTOCOL_STANDARD.md`](EFFECT_AND_PROTOCOL_STANDARD.md) — identity, durability and no-redispatch rules.
 8. [`PERFORMANCE_AND_OPTIMIZATION.md`](PERFORMANCE_AND_OPTIMIZATION.md) — global objective, SLOs and benchmark gates.
 9. [`TEAM_AND_DELIVERY_MODEL.md`](TEAM_AND_DELIVERY_MODEL.md) — ownership, review and merge-queue policy.
 10. [`OPERATIONS_AND_ROLLOUT.md`](OPERATIONS_AND_ROLLOUT.md) — deployment, leases, migrations, canary and rollback.
 11. [`QUALIFICATION_AND_EVIDENCE.md`](QUALIFICATION_AND_EVIDENCE.md) — L0–L6 evidence and fault qualification.
 12. [`GLOBAL_DEFINITION_OF_DONE.md`](GLOBAL_DEFINITION_OF_DONE.md) — exact completion criteria.
+
+For module implementation, read [`MODULE_DOCUMENTATION_POLICY.md`](MODULE_DOCUMENTATION_POLICY.md),
+the indexed detailed contracts under [`modules/`](modules/), and the
+[`executable contract inventory`](MODULE_CONTRACT_STATUS.md). Concrete source and
+test bindings in each module document identify its implementation entrypoints.
 
 ## 3. Truth rules
 
@@ -54,6 +59,9 @@ The exact registered files below are authoritative for their individual concerns
 - `machine/current-baseline.v1.json` — the dated, recorded trunk/source-CI/source-parent/documentation snapshot; its `latest_*` keys are not a live remote-status API;
 - `machine/program-state.v1.json` — active program, phases and capabilities;
 - `machine/module-catalog.v1.json` — logical module boundaries, dependencies, owners, state and SLO contracts;
+- `machine/module-document-index.v1.json` — exact detailed-document mapping and required module sections;
+- `machine/resource-budget-provenance.v1.json` — provisional resource/SLO classification and measurement holds;
+- `machine/module-contract-catalog.v1.json` — executable schema, vector, generator and producer/consumer bindings;
 - `machine/product-profile-catalog.v1.json` — the exact active default profile, sealed optional profile and capability-to-module graph;
 - `machine/effect-lifecycle.v1.json` — the complete cross-module effect state graph, crash cuts, invariants and implementation bindings;
 - `../Cargo.toml` plus `../governance/component-lifecycle.v1.json` — the exact active/default versus sealed root Cargo component inventory;
@@ -93,5 +101,7 @@ historical observation. They must not be substituted for the current PR head,
 its parent or its latest checks. Each changed G1 candidate remains unqualified
 until its exact source, deterministic synthetic merge, workflow attempts,
 artifacts and non-author reviews are current and mutually consistent.
+
+- Executable module-contract status: [`MODULE_CONTRACT_STATUS.md`](MODULE_CONTRACT_STATUS.md)
 
 - Executable module-contract status: [`docs/MODULE_CONTRACT_STATUS.md`](MODULE_CONTRACT_STATUS.md)

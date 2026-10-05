@@ -1,0 +1,13 @@
+--- actual-captured/frameworks/base/core/java/android/appwidget/AppWidgetConfigActivityProxy.java
++++ owned-final/frameworks/base/core/java/android/appwidget/AppWidgetConfigActivityProxy.java
+@@ -52,7 +52,9 @@
+ 
+     @Override
+     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+-        setResult(resultCode, data);
++        // Only pass the result code and intent extras, not data/component/grant flags.
++        Intent result = data != null ? new Intent().putExtras(data) : null;
++        setResult(resultCode, result);
+         int widgetId = getIntent().getIntExtra(
+                 AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+         AppWidgetManager.getInstance(this).setConfigActivityComplete(widgetId);

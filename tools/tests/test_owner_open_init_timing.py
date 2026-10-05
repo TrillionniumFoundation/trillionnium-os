@@ -81,7 +81,10 @@ class OwnerOpenInitTimingTest(unittest.TestCase):
         rc = self.read(RC)
         post_fs = self.action_body(rc, "post-fs-data")
         self.assertIn("mkdir /data/trillionnium 0700 root root", post_fs)
-        self.assertIn("mkdir /data/trillionnium/owner-open/state/broker 0700 root root", post_fs)
+        for child in ("broker", "home", "codex-home", "provider-sessions"):
+            command = f"mkdir /data/trillionnium/owner-open/state/{child} 0700 root root"
+            self.assertIn(command, post_fs)
+            self.assertLess(post_fs.index(command), post_fs.index("restorecon_recursive /data/trillionnium/owner-open"))
         self.assertIn("restorecon_recursive /data/trillionnium/owner-open", post_fs)
         self.assertIn(f"setprop {DATA_READY} 1", post_fs)
         self.assertLess(

@@ -19,20 +19,26 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
 import re
-import selectors
-import signal
 import stat
 import struct
-import subprocess
 import sys
-import time
 from typing import Iterable, Mapping, Sequence
 import unicodedata
 import xml.etree.ElementTree as ET
+
+
+_BOUNDED_SPEC = importlib.util.spec_from_file_location(
+    "trillionnium_owner_open_bounded_process",
+    Path(__file__).with_name("owner_open_bounded_process.py"),
+)
+assert _BOUNDED_SPEC is not None and _BOUNDED_SPEC.loader is not None
+BOUNDED_PROCESS = importlib.util.module_from_spec(_BOUNDED_SPEC)
+_BOUNDED_SPEC.loader.exec_module(BOUNDED_PROCESS)
 
 
 CONTRACT_SCHEMA_V1 = "org.trillionnium.p0-cross-repo-source-set.v1"
@@ -505,116 +511,23 @@ def bounded_command(
         "GIT_OPTIONAL_LOCKS": "0",
         "GIT_TERMINAL_PROMPT": "0",
         # repo's launcher defaults tracing on unless this is explicitly
-        # disabled.  A source measurement must not append to .repo/TRACE_FILE
-        # (or otherwise mutate a checkout) while resolving the manifest.
+        # disabled. A source measurement must not mutate .repo/TRACE_FILE.
         "REPO_TRACE": "0",
     }
-    if timeout <= 0 or maximum <= 0 or not allowed_returncodes:
+    if not allowed_returncodes:
         raise BomError(f"{label} bounds are invalid")
     try:
-        process = subprocess.Popen(
-            list(command),
-            cwd=cwd,
-            env=environment,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            close_fds=True,
-            start_new_session=True,
+        result = BOUNDED_PROCESS.run_bounded(
+            command, cwd=cwd, env=environment,
+            timeout_seconds=timeout, maximum_output=maximum,
         )
-    except OSError as error:
+    except BOUNDED_PROCESS.BoundedProcessError as error:
+        if error.output_limit_exceeded:
+            raise BomError(f"{label} exceeds output bound") from error
         raise BomError(f"{label} failed") from error
-
-    assert process.stdout is not None
-    assert process.stderr is not None
-    stdout_descriptor = process.stdout.fileno()
-    selector = selectors.DefaultSelector()
-    streams = (process.stdout, process.stderr)
-    buffers: dict[int, bytearray] = {
-        stream.fileno(): bytearray() for stream in streams
-    }
-    for stream in streams:
-        os.set_blocking(stream.fileno(), False)
-        selector.register(stream, selectors.EVENT_READ)
-
-    def terminate_group() -> None:
-        if process.poll() is not None:
-            return
-        try:
-            os.killpg(process.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            return
-        except OSError:
-            try:
-                process.kill()
-            except OSError:
-                pass
-
-    def reap_briefly() -> None:
-        if process.poll() is not None:
-            return
-        try:
-            process.wait(timeout=0.2)
-        except (subprocess.TimeoutExpired, OSError):
-            # A process stuck in uninterruptible storage I/O cannot be
-            # reaped synchronously.  The caller still gets a bounded HOLD;
-            # never turn cleanup into another unbounded wait.
-            pass
-
-    deadline = time.monotonic() + float(timeout)
-    try:
-        while selector.get_map():
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                terminate_group()
-                raise BomError(f"{label} failed")
-            events = selector.select(min(remaining, 0.1))
-            if not events and process.poll() is not None:
-                events = [
-                    (key, selectors.EVENT_READ)
-                    for key in selector.get_map().values()
-                ]
-            for key, _ in events:
-                stream = key.fileobj
-                descriptor = stream.fileno()
-                try:
-                    chunk = os.read(descriptor, 1024 * 1024)
-                except BlockingIOError:
-                    continue
-                except OSError as error:
-                    terminate_group()
-                    raise BomError(f"{label} failed") from error
-                if not chunk:
-                    selector.unregister(stream)
-                    stream.close()
-                    continue
-                buffers[descriptor].extend(chunk)
-                if len(buffers[descriptor]) > maximum:
-                    terminate_group()
-                    raise BomError(f"{label} exceeds output bound")
-
-        if process.poll() is None:
-            # Pipes can reach EOF just before the leader's wait status is
-            # observable.  Give the normal case a short bounded reap window;
-            # never turn this into the unbounded subprocess.run cleanup that
-            # originally made external-disk I/O hangs sticky.
-            try:
-                process.wait(timeout=0.2)
-            except (subprocess.TimeoutExpired, OSError):
-                terminate_group()
-                raise BomError(f"{label} failed")
-        if process.returncode not in allowed_returncodes:
-            raise BomError(f"{label} failed")
-        return bytes(buffers[stdout_descriptor])
-    finally:
-        terminate_group()
-        reap_briefly()
-        selector.close()
-        for stream in streams:
-            try:
-                stream.close()
-            except OSError:
-                pass
+    if result.returncode not in allowed_returncodes:
+        raise BomError(f"{label} failed")
+    return result.stdout
 
 
 def git(
