@@ -1,12 +1,10 @@
-# Android-native owner-open lifecycle boundary. The bootstrap stays outside the
-# Root Linux payload, verifies the immutable image, creates a private mount
-# namespace, binds only the writable state directory, chroots and execs the
-# finite Root Linux supervisor. No Authority/lease/P01 service participates.
-
+# API37: init owns verified read-only payload mounts and teardown.
+# The phone runs execution only; Codex and long-lived credentials stay on host.
 on early-init
-    # Keep the readiness barrier false until post-fs-data has created and
-    # relabeled every private state directory.
     setprop trillionnium.owner_open.data_ready 0
+    setprop trillionnium.owner_open.verified 0
+    setprop trillionnium.owner_open.mount_ready 0
+    setprop trillionnium.owner_open.ready 0
 
 on post-fs-data
     mkdir /data/trillionnium 0700 root root
@@ -15,43 +13,67 @@ on post-fs-data
     mkdir /data/trillionnium/owner-open/state 0700 root root
     mkdir /data/trillionnium/owner-open/state/broker 0700 root root
     restorecon_recursive /data/trillionnium/owner-open
-    # The combined property trigger below can fire in either property order,
-    # but only after this action has completed its mkdir/restorecon sequence.
     setprop trillionnium.owner_open.data_ready 1
 
 on property:ro.trillionnium.owner_open.enabled=true && property:trillionnium.owner_open.data_ready=1
+    start trillionnium_owner_open_ingress
+    exec_start trillionnium_owner_open_verify
+
+on property:trillionnium.owner_open.verified=1 && property:trillionnium.owner_open.data_ready=1
+    mount erofs loop@/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs /data/trillionnium/owner-open/root ro nosuid nodev
+    mount none /data/trillionnium/owner-open/state /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open bind
+    mount none none /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open bind remount nosuid nodev noexec
+    # Same PID namespace /proc supports bounded same-domain group observation.
+    mount none /proc /data/trillionnium/owner-open/root/proc bind
+    mount none none /data/trillionnium/owner-open/root/proc bind remount ro nosuid nodev noexec
+    # Device access still obeys the original SELinux labels and DAC rules.
+    mount none /dev /data/trillionnium/owner-open/root/dev bind
+    mount none none /data/trillionnium/owner-open/root/dev bind remount ro nosuid noexec
+    mount none none /data/trillionnium/owner-open/root private rec
+    setprop trillionnium.owner_open.mount_ready 1
     start trillionnium_owner_open_bootstrap
 
-on property:trillionnium.owner_open.ready=1
-    start trillionnium_owner_open_ingress
-
-on property:trillionnium.owner_open.ready=0
-    stop trillionnium_owner_open_ingress
+on property:init.svc.trillionnium_owner_open_bootstrap=stopped && property:trillionnium.owner_open.mount_ready=1
+    setprop trillionnium.owner_open.ready 0
+    setprop trillionnium.owner_open.mount_ready 0
+    setprop trillionnium.owner_open.verified 0
+    umount /data/trillionnium/owner-open/root/dev
+    umount /data/trillionnium/owner-open/root/proc
+    umount /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open
+    umount /data/trillionnium/owner-open/root
 
 on property:sys.trillionnium.owner_open.stop=1
-    stop trillionnium_owner_open_ingress
-    start trillionnium_owner_open_emergency_stop
+    setprop trillionnium.owner_open.ready 0
     stop trillionnium_owner_open_bootstrap
+    exec_start trillionnium_owner_open_emergency_stop
     setprop sys.trillionnium.owner_open.stop 0
 
-service trillionnium_owner_open_bootstrap /system_ext/bin/trillionnium-owner-open-bootstrap
+service trillionnium_owner_open_verify /system_ext/bin/trillionnium-owner-open-bootstrap --verify-image
     class core
     user root
     group root system
     disabled
     oneshot
     seclabel u:r:trillionnium_owner_open_bootstrap:s0
-    capabilities SYS_ADMIN SYS_CHROOT KILL
+    capabilities
 
-# Ingress runs as root only to satisfy the broker's same-UID and 0600-token
-# boundary. SELinux admits only the dedicated unprivileged app domain, and the
-# token is consumed here rather than exposed to the app process.
+service trillionnium_owner_open_bootstrap /system_ext/bin/trillionnium-owner-open-bootstrap --run-mounted
+    class core
+    user root
+    group root system
+    disabled
+    oneshot
+    namespace mnt
+    seclabel u:r:trillionnium_owner_open_bootstrap:s0
+    capabilities SYS_CHROOT KILL
+
 service trillionnium_owner_open_ingress /system_ext/bin/trillionnium-owner-open-ingress
     class core
     user root
     group root system
     disabled
     seclabel u:r:trillionnium_owner_open_ingress:s0
+    capabilities
 
 service trillionnium_owner_open_emergency_stop /system_ext/bin/trillionnium-owner-open-emergency-stop
     class core
@@ -60,4 +82,4 @@ service trillionnium_owner_open_emergency_stop /system_ext/bin/trillionnium-owne
     disabled
     oneshot
     seclabel u:r:trillionnium_owner_open_emergency_stop:s0
-    capabilities KILL
+    capabilities
