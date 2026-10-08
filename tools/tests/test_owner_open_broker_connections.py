@@ -368,9 +368,24 @@ class ProductionConnectionBoundTests(unittest.TestCase):
                     if time.monotonic() >= deadline:
                         self.fail("broker startup deadline exceeded")
                     time.sleep(.01)
-                # Descriptor publication precedes static worker startup.
-                time.sleep(.1)
-                baseline = len(list(Path(f"/proc/{process.pid}/task").iterdir()))
+                # Descriptor publication precedes _start_workers(), so elapsed
+                # time is not evidence that the static workers exist. This
+                # invocation has exactly five persistent threads before accept:
+                # main, upstream stderr, upstream reader, timeout, dispatcher.
+                # Require that exact baseline before opening any client socket;
+                # do not charge delayed static startup to the client bound or
+                # accept additional static threads into the baseline.
+                task_directory = Path(f"/proc/{process.pid}/task")
+                startup_deadline = time.monotonic() + 5
+                while True:
+                    if process.poll() is not None:
+                        self.fail(process.communicate()[1].decode())
+                    baseline = len(list(task_directory.iterdir()))
+                    if baseline == 5:
+                        break
+                    if time.monotonic() >= startup_deadline:
+                        self.fail(f"exact static worker baseline not ready: {baseline}")
+                    time.sleep(.01)
                 for _ in range(12):
                     peer = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
                     peers.append(peer)
