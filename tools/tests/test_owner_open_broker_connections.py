@@ -380,7 +380,8 @@ class ProductionConnectionBoundTests(unittest.TestCase):
                 while True:
                     if process.poll() is not None:
                         self.fail(process.communicate()[1].decode())
-                    baseline = len(list(task_directory.iterdir()))
+                    baseline_tasks = {entry.name for entry in task_directory.iterdir()}
+                    baseline = len(baseline_tasks)
                     if baseline == 5:
                         break
                     if time.monotonic() >= startup_deadline:
@@ -401,8 +402,9 @@ class ProductionConnectionBoundTests(unittest.TestCase):
                             time.sleep(.005)
                     time.sleep(.01)
                 time.sleep(.1)
-                threads = len(list(Path(f"/proc/{process.pid}/task").iterdir()))
-                self.assertLessEqual(threads - baseline, 2)
+                active_tasks = {entry.name for entry in task_directory.iterdir()}
+                self.assertTrue(baseline_tasks <= active_tasks, "static worker exited during connection accounting")
+                self.assertLessEqual(len(active_tasks - baseline_tasks), 2)
                 # Authenticate one reserved connection while another stays silent.
                 # Shutdown must retire both states without losing epoll wakeups.
                 token = (root / "token").read_text().strip()
