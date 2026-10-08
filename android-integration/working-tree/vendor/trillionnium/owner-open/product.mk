@@ -57,8 +57,10 @@ SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += \
 endif
 endif
 
+# Preserve the original generic profile default; an explicit engineering
+# profile assignment overrides this optional value after product inheritance.
 PRODUCT_SYSTEM_EXT_PROPERTIES += \
-    ro.trillionnium.owner_open.enabled=true
+    ro.trillionnium.owner_open.enabled?=true
 
 SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += \
     vendor/trillionnium/owner-open/sepolicy/private
