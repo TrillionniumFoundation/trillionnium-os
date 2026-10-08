@@ -87,6 +87,131 @@ source navigation alone does not prove wire compatibility.
 
 Only this module may perform authoritative writes for its state families. Read models may be rebuilt from retained authoritative records but cannot become an alternate writer. Every writer carries a module or service epoch; stale epochs fail closed.
 
+### Android client identity read model, schema v2
+
+`OwnerOpenClientState`, `OwnerOpenClientStateCodec` and
+`OwnerOpenClientStateStore` under the owned `client/src` path provide a local,
+non-authoritative read model with schema
+`org.trillionnium.owneropen.client-session.v2`. Their
+Activity/Client consumer integration has host behavior tests using the actual
+Activity, State/Codec/Store and real files, while Android mechanics and sockets
+are fixtures. This does not qualify Android storage behavior or phone task
+continuity. The UI and independent Stop controls are constructed before identity
+lookup. Identity initialization runs on the ordinary operation worker with
+normal dispatch held; it never connects or submits. Destroy fences publication
+before client shutdown, so late identity I/O cannot publish readiness or connect.
+This does not give every Android preference/file operation a universal deadline.
+Disk identity wins over stale Bundle identity; an absent committed
+record alongside a saved identity is held for explicit reconciliation, never
+silently replaced.
+
+The bounded record contains only canonical locally generated `session-UUID`,
+`task-UUID`, optional `turn-UUID`, optional lowercase SHA-256 request binding,
+revision and up to three cursor entries. The noncredential request digest
+exactly matches primary Host `r5_persistence::request_sha256` for this client's
+current fields: protocol/version, identities, default `owner-open` profile,
+null `config_generation`/`context_ref` and user input. The prompt itself is never
+retained. The same shared ASCII/Unicode/control/boundary vectors execute both
+actual Rust and Java algorithms. No prompt, transcript, socket, credential, model authentication or effect outcome
+is stored. Cursor domains are exactly `transport_event`, `job_runtime_event`
+and `job_journal_record` from distinct Host interfaces; each cursor carries a SHA-256 digest
+of a verified non-secret producer instance/epoch and a signed nonnegative
+inclusive cursor. A cursor is the next explicit read position supplied by
+validated evidence, not an interchangeable journal offset, transport sequence
+or proof of effect completion. The current Android `turn.inspect` instead reads
+a durable turn-frame index; its reply exposes neither a cursor domain nor a
+producer epoch. These cached domains must not be passed as its cursor. Until a
+separate reviewed binding exists, explicit same-turn inspection uses cursor zero
+and pagination/cross-epoch restoration remain pending. Outside an active Host
+turn, inspection requires the original request digest. Explicit Send persists
+its exact request digest and selected identity before any new effect-bearing
+wire write. Explicit Inspect sends that same digest in the existing
+`request_sha256` field; it never submits or retries the saved turn. Unsigned values
+above Java `long` fail closed.
+
+The caller supplies its already-existing app-private files directory. The
+store uses three fixed filenames, a nonblocking process file lock and revision
+compare-and-set. It rejects stale revisions, session/task replacement, cursor
+removal, regression or epoch substitution for the same turn. Selecting a new
+turn is a separate explicit user Send operation with empty cursor namespaces;
+persisting that identity never submits the turn. The consumer must persist
+successfully before forwarding a new Send and must not forward after any store
+error. Load returns empty only for an absent committed record, never for
+corruption, access failure or a leftover pending write.
+
+Acceptance must match the durable session/task/turn/profile and request digest,
+but cannot release the new-Send hold or replace the only recoverable identity
+of a running turn. Recovered turns require explicit cursor-zero inspection.
+Only a full same-scope durable page containing matching acceptance and a unique final
+`turn.end` carrying the same request digest and a known selected Host terminal
+status (`completed`, `cancelled`, `provider_failed`, `provider_panicked`,
+`host_failed`), with exact nonnegative signed cursor counts and no more pages,
+releases the local readback hold. Missing/unknown status,
+`unknown_after_disconnect` and `unknown_after_journal_failure` preserve the
+original identity and Send hold. Inner acceptance must have exact `accepted`
+status and occur once; duplicate terminal or events after it are rejected.
+The broker request ID is bound immediately
+before the actual Inspect wire write; the actual outer inspect result requires
+`request_sha256` and permits an absent `turn_request_sha256` alias (if present it
+must agree). Inner turn records require their actual semantic digest. Stale or unsolicited replies cannot
+release it; its two existing broker aliases must agree. This is readback of records, not evidence that every external effect
+succeeded. Missing/incomplete/paginated/invalid evidence keeps Send held. A
+storage failure has a separate fence that readback does not clear. There is no
+automatic reconnect on durable restoration, dispatch, cursor reset or replay.
+The parser rejects duplicate keys, scope/digest drift, wrong types, overflowing
+cursors, depth over 32, over 65,536 JSON values and wire-size overflow. Broker/frame correlation aliases, Host direction, stable turn-stream scopes,
+unique nonempty event IDs and increasing stored Host sequences are checked;
+wire request hashes stay separate from semantic turn digests. A short per-Activity publication lock serializes final receipt rechecking and
+state/pending/hold changes with new-Send identity publication; no filesystem or
+socket operation runs under it. Old parsed replies cannot clear a newer turn
+hold. Cancel/Inspect also require ready identity and revalidate captured targets
+against disk on the worker; queued target drift is rejected. Client
+readers also recheck their connection generation after a blocking read.
+
+Records are at most 512 bytes, use a strict version-2 binary codec in the fixed v1 filename namespace
+with no unknown fields and a SHA-256 corruption checksum. The checksum is not
+authentication against a malicious same-UID writer. New files have mode 0600;
+final-component symlinks and non-regular committed/lock files are rejected.
+All cooperating Store instances share a nonreentrant per-canonical-directory
+process guard acquired before opening any lock-file descriptor. A failed or
+recursive local contender opens no descriptor, so closing it cannot release
+the active writer's POSIX process lock. The registry contains at most 16 active
+partitions and 16 concurrent references per partition; capacity rejects before
+file I/O. The global registry monitor covers metadata only. The local guard is
+released only after the FileLock and channel are closed. Other same-UID code
+must not independently open/close or hardlink the owned lock inode; arbitrary
+same-UID interference is outside this cooperative cache's security boundary.
+Commit writes a new pending file, syncs it, atomically renames it and syncs the
+directory. No non-atomic fallback or automatic pending-file repair is allowed.
+A pending residue fences load/write and is preserved. Any atomic-rename attempt
+that throws is conservatively commit-unknown, including a failure before the
+caller receives success; post-rename or close/sync ambiguity remains explicit;
+re-reading a snapshot does not prove any external effect did or did not happen. Producer epoch changes require separate explicit
+readback/reconciliation, not an automatic cursor reset or blind replay. No
+cross-schema or prior-format migration is implemented; unknown versions are
+preserved and rejected, and downgrade is safe only without admitting new
+effects until compatible identity/evidence reconciliation is complete.
+
+Operations use at most two simultaneously open descriptors and at most two
+512-byte state files plus an empty lock file. Codec memory is bounded by the
+record and three entries. There is no background thread, network operation,
+append-only history or model execution. These source ceilings do not assert
+phone fsync latency, storage durability under power loss or a measured SLO.
+Host reproduction is `python3 -m unittest
+tools.tests.test_owner_open_client_state_store -v`: it executes the production
+Java classes, real files, cross-process reopen/locking, same-JVM and recursive
+rejection followed by an external independent JVM POSIX-lock probe (third actor,
+two Java OS processes), and injected pre/post atomic-rename I/O failure cuts.
+`tools.tests.test_owner_open_android_durable_identity` also executes actual
+Activity methods with real files and two independent JVM launches: no automatic
+connect/start after restore, admission cannot replace a running identity,
+explicit request-correlated terminal readback followed only by a new explicit
+Send, and corruption/pending/schema/commit-unknown recreation that cannot start.
+These Android/socket fixtures are host mechanism tests. Actual platform app
+compilation/package integration, same-boot main/cover recreation, Android
+process exit, power-loss fsync behavior, paginated Inspect and one-effect phone
+receipts remain open. `automatic_redispatch=false` remains mandatory.
+
 ## 7. Ordering, concurrency and backpressure
 
 - Ordering key: `boot_id`
