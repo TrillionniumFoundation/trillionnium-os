@@ -40,6 +40,7 @@ PRODUCT_PACKAGES += \
     trillionnium-owner-open-emergency-stop \
     trillionnium-owner-open-ingress \
     trillionnium-owner-open-init-rc \
+    trillionnium-sun-btfm-modprobe-init-rc \
     trillionnium-owner-open-profile-config \
     TrillionniumOwnerOpenShell
 
