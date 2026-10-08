@@ -87,6 +87,63 @@ source navigation alone does not prove wire compatibility.
 
 Only this module may perform authoritative writes for its state families. Read models may be rebuilt from retained authoritative records but cannot become an alternate writer. Every writer carries a module or service epoch; stale epochs fail closed.
 
+### Android client identity read model, schema v1
+
+`OwnerOpenClientState`, `OwnerOpenClientStateCodec` and
+`OwnerOpenClientStateStore` under the owned `client/src` path provide a local,
+non-authoritative read model with schema
+`org.trillionnium.owneropen.client-session.v1`. They are source helpers awaiting
+Activity/Client consumer integration; their presence does not qualify runtime
+restoration, Android storage behavior or phone task continuity. The existing
+Activity and wire Client are unchanged by this helper implementation.
+
+The bounded record contains only canonical locally generated `session-UUID`,
+`task-UUID`, optional `turn-UUID`, revision and up to three cursor entries. No
+prompt, transcript, socket, credential, model authentication or effect outcome
+is stored. Cursor domains are exactly `transport_event`, `job_runtime_event`
+and `job_journal_record`, matching the Host; each cursor carries a SHA-256 digest
+of a verified non-secret producer instance/epoch and a signed nonnegative
+inclusive cursor. A cursor is the next explicit read position supplied by
+validated evidence, not an interchangeable journal offset, transport sequence
+or proof of effect completion. Unsigned values above Java `long` fail closed.
+
+The caller supplies its already-existing app-private files directory. The
+store uses three fixed filenames, a nonblocking process file lock and revision
+compare-and-set. It rejects stale revisions, session/task replacement, cursor
+removal, regression or epoch substitution for the same turn. Selecting a new
+turn is a separate explicit user Send operation with empty cursor namespaces;
+persisting that identity never submits the turn. The consumer must persist
+successfully before forwarding a new Send and must not forward after any store
+error. Load returns empty only for an absent committed record, never for
+corruption, access failure or a leftover pending write.
+
+Records are at most 512 bytes, use a strict versioned binary codec with no
+unknown fields and a SHA-256 corruption checksum. The checksum is not
+authentication against a malicious same-UID writer. New files have mode 0600;
+final-component symlinks and non-regular committed/lock files are rejected.
+Commit writes a new pending file, syncs it, atomically renames it and syncs the
+directory. No non-atomic fallback or automatic pending-file repair is allowed.
+A pending residue fences load/write and is preserved. Post-rename or close/sync
+ambiguity remains explicit; re-reading a snapshot does not prove any external
+effect did or did not happen. Producer epoch changes require separate explicit
+readback/reconciliation, not an automatic cursor reset or blind replay. No
+cross-schema or prior-format migration is implemented; unknown versions are
+preserved and rejected, and downgrade is safe only without admitting new
+effects until compatible identity/evidence reconciliation is complete.
+
+Operations use at most two simultaneously open descriptors and at most two
+512-byte state files plus an empty lock file. Codec memory is bounded by the
+record and three entries. There is no background thread, network operation,
+append-only history or model execution. These source ceilings do not assert
+phone fsync latency, storage durability under power loss or a measured SLO.
+Host reproduction is `python3 -m unittest
+tools.tests.test_owner_open_client_state_store -v`: it executes the production
+Java classes, real files, cross-process reopen/locking and injected pre/post
+atomic-rename I/O failure cuts. Android compilation, consumer integration,
+same-boot main/cover recreation, process exit, paginated explicit Inspect and
+one-effect receipt evidence remain open. Restore has no dispatch API;
+`automatic_redispatch=false` remains mandatory at the later consumer boundary.
+
 ## 7. Ordering, concurrency and backpressure
 
 - Ordering key: `boot_id`

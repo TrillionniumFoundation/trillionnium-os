@@ -86,6 +86,21 @@
           "size": 10274
         },
         {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClientState.java",
+          "sha256": "3873d9dc9a01437f7183dc9a796f98b47655360d8b5a1f03e78fb19371db2a4b",
+          "size": 7140
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClientStateCodec.java",
+          "sha256": "2275c49057adfd2d83d89ab25fa2eb0e51c3d3661f3ea87ebc40d5ec27ebda16",
+          "size": 7083
+        },
+        {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClientStateStore.java",
+          "sha256": "a6e4cdf3676c6c04ed02e8aeff0233d31d8284368d584f558cd59748374506fa",
+          "size": 9760
+        },
+        {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
           "sha256": "6d5fd3e56c69a4b0e73b412024d084276627e79e014802ef65d67ddd5343bee4",
           "size": 11794
