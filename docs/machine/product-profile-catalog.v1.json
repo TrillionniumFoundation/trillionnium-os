@@ -162,5 +162,26 @@
         "authorized device evidence"
       ]
     }
+  ],
+  "device_variants": [
+    {
+      "id": "leap-codex-host-relay-v1",
+      "base_profile": "owner-open-core",
+      "status": "SOURCE_DOGFOOD_CANDIDATE",
+      "default": false,
+      "product": "trillionnium_leap-cp2a-userdebug",
+      "selection_variable": "TRILLINNIUM_LEAP_OWNER_OPEN_PROFILE=codex-host-relay-v1",
+      "runtime_enable_variable": "TRILLINNIUM_LEAP_OWNER_OPEN_RUNTIME_ENABLED=true",
+      "runtime_enabled_by_default": false,
+      "runtime_profile": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-codex-host-relay-v1.json",
+      "product_make": "android-integration/working-tree/vendor/trillionnium/owner-open/product-codex-host-relay-v1.mk",
+      "supervisor_config": "packaging/owner-open-rootfs/rootlinux-supervisor-codex-host-relay-v1.json",
+      "provider_transport": "tools/owner-open/provider_host_relay.py",
+      "filesystem": "erofs",
+      "host_codex_credentials_on_phone": false,
+      "old_phone_codex_v3_profile_selected": false,
+      "typed_android_extensions_active": false,
+      "claim_ceiling": "SOURCE_DOGFOOD_CANDIDATE_REQUIRES_EXACT_BUILD_AND_DEVICE_RECEIPTS"
+    }
   ]
 }

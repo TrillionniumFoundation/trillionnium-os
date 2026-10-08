@@ -4,15 +4,15 @@ package {
 
 python_binary_host {
     name: "trillionnium-owner-open-materialized-payload-verifier",
-    main: "tools/verify_owner_open_materialized_payload.py",
-    srcs: ["tools/verify_owner_open_materialized_payload.py"],
+    main: "tools/verify_owner_open_materialized_erofs_payload.py",
+    srcs: ["tools/verify_owner_open_materialized_erofs_payload.py"],
 }
 
 genrule {
     name: "trillionnium-owner-open-rootfs-image-verified",
     srcs: ["payload/materialized/**/*"],
     tools: ["trillionnium-owner-open-materialized-payload-verifier"],
-    out: ["owner-open-rootfs.squashfs"],
+    out: ["owner-open-rootfs.erofs"],
     cmd: "$(location trillionnium-owner-open-materialized-payload-verifier) --kind image --output $(out) $(in)",
 }
 
@@ -28,14 +28,14 @@ genrule {
     name: "trillionnium-owner-open-rootfs-digest-verified",
     srcs: ["payload/materialized/**/*"],
     tools: ["trillionnium-owner-open-materialized-payload-verifier"],
-    out: ["owner-open-rootfs.squashfs.sha256"],
+    out: ["owner-open-rootfs.erofs.sha256"],
     cmd: "$(location trillionnium-owner-open-materialized-payload-verifier) --kind digest --output $(out) $(in)",
 }
 
 prebuilt_etc {
     name: "trillionnium-owner-open-rootfs-image",
     src: ":trillionnium-owner-open-rootfs-image-verified",
-    filename: "owner-open-rootfs.squashfs",
+    filename: "owner-open-rootfs.erofs",
     sub_dir: "trillionnium/rootlinux",
     system_ext_specific: true,
 }
@@ -51,7 +51,7 @@ prebuilt_etc {
 prebuilt_etc {
     name: "trillionnium-owner-open-rootfs-digest",
     src: ":trillionnium-owner-open-rootfs-digest-verified",
-    filename: "owner-open-rootfs.squashfs.sha256",
+    filename: "owner-open-rootfs.erofs.sha256",
     sub_dir: "trillionnium/rootlinux",
     system_ext_specific: true,
 }
@@ -82,7 +82,9 @@ cc_binary {
 cc_binary {
     name: "trillionnium-owner-open-ingress",
     srcs: ["native/owner_open_ingress_proxy.cpp"],
-    shared_libs: ["libjsoncpp"],
+    // std::thread construction failures must be caught instead of aborting.
+    cppflags: ["-fexceptions"],
+    shared_libs: ["libjsoncpp", "libselinux"],
     cpp_std: "c++20",
     cflags: ["-Wall", "-Wextra", "-Werror"],
     system_ext_specific: true,
@@ -98,8 +100,8 @@ prebuilt_etc {
 
 prebuilt_etc {
     name: "trillionnium-owner-open-profile-config",
-    src: "config/profile-v3.json",
-    filename: "profile-v3.json",
+    src: "config/profile-codex-host-relay-v1.json",
+    filename: "profile-codex-host-relay-v1.json",
     sub_dir: "trillionnium/owner-open",
     system_ext_specific: true,
 }

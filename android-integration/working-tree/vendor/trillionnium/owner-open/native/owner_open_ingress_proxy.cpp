@@ -22,12 +22,13 @@
 #include <unistd.h>
 
 #include <json/json.h>
+#include <selinux/selinux.h>
+#include "owner_open_peer_identity.h"
 
 namespace {
 constexpr std::string_view kAbstractName = "trillionnium_owner_open";
 constexpr const char* kUpstream = "/data/trillionnium/owner-open/state/broker/owner-open.sock";
 constexpr const char* kToken = "/data/trillionnium/owner-open/state/broker/owner-open.token";
-constexpr std::string_view kAllowedPeer = "u:r:trillionnium_owner_open_client:s0";
 constexpr std::string_view kWireSchema = "org.trillionnium.owner-open.connection-broker-wire.v1";
 constexpr std::string_view kBrokerId = "owner-open-device";
 constexpr int kMaximumConnections = 32;
@@ -86,21 +87,14 @@ bool ReadPeerCredentials(int fd, struct ucred* output) {
 }
 
 bool AllowedPeer(int fd, struct ucred* output) {
-#ifndef SO_PEERSEC
-  (void)fd;
-  (void)output;
-  errno = ENOTSUP;
-  return false;
-#else
-  std::array<char, 256> security {};
-  socklen_t length = security.size();
-  if (getsockopt(fd, SOL_SOCKET, SO_PEERSEC, security.data(), &length) != 0 ||
-      length == 0 || length > security.size() || security[length - 1] != '\0') {
-    return false;
-  }
-  const std::string_view value(security.data(), length - 1);
-  if (value != kAllowedPeer) return false;
-#endif
+  // getpeercon handles the kernel's non-NUL-terminated SO_PEERSEC shape.
+  // Compare the dedicated app identity, retaining kernel-validated MCS user
+  // categories instead of requiring the impossible literal app range s0.
+  char* security = nullptr;
+  if (getpeercon(fd, &security) != 0 || security == nullptr) return false;
+  const bool admitted = trillionnium::owner_open::AllowedPeerContext(security);
+  freecon(security);
+  if (!admitted) return false;
   struct ucred credentials {};
   if (!ReadPeerCredentials(fd, &credentials) || credentials.uid < 10000) {
     return false;

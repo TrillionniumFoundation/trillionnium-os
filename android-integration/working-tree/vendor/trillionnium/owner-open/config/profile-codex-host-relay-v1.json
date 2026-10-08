@@ -1,0 +1,60 @@
+{
+  "schema": "org.trillionnium.owner-open.android-runtime-profile.v4",
+  "revision": "2026-10-08-leap-api37-init-mount-handoff",
+  "profile_id": "leap-codex-host-relay-v1",
+  "enabled_property": "ro.trillionnium.owner_open.enabled",
+  "data_ready_property": "trillionnium.owner_open.data_ready",
+  "ready_property": "trillionnium.owner_open.ready",
+  "emergency_stop_property": "sys.trillionnium.owner_open.stop",
+  "rootlinux_payload": {
+    "image": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs",
+    "image_sha256": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+    "image_manifest": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+    "mount_root": "/data/trillionnium/owner-open/root",
+    "state_root": "/data/trillionnium/owner-open/state",
+    "read_only_lower": true
+  },
+  "android_services": {
+    "bootstrap": "trillionnium-owner-open-bootstrap",
+    "ingress": "trillionnium-owner-open-ingress",
+    "emergency_stop": "trillionnium-owner-open-emergency-stop"
+  },
+  "android_ingress": {
+    "abstract_socket": "trillionnium_owner_open",
+    "allowed_peer_domain": "u:r:trillionnium_owner_open_client:s0",
+    "upstream_socket": "/data/trillionnium/owner-open/state/broker/owner-open.sock",
+    "broker_token": "/data/trillionnium/owner-open/state/broker/owner-open.token",
+    "maximum_connections": 32,
+    "automatic_redispatch": false
+  },
+  "rootlinux_supervisor": {
+    "executable": "/usr/bin/python3",
+    "entry": "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+    "config": "/etc/trillionnium/owner-open/rootlinux-supervisor.json"
+  },
+  "claims": {
+    "source_modules_authored": true,
+    "soong_compiled": false,
+    "selinux_compiled": false,
+    "target_files_built": false,
+    "image_included": false,
+    "physical_device_observed": false,
+    "public_release": false
+  },
+  "claim_ceiling": "LEAP_API37_SOURCE_CANDIDATE_NOT_DEVICE_QUALIFIED",
+  "mount_handoff": {
+    "owner": "android_init",
+    "verified_property": "trillionnium.owner_open.verified",
+    "mount_ready_property": "trillionnium.owner_open.mount_ready",
+    "service_mount_namespace": "mnt",
+    "bootstrap_mount_operations": false
+  },
+  "provider": {
+    "role": "host_codex",
+    "phone_adapter": "/usr/libexec/trillionnium/provider-adapter",
+    "config": "/etc/trillionnium/owner-open/provider-host-relay-v1.json",
+    "long_lived_credentials_on_phone": false,
+    "automatic_reconnect": false,
+    "automatic_redispatch": false
+  }
+}
