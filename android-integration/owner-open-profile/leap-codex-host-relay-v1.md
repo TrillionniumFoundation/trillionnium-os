@@ -109,3 +109,40 @@ The r3 payload uses the absolute /usr/bin/python3 provider shebang. It consumes
 exact staged source hashes, with SOURCE_DATE_EPOCH=0 and normalized inode epoch0
 recorded explicitly in the image manifest. Earlier r2 artifact evidence is
 retained, but r2 cannot be used as this candidate's direct-exec payload.
+
+## Product integration contract
+
+The Razr device product explicitly inherits
+`vendor/trillionnium/owner-open/product-codex-host-relay-v1.mk` only when
+`TRILLINNIUM_LEAP_OWNER_OPEN_PROFILE=codex-host-relay-v1`. This remains a
+userdebug/eng development lane. Runtime selection is an independent explicit
+`TRILLINNIUM_LEAP_OWNER_OPEN_RUNTIME_ENABLED=true` value; merely packaging the
+modules does not enable or qualify the runtime.
+
+The Android owner client is `TrillionniumOwnerOpenShell`. Its minimal
+send/cancel/inspect/reconnect UI is an ingress client of the same provider turn.
+Package inclusion, activity launch and launcher/HOME selection are distinct
+observations. A compiled client does not establish a phone request/effect/raw
+readback/durable-receipt loop. Authority, Capability Lease, P01 and the former
+AI Shell are not required predecessors of this selected product. Typed System
+API and Accessibility remain in `sealed-typed-android-extensions` with
+`activation_allowed=false`; neither a retained source directory nor a successful
+legacy test activates them.
+
+The device repository owns the cross-repository integration manifest and
+restricted target artifact anchors. That manifest binds the owner source, the
+Razr device source, the exact AOSP platform SELinux base and patch, and each
+candidate generation separately. The official AOSP remote is never a target for
+the local device policy patch. Source patch/bundle custody belongs to the private
+device integration change. Proprietary firmware, signing keys, credentials and
+raw target/user logs stay outside the public source change.
+
+A deployed engineering userspace candidate, an unsigned host-built filesystem
+candidate and a future signed package are separate identities. Changing source
+or image bytes invalidates an earlier identity or runtime claim. No historical
+boot, source CI or static init-contract result qualifies a replacement image.
+Installed-byte measurement, a complete platform boot, registered audio, retained
+state across startup/recovery, and same-turn phone effects require separately
+reviewed exact-generation receipts. L4/L5 dogfood and L6 release remain open until
+those checks pass; `public_release=false` and `automatic_redispatch=false` remain
+in force.
