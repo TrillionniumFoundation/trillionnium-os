@@ -26,6 +26,7 @@
 #include <json/json.h>
 
 #ifdef __ANDROID__
+#include <android/log.h>
 #include <sys/system_properties.h>
 #endif
 
@@ -77,9 +78,36 @@ struct ImageManifest {
   std::vector<PayloadEntry> entries;
 };
 
-int Fail(std::string_view message) {
-  std::fprintf(stderr, "owner-open bootstrap HOLD: %.*s: %s\n",
-               static_cast<int>(message.size()), message.data(), std::strerror(errno));
+// Diagnostic ABI: stable stage numbers only; never log request/protocol bytes,
+// configured paths, tokens, or directory contents.
+enum class BootstrapFailure : unsigned {
+  ExpectedMode = 1,
+  RuntimeProfile = 2,
+  ImageManifest = 3,
+  DirectoryHandoff = 4,
+  EmergencyStop = 5,
+  DigestRead = 6,
+  DigestAgreement = 7,
+  ImageOpen = 8,
+  ImageHash = 9,
+  MountHandoff = 10,
+  SupervisorFork = 11,
+  CarrierReadiness = 12,
+  SupervisorReap = 13,
+  SupervisorChildSetup = 14,
+  SupervisorChildExec = 15,
+};
+
+int Fail(BootstrapFailure stage) {
+  const int saved_errno = errno;
+#ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_ERROR, "TrillionniumOwnerOpenBootstrap",
+                      "HOLD stage=%u errno=%d", static_cast<unsigned>(stage), saved_errno);
+#else
+  std::fprintf(stderr, "owner-open bootstrap HOLD: stage=%u errno=%d\n",
+               static_cast<unsigned>(stage), saved_errno);
+#endif
+  errno = saved_errno;
   return 70;
 }
 
@@ -922,33 +950,33 @@ int main(int argc, char** argv) {
   const bool run_mounted = argc == 2 && std::strcmp(argv[1], "--run-mounted") == 0;
   if (!verify_only && !run_mounted) {
     errno = EINVAL;
-    return Fail("expected --verify-image or --run-mounted");
+    return Fail(BootstrapFailure::ExpectedMode);
   }
   if (verify_only) SetProperty("trillionnium.owner_open.verified", "0");
   // init may restart this service after a crash while the old readiness
   // property is still set.  Clear it before any validation so a failed
   // bootstrap can never leave the ingress gate open on stale state.
   SetProperty("trillionnium.owner_open.ready", "0");
-  if (!ValidateRuntimeProfile()) return Fail("runtime profile is missing or inconsistent");
+  if (!ValidateRuntimeProfile()) return Fail(BootstrapFailure::RuntimeProfile);
   ImageManifest manifest;
-  if (!ReadImageManifest(&manifest)) return Fail("image manifest is missing or inconsistent");
+  if (!ReadImageManifest(&manifest)) return Fail(BootstrapFailure::ImageManifest);
   if (!VerifyDirectory("/data/trillionnium", 0700) ||
       !VerifyDirectory("/data/trillionnium/owner-open", 0700) ||
       !VerifyDirectory(kStateRoot, 0700) || !VerifyDirectory(kMountRoot, run_mounted ? 0755 : 0700)) {
-    return Fail("init private owner-open directory handoff is invalid");
+    return Fail(BootstrapFailure::DirectoryHandoff);
   }
   if (EmergencyStopPresent()) {
     errno = ECANCELED;
-    return Fail("emergency stop inhibits bootstrap");
+    return Fail(BootstrapFailure::EmergencyStop);
   }
   std::string expected_digest;
-  if (!ReadDigest(&expected_digest)) return Fail("cannot read canonical image digest");
+  if (!ReadDigest(&expected_digest)) return Fail(BootstrapFailure::DigestRead);
   if (expected_digest != manifest.image_digest) {
     errno = EBADMSG;
-    return Fail("image digest file disagrees with image manifest");
+    return Fail(BootstrapFailure::DigestAgreement);
   }
   const int image_fd = open(kImage, O_RDONLY | O_CLOEXEC | O_NOFOLLOW);
-  if (image_fd < 0) return Fail("cannot open rootfs image");
+  if (image_fd < 0) return Fail(BootstrapFailure::ImageOpen);
   std::string actual_digest;
   std::size_t image_bytes = 0;
   if (!HashImage(image_fd, &actual_digest, &image_bytes) || image_bytes == 0 ||
@@ -956,7 +984,7 @@ int main(int argc, char** argv) {
       actual_digest != manifest.image_digest) {
     close(image_fd);
     errno = EBADMSG;
-    return Fail("rootfs image digest mismatch");
+    return Fail(BootstrapFailure::ImageHash);
   }
   close(image_fd);
   if (verify_only) {
@@ -964,15 +992,18 @@ int main(int argc, char** argv) {
     return 0;
   }
   if (!ValidateInitMountedRoot() || !RequiredPayloadEntriesExist(manifest)) {
-    return Fail("init mount handoff or exact payload entries are incomplete");
+    return Fail(BootstrapFailure::MountHandoff);
   }
   unlink(kSupervisorPid);
   const pid_t child = fork();
   if (child < 0) {
-    return Fail("cannot fork Root Linux supervisor");
+    return Fail(BootstrapFailure::SupervisorFork);
   }
   if (child == 0) {
-    if (setsid() < 0 || chroot(kMountRoot) != 0 || chdir("/") != 0) _exit(126);
+    if (setsid() < 0 || chroot(kMountRoot) != 0 || chdir("/") != 0) {
+      Fail(BootstrapFailure::SupervisorChildSetup);
+      _exit(126);
+    }
     setenv("PYTHONHOME", "/usr", 1);
     setenv("PYTHONDONTWRITEBYTECODE", "1", 1);
     unsetenv("ANDROID_SERIAL");
@@ -981,6 +1012,7 @@ int main(int argc, char** argv) {
     setenv("ADB_SERVER_SOCKET", "tcp:127.0.0.1:15038", 1);
     execl(kPython, kPython, kSupervisor, "--execute", "--same-domain-proc-observation", "--config", kSupervisorConfig,
           static_cast<char*>(nullptr));
+    Fail(BootstrapFailure::SupervisorChildExec);
     _exit(127);
   }
   g_child_pid = child;
@@ -991,7 +1023,7 @@ int main(int argc, char** argv) {
     int stopped_status = 0;
     ReapPinnedChild(child, &stopped_status);
     unlink(kSupervisorPid);
-    return Fail("cannot publish Root Linux identity or observe carrier readiness");
+    return Fail(BootstrapFailure::CarrierReadiness);
   }
   SetProperty("trillionnium.owner_open.ready", "1");
   int status = 0;
@@ -1000,7 +1032,7 @@ int main(int argc, char** argv) {
     SetProperty("trillionnium.owner_open.ready", "0");
     unlink(kSupervisorPid);
     errno = saved;
-    return Fail("cannot reap Root Linux supervisor");
+    return Fail(BootstrapFailure::SupervisorReap);
   }
   SetProperty("trillionnium.owner_open.ready", "0");
   unlink(kSupervisorPid);

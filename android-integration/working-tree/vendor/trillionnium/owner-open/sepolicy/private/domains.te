@@ -86,3 +86,9 @@ get_prop(trillionnium_owner_open_emergency_stop, trillionnium_owner_open_prop)
 # Cross-domain or escaped descendants are not declared absent by this rule.
 allow trillionnium_owner_open_bootstrap self:dir r_dir_perms;
 allow trillionnium_owner_open_bootstrap self:file r_file_perms;
+
+# Engineering-only observation of immutable profile and lifecycle properties.
+# get_prop grants only getattr/open/read/map, never property_service set.
+userdebug_or_eng(`
+  get_prop(shell, trillionnium_owner_open_prop)
+')
