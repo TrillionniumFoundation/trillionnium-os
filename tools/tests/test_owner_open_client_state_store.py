@@ -64,7 +64,8 @@ public final class ClientStateStoreHarness {
  }
  static void same(OwnerOpenClientState expected,OwnerOpenClientState actual) {
   require(expected.sessionId.equals(actual.sessionId)&&expected.taskId.equals(actual.taskId)
-    && Objects.equals(expected.turnId,actual.turnId),"semantic identity changed");
+    && Objects.equals(expected.turnId,actual.turnId)
+    && Objects.equals(expected.turnRequestSha256,actual.turnRequestSha256),"semantic identity changed");
   require(expected.cursors.size()==actual.cursors.size(),"cursor count changed");
   for(CursorDomain domain:expected.cursors.keySet()) {
    Cursor a=expected.cursors.get(domain),b=actual.cursors.get(domain);
@@ -74,6 +75,7 @@ public final class ClientStateStoreHarness {
  static int countOffset(byte[] value) {
   int offset=20;offset+=1+Byte.toUnsignedInt(value[offset]);offset+=1+Byte.toUnsignedInt(value[offset]);
   int selected=Byte.toUnsignedInt(value[offset++]);if(selected==1)offset+=1+Byte.toUnsignedInt(value[offset]);
+  int bound=Byte.toUnsignedInt(value[offset++]);if(bound==1)offset+=1+Byte.toUnsignedInt(value[offset]);
   return offset;
  }
  static void roundtrip() throws Exception {
@@ -82,6 +84,18 @@ public final class ClientStateStoreHarness {
   require(Arrays.equals(value,OwnerOpenClientStateCodec.encode(restored)),"noncanonical encoding");
   same(OwnerOpenClientState.identity(SESSION,TASK,null),OwnerOpenClientStateCodec.decode(
     OwnerOpenClientStateCodec.encode(new Snapshot(1,OwnerOpenClientState.identity(SESSION,TASK,null)))).state);
+ }
+ static void boundDigest() throws Exception {
+  OwnerOpenClientState base=OwnerOpenClientState.identity(SESSION,TASK,null);
+  OwnerOpenClientState bound=base.selectBoundTurnForExplicitSend(TURN,EPOCH);
+  for(CursorDomain domain:CursorDomain.values())bound=bound.withObservedCursor(new Cursor(domain,EPOCH,Long.MAX_VALUE));
+  byte[] encoded=OwnerOpenClientStateCodec.encode(new Snapshot(1,bound));
+  require(encoded.length<=512,"digest plus all cursors exceeded record bound");
+  same(bound,OwnerOpenClientStateCodec.decode(encoded).state);
+  rejectIllegal(()->base.selectBoundTurnForExplicitSend(TURN,null));
+  rejectIllegal(()->new OwnerOpenClientState(SESSION,TASK,null,EPOCH,Collections.emptyMap()));
+  rejectIllegal(()->new OwnerOpenClientState(SESSION,TASK,TURN,"X".repeat(64),Collections.emptyMap()));
+  byte[] old=encoded.clone();old[11]=1;corrupt(()->OwnerOpenClientStateCodec.decode(rehash(old)));
  }
  static void codecNegative() throws Exception {
   byte[] good=encoded();
@@ -276,6 +290,7 @@ public final class ClientStateStoreHarness {
   String scenario=args[0];Path directory=args.length>1?Path.of(args[1]):null;
   switch(scenario) {
    case "roundtrip":roundtrip();break;
+   case "bound-digest":boundDigest();break;
    case "codec-negative":codecNegative();break;
    case "identity-negative":identityNegative();break;
    case "cursor-domains":cursorSemantics();break;
@@ -340,7 +355,7 @@ class ClientStateStoreBehaviorTest(unittest.TestCase):
         self.assertIn(scenario+' PASS', result.stdout)
 
     def test_codec_state_and_domains(self):
-        for scenario in ('roundtrip', 'codec-negative', 'identity-negative', 'cursor-domains'):
+        for scenario in ('roundtrip', 'bound-digest', 'codec-negative', 'identity-negative', 'cursor-domains'):
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as folder:
                 self.run_scenario(scenario, Path(folder))
 

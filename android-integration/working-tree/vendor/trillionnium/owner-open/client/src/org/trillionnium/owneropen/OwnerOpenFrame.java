@@ -63,6 +63,41 @@ public final class OwnerOpenFrame {
                 + "}}";
     }
 
+    /** Exact primary Host request_sha256 for the fields this Android client sends. */
+    public static String turnRequestSha256(String sessionId, String taskId, String turnId,
+            String userInput) {
+        // Validate through the same mechanical serializer used for the actual dispatch.
+        turnStart(sessionId, taskId, turnId, userInput);
+        // serde_json's current default map is sorted by key; absent optional semantics are null.
+        String canonical = "{\"config_generation\":null,\"context_ref\":null,"
+                + "\"profile_id\":\"owner-open\",\"protocol\":\"trillionnium.agent.turn.v1\","
+                + "\"protocol_version\":1,"
+                + "\"schema\":\"trillionnium.owner-open.turn-request-digest.v1\","
+                + "\"session_id\":" + quote(sessionId) + ",\"task_id\":" + quote(taskId)
+                + ",\"turn_id\":" + quote(turnId) + ",\"user_input\":" + quote(userInput) + "}";
+        return sha256Hex(canonical);
+    }
+
+    /** Existing deterministic turn scope, never a producer epoch or effect identity. */
+    public static String turnStreamId(String sessionId, String taskId, String turnId) {
+        requireId(sessionId, "sessionId"); requireId(taskId, "taskId"); requireId(turnId, "turnId");
+        return "r5-stream-" + sha256Hex("{\"profile_id\":\"owner-open\","
+                + "\"schema\":\"trillionnium.owner-open.turn-stream.v1\",\"session_id\":" + quote(sessionId)
+                + ",\"task_id\":" + quote(taskId) + ",\"turn_id\":" + quote(turnId) + "}");
+    }
+
+    private static String sha256Hex(String canonical) {
+        try {
+            byte[] digest = java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(canonical.getBytes(StandardCharsets.UTF_8));
+            StringBuilder result = new StringBuilder(64);
+            for (byte value : digest) result.append(String.format(java.util.Locale.ROOT, "%02x", value & 255));
+            return result.toString();
+        } catch (java.security.NoSuchAlgorithmException error) {
+            throw new AssertionError("required SHA-256 unavailable", error);
+        }
+    }
+
     public static String turnCancel(String sessionId, String turnId) {
         requireId(sessionId, "sessionId");
         requireId(turnId, "turnId");
@@ -74,9 +109,17 @@ public final class OwnerOpenFrame {
 
     public static String turnInspect(
             String sessionId, String taskId, String turnId, long inclusiveCursor, int limit) {
+        return turnInspect(sessionId, taskId, turnId, null, inclusiveCursor, limit);
+    }
+
+    public static String turnInspect(String sessionId, String taskId, String turnId,
+            String requestSha256, long inclusiveCursor, int limit) {
         requireId(sessionId, "sessionId");
         requireId(taskId, "taskId");
         requireId(turnId, "turnId");
+        if (requestSha256 != null && !requestSha256.matches("[0-9a-f]{64}")) {
+            throw new IllegalArgumentException("invalid turn request digest");
+        }
         if (inclusiveCursor < 0) {
             throw new IllegalArgumentException("inclusiveCursor must be non-negative");
         }
@@ -87,6 +130,7 @@ public final class OwnerOpenFrame {
                 + "\"session_id\":" + quote(sessionId) + ","
                 + "\"task_id\":" + quote(taskId) + ","
                 + "\"turn_id\":" + quote(turnId) + ","
+                + (requestSha256 == null ? "" : "\"request_sha256\":" + quote(requestSha256) + ",")
                 + "\"inclusive_cursor\":" + inclusiveCursor + ","
                 + "\"limit\":" + limit
                 + "}}";

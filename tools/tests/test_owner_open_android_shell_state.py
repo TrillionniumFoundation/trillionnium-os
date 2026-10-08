@@ -62,6 +62,55 @@ public class OwnerOpenClient {
  public void shutdown(){connected=false;events.add("shutdown");}
 }'''
 
+# Actual app-private file operations use a per-scenario temporary directory.
+STUBS['android/app/Activity.java'] = STUBS['android/app/Activity.java'].replace('public static final int MODE_PRIVATE=0;', 'public static final int MODE_PRIVATE=0; public static boolean blockIdentityDirectory; public static final java.util.concurrent.CountDownLatch identityEntered=new java.util.concurrent.CountDownLatch(1),identityRelease=new java.util.concurrent.CountDownLatch(1); public java.io.File getFilesDir(){if(blockIdentityDirectory){identityEntered.countDown();boolean ready=false;while(!ready){try{identityRelease.await();ready=true;}catch(InterruptedException ignored){}}}return new java.io.File(System.getProperty("owneropen.test.files"));}')
+STUBS['org/trillionnium/owneropen/OwnerOpenClient.java'] = STUBS['org/trillionnium/owneropen/OwnerOpenClient.java'].replace('public OwnerOpenClient(Listener l){}', 'private final Listener listener; public static boolean wrongAccepted,moreInspection; public static String terminalStatus="completed"; public static boolean deferInspectResponse; public static volatile String deferredInspection; public OwnerOpenClient(Listener l){listener=l;}')
+STUBS['org/trillionnium/owneropen/OwnerOpenClient.java'] = STUBS['org/trillionnium/owneropen/OwnerOpenClient.java'].replace('events.add("start:"+s+":"+t+":"+u);return "request-start";', r'''
+  java.nio.file.Path dir=java.nio.file.Path.of(System.getProperty("owneropen.test.files"));
+  OwnerOpenClientState actual=new OwnerOpenClientStateStore(dir).load().orElseThrow().state;
+  String digest=OwnerOpenFrame.turnRequestSha256(s,t,u,p);
+  if(!s.equals(actual.sessionId)||!t.equals(actual.taskId)||!u.equals(actual.turnId)||!digest.equals(actual.turnRequestSha256))throw new AssertionError("effect write preceded durable exact identity");
+  java.nio.file.Files.writeString(dir.resolve("fixture-host-accepted-"+u),digest);
+  events.add("start:"+s+":"+t+":"+u);
+  listener.onFrame(envelope("turn.accepted",s,t,u,"{\"status\":\"accepted\",\"turn_request_sha256\":"+OwnerOpenFrame.quote(wrongAccepted?"b".repeat(64):digest)+"}"));
+  return "request-start";
+''')
+STUBS['org/trillionnium/owneropen/OwnerOpenClient.java'] = STUBS['org/trillionnium/owneropen/OwnerOpenClient.java'].replace('public void shutdown(){', r'''
+ public static String event(String kind,String s,String t,String u,String payload) {
+  String stream=OwnerOpenFrame.turnStreamId(s,t,u);int sequence=kind.equals("turn.end")?1:0;
+  return "{\"direction\":\"host_to_client\",\"stream_id\":"+OwnerOpenFrame.quote(stream)+",\"turn_stream_id\":"+OwnerOpenFrame.quote(stream)+",\"event_id\":"+OwnerOpenFrame.quote("fixture-event-"+sequence)+",\"seq\":"+sequence+",\"host_seq\":"+sequence+",\"broker_request_id\":\"request-inspect\",\"broker_request_sha256\":"+OwnerOpenFrame.quote("c".repeat(64))+",\"broker_request_upstream_seq\":7,\"kind\":"+OwnerOpenFrame.quote(kind)+",\"profile_id\":\"owner-open\",\"session_id\":"+OwnerOpenFrame.quote(s)+",\"task_id\":"+OwnerOpenFrame.quote(t)+",\"turn_id\":"+OwnerOpenFrame.quote(u)+",\"payload\":"+payload+"}";
+ }
+ public static String envelope(String kind,String s,String t,String u,String payload) {
+  return "{\"schema\":\"org.trillionnium.owner-open.connection-broker-wire.v1\",\"kind\":\"result\",\"request_id\":\"request-inspect\",\"broker_request_id\":\"request-inspect\",\"automatic_redispatch\":false,\"broker_request_sha256\":"+OwnerOpenFrame.quote("c".repeat(64))+",\"broker_request_upstream_seq\":7,\"broker_request_kind\":"+OwnerOpenFrame.quote(kind.equals("turn.accepted")?"turn.start":"turn.inspect")+",\"frame\":"+event(kind,s,t,u,payload)+"}";
+ }
+ public String inspectTurn(String s,String t,String u,String digest,long c)throws IOException {
+  if(c!=0)throw new AssertionError("invented cursor namespace");
+  java.nio.file.Path marker=java.nio.file.Path.of(System.getProperty("owneropen.test.files")).resolve("fixture-host-accepted-"+u);
+  boolean found=java.nio.file.Files.exists(marker);
+  if(found&&!java.nio.file.Files.readString(marker).equals(digest))throw new AssertionError("Inspect changed original semantic request");
+  String accepted=event("turn.accepted",s,t,u,"{\"status\":\"accepted\",\"turn_request_sha256\":"+OwnerOpenFrame.quote(digest)+"}");
+  String terminal=event("turn.end",s,t,u,"{\"status\":"+OwnerOpenFrame.quote(terminalStatus)+",\"turn_request_sha256\":"+OwnerOpenFrame.quote(digest)+"}");
+  String payload="{\"status\":"+OwnerOpenFrame.quote(found?"found":"not_found")+",\"source\":\"durable_event_store\",\"request_sha256\":"+OwnerOpenFrame.quote(digest)+",\"turn_request_sha256\":"+OwnerOpenFrame.quote(digest)+",\"inclusive_cursor\":0,\"next_cursor\":"+(found?2:0)+",\"total_events\":"+(found?(moreInspection?3:2):0)+",\"complete\":"+found+",\"has_more\":"+moreInspection+",\"frames\":["+(found?accepted+","+terminal:"")+"],\"side_effects\":false,\"automatic_redispatch\":false}";
+  events.add("inspect:"+s+":"+t+":"+u);String response=envelope("turn.inspect.result",s,t,u,payload);if(deferInspectResponse)deferredInspection=response;else listener.onFrame(response);return "request-inspect";
+ }
+ public String inspectTurn(String s,String t,String u,String digest,long c,java.util.function.Consumer<String> beforeWrite)throws IOException {beforeWrite.accept("request-inspect");return inspectTurn(s,t,u,digest,c);}
+ public void shutdown(){
+''')
+STUBS['org/trillionnium/owneropen/StoreFaultFactory.java'] = r'''package org.trillionnium.owneropen;
+import java.nio.file.*; import java.io.IOException;
+public final class StoreFaultFactory {
+ public static OwnerOpenClientStateStore create(Path directory,String cut)throws IOException {
+  return new OwnerOpenClientStateStore(directory,new OwnerOpenClientStateStore.CommitHook(){
+   public void afterFileSync()throws IOException {if(cut.equals("pre-rename"))throw new IOException("injected before atomic move");}
+   public void atomicMove(Path pending,Path committed)throws IOException {
+    if(!cut.equals("move-before"))Files.move(pending,committed,StandardCopyOption.ATOMIC_MOVE,StandardCopyOption.REPLACE_EXISTING);
+    if(cut.startsWith("move-"))throw new IOException("injected unknown namespace outcome");
+   }
+   public void afterAtomicRename()throws IOException {if(cut.equals("post-rename"))throw new IOException("injected after atomic move");}
+  });
+ }
+}'''
+
 HARNESS = r'''
 import android.os.Bundle;
 import android.widget.EditText;
@@ -129,7 +178,11 @@ public final class ShellStateHarness {
    System.out.println(args[0]+" PASS");return;
   }
   OwnerOpenShellActivity a=new OwnerOpenShellActivity();
-  call(a,"onCreate",new Class<?>[]{Bundle.class},(Object)null);waitFor("connect");
+  call(a,"onCreate",new Class<?>[]{Bundle.class},(Object)null);
+  long identityUntil=System.nanoTime()+3_000_000_000L;while(!(Boolean)field(a,"identityReady")&&System.nanoTime()<identityUntil)Thread.sleep(5);
+  require((Boolean)field(a,"identityReady"),"actual identity worker did not finish");
+  require(OwnerOpenClient.events.isEmpty(),"identity initialization connected automatically");
+  call(a,"reconnect");waitFor("connect");
   String session=(String)field(a,"sessionId"),task=(String)field(a,"taskId");
   ((EditText)field(a,"prompt")).setText("one reversible effect");call(a,"sendPrompt");waitFor("start:");
   String turn=(String)field(a,"turnId");
@@ -156,6 +209,7 @@ public final class ShellStateHarness {
    if(args[0].startsWith("emergency-")) {
     if(args[0].equals("emergency-priority-fence")) {
      OwnerOpenClient.blockConnect=true;
+     call(restored,"inspectTurn");
      ((EditText)field(restored,"prompt")).setText("queued effect");call(restored,"sendPrompt");
      require(OwnerOpenClient.connectEntered.await(2,java.util.concurrent.TimeUnit.SECONDS),"normal connect did not block");
     }
@@ -208,7 +262,9 @@ public final class ShellStateHarness {
      java.lang.reflect.Field process=OwnerOpenShellActivity.class.getDeclaredField("processIntent");process.setAccessible(true);process.set(null,null);
      OwnerOpenShellActivity relaunched=new OwnerOpenShellActivity();
      try {
-      call(relaunched,"onCreate",new Class<?>[]{Bundle.class},(Object)null);waitFor("connect");
+      call(relaunched,"onCreate",new Class<?>[]{Bundle.class},(Object)null);Thread.sleep(100);
+      require(OwnerOpenClient.events.isEmpty(),"durable identity restoration automatically connected");
+      call(relaunched,"reconnect");waitFor("connect");
       require(field(relaunched,"emergencyOperationId")==null,"fixture hid old armed preference");
       require(OwnerOpenClient.events.stream().noneMatch(e->e.startsWith("stop:")||e.startsWith("start:")),"failed commit caused saved request replay");
      } finally {call(relaunched,"onDestroy");}
@@ -234,6 +290,7 @@ public final class ShellStateHarness {
     require(OwnerOpenClient.events.stream().noneMatch(e->e.startsWith("start:")),"inspect/cancel replays an effect");
    } else if(args[0].equals("explicit-new-turn")) {
     call(restored,"reconnect");waitFor("connect");
+    call(restored,"inspectTurn");waitFor("inspect:"+session+":"+task+":"+turn);
     require(OwnerOpenClient.events.stream().noneMatch(e->e.startsWith("start:")),"reconnect replays saved turn");
     ((EditText)field(restored,"prompt")).setText("new user message");call(restored,"sendPrompt");waitFor("start:");
     require(!turn.equals(field(restored,"turnId")),"new Send reused old semantic turn");
@@ -254,11 +311,12 @@ class OwnerOpenAndroidShellStateTest(unittest.TestCase):
     p=folder/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(content)
    (folder/'ShellStateHarness.java').write_text(HARNESS)
    classes=folder/'classes';classes.mkdir()
-   run=subprocess.run([javac,'-d',str(classes),str(ACTIVITY),str(ACTIVITY.with_name("OwnerOpenFrame.java")),*map(str,folder.rglob('*.java'))],capture_output=True,text=True,timeout=30)
+   run=subprocess.run([javac,'-d',str(classes),str(ACTIVITY),*[str(ACTIVITY.with_name(name+'.java')) for name in ('OwnerOpenFrame','OwnerOpenTurnEvidence','OwnerOpenClientState','OwnerOpenClientStateCodec','OwnerOpenClientStateStore')],*map(str,folder.rglob('*.java'))],capture_output=True,text=True,timeout=30)
    self.assertEqual(run.returncode,0,run.stderr)
    for scenario in ['inspect-cancel','explicit-new-turn','bounded-history','emergency-intent-restart','emergency-priority-fence','emergency-confirm-destroy','emergency-slow-persistence','emergency-persistence-failure-restart','emergency-manual-retry','emergency-control-priority','unavailable-missing','unavailable-read-failure','unavailable-post-race','unavailable-init-rotation']:
     with self.subTest(scenario=scenario):
-     result=subprocess.run([java,'-cp',str(classes),'ShellStateHarness',scenario],capture_output=True,text=True,timeout=10)
+     files=folder/('files-'+scenario);files.mkdir()
+     result=subprocess.run([java,'-Downeropen.test.files='+str(files),'-cp',str(classes),'ShellStateHarness',scenario],capture_output=True,text=True,timeout=10)
      self.assertEqual(result.returncode,0,result.stderr)
      self.assertIn(scenario+' PASS',result.stdout)
      print(result.stdout,end="",flush=True)

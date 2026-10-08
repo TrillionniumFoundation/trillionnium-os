@@ -158,7 +158,27 @@ public final class OwnerOpenClient implements AutoCloseable {
         return send(frame, List.of("turn.inspect.result", "host.error"));
     }
 
+    public String inspectTurn(String sessionId, String taskId, String turnId,
+            String requestSha256, long cursor) throws IOException {
+        if (requestSha256 == null) throw new IOException("restored Inspect requires original request digest");
+        String frame = OwnerOpenFrame.turnInspect(sessionId, taskId, turnId, requestSha256, cursor, 256);
+        return send(frame, List.of("turn.inspect.result", "host.error"));
+    }
+
+    /** Correlate the explicit read before its actual wire write, including fast replies. */
+    public String inspectTurn(String sessionId, String taskId, String turnId,
+            String requestSha256, long cursor, java.util.function.Consumer<String> beforeWrite) throws IOException {
+        if (requestSha256 == null || beforeWrite == null) throw new IOException("Inspect binding required");
+        String frame = OwnerOpenFrame.turnInspect(sessionId, taskId, turnId, requestSha256, cursor, 256);
+        return send(frame, List.of("turn.inspect.result", "host.error"), beforeWrite);
+    }
+
     private String send(String frame, List<String> expectedKinds) throws IOException {
+        return send(frame, expectedKinds, ignored -> {});
+    }
+
+    private String send(String frame, List<String> expectedKinds,
+            java.util.function.Consumer<String> beforeWrite) throws IOException {
         String requestId = clientInstance + ":" + requestSequence.getAndIncrement();
         synchronized (lock) {
             if (locallyInhibited.get()) throw new IOException("local emergency inhibit; no dispatch");
@@ -170,6 +190,7 @@ public final class OwnerOpenClient implements AutoCloseable {
                         frame, nextClientFrameSequence);
                 String request = OwnerOpenFrame.brokerRequest(
                         requestId, clientFrame, expectedKinds, REQUEST_TIMEOUT_MILLISECONDS);
+                beforeWrite.accept(requestId);
                 OwnerOpenFrame.writeLine(output, request);
                 nextClientFrameSequence++;
             } catch (IOException error) {
@@ -184,7 +205,9 @@ public final class OwnerOpenClient implements AutoCloseable {
         String reason = "owner-open ingress closed";
         try {
             while (isCurrent(generation, ownedSocket)) {
-                listener.onFrame(OwnerOpenFrame.readLine(ownedInput));
+                String frame = OwnerOpenFrame.readLine(ownedInput);
+                if (!isCurrent(generation, ownedSocket)) break;
+                listener.onFrame(frame);
             }
         } catch (IOException | RuntimeException error) {
             reason = error.toString();

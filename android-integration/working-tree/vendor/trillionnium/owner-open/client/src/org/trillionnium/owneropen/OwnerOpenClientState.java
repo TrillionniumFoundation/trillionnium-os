@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 /** Non-secret client read model. This class cannot connect, submit or replay an effect. */
 public final class OwnerOpenClientState {
-    public static final String SCHEMA = "org.trillionnium.owneropen.client-session.v1";
+    public static final String SCHEMA = "org.trillionnium.owneropen.client-session.v2";
     private static final Pattern UUID = Pattern.compile(
             "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
     private static final Pattern SHA256 = Pattern.compile("[0-9a-f]{64}");
@@ -49,13 +49,25 @@ public final class OwnerOpenClientState {
     public final String sessionId;
     public final String taskId;
     public final String turnId;
+    // Noncredential binding to existing Host request semantics, never a producer epoch/outcome.
+    public final String turnRequestSha256;
     public final Map<CursorDomain, Cursor> cursors;
 
     public OwnerOpenClientState(String sessionId, String taskId, String turnId,
             Map<CursorDomain, Cursor> cursors) {
+        this(sessionId, taskId, turnId, null, cursors);
+    }
+
+    public OwnerOpenClientState(String sessionId, String taskId, String turnId,
+            String turnRequestSha256, Map<CursorDomain, Cursor> cursors) {
         this.sessionId = requireIdentity(sessionId, "session-");
         this.taskId = requireIdentity(taskId, "task-");
         this.turnId = turnId == null ? null : requireIdentity(turnId, "turn-");
+        if (turnRequestSha256 != null && (turnId == null || turnRequestSha256.length() != 64
+                || !SHA256.matcher(turnRequestSha256).matches())) {
+            throw new IllegalArgumentException("invalid turn request digest");
+        }
+        this.turnRequestSha256 = turnRequestSha256;
         Objects.requireNonNull(cursors, "cursors");
         if (cursors.size() > CursorDomain.values().length || (turnId == null && !cursors.isEmpty())) {
             throw new IllegalArgumentException("cursors require one selected turn");
@@ -87,6 +99,14 @@ public final class OwnerOpenClientState {
         return identity(sessionId, taskId, newTurnId);
     }
 
+    /** Bind the exact current Android request before dispatch; no prompt/outcome is retained. */
+    public OwnerOpenClientState selectBoundTurnForExplicitSend(String newTurnId, String digest) {
+        OwnerOpenClientState selected = selectTurnForExplicitSend(newTurnId);
+        if (digest == null) throw new IllegalArgumentException("Send needs exact request digest");
+        return new OwnerOpenClientState(selected.sessionId, selected.taskId, selected.turnId,
+                digest, Collections.emptyMap());
+    }
+
     /** The caller advances only after validating and consuming the corresponding read evidence. */
     public OwnerOpenClientState withObservedCursor(Cursor observed) {
         Objects.requireNonNull(observed, "observed cursor");
@@ -101,7 +121,7 @@ public final class OwnerOpenClientState {
         EnumMap<CursorDomain, Cursor> next = new EnumMap<>(CursorDomain.class);
         next.putAll(cursors);
         next.put(observed.domain, observed);
-        return new OwnerOpenClientState(sessionId, taskId, turnId, next);
+        return new OwnerOpenClientState(sessionId, taskId, turnId, turnRequestSha256, next);
     }
 
     /** Pure selection for an explicit read request. It never starts transport or an effect. */
@@ -131,6 +151,9 @@ public final class OwnerOpenClientState {
                 throw new IllegalArgumentException("new selected turn must have empty cursors");
             }
             return;
+        }
+        if (!Objects.equals(previous.turnRequestSha256, next.turnRequestSha256)) {
+            throw new IllegalArgumentException("same-turn request digest replacement rejected");
         }
         for (Cursor previousCursor : previous.cursors.values()) {
             Cursor nextCursor = next.cursors.get(previousCursor.domain);

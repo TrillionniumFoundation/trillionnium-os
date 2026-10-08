@@ -11,11 +11,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.EnumMap;
 
-/** Strict bounded binary schema v1; checksum detects corruption, not malicious same-UID writers. */
+/** Strict bounded binary schema v2; checksum detects corruption, not malicious same-UID writers. */
 public final class OwnerOpenClientStateCodec {
     public static final int MAX_RECORD_BYTES = 512;
     private static final byte[] MAGIC = {'O', 'O', 'C', 'L', 'S', 'T', '0', '1'};
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
     private static final int DIGEST_BYTES = 32;
 
     public static final class Snapshot {
@@ -52,6 +52,10 @@ public final class OwnerOpenClientStateCodec {
         output.writeByte(snapshot.state.turnId == null ? 0 : 1);
         if (snapshot.state.turnId != null) {
             writeAscii(output, snapshot.state.turnId);
+        }
+        output.writeByte(snapshot.state.turnRequestSha256 == null ? 0 : 1);
+        if (snapshot.state.turnRequestSha256 != null) {
+            writeAscii(output, snapshot.state.turnRequestSha256);
         }
         output.writeByte(snapshot.state.cursors.size());
         for (OwnerOpenClientState.CursorDomain domain : OwnerOpenClientState.CursorDomain.values()) {
@@ -98,6 +102,9 @@ public final class OwnerOpenClientStateCodec {
                 throw new CorruptStateException("invalid turn presence flag");
             }
             String turn = selected == 1 ? readAscii(input) : null;
+            int bound = input.readUnsignedByte();
+            if (bound > 1) throw new CorruptStateException("invalid request digest presence flag");
+            String requestDigest = bound == 1 ? readAscii(input) : null;
             int count = input.readUnsignedByte();
             OwnerOpenClientState.CursorDomain[] domains = OwnerOpenClientState.CursorDomain.values();
             if (count > domains.length) {
@@ -119,7 +126,7 @@ public final class OwnerOpenClientStateCodec {
             if (input.available() != 0) {
                 throw new CorruptStateException("unknown/trailing state fields");
             }
-            return new Snapshot(revision, new OwnerOpenClientState(session, task, turn, cursors));
+            return new Snapshot(revision, new OwnerOpenClientState(session, task, turn, requestDigest, cursors));
         } catch (IllegalArgumentException error) {
             throw new CorruptStateException("invalid state field");
         } catch (java.io.EOFException error) {
