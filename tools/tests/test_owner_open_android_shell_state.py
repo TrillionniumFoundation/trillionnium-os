@@ -125,6 +125,24 @@ public final class ShellStateHarness {
  static void call(Object a,String n,Class<?>[] types,Object... args)throws Exception{Method m=a.getClass().getDeclaredMethod(n,types);m.setAccessible(true);m.invoke(a,args);}
  static void call(Object a,String n)throws Exception{call(a,n,new Class<?>[0]);}
  static void waitFor(String prefix)throws Exception{long end=System.nanoTime()+3000000000L;while(System.nanoTime()<end){synchronized(OwnerOpenClient.events){for(String e:OwnerOpenClient.events)if(e.startsWith(prefix))return;}Thread.sleep(5);}throw new AssertionError("missing "+prefix+": "+OwnerOpenClient.events);}
+ static void waitForTerminalReadback(Object activity)throws Exception {
+  long end=System.nanoTime()+3000000000L;
+  while(System.nanoTime()<end) {
+   require(field(activity,"evidenceFailure")==null,"inspection evidence rejected: "+field(activity,"evidenceFailure"));
+   if(!(Boolean)field(activity,"readbackRequired"))return;
+   Thread.sleep(5);
+  }
+  throw new AssertionError("terminal readback still held after request write; evidenceFailure="+field(activity,"evidenceFailure")+", readbackRequired="+field(activity,"readbackRequired")+", events="+OwnerOpenClient.events);
+ }
+ static void waitForIdentityReady(Object activity)throws Exception {
+  long end=System.nanoTime()+3000000000L;
+  while(System.nanoTime()<end) {
+   require(field(activity,"storageFailure")==null,"identity storage rejected: "+field(activity,"storageFailure"));
+   if((Boolean)field(activity,"identityReady"))return;
+   Thread.sleep(5);
+  }
+  throw new AssertionError("identity worker not ready; storageFailure="+field(activity,"storageFailure")+", events="+OwnerOpenClient.events);
+ }
  public static void main(String[] args)throws Exception {
   if(args[0].startsWith("unavailable-")) {
    android.content.SharedPreferences.missing=args[0].equals("unavailable-missing")||args[0].equals("unavailable-post-race")||args[0].equals("unavailable-init-rotation");
@@ -155,6 +173,7 @@ public final class ShellStateHarness {
       call(folded,"confirmInitializeControl");
       require(field(folded,"emergencyOperationId")==null,"explicit refresh of committed initialization failed");
       require(OwnerOpenClient.events.stream().noneMatch(e->e.equals("connect")||e.startsWith("start:")),"refresh auto-dispatched");
+      waitForIdentityReady(folded);
       call(folded,"reconnect");waitFor("connect");
      } finally {call(folded,"onDestroy");}
      System.out.println(args[0]+" PASS");return;
@@ -179,8 +198,7 @@ public final class ShellStateHarness {
   }
   OwnerOpenShellActivity a=new OwnerOpenShellActivity();
   call(a,"onCreate",new Class<?>[]{Bundle.class},(Object)null);
-  long identityUntil=System.nanoTime()+3_000_000_000L;while(!(Boolean)field(a,"identityReady")&&System.nanoTime()<identityUntil)Thread.sleep(5);
-  require((Boolean)field(a,"identityReady"),"actual identity worker did not finish");
+  waitForIdentityReady(a);
   require(OwnerOpenClient.events.isEmpty(),"identity initialization connected automatically");
   call(a,"reconnect");waitFor("connect");
   String session=(String)field(a,"sessionId"),task=(String)field(a,"taskId");
@@ -197,7 +215,7 @@ public final class ShellStateHarness {
   OwnerOpenClient.events.clear();
   OwnerOpenShellActivity restored=new OwnerOpenShellActivity();
   try {
-   call(restored,"onCreate",new Class<?>[]{Bundle.class},saved);Thread.sleep(100);
+   call(restored,"onCreate",new Class<?>[]{Bundle.class},saved);waitForIdentityReady(restored);
    require(OwnerOpenClient.events.isEmpty(),"recreation silently reconnected or re-dispatched: "+OwnerOpenClient.events);
    require(session.equals(field(restored,"sessionId"))&&task.equals(field(restored,"taskId"))&&turn.equals(field(restored,"turnId")),"semantic identity changed");
    require(((EditText)field(restored,"prompt")).getText().toString().equals("unsent draft survives folding"),"draft lost");
@@ -291,6 +309,8 @@ public final class ShellStateHarness {
    } else if(args[0].equals("explicit-new-turn")) {
     call(restored,"reconnect");waitFor("connect");
     call(restored,"inspectTurn");waitFor("inspect:"+session+":"+task+":"+turn);
+    waitForTerminalReadback(restored);
+    require(turn.equals(field(restored,"turnId")),"readback replaced the inspected durable turn");
     require(OwnerOpenClient.events.stream().noneMatch(e->e.startsWith("start:")),"reconnect replays saved turn");
     ((EditText)field(restored,"prompt")).setText("new user message");call(restored,"sendPrompt");waitFor("start:");
     require(!turn.equals(field(restored,"turnId")),"new Send reused old semantic turn");
