@@ -112,6 +112,10 @@ retained, but r2 cannot be used as this candidate's direct-exec payload.
 
 ## Product integration contract
 
+The canonical default source catalog remains `owner-open-core`. This Android
+variant is selected by its explicit product make fragment and runtime profile
+configuration, not by an unvalidated extra field in the default profile catalog.
+
 The Razr device product explicitly inherits
 `vendor/trillionnium/owner-open/product-codex-host-relay-v1.mk` only when
 `TRILLINNIUM_LEAP_OWNER_OPEN_PROFILE=codex-host-relay-v1`. This remains a
