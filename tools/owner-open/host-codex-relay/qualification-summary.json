@@ -15,7 +15,7 @@
   "packaged_host_source_sha256": "2ab1aad7c4a8d5d357525b05890c391b3a1049a7c337d1a78dfdb96e11ac6936",
   "paired_protocol_dependency_sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
   "packaged_change": "Explicit absolute --codex executable is required and validated before service startup; protocol/inference body unchanged",
-  "packaged_change_real_inference_retested": false,
+  "packaged_change_real_inference_retested": true,
   "native_qualification_receipt_sha256": "69599f24ec18c84d2b7e18ef5f47a48b02e8a6d0b6123a56e0923d1ff93129e7",
   "observations": [
     {
@@ -147,5 +147,27 @@
     ],
     "scope": "Syntax, explicit CLI admission and paired JSONL mechanics only; no new inference or device effect",
     "passed": true
+  },
+  "portable_cli_inference_smoke": {
+    "utc": "2026-10-08T03:57:23.122649+00:00",
+    "source_commit": "b2e86351a8ff151d0435b6589cc66d6a46b7e2c7",
+    "host_adapter_sha256": "2ab1aad7c4a8d5d357525b05890c391b3a1049a7c337d1a78dfdb96e11ac6936",
+    "paired_dependency_sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
+    "passed": true,
+    "actual_rust_host_core": true,
+    "scenario": "normal with retained-journal restart",
+    "marker_lines": 1,
+    "raw_receipt_sha256": "1ac3e48fadc96f06ec17494efabd451a2b34d59a2be54fd816883354f4f67374",
+    "phone_tested": false,
+    "new_cli_path_admission_inference_verified": true,
+    "summary_receipt_sha256": "9adb679a2e3c694cdf543edbdfed86a11707150b00f9a7634ab6e3246eff2ce4",
+    "provider_session_count": 1,
+    "model_rounds": 2,
+    "provider_terminal_sha256": "ffe131d3f0a30868c2540afedd42531360ee06e31281785f7ba61b53363b867f",
+    "binary_sha256": {
+      "trillionnium-owner-open-r5-host": "dd133f21386cfa369bc0a351aee8f449b2b0eedfc8ec1dea3af759195b4696f6",
+      "trillionnium-owner-open-r5-core": "bd89953ee7f86488148cde21e02bbf9857b5848a8788817894fb6a547884203f"
+    },
+    "scope": "One added actual normal+retained-journal restart smoke for CLI path admission; the four original scenarios retain their original adapter and receipt hashes"
   }
 }
