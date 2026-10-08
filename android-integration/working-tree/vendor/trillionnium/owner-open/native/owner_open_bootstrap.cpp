@@ -35,6 +35,8 @@ constexpr const char* kImage = "/system_ext/etc/trillionnium/rootlinux/owner-ope
 constexpr const char* kDigest = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256";
 constexpr const char* kManifest = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json";
 constexpr const char* kProfile = "/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json";
+constexpr const char* kBootstrapExecutable = "/system_ext/bin/trillionnium-owner-open-bootstrap";
+constexpr std::size_t kMaximumBootstrapBytes = 32ULL * 1024ULL * 1024ULL;
 constexpr const char* kMountRoot = "/data/trillionnium/owner-open/root";
 constexpr const char* kStateRoot = "/data/trillionnium/owner-open/state";
 constexpr const char* kStateTarget = "/var/lib/trillionnium/owner-open";
@@ -96,6 +98,7 @@ enum class BootstrapFailure : unsigned {
   SupervisorReap = 13,
   SupervisorChildSetup = 14,
   SupervisorChildExec = 15,
+  ComponentMeasurement = 16,
 };
 
 int Fail(BootstrapFailure stage) {
@@ -957,6 +960,83 @@ void SetProperty(const char* name, const char* value) {
 #endif
 }
 
+// Only digests of three fixed immutable components are published. They are
+// engineering observations, not hardware attestation or a replacement for
+// AVB. No state, command, credential or caller-selected path is exposed.
+bool SetMeasurementProperty(const char* name, const char* value) {
+#ifdef __ANDROID__
+  return __system_property_set(name, value) == 0;
+#else
+  (void)name;
+  (void)value;
+  return true;
+#endif
+}
+
+bool ClearComponentMeasurement() {
+  // Consumers must require valid=1 on the same boot. Clear it first, before
+  // modifying any digest, so partial publication cannot look complete.
+  return SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "0") &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.bootstrap_sha256", "") &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.manifest_sha256", "") &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.image_sha256", "");
+}
+
+bool HashExecutingBootstrap(const char* installed_path, std::string* executable_digest) {
+  // /proc/self/exe is a kernel reference to THIS executing file. Comparing
+  // its stable identity with the fixed init executable also detects a
+  // substituted pathname. Only this fixed proc reference follows a link.
+  const int self_fd = open("/proc/self/exe", O_RDONLY | O_CLOEXEC);
+  if (self_fd < 0) return false;
+  std::size_t executable_bytes = 0;
+  struct stat executable_metadata {}, installed_metadata {};
+  bool ok = HashRegularDescriptor(self_fd, kMaximumBootstrapBytes, executable_digest,
+                                  &executable_bytes, &executable_metadata) &&
+      executable_bytes > 0 && lstat(installed_path, &installed_metadata) == 0 &&
+      S_ISREG(installed_metadata.st_mode) &&
+      SameStableMetadata(executable_metadata, installed_metadata);
+  const int saved_errno = errno;
+  close(self_fd);
+  errno = saved_errno;
+  return ok;
+}
+
+bool PublishComponentMeasurement(const ImageManifest& manifest, const std::string& image_digest) {
+  std::string executable_digest;
+  if (!HashExecutingBootstrap(kBootstrapExecutable, &executable_digest)) return false;
+
+  std::array<unsigned char, EVP_MAX_MD_SIZE> raw {};
+  unsigned int raw_size = 0;
+  if (EVP_Digest(manifest.raw.data(), manifest.raw.size(), raw.data(), &raw_size,
+                 EVP_sha256(), nullptr) != 1 || raw_size != 32) {
+    errno = EIO;
+    return false;
+  }
+  static constexpr char kHex[] = "0123456789abcdef";
+  std::string manifest_digest(64, '0');
+  for (std::size_t index = 0; index < 32; ++index) {
+    manifest_digest[index * 2] = kHex[raw[index] >> 4];
+    manifest_digest[index * 2 + 1] = kHex[raw[index] & 0x0f];
+  }
+  if (!IsHexDigest(executable_digest) || !IsHexDigest(manifest_digest) ||
+      !IsHexDigest(image_digest)) {
+    errno = EBADMSG;
+    return false;
+  }
+  const bool ok = SetMeasurementProperty("trillionnium.owner_open.measurement.bootstrap_sha256",
+                               executable_digest.c_str()) &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.manifest_sha256",
+                               manifest_digest.c_str()) &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.image_sha256",
+                               image_digest.c_str()) &&
+      SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "1");
+  if (!ok) {
+    SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "0");
+    errno = EIO;
+  }
+  return ok;
+}
+
 void ForwardSignal(int signal_number) {
   const pid_t child = static_cast<pid_t>(g_child_pid);
   if (child > 0) kill(-child, signal_number);
@@ -1008,6 +1088,7 @@ int main(int argc, char** argv) {
   // property is still set.  Clear it before any validation so a failed
   // bootstrap can never leave the ingress gate open on stale state.
   SetProperty("trillionnium.owner_open.ready", "0");
+  if (!ClearComponentMeasurement()) return Fail(BootstrapFailure::ComponentMeasurement);
   if (!ValidateRuntimeProfile()) return Fail(BootstrapFailure::RuntimeProfile);
   ImageManifest manifest;
   if (!ReadImageManifest(&manifest)) return Fail(BootstrapFailure::ImageManifest);
@@ -1038,6 +1119,9 @@ int main(int argc, char** argv) {
     return Fail(BootstrapFailure::ImageHash);
   }
   close(image_fd);
+  if (!PublishComponentMeasurement(manifest, actual_digest)) {
+    return Fail(BootstrapFailure::ComponentMeasurement);
+  }
   if (verify_only) {
     SetProperty("trillionnium.owner_open.verified", "1");
     return 0;
