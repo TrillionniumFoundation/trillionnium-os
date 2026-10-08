@@ -29,6 +29,33 @@ COMMON_OWNER_OPEN = Path(
     "android-integration/working-tree/vendor/trillionnium/config/common_owner_open.mk"
 )
 SUPERVISOR_CONFIG = Path("packaging/owner-open-rootfs/rootlinux-supervisor.json")
+# The unselected v2/v3 documents remain their own sealed foundation contract.
+# The authored Android surface now packages exactly this explicit Leap variant.
+ACTIVE_RUNTIME_PROFILE = ANDROID_ROOT / "config/profile-codex-host-relay-v1.json"
+ACTIVE_SOURCE_FILES = (
+    ACTIVE_RUNTIME_PROFILE,
+    ANDROID_ROOT / "tools/verify_owner_open_materialized_erofs_payload.py",
+    ANDROID_ROOT / "init/trillionnium-sun-btfm-modprobe.rc",
+)
+ACTIVE_EXTRA_MODULES = {"trillionnium-sun-btfm-modprobe-init-rc"}
+ACTIVE_EXTRA_SERVICES = {"trillionnium_owner_open_verify"}
+ACTIVE_PAYLOAD_PATHS = {
+    "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs",
+    "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+    "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+    "/data/trillionnium/owner-open/root",
+    "/data/trillionnium/owner-open/state",
+    "/usr/bin/python3",
+    "/usr/bin/adb",
+    "/usr/libexec/trillionnium/trillionnium-owner-open-r5-host",
+    "/usr/libexec/trillionnium/trillionnium-owner-open-r5-core",
+    "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+    "/usr/libexec/trillionnium/owner-open/owner_open_connection_broker.py",
+    "/usr/libexec/trillionnium/owner-open/adb_smart_socket_relay_release.py",
+    "/usr/libexec/trillionnium/provider-adapter",
+    "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
+    "/etc/trillionnium/owner-open/provider-host-relay-v1.json",
+}
 MAX_JSON_BYTES = 8 * 1024 * 1024
 MAX_TEXT_BYTES = 32 * 1024 * 1024
 PROFILE_SCHEMA = "org.trillionnium.owner-open.android-profile.v2"
@@ -202,6 +229,167 @@ def added_product_packages(product_text: str) -> set[str]:
     return result
 
 
+def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report) -> None:
+    """Bind the exact EROFS/host-provider/init-handoff source variant.
+
+    These are source assertions, never materialization or device evidence. The
+    old SquashFS/phone-Codex profile is checked independently below and cannot
+    silently authorize the changed runtime surface.
+    """
+    for relative in ACTIVE_SOURCE_FILES:
+        safe_source(root, str(relative), "Leap host-relay source", report)
+    try:
+        active = load_json(root / ACTIVE_RUNTIME_PROFILE, "Leap host-relay runtime profile")
+        btfm = load_text(root / ACTIVE_SOURCE_FILES[2], "sun BTFM init rc")
+    except (OSError, ValueError) as error:
+        report.errors.append(str(error))
+        return
+    expected = {
+        "schema": "org.trillionnium.owner-open.android-runtime-profile.v4",
+        "revision": "2026-10-08-leap-api37-init-mount-handoff",
+        "profile_id": "leap-codex-host-relay-v1",
+        "enabled_property": "ro.trillionnium.owner_open.enabled",
+        "data_ready_property": "trillionnium.owner_open.data_ready",
+        "ready_property": "trillionnium.owner_open.ready",
+        "emergency_stop_property": "sys.trillionnium.owner_open.stop",
+        "rootlinux_payload": {
+            "image": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs",
+            "image_sha256": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs.sha256",
+            "image_manifest": "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json",
+            "mount_root": "/data/trillionnium/owner-open/root",
+            "state_root": "/data/trillionnium/owner-open/state",
+            "read_only_lower": True,
+        },
+        "android_services": {
+            "bootstrap": "trillionnium-owner-open-bootstrap",
+            "ingress": "trillionnium-owner-open-ingress",
+            "emergency_stop": "trillionnium-owner-open-emergency-stop",
+        },
+        "android_ingress": {
+            "abstract_socket": "trillionnium_owner_open",
+            "allowed_peer_domain": "u:r:trillionnium_owner_open_client:s0",
+            "upstream_socket": "/data/trillionnium/owner-open/state/broker/owner-open.sock",
+            "broker_token": "/data/trillionnium/owner-open/state/broker/owner-open.token",
+            "maximum_connections": 32,
+            "automatic_redispatch": False,
+        },
+        "rootlinux_supervisor": {
+            "executable": "/usr/bin/python3",
+            "entry": "/usr/libexec/trillionnium/owner-open/owner_open_rootlinux_supervisor.py",
+            "config": "/etc/trillionnium/owner-open/rootlinux-supervisor.json",
+        },
+        "claims": {
+            "source_modules_authored": True,
+            "soong_compiled": False,
+            "selinux_compiled": False,
+            "target_files_built": False,
+            "image_included": False,
+            "physical_device_observed": False,
+            "public_release": False,
+        },
+        "claim_ceiling": "LEAP_API37_SOURCE_CANDIDATE_NOT_DEVICE_QUALIFIED",
+        "mount_handoff": {
+            "owner": "android_init",
+            "verified_property": "trillionnium.owner_open.verified",
+            "mount_ready_property": "trillionnium.owner_open.mount_ready",
+            "service_mount_namespace": "mnt",
+            "bootstrap_mount_operations": False,
+        },
+        "provider": {
+            "role": "host_codex",
+            "phone_adapter": "/usr/libexec/trillionnium/provider-adapter",
+            "config": "/etc/trillionnium/owner-open/provider-host-relay-v1.json",
+            "long_lived_credentials_on_phone": False,
+            "automatic_reconnect": False,
+            "automatic_redispatch": False,
+        },
+    }
+    if set(active) != set(expected):
+        report.errors.append("Leap host-relay runtime profile key inventory differs")
+    for name, value in expected.items():
+        if active.get(name) != value:
+            report.errors.append(f"Leap host-relay runtime profile {name} differs from exact source contract")
+    missing = sorted(value for value in ACTIVE_PAYLOAD_PATHS if value not in bootstrap)
+    if missing:
+        report.errors.append(f"bootstrap does not bind active payload paths: {missing}")
+    if re.search(r"\b(?:mount|umount|umount2)\s*\(", bootstrap):
+        report.errors.append("init-handoff bootstrap must not perform mount operations")
+    commands = [line.strip() for line in init.splitlines() if line.strip() and not line.lstrip().startswith("#")]
+    required_commands = {
+        "on property:ro.trillionnium.owner_open.enabled=true && property:trillionnium.owner_open.data_ready=1",
+        "exec_start trillionnium_owner_open_verify",
+        "on property:trillionnium.owner_open.verified=1 && property:trillionnium.owner_open.data_ready=1",
+        "mount erofs loop@/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs /data/trillionnium/owner-open/root ro nosuid nodev",
+        "mount none none /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open bind remount nosuid nodev noexec",
+        "mount none none /data/trillionnium/owner-open/root/proc bind remount ro nosuid nodev noexec",
+        "mount none none /data/trillionnium/owner-open/root/dev bind remount ro nosuid noexec",
+        "mount none none /data/trillionnium/owner-open/root private rec",
+        "setprop trillionnium.owner_open.mount_ready 1",
+        "start trillionnium_owner_open_bootstrap",
+        "umount /data/trillionnium/owner-open/root/dev",
+        "umount /data/trillionnium/owner-open/root/proc",
+        "umount /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open",
+        "umount /data/trillionnium/owner-open/root",
+    }
+    missing_commands = sorted(required_commands - set(commands))
+    if missing_commands:
+        report.errors.append(f"init mount handoff misses safety commands: {missing_commands}")
+    if commands.count("start trillionnium_owner_open_bootstrap") != 1:
+        report.errors.append("init mount handoff requires exactly one bootstrap start")
+    blocks: dict[str, list[str]] = {}
+    heading = ""
+    for command in commands:
+        if command.startswith(("on ", "service ")):
+            heading = command
+            if heading in blocks:
+                report.errors.append("duplicate init action or service heading")
+            blocks[heading] = []
+        elif heading:
+            blocks[heading].append(command)
+    verify_trigger = "on property:ro.trillionnium.owner_open.enabled=true && property:trillionnium.owner_open.data_ready=1"
+    mount_trigger = "on property:trillionnium.owner_open.verified=1 && property:trillionnium.owner_open.data_ready=1"
+    if blocks.get(verify_trigger) != ["exec_start trillionnium_owner_open_verify"]:
+        report.errors.append("init verifier must be the sole enabled/data-ready action")
+    if blocks.get(mount_trigger) != [
+        "mount erofs loop@/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs /data/trillionnium/owner-open/root ro nosuid nodev",
+        "mount none /data/trillionnium/owner-open/state /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open bind",
+        "mount none none /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open bind remount nosuid nodev noexec",
+        "mount none /proc /data/trillionnium/owner-open/root/proc bind",
+        "mount none none /data/trillionnium/owner-open/root/proc bind remount ro nosuid nodev noexec",
+        "mount none /dev /data/trillionnium/owner-open/root/dev bind",
+        "mount none none /data/trillionnium/owner-open/root/dev bind remount ro nosuid noexec",
+        "mount none none /data/trillionnium/owner-open/root private rec",
+        "setprop trillionnium.owner_open.mount_ready 1",
+        "start trillionnium_owner_open_bootstrap",
+    ]:
+        report.errors.append("init mount/start ordering differs from verified data-ready handoff")
+    observed_mounts = [command for command in commands if command.startswith(("mount ", "umount "))]
+    expected_mounts = [command for command in blocks.get(mount_trigger, []) if command.startswith("mount ")]
+    expected_mounts += [
+        "umount /data/trillionnium/owner-open/root/dev",
+        "umount /data/trillionnium/owner-open/root/proc",
+        "umount /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open",
+        "umount /data/trillionnium/owner-open/root",
+    ]
+    if observed_mounts != expected_mounts:
+        report.errors.append("init mount operation inventory differs from exact handoff/teardown")
+    for service, arguments, settings in (
+        ("verify", "/system_ext/bin/trillionnium-owner-open-bootstrap --verify-image", ["oneshot", "seclabel u:r:trillionnium_owner_open_bootstrap:s0", "capabilities"]),
+        ("bootstrap", "/system_ext/bin/trillionnium-owner-open-bootstrap --run-mounted", ["oneshot", "namespace mnt", "seclabel u:r:trillionnium_owner_open_bootstrap:s0", "capabilities SYS_CHROOT KILL"]),
+        ("ingress", "/system_ext/bin/trillionnium-owner-open-ingress", ["seclabel u:r:trillionnium_owner_open_ingress:s0", "capabilities"]),
+        ("emergency_stop", "/system_ext/bin/trillionnium-owner-open-emergency-stop", ["oneshot", "seclabel u:r:trillionnium_owner_open_emergency_stop:s0", "capabilities"]),
+    ):
+        key = f"service trillionnium_owner_open_{service} {arguments}"
+        if blocks.get(key) != ["class core", "user root", "group root system", "disabled", *settings]:
+            report.errors.append(f"init {service} service command/capability contract differs")
+    btfm_commands = [line.strip() for line in btfm.splitlines() if line.strip() and not line.lstrip().startswith("#")]
+    if btfm_commands != [
+        "on property:ro.boot.product.vendor.sku=sun && property:ro.build.version.sdk=37",
+        "exec u:r:vendor_modprobe:s0 -- /vendor/bin/modprobe -b -s -d /vendor_dlkm/lib/modules -a btfmcodec btfm_slim_codec bt_fm_swr",
+    ]:
+        report.errors.append("sun BTFM init contract differs from exact SKU/SDK/OEM module invocation")
+
+
 def verify(root: Path) -> Report:
     report = Report()
     try:
@@ -309,9 +497,18 @@ def verify(root: Path) -> Report:
     missing_bp = sorted(module_names - bp_modules)
     if missing_bp:
         report.errors.append(f"Android.bp misses required modules: {missing_bp}")
+    active_module_names = module_names | ACTIVE_EXTRA_MODULES
+    expected_bp_modules = active_module_names | {
+        "trillionnium-owner-open-materialized-payload-verifier",
+        "trillionnium-owner-open-rootfs-image-verified",
+        "trillionnium-owner-open-rootfs-manifest-verified",
+        "trillionnium-owner-open-rootfs-digest-verified",
+    }
+    if bp_modules != expected_bp_modules:
+        report.errors.append("Android.bp module inventory differs from exact active source contract")
     product_modules = added_product_packages(product_text)
-    missing_product = sorted(module_names - product_modules)
-    extra_product = sorted(product_modules - module_names)
+    missing_product = sorted(active_module_names - product_modules)
+    extra_product = sorted(product_modules - active_module_names)
     if missing_product or extra_product:
         report.errors.append(
             f"owner-open PRODUCT_PACKAGES differs: missing={missing_product} extra={extra_product}"
@@ -341,12 +538,13 @@ def verify(root: Path) -> Report:
         report.errors.append("product cut does not filter forbidden packages from product variables")
 
     required_bp_references = {
-        "tools/verify_owner_open_materialized_payload.py",
+        "tools/verify_owner_open_materialized_erofs_payload.py",
         "native/owner_open_bootstrap.cpp",
         "native/owner_open_emergency_stop.cpp",
         "native/owner_open_ingress_proxy.cpp",
         "init/trillionnium-owner-open.rc",
-        "config/profile-v3.json",
+        "init/trillionnium-sun-btfm-modprobe.rc",
+        "config/profile-codex-host-relay-v1.json",
         "client/AndroidManifest.xml",
     }
     missing_references = sorted(reference for reference in required_bp_references if reference not in bp_text)
@@ -358,6 +556,7 @@ def verify(root: Path) -> Report:
         for item in object_list(profile.get("required_services"), "required_services", report)
         if item.get("owner") == "android_init"
     }
+    expected_services |= ACTIVE_EXTRA_SERVICES
     observed_services = set(SERVICE_PATTERN.findall(init_text))
     if expected_services != observed_services:
         report.errors.append(
@@ -411,24 +610,12 @@ def verify(root: Path) -> Report:
     if drift:
         report.errors.append(f"canonical and runtime profile paths differ: {drift}")
 
-    bootstrap_required = {
-        str(payload.get("android_install_path")),
-        str(payload.get("runtime_mount_path")),
-        str(payload.get("state_root")),
-        *{
-            str(item.get("path"))
-            for item in object_list(payload.get("required_entries"), "rootlinux required_entries", report)
-        },
-    }
-    missing_bootstrap = sorted(value for value in bootstrap_required if value not in bootstrap_text)
-    if missing_bootstrap:
-        report.errors.append(f"bootstrap does not bind required payload paths: {missing_bootstrap}")
+    verify_active_surface(root, bootstrap_text, init_text, report)
     for marker in (
         "unsetenv(\"ANDROID_SERIAL\")",
         "unsetenv(\"ADB_SERVER_PORT\")",
         "unsetenv(\"ANDROID_ADB_SERVER_PORT\")",
         "MS_RDONLY | MS_NOSUID | MS_NODEV",
-        "trillionnium_owner_open_payload_file",
     ):
         if marker not in bootstrap_text:
             report.errors.append(f"bootstrap source misses safety marker: {marker}")
@@ -523,6 +710,10 @@ def verify(root: Path) -> Report:
     report.facts = {
         "revision": profile.get("revision"),
         "profile_id": profile.get("profile_id"),
+        "foundation_profile_selected": False,
+        "authored_runtime_profile": str(ACTIVE_RUNTIME_PROFILE),
+        "authored_runtime_profile_id": "leap-codex-host-relay-v1",
+        "active_required_module_count": len(active_module_names),
         "semantic_contract": profile_references.get("semantic_contract"),
         "architecture_decision": profile_references.get("architecture_decision"),
         "enabled_property": runtime_profile.get("enabled_property"),
