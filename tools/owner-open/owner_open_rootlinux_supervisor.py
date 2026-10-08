@@ -37,6 +37,19 @@ MAX_PATH_COMPONENTS = 64
 MAX_PROC_ENTRIES = 65536
 MAX_PROC_STAT_BYTES = 8192
 MAX_PROC_SCAN_SECONDS = 1.0
+# Native bootstrap records waitid's exact si_status without exposing error
+# messages or command data. These values classify admission, not root causes.
+NATIVE_STARTUP_EXIT_CODES = {
+    "config": 80, "domain": 81, "platform": 82, "state_root": 83,
+    "prior_session": 84, "session_create": 85, "carrier_spawn": 86,
+    "status_publish": 87,
+}
+
+
+def startup_failure_exit_code(native: bool, phase: str) -> int:
+    return NATIVE_STARTUP_EXIT_CODES.get(phase, 70) if native else 70
+
+
 NAME = re.compile(r"^[a-z][a-z0-9_.-]{0,63}$")
 ENV_NAME = re.compile(r"^[A-Z_][A-Z0-9_]{0,127}$")
 
@@ -378,6 +391,7 @@ class Supervisor:
         if same_domain_proc_observation:
             assert_same_domain_observation()
         self.config = config
+        self.startup_phase = "platform"
         self.same_domain_proc_observation = same_domain_proc_observation
         self.proc_observation_skips = 0
         self.children: dict[str, ManagedChild] = {}
@@ -901,7 +915,9 @@ class Supervisor:
         ):
             raise SupervisorError("Linux waitid/WNOWAIT and exclusive default-SIGCHLD reaping are required")
         try:
+            self.startup_phase = "state_root"
             self.validate_state_root()
+            self.startup_phase = "prior_session"
             self.assert_session_clear()
             result = self.run_owned()
             if result in (0, 75) and self._session_ready:
@@ -924,6 +940,7 @@ class Supervisor:
                 pass
         result = 0
         try:
+            self.startup_phase = "session_create"
             self.begin_session()
             # Detect an unsafe/full/torn event log before the first carrier.
             # This is a supervisor observation, not durable job acceptance.
@@ -933,9 +950,12 @@ class Supervisor:
                     self.request_stop("emergency_stop")
                 if self.stop_reason is not None:
                     break
+                self.startup_phase = "carrier_spawn"
                 self.spawn(child)
+            self.startup_phase = "status_publish"
             self.append_event("supervisor_ready", child_count=len(self.children))
             self.write_status("running")
+            self.startup_phase = "runtime"
             while self.stop_reason is None and self.failure_reason is None:
                 self.assert_session_owned()
                 if self.emergency_requested():
@@ -982,7 +1002,7 @@ class Supervisor:
             self.append_event("supervisor_stopping", reason=reason)
             self.write_status("stopping", reason)
         except Exception as error:
-            result = 70
+            result = startup_failure_exit_code(self.same_domain_proc_observation, self.startup_phase)
             self.failure_reason = f"supervisor_error:{type(error).__name__}:{error}"
             try:
                 self.append_event("supervisor_error", error=self.failure_reason)
@@ -992,7 +1012,8 @@ class Supervisor:
             try:
                 self.shutdown()
             except Exception as error:
-                result = 70
+                if result in (0, 75):
+                    result = 70
                 self.failure_reason = f"cleanup_error:{type(error).__name__}:{error}"
             reason = self.failure_reason or self.stop_reason or "clean_stop"
             try:
@@ -1000,7 +1021,8 @@ class Supervisor:
                 self.append_event("supervisor_terminal", reason=reason, returncode=result)
                 self._terminal_recorded = True
             except Exception:
-                result = 70
+                if result in (0, 75):
+                    result = 70
             for current, handler in previous_handlers.items():
                 signal.signal(current, handler)
         return result
@@ -1019,12 +1041,19 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
+    phase = "config"
+    supervisor = None
     try:
         config = load_config(args.config)
-        return Supervisor(config, same_domain_proc_observation=args.same_domain_proc_observation).run()
+        phase = "domain"
+        supervisor = Supervisor(config, same_domain_proc_observation=args.same_domain_proc_observation)
+        return supervisor.run()
     except (OSError, SupervisorError) as error:
         print(f"owner-open Root Linux supervisor HOLD: {error}", file=sys.stderr)
-        return 70
+        return startup_failure_exit_code(
+            args.same_domain_proc_observation,
+            supervisor.startup_phase if supervisor is not None else phase,
+        )
 
 
 if __name__ == "__main__":

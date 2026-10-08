@@ -825,12 +825,62 @@ bool RelayDescriptorPath(const Json::Value& session, const Json::Value& status, 
   return true;
 }
 
-bool WaitForSupervisorReady(pid_t child) {
+// Readiness failures have their own bounded diagnostic vocabulary. In
+// particular an exited child is not the ENOENT left by a missing status file.
+// waitid(WNOWAIT) preserves the original child generation for safe cleanup.
+enum class ReadinessPhase : unsigned {
+  None = 0, PidPublication = 1, SignalHandlers = 2, WaitId = 3,
+  ChildExited = 4, EmergencyInhibit = 5, Deadline = 6,
+};
+struct ReadinessObservation {
+  ReadinessPhase phase = ReadinessPhase::None;
+  int error = 0;
+  int child_code = 0;
+  int child_status = 0;
+};
+
+bool SupervisorStillAlive(pid_t child, ReadinessObservation* observation) {
+  siginfo_t information {};
+  // Keep this observation bounded even under repeated signals. An
+  // interrupted observation fails closed, as in the original startup gate.
+  const int result = waitid(P_PID, child, &information, WEXITED | WNOHANG | WNOWAIT);
+  if (result != 0) {
+    *observation = {ReadinessPhase::WaitId, errno, 0, 0};
+    return false;
+  }
+  if (information.si_pid != 0) {
+    *observation = {ReadinessPhase::ChildExited, ECHILD,
+                    information.si_code, information.si_status};
+    errno = ECHILD;
+    return false;
+  }
+  return true;
+}
+
+void ReportReadinessFailure(const ReadinessObservation& observation) {
+  const int saved_errno = errno;
+#ifdef __ANDROID__
+  __android_log_print(ANDROID_LOG_ERROR, "TrillionniumOwnerOpenBootstrap",
+      "HOLD readiness=%u errno=%d child_code=%d child_status=%d",
+      static_cast<unsigned>(observation.phase), observation.error,
+      observation.child_code, observation.child_status);
+#else
+  std::fprintf(stderr, "owner-open readiness HOLD: readiness=%u errno=%d child_code=%d child_status=%d\n",
+      static_cast<unsigned>(observation.phase), observation.error,
+      observation.child_code, observation.child_status);
+#endif
+  errno = saved_errno;
+}
+
+bool WaitForSupervisorReady(pid_t child, ReadinessObservation* observation) {
   const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(15);
   while (std::chrono::steady_clock::now() < deadline) {
-    siginfo_t information {};
-    if (waitid(P_PID, child, &information, WEXITED | WNOHANG | WNOWAIT) != 0 ||
-        information.si_pid != 0 || EmergencyStopPresent()) return false;
+    if (!SupervisorStillAlive(child, observation)) return false;
+    if (EmergencyStopPresent()) {
+      *observation = {ReadinessPhase::EmergencyInhibit, ECANCELED, 0, 0};
+      errno = ECANCELED;
+      return false;
+    }
     std::string session_raw, status_raw, descriptor_raw, relay_raw, relay_path;
     Json::Value session, status, descriptor, relay;
     struct stat socket_metadata {}, token_metadata {};
@@ -880,6 +930,7 @@ bool WaitForSupervisorReady(pid_t child) {
           status["children"]["owner-open-adb-relay"]["anchor_start_time_ticks"].asInt64())) return true;
     usleep(50000);
   }
+  *observation = {ReadinessPhase::Deadline, ETIMEDOUT, 0, 0};
   errno = ETIMEDOUT;
   return false;
 }
@@ -1016,13 +1067,28 @@ int main(int argc, char** argv) {
     _exit(127);
   }
   g_child_pid = child;
-  if (!WritePid(child) || !InstallSignalHandlers() || !WaitForSupervisorReady(child)) {
+  ReadinessObservation readiness;
+  bool ready = WritePid(child);
+  if (!ready) {
+    readiness = {ReadinessPhase::PidPublication, errno, 0, 0};
+  } else if (!InstallSignalHandlers()) {
+    readiness = {ReadinessPhase::SignalHandlers, errno, 0, 0};
+    ready = false;
+  } else {
+    ready = WaitForSupervisorReady(child, &readiness);
+  }
+  if (!ready) {
+    // Preserve the original cause across kill/waitpid/unlink, each of which
+    // may replace errno. Never log argv, state contents, or credentials.
+    const int failure_errno = readiness.error;
+    ReportReadinessFailure(readiness);
     kill(-child, SIGKILL);
     // Also stop the unreaped direct child if failure preceded its setsid().
     kill(child, SIGKILL);
     int stopped_status = 0;
     ReapPinnedChild(child, &stopped_status);
     unlink(kSupervisorPid);
+    errno = failure_errno;
     return Fail(BootstrapFailure::CarrierReadiness);
   }
   SetProperty("trillionnium.owner_open.ready", "1");
