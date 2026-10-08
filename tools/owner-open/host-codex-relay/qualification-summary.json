@@ -1,0 +1,151 @@
+{
+  "schema": "org.trillionnium.owner-open.host-codex-relay-qualification-summary.v1",
+  "observed_at_utc": "2026-10-08T03:19:02.667787+00:00",
+  "scope": "Actual Linux x86_64 Rust R5 transport Host + R5 Core + runtime/call registry + durable segmented event/job/transport journals + authenticated real Codex inference",
+  "source_git_head": "287e94fcc9640f06f641d0b6e90b276ac088c8ec",
+  "source_rust_dirty": false,
+  "provider": {
+    "model": "gpt-6-astra",
+    "codex_version": "0.158.0",
+    "model_selection": "Actual entrypoint model/list isDefault=true followed by real inference; not a guessed model identifier",
+    "host": "original authenticated local host; login material remains there",
+    "mac_entrypoint_qualified": false
+  },
+  "qualified_host_source_sha256": "4d8c0b4c22d3de58b44cbf1a43001b526b7e093b621e3385a852957e73abd221",
+  "packaged_host_source_sha256": "2ab1aad7c4a8d5d357525b05890c391b3a1049a7c337d1a78dfdb96e11ac6936",
+  "paired_protocol_dependency_sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
+  "packaged_change": "Explicit absolute --codex executable is required and validated before service startup; protocol/inference body unchanged",
+  "packaged_change_real_inference_retested": false,
+  "native_qualification_receipt_sha256": "69599f24ec18c84d2b7e18ef5f47a48b02e8a6d0b6123a56e0923d1ff93129e7",
+  "observations": [
+    {
+      "scenario": "cancel-after-tool",
+      "passed": true,
+      "receipt_sha256": "26f4809e093beb2200b2200226be4ca77fc9634a111051d941245db54f056550",
+      "marker_lines": 1,
+      "initial_terminal_status": "cancelled",
+      "replay_terminal_status": [
+        "cancelled"
+      ],
+      "provider_session_count": 1
+    },
+    {
+      "scenario": "cancel-before-tool",
+      "passed": true,
+      "receipt_sha256": "89e952f39d1b2a0103ed7da1e22f366137590c30daa0dfb220cf5356d6a2951e",
+      "marker_lines": 0,
+      "initial_terminal_status": "cancelled",
+      "replay_terminal_status": [
+        "cancelled"
+      ],
+      "provider_session_count": 1
+    },
+    {
+      "scenario": "normal",
+      "passed": true,
+      "receipt_sha256": "efb35e1b94e67aa844773c37c08eecbea879058cfae9ebdd8bc6b8ef51bff75f",
+      "marker_lines": 1,
+      "initial_terminal_status": "completed",
+      "replay_terminal_status": [
+        "completed"
+      ],
+      "provider_session_count": 1
+    },
+    {
+      "scenario": "terminal-journal-failure",
+      "passed": true,
+      "receipt_sha256": "02d8c4f2af371b9e584dd442dc50af5ac61eb97924e9341118c837a0e60c6a32",
+      "marker_lines": 1,
+      "initial_terminal_status": "unknown_after_journal_failure",
+      "replay_terminal_status": [
+        "unknown_after_disconnect"
+      ],
+      "provider_session_count": 1
+    }
+  ],
+  "limits": {
+    "phone_tested": false,
+    "native_android_tested": false,
+    "arm64_rust_execution_tested": false,
+    "physical_hardware_tested": false,
+    "automatic_effect_redispatch": false,
+    "provider_restart_dedup": "Accepted semantic turn identity excludes replacement stream IDs and is persisted before any model/tool call",
+    "codex_transport_retries": "CLI may internally use bounded network retries before decisions; relay does not relaunch failed rounds/fallback/redispatch"
+  },
+  "packaging_validation": {
+    "cli": [
+      {
+        "name": "required_cli",
+        "returncode": 2,
+        "expected_diagnostic": "--codex",
+        "passed": true
+      },
+      {
+        "name": "relative_cli",
+        "returncode": 2,
+        "expected_diagnostic": "absolute executable",
+        "passed": true
+      },
+      {
+        "name": "missing_cli",
+        "returncode": 2,
+        "expected_diagnostic": "existing executable",
+        "passed": true
+      },
+      {
+        "name": "valid_current_cli_no_service",
+        "returncode": 2,
+        "expected_diagnostic": "service bound",
+        "passed": true
+      }
+    ],
+    "protocol": [
+      {
+        "name": "duplicate_member",
+        "passed": true
+      },
+      {
+        "name": "nonfinite",
+        "passed": true
+      },
+      {
+        "name": "nonobject",
+        "passed": true
+      },
+      {
+        "name": "native_terminal_and_unknown_classification",
+        "passed": true
+      },
+      {
+        "name": "accepted_identity_persisted",
+        "passed": true
+      },
+      {
+        "name": "dispatch_intent_before_forwarding",
+        "passed": true
+      },
+      {
+        "name": "duplicate_call_identity_rejected",
+        "passed": true
+      },
+      {
+        "name": "unknown_result_persisted_and_turn_stops",
+        "passed": true
+      },
+      {
+        "name": "replacement_stream_same_semantic_identity_rejected",
+        "passed": true
+      },
+      {
+        "name": "cancel_before_claim",
+        "passed": true
+      },
+      {
+        "name": "boolean_sequence_rejected",
+        "passed": true
+      }
+    ],
+    "scope": "Syntax, explicit CLI admission and paired JSONL mechanics only; no new inference or device effect",
+    "passed": true
+  }
+}
