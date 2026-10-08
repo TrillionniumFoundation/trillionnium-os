@@ -12,6 +12,8 @@
 #include <limits>
 #include <poll.h>
 #include <memory>
+#include <mutex>
+#include <set>
 #include <string>
 #include <string_view>
 #include <sys/socket.h>
@@ -24,12 +26,27 @@
 #include <json/json.h>
 #include <selinux/selinux.h>
 #include "owner_open_peer_identity.h"
+#include "owner_open_emergency_inhibit.h"
+#ifdef __ANDROID__
+#include <sys/system_properties.h>
+#endif
 
 namespace {
 constexpr std::string_view kAbstractName = "trillionnium_owner_open";
 constexpr const char* kUpstream = "/data/trillionnium/owner-open/state/broker/owner-open.sock";
 constexpr const char* kToken = "/data/trillionnium/owner-open/state/broker/owner-open.token";
 constexpr std::string_view kWireSchema = "org.trillionnium.owner-open.connection-broker-wire.v1";
+constexpr const char* kState = "/data/trillionnium/owner-open/state";
+constexpr std::string_view kControlSchema = "org.trillionnium.owner-open.ingress-control.v1";
+constexpr std::size_t kMaximumControlBytes = 4096;
+constexpr int kMaximumPendingControls = 64;
+std::atomic<int> g_pending_controls{0};
+std::mutex g_admission;
+std::atomic<bool> g_inhibited{false};
+std::mutex g_stop_attempts_mutex;
+std::mutex g_inhibit_publication;
+std::set<std::string> g_stop_attempts;
+constexpr std::size_t kMaximumStopAttempts = 4096;
 constexpr std::string_view kBrokerId = "owner-open-device";
 constexpr int kMaximumConnections = 32;
 // Handshake bytes are control-plane authentication, not an unbounded stream.
@@ -51,6 +68,13 @@ bool TryAcquireConnection() {
                                                std::memory_order_relaxed)) {
   }
   return current < kMaximumConnections;
+}
+
+bool TryAcquireControlSlot() {
+  int current = g_pending_controls.load();
+  while (current < kMaximumPendingControls &&
+         !g_pending_controls.compare_exchange_weak(current, current + 1)) {}
+  return current < kMaximumPendingControls;
 }
 
 void ReleaseConnection() {
@@ -236,13 +260,14 @@ bool WriteAll(int fd, const unsigned char* data, std::size_t length, Deadline de
   return true;
 }
 
-bool ReadLine(int fd, std::string* output, Deadline deadline) {
+bool ReadLine(int fd, std::string* output, Deadline deadline,
+              std::size_t limit = kMaximumLineBytes) {
   output->clear();
   output->reserve(4096);
   // The bound covers the complete wire line, including its trailing newline.
   // Stop before reading byte max+1 so an unterminated/oversized frame cannot
   // grow the string beyond the advertised limit.
-  while (output->size() < kMaximumLineBytes) {
+  while (output->size() < limit) {
     if (!WaitForIo(fd, POLLIN, deadline)) return false;
     unsigned char current = 0;
     const ssize_t count = recv(fd, &current, 1, MSG_DONTWAIT);
@@ -388,53 +413,198 @@ bool AuthenticateUpstream(int client, int upstream, const struct ucred& peer, De
                   deadline);
 }
 
+enum class ControlKind { Connect, Stop, Status };
+struct ControlRequest { ControlKind kind; std::string operation_id; };
+
+bool ParseControl(std::string_view raw, ControlRequest* request) {
+  Json::Value frame;
+  std::string schema, kind, operation;
+  if (raw.size() > kMaximumControlBytes || !ParseJsonObject(raw, &frame) ||
+      !JsonString(frame, "schema", &schema) || schema != kControlSchema ||
+      !JsonInteger(frame, "version", 1) || !JsonString(frame, "kind", &kind)) return false;
+  if (kind == "ingress.connect") {
+    if (frame.size() != 3) return false;
+    *request = {ControlKind::Connect, {}};
+    return true;
+  }
+  if (!JsonString(frame, "operation_id", &operation) || operation.empty() || operation.size() > 96) return false;
+  for (char c : operation) {
+    if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '-')) return false;
+  }
+  if (kind == "emergency.status" && frame.size() == 4) {
+    *request = {ControlKind::Status, operation};
+    return true;
+  }
+  if (kind == "emergency.stop" && frame.size() == 5 &&
+      frame["explicit_user"].isBool() && frame["explicit_user"].asBool()) {
+    *request = {ControlKind::Stop, operation};
+    return true;
+  }
+  return false;
+}
+
+bool RequestInitStop() {
+#ifdef __ANDROID__
+  return __system_property_set("sys.trillionnium.owner_open.stop", "1") == 0;
+#else
+  errno = ENOTSUP;
+  return false;  // Host compilation cannot claim Android init cancellation.
+#endif
+}
+
+bool NormalAdmissionAllowed(const trillionnium::owner_open::EmergencyInhibit& inhibit) {
+  // Filesystem/property observation must stay outside the short send fence.
+  // Every leaf and every unreadable state fail closed.
+#ifdef __ANDROID__
+  char ready[PROP_VALUE_MAX] {};
+  if (__system_property_get("trillionnium.owner_open.ready", ready) != 1 || ready[0] != '1')
+    return false;
+#endif
+  return !g_inhibited && inhibit.Observe() ==
+      trillionnium::owner_open::InhibitObservation::Absent;
+}
+
+std::string ControlReply(const ControlRequest& request,
+                         const trillionnium::owner_open::EmergencyInhibit& inhibit,
+                         bool (*request_stop)()) {
+  bool durable = false, stop_requested = false;
+  std::string attempt = "status_only";
+  if (request.kind == ControlKind::Stop) {
+    {
+      std::lock_guard<std::mutex> fence(g_admission);
+      g_inhibited = true;  // No filesystem I/O can delay this send fence.
+    }
+    {
+      std::lock_guard<std::mutex> dedup(g_stop_attempts_mutex);
+      if (g_stop_attempts.count(request.operation_id) != 0) {
+        attempt = "duplicate_in_this_ingress_process";
+      } else if (g_stop_attempts.size() >= kMaximumStopAttempts) {
+        attempt = "capacity_refused";  // Never evict accepted IDs to admit a retry.
+      } else {
+        g_stop_attempts.insert(request.operation_id);
+        attempt = "submitted";
+        // A present marker does not prove init cancellation ever succeeded.
+        // A new explicit user operation may request mechanical stop again.
+        stop_requested = request_stop();
+      }
+    }
+    {
+      std::lock_guard<std::mutex> publication(g_inhibit_publication);
+      bool created = false;
+      durable = inhibit.Publish(&created);
+    }
+  }
+  const auto observed = inhibit.Observe();
+  const char* state = observed == trillionnium::owner_open::InhibitObservation::Absent ?
+      "absent" : observed == trillionnium::owner_open::InhibitObservation::Present ?
+      "present" : "unknown";
+  Json::Value response(Json::objectValue);
+  response["schema"] = std::string(kControlSchema);
+  response["version"] = 1;
+  response["kind"] = "emergency.result";
+  response["operation_id"] = request.operation_id;
+  response["inhibit_observation"] = state;
+  response["durable_inhibit_confirmed"] = durable;
+  response["dispatch_inhibited"] = g_inhibited || observed !=
+      trillionnium::owner_open::InhibitObservation::Absent;
+  response["request_attempt"] = attempt;
+  response["stop_requested"] = stop_requested;
+  response["process_quiescence"] = "unknown";
+  response["prior_effect_outcome"] = "unknown";
+  response["automatic_redispatch"] = false;
+  Json::StreamWriterBuilder writer;
+  writer["indentation"] = "";
+  return Json::writeString(writer, response) + "\n";
+}
+
+bool WriteAdmitted(int fd, const unsigned char* data, std::size_t length,
+                   Deadline deadline, const trillionnium::owner_open::EmergencyInhibit& inhibit) {
+  std::size_t offset = 0;
+  while (offset < length) {
+    if (!NormalAdmissionAllowed(inhibit)) return false;
+    ssize_t count;
+    {
+      std::lock_guard<std::mutex> fence(g_admission);
+      if (g_inhibited) return false;
+      // Never hold the emergency fence while waiting for a wedged broker.
+      count = send(fd, data + offset, length - offset, MSG_NOSIGNAL | MSG_DONTWAIT);
+    }
+    if (count < 0 && errno == EINTR) continue;
+    if (count < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+      if (!WaitForIo(fd, POLLOUT, std::min(deadline, Clock::now() +
+             std::chrono::milliseconds(100)))) return false;
+      continue;
+    }
+    if (count <= 0) return false;
+    offset += static_cast<std::size_t>(count);
+  }
+  return true;
+}
+
 void Pump(int client, struct ucred peer) {
   const Deadline handshake_deadline =
       Clock::now() + std::chrono::milliseconds(kHandshakeTimeoutMilliseconds);
-  const int upstream = ConnectUpstream(handshake_deadline);
-  if (upstream < 0 || !AuthenticateUpstream(client, upstream, peer, handshake_deadline)) {
-    if (upstream >= 0) close(upstream);
-    shutdown(client, SHUT_RDWR);
-    close(client);
-    ReleaseConnection();
-    return;
+  std::string first;
+  ControlRequest request {};
+  const trillionnium::owner_open::EmergencyInhibit inhibit(kState, 0, 0);
+  bool normal_reserved = false;
+  int upstream = -1;
+  if (!ReadLine(client, &first, handshake_deadline, kMaximumControlBytes) ||
+      !ParseControl(first, &request)) goto cleanup;
+  if (request.kind != ControlKind::Connect) {
+    const std::string reply = ControlReply(request, inhibit, RequestInitStop);
+    WriteAll(client, reinterpret_cast<const unsigned char*>(reply.data()), reply.size(),
+             handshake_deadline);
+    goto cleanup;
   }
-  std::array<unsigned char, kBufferBytes> buffer {};
-  bool client_read = true;
-  bool upstream_read = true;
-  while (client_read || upstream_read) {
-    std::array<struct pollfd, 2> descriptors {{
-        {client, static_cast<short>(client_read ? POLLIN : 0), 0},
-        {upstream, static_cast<short>(upstream_read ? POLLIN : 0), 0},
-    }};
-    const int ready = poll(descriptors.data(), descriptors.size(), kIdleTimeoutMilliseconds);
-    if (ready < 0 && errno == EINTR) continue;
-    if (ready <= 0) break;
-    for (std::size_t index = 0; index < descriptors.size(); ++index) {
-      if ((descriptors[index].revents & (POLLIN | POLLHUP)) == 0) continue;
-      const int source = index == 0 ? client : upstream;
-      const int destination = index == 0 ? upstream : client;
-      const ssize_t count = read(source, buffer.data(), buffer.size());
-      if (count < 0 && errno == EINTR) continue;
-      if (count <= 0) {
-        if (index == 0) client_read = false;
-        else upstream_read = false;
-        shutdown(destination, SHUT_WR);
-        continue;
-      }
-      if (!WriteAll(destination, buffer.data(), static_cast<std::size_t>(count),
-                    Clock::now() + std::chrono::milliseconds(kIdleTimeoutMilliseconds))) {
-        client_read = false;
-        upstream_read = false;
-        break;
+  if (!NormalAdmissionAllowed(inhibit)) goto cleanup;
+  {
+    std::lock_guard<std::mutex> fence(g_admission);
+    if (g_inhibited || !TryAcquireConnection()) goto cleanup;
+    normal_reserved = true;
+  }
+  // Reserve control capacity independently from long-lived ordinary sessions.
+  g_pending_controls.fetch_sub(1);
+  upstream = ConnectUpstream(handshake_deadline);
+  if (upstream < 0 || !AuthenticateUpstream(client, upstream, peer, handshake_deadline))
+    goto cleanup;
+  {
+    std::array<unsigned char, kBufferBytes> buffer {};
+    bool client_read = true, upstream_read = true;
+    auto last_activity = Clock::now();
+    while (client_read || upstream_read) {
+      if (!NormalAdmissionAllowed(inhibit)) break;
+      if (Clock::now() - last_activity >= std::chrono::milliseconds(kIdleTimeoutMilliseconds)) break;
+      std::array<struct pollfd, 2> descriptors {{{client, static_cast<short>(client_read ? POLLIN : 0), 0},
+          {upstream, static_cast<short>(upstream_read ? POLLIN : 0), 0}}};
+      const int ready = poll(descriptors.data(), descriptors.size(), 100);
+      if (ready < 0 && errno == EINTR) continue;
+      if (ready < 0) break;
+      if (ready == 0) continue;
+      last_activity = Clock::now();
+      for (std::size_t index = 0; index < descriptors.size(); ++index) {
+        if ((descriptors[index].revents & (POLLIN | POLLHUP)) == 0) continue;
+        const int source = index == 0 ? client : upstream;
+        const int destination = index == 0 ? upstream : client;
+        const ssize_t count = read(source, buffer.data(), buffer.size());
+        if (count < 0 && errno == EINTR) continue;
+        if (count <= 0) {
+          if (index == 0) client_read = false; else upstream_read = false;
+          shutdown(destination, SHUT_WR);
+          continue;
+        }
+        if (!WriteAdmitted(destination, buffer.data(), static_cast<std::size_t>(count),
+              Clock::now() + std::chrono::milliseconds(kIdleTimeoutMilliseconds), inhibit)) {
+          client_read = false; upstream_read = false; break;
+        }
       }
     }
   }
+cleanup:
   shutdown(client, SHUT_RDWR);
-  shutdown(upstream, SHUT_RDWR);
   close(client);
-  close(upstream);
-  ReleaseConnection();
+  if (upstream >= 0) { shutdown(upstream, SHUT_RDWR); close(upstream); }
+  if (normal_reserved) ReleaseConnection(); else g_pending_controls.fetch_sub(1);
 }
 
 int Listen() {
@@ -478,14 +648,14 @@ int main() {
       return Fail("accept failed");
     }
     struct ucred peer {};
-    if (!AllowedPeer(client, &peer) || !TryAcquireConnection()) {
+    if (!AllowedPeer(client, &peer) || !TryAcquireControlSlot()) {
       close(client);
       continue;
     }
     try {
       std::thread(Pump, client, peer).detach();
     } catch (...) {
-      ReleaseConnection();
+      g_pending_controls.fetch_sub(1);
       close(client);
     }
   }

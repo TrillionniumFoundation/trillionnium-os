@@ -27,7 +27,7 @@ ANDROID_BP = ROOT / "android-integration/working-tree/vendor/trillionnium/owner-
 BROKER = ROOT / "tools/owner-open/owner_open_connection_broker.py"
 RUNTIME_PROFILE = (
     ROOT
-    / "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json"
+    / "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-codex-host-relay-v1.json"
 )
 
 
@@ -182,7 +182,7 @@ class OwnerOpenIngressContractTest(unittest.TestCase):
 
     def test_read_line_bound_includes_newline_and_rejects_max_plus_one(self) -> None:
         source = self.read(SOURCE)
-        self.assertIn("while (output->size() < kMaximumLineBytes)", source)
+        self.assertIn("while (output->size() < limit)", source)
         self.assertNotIn("while (output->size() <= kMaximumLineBytes)", source)
 
         # ReadLine's contract is total frame bytes, including the delimiter.
@@ -201,7 +201,7 @@ class OwnerOpenIngressContractTest(unittest.TestCase):
         helper_start = source.index("using Clock = std::chrono::steady_clock;")
         helper_end = source.index("\n\nint ConnectUpstream", helper_start)
         helper = source[helper_start:helper_end]
-        start = source.index("bool ReadLine(int fd, std::string* output, Deadline deadline) {")
+        start = source.index("bool ReadLine(int fd, std::string* output, Deadline deadline,")
         end = source.index("\n}\n\nbool ParseJsonObject", start) + 2
         read_line = source[start:end]
         harness = textwrap.dedent(

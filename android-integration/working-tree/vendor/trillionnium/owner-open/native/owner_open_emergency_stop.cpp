@@ -5,6 +5,7 @@
 #include <string_view>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "owner_open_emergency_inhibit.h"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
@@ -12,7 +13,6 @@
 
 namespace {
 constexpr const char* kState = "/data/trillionnium/owner-open/state";
-constexpr const char* kMarker = "emergency-stop";
 
 int Fail(std::string_view message) {
   std::fprintf(stderr, "owner-open emergency stop HOLD: %.*s: %s\n",
@@ -21,37 +21,8 @@ int Fail(std::string_view message) {
 }
 
 bool WriteMarker() {
-  const int parent = open(kState, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
-  if (parent < 0) return false;
-  struct stat directory {};
-  if (fstat(parent, &directory) != 0 || !S_ISDIR(directory.st_mode) ||
-      directory.st_uid != 0 || directory.st_gid != 0 || (directory.st_mode & 07777) != 0700) {
-    close(parent);
-    errno = EPERM;
-    return false;
-  }
-  bool created = true;
-  int fd = openat(parent, kMarker, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, 0600);
-  if (fd < 0 && errno == EEXIST) {
-    created = false;
-    fd = openat(parent, kMarker, O_RDONLY | O_NONBLOCK | O_CLOEXEC | O_NOFOLLOW);
-  }
-  if (fd < 0) { const int saved = errno; close(parent); errno = saved; return false; }
-  struct stat metadata {};
-  bool ok = fstat(fd, &metadata) == 0 && S_ISREG(metadata.st_mode) &&
-            metadata.st_uid == 0 && metadata.st_gid == 0 && metadata.st_nlink == 1 &&
-            (metadata.st_mode & 07777) == 0600;
-  if (!ok) errno = EPERM;
-  static constexpr char kValue[] = "owner-authorized emergency stop\n";
-  if (ok && created) ok = write(fd, kValue, sizeof(kValue) - 1) == static_cast<ssize_t>(sizeof(kValue) - 1);
-  // Both an existing inhibit and a newly created one must be durable before
-  // success. A failed/short creation stays inhibited for offline reconciliation.
-  if (ok) ok = fsync(fd) == 0 && fsync(parent) == 0;
-  const int saved = errno;
-  close(fd);
-  close(parent);
-  errno = saved;
-  return ok;
+  bool created = false;
+  return trillionnium::owner_open::EmergencyInhibit(kState, 0, 0).Publish(&created);
 }
 
 void ClearReady() {

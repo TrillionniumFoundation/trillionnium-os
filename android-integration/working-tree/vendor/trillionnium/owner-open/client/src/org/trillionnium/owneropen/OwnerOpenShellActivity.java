@@ -1,6 +1,8 @@
 package org.trillionnium.owneropen;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -15,6 +17,9 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /** Minimal truthful UI over the owner-open R5 broker wire. */
 public final class OwnerOpenShellActivity extends Activity implements OwnerOpenClient.Listener {
@@ -24,6 +29,18 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
     private static final String STATE_PROMPT = "owneropen.prompt";
     private static final String STATE_TRANSCRIPT = "owneropen.transcript";
     private static final String STATE_SCROLL = "owneropen.scroll";
+    private static final String STATE_EMERGENCY = "owneropen.emergency";
+    private static final String EMERGENCY_PREFS = "owneropen_emergency_intent";
+    private static final String LOCAL_ARMED = "armed";
+    private static final String LOCAL_UNKNOWN = "stop-state-unknown";
+    private static final Object LOCAL_INTENT_LOCK = new Object();
+    private static volatile String processIntent;
+    // Confirmed single requests outlive Activity rotation. Neither process
+    // restart nor recreation submits a saved request. Queues are bounded.
+    private static final ExecutorService EMERGENCY_OPERATIONS = finiteExecutor("owner-open-status", 1);
+    private static final ExecutorService STOP_OPERATIONS = finiteExecutor("owner-open-stop", 1);
+    private static final ExecutorService INTENT_PERSISTENCE = finiteExecutor("owner-open-local-intent", 32);
+    private volatile String emergencyOperationId;
     private static final int MAX_PROMPT_CHARS = 65_536;
     private static final int MAX_SAVED_TRANSCRIPT_CHARS = 16_384;
     private final ExecutorService operations = Executors.newSingleThreadExecutor();
@@ -44,10 +61,28 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
             turnId = state.getString(STATE_TURN);
         }
         client = new OwnerOpenClient(this);
+        String persisted = null;
+        boolean storageUnknown = false;
+        try { persisted = getSharedPreferences(EMERGENCY_PREFS, MODE_PRIVATE).getString(STATE_EMERGENCY, null); }
+        catch (RuntimeException error) { storageUnknown = true; }
+        synchronized (LOCAL_INTENT_LOCK) {
+            String restoredIntent = state == null ? null : state.getString(STATE_EMERGENCY);
+            if (processIntent == null || LOCAL_ARMED.equals(processIntent)) {
+                processIntent = storageUnknown || persisted == null ? LOCAL_UNKNOWN : persisted;
+                if (restoredIntent != null) processIntent = restoredIntent;
+            }
+            emergencyOperationId = LOCAL_ARMED.equals(processIntent) ? null
+                    : processIntent.startsWith("state-initializing-") ? LOCAL_UNKNOWN : processIntent;
+        }
+        if (emergencyOperationId != null) client.inhibitLocally();
         setContentView(buildView());
-        if (state == null) {
+        if (emergencyOperationId != null) {
+            append("local: emergency or unavailable local control state retained; stop delivery and prior effects may be unknown. "
+                    + "Only explicit Stop status is available; no automatic resend.");
+        }
+        if (state == null && emergencyOperationId == null) {
             runOperation("connect", () -> client.connect());
-        } else {
+        } else if (state != null) {
             prompt.setText(state.getString(STATE_PROMPT, ""));
             transcript.setText(state.getString(STATE_TRANSCRIPT, ""));
             final int savedScroll = state.getInt(STATE_SCROLL, 0);
@@ -80,6 +115,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
         }
         state.putString(STATE_TRANSCRIPT, history);
         state.putInt(STATE_SCROLL, scroll.getScrollY());
+        if (emergencyOperationId != null) state.putString(STATE_EMERGENCY, emergencyOperationId);
     }
 
     private LinearLayout buildView() {
@@ -109,6 +145,19 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
         root.addView(controls, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        Button initialize = button(R.string.initialize_control, view -> confirmInitializeControl());
+        initialize.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        root.addView(initialize);
+        Button emergency = button(R.string.emergency_stop, view -> confirmEmergencyStop());
+        emergency.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        root.addView(emergency);
+        Button status = button(R.string.emergency_status, view -> emergencyStatus());
+        status.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        root.addView(status);
+
         transcript = new TextView(this);
         transcript.setTextIsSelectable(true);
         scroll = new ScrollView(this);
@@ -129,6 +178,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
     }
 
     private void sendPrompt() {
+        if (!normalOperationAllowed()) return;
         String value = prompt.getText().toString();
         if (value.isBlank()) {
             append("local: prompt is empty");
@@ -169,13 +219,164 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
     }
 
     private void reconnect() {
+        if (!normalOperationAllowed()) return;
         runOperation("reconnect", () -> {
             client.connect();
             append("local: reconnected");
         });
     }
 
+    private static ExecutorService finiteExecutor(String name, int capacity) {
+        return new ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(capacity), task -> {
+                    Thread thread = new Thread(task, name);
+                    thread.setDaemon(true);
+                    return thread;
+                }, new ThreadPoolExecutor.AbortPolicy());
+    }
+
+    private boolean normalOperationAllowed() {
+        if (emergencyOperationId == null && LOCAL_ARMED.equals(processIntent)) return true;
+        append("local: control state is inhibited or unavailable; no dispatch. Use Stop status.");
+        return false;
+    }
+
+    private void confirmInitializeControl() {
+        OwnerOpenClient previous = null;
+        synchronized (LOCAL_INTENT_LOCK) {
+            // Rotation may miss the old Activity's callback. Explicit refresh
+            // can publish an already committed armed state, with no connect.
+            if (LOCAL_ARMED.equals(processIntent) && LOCAL_UNKNOWN.equals(emergencyOperationId)) {
+                previous = client;
+                client = new OwnerOpenClient(this);
+                emergencyOperationId = null;
+                transcript.append("local: explicitly refreshed committed initialization; "
+                        + "use Reconnect. No turn was resent.\n");
+            }
+        }
+        if (previous != null) { previous.shutdown(); return; }
+        if (!LOCAL_UNKNOWN.equals(processIntent)) {
+            append("local: initialization cannot clear an emergency intent");
+            return;
+        }
+        new AlertDialog.Builder(this).setTitle(R.string.initialize_control)
+                .setMessage(R.string.initialize_confirm)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.initialize_control, (dialog, which) -> initializeControl())
+                .show();
+    }
+
+    private void initializeControl() {
+        final String operation = id("state-probe");
+        submitControl(() -> {
+            try {
+                String reply = client.emergencyControl(operation, false);
+                if (!OwnerOpenFrame.controlStatusAllowsInitialization(reply, operation)) {
+                    append("local: initialization refused; device inhibit is present or unknown");
+                    return;
+                }
+                final String initializing = id("state-initializing");
+                synchronized (LOCAL_INTENT_LOCK) {
+                    if (!LOCAL_UNKNOWN.equals(processIntent)) return;
+                    processIntent = initializing;
+                }
+                INTENT_PERSISTENCE.execute(() -> {
+                    try {
+                        boolean saved = getSharedPreferences(EMERGENCY_PREFS, MODE_PRIVATE)
+                                .edit().putString(STATE_EMERGENCY, LOCAL_ARMED).commit();
+                        synchronized (LOCAL_INTENT_LOCK) {
+                            if (!initializing.equals(processIntent)) return;
+                            if (!saved) {
+                                processIntent = LOCAL_UNKNOWN;
+                                append("local: initialization persistence failed; no dispatch");
+                                return;
+                            }
+                            processIntent = LOCAL_ARMED;
+                            runOnUiThread(() -> {
+                                OwnerOpenClient previous;
+                                synchronized (LOCAL_INTENT_LOCK) {
+                                    if (isDestroyed() || !LOCAL_ARMED.equals(processIntent)
+                                            || !LOCAL_UNKNOWN.equals(emergencyOperationId)) return;
+                                    previous = client;
+                                    client = new OwnerOpenClient(this);
+                                    emergencyOperationId = null;
+                                    transcript.append("local: explicit initialization recorded; new turns allowed. "
+                                            + "No previous turn was resent; use explicit Reconnect.\n");
+                                }
+                                previous.shutdown();
+                            });
+                        }
+                    } catch (RuntimeException error) {
+                        synchronized (LOCAL_INTENT_LOCK) {
+                            if (initializing.equals(processIntent)) processIntent = LOCAL_UNKNOWN;
+                        }
+                        append("local initialization persistence failed; no dispatch: " + error);
+                    }
+                });
+            } catch (Exception error) { append("local initialization unknown; no dispatch: " + error); }
+        });
+    }
+
+    private void confirmEmergencyStop() {
+        new AlertDialog.Builder(this).setTitle(R.string.emergency_stop)
+                .setMessage(emergencyOperationId == null ? R.string.emergency_confirm : R.string.emergency_retry_confirm)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.emergency_stop, (dialog, which) -> emergencyStop())
+                .show();
+    }
+
+    private void emergencyStop() {
+        final String selected = id("stop");
+        final OwnerOpenClient selectedClient = client;
+        synchronized (LOCAL_INTENT_LOCK) {
+            processIntent = selected;
+            emergencyOperationId = selected;
+        }
+        selectedClient.inhibitLocally();
+        append("local: explicit emergency intent latched; cancellation and prior effects require evidence.");
+        // Send once without waiting for SharedPreferences fsync. This process
+        // keeps the intent; Bundle and best-effort durable prefs preserve it.
+        // Native ingress independently publishes the device-side durable fence.
+        submitStop(() -> {
+            try { append(selectedClient.emergencyControl(selected, true)); }
+            catch (Exception error) { append("local emergency delivery unknown: " + error
+                    + "; no automatic resend. Use Stop status or explicitly confirm another mechanical stop."); }
+        });
+        try {
+            INTENT_PERSISTENCE.execute(() -> {
+                try {
+                    if (!selected.equals(processIntent)) return;
+                    boolean saved = getSharedPreferences(EMERGENCY_PREFS, MODE_PRIVATE)
+                            .edit().putString(STATE_EMERGENCY, selected).commit();
+                    append("local: durable local emergency intent=" + saved
+                            + "; storage failure requires explicit coordination.");
+                } catch (RuntimeException error) { append("local emergency persistence failed: " + error); }
+            });
+        } catch (RuntimeException error) { append("local emergency persistence unavailable: " + error); }
+    }
+
+    private void emergencyStatus() {
+        final String selected = emergencyOperationId;
+        final OwnerOpenClient selectedClient = client;
+        if (selected == null) { append("local: no local emergency intent"); return; }
+        submitControl(() -> {
+            try { append(selectedClient.emergencyControl(selected, false)); }
+            catch (Exception error) { append("local emergency status unknown: " + error); }
+        });
+    }
+
+    private void submitStop(Runnable operation) {
+        try { STOP_OPERATIONS.execute(operation); }
+        catch (RuntimeException error) { append("local stop queue unavailable; delivery unknown: " + error); }
+    }
+
+    private void submitControl(Runnable operation) {
+        try { EMERGENCY_OPERATIONS.execute(operation); }
+        catch (RuntimeException error) { append("local control queue unavailable; outcome unknown: " + error); }
+    }
+
     private void ensureConnected() throws IOException {
+        if (emergencyOperationId != null || !LOCAL_ARMED.equals(processIntent)) throw new IOException("emergency inhibit; status only");
         if (!client.isConnected()) {
             client.connect();
         }
@@ -184,6 +385,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
     private void runOperation(String label, CheckedOperation operation) {
         operations.execute(() -> {
             try {
+                if (emergencyOperationId != null || !LOCAL_ARMED.equals(processIntent)) throw new IOException("emergency inhibit; status only");
                 operation.run();
             } catch (Exception error) {
                 append("local " + label + " failed: " + error);

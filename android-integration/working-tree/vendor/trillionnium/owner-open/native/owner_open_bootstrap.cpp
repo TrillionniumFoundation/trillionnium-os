@@ -58,7 +58,7 @@ constexpr const char* kStagingManifestSchema =
     "org.trillionnium.owner-open.rootfs-payload-manifest.v1";
 constexpr const char* kRuntimeProfileSchema =
     "org.trillionnium.owner-open.android-runtime-profile.v4";
-constexpr const char* kRuntimeProfileRevision = "2026-10-08-leap-api37-init-mount-handoff";
+constexpr const char* kRuntimeProfileRevision = "2026-10-09-leap-api37-owner-client-emergency";
 constexpr const char* kRuntimeProfileId = "leap-codex-host-relay-v1";
 volatile sig_atomic_t g_child_pid = -1;
 

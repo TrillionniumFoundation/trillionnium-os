@@ -19,6 +19,34 @@ public final class OwnerOpenFrame {
 
     private OwnerOpenFrame() {}
 
+    public static String ingressConnect() {
+        return "{\"schema\":\"org.trillionnium.owner-open.ingress-control.v1\","
+                + "\"version\":1,\"kind\":\"ingress.connect\"}";
+    }
+
+    public static String emergencyControl(String operationId, boolean explicitStop) {
+        if (operationId == null || !operationId.matches("[a-z0-9-]{1,96}")) {
+            throw new IllegalArgumentException("invalid emergency operation ID");
+        }
+        return "{\"schema\":\"org.trillionnium.owner-open.ingress-control.v1\","
+                + "\"version\":1,\"kind\":\"emergency."
+                + (explicitStop ? "stop" : "status") + "\",\"operation_id\":"
+                + quote(operationId) + (explicitStop ? ",\"explicit_user\":true" : "") + "}";
+    }
+
+    /** Exact native status receipt only; duplicates, extras and type drift fail closed. */
+    public static boolean controlStatusAllowsInitialization(String reply, String operationId) {
+        emergencyControl(operationId, false); // Validate the caller-owned correlation ID.
+        String expected = "{\"automatic_redispatch\":false,\"dispatch_inhibited\":false,"
+                + "\"durable_inhibit_confirmed\":false,\"inhibit_observation\":\"absent\","
+                + "\"kind\":\"emergency.result\",\"operation_id\":" + quote(operationId)
+                + ",\"prior_effect_outcome\":\"unknown\",\"process_quiescence\":\"unknown\","
+                + "\"request_attempt\":\"status_only\","
+                + "\"schema\":\"org.trillionnium.owner-open.ingress-control.v1\","
+                + "\"stop_requested\":false,\"version\":1}";
+        return expected.equals(reply);
+    }
+
     public static String turnStart(
             String sessionId, String taskId, String turnId, String userInput) {
         requireId(sessionId, "sessionId");
@@ -124,6 +152,12 @@ public final class OwnerOpenFrame {
     }
 
     public static String readLine(InputStream input) throws IOException {
+        return readLine(input, MAX_LINE_BYTES);
+    }
+
+    public static String readLine(InputStream input, int maximumWireBytes) throws IOException {
+        if (maximumWireBytes < 2 || maximumWireBytes > MAX_LINE_BYTES)
+            throw new IllegalArgumentException("invalid wire byte bound");
         Objects.requireNonNull(input, "input");
         ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
         // MAX_LINE_BYTES is the complete wire-line bound, including the
@@ -147,7 +181,7 @@ public final class OwnerOpenFrame {
                 }
                 return output.toString(StandardCharsets.UTF_8);
             }
-            if (output.size() >= MAX_PAYLOAD_BYTES) {
+            if (output.size() >= maximumWireBytes - 1) {
                 throw new IOException("owner-open frame exceeds the byte bound");
             }
             output.write(current);

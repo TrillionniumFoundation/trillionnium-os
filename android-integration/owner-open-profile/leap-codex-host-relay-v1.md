@@ -37,13 +37,19 @@ Host process generations and the actual Host hello.ack with runtime_ready=true.
 The ADB relay must have published its actual loopback listener descriptor with
 a matching live process generation. Readiness uses no semantic provider probe.
 
-The independent emergency service fsyncs the inhibit file and its parent, clears
-readiness and never reads a persisted PID or signals a numeric PGID. Android init
-then stops its tracked bootstrap service cgroup. Bootstrap retains its child
+The R52 ordinary-client emergency control first fences normal writes in ingress,
+then requests the fixed typed stop property. Android init clears readiness and
+stops its tracked bootstrap service before executing the helper, which fsyncs
+the inhibit file and its parent. It never reads a persisted PID or signals a
+numeric PGID. The result keeps process quiescence and prior effects unknown
+until separately observed. Bootstrap retains its child
 with waitid WNOWAIT while forwarding signals, blocks forwarding before reaping,
 and clears the PID before signals resume. The supervisor's durable session fence
 requires offline reconciliation after uncertain cleanup; it does not replay an
 accepted effect. Unknown accepted calls/jobs stay unknown on journal recovery.
+
+The new source generation and the best-effort local preference limitations are
+specified in [R52 ordinary ownerclient emergency stop](r52-owner-client-emergency.md).
 
 ## Provider transport
 

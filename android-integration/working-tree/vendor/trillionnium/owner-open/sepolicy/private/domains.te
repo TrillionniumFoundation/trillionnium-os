@@ -55,7 +55,7 @@ get_prop(trillionnium_owner_open_bootstrap, trillionnium_owner_open_prop)
 # The ingress terminates Android peer identity and the private broker token. It
 # never exposes the token to the application and forwards only bounded bytes.
 allow trillionnium_owner_open_ingress self:unix_stream_socket create_stream_socket_perms;
-allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file:dir search;
+allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file:dir { add_name getattr open read search write };
 allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file:file r_file_perms;
 allow trillionnium_owner_open_ingress trillionnium_owner_open_state_file:sock_file write;
 allow trillionnium_owner_open_ingress trillionnium_owner_open_bootstrap:unix_stream_socket connectto;
@@ -77,7 +77,7 @@ allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:
     search
     write
 };
-allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:file {
+allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_inhibit_file:file {
     create
     getattr
     open
@@ -97,3 +97,13 @@ allow trillionnium_owner_open_bootstrap self:file r_file_perms;
 userdebug_or_eng(`
   get_prop(shell, trillionnium_owner_open_prop)
 ')
+
+# Fixed-leaf transition constrains the new ingress write surface. Bootstrap
+# may observe this leaf but cannot create, replace, clear, rename or unlink it.
+type_transition trillionnium_owner_open_ingress trillionnium_owner_open_state_file:file trillionnium_owner_open_inhibit_file "emergency-stop";
+type_transition trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:file trillionnium_owner_open_inhibit_file "emergency-stop";
+type_transition trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:file trillionnium_owner_open_inhibit_file "emergency-stop";
+allow trillionnium_owner_open_ingress trillionnium_owner_open_inhibit_file:file { create getattr open read write };
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_inhibit_file:file { getattr open read };
+set_prop(trillionnium_owner_open_ingress, trillionnium_owner_open_stop_prop)
+# No owner-client or shell property-service write permission is granted.

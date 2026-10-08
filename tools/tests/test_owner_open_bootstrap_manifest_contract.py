@@ -43,7 +43,7 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
             '#include <json/json.h>',
             'constexpr const char* kManifest = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json";',
             'constexpr const char* kProfile = "/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json";',
-            'constexpr const char* kRuntimeProfileRevision = "2026-10-08-leap-api37-init-mount-handoff";',
+            'constexpr const char* kRuntimeProfileRevision = "2026-10-09-leap-api37-owner-client-emergency";',
             'constexpr const char* kRuntimeProfileId = "leap-codex-host-relay-v1";',
             "Json::CharReaderBuilder::strictMode",
             'builder["skipBom"] = false',
@@ -124,7 +124,7 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
         self.assertFalse(profile["provider"]["automatic_reconnect"])
         self.assertFalse(profile["provider"]["automatic_redispatch"])
         self.assertFalse(profile["provider"]["long_lived_credentials_on_phone"])
-        self.assertEqual(profile["revision"], "2026-10-08-leap-api37-init-mount-handoff")
+        self.assertEqual(profile["revision"], "2026-10-09-leap-api37-owner-client-emergency")
         self.assertEqual(profile["profile_id"], "leap-codex-host-relay-v1")
         self.assertEqual(profile["enabled_property"], "ro.trillionnium.owner_open.enabled")
         self.assertEqual(profile["ready_property"], "trillionnium.owner_open.ready")
@@ -205,8 +205,10 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
         emergency_service = rc[rc.index("service trillionnium_owner_open_emergency_stop "):]
         self.assertEqual(re.findall(r"^    capabilities(.*)$", emergency_service, re.M), [""])
         emergency_action = rc[rc.index("on property:sys.trillionnium.owner_open.stop=1"):rc.index("service trillionnium_owner_open_verify ")]
-        self.assertLess(emergency_action.index("stop trillionnium_owner_open_ingress"), emergency_action.index("exec_start trillionnium_owner_open_emergency_stop"))
-        self.assertLess(emergency_action.index("exec_start trillionnium_owner_open_emergency_stop"), emergency_action.index("stop trillionnium_owner_open_bootstrap"))
+        self.assertNotIn("stop trillionnium_owner_open_ingress", rc)
+        self.assertIn("start trillionnium_owner_open_ingress\n    exec_start trillionnium_owner_open_verify", rc)
+        self.assertLess(emergency_action.index("setprop trillionnium.owner_open.ready 0"), emergency_action.index("stop trillionnium_owner_open_bootstrap"))
+        self.assertLess(emergency_action.index("stop trillionnium_owner_open_bootstrap"), emergency_action.index("exec_start trillionnium_owner_open_emergency_stop"))
         self.assertNotIn("allow trillionnium_owner_open_emergency_stop self:capability", domains)
         self.assertNotIn("set_prop(shell, trillionnium_owner_open_prop)", domains)
 

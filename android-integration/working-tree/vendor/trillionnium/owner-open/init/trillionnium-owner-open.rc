@@ -16,6 +16,7 @@ on post-fs-data
     setprop trillionnium.owner_open.data_ready 1
 
 on property:ro.trillionnium.owner_open.enabled=true && property:trillionnium.owner_open.data_ready=1
+    start trillionnium_owner_open_ingress
     exec_start trillionnium_owner_open_verify
 
 on property:trillionnium.owner_open.verified=1 && property:trillionnium.owner_open.data_ready=1
@@ -33,7 +34,6 @@ on property:trillionnium.owner_open.verified=1 && property:trillionnium.owner_op
     start trillionnium_owner_open_bootstrap
 
 on property:init.svc.trillionnium_owner_open_bootstrap=stopped && property:trillionnium.owner_open.mount_ready=1
-    stop trillionnium_owner_open_ingress
     setprop trillionnium.owner_open.ready 0
     setprop trillionnium.owner_open.mount_ready 0
     setprop trillionnium.owner_open.verified 0
@@ -42,16 +42,10 @@ on property:init.svc.trillionnium_owner_open_bootstrap=stopped && property:trill
     umount /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open
     umount /data/trillionnium/owner-open/root
 
-on property:trillionnium.owner_open.ready=1
-    start trillionnium_owner_open_ingress
-
-on property:trillionnium.owner_open.ready=0
-    stop trillionnium_owner_open_ingress
-
 on property:sys.trillionnium.owner_open.stop=1
-    stop trillionnium_owner_open_ingress
-    exec_start trillionnium_owner_open_emergency_stop
+    setprop trillionnium.owner_open.ready 0
     stop trillionnium_owner_open_bootstrap
+    exec_start trillionnium_owner_open_emergency_stop
     setprop sys.trillionnium.owner_open.stop 0
 
 service trillionnium_owner_open_verify /system_ext/bin/trillionnium-owner-open-bootstrap --verify-image

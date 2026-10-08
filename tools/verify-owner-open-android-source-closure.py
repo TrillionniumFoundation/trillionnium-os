@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass, field
 import json
+import hashlib
 from pathlib import Path
 from pathlib import PurePosixPath
 import re
@@ -36,6 +37,7 @@ ACTIVE_SOURCE_FILES = (
     ACTIVE_RUNTIME_PROFILE,
     ANDROID_ROOT / "tools/verify_owner_open_materialized_erofs_payload.py",
     ANDROID_ROOT / "init/trillionnium-sun-btfm-modprobe.rc",
+    ANDROID_ROOT / "native/owner_open_emergency_inhibit.h",
 )
 ACTIVE_EXTRA_MODULES = {"trillionnium-sun-btfm-modprobe-init-rc"}
 ACTIVE_EXTRA_SERVICES = {"trillionnium_owner_open_verify"}
@@ -246,7 +248,7 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
         return
     expected = {
         "schema": "org.trillionnium.owner-open.android-runtime-profile.v4",
-        "revision": "2026-10-08-leap-api37-init-mount-handoff",
+        "revision": "2026-10-09-leap-api37-owner-client-emergency",
         "profile_id": "leap-codex-host-relay-v1",
         "enabled_property": "ro.trillionnium.owner_open.enabled",
         "data_ready_property": "trillionnium.owner_open.data_ready",
@@ -295,6 +297,33 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
             "service_mount_namespace": "mnt",
             "bootstrap_mount_operations": False,
         },
+        "owner_client_control": {'schema': 'org.trillionnium.owner-open.ingress-control.v1',
+         'version': 1,
+         'first_frame_required': True,
+         'maximum_line_bytes': 4096,
+         'maximum_pending_controls': 64,
+         'explicit_user_stop_required': True,
+         'control_available_while_runtime_unready': True,
+         'persistent_inhibit_leaf': '/data/trillionnium/owner-open/state/emergency-stop',
+         'automatic_redispatch': False,
+         'automatic_resume': False,
+         'process_quiescence_claim': 'unknown_until_observed',
+         'selinux_source_sha256': {'types': 'd187fa0c7ea2ffd3abbce02db721d2071083854fb033bb9849fa2822d0cde7f9',
+                                   'domains': '93c7c21f59e7209d683038a8f7d03f275a19edd1e4a658a15374998add16eff4',
+                                   'file_contexts': 'dc0818aae7c6809665ac35854a1dc2d382e4da98c5dc29e1813e015907363798',
+                                   'property_contexts': '64d652c3dce81ba5571c53adaef71e920c8baf99805821da8bb2a29fce2cd1df',
+                                   'seapp_contexts': '06c87b1957ec3be9419a657d8c2e51a22e826c42bc3391fdcdac6b2e787d0367'},
+         'operation_id_format': '[a-z0-9-]{1,96}',
+         'mechanical_stop_attempts_per_ingress_process': 4096,
+         'mechanical_stop_attempt_deduplication': 'operation_id_within_ingress_process_no_eviction',
+         'new_mechanical_stop_requires_new_explicit_user_confirmation': True,
+         'status_never_requests_stop': True,
+         'client_request_deadline_milliseconds': 5000,
+         'client_stop_queue_capacity': 1,
+         'client_status_queue_capacity': 1,
+         'local_stop_intent_persistence': 'best_effort_shared_preferences',
+         'local_missing_or_unreadable_state': 'inhibit_until_explicit_absent_unfenced_status_and_committed_initialization',
+         'normal_writes_fenced_before_property_and_storage': True},
         "provider": {
             "role": "host_codex",
             "phone_adapter": "/usr/libexec/trillionnium/provider-adapter",
@@ -350,8 +379,8 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
             blocks[heading].append(command)
     verify_trigger = "on property:ro.trillionnium.owner_open.enabled=true && property:trillionnium.owner_open.data_ready=1"
     mount_trigger = "on property:trillionnium.owner_open.verified=1 && property:trillionnium.owner_open.data_ready=1"
-    if blocks.get(verify_trigger) != ["exec_start trillionnium_owner_open_verify"]:
-        report.errors.append("init verifier must be the sole enabled/data-ready action")
+    if blocks.get(verify_trigger) != ["start trillionnium_owner_open_ingress", "exec_start trillionnium_owner_open_verify"]:
+        report.errors.append("init enabled/data-ready action must start control ingress before the verifier")
     if blocks.get(mount_trigger) != [
         "mount erofs loop@/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.erofs /data/trillionnium/owner-open/root ro nosuid nodev",
         "mount none /data/trillionnium/owner-open/state /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open bind",
@@ -401,7 +430,6 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
             "setprop trillionnium.owner_open.data_ready 1",
         ],
         "on property:init.svc.trillionnium_owner_open_bootstrap=stopped && property:trillionnium.owner_open.mount_ready=1": [
-            "stop trillionnium_owner_open_ingress",
             "setprop trillionnium.owner_open.ready 0",
             "setprop trillionnium.owner_open.mount_ready 0",
             "setprop trillionnium.owner_open.verified 0",
@@ -410,12 +438,10 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
             "umount /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open",
             "umount /data/trillionnium/owner-open/root",
         ],
-        "on property:trillionnium.owner_open.ready=1": ["start trillionnium_owner_open_ingress"],
-        "on property:trillionnium.owner_open.ready=0": ["stop trillionnium_owner_open_ingress"],
         "on property:sys.trillionnium.owner_open.stop=1": [
-            "stop trillionnium_owner_open_ingress",
-            "exec_start trillionnium_owner_open_emergency_stop",
+            "setprop trillionnium.owner_open.ready 0",
             "stop trillionnium_owner_open_bootstrap",
+            "exec_start trillionnium_owner_open_emergency_stop",
             "setprop sys.trillionnium.owner_open.stop 0",
         ],
     }
@@ -811,13 +837,41 @@ def verify(root: Path) -> Report:
     context_rows = [line.split("#", 1)[0].split() for line in sepolicy_text.get("property_contexts", "").splitlines()]
     context_rows = [row for row in context_rows if row]
     expected_rows = {
-        (name, "u:object_r:trillionnium_owner_open_prop:s0", "exact", kind)
+        (name, "u:object_r:trillionnium_owner_open_stop_prop:s0" if name == "sys.trillionnium.owner_open.stop"
+         else "u:object_r:trillionnium_owner_open_prop:s0", "exact", kind)
         for name, kind in exact_property_types.items()
     }
     if {tuple(row) for row in context_rows} != expected_rows or len(context_rows) != len(expected_rows):
         report.errors.append("owner-open property context inventory/type/exact binding differs")
     if client_package and f"name={client_package}" not in sepolicy_text.get("seapp_contexts", ""):
         report.errors.append("seapp_contexts does not bind the owner-open client package")
+
+    try:
+        control_profile = load_json(root / ACTIVE_RUNTIME_PROFILE, "R52 owner-client control profile")
+    except (OSError, ValueError) as error:
+        report.errors.append(str(error))
+        return report
+    for name, expected_digest in control_profile.get("owner_client_control", {}).get("selinux_source_sha256", {}).items():
+        if hashlib.sha256(sepolicy_text.get(name, "").encode()).hexdigest() != expected_digest:
+            report.errors.append(f"R52 explicit policy generation source digest differs: {name}")
+    domains = sepolicy_text.get("domains", "")
+    policy_commands = [line.split("#", 1)[0].strip() for line in domains.splitlines()]
+    joined_policy = "\n".join(policy_commands)
+    for peer in ("shell", "trillionnium_owner_open_client", "trillionnium_owner_open_bootstrap"):
+        if re.search(rf"set_prop\(\s*{peer}\s*,\s*trillionnium_owner_open_stop_prop\s*\)", joined_policy):
+            report.errors.append("emergency stop property writable outside ingress")
+    if joined_policy.count("trillionnium_owner_open_stop_prop") != 1 or joined_policy.count("set_prop(trillionnium_owner_open_ingress, trillionnium_owner_open_stop_prop)") != 1:
+        report.errors.append("emergency stop property must have one typed ingress setter")
+    for peer in ("trillionnium_owner_open_ingress", "trillionnium_owner_open_emergency_stop", "trillionnium_owner_open_bootstrap"):
+        expected = f'type_transition {peer} trillionnium_owner_open_state_file:file trillionnium_owner_open_inhibit_file "emergency-stop";'
+        if joined_policy.count(expected) != 1:
+            report.errors.append("persistent inhibit fixed-leaf transition differs")
+    if re.search(r"allow\s+(?:shell|trillionnium_owner_open_client)\s+trillionnium_owner_open_(?:state|inhibit)_file", joined_policy):
+        report.errors.append("owner client/shell must not directly access private state or inhibit")
+    if re.search(r"allow\s+\S+\s+trillionnium_owner_open_inhibit_file:file\s+[^;]*(?:unlink|rename|relabelto|relabel_from)", joined_policy):
+        report.errors.append("persistent inhibit must not be clearable by a runtime domain")
+    if "/data/trillionnium/owner-open/state/emergency-stop         u:object_r:trillionnium_owner_open_inhibit_file:s0" not in sepolicy_text.get("file_contexts", ""):
+        report.errors.append("persistent inhibit exact file context missing")
 
     report.facts = {
         "revision": profile.get("revision"),

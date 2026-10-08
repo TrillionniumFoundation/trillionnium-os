@@ -74,6 +74,37 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
             "docs/GLOBAL_ARCHITECTURE.md",
         )
 
+    def test_r52_unknown_policy_grant_and_marker_clear_fail_closed(self) -> None:
+        relative = module.ANDROID_ROOT / "sepolicy/private/domains.te"
+        path = self.root / relative
+        original = path.read_text()
+        for extra in (
+            "set_prop(shell, trillionnium_owner_open_stop_prop)",
+            "allow shell trillionnium_owner_open_stop_prop:property_service set;",
+            "allow trillionnium_owner_open_client trillionnium_owner_open_inhibit_file:file read;",
+            "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_inhibit_file:file unlink;",
+            "allow { shell } core_data_file_type:file r_file_perms;",
+        ):
+            with self.subTest(extra=extra):
+                path.write_text(original + "\n" + extra + "\n")
+                report = module.verify(self.root)
+                self.assertFalse(report.ok, report.facts)
+                self.assertTrue(any("policy generation source digest differs" in e for e in report.errors), report.errors)
+        path.write_text(original)
+
+    def test_r52_ingress_control_availability_unknown_services_and_order_fail_closed(self) -> None:
+        path = self.root / module.ANDROID_ROOT / "init/trillionnium-owner-open.rc"
+        original = path.read_text()
+        for changed in (
+            original.replace("start trillionnium_owner_open_ingress\n    exec_start trillionnium_owner_open_verify", "exec_start trillionnium_owner_open_verify\n    start trillionnium_owner_open_ingress"),
+            original + "\non property:trillionnium.owner_open.ready=0\n    stop trillionnium_owner_open_ingress\n",
+            original + "\nservice unexpected_owner_service /system/bin/true\n    user root\n",
+        ):
+            with self.subTest(changed=changed[-100:]):
+                path.write_text(changed)
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
     def test_missing_profile_reference_fails_closed(self) -> None:
         (self.root / "docs/GLOBAL_ARCHITECTURE.md").unlink()
         report = module.verify(self.root)
