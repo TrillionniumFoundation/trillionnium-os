@@ -101,11 +101,18 @@ The bounded record contains only canonical locally generated `session-UUID`,
 `task-UUID`, optional `turn-UUID`, revision and up to three cursor entries. No
 prompt, transcript, socket, credential, model authentication or effect outcome
 is stored. Cursor domains are exactly `transport_event`, `job_runtime_event`
-and `job_journal_record`, matching the Host; each cursor carries a SHA-256 digest
+and `job_journal_record` from distinct Host interfaces; each cursor carries a SHA-256 digest
 of a verified non-secret producer instance/epoch and a signed nonnegative
 inclusive cursor. A cursor is the next explicit read position supplied by
 validated evidence, not an interchangeable journal offset, transport sequence
-or proof of effect completion. Unsigned values above Java `long` fail closed.
+or proof of effect completion. The current Android `turn.inspect` instead reads
+a durable turn-frame index; its reply exposes neither a cursor domain nor a
+producer epoch. These cached domains must not be passed as its cursor. Until a
+separate reviewed binding exists, explicit same-turn inspection uses cursor zero
+and pagination/cross-epoch restoration remain pending. Outside an active Host
+turn, inspection also requires the existing wire request digest; this helper
+does not manufacture that digest or qualify that consumer path. Unsigned values
+above Java `long` fail closed.
 
 The caller supplies its already-existing app-private files directory. The
 store uses three fixed filenames, a nonblocking process file lock and revision
@@ -121,6 +128,15 @@ Records are at most 512 bytes, use a strict versioned binary codec with no
 unknown fields and a SHA-256 corruption checksum. The checksum is not
 authentication against a malicious same-UID writer. New files have mode 0600;
 final-component symlinks and non-regular committed/lock files are rejected.
+All cooperating Store instances share a nonreentrant per-canonical-directory
+process guard acquired before opening any lock-file descriptor. A failed or
+recursive local contender opens no descriptor, so closing it cannot release
+the active writer's POSIX process lock. The registry contains at most 16 active
+partitions and 16 concurrent references per partition; capacity rejects before
+file I/O. The global registry monitor covers metadata only. The local guard is
+released only after the FileLock and channel are closed. Other same-UID code
+must not independently open/close or hardlink the owned lock inode; arbitrary
+same-UID interference is outside this cooperative cache's security boundary.
 Commit writes a new pending file, syncs it, atomically renames it and syncs the
 directory. No non-atomic fallback or automatic pending-file repair is allowed.
 A pending residue fences load/write and is preserved. Post-rename or close/sync
@@ -138,7 +154,8 @@ append-only history or model execution. These source ceilings do not assert
 phone fsync latency, storage durability under power loss or a measured SLO.
 Host reproduction is `python3 -m unittest
 tools.tests.test_owner_open_client_state_store -v`: it executes the production
-Java classes, real files, cross-process reopen/locking and injected pre/post
+Java classes, real files, cross-process reopen/locking, same-JVM and recursive
+rejection followed by a third-process POSIX-lock probe, and injected pre/post
 atomic-rename I/O failure cuts. Android compilation, consumer integration,
 same-boot main/cover recreation, process exit, paginated explicit Inspect and
 one-effect receipt evidence remain open. Restore has no dispatch API;

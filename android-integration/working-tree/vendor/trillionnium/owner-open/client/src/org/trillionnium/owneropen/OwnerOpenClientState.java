@@ -13,6 +13,7 @@ public final class OwnerOpenClientState {
             "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
     private static final Pattern SHA256 = Pattern.compile("[0-9a-f]{64}");
 
+    // Distinct Host interfaces. None is the durable turn.inspect frame-index domain.
     public enum CursorDomain {
         TRANSPORT_EVENT("transport_event"),
         JOB_RUNTIME_EVENT("job_runtime_event"),

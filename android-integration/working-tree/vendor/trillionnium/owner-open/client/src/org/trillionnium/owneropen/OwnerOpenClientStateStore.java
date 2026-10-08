@@ -16,14 +16,27 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /** Fixed-file, bounded CAS store under the caller's already-existing app-private files directory. */
 public final class OwnerOpenClientStateStore {
     private static final String STATE = "owner-client-session-v1.bin";
     private static final String PENDING = "owner-client-session-v1.pending";
     private static final String LOCK = "owner-client-session-v1.lock";
+    private static final int MAX_PROCESS_PARTITIONS = 16;
+    private static final int MAX_PARTITION_REFERENCES = 16;
+    private static final Map<Path, ProcessGuard> PROCESS_GUARDS = new HashMap<>();
     private final Path directory;
     private final CommitHook hook;
+
+    private static final class ProcessGuard {
+        // A nonreentrant guard prevents a rejected same-process contender from opening/closing
+        // another lock FD: POSIX fcntl locks can be released by closing any FD for that inode.
+        final Semaphore permit = new Semaphore(1);
+        int references;
+    }
 
     public enum Failure {
         IO_FAILURE, CORRUPT_RECORD, PENDING_WRITE, INVALID_FILE, LOCK_BUSY,
@@ -68,7 +81,11 @@ public final class OwnerOpenClientStateStore {
 
     /** Empty means absent only. Corruption, pending writes or I/O failures never become empty. */
     public Optional<OwnerOpenClientStateCodec.Snapshot> load() throws IOException {
-        return locked(() -> readCommitted(), false);
+        return locked(new LockedOperation<Optional<OwnerOpenClientStateCodec.Snapshot>>() {
+            public Optional<OwnerOpenClientStateCodec.Snapshot> run() throws IOException {
+                return readCommitted();
+            }
+        }, false);
     }
 
     /** expectedRevision=0 creates the first identity; otherwise rejects stale writers. */
@@ -77,55 +94,57 @@ public final class OwnerOpenClientStateStore {
         if (expectedRevision < 0 || next == null) {
             throw new IllegalArgumentException("invalid expected revision/state");
         }
-        return locked(() -> {
-            Optional<OwnerOpenClientStateCodec.Snapshot> current = readCommitted();
-            long actualRevision = current.isPresent() ? current.get().revision : 0;
-            if (actualRevision != expectedRevision) {
-                throw new StoreException(Failure.STALE_REVISION, false, null);
-            }
-            try {
-                if (current.isPresent()) {
-                    OwnerOpenClientState.requireSuccessor(current.get().state, next);
-                } else if (!next.cursors.isEmpty()) {
-                    throw new IllegalArgumentException("initial identity cannot invent observed cursors");
+        return locked(new LockedOperation<OwnerOpenClientStateCodec.Snapshot>() {
+            public OwnerOpenClientStateCodec.Snapshot run() throws IOException {
+                Optional<OwnerOpenClientStateCodec.Snapshot> current = readCommitted();
+                long actualRevision = current.isPresent() ? current.get().revision : 0;
+                if (actualRevision != expectedRevision) {
+                    throw new StoreException(Failure.STALE_REVISION, false, null);
                 }
-            } catch (IllegalArgumentException error) {
-                throw new StoreException(Failure.STATE_CONFLICT, false, error);
-            }
-            final long newRevision;
-            try {
-                newRevision = Math.addExact(actualRevision, 1);
-            } catch (ArithmeticException error) {
-                throw new StoreException(Failure.STATE_CONFLICT, false, error);
-            }
-            OwnerOpenClientStateCodec.Snapshot snapshot =
-                    new OwnerOpenClientStateCodec.Snapshot(newRevision, next);
-            byte[] record = OwnerOpenClientStateCodec.encode(snapshot);
-            Path pending = directory.resolve(PENDING);
-            Path committed = directory.resolve(STATE);
-            boolean renamed = false;
-            try {
-                // CREATE_NEW preserves a crash residue and prevents symlink replacement/following.
-                try (FileChannel output = FileChannel.open(pending,
-                        java.util.Set.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE,
-                                LinkOption.NOFOLLOW_LINKS),
-                        PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")))) {
-                    ByteBuffer bytes = ByteBuffer.wrap(record);
-                    while (bytes.hasRemaining()) {
-                        output.write(bytes);
+                try {
+                    if (current.isPresent()) {
+                        OwnerOpenClientState.requireSuccessor(current.get().state, next);
+                    } else if (!next.cursors.isEmpty()) {
+                        throw new IllegalArgumentException("initial identity cannot invent observed cursors");
                     }
-                    output.force(true);
+                } catch (IllegalArgumentException error) {
+                    throw new StoreException(Failure.STATE_CONFLICT, false, error);
                 }
-                hook.afterFileSync();
-                Files.move(pending, committed,
-                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-                renamed = true;
-                hook.afterAtomicRename();
-                syncDirectory();
-                return snapshot;
-            } catch (IOException error) {
-                // Do not repair/delete an ambiguous pending write or authorize submission.
-                throw new StoreException(Failure.IO_FAILURE, renamed, error);
+                final long newRevision;
+                try {
+                    newRevision = Math.addExact(actualRevision, 1);
+                } catch (ArithmeticException error) {
+                    throw new StoreException(Failure.STATE_CONFLICT, false, error);
+                }
+                OwnerOpenClientStateCodec.Snapshot snapshot =
+                        new OwnerOpenClientStateCodec.Snapshot(newRevision, next);
+                byte[] record = OwnerOpenClientStateCodec.encode(snapshot);
+                Path pending = directory.resolve(PENDING);
+                Path committed = directory.resolve(STATE);
+                boolean renamed = false;
+                try {
+                    // CREATE_NEW preserves a crash residue and prevents symlink replacement/following.
+                    try (FileChannel output = FileChannel.open(pending,
+                            java.util.Set.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE,
+                                    LinkOption.NOFOLLOW_LINKS),
+                            PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------")))) {
+                        ByteBuffer bytes = ByteBuffer.wrap(record);
+                        while (bytes.hasRemaining()) {
+                            output.write(bytes);
+                        }
+                        output.force(true);
+                    }
+                    hook.afterFileSync();
+                    Files.move(pending, committed,
+                            StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                    renamed = true;
+                    hook.afterAtomicRename();
+                    syncDirectory();
+                    return snapshot;
+                } catch (IOException error) {
+                    // Do not repair/delete an ambiguous pending write or authorize submission.
+                    throw new StoreException(Failure.IO_FAILURE, renamed, error);
+                }
             }
         }, true);
     }
@@ -167,6 +186,51 @@ public final class OwnerOpenClientStateStore {
     }
 
     private <T> T locked(LockedOperation<T> operation, boolean mayWrite) throws IOException {
+        ProcessGuard processGuard = retainProcessGuard();
+        boolean acquired = false;
+        try {
+            if (!processGuard.permit.tryAcquire()) {
+                throw new StoreException(Failure.LOCK_BUSY, false, null);
+            }
+            acquired = true;
+            // No lock inode FD may be opened before acquiring the local nonreentrant guard.
+            return fileLocked(operation, mayWrite);
+        } finally {
+            // fileLocked has already closed its FileLock and channel, even on failure.
+            if (acquired) {
+                processGuard.permit.release();
+            }
+            releaseProcessGuard(processGuard);
+        }
+    }
+
+    private ProcessGuard retainProcessGuard() throws IOException {
+        synchronized (PROCESS_GUARDS) {
+            ProcessGuard guard = PROCESS_GUARDS.get(directory);
+            if (guard == null) {
+                if (PROCESS_GUARDS.size() >= MAX_PROCESS_PARTITIONS) {
+                    throw new StoreException(Failure.LOCK_BUSY, false, null);
+                }
+                guard = new ProcessGuard();
+                PROCESS_GUARDS.put(directory, guard);
+            }
+            if (guard.references >= MAX_PARTITION_REFERENCES) {
+                throw new StoreException(Failure.LOCK_BUSY, false, null);
+            }
+            guard.references++;
+            return guard;
+        }
+    }
+
+    private void releaseProcessGuard(ProcessGuard guard) {
+        synchronized (PROCESS_GUARDS) {
+            if (--guard.references == 0) {
+                PROCESS_GUARDS.remove(directory);
+            }
+        }
+    }
+
+    private <T> T fileLocked(LockedOperation<T> operation, boolean mayWrite) throws IOException {
         Path lockPath = directory.resolve(LOCK);
         if (attributesIfPresent(lockPath) != null) {
             requireRegular(lockPath);

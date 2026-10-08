@@ -20,6 +20,8 @@ import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.security.*;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import org.trillionnium.owneropen.OwnerOpenClientState.Cursor;
 import org.trillionnium.owneropen.OwnerOpenClientState.CursorDomain;
 import org.trillionnium.owneropen.OwnerOpenClientStateCodec.Snapshot;
@@ -196,10 +198,11 @@ public final class ClientStateStoreHarness {
  }
  static void explicitReadback(Path directory) throws Exception {
   storeRoundtrip(directory);Snapshot restored=new OwnerOpenClientStateStore(directory).load().orElseThrow();
-  long cursor=restored.state.cursorForExplicitInspect(CursorDomain.JOB_RUNTIME_EVENT,EPOCH);
+  // turn.inspect is a different durable frame domain; these cached job/transport cursors cannot select it.
+  long cursor=0;
   String frame=OwnerOpenFrame.turnInspect(restored.state.sessionId,restored.state.taskId,restored.state.turnId,cursor,256);
   require(OwnerOpenFrame.hasKind(frame,"turn.inspect"),"readback changed operation kind");
-  require(frame.contains("\"inclusive_cursor\":13")&&frame.contains(TURN),"explicit readback lost same identity/cursor");
+  require(frame.contains("\"inclusive_cursor\":0")&&frame.contains(TURN),"explicit readback lost same identity/explicit zero cursor");
   require(!OwnerOpenFrame.hasKind(frame,"turn.start"),"readback submitted an effect");
   byte[] before=Files.readAllBytes(directory.resolve(BIN));
   for(int i=0;i<10;i++)new OwnerOpenClientStateStore(directory).load();
@@ -215,6 +218,39 @@ public final class ClientStateStoreHarness {
    require(lock.isValid(),"holder lock invalid");System.out.println("READY");System.out.flush();
    require(System.in.read()!=-1,"holder lost coordination");
   }
+ }
+ static void probeOsLock(Path directory) throws Exception {
+  try(FileChannel channel=FileChannel.open(directory.resolve(LOCK),StandardOpenOption.WRITE);
+      FileLock probe=channel.tryLock()) {
+   require(probe==null,"external independent process entered while original Store transaction was active");
+  }
+ }
+ static void sameJvmLockSafety(Path directory,boolean recursive) throws Exception {
+  new OwnerOpenClientStateStore(directory).compareAndSet(0,identity());
+  CountDownLatch synced=new CountDownLatch(1),release=new CountDownLatch(1);
+  AtomicReference<Throwable> failed=new AtomicReference<>();
+  OwnerOpenClientStateStore store=new OwnerOpenClientStateStore(directory,new OwnerOpenClientStateStore.CommitHook(){
+   public void afterFileSync() throws IOException {
+    try {
+     if(recursive)failure(Failure.LOCK_BUSY,()->new OwnerOpenClientStateStore(directory).load());
+     synced.countDown();require(release.await(5,TimeUnit.SECONDS),"writer lost coordination");
+    }catch(Exception error){throw new IOException(error);}
+   }
+   public void afterAtomicRename(){}
+  });
+  Thread writer=new Thread(()->{try{store.compareAndSet(1,cursored());}catch(Throwable error){failed.set(error);}});
+  writer.start();
+  try {
+   require(synced.await(5,TimeUnit.SECONDS),"writer never reached actual file fsync");
+   failure(Failure.LOCK_BUSY,()->new OwnerOpenClientStateStore(directory).load());
+   Process child=new ProcessBuilder(System.getProperty("java.home")+"/bin/java","-cp",System.getProperty("java.class.path"),
+    "org.trillionnium.owneropen.ClientStateStoreHarness","probe-os-lock",directory.toString()).redirectErrorStream(true).start();
+   require(child.waitFor(3,TimeUnit.SECONDS),"external independent process probe timed out");
+   String output=new String(child.getInputStream().readAllBytes());
+   require(child.exitValue()==0,"failed Store contender released original POSIX lock: "+output);
+  } finally {release.countDown();writer.join(3000);}
+  require(!writer.isAlive()&&failed.get()==null,"original writer failed: "+failed.get());
+  same(cursored(),new OwnerOpenClientStateStore(directory).load().orElseThrow().state);
  }
  public static void main(String[] args) throws Exception {
   String scenario=args[0];Path directory=args.length>1?Path.of(args[1]):null;
@@ -236,6 +272,9 @@ public final class ClientStateStoreHarness {
    case "explicit-readback":explicitReadback(directory);break;
    case "lock-held":lockHeld(directory);break;
    case "hold-lock":holdLock(directory);break;
+   case "probe-os-lock":probeOsLock(directory);break;
+   case "same-jvm-lock-safety":sameJvmLockSafety(directory,false);break;
+   case "same-thread-lock-safety":sameJvmLockSafety(directory,true);break;
    default:throw new AssertionError("unknown behavior test");
   }
   System.out.println(scenario+" PASS; actual Java/host filesystem only, Android/phone unqualified");
@@ -310,7 +349,7 @@ class ClientStateStoreBehaviorTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             self.run_scenario('overflow', Path(folder))
 
-    def test_explicit_inspect_uses_restored_identity_and_runtime_cursor(self):
+    def test_explicit_turn_inspect_uses_identity_and_zero_cursor_without_mixing_job_domains(self):
         with tempfile.TemporaryDirectory() as folder:
             self.run_scenario('explicit-readback', Path(folder))
 
@@ -328,6 +367,11 @@ class ClientStateStoreBehaviorTest(unittest.TestCase):
                 if holder.poll() is None:
                     holder.kill()
                     holder.communicate()
+
+    def test_failed_same_jvm_or_recursive_contender_cannot_release_writer_posix_lock(self):
+        for scenario in ('same-jvm-lock-safety', 'same-thread-lock-safety'):
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as folder:
+                self.run_scenario(scenario, Path(folder))
 
 
 if __name__ == '__main__':
