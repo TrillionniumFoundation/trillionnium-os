@@ -9,6 +9,8 @@ allow init trillionnium_owner_open_payload_file:dir mounton;
 # init opens the immutable EROFS backing image before attaching the loop device.
 allow init trillionnium_owner_open_payload_file:dir search;
 allow init trillionnium_owner_open_payload_file:file { getattr open read };
+# Loop-device workers read the immutable backing file in the kernel domain.
+allow kernel trillionnium_owner_open_payload_file:file read;
 # EROFS uses platform fs_use_xattr and labeledfs; per-inode labels stay intact.
 
 allow trillionnium_owner_open_bootstrap self:capability {
