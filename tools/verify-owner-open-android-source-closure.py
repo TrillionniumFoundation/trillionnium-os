@@ -307,7 +307,9 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
     if set(active) != set(expected):
         report.errors.append("Leap host-relay runtime profile key inventory differs")
     for name, value in expected.items():
-        if active.get(name) != value:
+        # Python equates 0/1 with false/true even inside dictionaries. Bind
+        # canonical JSON values so type drift cannot satisfy this contract.
+        if json.dumps(active.get(name), sort_keys=True) != json.dumps(value, sort_keys=True):
             report.errors.append(f"Leap host-relay runtime profile {name} differs from exact source contract")
     missing = sorted(value for value in ACTIVE_PAYLOAD_PATHS if value not in bootstrap)
     if missing:
@@ -382,6 +384,52 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
         key = f"service trillionnium_owner_open_{service} {arguments}"
         if blocks.get(key) != ["class core", "user root", "group root system", "disabled", *settings]:
             report.errors.append(f"init {service} service command/capability contract differs")
+    remaining_actions = {
+        "on early-init": [
+            "setprop trillionnium.owner_open.data_ready 0",
+            "setprop trillionnium.owner_open.verified 0",
+            "setprop trillionnium.owner_open.mount_ready 0",
+            "setprop trillionnium.owner_open.ready 0",
+        ],
+        "on post-fs-data": [
+            "mkdir /data/trillionnium 0700 root root",
+            "mkdir /data/trillionnium/owner-open 0700 root root",
+            "mkdir /data/trillionnium/owner-open/root 0700 root root",
+            "mkdir /data/trillionnium/owner-open/state 0700 root root",
+            "mkdir /data/trillionnium/owner-open/state/broker 0700 root root",
+            "restorecon_recursive /data/trillionnium/owner-open",
+            "setprop trillionnium.owner_open.data_ready 1",
+        ],
+        "on property:init.svc.trillionnium_owner_open_bootstrap=stopped && property:trillionnium.owner_open.mount_ready=1": [
+            "stop trillionnium_owner_open_ingress",
+            "setprop trillionnium.owner_open.ready 0",
+            "setprop trillionnium.owner_open.mount_ready 0",
+            "setprop trillionnium.owner_open.verified 0",
+            "umount /data/trillionnium/owner-open/root/dev",
+            "umount /data/trillionnium/owner-open/root/proc",
+            "umount /data/trillionnium/owner-open/root/var/lib/trillionnium/owner-open",
+            "umount /data/trillionnium/owner-open/root",
+        ],
+        "on property:trillionnium.owner_open.ready=1": ["start trillionnium_owner_open_ingress"],
+        "on property:trillionnium.owner_open.ready=0": ["stop trillionnium_owner_open_ingress"],
+        "on property:sys.trillionnium.owner_open.stop=1": [
+            "stop trillionnium_owner_open_ingress",
+            "exec_start trillionnium_owner_open_emergency_stop",
+            "stop trillionnium_owner_open_bootstrap",
+            "setprop sys.trillionnium.owner_open.stop 0",
+        ],
+    }
+    for trigger, body in remaining_actions.items():
+        if blocks.get(trigger) != body:
+            report.errors.append(f"init lifecycle action differs: {trigger}")
+    expected_headings = set(remaining_actions) | {verify_trigger, mount_trigger} | {
+        "service trillionnium_owner_open_verify /system_ext/bin/trillionnium-owner-open-bootstrap --verify-image",
+        "service trillionnium_owner_open_bootstrap /system_ext/bin/trillionnium-owner-open-bootstrap --run-mounted",
+        "service trillionnium_owner_open_ingress /system_ext/bin/trillionnium-owner-open-ingress",
+        "service trillionnium_owner_open_emergency_stop /system_ext/bin/trillionnium-owner-open-emergency-stop",
+    }
+    if set(blocks) != expected_headings:
+        report.errors.append("init action/service heading inventory differs")
     btfm_commands = [line.strip() for line in btfm.splitlines() if line.strip() and not line.lstrip().startswith("#")]
     if btfm_commands != [
         "on property:ro.boot.product.vendor.sku=sun && property:ro.build.version.sdk=37",
@@ -493,7 +541,10 @@ def verify(root: Path) -> Report:
         report.errors.append(str(error))
         return report
 
-    bp_modules = set(MODULE_PATTERN.findall(bp_text))
+    bp_module_list = MODULE_PATTERN.findall(bp_text)
+    bp_modules = set(bp_module_list)
+    if len(bp_module_list) != len(bp_modules):
+        report.errors.append("Android.bp repeats a module name")
     missing_bp = sorted(module_names - bp_modules)
     if missing_bp:
         report.errors.append(f"Android.bp misses required modules: {missing_bp}")
@@ -513,6 +564,43 @@ def verify(root: Path) -> Report:
         report.errors.append(
             f"owner-open PRODUCT_PACKAGES differs: missing={missing_product} extra={extra_product}"
         )
+    # The optional adb_root append is the only second package block, bounded
+    # by its existing explicit opt-in and engineering-variant guards. Do not
+    # let an unparsed later assignment bypass the closed product inventory.
+    product_lines = [line.split("#", 1)[0].strip() for line in product_text.splitlines()]
+    product_lines = [line for line in product_lines if line]
+    package_blocks: list[list[str]] = []
+    for index, line in enumerate(product_lines):
+        if re.match(r"^PRODUCT_PACKAGES(?:_DEBUG)?\s*\+=", line):
+            values = line.split("+=", 1)[1]
+            cursor = index
+            tokens = values.replace("\\", " ").split()
+            while product_lines[cursor].endswith("\\") and cursor + 1 < len(product_lines):
+                cursor += 1
+                tokens.extend(product_lines[cursor].replace("\\", " ").split())
+            package_blocks.append(tokens)
+    if len(package_blocks) != 2 or set(package_blocks[0]) != active_module_names or len(package_blocks[0]) != len(active_module_names) or package_blocks[1] != ["adb_root"]:
+        report.errors.append("product package append inventory differs from active modules and guarded adb_root")
+    guarded_append = "\n".join([
+        "ifeq ($(TRILLINNIUM_DOGFOOD_USERDEBUG_ADB_ROOT),true)",
+        "ifneq ($(filter userdebug eng,$(TARGET_BUILD_VARIANT)),)",
+        "PRODUCT_PACKAGES += \\",
+        "adb_root",
+        "SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += \\",
+        "vendor/trillionnium/owner-open/sepolicy/adbroot",
+        "endif",
+        "endif",
+    ])
+    if guarded_append not in "\n".join(product_lines):
+        report.errors.append("optional adb_root package/policy append lost its exact opt-in and variant guards")
+    package_replacements = [line for line in product_lines if re.match(r"^PRODUCT_PACKAGES(?:_DEBUG)?\s*(?::=|=)", line)]
+    expected_replacements = {
+        f"{variable} := $(filter-out $({cut}),$({variable}))"
+        for variable in ("PRODUCT_PACKAGES", "PRODUCT_PACKAGES_DEBUG")
+        for cut in ("_TRILLIONNIUM_OWNER_OPEN_FORBIDDEN_PACKAGES", "_TRILLIONNIUM_OWNER_OPEN_RETIRED_CLIENTS")
+    }
+    if set(package_replacements) != expected_replacements or len(package_replacements) != len(expected_replacements):
+        report.errors.append("product package replacement inventory differs from exact legacy cuts")
     generated_modules = added_product_packages(fragment_text)
     if generated_modules != module_names:
         report.errors.append(
@@ -557,7 +645,10 @@ def verify(root: Path) -> Report:
         if item.get("owner") == "android_init"
     }
     expected_services |= ACTIVE_EXTRA_SERVICES
-    observed_services = set(SERVICE_PATTERN.findall(init_text))
+    service_list = SERVICE_PATTERN.findall(init_text)
+    observed_services = set(service_list)
+    if len(service_list) != len(observed_services):
+        report.errors.append("init repeats a service name")
     if expected_services != observed_services:
         report.errors.append(
             f"init service set differs: missing={sorted(expected_services - observed_services)} "
@@ -704,6 +795,27 @@ def verify(root: Path) -> Report:
             sepolicy_text.get("property_contexts", ""),
         ):
             report.errors.append(f"property_contexts misses {property_name}")
+    exact_property_types = {
+        "ro.trillionnium.owner_open.enabled": "bool",
+        "trillionnium.owner_open.data_ready": "bool",
+        "trillionnium.owner_open.ready": "bool",
+        "sys.trillionnium.owner_open.stop": "bool",
+        "ro.trillionnium.owner_open.profile": "string",
+        "trillionnium.owner_open.verified": "bool",
+        "trillionnium.owner_open.mount_ready": "bool",
+        "trillionnium.owner_open.measurement.valid": "bool",
+        "trillionnium.owner_open.measurement.bootstrap_sha256": "string",
+        "trillionnium.owner_open.measurement.manifest_sha256": "string",
+        "trillionnium.owner_open.measurement.image_sha256": "string",
+    }
+    context_rows = [line.split("#", 1)[0].split() for line in sepolicy_text.get("property_contexts", "").splitlines()]
+    context_rows = [row for row in context_rows if row]
+    expected_rows = {
+        (name, "u:object_r:trillionnium_owner_open_prop:s0", "exact", kind)
+        for name, kind in exact_property_types.items()
+    }
+    if {tuple(row) for row in context_rows} != expected_rows or len(context_rows) != len(expected_rows):
+        report.errors.append("owner-open property context inventory/type/exact binding differs")
     if client_package and f"name={client_package}" not in sepolicy_text.get("seapp_contexts", ""):
         report.errors.append("seapp_contexts does not bind the owner-open client package")
 
