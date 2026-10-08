@@ -2,15 +2,19 @@
 # file, local transport, mount and emergency-stop mechanics. They do not inspect
 # commands, assign risk, require leases, inject ADB routing or authorize retries.
 
-# Bootstrap verifies the immutable payload, then (once the platform-owned
-# mount handoff is qualified) chroots and supervises Root Linux children in the
-# same SELinux domain.  The source-only profile deliberately leaves the mount
-# lifecycle in a platform-policy hold; no vendor fragment may bypass AOSP's
-# filesystem/mount neverallows to make the current native mount code appear
-# buildable.
+# Platform init owns all mount operations. Bootstrap can only verify and
+# execute the immutable lower inside the namespace established by init.
+allow init trillionnium_owner_open_state_file:dir mounton;
+allow init trillionnium_owner_open_payload_file:dir mounton;
+# init opens the immutable EROFS backing image before attaching the loop device.
+allow init trillionnium_owner_open_payload_file:dir search;
+allow init trillionnium_owner_open_payload_file:file { getattr open read };
+# Loop-device workers read the immutable backing file in the kernel domain.
+allow kernel trillionnium_owner_open_payload_file:file read;
+# EROFS uses platform fs_use_xattr and labeledfs; per-inode labels stay intact.
+
 allow trillionnium_owner_open_bootstrap self:capability {
     kill
-    sys_admin
     sys_chroot
 };
 allow trillionnium_owner_open_bootstrap self:process {
@@ -25,7 +29,9 @@ allow trillionnium_owner_open_bootstrap self:process {
 };
 allow trillionnium_owner_open_bootstrap self:unix_stream_socket create_stream_socket_perms;
 allow trillionnium_owner_open_bootstrap self:tcp_socket create_stream_socket_perms;
-allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:file {
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:file r_file_perms;
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_exec:file {
+    execute
     execute_no_trans
     getattr
     map
@@ -41,27 +47,8 @@ allow trillionnium_owner_open_bootstrap trillionnium_owner_open_payload_file:dir
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:dir create_dir_perms;
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:file create_file_perms;
 allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:sock_file create_file_perms;
-# PLATFORM_POLICY_HOLD: AOSP's domain.te neverallows intentionally prevent a
-# vendor/private domain from mounting, remounting or relabeling a generic
-# filesystem.  Keep these operations absent rather than adding a local
-# exception.  The platform/init integration must mount the verified squashfs,
-# apply the contextmount label, bind the writable state and own teardown.  The
-# native BindState()/mount path consequently remains source-only and is
-# fail-closed until that reviewed handoff exists.
-allow trillionnium_owner_open_bootstrap loop_control_device:chr_file rw_file_perms;
-allow trillionnium_owner_open_bootstrap loop_device:blk_file rw_file_perms;
-allowxperm trillionnium_owner_open_bootstrap loop_device:blk_file ioctl {
-    LOOP_CLR_FD
-    LOOP_CTL_GET_FREE
-    LOOP_SET_FD
-    LOOP_SET_STATUS64
-};
-allow trillionnium_owner_open_bootstrap block_device:dir search;
-allow trillionnium_owner_open_bootstrap device:dir search;
-allow trillionnium_owner_open_bootstrap trillionnium_owner_open_state_file:dir mounton;
 allow trillionnium_owner_open_bootstrap proc:filesystem getattr;
 allow trillionnium_owner_open_bootstrap sysfs:filesystem getattr;
-net_domain(trillionnium_owner_open_bootstrap)
 set_prop(trillionnium_owner_open_bootstrap, trillionnium_owner_open_prop)
 get_prop(trillionnium_owner_open_bootstrap, trillionnium_owner_open_prop)
 
@@ -79,13 +66,9 @@ get_prop(trillionnium_owner_open_ingress, trillionnium_owner_open_prop)
 allow trillionnium_owner_open_client self:unix_stream_socket create_stream_socket_perms;
 allow trillionnium_owner_open_client trillionnium_owner_open_ingress:unix_stream_socket connectto;
 
-# Emergency stop is independent of Codex/provider liveness. It creates the
-# persistent inhibit marker, clears readiness and terminates the bootstrap
-# process group.
-# State files are owned and mode-controlled by the platform handoff, so the
-# emergency stopper needs only signal authority; never grant the generic
-# dac_override capability to a vendor/private domain.
-allow trillionnium_owner_open_emergency_stop self:capability { kill };
+# Emergency stop durably creates the persistent inhibit and clears readiness.
+# Android init subsequently stops the tracked bootstrap service cgroup. No
+# numeric persisted PID, cross-domain signal, or KILL capability is needed.
 allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:dir {
     add_name
     getattr
@@ -101,9 +84,16 @@ allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_state_file:
     read
     write
 };
-allow trillionnium_owner_open_emergency_stop trillionnium_owner_open_bootstrap:process {
-    signal
-    sigkill
-};
 set_prop(trillionnium_owner_open_emergency_stop, trillionnium_owner_open_prop)
 get_prop(trillionnium_owner_open_emergency_stop, trillionnium_owner_open_prop)
+
+# The native profile observes visible same-domain original groups in /proc.
+# Cross-domain or escaped descendants are not declared absent by this rule.
+allow trillionnium_owner_open_bootstrap self:dir r_dir_perms;
+allow trillionnium_owner_open_bootstrap self:file r_file_perms;
+
+# Engineering-only observation of immutable profile and lifecycle properties.
+# get_prop grants only getattr/open/read/map, never property_service set.
+userdebug_or_eng(`
+  get_prop(shell, trillionnium_owner_open_prop)
+')

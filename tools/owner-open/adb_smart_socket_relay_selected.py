@@ -446,6 +446,23 @@ class Relay:
             "payload_logged": False,
             "automatic_redispatch": False,
         }
+        if getattr(self, "native_process_identity", False):
+            # The API37 profile publishes only its live identity after bind.
+            # This is readiness evidence, never a persisted signal authority.
+            with open("/proc/self/stat", "rb") as stream:
+                raw = stream.read(8193)
+            try:
+                fields = raw.rsplit(b")", 1)[1].split()
+                parent, group, session, start = int(fields[1]), int(fields[2]), int(fields[3]), int(fields[19])
+            except (ValueError, IndexError) as error:
+                raise RelayError("native relay process identity is malformed") from error
+            if len(raw) > 8192 or group != os.getpid() or session != os.getpid() or start <= 0:
+                raise RelayError("native relay process identity differs")
+            result["runtime_identity"] = {
+                "pid": os.getpid(), "parent_pid": parent, "process_group": group,
+                "session_id": session, "start_time_ticks": start,
+                "is_recovery_or_signal_authority": False,
+            }
         temporary = prepare_private_json(descriptor, result) if descriptor is not None else None
         try:
             if not await self.record_event(
@@ -545,6 +562,7 @@ async def run(args: argparse.Namespace) -> int:
         limits,
         events,
     )
+    relay.native_process_identity = args.native_process_identity
     loop = asyncio.get_running_loop()
     for current in (signal.SIGTERM, signal.SIGINT):
         try:
@@ -561,6 +579,7 @@ async def run(args: argparse.Namespace) -> int:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--native-process-identity", action="store_true")
     parser.add_argument("--listen-host", default="127.0.0.1")
     parser.add_argument("--listen-port", required=True, type=int)
     parser.add_argument("--upstream-host", default="127.0.0.1")
