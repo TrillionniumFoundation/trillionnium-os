@@ -60,6 +60,10 @@ public final class OwnerOpenClientStateStore {
     // Package-private fault injection runs actual filesystem operations in host behavior tests.
     interface CommitHook {
         void afterFileSync() throws IOException;
+        default void atomicMove(Path pending, Path committed) throws IOException {
+            Files.move(pending, committed,
+                    StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        }
         void afterAtomicRename() throws IOException;
     }
 
@@ -121,7 +125,7 @@ public final class OwnerOpenClientStateStore {
                 byte[] record = OwnerOpenClientStateCodec.encode(snapshot);
                 Path pending = directory.resolve(PENDING);
                 Path committed = directory.resolve(STATE);
-                boolean renamed = false;
+                boolean renameAttempted = false;
                 try {
                     // CREATE_NEW preserves a crash residue and prevents symlink replacement/following.
                     try (FileChannel output = FileChannel.open(pending,
@@ -135,15 +139,15 @@ public final class OwnerOpenClientStateStore {
                         output.force(true);
                     }
                     hook.afterFileSync();
-                    Files.move(pending, committed,
-                            StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-                    renamed = true;
+                    // A rename I/O error may leave the namespace outcome unknown.
+                    renameAttempted = true;
+                    hook.atomicMove(pending, committed);
                     hook.afterAtomicRename();
                     syncDirectory();
                     return snapshot;
                 } catch (IOException error) {
                     // Do not repair/delete an ambiguous pending write or authorize submission.
-                    throw new StoreException(Failure.IO_FAILURE, renamed, error);
+                    throw new StoreException(Failure.IO_FAILURE, renameAttempted, error);
                 }
             }
         }, true);

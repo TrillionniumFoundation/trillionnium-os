@@ -26,7 +26,7 @@
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 58699,
-      "sha256": "1240d5f7a0a299dd19b625956ae760e857aae6e9150bcadcaf0430e5a5a0e9f3"
+      "sha256": "830fdf896fadd5c40009694494deb77359c8b458d87008f086eadd2968b9c1de"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -162,7 +162,7 @@
     },
     "schemas/modules/android/compatibility.json": {
       "bytes": 10696,
-      "sha256": "0befd23ed00bfa9d80928b8d05e7f77c2056ccac15fe491d041bf3df0af75ac3"
+      "sha256": "a6b2285ba6dcc5de5d3f720aa6d59a9796f5aad8272b26faa85a4514dd256d36"
     },
     "schemas/modules/android/errors-v1.schema.json": {
       "bytes": 3088,

@@ -139,8 +139,9 @@ must not independently open/close or hardlink the owned lock inode; arbitrary
 same-UID interference is outside this cooperative cache's security boundary.
 Commit writes a new pending file, syncs it, atomically renames it and syncs the
 directory. No non-atomic fallback or automatic pending-file repair is allowed.
-A pending residue fences load/write and is preserved. Post-rename or close/sync
-ambiguity remains explicit; re-reading a snapshot does not prove any external
+A pending residue fences load/write and is preserved. Any atomic-rename attempt
+that throws is conservatively commit-unknown, including a failure before the
+caller receives success; post-rename or close/sync ambiguity remains explicit; re-reading a snapshot does not prove any external
 effect did or did not happen. Producer epoch changes require separate explicit
 readback/reconciliation, not an automatic cursor reset or blind replay. No
 cross-schema or prior-format migration is implemented; unknown versions are

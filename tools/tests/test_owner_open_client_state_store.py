@@ -176,6 +176,26 @@ public final class ClientStateStoreHarness {
    require(Arrays.equals(pending,Files.readAllBytes(directory.resolve(PENDING))),"blocked load/write deleted or repaired residue");
   }
  }
+ static void renameError(Path directory,boolean performed) throws Exception {
+  OwnerOpenClientStateStore first=new OwnerOpenClientStateStore(directory);first.compareAndSet(0,identity());
+  byte[] before=Files.readAllBytes(directory.resolve(BIN));
+  OwnerOpenClientStateStore store=new OwnerOpenClientStateStore(directory,new OwnerOpenClientStateStore.CommitHook(){
+   public void afterFileSync(){}
+   public void atomicMove(Path pending,Path committed) throws IOException {
+    if(performed)Files.move(pending,committed,StandardCopyOption.ATOMIC_MOVE,StandardCopyOption.REPLACE_EXISTING);
+    throw new IOException("injected unknown atomic move outcome");
+   }
+   public void afterAtomicRename(){throw new AssertionError("move error cannot return success");}
+  });
+  OwnerOpenClientStateStore.StoreException error=failure(Failure.IO_FAILURE,()->store.compareAndSet(1,cursored()));
+  require(error.commitMayHaveOccurred,"rename attempt error claimed no commit");
+  if(performed) {
+   same(cursored(),new OwnerOpenClientStateStore(directory).load().orElseThrow().state);
+  } else {
+   require(Arrays.equals(before,Files.readAllBytes(directory.resolve(BIN))),"nonperformed fixture changed commit");
+   failure(Failure.PENDING_WRITE,()->new OwnerOpenClientStateStore(directory).load());
+  }
+ }
  static void corruptFile(Path directory) throws Exception {
   OwnerOpenClientStateStore store=new OwnerOpenClientStateStore(directory);store.compareAndSet(0,identity());
   byte[] bad=Files.readAllBytes(directory.resolve(BIN));bad[22]^=1;Files.write(directory.resolve(BIN),bad);
@@ -264,6 +284,8 @@ public final class ClientStateStoreHarness {
    case "stale-conflict":staleAndConflict(directory);break;
    case "pre-rename-fault":fault(directory,false);break;
    case "post-rename-fault":fault(directory,true);break;
+   case "rename-error-before":renameError(directory,false);break;
+   case "rename-error-after":renameError(directory,true);break;
    case "corrupt-file":corruptFile(directory);break;
    case "state-symlink":symlink(directory,BIN);break;
    case "pending-symlink":symlink(directory,PENDING);break;
@@ -333,6 +355,11 @@ class ClientStateStoreBehaviorTest(unittest.TestCase):
 
     def test_real_pre_and_post_rename_failure_cuts(self):
         for scenario in ('pre-rename-fault', 'post-rename-fault'):
+            with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as folder:
+                self.run_scenario(scenario, Path(folder))
+
+    def test_atomic_move_error_is_unknown_for_both_namespace_outcomes(self):
+        for scenario in ('rename-error-before', 'rename-error-after'):
             with self.subTest(scenario=scenario), tempfile.TemporaryDirectory() as folder:
                 self.run_scenario(scenario, Path(folder))
 

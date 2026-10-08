@@ -97,8 +97,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClientStateStore.java",
-          "sha256": "70ca09b6f0d1b065398d708ae012645ddd6514faf31aa3d63b286cf0684b9ca6",
-          "size": 12627
+          "sha256": "85cde8447c88c4b9cae2959ad3976413c8e851e36f1b8ca9e11f15e982e6b06f",
+          "size": 12868
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenFrame.java",
