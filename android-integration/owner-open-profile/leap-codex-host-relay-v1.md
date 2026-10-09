@@ -89,6 +89,64 @@ is host evidence. Whole new Android image inclusion, final mounted-image split
 policy/signing, phone startup, UI, cancellation and physical hardware require
 their own exact receipts and stay unqualified until observed.
 
+## Dated candidate identities — 2026-10-10
+
+Historical deployment and source candidates retain separate identities. R41 was
+an actually deployed temporary engineering DSU. R49 owner
+`acf931a7b0c4581fe552a67c04db32b67e86f63b` produced an unsigned system_ext
+filesystem (`5ba3986a4c9acc247a8b68f99792fb558201f54f33cd5fa4ef3a5ac6c089c8f5`);
+it was not signed, packaged or installed. Later results do not replace those
+historical receipts.
+
+The R55 guest, BOOT `85fecdeb-fd79-4a34-987e-11107163f779`, used owner
+`082498058e9230a074e770b89a9b737312364d1d` and freeze
+`fada3f964f9a211b3df93ea7ec6da3541ed02c2b0a6989b5fc8943e04c8ab8e8`.
+Its qualified firstboot/full8 observation did not establish AI acceptance:
+the ordinary client's MCS-labelled connection to ingress was denied by MLS,
+with zero Send/model requests at that observation. R55 was subsequently returned
+to stock, BOOT `bf95778e-63da-48f3-8502-52d8e5683f16`; actual return receipt
+`85d90404de53f92ad4d53e1300519cd2afa5adf097b0206f8cf4e4c5be58c8b1`
+records that completed return. R55 is a retained runtime generation, not the
+current candidate's runtime qualification.
+
+The independent R56 build is owner
+`1f776e2ad822984a4dc8e4461c4c8bdbe98ad665`, freeze
+`9c87e82d7c44686baa6ecfda04c3c85b35f641a8ab244db8feb6e87314d0927d`.
+It adds MLS trust to ingress while the client retains ordinary MCS isolation.
+The actual host image audit
+`daf660b547051176ad6346042f0d8a69ce7fd52720a34cb34cb2287738f9b0c5`
+passed all 17 static gates; its image-derived strict policy is
+`848916924a41345c628013d3caec9178ce2940fe57af03ac94f82459a73af15e`.
+The device source remains `b8eabdc0ac9e8301871c19084eb0785f4f28b000` and the
+platform policy base remains `1ac08940de7b0a82cce8b043cebad81e76559dab`;
+Soong `8226dae6633b305e96a0b8a33996f2365ec4402c` and framework_base
+`48fe68e00b946ec46b6ecd334e6daf31f5bd65f1` are also fixed build inputs.
+
+The actual engineering signing receipt is
+`f645abfe91c0ce88d790994c6ecf6add9ece7b22e9a4aac308f38d1188293bf6`;
+independent signed-byte audit
+`0d2aaa92f046fa35afdb6c22bb1f8b393aafbae32b79aaec050aca83da8d6bc6`
+and canonical four-part package receipt
+`20d0b32948ba3fd2c5d6ec7c733211b55dd95b11e33541daa695f7a632c5c24d`
+bind ZIP `7f29690f3f39d5f436e1fa6352ab0f4056927b20d2c2845d77f45900676c9c3e`
+(3,668,161,104 bytes). Qualification
+`1e19287c5c5940eeba9ab16f05a7d4b3f815208915737d206e753d15cf63ccd6`
+admits a limited temporary DSU trial; it does not establish OEM trust or P1.
+One R56 install and activation reached new BOOT
+`83f059a4-170b-40b6-8240-f49131c8ffd9`. Actual firstboot handoff
+`897d501df925467ed4719b837d4711db918b0a4a8e5db7fc7a35993ba8e8a8a4`
+records completed firstboot, all eight fixed components, the product feature and
+property chain, and the 180-second stable process cohort. At this cutoff no
+normal Send/model request or AI-driven effect has been performed. AI, remaining
+hardware, physical cold start, startup interruption recovery and final Stop
+acceptance remain open; this firstboot handoff keeps phone-all-P1 and physical
+coldboot false. Permanent flashing remains NO-GO.
+
+The built artifacts remain bound to owner `1f776e2a…`, including after a later
+documentation-only commit publishes this dated status. Such a commit does not
+rebuild or relabel the signed images. Host, phone and source CI results retain
+their exact-generation scope.
+
 ## API37 process observation and evidence retention
 
 Only this explicit native profile passes --same-domain-proc-observation. It
