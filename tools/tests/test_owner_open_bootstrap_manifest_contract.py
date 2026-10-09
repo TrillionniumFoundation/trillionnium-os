@@ -43,7 +43,7 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
             '#include <json/json.h>',
             'constexpr const char* kManifest = "/system_ext/etc/trillionnium/rootlinux/owner-open-rootfs.image-manifest.json";',
             'constexpr const char* kProfile = "/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json";',
-            'constexpr const char* kRuntimeProfileRevision = "2026-10-09-leap-api37-owner-client-emergency";',
+            'constexpr const char* kRuntimeProfileRevision = "2026-10-09-leap-api37-client-api-fixed-measurement";',
             'constexpr const char* kRuntimeProfileId = "leap-codex-host-relay-v1";',
             "Json::CharReaderBuilder::strictMode",
             'builder["skipBom"] = false',
@@ -116,7 +116,7 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
         import json
 
         profile = json.loads(self.read(PROFILE))
-        self.assertEqual(profile["schema"], "org.trillionnium.owner-open.android-runtime-profile.v4")
+        self.assertEqual(profile["schema"], "org.trillionnium.owner-open.android-runtime-profile.v5")
         self.assertIn('src: "config/profile-codex-host-relay-v1.json"', self.read(ANDROID_BP))
         self.assertEqual(profile["mount_handoff"]["owner"], "android_init")
         self.assertFalse(profile["mount_handoff"]["bootstrap_mount_operations"])
@@ -124,7 +124,7 @@ class OwnerOpenBootstrapManifestContractTest(unittest.TestCase):
         self.assertFalse(profile["provider"]["automatic_reconnect"])
         self.assertFalse(profile["provider"]["automatic_redispatch"])
         self.assertFalse(profile["provider"]["long_lived_credentials_on_phone"])
-        self.assertEqual(profile["revision"], "2026-10-09-leap-api37-owner-client-emergency")
+        self.assertEqual(profile["revision"], "2026-10-09-leap-api37-client-api-fixed-measurement")
         self.assertEqual(profile["profile_id"], "leap-codex-host-relay-v1")
         self.assertEqual(profile["enabled_property"], "ro.trillionnium.owner_open.enabled")
         self.assertEqual(profile["ready_property"], "trillionnium.owner_open.ready")

@@ -92,6 +92,50 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
                 self.assertTrue(any("policy generation source digest differs" in e for e in report.errors), report.errors)
         path.write_text(original)
 
+    def test_fixed_component_profile_cannot_select_other_paths_or_types(self) -> None:
+        relative = module.BASE.ACTIVE_RUNTIME_PROFILE
+        path = self.root / relative
+        original = path.read_text()
+        for change in ("path", "property", "bound", "count", "root", "unknown"):
+            value = json.loads(original)
+            contract = value["component_measurement"]
+            if change == "path": contract["additional_components"][0]["relative_path"] = "etc/private-state"
+            elif change == "property": contract["additional_components"][0]["property"] = "arbitrary.property"
+            elif change == "bound": contract["additional_components"][0]["maximum_bytes"] = True
+            elif change == "count": contract["additional_components"].append(contract["additional_components"][0])
+            elif change == "root": contract["fixed_root"] = "/data"
+            else: contract["unknown"] = True
+            with self.subTest(change=change):
+                path.write_text(json.dumps(value))
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
+    def test_native_fixed_path_table_cannot_drift_from_profile(self) -> None:
+        path = self.root / module.ANDROID_ROOT / "native/owner_open_bootstrap.cpp"
+        original = path.read_text()
+        for old, new in (("etc/build.prop", "etc/private-state"),
+                         ("kFixedComponentRoot = \"/system_ext\"", "kFixedComponentRoot = \"/data\""),
+                         ("FixedComponent, 5>", "FixedComponent, 6>")):
+            with self.subTest(new=new):
+                self.assertIn(old, original)
+                path.write_text(original.replace(old, new, 1))
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
+    def test_ordinary_api_find_cannot_become_privileged_or_service_add(self) -> None:
+        path = self.root / module.ANDROID_ROOT / "sepolicy/private/domains.te"
+        original = path.read_text()
+        for extra in (
+            "allow trillionnium_owner_open_client system_api_service:service_manager find;",
+            "allow trillionnium_owner_open_client service_manager_type:service_manager { add find };",
+            "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_ingress_exec:file execute;",
+            "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_emergency_stop_exec:file write;",
+        ):
+            with self.subTest(extra=extra):
+                path.write_text(original + "\n" + extra + "\n")
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
     def test_r52_ingress_control_availability_unknown_services_and_order_fail_closed(self) -> None:
         path = self.root / module.ANDROID_ROOT / "init/trillionnium-owner-open.rc"
         original = path.read_text()

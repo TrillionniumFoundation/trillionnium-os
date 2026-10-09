@@ -247,8 +247,8 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
         report.errors.append(str(error))
         return
     expected = {
-        "schema": "org.trillionnium.owner-open.android-runtime-profile.v4",
-        "revision": "2026-10-09-leap-api37-owner-client-emergency",
+        "schema": "org.trillionnium.owner-open.android-runtime-profile.v5",
+        "revision": "2026-10-09-leap-api37-client-api-fixed-measurement",
         "profile_id": "leap-codex-host-relay-v1",
         "enabled_property": "ro.trillionnium.owner_open.enabled",
         "data_ready_property": "trillionnium.owner_open.data_ready",
@@ -297,6 +297,30 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
             "service_mount_namespace": "mnt",
             "bootstrap_mount_operations": False,
         },
+        "component_measurement": {'schema': 'org.trillionnium.owner-open.fixed-component-measurement.v1',
+         'valid_property': 'trillionnium.owner_open.measurement.valid',
+         'fixed_root': '/system_ext',
+         'component_count': 8,
+         'core_digest_properties': ['trillionnium.owner_open.measurement.bootstrap_sha256',
+                                    'trillionnium.owner_open.measurement.manifest_sha256',
+                                    'trillionnium.owner_open.measurement.image_sha256'],
+         'additional_components': [{'relative_path': 'etc/build.prop',
+                                    'property': 'trillionnium.owner_open.measurement.system_ext_build_prop_sha256',
+                                    'maximum_bytes': 1048576},
+                                   {'relative_path': 'bin/trillionnium-owner-open-ingress',
+                                    'property': 'trillionnium.owner_open.measurement.ingress_sha256',
+                                    'maximum_bytes': 33554432},
+                                   {'relative_path': 'bin/trillionnium-owner-open-emergency-stop',
+                                    'property': 'trillionnium.owner_open.measurement.emergency_stop_sha256',
+                                    'maximum_bytes': 8388608},
+                                   {'relative_path': 'app/TrillionniumOwnerOpenShell/TrillionniumOwnerOpenShell.apk',
+                                    'property': 'trillionnium.owner_open.measurement.shell_apk_sha256',
+                                    'maximum_bytes': 67108864},
+                                   {'relative_path': 'etc/init/trillionnium-sun-btfm-modprobe.rc',
+                                    'property': 'trillionnium.owner_open.measurement.btfm_init_sha256',
+                                    'maximum_bytes': 1048576}],
+         'publish_protocol': 'valid0_clear_all_hash_stable_fd_publish_all_valid1',
+         'claim_ceiling': 'fixed_components_same_boot_not_partition_or_hardware_attestation'},
         "owner_client_control": {'schema': 'org.trillionnium.owner-open.ingress-control.v1',
          'version': 1,
          'first_frame_required': True,
@@ -309,9 +333,9 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
          'automatic_resume': False,
          'process_quiescence_claim': 'unknown_until_observed',
          'selinux_source_sha256': {'types': 'd187fa0c7ea2ffd3abbce02db721d2071083854fb033bb9849fa2822d0cde7f9',
-                                   'domains': '93c7c21f59e7209d683038a8f7d03f275a19edd1e4a658a15374998add16eff4',
+                                   'domains': '25e1bebefde7bcd0e4176eaf9adb816a25cdc64f6bb402ebbf9cff4dc4ec744b',
                                    'file_contexts': 'dc0818aae7c6809665ac35854a1dc2d382e4da98c5dc29e1813e015907363798',
-                                   'property_contexts': '64d652c3dce81ba5571c53adaef71e920c8baf99805821da8bb2a29fce2cd1df',
+                                   'property_contexts': 'b0b4f6465cdbce096380d1093fa859aa6d37f733e8f1a31518a29deadc822e5f',
                                    'seapp_contexts': '06c87b1957ec3be9419a657d8c2e51a22e826c42bc3391fdcdac6b2e787d0367'},
          'operation_id_format': '[a-z0-9-]{1,96}',
          'mechanical_stop_attempts_per_ingress_process': 4096,
@@ -340,6 +364,18 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
         # canonical JSON values so type drift cannot satisfy this contract.
         if json.dumps(active.get(name), sort_keys=True) != json.dumps(value, sort_keys=True):
             report.errors.append(f"Leap host-relay runtime profile {name} differs from exact source contract")
+    fixed = re.search(r"constexpr std::array<FixedComponent,\s*(\d+)> kFixedComponents = \{\{(.*?)\}\};", bootstrap, re.S)
+    expected_components = expected["component_measurement"]["additional_components"]
+    actual_components = []
+    if fixed:
+        actual_components = [(path, prop, int(maximum)) for path, prop, maximum in
+                             re.findall(r'\{\s*"([^"]+)"\s*,\s*"([^"]+)"\s*,\s*(\d+)\s*\}', fixed.group(2))]
+    if not fixed or int(fixed.group(1)) != 5 or actual_components != [
+        (row["relative_path"], row["property"], row["maximum_bytes"]) for row in expected_components
+    ]:
+        report.errors.append("bootstrap fixed component path/property/byte bound inventory differs")
+    if 'constexpr const char* kFixedComponentRoot = "/system_ext";' not in bootstrap:
+        report.errors.append("bootstrap fixed component root differs")
     missing = sorted(value for value in ACTIVE_PAYLOAD_PATHS if value not in bootstrap)
     if missing:
         report.errors.append(f"bootstrap does not bind active payload paths: {missing}")
@@ -833,6 +869,11 @@ def verify(root: Path) -> Report:
         "trillionnium.owner_open.measurement.bootstrap_sha256": "string",
         "trillionnium.owner_open.measurement.manifest_sha256": "string",
         "trillionnium.owner_open.measurement.image_sha256": "string",
+        "trillionnium.owner_open.measurement.system_ext_build_prop_sha256": "string",
+        "trillionnium.owner_open.measurement.ingress_sha256": "string",
+        "trillionnium.owner_open.measurement.emergency_stop_sha256": "string",
+        "trillionnium.owner_open.measurement.shell_apk_sha256": "string",
+        "trillionnium.owner_open.measurement.btfm_init_sha256": "string",
     }
     context_rows = [line.split("#", 1)[0].split() for line in sepolicy_text.get("property_contexts", "").splitlines()]
     context_rows = [row for row in context_rows if row]

@@ -9,3 +9,8 @@ trillionnium.owner_open.measurement.valid    u:object_r:trillionnium_owner_open_
 trillionnium.owner_open.measurement.bootstrap_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string
 trillionnium.owner_open.measurement.manifest_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string
 trillionnium.owner_open.measurement.image_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string
+trillionnium.owner_open.measurement.system_ext_build_prop_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string
+trillionnium.owner_open.measurement.ingress_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string
+trillionnium.owner_open.measurement.emergency_stop_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string
+trillionnium.owner_open.measurement.shell_apk_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string
+trillionnium.owner_open.measurement.btfm_init_sha256    u:object_r:trillionnium_owner_open_prop:s0 exact string

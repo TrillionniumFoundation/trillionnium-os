@@ -37,6 +37,28 @@ constexpr const char* kManifest = "/system_ext/etc/trillionnium/rootlinux/owner-
 constexpr const char* kProfile = "/system_ext/etc/trillionnium/owner-open/profile-codex-host-relay-v1.json";
 constexpr const char* kBootstrapExecutable = "/system_ext/bin/trillionnium-owner-open-bootstrap";
 constexpr std::size_t kMaximumBootstrapBytes = 32ULL * 1024ULL * 1024ULL;
+constexpr const char* kFixedComponentRoot = "/system_ext";
+struct FixedComponent {
+  const char* relative_path;
+  const char* property;
+  std::size_t maximum_bytes;
+};
+// No command-line, profile-selected, credential, state or caller-supplied path.
+constexpr std::array<FixedComponent, 5> kFixedComponents = {{
+    {"etc/build.prop", "trillionnium.owner_open.measurement.system_ext_build_prop_sha256", 1048576},
+    {"bin/trillionnium-owner-open-ingress", "trillionnium.owner_open.measurement.ingress_sha256", 33554432},
+    {"bin/trillionnium-owner-open-emergency-stop", "trillionnium.owner_open.measurement.emergency_stop_sha256", 8388608},
+    {"app/TrillionniumOwnerOpenShell/TrillionniumOwnerOpenShell.apk", "trillionnium.owner_open.measurement.shell_apk_sha256", 67108864},
+    {"etc/init/trillionnium-sun-btfm-modprobe.rc", "trillionnium.owner_open.measurement.btfm_init_sha256", 1048576},
+}};
+constexpr std::array<const char*, 8> kMeasurementDigestProperties = {{
+    "trillionnium.owner_open.measurement.bootstrap_sha256",
+    "trillionnium.owner_open.measurement.manifest_sha256",
+    "trillionnium.owner_open.measurement.image_sha256",
+    kFixedComponents[0].property, kFixedComponents[1].property,
+    kFixedComponents[2].property, kFixedComponents[3].property,
+    kFixedComponents[4].property,
+}};
 constexpr const char* kMountRoot = "/data/trillionnium/owner-open/root";
 constexpr const char* kStateRoot = "/data/trillionnium/owner-open/state";
 constexpr const char* kStateTarget = "/var/lib/trillionnium/owner-open";
@@ -57,8 +79,8 @@ constexpr const char* kImageManifestSchema =
 constexpr const char* kStagingManifestSchema =
     "org.trillionnium.owner-open.rootfs-payload-manifest.v1";
 constexpr const char* kRuntimeProfileSchema =
-    "org.trillionnium.owner-open.android-runtime-profile.v4";
-constexpr const char* kRuntimeProfileRevision = "2026-10-09-leap-api37-owner-client-emergency";
+    "org.trillionnium.owner-open.android-runtime-profile.v5";
+constexpr const char* kRuntimeProfileRevision = "2026-10-09-leap-api37-client-api-fixed-measurement";
 constexpr const char* kRuntimeProfileId = "leap-codex-host-relay-v1";
 volatile sig_atomic_t g_child_pid = -1;
 
@@ -412,6 +434,42 @@ bool ReadImageManifest(ImageManifest* manifest) {
   return true;
 }
 
+bool ValidateComponentMeasurementProfile(const Json::Value& measurement) {
+  if (!measurement.isObject() || measurement.size() != 8 ||
+      measurement["schema"] != "org.trillionnium.owner-open.fixed-component-measurement.v1" ||
+      measurement["valid_property"] != "trillionnium.owner_open.measurement.valid" ||
+      measurement["fixed_root"] != kFixedComponentRoot || measurement["component_count"] != 8 ||
+      measurement["publish_protocol"] != "valid0_clear_all_hash_stable_fd_publish_all_valid1" ||
+      measurement["claim_ceiling"] != "fixed_components_same_boot_not_partition_or_hardware_attestation") {
+    errno = EBADMSG;
+    return false;
+  }
+  const Json::Value& core_properties = measurement["core_digest_properties"];
+  const Json::Value& components = measurement["additional_components"];
+  if (!core_properties.isArray() || core_properties.size() != 3 ||
+      !components.isArray() || components.size() != kFixedComponents.size()) {
+    errno = EBADMSG;
+    return false;
+  }
+  for (Json::ArrayIndex index = 0; index < 3; ++index) {
+    if (core_properties[index] != kMeasurementDigestProperties[index]) {
+      errno = EBADMSG; return false;
+    }
+  }
+  for (Json::ArrayIndex index = 0; index < components.size(); ++index) {
+    const Json::Value& component = components[index];
+    std::uint64_t maximum = 0;
+    if (!component.isObject() || component.size() != 3 ||
+        component["relative_path"] != kFixedComponents[index].relative_path ||
+        component["property"] != kFixedComponents[index].property ||
+        !JsonUnsigned(component, "maximum_bytes", &maximum) ||
+        maximum != kFixedComponents[index].maximum_bytes) {
+      errno = EBADMSG; return false;
+    }
+  }
+  return true;
+}
+
 bool ValidateRuntimeProfile() {
   std::string raw;
   if (!ReadBoundedRegular(kProfile, kMaximumProfileBytes, &raw)) return false;
@@ -424,6 +482,7 @@ bool ValidateRuntimeProfile() {
     errno = EBADMSG;
     return false;
   }
+  if (!ValidateComponentMeasurementProfile(root["component_measurement"])) return false;
   const Json::Value& payload = root["rootlinux_payload"];
   if (!payload.isObject() || payload["image"] != kImage || payload["image_sha256"] != kDigest ||
       payload["image_manifest"] != kManifest || payload["mount_root"] != kMountRoot ||
@@ -623,6 +682,91 @@ bool HashRegularDescriptor(int fd, std::size_t maximum, std::string* digest,
   *bytes = count;
   if (metadata_out != nullptr) *metadata_out = before;
   return true;
+}
+
+struct FixedMeasurements {
+  std::array<int, 5> descriptors {{-1, -1, -1, -1, -1}};
+  std::array<struct stat, 5> metadata {};
+  std::array<std::string, 5> digests;
+  FixedMeasurements() = default;
+  FixedMeasurements(const FixedMeasurements&) = delete;
+  FixedMeasurements& operator=(const FixedMeasurements&) = delete;
+  ~FixedMeasurements() {
+    for (int fd : descriptors) if (fd >= 0) close(fd);
+  }
+};
+
+bool FixedComponentDirectory(int fd) {
+  struct stat metadata {};
+  return fstat(fd, &metadata) == 0 && S_ISDIR(metadata.st_mode) &&
+      (metadata.st_mode & 0022) == 0;
+}
+
+int OpenFixedComponent(int system_ext, std::size_t index) {
+  if (index >= kFixedComponents.size() || !FixedComponentDirectory(system_ext)) {
+    errno = EPERM;
+    return -1;
+  }
+  int current = dup(system_ext);
+  if (current < 0) return -1;
+  const std::string_view path(kFixedComponents[index].relative_path);
+  std::size_t begin = 0;
+  while (begin < path.size()) {
+    const std::size_t end = path.find('/', begin);
+    const bool last = end == std::string_view::npos;
+    const std::size_t length = last ? path.size() - begin : end - begin;
+    const std::string component(path.substr(begin, length));
+    // O_NONBLOCK prevents a substituted FIFO from blocking before fstat can
+    // reject it. Every parent and leaf rejects symlinks independently.
+    const int flags = O_RDONLY | O_CLOEXEC | O_NOFOLLOW |
+        (last ? O_NONBLOCK : O_DIRECTORY);
+    const int next = openat(current, component.c_str(), flags);
+    const int saved_errno = errno;
+    close(current);
+    if (next < 0) { errno = saved_errno; return -1; }
+    if (last) return next;
+    if (!FixedComponentDirectory(next)) {
+      close(next);
+      errno = EPERM;
+      return -1;
+    }
+    current = next;
+    begin = end + 1;
+  }
+  close(current);
+  errno = EINVAL;
+  return -1;
+}
+
+bool FixedComponentDescriptorsStillMatch(int system_ext, const FixedMeasurements& measured) {
+  for (std::size_t index = 0; index < kFixedComponents.size(); ++index) {
+    struct stat descriptor_metadata {}, path_metadata {};
+    if (measured.descriptors[index] < 0 ||
+        fstat(measured.descriptors[index], &descriptor_metadata) != 0 ||
+        !SameStableMetadata(measured.metadata[index], descriptor_metadata)) return false;
+    const int path = OpenFixedComponent(system_ext, index);
+    if (path < 0) return false;
+    const bool ok = fstat(path, &path_metadata) == 0 &&
+        SameStableMetadata(measured.metadata[index], path_metadata);
+    const int saved_errno = errno;
+    close(path);
+    errno = saved_errno;
+    if (!ok) return false;
+  }
+  return true;
+}
+
+bool CollectFixedComponentMeasurements(int system_ext, FixedMeasurements* measured) {
+  for (std::size_t index = 0; index < kFixedComponents.size(); ++index) {
+    measured->descriptors[index] = OpenFixedComponent(system_ext, index);
+    if (measured->descriptors[index] < 0) return false;
+    std::size_t bytes = 0;
+    if (!HashRegularDescriptor(measured->descriptors[index],
+                               kFixedComponents[index].maximum_bytes,
+                               &measured->digests[index], &bytes, &measured->metadata[index]) ||
+        bytes == 0 || !IsHexDigest(measured->digests[index])) return false;
+  }
+  return FixedComponentDescriptorsStillMatch(system_ext, *measured);
 }
 
 bool StagingEntriesMatch(const Json::Value& staging,
@@ -960,7 +1104,7 @@ void SetProperty(const char* name, const char* value) {
 #endif
 }
 
-// Only digests of three fixed immutable components are published. They are
+// Only digests of eight fixed immutable components are published. They are
 // engineering observations, not hardware attestation or a replacement for
 // AVB. No state, command, credential or caller-selected path is exposed.
 bool SetMeasurementProperty(const char* name, const char* value) {
@@ -973,13 +1117,33 @@ bool SetMeasurementProperty(const char* name, const char* value) {
 #endif
 }
 
-bool ClearComponentMeasurement() {
+using MeasurementSetter = bool (*)(const char*, const char*);
+
+bool ClearComponentMeasurement(MeasurementSetter setter = SetMeasurementProperty) {
   // Consumers must require valid=1 on the same boot. Clear it first, before
   // modifying any digest, so partial publication cannot look complete.
-  return SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "0") &&
-      SetMeasurementProperty("trillionnium.owner_open.measurement.bootstrap_sha256", "") &&
-      SetMeasurementProperty("trillionnium.owner_open.measurement.manifest_sha256", "") &&
-      SetMeasurementProperty("trillionnium.owner_open.measurement.image_sha256", "");
+  bool ok = setter("trillionnium.owner_open.measurement.valid", "0");
+  // Attempt every clear even after a setter fails. Never publish valid=1 on
+  // a failed clear. The caller returns HOLD rather than retaining a result.
+  for (const char* property : kMeasurementDigestProperties) ok = setter(property, "") && ok;
+  return ok;
+}
+
+bool PublishMeasurementDigests(const std::array<std::string, 8>& digests,
+                              MeasurementSetter setter = SetMeasurementProperty) {
+  for (const std::string& digest : digests) {
+    if (!IsHexDigest(digest)) { ClearComponentMeasurement(setter); errno = EBADMSG; return false; }
+  }
+  for (std::size_t index = 0; index < digests.size(); ++index) {
+    if (!setter(kMeasurementDigestProperties[index], digests[index].c_str())) {
+      ClearComponentMeasurement(setter);
+      errno = EIO;
+      return false;
+    }
+  }
+  // Caller must revalidate the held descriptors before the separate valid=1
+  // publication. This function intentionally never sets the valid bit.
+  return true;
 }
 
 bool HashExecutingBootstrap(const char* installed_path, std::string* executable_digest) {
@@ -1002,14 +1166,23 @@ bool HashExecutingBootstrap(const char* installed_path, std::string* executable_
 }
 
 bool PublishComponentMeasurement(const ImageManifest& manifest, const std::string& image_digest) {
+  if (!ClearComponentMeasurement()) { errno = EIO; return false; }
+  const int system_ext = open(kFixedComponentRoot, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
+  if (system_ext < 0) return false;
+  FixedMeasurements fixed;
+  const bool fixed_ok = CollectFixedComponentMeasurements(system_ext, &fixed);
+  if (!fixed_ok) { const int saved = errno; close(system_ext); errno = saved; return false; }
   std::string executable_digest;
-  if (!HashExecutingBootstrap(kBootstrapExecutable, &executable_digest)) return false;
+  if (!HashExecutingBootstrap(kBootstrapExecutable, &executable_digest)) {
+    const int saved = errno; close(system_ext); errno = saved; return false;
+  }
 
   std::array<unsigned char, EVP_MAX_MD_SIZE> raw {};
   unsigned int raw_size = 0;
   if (EVP_Digest(manifest.raw.data(), manifest.raw.size(), raw.data(), &raw_size,
                  EVP_sha256(), nullptr) != 1 || raw_size != 32) {
     errno = EIO;
+    close(system_ext);
     return false;
   }
   static constexpr char kHex[] = "0123456789abcdef";
@@ -1021,17 +1194,22 @@ bool PublishComponentMeasurement(const ImageManifest& manifest, const std::strin
   if (!IsHexDigest(executable_digest) || !IsHexDigest(manifest_digest) ||
       !IsHexDigest(image_digest)) {
     errno = EBADMSG;
+    close(system_ext);
     return false;
   }
-  const bool ok = SetMeasurementProperty("trillionnium.owner_open.measurement.bootstrap_sha256",
-                               executable_digest.c_str()) &&
-      SetMeasurementProperty("trillionnium.owner_open.measurement.manifest_sha256",
-                               manifest_digest.c_str()) &&
-      SetMeasurementProperty("trillionnium.owner_open.measurement.image_sha256",
-                               image_digest.c_str()) &&
+  const std::array<std::string, 8> digests = {{executable_digest, manifest_digest, image_digest,
+      fixed.digests[0], fixed.digests[1], fixed.digests[2], fixed.digests[3], fixed.digests[4]}};
+  struct stat descriptor_root {}, installed_root {};
+  const bool ok = PublishMeasurementDigests(digests) &&
+      FixedComponentDescriptorsStillMatch(system_ext, fixed) &&
+      fstat(system_ext, &descriptor_root) == 0 && lstat(kFixedComponentRoot, &installed_root) == 0 &&
+      S_ISDIR(installed_root.st_mode) && SameStableMetadata(descriptor_root, installed_root) &&
       SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "1");
+  const int saved_errno = errno;
+  close(system_ext);
+  errno = saved_errno;
   if (!ok) {
-    SetMeasurementProperty("trillionnium.owner_open.measurement.valid", "0");
+    ClearComponentMeasurement();
     errno = EIO;
   }
   return ok;

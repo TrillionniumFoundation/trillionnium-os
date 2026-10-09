@@ -66,6 +66,16 @@ get_prop(trillionnium_owner_open_ingress, trillionnium_owner_open_prop)
 allow trillionnium_owner_open_client self:unix_stream_socket create_stream_socket_perms;
 allow trillionnium_owner_open_client trillionnium_owner_open_ingress:unix_stream_socket connectto;
 
+# Public Android application services are a separate baseline from app_domain.
+# Keep the dedicated ordinary application domain and broker peer identity.
+# This grants discovery only; Android API permissions remain enforced by servers.
+allow trillionnium_owner_open_client app_api_service:service_manager find;
+
+# Only bootstrap hashes the two fixed immutable Android mechanism binaries.
+# No map/execute/write permission is added, and no client can read these files.
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_ingress_exec:file { getattr open read };
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_emergency_stop_exec:file { getattr open read };
+
 # Emergency stop durably creates the persistent inhibit and clears readiness.
 # Android init subsequently stops the tracked bootstrap service cgroup. No
 # numeric persisted PID, cross-domain signal, or KILL capability is needed.
