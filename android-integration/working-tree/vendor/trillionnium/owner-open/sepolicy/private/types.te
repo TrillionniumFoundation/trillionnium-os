@@ -8,6 +8,9 @@ init_daemon_domain(trillionnium_owner_open_bootstrap)
 net_domain(trillionnium_owner_open_bootstrap)
 
 type trillionnium_owner_open_ingress, domain, coredomain;
+# Dedicated native ingress bridges ordinary app MCS categories at this socket.
+# Keep the client untrusted; existing TE and kernel peer checks still apply.
+typeattribute trillionnium_owner_open_ingress mlstrustedsubject;
 type trillionnium_owner_open_ingress_exec, exec_type, system_file_type, file_type;
 init_daemon_domain(trillionnium_owner_open_ingress)
 
