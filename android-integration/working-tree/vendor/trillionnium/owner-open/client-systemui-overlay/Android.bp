@@ -1,0 +1,7 @@
+runtime_resource_overlay {
+    name: "TrillionniumOwnerOpenSystemUIOverlay",
+    certificate: "platform",
+    sdk_version: "current",
+    system_ext_specific: true,
+    resource_dirs: ["res"],
+}

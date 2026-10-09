@@ -1,0 +1,4 @@
+<resources>
+    <string name="systemui_entry_label">AI 工作台</string>
+    <string name="systemui_entry_description">打开 AI 任务与控制</string>
+</resources>

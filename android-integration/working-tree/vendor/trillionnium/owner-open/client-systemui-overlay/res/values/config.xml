@@ -1,0 +1,5 @@
+<resources>
+    <!-- Keep the actual API37 SystemUI defaults, adding only an explicit entry. -->
+    <string name="quick_settings_tiles_default" translatable="false">internet,bt,custom(org.trillionnium.owneropen/.OwnerOpenTileService),dnd,cast,flashlight,airplane,rotation,wallet,alarm,controls,screenrecord,battery</string>
+    <string name="quick_settings_tiles_default_split" translatable="false">wifi,bt,custom(org.trillionnium.owneropen/.OwnerOpenTileService),cell,cast,dnd,wallet,airplane,rotation,flashlight,battery,alarm,controls,screenrecord</string>
+</resources>

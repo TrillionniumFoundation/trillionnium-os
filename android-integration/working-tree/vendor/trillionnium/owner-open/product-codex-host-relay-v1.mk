@@ -7,6 +7,7 @@ $(call inherit-product, vendor/trillionnium/owner-open/product.mk)
 # the common optional default during Android property post-processing.
 ifeq ($(TRILLINNIUM_LEAP_OWNER_OPEN_RUNTIME_ENABLED),true)
 PRODUCT_SYSTEM_EXT_PROPERTIES += ro.trillionnium.owner_open.enabled=true
+PRODUCT_PACKAGES += TrillionniumOwnerOpenSystemUIOverlay
 else
 PRODUCT_SYSTEM_EXT_PROPERTIES += ro.trillionnium.owner_open.enabled=false
 endif
