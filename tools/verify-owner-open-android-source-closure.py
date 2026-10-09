@@ -38,6 +38,15 @@ ACTIVE_SOURCE_FILES = (
     ANDROID_ROOT / "tools/verify_owner_open_materialized_erofs_payload.py",
     ANDROID_ROOT / "init/trillionnium-sun-btfm-modprobe.rc",
     ANDROID_ROOT / "native/owner_open_emergency_inhibit.h",
+    ANDROID_ROOT / 'client-systemui-overlay/Android.bp',
+    ANDROID_ROOT / 'client-systemui-overlay/AndroidManifest.xml',
+    ANDROID_ROOT / 'client-systemui-overlay/res/values/config.xml',
+    ANDROID_ROOT / 'client/AndroidManifest.xml',
+    ANDROID_ROOT / 'client/res/drawable/ic_owner_open_entry.xml',
+    ANDROID_ROOT / 'client/res/values-zh-rCN/systemui_entry.xml',
+    ANDROID_ROOT / 'client/res/values/strings.xml',
+    ANDROID_ROOT / 'client/src/org/trillionnium/owneropen/OwnerOpenTileService.java',
+    ANDROID_ROOT / 'product-codex-host-relay-v1.mk',
 )
 ACTIVE_EXTRA_MODULES = {"trillionnium-sun-btfm-modprobe-init-rc"}
 ACTIVE_EXTRA_SERVICES = {"trillionnium_owner_open_verify"}
@@ -321,6 +330,27 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
                                     'maximum_bytes': 1048576}],
          'publish_protocol': 'valid0_clear_all_hash_stable_fd_publish_all_valid1',
          'claim_ceiling': 'fixed_components_same_boot_not_partition_or_hardware_attestation'},
+        "native_systemui_entry": {'schema': 'org.trillionnium.owner-open.native-systemui-entry.v1',
+ 'tile_component': 'org.trillionnium.owneropen/.OwnerOpenTileService',
+ 'workspace_component': 'org.trillionnium.owneropen/.OwnerOpenShellActivity',
+ 'caller_permission': 'android.permission.BIND_QUICK_SETTINGS_TILE',
+ 'overlay_module': 'TrillionniumOwnerOpenSystemUIOverlay',
+ 'overlay_target': 'com.android.systemui',
+ 'overlay_partition': 'system_ext',
+ 'selected_when': 'TRILLINNIUM_LEAP_OWNER_OPEN_RUNTIME_ENABLED=true',
+ 'automatic_connect': False,
+ 'automatic_send': False,
+ 'automatic_resume': False,
+ 'entry_only': True,
+ 'source_sha256': {'client-systemui-overlay/Android.bp': 'e53e528cf87e7c00f1dd0297054e0ddf55037b4a78d6867b371cf5359d456e59',
+                   'client-systemui-overlay/AndroidManifest.xml': 'fb77914a6d30c21d3007c6d4d5610581e00d2014fd09544e695f73f046668623',
+                   'client-systemui-overlay/res/values/config.xml': 'c05de3f480ecc5372d24f64fcd6aa37d5f125c885d2c6592439a43000440d0df',
+                   'client/AndroidManifest.xml': '6403c3229cb6851a3bf7273566f84ff0ad0d5da242f4213e605cf6dfb4cec13a',
+                   'client/res/drawable/ic_owner_open_entry.xml': 'de07affd355ec2e8f18637aac6ceae1a7a4c6ed8c1f4f43157b71970277abeb5',
+                   'client/res/values-zh-rCN/systemui_entry.xml': 'b936f7ee5b118f857b49ab8c97582595673a9bd8daeeff2592ee3bf4900c5fee',
+                   'client/res/values/strings.xml': 'fefd13bdc2a05c81e0fc49bc2fc63b66acc2b159021c440b76b39aede1ef1ab0',
+                   'client/src/org/trillionnium/owneropen/OwnerOpenTileService.java': 'ee7382f6bf83af6f8a617d163ee58f8f2a9d17845c543193fda47f0f59cf30a6',
+                   'product-codex-host-relay-v1.mk': '6aa085c08627b03d835c1ef044b4ed28337f6816ba11980e1ab508d226b2e579'}},
         "owner_client_control": {'schema': 'org.trillionnium.owner-open.ingress-control.v1',
          'version': 1,
          'first_frame_required': True,
@@ -364,6 +394,23 @@ def verify_active_surface(root: Path, bootstrap: str, init: str, report: Report)
         # canonical JSON values so type drift cannot satisfy this contract.
         if json.dumps(active.get(name), sort_keys=True) != json.dumps(value, sort_keys=True):
             report.errors.append(f"Leap host-relay runtime profile {name} differs from exact source contract")
+    # This separately bound conditional overlay is intentionally not part of
+    # the common product.mk inventory. Unknown modules/selection/entry changes
+    # require an explicit new selected source contract, not automatic discovery.
+    entry = expected["native_systemui_entry"]
+    for relative, digest in entry["source_sha256"].items():
+        path = root / ANDROID_ROOT / relative
+        try:
+            if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                report.errors.append(f"native SystemUI entry source digest differs: {relative}")
+        except OSError as error:
+            report.errors.append(f"native SystemUI entry source unreadable: {relative}: {error}")
+    try:
+        overlay_bp = load_text(root / ANDROID_ROOT / "client-systemui-overlay/Android.bp", "native SystemUI overlay modules")
+        if MODULE_PATTERN.findall(overlay_bp) != [entry["overlay_module"]]:
+            report.errors.append("native SystemUI overlay module inventory differs")
+    except (OSError, ValueError) as error:
+        report.errors.append(str(error))
     fixed = re.search(r"constexpr std::array<FixedComponent,\s*(\d+)> kFixedComponents = \{\{(.*?)\}\};", bootstrap, re.S)
     expected_components = expected["component_measurement"]["additional_components"]
     actual_components = []
@@ -920,6 +967,8 @@ def verify(root: Path) -> Report:
         "foundation_profile_selected": False,
         "authored_runtime_profile": str(ACTIVE_RUNTIME_PROFILE),
         "authored_runtime_profile_id": "leap-codex-host-relay-v1",
+        "native_systemui_overlay_module": "TrillionniumOwnerOpenSystemUIOverlay",
+        "native_systemui_overlay_selection": "enabled_profile_only_source_bound_not_built",
         "active_required_module_count": len(active_module_names),
         "semantic_contract": profile_references.get("semantic_contract"),
         "architecture_decision": profile_references.get("architecture_decision"),

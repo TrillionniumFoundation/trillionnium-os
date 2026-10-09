@@ -122,6 +122,40 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
                 self.assertFalse(module.verify(self.root).ok)
         path.write_text(original)
 
+    def test_native_systemui_entry_source_and_selection_are_exact(self) -> None:
+        cases = (
+            ("client/src/org/trillionnium/owneropen/OwnerOpenTileService.java", "public final class", "// connect automatically\npublic final class"),
+            ("client/AndroidManifest.xml", "android.permission.BIND_QUICK_SETTINGS_TILE", "android.permission.INTERNET"),
+            ("client-systemui-overlay/Android.bp", 'name: "TrillionniumOwnerOpenSystemUIOverlay"', 'name: "UnselectedOverlay"'),
+            ("client-systemui-overlay/res/values/config.xml", "internet,bt,custom(", "internet,custom("),
+            ("product-codex-host-relay-v1.mk", "ifeq ($(TRILLINNIUM_LEAP_OWNER_OPEN_RUNTIME_ENABLED),true)", "ifeq (true,true)"),
+            ("product-codex-host-relay-v1.mk", "PRODUCT_PACKAGES += TrillionniumOwnerOpenSystemUIOverlay", "PRODUCT_PACKAGES += TrillionniumOwnerOpenSystemUIOverlay ExtraPackage"),
+        )
+        for relative, old, changed in cases:
+            path = self.root / module.ANDROID_ROOT / relative
+            original = path.read_text()
+            with self.subTest(relative=relative, changed=changed):
+                self.rewrite(module.ANDROID_ROOT / relative, old, changed)
+                report = module.verify(self.root)
+                self.assertFalse(report.ok)
+                self.assertTrue(any("native SystemUI entry source digest differs" in e for e in report.errors), report.errors)
+            path.write_text(original)
+
+    def test_native_systemui_profile_cannot_accept_unknown_source_or_auto_work(self) -> None:
+        path = self.root / module.BASE.ACTIVE_RUNTIME_PROFILE
+        original = path.read_text()
+        for change in ("automatic_send", "entry_only", "selected_when", "unknown", "hash"):
+            value = json.loads(original)
+            entry = value["native_systemui_entry"]
+            if change == "unknown": entry["unknown"] = True
+            elif change == "hash": entry["source_sha256"]["client/AndroidManifest.xml"] = "0" * 64
+            elif change == "selected_when": entry[change] = "always"
+            else: entry[change] = not entry[change]
+            with self.subTest(change=change):
+                path.write_text(json.dumps(value))
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
     def test_ordinary_api_find_cannot_become_privileged_or_service_add(self) -> None:
         path = self.root / module.ANDROID_ROOT / "sepolicy/private/domains.te"
         original = path.read_text()

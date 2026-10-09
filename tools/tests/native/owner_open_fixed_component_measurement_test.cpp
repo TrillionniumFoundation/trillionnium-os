@@ -125,6 +125,8 @@ int main(int argc, char** argv) {
   Require(!Collect(root), "writable parent rejected");
   Fixture(root); Require(chmod(root.c_str(), 0775) == 0, "make writable fixed root");
   Require(!Collect(root), "writable fixed root rejected");
+  Fixture(root); Require(chmod((root / "bin").c_str(), 0751) == 0, "actual native bin directory mode fixture");
+  Require(Collect(root), "safe 0751 parent accepted without gid-zero assumption");
   Fixture(root);
   const int stable_root = open(root.c_str(), O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
   {

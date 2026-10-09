@@ -81,6 +81,11 @@
           "size": 4320
         },
         {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client-systemui-overlay/Android.bp",
+          "sha256": "e53e528cf87e7c00f1dd0297054e0ddf55037b4a78d6867b371cf5359d456e59",
+          "size": 195
+        },
+        {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenClient.java",
           "sha256": "f41d8387a5321a849357485bd56428980e129c9fcf1049b1dfd04fa4a860a3e0",
           "size": 11677
@@ -111,14 +116,19 @@
           "size": 31543
         },
         {
+          "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenTileService.java",
+          "sha256": "ee7382f6bf83af6f8a617d163ee58f8f2a9d17845c543193fda47f0f59cf30a6",
+          "size": 2029
+        },
+        {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/client/src/org/trillionnium/owneropen/OwnerOpenTurnEvidence.java",
           "sha256": "93d8b972f02fcf739763d380093467151ea7c635d340593bcdf5a10cb88fe556",
           "size": 14620
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-codex-host-relay-v1.json",
-          "sha256": "3d49f90ee84b60f6419ef357584d6cd51fc6f82a261ece268a16d22e684bc8b5",
-          "size": 4242
+          "sha256": "df364f426254a7bb184f46a5fdd8ae1b1d86bdda519631b5b8c590a98f1b5f84",
+          "size": 7645
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json",
@@ -132,8 +142,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_bootstrap.cpp",
-          "sha256": "fdc3a9a2b25fe979bec8590cf4c9b8b6072a631a3d940239dc0817e92950880d",
-          "size": 50605
+          "sha256": "a87dacd9a5c9eae4ef9f0890b190ad9acf4debe6d16d906a326d38323b4af0b3",
+          "size": 58532
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/native/owner_open_emergency_inhibit.h",
@@ -162,8 +172,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/product-codex-host-relay-v1.mk",
-          "sha256": "1fb739d8e4640ee019051bdd7f633d050431996e7b3962ecc188735cd9b7ef4d",
-          "size": 746
+          "sha256": "6aa085c08627b03d835c1ef044b4ed28337f6816ba11980e1ab508d226b2e579",
+          "size": 803
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/product.mk",
@@ -197,8 +207,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/domains.te",
-          "sha256": "93c7c21f59e7209d683038a8f7d03f275a19edd1e4a658a15374998add16eff4",
-          "size": 5531
+          "sha256": "25e1bebefde7bcd0e4176eaf9adb816a25cdc64f6bb402ebbf9cff4dc4ec744b",
+          "size": 6217
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/types.te",

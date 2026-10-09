@@ -41,8 +41,8 @@ read broker credentials or set mechanism properties.
 
 Bootstrap first attempts `valid=0` and clears all eight digest fields, including
 after an individual clear fails. A failed clear returns HOLD. The fixed path
-walker rejects symlinks at each parent and leaf, writable parents, nonregular,
-empty, multiply linked, writable or oversized leaves. Nonblocking leaf open
+walker rejects symlinks at each parent and leaf, group/other-writable parents, nonregular,
+empty, multiply linked, group/other-writable or oversized leaves. Nonblocking leaf open
 allows a substituted FIFO to be refused before reading. Each file is hashed
 through its descriptor with stable before/after metadata; all descriptors stay
 open and are checked against their current fixed pathname again before final
@@ -72,3 +72,12 @@ policy with no permissive domains, exact permission comparison preserving prior
 denials, source freeze, image generation, AVB/FEC/package audit and a root-owned
 bounded phone trial. The existing R54 crash and three protected runtime digests
 remain failure or UNKNOWN evidence, respectively.
+
+The same selected source candidate includes the explicit SystemUI tile entry.
+The version-5 source profile binds all nine tile, manifest, resource, overlay
+and conditional-product source files by literal SHA256. The overlay is selected
+only for the enabled native profile, separately from the common package list.
+The tile opens the existing workspace after an explicit click and any required
+unlock. It does not connect, send, clear inhibition or resume work. Signature,
+idmap, SystemUI/client Binder permissions and physical lock/fold entry behavior
+still require the newly compiled and admitted candidate.

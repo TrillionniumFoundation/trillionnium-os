@@ -127,5 +127,30 @@
     ],
     "publish_protocol": "valid0_clear_all_hash_stable_fd_publish_all_valid1",
     "claim_ceiling": "fixed_components_same_boot_not_partition_or_hardware_attestation"
+  },
+  "native_systemui_entry": {
+    "schema": "org.trillionnium.owner-open.native-systemui-entry.v1",
+    "tile_component": "org.trillionnium.owneropen/.OwnerOpenTileService",
+    "workspace_component": "org.trillionnium.owneropen/.OwnerOpenShellActivity",
+    "caller_permission": "android.permission.BIND_QUICK_SETTINGS_TILE",
+    "overlay_module": "TrillionniumOwnerOpenSystemUIOverlay",
+    "overlay_target": "com.android.systemui",
+    "overlay_partition": "system_ext",
+    "selected_when": "TRILLINNIUM_LEAP_OWNER_OPEN_RUNTIME_ENABLED=true",
+    "automatic_connect": false,
+    "automatic_send": false,
+    "automatic_resume": false,
+    "entry_only": true,
+    "source_sha256": {
+      "client-systemui-overlay/Android.bp": "e53e528cf87e7c00f1dd0297054e0ddf55037b4a78d6867b371cf5359d456e59",
+      "client-systemui-overlay/AndroidManifest.xml": "fb77914a6d30c21d3007c6d4d5610581e00d2014fd09544e695f73f046668623",
+      "client-systemui-overlay/res/values/config.xml": "c05de3f480ecc5372d24f64fcd6aa37d5f125c885d2c6592439a43000440d0df",
+      "client/AndroidManifest.xml": "6403c3229cb6851a3bf7273566f84ff0ad0d5da242f4213e605cf6dfb4cec13a",
+      "client/res/drawable/ic_owner_open_entry.xml": "de07affd355ec2e8f18637aac6ceae1a7a4c6ed8c1f4f43157b71970277abeb5",
+      "client/res/values-zh-rCN/systemui_entry.xml": "b936f7ee5b118f857b49ab8c97582595673a9bd8daeeff2592ee3bf4900c5fee",
+      "client/res/values/strings.xml": "fefd13bdc2a05c81e0fc49bc2fc63b66acc2b159021c440b76b39aede1ef1ab0",
+      "client/src/org/trillionnium/owneropen/OwnerOpenTileService.java": "ee7382f6bf83af6f8a617d163ee58f8f2a9d17845c543193fda47f0f59cf30a6",
+      "product-codex-host-relay-v1.mk": "6aa085c08627b03d835c1ef044b4ed28337f6816ba11980e1ab508d226b2e579"
+    }
   }
 }
