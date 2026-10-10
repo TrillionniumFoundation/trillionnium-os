@@ -196,8 +196,8 @@
     },
     {
       "path": "tools/owner-open/owner_open_broker_mux.py",
-      "sha256": "b19b5bc571f5a5a7314fa929bd0ea888fcbdc40b37af86ff664a06ef9b13d7c3",
-      "size": 31138
+      "sha256": "7d483edc3c2c7791162d6500f221bd73de06d5795e2d84d9ccf95ef72235cd8b",
+      "size": 31152
     },
     {
       "path": "tools/owner-open/owner_open_broker_runtime.py",

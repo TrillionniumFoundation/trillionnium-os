@@ -300,7 +300,7 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
             OwnerOpenClientState actual = verifiedStoredIdentity().state;
             requireSameSelectedTurn(selected, actual);
             ensureConnected();
-            append("local request_id=" + client.cancelTurn(selected.sessionId, selected.turnId));
+            append("local request_id=" + client.cancelTurn(selected.sessionId, selected.taskId, selected.turnId));
         });
     }
 
@@ -386,6 +386,11 @@ public final class OwnerOpenShellActivity extends Activity implements OwnerOpenC
                 emergencyOperationId = null;
                 transcript.append("local: explicitly refreshed committed initialization; "
                         + "use Reconnect. No turn was resent.\n");
+            } else if (LOCAL_ARMED.equals(processIntent) && emergencyOperationId == null) {
+                // Repeated initialization is a local no-op, never a new request.
+                transcript.append("local: new turns already allowed; use explicit Reconnect. "
+                        + "No previous turn was resent.\n");
+                return;
             }
         }
         if (previous != null) { previous.shutdown(); return; }

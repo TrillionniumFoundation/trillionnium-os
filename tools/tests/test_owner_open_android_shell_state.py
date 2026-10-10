@@ -21,7 +21,7 @@ STUBS = {
  'android/widget/LinearLayout.java': '''package android.widget; import android.view.*; import android.app.Activity; public class LinearLayout extends ViewGroup { public static final int VERTICAL=1,HORIZONTAL=0; public LinearLayout(Activity a){} public void setOrientation(int o){} public void setPadding(int l,int t,int r,int b){} public void addView(View v){} public void addView(View v,LayoutParams p){} public static class LayoutParams extends ViewGroup.LayoutParams { public LayoutParams(int w,int h){super(w,h);} public LayoutParams(int w,int h,int weight){super(w,h);} } }''',
  'android/widget/ScrollView.java': '''package android.widget; import android.view.*; import android.app.Activity; public class ScrollView extends ViewGroup { private int y; public ScrollView(Activity a){} public void addView(View v,LayoutParams p){} public int getScrollY(){return y;} public void scrollTo(int x,int y){this.y=y;} public static class LayoutParams extends ViewGroup.LayoutParams { public LayoutParams(int w,int h){super(w,h);} }}''',
  'org/trillionnium/owneropen/R.java': '''package org.trillionnium.owneropen; public final class R { public static final class string { public static final int prompt_hint=1,send=2,cancel=3,inspect=4,reconnect=5; }}''',
- 'org/trillionnium/owneropen/OwnerOpenClient.java': '''package org.trillionnium.owneropen; import java.util.*; public class OwnerOpenClient { public interface Listener { void onFrame(String r); void onDisconnected(String r); } public static final List<String> events=Collections.synchronizedList(new ArrayList<>()); private boolean connected; public OwnerOpenClient(Listener l){} public void connect(){connected=true;events.add("connect");} public boolean isConnected(){return connected;} public String startTurn(String s,String t,String u,String p){events.add("start:"+s+":"+t+":"+u);return "request-start";} public String cancelTurn(String s,String u){events.add("cancel:"+s+":"+u);return "request-cancel";} public String inspectTurn(String s,String t,String u,long c){events.add("inspect:"+s+":"+t+":"+u);return "request-inspect";} public void shutdown(){connected=false;events.add("shutdown");}}''',
+ 'org/trillionnium/owneropen/OwnerOpenClient.java': '''package org.trillionnium.owneropen; import java.util.*; public class OwnerOpenClient { public interface Listener { void onFrame(String r); void onDisconnected(String r); } public static final List<String> events=Collections.synchronizedList(new ArrayList<>()); private boolean connected; public OwnerOpenClient(Listener l){} public void connect(){connected=true;events.add("connect");} public boolean isConnected(){return connected;} public String startTurn(String s,String t,String u,String p){events.add("start:"+s+":"+t+":"+u);return "request-start";} public String cancelTurn(String s,String t,String u){events.add("cancel:"+s+":"+u);return "request-cancel";} public String inspectTurn(String s,String t,String u,long c){events.add("inspect:"+s+":"+t+":"+u);return "request-inspect";} public void shutdown(){connected=false;events.add("shutdown");}}''',
 }
 
 # Android mechanics are stubs; the actual Activity methods below are compiled.
@@ -57,7 +57,11 @@ public class OwnerOpenClient {
  public void inhibitLocally(){inhibited=true;}
  public String emergencyControl(String operation,boolean stop){events.add((stop?"stop:":"status:")+operation);if(stop)return "emergency.result outcome unknown";return "{\"automatic_redispatch\":false,\"dispatch_inhibited\":false,\"durable_inhibit_confirmed\":false,\"inhibit_observation\":\"absent\",\"kind\":\"emergency.result\",\"operation_id\":\""+operation+"\",\"prior_effect_outcome\":\"unknown\",\"process_quiescence\":\"unknown\",\"request_attempt\":\"status_only\",\"schema\":\"org.trillionnium.owner-open.ingress-control.v1\",\"stop_requested\":false,\"version\":1}";}
  public String startTurn(String s,String t,String u,String p)throws IOException{if(inhibited)throw new IOException("inhibited");events.add("start:"+s+":"+t+":"+u);return "request-start";}
- public String cancelTurn(String s,String u){events.add("cancel:"+s+":"+u);return "request-cancel";}
+ public String cancelTurn(String s,String t,String u)throws IOException {
+  OwnerOpenClientState saved=new OwnerOpenClientStateStore(java.nio.file.Path.of(System.getProperty("owneropen.test.files"))).load().orElseThrow().state;
+  if(!s.equals(saved.sessionId)||!t.equals(saved.taskId)||!u.equals(saved.turnId))throw new AssertionError("Cancel changed durable turn scope");
+  events.add("cancel:"+s+":"+u);return "request-cancel";
+ }
  public String inspectTurn(String s,String t,String u,long c){events.add("inspect:"+s+":"+t+":"+u);return "request-inspect";}
  public void shutdown(){connected=false;events.add("shutdown");}
 }'''
@@ -144,6 +148,22 @@ public final class ShellStateHarness {
   throw new AssertionError("identity worker not ready; storageFailure="+field(activity,"storageFailure")+", events="+OwnerOpenClient.events);
  }
  public static void main(String[] args)throws Exception {
+  if(args[0].equals("initialization-armed-reentry")) {
+   OwnerOpenShellActivity armed=new OwnerOpenShellActivity();
+   try {
+    call(armed,"onCreate",new Class<?>[]{Bundle.class},(Object)null);waitForIdentityReady(armed);
+    Object originalClient=field(armed,"client");
+    require(android.app.AlertDialog.positive==null,"fixture started with a pending dialog");
+    for(int i=0;i<6;i++)call(armed,"confirmInitializeControl");
+    String text=((TextView)field(armed,"transcript")).getText().toString();
+    require(text.split("new turns already allowed",-1).length-1==6,"reentry did not explain already-armed state");
+    require(!text.contains("initialization cannot clear an emergency intent"),"armed reentry mislabeled as Stop");
+    require(originalClient==field(armed,"client")&&field(armed,"emergencyOperationId")==null,"reentry changed the client/fence");
+    require("armed".equals(new android.content.SharedPreferences().getString("owneropen.emergency",null)),"reentry changed durable intent");
+    require(android.app.AlertDialog.positive==null&&OwnerOpenClient.events.isEmpty(),"reentry opened confirmation or dispatched");
+   } finally {call(armed,"onDestroy");}
+   System.out.println(args[0]+" PASS; host Activity fixture only, phone untested");return;
+  }
   if(args[0].startsWith("unavailable-")) {
    android.content.SharedPreferences.missing=args[0].equals("unavailable-missing")||args[0].equals("unavailable-post-race")||args[0].equals("unavailable-init-rotation");
    android.content.SharedPreferences.readFail=args[0].equals("unavailable-read-failure");
@@ -161,6 +181,10 @@ public final class ShellStateHarness {
     android.app.AlertDialog.positive.onClick(null,1);waitFor("status:");
     if(args[0].equals("unavailable-init-rotation")) {
      require(android.content.SharedPreferences.commitEntered.await(2,java.util.concurrent.TimeUnit.SECONDS),"initialization commit not pending");
+     int before=OwnerOpenClient.events.size();
+     call(unavailable,"confirmInitializeControl");
+     require(OwnerOpenClient.events.size()==before,"pending initialization submitted another status request");
+     require(((TextView)field(unavailable,"transcript")).getText().toString().contains("initialization cannot clear an emergency intent"),"pending initialization was reported armed");
      call(unavailable,"onDestroy");OwnerOpenClient.events.clear();
      OwnerOpenShellActivity folded=new OwnerOpenShellActivity();
      try {
@@ -255,6 +279,12 @@ public final class ShellStateHarness {
      android.content.SharedPreferences.commitRelease.countDown();
     }
     String operation=(String)field(restored,"emergencyOperationId");
+    Object stoppedClient=field(restored,"client");
+    int beforeAllow=OwnerOpenClient.events.size();
+    call(restored,"confirmInitializeControl");
+    require(operation.equals(field(restored,"emergencyOperationId"))&&stoppedClient==field(restored,"client"),"Allow erased a genuine Stop fence");
+    require(OwnerOpenClient.events.size()==beforeAllow,"Allow dispatched while Stop was latched");
+    require(((TextView)field(restored,"transcript")).getText().toString().contains("initialization cannot clear an emergency intent"),"genuine Stop was reported armed");
     if(args[0].equals("emergency-priority-fence")) {
      OwnerOpenClient.connectRelease.countDown();Thread.sleep(100);
      require(OwnerOpenClient.events.stream().noneMatch(e->e.startsWith("start:")),"queued effect crossed local emergency fence");
@@ -333,7 +363,7 @@ class OwnerOpenAndroidShellStateTest(unittest.TestCase):
    classes=folder/'classes';classes.mkdir()
    run=subprocess.run([javac,'-d',str(classes),str(ACTIVITY),*[str(ACTIVITY.with_name(name+'.java')) for name in ('OwnerOpenFrame','OwnerOpenTurnEvidence','OwnerOpenClientState','OwnerOpenClientStateCodec','OwnerOpenClientStateStore')],*map(str,folder.rglob('*.java'))],capture_output=True,text=True,timeout=30)
    self.assertEqual(run.returncode,0,run.stderr)
-   for scenario in ['inspect-cancel','explicit-new-turn','bounded-history','emergency-intent-restart','emergency-priority-fence','emergency-confirm-destroy','emergency-slow-persistence','emergency-persistence-failure-restart','emergency-manual-retry','emergency-control-priority','unavailable-missing','unavailable-read-failure','unavailable-post-race','unavailable-init-rotation']:
+   for scenario in ['initialization-armed-reentry','inspect-cancel','explicit-new-turn','bounded-history','emergency-intent-restart','emergency-priority-fence','emergency-confirm-destroy','emergency-slow-persistence','emergency-persistence-failure-restart','emergency-manual-retry','emergency-control-priority','unavailable-missing','unavailable-read-failure','unavailable-post-race','unavailable-init-rotation']:
     with self.subTest(scenario=scenario):
      files=folder/('files-'+scenario);files.mkdir()
      result=subprocess.run([java,'-Downeropen.test.files='+str(files),'-cp',str(classes),'ShellStateHarness',scenario],capture_output=True,text=True,timeout=10)

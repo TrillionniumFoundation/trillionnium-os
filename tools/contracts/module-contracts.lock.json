@@ -26,7 +26,7 @@
     },
     "docs/machine/module-contract-catalog.v1.json": {
       "bytes": 59514,
-      "sha256": "fc21d98fbbcde16b10e3a81bdd6a273940e75a5b231221c7914bc10acf338713"
+      "sha256": "0f4718a0437341ba332e4abd583fea898d5af2228415f81244e1aafd163d50cf"
     },
     "schemas/modules/_shared/envelopes-v1.schemars.json": {
       "bytes": 4403,
@@ -162,7 +162,7 @@
     },
     "schemas/modules/android/compatibility.json": {
       "bytes": 11451,
-      "sha256": "5d688a23f829d326cda58c0121c005a132d1bdc9538abd345b036624a636f670"
+      "sha256": "047204e8d813e615606ddb9a9a94ec4c15aedec004e8f4663e13d23ba703d713"
     },
     "schemas/modules/android/errors-v1.schema.json": {
       "bytes": 3088,
@@ -286,7 +286,7 @@
     },
     "schemas/modules/broker/compatibility.json": {
       "bytes": 12837,
-      "sha256": "53526d1b49274048c6744e9ac144f736584110302b5e94e312c09efa61cd4572"
+      "sha256": "ce46d1a99afcc186d62a6add183a03c2d7624962bbd641c41be12c73b6460db7"
     },
     "schemas/modules/broker/errors-v1.schema.json": {
       "bytes": 3084,

@@ -56,6 +56,8 @@ public final class OwnerOpenFrame {
         return "{\"kind\":\"turn.start\",\"payload\":{"
                 + "\"protocol\":\"trillionnium.agent.turn.v1\","
                 + "\"protocol_version\":1,"
+                + "\"profile_id\":\"owner-open\","
+                + "\"turn_stream_id\":" + quote(turnStreamId(sessionId, taskId, turnId)) + ","
                 + "\"session_id\":" + quote(sessionId) + ","
                 + "\"task_id\":" + quote(taskId) + ","
                 + "\"turn_id\":" + quote(turnId) + ","
@@ -98,10 +100,14 @@ public final class OwnerOpenFrame {
         }
     }
 
-    public static String turnCancel(String sessionId, String turnId) {
+    public static String turnCancel(String sessionId, String taskId, String turnId) {
         requireId(sessionId, "sessionId");
+        requireId(taskId, "taskId");
         requireId(turnId, "turnId");
         return "{\"kind\":\"turn.cancel\",\"payload\":{"
+                + "\"profile_id\":\"owner-open\","
+                + "\"task_id\":" + quote(taskId) + ","
+                + "\"turn_stream_id\":" + quote(turnStreamId(sessionId, taskId, turnId)) + ","
                 + "\"session_id\":" + quote(sessionId) + ","
                 + "\"turn_id\":" + quote(turnId)
                 + "}}";
@@ -127,6 +133,8 @@ public final class OwnerOpenFrame {
             throw new IllegalArgumentException("limit must be in 1..4096");
         }
         return "{\"kind\":\"turn.inspect\",\"payload\":{"
+                + "\"profile_id\":\"owner-open\","
+                + "\"turn_stream_id\":" + quote(turnStreamId(sessionId, taskId, turnId)) + ","
                 + "\"session_id\":" + quote(sessionId) + ","
                 + "\"task_id\":" + quote(taskId) + ","
                 + "\"turn_id\":" + quote(turnId) + ","

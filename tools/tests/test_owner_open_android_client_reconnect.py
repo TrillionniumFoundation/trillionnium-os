@@ -279,7 +279,7 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                         reconnect.get(5, TimeUnit.SECONDS);
                         require(client.isConnected(), "second connect did not remain connected");
                         require(!second.wasClosed(), "second socket closed during reconnect");
-                        client.cancelTurn("session-1", "turn-1");
+                        client.cancelTurn("session-1", "task-1", "turn-1");
                         java.util.concurrent.atomic.AtomicReference<String> inspectRequest = new java.util.concurrent.atomic.AtomicReference<>();
                         client.inspectTurn("session-1", "task-1", "turn-1", "a".repeat(64), 0, id -> {
                             require(!second.written().contains("turn.inspect"), "read correlation ran after wire dispatch");

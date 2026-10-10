@@ -147,8 +147,8 @@ public final class OwnerOpenClient implements AutoCloseable {
         return send(frame, List.of("turn.accepted", "host.error"));
     }
 
-    public String cancelTurn(String sessionId, String turnId) throws IOException {
-        String frame = OwnerOpenFrame.turnCancel(sessionId, turnId);
+    public String cancelTurn(String sessionId, String taskId, String turnId) throws IOException {
+        String frame = OwnerOpenFrame.turnCancel(sessionId, taskId, turnId);
         return send(frame, List.of("turn.cancel.accepted", "host.error"));
     }
 
