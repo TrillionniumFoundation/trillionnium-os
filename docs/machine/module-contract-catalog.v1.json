@@ -127,7 +127,7 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-codex-host-relay-v1.json",
-          "sha256": "df364f426254a7bb184f46a5fdd8ae1b1d86bdda519631b5b8c590a98f1b5f84",
+          "sha256": "a0d0fa723d6c822c3e8b5e9ee2c775a766924d350a080cba32c730a2ac0f97ee",
           "size": 7645
         },
         {
@@ -212,8 +212,8 @@
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/types.te",
-          "sha256": "d187fa0c7ea2ffd3abbce02db721d2071083854fb033bb9849fa2822d0cde7f9",
-          "size": 1636
+          "sha256": "aa689d5f0b55fc698f5f0ce25c33de4ab70cf044d867260d46ef5edf8a81a516",
+          "size": 1857
         },
         {
           "path": "android-integration/working-tree/vendor/trillionnium/owner-open/tools/verify_owner_open_materialized_erofs_payload.py",
