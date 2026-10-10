@@ -1,0 +1,93 @@
+{
+  "schema": "android-existing-host-turn-request-digest-v1",
+  "vectors": [
+    {
+      "name": "ascii",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "one reversible effect",
+      "repeat": 1,
+      "request_sha256": "f0a2e9307dd8c83f8672d9ae3ec892436f55f0f21bd60ae0abbdac8eea5157ec",
+      "utf8_bytes": 21,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    },
+    {
+      "name": "empty",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "",
+      "repeat": 1,
+      "request_sha256": "52bd9b846bb6979904216f30c0c2c2ea07edc02ff88e1970429eef7ba36703b7",
+      "utf8_bytes": 0,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    },
+    {
+      "name": "unicode",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "中文折叠手机😀𐐀",
+      "repeat": 1,
+      "request_sha256": "88b8de0540f5b0d18938e6508c8fbdb1ca70e41d672b4519b8b2b2a3e872d2fa",
+      "utf8_bytes": 26,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    },
+    {
+      "name": "controls",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "quote\" slash\\ backspace\b formfeed\f newline\n tab\t return\r other\u0001/\u001f",
+      "repeat": 1,
+      "request_sha256": "2ecf9c8b8d675e05fdf818c800b537f6352e39027d0608854e9b54557627d153",
+      "utf8_bytes": 65,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    },
+    {
+      "name": "line-separators",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "  ﻿",
+      "repeat": 1,
+      "request_sha256": "57ec05440966d8df597c0ed2f9ce5c77f7fe354fc9012a038ef7cd079916c19e",
+      "utf8_bytes": 9,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    },
+    {
+      "name": "ascii-boundary",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "x",
+      "repeat": 262144,
+      "request_sha256": "f0565b67336ba7690f1b4639a0b4ea3e2926926e8359f7b168431a477b525652",
+      "utf8_bytes": 262144,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    },
+    {
+      "name": "utf8-boundary",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "汉",
+      "repeat": 262144,
+      "request_sha256": "8f86e90d149773f69c879f4df2e2c95a82e8c2a63580bd98af37a80078651632",
+      "utf8_bytes": 786432,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    },
+    {
+      "name": "surrogate-boundary",
+      "session_id": "session-11111111-1111-4111-8111-111111111111",
+      "task_id": "task-22222222-2222-4222-8222-222222222222",
+      "turn_id": "turn-33333333-3333-4333-8333-333333333333",
+      "input_unit": "😀",
+      "repeat": 131072,
+      "request_sha256": "c4bffb5a3ed379f4a27de14ad8a04802b7399263b717df8d99486d9da125c9da",
+      "utf8_bytes": 524288,
+      "turn_stream_id": "r5-stream-ebae15c7ff91ee74010357b0e2f4eea5fa80bca0e1c118ac26da40e39db47a47"
+    }
+  ]
+}

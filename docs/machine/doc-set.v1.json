@@ -124,7 +124,8 @@
     "docs/generated/PERFORMANCE_STATUS.md",
     "docs/machine/module-contract-catalog.v1.json",
     "docs/MODULE_CONTRACT_STATUS.md",
-    "docs/generated/METRIC_STATUS.md"
+    "docs/generated/METRIC_STATUS.md",
+    "docs/OWNER_OPEN_FIXED_COMPONENT_MEASUREMENT.md"
   ],
   "schema": "org.trillionnium.documentation-set.v1",
   "semantic_revision": "owner-open-semantic-v1",

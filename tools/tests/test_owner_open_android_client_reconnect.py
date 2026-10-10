@@ -57,6 +57,7 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
         )
         self.assertIn("while (isCurrent(generation, ownedSocket))", loop)
         self.assertIn("OwnerOpenFrame.readLine(ownedInput)", loop)
+        self.assertIn("if (!isCurrent(generation, ownedSocket)) break;", loop)
         self.assertIn("if (isCurrentLocked(generation, ownedSocket))", loop)
         self.assertIn("closeLocked();", loop)
         self.assertIn("notify = true;", loop)
@@ -121,6 +122,9 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                 }
 
                 public void connect(LocalSocketAddress address) throws IOException {}
+                public void setSoTimeout(int timeout) throws IOException {}
+                public void shutdownInput() throws IOException {}
+                public void shutdownOutput() throws IOException {}
 
                 public InputStream getInputStream() throws IOException {
                     return endpoint.input;
@@ -179,6 +183,7 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                         private final CountDownLatch entered = new CountDownLatch(1);
                         private final CountDownLatch release = new CountDownLatch(1);
                         private int offset;
+                        private int staleOffset;
 
                         @Override
                         public int read() throws IOException {
@@ -206,6 +211,15 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                             } catch (InterruptedException error) {
                                 Thread.currentThread().interrupt();
                                 throw new IOException("reader gate interrupted", error);
+                            }
+                            if (!releaseOnClose) {
+                                byte[] stale = "{\"kind\":\"provider.status\",\"payload\":{\"status\":\"stale\"}}\n"
+                                        .getBytes(StandardCharsets.UTF_8);
+                                if (staleOffset == stale.length) return -1;
+                                int count = Math.min(len, stale.length - staleOffset);
+                                System.arraycopy(stale, staleOffset, bytes, off, count);
+                                staleOffset += count;
+                                return count;
                             }
                             throw new IOException("reader gate released");
                         }
@@ -236,9 +250,12 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                     LocalSocket.Endpoint second = new LocalSocket.Endpoint(true);
                     LocalSocket.install(first, second);
                     AtomicInteger disconnects = new AtomicInteger();
+                    AtomicInteger staleFrames = new AtomicInteger();
                     OwnerOpenClient client = new OwnerOpenClient(new OwnerOpenClient.Listener() {
                         @Override
-                        public void onFrame(String rawJsonLine) {}
+                        public void onFrame(String rawJsonLine) {
+                            if (rawJsonLine.contains("stale")) staleFrames.incrementAndGet();
+                        }
 
                         @Override
                         public void onDisconnected(String reason) {
@@ -262,8 +279,16 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                         reconnect.get(5, TimeUnit.SECONDS);
                         require(client.isConnected(), "second connect did not remain connected");
                         require(!second.wasClosed(), "second socket closed during reconnect");
-                        client.cancelTurn("session-1", "turn-1");
-                        client.inspectTurn("session-1", "task-1", "turn-1", 0);
+                        client.cancelTurn("session-1", "task-1", "turn-1");
+                        java.util.concurrent.atomic.AtomicReference<String> inspectRequest = new java.util.concurrent.atomic.AtomicReference<>();
+                        client.inspectTurn("session-1", "task-1", "turn-1", "a".repeat(64), 0, id -> {
+                            require(!second.written().contains("turn.inspect"), "read correlation ran after wire dispatch");
+                            inspectRequest.set(id);
+                        });
+                        require(second.written().contains("\"request_sha256\":\"" + "a".repeat(64) + "\""),
+                                "existing Inspect request digest was dropped");
+                        require(second.written().contains("\"request_id\":\"" + inspectRequest.get() + "\""),
+                                "pre-write read correlation did not bind actual request ID");
                         require(second.written().contains(
                                         "\"direction\":\"client_to_host\",\"seq\":0"),
                                 "reconnected frame did not restart at seq=0");
@@ -277,6 +302,7 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                                 "second reader did not start");
                         require(client.isConnected(), "stale reader disconnected generation two");
                         require(!second.wasClosed(), "stale reader closed generation two");
+                        require(staleFrames.get() == 0, "old generation reader delivered a stale Host frame");
                         require(disconnects.get() == 0,
                                 "stale reader emitted a disconnect callback");
                     } finally {

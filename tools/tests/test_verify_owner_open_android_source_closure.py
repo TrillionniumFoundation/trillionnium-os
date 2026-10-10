@@ -38,6 +38,7 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
             module.COMMON_OWNER_OPEN,
             module.SUPERVISOR_CONFIG,
         }
+        paths.update(module.BASE.ACTIVE_SOURCE_FILES)
         for field_name in ("semantic_contract", "architecture_decision"):
             paths.add(Path(profile[field_name]))
         for item in profile["required_source_artifacts"]:
@@ -72,6 +73,115 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
             report.facts["architecture_decision"],
             "docs/GLOBAL_ARCHITECTURE.md",
         )
+
+    def test_r52_unknown_policy_grant_and_marker_clear_fail_closed(self) -> None:
+        relative = module.ANDROID_ROOT / "sepolicy/private/domains.te"
+        path = self.root / relative
+        original = path.read_text()
+        for extra in (
+            "set_prop(shell, trillionnium_owner_open_stop_prop)",
+            "allow shell trillionnium_owner_open_stop_prop:property_service set;",
+            "allow trillionnium_owner_open_client trillionnium_owner_open_inhibit_file:file read;",
+            "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_inhibit_file:file unlink;",
+            "allow { shell } core_data_file_type:file r_file_perms;",
+        ):
+            with self.subTest(extra=extra):
+                path.write_text(original + "\n" + extra + "\n")
+                report = module.verify(self.root)
+                self.assertFalse(report.ok, report.facts)
+                self.assertTrue(any("policy generation source digest differs" in e for e in report.errors), report.errors)
+        path.write_text(original)
+
+    def test_fixed_component_profile_cannot_select_other_paths_or_types(self) -> None:
+        relative = module.BASE.ACTIVE_RUNTIME_PROFILE
+        path = self.root / relative
+        original = path.read_text()
+        for change in ("path", "property", "bound", "count", "root", "unknown"):
+            value = json.loads(original)
+            contract = value["component_measurement"]
+            if change == "path": contract["additional_components"][0]["relative_path"] = "etc/private-state"
+            elif change == "property": contract["additional_components"][0]["property"] = "arbitrary.property"
+            elif change == "bound": contract["additional_components"][0]["maximum_bytes"] = True
+            elif change == "count": contract["additional_components"].append(contract["additional_components"][0])
+            elif change == "root": contract["fixed_root"] = "/data"
+            else: contract["unknown"] = True
+            with self.subTest(change=change):
+                path.write_text(json.dumps(value))
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
+    def test_native_fixed_path_table_cannot_drift_from_profile(self) -> None:
+        path = self.root / module.ANDROID_ROOT / "native/owner_open_bootstrap.cpp"
+        original = path.read_text()
+        for old, new in (("etc/build.prop", "etc/private-state"),
+                         ("kFixedComponentRoot = \"/system_ext\"", "kFixedComponentRoot = \"/data\""),
+                         ("FixedComponent, 5>", "FixedComponent, 6>")):
+            with self.subTest(new=new):
+                self.assertIn(old, original)
+                path.write_text(original.replace(old, new, 1))
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
+    def test_native_systemui_entry_source_and_selection_are_exact(self) -> None:
+        cases = (
+            ("client/src/org/trillionnium/owneropen/OwnerOpenTileService.java", "public final class", "// connect automatically\npublic final class"),
+            ("client/AndroidManifest.xml", "android.permission.BIND_QUICK_SETTINGS_TILE", "android.permission.INTERNET"),
+            ("client-systemui-overlay/Android.bp", 'name: "TrillionniumOwnerOpenSystemUIOverlay"', 'name: "UnselectedOverlay"'),
+            ("client-systemui-overlay/res/values/config.xml", "internet,bt,custom(", "internet,custom("),
+            ("product-codex-host-relay-v1.mk", "ifeq ($(TRILLINNIUM_LEAP_OWNER_OPEN_RUNTIME_ENABLED),true)", "ifeq (true,true)"),
+            ("product-codex-host-relay-v1.mk", "PRODUCT_PACKAGES += TrillionniumOwnerOpenSystemUIOverlay", "PRODUCT_PACKAGES += TrillionniumOwnerOpenSystemUIOverlay ExtraPackage"),
+        )
+        for relative, old, changed in cases:
+            path = self.root / module.ANDROID_ROOT / relative
+            original = path.read_text()
+            with self.subTest(relative=relative, changed=changed):
+                self.rewrite(module.ANDROID_ROOT / relative, old, changed)
+                report = module.verify(self.root)
+                self.assertFalse(report.ok)
+                self.assertTrue(any("native SystemUI entry source digest differs" in e for e in report.errors), report.errors)
+            path.write_text(original)
+
+    def test_native_systemui_profile_cannot_accept_unknown_source_or_auto_work(self) -> None:
+        path = self.root / module.BASE.ACTIVE_RUNTIME_PROFILE
+        original = path.read_text()
+        for change in ("automatic_send", "entry_only", "selected_when", "unknown", "hash"):
+            value = json.loads(original)
+            entry = value["native_systemui_entry"]
+            if change == "unknown": entry["unknown"] = True
+            elif change == "hash": entry["source_sha256"]["client/AndroidManifest.xml"] = "0" * 64
+            elif change == "selected_when": entry[change] = "always"
+            else: entry[change] = not entry[change]
+            with self.subTest(change=change):
+                path.write_text(json.dumps(value))
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
+    def test_ordinary_api_find_cannot_become_privileged_or_service_add(self) -> None:
+        path = self.root / module.ANDROID_ROOT / "sepolicy/private/domains.te"
+        original = path.read_text()
+        for extra in (
+            "allow trillionnium_owner_open_client system_api_service:service_manager find;",
+            "allow trillionnium_owner_open_client service_manager_type:service_manager { add find };",
+            "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_ingress_exec:file execute;",
+            "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_emergency_stop_exec:file write;",
+        ):
+            with self.subTest(extra=extra):
+                path.write_text(original + "\n" + extra + "\n")
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
+
+    def test_r52_ingress_control_availability_unknown_services_and_order_fail_closed(self) -> None:
+        path = self.root / module.ANDROID_ROOT / "init/trillionnium-owner-open.rc"
+        original = path.read_text()
+        for changed in (
+            original.replace("start trillionnium_owner_open_ingress\n    exec_start trillionnium_owner_open_verify", "exec_start trillionnium_owner_open_verify\n    start trillionnium_owner_open_ingress"),
+            original + "\non property:trillionnium.owner_open.ready=0\n    stop trillionnium_owner_open_ingress\n",
+            original + "\nservice unexpected_owner_service /system/bin/true\n    user root\n",
+        ):
+            with self.subTest(changed=changed[-100:]):
+                path.write_text(changed)
+                self.assertFalse(module.verify(self.root).ok)
+        path.write_text(original)
 
     def test_missing_profile_reference_fails_closed(self) -> None:
         (self.root / "docs/GLOBAL_ARCHITECTURE.md").unlink()
@@ -118,11 +228,100 @@ class VerifyOwnerOpenAndroidSourceClosureTest(unittest.TestCase):
     def test_bootstrap_and_profile_path_drift_fails_closed(self) -> None:
         self.rewrite(
             module.ANDROID_ROOT / "native/owner_open_bootstrap.cpp",
-            '"/usr/bin/codex"',
+            '"/usr/libexec/trillionnium/provider-adapter"',
             '"/opt/other-runtime"',
         )
         report = module.verify(self.root)
         self.assertTrue(any("bootstrap does not bind" in error for error in report.errors))
+
+    def test_unknown_product_package_and_init_service_fail_closed(self) -> None:
+        for relative, old, new, error in (
+            (module.ANDROID_ROOT / "product.mk", "    TrillionniumOwnerOpenShell", "    ArbitraryPrivilegeModule", "PRODUCT_PACKAGES differs"),
+            (module.ANDROID_ROOT / "init/trillionnium-owner-open.rc", "service trillionnium_owner_open_verify ", "service arbitrary_privileged_service ", "init service set differs"),
+            (module.ANDROID_ROOT / "Android.bp", 'name: "trillionnium-sun-btfm-modprobe-init-rc"', 'name: "arbitrary-module"', "Android.bp module inventory differs"),
+        ):
+            with self.subTest(relative=relative):
+                path = self.root / relative
+                original = path.read_text(encoding="utf-8")
+                self.rewrite(relative, old, new)
+                report = module.verify(self.root)
+                self.assertTrue(any(error in value for value in report.errors), report.errors)
+                path.write_text(original, encoding="utf-8")
+
+    def test_active_variant_claim_provider_and_payload_drift_fail_closed(self) -> None:
+        path = self.root / module.BASE.ACTIVE_RUNTIME_PROFILE
+        original = path.read_text(encoding="utf-8")
+        for field, member, value in (
+            ("claims", "physical_device_observed", True),
+            ("provider", "long_lived_credentials_on_phone", True),
+            ("provider", "automatic_redispatch", True),
+            ("rootlinux_payload", "image", "/tmp/alternate.erofs"),
+            ("mount_handoff", "bootstrap_mount_operations", True),
+            ("provider", "automatic_redispatch", 0),
+            ("claims", "source_modules_authored", 1),
+            ("rootlinux_payload", "read_only_lower", 1),
+        ):
+            with self.subTest(field=field, member=member):
+                profile = json.loads(original)
+                profile[field][member] = value
+                path.write_text(json.dumps(profile), encoding="utf-8")
+                report = module.verify(self.root)
+                self.assertTrue(any(f"profile {field} differs" in error for error in report.errors), report.errors)
+        path.write_text(original, encoding="utf-8")
+
+    def test_init_read_only_mount_guard_and_btfm_sku_drift_fail_closed(self) -> None:
+        for relative, old, new in (
+            (module.ANDROID_ROOT / "init/trillionnium-owner-open.rc", "ro nosuid nodev", "rw nosuid nodev"),
+            (module.ANDROID_ROOT / "init/trillionnium-owner-open.rc", "property:trillionnium.owner_open.verified=1 && ", ""),
+            (module.ANDROID_ROOT / "init/trillionnium-sun-btfm-modprobe.rc", "ro.boot.product.vendor.sku=sun", "ro.boot.product.vendor.sku=other"),
+        ):
+            with self.subTest(relative=relative, old=old):
+                path = self.root / relative
+                original = path.read_text(encoding="utf-8")
+                self.rewrite(relative, old, new)
+                self.assertFalse(module.verify(self.root).ok)
+                path.write_text(original, encoding="utf-8")
+
+    def test_later_package_and_duplicate_module_cannot_bypass_inventory(self) -> None:
+        for relative, suffix in (
+            (module.ANDROID_ROOT / "product.mk", "\nPRODUCT_PACKAGES += arbitrary_privileged_module\n"),
+            (module.ANDROID_ROOT / "product.mk", "\nPRODUCT_PACKAGES := arbitrary_privileged_module\n"),
+            (module.ANDROID_ROOT / "Android.bp", '\ncc_binary {\n name: "trillionnium-owner-open-bootstrap",\n}\n'),
+            (module.ANDROID_ROOT / "init/trillionnium-owner-open.rc", '\nservice trillionnium_owner_open_ingress /system/bin/arbitrary\n    user root\n'),
+        ):
+            with self.subTest(relative=relative, suffix=suffix):
+                path = self.root / relative
+                original = path.read_text(encoding="utf-8")
+                path.write_text(original + suffix, encoding="utf-8")
+                self.assertFalse(module.verify(self.root).ok)
+                path.write_text(original, encoding="utf-8")
+
+    def test_opt_in_teardown_and_early_ready_order_drift_fail_closed(self) -> None:
+        for relative, old, new in (
+            (module.ANDROID_ROOT / "product.mk", "ifeq ($(TRILLINNIUM_DOGFOOD_USERDEBUG_ADB_ROOT),true)", "ifeq (true,true)"),
+            (module.ANDROID_ROOT / "init/trillionnium-owner-open.rc", "property:init.svc.trillionnium_owner_open_bootstrap=stopped", "property:arbitrary=1"),
+            (module.ANDROID_ROOT / "init/trillionnium-owner-open.rc", "setprop trillionnium.owner_open.ready 0", "setprop trillionnium.owner_open.ready 1"),
+        ):
+            with self.subTest(relative=relative, old=old):
+                path = self.root / relative
+                original = path.read_text(encoding="utf-8")
+                self.rewrite(relative, old, new)
+                self.assertFalse(module.verify(self.root).ok)
+                path.write_text(original, encoding="utf-8")
+
+    def test_property_namespace_type_and_wildcard_drift_fail_closed(self) -> None:
+        relative = module.ANDROID_ROOT / "sepolicy/private/property_contexts"
+        path = self.root / relative
+        original = path.read_text(encoding="utf-8")
+        for changed in (
+            original.replace("exact bool", "exact string", 1),
+            original.replace("exact string", "prefix string", 1),
+            original + "\ntrillionnium.owner_open.privileged u:object_r:trillionnium_owner_open_prop:s0 prefix string\n",
+        ):
+            path.write_text(changed, encoding="utf-8")
+            report = module.verify(self.root)
+            self.assertTrue(any("property context inventory/type" in error for error in report.errors), report.errors)
+        path.write_text(original, encoding="utf-8")
 
     def test_missing_selinux_boundary_fails_closed(self) -> None:
         (self.root / module.ANDROID_ROOT / "sepolicy/private/types.te").unlink()
