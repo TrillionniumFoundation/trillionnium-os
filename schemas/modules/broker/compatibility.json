@@ -81,13 +81,13 @@
     },
     {
       "path": "tools/owner-open/adb_smart_socket_relay_release.py",
-      "sha256": "d53ce1af5b7a9c1e0db1cecc58590567178074664046f31dc0515624c140e15b",
-      "size": 1988
+      "sha256": "71a2d053be275eda676a0e35b4fa6fc41cb469723555097f2752af42a05838ed",
+      "size": 2053
     },
     {
       "path": "tools/owner-open/adb_smart_socket_relay_selected.py",
-      "sha256": "ab0e0ef91e82d910e0d89c7fabd4441f13a110ffd53eef482e35b9f0f5e5e83b",
-      "size": 23049
+      "sha256": "5565e626f475a52046d3fca9a9eee638095653beb5fd2b98d9d851422f239feb",
+      "size": 24263
     },
     {
       "path": "tools/owner-open/authenticated_python_bootstrap.py",
@@ -98,6 +98,11 @@
       "path": "tools/owner-open/build_codex_exec_prefix.py",
       "sha256": "3d089887eee58a79fc746fd824fa20d424517d2bb31849a584c6bcd9cb981dfd",
       "size": 13021
+    },
+    {
+      "path": "tools/owner-open/build_owner_open_erofs_release.py",
+      "sha256": "4fe30eb329476ee0e198443e854b0435ab9f432d1974bb61d2c81e082dc05165",
+      "size": 5942
     },
     {
       "path": "tools/owner-open/build_owner_open_rootfs_image_release.py",
@@ -123,6 +128,21 @@
       "path": "tools/owner-open/generate_owner_open_l1_candidate.py",
       "sha256": "947b7093f6f2cb891cdc0667f27f350ebd22a527f052ca02c3fe66f12b796c3f",
       "size": 31193
+    },
+    {
+      "path": "tools/owner-open/host-codex-relay/provider_codex_host.py",
+      "sha256": "2ab1aad7c4a8d5d357525b05890c391b3a1049a7c337d1a78dfdb96e11ac6936",
+      "size": 24150
+    },
+    {
+      "path": "tools/owner-open/host-codex-relay/provider_openai_compatible.py",
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0",
+      "size": 17247
+    },
+    {
+      "path": "tools/owner-open/host-codex-relay/qualification-summary.json",
+      "sha256": "72bbea78121c9ac9e0be6abf82298e39e455b1b6b91e13291f7e3e865ef1aecc",
+      "size": 6354
     },
     {
       "path": "tools/owner-open/jsonl_provider_runtime.py",
@@ -151,8 +171,8 @@
     },
     {
       "path": "tools/owner-open/owner_open_broker_base_v2.py",
-      "sha256": "2f08886a6e49baf5500cefc4d0e75ad650bdcf7304d7997eaf36a6250a3d6436",
-      "size": 25956
+      "sha256": "8333d1295297af6a6ade8ed91f6978a86614effbe1a7cff4b56dd0fa6ed940c4",
+      "size": 26858
     },
     {
       "path": "tools/owner-open/owner_open_broker_client.py",
@@ -216,8 +236,8 @@
     },
     {
       "path": "tools/owner-open/owner_open_rootlinux_supervisor.py",
-      "sha256": "0414bffd86ae43210aeb95d32e93c2398ee2adfe6546e1267682c6ce4a75be83",
-      "size": 39900
+      "sha256": "1ee28821c479955a694f9b62ac7d2355eadf5a685231574e276f9e6cb3f8a7f5",
+      "size": 47607
     },
     {
       "path": "tools/owner-open/prepare-adb-reverse-v1.sh",
@@ -233,6 +253,11 @@
       "path": "tools/owner-open/probe_codex_cli.py",
       "sha256": "39002074cd2a9fcb7b809358865aa5a7796131694d5f646bdaff312c800932db",
       "size": 8746
+    },
+    {
+      "path": "tools/owner-open/provider_host_relay.py",
+      "sha256": "5e48a5bfb06b9aeecbc7e510f07100df89321765545590cd7a6e97f780aff164",
+      "size": 7913
     },
     {
       "path": "tools/owner-open/qualify_codex_mcp_jobs.py",
@@ -261,8 +286,8 @@
     },
     {
       "path": "tools/owner-open/stage_owner_open_rootfs_payload_release.py",
-      "sha256": "4b8ef698b75dad9153c528936d15d2778757b01bcf6aed8ec0cd732edb2dac30",
-      "size": 18328
+      "sha256": "a92e07bd3083083029d307a1b0aff221f30eca4275b32a1b09135cd5e6e823e4",
+      "size": 18778
     },
     {
       "path": "tools/owner-open/supervise_codex_mcp_qualification.py",

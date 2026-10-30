@@ -12,7 +12,7 @@ PROPERTY_CONTEXTS = (
     ROOT
     / "android-integration/working-tree/vendor/trillionnium/owner-open/sepolicy/private/property_contexts"
 )
-PROFILE = ROOT / "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-v3.json"
+PROFILE = ROOT / "android-integration/working-tree/vendor/trillionnium/owner-open/config/profile-codex-host-relay-v1.json"
 DATA_READY = "trillionnium.owner_open.data_ready"
 ENABLED = "ro.trillionnium.owner_open.enabled"
 BOOTSTRAP = "trillionnium_owner_open_bootstrap"
@@ -57,14 +57,20 @@ class OwnerOpenInitTimingTest(unittest.TestCase):
     def test_bootstrap_has_no_enabled_only_start_path(self) -> None:
         rc = self.read(RC)
         combined = f"property:{ENABLED}=true && property:{DATA_READY}=1"
+        verified = f"property:trillionnium.owner_open.verified=1 && property:{DATA_READY}=1"
         self.assertIn(f"on {combined}", rc)
         self.assertNotIn(f"on property:{ENABLED}=true\n", rc)
         self.assertEqual(rc.count(f"start {BOOTSTRAP}"), 1)
-        self.assertIn(f"start {BOOTSTRAP}", self.action_body(rc, combined))
+        verify_action = self.action_body(rc, combined)
+        self.assertIn("exec_start trillionnium_owner_open_verify", verify_action)
+        self.assertNotIn(f"start {BOOTSTRAP}", verify_action)
+        mount_action = self.action_body(rc, verified)
+        self.assertLess(mount_action.index("mount erofs loop@"), mount_action.index(f"start {BOOTSTRAP}"))
+        self.assertLess(mount_action.index("setprop trillionnium.owner_open.mount_ready 1"), mount_action.index(f"start {BOOTSTRAP}"))
 
         # A future edit must not hide a second direct start in comments or an
         # unrelated property action.  Keep the check line-oriented so the
-        # combined trigger remains the only owner of this service start.
+        # verified/data-ready trigger remains the only owner of this start.
         start_trigger = re.compile(r"^on\s+(.+)$")
         active_trigger: str | None = None
         starts: list[str] = []
@@ -75,7 +81,7 @@ class OwnerOpenInitTimingTest(unittest.TestCase):
                 active_trigger = match.group(1)
             elif line == f"start {BOOTSTRAP}":
                 starts.append(active_trigger or "")
-        self.assertEqual(starts, [combined])
+        self.assertEqual(starts, [verified])
 
     def test_data_ready_is_published_after_directory_and_restorecon_actions(self) -> None:
         rc = self.read(RC)
@@ -99,9 +105,10 @@ class OwnerOpenInitTimingTest(unittest.TestCase):
 
     @staticmethod
     def trigger_model(events: list[str]) -> tuple[int, int | None]:
-        """Model the init combined-property trigger for both event orders."""
+        """Model enabled/data-ready verification, then the verified mount gate."""
         enabled = False
         data_ready = False
+        verified = False
         starts = 0
         first_start: int | None = None
         for index, event in enumerate(events):
@@ -109,9 +116,14 @@ class OwnerOpenInitTimingTest(unittest.TestCase):
                 enabled = True
             elif event == "post-fs-data-complete":
                 data_ready = True
+            elif event == "image-verified-and-mounted":
+                if enabled and data_ready:
+                    verified = True
+            elif event == "image-verification-failed":
+                verified = False
             else:
                 raise AssertionError(f"unknown event {event}")
-            if enabled and data_ready and starts == 0:
+            if enabled and data_ready and verified and starts == 0:
                 starts += 1
                 first_start = index
         return starts, first_start
@@ -123,12 +135,21 @@ class OwnerOpenInitTimingTest(unittest.TestCase):
             rc,
         )
         for events in (
-            ["enabled=true", "post-fs-data-complete"],
-            ["post-fs-data-complete", "enabled=true"],
+            ["enabled=true", "post-fs-data-complete", "image-verified-and-mounted"],
+            ["post-fs-data-complete", "enabled=true", "image-verified-and-mounted"],
         ):
             starts, first_start = self.trigger_model(events)
             self.assertEqual(starts, 1)
-            self.assertEqual(first_start, 1)
+            self.assertEqual(first_start, 2)
+
+    def test_absent_failed_or_premature_verification_never_starts_bootstrap(self) -> None:
+        for events in (
+            ["enabled=true", "post-fs-data-complete"],
+            ["post-fs-data-complete", "enabled=true", "image-verification-failed"],
+            ["image-verified-and-mounted", "enabled=true", "post-fs-data-complete"],
+            ["enabled=true", "image-verified-and-mounted"],
+        ):
+            self.assertEqual(self.trigger_model(events), (0, None))
 
 
 if __name__ == "__main__":

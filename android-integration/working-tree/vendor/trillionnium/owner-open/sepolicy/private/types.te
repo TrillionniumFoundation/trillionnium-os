@@ -5,6 +5,7 @@
 type trillionnium_owner_open_bootstrap, domain, coredomain;
 type trillionnium_owner_open_bootstrap_exec, exec_type, system_file_type, file_type;
 init_daemon_domain(trillionnium_owner_open_bootstrap)
+net_domain(trillionnium_owner_open_bootstrap)
 
 type trillionnium_owner_open_ingress, domain, coredomain;
 type trillionnium_owner_open_ingress_exec, exec_type, system_file_type, file_type;
@@ -17,17 +18,16 @@ init_daemon_domain(trillionnium_owner_open_emergency_stop)
 type trillionnium_owner_open_client, domain;
 app_domain(trillionnium_owner_open_client)
 
+type trillionnium_owner_open_inhibit_file, file_type, data_file_type, core_data_file_type;
+
 type trillionnium_owner_open_state_file, file_type, data_file_type, core_data_file_type;
 
-# The lower image is mounted with a single context= label.  Keep that label a
-# plain file/context-mount type: assigning system_file_type would make a
-# non-init bootstrap subject to the system/vendor mounton neverallows, while
-# assigning exec_type would make every mounted directory an executable target.
-# The current source contract therefore does not authorize an entrypoint or
-# domain transition into the lower tree; the execute_no_trans source rule is
-# retained only for the reviewed platform/init handoff.  That handoff must
-# provide executable labeling and the mount lifecycle before this path can be
-# built or enabled.
-type trillionnium_owner_open_payload_file, file_type, contextmount_type;
+# Immutable executable lower. Only platform init can mount or unmount it.
+# The mount label is a system executable type for coredomain execution;
+# namespace construction occurs in init before the service domain transition.
+type trillionnium_owner_open_payload_file, file_type, system_file_type;
+type trillionnium_owner_open_payload_exec, file_type, system_file_type, exec_type;
 
 system_internal_prop(trillionnium_owner_open_prop)
+
+system_internal_prop(trillionnium_owner_open_stop_prop)

@@ -4,3 +4,5 @@
 /system_ext/etc/trillionnium/rootlinux(/.*)?               u:object_r:trillionnium_owner_open_payload_file:s0
 /system_ext/etc/trillionnium/owner-open(/.*)?              u:object_r:trillionnium_owner_open_payload_file:s0
 /data/trillionnium/owner-open(/.*)?                        u:object_r:trillionnium_owner_open_state_file:s0
+
+/data/trillionnium/owner-open/state/emergency-stop         u:object_r:trillionnium_owner_open_inhibit_file:s0

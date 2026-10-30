@@ -155,7 +155,10 @@ def require_destination(value: Any) -> str:
     if not any(value.startswith(prefix) for prefix in ALLOWED_PREFIXES):
         raise StageError(f"entry destination is outside allowed payload prefixes: {value}")
     lowered = value.lower()
-    if any(token in lowered for token in FORBIDDEN_DESTINATION_TOKENS):
+    # These three public stdlib modules are required by genuine Python and
+    # contain code, not credentials. All other path restrictions remain.
+    python_stdlib_code = re.fullmatch(r"/usr/lib/python3\.[0-9]+/(token|tokenize|secrets)\.py", value)
+    if not python_stdlib_code and any(token in lowered for token in FORBIDDEN_DESTINATION_TOKENS):
         raise StageError(f"entry destination appears credential-bearing: {value}")
     return value
 
@@ -227,7 +230,7 @@ def inspect_source(
         stat.S_ISLNK(before.st_mode)
         or not stat.S_ISREG(before.st_mode)
         or before.st_nlink != 1
-        or before.st_size <= 0
+        or (before.st_size == 0 and re.fullmatch(r"/usr/lib/python3\.[0-9]+/.*\.py", destination) is None)
         or before.st_size > MAX_FILE_BYTES
         or before.st_mode & 0o022
     ):
@@ -441,6 +444,8 @@ def stage(plan_path: Path, output: Path) -> dict[str, Any]:
         make_parent_directories(
             staging, staging / RUNTIME_STATE_DIRECTORY.removeprefix("/")
         )
+        for mountpoint in ("proc", "dev"):
+            (staging / mountpoint).mkdir(mode=0o755)
         manifest = {
             "schema": MANIFEST_SCHEMA,
             "payload_id": plan["payload_id"],

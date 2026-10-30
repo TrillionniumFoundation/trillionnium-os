@@ -1,0 +1,8 @@
+# Android 17 Razr sun engineering DSU: restore two OEM Bluetooth/FM DAI
+# backend modules missing in r44/r45, but present on the same stock OEM kernel.
+# The upstream Motorola modules and ABI are unchanged. Kernel module insertion
+# uses the OEM modprobe SELinux domain. It resolves dependencies and executes
+# sequentially; failures remain visible in init logs and never claim readiness.
+# Trigger only for exactly the tested sun / SDK37 combination.
+on property:ro.boot.product.vendor.sku=sun && property:ro.build.version.sdk=37
+    exec u:r:vendor_modprobe:s0 -- /vendor/bin/modprobe -b -s -d /vendor_dlkm/lib/modules -a btfmcodec btfm_slim_codec bt_fm_swr

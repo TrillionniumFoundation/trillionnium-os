@@ -5,4 +5,10 @@
     <string name="cancel">Cancel</string>
     <string name="inspect">Inspect</string>
     <string name="reconnect">Reconnect</string>
+    <string name="emergency_stop">Emergency stop</string>
+    <string name="emergency_status">Stop status</string>
+    <string name="emergency_confirm">Stop AI execution and keep it inhibited across restart? In-flight work may already have taken effect. This screen will not resend the stop or resume tasks automatically.</string>
+    <string name="emergency_retry_confirm">Request another mechanical stop with a new operation ID? This repeats cancellation only. It will not resend a turn, repeat effects, clear the inhibit or prove rollback.</string>
+    <string name="initialize_control">Allow new turns</string>
+    <string name="initialize_confirm">Local control state is unavailable. Check that the device has no inhibit, then durably allow new turns? Previous outcomes stay unknown and previous turns will not be repeated.</string>
 </resources>

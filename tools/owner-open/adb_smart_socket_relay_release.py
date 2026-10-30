@@ -41,6 +41,7 @@ async def run(args) -> int:
         limits,
         events,
     )
+    relay.native_process_identity = args.native_process_identity
     loop = asyncio.get_running_loop()
     for current in (base.signal.SIGTERM, base.signal.SIGINT):
         try:

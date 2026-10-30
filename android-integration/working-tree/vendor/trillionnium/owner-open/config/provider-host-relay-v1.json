@@ -1,0 +1,10 @@
+{
+  "schema": "org.trillionnium.owner-open.host-provider-relay.v1",
+  "host": "127.0.0.1",
+  "port": 18080,
+  "connect_timeout_seconds": 3,
+  "idle_timeout_seconds": 300,
+  "max_duration_seconds": 600,
+  "max_line_bytes": 1048576,
+  "max_session_bytes": 67108864
+}

@@ -56,8 +56,8 @@ jobs:
           # Fixed distribution tools only, before any candidate checkout.
           # Do not run candidate scripts under sudo or silently skip ACL tests.
           /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
-          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl
-          /usr/bin/dpkg-query --show --showformat='${Package} ${Version}\n' acl | tee "${RUNNER_TEMP}/g1-source-tools.log"
+          /usr/bin/sudo /usr/bin/apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install --yes --no-install-recommends acl libjsoncpp-dev libselinux1-dev
+          /usr/bin/dpkg-query --show --showformat='${Package} ${Version}\n' acl libjsoncpp-dev libselinux1-dev | tee "${RUNNER_TEMP}/g1-source-tools.log"
 
       # A pull request's canonical hidden ref is served by the base repository
       # and remains fetchable even when the fork branch is renamed or private.

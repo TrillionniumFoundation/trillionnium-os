@@ -121,6 +121,9 @@ class OwnerOpenAndroidClientReconnectTest(unittest.TestCase):
                 }
 
                 public void connect(LocalSocketAddress address) throws IOException {}
+                public void setSoTimeout(int timeout) throws IOException {}
+                public void shutdownInput() throws IOException {}
+                public void shutdownOutput() throws IOException {}
 
                 public InputStream getInputStream() throws IOException {
                     return endpoint.input;

@@ -10,6 +10,7 @@ no-auto-redispatch protocol.
 from __future__ import annotations
 
 import argparse
+import errno
 from collections import deque
 from dataclasses import dataclass, field
 import fcntl
@@ -36,6 +37,19 @@ MAX_PATH_COMPONENTS = 64
 MAX_PROC_ENTRIES = 65536
 MAX_PROC_STAT_BYTES = 8192
 MAX_PROC_SCAN_SECONDS = 1.0
+# Native bootstrap records waitid's exact si_status without exposing error
+# messages or command data. These values classify admission, not root causes.
+NATIVE_STARTUP_EXIT_CODES = {
+    "config": 80, "domain": 81, "platform": 82, "state_root": 83,
+    "prior_session": 84, "session_create": 85, "carrier_spawn": 86,
+    "status_publish": 87,
+}
+
+
+def startup_failure_exit_code(native: bool, phase: str) -> int:
+    return NATIVE_STARTUP_EXIT_CODES.get(phase, 70) if native else 70
+
+
 NAME = re.compile(r"^[a-z][a-z0-9_.-]{0,63}$")
 ENV_NAME = re.compile(r"^[A-Z_][A-Z0-9_]{0,127}$")
 
@@ -194,6 +208,32 @@ class ManagedChild:
     process: subprocess.Popen[bytes]
     restart_times: deque[float] = field(default_factory=deque)
     group_cleaned: bool = False
+    anchor_start_time_ticks: int | None = None
+    instance_directory: Path | None = None
+
+
+def assert_same_domain_observation() -> None:
+    # This opt-in is for the API37 carrier profile, never a generic procfs
+    # permission bypass. Native policy separately proves configured payload
+    # executables execute_no_trans. Cross-domain/crash-dump descendants remain
+    # outside this observation contract and are not claimed absent.
+    with open("/proc/self/attr/current", "rb") as stream:
+        label = stream.read(256)
+    if label.rstrip(b"\x00\n") != b"u:r:trillionnium_owner_open_bootstrap:s0":
+        raise SupervisorError("same-domain observation requires the native bootstrap domain")
+
+
+def capture_group_anchor(pid: int) -> int:
+    with open(f"/proc/{pid}/stat", "rb") as stream:
+        raw = stream.read(MAX_PROC_STAT_BYTES + 1)
+    try:
+        fields = raw.rsplit(b")", 1)[1].split()
+        group, session, start_time = int(fields[2]), int(fields[3]), int(fields[19])
+    except (ValueError, IndexError) as error:
+        raise SupervisorError("process-group anchor stat is malformed") from error
+    if len(raw) > MAX_PROC_STAT_BYTES or group != pid or session != pid or start_time <= 0:
+        raise SupervisorError("process-group anchor identity differs")
+    return start_time
 
 
 def load_config(path: Path) -> Config:
@@ -347,8 +387,13 @@ def load_config(path: Path) -> Config:
 
 
 class Supervisor:
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, *, same_domain_proc_observation: bool = False):
+        if same_domain_proc_observation:
+            assert_same_domain_observation()
         self.config = config
+        self.startup_phase = "platform"
+        self.same_domain_proc_observation = same_domain_proc_observation
+        self.proc_observation_skips = 0
         self.children: dict[str, ManagedChild] = {}
         self.stop_reason: str | None = None
         self.failure_reason: str | None = None
@@ -564,6 +609,8 @@ class Supervisor:
                     "running": self.observe_exit(managed) is None,
                     "group_cleanup": "no_live_original_group_members_observed" if managed.group_cleaned else "pending",
                     "restart_count": len(managed.restart_times),
+                    "anchor_start_time_ticks": managed.anchor_start_time_ticks,
+                    "instance_directory": str(managed.instance_directory) if managed.instance_directory else None,
                 }
                 for name, managed in sorted(self.children.items())
             },
@@ -571,6 +618,9 @@ class Supervisor:
             "updated_monotonic_ns": time.monotonic_ns(),
             "cleanup_scope": "original_process_group_only",
             "escaped_descendants_absence_proven": False,
+            "proc_observation_scope": "same_domain_visible_original_groups" if self.same_domain_proc_observation else "complete_namespace_original_groups",
+            "nonanchor_permission_denied_observations": self.proc_observation_skips,
+            "cross_domain_descendants_absence_proven": False,
         }
         raw = json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2).encode("utf-8") + b"\n"
         parent = self.state_parent(self.config.status_path)
@@ -611,8 +661,9 @@ class Supervisor:
         if self._session_id is None:
             self.begin_session()
         self.assert_session_owned()
+        argv, instance_directory = self.carrier_argv(child)
         process = subprocess.Popen(
-            list(child.argv),
+            argv,
             stdin=subprocess.DEVNULL,
             close_fds=True,
             start_new_session=True,
@@ -622,10 +673,49 @@ class Supervisor:
             config=child,
             process=process,
             restart_times=restart_times if restart_times is not None else deque(),
+            instance_directory=instance_directory,
         )
+        # Keep the Popen in the owned list even if identity capture fails, so
+        # normal fail-closed cleanup retains its unreaped process-group anchor.
         self.children[child.name] = managed
+        if self.same_domain_proc_observation:
+            managed.anchor_start_time_ticks = capture_group_anchor(process.pid)
         self.append_event("child_started", child=child.name, pid=process.pid)
         return managed
+
+    def carrier_argv(self, child: ChildConfig) -> tuple[list[str], Path | None]:
+        """Allocate new private output names, preserving earlier launch evidence.
+
+        This is literal path materialization, not shell/environment expansion.
+        Only the API37 same-domain profile opts into the reserved output prefix.
+        Old/default configurations and executable argv[0] are unchanged.
+        """
+        marker = "{carrier_instance}"
+        if not any(marker in value for value in child.argv):
+            return list(child.argv), None
+        if not self.same_domain_proc_observation or self._session_id is None or marker in child.argv[0]:
+            raise SupervisorError("carrier output allocation requires the native session profile")
+        prefix = str(self.config.state_root / "carriers") + "/" + marker + "/"
+        for value in child.argv:
+            if marker in value and (not value.startswith(prefix) or value.count(marker) != 1
+                                    or "/" in value[len(prefix):] or value[len(prefix):] in ("", ".", "..")):
+                raise SupervisorError("carrier output placeholder is outside its private directory")
+        current = self.config.state_root
+        for index, part in enumerate(("carriers", self._session_id, child.name, secrets.token_hex(16))):
+            parent = self._state_directories[current]
+            current = current / part
+            if current not in self._state_directories:
+                try:
+                    os.mkdir(part, 0o700, dir_fd=parent)
+                except FileExistsError:
+                    if index == 3:
+                        raise SupervisorError("new carrier output directory already exists")
+                descriptor = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=parent)
+                self._state_directories[current] = descriptor
+                private_directory(descriptor)
+                os.fsync(parent)
+        replacement = f"{self._session_id}/{child.name}/{current.name}"
+        return [value.replace(marker, replacement) for value in child.argv], current
 
     @staticmethod
     def observe_exit(managed: ManagedChild) -> int | None:
@@ -654,11 +744,16 @@ class Supervisor:
         raise SupervisorError("unexpected non-exit process-group anchor status")
 
     @staticmethod
-    def live_group_members(pgid: int) -> tuple[int, ...]:
+    def live_group_members(pgid: int, *, allow_unreadable_other_domains: bool = False,
+                           anchor_start_time: int | None = None,
+                           observation: dict[str, int] | None = None) -> tuple[int, ...]:
         """Bounded procfs observation, not proof about escaped descendants.
 
-        The installed environment must provide a complete same-namespace /proc
-        view. Zombies cannot execute and do not count as live members; their
+        Default mode requires a complete same-namespace view. The native
+        profile's explicit opt-in observes only visible same-domain original
+        groups and reports non-anchor permission denials. The unreaped anchor
+        must remain readable and match PID/PGID/SID/starttime. Zombies cannot
+        execute and do not count as live members; their
         actual reaping belongs to their parent or the installed init/subreaper.
         """
         found: list[int] = []
@@ -676,6 +771,13 @@ class Supervisor:
                             raw = current.read(MAX_PROC_STAT_BYTES + 1)
                     except (FileNotFoundError, ProcessLookupError):
                         continue  # An unrelated process may leave during scanning.
+                    except OSError as error:
+                        if (allow_unreadable_other_domains and int(entry.name) != pgid
+                                and error.errno in (errno.EACCES, errno.EPERM)):
+                            if observation is not None:
+                                observation["permission_denied"] = observation.get("permission_denied", 0) + 1
+                            continue
+                        raise
                     if len(raw) > MAX_PROC_STAT_BYTES:
                         raise SupervisorError("oversized procfs process stat")
                     # comm may contain whitespace and parentheses: split at its
@@ -685,6 +787,8 @@ class Supervisor:
                     if int(entry.name) == pgid:
                         if group != pgid or session != pgid:
                             raise SupervisorError("process-group anchor identity differs")
+                        if anchor_start_time is not None and int(fields[19]) != anchor_start_time:
+                            raise SupervisorError("process-group anchor start time differs")
                         anchor_seen = True
                     if group == pgid and fields[0] not in (b"Z", b"X"):
                         if session != pgid:
@@ -717,7 +821,19 @@ class Supervisor:
                 if managed.group_cleaned:
                     continue
                 exited = self.observe_exit(managed) is not None
-                live = self.live_group_members(managed.process.pid)
+                if self.same_domain_proc_observation:
+                    if managed.anchor_start_time_ticks is None:
+                        raise SupervisorError("process-group anchor was not bound at admission")
+                    observation: dict[str, int] = {}
+                    live = self.live_group_members(
+                        managed.process.pid, allow_unreadable_other_domains=True,
+                        anchor_start_time=managed.anchor_start_time_ticks, observation=observation,
+                    )
+                    self.proc_observation_skips = min(
+                        2**63 - 1, self.proc_observation_skips + observation.get("permission_denied", 0),
+                    )
+                else:
+                    live = self.live_group_members(managed.process.pid)
                 quiet = quiet and exited and not live
             if quiet and quiet_once:
                 return True
@@ -799,7 +915,9 @@ class Supervisor:
         ):
             raise SupervisorError("Linux waitid/WNOWAIT and exclusive default-SIGCHLD reaping are required")
         try:
+            self.startup_phase = "state_root"
             self.validate_state_root()
+            self.startup_phase = "prior_session"
             self.assert_session_clear()
             result = self.run_owned()
             if result in (0, 75) and self._session_ready:
@@ -822,6 +940,7 @@ class Supervisor:
                 pass
         result = 0
         try:
+            self.startup_phase = "session_create"
             self.begin_session()
             # Detect an unsafe/full/torn event log before the first carrier.
             # This is a supervisor observation, not durable job acceptance.
@@ -831,9 +950,12 @@ class Supervisor:
                     self.request_stop("emergency_stop")
                 if self.stop_reason is not None:
                     break
+                self.startup_phase = "carrier_spawn"
                 self.spawn(child)
+            self.startup_phase = "status_publish"
             self.append_event("supervisor_ready", child_count=len(self.children))
             self.write_status("running")
+            self.startup_phase = "runtime"
             while self.stop_reason is None and self.failure_reason is None:
                 self.assert_session_owned()
                 if self.emergency_requested():
@@ -880,7 +1002,7 @@ class Supervisor:
             self.append_event("supervisor_stopping", reason=reason)
             self.write_status("stopping", reason)
         except Exception as error:
-            result = 70
+            result = startup_failure_exit_code(self.same_domain_proc_observation, self.startup_phase)
             self.failure_reason = f"supervisor_error:{type(error).__name__}:{error}"
             try:
                 self.append_event("supervisor_error", error=self.failure_reason)
@@ -890,7 +1012,8 @@ class Supervisor:
             try:
                 self.shutdown()
             except Exception as error:
-                result = 70
+                if result in (0, 75):
+                    result = 70
                 self.failure_reason = f"cleanup_error:{type(error).__name__}:{error}"
             reason = self.failure_reason or self.stop_reason or "clean_stop"
             try:
@@ -898,7 +1021,8 @@ class Supervisor:
                 self.append_event("supervisor_terminal", reason=reason, returncode=result)
                 self._terminal_recorded = True
             except Exception:
-                result = 70
+                if result in (0, 75):
+                    result = 70
             for current, handler in previous_handlers.items():
                 signal.signal(current, handler)
         return result
@@ -908,6 +1032,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--config", required=True, type=Path)
+    parser.add_argument("--same-domain-proc-observation", action="store_true")
     result = parser.parse_args(argv)
     if not result.execute:
         parser.error("--execute is required")
@@ -916,12 +1041,19 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
+    phase = "config"
+    supervisor = None
     try:
         config = load_config(args.config)
-        return Supervisor(config).run()
+        phase = "domain"
+        supervisor = Supervisor(config, same_domain_proc_observation=args.same_domain_proc_observation)
+        return supervisor.run()
     except (OSError, SupervisorError) as error:
         print(f"owner-open Root Linux supervisor HOLD: {error}", file=sys.stderr)
-        return 70
+        return startup_failure_exit_code(
+            args.same_domain_proc_observation,
+            supervisor.startup_phase if supervisor is not None else phase,
+        )
 
 
 if __name__ == "__main__":
