@@ -1,0 +1,5 @@
+#!/system/bin/sh
+# Frozen argv only; never submits a task or automatically replays work.
+set -eu
+umask 077
+exec '/data/adb/magisk/busybox' 'env' '-i' 'LANG=C.UTF-8' 'LC_ALL=C.UTF-8' 'LD_LIBRARY_PATH=/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu' 'NO_COLOR=1' 'PATH=/usr/bin:/bin:/usr/libexec/trillionnium' 'PYTHONDONTWRITEBYTECODE=1' 'PYTHONHOME=/usr' 'PYTHONPATH=/usr/libexec/trillionnium/owner-open' 'TERM=dumb' 'TMPDIR=/var/lib/trillionnium/owner-open/tmp' '/data/adb/magisk/busybox' 'chroot' '/data/trillionnium/owner-open/root' '/usr/bin/python3' '-B' '/var/lib/trillionnium/owner-open/phone-local-v150/provider-r6/source/daily_phone_local.py' '--state' '/var/lib/trillionnium/owner-open/phone-local-v150/provider-state' '--config' '/var/lib/trillionnium/owner-open/phone-local-v150/local-config-r6.json' '--port' '18080' '--workers' '1' '--timeout' '120' '--retained-claims' '/var/lib/trillionnium/owner-open/phone-local-v150/retained-claims.json' '--retained-claims-sha256' '<INSTANCE_BINDING_SHA256_REQUIRED>'

@@ -1,0 +1,55 @@
+{
+  "original_artifact_relative_path": "acceptance/r6/health-collector/R6-SOURCE-BINDING.diff.reverse-check.json",
+  "original_artifact_sha256": "04d4416f2d4564dec0057efef8718455e99e2149722efb23b95fefd20547071d",
+  "original_bytes": 1158,
+  "projected_document": {
+    "exact_reverse_bytes": true,
+    "executed_support": false,
+    "model_requests": 0,
+    "new_nonce": false,
+    "new_request": false,
+    "new_sha256": "12d656a02dfaf94437aa902bec87c03d056284ee402b14a5f3d3f72823651c7e",
+    "parent_sha256": "e79b4c01d653bc0ea6d752c6aa9a8541addce936d174c71f4e1eb69819901121",
+    "phone_calls": 0,
+    "python312_syntax": true,
+    "replacements": [
+      {
+        "from": "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f",
+        "occurrences": 2,
+        "to": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+      },
+      {
+        "from": "R5_HEALTH_",
+        "occurrences": 4,
+        "to": "R6_HEALTH_"
+      },
+      {
+        "from": "frozen r5 HEALTH",
+        "occurrences": 1,
+        "to": "frozen r6 HEALTH"
+      },
+      {
+        "from": "r5 minimal health",
+        "occurrences": 1,
+        "to": "r6 minimal health"
+      },
+      {
+        "from": "r5_health_exact_owner_only",
+        "occurrences": 1,
+        "to": "r6_health_exact_owner_only"
+      },
+      {
+        "from": "this r5 layout revision",
+        "occurrences": 1,
+        "to": "this r6 layout revision"
+      }
+    ],
+    "schema": "hepta.exact-source-binding-check.v1"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

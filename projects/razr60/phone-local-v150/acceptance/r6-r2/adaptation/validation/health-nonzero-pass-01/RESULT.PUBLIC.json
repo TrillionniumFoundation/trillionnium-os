@@ -1,0 +1,84 @@
+{
+  "original_artifact_relative_path": "acceptance/r6-r2/adaptation/validation/health-nonzero-pass-01/RESULT.json",
+  "original_artifact_sha256": "cb5187a259282262cb4cb90b54cd981e086b0b444473affb28ba4f6c9538da7c",
+  "original_bytes": 2059,
+  "projected_document": {
+    "actual_synthetic_child_raw_pass": true,
+    "actual_synthetic_child_rc": 7,
+    "checks": [
+      {
+        "actor_rc": 0,
+        "capture_process_zero": true,
+        "case": "positive_control",
+        "collector_rc": 0,
+        "expected_predicate": true,
+        "final": {
+          "health_qualification_pass": true,
+          "proof_complete": true,
+          "task_classification": "health_pass"
+        },
+        "passed": true,
+        "phone_rc": 0
+      },
+      {
+        "actor_rc": 7,
+        "capture_process_zero": false,
+        "case": "actor_nonzero_raw_pass",
+        "collector_rc": 0,
+        "expected_predicate": false,
+        "final": {
+          "health_qualification_pass": false,
+          "proof_complete": false,
+          "task_classification": "unconfirmed_original_capture"
+        },
+        "passed": true,
+        "phone_rc": 0
+      },
+      {
+        "actor_rc": 0,
+        "capture_process_zero": false,
+        "case": "phone_nonzero_raw_pass",
+        "collector_rc": 0,
+        "expected_predicate": false,
+        "final": {
+          "health_qualification_pass": false,
+          "proof_complete": false,
+          "task_classification": "unconfirmed_original_capture"
+        },
+        "passed": true,
+        "phone_rc": 7
+      },
+      {
+        "actor_rc": 0,
+        "capture_process_zero": true,
+        "case": "collector_nonzero_raw_pass",
+        "collector_rc": 7,
+        "expected_predicate": false,
+        "final": {
+          "health_qualification_pass": false,
+          "proof_complete": false,
+          "task_classification": "unconfirmed_collector_process"
+        },
+        "passed": true,
+        "phone_rc": 0
+      }
+    ],
+    "fence_positions_rejected": 3,
+    "model_calls": 0,
+    "one_actual_host_fault_scenario": true,
+    "phone_calls": 0,
+    "positive_control_count": 1,
+    "qualification_credit": 0,
+    "schema": "hepta.synthetic-health-process-fence-test.v1",
+    "scope": "Host-only synthetic records; proves process exit conjunction, not phone/runtime health",
+    "source_sha256": "d22ba8bc634bb8fc2c32092e6b821d55fe91ea778d515c63d69d56c07a01d0ae",
+    "state": "PASS",
+    "task_nonces_generated": 0
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

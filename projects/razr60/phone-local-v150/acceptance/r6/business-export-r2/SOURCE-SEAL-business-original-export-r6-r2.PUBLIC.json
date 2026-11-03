@@ -1,0 +1,93 @@
+{
+  "original_artifact_relative_path": "acceptance/r6/business-export-r2/SOURCE-SEAL-business-original-export-r6-r2.json",
+  "original_artifact_sha256": "e75dd92a4f238ad4070d8d1be9a2c9f3e5858d9c0883c47df77e9546f66b59a0",
+  "original_bytes": 3280,
+  "projected_document": {
+    "candidate_model_requests": 0,
+    "candidate_phone_operations": 0,
+    "collector_process_zero_required": true,
+    "execution": "Root only; actual current health gate and current combination remain external prerequisites.",
+    "files": [
+      {
+        "bytes": 19538,
+        "path": "capture_business_originals.py",
+        "sha256": "60dfd1a14d52aec458c9b56bf4c33fdc5e6c31f0dda693cfa08f30f57904a5aa"
+      },
+      {
+        "bytes": 2562,
+        "path": "read_archive_chunk.py",
+        "sha256": "78b5ccf18164a8162000485873c05e033d4ce533d7f3e67c81768f66642df9c1"
+      },
+      {
+        "bytes": 27671,
+        "path": "export_business_once.py",
+        "sha256": "82b9691bbbb3c1ad648dc858cfa2d3dc27542a4bec522ba5762fe8ac27784072"
+      },
+      {
+        "bytes": 3278,
+        "path": "test_process_terminal_fence.py",
+        "sha256": "c8816775d62af6605279552a669d7515ac295120361afdc91e0b4c3d56a3ad68"
+      },
+      {
+        "bytes": 10461,
+        "path": "README.md",
+        "sha256": "9b4b796343da9dad820f2d73eb7163e291a1013f989e94307a1b7ad4e3a9d06a"
+      },
+      {
+        "bytes": 8802,
+        "path": "PROCESS-TERMINALS.diff",
+        "sha256": "34f09013ecb9e5f2a92f04d1277a0f6f14e9d4cb3fd360b67ac4b2e2262ac7bf"
+      },
+      {
+        "bytes": 1043,
+        "path": "validation/nonzero-pass-02/RESULT.json",
+        "sha256": "fe47fc6edc83a66ea971bb169590fb22c070604c5497cfe3fae837ed51b66a13"
+      },
+      {
+        "bytes": 343,
+        "path": "HOST-NEGATIVE-JOB-TERMINAL.json",
+        "sha256": "0c0b9ec33dc1bae0a3a1e2833cf5428a1b965bd7ae5f00d3d4b924cb70cf0c00"
+      }
+    ],
+    "fresh_task_nonce_generation": 0,
+    "frozen_business_collector_sha256": "5719479507cd6f2366bb8848cb28a6f4a8d175a2ebc91332c77da2239b4fe899",
+    "host_validation": {
+      "exit_code": 0,
+      "job_id": "1a1a38122f2-fc05-b6d",
+      "old_broad_checks_not_repeated": true,
+      "qualification_credit": 0,
+      "result_sha256": "fe47fc6edc83a66ea971bb169590fb22c070604c5497cfe3fae837ed51b66a13",
+      "scenario_count": 1,
+      "scope": "nonzero synthetic host process plus raw PASS"
+    },
+    "old_sources_and_evidence_preserved": true,
+    "original_existing_evidence_writes": 0,
+    "parent_r1_12_checks_sha256": "fa87571a53d6fda255b5e6a515c411e39385ac8187a18d8cb59d91eeb3e22725",
+    "parent_r1_export_source_sha256": "3859581d276c80f547d66ba38f1db5394032e6f7c734a0f67850712eed104800",
+    "partial_archive_export_for_diagnosis_allowed": true,
+    "phone_capture_and_chunk_bytes_unchanged": true,
+    "provider_r6_source_seal_sha256": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3",
+    "publication_excludes": [
+      "actual output trees",
+      "user text and screenshot originals",
+      "sender and draft records",
+      "keys or key hashes",
+      "private native or action histories",
+      "runtime model weights",
+      "full SELinux policy binary"
+    ],
+    "raw_process_codes_and_report_flags_preserved": true,
+    "read_only_capture_process_zero_required": true,
+    "review_scope": "Root reviewed r1 three sources, requested the two process-terminal conjunctions; r2 exact diff is separately reviewable.",
+    "root_transport_harness_sha256": "630c4cb2b9ec5363c7dc464af59455ea252abb1f4f56b3920002f73de177efb6",
+    "schema": "hepta.business-original-export-source-seal.v150.r6.2",
+    "state": "FROZEN_HOST_ONLY_NOT_PHONE_EXECUTED",
+    "unknown_capture_not_replayed": true
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

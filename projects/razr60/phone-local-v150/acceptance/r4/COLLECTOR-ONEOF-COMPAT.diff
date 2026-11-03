@@ -1,0 +1,11 @@
+--- acceptance/collect_turn_evidence.py
++++ acceptance-r4/collector-r4/collect_turn_evidence.py
+@@ -368,7 +368,7 @@
+                     "model image source/round/hash binding differs")
+             require(snapshot.read(run/source.name)==raw,"model request image differs from saved capture")
+             image_hashes.append(sha(raw))
+-        properties=body["response_format"]["json_schema"]["schema"]["properties"]
++        properties=body["response_format"]["json_schema"]["schema"].get("properties", {})
+         health_schema=(properties.get("summary")=={"type":"string","maxLength":1024}
+             and all(properties.get(key,{}).get("const")==value for key,value in
+                     {"kind":"turn.complete","tool":"none","call_id":"","command":"","task_status":"completed"}.items())

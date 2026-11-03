@@ -1,0 +1,39 @@
+--- frozen-r1/export_health_r5_once.py
++++ r2/export_health_r5_once.py
+@@ -6,7 +6,7 @@
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,shlex,stat,subprocess,sys
+ B=Path('/operator-workspace/razr60/phone-local-v150')
+-D=B/'health-r5-original-export-r1'
++D=B/'health-r5-original-export-r2'
+ H=B/'health-r5-01'
+ E=B/'health-r5-originals-01'
+ LABEL='phone-local-r5-health-01'
+@@ -198,6 +198,12 @@
+ def collect():
+  material,request,combo,previous,material_raw=inputs()
+  capture=strict(local_read(E/'ACTUAL-CAPTURE-01.json',4*1024*1024))
++ capture_complete=(capture.get('state')=='CAPTURED_BOUND_ORIGINALS'
++   and capture.get('export_complete') is True and capture.get('issues')==[]
++   and isinstance(capture.get('bindings'),dict)
++   and set(capture['bindings'])=={'staged_request_and_registration','actual_source_config_service',
++       'unique_provider_owner_and_sender_scope','provider_start_exact_owner','durable_claim_scope_owner_run'}
++   and all(value is True for value in capture['bindings'].values()))
+  need(capture.get('owner_request_sha256')==sha(request) and capture.get('nonce')==material['nonce'],'export differs from original health')
+  collector=B/'acceptance-r5/collector-r5/collect_health_evidence.py'
+  local_read(collector,65536,COLLECTOR_SHA)
+@@ -217,8 +223,12 @@
+  report=strict(report_raw) if report_raw is not None else {}
+  result={'state':'HOST_COLLECTOR_TERMINAL','process_exit_code':r.returncode,
+  'report_path':str(report_path),'report_sha256':sha(report_raw) if report_raw is not None else None,
+- 'health_qualification_pass':report.get('health_qualification_pass') is True,
+- 'proof_complete':report.get('proof_complete') is True,'task_classification':report.get('task_classification'),
++ 'original_capture_complete':capture_complete,
++ 'raw_collector_health_qualification_pass':report.get('health_qualification_pass') is True,
++ 'raw_collector_proof_complete':report.get('proof_complete') is True,
++ 'health_qualification_pass':capture_complete and report.get('health_qualification_pass') is True,
++ 'proof_complete':capture_complete and report.get('proof_complete') is True,
++ 'task_classification':report.get('task_classification') if capture_complete else 'unconfirmed_original_capture',
+  'complete_business_success':False,'phone_calls':0,'model_requests':0,'automatic_retry':False}
+  writej(E/'COLLECTOR-RESULT.json',result);print(json.dumps(result,sort_keys=True))
+  return 0 if result['health_qualification_pass'] and result['proof_complete'] else 2

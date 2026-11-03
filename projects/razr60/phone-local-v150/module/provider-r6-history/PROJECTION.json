@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.public-source-projection.module-v150-r6.1",
+  "installable": false,
+  "publication_performed": false,
+  "source_bytes_exact": true,
+  "instance_specific_bindings_retained": true,
+  "new_health_result_asserted": false,
+  "excluded": [
+    "private manifests and SUMS",
+    "SEALED and archives",
+    "install operators",
+    "raw task or UI evidence",
+    "keys and key digests",
+    "weights",
+    "kernel policy binaries",
+    "full policy source maintained separately"
+  ],
+  "files": [
+    {
+      "path": "r6-r1/module-source/service.sh",
+      "bytes": 13210,
+      "sha256": "375985b7be8cec3a3281ed4b548cb80b416bc3ddc8ff45df879dfe7021ebd371"
+    },
+    {
+      "path": "r6-r1/module-source/role_guard.sh",
+      "bytes": 3663,
+      "sha256": "02c82c4b5935331614c862ad3b782b7355c039b24e28fe5cfad19fe1af4726eb"
+    },
+    {
+      "path": "r6-r1/module-source/role_identity_probe.sh",
+      "bytes": 2712,
+      "sha256": "30738311b6966a469e9532b729574db00fb1377b39467dd0d7bda5ee91b9f114"
+    },
+    {
+      "path": "r6-r1/module-source/activation_gate.sh",
+      "bytes": 4182,
+      "sha256": "9a7b153f2d1c673abee5f1e6e39a78c2bc10c653c71b6131281431e8482b3b81"
+    },
+    {
+      "path": "r6-r1/module-source/launch-model.sh",
+      "bytes": 841,
+      "sha256": "58826eab6d1f967068d1ec968abf51610ee8ed9c627e3c2d363372f4db39a94b"
+    },
+    {
+      "path": "r6-r1/module-source/launch-provider.sh",
+      "bytes": 1087,
+      "sha256": "a8d66d7333d7567331402f6a94a4f091a391105618976420a23a02742299f085"
+    },
+    {
+      "path": "r6-r1/module-source/launch-sidecar.sh",
+      "bytes": 360,
+      "sha256": "5da0ade34a0294c73da935487e5617ec46959f152804f49f754bb546bb3f9fa2"
+    },
+    {
+      "path": "r6-r1/module-source/role-expectations.tsv",
+      "bytes": 491,
+      "sha256": "b28f63d264aa78a5e6cc50461a4a894aa16faa08fec092584461e6fdd99d04be"
+    },
+    {
+      "path": "r6-r1/module-source/retired-groups.tsv",
+      "bytes": 84,
+      "sha256": "45a9d3ef6aefcd411dc4fba4b7b92d103ca1744a1a9c5fd6f44757463b9fbca6"
+    },
+    {
+      "path": "r6-r1/module-source/module.prop",
+      "bytes": 269,
+      "sha256": "685a549ae037710382a32ede9005d838e2cba69262a7b916c877d499d5d8229f"
+    },
+    {
+      "path": "r6-r1/module-source/skip_mount",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r6-r1/activation-source/proc_and_original_gate.py",
+      "bytes": 4837,
+      "sha256": "bdf546eaa520100e1e0fe0e5f2d54d8736238b1d78b40ff007a7185415d0f96a"
+    },
+    {
+      "path": "r6-r1/MODULE-R6-MINIMAL.diff",
+      "bytes": 10943,
+      "sha256": "88ca22ee9e68c52ec985810d4bce818b8ac20b87354cf8dcfeb12e07f9386849"
+    },
+    {
+      "path": "r6-r1/COMBINATION-FROZEN-v150-r6-module-r1.json",
+      "bytes": 968,
+      "sha256": "bc727e74b16b53c720400530203ff2e1581e42cbc39b6dc33bc38f68f26b915e"
+    },
+    {
+      "path": "r6-r2/module-source/service.sh",
+      "bytes": 13428,
+      "sha256": "1bfdb7c443f395c40903d53708fa9d94fe3c811d839e9d7dd2f6c5c056b8a0de"
+    },
+    {
+      "path": "r6-r2/module-source/role_guard.sh",
+      "bytes": 3881,
+      "sha256": "59e9bfcf4080734d16201fd3da764b0b3167bba0db5995d929bda7e0bdf33598"
+    },
+    {
+      "path": "r6-r2/module-source/role_identity_probe.sh",
+      "bytes": 2712,
+      "sha256": "fcd39bf289e20f6448f7988279cef630eac82b3aeca04cfd799ac2d9ce67dd65"
+    },
+    {
+      "path": "r6-r2/module-source/activation_gate.sh",
+      "bytes": 4182,
+      "sha256": "1539ed1da601804257f9d84e8c0fe7fd6a0a1290ed654d3d8a9a710b86c5ba5f"
+    },
+    {
+      "path": "r6-r2/module-source/launch-model.sh",
+      "bytes": 841,
+      "sha256": "58826eab6d1f967068d1ec968abf51610ee8ed9c627e3c2d363372f4db39a94b"
+    },
+    {
+      "path": "r6-r2/module-source/launch-provider.sh",
+      "bytes": 1093,
+      "sha256": "09c30c11395fa81514d9fdf5300cb2a99e3d46dcb8908cb18028bf01b1581b92"
+    },
+    {
+      "path": "r6-r2/module-source/launch-sidecar.sh",
+      "bytes": 360,
+      "sha256": "5da0ade34a0294c73da935487e5617ec46959f152804f49f754bb546bb3f9fa2"
+    },
+    {
+      "path": "r6-r2/module-source/role-expectations.tsv",
+      "bytes": 491,
+      "sha256": "b28f63d264aa78a5e6cc50461a4a894aa16faa08fec092584461e6fdd99d04be"
+    },
+    {
+      "path": "r6-r2/module-source/retired-groups.tsv",
+      "bytes": 108,
+      "sha256": "4af210accc0ef32e7d0f820db64ab498252b9e3a9d00b26b9c2fec4d9dbcca17"
+    },
+    {
+      "path": "r6-r2/module-source/module.prop",
+      "bytes": 290,
+      "sha256": "b3c9dfe2b22fb0ed95fc0f01617ceafdbb7f8773f18f51f3574656c94d931134"
+    },
+    {
+      "path": "r6-r2/module-source/skip_mount",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "r6-r2/activation-source/proc_and_original_gate.py",
+      "bytes": 4861,
+      "sha256": "713ff1089d9136062353e659e6f54193422f6c336f0c598dff5d12859cfac1c8"
+    },
+    {
+      "path": "r6-r2/MODULE-R6-R2-MINIMAL.diff",
+      "bytes": 9855,
+      "sha256": "63e245ddfa40869c24aaff67bca4ff2e74ac32703fc2c4dc7ce68d3742d9ae76"
+    },
+    {
+      "path": "r6-r2/COMBINATION-FROZEN-v150-r6-module-r2.json",
+      "bytes": 971,
+      "sha256": "1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1847,
+      "sha256": "99322dac28eb8feeccf792f4ccd56cf0ead5f195b6c8a6d1a2e0fda7ce1beff3"
+    }
+  ],
+  "source_module_manifest_sha256s": [
+    "925fb169f15b572bbd2c44b1f7e766c0f355d59aa40beb9c6fc2c5fb70212e43",
+    "9e5a8c3f9a5a7f4426d109beba1073edcfa2dfe4712760e446054b04906afb4a"
+  ]
+}

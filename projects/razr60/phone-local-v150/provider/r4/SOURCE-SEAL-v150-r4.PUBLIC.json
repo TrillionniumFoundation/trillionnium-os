@@ -1,0 +1,233 @@
+{
+  "original_artifact_relative_path": "provider/r4/SOURCE-SEAL-v150-r4.json",
+  "original_artifact_sha256": "700e5fb07e5ad250f4df5bd0452660b03dd0138b89718343e10e895c4db50d35",
+  "original_bytes": 9439,
+  "projected_document": {
+    "action_schema": {
+      "approved_aliases_exact": true,
+      "call_id_per_round_constant": true,
+      "current_image_required_for_tap": true,
+      "final_round_only_completion": true,
+      "model_selects_input_text_and_coordinates": true,
+      "non_input_command_empty": true,
+      "root": "oneOf disjoint complete closed object alternatives",
+      "visual_pre_selection_hides_observe_and_read_text": true,
+      "visual_repeated_tap_unavailable": true
+    },
+    "actual_model_requests_by_this_revision_builder": 0,
+    "actual_phone_operations_by_this_revision_builder": 0,
+    "all_existing_live_claims_preserved": true,
+    "automatic_task_or_effect_replay": false,
+    "claims_and_consumed_bindings_must_be_preserved": true,
+    "common_provider_state_preserved": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state",
+    "created_utc": "2026-11-03T16:02:35.579008+00:00",
+    "documentation": {
+      "bytes": 4854,
+      "path": "README.md",
+      "sha256": "a7141e3e24541bb7ea47f0fa6bbc2501f4fbde1668bd9bb76a686e8388ab4fab"
+    },
+    "formal_executor": "phone_local_sidecar",
+    "full_phone_physical_qualification": "Root-owned new r4 native health and unchanged fixed19 protocol required; r3 health and failures retained separately",
+    "generated_grammar_files": [
+      {
+        "bytes": 15870,
+        "path": "validation/pinned-cpp/before-image.gbnf",
+        "sha256": "d0d262ba0c79579fb0a64150a8ab42597294b3c698817a4c360baa61a6fae8aa"
+      },
+      {
+        "bytes": 17487,
+        "path": "validation/pinned-cpp/current-image.gbnf",
+        "sha256": "0071089330b09a877e91c57879842426f0006bf6a968e66f0bfa33523e15686c"
+      },
+      {
+        "bytes": 838,
+        "path": "validation/pinned-cpp/health-final-only.gbnf",
+        "sha256": "016091ec1a3aadb68dbc50500e18d40e01b251480801fd8ae235085088edb34a"
+      },
+      {
+        "bytes": 1268,
+        "path": "validation/pinned-cpp/round8-final.gbnf",
+        "sha256": "c10f862234b83110e504d39be40f2ddab5de546f263361307955b188a0b38c01"
+      },
+      {
+        "bytes": 15870,
+        "path": "validation/pinned-cpp/visual-after-selection.gbnf",
+        "sha256": "462aac82b00238bc6df3f953862c55bc93fb5599dac6c7d56bd41f02af8d8fdf"
+      },
+      {
+        "bytes": 7892,
+        "path": "validation/pinned-cpp/visual-before-selection.gbnf",
+        "sha256": "0e1532276f945e14fec0abb1f3106c5e2a99e97d8bf176a33e40556248d72483"
+      }
+    ],
+    "grammar_conversion_validation": {
+      "bytes": 8751,
+      "path": "validation/pinned-cpp/CONVERSION-RESULT-v150-r4.json",
+      "sha256": "b77dc0aa1732b4ad752e69bea84af73ecea67eb17ca87e60c00ce8138048d1b9"
+    },
+    "grammar_converter_build": {
+      "bytes": 6577,
+      "path": "validation/pinned-cpp/BUILD-ATTEMPT-02.json",
+      "sha256": "78fb049c529b340693f77dab418b3ab169a9ac1a6e5973f175e4c2533b6e9332"
+    },
+    "grammar_source_audit": {
+      "bytes": 5510,
+      "path": "provenance/LLAMA-JSON-SCHEMA-SUPPORT-v150-r4.json",
+      "sha256": "af5c81616a0671fbc6e99f303b4701a3d957948b775f18f5dcad0372db0cbf97"
+    },
+    "grammar_validation_scope": "Pinned C++ converter success for six saved schemas plus independent host structure/guard assertions; no phone inference or business qualification",
+    "health_contract": {
+      "exact_request_sha256": true,
+      "http_stop_join_idle_required": true,
+      "independent_exact_nonce_validation": true,
+      "known_session_profile_binding": true,
+      "model_rounds": 1,
+      "native_completed_required_independently": true,
+      "one_use": true,
+      "phone_tool_calls": 0,
+      "sidecar_inspections": 0,
+      "summary_is_plain_string_not_forced_nonce": true
+    },
+    "host_validation": {
+      "bytes": 3942,
+      "path": "validation/schema-shapes-02/RESULT.json",
+      "sha256": "6156b6569c4ea32dd299663d2e311476eb757eb58ab7ef100b7176eb2df4e15b"
+    },
+    "image_tokens_service_min_max": [
+      1024,
+      1024
+    ],
+    "inference_workers": 1,
+    "inherited_health_validation": {
+      "health_checks_not_claimed_rerun": true,
+      "health_module_unchanged": true,
+      "parent_source_seal_sha256": "17a438628070a7fffd9d9c3f92221c00ca92134c3dd91532eb5008fe2cf30564",
+      "report_sha256": "8230a766f9494cd7d920bfc924783da69ac4441a1a0a3943a5eb6db86da760e7"
+    },
+    "max_completion_tokens": 256,
+    "max_model_round_seconds": 120,
+    "max_model_rounds": 8,
+    "max_tool_calls": 7,
+    "max_turn_seconds": 300,
+    "model": "gui-owl-1.5-2b-phone-q4km",
+    "model_endpoint": "http://127.0.0.1:18087/v1/chat/completions",
+    "operator_helpers": [
+      {
+        "bytes": 2730,
+        "path": "register_task_contract.py",
+        "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+      },
+      {
+        "bytes": 2051,
+        "path": "inspect_original_action.py",
+        "sha256": "b11116f98279b32c286d055a6297499702f11d8767133449fa1e84df85910647"
+      },
+      {
+        "bytes": 1001,
+        "path": "register_health_contract.py",
+        "sha256": "deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b"
+      }
+    ],
+    "parent_source_seal_sha256": "17a438628070a7fffd9d9c3f92221c00ca92134c3dd91532eb5008fe2cf30564",
+    "phone_service_inputs_bytes": 4621,
+    "phone_service_inputs_sha256": "a2fe45cff43f7270a43e4d0738ef921812cb534e66ae45fe7b33970612488362",
+    "prior_health01_request_replayed": false,
+    "prior_r3_visual_unicode_requests_replayed": false,
+    "production_files": [
+      {
+        "bytes": 19887,
+        "path": "source/daily_phone_local.py",
+        "sha256": "fba1036d37fde6b2d780c87de55165da89cdb0342471425ddc20327ea1771d6b"
+      },
+      {
+        "bytes": 36528,
+        "path": "source/provider_phone_local.py",
+        "sha256": "b4c005780dbc707a385be86ebeecb720626cd1bb7ebb611a1898617fda67251d"
+      },
+      {
+        "bytes": 41510,
+        "path": "source/provider_codex_host.py",
+        "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+      },
+      {
+        "bytes": 17730,
+        "path": "source/provider_openai_compatible.py",
+        "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+      },
+      {
+        "bytes": 33980,
+        "path": "source/phone_observation_tools.py",
+        "sha256": "40617e8b2c8e1b174bce1b50e43ba156fd034ab38872c26a8703ef0cfba8971b"
+      },
+      {
+        "bytes": 11368,
+        "path": "source/phone_task_guards.py",
+        "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+      },
+      {
+        "bytes": 11922,
+        "path": "source/phone_local_tools.py",
+        "sha256": "5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01"
+      },
+      {
+        "bytes": 10453,
+        "path": "source/phone_local_http_worker.py",
+        "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+      },
+      {
+        "bytes": 8251,
+        "path": "source/model_health.py",
+        "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+      },
+      {
+        "bytes": 14744,
+        "path": "source/task_postconditions.py",
+        "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+      },
+      {
+        "bytes": 12074,
+        "path": "source/action_ledger.py",
+        "sha256": "2f3848a1c1fc9404d868e86a474550e18e5ec4fec3ce9c4c2db6fb089fa23c6c"
+      },
+      {
+        "bytes": 10979,
+        "path": "source/health_contracts.py",
+        "sha256": "9f2d87bc567c7b169d0d4d07635ab233ccef6da45ba8f547c8af7751f3686c44"
+      }
+    ],
+    "production_python_files": 12,
+    "prompt_source_seal_sha256": "94e3e202d402fdc7bd9bd3571e357a0a727830bd8f50e56bee15995a14069e5a",
+    "python_syntax_feature_version": "3.12",
+    "required_tool_child_gid": 2000,
+    "required_tool_child_uid": 2000,
+    "schema": "hepta.phone-local-source-seal.v150.1",
+    "schema_validation_script": {
+      "bytes": 12467,
+      "path": "tests/schema_shape_checks.py",
+      "sha256": "06a6c1129ece3b98a2af69558e8cce77ed5658384844e17e5a80bbe3e6637782"
+    },
+    "sidecar_binary_bytes": 952168,
+    "sidecar_binary_sha256": "30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa",
+    "sidecar_revision": "r5 controlled same-PID/process-group child credential drop",
+    "source_diff": {
+      "bytes": 8544,
+      "path": "TYPED-SCHEMA.diff",
+      "sha256": "7f208d1f4397c8a338564f02527884db9b552a8582efe03a7a9ebb0291dabb25"
+    },
+    "source_parent": "Frozen v150-r3 plus per-tool constrained business schema and visual-read admission; original guards unchanged",
+    "source_paths_changed": [
+      "provider-r4/source",
+      "local-config-r4.json"
+    ],
+    "target_python_runtime_validation": "Root confirmed phone GNU Python3.12.3; this seal checks3.12 syntax and source pins",
+    "tool_client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+    "version": "stock16-phone-local-v150-r4"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "private_deployment_metadata_removed"
+  ]
+}

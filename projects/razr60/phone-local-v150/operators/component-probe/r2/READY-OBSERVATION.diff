@@ -1,0 +1,125 @@
+--- r1/component_probe_provider.py
++++ r2/component_probe_provider.py
+@@ -406,6 +406,21 @@
+                 pass
+             self.conn.close()
+ 
++def ready_record(c, contract_sha, deadline, pid_start_ticks):
++    require(type(pid_start_ticks) is int and pid_start_ticks > 0, "ready_process_start_ticks")
++    return {"pid": os.getpid(), "pid_start_ticks": pid_start_ticks,
++            "instance": uuid.uuid4().hex, "port": 18080, "scope": SCOPE,
++            "nonce": c["nonce"], "owner_request_sha256": c["owner_request_sha256"],
++            "provider_source_sha256": c["provider_source_sha256"],
++            "contract_sha256": contract_sha, "accepting_one_session": True,
++            "executor_server_instance": c["executor_server_instance"],
++            "clock": "phone CLOCK_MONOTONIC",
++            "ready_monotonic_ns": time.monotonic_ns(),
++            "accept_deadline_monotonic_ns": int((deadline - 30) * 1000000000),
++            "service_deadline_monotonic_ns": int(deadline * 1000000000),
++            "readiness_scope": "transport_and_readonly_parent_identity_only"}
++
++
+ def serve(contract_path, contract_sha):
+     os.umask(0o077)
+     deadline = time.monotonic() + SERVICE_SECONDS
+@@ -441,11 +456,14 @@
+         # No SO_REUSEPORT and no other transport. Existing provider must be stopped.
+         listener.bind(("127.0.0.1", 18080))
+         listener.listen(1); listener.settimeout(.25)
++        with open("/proc/self/stat", "rb") as proc_stat:
++            process_stat = proc_stat.read(4097)
++        require(len(process_stat) <= 4096, "ready_process_stat_bound")
++        process_fields = process_stat.decode("utf-8").rsplit(")", 1)[1].split()
++        require(len(process_fields) > 19, "ready_process_stat_shape")
++        start_ticks = int(process_fields[19])
+         create(STATE/("ready-"+c["nonce"]+".json"),
+-               {"pid": os.getpid(), "instance": uuid.uuid4().hex, "port": 18080,
+-                "scope": SCOPE, "contract_sha256": contract_sha, "accepting_one_session": True,
+-                "executor_server_instance": c["executor_server_instance"],
+-                "readiness_scope": "transport_and_readonly_parent_identity_only"})
++               ready_record(c, contract_sha, deadline, start_ticks))
+         try:
+             while not stopped[0] and time.monotonic() + 30 <= deadline:
+                 try:
+--- r1/prepare_component_probe.py
++++ r2/prepare_component_probe.py
+@@ -55,7 +55,7 @@
+               "owner_request_sha256": m.sha(request),
+               "contract_sha256": m.sha((a.out/"contract.json").read_bytes()),
+               "phone_contract_path": str(m.STATE/"contracts"/(nonce+".json")),
+-              "phone_provider_source_path": str(m.STATE/"source/component_probe_provider.py"),
++              "phone_provider_source_path": str(m.STATE/"source-r2/component_probe_provider.py"),
+               "phone_provider_evidence_root": str(m.STATE/"evidence"),
+               "phone_executor_journal": m.JOURNAL,
+               "proof_gate": "operator must independently verify pinned retirement proof and actual resolution",
+--- r1/RUN-RETIRE-PLAN.md
++++ r2/RUN-RETIRE-PLAN.md
+@@ -1,6 +1,6 @@
+ # One-use native executor component probe r6
+ 
+-Status: host candidate. Do not count the 16 synthetic host fixtures as native or
++Status: isolated r2 host candidate; preserves the frozen r1 source and its phone installation. Do not count the 16 synthetic host fixtures as native or
+ SELinux qualification. Root is the only phone operator. No phone run is performed
+ by these files during preparation, import or host fixtures.
+ 
+@@ -17,7 +17,7 @@
+ |---|---|
+ | Existing native provider ingress | Phone 127.0.0.1:18080, existing native JSONL bridge |
+ | Provider GNU state | /var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6 |
+-| Provider source target | Same state /source/component_probe_provider.py |
++| Provider source target | Same state /source-r2/component_probe_provider.py |
+ | Provider evidence | Same state /evidence/YYYYMMDD-HHMMSS-32hex/provider-in.jsonl |
+ | Native client | /var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py |
+ | Client SHA256 | 500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f |
+@@ -98,7 +98,7 @@
+    existing Magisk context:
+    ["/data/adb/magisk/busybox", "chroot",
+     "/data/trillionnium/owner-open/root", "/usr/bin/python3", "-B",
+-    "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/source/component_probe_provider.py",
++    "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/source-r2/component_probe_provider.py",
+     "--contract",
+     "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/contracts/NONCE.json",
+     "--contract-sha256", "EXACT_REGISTERED_CONTRACT_SHA"]
+@@ -190,3 +190,21 @@
+ No ready qualified model-free fixed-effect harness was found in that frozen
+ entry-point inventory; this candidate is a new isolated provider, not a claimed
+ existing qualification.
++
++## r2 readiness observation delta
++
++Only readiness evidence and its installed source path change. State/claims,
++fixed stdout effect, scopes, timeouts, IPC, single-connection behavior and terminal
++guards are unchanged. The r1 source remains at source/; r2 installs at source-r2/.
++The fixed ready-NONCE.json adds nonce, owner_request_sha256, provider_source_sha256,
++pid_start_ticks and phone CLOCK_MONOTONIC ready/accept/service timestamps in ns.
++accept_deadline_monotonic_ns is the existing service deadline minus30s; this does
++not extend its window. It is not comparable to the Pocket4 clock. scope remains
++a descriptive string; selected S/P comes from the exact SHA-bound contract.
++
++The sender first completes its original prechecks and publishes its prepared/no-Send
++rendezvous. Root starts this fixed provider once. The sender only reads the fixed
++ready/contract and /proc identity, checks no consumed claim or service-ended record,
++compares same-phone CLOCK_MONOTONIC now with accept_deadline (at least15s remaining),
++then rechecks selection/draft/gates immediately before its sole Send. No command hook,
++TCP health probe, alternate endpoint, Send retry or producer restart is introduced.
+--- r1/host_component_checks.py
++++ r2/host_component_checks.py
+@@ -231,6 +231,18 @@
+     raise AssertionError("native terminal error accepted as completed")
+ test("non-null-native-terminal-error-rejected", error_terminal)
+ 
++def ready_deadline():
++    c = contract("6"*32)
++    deadline = time.monotonic() + 70
++    value = m.ready_record(c, "3"*64, deadline, 12345)
++    assert value["nonce"] == c["nonce"] and value["owner_request_sha256"] == c["owner_request_sha256"]
++    assert value["provider_source_sha256"] == c["provider_source_sha256"]
++    assert value["pid"] == os.getpid() and value["pid_start_ticks"] == 12345
++    assert value["clock"] == "phone CLOCK_MONOTONIC" and value["scope"] == m.SCOPE
++    assert 0 < value["accept_deadline_monotonic_ns"] - value["ready_monotonic_ns"] <= 40_000_001_000
++    assert abs(value["service_deadline_monotonic_ns"] - value["accept_deadline_monotonic_ns"] - 30_000_000_000) <= 1000
++test("ready-owner-identity-and-same-clock-window-no-extension", ready_deadline)
++
+ report = {"schema": "hepta.native-component-probe.host-fixtures.v1",
+           "status": "PASS", "checks": CHECKS, "passed": len(CHECKS),
+           "source_sha256": m.sha((ROOT/"component_probe_provider.py").read_bytes()),

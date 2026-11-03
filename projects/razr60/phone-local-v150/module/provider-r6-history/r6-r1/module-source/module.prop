@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150_r6_r1
+name=HEPTA Phone Local v150 r6 attempt 1
+version=v150-r6-attempt1
+versionCode=150061
+author=Trillionnium
+description=Minimal health terminal fix and cleanup signal shielding; current boot only; no automatic tasks or replay.

@@ -1,0 +1,125 @@
+--- frozen-r4/collect_turn_evidence.py
++++ business-r5-r1/collect_business_evidence.py
+@@ -19,9 +19,9 @@
+ 
+ from native_journal_audit import SCOPE_FIELDS, strict_loads, verify_records
+ 
+-SEAL = "1ec6e3c3a88d85c3ae8ccbadfddb0b9a7c419f05e3f52748d9d2f4823bc0d94a"
+-CONFIG = "e7202ef55cc9103cf3fb4847e44ff2299cfaf3484c4038b7b5ae22a23e0e146f"
+-SERVICE = "2c0cc3aa7cc2a6fe0b461e5e8ecf37a3f5545ff40a8ca86da43e56de9dcfd784"
++SEAL = "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f"
++CONFIG = "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755"
++SERVICE = "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2"
+ MODEL = "gui-owl-1.5-2b-phone-q4km"
+ MUTATIONS = {"phone.open_app", "phone.tap", "phone.input_text", "phone.return_hepta"}
+ SAFE_STATES = {"completed", "failed", "timed_out", "cancelled", "output_limit_exceeded"}
+@@ -173,6 +173,49 @@
+         output[stream] = b"".join(chunks)
+     return output, ending
+ 
++
++R6_CLIENT_SOURCE_SHA256 = "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f"
++R6_ENDPOINT = "hepta_phone_executor_v150_r6"
++R6_PARENT = "u:r:trillionnium_owner_open_phone_executor:s0"
++R6_BOOTSTRAP = "u:r:trillionnium_owner_open_bootstrap:s0"
++
++def r6_journal_binding(value,timeout_ms):
++    return (type(value.get("version")) is int and value["version"]==1
++            and type(value.get("executor_revision")) is int and value["executor_revision"]==6
++            and value.get("executor_context")==R6_PARENT and value.get("peer_context")==R6_BOOTSTRAP
++            and type(value.get("peer_uid")) is int and value["peer_uid"]==0
++            and type(value.get("timeout_ms")) is int and value["timeout_ms"]==timeout_ms
++            and isinstance(value.get("server_instance"),str)
++            and re.fullmatch("[0-9a-f]{32}",value["server_instance"]) is not None
++            and type(value.get("created_unix_ms")) is int and value["created_unix_ms"]>0
++            and value.get("can_redispatch") is False)
++
++def r6_terminal_identity_and_cleanup(receipt):
++    # Exact predicate from frozen provider-r5 retirement_recovery.py c1f5a77e...
++    # It establishes a process terminal, never an App postcondition or exit0.
++    return (
++        receipt.get('terminal') is True
++            and receipt.get('state') in {'completed', 'failed', 'timed_out', 'cancelled', 'output_limit_exceeded'}
++            and receipt.get('executor_revision') == 6
++            and receipt.get('executor_context') == 'u:r:trillionnium_owner_open_phone_executor:s0'
++            and receipt.get('peer_context') == 'u:r:trillionnium_owner_open_bootstrap:s0'
++            and receipt.get('execution_context') == 'u:r:trillionnium_owner_open_phone_worker:s0'
++            and receipt.get('execution_credentials_scope') == 'android_shell_uid2000'
++            and receipt.get('handshake_stage') == 'worker_entry_after_exec_transition'
++            and all(receipt.get(key) is True for key in
++                ('effect_started', 'process_group_established', 'waitpid_joined', 'process_group_absent',
++                 'execution_credentials_verified', 'supplementary_groups_cleared', 'worker_domain_verified'))
++            and all(type(receipt.get(key)) is int and receipt[key] == 2000 for key in
++                ('required_execution_uid', 'required_execution_gid', 'execution_uid', 'execution_euid',
++                 'execution_gid', 'execution_egid'))
++            and type(receipt.get('execution_supplementary_group_count')) is int
++            and receipt['execution_supplementary_group_count'] == 0
++            and type(receipt.get('dispatch_count')) is int and receipt['dispatch_count'] == 1
++            and type(receipt.get('pid')) is int and receipt['pid'] > 1
++            and type(receipt.get('pgid')) is int and receipt['pgid'] == receipt['pid']
++            and receipt.get('waitpid_identity_lost') is False
++    )
++
+ def inspect_tool(snapshot,run,state,sidecar,client,scope,call,result,frames):
+     key = sha(call["call_id"].encode())
+     semantic = snapshot.json(run/("semantic-"+key+".json"))
+@@ -183,7 +226,7 @@
+     require(call["tool"]=="shell.exec","selected phone-local proof requires actual shell.exec")
+     argv = call["argv"]
+     require(len(argv)==9 and argv[:3]==[
+-        "/usr/bin/python3","/var/lib/trillionnium/owner-open/phone-local-v150/tool_client.py","execute"]
++        "/usr/bin/python3","/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py","execute"]
+         and argv[3]=="--action-id" and argv[5]=="--command-b64"
+         and argv[7]=="--timeout-ms","phone executor argv differs")
+     token, command = argv[4], decode64(argv[6])
+@@ -237,6 +280,8 @@
+         if obj is not None:
+             require(obj.get("action_id")==token and obj.get("command_sha256")==command_sha,
+                     label+" action/command binding differs")
++            require(r6_journal_binding(obj,int(argv[8])),
++                    label+" r6 revision/context/instance/timeout binding differs")
+         else:
+             row["issues"].append(label+" is absent.")
+     claim = snapshot.json(client/(token+".claim.json"),required=False)
+@@ -244,6 +289,11 @@
+     if claim:
+         require(claim.get("action_id")==token and claim.get("command_sha256")==command_sha,
+                 "client claim action/command binding differs")
++        require(type(claim.get("version")) is int and claim["version"]==1
++                and type(claim.get("client_revision")) is int and claim["client_revision"]==6
++                and claim.get("endpoint")==R6_ENDPOINT and claim.get("client_source_sha256")==R6_CLIENT_SOURCE_SHA256
++                and type(claim.get("timeout_ms")) is int and claim["timeout_ms"]==int(argv[8])
++                and claim.get("state")=="intent","r6 client claim/source/endpoint differs")
+     else:
+         row["issues"].append("client claim is absent.")
+     if receipt:
+@@ -251,9 +301,16 @@
+         row["executor_credential_evidence"] = {key:value for key,value in receipt.items()
+             if "uid" in key or "gid" in key or "credential" in key}
+         row["shell_uid_qualification_note"] = "Unicode/screenshot helper qualification requires actual UID2000; r4 root-only fixture is insufficient."
++        r6_verified = bool(intent and claim and pending is None
++                and intent.get("server_instance")==receipt.get("server_instance")
++                and intent.get("created_unix_ms")==receipt.get("created_unix_ms")
++                and receipt.get("intent_parent_sync_complete") is True
++                and r6_terminal_identity_and_cleanup(receipt))
++        row["r6_terminal_identity_and_cleanup_verified"] = r6_verified
+         safe = (receipt.get("state") in SAFE_STATES and receipt.get("terminal") is True
+                 and all(receipt.get(key) is True for key in
+-                        ("effect_started","process_group_established","waitpid_joined","process_group_absent")))
++                        ("effect_started","process_group_established","waitpid_joined","process_group_absent"))
++                and r6_verified)
+         row["safe_original_execution_terminal"] = safe
+         require(receipt.get("dispatch_count") in (0,1),"sidecar dispatch count is not at-most-once")
+         row["dispatch_count"] = receipt.get("dispatch_count")
+@@ -266,7 +323,10 @@
+                     require(len(raw)==receipt.get(name+"_bytes") and sha(raw)==receipt.get(name+"_sha256"),
+                             "sidecar terminal output hash/length differs")
+         row["client_received_same_terminal_receipt"] = bool(
+-            client_result and client_result.get("receipt")==receipt)
++            client_result and client_result.get("receipt")==receipt
++            and type(client_result.get("version")) is int and client_result["version"]==1
++            and client_result.get("protocol")=="hepta_phone_local_v150"
++            and client_result.get("duplicate") is False)
+         if safe and receipt.get("state")=="completed" and native_data is not None:
+             require(set(sidecar_data)=={"stdout","stderr"},"completed execution raw outputs are missing")
+             require(native_data==sidecar_data,"completed sidecar raw output differs from native shell.exec")

@@ -1,0 +1,63 @@
+{
+  "original_artifact_relative_path": "operators/component-probe/r3/MANIFEST.json",
+  "original_artifact_sha256": "dc5d32f4ab66eee892084e5d1fff5e9887d5fe89f63d5cf935be1429948a798b",
+  "original_bytes": 2126,
+  "projected_document": {
+    "actual_offline_parser_evidence_sha256": "7a627ae4069396d0c0ea4d5350fdcf8178146367077c56a3ac663ba7eddbc3e9",
+    "binding_only_static_checks": 5,
+    "files": [
+      {
+        "bytes": 27226,
+        "path": "component_probe_provider.py",
+        "sha256": "83e867936e6db85e5187a6e8853c40b7bdd9804a27cdd09591c1a8274a950295"
+      },
+      {
+        "bytes": 3349,
+        "path": "prepare_component_probe.py",
+        "sha256": "6a86e86442d78da55dbc4319f9a012f37d0d7f269a822f3b09bf6ed6bc32cf77"
+      },
+      {
+        "bytes": 12979,
+        "path": "host_component_checks.py",
+        "sha256": "f061e67735222d96b9b996c2888e94d9efc901b40a40e9f5c16d5fc2f8daaeea"
+      },
+      {
+        "bytes": 15136,
+        "path": "RUN-RETIRE-PLAN.md",
+        "sha256": "8a075399c7644a0622b07c3ab6fb5bd5a35a1fa421180f179b6d7cee3a7abbba"
+      },
+      {
+        "bytes": 1587,
+        "path": "POLICY-BINDING-ONLY.diff",
+        "sha256": "58a408400ac9f4443fc1141c51be85d7131ee281c7bc960870a901eeab8bc9a9"
+      },
+      {
+        "bytes": 676,
+        "path": "BINDING-ONLY-CHECK.json",
+        "sha256": "6b19cbd57be7280da3611d85bb544eac71b59edfd7f88bb456804491e6763c29"
+      },
+      {
+        "bytes": 1761,
+        "path": "validation-01/RESULT.json",
+        "sha256": "22fa657a37b8a1bce2397e26e5fe1e3492f70b38501e571bc9e709d326debcfd"
+      }
+    ],
+    "full_policy_rule_sha256": "b83280ba8be66d532e94a66fb5f03c586478deb62f33bc89649d3298cb08cb2f",
+    "host_checks": 18,
+    "model_requests": 0,
+    "parent_manifest_sha256": "07b4f3b9a34969c509a97843a99459d3574885bde08873622f45054e13eec51e",
+    "parent_supervisor": "separately sealed component-parent-r6-r2; original r1 zero-action failure preserved",
+    "patched_policy_sha256": "3983cdba0e46e826fcf9d1cd67821c998849af7cc45fc863f2ce950897dde613",
+    "phone_operations": 0,
+    "phone_provider_source_path": "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/source-r3/component_probe_provider.py",
+    "schema": "hepta.native-component-probe.source-manifest.v150.r6.3",
+    "scope": "Policy binding change only; 18 host fixtures, no actual phone/native/model run",
+    "status": "FROZEN_SOURCE_CANDIDATE_PENDING_ROOT_RUNTIME_QUALIFICATION"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

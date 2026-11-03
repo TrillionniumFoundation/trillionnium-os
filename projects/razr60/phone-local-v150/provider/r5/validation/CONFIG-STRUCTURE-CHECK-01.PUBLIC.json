@@ -1,0 +1,23 @@
+{
+  "original_artifact_relative_path": "provider/r5/validation/CONFIG-STRUCTURE-CHECK-01.json",
+  "original_artifact_sha256": "e72fb01c093695f4241c39b5d8344586ebab53fa2abc8ed56c1522e83b2774f9",
+  "original_bytes": 426,
+  "projected_document": {
+    "executor_pin_matches_service_manifest": true,
+    "model_and_tool_budgets_unchanged": true,
+    "model_calls": 0,
+    "phone_calls": 0,
+    "phone_paths_presence_checked": false,
+    "private_key_read": false,
+    "qualification": false,
+    "schema": "hepta.config-structure-host-check.v150.1",
+    "structure_and_bound_inputs_valid": true
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "private_deployment_metadata_removed"
+  ]
+}

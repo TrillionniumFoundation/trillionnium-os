@@ -1,0 +1,175 @@
+{
+  "original_artifact_relative_path": "provider/r4/validation/pinned-cpp/BUILD-ATTEMPT-02.json",
+  "original_artifact_sha256": "78fb049c529b340693f77dab418b3ab169a9ac1a6e5973f175e4c2533b6e9332",
+  "original_bytes": 6577,
+  "projected_document": {
+    "binary": {
+      "bytes": 472560,
+      "path": "schema-converter",
+      "sha256": "7de58c070ff0a103e59305a3f98069dd9c3ca2311004e7a59146aaae30d38cdc"
+    },
+    "model_requests": 0,
+    "passed": true,
+    "phone_requests": 0,
+    "schema": "hepta.host-schema-converter-build.v150.r4.2",
+    "scope": "Host-only exact pinned C++ conversion; no phone/model requests; no grammar algorithm stubs or modifications",
+    "source_files": [
+      {
+        "bytes": 44841,
+        "path": "common/json-schema-to-grammar.cpp",
+        "sha256": "cb744e5dfa94f38d88900e3bc455cb21e6c6e4449f3e4b70f3283dc8a443ea81"
+      },
+      {
+        "bytes": 804,
+        "path": "common/json-schema-to-grammar.h",
+        "sha256": "9e4d9f1d426bef42e1ebcb66c551fe3f2eae700a361e7e698f2e382d600432ca"
+      },
+      {
+        "bytes": 21755,
+        "path": "common/json-schema.cpp",
+        "sha256": "1d39f46e92345419da65504995a89b05ed083163968d799f0b3c3c1dced8c490"
+      },
+      {
+        "bytes": 6095,
+        "path": "common/json-schema.h",
+        "sha256": "57933a181ec0e84cbba1abea7fd898dc03e452d7de1a35795b787cee679d02af"
+      },
+      {
+        "bytes": 14613,
+        "path": "common/json.cpp",
+        "sha256": "d8c556445cef8e7c93b0857f6ca7ae7ebd8295f169403ac66641b72f6b0598f2"
+      },
+      {
+        "bytes": 13476,
+        "path": "common/json.h",
+        "sha256": "a352f31307f1be2bdb34c027b876f42a1c5d1ea775cc8e4f11d703b16c40d22f"
+      },
+      {
+        "bytes": 3838,
+        "path": "common/trie.cpp",
+        "sha256": "807cac6c6296ca294397360fbfdd5f19a65fb7c50a587c8b56094261eec5acb2"
+      },
+      {
+        "bytes": 2337,
+        "path": "common/trie.h",
+        "sha256": "391806c154f074d63e208f5a79d4d19df07592a645d860bb2c845525afda898e"
+      },
+      {
+        "bytes": 4327,
+        "path": "common/unicode.cpp",
+        "sha256": "191c00abab788e59e83e29fb877047fcbac1f4d6088c5e9962d38ac2e694686c"
+      },
+      {
+        "bytes": 1139,
+        "path": "common/unicode.h",
+        "sha256": "219b9257ac567a3e6bcf0f552c9a9ddc01d46a15eb4d2829ae5e069e643f0ec5"
+      },
+      {
+        "bytes": 84942,
+        "path": "common/common.cpp",
+        "sha256": "f637dc38ab72bcdda4f845dda08fc6e621340d4ca7d749300053dc2f7184e95f"
+      },
+      {
+        "bytes": 263959,
+        "path": "ggml/src/ggml.c",
+        "sha256": "45e90696c4a766d5747f3443f817cd3be11f0110cf93cd16926698c0f49ed083"
+      },
+      {
+        "bytes": 118304,
+        "path": "ggml/include/ggml.h",
+        "sha256": "2b4dd92fa992cb4ef484917a6c62fef5097698744160ccc09214fd0c459c92c7"
+      }
+    ],
+    "stages": [
+      {
+        "argv": [
+          "/usr/bin/clang",
+          "-std=c11",
+          "-O1",
+          "-ffunction-sections",
+          "-fdata-sections",
+          "-I/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/ggml/include",
+          "-c",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/ggml-abort-exact.c",
+          "-o",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/ggml-abort-exact.o"
+        ],
+        "elapsed_seconds": 0.039053,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/usr/bin/clang++",
+          "-std=c++17",
+          "-O1",
+          "-pthread",
+          "-ffunction-sections",
+          "-fdata-sections",
+          "-Wl,-dead_strip",
+          "-I/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/common",
+          "-I/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/vendor",
+          "-I/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/include",
+          "-I/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/ggml/include",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema_converter.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/common/json-schema-to-grammar.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/common/json-schema.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/common/json.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/common/trie.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-ondevice-v150-runtime-20261103-r1/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6/common/unicode.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/common-string-functions.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/ggml-abort-exact.o",
+          "-o",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema-converter"
+        ],
+        "elapsed_seconds": 3.923815,
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "upstream_commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+    "upstream_helpers": [
+      {
+        "end_utf8_byte": 16589,
+        "sha256": "cc9c4debe7eb02ac054658017ba729f42c839b0eb3df17afed2fb5a573715525",
+        "source": "common/common.cpp",
+        "start_utf8_byte": 16285,
+        "symbol": "std::string string_join("
+      },
+      {
+        "end_utf8_byte": 17031,
+        "sha256": "7bf43d40d06ecac4035108577c8d738cec4bf87fa843113bbce8e3f6fb3ecd66",
+        "source": "common/common.cpp",
+        "start_utf8_byte": 16590,
+        "symbol": "std::vector<std::string> string_split("
+      },
+      {
+        "end_utf8_byte": 17290,
+        "sha256": "5d593c6d869236bf66d43a4563b16e8c461f9b273dcda9bc1b3cd1919ee393e4",
+        "source": "common/common.cpp",
+        "start_utf8_byte": 17032,
+        "symbol": "std::string string_repeat("
+      },
+      {
+        "end_utf8_byte": 7560,
+        "sha256": "73bc38c1de7424ad2ef2dd3f196afab80fb6356a1ad8789028bca1399b457695",
+        "source": "ggml/src/ggml.c",
+        "start_utf8_byte": 1794,
+        "symbol": "upstream backtrace + abort implementation block"
+      }
+    ]
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

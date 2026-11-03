@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150_r6_r2
+name=HEPTA Phone Local v150 r6 attempt 2
+version=v150-r6-attempt2
+versionCode=150062
+author=Trillionnium
+description=Embedded health dependency pin closure and preserved cleanup signal shielding; current boot only; no automatic tasks or replay.

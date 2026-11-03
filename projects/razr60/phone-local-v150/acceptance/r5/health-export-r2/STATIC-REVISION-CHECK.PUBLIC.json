@@ -1,0 +1,29 @@
+{
+  "original_artifact_relative_path": "acceptance/r5/health-export-r2/STATIC-REVISION-CHECK.json",
+  "original_artifact_sha256": "986b176bf7a4b77b922b41d5fc237e949497b54c6f3e3aaa370908e4df82c7df",
+  "original_bytes": 711,
+  "projected_document": {
+    "exact_reverse_patch_recovers_frozen_r1": true,
+    "health_collector_changed": false,
+    "model_requests": 0,
+    "new_fixtures": 0,
+    "new_host_source_sha256": "e8391d076d4116cbfb27d26568be5e0b5e8154c613d1bec451a331617444e8e4",
+    "new_nonce": false,
+    "old_host_source_sha256": "afde0fa758a73e9aeceb6c24514e755bc52ec3f6646312981bf63495175304d5",
+    "phone_calls": 0,
+    "phone_source_unchanged_sha256": "377a5c7fceccb1c4790a15bb6f8890bb8d21b5cec842336356695bd3936fd596",
+    "python312_syntax": true,
+    "request_created": false,
+    "schema": "hepta.health-export-capture-completeness-revision.v150.r5.r2",
+    "source_edits": [
+      "new operator directory",
+      "final capture complete/issue/binding gate only"
+    ]
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

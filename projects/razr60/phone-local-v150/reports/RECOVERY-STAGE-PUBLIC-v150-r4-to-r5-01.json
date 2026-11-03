@@ -1,0 +1,521 @@
+{
+  "schema": "hepta.phone-local-recovery-public-snapshot.v150.r4_to_r5.1",
+  "snapshot_stage": "ACTUAL_RETIREMENT_RESOLUTION_APPENDED_R4_FAILURE_PRESERVED",
+  "recorded_utc": "2026-11-03T18:36:40.870Z",
+  "state": "RECOVERY_DISPOSITION_RECORDED_NOT_BUSINESS_QUALIFICATION",
+  "preserved_prior_business_public": {
+    "file": "QUALITY-COST-PUBLIC-v150-r4-business-stage.json",
+    "bytes": 25530,
+    "sha256": "a810379fc8477e215280a14e13b230df3d3a3525f462203da093fb22c46e485f"
+  },
+  "preserved_prior_health_public": {
+    "file": "QUALITY-COST-PUBLIC-v150-r4-health-stage.json",
+    "sha256": "788cceebb5f470baf1cf4c54ee35f3337430941c0152febe6f2bf187c789826c",
+    "preserved_unchanged": true
+  },
+  "original_sample": {
+    "attempt_id": "VISUAL04",
+    "fixed_case_id": "E2E-01",
+    "version": "v150-r4",
+    "classification": "failed",
+    "complete_business_success": false,
+    "classification_unchanged": true,
+    "recovery_adds_business_sample": false
+  },
+  "health_r4": {
+    "samples": 2,
+    "passed": 1,
+    "failed": 1,
+    "tools": 0
+  },
+  "business_r4": {
+    "samples": 1,
+    "complete": 0,
+    "partial": 0,
+    "failed": 1,
+    "cancelled": 0,
+    "recovery_success_credit": 0
+  },
+  "fixed19": {
+    "case_count": 19,
+    "executed": 1,
+    "protocol_passes": 0,
+    "protocol_failures": 1,
+    "not_run": 18,
+    "business_samples": 1,
+    "cases": [
+      {
+        "id": "E2E-01",
+        "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA",
+        "scope": "model_e2e",
+        "required_layers": [
+          "model_e2e"
+        ],
+        "execution_status": "EXECUTED",
+        "qualification_status": "FAIL",
+        "attempt_count": 1,
+        "required_evidence": [
+          "Actual local HTTP model request includes the newly captured verified JPEG and its hash matches the bound native result.",
+          "Exactly one choice was dispatched; no recapture-to-guess or second challenge attempt is hidden.",
+          "Public challenge is literal 挑战码： plus exactly eight uppercase hex characters.",
+          "Public receipt is HEPTA_VISUAL_OK plus one space and the same code from the same UI snapshot.",
+          "Final actual focus/resumed activity is the fixed HEPTA activity on qualified display 0.",
+          "Native terminal is complete and business_verified=true for coverage=entire_request."
+        ],
+        "outcome": "failed",
+        "complete_business_success": false,
+        "recovery_disposition": {
+          "state": "confirmed_not_executed_after_executor_retirement",
+          "actual_resolution_sha256": "7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433",
+          "actual_resolution_read_back": true,
+          "original_task_classification": "failed",
+          "automatic_replay": false,
+          "business_success_credit": 0,
+          "extra_business_samples": 0
+        }
+      },
+      {
+        "id": "E2E-02",
+        "title": "全新中文/emoji/换行输入、确认、公开回执与返回",
+        "scope": "model_e2e",
+        "required_layers": [
+          "model_e2e"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Helper operation/package/view/old-text/requested/after hashes and exact UTF8 readback all match.",
+          "Public unicode_readback equals the fresh literal input byte for byte.",
+          "Public receipt exactly equals the source-defined four-line format in unicode_receipt_formula.",
+          "Literal newline remains a newline; XML normalization to a space is a failure, not an allowed rewrite.",
+          "Actual HEPTA focus is verified after return.",
+          "Input-only success without confirmation, public receipt or return must end as turn.fail/business_verified=false."
+        ],
+        "registration_note": "Root reports registered but not sent. No Unicode04 execution or outcome is counted."
+      },
+      {
+        "id": "E2E-03",
+        "title": "计算器完成全新随机简单表达式并核验结果",
+        "scope": "model_e2e",
+        "required_layers": [
+          "model_e2e"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Expression and expected result use the fresh parameters, not values from prior examples.",
+          "A public visible result proves the arithmetic; a model mental calculation is insufficient.",
+          "No repeated evaluation after an uncertain effect.",
+          "The exact result contract and requested return both pass."
+        ]
+      },
+      {
+        "id": "E2E-04",
+        "title": "只读查看设置中的公开系统版本字段",
+        "scope": "model_e2e",
+        "required_layers": [
+          "model_e2e"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "The app field, package, focus and unique view are independently verified.",
+          "No settings value, permission, network configuration or account state is changed.",
+          "The result is based on actual UI text rather than a prefilled model answer.",
+          "No return is forced by generic completion; the contract covers exactly the read-only request."
+        ]
+      },
+      {
+        "id": "COMP-01",
+        "title": "显式返回：launch状态和实际焦点双核验",
+        "scope": "component_direct",
+        "required_layers": [
+          "component_direct"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Launch rc is captured immediately and is zero.",
+          "One Status: ok and the exact known activity occur in launch output.",
+          "Inner display focus/app/top-resumed all name HEPTA and keyguard is false.",
+          "Mark only direct component acceptance, not model or native-task acceptance."
+        ]
+      },
+      {
+        "id": "NEG-01",
+        "title": "截图后焦点切换：必须在input之前拒绝",
+        "scope": "component_direct",
+        "required_layers": [
+          "component_direct"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Guard exits 70 or fails earlier with an explicitly recorded known precondition.",
+          "No input effect is observed on either old or new page.",
+          "The image is consumed and the effect is not retried."
+        ]
+      },
+      {
+        "id": "NEG-02",
+        "title": "同viewport内容变化：精确像素guard必须拒绝",
+        "scope": "component_direct",
+        "required_layers": [
+          "component_direct"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Viewport and focus remain the same, but PNG SHA differs.",
+          "Guard exits 71 before input.",
+          "No selection/submission/other app effect and no automatic retry occur."
+        ]
+      },
+      {
+        "id": "NEG-03",
+        "title": "外屏或旋转：拒绝未资格显示配置",
+        "scope": "component_direct",
+        "required_layers": [
+          "component_direct"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Screenshot/tap/public-return qualification rejects anything outside the qualified display 0 portrait geometry.",
+          "No input is injected on another display.",
+          "Fixture and physical-device outcomes remain separately labelled."
+        ]
+      },
+      {
+        "id": "NEG-04",
+        "title": "断连发生于dispatch之前",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated",
+          "physical_native_task"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "No tool is dispatched and the accepted semantic identity remains consumed.",
+          "No automatic request/stream replay occurs.",
+          "No business success is emitted; unknown transport outcome remains unknown where no terminal is observed."
+        ]
+      },
+      {
+        "id": "NEG-05",
+        "title": "作用已开始后断连：保持未知且不重放",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated",
+          "physical_native_task"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Effect count is at most one.",
+          "Unknown result is not inferred as success and not retried.",
+          "A reconnect/new stream cannot reuse the semantic identity."
+        ]
+      },
+      {
+        "id": "NEG-06",
+        "title": "模型超时：有界结束且清理原进程组",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Existing fail frame contains model_timeout; business_verified=false.",
+          "No tool dispatch, child process group leak, account/model fallback or relaunch occurs.",
+          "The claim remains consumed."
+        ]
+      },
+      {
+        "id": "NEG-07",
+        "title": "执行器结果超时：不能用迟到结果认定成功或再执行",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated",
+          "physical_native_task"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "No second effect is executed.",
+          "Late or unmatched results do not rewrite the accepted terminal/unknown outcome.",
+          "Business remains false and cancellation/cleanup state is explicit."
+        ]
+      },
+      {
+        "id": "NEG-08",
+        "title": "dispatch前取消",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated",
+          "physical_native_task"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Existing turn.cancelled (or explicitly unknown transport outcome if the cancel acknowledgement is lost) is retained.",
+          "Zero phone effects; no automatic navigation on cancellation; business_verified=false.",
+          "No original HTTP-client process group remains after confirmed cleanup."
+        ]
+      },
+      {
+        "id": "NEG-09",
+        "title": "首次作用后取消",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated",
+          "physical_native_task"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Exactly the already-observed effect remains; no follow-up input or forced return occurs.",
+          "Cancellation is not labelled complete business success.",
+          "No automatic replay or identity release occurs."
+        ]
+      },
+      {
+        "id": "NEG-10",
+        "title": "图片字节预算/过期图像/旧round绑定",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Each invalid condition fails before dispatch.",
+          "No budget extension, stale-image fallback or guessed generic tap occurs.",
+          "Maximum single image remains 196608 bytes and turn image budget 393216 bytes."
+        ]
+      },
+      {
+        "id": "NEG-11",
+        "title": "native输出损坏/截断/错误身份",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Each malformed envelope is rejected as insufficient evidence.",
+          "No image/text/return fact is admitted and no business success is synthesized.",
+          "Original test fixtures remain clearly labelled synthetic."
+        ]
+      },
+      {
+        "id": "NEG-12",
+        "title": "部分任务被模型说成完成：必须失败终态",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Existing wire kind is turn.fail with business_not_verified.",
+          "business-outcome.json lists missing conditions and business_verified=false.",
+          "Native complete or model summary cannot hide a missing app receipt/return/full-request coverage."
+        ]
+      },
+      {
+        "id": "NEG-13",
+        "title": "一次性模板并发/旧nonce重用",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Exactly one O_EXCL binding succeeds; wrong scope does not consume the template.",
+          "Consumed template cannot qualify or dispatch another task.",
+          "All claims/bindings remain; no deletion/reset to obtain a pass."
+        ]
+      },
+      {
+        "id": "NEG-14",
+        "title": "容量/原子rename竞态与资源收尾",
+        "scope": "host_isolated",
+        "required_layers": [
+          "host_isolated"
+        ],
+        "execution_status": "NOT_RUN",
+        "qualification_status": "BLOCKED_MISSING_REQUIRED_EVIDENCE",
+        "attempt_count": 0,
+        "required_evidence": [
+          "Only the exact recognized rename race is tolerated.",
+          "Unknown files/I/O failures fail closed; no accepted claim is deleted for capacity.",
+          "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline."
+        ]
+      }
+    ],
+    "required_cases_closed": 0,
+    "closed": false
+  },
+  "recovery_event": {
+    "state": "confirmed_not_executed_after_executor_retirement",
+    "actual_resolution_sha256": "7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433",
+    "actual_resolution_bytes": 1237,
+    "actual_resolution_independently_read_back": true,
+    "proof_sha256": "2bdd6c33c42359f1b27567b99627f7223d40a0c37f6af0158b8dc010e899943e",
+    "proof_bytes": 15100,
+    "automatic_checks": 83,
+    "automatic_checks_pass": true,
+    "independent_root_external_review_verified": true,
+    "append_result_sha256": "561a103255d3eba6b6ebae62f8c8b015b51e5a93357947232acef51e11d6dda5",
+    "append_result_bytes": 3454,
+    "check_only_result_sha256": "b6db205538269f5439dfaa8f418a3a0363368e30219dcb81eb9e524602c4c636",
+    "check_only_is_preappend_history": true,
+    "unresolved_after_explicit_append": 0,
+    "retained_original_claims": 24,
+    "original_task_terminal_unchanged": true,
+    "no_replay": true,
+    "new_effects_from_recovery": 0,
+    "new_ui_actions_from_recovery": 0,
+    "new_model_requests_from_recovery": 0,
+    "policy_writes_from_recovery": 0,
+    "old_requests_texts_and_actions_replayed": 0,
+    "claims_or_failed_records_deleted": 0,
+    "trust_boundary": "Trusted sole Root operating history; no privileged external journal erasure/rebinding. Not a cryptographic proof against privileged tampering."
+  },
+  "original_services": {
+    "state": "RETIRED_OFF",
+    "root_stop_proof_sha256": "eec6fe60a91b86d97d01b6b6b6510d26b62f23a16074ef63ea7f78895d0d2fb3",
+    "four_original_owned_groups_independently_absent": true,
+    "old_module_and_per_boot_history_retained": true,
+    "known_external_host_channels_observed_disabled_unloaded_and_without_known_process_or_port": true,
+    "external_observation_limits": "Two non-atomic host observations of configured source paths, ports and known state only. Arbitrary renamed processes, unrelated channels and opaque SSH buffers are not globally excluded."
+  },
+  "future_combination": {
+    "provider_version": "v150-r5",
+    "provider_seal_sha256": "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "executor_revision": 6,
+    "client_sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+    "new_endpoint_required": true,
+    "module_startable": false,
+    "live_policy_applied": false,
+    "ipc_offline_structural_checks": 18,
+    "ipc_offline_structural_passes": 18,
+    "business_permissions_qualified": false,
+    "new_fresh_health_required": true,
+    "inference_location": "phone_cpu",
+    "cloud_model_requests": 0,
+    "provider_payload_installation": {
+      "files_verified": 24,
+      "install_report_sha256": "0a12946126fef8bbea14f6b2dad165a33dd9b741092928e2d6ee057b1053301e",
+      "services_started": 0,
+      "qualified_by_installation": false
+    },
+    "ledger_recovery_prerequisite_satisfied_at_cutoff": true,
+    "remaining_gates": [
+      "independent r6 component path qualification",
+      "final policy/helper permissions and actual entry/data labels/DAC",
+      "final module pins and review",
+      "new one-use health nonce with a real terminal"
+    ]
+  },
+  "separate_new_denominators": {
+    "r6_native_component": {
+      "samples": 0,
+      "passed": 0,
+      "failed": 0,
+      "state": "NOT_RUN"
+    },
+    "provider_r5_health": {
+      "samples": 0,
+      "passed": 0,
+      "failed": 0,
+      "state": "NOT_RUN"
+    },
+    "provider_r5_business": {
+      "samples": 0,
+      "complete": 0,
+      "partial": 0,
+      "failed": 0,
+      "cancelled": 0,
+      "state": "NOT_RUN"
+    }
+  },
+  "known_original_cost": {
+    "prompt_tokens": 808,
+    "completion_tokens": 65,
+    "total_tokens": 873,
+    "cached_prompt_tokens": 404,
+    "health_excluded": true
+  },
+  "resources": {
+    "new_combination_task_peak_rss_kib": null,
+    "new_combination_latency_seconds": null,
+    "energy_joules": null,
+    "battery_delta_percent": null,
+    "monetary_cost": null,
+    "note": "Recovery evidence processing and an appended resolution must not create invented model usage or task latency measurements."
+  },
+  "qualification": {
+    "daily_use": false,
+    "fixed19_closed": false,
+    "visual_business": false,
+    "unicode_business": false,
+    "cold_boot": false,
+    "usb_mac_disconnected": false,
+    "outer_screen": false,
+    "landscape": false,
+    "fold_switch": false
+  },
+  "next_freeze_conditions": [
+    "Revalidate exact retained proof/actual resolution and current unresolved ledger under the shared lock at future activation; do not resolve again",
+    "Keep original failed sample and all historical snapshots unchanged",
+    "Qualify the new executor path as a separate component sample",
+    "Freeze the final new module and policy inputs",
+    "Use a new one-use nonce and only its real terminal to decide whether to run new business contracts"
+  ],
+  "private_fields_excluded": {
+    "raw_task_text": true,
+    "user_draft_and_hash": true,
+    "api_key_and_hash": true,
+    "instance_pids_and_boot_ids": true
+  },
+  "report_builder": {
+    "phone_operations": 0,
+    "model_requests": 0,
+    "ledger_mutations": 0,
+    "publication_performed": false
+  },
+  "evidence_cutoff": {
+    "event": "explicit original-action resolution append",
+    "observed_utc": "2026-11-03T18:17:10.103595+00:00",
+    "later_component_or_policy_results_included": false
+  },
+  "preserved_preappend_draft": {
+    "file": "RECOVERY-STAGE-PUBLIC-v150-r4-to-r5-WORKING.json",
+    "bytes": 19184,
+    "sha256": "4cd8cb4485e1e867bce5ecf7bd59b7fe11aba0f72d611497c3e72f92e787ea17"
+  }
+}

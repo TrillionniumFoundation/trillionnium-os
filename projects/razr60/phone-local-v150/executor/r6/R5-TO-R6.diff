@@ -1,0 +1,218 @@
+--- r5/phone_tool_sidecar.cpp
++++ r6/phone_tool_sidecar.cpp
+@@ -29,6 +29,7 @@
+ #include <vector>
+ #include "json.hpp"
+ #include "hash/hash.h"
++#include "phone_security.h"
+ using J=nlohmann::json;
+ using Clock=std::chrono::steady_clock;
+ static constexpr size_t MAX_REQUEST=262144,MAX_COMMAND=131072,MAX_OUTPUT=8*1024*1024,MAX_RESPONSE=12*1024*1024;
+@@ -37,7 +38,10 @@
+ static volatile sig_atomic_t stopping=0;
+ static int actions_fd=-1;
+ static std::atomic<bool> recovery_required{false};
+-static std::string instance,shell_path="/system/bin/sh";
++static std::string instance,executor_context,worker_entry=phone_security::WORKER_ENTRY;
++#ifdef HEPTA_TESTING
++static std::string fixture_peer_context=phone_security::BOOTSTRAP_CONTEXT;
++#endif
+ static uid_t fixture_uid=static_cast<uid_t>(-1);
+ #ifdef HEPTA_TESTING
+ static std::atomic<unsigned> fixture_prelock_delays{0};
+@@ -90,7 +94,7 @@
+ }
+ static J inspect_action(const std::string&id,const std::string&sha,bool include,bool duplicate){
+  int d=openat(actions_fd,id.c_str(),O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);
+- if(d<0)return envelope({{"action_id",id},{"state","not_found"},{"terminal",false},{"effect_started",false}},duplicate);
++ if(d<0){if(errno!=ENOENT)throw std::runtime_error("action_directory_inspection_failed");return envelope({{"action_id",id},{"state","not_found"},{"terminal",false},{"effect_started",false},{"lookup_errno",ENOENT}},duplicate);}
+  try{
+   J intent=J::parse(read_at(d,"intent.json",MAX_REQUEST));require(intent.value("action_id","")==id,"stored_action_identity_mismatch");
+   if(!sha.empty()&&intent.value("command_sha256","")!=sha){close(d);return envelope({{"action_id",id},{"state","rejected"},{"error","action_id_payload_mismatch"},{"terminal",false},{"effect_started",false}},duplicate);}
+@@ -101,10 +105,10 @@
+ }
+ static bool disconnected(int fd){struct pollfd p{fd,POLLRDHUP|POLLHUP|POLLERR,0};if(poll(&p,1,0)>0&&(p.revents&(POLLRDHUP|POLLHUP|POLLERR)))return true;char c;ssize_t k=recv(fd,&c,1,MSG_PEEK|MSG_DONTWAIT);return k==0||(k<0&&errno!=EAGAIN&&errno!=EWOULDBLOCK&&errno!=EINTR);}
+ static bool group_absent(pid_t p){return kill(-p,0)<0&&errno==ESRCH;}
+-static void signal_owned(pid_t pid,int sig,bool group){if(group)kill(-pid,sig);else kill(pid,sig);}
++static void signal_owned(pid_t pid,int sig,bool group,bool joined,bool identity_lost){if(group)kill(-pid,sig);else if(!joined&&!identity_lost)kill(pid,sig);}
+ static void reap_group(pid_t pgid){int st;while(waitpid(-pgid,&st,WNOHANG)>0){}}
+-struct ChildGuard { pid_t pid; bool dismissed=false; ~ChildGuard(){if(dismissed)return;kill(-pid,SIGKILL);kill(pid,SIGKILL);int st;for(int i=0;i<200;i++){pid_t w=waitpid(pid,&st,WNOHANG);if(w==pid||(w<0&&errno==ECHILD))break;usleep(10000);}reap_group(pid);} };
+-static J execute_action(int sock,const J&q,uid_t peer){
++struct ChildGuard { pid_t pid; bool &joined; bool &group; bool &identity_lost; bool dismissed=false; ~ChildGuard(){if(dismissed)return;/* Before reaping, the owned child PID also reserves its possible PGID. */if(group||(!joined&&!identity_lost))kill(-pid,SIGKILL);if(!joined&&!identity_lost)kill(pid,SIGKILL);int st;if(!joined&&!identity_lost)for(int i=0;i<200;i++){pid_t w=waitpid(pid,&st,WNOHANG);if(w==pid){joined=true;break;}if(w<0&&errno==ECHILD){identity_lost=true;break;}usleep(10000);}if(group)reap_group(pid);} };
++static J execute_action(int sock,const J&q,uid_t peer,const std::string& peer_context){
+ #ifdef HEPTA_TESTING
+  const uid_t execution_uid=getuid();const gid_t execution_gid=getgid();
+  const int execution_groups=getgroups(0,nullptr);require(execution_groups>=0,"fixture_groups_unavailable");
+@@ -126,7 +130,7 @@
+  if(recovery_required.load())return envelope({{"action_id",id},{"state","recovery_required"},{"error","unresolved_prior_intent"},{"terminal",false},{"effect_started",false}});
+  if(mkdirat(actions_fd,id.c_str(),0700)!=0){if(errno==EEXIST)return inspect_action(id,sha,false,true);throw std::runtime_error("action_directory_create_failed");}
+  int d=openat(actions_fd,id.c_str(),O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);require(d>=0,"action_directory_open_failed");
+- J r={{"version",1},{"action_id",id},{"command_sha256",sha},{"timeout_ms",timeout},{"server_instance",instance},{"peer_uid",peer},{"created_unix_ms",now_ms()},{"state","intent"},{"terminal",false},{"effect_started",false},{"dispatch_count",0},{"can_redispatch",false},
++ J r={{"version",1},{"executor_revision",6},{"action_id",id},{"command_sha256",sha},{"timeout_ms",timeout},{"server_instance",instance},{"peer_uid",peer},{"peer_context",peer_context},{"executor_context",executor_context},{"worker_domain_verified",false},{"execution_context",nullptr},{"handshake_stage","worker_entry_after_exec_transition"},{"created_unix_ms",now_ms()},{"state","intent"},{"terminal",false},{"effect_started",false},{"dispatch_count",0},{"can_redispatch",false},
+  {"execution_credentials_scope",credential_scope},{"required_execution_uid",execution_uid},{"required_execution_gid",execution_gid},
+  {"execution_credentials_verified",false},{"execution_uid",nullptr},{"execution_euid",nullptr},{"execution_gid",nullptr},{"execution_egid",nullptr},
+  {"execution_supplementary_group_count",nullptr},{"supplementary_groups_cleared",nullptr}};
+@@ -146,6 +150,10 @@
+  logs[0]=openat(d,"stdout.bin",O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC|O_NOFOLLOW,0600);logs[1]=openat(d,"stderr.bin",O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC|O_NOFOLLOW,0600);
+  if(logs[0]<0||logs[1]<0||pipe2(out,O_CLOEXEC)||pipe2(err,O_CLOEXEC)||pipe2(started,O_CLOEXEC)){recovery_required=true;throw std::runtime_error("tool_io_setup_failed");}
+  int nullfd=open("/dev/null",O_RDONLY|O_CLOEXEC);require(nullfd>=0,"null_input_open_failed");
++ const std::string started_fd_arg=std::to_string(started[1]),parent_pid_arg=std::to_string(getpid());
++#ifdef HEPTA_TESTING
++ const std::string fixture_worker_context=q.value("_fixture_worker_domain_fail",false)?"denied_fixture_worker":"host_fixture_worker";
++#endif
+  auto begin=Clock::now();pid_t pid=fork();
+  if(pid==0){
+   close(out[0]);close(err[0]);close(started[0]);
+@@ -166,21 +174,34 @@
+      ||real_uid!=execution_uid||effective_uid!=execution_uid||saved_uid!=execution_uid
+      ||real_gid!=execution_gid||effective_gid!=execution_gid||saved_gid!=execution_gid
+      ||getgroups(0,nullptr)!=execution_groups)credential_failure();
+-  char s='S';if(write(started[1],&s,1)!=1)_exit(126);close(started[1]);close(out[1]);close(err[1]);close(nullfd);
+-  execl(shell_path.c_str(),shell_path.c_str(),"-c",cmd.c_str(),(char*)nullptr);_exit(127);
++  // Only this fixed descriptor survives exec into the dedicated worker entry.
++  if(fcntl(started[1],F_SETFD,0)!=0)_exit(126);
++  close(out[1]);close(err[1]);close(nullfd);
++#ifndef HEPTA_TESTING
++  execl(worker_entry.c_str(),worker_entry.c_str(),"--started-fd",started_fd_arg.c_str(),"--expected-parent",parent_pid_arg.c_str(),"--command",cmd.c_str(),(char*)nullptr);
++#else
++  execl(worker_entry.c_str(),worker_entry.c_str(),"--started-fd",started_fd_arg.c_str(),"--expected-parent",parent_pid_arg.c_str(),"--command",cmd.c_str(),"--fixture-context",fixture_worker_context.c_str(),(char*)nullptr);
++#endif
++  _exit(127);
+  }
+  close(nullfd);close(out[1]);close(err[1]);close(started[1]);
+  if(pid<0){recovery_required=true;throw std::runtime_error("tool_fork_failed");}
+- ChildGuard child_guard{pid};
++ bool group=false,joined=false,identity_lost=false;ChildGuard child_guard{pid,joined,group,identity_lost};
+  int reads[2]={out[0],err[0]};for(int f:reads)fcntl(f,F_SETFL,fcntl(f,F_GETFL)|O_NONBLOCK);fcntl(started[0],F_SETFL,fcntl(started[0],F_GETFL)|O_NONBLOCK);
+  r["state"]="running";r["effect_started"]=nullptr;r["pid"]=pid;r["pgid"]=pid;r["dispatch_count"]=1;r["dispatch_started_unix_ms"]=now_ms();
+  bool journal_ok=true;try{atomic_receipt(d,r);}catch(...){journal_ok=false;}
+- bool group=false,joined=false,eof[2]={false,false},handshake_eof=false,handshake_saved=false;int status=0;std::string data[2],reason;
++ bool eof[2]={false,false},handshake_eof=false,handshake_saved=false;int status=0;std::string data[2],reason;
+  auto consume_handshake=[&](){
+   while(!handshake_eof){char value;ssize_t n=read(started[0],&value,1);
+    if(n==1){if(value=='S'){group=true;r["effect_started"]=true;r["execution_credentials_verified"]=true;
+      r["execution_uid"]=execution_uid;r["execution_euid"]=execution_uid;r["execution_gid"]=execution_gid;r["execution_egid"]=execution_gid;
+      r["execution_supplementary_group_count"]=execution_groups;r["supplementary_groups_cleared"]=(execution_groups==0);
++     r["worker_domain_verified"]=true;
++#ifdef HEPTA_TESTING
++     r["execution_context"]="host_fixture_worker_not_android_selinux";
++#else
++     r["execution_context"]=phone_security::WORKER_CONTEXT;
++#endif
+     }else if(reason.empty())reason="setsid_handshake_invalid";continue;}
+    if(n==0){handshake_eof=true;break;}if(errno==EINTR)continue;if(errno!=EAGAIN&&errno!=EWOULDBLOCK&&reason.empty())reason="setsid_handshake_read_failed";break;
+   }
+@@ -195,7 +216,7 @@
+ #ifdef HEPTA_TESTING
+   if(fixture_first_wait&&q.value("_fixture_parent_wait_delay_ms",0)>0)usleep(std::min(q.value("_fixture_parent_wait_delay_ms",0),2000)*1000);fixture_first_wait=false;
+ #endif
+-  if(!joined){pid_t w=waitpid(pid,&status,WNOHANG);if(w==pid)joined=true;else if(w<0&&errno==ECHILD){reason="child_wait_identity_lost";}}
++  if(!joined&&!identity_lost){pid_t w=waitpid(pid,&status,WNOHANG);if(w==pid)joined=true;else if(w<0&&errno==ECHILD){identity_lost=true;reason="child_wait_identity_lost";}}
+   if(joined&&!group){consume_handshake();if(group)r["handshake_observed_after_join"]=true;}
+   if(group&&!handshake_saved){try{atomic_receipt(d,r);handshake_saved=true;}catch(...){if(reason.empty())reason="receipt_write_failed";}}
+   for(int i=0;i<2;i++)if(!eof[i]){
+@@ -211,18 +232,18 @@
+   if(reason.empty()&&stopping)reason="server_stopping";
+   if(reason.empty()&&std::chrono::duration_cast<std::chrono::milliseconds>(now-begin).count()>=timeout)reason="timeout";
+   if(joined&&group){reap_group(pid);if(reason.empty()&&!group_absent(pid))reason="background_descendants";}
+-  if(!reason.empty()&&!term_sent){signal_owned(pid,SIGTERM,group);term_sent=true;kill_at=now;}
+-  if(term_sent&&!killed&&now-kill_at>=std::chrono::milliseconds(200)){signal_owned(pid,SIGKILL,group);killed=true;}
++  if(!reason.empty()&&!term_sent){signal_owned(pid,SIGTERM,group,joined,identity_lost);term_sent=true;kill_at=now;}
++  if(term_sent&&!killed&&now-kill_at>=std::chrono::milliseconds(200)){signal_owned(pid,SIGKILL,group,joined,identity_lost);killed=true;}
+   if(joined&&eof[0]&&eof[1]&&group_absent(pid)){if(!group&&reason.empty())reason="setsid_handshake_unobserved";break;}
+   if(term_sent&&now-kill_at>=std::chrono::seconds(2))break;
+   struct pollfd fds[3]={{eof[0]?-1:reads[0],POLLIN|POLLHUP,0},{eof[1]?-1:reads[1],POLLIN|POLLHUP,0},{sock,POLLRDHUP|POLLHUP|POLLERR,0}};poll(fds,3,10);
+  }
+- if(!joined){signal_owned(pid,SIGKILL,group);for(int i=0;i<100;i++){pid_t w=waitpid(pid,&status,WNOHANG);if(w==pid){joined=true;break;}usleep(10000);}}
++ if(!joined&&!identity_lost){signal_owned(pid,SIGKILL,group,joined,identity_lost);for(int i=0;i<100;i++){pid_t w=waitpid(pid,&status,WNOHANG);if(w==pid){joined=true;break;}if(w<0&&errno==ECHILD){identity_lost=true;break;}usleep(10000);}}
+  if(joined&&!group){consume_handshake();if(group)r["handshake_observed_after_join"]=true;}
+  if(group){reap_group(pid);for(int i=0;i<100&&!group_absent(pid);i++){kill(-pid,SIGKILL);reap_group(pid);usleep(10000);}}
+  bool absent=group_absent(pid);child_guard.dismissed=joined&&absent;
+  close(started[0]);for(int i=0;i<2;i++){close(reads[i]);if(fsync(logs[i])!=0&&reason.empty())reason="output_sync_failed";close(logs[i]);}
+- r["terminal"]=true;r["waitpid_joined"]=joined;r["process_group_established"]=group;r["process_group_absent"]=absent;
++ r["terminal"]=true;r["waitpid_joined"]=joined;r["waitpid_identity_lost"]=identity_lost;r["process_group_established"]=group;r["process_group_absent"]=absent;
+  r["exit_code"]=joined&&WIFEXITED(status)?J(WEXITSTATUS(status)):J(nullptr);r["term_signal"]=joined&&WIFSIGNALED(status)?J(WTERMSIG(status)):J(nullptr);
+  r["stdout_bytes"]=data[0].size();r["stderr_bytes"]=data[1].size();r["stdout_sha256"]=digest(data[0]);r["stderr_sha256"]=digest(data[1]);
+  r["elapsed_ms"]=std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now()-begin).count();r["completed_unix_ms"]=now_ms();r["client_disconnected"]=client_gone;
+@@ -233,47 +254,58 @@
+  J response=envelope(r,false,true,d);close(d);return response;
+ }
+ static void connection(int fd){
+- J request;
++ J request;bool execute_admitted=false;
+  try{
+-  struct ucred cred{};socklen_t len=sizeof(cred);require(getsockopt(fd,SOL_SOCKET,SO_PEERCRED,&cred,&len)==0,"peer_credentials_unavailable");
+-  bool allowed=cred.uid==0||cred.uid==2000;
+-#ifdef HEPTA_TESTING
+-  allowed=allowed||cred.uid==fixture_uid;
+-#endif
+-  require(allowed,"peer_uid_denied");
++  struct ucred cred{};socklen_t len=sizeof(cred);require(getsockopt(fd,SOL_SOCKET,SO_PEERCRED,&cred,&len)==0&&len==sizeof(cred),"peer_credentials_unavailable");
++  std::string peer_context;
++#ifndef HEPTA_TESTING
++  peer_context=phone_security::peer_context(fd);
++  const uid_t authorization_uid=cred.uid;
++#else
++  require(cred.uid==fixture_uid,"fixture_peer_uid_denied");
++  peer_context=fixture_peer_context;
++  const uid_t authorization_uid=0; // explicitly host fixture, never Android credentials proof
++#endif
++  require(phone_security::read_operation_allowed(authorization_uid,peer_context),"peer_identity_denied");
+   struct timeval tv{5,0};setsockopt(fd,SOL_SOCKET,SO_RCVTIMEO,&tv,sizeof(tv));setsockopt(fd,SOL_SOCKET,SO_SNDTIMEO,&tv,sizeof(tv));
+   J q=receive_json(fd);request=q;require(q.is_object()&&q.value("version",0)==1,"invalid_protocol");std::string op=q.at("op");
+-  if(op=="health"){J health={{"version",1},{"protocol","hepta_phone_local_v150"},{"server_instance",instance},{"state",recovery_required?"recovery_required":"ready"},{"inference_endpoint",false}};
++  if(op=="health"){J health={{"version",1},{"protocol","hepta_phone_local_v150"},{"server_instance",instance},{"state",recovery_required?"recovery_required":"ready"},{"inference_endpoint",false},{"executor_revision",6},{"executor_context",executor_context},{"peer_context",peer_context},{"execute_authorized",phone_security::execute_allowed(authorization_uid,peer_context)},{"required_worker_context",phone_security::WORKER_CONTEXT}};
+ #ifdef HEPTA_TESTING
+    health["fixture_prelock_delays"]=fixture_prelock_delays.load();
+ #endif
+    send_json(fd,health);}
+   else if(op=="inspect"){std::string id=q.at("action_id"),sha=q.value("command_sha256","");require(hexstr(id,32)&&(sha.empty()||hexstr(sha,64)),"invalid_action_identity");send_json(fd,inspect_action(id,sha,q.value("include_output",false),false));}
+-  else if(op=="execute")send_json(fd,execute_action(fd,q,cred.uid));
++  else if(op=="execute"){require(phone_security::execute_allowed(authorization_uid,peer_context),"execute_peer_context_denied");execute_admitted=true;send_json(fd,execute_action(fd,q,cred.uid,peer_context));}
+   else throw std::runtime_error("unsupported_operation");
+  }catch(const std::exception&e){
+   J o={{"version",1},{"protocol","hepta_phone_local_v150"},{"state","rejected"},{"error",e.what()},{"effect_started",false}};
+-  try{if(request.is_object()&&request.value("op","")=="execute"){std::string id=request.value("action_id","");if(hexstr(id,32)&&exists_at(actions_fd,id.c_str())){o=inspect_action(id,"",false,false);o["transport_error"]=e.what();o["receipt"]["state"]="indeterminate";o["receipt"]["terminal"]=false;o["receipt"]["effect_started"]=nullptr;recovery_required=true;}}}catch(...){o["state"]="indeterminate";o["effect_started"]=nullptr;recovery_required=true;}send_json(fd,o);
++  try{if(execute_admitted&&request.is_object()&&request.value("op","")=="execute"){std::string id=request.value("action_id","");if(hexstr(id,32)&&exists_at(actions_fd,id.c_str())){o=inspect_action(id,"",false,false);o["transport_error"]=e.what();o["receipt"]["state"]="indeterminate";o["receipt"]["terminal"]=false;o["receipt"]["effect_started"]=nullptr;recovery_required=true;}}}catch(...){o["state"]="indeterminate";o["effect_started"]=nullptr;recovery_required=true;}send_json(fd,o);
+  }
+  close(fd);workers--;
+ }
+ static bool safe_execution_terminal(const J&r){
+  const std::string state=r.value("state","");
+  const bool terminal_state=state=="completed"||state=="failed"||state=="timed_out"||state=="cancelled"||state=="output_limit_exceeded";
+- return r.value("terminal",false)&&terminal_state&&r.contains("effect_started")&&r["effect_started"].is_boolean()&&r["effect_started"]==true
++ return r.value("executor_revision",0)==6&&r.value("worker_domain_verified",false)&&r.value("terminal",false)&&terminal_state&&r.contains("effect_started")&&r["effect_started"].is_boolean()&&r["effect_started"]==true
+   &&r.value("process_group_established",false)&&r.value("waitpid_joined",false)&&r.value("process_group_absent",false);
+ }
+ int main(int argc,char**argv){
+  try{
+-  std::string state,socket_name="hepta_phone_local_v150";
++  std::string state,socket_name=phone_security::DEFAULT_SOCKET;
+   for(int i=1;i<argc;i++){std::string a=argv[i];require(i+1<argc,"missing_argument_value");std::string v=argv[++i];if(a=="--state-dir")state=v;else if(a=="--socket-name")socket_name=v;
+ #ifdef HEPTA_TESTING
+-   else if(a=="--fixture-uid")fixture_uid=(uid_t)std::stoul(v);else if(a=="--fixture-shell")shell_path=v;
++   else if(a=="--fixture-uid")fixture_uid=(uid_t)std::stoul(v);else if(a=="--fixture-worker")worker_entry=v;else if(a=="--fixture-peer-context")fixture_peer_context=v;
+ #endif
+    else throw std::runtime_error("unknown_argument");}
+   require(!state.empty()&&state[0]=='/'&&socket_name.size()<100,"invalid_server_configuration");
+ #ifndef HEPTA_TESTING
+-  require(getuid()==0&&geteuid()==0,"production_parent_uid_must_be_root");
++  require(getuid()==0&&geteuid()==0&&getgid()==0&&getegid()==0,"production_parent_credentials_must_be_root");
++  executor_context=phone_security::own_context();
++  require(executor_context==phone_security::PARENT_CONTEXT,"production_executor_domain_mismatch");
++  require(phone_security::globally_enforcing(),"global_selinux_must_be_enforcing");
++  require(prctl(PR_GET_NO_NEW_PRIVS,0,0,0,0)==0,"production_no_new_privs_must_be_zero");
++#else
++  executor_context="host_fixture_parent_not_android_selinux";
+ #endif
+   umask(0077);if(mkdir(state.c_str(),0700)&&errno!=EEXIST)throw std::runtime_error("state_directory_create_failed");
+   int base=open(state.c_str(),O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);require(base>=0,"state_directory_invalid");
+@@ -292,7 +324,7 @@
+   int ls=socket(AF_UNIX,SOCK_STREAM|SOCK_CLOEXEC,0);require(ls>=0,"socket_create_failed");
+   struct sockaddr_un un{};un.sun_family=AF_UNIX;memcpy(un.sun_path+1,socket_name.data(),socket_name.size());
+   require(bind(ls,(struct sockaddr*)&un,offsetof(struct sockaddr_un,sun_path)+1+socket_name.size())==0,"socket_bind_failed");require(listen(ls,16)==0,"socket_listen_failed");
+-  std::cout<<J({{"state",recovery_required?"recovery_required":"ready"},{"protocol","hepta_phone_local_v150"},{"server_instance",instance}}).dump()<<std::endl;
++  std::cout<<J({{"state",recovery_required?"recovery_required":"ready"},{"protocol","hepta_phone_local_v150"},{"server_instance",instance},{"executor_revision",6},{"executor_context",executor_context}}).dump()<<std::endl;
+   while(!stopping){struct pollfd p{ls,POLLIN,0};if(poll(&p,1,100)<=0)continue;int fd=accept4(ls,nullptr,nullptr,SOCK_CLOEXEC);if(fd<0)continue;if(workers.load()>=16){close(fd);continue;}workers++;std::thread(connection,fd).detach();}
+   close(ls);for(int i=0;i<700&&workers.load();i++)usleep(10000);if(workers.load())_exit(2);close(actions_fd);close(lease);close(base);return 0;
+  }catch(const std::exception&e){std::cerr<<J({{"state","failed"},{"error",e.what()}}).dump()<<std::endl;return 1;}

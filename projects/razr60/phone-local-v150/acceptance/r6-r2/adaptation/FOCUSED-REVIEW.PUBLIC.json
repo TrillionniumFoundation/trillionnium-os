@@ -1,0 +1,28 @@
+{
+  "original_artifact_relative_path": "acceptance/r6-r2/adaptation/FOCUSED-REVIEW.json",
+  "original_artifact_sha256": "a2d80be34136ea946660725f2a55bc70975854667746d8dcf581724e5f0b0dfd",
+  "original_bytes": 744,
+  "projected_document": {
+    "diff_sha256": "1159f3a19ae1aeaf4cdd19f9ec2a767acd73970fce2b885005b60514b5099023",
+    "findings": [
+      "Original operation actor and phone integer zero plus original stdout/capture SHA linked.",
+      "collect rechecks original operation and requires actual collector process zero.",
+      "Raw partial originals are preserved without qualification.",
+      "No new retry or phone/model call path."
+    ],
+    "model_calls": 0,
+    "new_test_execution_by_reviewer": false,
+    "phone_calls": 0,
+    "review_type": "independent static source and diff read",
+    "reviewer": "local_provider_integration",
+    "schema": "hepta.focused-review-received.v1",
+    "source_sha256": "d22ba8bc634bb8fc2c32092e6b821d55fe91ea778d515c63d69d56c07a01d0ae",
+    "state": "PASS"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

@@ -1,0 +1,20 @@
+--- acceptance-r6/collector-r6/collect_health_evidence.py
++++ acceptance-r6-r2/collector-r6-r2/collect_health_evidence.py
+@@ -19,7 +19,7 @@
+ 
+ from native_journal_audit import SCOPE_FIELDS, strict_loads, verify_records
+ 
+-SEAL = "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
++SEAL = "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1"
+ CONFIG = "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755"
+ SERVICE = "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2"
+ MODEL = "gui-owl-1.5-2b-phone-q4km"
+@@ -314,7 +314,7 @@
+         row["unresolved_effect"]=False
+     return row
+ 
+-R6_HEALTH_SOURCE_SEAL = "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
++R6_HEALTH_SOURCE_SEAL = "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1"
+ R6_HEALTH_POLICY = 'Perform this one-use no-action health check. Return one JSON object:\nkind="turn.complete", call_id="", tool="none", command="", argv=[], task_status="completed".\nSet summary to exactly the nonce requested in the owner\'s message. Copy it without any prefix, suffix, explanation, Markdown, or changed character. No tools, app actions, text edits, or additional rounds are allowed.'
+ 
+ def prompt_layout(body,exact_request,health_case=False):

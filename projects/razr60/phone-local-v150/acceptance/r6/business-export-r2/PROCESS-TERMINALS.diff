@@ -1,0 +1,122 @@
+--- r1/export_business_once.py
++++ r2/export_business_once.py
+@@ -6,7 +6,7 @@
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,shlex,signal,stat,subprocess,sys,tarfile,time
+ B=Path('/operator-workspace/razr60/phone-local-v150')
+-D=B/'business-r6-original-export-r1'
++D=B/'business-r6-original-export-r2'
+ S=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ SEAL_SHA='26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3'
+@@ -162,6 +162,15 @@
+  label='business-r6-'+m['nonce']+'-capture'
+  ph,raw=original_operation(harness(e),e,label,phone_request(source,bound,75),131072)
+  put(e/'CAPTURE-RESULT.json',raw);result=strict(raw)
++ original_raw=read(e/(label+'.original-operation.json'),2*1024*1024)
++ original=strict(original_raw);original_phone=original['wrapper'].get('phone',{})
++ need(original_phone.get('rc')==ph.get('rc') and original_phone.get('stdout')==ph.get('stdout'),
++  'capture process terminal differs from retained original')
++ writej(e/'CAPTURE-TERMINAL.json',{'schema':'hepta.business-capture-process-terminal.v150.r6.2',
++  'nonce':m['nonce'],'owner_request_sha256':sha(request),'operation_label':label,
++  'original_operation_sha256':sha(original_raw),'capture_result_sha256':sha(raw),
++  'phone_process_rc':original_phone.get('rc'),'actor_rc':original.get('actor_rc'),
++  'capture_process_completed_zero':type(original_phone.get('rc')) is int and original_phone['rc']==0})
+  need(result.get('schema')=='hepta.business-original-capture-result.v150.r6.1'
+   and result.get('nonce')==m['nonce'] and result.get('owner_request_sha256')==sha(request)
+   and result.get('combination_sha256')==sha(combo_raw) and result.get('selected_scope')==scope,'capture result binding')
+@@ -174,6 +183,29 @@
+  need(p.parts[0] in ('provider-state','sources','client-receipts','executor-r6',
+   'CAPTURE.json','host-bound-request.txt','selected-scope.json','selected-native-raw.jsonl'),'archive root not allowed')
+  return p
++def capture_terminal_zero(e,bound):
++ label='business-r6-'+bound['nonce']+'-capture'
++ terminal=strict(read(e/'CAPTURE-TERMINAL.json',65536))
++ original_raw=read(e/(label+'.original-operation.json'),2*1024*1024)
++ original=strict(original_raw);phone=original['wrapper'].get('phone',{})
++ result_raw=read(e/'CAPTURE-RESULT.json',131072)
++ need(terminal.get('schema')=='hepta.business-capture-process-terminal.v150.r6.2'
++  and terminal.get('nonce')==bound['nonce'] and terminal.get('owner_request_sha256')==bound['owner_request_sha256']
++  and terminal.get('operation_label')==label and terminal.get('original_operation_sha256')==sha(original_raw)
++  and terminal.get('capture_result_sha256')==sha(result_raw)
++  and terminal.get('phone_process_rc')==phone.get('rc')
++  and terminal.get('actor_rc')==original.get('actor_rc')
++  and isinstance(phone.get('stdout'),str) and phone['stdout'].encode()==result_raw,
++  'capture process terminal original binding differs')
++ actual_zero=type(phone.get('rc')) is int and phone['rc']==0
++ need(terminal.get('capture_process_completed_zero') is actual_zero,'capture zero-exit marker differs')
++ return actual_zero
++def final_qualification(capture_is_complete,process_rc,report):
++ process_zero=type(process_rc) is int and process_rc==0
++ return {'proof_complete':capture_is_complete is True and process_zero and report.get('proof_complete') is True,
++  'complete_business_success':capture_is_complete is True and process_zero and report.get('complete_business_success') is True,
++  'task_classification':(report.get('task_classification') if process_zero else 'unconfirmed_collector_process')
++   if capture_is_complete is True else 'unconfirmed_original_capture'}
+ def capture_complete(result,capture):
+  expected={'actual_source_config_service_client','unique_provider_owner_and_sender_scope',
+   'provider_start_exact_owner','durable_claim_scope_owner_run','original_task_contract_files_retained',
+@@ -182,7 +214,7 @@
+   and capture.get('state')=='CAPTURED_BOUND_ORIGINALS' and capture.get('export_complete') is True
+   and capture.get('issues')==[] and isinstance(capture.get('bindings'),dict)
+   and set(capture['bindings'])==expected and all(v is True for v in capture['bindings'].values()))
+-def unpack(e,result,bound):
++def unpack(e,result,bound,capture_process_completed_zero):
+  root=e/'snapshot';mkdir(root);archive=e/'originals.tar.gz';seen={};total=0
+  with tarfile.open(archive,'r:gz') as t:
+   for member in t:
+@@ -215,9 +247,10 @@
+  for line,row in zip(native,capture['native_raw_records']):
+   need(line.endswith(b'\n') and len(line)==row['bytes'] and sha(line)==row['sha256'],'original native raw bytes differ')
+   need(strict(line).get('scope')==bound['sender_scope'],'original native selected scope differs')
+- complete=capture_complete(result,capture) and generated<=set(seen)
++ complete=(capture_process_completed_zero is True and capture_complete(result,capture) and generated<=set(seen))
+  manifest={'schema':'hepta.business-original-unpack.v150.r6.1','complete_original_capture':complete,
+   'capture_sha256':sha(capture_raw),'archive_sha256':result['archive']['sha256'],
++  'capture_process_completed_zero':capture_process_completed_zero is True,
+   'files':[{'path':k,**v} for k,v in sorted(seen.items())],'native_raw_record_count':len(native),
+   'qualified_business_success':False,'phone_ui_actions':0,'model_requests':0,'original_file_writes':0,
+   'transport_phases_preserved_only':'Existing collector validates claim/result/receipt; this wrapper does not add a 15-phase audit claim.',
+@@ -267,7 +300,7 @@
+    raw=read(e/'chunks'/('%03d.bin'%index),CHUNK,row['sha256']);f.write(raw);digest.update(raw);written+=len(raw)
+   f.flush();os.fsync(f.fileno())
+  need(written==size and digest.hexdigest()==archive['sha256'],'whole archive hash differs')
+- manifest=unpack(e,result,bound)
++ manifest=unpack(e,result,bound,capture_terminal_zero(e,bound))
+  outcome={'state':'ORIGINALS_EXPORTED' if manifest['complete_original_capture'] else 'PARTIAL_ORIGINALS_RETAINED',
+   'original_capture_complete':manifest['complete_original_capture'],'archive_sha256':digest.hexdigest(),
+   'archive_bytes':written,'captured_file_count':len(manifest['files']),
+@@ -309,25 +342,29 @@
+  capture_result=strict(read(e/'CAPTURE-RESULT.json',131072))
+  capture_raw=read(root/'CAPTURE.json',2*1024*1024,capture_result['capture_sha256'])
+  original_capture=strict(capture_raw)
+- complete=(manifest.get('complete_original_capture') is True
++ complete=(capture_terminal_zero(e,bound) is True
++  and manifest.get('capture_process_completed_zero') is True
++  and manifest.get('complete_original_capture') is True
+   and manifest['capture_sha256']==sha(capture_raw)
+   and manifest['archive_sha256']==capture_result['archive']['sha256']
+   and original_capture.get('selected_scope')==bound['sender_scope']
+   and original_capture.get('owner_request_sha256')==sha(request)
+   and original_capture.get('combination_sha256')==sha(combo_raw)
+   and capture_complete(capture_result,original_capture))
++ flags=final_qualification(complete,process.returncode,report)
+  result={'state':'HOST_BUSINESS_COLLECTOR_TERMINAL','process_exit_code':process.returncode,
+   'report_path':str(report_path),'report_sha256':sha(report_raw) if report_raw is not None else None,
+   'source_seal_sha256':SEAL_SHA,'collector_source_sha256':COLLECTOR_SHA,
+   'original_capture_complete':complete,'raw_collector_proof_complete':report.get('proof_complete') is True,
+   'raw_collector_complete_business_success':report.get('complete_business_success') is True,
+-  'proof_complete':complete and report.get('proof_complete') is True,
+-  'complete_business_success':complete and report.get('complete_business_success') is True,
+-  'task_classification':report.get('task_classification') if complete else 'unconfirmed_original_capture',
++  'proof_complete':flags['proof_complete'],
++  'complete_business_success':flags['complete_business_success'],
++  'raw_collector_task_classification':report.get('task_classification'),
++  'task_classification':flags['task_classification'],
+   'case_id':m['case'],'phone_calls':0,'model_requests':0,'automatic_retry':False,
+   'new_previous_input_generated':False,'fixed19_attempt_automatically_written':False}
+  writej(e/'COLLECTOR-RESULT.json',result);print(json.dumps(result,sort_keys=True))
+- return 0 if result['complete_business_success'] and result['proof_complete'] else 2
++ return 0 if process.returncode==0 and result['complete_business_success'] and result['proof_complete'] else 2
+ def phase_expired(signum,frame):
+  raise TimeoutError('Root operator phase bound expired; inspect retained original operation, never resubmit')
+ def main():

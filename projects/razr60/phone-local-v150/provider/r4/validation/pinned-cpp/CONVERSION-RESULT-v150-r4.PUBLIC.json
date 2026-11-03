@@ -1,0 +1,158 @@
+{
+  "original_artifact_relative_path": "provider/r4/validation/pinned-cpp/CONVERSION-RESULT-v150-r4.json",
+  "original_artifact_sha256": "b77dc0aa1732b4ad752e69bea84af73ecea67eb17ca87e60c00ce8138048d1b9",
+  "original_bytes": 8751,
+  "projected_document": {
+    "binary": {
+      "bytes": 472560,
+      "path": "schema-converter",
+      "sha256": "7de58c070ff0a103e59305a3f98069dd9c3ca2311004e7a59146aaae30d38cdc"
+    },
+    "build_manifest_sha256": "78fb049c529b340693f77dab418b3ab169a9ac1a6e5973f175e4c2533b6e9332",
+    "build_used_exact_upstream_helper_slices": true,
+    "conversion_count": 6,
+    "model_requests": 0,
+    "pass_count": 6,
+    "passed": true,
+    "phone_requests": 0,
+    "provider_source_sha256": "b4c005780dbc707a385be86ebeecb720626cd1bb7ebb611a1898617fda67251d",
+    "results": [
+      {
+        "argv": [
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema-converter",
+          "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/before-image.json",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/before-image.gbnf"
+        ],
+        "case": "before-image",
+        "elapsed_seconds": 4.492557,
+        "grammar_bytes": 15870,
+        "grammar_file": "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/before-image.gbnf",
+        "grammar_sha256": "d0d262ba0c79579fb0a64150a8ab42597294b3c698817a4c360baa61a6fae8aa",
+        "returncode": 0,
+        "root_rule_present": true,
+        "schema_bytes": 12224,
+        "schema_file": "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/before-image.json",
+        "schema_sha256": "2d976a401c9e6163ed86a0234efbbebcfdd70d9977a5d46283dda75e42825828",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 21,
+        "stdout_sha256": "f6ca451de1f9bccb1431f09e37ea83fda8a7d26ce062140c4c16c88139dc5e97"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema-converter",
+          "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/current-image.json",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/current-image.gbnf"
+        ],
+        "case": "current-image",
+        "elapsed_seconds": 0.010104,
+        "grammar_bytes": 17487,
+        "grammar_file": "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/current-image.gbnf",
+        "grammar_sha256": "0071089330b09a877e91c57879842426f0006bf6a968e66f0bfa33523e15686c",
+        "returncode": 0,
+        "root_rule_present": true,
+        "schema_bytes": 13337,
+        "schema_file": "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/current-image.json",
+        "schema_sha256": "c6a335f4da76464a5d205c48ab03c2f8eec45f4da5d03cd4f582e4f4109c5cd3",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 21,
+        "stdout_sha256": "656cc767a8c528b243bc1f017c7e155dc23f4d59345d07f3822c717e4600ab0e"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema-converter",
+          "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/health-final-only.json",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/health-final-only.gbnf"
+        ],
+        "case": "health-final-only",
+        "elapsed_seconds": 0.005953,
+        "grammar_bytes": 838,
+        "grammar_file": "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/health-final-only.gbnf",
+        "grammar_sha256": "016091ec1a3aadb68dbc50500e18d40e01b251480801fd8ae235085088edb34a",
+        "returncode": 0,
+        "root_rule_present": true,
+        "schema_bytes": 760,
+        "schema_file": "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/health-final-only.json",
+        "schema_sha256": "13792226b3f81d8d5735591fdbb23dcacce0f6bd5e8be322fec24fd98a74a684",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 19,
+        "stdout_sha256": "457fbf89b29c6b76b049a0076565ab86de766a36720c02263660ab37f2766b2b"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema-converter",
+          "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/round8-final.json",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/round8-final.gbnf"
+        ],
+        "case": "round8-final",
+        "elapsed_seconds": 0.004649,
+        "grammar_bytes": 1268,
+        "grammar_file": "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/round8-final.gbnf",
+        "grammar_sha256": "c10f862234b83110e504d39be40f2ddab5de546f263361307955b188a0b38c01",
+        "returncode": 0,
+        "root_rule_present": true,
+        "schema_bytes": 833,
+        "schema_file": "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/round8-final.json",
+        "schema_sha256": "811115032c8465650fe8703b1385e0cfc5e6f47f0a6456f77370f40c2bf4cbaf",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 20,
+        "stdout_sha256": "da57da89771eae7d1314bf5f4154c3b88e1e6d4643ab7e1e973b25e3b32c0ecc"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema-converter",
+          "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/visual-after-selection.json",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/visual-after-selection.gbnf"
+        ],
+        "case": "visual-after-selection",
+        "elapsed_seconds": 0.004693,
+        "grammar_bytes": 15870,
+        "grammar_file": "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/visual-after-selection.gbnf",
+        "grammar_sha256": "462aac82b00238bc6df3f953862c55bc93fb5599dac6c7d56bd41f02af8d8fdf",
+        "returncode": 0,
+        "root_rule_present": true,
+        "schema_bytes": 12224,
+        "schema_file": "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/visual-after-selection.json",
+        "schema_sha256": "ee764a5703a0e55b6941f8b2372c9af96a06384f83b546ea62f885cfbf5314ad",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 21,
+        "stdout_sha256": "f6ca451de1f9bccb1431f09e37ea83fda8a7d26ce062140c4c16c88139dc5e97"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/schema-converter",
+          "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/visual-before-selection.json",
+          "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/visual-before-selection.gbnf"
+        ],
+        "case": "visual-before-selection",
+        "elapsed_seconds": 0.002949,
+        "grammar_bytes": 7892,
+        "grammar_file": "/operator-workspace/mac/Documents/Codex/razr60-schema-converter-v150-r4/visual-before-selection.gbnf",
+        "grammar_sha256": "0e1532276f945e14fec0abb1f3106c5e2a99e97d8bf176a33e40556248d72483",
+        "returncode": 0,
+        "root_rule_present": true,
+        "schema_bytes": 5615,
+        "schema_file": "/operator-workspace/razr60/phone-local-v150/provider-r4/validation/schema-shapes-02/schema-inputs/visual-before-selection.json",
+        "schema_sha256": "734f014d2d17599ffe33e2e0fe61fe3391d4a5647c314b0eeba9ea856de2e594",
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 20,
+        "stdout_sha256": "f0121a6bfc03dfbc0a34a09c6438a4a1e42f5ef51d713a23ecc1792c2a01cd79"
+      }
+    ],
+    "schema": "hepta.pinned-cpp-schema-conversion.v150.r4.1",
+    "scope": "Offline host converter validation of six saved dynamic schemas; no inference, phone tools, business outcome or Android execution qualification",
+    "upstream_commit": "8642541b255bfb5dc39cd351a178be09013a55d6"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

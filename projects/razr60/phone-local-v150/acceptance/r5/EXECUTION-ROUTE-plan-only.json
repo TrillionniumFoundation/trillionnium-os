@@ -1,0 +1,457 @@
+{
+  "schema": "hepta.fixed19-current-r5-route-plan.v150.1",
+  "state": "HOST_PLAN_ONLY_NOT_EXECUTED",
+  "automatic_execution": false,
+  "source_manifest": {
+    "path": "acceptance-r5/ACCEPTANCE-SUPPORT-MANIFEST-v150-r5.json",
+    "sha256": "248307263682b70da215d7421674b3ae7110353d864796bc979632ffa92773f0"
+  },
+  "protocol": {
+    "path": "acceptance-r5/fixed-acceptance-set-r5.json",
+    "sha256": "df7a0de3693ffd768b0acfa19ea40f2ca6bb3241b9f43a7c07dbd4033ff5d110",
+    "original_sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0",
+    "case_objects_unchanged": true
+  },
+  "limits": {
+    "default_model_round_deadline_seconds": 120,
+    "do_not_silently_raise_limits_to_pass": true,
+    "live_configuration_must_be_verified_before_use": true,
+    "maximum_sequential_tool_calls_before_final_summary": 7,
+    "model_rounds": 8,
+    "turn_deadline_seconds": 300
+  },
+  "qualified_geometry": {
+    "display_id": 0,
+    "external_display_qualification": false,
+    "height": 2992,
+    "rotation": 0,
+    "width": 1224
+  },
+  "preconditions": [
+    "Root is the sole phone operator; no phone case concurrency.",
+    "Freeze a NEW complete module/policy/live semantic audit/native-App combination; source-only hashes cannot group current results.",
+    "Retain all historical claims/intents/failures and actual resolution. Unknown effect blocks new tasks.",
+    "Complete independent r6 native component and parent true retirement, then qualify production typed public interfaces; neither is a business sample.",
+    "Use fresh real bounded model health on final production combination before any business admission.",
+    "Each later task uses one new nonce/request/contract; observe original receipts first before any recovery."
+  ],
+  "efficient_order": [
+    "Prepare/inspect isolated host fault fixtures without phone operations; label their exact source and combination.",
+    "Root runs the separately frozen one-use r6 printf native component and independently collects original native/r6 receipt; outside fixed19.",
+    "Root retires component-only processes and freezes/validates final production service/policy/native-App combination.",
+    "Fresh genuine bounded model health, separate denominator; non-PASS stops business.",
+    "Fresh E2E-01 and E2E-02; E2E-03/E2E-04 only with qualified actual selectors/navigation and unchanged budget.",
+    "Direct component negatives/return, then the five physical lifecycle followups one at a time with fresh identities and receipt-first recovery.",
+    "Independent final grouping/coverage/accounting; blocked gaps remain blocked, daily-use reliability not inferred from one suite."
+  ],
+  "cases": [
+    {
+      "id": "E2E-01",
+      "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA",
+      "original_layer": "model_e2e",
+      "required_layers": [
+        "model_e2e"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#E2E-01",
+      "route": "Fresh VisualChallenge -> explicit fresh screenshot -> actual model image decision -> one bound tap -> public challenge and receipt in the same observation -> requested HEPTA return -> independent whole-task collector.",
+      "new_inputs": "New owner request, nonce, one-time postcondition contract, actual fresh challenge. Never pre-read challenge/private state before screenshot-bound choice.",
+      "essential_evidence": [
+        "Original model HTTP request with exact verified JPEG and hash",
+        "Original unique tap dispatch and image binding",
+        "Public challenge eight-uppercase-hex plus HEPTA_VISUAL_OK same code",
+        "Actual HEPTA activity/focus/display/keyguard",
+        "Native terminal plus business_verified coverage entire_request"
+      ],
+      "blocking_gap": "Final combination/business permission and new real health are pending; no r5 business sample exists."
+    },
+    {
+      "id": "E2E-02",
+      "title": "全新中文/emoji/换行输入、确认、公开回执与返回",
+      "original_layer": "model_e2e",
+      "required_layers": [
+        "model_e2e"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#E2E-02",
+      "route": "Fresh literal text -> actual focused editor/old text -> one CAS input -> one observed submit -> exact public text and four-line receipt -> requested HEPTA return -> independent whole-task collector.",
+      "new_inputs": "New Chinese/emoji/real LF/quotes/literal shell-metacharacter text and nonce, <=4096 UTF8 bytes, new exact contract.",
+      "essential_evidence": [
+        "Helper operation/package/view/current/requested/after exact UTF8 receipts",
+        "Public unicode_readback byte-identical to original fresh text",
+        "Source-defined four-line unicode_receipt",
+        "Actual return and full-task terminal"
+      ],
+      "blocking_gap": "Qualify new worker/helper public interfaces first; no hint or XML normalization substitution."
+    },
+    {
+      "id": "E2E-03",
+      "title": "计算器完成全新随机简单表达式并核验结果",
+      "original_layer": "model_e2e",
+      "required_layers": [
+        "model_e2e"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#E2E-03",
+      "route": "Independently choose fresh a,b,c and compute (a*b)+c; qualify real unique public calculator result view; allow one actual evaluation and verify result+explicit return.",
+      "new_inputs": "New expression/nonce/contract. Only expression goes to model; expected value remains independent.",
+      "essential_evidence": [
+        "Real installed component and unique visible result selector",
+        "Actual control/input/tap receipts within original 7-tool/8-round budget",
+        "Public result matching independently qualified format",
+        "Requested HEPTA return and whole-task collector"
+      ],
+      "blocking_gap": "Current typed API has no generic keyevent/swipe and input_text requires qualified editable field. If expression cannot be entered within original budget, record blocked/failure; do not simplify expression or silently raise budget."
+    },
+    {
+      "id": "E2E-04",
+      "title": "只读查看设置中的公开系统版本字段",
+      "original_layer": "model_e2e",
+      "required_layers": [
+        "model_e2e"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#E2E-04",
+      "route": "Resolve a unique public non-sensitive Settings version field, new read-only request, actual UI read and independent read-only system comparison.",
+      "new_inputs": "New request/nonce/contract; no identifiers/accounts/secrets/toggles.",
+      "essential_evidence": [
+        "Actual package/page/focus/public view uniqueness",
+        "Public app field and independent system value",
+        "No settings mutation",
+        "Contract covers only requested read; no generic forced return"
+      ],
+      "blocking_gap": "If navigation needs unsupported swipe/keyevent or no qualified public selector, preserve blocked status."
+    },
+    {
+      "id": "COMP-01",
+      "title": "显式返回：launch状态和实际焦点双核验",
+      "original_layer": "component_direct",
+      "required_layers": [
+        "component_direct"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#COMP-01",
+      "route": "New direct component identity from verified non-HEPTA foreground; dispatch explicit return once; retain launch receipt and independent actual focus.",
+      "new_inputs": "Fresh component identity; never invent native model task scope.",
+      "essential_evidence": [
+        "Immediately captured launch rc0",
+        "Exactly one Status: ok and fixed HEPTA activity",
+        "Display0 focus/app/top-resumed and keyguard false"
+      ],
+      "blocking_gap": "New r6 printf IPC component does not close this return case."
+    },
+    {
+      "id": "NEG-01",
+      "title": "截图后焦点切换：必须在input之前拒绝",
+      "original_layer": "component_direct",
+      "required_layers": [
+        "component_direct"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-01",
+      "route": "Capture one fresh qualified screenshot; sole Root intentionally changes focus to a safe page; dispatch pending bound tap once; compare independent public state/counter.",
+      "new_inputs": "Fresh disposable page/screenshot/call identity; no old tap replay.",
+      "essential_evidence": [
+        "Original screenshot/focus and changed focus",
+        "Guard70 or documented earlier precondition failure",
+        "Independent no-input observation on old and new page",
+        "Image consumed and no retry"
+      ],
+      "blocking_gap": "Needs reviewed one-effect physical operator harness; no current r5 execution credit from old r5 executor fixtures."
+    },
+    {
+      "id": "NEG-02",
+      "title": "同viewport内容变化：精确像素guard必须拒绝",
+      "original_layer": "component_direct",
+      "required_layers": [
+        "component_direct"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-02",
+      "route": "Same viewport/focus with controlled visible content change after screenshot; dispatch one pending tap; preserve before/guard PNG hashes and public no-effect state.",
+      "new_inputs": "Fresh disposable snapshot/action identity.",
+      "essential_evidence": [
+        "Same focus/display/geometry",
+        "Different PNG hashes",
+        "Guard71 before input",
+        "No selection/submission and no retry"
+      ],
+      "blocking_gap": "A focus or rotation change cannot substitute for this same-viewport case."
+    },
+    {
+      "id": "NEG-03",
+      "title": "外屏或旋转：拒绝未资格显示配置",
+      "original_layer": "component_direct",
+      "required_layers": [
+        "component_direct"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-03",
+      "route": "Run clearly-labelled isolated unqualified display/rotation receipt fixtures; any real fold/rotation negative is separately scheduled/restored by Root.",
+      "new_inputs": "New fixture or physical negative identity, with layer explicit.",
+      "essential_evidence": [
+        "Reject screenshot/tap/return outside display0 portrait qualified geometry",
+        "No other-display input",
+        "Fixture versus real hardware outcome kept separate"
+      ],
+      "blocking_gap": "A negative rejection is not positive outer-screen/landscape/fold qualification."
+    },
+    {
+      "id": "NEG-04",
+      "title": "断连发生于dispatch之前",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-04",
+      "route": "Isolated fresh admitted turn with deterministic fixture decision; close only test-owned transport before dispatch. Then a distinct fresh physical native lifecycle task.",
+      "new_inputs": "New scope/nonce for each layer; admit evidence before one disconnect.",
+      "essential_evidence": [
+        "Durable accepted identity before disconnect",
+        "Zero tool dispatch",
+        "Claim remains consumed across reconnect/new stream",
+        "Original terminal or explicit unknown; no business success"
+      ],
+      "blocking_gap": "Both host_isolated and physical_native_task are required. Freeze a new fault harness against current endpoint; component printf probe alone is insufficient."
+    },
+    {
+      "id": "NEG-05",
+      "title": "作用已开始后断连：保持未知且不重放",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-05",
+      "route": "New disposable single-effect marker; confirm original effect_started before one owned stream disconnect; inspect original receipt/counter first.",
+      "new_inputs": "Fresh no-risk action and separate identities for host/physical layers; no messages/settings/purchases/deletion.",
+      "essential_evidence": [
+        "Original action identity/started evidence",
+        "Independent counter <=1",
+        "Original terminal or indeterminate result retained",
+        "Reconnect cannot redispatch same identity"
+      ],
+      "blocking_gap": "Unknown halts further effects; no automatic completion inference or replay."
+    },
+    {
+      "id": "NEG-06",
+      "title": "模型超时：有界结束且清理原进程组",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-06",
+      "route": "Host-only disposable local HTTP fixture holds a fresh turn until a short explicit isolated deadline; observe original worker group cleanup.",
+      "new_inputs": "New isolated state/claim/HTTP fixture; production configuration untouched.",
+      "essential_evidence": [
+        "Real timeout occurrence and model_timeout fail frame",
+        "Business false/zero tools",
+        "Original spawned group joined and absent",
+        "No model/account fallback/relaunch; claim retained"
+      ],
+      "blocking_gap": "Do not spend real quota or stall a live model to synthesize timeout; label fixture evidence."
+    },
+    {
+      "id": "NEG-07",
+      "title": "执行器结果超时：不能用迟到结果认定成功或再执行",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-07",
+      "route": "Delay one disposable executor result past its original deadline; inspect/deliver late result only as evidence, never redispatch; repeat separately on physical native path.",
+      "new_inputs": "Fresh action per layer with bounded no-risk effect counter.",
+      "essential_evidence": [
+        "Original dispatch/deadline/accepted outcome",
+        "Counter no second effect",
+        "Late result cannot rewrite terminal/unknown",
+        "Explicit cleanup/cancel and business false"
+      ],
+      "blocking_gap": "Both required layers and actual late-result ordering need sealed harness and independent collector."
+    },
+    {
+      "id": "NEG-08",
+      "title": "dispatch前取消",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-08",
+      "route": "New accepted normal task; exact selected scope twice with zero tools; one actual ui_cancel before dispatch; collect original native/provider cancellation and worker cleanup.",
+      "new_inputs": "New scope/nonce/request; preserve actual nonempty original draft; cancel control is not Reconnect.",
+      "essential_evidence": [
+        "Admission and final before-effect phase/ledger checks",
+        "Exactly one verified ui_cancel control action",
+        "Original cancel acknowledgement plus original native cancelled or explicit lost-ack unknown",
+        "Provider cancelled, worker joined/slot idle, business false, no automatic return"
+      ],
+      "blocking_gap": "Old acceptance-r4/neg08-cancel-r1 is known reviewed-needs-fix: final gate and absolute deadline gaps, unadapted r6/nonempty draft. No eligible current executable harness; a separate repaired revision is required."
+    },
+    {
+      "id": "NEG-09",
+      "title": "首次作用后取消",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-09",
+      "route": "Confirm one disposable effect through original receipt then cancel before follow-up; inspect exact receipt/counter; perform separate host and physical lifecycle layers.",
+      "new_inputs": "Fresh one-effect task per layer.",
+      "essential_evidence": [
+        "Already-confirmed effect exactly once",
+        "Real cancel event and original terminal",
+        "No follow-up input/forced return",
+        "Claims retained and no replay/identity release"
+      ],
+      "blocking_gap": "Do not cancel after an effect of unknown outcome and then infer its success; inspect original first."
+    },
+    {
+      "id": "NEG-10",
+      "title": "图片字节预算/过期图像/旧round绑定",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-10",
+      "route": "Isolated PhoneTools fixtures: remaining image budget below65536, image older120s, foreign call ID, wrong attached model round; independent fresh identity each.",
+      "new_inputs": "Synthetic retained-shape fixture state, no capture/model call.",
+      "essential_evidence": [
+        "Each invalid boundary fails before dispatch",
+        "No stale-image fallback or guessed tap",
+        "Single-image cap196608 and turn cap393216 preserved"
+      ],
+      "blocking_gap": "This fixed case covers image budget, not all model/token/tool/turn budget exhaustion. Additional explicitly named coverage is required for the broader user goal; do not rename NEG-10 or silently add IDs to the19."
+    },
+    {
+      "id": "NEG-11",
+      "title": "native输出损坏/截断/错误身份",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-11",
+      "route": "Host isolated synthetic native envelopes vary call_id/sequence/byte count/exit/truncation/Base64/source/hash independently.",
+      "new_inputs": "New clearly synthetic fixtures; original live evidence never edited.",
+      "essential_evidence": [
+        "Each malformed envelope rejected",
+        "No image/text/return fact admitted",
+        "No synthetic business success"
+      ],
+      "blocking_gap": "Need current r5 source/client binding in fixture evidence; historic source-only PASS cannot close current combination."
+    },
+    {
+      "id": "NEG-12",
+      "title": "部分任务被模型说成完成：必须失败终态",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-12",
+      "route": "Fresh full-task contract: valid input-only receipt + model completed; then public receipt without return; then declared_postconditions_only coverage.",
+      "new_inputs": "New exact request/contract/fixtures for each missing condition.",
+      "essential_evidence": [
+        "turn.fail/business_not_verified",
+        "Missing conditions recorded",
+        "business_verified false despite model completed",
+        "Partial facts retained without whole success"
+      ],
+      "blocking_gap": "Contract must require the exact whole task; do not weaken it to obtain a pass."
+    },
+    {
+      "id": "NEG-13",
+      "title": "一次性模板并发/旧nonce重用",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-13",
+      "route": "One new private isolated contract; race two semantic turn admissions, test wrong known scope and reuse after consumption.",
+      "new_inputs": "Fresh temporary state/request/nonce, never production state.",
+      "essential_evidence": [
+        "Exactly one O_EXCL binding",
+        "Wrong scope does not consume",
+        "Consumed nonce cannot qualify or dispatch another task",
+        "No claim/binding deletion"
+      ],
+      "blocking_gap": "Keep synthetic concurrency fixtures outside model/business denominator."
+    },
+    {
+      "id": "NEG-14",
+      "title": "容量/原子rename竞态与资源收尾",
+      "original_layer": "host_isolated",
+      "required_layers": [
+        "host_isolated"
+      ],
+      "planned_status": "BLOCKED_FINAL_COMBINATION_PENDING",
+      "actual_attempts": 0,
+      "original_case_ref": "acceptance-r5/fixed-acceptance-set-r5.json#NEG-14",
+      "route": "Isolated temporary evidence only: recognized enumerate/atomic-rename/lstat race, canonical missing evidence, unreadable paths, retained orphan spawn and capacity boundary.",
+      "new_inputs": "New private fixture trees and measured resource baseline.",
+      "essential_evidence": [
+        "Only exact recognized temporary rename race tolerated",
+        "Unknown I/O/missing evidence fails closed",
+        "Accepted claims retained",
+        "Actual worker/child/FD cleanup versus measured baseline"
+      ],
+      "blocking_gap": "Never fill or delete production evidence or infer cleanup solely from parent exit."
+    }
+  ],
+  "separately_counted_auxiliary": [
+    "Real bounded model health",
+    "Parent startup/retirement events",
+    "r6 native printf IPC component probe",
+    "Original r4 Visual04 recovery disposition"
+  ],
+  "original_r4_business_outcome_unchanged": "One failed Visual04 and18 not run; confirmed-not-executed recovery never becomes success/partial or a new business sample.",
+  "metrics": {
+    "task_outcomes": [
+      "complete_success",
+      "partial",
+      "failed",
+      "cancelled",
+      "unconfirmed"
+    ],
+    "recovery": "Separate disposition/event bound to original failed task; no hidden new business denominator.",
+    "time": "Same Pocket4 monotonic Send-to-persisted-native-terminal lower/upper interval with polling uncertainty; original HTTP elapsed kept separate.",
+    "usage": "Raw prompt/completion/total/cached tokens and model rounds when present; unavailable=null; do not estimate from text length.",
+    "resources": "Before/after observed RSS/CPU/battery/temperature with sample times; VmHWM is process lifetime, not task peak; energy and monetary cost null unless measured.",
+    "route": "Assert zero cloud calls only from actual route/endpoint/evidence; phone-local architecture is not a fabricated telemetry count."
+  },
+  "physical_state_expansion": "Actual external screen, landscape, folding transition and disconnect recovery each require display identity, viewport coordinates, focus and recovery evidence. Fixture negative rejections do not qualify positive support.",
+  "phone_calls": 0,
+  "model_requests": 0,
+  "new_task_admissions": 0,
+  "case_results_changed": false
+}

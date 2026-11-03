@@ -1,0 +1,25 @@
+--- health-r6-original-export-r1/capture_health_originals.py
++++ health-r6-r2-original-export-r1/capture_health_originals.py
+@@ -8,7 +8,7 @@
+ BASE=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ STATE=BASE/'provider-state'
+ EVIDENCE=STATE/'evidence'
+-STAGED=BASE/'root-health-r6-01'
++STAGED=BASE/'root-health-r6-r2-01'
+ JOURNAL=Path('/var/lib/trillionnium/owner-open/turn-events.jsonl.segments')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ MAX_OUTPUT=4*1024*1024
+@@ -17,10 +17,10 @@
+ MAX_FILES=160
+ MAX_LINE=1024*1024
+ PINNED_SOURCES={
+- 'sources/SOURCE-SEAL-v150-r6.json':(BASE/'provider-r6/SOURCE-SEAL-v150-r6.json','26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3'),
+- 'sources/local-config-r6.json':(BASE/'local-config-r6.json','0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'),
++ 'sources/SOURCE-SEAL-v150-r6-r2.json':(BASE/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json','a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'),
++ 'sources/local-config-r6-r2.json':(BASE/'local-config-r6-r2.json','0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'),
+  'sources/PHONE-SERVICE-INPUTS-v150-r3.json':(BASE/'PHONE-SERVICE-INPUTS-v150-r3.json','ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2'),
+- 'sources/provider_phone_local.py':(BASE/'provider-r6/source/provider_phone_local.py','7e89eeb4c6c972ab253922d99f061764ffa2a1d4a8c442b6aa049e69685e90c8')}
++ 'sources/provider_phone_local.py':(BASE/'provider-r6-r2/source/provider_phone_local.py','7e89eeb4c6c972ab253922d99f061764ffa2a1d4a8c442b6aa049e69685e90c8')}
+ R={'schema':'hepta.production-health-original-capture.v150.r6.1','state':'PARTIAL_ORIGINAL_CAPTURE',
+  'phone_actions':0,'model_calls':0,'socket_calls':0,'service_changes':0,'task_submissions':0,
+  'qualification':False,'read_only':True,'files':[],'directories':[],'native_sources':[],

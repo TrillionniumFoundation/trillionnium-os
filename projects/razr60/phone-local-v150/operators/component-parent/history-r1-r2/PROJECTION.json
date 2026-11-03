@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.component-parent.public-source-projection.v150.1",
+  "scope": "Exact reviewed shell source only. Instance-specific values remain visible as code, not generalized or silently changed. This is not an installable or complete private deployment bundle.",
+  "files": [
+    {
+      "path": "r1/common.sh",
+      "bytes": 6890,
+      "sha256": "8f02d4cebcdce25c363e0bc4bff6b122156fb2eeaf9e2f54125f55e24398f43b",
+      "source_release": "component-parent-r6-r1",
+      "exact_original_source_bytes": true
+    },
+    {
+      "path": "r1/child_guard.sh",
+      "bytes": 949,
+      "sha256": "852bb2bc499bf7d06f7f33b50e306ff19e03b50164e1f44318519b64469dab0d",
+      "source_release": "component-parent-r6-r1",
+      "exact_original_source_bytes": true
+    },
+    {
+      "path": "r1/observe_parent.sh",
+      "bytes": 1078,
+      "sha256": "6f238e457de4d4b7ad99235410092b9c64062d1cff0603c86a7a2ef37351e85e",
+      "source_release": "component-parent-r6-r1",
+      "exact_original_source_bytes": true
+    },
+    {
+      "path": "r1/supervise_parent.sh",
+      "bytes": 8008,
+      "sha256": "8342204237d64ec961f4501615a19b8ae2fa6a805463cd18562e82f92283ef5f",
+      "source_release": "component-parent-r6-r1",
+      "exact_original_source_bytes": true
+    },
+    {
+      "path": "r2/common.sh",
+      "bytes": 10438,
+      "sha256": "76bce5a3a3f94c3742320ed78aac5fdfec1a70c8127e8b5d22d82fc33f15a910",
+      "source_release": "component-parent-r6-r2",
+      "exact_original_source_bytes": true
+    },
+    {
+      "path": "r2/child_guard.sh",
+      "bytes": 949,
+      "sha256": "171a4673f86a669b418aeae9c6199c59fa2eaf12945f16dc706d813bc7f6644e",
+      "source_release": "component-parent-r6-r2",
+      "exact_original_source_bytes": true
+    },
+    {
+      "path": "r2/observe_parent.sh",
+      "bytes": 1078,
+      "sha256": "2d7623fa86ff3a394e907c5ca1192f568d1fe411c397425ea8404a5b7ecfb167",
+      "source_release": "component-parent-r6-r2",
+      "exact_original_source_bytes": true
+    },
+    {
+      "path": "r2/supervise_parent.sh",
+      "bytes": 8185,
+      "sha256": "7cf4ffaaab6a998f04bc7f286e44f0eb36f83201b5e075fb0553a1739f6b0baa",
+      "source_release": "component-parent-r6-r2",
+      "exact_original_source_bytes": true
+    }
+  ],
+  "original_package_manifest_sha256": {
+    "r1": "5bf5b0fbfbc7c0d65e5259a9bb01a170997ee5ac70384bc43caa419a6c414850",
+    "r2": "6368b4a8fc14f4c72edffe4fe7d20f2035443257d1e99326f5263adc7752406d"
+  },
+  "visible_instance_bindings": [
+    "Known owned journal device/inode and r1 log inodes",
+    "r2 fixed original supervisor/parent PID+start identity and exact original record names",
+    "Fixed owned code/state paths; no key material or user text"
+  ],
+  "excluded": [
+    "Original deployment tar and SHA256SUMS",
+    "Original private deployment manifests and admission records",
+    "Full retirement proofs/resolution and process captures",
+    "User draft/UI text, requests, private images",
+    "API key bytes or files",
+    "Any phone/model execution or publication action"
+  ],
+  "readiness": "Static source review only. Qualification checkpoint is a separately sourced artifact; this projection does not assert successful r6 startup or component/business acceptance.",
+  "execution_requirement": "Missing deployment SUMS and instance evidence prevent standalone execution. No automated installation/claim reset/replay is provided.",
+  "no_original_source_modification": true,
+  "phone_calls": 0,
+  "model_requests": 0
+}

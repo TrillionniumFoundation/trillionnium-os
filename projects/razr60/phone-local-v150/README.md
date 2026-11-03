@@ -1,123 +1,101 @@
-# RAZR60 phone-local v150 source candidate
+# RAZR60 phone-local v150 — r6-r2 health checkpoint
 
-This project records a phone-local GUI model path: GUI-Owl-1.5-2B-Instruct runs through an Android ARM64 llama.cpp server on the phone, the provider runs in the existing GNU rootfs, and reviewed phone tools cross an authenticated local Unix socket to an Android Bionic executor. Mac and Pocket4 are build/operator hosts; the selected request path does not send inference to them.
+**The phone-local r6-r2 combination has passed one complete, bounded native health task. Business and daily-use qualification remain pending.** The checkpoint records one actual Send, one local model HTTP request and zero dispatched phone tools. Its original model response matched the new nonce, the provider and native terminal both completed, the model worker joined, the slot returned idle, and all captured originals and actual process exits were checked. This is the health-stage cutoff; later business attempts belong in a new evidence snapshot.
 
-**Business and daily-use qualification remain pending.** The current r3 was installed and the sole phone operator observed a fresh health task ending native completed with the exact raw model nonce and zero tool events. Its original HTTP attempt took 9.078923 seconds and reported 669 input plus 57 output tokens (726 total). This is one bounded health sample; independent collector verification and business acceptance are separate follow-up evidence. The observed health readback artifact is identified by SHA2565e0840cb877007506a79d0375b47f4a9354d44fa0e7c1f8ed17f951939b4605d and is not embedded with private run text in this source publication.
+Read the [health checkpoint](qualification/checkpoints/HEALTH-PASS-v150-r6-r2-01.json) for the exact version and evidence hashes. The [public source boundary](PUBLIC-SOURCE-BOUNDARY.md) and [projection index](PUBLIC-PROJECTION-INDEX.json) distinguish byte-identical production source from explicitly redacted operator or metadata copies.
 
- The first native r1 health task reached a real model HTTP 200 / stop response in about 8.10 seconds, but the model violated the nonce-only instruction and proposed an invalid open_app operation. The typed guard rejected it with zero tools dispatched; the native task ended provider_failed. This is an observed model-instruction failure, not a successful native health task or business task. The operator's detailed evidence is tracked separately; it must not be replaced with the earlier pure inference health result.
+## Current measured result
 
-The frozen r1 source and the uninstalled r2 prompt-layout candidate are retained as separate histories. The current frozen provider/r3 adds a dedicated one-use health contract which permits no phone tool dispatch; it requires its own fresh native health result. Original requests, accepted identities and consumed contracts are retained. No current file activates a new root Cargo member, changes the global module catalog, promotes the project to a qualified product profile, or supplies an integration/release approval.
-
-The r5 executor has now passed five actual-phone component recovery cases in 3.970 seconds. Four synthetic commands ran once, and the incomplete-frame case never created an action. Original receipts and stdout independently establish UID/GID2000 with zero supplementary groups, owned-group cleanup, timeout/late-output suppression and duplicate inspect-only behavior. This component result does not qualify the native/model business chain or the fixed 19-item protocol. The exact original evidence is under qa/actual-r5-component.
-
-## Publication baseline
-
-The publication baseline is 2541c380f3f718803983c918f6a20793479c1127, including parent 47430d52ede072c12f83a354e932adc0f3b3905b. It preserves the existing v149 publication at 0152dc425b6eec188dfd0efdd62aa004b59c76c5, the concurrent executable-binding fix at 038f33f85e6b2e4796c369d310ed4e256e23ca78, and that fix's later deployment/recovery records. The original v149 branches are not moved.
-
-The provider's implementation parent is the frozen v149-r1 protocol/typed-tool source, as recorded in its seal. The v149-r2 CLI executable-binding work remains in the Git ancestry and its original project directory. The phone-local provider uses its own fixed HTTP worker and does not launch that cloud CLI.
-
-| Directory | Contents and authority |
+| Measure | Actual r6-r2 health sample |
 | --- | --- |
-| provider/r1, provider/r2, provider/r3 | Exact frozen runtime sources in separate histories, one-use business/health contract and inspection helpers, fixed 19-case specification, public config template, projected source seals and offline test programs |
-| executor/r4, executor/r5 | Historical r4 and current r5 C++ sources, unchanged rootfs client, Android build scripts, complete pinned vendor inputs and focused host regressions |
-| runtime | Pinned llama.cpp CPU build inputs, delivered artifact hashes, and a portable operator build recipe |
-| model | Official model/runtime references, model and quantization revisions, licenses, prompt references, acquisition hashes and projected download readback |
-| module | Separate startup/guard/sealer source histories with deliberately unsealed public binding templates; runtime activation requires independent private bindings and observed phone state |
-| qa/sidecar-recovery-r4, qa/sidecar-recovery-r5 | Historical r4 preparation and frozen r5 stdout-only five-case script; only the sole phone operator executes a fresh suite |
-| qa/actual-r5-component | Exact synthetic phone evidence: five cases passed, four executions, 92 manifest entries independently read back, plus original summary and hashes |
-| qualification | Current claim ceiling and source/lifecycle references; no guessed business PASS |
-| acceptance/r3 | Six sealed preparation, native-evidence collection and fixed19 aggregation helpers; read-only collectors never dispatch, and their 13+4 offline checks do not establish phone qualification |
+| Native terminal | completed |
+| Original model requests / tool dispatches | 1 / 0 |
+| Model HTTP elapsed time | 3.198154530 seconds |
+| Prompt / output / total model tokens | 170 / 60 / 230 |
+| Model-reported output rate | 33.148637 tokens per second |
+| Send to observed native terminal | at most 4.215477534 seconds |
+| Terminal persistence interval | 2.986361244 to 4.215477534 seconds |
+| Original capture | 31 files and 3 native records |
+| Capture actor / phone / collector exits | 0 / 0 / 0 |
+| Original owner draft | restored once, not submitted |
+| Model RSS before / after | 3,101,380 / 3,122,796 kB |
+| Model high-water RSS | 3,143,504 kB |
+| Fixed 19 cases closed at this cutoff | 0 / 19 |
+| Daily-use qualification | pending |
 
-PUBLISH-MANIFEST.json binds every published file by size, SHA-256 and Git blob identity. Runtime source bytes retain their original frozen component hashes. Public source seals and metadata explicitly project private retained-claims digests or operator workspace paths and record the original frozen artifact hash. Those projections are not the private original seal bytes and cannot silently substitute for a private installation binding. No model weights, executable binaries, rootfs images, keys, instance-specific key hashes, retained claim bodies, user text, captures, or live raw private receipts are included.
+The latency interval uses one Pocket4 monotonic clock and includes polling uncertainty. The model HTTP time is not total task latency. Memory values are Android process snapshots, not whole-device peak memory. No hardware-energy or monetary-cost measurement is claimed.
 
-## Frozen combination
+The raw model summary matches the nonce. Native display intentionally keeps the inherited business-unverified prefix, because a zero-tool health task does not verify an App outcome. The health collector explicitly reports complete_business_success=false.
 
-| Input | Pin |
+The private report SHA is 47ce2d5ecf9a6948b097975f0a9b06b1a217e551a44524269732850c7233b285. Its 27,753 original bytes were independently read for publication. The operator's final admission review, 83db5f3b086bdc73e1d025c4b6f66b1e4f823299dfd9c9d5eacc0f566dae48e0, verifies all originals and four actual host stages. Raw inputs, nonces, native identity fields and captures are not published.
+
+## What runs on the phone
+
+GUI-Owl-1.5-2B-Instruct Q4_K_M and its Q8 projector run in an Android ARM64 llama.cpp CPU server. The provider runs in the existing GNU rootfs. Native tools use the original shell.exec admission and journal, a pinned Python client, an authenticated abstract Unix socket, and an Android Bionic executor with a separate worker domain.
+
+The selected model endpoint is phone loopback. Mac and Pocket4 are build and operator hosts; they are not inference servers for this combination. The health sample made no cloud model request.
+
+| Component | Frozen identity |
 | --- | --- |
-| llama.cpp | ggml-org/llama.cpp v0.8.0, commit 8642541b255bfb5dc39cd351a178be09013a55d6 |
-| Source archive | SHA256 1688a167a8edd9499cdd0c19b8bd044f0fa184b466981977bbf2222d884953a4 |
-| Android NDK content | r28b / 28.1.13356709; the original directory name said 28.2.13676358, so use source.properties and input hashes |
-| Android CPU | API28 arm64, static C++, armv8.6-a+dotprod+i8mm+bf16+fp16; no Vulkan/OpenCL/Metal/OpenMP |
-| Delivered llama-server | 7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176 |
-| GUI-Owl official source revision | mPLUG/GUI-Owl-1.5-2B-Instruct at 528ceaec795bbfbe6103bd79e03db849feadfb24 |
-| Community GGUF revision | mradermacher/GUI-Owl-1.5-2B-Instruct-GGUF at a0592aa615540e507a918bc6281fdbfc1b441361 |
-| Q4_K_M weights | 1,107,410,432 bytes; 5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5 |
-| Q8 projector | 445,053,216 bytes; 16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7 |
-| Current sidecar r5 | 30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa |
-| Historical sidecar r4 | 796f223a98553afc83eb875b3a89aa03f07d0d069a3fb5ab953f849a7f8e84c0; root effect identity does not satisfy frozen phone-helper guards |
-| Rootfs tool client | b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539 |
-| Current provider/r3 original seal | 17a438628070a7fffd9d9c3f92221c00ca92134c3dd91532eb5008fe2cf30564; public projection retains runtime source hashes |
-| Current module/r3 service source | 804037c9b94a4f5d98bf4335c5703a80c91b2e6109c681216bf2c70ac7d0433a |
-| Shared runtime/model/executor service input | a2fe45cff43f7270a43e4d0738ef921812cb534e66ae45fe7b33970612488362; qualification fields describe its historical freeze time |
+| Provider source seal | a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1 |
+| Module manifest | 9e5a8c3f9a5a7f4426d109beba1073edcfa2dfe4712760e446054b04906afb4a |
+| Full combination file | 1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802 |
+| Canonical combination | 5c04f6d4b27be786387e83998c2f8e350c263835bb12d629278d0d252c36e418 |
+| llama.cpp source | 8642541b255bfb5dc39cd351a178be09013a55d6 |
+| Main GGUF | 5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5 |
+| Projector GGUF | 16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7 |
+| Executor client | 500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f |
+| Actual live policy | 05756784090a574be850a068576fbded2842f3fa8c1af0aa5b430f875c78a31f |
 
-The final service parameters are loopback 127.0.0.1:18087, one slot, four CPU threads, 4096 context tokens, batch 256, ubatch 128, GPU layers 0, no projector offload, and image minimum/maximum 1024 tokens. The earlier 768-token pure-text health result belongs to an earlier combination. The provider retains eight model rounds, seven tools, a 120-second model-round bound and a 300-second turn bound.
+The runtime uses four CPU threads, a 4,096-token context, one slot and a fixed 1,024-token vision budget. The published source and model reference manifests identify inputs; model weights, device executables and full rootfs images are not included here.
 
-## Interfaces, state, and ordering
+## Changes since the previous publication
 
-Affected logical boundaries are MOD-PROVIDER, MOD-TOOL-RUNTIME, MOD-ROOTLINUX, MOD-ANDROID and MOD-EVIDENCE, using the existing MOD-PROTOCOL, MOD-TURN-ENGINE and MOD-EVENT-STORE contracts. This is a project candidate involving D2/D3/D4/D5 concerns; publication alone supplies no required maintainer, architecture, semantic-authority or release approval.
+The previous published tree is preserved. This increment adds provider r4, r5, r6 and r6-r2 source history; executor r6 and its worker; client r6; explicit IPC and business policy source; current module source projections; original-evidence validators; bounded capture/export operators; and r6-r2 acceptance metadata.
 
-For r3 health, the raw model JSON summary must equal the new nonce exactly. The grammar leaves summary as an ordinary string rather than forcing the nonce with const or enum. Both decision validation and native-frame emission forbid tools. One HTTP 200/stop attempt, exact original owner bytes, original request/response hashes, joined worker and idle inference slot are required before health-outcome can pass. Native completed and zero tool events still require independent journal verification. The existing native display layer adds `[无动作；业务未独立验证] ` before the model summary; this is recorded separately and is not claimed to be nonce-only native display text. A health PASS does not establish business qualification.
+Provider r6 fixes a concrete health-terminal bug: the owner input became a plain string while the validator still expected a content block. The first r6 startup then exposed one stale embedded health-source hash in the daily entry. Provider r6-r2 changes that binding and preserves the other twelve production modules, four operator helpers and the business behavior. It has actual isolated entry/import evidence and the complete phone health sample above.
 
-The native r5 task protocol remains the authority for native tool acceptance, start, output and terminal frames. The provider emits a genuine shell.exec call with the pinned Python client argv. It never executes a model-authored shell string; reviewed typed mappers construct the command and bind current screen/focus/text observations.
+The new capture wrappers require actual process completion alongside report predicates. A raw report saying PASS cannot qualify a nonzero collector process or a failed capture process. Partial originals remain available for diagnosis. The focused host negative check really printed PASS and then exited 7; each process fence rejected qualification.
 
-The sidecar protocol is a four-byte big-endian JSON length over abstract hepta_phone_local_v150. Both directions require an approved SO_PEERCRED UID. One effect may run at a time. A new action ID and command hash are durable before fork; an original action can be inspected but never redispatched. Timeout, cancellation and disconnect require owned child/group cleanup and a preserved original receipt. r4 preserves the global recovery gate across restart for a sealed but indeterminate receipt. r5 retains that rule and the root journal owner, while the same owned child clears supplementary groups and changes real/effective/saved UID and GID to2000 before its verified startup handshake and exec. The frozen Unicode and screenshot helpers require this Android shell identity. There is no su wrapper or extra credential-helper process.
+SELinux remains Enforcing. The executor parent and worker use dedicated domains, pinned entry labels and explicit peer checks. The parent keeps private durable intents and receipts; each production effect runs as UID/GID 2000 with zero supplementary groups. Its receipt binds the worker domain and handshake, process identity, exact command and action, child join and process-group absence. An interrupted or uncertain effect remains blocked until its original evidence is resolved; changing a call identifier does not authorize replay.
 
-The provider action ledger prevents a new call ID or turn from bypassing an unresolved original effect. Reservation, inspection and resolution use one filesystem lock. A known cancellation before the native tool frame is distinguished from an uncertain dispatch. A visual contract allows one selection attempt; a Unicode editor contract allows one input attempt. Business success still requires exact public readback, business receipt, verified HEPTA foreground and a consistent native task terminal.
+The policy audit checks expanded permissions and non-rule tables, not just text or binary size. The full combined rule parsed cleanly using the installed Magisk parser; the actual live serialization was separately compared with the reviewed offline candidate. A policy audit is not proof that every App operation works.
 
-## Build and reproduce
+## Preserved failures and recovery
 
-Source publication is not a new Android rebuild record. The original build/provenance records identify the delivered binaries. The included portable CPU recipe validates the source archive, full source manifest, actual NDK input hashes and CMake version before building in a new directory:
+| Stage | Retained result | Qualification limit |
+| --- | --- | --- |
+| Earlier r4 visual task | native provider_failed; socket access denied | no business success |
+| IPC-only executor component03 | native provider_failed, tool exit 127; printf inaccessible | correct worker identity and cleanup do not turn it into success |
+| Provider-r5 / module-r3 health01 | correct local nonce response, then provider string.get exception | native failure remains a failure |
+| Initial module-r5-r3 retirement | partial: supervisor/provider exited while model/executor remained | no invented supervisor wait result |
+| Separate remaining-role recovery | original two roles each received one TERM; groups absent | observation is not waitpid proof |
+| Provider-r6-r1 startup | stale embedded source pin rejected before any task | zero health samples |
+| Provider-r6-r2 current health | complete bounded health PASS | one health sample; no business sample at cutoff |
 
-    python3 runtime/build_android_cpu.py \
-      --source /absolute/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6 \
-      --source-archive /absolute/verified-source.tar.gz \
-      --ndk /absolute/pinned-ndk --out /absolute/new-build-directory
+Earlier source, reports and public snapshots remain under their versioned paths. The [previous published README](qualification/history/README-as-published-82dd4497.md) and [previous publication manifest](qualification/manifests/SOURCE-PUBLISH-as-of-82dd4497.json) preserve the exact prior checkpoint. Later recovery records do not rewrite the original failed tasks.
 
-The official archive URL and expected SHA are in runtime/SOURCE-REFERENCE.json. Obtain external inputs through the operator's permitted network mechanism; these recipes do not alter proxy, credentials or host configuration. A relocated build may have different embedded path bytes. The resulting receipt reports exact output hashes and comparison with delivered bytes, without claiming arbitrary-path bit identity.
+## Source map
 
-For the sidecar:
+- [Current provider](provider/r6-r2/source/) — thirteen frozen production Python modules.
+- [Provider r6 history](provider/r6/source/) and [provider r5 history](provider/r5/source/) — independent previous revisions.
+- [Executor r6](executor/r6/) and [client r6](client/r6/) — durable action receipts, credential and domain validation, and cancellation cleanup.
+- [Module source history](module/provider-r6-history/) — instance-specific review sources and explicit public projections.
+- [Current acceptance metadata](acceptance/r6-r2/) — unchanged nineteen case objects, limits and geometry, with the current source binding.
+- [Business evidence collector](acceptance/r5/business-collector-r1/) — the unchanged frozen collector used with the new source-seal override.
+- [Current business original export](acceptance/r6-r2/business-original-export/) — bounded snapshot and original receipt capture.
+- [Current business registration operator](operators/business-r6-r2/registration/) — separate one-use contract registration, no automatic Send.
+- [Sender r5](operators/r5/) — exact-draft compare-and-swap protection and one Send.
+- [Current health checkpoint](qualification/checkpoints/HEALTH-PASS-v150-r6-r2-01.json).
 
-    python3 executor/r5/build_android_r5.py --ndk /absolute/pinned-ndk --out /absolute/new-android-executor-build
+Some source manifests appear as .PUBLIC.json projections. They preserve the original sealed-input SHA and safe source hashes, but deliberately omit private deployment fields. They cannot replace the private runtime manifest. Operator paths and retained-claim digests may be placeholders. Read PUBLIC-PROJECTION-INDEX.json before comparing a projected file against its original hash or attempting a rebuild.
 
-Vendored JSON/hash sources are pinned to the same official llama.cpp commit. executor/r4/materialize_vendor.py can verify or restore missing historical r4 vendor files from that exact, already obtained source tree. It performs no network or phone operation.
+## Next qualification work
 
-A Linux host may reproduce only the r4 sealed-unknown restart regression in a new output directory:
+1. Run a wholly new visual task and a wholly new Unicode task against the same frozen combination. Use new nonce and text, the complete owner request, and one-use postcondition contracts. Require original action and text readback, business outcome, correct HEPTA foreground, and native task terminal to agree.
+2. Exercise the native cancellation, disconnect, late-result, timeout and budget routes. Read the original receipt before attempting recovery. A standalone executor fixture cannot substitute for a native/model-chain case.
+3. Complete the fixed nineteen-case protocol and report full success, partial completion, failure, cancellation and recovery separately. Keep sample counts, latency, resource observations and available token use. Health and host checks are auxiliary evidence.
+4. Validate external display, rotation and folding separately. Confirm display identity, coordinate mapping, focus and recovery before expanding support.
+5. Keep the completed core reproduction evidence. Remaining HEPTA49 and full rootfs bit-level reproduction require their own pinned historical compiler and system-image inputs.
 
-    python3 executor/r4/run_targeted_r4.py --out /absolute/new-linux-fixture-directory
-
-That helper builds a HEPTA_TESTING binary, uses a fresh abstract fixture socket and synthetic files, and preserves the new result. The production Android build has no fixture UID allowance. The four r5 host checks independently cover identity, cancellation after verified credentials, pre-exec credential failure plus restart blocking, and actual production refusal under a nonroot parent. Host fixtures deliberately retain their actual host identity; Android UID2000 is established only by the later actual-phone component evidence. The retained 17 r2 checks, five r3 regressions and one r4 regression are component evidence with different source identities; they are not 23 model tasks and not the fixed 19-item phone protocol.
-
-Provider tests remain separate synthetic local fixtures:
-
-    python3 -B provider/r1/tests/local_provider_checks.py
-    python3 -B provider/r1/tests/local_contract_capacity_checks.py
-    python3 -B provider/r1/tests/local_capacity_race_checks.py
-    python3 -B provider/r1/tests/local_action_fence_checks.py
-
-## Acceptance evidence helpers
-
-The independently sealed acceptance/r3 helpers prepare fresh material, check retained original native/model/tool evidence and aggregate the fixed 19-case protocol without dispatching any action. The acceptance support manifest is SHA25664b145e0f6979b1b33a407aca6abb1dc22598abbbca277483f82118eca10d971. The collector explicitly separates raw-model nonce equality from the native display prefix, local record-hash checks from a complete global journal chain, safe process terminals from business success, and component fixtures from model E2E samples. Its README describes installed phone paths; repository provider source lives under provider/r3.
-
-Only the six sealed helper programs, documentation and sanitized 13+4 host-validation summaries are included. Actual request text, screenshots, raw live claim contents, private fixture inputs and user tool streams remain outside this publication. New phone results are appended as separate evidence revisions. The initial source manifest remains preserved under qualification/manifests/SOURCE-PUBLISH-v150-r1.json and is bound to source commit52bcecfece2a08f20412aadbc00ab231f24f68a5.
-
-## Deployment, recovery and rollback
-
-The public templates cannot start a production instance. A private instance must supply observed config/claim/key bindings, retain every accepted identity and consumed contract, and verify the actual phone bytes before starting. The module source contains no SEALED marker and performs no automatic health request, task, resume or effect replay. The final module/r3 also removes the unsupported `--` argument from the two BusyBox group-signal calls; the exact phone-observed compatibility reason is recorded in SOURCE-PATCH-KILLCOMPAT-v150-r3.json. Older module sources remain historical and are not the selected current service.
-
-Runtime startup still uses the existing legacy native profile; the source audit describes the remaining local legacy-relay coupling and the later formal phone_local profile/rootfs work. A locally running model does not by itself prove cold-boot persistence or a complete independent user task.
-
-Stop admission first, then reconcile the original model worker/slot and sidecar action receipts. If an effect may have happened, inspect it and current public state before authorizing only the unfinished portion of a new task. Preserve claims and sealed unknown receipts across rollback. Replacing a source file, clearing a claim or changing the action ID is not an approved recovery method.
-
-## Qualification still required
-
-- A fresh native nonce-only health task must actually honor its contract.
-- New visual and Unicode tasks must satisfy the complete one-use business contract.
-- Native in-flight disconnect, started-tool cancellation, late-result handling, timeout and budget exhaustion require actual native/model evidence.
-- The five-case r5 sidecar component test passed on the phone. Its own 70-second safety bound is not a product budget-exhaustion test, and its direct client path is not the native r5 tool-ledger cancellation chain.
-- The fixed 19-case protocol needs per-case sample counts, real outcomes, latency, resource and available model usage data.
-- Only the existing display0 portrait 1224×2992 guard is claimed by the source. Outer screen, landscape and fold changes each require physical identity/coordinate/focus/recovery observations.
-- Current-boot service startup, cold boot, real host/USB removal, full descendant quiescence and complete HEPTA49/rootfs bit reproduction remain separate gates.
-
-The actual r5 component summary SHA256 is 3006a16eb0c7014235a936483329aa51b1b881e02dbe028d551a4105f7358eff; its original evidence-manifest SHA256 is 4a11316b288591d9bf53fa8e5535a97f1595e7b436398e0248aa65328419a403. Synthetic raw evidence is retained so readers can distinguish no dispatch, cancelled, timed out and completed originals instead of treating them all as business success.
-
-Use qualification/STATUS.json for the publication claim ceiling. Consult the original component manifests and any later independently published evidence, not this README alone, to decide whether the exact active combination is usable.
+The current publication grants no daily-use, cold-boot or folded-display qualification. Those claims require their own original evidence.

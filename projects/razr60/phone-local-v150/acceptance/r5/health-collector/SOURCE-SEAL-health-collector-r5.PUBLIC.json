@@ -1,0 +1,95 @@
+{
+  "original_artifact_relative_path": "acceptance/r5/health-collector/SOURCE-SEAL-health-collector-r5.json",
+  "original_artifact_sha256": "b57b8c6b311c984240b9876e0e8c5fc4eda14c7f10b6c726b3f8c78b7eef3c04",
+  "original_bytes": 4348,
+  "projected_document": {
+    "actual_fresh_nonce_materialized": false,
+    "actual_request_materialized": false,
+    "business_qualified": false,
+    "change_scope": [
+      "Recognize exact frozen r5 two-message zero-tool health prompt",
+      "Preserve existing raw owner checks and every HTTP/schema/nonce/native/cleanup gate",
+      "Explicit r5 defaults and HEALTH-only CLI"
+    ],
+    "exact_reverse_diff_verified": true,
+    "files": [
+      {
+        "bytes": 47357,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/collect_health_evidence.py",
+        "sha256": "e79b4c01d653bc0ea6d752c6aa9a8541addce936d174c71f4e1eb69819901121"
+      },
+      {
+        "bytes": 6701,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/native_journal_audit.py",
+        "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+      },
+      {
+        "bytes": 5096,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/business_fact_recheck.py",
+        "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+      },
+      {
+        "bytes": 6471,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/HEALTH-LAYOUT.diff",
+        "sha256": "7898274c42f40aee63ecdf04371fbde19a8cbedbad7754a57e9fd2faca91a3fc"
+      },
+      {
+        "bytes": 324,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/LAYOUT-REVISION-CHECK.json",
+        "sha256": "a98043b00e1eb3194b8352857979ee4eb6a5ad4a61702c31b029c1823e268dbe"
+      },
+      {
+        "bytes": 3264,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/test_health_layout.py",
+        "sha256": "6ff5ec3f8babca5b4b49794c7a8305fc0a9137f82e26e25cb4448e4505dfbc94"
+      },
+      {
+        "bytes": 690,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/HOST-LAYOUT-CHECKS-01.json",
+        "sha256": "f5da7bfbdc11747c8fb918d090fb4d85ab5221c30684fde1a124925f13ff1166"
+      },
+      {
+        "bytes": 729,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/HOST-TEST-JOB-TERMINAL.json",
+        "sha256": "f5148f71409fde4c02496fb713fb6d12d6b6b945ff33185b390e804be6501b07"
+      },
+      {
+        "bytes": 12991,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/ROOT-HEALTH-R5-PLAN.md",
+        "sha256": "41a19cb10adac53226649f2a5850aa7c888eca8b1ceb7ba5d13a86f6829055fd"
+      },
+      {
+        "bytes": 5034,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/ROOT-HEALTH-R5-QUICK.md",
+        "sha256": "a5b2fcfb3f218c25978333b24bcb781b44be1df1f52df6d8fd16a5a3338d512c"
+      },
+      {
+        "bytes": 783,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r5/collector-r5/FOCUSED-REVIEW.json",
+        "sha256": "af896c386f99f4dd4c92f6abe51d0de8ca2c0d9d146d02b20903fd8b5294942b"
+      }
+    ],
+    "host_layout_checks_passed": 10,
+    "independent_focused_review": "PASS",
+    "model_requests": 0,
+    "old_r4_collector_unchanged": true,
+    "parent_collector_sha256": "623f0c2c6a93e585d494bb02b736808904938154d2c06e209e1155ada4b7f4eb",
+    "phone_calls": 0,
+    "physical_health_qualified": false,
+    "provider_source_seal_sha256": "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f",
+    "registrations": 0,
+    "schema": "hepta.health-collector-source-seal.v150.r5.1",
+    "sealed_provider_r5_unchanged": true,
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "status": "SEALED_HOST_SUPPORT_NO_FRESH_REQUEST",
+    "ui_send": 0
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized",
+    "private_deployment_metadata_removed"
+  ]
+}

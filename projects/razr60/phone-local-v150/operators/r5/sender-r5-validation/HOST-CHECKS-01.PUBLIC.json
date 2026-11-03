@@ -1,0 +1,75 @@
+{
+  "original_artifact_relative_path": "operators/r5/sender-r5-validation/HOST-CHECKS-01.json",
+  "original_artifact_sha256": "d8cbb3925ccb8a4a5c80223235bfac948fb51bf5bce00a71f7ab12c5a75fad5e",
+  "original_bytes": 2622,
+  "projected_document": {
+    "actor_preview": {
+      "path": "/operator-workspace/razr60/phone-local-v150/host-sender-r5-d1d68ef92f1e.preview.actor.py",
+      "sha256": "5bdeef6c505f46b46cd011ef943f26fd9245c33419ca540a3370e33d70cc5bf7"
+    },
+    "actual_certificate_checked_readonly": true,
+    "actual_originals_copied_only_into_private_host_fixture": true,
+    "checks": [
+      "actual_root_resolution_exact_pin",
+      "actual_final_proof_exact_pin",
+      "only_original_failed_scope_has_retirement_admission",
+      "unrelated_failed_scope_not_admitted",
+      "original_scope_wrong_native_digest_rejected",
+      "original_failure_cannot_be_relabelled_success",
+      "malformed_resolution_action_id",
+      "malformed_resolution_state",
+      "malformed_resolution_business_verified",
+      "malformed_resolution_automatic_replay",
+      "malformed_resolution_old_effect_replay_forbidden",
+      "old_executor_fallback_rejected",
+      "same_JSON_different_resolution_bytes_rejected",
+      "full_embedded_native_auditor_compiles",
+      "read_only_guard_validates_actual_certificate_copies",
+      "guard_does_not_reclassify_original_success",
+      "live_resolution_tamper_blocks_send_gate",
+      "any_new_unknown_effect_blocks_send_gate",
+      "original_native_hash_corruption_blocks_send_gate",
+      "default_is_build_only_and_zero_external_calls",
+      "generated_actor_private_mode",
+      "generated_actor_has_exactly_one_Send_call",
+      "pre_Send_has_absolute_150s_deadline",
+      "retirement_gate_is_double_checked",
+      "empty_hint_effectiveText_CAS_restores_exact_unicode",
+      "changed_user_draft_not_overwritten",
+      "literal_user_hint_not_mistaken_for_empty_CAS",
+      "unknown_native_task_has_no_restore_actions",
+      "changed_scope_prevents_restore_actions",
+      "new_unknown_effect_prevents_restore_actions",
+      "restore_never_submits_original_draft",
+      "restore_not_credited_as_model_business_result",
+      "original_draft_hash_stays_private",
+      "frozen_r4_sender_unchanged",
+      "frozen_r4_ready_helper_unchanged",
+      "frozen_r3_sender_unchanged"
+    ],
+    "checks_passed": 36,
+    "draft_fixture_synthetic_not_user_draft": true,
+    "external_process_requests": 0,
+    "model_calls": 0,
+    "phone_calls": 0,
+    "physical_qualification": false,
+    "schema": "hepta.sender-r5-host-validation.v150.1",
+    "sources": {
+      "send_new_native_task_r5.py": {
+        "bytes": 40788,
+        "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+      },
+      "sender_retirement_guard_r4.py": {
+        "bytes": 18032,
+        "sha256": "5aaf4a9d1edf7e241106dffd46a1fb905373456585bf0c55d148dac654ca7c79"
+      }
+    }
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

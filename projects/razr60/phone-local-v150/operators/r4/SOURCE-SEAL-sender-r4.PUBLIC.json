@@ -1,0 +1,145 @@
+{
+  "original_artifact_relative_path": "operators/r4/SOURCE-SEAL-sender-r4.json",
+  "original_artifact_sha256": "5f523c04fb00946d660f0153af076806fe619f2e2641a74e7e5bc61b10737f9d",
+  "original_bytes": 4988,
+  "projected_document": {
+    "actual_retirement": {
+      "action_id": "fc7bd6d939fb740a6403a04521fbb057",
+      "old_request_replay_authorized": false,
+      "original_native_status_retained": "provider_failed",
+      "proof_sha256": "2bdd6c33c42359f1b27567b99627f7223d40a0c37f6af0158b8dc010e899943e",
+      "resolution_bytes": 1237,
+      "resolution_sha256": "7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433"
+    },
+    "completion_requires": "Root one-shot native component ingress and independent collector; then fresh production health. No physical PASS inferred.",
+    "files": [
+      {
+        "bytes": 40788,
+        "path": "send_new_native_task_r4.py",
+        "sha256": "f9bd48919c11cd4673f486f3d5f0f7206b18d36312c55f3adef43a103c018caf"
+      },
+      {
+        "bytes": 18032,
+        "path": "sender_retirement_guard_r4.py",
+        "sha256": "5aaf4a9d1edf7e241106dffd46a1fb905373456585bf0c55d148dac654ca7c79"
+      },
+      {
+        "bytes": 12667,
+        "path": "sender_component_ready_r4.py",
+        "sha256": "c1a4c05e157f199e4b4a2d153fac2fc0d02b1e25afd24c1320b91f78109f9f3d"
+      },
+      {
+        "bytes": 13246,
+        "path": "test_sender_r4_final.py",
+        "sha256": "4689124a7af3b090c9430fbc7d0318075429f3a13cee67178ae981829f17b7bf"
+      },
+      {
+        "bytes": 11601,
+        "path": "test_sender_r4_component_ready.py",
+        "sha256": "b66d8f96f9f74a534078168feaded6eba7926c0ebe1f24b99086744287f15449"
+      },
+      {
+        "bytes": 12457,
+        "path": "RUN-SENDER-R4.md",
+        "sha256": "6cd8d593671bccf9c9978c5e3218196471567af134d14ea80cc038748609225a"
+      },
+      {
+        "bytes": 2548,
+        "path": "sender-r4-validation/HOST-CHECKS-02.json",
+        "sha256": "1e5a97bf8c3327614561ae0d4bc6f065cb523349f30cef2640f0e6457d049a2c"
+      },
+      {
+        "bytes": 2066,
+        "path": "sender-r4-validation/HOST-READY-CHECKS-01.json",
+        "sha256": "bc45e7759263a6c282acb1266ac6ace6215df4d8e7d1694c443b6152fe16dafc"
+      },
+      {
+        "bytes": 731,
+        "path": "sender-r4-validation/HOST-TEST-JOB-TERMINAL.json",
+        "sha256": "f7a6df8a0073b1f3a08368a7879772d0a584a0bc8e177e6e9208d2a64bd6655b"
+      },
+      {
+        "bytes": 1534,
+        "path": "sender-r4-validation/FOCUSED-REVIEW-NOTES.json",
+        "sha256": "861f96e67bca91836fa8cb4e392f4fc22b728c92208c1247dea73c12b4899e95"
+      },
+      {
+        "bytes": 60137,
+        "path": "sender-r4-validation/SENDER-R4-FINAL.diff",
+        "sha256": "b0d0bd1bb0361c0883396018010317b3459027d3ccdecf051de5bef06ea433f3"
+      }
+    ],
+    "fixed_component": {
+      "arbitrary_launcher_hook": false,
+      "clock_semantics": "Same-phone CLOCK_MONOTONIC deadline; conservatively deduct complete P4 observation duration and subsequent elapsed time",
+      "component_manifest_sha256": "07b4f3b9a34969c509a97843a99459d3574885bde08873622f45054e13eec51e",
+      "final_accept_margin_seconds": 15,
+      "first_accept_margin_seconds": 25,
+      "pre_send_budget_seconds": 150,
+      "provider_source_bytes": 27226,
+      "provider_source_path": "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/source-r2/component_probe_provider.py",
+      "provider_source_sha256": "ff65efc41c30027d0066ddd6fdf3120278c83ccdbe56d7e24922ed96782d2118",
+      "socket_probe": false
+    },
+    "frozen_predecessor": {
+      "path": "send_new_native_task_r3.py",
+      "sha256": "d1d3339bbfeacfc7d429f58e733d0130a36b2f8593f0efd590e427e7e7a937e5"
+    },
+    "private_generated_artifacts_excluded": [
+      "request and preserved-draft inputs",
+      "actor and preview actor files",
+      "local-once receipts",
+      "UI dumps/screenshots",
+      "actual original private evidence copies"
+    ],
+    "required_existing_dependencies": [
+      {
+        "path": "../stock16-hepta-control-check-Root-v146-r1/control_send_once.py",
+        "sha256": "ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70"
+      },
+      {
+        "path": "../stock16-hepta-app-task-selection-source-B-v147-r1/decode_client_state.py",
+        "sha256": "a3e619926a4688ebfefd55ad1074cb386240f9828613781b7fd547bcf0c70073"
+      },
+      {
+        "path": "retirement-recovery-r2/FINAL-PROOF-01.json",
+        "sha256": "2bdd6c33c42359f1b27567b99627f7223d40a0c37f6af0158b8dc010e899943e"
+      },
+      {
+        "path": "retirement-recovery-r2/original/before.json",
+        "sha256": "ee698fc195b52360b87b9196163d0bd32b3455daa6769b91dfd67a93e8c26744"
+      },
+      {
+        "path": "retirement-recovery-r2/original/selected-native-records.json",
+        "sha256": "3acdcdbde2ce5673816751664a706c11a07b3fc1976f7a598af398cdc4f4f806"
+      }
+    ],
+    "runtime_source_paths": [
+      "send_new_native_task_r4.py",
+      "sender_retirement_guard_r4.py",
+      "sender_component_ready_r4.py"
+    ],
+    "schema": "hepta.native-task-sender.source-seal.v150.r4",
+    "state": "HOST_VERIFIED_ROOT_EXECUTION_NOT_PERFORMED",
+    "validation": {
+      "exit_code": 0,
+      "external_process_requests": 0,
+      "groups": [
+        34,
+        35
+      ],
+      "host_checks_passed": 69,
+      "job_id": "1a1a2cc3a79-fc05-a94",
+      "model_calls": 0,
+      "phone_calls": 0,
+      "physical_qualification": false
+    },
+    "version": "sender-r4"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

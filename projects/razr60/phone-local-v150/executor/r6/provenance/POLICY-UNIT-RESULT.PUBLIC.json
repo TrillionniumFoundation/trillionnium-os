@@ -1,0 +1,377 @@
+{
+  "original_artifact_relative_path": "executor/r6/provenance/POLICY-UNIT-RESULT.json",
+  "original_artifact_sha256": "7e526f839d28122060b0fddccc80c1302346245d9130e08d6b7dc987bfe91634",
+  "original_bytes": 13822,
+  "projected_document": {
+    "checkmodule_version": "Module versions 4-23\n",
+    "classes_permissions": {
+      "capability": [
+        "kill",
+        "setgid",
+        "setuid"
+      ],
+      "chr_file": [
+        "getattr",
+        "open",
+        "read",
+        "write"
+      ],
+      "dir": [
+        "add_name",
+        "create",
+        "getattr",
+        "open",
+        "read",
+        "remove_name",
+        "search",
+        "setattr",
+        "write"
+      ],
+      "fd": [
+        "use"
+      ],
+      "fifo_file": [
+        "create",
+        "getattr",
+        "ioctl",
+        "open",
+        "read",
+        "write"
+      ],
+      "file": [
+        "append",
+        "create",
+        "entrypoint",
+        "execute",
+        "execute_no_trans",
+        "getattr",
+        "lock",
+        "map",
+        "open",
+        "read",
+        "rename",
+        "setattr",
+        "unlink",
+        "write"
+      ],
+      "process": [
+        "fork",
+        "getpgid",
+        "getsession",
+        "rlimitinh",
+        "setpgid",
+        "sigchld",
+        "siginh",
+        "sigkill",
+        "signal",
+        "signull",
+        "transition"
+      ],
+      "process2": [
+        "nosuid_transition"
+      ],
+      "unix_stream_socket": [
+        "accept",
+        "bind",
+        "connect",
+        "connectto",
+        "create",
+        "getattr",
+        "getopt",
+        "listen",
+        "read",
+        "setopt",
+        "shutdown",
+        "write"
+      ]
+    },
+    "full_platform_compile": "NOT_RUN: original platform source has no magisk type, this TE fragment requires integration-specific launcher/types and original neverallow inputs.",
+    "live_policy_sha256": "821deeb9578535c55383afc410bbc83295a4bc16639de97b6b293e8915f1356a",
+    "magisk_parser_validation": "PENDING: root may run actual installed 31.1 --load immutable snapshot --apply exact sepolicy.rule --save NEW output, WITHOUT --live; then independently inspect output. No policy application implied.",
+    "new_types": {
+      "trillionnium_owner_open_phone_executor": [
+        "domain"
+      ],
+      "trillionnium_owner_open_phone_executor_data_file": [
+        "file_type",
+        "data_file_type"
+      ],
+      "trillionnium_owner_open_phone_executor_exec": [
+        "file_type",
+        "exec_type"
+      ],
+      "trillionnium_owner_open_phone_worker": [
+        "domain"
+      ],
+      "trillionnium_owner_open_phone_worker_data_file": [
+        "file_type",
+        "data_file_type"
+      ],
+      "trillionnium_owner_open_phone_worker_exec": [
+        "file_type",
+        "exec_type"
+      ]
+    },
+    "package_sha256": "7df36319ef2543651385d553ed5244e0bb601f92d524b02fdae0f91e57704582",
+    "phone_operations": 0,
+    "policy_writes": 0,
+    "query_checks": [
+      {
+        "line": "type_transition magisk trillionnium_owner_open_phone_executor_exec process trillionnium_owner_open_phone_executor",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow magisk trillionnium_owner_open_phone_executor_exec file { getattr open read execute map }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow magisk trillionnium_owner_open_phone_executor process transition",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow magisk trillionnium_owner_open_phone_executor process2 nosuid_transition",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_exec file { entrypoint getattr open read execute map }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor magisk process { sigchld siginh rlimitinh }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "type_transition trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker_exec process trillionnium_owner_open_phone_worker",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker_exec file { getattr open read execute map }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker process transition",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker process2 nosuid_transition",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker_exec file { entrypoint getattr open read execute map }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_executor process { sigchld siginh rlimitinh }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_bootstrap trillionnium_owner_open_phone_executor unix_stream_socket connectto",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow magisk trillionnium_owner_open_phone_executor unix_stream_socket connectto",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor unix_stream_socket { create bind listen accept connect read write getattr getopt setopt shutdown }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor process { fork getpgid getsession setpgid sigchld signal signull sigkill }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor capability { setuid setgid kill }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker process { getpgid getsession signull signal sigkill }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor fd use",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor fifo_file { create read write getattr open ioctl }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor file { getattr open read }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor dir { getattr search open read }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor selinuxfs file { getattr open read }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor null_device chr_file { getattr open read write }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file dir { create getattr open read search write add_name remove_name setattr }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file file { create getattr open read write append rename unlink setattr lock }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "type_transition trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file dir trillionnium_owner_open_phone_executor_data_file",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "type_transition trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file file trillionnium_owner_open_phone_executor_data_file",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor trillionnium_owner_open_state_file dir { getattr search open read }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker process { fork getpgid getsession setpgid sigchld signal signull sigkill }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_executor fd use",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_executor fifo_file { read write getattr }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker fifo_file { create read write getattr open ioctl }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker fd use",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker file { getattr open read }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker dir { getattr search open read }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker shell_exec file { getattr open read execute execute_no_trans map }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker null_device chr_file { getattr open read write }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker selinuxfs file { getattr open read }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor shell_data_file dir { getattr search }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker shell_data_file dir { getattr search }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor system_data_root_file dir { getattr search }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker system_data_root_file dir { getattr search }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_executor system_file dir { getattr search }",
+        "live_symbols_and_permissions_exist": true
+      },
+      {
+        "line": "allow trillionnium_owner_open_phone_worker system_file dir { getattr search }",
+        "live_symbols_and_permissions_exist": true
+      }
+    ],
+    "required_external_types": [
+      "magisk",
+      "null_device",
+      "selinuxfs",
+      "shell_data_file",
+      "shell_exec",
+      "system_data_root_file",
+      "system_file",
+      "trillionnium_owner_open_bootstrap",
+      "trillionnium_owner_open_state_file"
+    ],
+    "rule_sha256": "797bd3bc5997ca2df5d04d877c55e652b19340d28164c83da3fb661a932d3448",
+    "schema": "hepta.executor-r6-policy-offline-unit-check.v1",
+    "scope": "Read-only live-policy symbol/permission validation plus standalone TE module compile. Does not compile full AOSP platform/neverallow inputs or run the Magisk parser; not loaded/applied on phone.",
+    "status": "PASS",
+    "steps": [
+      {
+        "argv": [
+          "apt-get",
+          "download",
+          "checkpolicy=3.9-1"
+        ],
+        "name": "download-checkpolicy",
+        "rc": 0,
+        "seconds": 9.329329,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "2bca363c2a8ff8a27a1bc41f83d2cbec53f17851ccb3538de22c50b999dca8cd"
+      },
+      {
+        "argv": [
+          "dpkg-deb",
+          "-x",
+          "/operator-workspace/razr60/runtime/executor-r6-policy-checks02/checkpolicy_3.9-1_amd64.deb",
+          "/operator-workspace/razr60/runtime/executor-r6-policy-checks02/unpack"
+        ],
+        "name": "unpack-checkpolicy",
+        "rc": 0,
+        "seconds": 0.007681,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/operator-workspace/razr60/runtime/executor-r6-policy-checks02/unpack/usr/bin/checkmodule",
+          "-V"
+        ],
+        "name": "checkmodule-version",
+        "rc": 0,
+        "seconds": 0.000843,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "fb6b4c8d46aed2f64d2209de969478e87ef9712c477349c7fafb0249506daaaf"
+      },
+      {
+        "argv": [
+          "/operator-workspace/razr60/runtime/executor-r6-policy-checks02/unpack/usr/bin/checkmodule",
+          "-M",
+          "-m",
+          "-o",
+          "/operator-workspace/razr60/runtime/executor-r6-policy-checks02/hepta_phone_executor.mod",
+          "/operator-workspace/razr60/runtime/executor-r6-policy-checks02/policy-unit.te"
+        ],
+        "name": "compile-unit-module",
+        "rc": 0,
+        "seconds": 0.001363,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "te_sha256": "62811a8f336346ab1fd0373610a75c69b726cc04ff9712e09cda82899d940b2b"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "original_artifact_relative_path": "acceptance/r6-r2/adaptation/ACCEPTANCE-SUPPORT-SEAL-v150-r6-r2-r1.json",
+  "original_artifact_sha256": "abdc8ab70e446894063dbd8067fbf6d3bd7a8440ef594768cfa6c85b4ebfaf6c",
+  "original_bytes": 3695,
+  "projected_document": {
+    "child_exit_code": 7,
+    "combination_canonical_sha256": "5c04f6d4b27be786387e83998c2f8e350c263835bb12d629278d0d252c36e418",
+    "combination_input_is_not_runtime_health": true,
+    "current_fixed19_attempts": 0,
+    "files": [
+      {
+        "bytes": 24183,
+        "path": "ADAPTATION-RESULT.json",
+        "sha256": "1280b7fed4aed8185bdfd7c7347b47d552cd2fd5e70f5cbec5fdfd5bfbcc6362"
+      },
+      {
+        "bytes": 5044,
+        "path": "README.md",
+        "sha256": "dc52bfc4dffd4217fd6a05e50f174b818d9c641b08153b8e0d97cdce792682dc"
+      },
+      {
+        "bytes": 1764,
+        "path": "HOST-JOB-TERMINALS.json",
+        "sha256": "2aa53e601bf3a3551735684e914d377e87c7dc9d84a9f055c4f7139c3b124eba"
+      },
+      {
+        "bytes": 744,
+        "path": "FOCUSED-REVIEW.json",
+        "sha256": "a2d80be34136ea946660725f2a55bc70975854667746d8dcf581724e5f0b0dfd"
+      },
+      {
+        "bytes": 3841,
+        "path": "test_health_r6_r2_process_fences_r1.py",
+        "sha256": "bd9253b678cf3bc2ec94f2f4171d402454259848e302178bf4bd47a8554cbff5"
+      },
+      {
+        "bytes": 2059,
+        "path": "validation/health-nonzero-pass-01/RESULT.json",
+        "sha256": "cb5187a259282262cb4cb90b54cd981e086b0b444473affb28ba4f6c9538da7c"
+      }
+    ],
+    "fixed19_cases_unchanged": 19,
+    "frozen_combination_input": {
+      "bytes": 971,
+      "path": "/operator-workspace/razr60/phone-local-v150/module-r6-r2-finalization-r1/COMBINATION-FROZEN-v150-r6-module-r2.json",
+      "sha256": "1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802"
+    },
+    "group_seals": [
+      {
+        "bytes": 3629,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/METADATA-SOURCE-SEAL-v150-r6-r2-r1.json",
+        "sha256": "f3b9937087dd87213893e0ae5e44be7ec0c3cef951e4c55a27e3fc9a56bc601d"
+      },
+      {
+        "bytes": 2106,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/collector-r6-r2/SOURCE-SEAL-health-collector-r6-r2.json",
+        "sha256": "9cb4b6bdd5cfc74e84125bb5844da221a418a02a43807b9198cf6df3677bc5d8"
+      },
+      {
+        "bytes": 2162,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-r2-original-export-r1/SOURCE-SEAL-health-original-export-r6-r2-r1.json",
+        "sha256": "df5bb28ece841cc30fe38e94c4f06e70b82c22a7df112792f2023a60ffe623de"
+      },
+      {
+        "bytes": 2478,
+        "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-original-export-r1/SOURCE-SEAL-business-original-export-r6-r2-r1.json",
+        "sha256": "1ae03df16b590f33d6f0199f798f2940d05b4c48464baaa4f6395ec5e162abf6"
+      },
+      {
+        "bytes": 1844,
+        "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-root-operator-r1/SOURCE-SEAL-business-registration-r6-r2-r1.json",
+        "sha256": "cd9f06435feb610afac27409ac681b77b850f1c4ca24b4a8a44d3e6093f52695"
+      }
+    ],
+    "host_metadata_exit_code": 0,
+    "host_validator_exit_code": 0,
+    "materializer_source_unchanged_sha256": "6ec2e23ed87e690e520dd1ee2b063e4e19b92e65e6a2570d0a666cadea42411d",
+    "model_calls": 0,
+    "nonce_generated": false,
+    "phone_calls": 0,
+    "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "real_host_process_scenario": "One actual child printed raw PASS then exited7; actor/phone/collector positions rejected.",
+    "schema": "hepta.r6-r2.acceptance-support-seal.v1",
+    "state": "FROZEN_HOST_SUPPORT"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

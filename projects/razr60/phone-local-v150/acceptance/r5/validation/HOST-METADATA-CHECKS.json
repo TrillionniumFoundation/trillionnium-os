@@ -1,0 +1,88 @@
+{
+  "actual_business_attempts": 0,
+  "actual_model_requests": 0,
+  "actual_phone_calls": 0,
+  "actual_zero_report_sha256": "fb49fe63bf38396943c29000344f37c55ec3d62c3b66077c01dd79d74a9cff7e",
+  "check_count": 18,
+  "checks": [
+    {
+      "name": "all_original19_case_objects_limits_geometry_unchanged",
+      "passed": true
+    },
+    {
+      "name": "actual_inputs_remain_empty",
+      "passed": true
+    },
+    {
+      "name": "pending_has_actual_known_pins_and_null_future_pins",
+      "passed": true
+    },
+    {
+      "name": "actual_zero_partition",
+      "passed": true
+    },
+    {
+      "name": "actual_report_19_preserved_all_blocked",
+      "passed": true
+    },
+    {
+      "name": "actual_report_model_denominator_zero_and_fraction_null",
+      "passed": true
+    },
+    {
+      "name": "actual_report_not_qualified",
+      "passed": true
+    },
+    {
+      "name": "actual_report_auxiliary_zero",
+      "passed": true
+    },
+    {
+      "name": "actual_report_all_layer_counts_zero",
+      "passed": true
+    },
+    {
+      "name": "same_source_different_policy_has_different_full_combo_id",
+      "passed": true
+    },
+    {
+      "name": "same_source_different_module_has_different_full_combo_id",
+      "passed": true
+    },
+    {
+      "name": "pending_cannot_admit_executed_sample",
+      "passed": true
+    },
+    {
+      "name": "component_probe_cannot_be_a_fixed19_attempt",
+      "passed": true
+    },
+    {
+      "name": "foreign_same_source_verified_combo_is_separate_not_current",
+      "passed": true
+    },
+    {
+      "name": "foreign_original_failure_retained",
+      "passed": true
+    },
+    {
+      "name": "unverified_foreign_current_source_blocks_qualification",
+      "passed": true
+    },
+    {
+      "name": "frozen_cannot_contain_null_module_pin",
+      "passed": true
+    },
+    {
+      "name": "other_provider_cannot_be_relabelled_r5",
+      "passed": true
+    }
+  ],
+  "production_module_policy_native_app_pins_pending": true,
+  "r5_protocol_sha256": "df7a0de3693ffd768b0acfa19ea40f2ca6bb3241b9f43a7c07dbd4033ff5d110",
+  "schema": "hepta.acceptance-r5.host-metadata-validation.v150.1",
+  "selected_combination_frozen": false,
+  "state": "PASS",
+  "synthetic_grouping_fixtures_are_not_samples": true,
+  "unchanged_original_protocol_sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+}

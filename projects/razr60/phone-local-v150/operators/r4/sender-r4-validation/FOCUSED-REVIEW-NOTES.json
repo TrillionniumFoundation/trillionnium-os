@@ -1,0 +1,37 @@
+{
+  "independent_research_review": {
+    "confirmed": [
+      "actual source-r2 ready fields and attempt shape match",
+      "PID/start/cmdline and raw ready binding",
+      "25 s initial and 15 s final margin deduct full Pocket4 read elapsed",
+      "original 150 s deadline not reset",
+      "no new dispatch/replay/launcher path"
+    ],
+    "limits": [
+      "ready is an observation, not a reservation",
+      "actual original native/receipt remains authoritative",
+      "no physical component qualification from review"
+    ],
+    "no_blocker_reported": true
+  },
+  "model_calls": 0,
+  "phone_calls": 0,
+  "review_source": "Messages in the current collaborative task; this file records their statements and is not a separate signed attestation.",
+  "root_review": {
+    "confirmed": [
+      "fixed rendezvous without arbitrary hook",
+      "one Send",
+      "conservative separate-clock margin",
+      "requires precreated private claims directory; Root will prepare without deleting old state",
+      "exact /usr/bin/python3 -B source-r2 argv"
+    ],
+    "no_blocker_reported": true
+  },
+  "schema": "hepta.sender-r4-focused-review-notes.v1",
+  "source_pins": {
+    "component_provider_r2": "ff65efc41c30027d0066ddd6fdf3120278c83ccdbe56d7e24922ed96782d2118",
+    "ready_helper": "c1a4c05e157f199e4b4a2d153fac2fc0d02b1e25afd24c1320b91f78109f9f3d",
+    "retirement_helper": "5aaf4a9d1edf7e241106dffd46a1fb905373456585bf0c55d148dac654ca7c79",
+    "sender": "f9bd48919c11cd4673f486f3d5f0f7206b18d36312c55f3adef43a103c018caf"
+  }
+}

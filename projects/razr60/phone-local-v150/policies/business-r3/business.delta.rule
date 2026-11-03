@@ -1,0 +1,56 @@
+# PROPOSED ONLY: business public-interface delta, revision2.
+# Append only after separately qualified IPC r2; do not replace r2.
+# Static necessities, not phone qualification. ART/graphics callback dependencies
+# remain explicitly pending in INTERFACE-MATRIX.json. No permissive changes.
+# No shell/appdomain attribute copying, bootstrap->magisk grant or generic network.
+
+# Read-only exact-byte helper copies under the independent executor root.
+type trillionnium_owner_open_phone_helper_file file_type
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_helper_file dir { getattr search }
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_helper_file file { getattr open read map }
+
+# Existing typed scripts create fresh nonce PNG/XML only. Shared-parent create
+# transition applies to worker-created regular files, not old shell_data_file files.
+# Typed EXIT traps require remove_name+unlink, but only owned file type may be
+# unlinked. Root-owned0755 helper/bin directories prevent worker write by DAC.
+allow trillionnium_owner_open_phone_worker shell_data_file dir { open write add_name remove_name }
+type_transition trillionnium_owner_open_phone_worker shell_data_file file trillionnium_owner_open_phone_worker_data_file
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker_data_file file { create getattr open read write setattr unlink }
+
+# Actual observed executable labels. system_file is a coarse platform type:
+# this grants all same-labelled files, not a pathname allowlist.
+allow trillionnium_owner_open_phone_worker toolbox_exec file { getattr open read map execute execute_no_trans }
+allow trillionnium_owner_open_phone_worker system_file file { getattr open read map execute execute_no_trans }
+allow trillionnium_owner_open_phone_worker zygote_exec file { getattr open read map execute execute_no_trans }
+
+# Exact serialno property and Binder driver/public lookup.
+allow trillionnium_owner_open_phone_worker serialno_prop file { getattr open read map }
+allow trillionnium_owner_open_phone_worker binder_device chr_file { getattr open read write ioctl map }
+allow trillionnium_owner_open_phone_worker servicemanager binder { call transfer }
+allow servicemanager trillionnium_owner_open_phone_worker dir search
+allow servicemanager trillionnium_owner_open_phone_worker file { getattr open read }
+allow servicemanager trillionnium_owner_open_phone_worker process getattr
+
+# Literal named services used by current typed guards/actions.
+allow trillionnium_owner_open_phone_worker { activity_service window_service display_service input_service accessibility_service surfaceflinger_service } service_manager find
+
+# Framework requests, UiAutomation callbacks and returned framework descriptors.
+allow trillionnium_owner_open_phone_worker system_server binder { call transfer }
+allow system_server trillionnium_owner_open_phone_worker binder { call transfer }
+allow trillionnium_owner_open_phone_worker system_server fd use
+# dumpsys/cmd return output through inherited parent-created pipe descriptors.
+allow system_server trillionnium_owner_open_phone_executor fd use
+allow system_server trillionnium_owner_open_phone_executor fifo_file { getattr write }
+
+# Screenshot API/callback; buffer/HAL/ART needs are NOT implicitly granted here.
+allow trillionnium_owner_open_phone_worker surfaceflinger binder { call transfer }
+allow surfaceflinger trillionnium_owner_open_phone_worker binder { call transfer }
+allow trillionnium_owner_open_phone_worker surfaceflinger fd use
+allow surfaceflinger trillionnium_owner_open_phone_executor fd use
+allow surfaceflinger trillionnium_owner_open_phone_executor fifo_file { getattr write }
+
+# Actual four approved App process types from stable read8478ca...f795.
+# TE rules distinguish types, not package or UID; other Apps sharing these exact
+# types are also within this grant. Typed package/focus guards still apply.
+# No appdomain wildcard and no newly relabelled App.
+allow { untrusted_app moto_app system_app trillionnium_owner_open_client } trillionnium_owner_open_phone_worker binder { call transfer }

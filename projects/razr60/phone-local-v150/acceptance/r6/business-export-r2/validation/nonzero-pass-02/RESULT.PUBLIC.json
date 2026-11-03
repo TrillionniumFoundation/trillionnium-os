@@ -1,0 +1,40 @@
+{
+  "original_artifact_relative_path": "acceptance/r6/business-export-r2/validation/nonzero-pass-02/RESULT.json",
+  "original_artifact_sha256": "fe47fc6edc83a66ea971bb169590fb22c070604c5497cfe3fae837ed51b66a13",
+  "original_bytes": 1043,
+  "projected_document": {
+    "actual_synthetic_child_rc": 7,
+    "actual_task_nonce_generation": 0,
+    "business_qualification_credit": 0,
+    "capture_terminal_read_from_original_wrapper": true,
+    "collector_nonzero_final_flags": {
+      "complete_business_success": false,
+      "proof_complete": false,
+      "task_classification": "unconfirmed_collector_process"
+    },
+    "model_requests": 0,
+    "old_r1_broad_checks_repeated": false,
+    "original_raw_PASS_flags_preserved": {
+      "complete_business_success": true,
+      "proof_complete": true,
+      "task_classification": "complete_success"
+    },
+    "phone_operations": 0,
+    "recorded_capture_nonzero_final_flags": {
+      "complete_business_success": false,
+      "proof_complete": false,
+      "task_classification": "unconfirmed_original_capture"
+    },
+    "scenario": "actual nonzero host child with raw PASS must never qualify",
+    "scenario_count": 1,
+    "schema": "hepta.business-process-terminal-fence.host-negative.v150.r6.2",
+    "source_sha256": "82b9691bbbb3c1ad648dc858cfa2d3dc27542a4bec522ba5762fe8ac27784072",
+    "state": "PASS"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

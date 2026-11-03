@@ -1,0 +1,50 @@
+{
+  "original_artifact_relative_path": "client/r6/CLIENT-SEAL-v150-r6.json",
+  "original_artifact_sha256": "c4b06581319f8fef8319c7ee46cba8898fe9c81096c113addc45c3abfc621866",
+  "original_bytes": 1458,
+  "projected_document": {
+    "created_utc": "2026-11-03T17:35:57.896558+00:00",
+    "endpoint": "hepta_phone_executor_v150_r6",
+    "execute_caller_context": "u:r:trillionnium_owner_open_bootstrap:s0",
+    "files": [
+      {
+        "bytes": 17390,
+        "path": "tool_client_r6.py",
+        "sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f"
+      },
+      {
+        "bytes": 11484,
+        "path": "test_client_r6.py",
+        "sha256": "47d73a417a67a69fdcc3f3db4ac9d49b7f112111e74280c0866689e2aa5e9597"
+      },
+      {
+        "bytes": 2934,
+        "path": "HOST-CHECKS-01.json",
+        "sha256": "b6b5f1c2d81bbde710f1c2fc935f3d2dc370e84a0257a1538a3f36daafe5a653"
+      },
+      {
+        "bytes": 3989,
+        "path": "README.md",
+        "sha256": "69600f6fbd431bbf923a88b286d577332a8b009f435c7429b689c5d390bb5156"
+      }
+    ],
+    "host_checks_passed": 61,
+    "independent_focused_review": "android_runtime_build final source500e2703 PASS; no phone/test expansion",
+    "model_calls": 0,
+    "old_claims_modified": false,
+    "old_client_modified": false,
+    "parent_client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+    "phone_calls": 0,
+    "schema": "hepta.client-source-seal.v150.r6",
+    "server_context": "u:r:trillionnium_owner_open_phone_executor:s0",
+    "status": "SEALED_HOST_VALIDATED_NOT_PHYSICALLY_QUALIFIED",
+    "target": "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client_r6.py",
+    "worker_context": "u:r:trillionnium_owner_open_phone_worker:s0"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

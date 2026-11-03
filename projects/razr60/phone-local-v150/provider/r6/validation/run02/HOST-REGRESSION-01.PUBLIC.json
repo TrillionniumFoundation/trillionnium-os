@@ -1,0 +1,78 @@
+{
+  "original_artifact_relative_path": "provider/r6/validation/run02/HOST-REGRESSION-01.json",
+  "original_artifact_sha256": "13c8b8171c341f4e03b0e14b7a9fcef76b2115f35f17674fecebdc670e1eda9e",
+  "original_bytes": 1841,
+  "projected_document": {
+    "candidate_r6_source_sha256": "00adea791c00eaac52f65716cb158ee73f38bdded96f1718578ec92f5091d32d",
+    "checks": [
+      {
+        "detail": null,
+        "name": "original_r5_exact_bytes_reproduce_original_type_error_at_line167",
+        "passed": true
+      },
+      {
+        "detail": "Host pure validation only; original native task remains provider_failed.",
+        "name": "r6_parses_actual_plain_string_then_passes_unchanged_strict_http_nonce_cleanup_checks",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "one_text_part_compatibility_keeps_exact_owner",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "changed-owner-byte_rejected",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "non_text_content_rejected",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "extra_content_part_rejected",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "two_http_attempts_rejected",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "unjoined_worker_rejected",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "slot_not_idle_rejected",
+        "passed": true
+      },
+      {
+        "detail": null,
+        "name": "wrong_summary_nonce_rejected",
+        "passed": true
+      }
+    ],
+    "failed": 0,
+    "host_reparse_is_not_retroactive_phone_success": true,
+    "model_requests": 0,
+    "new_nonce": false,
+    "old_phone_task_status": "provider_failed",
+    "old_request_or_action_redispatched": false,
+    "original_r5_source_sha256": "9f2d87bc567c7b169d0d4d07635ab233ccef6da45ba8f547c8af7751f3686c44",
+    "passed": 10,
+    "phone_calls": 0,
+    "schema": "hepta.provider-r6.health-owner-regression.v150.1",
+    "task_submissions": 0
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "private_deployment_metadata_removed"
+  ]
+}

@@ -1,0 +1,47 @@
+--- business-r6-original-export-r2/capture_business_originals.py
++++ business-r6-r2-original-export-r1/capture_business_originals.py
+@@ -10,7 +10,7 @@
+ EVIDENCE=STATE/'evidence'
+ NATIVE=Path('/var/lib/trillionnium/owner-open/turn-events.jsonl.segments')
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+-SEAL_SHA='26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3'
++SEAL_SHA='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
+ CONFIG_SHA='0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'
+ SERVICE_SHA='ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2'
+ CLIENT_SHA='500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f'
+@@ -229,12 +229,12 @@
+  need(re.fullmatch('[a-z0-9][a-z0-9-]{5,80}',bound['sender_label']),'sender_label_format')
+  owner=base64.b64decode(bound['request_b64'],validate=True)
+  need(0<len(owner)<=24576 and sha(owner)==wanted and owner.decode().count(nonce)==1,'exact_owner_bytes')
+- root=BASE/'business-original-captures-r6'
++ root=BASE/'business-original-captures-r6-r2'
+  if not root.exists():mkdir_new(root)
+  need(root.resolve(strict=True)==root and stat.S_IMODE(root.stat().st_mode)==0o700
+   and root.stat().st_uid==0,'private_capture_parent')
+  OUT=root/nonce;mkdir_new(OUT);SNAP=OUT/'snapshot';mkdir_new(SNAP)
+- for rel in ('provider-state','client-receipts','executor-r6/actions','sources/provider-r6/source'):
++ for rel in ('provider-state','client-receipts','executor-r6/actions','sources/provider-r6-r2/source'):
+   (SNAP/rel).mkdir(mode=0o700,parents=True,exist_ok=True)
+  R.update(nonce=nonce,case_id=bound['case_id'],owner_request_sha256=wanted,
+   combination_sha256=bound['combination_sha256'],selected_scope=scope,
+@@ -242,17 +242,17 @@
+   snapshot_scope='Stable individual files and final metadata/name checks; not an atomic filesystem snapshot.')
+  save('host-bound-request.txt',owner)
+  save('selected-scope.json',encoded({'scope':scope,'source':'actual original sender and provider acceptance'}))
+- seal_raw=capture(BASE/'provider-r6/SOURCE-SEAL-v150-r6.json','sources/provider-r6/SOURCE-SEAL-v150-r6.json',True,65536)
++ seal_raw=capture(BASE/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json','sources/provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json',True,65536)
+  need(seal_raw is not None and sha(seal_raw)==SEAL_SHA,'actual_source_seal_pin')
+  seal=strict(seal_raw);rows=seal['production_files']
+  need(len(rows)==13,'sealed_production_source_count')
+  for row in rows:
+   rel=safe_relative(row['path'])
+   need(len(rel.parts)==2 and rel.parts[0]=='source' and rel.suffix=='.py','sealed_source_relative_path')
+-  raw=capture(BASE/'provider-r6'/rel,'sources/provider-r6/'+str(rel),True,65536)
++  raw=capture(BASE/'provider-r6-r2'/rel,'sources/provider-r6-r2/'+str(rel),True,65536)
+   need(raw is not None and len(raw)==row['bytes'] and sha(raw)==row['sha256'],'actual_production_source_pin')
+  for rel,p,pin in (
+-  ('sources/local-config-r6.json',BASE/'local-config-r6.json',CONFIG_SHA),
++  ('sources/local-config-r6-r2.json',BASE/'local-config-r6-r2.json',CONFIG_SHA),
+   ('sources/PHONE-SERVICE-INPUTS-v150-r3.json',BASE/'PHONE-SERVICE-INPUTS-v150-r3.json',SERVICE_SHA),
+   ('sources/tool_client_r6.py',BASE/'tool_client_r6.py',CLIENT_SHA)):
+   raw=capture(p,rel,True,65536);need(raw is not None and sha(raw)==pin,'actual_fixed_input_pin')

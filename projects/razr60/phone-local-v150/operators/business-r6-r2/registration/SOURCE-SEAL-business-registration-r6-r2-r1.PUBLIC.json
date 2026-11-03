@@ -1,0 +1,53 @@
+{
+  "original_artifact_relative_path": "operators/business-r6-r2/registration/SOURCE-SEAL-business-registration-r6-r2-r1.json",
+  "original_artifact_sha256": "cd9f06435feb610afac27409ac681b77b850f1c4ca24b4a8a44d3e6093f52695",
+  "original_bytes": 1844,
+  "projected_document": {
+    "actual_new_tasks": 0,
+    "actual_runtime_qualification": "PENDING_ROOT_REAL_HEALTH_AND_SEPARATE_BUSINESS_TERMINALS",
+    "adaptation_result_sha256": "1280b7fed4aed8185bdfd7c7347b47d552cd2fd5e70f5cbec5fdfd5bfbcc6362",
+    "files": [
+      {
+        "bytes": 13591,
+        "path": "prepare_register_business_r6.py",
+        "sha256": "3c8df2507a621715811592ec3cfba7e3c5e3f0bbf1d282438b6ae279688b30ac"
+      },
+      {
+        "bytes": 5722,
+        "path": "prepare_register_business_r6.py.ADAPTATION.diff",
+        "sha256": "6c0b029e1b4c88e0428a9fa169943e406824c0479522e1b687af60d9c0049a22"
+      }
+    ],
+    "fixed19_cases_limits_geometry_unchanged": true,
+    "health_process_fence_test_sha256": "cb5187a259282262cb4cb90b54cd981e086b0b444473affb28ba4f6c9538da7c",
+    "independent_focused_review_sha256": "a2d80be34136ea946660725f2a55bc70975854667746d8dcf581724e5f0b0dfd",
+    "materializer_executed": false,
+    "metadata_job_exit_code": 0,
+    "metadata_job_id": "1a1a39935a4-fc05-b96",
+    "model_calls": 0,
+    "nonce_generated": false,
+    "old_frozen_sources_and_failures_preserved": true,
+    "phone_calls": 0,
+    "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "public_exclusions": [
+      "actual materials and requests",
+      "draft or keys or key digests",
+      "original private native/tool records",
+      "actual output trees",
+      "runtime weights",
+      "full policy binaries"
+    ],
+    "schema": "hepta.r6-r2.host-support-source-seal.v1",
+    "scope": "metadata only; entire_request / one-use / dynamic previous / no Send unchanged",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "source_reverse_bytes_verified": true,
+    "state": "FROZEN_HOST_ONLY_NOT_PHYSICALLY_QUALIFIED"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "private_deployment_metadata_removed"
+  ]
+}

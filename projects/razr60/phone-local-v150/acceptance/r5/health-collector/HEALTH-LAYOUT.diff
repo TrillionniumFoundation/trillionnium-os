@@ -1,0 +1,97 @@
+--- frozen-r4/collect_turn_evidence.py
++++ r5/collect_health_evidence.py
+@@ -19,9 +19,9 @@
+ 
+ from native_journal_audit import SCOPE_FIELDS, strict_loads, verify_records
+ 
+-SEAL = "1ec6e3c3a88d85c3ae8ccbadfddb0b9a7c419f05e3f52748d9d2f4823bc0d94a"
+-CONFIG = "e7202ef55cc9103cf3fb4847e44ff2299cfaf3484c4038b7b5ae22a23e0e146f"
+-SERVICE = "2c0cc3aa7cc2a6fe0b461e5e8ecf37a3f5545ff40a8ca86da43e56de9dcfd784"
++SEAL = "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f"
++CONFIG = "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755"
++SERVICE = "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2"
+ MODEL = "gui-owl-1.5-2b-phone-q4km"
+ MUTATIONS = {"phone.open_app", "phone.tap", "phone.input_text", "phone.return_hepta"}
+ SAFE_STATES = {"completed", "failed", "timed_out", "cancelled", "output_limit_exceeded"}
+@@ -314,30 +314,46 @@
+         row["unresolved_effect"]=False
+     return row
+ 
+-def inspect_rounds(snapshot,run,original_run,exact_request):
++R5_HEALTH_SOURCE_SEAL = "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f"
++R5_HEALTH_POLICY = 'Perform this one-use no-action health check. Return one JSON object:\nkind="turn.complete", call_id="", tool="none", command="", argv=[], task_status="completed".\nSet summary to exactly the nonce requested in the owner\'s message. Copy it without any prefix, suffix, explanation, Markdown, or changed character. No tools, app actions, text edits, or additional rounds are allowed.'
++
++def prompt_layout(body,exact_request,health_case=False):
++    """Read exact messages; never reinterpret a normal request as a health check."""
++    if isinstance(body.get("messages"),list) and len(body["messages"]) == 2:
++        require(health_case and SEAL == R5_HEALTH_SOURCE_SEAL,
++                "two-message layout requires selected frozen r5 HEALTH case")
++        require(body["messages"] == [
++                    {"role":"system","content":R5_HEALTH_POLICY},
++                    {"role":"user","content":exact_request.decode("utf-8",errors="strict")}],
++                "r5 minimal health policy or exact owner bytes differ")
++        return "r5_health_exact_owner_only"
++    if isinstance(body["messages"][1]["content"],str):
++        projected = strict_loads(body["messages"][1]["content"])
++        owner = body["messages"][-1]
++        require(len(body["messages"])==3 and owner.get("role")=="user"
++                and owner["content"][0].get("type")=="text"
++                and owner["content"][0]["text"].encode("utf-8")==exact_request
++                and projected.get("owner_request_utf8_sha256")==sha(exact_request)
++                and not any(row.get("role")=="user" for row in projected["transcript"]),
++                "r2 exact owner text/hash/layout binding differs")
++        layout = "r2_explicit_owner_last"
++    else:
++        projected = strict_loads(body["messages"][1]["content"][0]["text"])
++        user_rows = [row for row in projected["transcript"] if row.get("role")=="user"]
++        require(len(user_rows)==1 and isinstance(user_rows[0].get("content"),str)
++                and user_rows[0]["content"].encode("utf-8")==exact_request,
++                "local model did not receive the exact original user input")
++        layout = "r1_owner_in_context_transcript"
++    return layout
++
++def inspect_rounds(snapshot,run,original_run,exact_request,health_case=False):
+     output = []
+     for path in sorted(run.glob("local-*.request.json")):
+         match = re.fullmatch(r"local-([0-9]{2})\.request\.json",path.name)
+         require(match is not None,"unexpected model round filename")
+         number, prefix = int(match[1]),path.name.removesuffix(".request.json")
+         body = snapshot.json(path)
+-        if isinstance(body["messages"][1]["content"],str):
+-            projected = strict_loads(body["messages"][1]["content"])
+-            owner = body["messages"][-1]
+-            require(len(body["messages"])==3 and owner.get("role")=="user"
+-                    and owner["content"][0].get("type")=="text"
+-                    and owner["content"][0]["text"].encode("utf-8")==exact_request
+-                    and projected.get("owner_request_utf8_sha256")==sha(exact_request)
+-                    and not any(row.get("role")=="user" for row in projected["transcript"]),
+-                    "r2 exact owner text/hash/layout binding differs")
+-            layout = "r2_explicit_owner_last"
+-        else:
+-            projected = strict_loads(body["messages"][1]["content"][0]["text"])
+-            user_rows = [row for row in projected["transcript"] if row.get("role")=="user"]
+-            require(len(user_rows)==1 and isinstance(user_rows[0].get("content"),str)
+-                    and user_rows[0]["content"].encode("utf-8")==exact_request,
+-                    "local model did not receive the exact original user input")
+-            layout = "r1_owner_in_context_transcript"
++        layout = prompt_layout(body,exact_request,health_case)
+         images = snapshot.json(run/(prefix+".images.json"))
+         receipt = snapshot.json(run/(prefix+".http-receipt.json"),required=False)
+         response = snapshot.read(run/(prefix+".http-response.json"),required=False)
+@@ -456,6 +472,7 @@
+     parser.add_argument("--out",type=Path,required=True)
+     parser.add_argument("--max-total-mib",type=int,default=512)
+     args=parser.parse_args()
++    require(args.case_id=="HEALTH","this r5 layout revision is qualified for HEALTH evidence only")
+     require(1<=args.max_total_mib<=2048,"evidence budget out of range")
+     output=args.out.absolute()
+     require(output.parent.resolve()==output.parent,"output parent must be canonical")
+@@ -575,7 +592,7 @@
+             not row.get("unresolved_effect",True) for row in tool_rows)
+         fingerprints=[row["effect_fingerprint"] for row in tool_rows if row.get("effect_fingerprint")]
+         require(len(fingerprints)==len(set(fingerprints)),"same bound effect dispatched twice in one turn")
+-        report["model_rounds"]=inspect_rounds(snapshot,run,original_run,request)
++        report["model_rounds"]=inspect_rounds(snapshot,run,original_run,request,args.case_id=="HEALTH")
+         report["checks"]["all_model_rounds_real_terminal_and_cleanup"]=bool(report["model_rounds"]) and all(
+             row["real_terminal_and_cleanup"] for row in report["model_rounds"])
+         model_images={value for row in report["model_rounds"] for value in row["model_image_sha256"]}

@@ -1,0 +1,86 @@
+{
+  "original_artifact_relative_path": "executor/r6/provenance/VENDOR-MANIFEST.json",
+  "original_artifact_sha256": "a912d9c0a683e300d4c6b6dfadeaffcfb5ae71df416f723c8b6df27286da9f7b",
+  "original_bytes": 2314,
+  "projected_document": {
+    "files": [
+      {
+        "path": "vendor/hash/CMakeLists.txt",
+        "sha256": "80d1dd6d096d84375b94290ce75e447a8ba5ce2d6664e4cc3104eb1f0ff02919",
+        "size": 1010
+      },
+      {
+        "path": "vendor/hash/hash.cpp",
+        "sha256": "083a5a64f04667a78a03d09ce3e8499defa88f7b0aedace049749c97366d8b47",
+        "size": 581
+      },
+      {
+        "path": "vendor/hash/hash.h",
+        "sha256": "63f7f0f5c1e8f1d98187af2dc37ad938863730fad59bca1f0d0573ad7272b549",
+        "size": 216
+      },
+      {
+        "path": "vendor/hash/rotate-bits/LICENSE.md",
+        "sha256": "ca0b44aec101afb6b46f4c39b23369fa06a64fb9c0add37c2689d702156fee55",
+        "size": 1088
+      },
+      {
+        "path": "vendor/hash/rotate-bits/rotate-bits.h",
+        "sha256": "4a100f5e9b6bdc3e780bec38caeaec7f0edc87cf06b69b5bc1f87c2c867bdf23",
+        "size": 1017
+      },
+      {
+        "path": "vendor/hash/sha1/sha1.c",
+        "sha256": "6de78afb7c2e54ccbd742c0307015db4dceaa64d85533709f99de05074d639e4",
+        "size": 7676
+      },
+      {
+        "path": "vendor/hash/sha1/sha1.h",
+        "sha256": "aded220220587c5a409dfa04f4bc2e760bd5bc81ac74af830aceb5bde7bc43e6",
+        "size": 689
+      },
+      {
+        "path": "vendor/hash/sha256/LICENSE",
+        "sha256": "b81d0022ca6367918c67b57e9647d3513ee58809fd4b0ef0b3492f1356bced25",
+        "size": 41
+      },
+      {
+        "path": "vendor/hash/sha256/sha256.c",
+        "sha256": "ba7a8ea69ad125385db28ef17e77be4a09dfdc30bb9532c30b259baaf670129c",
+        "size": 5282
+      },
+      {
+        "path": "vendor/hash/sha256/sha256.h",
+        "sha256": "6086b0330eafe9ddef74072738290bc268b2dcccae16bc6d6cde84dc7585ca07",
+        "size": 549
+      },
+      {
+        "path": "vendor/hash/xxhash/LICENSE",
+        "sha256": "6ffedbc0f7878612d2b23589f1ff2ab15633e1df7963a5d9fc750ec5500c7e7a",
+        "size": 1389
+      },
+      {
+        "path": "vendor/hash/xxhash/xxhash.c",
+        "sha256": "5c3591fe6e6c86a619eb26760e9520e37a6fd5152882ab5ad93f912e2a855966",
+        "size": 1855
+      },
+      {
+        "path": "vendor/hash/xxhash/xxhash.h",
+        "sha256": "1d5a18c925f71a9c2d8424742df47492f846f9890e3e8c55d201e4729d9e3d6d",
+        "size": 264750
+      },
+      {
+        "path": "vendor/json.hpp",
+        "sha256": "08f19bbcc66ff3082f5caf58867b1232987dba98d82e2b29d870722fce42776b",
+        "size": 987455
+      }
+    ],
+    "upstream_commit": "8642541b255bfb5dc39cd351a178be09013a55d6"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

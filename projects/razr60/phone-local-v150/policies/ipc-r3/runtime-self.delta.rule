@@ -1,0 +1,10 @@
+# R3 runtime-self delta only. Apply only after separate review and actual parser validation.
+# Parent startup failed before bind/intent on the reviewed IPC r2 policy.
+# Do not widen domain attributes or grant access to any other process type.
+# Read-only same-domain proc links support Bionic loader and realpath(fd).
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor lnk_file { getattr read }
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker lnk_file { getattr read }
+# Bionic inherited-scheduler thread initialization calls sched_getscheduler(0).
+# This allows querying scheduling state, not setsched or sys_nice.
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor process getsched
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker process getsched

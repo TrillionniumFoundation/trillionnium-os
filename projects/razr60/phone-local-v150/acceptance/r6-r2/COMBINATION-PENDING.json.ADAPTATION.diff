@@ -1,0 +1,13 @@
+--- acceptance-r6/COMBINATION-PENDING.json
++++ acceptance-r6-r2/COMBINATION-PENDING.json
+@@ -1,8 +1,8 @@
+ {
+   "schema": "hepta.acceptance-combination.v150.r6.1",
+-  "release": "v150-r6",
++  "release": "v150-r6-r2",
+   "state": "pending",
+-  "provider_source_seal_sha256": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3",
++  "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+   "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+   "provider_config_sha256": "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755",
+   "model_route": "phone_local_cpu",

@@ -1,0 +1,69 @@
+# CANDIDATE ONLY. Magisk 31.1 parser statements, not platform TE.
+# Do not apply before independent review and offline actual-parser validation.
+# Only new domains/labels are introduced; no bootstrap -> magisk allow.
+type trillionnium_owner_open_phone_executor domain
+type trillionnium_owner_open_phone_worker domain
+type trillionnium_owner_open_phone_executor_exec { file_type exec_type }
+type trillionnium_owner_open_phone_worker_exec { file_type exec_type }
+type trillionnium_owner_open_phone_executor_data_file { file_type data_file_type }
+type trillionnium_owner_open_phone_worker_data_file { file_type data_file_type }
+enforce trillionnium_owner_open_phone_executor
+enforce trillionnium_owner_open_phone_worker
+
+# entry-transitions: New labelled entries only; /data is nosuid, NNP must remain 0. Existing services keep their domains.
+type_transition magisk trillionnium_owner_open_phone_executor_exec process trillionnium_owner_open_phone_executor
+allow magisk trillionnium_owner_open_phone_executor_exec file { getattr open read execute map }
+allow magisk trillionnium_owner_open_phone_executor process transition
+allow magisk trillionnium_owner_open_phone_executor process2 nosuid_transition
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_exec file { entrypoint getattr open read execute map }
+allow trillionnium_owner_open_phone_executor magisk process { sigchld siginh rlimitinh }
+type_transition trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker_exec process trillionnium_owner_open_phone_worker
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker_exec file { getattr open read execute map }
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker process transition
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker process2 nosuid_transition
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker_exec file { entrypoint getattr open read execute map }
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_executor process { sigchld siginh rlimitinh }
+
+# native-abstract-ipc: Exact bootstrap -> new executor only. SO_PEERCRED+SO_PEERSEC gates execute; Magisk root is read-only at application layer.
+allow trillionnium_owner_open_bootstrap trillionnium_owner_open_phone_executor unix_stream_socket connectto
+allow magisk trillionnium_owner_open_phone_executor unix_stream_socket connectto
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor unix_stream_socket { create bind listen accept connect read write getattr getopt setopt shutdown }
+
+# parent-lifecycle: One forked owned worker group, credential drop before worker exec, bounded signal/reap. No sys_admin, mount, ptrace or setcurrent.
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor process { fork getpgid getsession setpgid sigchld signal signull sigkill }
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor capability { setuid setgid kill }
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_worker process { getpgid getsession signull signal sigkill }
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor fd use
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor fifo_file { create read write getattr open ioctl }
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor file { getattr open read }
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor dir { getattr search open read }
+allow trillionnium_owner_open_phone_executor selinuxfs file { getattr open read }
+allow trillionnium_owner_open_phone_executor null_device chr_file { getattr open read write }
+
+# parent-private-journal: New root-owned 0700 journal type. Worker gets no permissions for this type; old journal is not relabelled or modified. File unlink permission is needed for atomic rename over the previous receipt; source exposes no journal deletion operation.
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file dir { create getattr open read search write add_name remove_name setattr }
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file file { create getattr open read write append rename unlink setattr lock }
+type_transition trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file dir trillionnium_owner_open_phone_executor_data_file
+type_transition trillionnium_owner_open_phone_executor trillionnium_owner_open_phone_executor_data_file file trillionnium_owner_open_phone_executor_data_file
+allow trillionnium_owner_open_phone_executor trillionnium_owner_open_state_file dir { getattr search open read }
+
+# worker-entry-and-pipes: Worker inherits only its owned pipe descriptors; context/UID/GID/groups/PID/PGID/SID verified before S. Fixed shell exec stays in worker domain.
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker process { fork getpgid getsession setpgid sigchld signal signull sigkill }
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_executor fd use
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_executor fifo_file { read write getattr }
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker fifo_file { create read write getattr open ioctl }
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker fd use
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker file { getattr open read }
+allow trillionnium_owner_open_phone_worker trillionnium_owner_open_phone_worker dir { getattr search open read }
+allow trillionnium_owner_open_phone_worker shell_exec file { getattr open read execute execute_no_trans map }
+allow trillionnium_owner_open_phone_worker null_device chr_file { getattr open read write }
+allow trillionnium_owner_open_phone_worker selinuxfs file { getattr open read }
+
+# entry-path-traversal: Traverse existing /data/local/tmp parents only, no shared file reads/writes. New directories and entry labels are supplied separately.
+allow trillionnium_owner_open_phone_executor shell_data_file dir { getattr search }
+allow trillionnium_owner_open_phone_worker shell_data_file dir { getattr search }
+allow trillionnium_owner_open_phone_executor system_data_root_file dir { getattr search }
+allow trillionnium_owner_open_phone_worker system_data_root_file dir { getattr search }
+allow trillionnium_owner_open_phone_executor system_file dir { getattr search }
+allow trillionnium_owner_open_phone_worker system_file dir { getattr search }
+

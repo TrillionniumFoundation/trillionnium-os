@@ -1,0 +1,38 @@
+--- acceptance-r6/fixed-acceptance-set-r6.json
++++ acceptance-r6-r2/fixed-acceptance-set-r6.json
+@@ -10,7 +10,7 @@
+   "automatic_schedule": false,
+   "backend": "phone_local_http",
+   "base_protocol_sha256": "07433e17cb71592a011a54c787ac61947b727ec5ae6f507bca22f8fa6dfb0736",
+-  "candidate_manifest_sha256": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3",
++  "candidate_manifest_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+   "candidate_source_frozen": true,
+   "case_count": 19,
+   "cases": [
+@@ -830,7 +830,7 @@
+     }
+   ],
+   "created_utc": "2026-11-03T16:02:35.579008+00:00",
+-  "current_global_blocker": "Full r6 production combination awaits its actual new module/retirement binding. New bounded r6 health must reach genuine complete native/provider/model terminal before business. Original r5-r3 health01 remains failed; its model nonce was correct but provider terminal failed. Historical combinations are never merged.",
++  "current_global_blocker": "The r6-r1 startup failed before requests because its entry contained a stale health-source pin; it has zero health samples. The new r6-r2 full production combination and a fresh bounded health terminal are required before business. Original r5-r3 health01 remains failed. Historical combinations are never merged.",
+   "executed_cases": 0,
+   "freshness_policy": {
+     "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+@@ -901,7 +901,7 @@
+     ]
+   },
+   "schema": "hepta.fixed-acceptance-set.v150.1",
+-  "set_id": "stock16-phone-local-fixed-set-r6",
++  "set_id": "stock16-phone-local-fixed-set-r6-r2",
+   "unicode_receipt_formula": {
+     "escape_meaning": "\\n in recipe denotes one literal LF in the expected value; never normalize to space",
+     "public_readback_view": "org.trillionnium.hepta.controlprobe:id/unicode_readback",
+@@ -913,7 +913,7 @@
+     "schema": "hepta.fixed19-metadata-binding.v150.r6.1",
+     "original_protocol_sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0",
+     "original_candidate_manifest_sha256": "700e5fb07e5ad250f4df5bd0452660b03dd0138b89718343e10e895c4db50d35",
+-    "provider_source_seal_sha256": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3",
++    "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+     "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+     "provider_config_sha256": "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755",
+     "case_objects_limits_geometry_and_pass_conditions_unchanged": true,

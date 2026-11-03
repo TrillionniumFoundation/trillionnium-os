@@ -1,0 +1,96 @@
+{
+  "original_artifact_relative_path": "operators/component-probe/r3/validation-01/RESULT.json",
+  "original_artifact_sha256": "22fa657a37b8a1bce2397e26e5fe1e3492f70b38501e571bc9e709d326debcfd",
+  "original_bytes": 1761,
+  "projected_document": {
+    "actual_native_admissions": 0,
+    "checks": [
+      {
+        "name": "one-fixed-call-completes-only-after-native-and-original-receipt",
+        "passed": true
+      },
+      {
+        "name": "fresh-call-or-turn-id-cannot-bypass-consumed-nonce",
+        "passed": true
+      },
+      {
+        "name": "owner-byte-mismatch-dispatches-zero",
+        "passed": true
+      },
+      {
+        "name": "buffered-cancel-retains-claim-with-zero-dispatch",
+        "passed": true
+      },
+      {
+        "name": "cancel-after-result-does-not-complete-or-redispatch",
+        "passed": true
+      },
+      {
+        "name": "disconnect-after-dispatch-inspects-only-original",
+        "passed": true
+      },
+      {
+        "name": "native-output-mismatch-fails-even-with-good-receipt",
+        "passed": true
+      },
+      {
+        "name": "original-receipt-rejects-execution_uid",
+        "passed": true
+      },
+      {
+        "name": "original-receipt-rejects-worker_domain_verified",
+        "passed": true
+      },
+      {
+        "name": "original-receipt-rejects-process_group_absent",
+        "passed": true
+      },
+      {
+        "name": "original-receipt-rejects-server_instance",
+        "passed": true
+      },
+      {
+        "name": "original-receipt-rejects-dispatch_count",
+        "passed": true
+      },
+      {
+        "name": "original-receipt-rejects-waitpid_identity_lost",
+        "passed": true
+      },
+      {
+        "name": "fixed-printf-generator-rejects-injection-and-malformed-nonce",
+        "passed": true
+      },
+      {
+        "name": "duplicate-json-member-rejected",
+        "passed": true
+      },
+      {
+        "name": "expired-contract-dispatches-zero",
+        "passed": true
+      },
+      {
+        "name": "non-null-native-terminal-error-rejected",
+        "passed": true
+      },
+      {
+        "name": "ready-owner-identity-and-same-clock-window-no-extension",
+        "passed": true
+      }
+    ],
+    "model_requests": 0,
+    "passed": 18,
+    "phone_operations": 0,
+    "schema": "hepta.native-component-probe.host-fixtures.v1",
+    "scope": "Synthetic host protocol frames and receipts. No actual native core, phone, SELinux transition, model or business qualification.",
+    "source_sha256": "83e867936e6db85e5187a6e8853c40b7bdd9804a27cdd09591c1a8274a950295",
+    "status": "PASS",
+    "test_source_sha256": "f061e67735222d96b9b996c2888e94d9efc901b40a40e9f5c16d5fc2f8daaeea"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

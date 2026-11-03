@@ -1,0 +1,51 @@
+{
+  "original_artifact_relative_path": "executor/r6/provenance/TOOLCHAIN-INVENTORY.json",
+  "original_artifact_sha256": "e137304ba05de58fc66f1bb906c6d7bfb7357cbcd618699e502aaccc7d52f679",
+  "original_bytes": 2180,
+  "projected_document": {
+    "clang": {
+      "returncode": 0,
+      "stderr": "",
+      "version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: x86_64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin\n"
+    },
+    "cmake": {
+      "returncode": 0,
+      "stderr": "",
+      "version": "cmake version 4.3.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n"
+    },
+    "inputs": [
+      {
+        "bytes": 10344,
+        "realpath": "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/build/cmake/android.toolchain.cmake",
+        "relative_path": "build/cmake/android.toolchain.cmake",
+        "sha256": "dbad92d9dcfea0d32b7c5e5f82f5072d878ded5d46a5d3f1f581ea108ca7fe89"
+      },
+      {
+        "bytes": 172733264,
+        "realpath": "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+        "relative_path": "toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+        "sha256": "ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6"
+      },
+      {
+        "bytes": 15182348,
+        "realpath": "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_static.a",
+        "relative_path": "toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_static.a",
+        "sha256": "d184e73abfa4c71fe1d1839af59994416198b2bd06f06f385d27ad0a597128f0"
+      }
+    ],
+    "make": {
+      "returncode": 0,
+      "stderr": "",
+      "version": "GNU Make 3.81\nCopyright (C) 2006  Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.\nThere is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\n\nThis program built for i386-apple-darwin11.3.0\n"
+    },
+    "ndk_path": "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358",
+    "source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

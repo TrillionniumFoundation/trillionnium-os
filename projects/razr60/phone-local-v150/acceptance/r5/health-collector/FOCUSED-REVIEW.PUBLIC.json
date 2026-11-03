@@ -1,0 +1,29 @@
+{
+  "original_artifact_relative_path": "acceptance/r5/health-collector/FOCUSED-REVIEW.json",
+  "original_artifact_sha256": "af896c386f99f4dd4c92f6abe51d0de8ca2c0d9d146d02b20903fd8b5294942b",
+  "original_bytes": 783,
+  "projected_document": {
+    "checks": [
+      "HEALTH_POLICY exact match to frozen provider-r5 7e89 source",
+      "Two-message layout admitted only for HEALTH and runtime-selected source seal f368",
+      "Exact system string and original strict UTF8 owner input",
+      "CLI rejects business cases",
+      "Existing HTTP/slot/nonce/native/one-use gates unchanged"
+    ],
+    "diff_sha256": "7898274c42f40aee63ecdf04371fbde19a8cbedbad7754a57e9fd2faca91a3fc",
+    "model_requests": 0,
+    "new_tests_by_reviewer": 0,
+    "phone_calls": 0,
+    "record_type": "Transcribed independent static review",
+    "result": "PASS_NO_BLOCKING_ISSUE",
+    "reviewer": "/root/android_runtime_build",
+    "schema": "hepta.r5-health-collector.focused-review.v1",
+    "source_sha256": "e79b4c01d653bc0ea6d752c6aa9a8541addce936d174c71f4e1eb69819901121"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

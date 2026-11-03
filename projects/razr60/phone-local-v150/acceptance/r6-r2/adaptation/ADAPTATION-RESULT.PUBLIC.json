@@ -1,0 +1,548 @@
+{
+  "original_artifact_relative_path": "acceptance/r6-r2/adaptation/ADAPTATION-RESULT.json",
+  "original_artifact_sha256": "1280b7fed4aed8185bdfd7c7347b47d552cd2fd5e70f5cbec5fdfd5bfbcc6362",
+  "original_bytes": 24183,
+  "projected_document": {
+    "business_process_gates_unchanged": true,
+    "existing_host_candidate_bytes_read_back_before_reuse": true,
+    "files": [
+      {
+        "diff": {
+          "bytes": 2926,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/aggregate_protocol_r6.py.ADAPTATION.diff",
+          "sha256": "b3b5a22e2d66fc307326257239de7445ee076080e299e9ca374f3bd305fa3bc3"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 1,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 1,
+            "new": "\"release\":\"v150-r6-r2\"",
+            "old": "\"release\":\"v150-r6\""
+          },
+          {
+            "count": 1,
+            "new": "stock16-phone-local-fixed-set-r6-r2",
+            "old": "stock16-phone-local-fixed-set-r6"
+          },
+          {
+            "count": 1,
+            "new": "Provider r6-r2 a8bd87b3...",
+            "old": "Provider r6 26eb..."
+          }
+        ],
+        "output": {
+          "bytes": 11961,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/aggregate_protocol_r6.py",
+          "sha256": "bb57668a3145ec206dbfd5df660e485fc9106ea6b00df98a61286f71659b08e9"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/aggregate_protocol_r6.py",
+        "parent_sha256": "71a48142f767799dc935c598abd129f04095276c2ffbce4306895ecf00dc2360",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": null,
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [],
+        "output": {
+          "bytes": 3109,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/materialize_case_r6.py",
+          "sha256": "6ec2e23ed87e690e520dd1ee2b063e4e19b92e65e6a2570d0a666cadea42411d"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/materialize_case_r6.py",
+        "parent_sha256": "6ec2e23ed87e690e520dd1ee2b063e4e19b92e65e6a2570d0a666cadea42411d",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 2650,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/fixed-acceptance-set-r6.json.ADAPTATION.diff",
+          "sha256": "c719411387a813681e448ae04cf9e1578290a148bae4e1df17542217c4e3d152"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 2,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 1,
+            "new": "stock16-phone-local-fixed-set-r6-r2",
+            "old": "stock16-phone-local-fixed-set-r6"
+          },
+          {
+            "count": 1,
+            "new": "The r6-r1 startup failed before requests because its entry contained a stale health-source pin; it has zero health samples. The new r6-r2 full production combination and a fresh bounded health terminal are required before business. Original r5-r3 health01 remains failed. Historical combinations are never merged.",
+            "old": "Full r6 production combination awaits its actual new module/retirement binding. New bounded r6 health must reach genuine complete native/provider/model terminal before business. Original r5-r3 health01 remains failed; its model nonce was correct but provider terminal failed. Historical combinations are never merged."
+          }
+        ],
+        "output": {
+          "bytes": 38286,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/fixed-acceptance-set-r6.json",
+          "sha256": "4cecd310c93c99db1d71d5c93afafb514d54c1cb5d51bdec22730102d4a4cc57"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/fixed-acceptance-set-r6.json",
+        "parent_sha256": "c7b7779f9b601fc6bc1e68bbfa876b46c2a571a8bf6a7ae35b8c7acd44370bbd",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": null,
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [],
+        "output": {
+          "bytes": 13217,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/references/aggregate_protocol_r4.py",
+          "sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/references/aggregate_protocol_r4.py",
+        "parent_sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": null,
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [],
+        "output": {
+          "bytes": 9783,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/references/materialize_case_r4.py",
+          "sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/references/materialize_case_r4.py",
+        "parent_sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": null,
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [],
+        "output": {
+          "bytes": 37318,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/references/fixed-acceptance-set-r4.original.json",
+          "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/references/fixed-acceptance-set-r4.original.json",
+        "parent_sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 673,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/COMBINATION-PENDING.json.ADAPTATION.diff",
+          "sha256": "fe95d04c681ba87591e433dc0e5e4ef03ba0f58030e776701b752899721d4094"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 1,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 1,
+            "new": "\"release\": \"v150-r6-r2\"",
+            "old": "\"release\": \"v150-r6\""
+          }
+        ],
+        "output": {
+          "bytes": 662,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/COMBINATION-PENDING.json",
+          "sha256": "d6d46c81c57d24bd2737aded13605af508914daf4d8244c78389b3437de140e4"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/COMBINATION-PENDING.json",
+        "parent_sha256": "23a557c854b35ed56a0696d417da1ff69891ac1eed1b76c77cf7324108a05a4f",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 1289,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/collector-r6-r2/collect_health_evidence.py.ADAPTATION.diff",
+          "sha256": "acd38042ef2daff7cc12f4aecf8ee677f036e568654b90786e3d1dee5212e96f"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 2,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          }
+        ],
+        "output": {
+          "bytes": 47357,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/collector-r6-r2/collect_health_evidence.py",
+          "sha256": "50c901e87563a8bb04260b2e5e86a2d765cf3a83d9dc01330267e998caa05865"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/collector-r6/collect_health_evidence.py",
+        "parent_sha256": "12d656a02dfaf94437aa902bec87c03d056284ee402b14a5f3d3f72823651c7e",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": null,
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [],
+        "output": {
+          "bytes": 6701,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/collector-r6-r2/native_journal_audit.py",
+          "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/collector-r6/native_journal_audit.py",
+        "parent_sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": null,
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [],
+        "output": {
+          "bytes": 5096,
+          "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/collector-r6-r2/business_fact_recheck.py",
+          "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/collector-r6/business_fact_recheck.py",
+        "parent_sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 1913,
+          "path": "/operator-workspace/razr60/phone-local-v150/health-r6-r2-original-export-r1/capture_health_originals.py.ADAPTATION.diff",
+          "sha256": "6533a73bf454aa4f8e349544aad6106483ebd010b8c0d3f651e7fc65beeb0d77"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 1,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 2,
+            "new": "provider-r6-r2/",
+            "old": "provider-r6/"
+          },
+          {
+            "count": 2,
+            "new": "SOURCE-SEAL-v150-r6-r2.json",
+            "old": "SOURCE-SEAL-v150-r6.json"
+          },
+          {
+            "count": 2,
+            "new": "local-config-r6-r2.json",
+            "old": "local-config-r6.json"
+          },
+          {
+            "count": 1,
+            "new": "root-health-r6-r2-01",
+            "old": "root-health-r6-01"
+          }
+        ],
+        "output": {
+          "bytes": 14109,
+          "path": "/operator-workspace/razr60/phone-local-v150/health-r6-r2-original-export-r1/capture_health_originals.py",
+          "sha256": "5d01832872160e815eb470180f7bcb9efc75fa602f8a1a80cc9d9ac8d679f32b"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/capture_health_originals.py",
+        "parent_sha256": "27fa9bf2e3404d3ca7bb30becc191fdce427541a967c6813fdcab9a1aac6fac2",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 9274,
+          "path": "/operator-workspace/razr60/phone-local-v150/health-r6-r2-original-export-r1/export_health_r6_once.py.ADAPTATION.diff",
+          "sha256": "1159f3a19ae1aeaf4cdd19f9ec2a767acd73970fce2b885005b60514b5099023"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 1,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 3,
+            "new": "provider-r6-r2/",
+            "old": "provider-r6/"
+          },
+          {
+            "count": 1,
+            "new": "SOURCE-SEAL-v150-r6-r2.json",
+            "old": "SOURCE-SEAL-v150-r6.json"
+          },
+          {
+            "count": 1,
+            "new": "health-r6-r2-original-export-r1",
+            "old": "health-r6-original-export-r1"
+          },
+          {
+            "count": 2,
+            "new": "health-r6-r2-01",
+            "old": "health-r6-01"
+          },
+          {
+            "count": 1,
+            "new": "health-r6-r2-originals-01",
+            "old": "health-r6-originals-01"
+          },
+          {
+            "count": 1,
+            "new": "phone-local-r6-r2-health-01",
+            "old": "phone-local-r6-health-01"
+          },
+          {
+            "count": 1,
+            "new": "capture-original-native-r6-r2-health-01",
+            "old": "capture-original-native-r6-health-01"
+          },
+          {
+            "count": 1,
+            "new": "acceptance-r6-r2/collector-r6-r2/",
+            "old": "acceptance-r6/collector-r6/"
+          },
+          {
+            "count": 1,
+            "new": "5d01832872160e815eb470180f7bcb9efc75fa602f8a1a80cc9d9ac8d679f32b",
+            "old": "27fa9bf2e3404d3ca7bb30becc191fdce427541a967c6813fdcab9a1aac6fac2"
+          },
+          {
+            "count": 1,
+            "new": "50c901e87563a8bb04260b2e5e86a2d765cf3a83d9dc01330267e998caa05865",
+            "old": "12d656a02dfaf94437aa902bec87c03d056284ee402b14a5f3d3f72823651c7e"
+          }
+        ],
+        "output": {
+          "bytes": 18992,
+          "path": "/operator-workspace/razr60/phone-local-v150/health-r6-r2-original-export-r1/export_health_r6_once.py",
+          "sha256": "d22ba8bc634bb8fc2c32092e6b821d55fe91ea778d515c63d69d56c07a01d0ae"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/export_health_r6_once.py",
+        "parent_sha256": "746109ee5569eec95c49a04cbf19b95c56933d01096be2728ca4177c9f076d30",
+        "process_guard_substitutions": 7
+      },
+      {
+        "diff": {
+          "bytes": 3374,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-original-export-r1/capture_business_originals.py.ADAPTATION.diff",
+          "sha256": "3d593b62a15923e77c6e91a88d2d4cac05f56342ce3cc57f28ceff4b84e50f34"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 1,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 4,
+            "new": "provider-r6-r2/",
+            "old": "provider-r6/"
+          },
+          {
+            "count": 2,
+            "new": "SOURCE-SEAL-v150-r6-r2.json",
+            "old": "SOURCE-SEAL-v150-r6.json"
+          },
+          {
+            "count": 2,
+            "new": "local-config-r6-r2.json",
+            "old": "local-config-r6.json"
+          },
+          {
+            "count": 1,
+            "new": "BASE/'provider-r6-r2'",
+            "old": "BASE/'provider-r6'"
+          },
+          {
+            "count": 1,
+            "new": "business-original-captures-r6-r2",
+            "old": "business-original-captures-r6"
+          }
+        ],
+        "output": {
+          "bytes": 19568,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-original-export-r1/capture_business_originals.py",
+          "sha256": "d9f4e037ca45ac6d236137639fdb4c9525c8693c4dc4e68f404f79726efeff36"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/business-r6-original-export-r2/capture_business_originals.py",
+        "parent_sha256": "60dfd1a14d52aec458c9b56bf4c33fdc5e6c31f0dda693cfa08f30f57904a5aa",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 539,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-original-export-r1/read_archive_chunk.py.ADAPTATION.diff",
+          "sha256": "c116e9cb45fb5024ffa9dc339f8472223eadbe1a9a1fab0b2d6b342214c66f08"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 1,
+            "new": "business-original-captures-r6-r2",
+            "old": "business-original-captures-r6"
+          }
+        ],
+        "output": {
+          "bytes": 2565,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-original-export-r1/read_archive_chunk.py",
+          "sha256": "a5f5659a3c8f44baf0277f2c44a0b06c73d042854aac88b47807002186103e44"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/business-r6-original-export-r2/read_archive_chunk.py",
+        "parent_sha256": "78b5ccf18164a8162000485873c05e033d4ce533d7f3e67c81768f66642df9c1",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 5463,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-original-export-r1/export_business_once.py.ADAPTATION.diff",
+          "sha256": "53a0c893d6b67ff31b66fcd7854eca3b8c73407bcdbf7df576fc6959c3541540"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 1,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 2,
+            "new": "provider-r6-r2/",
+            "old": "provider-r6/"
+          },
+          {
+            "count": 1,
+            "new": "SOURCE-SEAL-v150-r6-r2.json",
+            "old": "SOURCE-SEAL-v150-r6.json"
+          },
+          {
+            "count": 1,
+            "new": "local-config-r6-r2.json",
+            "old": "local-config-r6.json"
+          },
+          {
+            "count": 1,
+            "new": "business-r6-r2-original-export-r1",
+            "old": "business-r6-original-export-r2"
+          },
+          {
+            "count": 2,
+            "new": "business-original-captures-r6-r2",
+            "old": "business-original-captures-r6"
+          },
+          {
+            "count": 3,
+            "new": "'business-r6-r2-'",
+            "old": "'business-r6-'"
+          },
+          {
+            "count": 1,
+            "new": "d9f4e037ca45ac6d236137639fdb4c9525c8693c4dc4e68f404f79726efeff36",
+            "old": "60dfd1a14d52aec458c9b56bf4c33fdc5e6c31f0dda693cfa08f30f57904a5aa"
+          },
+          {
+            "count": 1,
+            "new": "a5f5659a3c8f44baf0277f2c44a0b06c73d042854aac88b47807002186103e44",
+            "old": "78b5ccf18164a8162000485873c05e033d4ce533d7f3e67c81768f66642df9c1"
+          }
+        ],
+        "output": {
+          "bytes": 27701,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-original-export-r1/export_business_once.py",
+          "sha256": "6f0e91b24f53e01c4ce7f925f0b024172e3feae45b4e4d4e7939bf0fd808d296"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/business-r6-original-export-r2/export_business_once.py",
+        "parent_sha256": "82b9691bbbb3c1ad648dc858cfa2d3dc27542a4bec522ba5762fe8ac27784072",
+        "process_guard_substitutions": 0
+      },
+      {
+        "diff": {
+          "bytes": 5722,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-root-operator-r1/prepare_register_business_r6.py.ADAPTATION.diff",
+          "sha256": "6c0b029e1b4c88e0428a9fa169943e406824c0479522e1b687af60d9c0049a22"
+        },
+        "exact_reverse_bytes_verified": true,
+        "metadata_substitutions": [
+          {
+            "count": 2,
+            "new": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+            "old": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+          },
+          {
+            "count": 4,
+            "new": "provider-r6-r2/",
+            "old": "provider-r6/"
+          },
+          {
+            "count": 2,
+            "new": "SOURCE-SEAL-v150-r6-r2.json",
+            "old": "SOURCE-SEAL-v150-r6.json"
+          },
+          {
+            "count": 1,
+            "new": "local-config-r6-r2.json",
+            "old": "local-config-r6.json"
+          },
+          {
+            "count": 1,
+            "new": "business-r6-r2-root-operator-r1",
+            "old": "business-r6-root-operator-r1"
+          },
+          {
+            "count": 3,
+            "new": "acceptance-r6-r2/",
+            "old": "acceptance-r6/"
+          },
+          {
+            "count": 3,
+            "new": "+'-r6-r2-01'",
+            "old": "+'-r6-01'"
+          },
+          {
+            "count": 1,
+            "new": "bb57668a3145ec206dbfd5df660e485fc9106ea6b00df98a61286f71659b08e9",
+            "old": "71a48142f767799dc935c598abd129f04095276c2ffbce4306895ecf00dc2360"
+          }
+        ],
+        "output": {
+          "bytes": 13591,
+          "path": "/operator-workspace/razr60/phone-local-v150/business-r6-r2-root-operator-r1/prepare_register_business_r6.py",
+          "sha256": "3c8df2507a621715811592ec3cfba7e3c5e3f0bbf1d282438b6ae279688b30ac"
+        },
+        "parent": "/operator-workspace/razr60/phone-local-v150/business-r6-root-operator-r1/prepare_register_business_r6.py",
+        "parent_sha256": "92c641a136cb137c52e343389956ba3e5e00e67fdc61cde37cb4062456715b59",
+        "process_guard_substitutions": 0
+      }
+    ],
+    "fixed19_cases_limits_geometry_unchanged": true,
+    "fixed19_closed": false,
+    "health_capture_actor_and_phone_zero_required": true,
+    "health_collector_real_process_zero_required": true,
+    "health_raw_report_and_partial_capture_preserved": true,
+    "materializer_bytes_unchanged": true,
+    "materializer_executed": false,
+    "model_calls": 0,
+    "nonce_generated": false,
+    "phone_calls": 0,
+    "physical_samples": 0,
+    "prior_host_build_attempt": {
+      "exit_code": 1,
+      "job_id": "1a1a3988933-fc05-b94",
+      "reason": "host-only missing optional local-config literal in exporter; no phone or materialization"
+    },
+    "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "runtime_source_edits": 0,
+    "schema": "hepta.acceptance-r6-r2.metadata-adaptation.v1",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "source_reverse_bytes_verified": true
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized",
+    "private_deployment_metadata_removed"
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "original_artifact_relative_path": "acceptance/r6/health-export-r1/R6-CAPTURE-BINDING.diff.reverse-check.json",
+  "original_artifact_sha256": "0804b06b68d04d318de3875fcd35bc4af69ef20e4b70f7266a683466022d2554",
+  "original_bytes": 1518,
+  "projected_document": {
+    "exact_reverse_bytes": true,
+    "executed_support": false,
+    "model_requests": 0,
+    "new_nonce": false,
+    "new_request": false,
+    "new_sha256": "27fa9bf2e3404d3ca7bb30becc191fdce427541a967c6813fdcab9a1aac6fac2",
+    "parent_sha256": "377a5c7fceccb1c4790a15bb6f8890bb8d21b5cec842336356695bd3936fd596",
+    "phone_calls": 0,
+    "python312_syntax": true,
+    "replacements": [
+      {
+        "from": "Fixed r5 health",
+        "occurrences": 1,
+        "to": "Fixed r6 health"
+      },
+      {
+        "from": "root-health-r5-01",
+        "occurrences": 1,
+        "to": "root-health-r6-01"
+      },
+      {
+        "from": "SOURCE-SEAL-v150-r5.json",
+        "occurrences": 2,
+        "to": "SOURCE-SEAL-v150-r6.json"
+      },
+      {
+        "from": "provider-r5/",
+        "occurrences": 2,
+        "to": "provider-r6/"
+      },
+      {
+        "from": "local-config-r5.json",
+        "occurrences": 2,
+        "to": "local-config-r6.json"
+      },
+      {
+        "from": "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f",
+        "occurrences": 1,
+        "to": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+      },
+      {
+        "from": "hepta.production-health-original-capture.v150.r5.1",
+        "occurrences": 1,
+        "to": "hepta.production-health-original-capture.v150.r6.1"
+      },
+      {
+        "from": "71afeb80ce246cff7c96e8a710c8d8c24ea9272db799f8d5202c3f5a12235aab",
+        "occurrences": 1,
+        "to": "749126d88d1bf08eddb79104484cdd73f76250117ef2fcefcbb0e29289a34951"
+      }
+    ],
+    "schema": "hepta.exact-source-binding-check.v1"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

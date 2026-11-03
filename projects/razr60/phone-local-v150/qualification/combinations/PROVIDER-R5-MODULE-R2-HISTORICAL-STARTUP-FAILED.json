@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.acceptance-combination.v150.r5.1",
+  "release": "v150-r5",
+  "state": "frozen",
+  "provider_source_seal_sha256": "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f",
+  "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+  "provider_config_sha256": "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755",
+  "model_route": "phone_local_cpu",
+  "cloud_fallback": false,
+  "module_manifest_sha256": "8751b54c6f01724bc943da64dcddbb2dc33a2cc567e4cebb5067f8ce7ed18121",
+  "policy_rules_manifest_sha256": "01eb1a6e50948bfa6f0dff0ebd40357d0f4858c6787f9ea25a68fc8cc2c48fd8",
+  "live_policy_snapshot_sha256": "05756784090a574be850a068576fbded2842f3fa8c1af0aa5b430f875c78a31f",
+  "live_policy_semantic_audit_sha256": "8f5425f59c30635445cbfafbdc9fddbf8c3645dbef83e36c413f5931a21acd80",
+  "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8"
+}

@@ -1,0 +1,512 @@
+{
+  "original_artifact_relative_path": "acceptance/r6-r2/ZERO-SAMPLE-REPORT.json",
+  "original_artifact_sha256": "e45cf9d17cfccc6d28929312dfc3876ff9427c39cbcf45e4109fd7be7556ba92",
+  "original_bytes": 14934,
+  "projected_document": {
+    "actual_model_requests": 0,
+    "actual_phone_actions": 0,
+    "aggregation_operation": {
+      "host_only": true,
+      "model_calls": 0,
+      "phone_calls": 0,
+      "service_changes": 0,
+      "task_execution": false
+    },
+    "all_cases_preserved": true,
+    "automatic_task_execution": false,
+    "auxiliary_evidence": [],
+    "auxiliary_record_counts": {},
+    "by_layer": {
+      "component_direct": {
+        "attempts": 0,
+        "outcomes": {
+          "cancelled": 0,
+          "complete_success": 0,
+          "failed": 0,
+          "partial": 0,
+          "unconfirmed": 0
+        },
+        "recovery_attempts": 0
+      },
+      "host_isolated": {
+        "attempts": 0,
+        "outcomes": {
+          "cancelled": 0,
+          "complete_success": 0,
+          "failed": 0,
+          "partial": 0,
+          "unconfirmed": 0
+        },
+        "recovery_attempts": 0
+      },
+      "model_e2e": {
+        "attempts": 0,
+        "outcomes": {
+          "cancelled": 0,
+          "complete_success": 0,
+          "failed": 0,
+          "partial": 0,
+          "unconfirmed": 0
+        },
+        "recovery_attempts": 0
+      },
+      "physical_native_task": {
+        "attempts": 0,
+        "outcomes": {
+          "cancelled": 0,
+          "complete_success": 0,
+          "failed": 0,
+          "partial": 0,
+          "unconfirmed": 0
+        },
+        "recovery_attempts": 0
+      }
+    },
+    "candidate_manifest_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "case_status_counts": {
+      "BLOCKED": 19
+    },
+    "cases": [
+      {
+        "attempt_count": 0,
+        "id": "E2E-01",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "model_e2e",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA"
+      },
+      {
+        "attempt_count": 0,
+        "id": "E2E-02",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "model_e2e",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "全新中文/emoji/换行输入、确认、公开回执与返回"
+      },
+      {
+        "attempt_count": 0,
+        "id": "E2E-03",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "model_e2e",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "计算器完成全新随机简单表达式并核验结果"
+      },
+      {
+        "attempt_count": 0,
+        "id": "E2E-04",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "model_e2e",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "只读查看设置中的公开系统版本字段"
+      },
+      {
+        "attempt_count": 0,
+        "id": "COMP-01",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "component_direct",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "显式返回：launch状态和实际焦点双核验"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-01",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "component_direct",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "截图后焦点切换：必须在input之前拒绝"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-02",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "component_direct",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "同viewport内容变化：精确像素guard必须拒绝"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-03",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "component_direct",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "外屏或旋转：拒绝未资格显示配置"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-04",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 0,
+            "layer": "physical_native_task",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "断连发生于dispatch之前"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-05",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 0,
+            "layer": "physical_native_task",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "作用已开始后断连：保持未知且不重放"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-06",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "模型超时：有界结束且清理原进程组"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-07",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 0,
+            "layer": "physical_native_task",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "执行器结果超时：不能用迟到结果认定成功或再执行"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-08",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 0,
+            "layer": "physical_native_task",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "dispatch前取消"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-09",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          },
+          {
+            "attempts": 0,
+            "layer": "physical_native_task",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "首次作用后取消"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-10",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "图片字节预算/过期图像/旧round绑定"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-11",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "native输出损坏/截断/错误身份"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-12",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "部分任务被模型说成完成：必须失败终态"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-13",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "一次性模板并发/旧nonce重用"
+      },
+      {
+        "attempt_count": 0,
+        "id": "NEG-14",
+        "original_task_outcomes": {},
+        "recovery_attempts": 0,
+        "required_layers": [
+          {
+            "attempts": 0,
+            "layer": "host_isolated",
+            "reason": "No current-combination evidence was supplied for this required layer.",
+            "status": "BLOCKED"
+          }
+        ],
+        "status": "BLOCKED",
+        "title": "容量/原子rename竞态与资源收尾"
+      }
+    ],
+    "combination_excluded": [],
+    "combination_qualification_gate": {
+      "frozen_inputs": false,
+      "module_policy_and_native_app_hashes_must_be_bound_before_samples": true,
+      "pending_is_not_a_frozen_production_release": true,
+      "unbound_current_source_attempts_clear": true
+    },
+    "component_health_recovery_in_business_denominator": false,
+    "current_attempt_record_count": 0,
+    "daily_use_qualification_established": false,
+    "daily_use_reason": "The fixed protocol forbids a general daily reliability claim from one suite; repeated representative samples and measured limits are still required.",
+    "fixed_case_count": 19,
+    "hardware_energy_joules": null,
+    "historical_excluded": [],
+    "historical_outcomes_rewritten": false,
+    "input_attempt_record_count": 0,
+    "model_complete_success_count": 0,
+    "model_complete_success_fraction": null,
+    "model_e2e_denominator": "Only executed model_e2e tasks of this exact frozen combination; excludes health, direct components, isolated fixtures, blocked cases and historical runs.",
+    "model_task_sample_count": 0,
+    "monetary_cost": null,
+    "recovery_counting": "Separate cross-cutting events. Original task terminals remain unchanged.",
+    "recovery_status_counts": {},
+    "required_19_protocol_closed": false,
+    "resource_measurements": [],
+    "resource_missing_samples": 0,
+    "schema": "hepta.fixed19-quality-report.v150.r6.1",
+    "selected_combination": {
+      "combination_sha256": "2f15a8bba690bc79afe63af65332d2f9b4a3c4e3c8f7b1ed0e320c6edfb151f8",
+      "frozen": false,
+      "manifest_path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6-r2/COMBINATION-PENDING.json",
+      "manifest_sha256": "d6d46c81c57d24bd2737aded13605af508914daf4d8244c78389b3437de140e4",
+      "missing_inputs": [
+        "module_manifest_sha256",
+        "policy_rules_manifest_sha256",
+        "live_policy_snapshot_sha256",
+        "live_policy_semantic_audit_sha256",
+        "native_and_apps_manifest_sha256"
+      ],
+      "state": "pending"
+    },
+    "selected_combination_inputs": {
+      "cloud_fallback": false,
+      "live_policy_semantic_audit_sha256": null,
+      "live_policy_snapshot_sha256": null,
+      "model_route": "phone_local_cpu",
+      "module_manifest_sha256": null,
+      "native_and_apps_manifest_sha256": null,
+      "policy_rules_manifest_sha256": null,
+      "provider_config_sha256": "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755",
+      "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+      "release": "v150-r6-r2",
+      "schema": "hepta.acceptance-combination.v150.r6.1",
+      "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+      "state": "pending"
+    },
+    "source_evidence": [],
+    "source_only_grouping_forbidden": true,
+    "timings": {
+      "http_elapsed_seconds": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "missing_samples": 0,
+        "p50": null,
+        "p95": null,
+        "samples": 0
+      },
+      "native_end_to_end_latency_seconds": {
+        "max": null,
+        "mean": null,
+        "min": null,
+        "missing_samples": 0,
+        "p50": null,
+        "p95": null,
+        "samples": 0
+      }
+    },
+    "unbound_executed_current_source_attempts": 0,
+    "usage": {
+      "completion_tokens": {
+        "complete_total": null,
+        "known_samples": 0,
+        "known_sum": null,
+        "missing_samples": 0
+      },
+      "prompt_tokens": {
+        "complete_total": null,
+        "known_samples": 0,
+        "known_sum": null,
+        "missing_samples": 0
+      },
+      "total_tokens": {
+        "complete_total": null,
+        "known_samples": 0,
+        "known_sum": null,
+        "missing_samples": 0
+      }
+    }
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

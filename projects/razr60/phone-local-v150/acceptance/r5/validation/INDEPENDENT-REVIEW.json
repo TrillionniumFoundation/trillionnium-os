@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.acceptance-r5-independent-wrapper-review.v150.1",
+  "reviewer": "/root/local_provider_integration",
+  "state": "STATIC_REVIEW_PASS_NO_PHONE_EXECUTION",
+  "files": [
+    {
+      "name": "aggregate_protocol_r5.py",
+      "bytes": 11948,
+      "sha256": "6437e43385f93bdc6946469f491f3b2b1b4e8d1f07b34500e76249347bf6833e"
+    },
+    {
+      "name": "materialize_case_r5.py",
+      "bytes": 3109,
+      "sha256": "2c94579479baa51a06f1ba381775a5e79d686b1a9efa412c9a1da75dc7e5e4ad"
+    }
+  ],
+  "checks": [
+    "All19 IDs/case objects/limits/geometry checked against byte-pinned original.",
+    "Current attempts require full canonical combination, original combination-manifest byte hash and r5 source.",
+    "Pending only accepts not_run metadata, not executed samples.",
+    "Same source with different module/policy is separate; unbound executed r5 records prevent closure.",
+    "Health/component/recovery auxiliary excluded from fixed19/model business denominators.",
+    "Materializer overrides only frozen old SEAL metadata and preserves request/postcondition function; pending rejects before materialization; no register or Send."
+  ],
+  "limit": "A supplied frozen combination is a grouping identity, not independent proof of installation, live policy, App or business qualification. Actual original evidence is required.",
+  "reviewer_fixture_runs": 0,
+  "reviewer_phone_calls": 0,
+  "reviewer_model_requests": 0
+}

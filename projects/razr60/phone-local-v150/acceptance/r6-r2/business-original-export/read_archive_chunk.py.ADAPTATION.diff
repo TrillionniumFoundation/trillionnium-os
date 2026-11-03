@@ -1,0 +1,11 @@
+--- business-r6-original-export-r2/read_archive_chunk.py
++++ business-r6-r2-original-export-r1/read_archive_chunk.py
+@@ -2,7 +2,7 @@
+ """Root-only bounded read of one already-created business archive chunk."""
+ import base64,hashlib,json,os,re,signal,stat,sys
+ from pathlib import Path
+-ROOT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/business-original-captures-r6')
++ROOT=Path('/var/lib/trillionnium/owner-open/phone-local-v150/business-original-captures-r6-r2')
+ CHUNK=1024*1024
+ MAX_ARCHIVE=64*1024*1024
+ def need(ok,why):

@@ -1,0 +1,108 @@
+{
+  "original_artifact_relative_path": "acceptance/r6-r2/METADATA-SOURCE-SEAL-v150-r6-r2-r1.json",
+  "original_artifact_sha256": "f3b9937087dd87213893e0ae5e44be7ec0c3cef951e4c55a27e3fc9a56bc601d",
+  "original_bytes": 3629,
+  "projected_document": {
+    "actual_new_tasks": 0,
+    "actual_runtime_qualification": "PENDING_ROOT_REAL_HEALTH_AND_SEPARATE_BUSINESS_TERMINALS",
+    "adaptation_result_sha256": "1280b7fed4aed8185bdfd7c7347b47d552cd2fd5e70f5cbec5fdfd5bfbcc6362",
+    "files": [
+      {
+        "bytes": 11961,
+        "path": "aggregate_protocol_r6.py",
+        "sha256": "bb57668a3145ec206dbfd5df660e485fc9106ea6b00df98a61286f71659b08e9"
+      },
+      {
+        "bytes": 2926,
+        "path": "aggregate_protocol_r6.py.ADAPTATION.diff",
+        "sha256": "b3b5a22e2d66fc307326257239de7445ee076080e299e9ca374f3bd305fa3bc3"
+      },
+      {
+        "bytes": 3109,
+        "path": "materialize_case_r6.py",
+        "sha256": "6ec2e23ed87e690e520dd1ee2b063e4e19b92e65e6a2570d0a666cadea42411d"
+      },
+      {
+        "bytes": 38286,
+        "path": "fixed-acceptance-set-r6.json",
+        "sha256": "4cecd310c93c99db1d71d5c93afafb514d54c1cb5d51bdec22730102d4a4cc57"
+      },
+      {
+        "bytes": 2650,
+        "path": "fixed-acceptance-set-r6.json.ADAPTATION.diff",
+        "sha256": "c719411387a813681e448ae04cf9e1578290a148bae4e1df17542217c4e3d152"
+      },
+      {
+        "bytes": 13217,
+        "path": "references/aggregate_protocol_r4.py",
+        "sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772"
+      },
+      {
+        "bytes": 9783,
+        "path": "references/materialize_case_r4.py",
+        "sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81"
+      },
+      {
+        "bytes": 37318,
+        "path": "references/fixed-acceptance-set-r4.original.json",
+        "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+      },
+      {
+        "bytes": 662,
+        "path": "COMBINATION-PENDING.json",
+        "sha256": "d6d46c81c57d24bd2737aded13605af508914daf4d8244c78389b3437de140e4"
+      },
+      {
+        "bytes": 673,
+        "path": "COMBINATION-PENDING.json.ADAPTATION.diff",
+        "sha256": "fe95d04c681ba87591e433dc0e5e4ef03ba0f58030e776701b752899721d4094"
+      },
+      {
+        "bytes": 14934,
+        "path": "ZERO-SAMPLE-REPORT.json",
+        "sha256": "e45cf9d17cfccc6d28929312dfc3876ff9427c39cbcf45e4109fd7be7556ba92"
+      },
+      {
+        "bytes": 3,
+        "path": "EMPTY-ACTUAL-ATTEMPTS.json",
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      {
+        "bytes": 3,
+        "path": "EMPTY-AUXILIARY-EVIDENCE.json",
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      }
+    ],
+    "fixed19_cases_limits_geometry_unchanged": true,
+    "health_process_fence_test_sha256": "cb5187a259282262cb4cb90b54cd981e086b0b444473affb28ba4f6c9538da7c",
+    "independent_focused_review_sha256": "a2d80be34136ea946660725f2a55bc70975854667746d8dcf581724e5f0b0dfd",
+    "materializer_executed": false,
+    "metadata_job_exit_code": 0,
+    "metadata_job_id": "1a1a39935a4-fc05-b96",
+    "model_calls": 0,
+    "nonce_generated": false,
+    "old_frozen_sources_and_failures_preserved": true,
+    "phone_calls": 0,
+    "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "public_exclusions": [
+      "actual materials and requests",
+      "draft or keys or key digests",
+      "original private native/tool records",
+      "actual output trees",
+      "runtime weights",
+      "full policy binaries"
+    ],
+    "schema": "hepta.r6-r2.host-support-source-seal.v1",
+    "scope": "metadata and fixed19; materializer unchanged",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "source_reverse_bytes_verified": true,
+    "state": "FROZEN_HOST_ONLY_NOT_PHYSICALLY_QUALIFIED"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "private_deployment_metadata_removed"
+  ]
+}

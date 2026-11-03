@@ -1,0 +1,124 @@
+{
+  "original_artifact_relative_path": "executor/r6/provenance/ANDROID-BUILD-RESULT.json",
+  "original_artifact_sha256": "7b2fc75d7e31d708bd8a019a88ba97837387fa4ed0bac2ef344652849645261c",
+  "original_bytes": 5072,
+  "projected_document": {
+    "binaries": [
+      {
+        "bytes": 965824,
+        "path": "android-build-attempt03/phone-tool-sidecar-r6",
+        "sha256": "8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976"
+      },
+      {
+        "bytes": 296096,
+        "path": "android-build-attempt03/phone-tool-worker-r6",
+        "sha256": "49fb74f8798194c63d5e510c0ed81604d64a55e1df84822d9457ae4110cab6da"
+      }
+    ],
+    "phone_operations": 0,
+    "policy_writes": 0,
+    "schema": "hepta.phone-executor-r6-build-candidate.v1",
+    "scope": "Dedicated domain candidate only. Host build does not prove actual SELinux transition or Android behavior.",
+    "sources": [
+      {
+        "bytes": 27335,
+        "path": "phone_tool_sidecar.cpp",
+        "sha256": "baafc644a3a7da62c68b4ccc369e17d162bd11d411e7d151db1a4c611ea02475"
+      },
+      {
+        "bytes": 2885,
+        "path": "phone_tool_worker.cpp",
+        "sha256": "8c5a4cb4479c384776776448fa2907044667f99b310a05adaf88866bf6892d7d"
+      },
+      {
+        "bytes": 2273,
+        "path": "phone_security.h",
+        "sha256": "d92dd95b1561d5019209ba0768c1444d2288cb6de4d771c67558e453174c7bfb"
+      }
+    ],
+    "status": "BUILT_NOT_POLICY_APPLIED_NOT_PHONE_VALIDATED",
+    "steps": [
+      {
+        "argv": [
+          "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang",
+          "-O2",
+          "-c",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/vendor/hash/sha256/sha256.c",
+          "-I/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/vendor/hash",
+          "-o",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/sha256.o"
+        ],
+        "rc": 0,
+        "seconds": 0.04948,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++",
+          "-std=c++17",
+          "-O2",
+          "-pthread",
+          "-static-libstdc++",
+          "-I/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/vendor",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/phone_tool_sidecar.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/vendor/hash/hash.cpp",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/sha256.o",
+          "-o",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/phone-tool-sidecar-r6"
+        ],
+        "rc": 0,
+        "seconds": 1.581296,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++",
+          "-std=c++17",
+          "-O2",
+          "-static-libstdc++",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/phone_tool_worker.cpp",
+          "-o",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/phone-tool-worker-r6"
+        ],
+        "rc": 0,
+        "seconds": 0.161515,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+          "--strip-unneeded",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/phone-tool-sidecar-r6",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/phone-tool-worker-r6"
+        ],
+        "rc": 0,
+        "seconds": 0.008917,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/operator-workspace/mac/Library/Android/sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf",
+          "-h",
+          "-d",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/phone-tool-sidecar-r6",
+          "/operator-workspace/mac/Documents/Codex/razr60-phone-local-executor-v150-r6-candidate/android-build-attempt03/phone-tool-worker-r6"
+        ],
+        "rc": 0,
+        "seconds": 0.006316,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "763e84c7712f0419a49154d51a4961f2f43b700169fa806caedfb80500fda53e"
+      }
+    ]
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

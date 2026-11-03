@@ -1,0 +1,100 @@
+{
+  "original_artifact_relative_path": "acceptance/r6/health-export-r1/SOURCE-SEAL-health-original-export-r6-r1.json",
+  "original_artifact_sha256": "ec0e67592097e8952c1996cd794f0429f8b85d2cbf1625a7e31893da06b1f59c",
+  "original_bytes": 4846,
+  "projected_document": {
+    "actual_model_requests": 0,
+    "actual_nonce_generated": false,
+    "actual_phone_calls": 0,
+    "actual_request_generated": false,
+    "build_job": {
+      "exit_code": 0,
+      "job_id": "1a1a363b88c-fc05-b54",
+      "output_durable": true,
+      "stderr_bytes": 0
+    },
+    "business_qualified": false,
+    "change_scope": "fixed metadata/current failed-health zero-tool previous; original one-read bounds and completeness conjunction retained",
+    "collector_seal": {
+      "bytes": 2998,
+      "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/collector-r6/SOURCE-SEAL-health-collector-r6.json",
+      "sha256": "62df56e2d24d931a90c38e8833041c728f52c5260f07a0f05e0da9f52fda55ce"
+    },
+    "created_utc": "2026-11-03T21:54:03.113664+00:00",
+    "exact_reverse_bytes_verified": true,
+    "files": [
+      {
+        "bytes": 14088,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/capture_health_originals.py",
+        "sha256": "27fa9bf2e3404d3ca7bb30becc191fdce427541a967c6813fdcab9a1aac6fac2"
+      },
+      {
+        "bytes": 16530,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/export_health_r6_once.py",
+        "sha256": "746109ee5569eec95c49a04cbf19b95c56933d01096be2728ca4177c9f076d30"
+      },
+      {
+        "bytes": 3220,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/R6-CAPTURE-BINDING.diff",
+        "sha256": "509f27cc29f2aa1fc085338407febf00e4a34fb342d0425fdaa533ffa59e5e47"
+      },
+      {
+        "bytes": 6865,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/R6-EXPORT-BINDING.diff",
+        "sha256": "2203165bf6c1151469baf80f7dacd5a2ce39eab2333b4fd2a4c3eaa7dd77c824"
+      },
+      {
+        "bytes": 1518,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/R6-CAPTURE-BINDING.diff.reverse-check.json",
+        "sha256": "0804b06b68d04d318de3875fcd35bc4af69ef20e4b70f7266a683466022d2554"
+      },
+      {
+        "bytes": 3123,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/R6-EXPORT-BINDING.diff.reverse-check.json",
+        "sha256": "0b23fa59b47778db06a3ef1575b7407bdc802ebd3f0ee39de695a8480ec321d1"
+      },
+      {
+        "bytes": 7421,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/ROOT-HEALTH-R6-QUICK.md",
+        "sha256": "25f853d65138807ab8fd8f20bf4330d2e262cfeba5ca5202177a494fc5fccfe0"
+      },
+      {
+        "bytes": 1467,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/FOCUSED-REVIEW-RECEIVED.json",
+        "sha256": "386d1efb49a864e118fc77b8af83e8c7ab5e34368bb1c86ba07cdc0d324517ca"
+      }
+    ],
+    "fixed_case": "health-r6-01",
+    "key_files_or_content_hashes_read": false,
+    "no_new_broad_tests": true,
+    "original_capture_complete_required_for_final_health": true,
+    "original_output_directory": "/operator-workspace/razr60/phone-local-v150/health-r6-originals-01",
+    "parent_capture_sha256": "377a5c7fceccb1c4790a15bb6f8890bb8d21b5cec842336356695bd3936fd596",
+    "parent_exporter_sha256": "e8391d076d4116cbfb27d26568be5e0b5e8154c613d1bec451a331617444e8e4",
+    "phone_staged_directory": "/var/lib/trillionnium/owner-open/phone-local-v150/root-health-r6-01",
+    "physical_health_qualified": false,
+    "previous_input_sha256": "749126d88d1bf08eddb79104484cdd73f76250117ef2fcefcbb0e29289a34951",
+    "private_draft_read": false,
+    "provider_source_seal_sha256": "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3",
+    "python312_syntax": true,
+    "registrations": 0,
+    "root_registration_operator": {
+      "bytes": 5624,
+      "path": "/operator-workspace/razr60/phone-local-v150/health-r6-root-operator-r1/prepare_register_health_r6.py",
+      "sha256": "aed0fba626f864bbdd84b22e7a82b910726c164ee015bc653a4fbaa92b514f0c"
+    },
+    "schema": "hepta.health-original-export-source-seal.v150.r6.1",
+    "send_count": 0,
+    "sender_label": "phone-local-r6-health-01",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "status": "SEALED_HOST_SUPPORT_NO_FRESH_REQUEST"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized",
+    "private_deployment_metadata_removed"
+  ]
+}

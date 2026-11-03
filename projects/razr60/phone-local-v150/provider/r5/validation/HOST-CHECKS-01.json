@@ -1,0 +1,146 @@
+{
+  "schema": "hepta.phone-local-r5-host-validation.v150.1",
+  "checks_passed": 66,
+  "checks": [
+    "python312_all_production_source_syntax",
+    "original_guard_unchanged_business_decision_schema",
+    "original_guard_unchanged_PhoneLocalAdapter._decision",
+    "original_guard_unchanged_PhoneLocalAdapter.emit",
+    "frozen_parent_bytes_unchanged_provider_codex_host.py",
+    "frozen_parent_bytes_unchanged_provider_openai_compatible.py",
+    "frozen_parent_bytes_unchanged_phone_task_guards.py",
+    "frozen_parent_bytes_unchanged_phone_local_http_worker.py",
+    "frozen_parent_bytes_unchanged_model_health.py",
+    "frozen_parent_bytes_unchanged_task_postconditions.py",
+    "frozen_parent_bytes_unchanged_health_contracts.py",
+    "Unicode_helper_new_readonly_path",
+    "screen_helper_new_readonly_path",
+    "only_helper_paths_changed_in_observation_mapper",
+    "r6_exact_executor_configuration",
+    "legacy_adb_fallback_rejected",
+    "old_client_path_rejected",
+    "wrong_client_pin_rejected",
+    "health_has_only_minimal_policy_and_exact_owner",
+    "health_no_app_catalog_or_tool_inventory",
+    "health_nonce_not_forced_by_grammar",
+    "health_rejects_any_image",
+    "business_exact_owner_last_once",
+    "all_approved_components_visible_without_new_scope",
+    "same_package_activities_remain_distinct",
+    "business_owner_utf8_hash_bound",
+    "no_tap_hint_without_current_image",
+    "visual_hidden_branches_not_in_prompt",
+    "current_tap_hint_uses_same_grammar_image",
+    "spent_visual_selection_not_in_prompt",
+    "round8_final_prompt_has_no_tools",
+    "legacy_unknown_blocks_new_mutation",
+    "legacy_pending_never_inspected_on_new_endpoint",
+    "unqualified_automatic_proof_cannot_resolve",
+    "failed_resolution_left_original_intent_and_no_resolution",
+    "invalid_proof_field_rejected_automatic_checks_pass",
+    "invalid_proof_field_rejected_external_review_verified",
+    "invalid_proof_field_rejected_eligible_for_new_version_resolution",
+    "invalid_proof_field_rejected_business_verified",
+    "invalid_proof_field_rejected_automatic_replay",
+    "invalid_proof_field_rejected_original_task_terminal_unchanged",
+    "invalid_proof_field_rejected_old_claims_edited",
+    "invalid_proof_field_rejected_state",
+    "invalid_proof_field_rejected_action_id",
+    "invalid_proof_field_rejected_verifier_sha256",
+    "different_proof_bytes_rejected",
+    "old_executor_cannot_unlock_future_work",
+    "crash_after_proof_does_not_resolve",
+    "crash_retains_exact_proof_and_pending_original",
+    "additive_retirement_schema_not_sidecar_success",
+    "same_retained_proof_reused_without_overwrite",
+    "ledger_scan_revalidates_pinned_retirement_proof",
+    "duplicate_resolution_never_overwrites",
+    "same_old_task_cannot_retry_effect_with_new_call_id",
+    "fresh_intent_has_explicit_r6_binding",
+    "original_intent_remains_byte_identical",
+    "retained_proof_tamper_blocks_ledger",
+    "r6_authentic_worker_terminal_shape_accepted",
+    "unsafe_r6_terminal_rejected_terminal",
+    "unsafe_r6_terminal_rejected_peer_context",
+    "unsafe_r6_terminal_rejected_worker_domain_verified",
+    "unsafe_r6_terminal_rejected_execution_uid",
+    "unsafe_r6_terminal_rejected_waitpid_identity_lost",
+    "unsafe_r6_terminal_rejected_process_group_absent",
+    "unsafe_r6_terminal_rejected_dispatch_count",
+    "unsafe_r6_terminal_rejected_handshake_stage"
+  ],
+  "phone_calls": 0,
+  "model_calls": 0,
+  "socket_connections": 0,
+  "real_actions_dispatched": 0,
+  "physical_qualification": false,
+  "synthetic_resolution_fixture_only": true,
+  "old_frozen_sources_modified": false,
+  "source_files": [
+    {
+      "path": "source/action_ledger.py",
+      "bytes": 15363,
+      "sha256": "727c684fc9e1a0fde410396b1aa85b6ca212aa83bb2d601577fef2b0c7601c4e"
+    },
+    {
+      "path": "source/daily_phone_local.py",
+      "bytes": 19887,
+      "sha256": "fba1036d37fde6b2d780c87de55165da89cdb0342471425ddc20327ea1771d6b"
+    },
+    {
+      "path": "source/health_contracts.py",
+      "bytes": 10979,
+      "sha256": "9f2d87bc567c7b169d0d4d07635ab233ccef6da45ba8f547c8af7751f3686c44"
+    },
+    {
+      "path": "source/model_health.py",
+      "bytes": 8251,
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "path": "source/phone_local_http_worker.py",
+      "bytes": 10453,
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "path": "source/phone_local_tools.py",
+      "bytes": 11792,
+      "sha256": "dd0fb20af8f3de229d4ce8d8dee47db335eb551e6f5db136fa8f5881c0ca6871"
+    },
+    {
+      "path": "source/phone_observation_tools.py",
+      "bytes": 34040,
+      "sha256": "bcea6fbc5d5efa39a0164623ac61bafb27577e4812b5de0384d2155e3f2c6243"
+    },
+    {
+      "path": "source/phone_task_guards.py",
+      "bytes": 11368,
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "path": "source/provider_codex_host.py",
+      "bytes": 41510,
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "path": "source/provider_openai_compatible.py",
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "path": "source/provider_phone_local.py",
+      "bytes": 39948,
+      "sha256": "7e89eeb4c6c972ab253922d99f061764ffa2a1d4a8c442b6aa049e69685e90c8"
+    },
+    {
+      "path": "source/retirement_recovery.py",
+      "bytes": 9763,
+      "sha256": "732e5f5bddb57ee74c55d69ac6d8b39b71d6e443e8e5fe57d1d32f94b55337e6"
+    },
+    {
+      "path": "source/task_postconditions.py",
+      "bytes": 14744,
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+    }
+  ]
+}

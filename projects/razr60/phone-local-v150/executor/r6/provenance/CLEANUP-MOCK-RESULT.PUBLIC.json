@@ -1,0 +1,24 @@
+{
+  "original_artifact_relative_path": "executor/r6/provenance/CLEANUP-MOCK-RESULT.json",
+  "original_artifact_sha256": "34a1cd97a4181ea817145c43ed0f3f26faf15340686d86607ca6d7ff10cffee5",
+  "original_bytes": 955,
+  "projected_document": {
+    "actual_signals_sent": 0,
+    "checks": 9,
+    "compile_rc": 0,
+    "extracted_code_sha256": "898f8080fd781be0a3faa2b962486f5866e8d33c2c8a29ee8ad3e2c0bdc8bf73",
+    "output": "joined-without-group-never-signals-PID: PASS\njoined-proven-group-only-signals-group: PASS\nunjoined-owned-child-cleans-possible-group-and-PID: PASS\nlost-wait-without-group-never-signals-PID: PASS\nlost-wait-proven-group-only-signals-group: PASS\ndismissed-never-signals: PASS\nloop-joined-no-PID-signal: PASS\nloop-lost-wait-no-PID-signal: PASS\nloop-proven-group-signal: PASS\n",
+    "phone_operations": 0,
+    "run_rc": 0,
+    "schema": "hepta.executor-r6-cleanup-targeted-mock.v1",
+    "scope": "Exact current production cleanup code extracted and executed with syscall mocks; zero OS signals/process actions. Tests only joined/lost-wait identity guards, not Android SELinux.",
+    "source_sha256": "baafc644a3a7da62c68b4ccc369e17d162bd11d411e7d151db1a4c611ea02475",
+    "status": "PASS"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

@@ -1,0 +1,411 @@
+--- frozen/send_new_native_task_r3.py
++++ candidate/send_new_native_task_r4.py
+@@ -1,44 +1,75 @@
+ """Submit one ordinary natural-language task through the real HEPTA UI.
+ 
+-R3 adds a bounded read-only original-native terminal latency observation.
++R4 adds exact original retirement admission, fixed component evidence selection,
++and bounded one-Send ingress with separately recorded original-draft cleanup.
+ Only Root operates the phone. No control commands or coordinates are supplied
+ to the model; app actions must come from its own observed UI and tool decisions.
+ """
+ from pathlib import Path
+ import argparse, hashlib, json, os, subprocess
+ 
+-READ_ONLY_PROBE = "import base64,hashlib,json,os,re,stat,sys\nfrom pathlib import Path\nWANTED=sys.argv[1]\nHINT=json.loads(base64.b64decode(sys.argv[2])) if len(sys.argv)>2 and sys.argv[2]!='-' else None\nassert re.fullmatch('[0-9a-f]{64}',WANTED)\nE=Path('/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/evidence')\nJ=Path('/var/lib/trillionnium/owner-open/turn-events.jsonl.segments')\nKEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')\ndef sha(b): return hashlib.sha256(b).hexdigest()\ndef strict(b):\n def pairs(xs):\n  result={}\n  for k,v in xs:\n   if k in result: raise ValueError('duplicate_json_key')\n   result[k]=v\n  return result\n return json.loads(b,object_pairs_hook=pairs,parse_constant=lambda x:(_ for _ in ()).throw(ValueError('nonfinite_json')))\ndef canonical_directory(p):\n assert p.is_dir() and not p.is_symlink() and p.resolve()==p,'noncanonical_evidence_directory'\ncanonical_directory(E);canonical_directory(J)\ndirs=sorted([p for p in E.iterdir() if re.fullmatch(r'[0-9]{8}-[0-9]{6}-[0-9a-f]{32}',p.name)])\nassert len(dirs)<=512,'provider_directory_bound'\nmatches=[]\nfor d in dirs:\n canonical_directory(d)\n p=d/'provider-in.jsonl'\n try: fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n except FileNotFoundError: continue\n try:\n  before=os.fstat(fd)\n  assert stat.S_ISREG(before.st_mode) and before.st_nlink==1,'provider_file_type'\n  raw=os.read(fd,131072)\n  after=os.fstat(fd)\n  assert (before.st_dev,before.st_ino)==(after.st_dev,after.st_ino) and after.st_size>=before.st_size,'provider_file_identity'\n finally: os.close(fd)\n for line in raw.splitlines(keepends=True):\n  if not line.endswith(b'\\n'): continue\n  frame=strict(line)\n  if frame.get('kind')!='turn.start': continue\n  turn=frame.get('turn',{})\n  if not isinstance(turn.get('user_input'),str) or sha(turn['user_input'].encode('utf-8'))!=WANTED: continue\n  scope={k:turn.get(k) for k in KEYS}\n  assert all(isinstance(v,str) and 0<len(v.encode())<=256 and '\\0' not in v for v in scope.values()),'provider_scope'\n  matches.append({'run_dir':str(d),'provider_input_file':str(p),'scope':scope,'owner_utf8_sha256':WANTED,\n                  'provider_start_original_b64':base64.b64encode(line).decode(),\n                  'provider_start_original_sha256':sha(line),'provider_start_original_bytes':len(line)})\nanswer={'schema':'hepta.read-only-new-turn-observation.v150.r3','owner_utf8_sha256':WANTED,\n        'provider_match_count':len(matches),'phone_writes':False,'model_requests':0,'tool_dispatches':0,\n        'native_hash_chain_verified':False,'business_qualified':False}\nif not matches:\n answer['state']='no_matching_provider_start'\nelif len(matches)!=1:\n answer.update(state='ambiguous_matching_provider_starts',matches=matches)\nelse:\n match=matches[0];scope=match['scope'];answer['match']=match\n if HINT is not None and HINT!=scope:\n  answer['state']='scope_changed'\n else:\n  files=sorted(J.glob('*.jsonl'));assert len(files)<=1024,'native_segment_count_bound'\n  total=0;selected=[];terminal=[]\n  needle=scope['turn_id'].encode('utf-8')\n  for p in files:\n   fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n   try:\n    info=os.fstat(fd)\n    assert stat.S_ISREG(info.st_mode) and info.st_nlink==1,'native_file_type'\n    total+=info.st_size;assert total<=64*1024*1024,'native_scan_bytes_bound'\n    with os.fdopen(fd,'rb',closefd=False) as stream:\n     while True:\n      raw=stream.readline(4*1024*1024+1)\n      if not raw: break\n      assert len(raw)<=4*1024*1024,'native_record_bytes_bound'\n      if not raw.endswith(b'\\n'): continue\n      if needle not in raw: continue\n      row=strict(raw)\n      if row.get('scope')!=scope: continue\n      payload=row.get('payload',{});frame=payload.get('frame',{})\n      assert isinstance(frame,dict),'native_frame_type'\n      selected.append({'file':str(p),'store_seq':row.get('store_seq'),'turn_seq':row.get('turn_seq'),\n                       'kind':frame.get('kind'),'row_kind':row.get('kind'),'request_sha256':payload.get('request_sha256'),\n                       'record_sha256':row.get('record_sha256'),'raw_line_sha256':sha(raw),'raw_line_bytes':len(raw)})\n      if frame.get('kind')=='turn.end':\n       terminal.append({'frame':frame,'record':row,'raw_line_b64':base64.b64encode(raw).decode(),\n                        'raw_line_sha256':sha(raw),'raw_line_bytes':len(raw),'source':str(p)})\n   finally: os.close(fd)\n  selected.sort(key=lambda r:r['turn_seq'] if type(r['turn_seq']) is int else -1)\n  assert [r['turn_seq'] for r in selected]==list(range(len(selected))),'native_turn_sequence_gap_or_duplicate'\n  hashes={r['request_sha256'] for r in selected}\n  assert len(hashes)<=1 and all(isinstance(x,str) and re.fullmatch('[0-9a-f]{64}',x) for x in hashes),'native_request_hash_binding'\n  answer.update(native_records=selected,native_record_count=len(selected),native_scanned_bytes=total,\n                native_request_sha256=next(iter(hashes)) if hashes else None)\n  assert len(terminal)<=1,'duplicate_native_terminal'\n  if terminal:\n   assert selected and selected[-1]['kind']=='turn.end' and terminal[0]['record']['turn_seq']==selected[-1]['turn_seq'],'native_terminal_order'\n   assert terminal[0]['frame'].get('payload',{}).get('status') in ('completed','provider_failed','cancelled'),'native_terminal_status'\n   answer.update(state='native_terminal_observed',native_terminal=terminal[0])\n  else: answer['state']='native_pending'\nprint(json.dumps(answer,ensure_ascii=False,separators=(',',':'),allow_nan=False))\n"
+-LATENCY_OBSERVER = "import signal\nclass OriginalReadDeadline(RuntimeError): pass\ndef latency_read_original(scope=None):\n # Entire host route discovery plus wire read has an 8-second alarm.\n # Remote process is read-only and separately bounded by BusyBox 6s + 1s kill.\n def alarm(_signum,_frame): raise OriginalReadDeadline('read_only_probe_total_deadline')\n previous_handler=signal.getsignal(signal.SIGALRM)\n previous_timer=signal.getitimer(signal.ITIMER_REAL)\n assert previous_timer==(0.0,0.0),'preexisting observer alarm; no read'\n signal.signal(signal.SIGALRM,alarm)\n start=time.monotonic_ns()\n result=None\n try:\n  signal.setitimer(signal.ITIMER_REAL,8.0)\n  hint=base64.b64encode(json.dumps(scope,separators=(',',':')).encode()).decode() if scope else '-'\n  command='/data/adb/magisk/busybox timeout -s TERM -k 1 6 /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -c '+shlex.quote(READ_ONLY_PROBE_SOURCE)+' '+shlex.quote(hashlib.sha256(expected.encode()).hexdigest())+' '+shlex.quote(hint)\n  result=f.shell('/debug_ramdisk/su -c '+shlex.quote(command),c,t,timeout=6)\n  assert result['rc']==0,'read-only probe nonzero exit'\n  value=json.loads(result['stdout'])\n  assert value['owner_utf8_sha256']==hashlib.sha256(expected.encode()).hexdigest(),'probe request binding'\n  return {'read_start_monotonic_ns':start,'read_end_monotonic_ns':time.monotonic_ns(),\n          'read_deadline_seconds':8,'original_wire_receipt':result,'observation':value}\n except Exception as error:\n  return {'read_start_monotonic_ns':start,'read_end_monotonic_ns':time.monotonic_ns(),\n          'read_deadline_seconds':8,'original_wire_receipt':result,\n          'read_error_type':type(error).__name__,'read_error':str(error),'automatic_send_retry':False}\n finally:\n  signal.setitimer(signal.ITIMER_REAL,0)\n  signal.signal(signal.SIGALRM,previous_handler)\ndef observe_original_terminal(send_started_monotonic_ns,send_returned_monotonic_ns,send_status):\n deadline=send_started_monotonic_ns+335_000_000_000\n scope=None;count=0;reads=[];last_negative_start=None;result=None\n while time.monotonic_ns()+8_000_000_000<=deadline:\n  count+=1\n  reading=latency_read_original(scope)\n  save('LATENCY-%04d.original-read.json'%count,reading)\n  observation=reading.get('observation')\n  reads.append({'start':reading['read_start_monotonic_ns'],'end':reading['read_end_monotonic_ns'],\n                'state':observation.get('state') if observation else 'read_unknown'})\n  if observation:\n   state=observation['state']\n   if state in ('ambiguous_matching_provider_starts','scope_changed'):\n    result={'state':'UNKNOWN_SCOPE_BINDING','original_observation':observation};break\n   if 'match' in observation:\n    observed_scope=observation['match']['scope']\n    assert observed_scope!=previous_identity,'old scope cannot be the fresh task'\n    if scope is None: scope=observed_scope\n    assert scope==observed_scope,'observation changed scope'\n   if state=='native_terminal_observed':\n    end=reading['read_end_monotonic_ns']\n    lower=max(send_started_monotonic_ns,last_negative_start or send_started_monotonic_ns)\n    result={'state':'ORIGINAL_NATIVE_TERMINAL_OBSERVED','native_status':observation['native_terminal']['frame']['payload']['status'],\n            'terminal_observation_end_monotonic_ns':end,\n            'send_to_terminal_observed_seconds':(end-send_started_monotonic_ns)/1e9,\n            'terminal_persistence_latency_interval_seconds':[(lower-send_started_monotonic_ns)/1e9,(end-send_started_monotonic_ns)/1e9],\n            'observation_uncertainty_interval_seconds':(end-lower)/1e9,\n            'original_observation':observation}\n    break\n   if state=='native_pending':\n    last_negative_start=reading['read_start_monotonic_ns']\n  pause=min(0.75,max(0,(deadline-time.monotonic_ns())/1e9-8))\n  if pause: time.sleep(pause)\n if result is None: result={'state':'UNKNOWN_MONITOR_BOUND_REACHED','next':'Read the same original request/scope only; never Send again'}\n ends=[r['end']-r['start'] for r in reads]\n gaps=[reads[i]['start']-reads[i-1]['start'] for i in range(1,len(reads))]\n result.update(schema='hepta.p4-send-native-terminal-latency.v150.r3',\n   owner_request_utf8_sha256=hashlib.sha256(expected.encode()).hexdigest(),scope=scope,\n   send_call_started_monotonic_ns=send_started_monotonic_ns,\n   send_call_returned_monotonic_ns=send_returned_monotonic_ns,send_wire_state=send_status,\n   clock='Pocket4 time.monotonic_ns, one actor process',monitor_budget_seconds=335,\n   read_deadline_seconds=8,poll_pause_seconds=0.75,\n   nominal_poll_start_interval_upper_seconds=8.75,\n   maximum_observed_poll_start_interval_seconds=max(gaps,default=0)/1e9,\n   maximum_observed_read_seconds=max(ends,default=0)/1e9,\n   observer_elapsed_seconds=(time.monotonic_ns()-send_started_monotonic_ns)/1e9,\n   read_count=count,automatic_send_retry=False,send_attempt_count=1,\n   native_hash_chain_verified=False,business_success_verified=False,\n   qualification='Observed native terminal latency upper bound; independent collector still required',\n   original_receipts_preserved=True)\n save('SEND-NATIVE-LATENCY.json',result)\n return result\n"
++READ_ONLY_PROBE = "import base64,hashlib,json,os,re,stat,sys\nfrom pathlib import Path\nWANTED=sys.argv[1]\nHINT=json.loads(base64.b64decode(sys.argv[2])) if len(sys.argv)>2 and sys.argv[2]!='-' else None\nassert re.fullmatch('[0-9a-f]{64}',WANTED)\nROOTS={'production':'/var/lib/trillionnium/owner-open/phone-local-v150/provider-state/evidence',\n       'component':'/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/evidence'}\nMODE=sys.argv[3] if len(sys.argv)>3 else 'production'\nassert MODE in ROOTS,'unapproved evidence root'\nE=Path(ROOTS[MODE])\nJ=Path('/var/lib/trillionnium/owner-open/turn-events.jsonl.segments')\nKEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')\ndef sha(b): return hashlib.sha256(b).hexdigest()\ndef strict(b):\n def pairs(xs):\n  result={}\n  for k,v in xs:\n   if k in result: raise ValueError('duplicate_json_key')\n   result[k]=v\n  return result\n return json.loads(b,object_pairs_hook=pairs,parse_constant=lambda x:(_ for _ in ()).throw(ValueError('nonfinite_json')))\ndef canonical_directory(p):\n assert p.is_dir() and not p.is_symlink() and p.resolve()==p,'noncanonical_evidence_directory'\ncanonical_directory(E);canonical_directory(J)\ndirs=[];modes={}\nfor mode,root_name in ROOTS.items():\n root=Path(root_name)\n try:root.lstat()\n except FileNotFoundError:continue\n canonical_directory(root)\n for path in root.iterdir():\n  if re.fullmatch(r'[0-9]{8}-[0-9]{6}-[0-9a-f]{32}',path.name):\n   dirs.append(path);modes[str(path)]=mode\ndirs.sort()\nassert len(dirs)<=512,'provider_directory_bound'\nmatches=[]\nfor d in dirs:\n canonical_directory(d)\n p=d/'provider-in.jsonl'\n try: fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n except FileNotFoundError: continue\n try:\n  before=os.fstat(fd)\n  assert stat.S_ISREG(before.st_mode) and before.st_nlink==1,'provider_file_type'\n  raw=os.read(fd,131072)\n  after=os.fstat(fd)\n  assert (before.st_dev,before.st_ino)==(after.st_dev,after.st_ino) and after.st_size>=before.st_size,'provider_file_identity'\n finally: os.close(fd)\n for line in raw.splitlines(keepends=True):\n  if not line.endswith(b'\\n'): continue\n  frame=strict(line)\n  if frame.get('kind')!='turn.start': continue\n  turn=frame.get('turn',{})\n  if not isinstance(turn.get('user_input'),str) or sha(turn['user_input'].encode('utf-8'))!=WANTED: continue\n  scope={k:turn.get(k) for k in KEYS}\n  assert all(isinstance(v,str) and 0<len(v.encode())<=256 and '\\0' not in v for v in scope.values()),'provider_scope'\n  matches.append({'evidence_root_mode':modes[str(d)],'run_dir':str(d),'provider_input_file':str(p),'scope':scope,'owner_utf8_sha256':WANTED,\n                  'provider_start_original_b64':base64.b64encode(line).decode(),\n                  'provider_start_original_sha256':sha(line),'provider_start_original_bytes':len(line)})\nanswer={'schema':'hepta.read-only-new-turn-observation.v150.r4','owner_utf8_sha256':WANTED,\n        'provider_match_count':len(matches),'phone_writes':False,'model_requests':0,'tool_dispatches':0,\n        'native_hash_chain_verified':False,'business_qualified':False}\nif not matches:\n answer['state']='no_matching_provider_start'\nelif len(matches)!=1:\n answer.update(state='ambiguous_matching_provider_starts',matches=matches)\nelse:\n match=matches[0];scope=match['scope'];answer['match']=match\n if match['evidence_root_mode']!=MODE or (HINT is not None and HINT!=scope):\n  answer['state']='scope_changed'\n else:\n  files=sorted(J.glob('*.jsonl'));assert len(files)<=1024,'native_segment_count_bound'\n  total=0;selected=[];terminal=[]\n  needle=scope['turn_id'].encode('utf-8')\n  for p in files:\n   fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n   try:\n    info=os.fstat(fd)\n    assert stat.S_ISREG(info.st_mode) and info.st_nlink==1,'native_file_type'\n    total+=info.st_size;assert total<=64*1024*1024,'native_scan_bytes_bound'\n    with os.fdopen(fd,'rb',closefd=False) as stream:\n     while True:\n      raw=stream.readline(4*1024*1024+1)\n      if not raw: break\n      assert len(raw)<=4*1024*1024,'native_record_bytes_bound'\n      if not raw.endswith(b'\\n'): continue\n      if needle not in raw: continue\n      row=strict(raw)\n      if row.get('scope')!=scope: continue\n      payload=row.get('payload',{});frame=payload.get('frame',{})\n      assert isinstance(frame,dict),'native_frame_type'\n      selected.append({'file':str(p),'store_seq':row.get('store_seq'),'turn_seq':row.get('turn_seq'),\n                       'kind':frame.get('kind'),'row_kind':row.get('kind'),'request_sha256':payload.get('request_sha256'),\n                       'record_sha256':row.get('record_sha256'),'raw_line_sha256':sha(raw),'raw_line_bytes':len(raw)})\n      if frame.get('kind')=='turn.end':\n       terminal.append({'frame':frame,'record':row,'raw_line_b64':base64.b64encode(raw).decode(),\n                        'raw_line_sha256':sha(raw),'raw_line_bytes':len(raw),'source':str(p)})\n   finally: os.close(fd)\n  selected.sort(key=lambda r:r['turn_seq'] if type(r['turn_seq']) is int else -1)\n  assert [r['turn_seq'] for r in selected]==list(range(len(selected))),'native_turn_sequence_gap_or_duplicate'\n  hashes={r['request_sha256'] for r in selected}\n  assert len(hashes)<=1 and all(isinstance(x,str) and re.fullmatch('[0-9a-f]{64}',x) for x in hashes),'native_request_hash_binding'\n  answer.update(native_records=selected,native_record_count=len(selected),native_scanned_bytes=total,\n                native_request_sha256=next(iter(hashes)) if hashes else None)\n  assert len(terminal)<=1,'duplicate_native_terminal'\n  if terminal:\n   assert selected and selected[-1]['kind']=='turn.end' and terminal[0]['record']['turn_seq']==selected[-1]['turn_seq'],'native_terminal_order'\n   assert terminal[0]['frame'].get('payload',{}).get('status') in ('completed','provider_failed','cancelled'),'native_terminal_status'\n   answer.update(state='native_terminal_observed',native_terminal=terminal[0])\n  else: answer['state']='native_pending'\nprint(json.dumps(answer,ensure_ascii=False,separators=(',',':'),allow_nan=False))\n"
++LATENCY_OBSERVER = "import signal\nclass OriginalReadDeadline(RuntimeError): pass\ndef latency_read_original(scope=None):\n # Entire host route discovery plus wire read has an 8-second alarm.\n # Remote process is read-only and separately bounded by BusyBox 6s + 1s kill.\n def alarm(_signum,_frame): raise OriginalReadDeadline('read_only_probe_total_deadline')\n previous_handler=signal.getsignal(signal.SIGALRM)\n previous_timer=signal.getitimer(signal.ITIMER_REAL)\n assert previous_timer==(0.0,0.0),'preexisting observer alarm; no read'\n signal.signal(signal.SIGALRM,alarm)\n start=time.monotonic_ns()\n result=None\n try:\n  signal.setitimer(signal.ITIMER_REAL,8.0)\n  hint=base64.b64encode(json.dumps(scope,separators=(',',':')).encode()).decode() if scope else '-'\n  command='/data/adb/magisk/busybox timeout -s TERM -k 1 6 /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -c '+shlex.quote(READ_ONLY_PROBE_SOURCE)+' '+shlex.quote(hashlib.sha256(expected.encode()).hexdigest())+' '+shlex.quote(hint)+' '+shlex.quote(evidence_mode)\n  result=f.shell('/debug_ramdisk/su -c '+shlex.quote(command),c,t,timeout=6)\n  assert result['rc']==0,'read-only probe nonzero exit'\n  value=json.loads(result['stdout'])\n  assert value['owner_utf8_sha256']==hashlib.sha256(expected.encode()).hexdigest(),'probe request binding'\n  return {'read_start_monotonic_ns':start,'read_end_monotonic_ns':time.monotonic_ns(),\n          'read_deadline_seconds':8,'original_wire_receipt':result,'observation':value}\n except Exception as error:\n  return {'read_start_monotonic_ns':start,'read_end_monotonic_ns':time.monotonic_ns(),\n          'read_deadline_seconds':8,'original_wire_receipt':result,\n          'read_error_type':type(error).__name__,'read_error':str(error),'automatic_send_retry':False}\n finally:\n  signal.setitimer(signal.ITIMER_REAL,0)\n  signal.signal(signal.SIGALRM,previous_handler)\ndef observe_original_terminal(send_started_monotonic_ns,send_returned_monotonic_ns,send_status):\n deadline=send_started_monotonic_ns+335_000_000_000\n scope=None;count=0;reads=[];last_negative_start=None;result=None\n while time.monotonic_ns()+8_000_000_000<=deadline:\n  count+=1\n  reading=latency_read_original(scope)\n  save('LATENCY-%04d.original-read.json'%count,reading)\n  observation=reading.get('observation')\n  reads.append({'start':reading['read_start_monotonic_ns'],'end':reading['read_end_monotonic_ns'],\n                'state':observation.get('state') if observation else 'read_unknown'})\n  if observation:\n   state=observation['state']\n   if state in ('ambiguous_matching_provider_starts','scope_changed'):\n    result={'state':'UNKNOWN_SCOPE_BINDING','original_observation':observation};break\n   if 'match' in observation:\n    observed_scope=observation['match']['scope']\n    assert observed_scope!=previous_identity,'old scope cannot be the fresh task'\n    if scope is None: scope=observed_scope\n    assert scope==observed_scope,'observation changed scope'\n   if state=='native_terminal_observed':\n    end=reading['read_end_monotonic_ns']\n    lower=max(send_started_monotonic_ns,last_negative_start or send_started_monotonic_ns)\n    result={'state':'ORIGINAL_NATIVE_TERMINAL_OBSERVED','native_status':observation['native_terminal']['frame']['payload']['status'],\n            'terminal_observation_end_monotonic_ns':end,\n            'send_to_terminal_observed_seconds':(end-send_started_monotonic_ns)/1e9,\n            'terminal_persistence_latency_interval_seconds':[(lower-send_started_monotonic_ns)/1e9,(end-send_started_monotonic_ns)/1e9],\n            'observation_uncertainty_interval_seconds':(end-lower)/1e9,\n            'original_observation':observation}\n    break\n   if state=='native_pending':\n    last_negative_start=reading['read_start_monotonic_ns']\n  pause=min(0.75,max(0,(deadline-time.monotonic_ns())/1e9-8))\n  if pause: time.sleep(pause)\n if result is None: result={'state':'UNKNOWN_MONITOR_BOUND_REACHED','next':'Read the same original request/scope only; never Send again'}\n ends=[r['end']-r['start'] for r in reads]\n gaps=[reads[i]['start']-reads[i-1]['start'] for i in range(1,len(reads))]\n result.update(schema='hepta.p4-send-native-terminal-latency.v150.r3',\n   owner_request_utf8_sha256=hashlib.sha256(expected.encode()).hexdigest(),scope=scope,\n   send_call_started_monotonic_ns=send_started_monotonic_ns,\n   send_call_returned_monotonic_ns=send_returned_monotonic_ns,send_wire_state=send_status,\n   clock='Pocket4 time.monotonic_ns, one actor process',monitor_budget_seconds=335,\n   read_deadline_seconds=8,poll_pause_seconds=0.75,\n   nominal_poll_start_interval_upper_seconds=8.75,\n   maximum_observed_poll_start_interval_seconds=max(gaps,default=0)/1e9,\n   maximum_observed_read_seconds=max(ends,default=0)/1e9,\n   observer_elapsed_seconds=(time.monotonic_ns()-send_started_monotonic_ns)/1e9,\n   read_count=count,automatic_send_retry=False,send_attempt_count=1,\n   native_hash_chain_verified=False,business_success_verified=False,\n   qualification='Observed native terminal latency upper bound; independent collector still required',\n   original_receipts_preserved=True)\n save('SEND-NATIVE-LATENCY.json',result)\n return result\n"
+ 
+ BASE = Path(__file__).resolve().parent
++os.umask(0o077)
+ p = argparse.ArgumentParser()
+ p.add_argument('label')
+ p.add_argument('request_file', type=Path)
+ p.add_argument('previous_report', type=Path)
+ p.add_argument('--preserved-draft', type=Path, required=True)
+ p.add_argument('--reset-probe', action='store_true')
++p.add_argument('--retirement-resolution',type=Path,required=True)
++p.add_argument('--evidence-root',choices=('production','component'),default='production')
++p.add_argument('--component-contract',type=Path,help='Only the fixed component-r2 contract; production does not wait')
++p.add_argument('--execute-once',action='store_true',help='Root only; default only builds a private actor preview')
+ args = p.parse_args()
+ import base64, re
+ assert re.fullmatch(r'[a-z0-9-]{1,70}',args.label)
+-prompt = args.request_file.read_text(encoding='utf-8')
++prompt = args.request_file.read_bytes().decode('utf-8')
+ assert 20 <= len(prompt.encode()) <= 16000
+ preserved = json.loads(args.preserved_draft.read_bytes())
+ preserved_draft = base64.b64decode(preserved['exact_utf8_b64'],validate=True).decode('utf-8')
+ assert hashlib.sha256(preserved_draft.encode()).hexdigest()==preserved['utf8_sha256']
++assert preserved_draft!='','The old empty-draft baseline is no longer valid'
++assert prompt!=preserved_draft,'The original preserved user draft must not be submitted'
++helper_path=BASE/'sender_retirement_guard_r4.py'
++assert hashlib.sha256(helper_path.read_bytes()).hexdigest()=='5aaf4a9d1edf7e241106dffd46a1fb905373456585bf0c55d148dac654ca7c79','sender recovery helper source pin differs'
++import importlib.util
++helper_spec=importlib.util.spec_from_file_location('sender_r4_retirement',helper_path)
++retirement_helper=importlib.util.module_from_spec(helper_spec);helper_spec.loader.exec_module(retirement_helper)
++retirement_binding=retirement_helper.binding(args.retirement_resolution)
+ previous = json.loads(args.previous_report.read_bytes())
++retirement_prior=retirement_helper.prior_is_exact_retired(previous,retirement_binding)
+ identity = previous['identity']
+ digest = previous['request_sha256']
+ assert len(digest) == 64
+ known_failed = previous.get('known_no_phone_tool_execution') is True or previous.get('known_all_dispatched_tools_confirmed_terminal') is True
+ previous_status = previous.get('terminal', {}).get('status', 'provider_failed' if known_failed else 'completed')
+ assert previous_status in ('completed', 'provider_failed', 'cancelled'), 'Prior terminal requires explicit review'
+-assert previous_status == 'completed' or known_failed, 'Prior effects require confirmed terminal outcomes'
++assert previous_status == 'completed' or known_failed or retirement_prior, 'Prior effects require their actual terminal outcomes or this exact retirement certificate'
++component_binding=None
++component_helper=None
++if args.evidence_root=='component':
++    assert args.component_contract is not None and not args.reset_probe,'Component mode requires its fixed contract and no business probe reset'
++    component_helper_path=BASE/'sender_component_ready_r4.py'
++    assert hashlib.sha256(component_helper_path.read_bytes()).hexdigest()=='c1a4c05e157f199e4b4a2d153fac2fc0d02b1e25afd24c1320b91f78109f9f3d','Component readiness helper source pin differs'
++    component_spec=importlib.util.spec_from_file_location('sender_r4_component',component_helper_path)
++    component_helper=importlib.util.module_from_spec(component_spec);component_spec.loader.exec_module(component_helper)
++    component_binding=component_helper.binding(args.component_contract,prompt.encode(),identity)
++else:
++    assert args.component_contract is None,'Production mode must not use a component rendezvous'
+ label = args.label
+ old = (BASE.parent / 'stock16-hepta-control-check-Root-v146-r1/control_send_once.py').read_text()
+ assert hashlib.sha256(old.encode()).hexdigest()=='ca200ab35d39ec42232e853c785ab298958858cb4f03e2092231d1ccc638fc70'
+ source = old[:old.index('expected=')]
+ source += 'label=' + repr(label) + '\nreset_probe=' + repr(args.reset_probe) + '\n'
+ source += 'preserved_draft=' + repr(preserved_draft) + '\n'
++source += 'retirement_binding='+repr(retirement_binding)+'\nretirement_prior='+repr(retirement_prior)+'\nevidence_mode='+repr(args.evidence_root)+'\n'
++source += 'RETIREMENT_READ_GUARD_SOURCE='+repr(retirement_helper.phone_guard(retirement_binding))+'\n'
++source += 'component_binding='+repr(component_binding)+'\n'
++source += 'COMPONENT_READY_PROBE_SOURCE='+repr(component_helper.phone_probe(component_binding) if component_binding else None)+'\n'
++if component_binding:source += 'import re\n'+component_helper.VALIDATOR_SOURCE+'\n'
+ source += 'expected=' + repr(prompt) + '\nprevious_identity=' + repr(identity) + '\nprevious_digest=' + repr(digest) + '\nprevious_status=' + repr(previous_status) + '\n'
+ source += 'known_all_prior_tools_confirmed=' + repr(previous.get('known_all_dispatched_tools_confirmed_terminal') is True) + '\n'
+ decoder = (BASE.parent / 'stock16-hepta-app-task-selection-source-B-v147-r1/decode_client_state.py').read_text()
+@@ -51,93 +82,239 @@
+ source += helpers
+ source += 'READ_ONLY_PROBE_SOURCE=' + repr(READ_ONLY_PROBE) + '\n'
+ source += LATENCY_OBSERVER
++source += "\ndef component_send_margin(reading,minimum_remaining_ns=15000000000):\n elapsed=time.monotonic_ns()-reading['read_start_monotonic_ns']\n assert elapsed>=0,'Pocket4 monotonic clock changed'\n value=reading['observation']\n assert value['remaining_accept_ns']-elapsed>=minimum_remaining_ns,'Component accept margin elapsed; no Send'\n assert component_binding['contract']['expires_unix_ms']-value['phone_unix_ms']-elapsed//1000000>=minimum_remaining_ns//1000000,'Component contract margin elapsed; no Send'\n assert time.monotonic_ns()<=pre_send_deadline_ns,'Original pre-Send deadline elapsed; no Send'\n\ndef read_component_ready(tag,previous=None,minimum_remaining_ns=15000000000):\n import signal\n assert component_binding is not None and evidence_mode=='component','Fixed component mode required'\n assert time.monotonic_ns()+8_000_000_000<=pre_send_deadline_ns,'Insufficient original pre-Send read budget'\n def expired(_number,_frame):raise RuntimeError('component ready read deadline')\n previous_handler=signal.getsignal(signal.SIGALRM)\n assert signal.getitimer(signal.ITIMER_REAL)==(0.0,0.0),'Existing deadline must not be cleared'\n signal.signal(signal.SIGALRM,expired)\n result=None;value=None;started=time.monotonic_ns()\n try:\n  signal.setitimer(signal.ITIMER_REAL,8.0)\n  command='/data/adb/magisk/busybox timeout -s TERM -k 1 6 /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -c '+shlex.quote(COMPONENT_READY_PROBE_SOURCE)\n  result=f.shell('/debug_ramdisk/su -c '+shlex.quote(command),c,t,timeout=6)\n  assert result['rc']==0,'Fixed component ready observation failed; no Send'\n  value=json.loads(result['stdout'])\n  if value.get('state')=='waiting_for_ready':\n   assert previous is None,'Component ready vanished after observation'\n   assert value['contract_sha256']==component_binding['contract_sha256'] and value['nonce']==component_binding['contract']['nonce'] and value['owner_request_sha256']==component_binding['contract']['owner_request_sha256']\n   assert value['claim_absent'] is True and value['ended_absent'] is True\n  else:\n   validate_ready_observation(value,component_binding,previous,minimum_remaining_ns)\n finally:\n  signal.setitimer(signal.ITIMER_REAL,0)\n  signal.signal(signal.SIGALRM,previous_handler)\n  reading={'read_start_monotonic_ns':started,'read_end_monotonic_ns':time.monotonic_ns(),\n           'original_wire_receipt':result,'observation':value,'read_only':True,\n           'socket_connections':0,'service_launches':0}\n  save(tag+'.original-read.json',reading)\n if value['state']=='ready_observed':component_send_margin(reading,minimum_remaining_ns)\n return reading\n\ndef wait_component_rendezvous():\n assert component_binding is not None and evidence_mode=='component','Fixed component rendezvous only'\n now=time.monotonic_ns()\n assert now+30_000_000_000<=pre_send_deadline_ns,'Insufficient original pre-Send budget for rendezvous'\n save('COMPONENT-PREPARED-NO-SEND.json',{\n  'schema':'hepta.component-sender-prepared.v150.r4','state':'PREPARED_NO_SEND',\n  'nonce':component_binding['contract']['nonce'],\n  'owner_request_sha256':component_binding['contract']['owner_request_sha256'],\n  'contract_sha256':component_binding['contract_sha256'],\n  'provider_source_sha256':component_binding['source_sha256'],\n  'ready_path':component_binding['phone_ready_path'],\n  'clock':'Pocket4 time.monotonic_ns, one actor process',\n  'prepared_monotonic_ns':now,'pre_send_deadline_monotonic_ns':pre_send_deadline_ns,\n  'pre_send_budget_remaining_seconds':(pre_send_deadline_ns-now)/1e9,\n  'same_phone_accept_minimum_remaining_seconds':15,\n  'provider_started_by_sender':False,'socket_connections':0,'send_attempt_count':0,\n  'root_action':'Root may launch the separately reviewed fixed component-r2 provider once; sender only reads its fixed ready file'})\n count=0\n while time.monotonic_ns()+25_000_000_000<=pre_send_deadline_ns:\n  count+=1\n  reading=read_component_ready('COMPONENT-READY-%04d'%count,minimum_remaining_ns=25000000000)\n  if reading['observation']['state']=='ready_observed':return reading\n  pause=min(.25,max(0,(pre_send_deadline_ns-time.monotonic_ns()-25_000_000_000)/1e9))\n  if pause:time.sleep(pause)\n raise RuntimeError('Component rendezvous deadline elapsed; zero Send, no provider restart')\n"
+ source += r'''
+-if reset_probe:sh('am force-stop org.trillionnium.hepta.controlprobe')
+-sh('input keyevent 224; wm dismiss-keyguard; cmd statusbar collapse; am start -W -n org.trillionnium.owneropen/.OwnerOpenShellActivity')
+-nodes=dump('INITIAL')
+-for index in range(4):
+- if any(n.attrib.get('resource-id')=='org.trillionnium.owneropen:id/ui_prompt' for n in nodes):break
+- dismiss=[n for n in nodes if n.attrib.get('package')=='org.trillionnium.owneropen' and n.attrib.get('resource-id')=='android:id/button2' and n.attrib.get('text') in ('关闭','返回','完成') and n.attrib.get('clickable')=='true']
+- assert len(dismiss)==1,'Unknown modal retained; no task sent'
+- tap(dismiss[0]);nodes=dump('DISMISS-INFO-'+str(index))
+-assert any(n.attrib.get('resource-id')=='org.trillionnium.owneropen:id/ui_prompt' for n in nodes)
+-status=node(nodes,'org.trillionnium.owneropen:id/ui_control_status').attrib.get('text','')
+-assert '暂停' not in status,'Task arming is paused; no task sent'
+-editor=node(nodes,'org.trillionnium.owneropen:id/ui_prompt');existing=editor.attrib.get('text','')
+-# A preserved-empty draft is independently confirmed with the frozen helper.
+-# Its CAS still compares effectiveText==empty before the only new input action.
+-if preserved_draft=='' and editor.attrib.get('hint') and existing==editor.attrib.get('hint'):
+- existing=''
+-assert existing == preserved_draft, 'Draft changed since immutable preservation; no task sent'
+-save('PRESERVED-USER-DRAFT.json',{'exact_text':existing,'utf8_sha256':hashlib.sha256(existing.encode()).hexdigest(),'restore_required':True,'submitted_original_draft':False})
+-if existing!=expected:
++def read_selected_identity(tag,wanted_identity,wanted_digest):
++ directory='/data/user/0/org.trillionnium.owneropen/files/'
++ command='test ! -e '+directory+'owner-client-session-v1.pending && base64 '+directory+'owner-client-session-v1.bin && test ! -e '+directory+'owner-client-session-v1.pending'
++ result=f.shell('/debug_ramdisk/su -c '+shlex.quote(command),c,t,timeout=8)
++ save(tag+'.original-read.json',result)
++ assert result['rc']==0,'Selected task state unreadable'
++ raw=base64.b64decode(''.join(result['stdout'].split()),validate=True)
++ selected=decode_client_state(raw)
++ assert all(selected[k]==wanted_identity[k] for k in ('session_id','task_id','turn_id')) and selected['turn_request_sha256']==wanted_digest,'Selected task changed; no Send or draft replacement'
++ return selected
++
++def read_retirement_gate(tag):
++ import signal
++ def expired(_number,_frame):raise RuntimeError('retirement read deadline')
++ previous_handler=signal.getsignal(signal.SIGALRM)
++ assert signal.getitimer(signal.ITIMER_REAL)==(0.0,0.0),'existing deadline must not be cleared'
++ signal.signal(signal.SIGALRM,expired)
++ result=None
++ try:
++  signal.setitimer(signal.ITIMER_REAL,8.0)
++  command='/data/adb/magisk/busybox timeout -s TERM -k 1 6 /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -c '+shlex.quote(RETIREMENT_READ_GUARD_SOURCE)
++  result=f.shell('/debug_ramdisk/su -c '+shlex.quote(command),c,t,timeout=6)
++  assert result['rc']==0,'Original retirement or global action gate unverified'
++  value=json.loads(result['stdout'])
++  assert value['state']=='original_retirement_verified' and value['global_action_gate_clear'] is True
++  assert value['resolution_sha256']==retirement_binding['resolution_sha256'] and value['proof_sha256']==retirement_binding['proof_sha256']
++ finally:
++  signal.setitimer(signal.ITIMER_REAL,0)
++  signal.signal(signal.SIGALRM,previous_handler)
++  save(tag+'.original-read.json',{'original_wire_receipt':result,'read_only':True,'no_retry':True})
++ return value
++
++def restore_preserved_draft(timing,send_attempted,draft_input_confirmed):
++ if not draft_input_confirmed:
++  value={'state':'RESTORE_NOT_AUTOMATED_INPUT_OUTCOME_UNCONFIRMED','original_draft_preserved_privately':True,'automatic_retry':False}
++  save('DRAFT-RESTORE-PENDING.json',value);return value
++ if send_attempted:
++  if not timing or timing.get('state')!='ORIGINAL_NATIVE_TERMINAL_OBSERVED':
++   value={'state':'RESTORE_DEFERRED_ORIGINAL_TASK_NOT_TERMINAL','original_draft_preserved_privately':True,'automatic_retry':False}
++   save('DRAFT-RESTORE-PENDING.json',value);return value
++  restore_identity=timing['scope']
++  restore_digest=timing['original_observation']['native_request_sha256']
++ else:
++  restore_identity,restore_digest=previous_identity,previous_digest
++ read_retirement_gate('RESTORE-GLOBAL-GATE')
++ read_selected_identity('RESTORE-SELECTED',restore_identity,restore_digest)
++ # This is operator cleanup after the original task terminal, never a model
++ # return receipt or business postcondition. Preserve the actual pre-cleanup UI.
++ foreground=f.shell('dumpsys activity activities | grep topResumedActivity',c,t,timeout=8)
++ save('PRE-RESTORE-FOREGROUND.json',{'original_wire_receipt':foreground,'model_business_credit':False})
++ sh('am start -W -n org.trillionnium.owneropen/.OwnerOpenShellActivity')
++ nodes=dump('RESTORE-INITIAL')
++ for index in range(4):
++  if any(n.attrib.get('resource-id')=='org.trillionnium.owneropen:id/ui_prompt' for n in nodes):break
++  dismiss=[n for n in nodes if n.attrib.get('package')=='org.trillionnium.owneropen' and n.attrib.get('resource-id')=='android:id/button2' and n.attrib.get('text') in ('关闭','返回','完成') and n.attrib.get('clickable')=='true']
++  assert len(dismiss)==1,'Unknown modal retained; draft restore deferred'
++  tap(dismiss[0]);nodes=dump('RESTORE-DISMISS-'+str(index))
++ editor=node(nodes,'org.trillionnium.owneropen:id/ui_prompt')
++ visible=editor.attrib.get('text','')
++ if visible in ('',editor.attrib.get('hint',''),'发消息或交代任务…','发消息或交代任务...'):
++  expected_before=''
++ elif visible in (expected,preserved_draft):
++  expected_before=visible
++ else:
++  raise RuntimeError('Draft changed after submission; preserved without replacement')
++ # A hint is treated as empty only for the helper's exact effectiveText CAS.
++ # A real user-entered hint string fails that CAS, so it is never overwritten.
++ read_selected_identity('RESTORE-SELECTED-FINAL',restore_identity,restore_digest)
+  tap(editor)
+- helper='CLASSPATH=/data/local/tmp/hepta-unicode-v148-r2/input.jar app_process /system/bin org.trillionnium.hepta.input.UnicodeInput set-text --operation-id root-prompt-' + label + ' --display 0 --package org.trillionnium.owneropen --view-id org.trillionnium.owneropen:id/ui_prompt --expected-text-b64 '+shlex.quote(base64.b64encode(existing.encode()).decode() or '-')+' --text-b64 '+shlex.quote(base64.b64encode(expected.encode()).decode())
+- result=sh(helper);save('OPERATOR-CHINESE-PROMPT-INPUT.json',result);answer=json.loads(result['stdout']);assert answer['status'] in ('set_verified','already_exact') and answer['own_automation_disconnected'] is True and base64.b64decode(answer['readback_text_b64']).decode()==expected
+-
+-nodes=dump('DRAFT');assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib['text']==expected
+-tap(node(nodes,'org.trillionnium.owneropen:id/ui_tools'));nodes=dump('CONNECT-MENU');tap(node(nodes,'org.trillionnium.owneropen:id/ui_reconnect'));time.sleep(.5)
+-nodes=dump('CURRENT-CONNECTION');tap(node(nodes,'org.trillionnium.owneropen:id/ui_task_summary'));nodes=dump('TASK-CONTROLS');tap(node(nodes,'org.trillionnium.owneropen:id/ui_inspect'));time.sleep(.5)
+-nodes=dump('READBACK');tap(node(nodes,'org.trillionnium.owneropen:id/ui_tools'));nodes=dump('DETAILS-MENU');tap(node(nodes,'org.trillionnium.owneropen:id/ui_details'));nodes=dump('RAW-DETAILS')
+-records=[]
+-for line in node(nodes,'org.trillionnium.owneropen:id/ui_log').attrib['text'].splitlines():
+- try:records.append(json.loads(line))
+- except (ValueError,TypeError):pass
+-save('PREVIOUS-ORIGINAL-READBACK.json',records)
+-hellos=[i for i,r in enumerate(records) if r.get('kind')=='broker.hello.ack']
+-inspections=[r['frame'] for r in records[(hellos[-1]+1 if hellos else 0):] if r.get('frame',{}).get('kind')=='turn.inspect.result' and all(r['frame'].get(k)==v for k,v in previous_identity.items())]
+-if inspections and hellos:
+- hello=records[hellos[-1]];assert hello['host_hello_ack']['payload']['runtime_ready'] is True
+- proof=inspections[-1]['payload'];assert proof['request_sha256']==previous_digest and proof['complete'] is True and proof['has_more'] is False
+- assert proof['frames'][-1]['kind']=='turn.end' and proof['frames'][-1]['payload']['status']==previous_status
+- qualified={'method':'same_connection_real_app_original_inspect','hello':hello,'previous_original_readback':inspections[-1]}
+-else:
+- # Accessibility exposes only the first100000 characters of this diagnostic
+- # TextView. Its prefix is not authority for selecting or completing a task.
+- # The app still processes its full native response and owns its Send fence.
+- # The app's view cache also drops a prefix at131072 characters, so even a
+- # shorter exposed suffix can lack a complete JSON response. Observe the
+- # committed selection and full native records instead of treating the view
+- # cache as the execution record. The app's original Inspect/Send fence stays.
+- diagnostic_chars=len(node(nodes,'org.trillionnium.owneropen:id/ui_log').attrib['text'])
+- directory='/data/user/0/org.trillionnium.owneropen/files/'
+- state_read=root('test ! -e '+directory+'owner-client-session-v1.pending && base64 '+directory+'owner-client-session-v1.bin && test ! -e '+directory+'owner-client-session-v1.pending');assert state_read['rc']==0
+- raw=base64.b64decode(''.join(state_read['stdout'].split()),validate=True);selected=decode_client_state(raw)
+- assert all(selected[k]==previous_identity[k] for k in ('session_id','task_id','turn_id')) and selected['turn_request_sha256']==previous_digest,'Selected app identity differs; no Send'
+- journal=root('grep -h -F '+shlex.quote(previous_identity['turn_id'])+' /data/trillionnium/owner-open/state/turn-events.jsonl.segments/*.jsonl');assert journal['rc']==0
+- original=[json.loads(line) for line in journal['stdout'].splitlines()];assert original and all(row['scope']==previous_identity for row in original)
+- assert [row['turn_seq'] for row in original]==list(range(len(original)))
+- assert all(row['payload']['request_sha256']==previous_digest for row in original)
+- last=original[-1]['payload']['frame'];assert last['kind']=='turn.end' and last['payload']['status']==previous_status
+- if previous_status!='completed' and not known_all_prior_tools_confirmed:assert not any(row['kind'].startswith('tool.') for row in original),'Failed task has effects without confirmed outcomes; no fresh test'
+- qualified={'method':'real_app_inspect_then_read_only_selected_identity_and_original_journal','app_diagnostic_not_complete_record':True,'diagnostic_chars':diagnostic_chars,'selected_identity':selected,'original_records':original,'app_state_writes':False,'app_guard_bypassed':False}
+-qualified['prompt_sha256']=hashlib.sha256(expected.encode()).hexdigest();save('PRE-SEND-QUALIFIED.json',qualified)
+-for index in range(2):
+- done=node(nodes,'android:id/button2');assert done.attrib['text'] in ('关闭','完成');tap(done);nodes=dump('CLOSE-DETAILS-'+str(index))
+-assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib['text']==expected
+-assert f.read('cat /proc/sys/kernel/random/boot_id',c,t)=='f8019f83-20a7-4f18-bea1-51c980621e4d'
+-send=node(nodes,'org.trillionnium.owneropen:id/ui_send');save('SEND.once.json',{'prompt':expected,'prompt_sha256':hashlib.sha256(expected.encode()).hexdigest(),'bounds':send.attrib['bounds'],'supplied_app_commands':False,'supplied_app_coordinates':False,'automatic_replay':False})
+-# Additional read-only freshness guard: identical old text cannot bind this timing.
+-pre=latency_read_original()
+-save('LATENCY-PRE-SEND.original-read.json',pre)
+-assert pre.get('observation',{}).get('state')=='no_matching_provider_start','New exact request already present or read unknown; no Send'
+-save('SEND.MONOTONIC-INTENT.json',{'p4_pre_send_monotonic_ns':time.monotonic_ns(),'send_attempt_count':1,'automatic_replay':False})
+-send_started_monotonic_ns=time.monotonic_ns()
+-send_status='unknown'
++ command='CLASSPATH=/data/local/tmp/hepta-unicode-v148-r2/input.jar app_process /system/bin org.trillionnium.hepta.input.UnicodeInput set-text --operation-id root-restore-' + label + ' --display 0 --package org.trillionnium.owneropen --view-id org.trillionnium.owneropen:id/ui_prompt --expected-text-b64 '+shlex.quote(base64.b64encode(expected_before.encode()).decode() or '-')+' --text-b64 '+shlex.quote(base64.b64encode(preserved_draft.encode()).decode() or '-')
++ result=sh(command);save('PRESERVED-DRAFT-RESTORE.original.json',result)
++ answer=json.loads(result['stdout'])
++ assert answer['status'] in ('set_verified','already_exact') and answer['own_automation_disconnected'] is True
++ readback=base64.b64decode(answer['readback_text_b64'],validate=True).decode('utf-8')
++ assert readback==preserved_draft,'Original preserved draft not exactly restored'
++ value={'state':'ORIGINAL_DRAFT_RESTORED','utf8_sha256':hashlib.sha256(readback.encode()).hexdigest(),
++        'original_draft_submitted':False,'model_business_credit':False,'restore_attempts':1}
++ save('DRAFT-RESTORE-RESULT.json',value)
++ return value
++
++pre_send_deadline_ns=time.monotonic_ns()+150_000_000_000
++draft_input_confirmed=False
++send_attempted=False
++timing=None
++actor_error=None
++exit_code=0
++restore={'state':'NOT_ATTEMPTED'}
+ try:
+- result=tap(send);send_status='tap_returned';save('SEND.result.json',result)
+-except Exception as error:
+- save('SEND.unknown.json',{'error':str(error),'automatic_replay':False,'next':'Only read original request/scope'})
+-send_returned_monotonic_ns=time.monotonic_ns()
+-save('SEND.MONOTONIC-WINDOW.json',{'send_started_monotonic_ns':send_started_monotonic_ns,'send_returned_monotonic_ns':send_returned_monotonic_ns,'clock':'Pocket4 time.monotonic_ns','send_status':send_status,'automatic_replay':False})
+-timing=observe_original_terminal(send_started_monotonic_ns,send_returned_monotonic_ns,send_status)
+-print(json.dumps({'state':timing['state'],'native_status':timing.get('native_status'),'out':str(out),'route':t,'prompt_sha256':hashlib.sha256(expected.encode()).hexdigest(),'send_to_terminal_observed_seconds':timing.get('send_to_terminal_observed_seconds'),'latency_receipt':str(out/'SEND-NATIVE-LATENCY.json'),'automatic_replay':False}))
+-if timing['state']!='ORIGINAL_NATIVE_TERMINAL_OBSERVED': raise SystemExit(2)
++ 
++ retirement_before=read_retirement_gate('PRE-MUTATION-RETIREMENT')
++ if reset_probe:sh('am force-stop org.trillionnium.hepta.controlprobe')
++ sh('input keyevent 224; wm dismiss-keyguard; cmd statusbar collapse; am start -W -n org.trillionnium.owneropen/.OwnerOpenShellActivity')
++ nodes=dump('INITIAL')
++ for index in range(4):
++  if any(n.attrib.get('resource-id')=='org.trillionnium.owneropen:id/ui_prompt' for n in nodes):break
++  dismiss=[n for n in nodes if n.attrib.get('package')=='org.trillionnium.owneropen' and n.attrib.get('resource-id')=='android:id/button2' and n.attrib.get('text') in ('关闭','返回','完成') and n.attrib.get('clickable')=='true']
++  assert len(dismiss)==1,'Unknown modal retained; no task sent'
++  tap(dismiss[0]);nodes=dump('DISMISS-INFO-'+str(index))
++ assert any(n.attrib.get('resource-id')=='org.trillionnium.owneropen:id/ui_prompt' for n in nodes)
++ status=node(nodes,'org.trillionnium.owneropen:id/ui_control_status').attrib.get('text','')
++ assert '暂停' not in status,'Task arming is paused; no task sent'
++ editor=node(nodes,'org.trillionnium.owneropen:id/ui_prompt');existing=editor.attrib.get('text','')
++ # A preserved-empty draft is independently confirmed with the frozen helper.
++ # Its CAS still compares effectiveText==empty before the only new input action.
++ if preserved_draft=='' and editor.attrib.get('hint') and existing==editor.attrib.get('hint'):
++  existing=''
++ assert existing == preserved_draft, 'Draft changed since immutable preservation; no task sent'
++ save('PRESERVED-USER-DRAFT.json',{'exact_text':existing,'utf8_sha256':hashlib.sha256(existing.encode()).hexdigest(),'restore_required':True,'submitted_original_draft':False})
++ if existing!=expected:
++  tap(editor)
++  helper='CLASSPATH=/data/local/tmp/hepta-unicode-v148-r2/input.jar app_process /system/bin org.trillionnium.hepta.input.UnicodeInput set-text --operation-id root-prompt-' + label + ' --display 0 --package org.trillionnium.owneropen --view-id org.trillionnium.owneropen:id/ui_prompt --expected-text-b64 '+shlex.quote(base64.b64encode(existing.encode()).decode() or '-')+' --text-b64 '+shlex.quote(base64.b64encode(expected.encode()).decode())
++  result=sh(helper);save('OPERATOR-CHINESE-PROMPT-INPUT.json',result);answer=json.loads(result['stdout']);assert answer['status'] in ('set_verified','already_exact') and answer['own_automation_disconnected'] is True and base64.b64decode(answer['readback_text_b64']).decode()==expected
++ 
++ draft_input_confirmed=True
++ nodes=dump('DRAFT');assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib['text']==expected
++ tap(node(nodes,'org.trillionnium.owneropen:id/ui_tools'));nodes=dump('CONNECT-MENU');tap(node(nodes,'org.trillionnium.owneropen:id/ui_reconnect'));time.sleep(.5)
++ nodes=dump('CURRENT-CONNECTION');tap(node(nodes,'org.trillionnium.owneropen:id/ui_task_summary'));nodes=dump('TASK-CONTROLS');tap(node(nodes,'org.trillionnium.owneropen:id/ui_inspect'));time.sleep(.5)
++ nodes=dump('READBACK');tap(node(nodes,'org.trillionnium.owneropen:id/ui_tools'));nodes=dump('DETAILS-MENU');tap(node(nodes,'org.trillionnium.owneropen:id/ui_details'));nodes=dump('RAW-DETAILS')
++ records=[]
++ for line in node(nodes,'org.trillionnium.owneropen:id/ui_log').attrib['text'].splitlines():
++  try:records.append(json.loads(line))
++  except (ValueError,TypeError):pass
++ save('PREVIOUS-ORIGINAL-READBACK.json',records)
++ hellos=[i for i,r in enumerate(records) if r.get('kind')=='broker.hello.ack']
++ inspections=[r['frame'] for r in records[(hellos[-1]+1 if hellos else 0):] if r.get('frame',{}).get('kind')=='turn.inspect.result' and all(r['frame'].get(k)==v for k,v in previous_identity.items())]
++ if inspections and hellos:
++  hello=records[hellos[-1]];assert hello['host_hello_ack']['payload']['runtime_ready'] is True
++  proof=inspections[-1]['payload'];assert proof['request_sha256']==previous_digest and proof['complete'] is True and proof['has_more'] is False
++  assert proof['frames'][-1]['kind']=='turn.end' and proof['frames'][-1]['payload']['status']==previous_status
++  qualified={'method':'same_connection_real_app_original_inspect','hello':hello,'previous_original_readback':inspections[-1]}
++ else:
++  # Accessibility exposes only the first100000 characters of this diagnostic
++  # TextView. Its prefix is not authority for selecting or completing a task.
++  # The app still processes its full native response and owns its Send fence.
++  # The app's view cache also drops a prefix at131072 characters, so even a
++  # shorter exposed suffix can lack a complete JSON response. Observe the
++  # committed selection and full native records instead of treating the view
++  # cache as the execution record. The app's original Inspect/Send fence stays.
++  diagnostic_chars=len(node(nodes,'org.trillionnium.owneropen:id/ui_log').attrib['text'])
++  directory='/data/user/0/org.trillionnium.owneropen/files/'
++  state_read=root('test ! -e '+directory+'owner-client-session-v1.pending && base64 '+directory+'owner-client-session-v1.bin && test ! -e '+directory+'owner-client-session-v1.pending');assert state_read['rc']==0
++  raw=base64.b64decode(''.join(state_read['stdout'].split()),validate=True);selected=decode_client_state(raw)
++  assert all(selected[k]==previous_identity[k] for k in ('session_id','task_id','turn_id')) and selected['turn_request_sha256']==previous_digest,'Selected app identity differs; no Send'
++  journal=root('grep -h -F '+shlex.quote(previous_identity['turn_id'])+' /data/trillionnium/owner-open/state/turn-events.jsonl.segments/*.jsonl');assert journal['rc']==0
++  original=[json.loads(line) for line in journal['stdout'].splitlines()];assert original and all(row['scope']==previous_identity for row in original)
++  assert [row['turn_seq'] for row in original]==list(range(len(original)))
++  assert all(row['payload']['request_sha256']==previous_digest for row in original)
++  last=original[-1]['payload']['frame'];assert last['kind']=='turn.end' and last['payload']['status']==previous_status
++  if previous_status!='completed' and not (known_all_prior_tools_confirmed or retirement_prior):assert not any(row['kind'].startswith('tool.') for row in original),'Failed task has effects without confirmed outcomes; no fresh test'
++  qualified={'method':'real_app_inspect_then_read_only_selected_identity_and_original_journal','app_diagnostic_not_complete_record':True,'diagnostic_chars':diagnostic_chars,'selected_identity':selected,'original_records':original,'app_state_writes':False,'app_guard_bypassed':False}
++ qualified['retirement_prior_admission']=retirement_prior
++ qualified['retirement_gate']=retirement_before
++ qualified['prompt_sha256']=hashlib.sha256(expected.encode()).hexdigest();save('PRE-SEND-QUALIFIED.json',qualified)
++ for index in range(2):
++  done=node(nodes,'android:id/button2');assert done.attrib['text'] in ('关闭','完成');tap(done);nodes=dump('CLOSE-DETAILS-'+str(index))
++ assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib['text']==expected
++ assert f.read('cat /proc/sys/kernel/random/boot_id',c,t)=='f8019f83-20a7-4f18-bea1-51c980621e4d'
++ send=node(nodes,'org.trillionnium.owneropen:id/ui_send')
++ # Additional read-only freshness guard: identical old text cannot bind this timing.
++ pre=latency_read_original()
++ save('LATENCY-PRE-SEND.original-read.json',pre)
++ assert pre.get('observation',{}).get('state')=='no_matching_provider_start','New exact request already present or read unknown; no Send'
++ retirement_final=read_retirement_gate('FINAL-PRE-SEND-RETIREMENT')
++ read_selected_identity('FINAL-PRE-SEND-SELECTED',previous_identity,previous_digest)
++ nodes=dump('FINAL-PRE-SEND-UI')
++ assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib.get('text','')==expected,'Fresh owner draft changed; no Send'
++ send=node(nodes,'org.trillionnium.owneropen:id/ui_send')
++ component_final=None
++ if component_binding is not None:
++  component_first=wait_component_rendezvous()
++  retirement_final=read_retirement_gate('COMPONENT-FINAL-PRE-SEND-RETIREMENT')
++  read_selected_identity('COMPONENT-FINAL-PRE-SEND-SELECTED',previous_identity,previous_digest)
++  nodes=dump('COMPONENT-FINAL-PRE-SEND-UI')
++  assert node(nodes,'org.trillionnium.owneropen:id/ui_prompt').attrib.get('text','')==expected,'Fresh component draft changed; no Send'
++  send=node(nodes,'org.trillionnium.owneropen:id/ui_send')
++  component_final=read_component_ready('COMPONENT-FINAL-PRE-SEND-READY',component_first['observation'])
++ assert time.monotonic_ns()<=pre_send_deadline_ns,'Pre-Send budget elapsed; no late Send'
++ save('SEND.once.json',{'prompt':expected,'prompt_sha256':hashlib.sha256(expected.encode()).hexdigest(),'bounds':send.attrib['bounds'],'supplied_app_commands':False,'supplied_app_coordinates':False,'automatic_replay':False})
++ save('SEND.MONOTONIC-INTENT.json',{'p4_pre_send_monotonic_ns':time.monotonic_ns(),'send_attempt_count':1,'automatic_replay':False})
++ assert time.monotonic_ns()<=pre_send_deadline_ns,'Pre-Send budget elapsed after intent persistence; no late Send'
++ if component_final is not None:component_send_margin(component_final)
++ send_started_monotonic_ns=time.monotonic_ns()
++ send_status='unknown'
++ send_attempted=True
++ try:
++  result=tap(send);send_status='tap_returned';save('SEND.result.json',result)
++ except Exception as error:
++  save('SEND.unknown.json',{'error':str(error),'automatic_replay':False,'next':'Only read original request/scope'})
++ send_returned_monotonic_ns=time.monotonic_ns()
++ save('SEND.MONOTONIC-WINDOW.json',{'send_started_monotonic_ns':send_started_monotonic_ns,'send_returned_monotonic_ns':send_returned_monotonic_ns,'clock':'Pocket4 time.monotonic_ns','send_status':send_status,'automatic_replay':False})
++ timing=observe_original_terminal(send_started_monotonic_ns,send_returned_monotonic_ns,send_status)
++ # Final output is emitted only after the separately recorded draft cleanup.
++ if timing['state']!='ORIGINAL_NATIVE_TERMINAL_OBSERVED': raise SystemExit(2)
++except BaseException as error:
++ actor_error={'error_type':type(error).__name__,'error':str(error),'automatic_send_retry':False}
++ save('ACTOR-FAILURE.json',actor_error)
++ exit_code=2
++finally:
++ try:
++  restore=restore_preserved_draft(timing,send_attempted,draft_input_confirmed)
++ except BaseException as error:
++  restore={'state':'RESTORE_UNCONFIRMED_RETAIN_PRIVATE_ORIGINAL','error_type':type(error).__name__,
++           'automatic_retry':False,'original_draft_preserved_privately':True}
++  save('DRAFT-RESTORE-UNCONFIRMED.json',restore)
++ if restore.get('state')!='ORIGINAL_DRAFT_RESTORED':exit_code=2
++print(json.dumps({'state':timing.get('state') if timing else 'PRE_SEND_OR_ACTOR_FAILURE',
++ 'native_status':timing.get('native_status') if timing else None,
++ 'out':str(out),'route':t,'prompt_sha256':hashlib.sha256(expected.encode()).hexdigest(),
++ 'draft_restore':{'state':restore.get('state'),'restore_attempts':restore.get('restore_attempts',0),'original_draft_submitted':False},'send_attempt_count':int(send_attempted),'automatic_replay':False,
++ 'business_success_verified':False,'independent_collector_required':True,
++ 'retirement_resolution_sha256':retirement_binding['resolution_sha256']}))
++if exit_code:raise SystemExit(exit_code)
++
+ '''
+ compile(source, label + '.actor.py', 'exec')
+-(BASE / (label + '.actor.py')).write_text(source)
++if not args.execute_once:
++    path=BASE/(label+'.preview.actor.py')
++    with path.open('x') as out:out.write(source);out.flush();os.fsync(out.fileno())
++    os.chmod(path,0o600)
++    print(json.dumps({'state':'BUILT_ONLY_NO_PHONE','actor_path':str(path),
++                     'actor_sha256':hashlib.sha256(source.encode()).hexdigest(),
++                     'retirement_resolution_sha256':retirement_binding['resolution_sha256'],
++                     'evidence_root_mode':args.evidence_root,'phone_calls':0,'send_attempts':0}))
++    raise SystemExit(0)
++with (BASE / (label + '.actor.py')).open('x') as out:
++    out.write(source);out.flush();os.fsync(out.fileno())
++os.chmod(BASE/(label+'.actor.py'),0o600)
+ intent = {'task': args.label, 'prompt': prompt, 'prompt_sha256': hashlib.sha256(prompt.encode()).hexdigest(),
+           'previous_identity': identity, 'previous_digest': digest,
++          'retirement_resolution_sha256':retirement_binding['resolution_sha256'],
++          'retirement_prior_admission':retirement_prior,'evidence_root_mode':args.evidence_root,
+           'supplied_app_commands': False, 'supplied_app_coordinates': False, 'automatic_replay': False}
+ with (BASE / (label + '.local-once.json')).open('x') as stream:
+     json.dump(intent, stream, ensure_ascii=False, indent=2); stream.write('\n'); stream.flush(); os.fsync(stream.fileno())
+@@ -148,5 +325,6 @@
+     receipt = {'rc': result.returncode, 'stdout': result.stdout.decode(errors='replace'), 'stderr': result.stderr.decode(errors='replace')}
+ except Exception as error:
+     receipt = {'UNKNOWN': str(error), 'automatic_replay': False}
+-(BASE / (label + '.send-result.json')).write_text(json.dumps(receipt, ensure_ascii=False, indent=2)+'\n')
++with (BASE / (label + '.send-result.json')).open('x') as out:
++    json.dump(receipt,out,ensure_ascii=False,indent=2);out.write('\n');out.flush();os.fsync(out.fileno())
+ print(json.dumps(receipt, ensure_ascii=False, indent=2))

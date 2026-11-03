@@ -1,0 +1,127 @@
+{
+  "original_artifact_relative_path": "provider/r4/provenance/LLAMA-JSON-SCHEMA-SUPPORT-v150-r4.json",
+  "original_artifact_sha256": "af5c81616a0671fbc6e99f303b4701a3d957948b775f18f5dcad0372db0cbf97",
+  "original_bytes": 5510,
+  "projected_document": {
+    "actual_model_requests": 0,
+    "actual_phone_actions": 0,
+    "commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+    "findings": [
+      {
+        "actual": "Both are parsed as common_chat_schema_any_of and emitted as grammar alternatives. This does not enforce exclusive exactly-one semantics on overlapping branches.",
+        "feature": "oneOf / anyOf",
+        "recommendation": "Use a root oneOf containing self-contained full object schemas. Give branches mutually exclusive kind/tool const discriminants; do not depend on shared root properties/required because the parser returns alternatives first.",
+        "source": "common/json-schema.cpp:253-255; common/json-schema-to-grammar.cpp:395-401,916-917"
+      },
+      {
+        "actual": "A const arbitrary JSON value or each enum value becomes a literal JSON grammar string.",
+        "feature": "const / enum",
+        "recommendation": "command const:'' for non-input; kind/tool const; argv const:['0'] or const:[] supported. A free summary must remain free rather than forcing the expected success/nonce.",
+        "source": "common/json-schema.cpp:276-288; common/json-schema-to-grammar.cpp:851-853,920-927",
+        "tests": [
+          "string const",
+          "non-string const",
+          "non-string enum",
+          "literal string with escapes"
+        ]
+      },
+      {
+        "actual": "items object plus minItems/maxItems makes a repeated item grammar with specified bounds.",
+        "example": {
+          "items": {
+            "enum": [
+              "视觉挑战",
+              "Unicode验证",
+              "计算器",
+              "设置"
+            ],
+            "type": "string"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "feature": "homogeneous fixed-length arrays",
+        "source": "common/json-schema.cpp:186-206; common/json-schema-to-grammar.cpp:956-963",
+        "tests": [
+          "minItems",
+          "maxItems 0",
+          "maxItems 1",
+          "maxItems 2",
+          "min + maxItems"
+        ]
+      },
+      {
+        "actual": "prefixItems array without items is parsed as KIND_TUPLE and emits exactly those N entries; tuple conversion closes bracket immediately.",
+        "caution": "The tuple parser returns before reading minItems/maxItems. Equal redundant min=max=N has the same generated behavior, but those constraints are not independently processed. Prefer omitting redundant min/max.",
+        "example": {
+          "prefixItems": [
+            {
+              "const": "0"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "type": "array"
+        },
+        "feature": "heterogeneous fixed tuples",
+        "source": "common/json-schema.cpp:188-198; common/json-schema-to-grammar.cpp:944-954",
+        "tests": [
+          "tuple1",
+          "tuple2"
+        ]
+      },
+      {
+        "actual": "If both are present, items wins. items:{} makes unrestricted items; items:false fails because schema nodes must be objects.",
+        "feature": "items overrides prefixItems",
+        "recommendation": "Never combine prefixItems with items for this pinned runtime; especially do not add modern-draft items:false.",
+        "source": "common/json-schema.cpp:188-200,246-248",
+        "tests": [
+          "array with empty items and prefixItems"
+        ]
+      },
+      {
+        "actual": "Required properties and false additionalProperties are represented in each object branch. Boolean false additionalProperties means no extra-property grammar.",
+        "feature": "required / additionalProperties",
+        "recommendation": "Repeat a complete object shape with required all wire fields and additionalProperties:false in each branch.",
+        "source": "common/json-schema.cpp:143-181; common/json-schema-to-grammar.cpp:726-819"
+      },
+      {
+        "actual": "Anchored basic regex supports alternation, groups, classes and bounded quantifiers. Unsupported patterns degrade to unrestricted strings with warning rather than becoming a semantic security boundary.",
+        "feature": "coordinate string pattern",
+        "recommendation": "Keep existing integer/bounds/viewport/pixel guards; grammar narrows syntactic model choices, not proof of coordinate validity.",
+        "source": "common/json-schema-to-grammar.cpp:414-433,493-608",
+        "supported_coordinate_pattern": "^(0|[1-9][0-9]{0,2}|1000)$"
+      }
+    ],
+    "grammar_execution_validation": false,
+    "private_material_included": false,
+    "release": "v0.8.0",
+    "schema": "hepta.llamacpp-json-schema-source-audit.v150.1",
+    "source_files": [
+      {
+        "git_blob_sha1": "eb57a524a6050b8220cf42690c016cacf406e371",
+        "path": "common/json-schema.cpp",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/8642541b255bfb5dc39cd351a178be09013a55d6/common/json-schema.cpp"
+      },
+      {
+        "git_blob_sha1": "6f3ecc992113dcfcce7cb48d22da8e8eafdabcde",
+        "path": "common/json-schema-to-grammar.cpp",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/8642541b255bfb5dc39cd351a178be09013a55d6/common/json-schema-to-grammar.cpp"
+      },
+      {
+        "git_blob_sha1": "c7d971b29dd0005bf12b28ec62e1a026aa6e7f7a",
+        "path": "tests/test-json-schema-to-grammar.cpp",
+        "url": "https://github.com/ggml-org/llama.cpp/blob/8642541b255bfb5dc39cd351a178be09013a55d6/tests/test-json-schema-to-grammar.cpp"
+      }
+    ],
+    "source_only_conclusion": "The proposed disjoint tool branches use the implemented GBNF subset. Exact generated grammar and counterexample checks still require an offline compiled pinned converter; this audit does not claim those checks ran."
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

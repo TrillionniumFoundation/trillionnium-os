@@ -1,0 +1,83 @@
+{
+  "original_artifact_relative_path": "acceptance/component-original-verifier-r1/SOURCE-SEAL-component-original-verifier-r1.json",
+  "original_artifact_sha256": "1272feb078c096b7ff97604362a8d14bdf01207b17482f88f3dfd272aa760d89",
+  "original_bytes": 3779,
+  "projected_document": {
+    "client_source_sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+    "files": [
+      {
+        "bytes": 29737,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/verify_component_originals.py",
+        "role": "frozen support source",
+        "sha256": "6955bb4c2aed3063a7e2af354aae44a871ea9868369af7dd3ee638792f902a6f"
+      },
+      {
+        "bytes": 6701,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/native_journal_audit.py",
+        "role": "frozen support source",
+        "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+      },
+      {
+        "bytes": 16210,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/test_component_originals.py",
+        "role": "frozen support source",
+        "sha256": "d278b072135da6c0f4f7fe31c4c3a60b9b2bd63b7cfdfd565882afefb21cf43a"
+      },
+      {
+        "bytes": 1153,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/HOST-CHECKS-01.json",
+        "role": "host-only synthetic checks",
+        "sha256": "b5433f6b7e13618d45506df8c243dcccd553e6f7d0dfa4f519e2cf4cdc713af4"
+      },
+      {
+        "bytes": 7812,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/README.md",
+        "sha256": "8dc9a1dbbcef9cefeea00554074d80339332be2281426d5616767e38be2cc5ed"
+      },
+      {
+        "bytes": 4740,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/EXPORT-SPEC.json",
+        "sha256": "b599e7ac1bcfa8a21723d8d935d31a81a8e4bc985d87ccab1853a6bf4aba5107"
+      },
+      {
+        "bytes": 731,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/HOST-TEST-JOB-TERMINAL.json",
+        "sha256": "c74accd6bdcf568358295794cf4ea02a4a872dedcac2e6d1f2017981b8b8f100"
+      },
+      {
+        "bytes": 892,
+        "path": "/operator-workspace/razr60/phone-local-v150/component-original-verifier-r1/FOCUSED-REVIEW.json",
+        "sha256": "376099ac40f18d7383579af038b03d7040b1878fda8e12fc6ab1bd92796d4100"
+      }
+    ],
+    "first_fixture_draft": "Retained wrong expected check-count assertion; corrected only test assertion; no production verification condition weakened",
+    "fixed19_case_credit": false,
+    "host_checks_passed": 11,
+    "host_exit_code": 0,
+    "host_job_id": "1a1a307db14-fc05-ad3",
+    "independent_focused_review": "PASS",
+    "limitations": [
+      "Physical verdict requires exported actual originals",
+      "Live policy audit and parent/provider retirement remain separate",
+      "No global WAL completeness claim for unseen records"
+    ],
+    "model_calls": 0,
+    "native_auditor_sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf",
+    "phone_calls": 0,
+    "physical_component_qualification": false,
+    "provider_source_sha256": "83e867936e6db85e5187a6e8853c40b7bdd9804a27cdd09591c1a8274a950295",
+    "revision": "component-original-verifier-r1",
+    "schema": "hepta.native-component-original-verifier.source-seal.v1",
+    "scope": "Read-only local original evidence verification; creates one new private report only",
+    "source_python_syntax": "Python 3.12 compatible AST check; host fixtures executed using Python 3.14",
+    "status": "SEALED_HOST_ONLY",
+    "task_submissions": 0
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

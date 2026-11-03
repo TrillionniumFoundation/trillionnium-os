@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.native-component-original-verifier.focused-review.v1",
+  "reviewer": "/root/android_runtime_build",
+  "source_sha256": "6955bb4c2aed3063a7e2af354aae44a871ea9868369af7dd3ee638792f902a6f",
+  "result": "PASS",
+  "record_type": "Accurate transcription of collaborator's focused static review; not a new physical observation",
+  "checks": [
+    "Compared final verifier with previous draft and pinned client/provider/native auditor/runtime sources",
+    "Four process PID bounds are strict integers greater than one",
+    "All 15 phase fences match frozen client mark order and send/receive byte progression",
+    "Peer verification precedes the first request send",
+    "No new phone/socket/subprocess operation or verification condition weakening"
+  ],
+  "execution_by_reviewer": false,
+  "optional_new_tests_requested": false,
+  "physical_component_qualification": false
+}

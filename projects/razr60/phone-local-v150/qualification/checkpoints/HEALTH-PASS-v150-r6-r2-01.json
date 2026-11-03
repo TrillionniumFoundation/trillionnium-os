@@ -1,0 +1,175 @@
+{
+  "combination": {
+    "actual_live_policy_sha256": "05756784090a574be850a068576fbded2842f3fa8c1af0aa5b430f875c78a31f",
+    "actual_policy_audit_sha256": "8f5425f59c30635445cbfafbdc9fddbf8c3645dbef83e36c413f5931a21acd80",
+    "canonical_combination_sha256": "5c04f6d4b27be786387e83998c2f8e350c263835bb12d629278d0d252c36e418",
+    "frozen_combination_sha256": "1cca670c3d51e0319ba9a07921319d1bf36af160780eed4e7e0c68e2b7a72802",
+    "full_rule_sha256": "116a96094dfec4c222e7a0a90598b3674ec2858b409be0dcecd72ea02ef993bb",
+    "module_manifest_sha256": "9e5a8c3f9a5a7f4426d109beba1073edcfa2dfe4712760e446054b04906afb4a",
+    "native_and_apps_manifest_sha256": "f61f5f794763d5c51285712cc926566ab8fde05d0166d16e6fc5d2de701d8bf8",
+    "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "release": "v150-r6-r2",
+    "rules_manifest_sha256": "01eb1a6e50948bfa6f0dff0ebd40357d0f4858c6787f9ea25a68fc8cc2c48fd8",
+    "schema": "hepta.acceptance-combination.v150.r6.1"
+  },
+  "cutoff": "Immediately after the first fully collected r6-r2 health terminal; later business attempts are not included.",
+  "evidence": {
+    "collector_report_bytes": 27753,
+    "independently_read_collector_report_sha256": "47ce2d5ecf9a6948b097975f0a9b06b1a217e551a44524269732850c7233b285",
+    "public_projection_excludes_raw_private_evidence": true,
+    "root_health_admission_review_sha256": "83db5f3b086bdc73e1d025c4b6f66b1e4f823299dfd9c9d5eacc0f566dae48e0",
+    "root_verified_capture_operation_sha256": "cda5ff0c98d442b77d7530907d7fb42a9c5c01ca681e50cae9369432293d90b2",
+    "root_verified_original_capture_sha256": "e4ed4ad75753daf3dd2440ba35716565e129f8400b547e8a8e61f111d57dcb5a",
+    "root_verified_original_stages_with_actual_zero_exit": 4,
+    "root_verified_readiness_capture_sha256": "9c8ffb4ca9ccc79b8cdc2df1e45603776c062d5e43c26d02bb5c490bbed2e25d",
+    "root_verified_readiness_file_count": 80
+  },
+  "health": {
+    "cancelled": 0,
+    "capture_actor_exit_code": 0,
+    "capture_phone_exit_code": 0,
+    "collector_exit_code": 0,
+    "complete_business_success": false,
+    "complete_health_success": 1,
+    "completion_tokens": 60,
+    "failed": 0,
+    "finish_reason": "stop",
+    "health_qualification_pass": true,
+    "http_elapsed_seconds": 3.1981545299931895,
+    "issues": [],
+    "native_display_preserves_business_unverified_prefix": true,
+    "native_records": 3,
+    "native_status": "completed",
+    "nonce_not_forced_by_schema": true,
+    "old_request_or_action_replayed": false,
+    "one_send": true,
+    "original_capture_files": 31,
+    "original_model_requests": 1,
+    "original_request_exactly_retained": true,
+    "original_tool_dispatches": 0,
+    "original_user_draft_restored": true,
+    "original_user_draft_submitted": false,
+    "output_tokens_per_second": 33.1486373663,
+    "partial": 0,
+    "prompt_tokens": 170,
+    "proof_complete": true,
+    "raw_model_summary_equals_fresh_nonce": true,
+    "real_http_status": 200,
+    "sample_size": 1,
+    "server_slot_idle_after": true,
+    "total_tokens": 230,
+    "worker_joined": true
+  },
+  "next_work": [
+    "Use a new nonce, new text, exact full request binding and one-use postcondition contract for visual and Unicode tasks on this frozen combination.",
+    "Read every original action receipt before deciding recovery; never replay completed or uncertain effects.",
+    "Complete the unchanged 19-case protocol using current native routes; keep full success, partial, failure, cancellation and recovery separate.",
+    "Validate display identity, coordinates, focus and recovery independently for outer display, rotation and folding.",
+    "Keep core reproduction evidence; HEPTA49 and full rootfs bit-level reproduction remain separate remaining work."
+  ],
+  "phone_local_runtime": {
+    "client_sha256": "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f",
+    "cloud_model_requests": 0,
+    "context_tokens": 4096,
+    "cpu_threads": 4,
+    "executor_sha256": "8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976",
+    "inference_residency": "on the Android phone",
+    "llama_cpp_commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+    "llama_server_sha256": "7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176",
+    "mmproj_sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7",
+    "model": "GUI-Owl-1.5-2B-Instruct Q4_K_M",
+    "model_endpoint_scope": "phone loopback only",
+    "model_sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5",
+    "parallel_slots": 1,
+    "vision_tokens_max": 1024,
+    "vision_tokens_min": 1024,
+    "worker_sha256": "49fb74f8798194c63d5e510c0ed81604d64a55e1df84822d9457ae4110cab6da"
+  },
+  "preserved_history": [
+    {
+      "current_combination_business_credit": 0,
+      "reason": "native shell client lacked permitted dedicated executor IPC; the original failed task was not upgraded after retirement-based closure",
+      "stage": "r4 business visual",
+      "status": "failed"
+    },
+    {
+      "business_credit": 0,
+      "native_status": "provider_failed",
+      "reason": "printf inaccessible or not found; correct worker identity and joined process group were independently retained",
+      "stage": "r6 executor component03 under IPC-only policy",
+      "status": "failed",
+      "tool_exit_code": 127
+    },
+    {
+      "completion_tokens": 50,
+      "model_http_seconds": 2.829981196,
+      "model_nonce_correct": true,
+      "native_status": "provider_failed",
+      "original_failure_preserved": true,
+      "phone_tools": 0,
+      "prompt_tokens": 164,
+      "reason": "health terminal processing called .get on a plain string",
+      "stage": "provider-r5 module-r3 health01",
+      "status": "failed"
+    },
+    {
+      "original_supervisor_exit_status": "unknown",
+      "reason": "supervisor and provider exited while model and executor remained; a separately recorded recovery terminated only those two original roles",
+      "recovery_observation_is_waitpid_proof": false,
+      "separate_remaining_recovery_completed": true,
+      "stage": "module-r5-r3 initial retirement",
+      "status": "partial"
+    },
+    {
+      "health_requests": 0,
+      "phone_tool_dispatches": 0,
+      "reason": "embedded health source hash in daily entry was stale",
+      "stage": "provider-r6-r1 startup",
+      "status": "failed_before_task"
+    },
+    {
+      "payload_and_source_readback_verified": true,
+      "reason": "only the embedded daily hash binding was corrected; source import and entry were validated before installation",
+      "stage": "provider-r6-r2 startup",
+      "status": "ready"
+    }
+  ],
+  "publication_boundary": {
+    "no_phone_or_model_operation_by_publisher": true,
+    "operator_source_projections_are_not_ready_to_install": true,
+    "private_keys_key_hashes_user_text_screenshots_native_history_claims_and_full_policy_binaries_excluded": true,
+    "production_source_bytes_preserved_when_marked_exact": true
+  },
+  "qualification": {
+    "business_qualification": "PENDING",
+    "cold_boot_qualified": false,
+    "current_health": "PASS",
+    "daily_use_qualified": false,
+    "fixed19_attempts_in_this_combination": 0,
+    "fixed19_cases_closed": 0,
+    "fixed19_cases_not_run": 19,
+    "health_is_not_business_success": true,
+    "outer_display_rotation_fold_qualified": false
+  },
+  "resource_observation": {
+    "android_proc_units": "kB as reported by /proc/status; snapshots are not whole-device peak or energy measurements",
+    "hardware_energy_joules": null,
+    "model_hwm_kB": 3143504,
+    "model_rss_kB_after": 3122796,
+    "model_rss_kB_before": 3101380,
+    "monetary_cost": null,
+    "source": "Root-operated before/after samples of the same verified model process"
+  },
+  "schema": "hepta.public-health-checkpoint.v150.r6r2.1",
+  "stage": "provider-r6-r2_module-r6-r2_health-01-complete",
+  "timing": {
+    "inference_time_is_not_end_to_end_latency": true,
+    "measurement_clock": "same Pocket4 monotonic clock",
+    "observed_send_to_native_terminal_seconds_upper": 4.215477534,
+    "persistence_interval_seconds": [
+      2.986361244,
+      4.215477534
+    ],
+    "polling_uncertainty_seconds": 1.22911629
+  }
+}

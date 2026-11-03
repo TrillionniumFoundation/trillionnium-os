@@ -1,0 +1,69 @@
+{
+  "component_source_sha256": "83e867936e6db85e5187a6e8853c40b7bdd9804a27cdd09591c1a8274a950295",
+  "files": [
+    {
+      "bytes": 12667,
+      "path": "sender_component_ready_r5.py",
+      "sha256": "ba8256ef5b4663591896099e2428e919b9d7869cb8d41d9267d99d3c6d961057"
+    },
+    {
+      "bytes": 40788,
+      "path": "send_new_native_task_r5.py",
+      "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+    }
+  ],
+  "model_calls": 0,
+  "patched_policy_sha256": "3983cdba0e46e826fcf9d1cd67821c998849af7cc45fc863f2ce950897dde613",
+  "phone_calls": 0,
+  "policy_rule_sha256": "b83280ba8be66d532e94a66fb5f03c586478deb62f33bc89649d3298cb08cb2f",
+  "r4_ready_sha256": "c1a4c05e157f199e4b4a2d153fac2fc0d02b1e25afd24c1320b91f78109f9f3d",
+  "r4_sender_sha256": "f9bd48919c11cd4673f486f3d5f0f7206b18d36312c55f3adef43a103c018caf",
+  "replacement_counts": {
+    "ready": [
+      [
+        "component-r2",
+        1
+      ],
+      [
+        "source-r2",
+        2
+      ],
+      [
+        "r2_source_required",
+        1
+      ],
+      [
+        "ff65efc41c30027d0066ddd6fdf3120278c83ccdbe56d7e24922ed96782d2118",
+        1
+      ],
+      [
+        "7011fc8b0e4629a05bdd9739d168cdcba9b43044e54e0cdadb6da5f5bb876381",
+        1
+      ],
+      [
+        "67ee1d75606e42e8b95c91faa57f7a22a5070e177cd6cc82552308f3de2b25d0",
+        1
+      ]
+    ],
+    "sender": [
+      [
+        "component-r2",
+        2
+      ],
+      [
+        "sender_component_ready_r4.py",
+        1
+      ],
+      [
+        "c1a4c05e157f199e4b4a2d153fac2fc0d02b1e25afd24c1320b91f78109f9f3d",
+        1
+      ]
+    ]
+  },
+  "retirement_guard_unchanged": true,
+  "reverse_bindings_match_frozen_r4_AST": true,
+  "reverse_bindings_match_frozen_r4_bytes": true,
+  "schema": "hepta.sender-r5-binding-only-check.v1",
+  "source_logic_otherwise_unchanged": true,
+  "status": "PASS"
+}

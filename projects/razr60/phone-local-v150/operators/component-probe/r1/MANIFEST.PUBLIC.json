@@ -1,0 +1,67 @@
+{
+  "original_artifact_relative_path": "operators/component-probe/r1/MANIFEST.json",
+  "original_artifact_sha256": "f5b4fa692e078e68fe3a1440aab057c7ab5a87847b31d57a5f40588717f2741d",
+  "original_bytes": 1956,
+  "projected_document": {
+    "actual_native_admissions": 0,
+    "files": [
+      {
+        "bytes": 26191,
+        "path": "component_probe_provider.py",
+        "role": "current-candidate",
+        "sha256": "ea05c5783d286ba322f1bca007dd2d77f00cdc39669f188cb8fa2f6fae846db1"
+      },
+      {
+        "bytes": 3346,
+        "path": "prepare_component_probe.py",
+        "role": "current-candidate",
+        "sha256": "cddb35fc1431763d586b2f082d24c527a67b8b4526324e68be0233453177f50c"
+      },
+      {
+        "bytes": 12201,
+        "path": "host_component_checks.py",
+        "role": "current-candidate",
+        "sha256": "a070dc6c500ad7815555e67b5373f6377a79b246f4adf4c1c3547357300d265f"
+      },
+      {
+        "bytes": 12345,
+        "path": "RUN-RETIRE-PLAN.md",
+        "role": "current-candidate",
+        "sha256": "6e10974cbee899ad6139f053c83289ff226cc6ae47721ec3f64eb5622d6327b5"
+      },
+      {
+        "bytes": 1680,
+        "path": "validation-02/RESULT.json",
+        "role": "current-candidate",
+        "sha256": "e72edd2b8f3dfc48a41d81931ef60551732e158656ad88d4a60394f45aa947f7"
+      },
+      {
+        "bytes": 1615,
+        "path": "validation-01/RESULT.json",
+        "role": "historical-first-draft-fixture",
+        "sha256": "6341e7ff8cafb326639322cf4554695fef9865ba0f2ca7281ad4cde8b54a8e01"
+      }
+    ],
+    "host_checks": 17,
+    "host_result_sha256": "e72edd2b8f3dfc48a41d81931ef60551732e158656ad88d4a60394f45aa947f7",
+    "model_requests": 0,
+    "operator_plan": "RUN-RETIRE-PLAN.md",
+    "phone_calls": 0,
+    "production_provider_unchanged": true,
+    "review_closures": [
+      "native terminal.error must be None",
+      "receipt hash explicitly canonical JSON plus LF",
+      "scope separates sender UI orchestration",
+      "single TCP connection; no TCP readiness check"
+    ],
+    "schema": "hepta.native-component-probe.source-manifest.v150.r6.1",
+    "scope": "Fixed printf executor probe; zero model or business UI effects; HEPTA task-entry UI separately counted.",
+    "status": "HOST_FROZEN_FOR_ROOT_COMPONENT_REVIEW_NOT_PHONE_QUALIFIED"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

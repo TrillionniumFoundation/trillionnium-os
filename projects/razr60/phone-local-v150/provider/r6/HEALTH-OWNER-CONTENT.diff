@@ -1,0 +1,23 @@
+--- frozen-provider-r5/source/health_contracts.py
++++ provider-r6/source/health_contracts.py
+@@ -164,8 +164,18 @@
+     require(summary_schema == {"type":"string", "maxLength":1024},
+             "health nonce must not be forced by schema grammar")
+     owner = body["messages"][-1]
+-    require(owner.get("role") == "user" and owner["content"][0].get("type") == "text"
+-            and request_hash(owner["content"][0]["text"]) == contract["request_sha256"],
++    require(isinstance(owner, dict) and owner.get("role") == "user",
++            "health final owner message must be a user object")
++    content = owner.get("content")
++    if isinstance(content, str):
++        owner_text = content
++    else:
++        require(isinstance(content, list) and len(content) == 1
++                and isinstance(content[0], dict) and content[0].get("type") == "text"
++                and isinstance(content[0].get("text"), str),
++                "health owner content must be plain text or one text part")
++        owner_text = content[0]["text"]
++    require(request_hash(owner_text) == contract["request_sha256"],
+             "health model did not receive the exact original owner input")
+     response = raw_private(prefix.with_suffix(".http-response.json"), 1024*1024)
+     require(hashlib.sha256(response).hexdigest() == receipt.get("response_sha256")

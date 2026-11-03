@@ -1,0 +1,137 @@
+--- health-r6-original-export-r1/export_health_r6_once.py
++++ health-r6-r2-original-export-r1/export_health_r6_once.py
+@@ -1,21 +1,21 @@
+ #!/usr/bin/env python3
+-"""Root-only fixed health-r6-01 export and host collection. No nonce generation.
++"""Root-only fixed health-r6-r2-01 export and host collection. No nonce generation.
+ capture invokes one reviewed read-only phone operation; collect is host-only.
+ No Send, tool execute, model/slot query, service action, key or draft read exists.
+ """
+ from pathlib import Path
+ import argparse,base64,hashlib,importlib.util,json,os,re,shlex,stat,subprocess,sys
+ B=Path('/operator-workspace/razr60/phone-local-v150')
+-D=B/'health-r6-original-export-r1'
+-H=B/'health-r6-01'
+-E=B/'health-r6-originals-01'
+-LABEL='phone-local-r6-health-01'
+-OP='capture-original-native-r6-health-01'
++D=B/'health-r6-r2-original-export-r1'
++H=B/'health-r6-r2-01'
++E=B/'health-r6-r2-originals-01'
++LABEL='phone-local-r6-r2-health-01'
++OP='capture-original-native-r6-r2-health-01'
+ P4=Path('/operator-workspace/pocket4/codex-hepta-natural-'+LABEL+'-root-v150')
+-PHONE_SOURCE_SHA='27fa9bf2e3404d3ca7bb30becc191fdce427541a967c6813fdcab9a1aac6fac2'
++PHONE_SOURCE_SHA='5d01832872160e815eb470180f7bcb9efc75fa602f8a1a80cc9d9ac8d679f32b'
+ PREVIOUS_SHA='749126d88d1bf08eddb79104484cdd73f76250117ef2fcefcbb0e29289a34951'
+-COLLECTOR_SHA='12d656a02dfaf94437aa902bec87c03d056284ee402b14a5f3d3f72823651c7e'
+-SEAL_SHA='26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3'
++COLLECTOR_SHA='50c901e87563a8bb04260b2e5e86a2d765cf3a83d9dc01330267e998caa05865'
++SEAL_SHA='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
+ KEYS=('session_id','profile_id','task_id','turn_id','turn_stream_id')
+ SSH=['ssh','-J','ai395-usb4','-o','HostName=10.77.0.4','-p','22','-o','BatchMode=yes',
+      '-o','StrictHostKeyChecking=yes','-o','ConnectTimeout=5','pocket4-usb4-fast']
+@@ -133,6 +133,33 @@
+   'no_action_absence_inferred_from_local_directories':True,'original_user_draft_not_read':True,'key_files_not_read':True}
+  writej(E/'UNPACK-MANIFEST.json',manifest)
+  return manifest
++
++def capture_terminal_zero():
++ raw=local_read(E/'ACTUAL-CAPTURE-01.json',4*1024*1024)
++ original_raw=local_read(E/(OP+'.original-operation.json'),8*1024*1024)
++ original=strict(original_raw);phone=original.get('wrapper',{}).get('phone',{})
++ terminal=strict(local_read(E/'CAPTURE-TERMINAL.json',65536))
++ need(terminal.get('schema')=='hepta.health-capture-process-terminal.v150.r6.2'
++  and terminal.get('operation_label')==OP
++  and terminal.get('original_operation_sha256')==sha(original_raw)
++  and terminal.get('capture_sha256')==sha(raw)
++  and terminal.get('phone_process_rc')==phone.get('rc')
++  and terminal.get('actor_rc')==original.get('actor_rc')
++  and isinstance(phone.get('stdout'),str) and phone['stdout'].encode('utf-8')==raw,
++  'capture process terminal differs from its original wrapper')
++ actual_zero=(type(phone.get('rc')) is int and phone['rc']==0
++  and type(original.get('actor_rc')) is int and original['actor_rc']==0)
++ need(terminal.get('capture_process_completed_zero') is actual_zero,'capture zero marker differs')
++ return actual_zero
++
++def final_health_qualification(capture_complete,process_rc,report):
++ process_zero=type(process_rc) is int and process_rc==0
++ return {'health_qualification_pass':capture_complete is True and process_zero
++          and report.get('health_qualification_pass') is True,
++  'proof_complete':capture_complete is True and process_zero and report.get('proof_complete') is True,
++  'task_classification':(report.get('task_classification') if process_zero else 'unconfirmed_collector_process')
++     if capture_complete is True else 'unconfirmed_original_capture'}
++
+ def capture_once():
+  os.umask(0o077)
+  material,request,combo,previous,material_raw=inputs()
+@@ -183,18 +210,31 @@
+  raw=ph['stdout'].encode('utf-8')
+  need(len(raw)<=4*1024*1024,'phone capture output exceeds bound')
+  put(E/'ACTUAL-CAPTURE-01.json',raw)
++ original_raw=local_read(E/(OP+'.original-operation.json'),8*1024*1024)
++ original=strict(original_raw);original_phone=original.get('wrapper',{}).get('phone',{})
++ need(original_phone.get('rc')==ph.get('rc') and original_phone.get('stdout')==ph.get('stdout'),
++  'capture original process binding differs')
++ capture_zero=(type(original_phone.get('rc')) is int and original_phone['rc']==0
++  and type(original.get('actor_rc')) is int and original['actor_rc']==0)
++ writej(E/'CAPTURE-TERMINAL.json',{'schema':'hepta.health-capture-process-terminal.v150.r6.2',
++  'operation_label':OP,'original_operation_sha256':sha(original_raw),
++  'capture_sha256':sha(raw),'phone_process_rc':original_phone.get('rc'),
++  'actor_rc':original.get('actor_rc'),'capture_process_completed_zero':capture_zero})
++
+  capture=strict(raw)
+  need(capture.get('schema')=='hepta.production-health-original-capture.v150.r6.1','capture schema differs')
+  need(capture.get('owner_request_sha256')==sha(request) and capture.get('nonce')==material['nonce'],'capture identity differs')
+  need(capture.get('combination_sha256')==sha(combo),'capture combination differs')
+  manifest=unpack(capture)
+- result={'state':'ORIGINALS_EXPORTED' if manifest['export_complete'] else 'PARTIAL_ORIGINALS_RETAINED',
++ complete_export=manifest['export_complete'] is True and capture_zero
++ result={'state':'ORIGINALS_EXPORTED' if complete_export else 'PARTIAL_ORIGINALS_RETAINED',
+          'original_export':str(E),'capture_sha256':sha(raw),'files':len(manifest['files']),
+-         'native_records':manifest['native_raw_record_count'],'export_complete':manifest['export_complete'],
+-         'health_qualified':False,'task_submissions':0,'model_requests':0,'phone_ui_actions':0,
++         'native_records':manifest['native_raw_record_count'],'export_complete':complete_export,'raw_capture_export_complete':manifest['export_complete'],
++         'capture_process_completed_zero':capture_zero,'phone_process_rc':original_phone.get('rc'),
++         'actor_rc':original.get('actor_rc'),'health_qualified':False,'task_submissions':0,'model_requests':0,'phone_ui_actions':0,
+          'phone_read_operations':1,'automatic_retry':False,'draft_files_read':0,'key_files_read':0}
+  writej(E/'EXPORT-RESULT.json',result);print(json.dumps(result,sort_keys=True))
+- return 0 if manifest['export_complete'] else 2
++ return 0 if complete_export else 2
+ def collect():
+  material,request,combo,previous,material_raw=inputs()
+  capture=strict(local_read(E/'ACTUAL-CAPTURE-01.json',4*1024*1024))
+@@ -203,16 +243,17 @@
+    and isinstance(capture.get('bindings'),dict)
+    and set(capture['bindings'])=={'staged_request_and_registration','actual_source_config_service',
+        'unique_provider_owner_and_sender_scope','provider_start_exact_owner','durable_claim_scope_owner_run'}
+-   and all(value is True for value in capture['bindings'].values()))
++   and all(value is True for value in capture['bindings'].values())
++   and capture_terminal_zero())
+  need(capture.get('owner_request_sha256')==sha(request) and capture.get('nonce')==material['nonce'],'export differs from original health')
+- collector=B/'acceptance-r6/collector-r6/collect_health_evidence.py'
++ collector=B/'acceptance-r6-r2/collector-r6-r2/collect_health_evidence.py'
+  local_read(collector,65536,COLLECTOR_SHA)
+  args=[sys.executable,'-B',str(collector),'--provider-state',str(E/'provider-state'),
+  '--request-file',str(H/'request.txt'),'--selected-scope-file',str(E/'selected-scope.json'),
+  '--native-journal',str(E/'selected-native-raw.jsonl'),'--sidecar-journal',str(E/'executor-r6'),
+- '--client-receipts',str(E/'client-receipts'),'--source-seal',str(B/'provider-r6/SOURCE-SEAL-v150-r6.json'),
+- '--source-seal-sha256',SEAL_SHA,'--provider-source',str(B/'provider-r6/source'),
+- '--config-file',str(B/'provider-r6/local-config.phone.production.json'),
++ '--client-receipts',str(E/'client-receipts'),'--source-seal',str(B/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json'),
++ '--source-seal-sha256',SEAL_SHA,'--provider-source',str(B/'provider-r6-r2/source'),
++ '--config-file',str(B/'provider-r6-r2/local-config.phone.production.json'),
+  '--service-manifest',str(B/'PHONE-SERVICE-INPUTS-v150-r3.json'),
+  '--nonce',material['nonce'],'--case-id','HEALTH','--out',str(E/'health-audit-01')]
+  writej(E/'COLLECTOR-INTENT.json',{'argv':args,'phone_calls':0,'model_requests':0})
+@@ -226,9 +267,7 @@
+  'original_capture_complete':capture_complete,
+  'raw_collector_health_qualification_pass':report.get('health_qualification_pass') is True,
+  'raw_collector_proof_complete':report.get('proof_complete') is True,
+- 'health_qualification_pass':capture_complete and report.get('health_qualification_pass') is True,
+- 'proof_complete':capture_complete and report.get('proof_complete') is True,
+- 'task_classification':report.get('task_classification') if capture_complete else 'unconfirmed_original_capture',
++ **final_health_qualification(capture_complete,r.returncode,report),
+  'complete_business_success':False,'phone_calls':0,'model_requests':0,'automatic_retry':False}
+  writej(E/'COLLECTOR-RESULT.json',result);print(json.dumps(result,sort_keys=True))
+  return 0 if result['health_qualification_pass'] and result['proof_complete'] else 2

@@ -1,0 +1,138 @@
+{
+  "original_artifact_relative_path": "operators/r5/SOURCE-SEAL-sender-r5.json",
+  "original_artifact_sha256": "cad2f95aa7d482cf94a2c683649ede6458733e86f5b24f3877e6f31411888241",
+  "original_bytes": 5078,
+  "projected_document": {
+    "change_scope": "Fixed component-r3 source/path/full policy pins and the corresponding ready-helper path/hash only; reverse text and AST match r4",
+    "component_native_auditor": {
+      "path": "acceptance-r4/collector-r4/native_journal_audit.py",
+      "scope": "Hash supplied original records only; component receipt verification remains separate; no whole global WAL attestation",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    "files": [
+      {
+        "bytes": 40788,
+        "path": "send_new_native_task_r5.py",
+        "sha256": "5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281"
+      },
+      {
+        "bytes": 12667,
+        "path": "sender_component_ready_r5.py",
+        "sha256": "ba8256ef5b4663591896099e2428e919b9d7869cb8d41d9267d99d3c6d961057"
+      },
+      {
+        "bytes": 18032,
+        "path": "sender_retirement_guard_r4.py",
+        "sha256": "5aaf4a9d1edf7e241106dffd46a1fb905373456585bf0c55d148dac654ca7c79"
+      },
+      {
+        "bytes": 13572,
+        "path": "test_sender_r5_final.py",
+        "sha256": "cdf0e50ac013450f27efc8d92dd33f897ad35c3e4c2d2a82e4d3bb6850bd4bcb"
+      },
+      {
+        "bytes": 12044,
+        "path": "test_sender_r5_component_ready.py",
+        "sha256": "619e448d4ec8c8bfb1f4e87ea6499a85ac7b2267aca33229076124aab77aa6f6"
+      },
+      {
+        "bytes": 2622,
+        "path": "sender-r5-validation/HOST-CHECKS-01.json",
+        "sha256": "d8cbb3925ccb8a4a5c80223235bfac948fb51bf5bce00a71f7ab12c5a75fad5e"
+      },
+      {
+        "bytes": 2208,
+        "path": "sender-r5-validation/HOST-READY-CHECKS-01.json",
+        "sha256": "ddcd050caa28b3dec67ec56bed304589cd9189aedb13ac4da59c86f54cb50bb8"
+      },
+      {
+        "bytes": 1861,
+        "path": "sender-r5-validation/BINDINGS-ONLY-CHECK.json",
+        "sha256": "5c13418c85a951da554c20819aef6c41e06c5c3fda9a75107777188b993c8a8b"
+      },
+      {
+        "bytes": 13674,
+        "path": "sender-r5-validation/SENDER-R5-BINDINGS.diff",
+        "sha256": "0fedb68e853e60750ad7bc3e81d6929d08b84a7217bea885a452692b731c2586"
+      },
+      {
+        "bytes": 731,
+        "path": "sender-r5-validation/HOST-TEST-JOB-TERMINAL.json",
+        "sha256": "a603769a232294575684d5bcdb3d5a8fcb184dc087838833b82bc1606a4557b5"
+      },
+      {
+        "bytes": 980,
+        "path": "sender-r5-validation/FOCUSED-REVIEW.json",
+        "sha256": "836a57ad67f91ce0dbc265b331e809b506ea2538fe1fc70b539fb1abe28a2fe8"
+      },
+      {
+        "bytes": 6358,
+        "path": "RUN-SENDER-R5-ONEPAGE.md",
+        "sha256": "2a604bc1aa415829d4adbb313edaf4bc20ad43c1e57706bc0d9341cdfd6266ee"
+      }
+    ],
+    "fixed_component": {
+      "full_policy_rule_bytes": 8140,
+      "full_policy_rule_sha256": "b83280ba8be66d532e94a66fb5f03c586478deb62f33bc89649d3298cb08cb2f",
+      "manifest_sha256": "dc5d32f4ab66eee892084e5d1fff5e9887d5fe89f63d5cf935be1429948a798b",
+      "patched_policy_bytes": 2666999,
+      "patched_policy_sha256": "3983cdba0e46e826fcf9d1cd67821c998849af7cc45fc863f2ce950897dde613",
+      "source_bytes": 27226,
+      "source_path": "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/source-r3/component_probe_provider.py",
+      "source_sha256": "83e867936e6db85e5187a6e8853c40b7bdd9804a27cdd09591c1a8274a950295"
+    },
+    "frozen_predecessor_unchanged": true,
+    "original_nonempty_draft": "exact CAS and separate restoration; no plaintext or original draft SHA in public stdout",
+    "parent_seal_sha256": "5f523c04fb00946d660f0153af076806fe619f2e2641a74e7e5bc61b10737f9d",
+    "prior_readiness_qualification_retained": "Root reported the first parent start failed before any nonce/Send/model/native task; this source revision does not reclassify it",
+    "private_generated_artifacts_excluded": [
+      "request/preservation inputs",
+      "generated actor and preview actor",
+      "actual claims/raw proof/native records",
+      "send/raw UI receipts"
+    ],
+    "production_sender_logic_unchanged": true,
+    "retirement": {
+      "action_id": "fc7bd6d939fb740a6403a04521fbb057",
+      "original_failure_retained": true,
+      "proof_sha256": "2bdd6c33c42359f1b27567b99627f7223d40a0c37f6af0158b8dc010e899943e",
+      "replay_authorized": false,
+      "resolution_bytes": 1237,
+      "resolution_sha256": "7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433"
+    },
+    "retirement_guard_reused_without_change": true,
+    "schema": "hepta.native-task-sender.source-seal.v150.r5",
+    "state": "HOST_VERIFIED_ROOT_EXECUTION_NOT_PERFORMED",
+    "unchanged_limits": {
+      "component_accept_seconds": 40,
+      "component_service_seconds": 70,
+      "final_ready_remaining_seconds": 15,
+      "first_ready_remaining_seconds": 25,
+      "maximum_Send_calls": 1,
+      "native_observation_seconds": 335,
+      "pre_send_seconds": 150
+    },
+    "validation": {
+      "exit_code": 0,
+      "external_process_requests": 0,
+      "groups_total": [
+        36,
+        38
+      ],
+      "job_id": "1a1a2ec66ec-fc05-ab4",
+      "model_calls": 0,
+      "new_old_binding_or_immutability_checks_passed": 5,
+      "original_host_fixtures_repeated_and_passed": 69,
+      "phone_calls": 0,
+      "physical_qualification": false
+    },
+    "version": "sender-r5",
+    "wire_contract_and_ready_schema_unchanged": true
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

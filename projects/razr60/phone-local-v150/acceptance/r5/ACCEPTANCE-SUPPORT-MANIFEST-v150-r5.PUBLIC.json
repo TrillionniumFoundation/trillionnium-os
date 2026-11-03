@@ -1,0 +1,245 @@
+{
+  "original_artifact_relative_path": "acceptance/r5/ACCEPTANCE-SUPPORT-MANIFEST-v150-r5.json",
+  "original_artifact_sha256": "248307263682b70da215d7421674b3ae7110353d864796bc979632ffa92773f0",
+  "original_bytes": 8473,
+  "projected_document": {
+    "actual_accounting": {
+      "auxiliary_component_count": 0,
+      "business_model_sample_count": 0,
+      "cases_blocked": 19,
+      "cases_closed": 0,
+      "daily_use_qualified": false,
+      "fixed19_attempt_count": 0,
+      "health_count": 0,
+      "model_complete_success_fraction": null,
+      "recovery_count": 0,
+      "required19_closed": false
+    },
+    "case_ids": [
+      "E2E-01",
+      "E2E-02",
+      "E2E-03",
+      "E2E-04",
+      "COMP-01",
+      "NEG-01",
+      "NEG-02",
+      "NEG-03",
+      "NEG-04",
+      "NEG-05",
+      "NEG-06",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09",
+      "NEG-10",
+      "NEG-11",
+      "NEG-12",
+      "NEG-13",
+      "NEG-14"
+    ],
+    "combination_pending": {
+      "canonical_sha256": "c7e9a9133ac6b80ab4512e402b40ac27e16db05b02691e01b38234824659b91a",
+      "future_frozen_manifest_must_be_new_file": true,
+      "missing_real_pins": [
+        "module_manifest_sha256",
+        "policy_rules_manifest_sha256",
+        "live_policy_snapshot_sha256",
+        "live_policy_semantic_audit_sha256",
+        "native_and_apps_manifest_sha256"
+      ],
+      "new_request_materialization_permitted": false,
+      "only_zero_executed_samples_permitted": true,
+      "path": "COMBINATION-PENDING.json",
+      "raw_sha256": "f5f778e908e46f2c291da06a08dc9546ac803350e6ec9989582564d1ca3de086"
+    },
+    "files": [
+      {
+        "bytes": 11948,
+        "path": "aggregate_protocol_r5.py",
+        "public_allowed": true,
+        "sha256": "6437e43385f93bdc6946469f491f3b2b1b4e8d1f07b34500e76249347bf6833e"
+      },
+      {
+        "bytes": 3109,
+        "path": "materialize_case_r5.py",
+        "public_allowed": true,
+        "sha256": "2c94579479baa51a06f1ba381775a5e79d686b1a9efa412c9a1da75dc7e5e4ad"
+      },
+      {
+        "bytes": 5173,
+        "path": "check_metadata_host_only.py",
+        "public_allowed": true,
+        "sha256": "0e90976ae974f303950a26c3f0a60aa2f901c27b8f87b96e46c43b7acc261ce6"
+      },
+      {
+        "bytes": 1871,
+        "path": "check_pending_materializer_host_only.py",
+        "public_allowed": true,
+        "sha256": "187eb0969eb9c190e41d5ceec20dabad6b29dd452d5ffbbc784daeec93848799"
+      },
+      {
+        "bytes": 38163,
+        "path": "fixed-acceptance-set-r5.json",
+        "public_allowed": true,
+        "sha256": "df7a0de3693ffd768b0acfa19ea40f2ca6bb3241b9f43a7c07dbd4033ff5d110"
+      },
+      {
+        "bytes": 659,
+        "path": "COMBINATION-PENDING.json",
+        "public_allowed": true,
+        "sha256": "f5f778e908e46f2c291da06a08dc9546ac803350e6ec9989582564d1ca3de086"
+      },
+      {
+        "bytes": 3,
+        "path": "EMPTY-ACTUAL-ATTEMPTS.json",
+        "public_allowed": true,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      {
+        "bytes": 3,
+        "path": "EMPTY-AUXILIARY-EVIDENCE.json",
+        "public_allowed": true,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      {
+        "bytes": 7850,
+        "path": "README.md",
+        "public_allowed": true,
+        "sha256": "9e858250b26908f89376066847cbfaa661a28b250e1513f486c1a5c9feafef99"
+      },
+      {
+        "bytes": 37318,
+        "path": "references/fixed-acceptance-set-r4.original.json",
+        "public_allowed": true,
+        "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+      },
+      {
+        "bytes": 13217,
+        "path": "references/aggregate_protocol_r4.py",
+        "public_allowed": true,
+        "sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772"
+      },
+      {
+        "bytes": 9783,
+        "path": "references/materialize_case_r4.py",
+        "public_allowed": true,
+        "sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81"
+      },
+      {
+        "bytes": 15537,
+        "path": "validation/EMPTY-CURRENT-REPORT.json",
+        "public_allowed": false,
+        "sha256": "fb49fe63bf38396943c29000344f37c55ec3d62c3b66077c01dd79d74a9cff7e"
+      },
+      {
+        "bytes": 2351,
+        "path": "validation/HOST-METADATA-CHECKS.json",
+        "public_allowed": true,
+        "sha256": "c3ae1cc90131fa8faa20e1c491d398744c53c3c85d737d82845f37ad39687915"
+      },
+      {
+        "bytes": 721,
+        "path": "validation/MATERIALIZER-PENDING-REJECTION.json",
+        "public_allowed": true,
+        "sha256": "a3c86910da0b53d61823e79edfc116835f0e69edca5a4ebb843b5196c5a9a7de"
+      },
+      {
+        "bytes": 1440,
+        "path": "validation/INDEPENDENT-REVIEW.json",
+        "public_allowed": true,
+        "sha256": "8579fcdcef4e3e6bba649836139fcf3a89fb86068a157b12cbcdac2ded3fa298"
+      },
+      {
+        "bytes": 4728,
+        "path": "PUBLIC-ZERO-SAMPLE-SNAPSHOT.json",
+        "public_allowed": true,
+        "sha256": "f662f6199f851d5fc796bec213a0705df975900b25efc17a02accc8d6ae4463e"
+      },
+      {
+        "bytes": 346,
+        "path": "validation/README.md",
+        "public_allowed": true,
+        "sha256": "0de6d53dfc5121d5b24838ac17c3e5b0e47a5b0b841bb674202e7e72743424aa"
+      }
+    ],
+    "fixed19_case_objects_order_limits_geometry_unchanged": true,
+    "future_execution_gates": [
+      "Root freezes and independently validates all real current combination pins.",
+      "Fresh bounded genuine model health with new nonce is required before business.",
+      "Every task uses fresh material and preserved original receipt-first/no-replay recovery.",
+      "The real component probe does not close COMP-01 or any fixed19 case."
+    ],
+    "grouping_rules": [
+      "Exact r5 source seal plus raw original combination-file SHA plus full canonical combination ID for each current attempt.",
+      "Same source with different module/policy/native-App combination remains separate.",
+      "Unbound or unverifiable executed current-source records are exposed and prevent closure.",
+      "Historical r4 outcomes are preserved; retirement disposition never rewrites business failure.",
+      "Health, parent startup, component IPC probe and retirement disposition remain separate from fixed19/model-business samples.",
+      "Provided hashes group evidence; original independent actual installation/policy/App/task proofs are still necessary."
+    ],
+    "hardware_energy_joules": null,
+    "monetary_cost": null,
+    "never_publish_under_this_allowlist": [
+      "validation/EMPTY-CURRENT-REPORT.json",
+      "Any future real attempts, raw user/model/phone content or private evidence",
+      "Any final-combination proof without a separately reviewed public projection"
+    ],
+    "original_protocol_sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0",
+    "protocol_r5_sha256": "df7a0de3693ffd768b0acfa19ea40f2ca6bb3241b9f43a7c07dbd4033ff5d110",
+    "provider_config_sha256": "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755",
+    "provider_source_seal_sha256": "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f",
+    "public_allowlist": [
+      "ACCEPTANCE-SUPPORT-MANIFEST-v150-r5.json",
+      "aggregate_protocol_r5.py",
+      "materialize_case_r5.py",
+      "check_metadata_host_only.py",
+      "check_pending_materializer_host_only.py",
+      "fixed-acceptance-set-r5.json",
+      "COMBINATION-PENDING.json",
+      "EMPTY-ACTUAL-ATTEMPTS.json",
+      "EMPTY-AUXILIARY-EVIDENCE.json",
+      "README.md",
+      "references/fixed-acceptance-set-r4.original.json",
+      "references/aggregate_protocol_r4.py",
+      "references/materialize_case_r4.py",
+      "validation/HOST-METADATA-CHECKS.json",
+      "validation/MATERIALIZER-PENDING-REJECTION.json",
+      "validation/INDEPENDENT-REVIEW.json",
+      "PUBLIC-ZERO-SAMPLE-SNAPSHOT.json",
+      "validation/README.md"
+    ],
+    "release": "v150-r5",
+    "schema": "hepta.acceptance-support-manifest.v150.r5.1",
+    "scope": "Independent metadata/materializer/accounting wrappers only; original fixed19 and historical samples unchanged.",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "state": "HOST_SUPPORT_FROZEN_ACTUAL_COMBINATION_PENDING_ZERO_SAMPLES",
+    "validation": {
+      "actual_zero_sample_aggregation": true,
+      "durable_host_jobs": [
+        {
+          "job_id": "1a1a2ed0e62-fc05-ab5",
+          "scope": "actual empty-array aggregation plus synthetic host metadata fixtures",
+          "terminal": "exit_0"
+        },
+        {
+          "job_id": "1a1a2f63ce6-fc05-ac1",
+          "scope": "expected rejection of materialization against pending actual combination",
+          "terminal": "exit_0"
+        }
+      ],
+      "host_materializer_pending_rejection_checks": 1,
+      "host_metadata_checks": 18,
+      "independent_wrapper_static_review": "PASS",
+      "model_requests": 0,
+      "phone_calls": 0,
+      "synthetic_fixtures_are_actual_business_samples": false,
+      "task_registrations": 0,
+      "ui_send": 0
+    }
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

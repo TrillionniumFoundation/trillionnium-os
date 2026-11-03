@@ -1,0 +1,24 @@
+--- r2/component_probe_provider.py
++++ r3/component_probe_provider.py
+@@ -28,8 +28,8 @@
+ CLIENT_SHA = "500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f"
+ PARENT_SHA = "8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976"
+ WORKER_SHA = "49fb74f8798194c63d5e510c0ed81604d64a55e1df84822d9457ae4110cab6da"
+-POLICY_RULE_SHA = "7011fc8b0e4629a05bdd9739d168cdcba9b43044e54e0cdadb6da5f5bb876381"
+-PATCHED_POLICY_SHA = "67ee1d75606e42e8b95c91faa57f7a22a5070e177cd6cc82552308f3de2b25d0"
++POLICY_RULE_SHA = "b83280ba8be66d532e94a66fb5f03c586478deb62f33bc89649d3298cb08cb2f"
++PATCHED_POLICY_SHA = "3983cdba0e46e826fcf9d1cd67821c998849af7cc45fc863f2ce950897dde613"
+ SOCKET = "hepta_phone_executor_v150_r6"
+ PARENT_CONTEXT = "u:r:trillionnium_owner_open_phone_executor:s0"
+ WORKER_CONTEXT = "u:r:trillionnium_owner_open_phone_worker:s0"
+--- r2/prepare_component_probe.py
++++ r3/prepare_component_probe.py
+@@ -55,7 +55,7 @@
+               "owner_request_sha256": m.sha(request),
+               "contract_sha256": m.sha((a.out/"contract.json").read_bytes()),
+               "phone_contract_path": str(m.STATE/"contracts"/(nonce+".json")),
+-              "phone_provider_source_path": str(m.STATE/"source-r2/component_probe_provider.py"),
++              "phone_provider_source_path": str(m.STATE/"source-r3/component_probe_provider.py"),
+               "phone_provider_evidence_root": str(m.STATE/"evidence"),
+               "phone_executor_journal": m.JOURNAL,
+               "proof_gate": "operator must independently verify pinned retirement proof and actual resolution",

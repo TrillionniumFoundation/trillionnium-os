@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.native-component-original-export-spec.v150.r6.1",
+  "operation": "Root read-only export of a single actual component; not an executable actor",
+  "phone_source_roots": {
+    "component_gnu": "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6",
+    "component_android": "/data/trillionnium/owner-open/state/phone-local-v150/component-probe-r6",
+    "executor_android": "/data/trillionnium/owner-open/state/phone-local-v150/executor-r6-component-01",
+    "executor_gnu": "/var/lib/trillionnium/owner-open/phone-local-v150/executor-r6-component-01",
+    "native_segments": "/data/trillionnium/owner-open/state/turn-events.jsonl.segments"
+  },
+  "placeholders": {
+    "NONCE": "exact new contract.nonce",
+    "RUN": "exact basename of original claims/NONCE.json run_dir",
+    "ACTION": "original claims/NONCE.json action_id, independently recomputed by checker"
+  },
+  "top_level_inputs": {
+    "request": "request.txt, exact original UTF8 bytes; no added LF",
+    "contract": "contract.json, exact registered bytes and independently selected SHA",
+    "scope": "scope.json, JSON object with exactly session_id/profile_id/task_id/turn_id/turn_stream_id",
+    "native_records": "native-records.json, complete selected original records in store order",
+    "native_raw": "selected-native-raw.jsonl plus source-file/offset and raw hash inventory; retained separately"
+  },
+  "component_relative_required": [
+    "contracts/NONCE.json",
+    "claims/NONCE.json",
+    "ready-NONCE.json",
+    "service-attempt-NONCE.json",
+    "health-before-NONCE.json",
+    "service-ended-NONCE.json",
+    "evidence/RUN/provider-in.jsonl",
+    "evidence/RUN/provider-out.jsonl",
+    "evidence/RUN/accepted.json",
+    "evidence/RUN/dispatch-intent.json",
+    "evidence/RUN/native-tool-result.json",
+    "evidence/RUN/original-executor-inspection.json",
+    "evidence/RUN/component-outcome.json",
+    "evidence/RUN/provider-terminal-intent.json",
+    "client-receipts/ACTION.claim.json",
+    "client-receipts/ACTION.result.json",
+    "client-receipts/ACTION.transport-r6/00-claim_durable_before_transport.json",
+    "client-receipts/ACTION.transport-r6/01-socket_create_attempt.json",
+    "client-receipts/ACTION.transport-r6/02-socket_created.json",
+    "client-receipts/ACTION.transport-r6/03-connect_attempt.json",
+    "client-receipts/ACTION.transport-r6/04-connected.json",
+    "client-receipts/ACTION.transport-r6/05-peer_identity_query.json",
+    "client-receipts/ACTION.transport-r6/06-peer_verified.json",
+    "client-receipts/ACTION.transport-r6/07-request_send_begin.json",
+    "client-receipts/ACTION.transport-r6/08-request_sent.json",
+    "client-receipts/ACTION.transport-r6/09-response_header_begin.json",
+    "client-receipts/ACTION.transport-r6/10-response_header_received.json",
+    "client-receipts/ACTION.transport-r6/11-response_body_begin.json",
+    "client-receipts/ACTION.transport-r6/12-response_received.json",
+    "client-receipts/ACTION.transport-r6/13-response_validated.json",
+    "client-receipts/ACTION.transport-r6/14-transport_complete.json"
+  ],
+  "component_preserve_all_files_within": [
+    "evidence/RUN",
+    "client-receipts/ACTION.transport-r6"
+  ],
+  "component_preserve_if_present": [
+    "evidence/RUN/component-failure.json",
+    "evidence/RUN/original-executor-inspection-error.json",
+    "client-receipts/ACTION.last-inspect.json",
+    "client-receipts/ACTION.* temporary or diagnostic files"
+  ],
+  "executor_relative_required": [
+    "actions/ACTION/intent.json",
+    "actions/ACTION/receipt.json",
+    "actions/ACTION/stdout.bin",
+    "actions/ACTION/stderr.bin"
+  ],
+  "executor_preserve_if_present": [
+    "actions/ACTION/receipt.pending",
+    "any other file in the original selected action directory"
+  ],
+  "export_rules": [
+    "Copy original bytes; do not parse and reserialize source JSON files",
+    "Preserve missing/failed/pending records as missing/failed/pending; never synthesize success",
+    "Record original source path, stat identity, bytes and full SHA; compare destination full SHA",
+    "Keep private files 0600 and directories 0700; no symlinks or hardlinked files",
+    "No old request, action or nonce is replayed or redispatched",
+    "No new inspect/health/execution is required by this specification; export the already persisted records",
+    "No raw draft or request is printed in public stdout",
+    "Retain complete raw native WAL rows separately from the parsed verifier array"
+  ],
+  "report_boundaries": {
+    "business_qualified": false,
+    "daily_use_qualified": false,
+    "fixed19_case_credit": false,
+    "whole_device_model_zero": false,
+    "live_policy_audit_separate": true,
+    "parent_and_provider_retirement_separate": true
+  }
+}

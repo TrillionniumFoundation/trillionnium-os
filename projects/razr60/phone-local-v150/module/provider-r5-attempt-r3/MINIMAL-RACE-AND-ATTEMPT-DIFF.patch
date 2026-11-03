@@ -1,0 +1,117 @@
+--- original-r2/service.sh
++++ candidate-r3/service.sh
+@@ -6,17 +6,20 @@
+ BB=/data/adb/magisk/busybox
+ SYS=/system/bin
+ STATE=/data/trillionnium/owner-open/state
+-HISTORY=/data/adb/trillionnium-hepta-phone-local-v150-r5
++HISTORY=/data/adb/trillionnium-hepta-phone-local-v150-r5-r3
+ ROOT=/data/trillionnium/owner-open/root
+ CLAIM=
+ STOPPING=0
+ PRIOR_R1=/data/adb/modules/trillionnium_hepta_phone_local_v150
+ PRIOR_R3=/data/adb/modules/trillionnium_hepta_phone_local_v150_r3
+ PRIOR_R4=/data/adb/modules/trillionnium_hepta_phone_local_v150_r4
++PRIOR_R5=/data/adb/modules/trillionnium_hepta_phone_local_v150_r5
+ EXECUTOR_DATA=/data/trillionnium/owner-open/state/phone-local-v150/executor-r6
+-EXECUTOR_LOG_ROOT=$EXECUTOR_DATA/module-history
++EXECUTOR_LOG_ROOT=$EXECUTOR_DATA/module-history-r3
+ EXECUTOR_LOGDIR=
+ previous_release_disabled() {
++    [ -d "$PRIOR_R5" ] && [ ! -L "$PRIOR_R5" ] || return 1
++    [ -f "$PRIOR_R5/disable" ] && [ ! -L "$PRIOR_R5/disable" ] || return 1
+     # R4 must remain present with its real disable marker; never remove old files.
+     [ -d "$PRIOR_R4" ] && [ ! -L "$PRIOR_R4" ] || return 1
+     [ -f "$PRIOR_R4/disable" ] && [ ! -L "$PRIOR_R4/disable" ] || return 1
+@@ -48,7 +51,7 @@
+ previous_release_disabled || exit 70
+ # Unsealed source candidates MUST fail closed. The seal is produced only after review.
+ [ -f "$MODDIR/SEALED" ] && [ ! -L "$MODDIR/SEALED" ]
+-[ "$($SYS/cat "$MODDIR/SEALED")" = HEPTA_PHONE_LOCAL_V150_R5_REVIEWED_INPUTS_BOUND ]
++[ "$($SYS/cat "$MODDIR/SEALED")" = HEPTA_PHONE_LOCAL_V150_R5_R3_REVIEWED_INPUTS_BOUND ]
+ [ -f "$MODDIR/module-inputs.sha256" ] && [ ! -L "$MODDIR/module-inputs.sha256" ]
+ [ -f "$MODDIR/payload-inputs.sha256" ] && [ ! -L "$MODDIR/payload-inputs.sha256" ]
+ [ -f "$MODDIR/role_guard.sh" ] && [ ! -L "$MODDIR/role_guard.sh" ]
+--- original-r2/role_guard.sh
++++ candidate-r3/role_guard.sh
+@@ -11,7 +11,10 @@
+ PRIOR_R1=/data/adb/modules/trillionnium_hepta_phone_local_v150
+ PRIOR_R3=/data/adb/modules/trillionnium_hepta_phone_local_v150_r3
+ PRIOR_R4=/data/adb/modules/trillionnium_hepta_phone_local_v150_r4
++PRIOR_R5=/data/adb/modules/trillionnium_hepta_phone_local_v150_r5
+ previous_release_disabled() {
++    [ -d "$PRIOR_R5" ] && [ ! -L "$PRIOR_R5" ] || return 1
++    [ -f "$PRIOR_R5/disable" ] && [ ! -L "$PRIOR_R5/disable" ] || return 1
+     # R4 must remain present with its real disable marker; never remove old files.
+     [ -d "$PRIOR_R4" ] && [ ! -L "$PRIOR_R4" ] || return 1
+     [ -f "$PRIOR_R4/disable" ] && [ ! -L "$PRIOR_R4/disable" ] || return 1
+@@ -31,7 +34,7 @@
+     return 0
+ }
+ case "$ROLE" in model|sidecar|provider) ;; *) exit 80 ;; esac
+-case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r5/*) ;; *) exit 80 ;; esac
++case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r5-r3/*) ;; *) exit 80 ;; esac
+ [ -d "$CLAIM" ] && [ ! -L "$CLAIM" ]
+ [ "$($SYS/stat -c '%u:%g:%a' "$CLAIM")" = 0:0:700 ]
+ [ "$($SYS/id -u)" = 0 ]
+--- original-r2/role_identity_probe.sh
++++ candidate-r3/role_identity_probe.sh
+@@ -10,7 +10,7 @@
+ MODE=$3
+ case "$ROLE" in model|sidecar|provider) ;; *) exit 78 ;; esac
+ case "$MODE" in startup|monitor) ;; *) exit 78 ;; esac
+-case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r5/*) ;; *) exit 78 ;; esac
++case "$CLAIM" in /data/adb/trillionnium-hepta-phone-local-v150-r5-r3/*) ;; *) exit 78 ;; esac
+ [ -d "$CLAIM" ] && [ ! -L "$CLAIM" ]
+ [ "$($SYS/stat -c '%u:%g:%a' "$CLAIM")" = 0:0:700 ]
+ [ -f "$MODDIR/role-expectations.tsv" ] && [ ! -L "$MODDIR/role-expectations.tsv" ]
+--- original-r2/activation_gate.sh
++++ candidate-r3/activation_gate.sh
+@@ -12,7 +12,7 @@
+     startup) [ "$#" = 1 ] ;;
+     admission)
+         [ "$#" = 3 ]
+-        case "$2" in /data/adb/trillionnium-hepta-phone-local-v150-r5/*) ;; *) exit 78 ;; esac
++        case "$2" in /data/adb/trillionnium-hepta-phone-local-v150-r5-r3/*) ;; *) exit 78 ;; esac
+         case "$3" in model|sidecar|provider) ;; *) exit 78 ;; esac
+         ;;
+     *) exit 78 ;;
+@@ -50,22 +50,14 @@
+ "$SYS/cmp" "$model_key" "$provider_key" >/dev/null 2>&1
+ [ "$("$SYS/stat" -c '%d:%i:%u:%g:%a:%h:%s:%Y:%Z' "$model_key")" = "$model_key_identity" ]
+ [ "$("$SYS/stat" -c '%d:%i:%u:%g:%a:%h:%s:%Y:%Z' "$provider_key")" = "$provider_key_identity" ]
+-# Read-only census; old original processes and effect groups are never signalled.
+-members=$("$BB" awk '
+-    FILENAME==ARGV[1] {if(NF!=1 || $1 !~ /^[0-9]+$/ || $1<2) {bad=1;next} groups[$1]=1; count++; next}
+-    {pid=$1;tail=$0;sub(/^.*\) /,"",tail);n=split(tail,a,/ +/);
+-     if(n<20) {bad=1;next}
+-     if(groups[pid] || groups[a[3]] || groups[a[4]]) print pid ":" a[3] ":" a[4] ":" a[20]}
+-    END {if(bad || count!=8)exit 1}
+-' "$MODDIR/retired-groups.tsv" /proc/[0-9]*/stat)
+-[ -z "$members" ]
++# The GNU helper below performs the same ten-group census with explicit kernel errno handling.
+ exact_label() {
+     observed=$("$SYS/ls" -Zd "$1")
+     printf '%s\n' "$observed" | "$BB" awk -v p="$1" -v c="$2" 'NF!=2 || $1!=c || $2!=p {exit 1} {n++} END {if(n!=1)exit 1}'
+ }
+ exact_label /data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-sidecar-r6 u:object_r:trillionnium_owner_open_phone_executor_exec:s0
+ exact_label /data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-worker-r6 u:object_r:trillionnium_owner_open_phone_worker_exec:s0
+-for d in "$BASE/executor-r6" "$BASE/executor-r6/module-history"; do
++for d in "$BASE/executor-r6" "$BASE/executor-r6/module-history-r3"; do
+     [ -d "$d" ] && [ ! -L "$d" ]
+     [ "$("$SYS/readlink" -f "$d")" = "$d" ]
+     [ "$("$SYS/stat" -c '%u:%g:%a' "$d")" = 0:0:700 ]
+@@ -82,4 +74,4 @@
+     LANG=C.UTF-8 LC_ALL=C.UTF-8 TMPDIR=/var/lib/trillionnium/owner-open/tmp \
+     NO_COLOR=1 TERM=dumb \
+     "$BB" chroot "$ROOT" /usr/bin/python3 -B \
+-    /var/lib/trillionnium/owner-open/phone-local-v150/module-r5-activation/activation_original_gate.py
++    /var/lib/trillionnium/owner-open/phone-local-v150/module-r5-activation-r3/proc_and_original_gate.py --check-and-chain
+--- original-r2/retired-groups.tsv
++++ candidate-r3/retired-groups.tsv
+@@ -6,3 +6,5 @@
+ 31121
+ 31206
+ 31274
++30415
++30570

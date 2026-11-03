@@ -1,0 +1,192 @@
+{
+  "schema": "hepta.acceptance-r5.public-zero-sample-snapshot.v150.1",
+  "scope": "Derived host metadata baseline only; no phone operation or execution qualification.",
+  "source_report": {
+    "repository_path": "acceptance-r5/validation/EMPTY-CURRENT-REPORT.json",
+    "sha256": "fb49fe63bf38396943c29000344f37c55ec3d62c3b66077c01dd79d74a9cff7e"
+  },
+  "provider_source_seal_sha256": "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f",
+  "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+  "provider_config_sha256": "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755",
+  "selected_combination_state": "pending",
+  "selected_combination_id": "c7e9a9133ac6b80ab4512e402b40ac27e16db05b02691e01b38234824659b91a",
+  "missing_real_pins": [
+    "module_manifest_sha256",
+    "policy_rules_manifest_sha256",
+    "live_policy_snapshot_sha256",
+    "live_policy_semantic_audit_sha256",
+    "native_and_apps_manifest_sha256"
+  ],
+  "fixed_case_count": 19,
+  "cases": [
+    {
+      "id": "E2E-01",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "E2E-02",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "E2E-03",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "E2E-04",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "COMP-01",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-01",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-02",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-03",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-04",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-05",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-06",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-07",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-08",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-09",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-10",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-11",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-12",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-13",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    },
+    {
+      "id": "NEG-14",
+      "status": "BLOCKED",
+      "attempt_count": 0
+    }
+  ],
+  "case_status_counts": {
+    "BLOCKED": 19
+  },
+  "model_business_sample_count": 0,
+  "model_complete_success_fraction": null,
+  "current_attempt_record_count": 0,
+  "by_layer": {
+    "component_direct": {
+      "attempts": 0,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "host_isolated": {
+      "attempts": 0,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "model_e2e": {
+      "attempts": 0,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    },
+    "physical_native_task": {
+      "attempts": 0,
+      "outcomes": {
+        "cancelled": 0,
+        "complete_success": 0,
+        "failed": 0,
+        "partial": 0,
+        "unconfirmed": 0
+      },
+      "recovery_attempts": 0
+    }
+  },
+  "auxiliary_record_counts": {},
+  "required_19_protocol_closed": false,
+  "daily_use_qualification_established": false,
+  "host_validation_counts": {
+    "metadata_grouping_checks": 18,
+    "pending_materializer_rejection": 1
+  },
+  "validation_is_not_a_business_sample": true,
+  "original_19_case_objects_limits_geometry_unchanged": true,
+  "source_only_grouping_forbidden": true,
+  "historical_outcomes_rewritten": false,
+  "component_health_recovery_counted_as_business": false,
+  "monetary_cost": null,
+  "hardware_energy_joules": null,
+  "phone_calls": 0,
+  "model_requests": 0,
+  "public_projection_omits": [
+    "Absolute host paths",
+    "Any future private attempt/evidence records",
+    "Phone/user/model raw content"
+  ],
+  "qualification_gate": "Populate and independently qualify the final real module, policy and native/App combination; run a fresh genuine bounded health before any business task."
+}

@@ -1,0 +1,72 @@
+{
+  "original_artifact_relative_path": "acceptance/r4/ACCEPTANCE-SUPPORT-MANIFEST-v150-r4.json",
+  "original_artifact_sha256": "f31ab137c6ebed457882d86cdf69b864f2a27897bc06da42c7fe2d3143ce181c",
+  "original_bytes": 2454,
+  "projected_document": {
+    "actual_model_requests_by_support_builder": 0,
+    "actual_phone_actions_by_support_builder": 0,
+    "candidate_source_seal_sha256": "700e5fb07e5ad250f4df5bd0452660b03dd0138b89718343e10e895c4db50d35",
+    "collector_change": "Only health schema properties lookup uses get(properties,{}); business oneOf is not health.",
+    "compatibility_diff": {
+      "bytes": 798,
+      "path": "COLLECTOR-ONEOF-COMPAT.diff",
+      "sha256": "0b0ea4c74aafe270d67ff07ec0c283f8ad84b89c04530450cc490e6a6bc69790"
+    },
+    "created_utc": "2026-11-03T16:02:35.579008+00:00",
+    "documentation": {
+      "bytes": 2263,
+      "path": "README.md",
+      "sha256": "ce8e25ceba86912e2b211d9703854792a7e5f01c6b6ddb1ea23b52032d154222"
+    },
+    "failure_status_and_error_comparison_unchanged": true,
+    "fixed19_protocol": {
+      "bytes": 37318,
+      "path": "qa/fixed-acceptance-set.json",
+      "sha256": "c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+    },
+    "helper_files": [
+      {
+        "bytes": 46033,
+        "path": "collector-r4/collect_turn_evidence.py",
+        "sha256": "623f0c2c6a93e585d494bb02b736808904938154d2c06e209e1155ada4b7f4eb"
+      },
+      {
+        "bytes": 6701,
+        "path": "collector-r4/native_journal_audit.py",
+        "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+      },
+      {
+        "bytes": 5096,
+        "path": "collector-r4/business_fact_recheck.py",
+        "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+      },
+      {
+        "bytes": 9783,
+        "path": "materialize_case.py",
+        "sha256": "f2b2416cd895e9235fc36cbad07cc32f763420410fc48829c99ac9c566a3fb81"
+      },
+      {
+        "bytes": 13217,
+        "path": "aggregate_protocol.py",
+        "sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772"
+      }
+    ],
+    "host_compatibility_check": {
+      "bytes": 814,
+      "path": "COMPATIBILITY-CHECK.json",
+      "sha256": "d299c5ed45da6ef025959ae88a0117f40cf3ee586b55459ea53898875199b465"
+    },
+    "materializer_change": "Candidate source seal metadata only; fresh text and request construction unchanged.",
+    "old_helpers_and_reports_preserved": true,
+    "parent_acceptance_support_seal_sha256": "64b145e0f6979b1b33a407aca6abb1dc22598abbbca277483f82118eca10d971",
+    "production_source_modified_by_support_builder": false,
+    "qualification_limit": "Support compatibility only; not physical phone, business, fixed19 or daily-use qualification.",
+    "schema": "hepta.acceptance-support-seal.v150.4"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

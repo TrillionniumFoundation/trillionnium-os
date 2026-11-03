@@ -1,0 +1,47 @@
+--- frozen-parent
++++ new-r6-support
+@@ -19,7 +19,7 @@
+ 
+ from native_journal_audit import SCOPE_FIELDS, strict_loads, verify_records
+ 
+-SEAL = "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f"
++SEAL = "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
+ CONFIG = "0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755"
+ SERVICE = "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2"
+ MODEL = "gui-owl-1.5-2b-phone-q4km"
+@@ -314,19 +314,19 @@
+         row["unresolved_effect"]=False
+     return row
+ 
+-R5_HEALTH_SOURCE_SEAL = "f3685aadb004882a3f087e42d43d374bd24564ad56eb472cb638b2f88e96935f"
+-R5_HEALTH_POLICY = 'Perform this one-use no-action health check. Return one JSON object:\nkind="turn.complete", call_id="", tool="none", command="", argv=[], task_status="completed".\nSet summary to exactly the nonce requested in the owner\'s message. Copy it without any prefix, suffix, explanation, Markdown, or changed character. No tools, app actions, text edits, or additional rounds are allowed.'
++R6_HEALTH_SOURCE_SEAL = "26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
++R6_HEALTH_POLICY = 'Perform this one-use no-action health check. Return one JSON object:\nkind="turn.complete", call_id="", tool="none", command="", argv=[], task_status="completed".\nSet summary to exactly the nonce requested in the owner\'s message. Copy it without any prefix, suffix, explanation, Markdown, or changed character. No tools, app actions, text edits, or additional rounds are allowed.'
+ 
+ def prompt_layout(body,exact_request,health_case=False):
+     """Read exact messages; never reinterpret a normal request as a health check."""
+     if isinstance(body.get("messages"),list) and len(body["messages"]) == 2:
+-        require(health_case and SEAL == R5_HEALTH_SOURCE_SEAL,
+-                "two-message layout requires selected frozen r5 HEALTH case")
++        require(health_case and SEAL == R6_HEALTH_SOURCE_SEAL,
++                "two-message layout requires selected frozen r6 HEALTH case")
+         require(body["messages"] == [
+-                    {"role":"system","content":R5_HEALTH_POLICY},
++                    {"role":"system","content":R6_HEALTH_POLICY},
+                     {"role":"user","content":exact_request.decode("utf-8",errors="strict")}],
+-                "r5 minimal health policy or exact owner bytes differ")
+-        return "r5_health_exact_owner_only"
++                "r6 minimal health policy or exact owner bytes differ")
++        return "r6_health_exact_owner_only"
+     if isinstance(body["messages"][1]["content"],str):
+         projected = strict_loads(body["messages"][1]["content"])
+         owner = body["messages"][-1]
+@@ -472,7 +472,7 @@
+     parser.add_argument("--out",type=Path,required=True)
+     parser.add_argument("--max-total-mib",type=int,default=512)
+     args=parser.parse_args()
+-    require(args.case_id=="HEALTH","this r5 layout revision is qualified for HEALTH evidence only")
++    require(args.case_id=="HEALTH","this r6 layout revision is qualified for HEALTH evidence only")
+     require(1<=args.max_total_mib<=2048,"evidence budget out of range")
+     output=args.out.absolute()
+     require(output.parent.resolve()==output.parent,"output parent must be canonical")

@@ -1,0 +1,63 @@
+{
+  "original_artifact_relative_path": "acceptance/r6-r2/health-original-export/SOURCE-SEAL-health-original-export-r6-r2-r1.json",
+  "original_artifact_sha256": "df5bb28ece841cc30fe38e94c4f06e70b82c22a7df112792f2023a60ffe623de",
+  "original_bytes": 2162,
+  "projected_document": {
+    "actual_new_tasks": 0,
+    "actual_runtime_qualification": "PENDING_ROOT_REAL_HEALTH_AND_SEPARATE_BUSINESS_TERMINALS",
+    "adaptation_result_sha256": "1280b7fed4aed8185bdfd7c7347b47d552cd2fd5e70f5cbec5fdfd5bfbcc6362",
+    "files": [
+      {
+        "bytes": 14109,
+        "path": "capture_health_originals.py",
+        "sha256": "5d01832872160e815eb470180f7bcb9efc75fa602f8a1a80cc9d9ac8d679f32b"
+      },
+      {
+        "bytes": 1913,
+        "path": "capture_health_originals.py.ADAPTATION.diff",
+        "sha256": "6533a73bf454aa4f8e349544aad6106483ebd010b8c0d3f651e7fc65beeb0d77"
+      },
+      {
+        "bytes": 18992,
+        "path": "export_health_r6_once.py",
+        "sha256": "d22ba8bc634bb8fc2c32092e6b821d55fe91ea778d515c63d69d56c07a01d0ae"
+      },
+      {
+        "bytes": 9274,
+        "path": "export_health_r6_once.py.ADAPTATION.diff",
+        "sha256": "1159f3a19ae1aeaf4cdd19f9ec2a767acd73970fce2b885005b60514b5099023"
+      }
+    ],
+    "fixed19_cases_limits_geometry_unchanged": true,
+    "health_process_fence_test_sha256": "cb5187a259282262cb4cb90b54cd981e086b0b444473affb28ba4f6c9538da7c",
+    "independent_focused_review_sha256": "a2d80be34136ea946660725f2a55bc70975854667746d8dcf581724e5f0b0dfd",
+    "materializer_executed": false,
+    "metadata_job_exit_code": 0,
+    "metadata_job_id": "1a1a39935a4-fc05-b96",
+    "model_calls": 0,
+    "nonce_generated": false,
+    "old_frozen_sources_and_failures_preserved": true,
+    "phone_calls": 0,
+    "provider_source_seal_sha256": "a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1",
+    "public_exclusions": [
+      "actual materials and requests",
+      "draft or keys or key digests",
+      "original private native/tool records",
+      "actual output trees",
+      "runtime weights",
+      "full policy binaries"
+    ],
+    "schema": "hepta.r6-r2.host-support-source-seal.v1",
+    "scope": "metadata plus original actor/phone/collector process exit conjunction",
+    "service_inputs_sha256": "ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2",
+    "source_reverse_bytes_verified": true,
+    "state": "FROZEN_HOST_ONLY_NOT_PHYSICALLY_QUALIFIED"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "private_deployment_metadata_removed"
+  ]
+}

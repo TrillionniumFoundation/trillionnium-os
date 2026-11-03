@@ -1,0 +1,84 @@
+--- business-r6-root-operator-r1/prepare_register_business_r6.py
++++ business-r6-r2-root-operator-r1/prepare_register_business_r6.py
+@@ -3,12 +3,12 @@
+ from pathlib import Path
+ import argparse,hashlib,importlib.util,json,os,re,shlex,subprocess,sys,types
+ B=Path('/operator-workspace/razr60/phone-local-v150')
+-D=B/'business-r6-root-operator-r1'
++D=B/'business-r6-r2-root-operator-r1'
+ GNU='/var/lib/trillionnium/owner-open/phone-local-v150'
+-SOURCE_SHA='26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3'
++SOURCE_SHA='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
+ CONFIG_SHA='0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'
+ MATERIALIZER_SHA='6ec2e23ed87e690e520dd1ee2b063e4e19b92e65e6a2570d0a666cadea42411d'
+-AGGREGATE_SHA='71a48142f767799dc935c598abd129f04095276c2ffbce4306895ecf00dc2360'
++AGGREGATE_SHA='bb57668a3145ec206dbfd5df660e485fc9106ea6b00df98a61286f71659b08e9'
+ REGISTRAR_SHA='3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230'
+ SENDER_SHA='5ab04019e94adb989e9909ae3a9aa10db0689de62821ec549db8beb3ec4d0281'
+ HARNESS_SHA='630c4cb2b9ec5363c7dc464af59455ea252abb1f4f56b3920002f73de177efb6'
+@@ -26,7 +26,7 @@
+ def pin(path,expected):
+  raw=path.read_bytes();require(sha(raw)==expected,'source_pin:'+path.name);return raw
+ def binding_module():
+- path=B/'acceptance-r6/aggregate_protocol_r6.py';raw=pin(path,AGGREGATE_SHA)
++ path=B/'acceptance-r6-r2/aggregate_protocol_r6.py';raw=pin(path,AGGREGATE_SHA)
+  module=types.ModuleType('fixed_r6_binding');module.__file__=str(path)
+  exec(compile(raw,str(path),'exec'),module.__dict__)
+  return module
+@@ -36,7 +36,7 @@
+ import hashlib,json,os,stat,subprocess
+ B=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+ kind=PAYLOAD['kind'];assert kind in ('visual','unicode')
+-D=B/('root-'+kind+'-r6-01')
++D=B/('root-'+kind+'-r6-r2-01')
+ def sha(raw):return hashlib.sha256(raw).hexdigest()
+ def put(p,raw):
+  fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+@@ -55,10 +55,10 @@
+ s=B.lstat();assert stat.S_ISDIR(s.st_mode) and not B.is_symlink() and B.resolve()==B
+ assert s.st_uid==s.st_gid==0 and stat.S_IMODE(s.st_mode)==0o700
+ assert not D.exists() and not D.is_symlink()
+-reg=B/'provider-r6/register_task_contract.py'
++reg=B/'provider-r6-r2/register_task_contract.py'
+ assert sha(reg.read_bytes())=='3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230'
+-assert sha((B/'provider-r6/SOURCE-SEAL-v150-r6.json').read_bytes())=='26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3'
+-assert sha((B/'local-config-r6.json').read_bytes())=='0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'
++assert sha((B/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json').read_bytes())=='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
++assert sha((B/'local-config-r6-r2.json').read_bytes())=='0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'
+ expected={'request.txt','postconditions.json','material.json','combination.json'}
+ if kind=='unicode':expected|={'expected-text.txt','expected-public-receipt.txt'}
+ assert set(PAYLOAD['files'])==expected
+@@ -139,11 +139,11 @@
+  status=previous.get('terminal',{}).get('status')
+  known_failed=previous.get('known_no_phone_tool_execution') is True or previous.get('known_all_dispatched_tools_confirmed_terminal') is True
+  require(status in ('completed','provider_failed','cancelled') and (status=='completed' or known_failed),'previous actual terminal/receipts must already be closed')
+- H=B/(a.kind+'-r6-01');run=D/(a.kind+'-01')
++ H=B/(a.kind+'-r6-r2-01');run=D/(a.kind+'-01')
+  require(not H.exists() and not H.is_symlink() and not run.exists() and not run.is_symlink(),'one-time output already exists; inspect original attempt')
+- pin(B/'provider-r6/SOURCE-SEAL-v150-r6.json',SOURCE_SHA)
+- pin(B/'acceptance-r6/materialize_case_r6.py',MATERIALIZER_SHA)
+- pin(B/'provider-r6/register_task_contract.py',REGISTRAR_SHA)
++ pin(B/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json',SOURCE_SHA)
++ pin(B/'acceptance-r6-r2/materialize_case_r6.py',MATERIALIZER_SHA)
++ pin(B/'provider-r6-r2/register_task_contract.py',REGISTRAR_SHA)
+  pin(B/'send_new_native_task_r5.py',SENDER_SHA)
+  helper=B/'root-operators-r6-cycle03/run_cycle03.py';pin(helper,HARNESS_SHA)
+  run.mkdir(mode=0o700)
+@@ -152,7 +152,7 @@
+   'previous_identity':identity,'previous_request_sha256':digest,'previous_status':status,
+   'combination_manifest_sha256':a.combination_sha256,'registration_only':True,
+   'automatic_retry':False,'send_attempts':0,'nonce_generated_before_this_invocation':False}))
+- argv=[sys.executable,'-B',str(B/'acceptance-r6/materialize_case_r6.py'),a.kind,
++ argv=[sys.executable,'-B',str(B/'acceptance-r6-r2/materialize_case_r6.py'),a.kind,
+   '--combination',str(a.combination),'--combination-sha256',a.combination_sha256,'--out',str(H)]
+  r=subprocess.run(argv,capture_output=True,timeout=15)
+  put(run/'materialize.stdout',r.stdout);put(run/'materialize.stderr',r.stderr)
+@@ -203,7 +203,7 @@
+  print(json.dumps({'state':'FRESH_BUSINESS_REGISTERED_NO_SEND','kind':a.kind,'case':meta['case'],
+   'nonce':nonce,'request_sha256':sha(request),'template_sha256':result['template_original_sha256'],
+   'combination_manifest_sha256':a.combination_sha256,'combination_sha256':selected['combination_sha256'],
+-  'phone_directory':GNU+'/root-'+a.kind+'-r6-01','send_attempts':0,'model_requests':0,
++  'phone_directory':GNU+'/root-'+a.kind+'-r6-r2-01','send_attempts':0,'model_requests':0,
+   'live_selected_identity_checked_here':False,'frozen_sender_checks_required':True,
+   'automatic_replay':False},sort_keys=True))
+ if __name__=='__main__':main()

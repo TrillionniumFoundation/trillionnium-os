@@ -1,68 +1,20 @@
 {
-  "schema": "hepta.phone-local-publication-qualification.v150.2",
-  "base_commit": "2541c380f3f718803983c918f6a20793479c1127",
-  "runtime_location": "phone",
   "business_qualified": false,
+  "cold_boot_qualified": false,
+  "current_checkpoint": "qualification/checkpoints/HEALTH-PASS-v150-r6-r2-01.json",
+  "current_executor": "r6",
+  "current_module": "provider-r6-r2 module-r6-r2",
+  "current_provider": "r6-r2",
+  "cutoff": "health-stage snapshot before later business attempts",
   "daily_use_qualified": false,
-  "old_requests_replayed": false,
-  "provider_revisions": {
-    "r1": {
-      "status": "FAILED_FIRST_NATIVE_HEALTH",
-      "model_terminal": "HTTP200_stop",
-      "native_terminal": "provider_failed",
-      "phone_tools": 0,
-      "model_seconds_approx": 8.1
-    },
-    "r2": {
-      "status": "FROZEN_STATIC_ONLY_NOT_INSTALLED",
-      "change": "Owner request remains exact and appears in final user text part"
-    },
-    "r3": {
-      "status": "ROOT_OBSERVED_NATIVE_COMPLETED_PENDING_INDEPENDENT_COLLECTOR",
-      "original_source_seal_sha256": "17a438628070a7fffd9d9c3f92221c00ca92134c3dd91532eb5008fe2cf30564",
-      "production_python_files": 12,
-      "host_checks": 30,
-      "change": "One-use exact request and known session/profile health contract, one raw model response with exact nonce summary, zero phone dispatch",
-      "raw_model_nonce_required_exact": true,
-      "native_display_prefix": "[无动作；业务未独立验证] ",
-      "native_completed_and_zero_tools_required_independently": true,
-      "observed_native_terminal": "completed",
-      "observed_tools": 0,
-      "observed_raw_model_summary_exact_nonce": true,
-      "health_sample_count": 1,
-      "http_elapsed_seconds": 9.078922549,
-      "model_usage": {
-        "prompt_tokens": 669,
-        "completion_tokens": 57,
-        "total_tokens": 726
-      },
-      "observer_readback_sha256": "5e0840cb877007506a79d0375b47f4a9354d44fa0e7c1f8ed17f951939b4605d",
-      "raw_private_run_not_published": true
-    }
-  },
-  "sidecar_r5": {
-    "binary_sha256": "30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa",
-    "host_targeted_checks": 4,
-    "actual_phone_component_cases": 5,
-    "actual_phone_component_status": "PASS",
-    "actual_synthetic_executions": 4,
-    "elapsed_seconds": 3.97,
-    "uid_gid": 2000,
-    "supplementary_group_count": 0,
-    "summary_path": "qa/actual-r5-component/SUMMARY.json",
-    "summary_sha256": "3006a16eb0c7014235a936483329aa51b1b881e02dbe028d551a4105f7358eff",
-    "evidence_manifest_sha256": "4a11316b288591d9bf53fa8e5535a97f1595e7b436398e0248aa65328419a403",
-    "native_model_chain_qualified": false
-  },
-  "remaining": [
-    "independent native/HTTP/claim collector verification of fresh r3 health",
-    "fresh visual and Unicode complete business contracts",
-    "native/model disconnect cancel late result timeout and budget exhaustion",
-    "fixed19 protocol with sample, latency, cost and resource statistics",
-    "physical display0/outer/rotation/folding verification",
-    "cold boot and observed host/USB independence",
-    "remaining full HEPTA49 and rootfs bit reproduction"
-  ],
-  "current_module_service_sha256": "804037c9b94a4f5d98bf4335c5703a80c91b2e6109c681216bf2c70ac7d0433a",
-  "current_service_input_original_sha256": "a2fe45cff43f7270a43e4d0738ef921812cb534e66ae45fe7b33970612488362"
+  "fixed19_attempts": 0,
+  "fixed19_closed": 0,
+  "fixed19_not_run": 19,
+  "fold_external_rotation_qualified": false,
+  "health_pass": true,
+  "health_samples": 1,
+  "history": "qualification/history/STATUS-as-published-82dd4497.json",
+  "old_failures_preserved": true,
+  "originals_private": true,
+  "schema": "hepta.qualification-status.v150.r6r2.health01"
 }

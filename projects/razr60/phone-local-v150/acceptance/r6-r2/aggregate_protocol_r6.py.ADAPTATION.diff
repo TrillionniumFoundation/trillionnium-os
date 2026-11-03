@@ -1,0 +1,38 @@
+--- acceptance-r6/aggregate_protocol_r6.py
++++ acceptance-r6-r2/aggregate_protocol_r6.py
+@@ -3,7 +3,7 @@
+ import argparse,collections,hashlib,json,os,re,stat,types
+ from pathlib import Path
+ BASE=Path(__file__).resolve().parent
+-SOURCE_SHA="26eb35e366cbc577408fe2662dc6c34d8a80f786bd46c584c43b5c9e2f7382a3"
++SOURCE_SHA="a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1"
+ SERVICE_SHA="ccb7cacf0dd9e4e12daba09515a56633363dd9f04607b44546df1e493d15bfd2"
+ CONFIG_SHA="0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755"
+ ORIGINAL_PROTOCOL_SHA="c573959e59fd9fbe7a850d6d2d6d747e3135718493f15de4a8acde850bad93b0"
+@@ -12,7 +12,7 @@
+ DYNAMIC_PINS=("module_manifest_sha256","policy_rules_manifest_sha256",
+  "live_policy_snapshot_sha256","live_policy_semantic_audit_sha256",
+  "native_and_apps_manifest_sha256")
+-FIXED={"schema":"hepta.acceptance-combination.v150.r6.1","release":"v150-r6",
++FIXED={"schema":"hepta.acceptance-combination.v150.r6.1","release":"v150-r6-r2",
+  "provider_source_seal_sha256":SOURCE_SHA,"service_inputs_sha256":SERVICE_SHA,
+  "provider_config_sha256":CONFIG_SHA,"model_route":"phone_local_cpu","cloud_fallback":False}
+ IDS=["E2E-"+str(i).zfill(2) for i in range(1,5)]+["COMP-01"]+["NEG-"+str(i).zfill(2) for i in range(1,15)]
+@@ -69,7 +69,7 @@
+   if key not in allowed:require(new[key]==old[key],"protocol_semantics_changed:"+key)
+  require(new["cases"]==old["cases"] and new["limits"]==old["limits"]
+   and new["qualified_geometry"]==old["qualified_geometry"],"fixed19_cases_limits_geometry_changed")
+- require(new["candidate_manifest_sha256"]==SOURCE_SHA and new["set_id"]=="stock16-phone-local-fixed-set-r6","r6_source_metadata")
++ require(new["candidate_manifest_sha256"]==SOURCE_SHA and new["set_id"]=="stock16-phone-local-fixed-set-r6-r2","r6_source_metadata")
+  b=new["r6_binding"]
+  require(b["original_protocol_sha256"]==ORIGINAL_PROTOCOL_SHA and
+   b["provider_source_seal_sha256"]==SOURCE_SHA and b["service_inputs_sha256"]==SERVICE_SHA and
+@@ -181,7 +181,7 @@
+  result=aggregate_bound(protocol,selected,attempts,a.attempts.absolute().parent,auxiliary)
+  result.update(protocol_sha256=protocol_sha,original_protocol_sha256=ORIGINAL_PROTOCOL_SHA,
+   original_protocol_candidate_source_sha256=old_source,attempts_sha256=sha(raw),auxiliary_input_sha256=auxsha,
+-  source_binding="Provider r6 26eb..., service-inputs-r3 ccb7..., and exact full combination; no source-only mixing.")
++  source_binding="Provider r6-r2 a8bd87b3..., service-inputs-r3 ccb7..., and exact full combination; no source-only mixing.")
+  record=write_new(a.out,(json.dumps(result,sort_keys=True,ensure_ascii=False,indent=2,allow_nan=False)+"\n").encode())
+  print(json.dumps({"report":record,"cases":len(result["cases"]),"case_status_counts":result["case_status_counts"],
+   "model_task_sample_count":result["model_task_sample_count"],"complete_fraction":result["model_complete_success_fraction"],

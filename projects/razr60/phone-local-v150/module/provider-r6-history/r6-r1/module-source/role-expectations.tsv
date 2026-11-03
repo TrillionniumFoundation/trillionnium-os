@@ -1,0 +1,3 @@
+model	/data/local/tmp/hepta-phone-local-v150-r1/bin/llama-server	7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176	u:r:magisk:s0	0	0	0
+sidecar	/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-sidecar-r6	8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976	u:r:trillionnium_owner_open_phone_executor:s0	0	0	0
+provider	/data/trillionnium/owner-open/root/usr/bin/python3	f7ad87c414fc6a5126571b2ecca19351119ac10e54d0539de6a0a9300d81087f	u:r:magisk:s0	0	0	0

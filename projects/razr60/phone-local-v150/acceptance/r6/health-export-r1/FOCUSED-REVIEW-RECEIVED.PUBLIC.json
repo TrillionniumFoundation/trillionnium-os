@@ -1,0 +1,43 @@
+{
+  "original_artifact_relative_path": "acceptance/r6/health-export-r1/FOCUSED-REVIEW-RECEIVED.json",
+  "original_artifact_sha256": "386d1efb49a864e118fc77b8af83e8c7ab5e34368bb1c86ba07cdc0d324517ca",
+  "original_bytes": 1467,
+  "projected_document": {
+    "actual_review_source": "agent message received before sealing; no signature impersonation",
+    "checks": [
+      "exact r6 source/path/config pins",
+      "exact previous7491 failed + no-tool true + all-dispatched false",
+      "zero-tool/owner/HTTP/slot/worker/native gates unchanged",
+      "original capture completeness conjunction retained"
+    ],
+    "new_regression_or_phone_execution": false,
+    "review_type": "static diff only",
+    "reviewer_agent": "android_runtime_build",
+    "schema": "hepta.focused-review-received.v1",
+    "source_pins": [
+      {
+        "bytes": 47357,
+        "path": "/operator-workspace/razr60/phone-local-v150/acceptance-r6/collector-r6/collect_health_evidence.py",
+        "sha256": "12d656a02dfaf94437aa902bec87c03d056284ee402b14a5f3d3f72823651c7e"
+      },
+      {
+        "bytes": 14088,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/capture_health_originals.py",
+        "sha256": "27fa9bf2e3404d3ca7bb30becc191fdce427541a967c6813fdcab9a1aac6fac2"
+      },
+      {
+        "bytes": 16530,
+        "path": "/operator-workspace/razr60/phone-local-v150/health-r6-original-export-r1/export_health_r6_once.py",
+        "sha256": "746109ee5569eec95c49a04cbf19b95c56933d01096be2728ca4177c9f076d30"
+      }
+    ],
+    "verdict": "PASS_NO_BLOCKING_FINDING"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection",
+    "operator_host_path_normalized"
+  ]
+}

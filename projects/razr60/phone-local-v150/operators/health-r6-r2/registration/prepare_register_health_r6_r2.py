@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+from pathlib import Path
+import argparse,hashlib,importlib.util,json,os,shlex,subprocess,sys
+B=Path("/operator-workspace/razr60/phone-local-v150")
+D=B/'health-r6-r2-root-operator-r1'
+H=B/'health-r6-r2-01'
+ROOT_GNU='/var/lib/trillionnium/owner-open/phone-local-v150'
+def sha(b):return hashlib.sha256(b).hexdigest()
+def put(p,b):
+ fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+ with os.fdopen(fd,'wb') as f:f.write(b);f.flush();os.fsync(f.fileno())
+def pin(rel,h):
+ p=B/rel;raw=p.read_bytes();assert sha(raw)==h,rel;return raw
+def main():
+ p=argparse.ArgumentParser();p.add_argument('--combination',type=Path,required=True);p.add_argument('--combination-sha256',required=True);p.add_argument('--materializer-sha256',required=True);a=p.parse_args()
+ assert not H.exists()
+ pin('provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json','a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1')
+ pin('acceptance-r6-r2/materialize_case_r6.py',a.materializer_sha256)
+ pin('provider-r6-r2/register_health_contract.py','deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b')
+ pin('health-r5-failure01-closure-r1/actual-01/ACTUAL-FAILED-HEALTH01-PREVIOUS-INPUT.json','749126d88d1bf08eddb79104484cdd73f76250117ef2fcefcbb0e29289a34951')
+ assert sha(a.combination.read_bytes())==a.combination_sha256
+ argv=[sys.executable,'-B',str(B/'acceptance-r6-r2/materialize_case_r6.py'),'health','--combination',str(a.combination),'--combination-sha256',a.combination_sha256,'--out',str(H)]
+ r=subprocess.run(argv,capture_output=True,timeout=15)
+ put(D/'materialize.stdout',r.stdout);put(D/'materialize.stderr',r.stderr)
+ assert r.returncode==0,'materialization failed; originals retained'
+ meta=json.loads((H/'material.json').read_bytes());raw=(H/'request.txt').read_bytes();nonce=meta['nonce']
+ assert len(nonce)==32 and all(c in '0123456789abcdef' for c in nonce)
+ assert sha(raw)==meta['request_sha256']
+ combo=(H/'combination.json').read_bytes();assert sha(combo)==a.combination_sha256
+ code="""from pathlib import Path
+import hashlib,json,os,stat,subprocess
+B=Path('/var/lib/trillionnium/owner-open/phone-local-v150')
+D=B/'root-health-r6-r2-01'
+def sha(b):return hashlib.sha256(b).hexdigest()
+def put(p,b):
+ fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+ with os.fdopen(fd,'wb') as f:f.write(b);f.flush();os.fsync(f.fileno())
+s=B.lstat();assert stat.S_ISDIR(s.st_mode) and not B.is_symlink() and B.resolve()==B
+assert not D.exists()
+reg=B/'provider-r6-r2/register_health_contract.py'
+assert sha(reg.read_bytes())=='deba53529e1c39e1a591b6e8a185857d2e0de4e08f21281fcc656945061a1e7b'
+assert sha((B/'provider-r6-r2/SOURCE-SEAL-v150-r6-r2.json').read_bytes())=='a8bd87b3d50c993b3e4ac7799ca66dd8e84cbd7925deb7e641e5cc66c1bdb7c1'
+assert sha((B/'local-config-r6-r2.json').read_bytes())=='0eb740aea8591a0377bc9ceecafb4b848a9dcdd7dc2cb75ffc3f0892abe5c755'
+D.mkdir(mode=0o700)
+raw="""+repr(raw)+"""
+combo="""+repr(combo)+"""
+nonce="""+repr(nonce)+"""
+put(D/'request.txt',raw);put(D/'combination.json',combo)
+for p in (D/'request.txt',D/'combination.json'):
+ s=p.lstat();assert s.st_uid==s.st_gid==0 and s.st_nlink==1 and stat.S_IMODE(s.st_mode)==0o600
+fd=os.open(D,os.O_RDONLY|os.O_DIRECTORY);os.fsync(fd);os.close(fd)
+r=subprocess.run(['/usr/bin/python3','-B',str(reg),'--state',str(B/'provider-state'),'--request-file',str(D/'request.txt'),'--session-id','session-ee897738-8fc2-4d3e-a916-5fe368b340ef','--profile-id','owner-open','--nonce',nonce],capture_output=True,timeout=15)
+put(D/'register.stdout',r.stdout);put(D/'register.stderr',r.stderr)
+result={'schema':'hepta.root-health-registration-once.v150.r6.r2','rc':r.returncode,'nonce':nonce,'request_sha256':sha(raw),'combination_sha256':sha(combo),'stdout_sha256':sha(r.stdout),'stderr_sha256':sha(r.stderr),'stdout_bytes':len(r.stdout),'stderr_bytes':len(r.stderr),'send_attempts':0,'model_requests':0,'automatic_retry':False}
+if r.returncode==0:result['registration']=json.loads(r.stdout)
+put(D/'REGISTRATION-RESULT.json',(json.dumps(result,sort_keys=True,indent=2)+'\\n').encode())
+print(json.dumps(result,sort_keys=True))
+raise SystemExit(r.returncode)
+"""
+ compile(code,'phone-health-registration','exec')
+ helper=B/'root-operators-r6-cycle03/run_cycle03.py';assert sha(helper.read_bytes())=='630c4cb2b9ec5363c7dc464af59455ea252abb1f4f56b3920002f73de177efb6'
+ spec=importlib.util.spec_from_file_location('root_phone_once',helper);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);m.D=D
+ req={'kind':'shell','root':True,'timeout_seconds':45,'command':'/data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -B -c '+shlex.quote(code)}
+ put(D/'register-health-r6-r2-01.request.json',(json.dumps(req,sort_keys=True,indent=2)+'\n').encode())
+ try:ph=m.call_phone('register-fresh-native-r6-r2-health-01',req)
+ except AssertionError:
+  print(json.dumps({'state':'ORIGINAL_REGISTRATION_FAILED_NO_SEND','originals_retained':True,'automatic_retry':False}));raise SystemExit(2)
+ result=json.loads(ph['stdout']);assert result['rc']==0 and result['send_attempts']==0
+ assert result['request_sha256']==sha(raw) and result['combination_sha256']==a.combination_sha256
+ put(D/'REGISTRATION-RESULT.json',(json.dumps(result,sort_keys=True,indent=2)+'\n').encode())
+ print(json.dumps({'state':'FRESH_HEALTH_REGISTERED_NO_SEND','nonce':nonce,'request_sha256':sha(raw),'combination_manifest_sha256':a.combination_sha256,'phone_directory':ROOT_GNU+'/root-health-r6-r2-01','send_attempts':0,'model_requests':0,'automatic_replay':False},sort_keys=True))
+if __name__=='__main__':main()

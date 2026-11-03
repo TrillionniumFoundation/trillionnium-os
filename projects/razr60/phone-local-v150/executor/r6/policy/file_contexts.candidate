@@ -1,0 +1,4 @@
+# Candidate labels only; not installed or applied.
+/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-sidecar-r6 -- u:object_r:trillionnium_owner_open_phone_executor_exec:s0
+/data/local/tmp/hepta-phone-executor-v150-r6/bin/phone-tool-worker-r6 -- u:object_r:trillionnium_owner_open_phone_worker_exec:s0
+/data/trillionnium/owner-open/state/phone-local-v150/executor-r6(/.*)? u:object_r:trillionnium_owner_open_phone_executor_data_file:s0

@@ -1,0 +1,77 @@
+--- frozen/send_new_native_task_r4.py
++++ candidate/send_new_native_task_r5.py
+@@ -21,7 +21,7 @@
+ p.add_argument('--reset-probe', action='store_true')
+ p.add_argument('--retirement-resolution',type=Path,required=True)
+ p.add_argument('--evidence-root',choices=('production','component'),default='production')
+-p.add_argument('--component-contract',type=Path,help='Only the fixed component-r2 contract; production does not wait')
++p.add_argument('--component-contract',type=Path,help='Only the fixed component-r3 contract; production does not wait')
+ p.add_argument('--execute-once',action='store_true',help='Root only; default only builds a private actor preview')
+ args = p.parse_args()
+ import base64, re
+@@ -52,8 +52,8 @@
+ component_helper=None
+ if args.evidence_root=='component':
+     assert args.component_contract is not None and not args.reset_probe,'Component mode requires its fixed contract and no business probe reset'
+-    component_helper_path=BASE/'sender_component_ready_r4.py'
+-    assert hashlib.sha256(component_helper_path.read_bytes()).hexdigest()=='c1a4c05e157f199e4b4a2d153fac2fc0d02b1e25afd24c1320b91f78109f9f3d','Component readiness helper source pin differs'
++    component_helper_path=BASE/'sender_component_ready_r5.py'
++    assert hashlib.sha256(component_helper_path.read_bytes()).hexdigest()=='ba8256ef5b4663591896099e2428e919b9d7869cb8d41d9267d99d3c6d961057','Component readiness helper source pin differs'
+     component_spec=importlib.util.spec_from_file_location('sender_r4_component',component_helper_path)
+     component_helper=importlib.util.module_from_spec(component_spec);component_spec.loader.exec_module(component_helper)
+     component_binding=component_helper.binding(args.component_contract,prompt.encode(),identity)
+@@ -82,7 +82,7 @@
+ source += helpers
+ source += 'READ_ONLY_PROBE_SOURCE=' + repr(READ_ONLY_PROBE) + '\n'
+ source += LATENCY_OBSERVER
+-source += "\ndef component_send_margin(reading,minimum_remaining_ns=15000000000):\n elapsed=time.monotonic_ns()-reading['read_start_monotonic_ns']\n assert elapsed>=0,'Pocket4 monotonic clock changed'\n value=reading['observation']\n assert value['remaining_accept_ns']-elapsed>=minimum_remaining_ns,'Component accept margin elapsed; no Send'\n assert component_binding['contract']['expires_unix_ms']-value['phone_unix_ms']-elapsed//1000000>=minimum_remaining_ns//1000000,'Component contract margin elapsed; no Send'\n assert time.monotonic_ns()<=pre_send_deadline_ns,'Original pre-Send deadline elapsed; no Send'\n\ndef read_component_ready(tag,previous=None,minimum_remaining_ns=15000000000):\n import signal\n assert component_binding is not None and evidence_mode=='component','Fixed component mode required'\n assert time.monotonic_ns()+8_000_000_000<=pre_send_deadline_ns,'Insufficient original pre-Send read budget'\n def expired(_number,_frame):raise RuntimeError('component ready read deadline')\n previous_handler=signal.getsignal(signal.SIGALRM)\n assert signal.getitimer(signal.ITIMER_REAL)==(0.0,0.0),'Existing deadline must not be cleared'\n signal.signal(signal.SIGALRM,expired)\n result=None;value=None;started=time.monotonic_ns()\n try:\n  signal.setitimer(signal.ITIMER_REAL,8.0)\n  command='/data/adb/magisk/busybox timeout -s TERM -k 1 6 /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -c '+shlex.quote(COMPONENT_READY_PROBE_SOURCE)\n  result=f.shell('/debug_ramdisk/su -c '+shlex.quote(command),c,t,timeout=6)\n  assert result['rc']==0,'Fixed component ready observation failed; no Send'\n  value=json.loads(result['stdout'])\n  if value.get('state')=='waiting_for_ready':\n   assert previous is None,'Component ready vanished after observation'\n   assert value['contract_sha256']==component_binding['contract_sha256'] and value['nonce']==component_binding['contract']['nonce'] and value['owner_request_sha256']==component_binding['contract']['owner_request_sha256']\n   assert value['claim_absent'] is True and value['ended_absent'] is True\n  else:\n   validate_ready_observation(value,component_binding,previous,minimum_remaining_ns)\n finally:\n  signal.setitimer(signal.ITIMER_REAL,0)\n  signal.signal(signal.SIGALRM,previous_handler)\n  reading={'read_start_monotonic_ns':started,'read_end_monotonic_ns':time.monotonic_ns(),\n           'original_wire_receipt':result,'observation':value,'read_only':True,\n           'socket_connections':0,'service_launches':0}\n  save(tag+'.original-read.json',reading)\n if value['state']=='ready_observed':component_send_margin(reading,minimum_remaining_ns)\n return reading\n\ndef wait_component_rendezvous():\n assert component_binding is not None and evidence_mode=='component','Fixed component rendezvous only'\n now=time.monotonic_ns()\n assert now+30_000_000_000<=pre_send_deadline_ns,'Insufficient original pre-Send budget for rendezvous'\n save('COMPONENT-PREPARED-NO-SEND.json',{\n  'schema':'hepta.component-sender-prepared.v150.r4','state':'PREPARED_NO_SEND',\n  'nonce':component_binding['contract']['nonce'],\n  'owner_request_sha256':component_binding['contract']['owner_request_sha256'],\n  'contract_sha256':component_binding['contract_sha256'],\n  'provider_source_sha256':component_binding['source_sha256'],\n  'ready_path':component_binding['phone_ready_path'],\n  'clock':'Pocket4 time.monotonic_ns, one actor process',\n  'prepared_monotonic_ns':now,'pre_send_deadline_monotonic_ns':pre_send_deadline_ns,\n  'pre_send_budget_remaining_seconds':(pre_send_deadline_ns-now)/1e9,\n  'same_phone_accept_minimum_remaining_seconds':15,\n  'provider_started_by_sender':False,'socket_connections':0,'send_attempt_count':0,\n  'root_action':'Root may launch the separately reviewed fixed component-r2 provider once; sender only reads its fixed ready file'})\n count=0\n while time.monotonic_ns()+25_000_000_000<=pre_send_deadline_ns:\n  count+=1\n  reading=read_component_ready('COMPONENT-READY-%04d'%count,minimum_remaining_ns=25000000000)\n  if reading['observation']['state']=='ready_observed':return reading\n  pause=min(.25,max(0,(pre_send_deadline_ns-time.monotonic_ns()-25_000_000_000)/1e9))\n  if pause:time.sleep(pause)\n raise RuntimeError('Component rendezvous deadline elapsed; zero Send, no provider restart')\n"
++source += "\ndef component_send_margin(reading,minimum_remaining_ns=15000000000):\n elapsed=time.monotonic_ns()-reading['read_start_monotonic_ns']\n assert elapsed>=0,'Pocket4 monotonic clock changed'\n value=reading['observation']\n assert value['remaining_accept_ns']-elapsed>=minimum_remaining_ns,'Component accept margin elapsed; no Send'\n assert component_binding['contract']['expires_unix_ms']-value['phone_unix_ms']-elapsed//1000000>=minimum_remaining_ns//1000000,'Component contract margin elapsed; no Send'\n assert time.monotonic_ns()<=pre_send_deadline_ns,'Original pre-Send deadline elapsed; no Send'\n\ndef read_component_ready(tag,previous=None,minimum_remaining_ns=15000000000):\n import signal\n assert component_binding is not None and evidence_mode=='component','Fixed component mode required'\n assert time.monotonic_ns()+8_000_000_000<=pre_send_deadline_ns,'Insufficient original pre-Send read budget'\n def expired(_number,_frame):raise RuntimeError('component ready read deadline')\n previous_handler=signal.getsignal(signal.SIGALRM)\n assert signal.getitimer(signal.ITIMER_REAL)==(0.0,0.0),'Existing deadline must not be cleared'\n signal.signal(signal.SIGALRM,expired)\n result=None;value=None;started=time.monotonic_ns()\n try:\n  signal.setitimer(signal.ITIMER_REAL,8.0)\n  command='/data/adb/magisk/busybox timeout -s TERM -k 1 6 /data/adb/magisk/busybox chroot /data/trillionnium/owner-open/root /usr/bin/python3 -I -c '+shlex.quote(COMPONENT_READY_PROBE_SOURCE)\n  result=f.shell('/debug_ramdisk/su -c '+shlex.quote(command),c,t,timeout=6)\n  assert result['rc']==0,'Fixed component ready observation failed; no Send'\n  value=json.loads(result['stdout'])\n  if value.get('state')=='waiting_for_ready':\n   assert previous is None,'Component ready vanished after observation'\n   assert value['contract_sha256']==component_binding['contract_sha256'] and value['nonce']==component_binding['contract']['nonce'] and value['owner_request_sha256']==component_binding['contract']['owner_request_sha256']\n   assert value['claim_absent'] is True and value['ended_absent'] is True\n  else:\n   validate_ready_observation(value,component_binding,previous,minimum_remaining_ns)\n finally:\n  signal.setitimer(signal.ITIMER_REAL,0)\n  signal.signal(signal.SIGALRM,previous_handler)\n  reading={'read_start_monotonic_ns':started,'read_end_monotonic_ns':time.monotonic_ns(),\n           'original_wire_receipt':result,'observation':value,'read_only':True,\n           'socket_connections':0,'service_launches':0}\n  save(tag+'.original-read.json',reading)\n if value['state']=='ready_observed':component_send_margin(reading,minimum_remaining_ns)\n return reading\n\ndef wait_component_rendezvous():\n assert component_binding is not None and evidence_mode=='component','Fixed component rendezvous only'\n now=time.monotonic_ns()\n assert now+30_000_000_000<=pre_send_deadline_ns,'Insufficient original pre-Send budget for rendezvous'\n save('COMPONENT-PREPARED-NO-SEND.json',{\n  'schema':'hepta.component-sender-prepared.v150.r4','state':'PREPARED_NO_SEND',\n  'nonce':component_binding['contract']['nonce'],\n  'owner_request_sha256':component_binding['contract']['owner_request_sha256'],\n  'contract_sha256':component_binding['contract_sha256'],\n  'provider_source_sha256':component_binding['source_sha256'],\n  'ready_path':component_binding['phone_ready_path'],\n  'clock':'Pocket4 time.monotonic_ns, one actor process',\n  'prepared_monotonic_ns':now,'pre_send_deadline_monotonic_ns':pre_send_deadline_ns,\n  'pre_send_budget_remaining_seconds':(pre_send_deadline_ns-now)/1e9,\n  'same_phone_accept_minimum_remaining_seconds':15,\n  'provider_started_by_sender':False,'socket_connections':0,'send_attempt_count':0,\n  'root_action':'Root may launch the separately reviewed fixed component-r3 provider once; sender only reads its fixed ready file'})\n count=0\n while time.monotonic_ns()+25_000_000_000<=pre_send_deadline_ns:\n  count+=1\n  reading=read_component_ready('COMPONENT-READY-%04d'%count,minimum_remaining_ns=25000000000)\n  if reading['observation']['state']=='ready_observed':return reading\n  pause=min(.25,max(0,(pre_send_deadline_ns-time.monotonic_ns()-25_000_000_000)/1e9))\n  if pause:time.sleep(pause)\n raise RuntimeError('Component rendezvous deadline elapsed; zero Send, no provider restart')\n"
+ source += r'''
+ def read_selected_identity(tag,wanted_identity,wanted_digest):
+  directory='/data/user/0/org.trillionnium.owneropen/files/'
+--- frozen/sender_component_ready_r4.py
++++ candidate/sender_component_ready_r5.py
+@@ -1,4 +1,4 @@
+-"""Fixed, read-only component-r2 readiness gate for the Root-owned one-Send actor.
++"""Fixed, read-only component-r3 readiness gate for the Root-owned one-Send actor.
+ 
+ This module never launches a service or connects to a socket. Production uses
+ only the frozen component paths below. Host fixtures replace paths in an isolated
+@@ -7,8 +7,8 @@
+ import hashlib,json,os,re,stat
+ from pathlib import Path
+ STATE=Path('/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6')
+-SOURCE=STATE/'source-r2/component_probe_provider.py'
+-SOURCE_SHA='ff65efc41c30027d0066ddd6fdf3120278c83ccdbe56d7e24922ed96782d2118'
++SOURCE=STATE/'source-r3/component_probe_provider.py'
++SOURCE_SHA='83e867936e6db85e5187a6e8853c40b7bdd9804a27cdd09591c1a8274a950295'
+ PROOF_SHA='2bdd6c33c42359f1b27567b99627f7223d40a0c37f6af0158b8dc010e899943e'
+ RESOLUTION_SHA='7e06216823c49ec8b3949efa334e61b6731ca3f9bd4a039edbea771fb849a433'
+ SCOPE='native executor component only; zero model requests and zero business UI effects; HEPTA task-entry UI counted separately'
+@@ -22,8 +22,8 @@
+  'client_sha256':'500e27037738deead0e213321b43bb66e8150e534a65071b2b6ffd211aa3899f',
+  'parent_sha256':'8595f99cf8d0f39ec2a45f85f1250745c158ea504d2d0520cd83791f28bdb976',
+  'worker_sha256':'49fb74f8798194c63d5e510c0ed81604d64a55e1df84822d9457ae4110cab6da',
+- 'policy_rule_sha256':'7011fc8b0e4629a05bdd9739d168cdcba9b43044e54e0cdadb6da5f5bb876381',
+- 'patched_policy_sha256':'67ee1d75606e42e8b95c91faa57f7a22a5070e177cd6cc82552308f3de2b25d0',
++ 'policy_rule_sha256':'b83280ba8be66d532e94a66fb5f03c586478deb62f33bc89649d3298cb08cb2f',
++ 'patched_policy_sha256':'3983cdba0e46e826fcf9d1cd67821c998849af7cc45fc863f2ce950897dde613',
+  'retirement_proof_sha256':PROOF_SHA,'retirement_resolution_sha256':RESOLUTION_SHA,
+  'provider_source_sha256':SOURCE_SHA,'scope':SCOPE}
+ def require(ok,label):
+@@ -181,7 +181,7 @@
+ attempt_raw=regular(STATE/('service-attempt-'+nonce+'.json'),16384)
+ attempt=strict(attempt_raw)
+ need(attempt=={'contract_sha256':BOUND['contract_sha256'],'automatic_restart':False,'pid':pid},'component_attempt_binding')
+-source=STATE/'source-r2/component_probe_provider.py'
++source=STATE/'source-r3/component_probe_provider.py'
+ source_raw=regular(source,65536)
+ need(digest(source_raw)==BOUND['source_sha256'],'component_installed_source_pin')
+ cmdline=proc_bytes(PROC/str(pid)/'cmdline',8192)
+@@ -203,5 +203,5 @@
+ print(json.dumps(value,sort_keys=True,separators=(',',':'),allow_nan=False))
+ '''
+ def phone_probe(bound):
+- require(bound['source_sha256']==SOURCE_SHA and bound['contract']['provider_source_sha256']==SOURCE_SHA,'r2_source_required')
++ require(bound['source_sha256']==SOURCE_SHA and bound['contract']['provider_source_sha256']==SOURCE_SHA,'r3_source_required')
+  return PHONE_SOURCE.replace('__BOUND__',repr(bound)).replace('__VALIDATOR__',VALIDATOR_SOURCE)

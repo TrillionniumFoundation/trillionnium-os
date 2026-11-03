@@ -1,0 +1,58 @@
+{
+  "schema": "hepta.component-parent-public-projection.v150.r3.1",
+  "scope": "Byte-identical instance-specific r3 source only; not private original bundle or execution qualification.",
+  "original_private_manifest_sha256": "f7ae9584378dd954a59bd3c31f89bcc20782430187e613a5a13ad721ecffe3e4",
+  "prior_r1_r2_public_projection_sha256": "907810eb8bd45f9785ee89c726b2b9ef579b2e2da29915f3d58d9158fc89c529",
+  "source_files": [
+    {
+      "path": "common.sh",
+      "bytes": 16898,
+      "sha256": "79a8a164f37ea10383fe5e07417a8ed8333702079cd8dda102f6a7252f04292f",
+      "bytes_changed": false
+    },
+    {
+      "path": "child_guard.sh",
+      "bytes": 949,
+      "sha256": "7f3828ee354429a680ccb4b1b8c0cd2d22f086dc5ded3f002541d945f3b63bd2",
+      "bytes_changed": false
+    },
+    {
+      "path": "observe_parent.sh",
+      "bytes": 1078,
+      "sha256": "213cf4726d065b634e34e63ac977ea1322a76533b07e0f30364a579a5417af71",
+      "bytes_changed": false
+    },
+    {
+      "path": "supervise_parent.sh",
+      "bytes": 8173,
+      "sha256": "f74ca42a24ff8fb5c38c9f6c193a91a25183cb5acc9110966bed9e45c3400d4b",
+      "bytes_changed": false
+    }
+  ],
+  "validation": {
+    "host_syntax_evidence_integrity_sha256": "147b5c4e9703da26d3ff5a08954f0c7c371ac36a9b86eabdff9e7184486d7e19",
+    "independent_focused_review_sha256": "f4789d1935070013642727cd637057014c0800229be3e741c8f26d212aa79bfa",
+    "scope": "Host-only; no phone execution by this projection"
+  },
+  "instance_specific_bindings_retained": true,
+  "omitted": [
+    "Private SHA256SUMS",
+    "Private original manifest/transfer archive",
+    "Retirement proof/resolution contents",
+    "Captured phone logs/records",
+    "API keys/user drafts/model content",
+    "Full live policy snapshot"
+  ],
+  "public_allowlist": [
+    "PROJECTION.json",
+    "README.md",
+    "common.sh",
+    "child_guard.sh",
+    "observe_parent.sh",
+    "supervise_parent.sh"
+  ],
+  "new_actual_parent_startup_proven": false,
+  "new_native_component_result_proven": false,
+  "business_qualification": false,
+  "automatic_execution": false
+}

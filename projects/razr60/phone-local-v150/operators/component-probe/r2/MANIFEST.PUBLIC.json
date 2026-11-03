@@ -1,0 +1,54 @@
+{
+  "original_artifact_relative_path": "operators/component-probe/r2/MANIFEST.json",
+  "original_artifact_sha256": "07b4f3b9a34969c509a97843a99459d3574885bde08873622f45054e13eec51e",
+  "original_bytes": 1570,
+  "projected_document": {
+    "actual_native_admissions": 0,
+    "change_scope": "Ready observation fields and new source path only; frozen r1 preserved. State, claims, effect, protocol, budgets, terminals unchanged.",
+    "files": [
+      {
+        "bytes": 27226,
+        "path": "component_probe_provider.py",
+        "sha256": "ff65efc41c30027d0066ddd6fdf3120278c83ccdbe56d7e24922ed96782d2118"
+      },
+      {
+        "bytes": 3349,
+        "path": "prepare_component_probe.py",
+        "sha256": "ebfac93d2ab1c54113122ebb6b5131bbe83414d61ebaf625da4b53bc7f7c4f9a"
+      },
+      {
+        "bytes": 12979,
+        "path": "host_component_checks.py",
+        "sha256": "f061e67735222d96b9b996c2888e94d9efc901b40a40e9f5c16d5fc2f8daaeea"
+      },
+      {
+        "bytes": 13615,
+        "path": "RUN-RETIRE-PLAN.md",
+        "sha256": "4aa135dcdeff56285bb1cd29865ee282428b57c83120e291e69c21d0a63c864f"
+      },
+      {
+        "bytes": 7440,
+        "path": "READY-OBSERVATION.diff",
+        "sha256": "5adf9661d8346d5dfe219279ae580f514f1ea08fbedbcf9f6bf419c6bdf73ecd"
+      },
+      {
+        "bytes": 1761,
+        "path": "validation-01/RESULT.json",
+        "sha256": "001a344f4c175fa94a284ee56962448b55e16ac96b9ce63b7c5d563a4710017a"
+      }
+    ],
+    "host_checks": 18,
+    "model_requests": 0,
+    "parent_manifest_sha256": "f5b4fa692e078e68fe3a1440aab057c7ab5a87847b31d57a5f40588717f2741d",
+    "phone_calls": 0,
+    "schema": "hepta.native-component-probe.source-manifest.v150.r6.2",
+    "source_target": "/var/lib/trillionnium/owner-open/phone-local-v150/component-probe-r6/source-r2/component_probe_provider.py",
+    "status": "HOST_FROZEN_NOT_PHONE_QUALIFIED"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}

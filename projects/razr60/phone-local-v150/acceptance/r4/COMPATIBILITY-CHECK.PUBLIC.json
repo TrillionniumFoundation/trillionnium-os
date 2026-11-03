@@ -1,0 +1,40 @@
+{
+  "original_artifact_relative_path": "acceptance/r4/COMPATIBILITY-CHECK.json",
+  "original_artifact_sha256": "d299c5ed45da6ef025959ae88a0117f40cf3ee586b55459ea53898875199b465",
+  "original_bytes": 814,
+  "projected_document": {
+    "checks": [
+      "exact_single_line_properties_get_diff",
+      "actual_health_detector_accepts_original_health_only",
+      "oneof_business_schema_is_not_health",
+      "other_two_collector_modules_unchanged"
+    ],
+    "collector_sha256": "623f0c2c6a93e585d494bb02b736808904938154d2c06e209e1155ada4b7f4eb",
+    "failure_status_or_error_comparison_changed": false,
+    "fixtures": [
+      {
+        "fixture": "health-final-only.json",
+        "health_schema": true
+      },
+      {
+        "fixture": "before-image.json",
+        "health_schema": false
+      },
+      {
+        "fixture": "current-image.json",
+        "health_schema": false
+      }
+    ],
+    "model_requests": 0,
+    "old_collector_sha256": "af79b58dadb5a966c20b552a8e9bad53f9f34543be0ffcfa18a6145d3a63f182",
+    "phone_calls": 0,
+    "production_source_changes": 0,
+    "status": "PASS"
+  },
+  "projected_document_is_not_the_original_sealed_input": true,
+  "qualification_scope": "Only the claims within the original stage apply; this projection adds no phone or model test.",
+  "schema": "hepta.public-artifact-projection.v150.1",
+  "transformations": [
+    "explicit_public_metadata_projection"
+  ]
+}
