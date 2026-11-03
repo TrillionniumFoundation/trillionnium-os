@@ -1,0 +1,85 @@
+{
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "commit": "0152dc425b6eec188dfd0efdd62aa004b59c76c5",
+  "prefix": "projects/razr60/stock16-v149/provider/v149-r1",
+  "files": [
+    {
+      "path": "register_task_contract.py",
+      "bytes": 2730,
+      "git_blob_sha": "d1d48558e8e6e8d127c06a0d54673c44fcdca3ea",
+      "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+    },
+    {
+      "path": "source/daily_provider.py",
+      "bytes": 17849,
+      "git_blob_sha": "8ad8807ebde07efb5d93f04d9ca46e5468cade08",
+      "sha256": "44b2f708846447b57cee3a8da0c9c0aee1d250d7e123337fb08d0156b9a31ccc"
+    },
+    {
+      "path": "source/model_health.py",
+      "bytes": 8127,
+      "git_blob_sha": "b734d66daabdf06da2ba28277b5f2ffea26f8cd6",
+      "sha256": "778104cc0c5f4d8f8b23d3b8af049b7efaebb9721ae460e5768fd1933bc09a82"
+    },
+    {
+      "path": "source/phone_observation_tools.py",
+      "bytes": 33548,
+      "git_blob_sha": "6df6a26fff5070b874f12bfecee4280f3bc1ce74",
+      "sha256": "8b350c35d1b349649f11000c629ff59ff581c89e255729b45ac3cc9ccd58b975"
+    },
+    {
+      "path": "source/phone_task_guards.py",
+      "bytes": 11368,
+      "git_blob_sha": "fda9b6cf891eb8b7a08caf08cfe9cdecb67ba55c",
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "path": "source/provider_codex_host.py",
+      "bytes": 41510,
+      "git_blob_sha": "b4c4111db218d876a963d941c93fb84505bdf3eb",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "path": "source/provider_openai_compatible.py",
+      "bytes": 17247,
+      "git_blob_sha": "be479de0155ba3c1e61f9c9712328ad8bab1687a",
+      "sha256": "de8225db666382df4ef99a1c5caeb2a30c2c1c5f17f8adb6c2a0a7d96dfb8ae0"
+    },
+    {
+      "path": "source/ssh_exec_persistent_bridge.py",
+      "bytes": 18394,
+      "git_blob_sha": "b5781c95117a7a3f7d26de0e59f3f35ac34e4862",
+      "sha256": "6a0b6da0ce197c5f91ac15dfa487a45265b946f54f0b5f0fb5aa7820aea06bec"
+    },
+    {
+      "path": "source/task_postconditions.py",
+      "bytes": 14744,
+      "git_blob_sha": "eda758eff50f6a21c6fffda441ab7bbade32f4a3",
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+    },
+    {
+      "path": "tests/fixtures.py",
+      "bytes": 2832,
+      "git_blob_sha": "0efb5ec6f8653c04486d30b4a93bcf27986741ac",
+      "sha256": "6fee5591825b727b7c3a48de7dea7d51b3f465385a5f32760dc83a5141032db1"
+    },
+    {
+      "path": "tests/offline_capacity_race_checks.py",
+      "bytes": 5843,
+      "git_blob_sha": "34ee6b403b367ee4ecc3315941230041bcdc0ed1",
+      "sha256": "f3b902c28f50079d4bc03e53eec5cdc70a9f9ebc6b701eaa6bea2646193b28f2"
+    },
+    {
+      "path": "tests/offline_phone_tools_checks.py",
+      "bytes": 14421,
+      "git_blob_sha": "34a22d2f04a69d6975a90cb926d779a871efda65",
+      "sha256": "c19a880bc0b89fb127bf3b92ddca08235805d2624356b14d569e181ffbb8669b"
+    },
+    {
+      "path": "tests/offline_v149_checks.py",
+      "bytes": 28458,
+      "git_blob_sha": "ed6e9d08e76eeb22dd5bde37e6a47f4d12479f59",
+      "sha256": "e888a97cd46b21b8040f5fcb875cfa98652ad82c7af4afb16a22d924b9fd75e8"
+    }
+  ]
+}

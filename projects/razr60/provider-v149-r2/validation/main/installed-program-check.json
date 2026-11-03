@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.cli-binding.installed-program-check.v1",
+  "captured_utc": "2026-11-03T12:55:08.227509+00:00",
+  "binding": {
+    "schema": "hepta.cli-executable-binding.v1",
+    "launcher": {
+      "path": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex",
+      "sha256": "50ab38ba21d0d9f8346f32f41848382f15b556190f3c7a07e885a4fb73e379c8",
+      "file_identity": [
+        16777233,
+        586150040,
+        328,
+        1791492613000000000,
+        1793667738259987118
+      ]
+    },
+    "executable": {
+      "path": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+      "sha256": "58a91f6ea19bea477ae3a2ec48d619f0039afe75d3476260747e11d201fa7cea",
+      "file_identity": [
+        16777233,
+        586150034,
+        267754128,
+        1793368231726101167,
+        1793667737478998065
+      ]
+    }
+  },
+  "versions": [
+    {
+      "role": "launcher",
+      "returncode": 0,
+      "stdout": "codex-cli 0.166.0-alpha.5.1\n",
+      "stderr": "",
+      "wall_seconds": 0.03414874989539385
+    },
+    {
+      "role": "qualified_executable",
+      "returncode": 0,
+      "stdout": "codex-cli 0.166.0-alpha.5.1\n",
+      "stderr": "",
+      "wall_seconds": 0.008040334098041058
+    }
+  ],
+  "wall_seconds": 0.13376933289691806,
+  "provider_source_sha256": "f14dad67147fd9c66dc42ad36222c94da35418fee64761e9843871abdfbdf3bb",
+  "real_model_calls": 0,
+  "phone_calls": 0,
+  "live_services_modified": false
+}

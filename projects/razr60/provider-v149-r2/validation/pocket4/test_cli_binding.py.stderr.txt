@@ -1,0 +1,14 @@
+test_cancelled_request_keeps_zero_launches (__main__.CliBindingTests.test_cancelled_request_keeps_zero_launches) ... ok
+test_launcher_change_is_rejected_before_spawn (__main__.CliBindingTests.test_launcher_change_is_rejected_before_spawn) ... ok
+test_missing_binary_stops_accepting_without_spawn (__main__.CliBindingTests.test_missing_binary_stops_accepting_without_spawn) ... ok
+test_selected_binary_is_launched_directly_with_arguments_and_receipt (__main__.CliBindingTests.test_selected_binary_is_launched_directly_with_arguments_and_receipt) ... ok
+test_startup_rejects_executable_changed_during_hash (__main__.CliBindingTests.test_startup_rejects_executable_changed_during_hash) ... ok
+test_startup_rejects_wrong_binary_bytes_even_with_approved_launcher (__main__.CliBindingTests.test_startup_rejects_wrong_binary_bytes_even_with_approved_launcher) ... ok
+test_startup_rejects_wrong_launcher_bytes (__main__.CliBindingTests.test_startup_rejects_wrong_launcher_bytes) ... ok
+test_underlying_binary_change_is_rejected_before_spawn (__main__.CliBindingTests.test_underlying_binary_change_is_rejected_before_spawn) ... ok
+test_unqualified_argv_program_is_rejected (__main__.CliBindingTests.test_unqualified_argv_program_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.026s
+
+OK

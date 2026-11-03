@@ -1,0 +1,6 @@
+{
+  "returncode": 1,
+  "test_sha256": "9d4e3108374800ed1fdca7c77c6177ccd504ee12e71c08ea1199e2bb0ead56c0",
+  "stderr_sha256": "99d452c824d5928156349d115ac75cb15bfc368431dd3c2f36ace6df72a64574",
+  "expected_failure_observed": true
+}

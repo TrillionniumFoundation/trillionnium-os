@@ -1,0 +1,15 @@
+test_underlying_binary_change_is_rejected_before_spawn (__main__.CliBindingTests.test_underlying_binary_change_is_rejected_before_spawn) ... FAIL
+
+======================================================================
+FAIL: test_underlying_binary_change_is_rejected_before_spawn (__main__.CliBindingTests.test_underlying_binary_change_is_rejected_before_spawn)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/qianqi/Documents/Codex/2026-11-03/hepta-a16-cli-binding-efa0986a3c87/candidate/tests/test_cli_binding.py", line 76, in test_underlying_binary_change_is_rejected_before_spawn
+    with self.assertRaises(provider.ProviderError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ProviderError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 1.334s
+
+FAILED (failures=1)

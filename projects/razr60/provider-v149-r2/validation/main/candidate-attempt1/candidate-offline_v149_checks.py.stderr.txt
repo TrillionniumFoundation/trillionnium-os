@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/qianqi/Documents/Codex/2026-11-03/hepta-a16-cli-binding-efa0986a3c87/candidate/tests/offline_v149_checks.py", line 371, in <module>
+    print(json.dumps(main(),ensure_ascii=False,indent=2))
+                     ~~~~^^
+  File "/Users/qianqi/Documents/Codex/2026-11-03/hepta-a16-cli-binding-efa0986a3c87/candidate/tests/offline_v149_checks.py", line 363, in main
+    test_fake_cli_quota_stream(root)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/Users/qianqi/Documents/Codex/2026-11-03/hepta-a16-cli-binding-efa0986a3c87/candidate/tests/offline_v149_checks.py", line 335, in test_fake_cli_quota_stream
+    args.cli_binding={'schema':'fixture-only','executable_sha256':sha(fake)}
+                                                                  ~~~^^^^^^
+  File "/Users/qianqi/Documents/Codex/2026-11-03/hepta-a16-cli-binding-efa0986a3c87/candidate/source/phone_observation_tools.py", line 50, in sha
+    return hashlib.sha256(raw).hexdigest()
+           ~~~~~~~~~~~~~~^^^^^
+TypeError: object supporting the buffer API required
