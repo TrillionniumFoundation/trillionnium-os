@@ -1,0 +1,67 @@
+{
+  "actual_model_requests_by_support_builder": 0,
+  "actual_phone_actions_by_support_builder": 0,
+  "additional_host_support_validation": {
+    "bytes": 498,
+    "path": "validation-collector-final/SUPPORT-RESULT.json",
+    "sha256": "b4eafc10f1f82f952e1b849d172fefb5a3a158124f23688d8b17d21d5c894bac"
+  },
+  "candidate_source_seal_sha256": "17a438628070a7fffd9d9c3f92221c00ca92134c3dd91532eb5008fe2cf30564",
+  "collector_runtime_files": [
+    "collect_turn_evidence.py",
+    "native_journal_audit.py",
+    "business_fact_recheck.py"
+  ],
+  "created_utc": "2026-11-03T15:34:50.891051+00:00",
+  "documentation": {
+    "bytes": 8397,
+    "path": "README.md",
+    "sha256": "c05d5c58773473b01260111f556217cb47e790ae1fe99c335a2d62f3986a8ac9"
+  },
+  "fixed19_cases_executed_by_helper_validation": 0,
+  "fixed19_protocol_sha256": "2f7504ebb49a4441ae8736b055c82441ff7b82f74254ff7a329b10dd09e24a2f",
+  "health_native_summary": "Existing [无动作；业务未独立验证] prefix plus nonce; separately checked.",
+  "health_raw_model_summary": "Exact nonce; independently checked, not grammar-forced.",
+  "helper_files": [
+    {
+      "bytes": 46025,
+      "path": "collect_turn_evidence.py",
+      "sha256": "af79b58dadb5a966c20b552a8e9bad53f9f34543be0ffcfa18a6145d3a63f182"
+    },
+    {
+      "bytes": 6701,
+      "path": "native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "bytes": 5096,
+      "path": "business_fact_recheck.py",
+      "sha256": "0f9ccb8a9a29981af7eaca69624d00793d9e88bcfd5e1fbff71296a1c40bdfa6"
+    },
+    {
+      "bytes": 9783,
+      "path": "materialize_case.py",
+      "sha256": "5386801d83a4680b993f19bf38615110d10b77eed65f131f2509377879eb9308"
+    },
+    {
+      "bytes": 13217,
+      "path": "aggregate_protocol.py",
+      "sha256": "9f0d0088eea2bd9962180bbe710266228717905a3f1c695b0192b867f4e73772"
+    },
+    {
+      "bytes": 8340,
+      "path": "test_acceptance_support.py",
+      "sha256": "a5d5c9a7d1a4be422bfbed3e4ee1f2ce96781fbcc8866100f6a52b558c44f5fb"
+    }
+  ],
+  "host_integrity_validation": {
+    "bytes": 1203,
+    "path": "validation-collector-final/RESULT.json",
+    "sha256": "6b0dadcaa9e10bcdbe2e52db03fa89bdb87692ce70ddc9ebc654144ee9f63d8d"
+  },
+  "no_replay": true,
+  "production_source_modified": false,
+  "qualification_limit": "This seal proves helper input pins and host-only integrity checks. It grants no physical phone, model E2E or daily-use qualification.",
+  "raw_evidence_private": true,
+  "schema": "hepta.acceptance-support-seal.v150.3"
+}

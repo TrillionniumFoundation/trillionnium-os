@@ -26,6 +26,7 @@ The provider's implementation parent is the frozen v149-r1 protocol/typed-tool s
 | qa/sidecar-recovery-r4, qa/sidecar-recovery-r5 | Historical r4 preparation and frozen r5 stdout-only five-case script; only the sole phone operator executes a fresh suite |
 | qa/actual-r5-component | Exact synthetic phone evidence: five cases passed, four executions, 92 manifest entries independently read back, plus original summary and hashes |
 | qualification | Current claim ceiling and source/lifecycle references; no guessed business PASS |
+| acceptance/r3 | Six sealed preparation, native-evidence collection and fixed19 aggregation helpers; read-only collectors never dispatch, and their 13+4 offline checks do not establish phone qualification |
 
 PUBLISH-MANIFEST.json binds every published file by size, SHA-256 and Git blob identity. Runtime source bytes retain their original frozen component hashes. Public source seals and metadata explicitly project private retained-claims digests or operator workspace paths and record the original frozen artifact hash. Those projections are not the private original seal bytes and cannot silently substitute for a private installation binding. No model weights, executable binaries, rootfs images, keys, instance-specific key hashes, retained claim bodies, user text, captures, or live raw private receipts are included.
 
@@ -92,6 +93,12 @@ Provider tests remain separate synthetic local fixtures:
     python3 -B provider/r1/tests/local_contract_capacity_checks.py
     python3 -B provider/r1/tests/local_capacity_race_checks.py
     python3 -B provider/r1/tests/local_action_fence_checks.py
+
+## Acceptance evidence helpers
+
+The independently sealed acceptance/r3 helpers prepare fresh material, check retained original native/model/tool evidence and aggregate the fixed 19-case protocol without dispatching any action. The acceptance support manifest is SHA25664b145e0f6979b1b33a407aca6abb1dc22598abbbca277483f82118eca10d971. The collector explicitly separates raw-model nonce equality from the native display prefix, local record-hash checks from a complete global journal chain, safe process terminals from business success, and component fixtures from model E2E samples. Its README describes installed phone paths; repository provider source lives under provider/r3.
+
+Only the six sealed helper programs, documentation and sanitized 13+4 host-validation summaries are included. Actual request text, screenshots, raw live claim contents, private fixture inputs and user tool streams remain outside this publication. New phone results are appended as separate evidence revisions. The initial source manifest remains preserved under qualification/manifests/SOURCE-PUBLISH-v150-r1.json and is bound to source commit52bcecfece2a08f20412aadbc00ab231f24f68a5.
 
 ## Deployment, recovery and rollback
 

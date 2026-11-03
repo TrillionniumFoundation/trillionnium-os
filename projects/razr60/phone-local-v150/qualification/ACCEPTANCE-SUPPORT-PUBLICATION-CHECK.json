@@ -1,0 +1,16 @@
+{
+  "acceptance_original_seal_sha256": "64b145e0f6979b1b33a407aca6abb1dc22598abbbca277483f82118eca10d971",
+  "documents_and_sanitized_validation_exact": 3,
+  "existing_runtime_sources_changed": 0,
+  "fixed19_cases_executed_by_helper_checks": 0,
+  "helpers_exact": 6,
+  "host_additional_support_checks": 4,
+  "host_original_checks": 13,
+  "model_requests_by_publisher": 0,
+  "phone_operations_by_publisher": 0,
+  "previous_source_manifest_sha256": "ba056f46d43eae855744b760168e8ae3f5d61b320b1595d341248dbfcfaa2a50",
+  "private_acceptance_tree_not_read_or_uploaded": true,
+  "schema": "hepta.acceptance-support-publication-check.v150.1",
+  "source_parent_commit": "52bcecfece2a08f20412aadbc00ab231f24f68a5",
+  "status": "PASS_EXACT_ALLOWLIST_AND_SOURCE_PRESERVATION"
+}

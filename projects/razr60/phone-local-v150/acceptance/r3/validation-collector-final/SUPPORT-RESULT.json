@@ -1,0 +1,14 @@
+{
+  "actual_model_requests": 0,
+  "actual_phone_actions": 0,
+  "checks": [
+    "all_six_helpers_python3_12_syntax_and_expected_pins",
+    "empty_fixed19_preserves_all_cases_and_unknown_costs",
+    "health_material_requires_new_one_use_health_contract",
+    "visual_one_tap_and_unicode_exact_bytes_material"
+  ],
+  "fixed19_cases_executed": 0,
+  "production_files_modified": 0,
+  "scope": "Offline helper integrity only; not phone, model, business or daily-use qualification.",
+  "status": "PASS"
+}

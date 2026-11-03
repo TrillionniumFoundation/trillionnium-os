@@ -1,0 +1,34 @@
+{
+  "actual_model_requests": 0,
+  "actual_phone_actions": 0,
+  "assertions": 13,
+  "checks": [
+    "python3_12_syntax",
+    "actual_original_native_two_level_hashes",
+    "filtered_turn_not_whole_global_chain",
+    "native_payload_corruption_rejected",
+    "rehashed_wrong_predecessor_rejected",
+    "complete_original_tool_streams_aligned",
+    "split_unicode_bytes_preserved",
+    "completed_effect_candidates_require_join_and_original_receipt",
+    "raw_input_copies_retained",
+    "different_native_bytes_are_detectable",
+    "cancel_execution_terminal_is_not_success",
+    "cancel_diagnostic_difference_is_explicit",
+    "missing_native_result_never_success"
+  ],
+  "historical_native_input_sha256": "be0a4d10f31019dc76c71681187a65bb1da6219955f3216a7739164491d383d7",
+  "scope": "collector integrity only; not native or model qualification",
+  "source_files": [
+    {
+      "name": "native_journal_audit.py",
+      "sha256": "da47d875addc32c0f7f30d178de95d8ebd956a6cb10b59813705feeb7811f0cf"
+    },
+    {
+      "name": "collect_turn_evidence.py",
+      "sha256": "af79b58dadb5a966c20b552a8e9bad53f9f34543be0ffcfa18a6145d3a63f182"
+    }
+  ],
+  "status": "PASS",
+  "synthetic_effect_executions": 0
+}
