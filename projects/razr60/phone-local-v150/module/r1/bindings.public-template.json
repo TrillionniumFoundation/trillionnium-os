@@ -1,0 +1,210 @@
+{
+  "schema": "org.trillionnium.hepta.phone-local-module-bindings.v1",
+  "reviewed_for_installation": false,
+  "native_profile": "leap-stock16-codex-host-relay-v1",
+  "runtime_execution_location": "phone_local",
+  "automatic_tasks": false,
+  "automatic_resume": false,
+  "automatic_redispatch": false,
+  "replay_unknown_effects": false,
+  "notes": "Public source template. Create private instance-specific config, claims inventory and API key files locally, then provide their observed sizes/SHA. No key contents belong in this template. Runtime/model/source hashes are public frozen inputs; this template cannot be installed as-is.",
+  "payloads": [
+    {
+      "path": "/data/local/tmp/hepta-phone-local-v150-r1/bin/llama-server",
+      "bytes": 11590216,
+      "sha256": "7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176"
+    },
+    {
+      "path": "/data/local/tmp/hepta-phone-local-v150-r1/models/GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "bytes": 1107410432,
+      "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5"
+    },
+    {
+      "path": "/data/local/tmp/hepta-phone-local-v150-r1/models/GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "bytes": 445053216,
+      "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7"
+    },
+    {
+      "path": "/data/local/tmp/hepta-phone-local-v150-r1/bin/phone-tool-sidecar",
+      "bytes": 943392,
+      "sha256": "796f223a98553afc83eb875b3a89aa03f07d0d069a3fb5ab953f849a7f8e84c0"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/tool_client.py",
+      "bytes": 8399,
+      "sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/local-config.json",
+      "bytes": 0,
+      "sha256": "REPLACE_WITH_PRIVATE_INSTANCE_FILE_SHA256"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/retained-claims.json",
+      "bytes": 0,
+      "sha256": "REPLACE_WITH_PRIVATE_INSTANCE_FILE_SHA256"
+    },
+    {
+      "path": "/data/local/tmp/hepta-phone-local-v150-r1/state/api.key",
+      "bytes": 0,
+      "sha256": "REPLACE_WITH_PRIVATE_INSTANCE_FILE_SHA256"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/private/llama-api.key",
+      "bytes": 0,
+      "sha256": "REPLACE_WITH_PRIVATE_INSTANCE_FILE_SHA256"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/daily_phone_local.py",
+      "bytes": 19743,
+      "sha256": "178113266c77fd0e2463fcb28e83b8aa2fdcccc5207c6d63d20088dad0128cf8"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/provider_phone_local.py",
+      "bytes": 28255,
+      "sha256": "ac60606b7743aa02a7cad3513422e602f0c8d08b2e49820c9bbedb50053b6b17"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/provider_codex_host.py",
+      "bytes": 41510,
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/provider_openai_compatible.py",
+      "bytes": 17730,
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/phone_observation_tools.py",
+      "bytes": 33980,
+      "sha256": "40617e8b2c8e1b174bce1b50e43ba156fd034ab38872c26a8703ef0cfba8971b"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/phone_task_guards.py",
+      "bytes": 11368,
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/phone_local_tools.py",
+      "bytes": 11922,
+      "sha256": "5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/phone_local_http_worker.py",
+      "bytes": 10453,
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/model_health.py",
+      "bytes": 8251,
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/task_postconditions.py",
+      "bytes": 14744,
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+    },
+    {
+      "path": "/data/trillionnium/owner-open/state/phone-local-v150/provider/source/action_ledger.py",
+      "bytes": 12074,
+      "sha256": "2f3848a1c1fc9404d868e86a474550e18e5ec4fec3ce9c4c2db6fb089fa23c6c"
+    }
+  ],
+  "roles": {
+    "model": {
+      "argv": [
+        "/data/local/tmp/hepta-phone-local-v150-r1/bin/llama-server",
+        "-m",
+        "/data/local/tmp/hepta-phone-local-v150-r1/models/GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+        "--mmproj",
+        "/data/local/tmp/hepta-phone-local-v150-r1/models/GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "18087",
+        "-c",
+        "4096",
+        "-np",
+        "1",
+        "-t",
+        "4",
+        "-b",
+        "256",
+        "-ub",
+        "128",
+        "-ngl",
+        "0",
+        "--no-mmproj-offload",
+        "--image-min-tokens",
+        "1024",
+        "--image-max-tokens",
+        "1024",
+        "--no-webui",
+        "--jinja",
+        "--api-key-file",
+        "/data/local/tmp/hepta-phone-local-v150-r1/state/api.key",
+        "--slots",
+        "--metrics",
+        "--no-warmup",
+        "--alias",
+        "gui-owl-1.5-2b-phone-q4km"
+      ],
+      "environment": {
+        "PATH": "/system/bin:/vendor/bin",
+        "TMPDIR": "/data/local/tmp/hepta-phone-local-v150-r1"
+      },
+      "send_task_on_start": false
+    },
+    "sidecar": {
+      "argv": [
+        "/data/local/tmp/hepta-phone-local-v150-r1/bin/phone-tool-sidecar",
+        "--state-dir",
+        "/data/trillionnium/owner-open/state/phone-local-v150/sidecar",
+        "--socket-name",
+        "hepta_phone_local_v150"
+      ],
+      "environment": {
+        "PATH": "/system/bin:/vendor/bin",
+        "TMPDIR": "/data/local/tmp/hepta-phone-local-v150-r1"
+      },
+      "send_task_on_start": false
+    },
+    "provider": {
+      "argv": [
+        "/data/adb/magisk/busybox",
+        "chroot",
+        "/data/trillionnium/owner-open/root",
+        "/usr/bin/python3",
+        "-B",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/provider/source/daily_phone_local.py",
+        "--state",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state",
+        "--config",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/local-config.json",
+        "--port",
+        "18080",
+        "--workers",
+        "1",
+        "--timeout",
+        "120",
+        "--retained-claims",
+        "/var/lib/trillionnium/owner-open/phone-local-v150/retained-claims.json",
+        "--retained-claims-sha256",
+        "REPLACE_WITH_PRIVATE_RETAINED_CLAIMS_SHA256"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin:/usr/libexec/trillionnium",
+        "PYTHONPATH": "/usr/libexec/trillionnium/owner-open",
+        "PYTHONHOME": "/usr",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/usr/lib/aarch64-linux-gnu/android:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TMPDIR": "/var/lib/trillionnium/owner-open/tmp",
+        "NO_COLOR": "1",
+        "TERM": "dumb"
+      },
+      "send_task_on_start": false
+    }
+  }
+}

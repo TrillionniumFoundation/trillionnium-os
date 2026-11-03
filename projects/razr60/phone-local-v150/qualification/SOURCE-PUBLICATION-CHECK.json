@@ -1,0 +1,16 @@
+{
+  "actual_r5_component_evidence_manifest_files": 92,
+  "exact_provider_runtime_and_helper_files": 41,
+  "exact_vendor_files": 28,
+  "json_files": 132,
+  "model_requests_by_publisher": 0,
+  "operator_private_paths_and_claim_digest_absent": true,
+  "phone_operations_by_publisher": 0,
+  "python_syntax_files": 63,
+  "r3_module_final_pins": "PASS",
+  "schema": "hepta.source-publication-check.v150.1",
+  "shell_syntax_files": 6,
+  "source_project_qualified_for_business": false,
+  "status": "PASS_SOURCE_PINS_AND_PUBLIC_SCOPE",
+  "validation_scope": "Syntax, byte identity, privacy projection, final module pins and original synthetic evidence readback; no extra model/phone tests"
+}

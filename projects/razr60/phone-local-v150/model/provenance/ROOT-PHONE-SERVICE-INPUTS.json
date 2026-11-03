@@ -1,0 +1,94 @@
+{
+  "evidence": {
+    "executor_live_health_sha256": "7f6dd046e8395c78257c7543bee691757fb1df73001b6bfc1d7d2bbbb253f1d7",
+    "initial_health_summary_sha256": "b7f89abcbb6784a8ad8235b0b09ed5d2df27b214b32ddd773556785e3396f5f5",
+    "model_image_reconfigure_sha256": "03905708864a586f08a34340c8009bbe2417c6f84da2543051400e3b02ed6b17",
+    "retained_claims_sha256": "PRIVATE_RETAINED_CLAIMS_SHA256_NOT_PUBLISHED"
+  },
+  "executor": {
+    "binary": {
+      "bytes": 943392,
+      "sha256": "796f223a98553afc83eb875b3a89aa03f07d0d069a3fb5ab953f849a7f8e84c0"
+    },
+    "client": {
+      "bytes": 8399,
+      "sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539"
+    },
+    "manifest_sha256": "ef646e1a0dc8bff726d1bcb558036bdf6a741bc25f0adb90d01b7d133775b199",
+    "pocket4_readback_sha256": "5c16a3fe5c6b876711073c334768dce0f1181596fffff41b3504ab6ba1c5a275",
+    "socket_name": "hepta_phone_local_v150",
+    "source_sha256": "2507d3d353f620ba319543c6fe31b1043a41297d20b86fb014e943b93ee736fc",
+    "version": "v150-r4"
+  },
+  "model": {
+    "acquisition_manifest_sha256": "e7f15a13b2c5a80449922f0fa57df597c468fa9742484ad8348bb1795ab03769",
+    "projector": {
+      "bytes": 445053216,
+      "file": "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7"
+    },
+    "quantization_repository": "mradermacher/GUI-Owl-1.5-2B-Instruct-GGUF",
+    "quantization_revision": "a0592aa615540e507a918bc6281fdbfc1b441361",
+    "upstream": "mPLUG/GUI-Owl-1.5-2B-Instruct",
+    "weights": {
+      "bytes": 1107410432,
+      "file": "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5"
+    }
+  },
+  "model_parameters": {
+    "alias": "gui-owl-1.5-2b-phone-q4km",
+    "api_key_file": "/data/local/tmp/hepta-phone-local-v150-r1/state/api.key",
+    "batch": 256,
+    "context_tokens": 4096,
+    "gpu_layers": 0,
+    "host": "127.0.0.1",
+    "image_max_tokens": 1024,
+    "image_min_tokens": 1024,
+    "jinja": true,
+    "metrics": true,
+    "mmproj_offload": false,
+    "parallel_slots": 1,
+    "port": 18087,
+    "slots": true,
+    "threads": 4,
+    "ubatch": 128,
+    "warmup": false,
+    "webui": false
+  },
+  "phone": {
+    "architecture": "aarch64",
+    "fingerprint": "motorola/leap_cn/leap:16/W1VL36H.59-53-11/643c83-3ed541:user/release-keys",
+    "model_root": "/data/local/tmp/hepta-phone-local-v150-r1",
+    "ram_total_kib": 15540960,
+    "selinux": "Enforcing",
+    "soc": "SM8750",
+    "state_root": "/data/trillionnium/owner-open/state/phone-local-v150"
+  },
+  "public_projection": {
+    "changes": "Private retained-claims digest and/or operator workspace paths replaced; runtime source files and their hashes unchanged.",
+    "not_original_seal_bytes": true,
+    "original_bytes": 3451,
+    "original_frozen_sha256": "2c0cc3aa7cc2a6fe0b461e5e8ecf37a3f5545ff40a8ca86da43e56de9dcfd784"
+  },
+  "qualifications": {
+    "business_acceptance": "NOT_RUN",
+    "independence": "phone model + executor live; provider handoff not yet complete",
+    "physical_fold": "NOT_RUN",
+    "raw_text_inference_health": "PASS on original image budget 768, retained as historical proof; revised 1024 combo awaiting fresh native health"
+  },
+  "runtime": {
+    "android_api": 28,
+    "backend": "cpu",
+    "commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+    "ndk_version": "28.1.13356709",
+    "project": "ggml-org/llama.cpp",
+    "server": {
+      "bytes": 11590216,
+      "sha256": "7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176"
+    },
+    "tag": "v0.8.0"
+  },
+  "schema": "hepta.phone-local.service-inputs.v150.1",
+  "scope": "runtime-model-executor-inputs; provider release/config sealed separately"
+}

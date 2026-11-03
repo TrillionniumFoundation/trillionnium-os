@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "scope": "r4_restart_of_sealed_unknown_only",
+  "phone_actions": 0,
+  "count": 1,
+  "old_action_id": "f8428d24bded62e6ed980877bb004fb8",
+  "blocked_action_id": "02fe17b3fca7e3fdab6e7a3536e5c359",
+  "old_receipt_sha256": "ea24cd42d2a3e4e5efb610533bfb55ca916ed6dc1489e1ce3293872b1d483ab4",
+  "sealed_terminal_remains_indeterminate": true,
+  "recovery_required_after_restart": true,
+  "new_effect_dispatched": false,
+  "old_receipt_bytes_unchanged": true,
+  "source_sha256": "2507d3d353f620ba319543c6fe31b1043a41297d20b86fb014e943b93ee736fc",
+  "evidence_dir": "@EXECUTOR_FIXTURE_ROOT@/restart-unknown-1fc3d48eb8e2b3c6"
+}

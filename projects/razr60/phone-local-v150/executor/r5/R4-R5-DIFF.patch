@@ -1,0 +1,77 @@
+--- r4/phone_tool_sidecar.cpp
++++ r5/phone_tool_sidecar.cpp
+@@ -10,6 +10,7 @@
+ #include <cstring>
+ #include <dirent.h>
+ #include <fcntl.h>
++#include <grp.h>
+ #include <fstream>
+ #include <iostream>
+ #include <mutex>
+@@ -104,6 +105,14 @@
+ static void reap_group(pid_t pgid){int st;while(waitpid(-pgid,&st,WNOHANG)>0){}}
+ struct ChildGuard { pid_t pid; bool dismissed=false; ~ChildGuard(){if(dismissed)return;kill(-pid,SIGKILL);kill(pid,SIGKILL);int st;for(int i=0;i<200;i++){pid_t w=waitpid(pid,&st,WNOHANG);if(w==pid||(w<0&&errno==ECHILD))break;usleep(10000);}reap_group(pid);} };
+ static J execute_action(int sock,const J&q,uid_t peer){
++#ifdef HEPTA_TESTING
++ const uid_t execution_uid=getuid();const gid_t execution_gid=getgid();
++ const int execution_groups=getgroups(0,nullptr);require(execution_groups>=0,"fixture_groups_unavailable");
++ const char* credential_scope="host_fixture_current_identity_not_android_shell";
++#else
++ const uid_t execution_uid=2000;const gid_t execution_gid=2000;const int execution_groups=0;
++ const char* credential_scope="android_shell_uid2000";
++#endif
+  std::string id=q.at("action_id").get<std::string>(),sha=q.at("command_sha256").get<std::string>(),cmd=q.at("command").get<std::string>();
+  require(hexstr(id,32)&&hexstr(sha,64),"invalid_action_identity");require(!cmd.empty()&&cmd.size()<=MAX_COMMAND&&cmd.find('\0')==std::string::npos,"invalid_command");
+  require(digest(cmd)==sha,"command_sha256_mismatch");require(q.at("timeout_ms").is_number_integer(),"invalid_timeout_type");auto timeout64=q.at("timeout_ms").get<int64_t>();require(timeout64>=1&&timeout64<=60000,"invalid_timeout");int timeout=(int)timeout64;
+@@ -117,7 +126,10 @@
+  if(recovery_required.load())return envelope({{"action_id",id},{"state","recovery_required"},{"error","unresolved_prior_intent"},{"terminal",false},{"effect_started",false}});
+  if(mkdirat(actions_fd,id.c_str(),0700)!=0){if(errno==EEXIST)return inspect_action(id,sha,false,true);throw std::runtime_error("action_directory_create_failed");}
+  int d=openat(actions_fd,id.c_str(),O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);require(d>=0,"action_directory_open_failed");
+- J r={{"version",1},{"action_id",id},{"command_sha256",sha},{"timeout_ms",timeout},{"server_instance",instance},{"peer_uid",peer},{"created_unix_ms",now_ms()},{"state","intent"},{"terminal",false},{"effect_started",false},{"dispatch_count",0},{"can_redispatch",false}};
++ J r={{"version",1},{"action_id",id},{"command_sha256",sha},{"timeout_ms",timeout},{"server_instance",instance},{"peer_uid",peer},{"created_unix_ms",now_ms()},{"state","intent"},{"terminal",false},{"effect_started",false},{"dispatch_count",0},{"can_redispatch",false},
++ {"execution_credentials_scope",credential_scope},{"required_execution_uid",execution_uid},{"required_execution_gid",execution_gid},
++ {"execution_credentials_verified",false},{"execution_uid",nullptr},{"execution_euid",nullptr},{"execution_gid",nullptr},{"execution_egid",nullptr},
++ {"execution_supplementary_group_count",nullptr},{"supplementary_groups_cleared",nullptr}};
+  std::string intent=r.dump();int fi=openat(d,"intent.json",O_WRONLY|O_CREAT|O_EXCL|O_CLOEXEC|O_NOFOLLOW,0600);
+  if(fi<0){close(d);throw std::runtime_error("intent_exclusive_create_failed");}
+  bool intent_ok=write_all(fi,intent.data(),intent.size())&&fsync(fi)==0;close(fi);
+@@ -143,6 +155,17 @@
+   if(q.value("_fixture_omit_handshake",false))_exit(126);
+ #endif
+   if(dup2(nullfd,0)<0||dup2(out[1],1)<0||dup2(err[1],2)<0)_exit(126);
++  auto credential_failure=[](){const char message[]="hepta_execution_credentials_failed_before_exec\n";(void)write(2,message,sizeof(message)-1);_exit(125);};
++#ifndef HEPTA_TESTING
++  if(setgroups(0,nullptr)!=0||setresgid(2000,2000,2000)!=0||setresuid(2000,2000,2000)!=0)credential_failure();
++#else
++  if(q.value("_fixture_credentials_fail",false))credential_failure();
++#endif
++  uid_t real_uid,effective_uid,saved_uid;gid_t real_gid,effective_gid,saved_gid;
++  if(getresuid(&real_uid,&effective_uid,&saved_uid)!=0||getresgid(&real_gid,&effective_gid,&saved_gid)!=0
++     ||real_uid!=execution_uid||effective_uid!=execution_uid||saved_uid!=execution_uid
++     ||real_gid!=execution_gid||effective_gid!=execution_gid||saved_gid!=execution_gid
++     ||getgroups(0,nullptr)!=execution_groups)credential_failure();
+   char s='S';if(write(started[1],&s,1)!=1)_exit(126);close(started[1]);close(out[1]);close(err[1]);close(nullfd);
+   execl(shell_path.c_str(),shell_path.c_str(),"-c",cmd.c_str(),(char*)nullptr);_exit(127);
+  }
+@@ -155,7 +178,10 @@
+  bool group=false,joined=false,eof[2]={false,false},handshake_eof=false,handshake_saved=false;int status=0;std::string data[2],reason;
+  auto consume_handshake=[&](){
+   while(!handshake_eof){char value;ssize_t n=read(started[0],&value,1);
+-   if(n==1){if(value=='S'){group=true;r["effect_started"]=true;}else if(reason.empty())reason="setsid_handshake_invalid";continue;}
++   if(n==1){if(value=='S'){group=true;r["effect_started"]=true;r["execution_credentials_verified"]=true;
++     r["execution_uid"]=execution_uid;r["execution_euid"]=execution_uid;r["execution_gid"]=execution_gid;r["execution_egid"]=execution_gid;
++     r["execution_supplementary_group_count"]=execution_groups;r["supplementary_groups_cleared"]=(execution_groups==0);
++    }else if(reason.empty())reason="setsid_handshake_invalid";continue;}
+    if(n==0){handshake_eof=true;break;}if(errno==EINTR)continue;if(errno!=EAGAIN&&errno!=EWOULDBLOCK&&reason.empty())reason="setsid_handshake_read_failed";break;
+   }
+  };
+@@ -246,6 +272,9 @@
+ #endif
+    else throw std::runtime_error("unknown_argument");}
+   require(!state.empty()&&state[0]=='/'&&socket_name.size()<100,"invalid_server_configuration");
++#ifndef HEPTA_TESTING
++  require(getuid()==0&&geteuid()==0,"production_parent_uid_must_be_root");
++#endif
+   umask(0077);if(mkdir(state.c_str(),0700)&&errno!=EEXIST)throw std::runtime_error("state_directory_create_failed");
+   int base=open(state.c_str(),O_RDONLY|O_DIRECTORY|O_CLOEXEC|O_NOFOLLOW);require(base>=0,"state_directory_invalid");
+   struct stat bst{};require(fstat(base,&bst)==0&&bst.st_uid==geteuid()&&(bst.st_mode&0077)==0,"state_directory_owner_or_mode_invalid");

@@ -1,0 +1,39 @@
+{
+  "ndk_path": "@NDK_ROOT@",
+  "source_properties": "Pkg.Desc = Android NDK\nPkg.Revision = 28.1.13356709\nPkg.BaseRevision = 28.1.13356709\nPkg.ReleaseName = r28b\n",
+  "inputs": [
+    {
+      "relative_path": "build/cmake/android.toolchain.cmake",
+      "realpath": "@NDK_ROOT@/build/cmake/android.toolchain.cmake",
+      "bytes": 10344,
+      "sha256": "dbad92d9dcfea0d32b7c5e5f82f5072d878ded5d46a5d3f1f581ea108ca7fe89"
+    },
+    {
+      "relative_path": "toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+      "realpath": "@NDK_ROOT@/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang",
+      "bytes": 172733264,
+      "sha256": "ff1800041e683dd1c51ce470a291669a67d6cdee1258c409db33c4124dd175f6"
+    },
+    {
+      "relative_path": "toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_static.a",
+      "realpath": "@NDK_ROOT@/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/aarch64-linux-android/libc++_static.a",
+      "bytes": 15182348,
+      "sha256": "d184e73abfa4c71fe1d1839af59994416198b2bd06f06f385d27ad0a597128f0"
+    }
+  ],
+  "cmake": {
+    "returncode": 0,
+    "version": "cmake version 4.3.2\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n",
+    "stderr": ""
+  },
+  "clang": {
+    "returncode": 0,
+    "version": "Android (13324770, +pgo, -bolt, +lto, -mlgo, based on r530567d) clang version 19.0.0 (https://android.googlesource.com/toolchain/llvm-project 97a699bf4812a18fb657c2779f5296a4ab2694d2)\nTarget: x86_64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: @NDK_ROOT@/toolchains/llvm/prebuilt/darwin-x86_64/bin\n",
+    "stderr": ""
+  },
+  "make": {
+    "returncode": 0,
+    "version": "GNU Make 3.81\nCopyright (C) 2006  Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.\nThere is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A\nPARTICULAR PURPOSE.\n\nThis program built for i386-apple-darwin11.3.0\n",
+    "stderr": ""
+  }
+}

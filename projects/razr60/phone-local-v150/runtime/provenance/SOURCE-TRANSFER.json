@@ -1,0 +1,9 @@
+{
+  "returncode": 0,
+  "elapsed": 0.321725875,
+  "stderr": "",
+  "bytes": 38685236,
+  "sha256": "1688a167a8edd9499cdd0c19b8bd044f0fa184b466981977bbf2222d884953a4",
+  "symlinks": [],
+  "source_dir": "@RUNTIME_BUILD_ROOT@/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6"
+}

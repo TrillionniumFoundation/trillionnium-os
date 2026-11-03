@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.llama-cpu-source-reference.v150.1",
+  "repository": "https://github.com/ggml-org/llama.cpp",
+  "tag": "v0.8.0",
+  "commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+  "source_archive_url": "https://codeload.github.com/ggml-org/llama.cpp/tar.gz/8642541b255bfb5dc39cd351a178be09013a55d6",
+  "source_archive_bytes": 38685236,
+  "source_archive_sha256": "1688a167a8edd9499cdd0c19b8bd044f0fa184b466981977bbf2222d884953a4",
+  "source_files": 3942,
+  "source_manifest_sha256": "26cfb57a895fe5965ce9684fac254dec1a165d044d8f056f3e5b50f2cdce46f5",
+  "original_build_recipe_sha256": "0101c397a90bb0497254eaa74243ac8ab8de871f728096a2963aa3cce973ef63",
+  "original_build_receipt_sha256": "60341a88ad7911ccd6ca3abbf9b537c7becae50030365c5088109905e2c7fb0e",
+  "portable_recipe_status": "Syntax checked for source publication; original delivered build retained separately. No new Android rebuild claim."
+}

@@ -1,0 +1,912 @@
+{
+  "adaptations": [
+    "Backend CLI observations become original phone-local HTTP response, usage and worker/slot terminal receipts.",
+    "Host-isolated model timeout/cancel cases use a labelled local HTTP model fixture rather than the previously selected Codex CLI.",
+    "E2E-01's image admission condition refers to the exact newly attached data:image/jpeg payload, its SHA and bound native capture receipt; no CLI argv is needed.",
+    "All 19 case IDs, coverage, business postconditions, geometry and original 7 tool / 8 round / 300 second bounds are retained.",
+    "A fixture PASS is not a physical lifecycle PASS, and blocked or partial cases never count as complete business success."
+  ],
+  "automatic_execution": false,
+  "automatic_schedule": false,
+  "backend": "phone_local_http",
+  "base_protocol_sha256": "07433e17cb71592a011a54c787ac61947b727ec5ae6f507bca22f8fa6dfb0736",
+  "candidate_manifest_sha256": "cbbf47ba6eafae475d5f7ee76a9e90e68c47639938d57451f6fb73b5e6612095",
+  "candidate_source_frozen": true,
+  "case_count": 19,
+  "cases": [
+    {
+      "automatic_execution": false,
+      "contract_recipe": {
+        "coverage": "entire_request",
+        "postconditions": [
+          {
+            "challenge_prefix": "挑战码：",
+            "challenge_view_id": "org.trillionnium.hepta.controlprobe:id/visual_challenge_code",
+            "id": "visual_receipt",
+            "kind": "visual_receipt_matches_challenge",
+            "package": "org.trillionnium.hepta.controlprobe",
+            "receipt_prefix": "HEPTA_VISUAL_OK ",
+            "receipt_view_id": "org.trillionnium.hepta.controlprobe:id/visual_receipt"
+          },
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ]
+      },
+      "executed_in_this_set": false,
+      "expected_business_verified": true,
+      "fresh_inputs": {
+        "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+        "appears_once_in_exact_request": true,
+        "minimum_entropy_bits": 128,
+        "old_nonce_task_or_stream_reuse": false,
+        "persist_actual_request_only_in_private_run_evidence": true
+      },
+      "id": "E2E-01",
+      "layer": "model_e2e",
+      "negative_case": false,
+      "operator_steps": [
+        "Create a new natural-language task and exact one-time contract for this challenge and requested return.",
+        "Require one explicit phone.screenshot attached to the next real model decision.",
+        "Allow one screenshot-bound phone.tap selection; its additional PNG guard capture is not a second model observation.",
+        "Read visual_challenge_code and visual_receipt together through phone.read_text after the attempt.",
+        "Use explicit phone.return_hepta, then complete with task_status=completed only when all facts hold."
+      ],
+      "pass_postconditions": [
+        "Actual local HTTP model request includes the newly captured verified JPEG and its hash matches the bound native result.",
+        "Exactly one choice was dispatched; no recapture-to-guess or second challenge attempt is hidden.",
+        "Public challenge is literal 挑战码： plus exactly eight uppercase hex characters.",
+        "Public receipt is HEPTA_VISUAL_OK plus one space and the same code from the same UI snapshot.",
+        "Final actual focus/resumed activity is the fixed HEPTA activity on qualified display 0.",
+        "Native terminal is complete and business_verified=true for coverage=entire_request."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use the existing qualified VisualChallengeActivity and generate exactly one fresh challenge.",
+        "Do not reveal or read challenge code/private app data before the screenshot-bound selection."
+      ],
+      "title": "一次新截图完成一个全新随机视觉挑战并返回HEPTA"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": {
+        "coverage": "entire_request",
+        "postconditions": [
+          {
+            "id": "editor",
+            "kind": "text_readback_exact",
+            "package": "org.trillionnium.hepta.controlprobe",
+            "utf8_sha256": "RUNTIME_SHA256_OF_NEW_TEXT",
+            "view_id": "org.trillionnium.hepta.controlprobe:id/unicode_input"
+          },
+          {
+            "id": "public_readback",
+            "kind": "public_text_exact",
+            "package": "org.trillionnium.hepta.controlprobe",
+            "utf8_sha256": "RUNTIME_SHA256_OF_NEW_TEXT",
+            "view_id": "org.trillionnium.hepta.controlprobe:id/unicode_readback"
+          },
+          {
+            "id": "public_receipt",
+            "kind": "public_text_exact",
+            "package": "org.trillionnium.hepta.controlprobe",
+            "utf8_sha256": "RUNTIME_SHA256_OF_EXACT_SOURCE_DEFINED_RECEIPT",
+            "view_id": "org.trillionnium.hepta.controlprobe:id/unicode_receipt"
+          },
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ],
+        "runtime_materialization_required": true
+      },
+      "executed_in_this_set": false,
+      "expected_business_verified": true,
+      "fresh_inputs": {
+        "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+        "appears_once_in_exact_request": true,
+        "minimum_entropy_bits": 128,
+        "old_nonce_task_or_stream_reuse": false,
+        "persist_actual_request_only_in_private_run_evidence": true
+      },
+      "id": "E2E-02",
+      "layer": "model_e2e",
+      "negative_case": false,
+      "operator_steps": [
+        "Record exact request bytes and expected fresh text SHA without normalizing whitespace or Unicode.",
+        "Observe the actual focused unicode_input and its current text.",
+        "Use phone.input_text once, then activate the observed unicode_submit control once.",
+        "Read unicode_readback and unicode_receipt together after confirmation.",
+        "Use explicit phone.return_hepta and evaluate the whole-task contract."
+      ],
+      "pass_postconditions": [
+        "Helper operation/package/view/old-text/requested/after hashes and exact UTF8 readback all match.",
+        "Public unicode_readback equals the fresh literal input byte for byte.",
+        "Public receipt exactly equals the source-defined four-line format in unicode_receipt_formula.",
+        "Literal newline remains a newline; XML normalization to a space is a failure, not an allowed rewrite.",
+        "Actual HEPTA focus is verified after return.",
+        "Input-only success without confirmation, public receipt or return must end as turn.fail/business_verified=false."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use existing TextEntryActivity; do not inject Intent extras or private app state.",
+        "Generate new nonempty synthetic text containing Chinese, emoji, one real newline, quotes and literal shell metacharacters; embed a newly generated random marker.",
+        "Keep the entire UTF8 input under the qualified 4096-byte helper bound."
+      ],
+      "title": "全新中文/emoji/换行输入、确认、公开回执与返回"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": {
+        "coverage": "entire_request",
+        "postconditions": [
+          {
+            "id": "calculator_result",
+            "kind": "public_text_exact",
+            "package": "RESOLVE_CURRENT_PACKAGE",
+            "utf8_sha256": "RUNTIME_SHA256_OF_QUALIFIED_RESULT_STRING",
+            "view_id": "RESOLVE_UNIQUE_CURRENT_RESULT_VIEW"
+          },
+          {
+            "id": "return",
+            "kind": "foreground_hepta"
+          }
+        ],
+        "runtime_app_qualification_required": true
+      },
+      "executed_in_this_set": false,
+      "expected_business_verified": true,
+      "fresh_inputs": {
+        "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+        "appears_once_in_exact_request": true,
+        "minimum_entropy_bits": 128,
+        "old_nonce_task_or_stream_reuse": false,
+        "persist_actual_request_only_in_private_run_evidence": true
+      },
+      "id": "E2E-03",
+      "layer": "model_e2e",
+      "negative_case": false,
+      "operator_steps": [
+        "Compute the expected arithmetic independently before sending, keep only the expression in the task.",
+        "Use observed controls to enter/evaluate the expression once.",
+        "Read the real public result and independently compare its source-qualified display formatting.",
+        "Return to HEPTA only because this case explicitly requests it."
+      ],
+      "pass_postconditions": [
+        "Expression and expected result use the fresh parameters, not values from prior examples.",
+        "A public visible result proves the arithmetic; a model mental calculation is insufficient.",
+        "No repeated evaluation after an uncertain effect.",
+        "The exact result contract and requested return both pass."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Resolve the installed calculator and its real public result view; do not assume a package or resource ID.",
+        "Choose fresh small integers a,b,c and expression (a*b)+c, with a bounded exact integer result.",
+        "If the app exposes no unique qualified public result view, mark unsupported/blocked; never relax uniqueness silently."
+      ],
+      "title": "计算器完成全新随机简单表达式并核验结果"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": {
+        "coverage": "entire_request",
+        "postconditions": [
+          {
+            "id": "public_setting_value",
+            "kind": "public_text_exact",
+            "package": "RESOLVE_CURRENT_SETTINGS_PACKAGE",
+            "utf8_sha256": "RUNTIME_SHA256_FROM_INDEPENDENT_READ_ONLY_OBSERVATION",
+            "view_id": "RESOLVE_UNIQUE_DETAIL_VIEW"
+          }
+        ],
+        "runtime_app_qualification_required": true
+      },
+      "executed_in_this_set": false,
+      "expected_business_verified": true,
+      "fresh_inputs": {
+        "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+        "appears_once_in_exact_request": true,
+        "minimum_entropy_bits": 128,
+        "old_nonce_task_or_stream_reuse": false,
+        "persist_actual_request_only_in_private_run_evidence": true
+      },
+      "id": "E2E-04",
+      "layer": "model_e2e",
+      "negative_case": false,
+      "operator_steps": [
+        "Send a new request that asks only to read that field; it need not request return.",
+        "Navigate only as needed to observe the public field.",
+        "Use phone.read_text and compare with an independent read-only system observation."
+      ],
+      "pass_postconditions": [
+        "The app field, package, focus and unique view are independently verified.",
+        "No settings value, permission, network configuration or account state is changed.",
+        "The result is based on actual UI text rather than a prefilled model answer.",
+        "No return is forced by generic completion; the contract covers exactly the read-only request."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Choose one public non-sensitive system information field, such as Android version.",
+        "Resolve the actual installed Settings package, detail page and unique public view ID.",
+        "Do not use identifiers, accounts, network secrets, toggles or editable preferences."
+      ],
+      "title": "只读查看设置中的公开系统版本字段"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": null,
+      "fresh_inputs": {
+        "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+        "appears_once_in_exact_request": true,
+        "minimum_entropy_bits": 128,
+        "old_nonce_task_or_stream_reuse": false,
+        "persist_actual_request_only_in_private_run_evidence": true
+      },
+      "id": "COMP-01",
+      "layer": "component_direct",
+      "negative_case": false,
+      "operator_steps": [
+        "Map phone.return_hepta once with frozen production source and dispatch once through the reviewed operator transport.",
+        "Retain raw launch/page/viewport receipt and compare the foreground directly."
+      ],
+      "pass_postconditions": [
+        "Launch rc is captured immediately and is zero.",
+        "One Status: ok and the exact known activity occur in launch output.",
+        "Inner display focus/app/top-resumed all name HEPTA and keyguard is false.",
+        "Mark only direct component acceptance, not model or native-task acceptance."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use a new operator component identity and a verified non-HEPTA foreground; do not fabricate native task identity."
+      ],
+      "title": "显式返回：launch状态和实际焦点双核验"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-01",
+      "layer": "component_direct",
+      "negative_case": true,
+      "operator_steps": [
+        "Map/dispatch only the pending screenshot-bound tap once.",
+        "Read independent public probe state/counter before and after; do not rely only on exit code."
+      ],
+      "pass_postconditions": [
+        "Guard exits 70 or fails earlier with an explicitly recorded known precondition.",
+        "No input effect is observed on either old or new page.",
+        "The image is consumed and the effect is not retried."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Capture a fresh qualified screenshot of a disposable probe page.",
+        "Then have the sole Root operator intentionally switch focus to another safe page."
+      ],
+      "title": "截图后焦点切换：必须在input之前拒绝"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-02",
+      "layer": "component_direct",
+      "negative_case": true,
+      "operator_steps": [
+        "Dispatch one bound tap and retain before/guard PNG hashes.",
+        "Observe public state independently to confirm no input."
+      ],
+      "pass_postconditions": [
+        "Viewport and focus remain the same, but PNG SHA differs.",
+        "Guard exits 71 before input.",
+        "No selection/submission/other app effect and no automatic retry occur."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use a disposable page with the same display/focus and controlled visible content change after a fresh screenshot.",
+        "Do not substitute a rotation/focus change for this same-viewport test."
+      ],
+      "title": "同viewport内容变化：精确像素guard必须拒绝"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-03",
+      "layer": "component_direct",
+      "negative_case": true,
+      "operator_steps": [
+        "Supply an unqualified display/rotation observation to the frozen mapper/parser, or conduct one explicitly scheduled physical negative."
+      ],
+      "pass_postconditions": [
+        "Screenshot/tap/public-return qualification rejects anything outside the qualified display 0 portrait geometry.",
+        "No input is injected on another display.",
+        "Fixture and physical-device outcomes remain separately labelled."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Prefer an isolated replay of original-shaped read-only display receipts first.",
+        "Any physical fold/rotation test needs separate operator scheduling and restoration of this run baseline."
+      ],
+      "title": "外屏或旋转：拒绝未资格显示配置"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-04",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "After durable turn admission but before tool dispatch, close only the test-owned transport.",
+        "Inspect claim, process group, terminal/unknown state and any replacement stream attempt."
+      ],
+      "pass_postconditions": [
+        "No tool is dispatched and the accepted semantic identity remains consumed.",
+        "No automatic request/stream replay occurs.",
+        "No business success is emitted; unknown transport outcome remains unknown where no terminal is observed."
+      ],
+      "physical_followup_rule": "An isolated fixture pass does not close the corresponding installed lifecycle gate; use a fresh bounded disposable physical task and keep actual model versus fixture-provider evidence explicit.",
+      "physical_followup_status": "NOT_RUN_SEPARATELY_AUTHORIZED_NEW_TASK_REQUIRED",
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "setup": [
+        "Use a fresh isolated connection/task and deterministic fixture decision, with no real phone effects."
+      ],
+      "title": "断连发生于dispatch之前"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-05",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Disconnect only the owned stream after effect start but before its result reaches the provider.",
+        "Inspect durable dispatch/claim evidence and the independent counter."
+      ],
+      "pass_postconditions": [
+        "Effect count is at most one.",
+        "Unknown result is not inferred as success and not retried.",
+        "A reconnect/new stream cannot reuse the semantic identity."
+      ],
+      "physical_followup_rule": "An isolated fixture pass does not close the corresponding installed lifecycle gate; use a fresh bounded disposable physical task and keep actual model versus fixture-provider evidence explicit.",
+      "physical_followup_status": "NOT_RUN_SEPARATELY_AUTHORIZED_NEW_TASK_REQUIRED",
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "setup": [
+        "Use a disposable local effect counter or separately authorized probe action under a new identity.",
+        "Do not use real messages, settings changes, purchases or file deletion as the effect."
+      ],
+      "title": "作用已开始后断连：保持未知且不重放"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-06",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Admit a new fixture turn and allow the timeout to fire once.",
+        "Inspect the exact spawned/joined HTTP-client process group and real server slot where physical and model-health classification."
+      ],
+      "pass_postconditions": [
+        "Existing fail frame contains model_timeout; business_verified=false.",
+        "No tool dispatch, child process group leak, account/model fallback or relaunch occurs.",
+        "The claim remains consumed."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use a disposable local HTTP model fixture process with a deterministic hold; do not waste a real quota request to synthesize timeout.",
+        "Use an explicitly short isolated test deadline, not the live service configuration."
+      ],
+      "title": "模型超时：有界结束且清理原进程组"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-07",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Trigger one result deadline and retain the original dispatch identity.",
+        "Deliver/observe the late result only as evidence; do not redispatch."
+      ],
+      "pass_postconditions": [
+        "No second effect is executed.",
+        "Late or unmatched results do not rewrite the accepted terminal/unknown outcome.",
+        "Business remains false and cancellation/cleanup state is explicit."
+      ],
+      "physical_followup_rule": "An isolated fixture pass does not close the corresponding installed lifecycle gate; use a fresh bounded disposable physical task and keep actual model versus fixture-provider evidence explicit.",
+      "physical_followup_status": "NOT_RUN_SEPARATELY_AUTHORIZED_NEW_TASK_REQUIRED",
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "setup": [
+        "Use a deterministic disposable executor fixture with a delayed result and a bounded no-risk effect counter."
+      ],
+      "title": "执行器结果超时：不能用迟到结果认定成功或再执行"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-08",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Cancel after admission and before the first tool dispatch.",
+        "Observe original process cleanup and persisted claim."
+      ],
+      "pass_postconditions": [
+        "Existing turn.cancelled (or explicitly unknown transport outcome if the cancel acknowledgement is lost) is retained.",
+        "Zero phone effects; no automatic navigation on cancellation; business_verified=false.",
+        "No original HTTP-client process group remains after confirmed cleanup."
+      ],
+      "physical_followup_rule": "An isolated fixture pass does not close the corresponding installed lifecycle gate; use a fresh bounded disposable physical task and keep actual model versus fixture-provider evidence explicit.",
+      "physical_followup_status": "NOT_RUN_SEPARATELY_AUTHORIZED_NEW_TASK_REQUIRED",
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "setup": [
+        "Use an isolated local HTTP model fixture or a separately authorized fresh model run; state the selected layer."
+      ],
+      "title": "dispatch前取消"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-09",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Cancel after one confirmed effect and before the next action.",
+        "Inspect exact original receipts and the counter."
+      ],
+      "pass_postconditions": [
+        "Exactly the already-observed effect remains; no follow-up input or forced return occurs.",
+        "Cancellation is not labelled complete business success.",
+        "No automatic replay or identity release occurs."
+      ],
+      "physical_followup_rule": "An isolated fixture pass does not close the corresponding installed lifecycle gate; use a fresh bounded disposable physical task and keep actual model versus fixture-provider evidence explicit.",
+      "physical_followup_status": "NOT_RUN_SEPARATELY_AUTHORIZED_NEW_TASK_REQUIRED",
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "required_qualification_layers": [
+        "host_isolated",
+        "physical_native_task"
+      ],
+      "setup": [
+        "Use a disposable single-effect counter/probe and a fresh identity."
+      ],
+      "title": "首次作用后取消"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-10",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Set remaining image budget just below 65536 bytes, then request screenshot.",
+        "Separately present an image older than 120 seconds, a foreign call ID and a non-current attached round."
+      ],
+      "pass_postconditions": [
+        "Each invalid condition fails before dispatch.",
+        "No budget extension, stale-image fallback or guessed generic tap occurs.",
+        "Maximum single image remains 196608 bytes and turn image budget 393216 bytes."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use isolated PhoneTools fixture state, with no phone capture or model call.",
+        "Exercise each boundary as a separate new fixture identity."
+      ],
+      "title": "图片字节预算/过期图像/旧round绑定"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-11",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Independently vary call_id, sequence, byte count, terminal exit, truncation, Base64 and source/hash bindings."
+      ],
+      "pass_postconditions": [
+        "Each malformed envelope is rejected as insufficient evidence.",
+        "No image/text/return fact is admitted and no business success is synthesized.",
+        "Original test fixtures remain clearly labelled synthetic."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use retained-shape synthetic native envelopes only; never edit real evidence to make a live pass."
+      ],
+      "title": "native输出损坏/截断/错误身份"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-12",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Supply only a valid input helper receipt and a model completed decision.",
+        "Repeat with valid public receipt but missing return; separately test declared_postconditions_only coverage."
+      ],
+      "pass_postconditions": [
+        "Existing wire kind is turn.fail with business_not_verified.",
+        "business-outcome.json lists missing conditions and business_verified=false.",
+        "Native complete or model summary cannot hide a missing app receipt/return/full-request coverage."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Create a new exact contract requiring editor input, public confirmation receipt and explicit return."
+      ],
+      "title": "部分任务被模型说成完成：必须失败终态"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-13",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Race two admissions with distinct semantic turns against the same exact nonce/request.",
+        "Try another new stream/turn after consumption and try a wrong known session/profile."
+      ],
+      "pass_postconditions": [
+        "Exactly one O_EXCL binding succeeds; wrong scope does not consume the template.",
+        "Consumed template cannot qualify or dispatch another task.",
+        "All claims/bindings remain; no deletion/reset to obtain a pass."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use a new private temporary task-contracts directory and one fresh request template."
+      ],
+      "title": "一次性模板并发/旧nonce重用"
+    },
+    {
+      "automatic_execution": false,
+      "contract_recipe": null,
+      "executed_in_this_set": false,
+      "expected_business_verified": false,
+      "fresh_inputs": {
+        "isolated_fixture_or_new_component_identity_required": true,
+        "old_task_replay": false
+      },
+      "id": "NEG-14",
+      "layer": "host_isolated",
+      "negative_case": true,
+      "operator_steps": [
+        "Reproduce enumerate→atomic rename→lstat for recognized temporary names.",
+        "Separately exercise unknown missing canonical evidence, unreadable paths, retained orphan-spawn receipts and evidence capacity boundary."
+      ],
+      "pass_postconditions": [
+        "Only the exact recognized rename race is tolerated.",
+        "Unknown files/I/O failures fail closed; no accepted claim is deleted for capacity.",
+        "Confirmed worker/child/file-descriptor cleanup returns to the measured baseline."
+      ],
+      "planned_status": "NOT_RUN_FIXED_SET",
+      "required_metrics": [
+        "latency",
+        "usage",
+        "cost",
+        "resources",
+        "evidence",
+        "restoration"
+      ],
+      "setup": [
+        "Use temporary evidence/state trees only, never fill or delete production evidence."
+      ],
+      "title": "容量/原子rename竞态与资源收尾"
+    }
+  ],
+  "created_utc": "2026-11-03T14:49:54.022591+00:00",
+  "current_global_blocker": "R2 source/config frozen; wait for Root's entirely new native health terminal before business E2E. R1 health01 remains a separate real model/argument failure with zero effects.",
+  "executed_cases": 0,
+  "freshness_policy": {
+    "algorithm": "operator creates secrets.token_hex(16) once for this new case run",
+    "appears_once_in_exact_request": true,
+    "minimum_entropy_bits": 128,
+    "old_nonce_task_or_stream_reuse": false,
+    "persist_actual_request_only_in_private_run_evidence": true
+  },
+  "global_preconditions": [
+    "Freeze actual provider/source/helper/APK/native hashes and device fingerprint before admission.",
+    "Record the current inner display/rotation/focus and the actual stay-on baseline; current observed baseline is 2.",
+    "One Root operator owns phone actions; never run two cases on the phone concurrently.",
+    "Register an exact request-bound task contract where supported, with a new nonce and current session/profile.",
+    "Capture original phone-local HTTP responses and slot receipts, native frames and business-outcome sidecar; model prose or exit0 alone cannot pass.",
+    "Any unknown effect, transport loss or late result stays consumed; no same-identity replay, hidden retry or fallback model."
+  ],
+  "limits": {
+    "default_model_round_deadline_seconds": 120,
+    "do_not_silently_raise_limits_to_pass": true,
+    "live_configuration_must_be_verified_before_use": true,
+    "maximum_sequential_tool_calls_before_final_summary": 7,
+    "model_rounds": 8,
+    "turn_deadline_seconds": 300
+  },
+  "model": "gui-owl-1.5-2b-phone-q4km",
+  "parent_fixed_set_sha256": "b6673cee6d90ffb84e8cdef50f601aaa4f38567289eeca0407596578a9714895",
+  "qualified_geometry": {
+    "display_id": 0,
+    "external_display_qualification": false,
+    "height": 2992,
+    "rotation": 0,
+    "width": 1224
+  },
+  "release_gate": {
+    "blocked_not_counted_as_pass": true,
+    "currently_closed": false,
+    "daily_use_reliability_claim_allowed_from_one_suite": false,
+    "direct_component_does_not_close_model_gate": true,
+    "historical_exploratory_runs_not_in_denominator": true,
+    "physical_lifecycle_followups_required": [
+      "NEG-04",
+      "NEG-05",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09"
+    ],
+    "required_fresh_model_cases": [
+      "E2E-01",
+      "E2E-02",
+      "E2E-03",
+      "E2E-04"
+    ],
+    "required_negative_cases": [
+      "NEG-01",
+      "NEG-02",
+      "NEG-03",
+      "NEG-04",
+      "NEG-05",
+      "NEG-06",
+      "NEG-07",
+      "NEG-08",
+      "NEG-09",
+      "NEG-10",
+      "NEG-11",
+      "NEG-12",
+      "NEG-13",
+      "NEG-14"
+    ]
+  },
+  "schema": "hepta.fixed-acceptance-set.v150.1",
+  "set_id": "stock16-phone-local-fixed-set-r2",
+  "unicode_receipt_formula": {
+    "escape_meaning": "\\n in recipe denotes one literal LF in the expected value; never normalize to space",
+    "public_readback_view": "org.trillionnium.hepta.controlprobe:id/unicode_readback",
+    "public_receipt_view": "org.trillionnium.hepta.controlprobe:id/unicode_receipt",
+    "recipe": "HEPTA_UNICODE_READBACK\\nsha256={sha256_utf8_lowerhex}\\ncodepoints={unicode_scalar_count}\\nutf8_bytes={utf8_byte_count}",
+    "source": "android/visual-probe-v148r1/source/src/org/trillionnium/hepta/controlprobe/TextEntryActivity.java:onClick"
+  }
+}

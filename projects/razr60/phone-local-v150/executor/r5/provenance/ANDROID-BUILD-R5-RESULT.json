@@ -1,0 +1,56 @@
+{
+  "status": "BUILT_PHONE_CREDENTIAL_TEST_PENDING",
+  "steps": [
+    {
+      "argv": [
+        "@NDK_ROOT@/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang",
+        "-O2",
+        "-c",
+        "@EXECUTOR_SOURCE_ROOT@/vendor/hash/sha256/sha256.c",
+        "-I@EXECUTOR_SOURCE_ROOT@/vendor/hash",
+        "-o",
+        "@EXECUTOR_SOURCE_ROOT@/sha256.android.o"
+      ],
+      "returncode": 0,
+      "seconds": 0.258837417
+    },
+    {
+      "argv": [
+        "@NDK_ROOT@/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++",
+        "-std=c++17",
+        "-O2",
+        "-pthread",
+        "-static-libstdc++",
+        "-I@EXECUTOR_SOURCE_ROOT@/vendor",
+        "@EXECUTOR_SOURCE_ROOT@/phone_tool_sidecar.cpp",
+        "@EXECUTOR_SOURCE_ROOT@/vendor/hash/hash.cpp",
+        "@EXECUTOR_SOURCE_ROOT@/sha256.android.o",
+        "-o",
+        "@EXECUTOR_SOURCE_ROOT@/phone-tool-sidecar-r5"
+      ],
+      "returncode": 0,
+      "seconds": 2.1067934580000003
+    },
+    {
+      "argv": [
+        "@NDK_ROOT@/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-strip",
+        "--strip-unneeded",
+        "@EXECUTOR_SOURCE_ROOT@/phone-tool-sidecar-r5"
+      ],
+      "returncode": 0,
+      "seconds": 0.03352966699999982
+    }
+  ],
+  "binary": "phone-tool-sidecar-r5",
+  "bytes": 952168,
+  "sha256": "30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa",
+  "source_sha256": "beedc3a1a178d4b75887773e8ea1feae508cef89a692b35a03da3134893cafb4",
+  "client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+  "production_test_hooks_absent": true,
+  "required_parent_uid": 0,
+  "required_effect_uid": 2000,
+  "required_effect_gid": 2000,
+  "supplementary_groups": 0,
+  "same_child_and_process_group": true,
+  "phone_operations": 0
+}

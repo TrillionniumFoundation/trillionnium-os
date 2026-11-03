@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.phone-helper-execution-identity-input.v150.1",
+  "source_repository": "TrillionniumFoundation/trillionnium-os",
+  "source_commit": "0152dc425b6eec188dfd0efdd62aa004b59c76c5",
+  "helpers": [
+    {
+      "path": "projects/razr60/stock16-v149/android/unicode-v148r2/source/org/trillionnium/hepta/input/UnicodeInput.java",
+      "bytes": 13213,
+      "sha256": "9163adf754ce450f9a7ece496257e4135cea8f63bd53d2ab92f7007b5d3bbf9e",
+      "requirement": "Process.myUid() == 2000",
+      "rejection": "requires_existing_shell_uid2000"
+    },
+    {
+      "path": "projects/razr60/stock16-v149/android/screen-codec-v148r1/source/org/trillionnium/hepta/screen/ScreenshotCodec.java",
+      "bytes": 10204,
+      "sha256": "cf11757a3de7c7000d8a9410115cf28648458c37106d4956446b8180c313c26c",
+      "requirement": "Os.getuid()==2000 and Os.geteuid()==2000; source PNG owner UID2000"
+    }
+  ],
+  "root_phone_validation": "PENDING",
+  "parent_and_journal_owner_uid": 0,
+  "effect_real_effective_saved_uid": 2000,
+  "effect_real_effective_saved_gid": 2000,
+  "supplementary_groups": [],
+  "client_unchanged_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539"
+}

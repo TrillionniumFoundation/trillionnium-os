@@ -1,0 +1,115 @@
+{
+  "evidence": {
+    "executor_live_health_sha256": "7f6dd046e8395c78257c7543bee691757fb1df73001b6bfc1d7d2bbbb253f1d7",
+    "initial_health_summary_sha256": "b7f89abcbb6784a8ad8235b0b09ed5d2df27b214b32ddd773556785e3396f5f5",
+    "model_image_reconfigure_sha256": "03905708864a586f08a34340c8009bbe2417c6f84da2543051400e3b02ed6b17",
+    "provider_r2_prompt_source_seal_sha256": "94e3e202d402fdc7bd9bd3571e357a0a727830bd8f50e56bee15995a14069e5a",
+    "r1_model_health_http_receipt_sha256": "a4775e3265f3e17b85da876899a9ac36eb4043a035f00bd5f2b268678f964ec3",
+    "r1_module_service_preflight_sha256": "7ca9398cf175281fa3ff8227fec3af88d7c837133e5a7f61816da7a81ce91a66",
+    "r1_native_health_verified_sha256": "b0cfeea892e40918435b2bdce0f0d9bb10e482a5c1dde6233d988af630c00ed0",
+    "retained_claims_sha256": "PRIVATE_RETAINED_CLAIMS_SHA256_NOT_PUBLISHED"
+  },
+  "executor": {
+    "binary": {
+      "bytes": 952168,
+      "path": "/data/local/tmp/hepta-phone-local-v150-r1/bin/phone-tool-sidecar-r5",
+      "sha256": "30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa"
+    },
+    "client": {
+      "bytes": 8399,
+      "sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539"
+    },
+    "credential_handshake_before_exec": true,
+    "effect_gid": 2000,
+    "effect_supplementary_groups": [],
+    "effect_uid": 2000,
+    "prior_r4_preserved": true,
+    "production_parent_uid": 0,
+    "real_uid_validation": "pending fresh phone execution",
+    "same_child_session_and_process_group": true,
+    "socket_name": "hepta_phone_local_v150",
+    "source_sha256": "beedc3a1a178d4b75887773e8ea1feae508cef89a692b35a03da3134893cafb4",
+    "version": "v150-r5"
+  },
+  "model": {
+    "acquisition_manifest_sha256": "e7f15a13b2c5a80449922f0fa57df597c468fa9742484ad8348bb1795ab03769",
+    "projector": {
+      "bytes": 445053216,
+      "file": "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7"
+    },
+    "quantization_repository": "mradermacher/GUI-Owl-1.5-2B-Instruct-GGUF",
+    "quantization_revision": "a0592aa615540e507a918bc6281fdbfc1b441361",
+    "upstream": "mPLUG/GUI-Owl-1.5-2B-Instruct",
+    "weights": {
+      "bytes": 1107410432,
+      "file": "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5"
+    }
+  },
+  "model_parameters": {
+    "alias": "gui-owl-1.5-2b-phone-q4km",
+    "api_key_file": "/data/local/tmp/hepta-phone-local-v150-r1/state/api.key",
+    "batch": 256,
+    "context_tokens": 4096,
+    "gpu_layers": 0,
+    "host": "127.0.0.1",
+    "image_max_tokens": 1024,
+    "image_min_tokens": 1024,
+    "jinja": true,
+    "metrics": true,
+    "mmproj_offload": false,
+    "parallel_slots": 1,
+    "port": 18087,
+    "slots": true,
+    "threads": 4,
+    "ubatch": 128,
+    "warmup": false,
+    "webui": false
+  },
+  "phone": {
+    "architecture": "aarch64",
+    "fingerprint": "motorola/leap_cn/leap:16/W1VL36H.59-53-11/643c83-3ed541:user/release-keys",
+    "model_root": "/data/local/tmp/hepta-phone-local-v150-r1",
+    "ram_total_kib": 15540960,
+    "selinux": "Enforcing",
+    "soc": "SM8750",
+    "state_root": "/data/trillionnium/owner-open/state/phone-local-v150"
+  },
+  "public_projection": {
+    "changes": "Private retained-claims digest and optional operator workspace paths replaced; frozen runtime source hashes unchanged.",
+    "not_original_seal_bytes": true,
+    "original_bytes": 4621,
+    "original_frozen_sha256": "a2fe45cff43f7270a43e4d0738ef921812cb534e66ae45fe7b33970612488362"
+  },
+  "qualifications": {
+    "business_acceptance": "NOT_RUN",
+    "cold_boot": "NOT_RUN",
+    "current_boot_module_r1": "service readiness PASS; preserved historical configuration",
+    "physical_fold": "NOT_RUN",
+    "prior_r1_native_health": "FAILED: exact owner input reached model; model attempted invalid open_app contrary to no-tool request; guard rejected, 0 native tools, real provider_failed",
+    "provider_r2_native_health": "NOT_RUN"
+  },
+  "runtime": {
+    "android_api": 28,
+    "backend": "cpu",
+    "commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+    "ndk_version": "28.1.13356709",
+    "project": "ggml-org/llama.cpp",
+    "server": {
+      "bytes": 11590216,
+      "sha256": "7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176"
+    },
+    "tag": "v0.8.0"
+  },
+  "schema": "hepta.phone-local.service-inputs.v150.2",
+  "scope": "Immutable runtime/model/executor inputs for provider v150-r2; final source/config/module seals are separate.",
+  "state_preservation": {
+    "currently_observed_claims": 18,
+    "keep_all_claims_receipts_and_consumed_contract_bindings": true,
+    "no_old_request_text_or_unknown_effect_redispatch": true,
+    "original_seed_claims": 17,
+    "original_user_draft_preserved_privately": true,
+    "state_path": "/data/trillionnium/owner-open/state/phone-local-v150/provider-state"
+  }
+}

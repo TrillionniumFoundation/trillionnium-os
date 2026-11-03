@@ -1,0 +1,185 @@
+{
+  "binary": "phone-tool-sidecar-r5",
+  "business_qualification": "PENDING_FRESH_NATIVE_TASKS",
+  "changes": "Same production child and process group drops supplementary groups and real/effective/saved GID/UID to 2000 before verified S handshake and exec; parent remains root with original journal and cancellation semantics.",
+  "client_unchanged": true,
+  "files": [
+    {
+      "bytes": 2315,
+      "path": "ANDROID-BUILD-R5-RESULT.json",
+      "sha256": "3a58760b5f20f63c8e3d51bc558ad61be6ea811d17c909345a0abeb1f5abefa4"
+    },
+    {
+      "bytes": 5210,
+      "path": "BASE-R4-MANIFEST.json",
+      "sha256": "ef646e1a0dc8bff726d1bcb558036bdf6a741bc25f0adb90d01b7d133775b199"
+    },
+    {
+      "bytes": 1188,
+      "path": "HELPER-UID-GUARD-INPUTS.json",
+      "sha256": "f23d94b838b3a58ed4a843a43e5739e6ae6b50601cb5a64b11f86d2bba43cb16"
+    },
+    {
+      "bytes": 1078,
+      "path": "LLAMA-UPSTREAM-LICENSE.txt",
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "bytes": 1838,
+      "path": "NATIVE-BUILD-R5-RESULT.json",
+      "sha256": "76f21b5d6cc87734ca3324aa82cf7d62fafe181ee042fef1fa258b2c6610e76e"
+    },
+    {
+      "bytes": 6195,
+      "path": "R4-R5-DIFF.patch",
+      "sha256": "a84df899bb95af645da17ca2a859be6e69f728311c995c5c51518b8a47de9d5b"
+    },
+    {
+      "bytes": 3754,
+      "path": "README.md",
+      "sha256": "0e2332b16bd75b8ae283cd15c6efe0768002c8fd1b23391c98c970c3d4fd0f47"
+    },
+    {
+      "bytes": 969,
+      "path": "TARGETED-R5-RESULT.json",
+      "sha256": "3a0fee0baee8ffa27ca4c7ad817013ff8d5af58308d810bb1f8aa1b3b07a84c4"
+    },
+    {
+      "bytes": 2180,
+      "path": "TOOLCHAIN-INVENTORY.json",
+      "sha256": "e137304ba05de58fc66f1bb906c6d7bfb7357cbcd618699e502aaccc7d52f679"
+    },
+    {
+      "bytes": 2314,
+      "path": "VENDOR-MANIFEST.json",
+      "sha256": "a912d9c0a683e300d4c6b6dfadeaffcfb5ae71df416f723c8b6df27286da9f7b"
+    },
+    {
+      "bytes": 0,
+      "path": "android-step-0.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "android-step-1.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "android-step-2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1793,
+      "path": "build_android_r5.py",
+      "sha256": "86d1f71725921850ff18a59999913c442caf7cb4880bb90764f46bbcc296b2eb"
+    },
+    {
+      "bytes": 952168,
+      "path": "phone-tool-sidecar-r5",
+      "sha256": "30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa"
+    },
+    {
+      "bytes": 23994,
+      "path": "phone_tool_sidecar.cpp",
+      "sha256": "beedc3a1a178d4b75887773e8ea1feae508cef89a692b35a03da3134893cafb4"
+    },
+    {
+      "bytes": 4056,
+      "path": "sidecar-android.readelf.txt",
+      "sha256": "b7cff90eb5f0ae230c31e30eea3e0684cdf4c6687ef772b822bdbe95b8dfa33d"
+    },
+    {
+      "bytes": 7889,
+      "path": "targeted_r5_fixture.py",
+      "sha256": "8d6ff8973c795b47f313e0a00facc08293f31d15cf77355f303dc8339b22bdd9"
+    },
+    {
+      "bytes": 8399,
+      "path": "tool_client.py",
+      "sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539"
+    },
+    {
+      "bytes": 1010,
+      "path": "vendor/hash/CMakeLists.txt",
+      "sha256": "80d1dd6d096d84375b94290ce75e447a8ba5ce2d6664e4cc3104eb1f0ff02919"
+    },
+    {
+      "bytes": 581,
+      "path": "vendor/hash/hash.cpp",
+      "sha256": "083a5a64f04667a78a03d09ce3e8499defa88f7b0aedace049749c97366d8b47"
+    },
+    {
+      "bytes": 216,
+      "path": "vendor/hash/hash.h",
+      "sha256": "63f7f0f5c1e8f1d98187af2dc37ad938863730fad59bca1f0d0573ad7272b549"
+    },
+    {
+      "bytes": 1088,
+      "path": "vendor/hash/rotate-bits/LICENSE.md",
+      "sha256": "ca0b44aec101afb6b46f4c39b23369fa06a64fb9c0add37c2689d702156fee55"
+    },
+    {
+      "bytes": 1017,
+      "path": "vendor/hash/rotate-bits/rotate-bits.h",
+      "sha256": "4a100f5e9b6bdc3e780bec38caeaec7f0edc87cf06b69b5bc1f87c2c867bdf23"
+    },
+    {
+      "bytes": 7676,
+      "path": "vendor/hash/sha1/sha1.c",
+      "sha256": "6de78afb7c2e54ccbd742c0307015db4dceaa64d85533709f99de05074d639e4"
+    },
+    {
+      "bytes": 689,
+      "path": "vendor/hash/sha1/sha1.h",
+      "sha256": "aded220220587c5a409dfa04f4bc2e760bd5bc81ac74af830aceb5bde7bc43e6"
+    },
+    {
+      "bytes": 41,
+      "path": "vendor/hash/sha256/LICENSE",
+      "sha256": "b81d0022ca6367918c67b57e9647d3513ee58809fd4b0ef0b3492f1356bced25"
+    },
+    {
+      "bytes": 5282,
+      "path": "vendor/hash/sha256/sha256.c",
+      "sha256": "ba7a8ea69ad125385db28ef17e77be4a09dfdc30bb9532c30b259baaf670129c"
+    },
+    {
+      "bytes": 549,
+      "path": "vendor/hash/sha256/sha256.h",
+      "sha256": "6086b0330eafe9ddef74072738290bc268b2dcccae16bc6d6cde84dc7585ca07"
+    },
+    {
+      "bytes": 1389,
+      "path": "vendor/hash/xxhash/LICENSE",
+      "sha256": "6ffedbc0f7878612d2b23589f1ff2ab15633e1df7963a5d9fc750ec5500c7e7a"
+    },
+    {
+      "bytes": 1855,
+      "path": "vendor/hash/xxhash/xxhash.c",
+      "sha256": "5c3591fe6e6c86a619eb26760e9520e37a6fd5152882ab5ad93f912e2a855966"
+    },
+    {
+      "bytes": 264750,
+      "path": "vendor/hash/xxhash/xxhash.h",
+      "sha256": "1d5a18c925f71a9c2d8424742df47492f846f9890e3e8c55d201e4729d9e3d6d"
+    },
+    {
+      "bytes": 987455,
+      "path": "vendor/json.hpp",
+      "sha256": "08f19bbcc66ff3082f5caf58867b1232987dba98d82e2b29d870722fce42776b"
+    }
+  ],
+  "host_scope": "Linux fixture retains actual host identity; production nonroot refusal; no Android credential validation",
+  "host_targeted_checks": 4,
+  "phone_operations": 0,
+  "phone_qualification": "PENDING_ROOT_OPERATOR",
+  "predecessor": "v150-r4-preserved",
+  "production_effect_gid": 2000,
+  "production_effect_uid": 2000,
+  "production_parent_uid": 0,
+  "production_supplementary_groups": [],
+  "schema": "hepta.phone-local-executor.freeze.v150.r5",
+  "socket": "hepta_phone_local_v150",
+  "status": "FROZEN_ANDROID_BUILD_HOST_TARGETED_PASS_PHONE_PENDING"
+}

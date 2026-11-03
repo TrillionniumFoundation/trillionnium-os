@@ -1,0 +1,30 @@
+{
+  "files": [
+    {
+      "bytes": 34860,
+      "path": "phone_sidecar_recovery_suite.py",
+      "sha256": "101fd5100eddd1e81eabe8cfbf2cc86fe6737ea4d03c1d98ab73970785152128"
+    },
+    {
+      "bytes": 4127,
+      "path": "README.md",
+      "sha256": "583efc4679afe5460abcdefba49de2c4cf07aff3218e706759d5f857c93ca2a5"
+    },
+    {
+      "bytes": 1845,
+      "path": "PREPARATION-VALIDATION.json",
+      "sha256": "30a549f3c4128f4a7b604b95314f49367cbbdc9f058c63aedd5c1effe714213c"
+    },
+    {
+      "bytes": 1332,
+      "path": "INDEPENDENT-STATIC-REVIEW.json",
+      "sha256": "643275026917a29a4da06e05192504643609628a59917d035d5d493dcc438f2f"
+    }
+  ],
+  "native_chain_and_fixed19_qualified": false,
+  "phone_operations": 0,
+  "root_execution_required": true,
+  "schema": "hepta.phone-sidecar-recovery-suite.freeze.v150.r5.1",
+  "sidecar_revision": "r5 UID2000 child; root parent private journals",
+  "status": "PREPARED_STATIC_REVIEWED_NOT_PHONE_EXECUTED"
+}

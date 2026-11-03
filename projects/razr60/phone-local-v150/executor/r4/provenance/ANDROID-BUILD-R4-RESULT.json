@@ -1,0 +1,21 @@
+{
+  "returncode": 0,
+  "argv": [
+    "@NDK_ROOT@/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang++",
+    "-std=c++17",
+    "-O2",
+    "-pthread",
+    "-static-libstdc++",
+    "-I@EXECUTOR_SOURCE_ROOT@/vendor",
+    "@EXECUTOR_SOURCE_ROOT@/phone_tool_sidecar.cpp",
+    "@EXECUTOR_SOURCE_ROOT@/vendor/hash/hash.cpp",
+    "@EXECUTOR_SOURCE_ROOT@/sha256.android.o",
+    "-o",
+    "@EXECUTOR_SOURCE_ROOT@/phone-tool-sidecar"
+  ],
+  "sidecar_bytes": 943392,
+  "sidecar_sha256": "796f223a98553afc83eb875b3a89aa03f07d0d069a3fb5ab953f849a7f8e84c0",
+  "source_sha256": "2507d3d353f620ba319543c6fe31b1043a41297d20b86fb014e943b93ee736fc",
+  "client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+  "production_test_hooks_absent": true
+}

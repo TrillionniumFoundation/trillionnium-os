@@ -1,0 +1,159 @@
+{
+  "actual_model_requests_by_this_revision_builder": 0,
+  "actual_phone_operations_by_this_revision_builder": 0,
+  "automatic_task_or_effect_replay": false,
+  "claims_and_consumed_bindings_must_be_preserved": true,
+  "common_provider_state_preserved": "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state",
+  "configuration": {
+    "bytes": 1302,
+    "path": "local-config.phone.production.json",
+    "sha256": "0e3b3e1448a45f7948501518441fc3b18b808c238958fe43860c54c8ef4b689d"
+  },
+  "created_utc": "2026-11-03T14:49:54.022591+00:00",
+  "documentation": {
+    "bytes": 4366,
+    "path": "README.md",
+    "sha256": "71fc1395912de8c7b8e5ce80c6c2febc0e6d174a9d8e0080cc39cc2e3c93234e"
+  },
+  "formal_executor": "phone_local_sidecar",
+  "full_phone_physical_qualification": "Root-owned pending new r2 native health and unchanged fixed 19-case protocol",
+  "host_validation": {
+    "bytes": 1456,
+    "path": "validation/prompt-layout-health01-host.json",
+    "sha256": "a2e0ce975e9b6440ed620b6038028aa96e555be53fc8ed2149e40bbb8784d0bd"
+  },
+  "image_tokens_service_min_max": [
+    1024,
+    1024
+  ],
+  "inference_workers": 1,
+  "max_completion_tokens": 256,
+  "max_model_round_seconds": 120,
+  "max_model_rounds": 8,
+  "max_tool_calls": 7,
+  "max_turn_seconds": 300,
+  "model": "gui-owl-1.5-2b-phone-q4km",
+  "model_endpoint": "http://127.0.0.1:18087/v1/chat/completions",
+  "operator_helpers": [
+    {
+      "bytes": 2730,
+      "path": "register_task_contract.py",
+      "sha256": "3518d52418547eaa797159d8e76aa3df38e1e1b6a61282612388e0d857d5d230"
+    },
+    {
+      "bytes": 2051,
+      "path": "inspect_original_action.py",
+      "sha256": "b11116f98279b32c286d055a6297499702f11d8767133449fa1e84df85910647"
+    }
+  ],
+  "parent_source_seal_sha256": "1ec6e3c3a88d85c3ae8ccbadfddb0b9a7c419f05e3f52748d9d2f4823bc0d94a",
+  "phone_service_inputs_bytes": 4621,
+  "phone_service_inputs_sha256": "a2fe45cff43f7270a43e4d0738ef921812cb534e66ae45fe7b33970612488362",
+  "prior_health01_request_replayed": false,
+  "production_files": [
+    {
+      "bytes": 19743,
+      "path": "source/daily_phone_local.py",
+      "sha256": "4b2653f359f004fe15525c09e1d209185363b8620bf4965dcfaceef4cba5cb0d"
+    },
+    {
+      "bytes": 29867,
+      "path": "source/provider_phone_local.py",
+      "sha256": "db429ad881308aca68fc3d5c7a418edb72b6158057391e67535cd07c5313e902"
+    },
+    {
+      "bytes": 41510,
+      "path": "source/provider_codex_host.py",
+      "sha256": "cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039"
+    },
+    {
+      "bytes": 17730,
+      "path": "source/provider_openai_compatible.py",
+      "sha256": "337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc"
+    },
+    {
+      "bytes": 33980,
+      "path": "source/phone_observation_tools.py",
+      "sha256": "40617e8b2c8e1b174bce1b50e43ba156fd034ab38872c26a8703ef0cfba8971b"
+    },
+    {
+      "bytes": 11368,
+      "path": "source/phone_task_guards.py",
+      "sha256": "f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59"
+    },
+    {
+      "bytes": 11922,
+      "path": "source/phone_local_tools.py",
+      "sha256": "5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01"
+    },
+    {
+      "bytes": 10453,
+      "path": "source/phone_local_http_worker.py",
+      "sha256": "a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d"
+    },
+    {
+      "bytes": 8251,
+      "path": "source/model_health.py",
+      "sha256": "105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80"
+    },
+    {
+      "bytes": 14744,
+      "path": "source/task_postconditions.py",
+      "sha256": "6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4"
+    },
+    {
+      "bytes": 12074,
+      "path": "source/action_ledger.py",
+      "sha256": "2f3848a1c1fc9404d868e86a474550e18e5ec4fec3ce9c4c2db6fb089fa23c6c"
+    }
+  ],
+  "production_python_files": 11,
+  "prompt_source_seal_sha256": "94e3e202d402fdc7bd9bd3571e357a0a727830bd8f50e56bee15995a14069e5a",
+  "prompt_validation_script": {
+    "bytes": 5881,
+    "path": "tests/prompt_layout_checks.py",
+    "sha256": "3dc0b8f06c93bdecad2a1836552360845ef59047e1b43dde49397803ac79b9a6"
+  },
+  "public_projection": {
+    "changes": "Private retained-claims digest and/or operator workspace paths replaced; runtime source files and their hashes unchanged.",
+    "not_original_seal_bytes": true,
+    "original_bytes": 5826,
+    "original_frozen_sha256": "cbbf47ba6eafae475d5f7ee76a9e90e68c47639938d57451f6fb73b5e6612095"
+  },
+  "python_syntax_feature_version": "3.12",
+  "required_tool_child_gid": 2000,
+  "required_tool_child_uid": 2000,
+  "retained_claims_sha256": "PRIVATE_RETAINED_CLAIMS_SHA256_NOT_PUBLISHED",
+  "schema": "hepta.phone-local-source-seal.v150.1",
+  "sidecar_binary_bytes": 952168,
+  "sidecar_binary_sha256": "30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa",
+  "sidecar_revision": "r5 controlled same-PID/process-group child credential drop",
+  "source_diff": {
+    "bytes": 6351,
+    "path": "PROMPT-LAYOUT.diff",
+    "sha256": "b26263dec1292a7ce78877f390142f20bb0be8f1b202dc46af37eeb920737dad"
+  },
+  "source_parent": "Frozen v150-r1 plus separately reviewed r2 prompt layout; all r1 artifacts retained unchanged",
+  "start_argv_inside_existing_gnu_rootfs": [
+    "/usr/bin/python3",
+    "-B",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/provider-r2/source/daily_phone_local.py",
+    "--state",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/provider-state",
+    "--config",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/local-config-r2.json",
+    "--port",
+    "18080",
+    "--workers",
+    "1",
+    "--timeout",
+    "120",
+    "--retained-claims",
+    "/var/lib/trillionnium/owner-open/phone-local-v150/retained-claims.json",
+    "--retained-claims-sha256",
+    "PRIVATE_RETAINED_CLAIMS_SHA256_NOT_PUBLISHED"
+  ],
+  "target_python_runtime_validation": "Root confirmed phone GNU Python3.12.3; this seal checks3.12 syntax and source pins",
+  "tool_client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+  "version": "stock16-phone-local-v150-r2"
+}

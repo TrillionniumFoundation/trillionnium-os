@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.phone-local-provider.v150.1",
+  "endpoint": "http://127.0.0.1:18087/v1/chat/completions",
+  "api_key_file": "/var/lib/trillionnium/owner-open/phone-local-v150/private/llama-api.key",
+  "model": "gui-owl-1.5-2b-phone-q4km",
+  "service_manifest_sha256": "REPLACE_WITH_REVIEWED_PHONE_SERVICE_MANIFEST_SHA256",
+  "max_tokens": 256,
+  "max_prompt_bytes": 24576,
+  "approved_apps": {
+    "视觉挑战": {
+      "component": "org.trillionnium.hepta.controlprobe/.VisualChallengeActivity",
+      "label": "HEPTA视觉挑战"
+    },
+    "Unicode验证": {
+      "component": "org.trillionnium.hepta.controlprobe/.TextEntryActivity",
+      "label": "HEPTA Unicode验证"
+    },
+    "计算器": {
+      "component": "com.motorola.cn.calculator/.Calculator",
+      "label": "计算器"
+    },
+    "设置": {
+      "component": "com.android.settings/.homepage.SettingsHomepageActivity",
+      "label": "设置"
+    }
+  },
+  "inference_location": "phone",
+  "expected_parallel_slots": 1,
+  "executor": {
+    "mode": "phone_local_sidecar",
+    "python": "/usr/bin/python3",
+    "client_path": "/var/lib/trillionnium/owner-open/phone-local-v150/tool_client.py",
+    "client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+    "timeout_ms": 60000
+  }
+}

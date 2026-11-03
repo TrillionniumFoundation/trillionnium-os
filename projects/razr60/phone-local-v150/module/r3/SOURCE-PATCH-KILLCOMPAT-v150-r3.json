@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.module-source-patch.v150.r3.killcompat",
+  "scope": "Only two argument removals in unsealed r3 service; sealed r1/r2 unchanged",
+  "before": {
+    "service_sha256": "80b761d9796a3d695b7df2eeaf2cbf758bca0107a8aaab76d332bd93134a2556",
+    "bytes": 8848,
+    "static_validation_file": "STATIC-VALIDATION-v150-r3.json",
+    "static_validation_sha256": "063ffd79ba259776ff3f67361bc83f5647c6fb7c4e7217381a67e5438ed840da"
+  },
+  "after": {
+    "service_sha256": "804037c9b94a4f5d98bf4335c5703a80c91b2e6109c681216bf2c70ac7d0433a",
+    "bytes": 8842,
+    "static_validation_file": "STATIC-VALIDATION-v150-r3-killcompat.json"
+  },
+  "patches": [
+    {
+      "before": "$BB kill -TERM -- \"-$role_pid\"",
+      "after": "$BB kill -TERM \"-$role_pid\""
+    },
+    {
+      "before": "$BB kill -KILL -- \"-$role_pid\"",
+      "after": "$BB kill -KILL \"-$role_pid\""
+    }
+  ],
+  "runtime_evidence": {
+    "observer": "Root actual phone, not this source builder",
+    "busybox_version": "1.36.1.1 topjohnwu (2024-10-06)",
+    "help_usage": "kill [-l] [-SIG] PID...",
+    "help_receipt": "operations/busybox-kill-help-01/result.json",
+    "help_sha256": "d4cb7e3ca799be5804060d1b3674fd1c209082b4e5725f27c02804cf61c02400",
+    "observed_incompatibility": "The -- argument reported invalid number and rc1; the same original command nevertheless processed its later negative PGID. Root did not repeat the signal.",
+    "original_group_observation_receipt": "operations/observe-original-r5-stop-01/result.json",
+    "original_group_observation_sha256": "b5a4e2097cbac6a6f7bc39d7c3bc6e85a8078b68bcdc7fd5bab967e553404469",
+    "original_pgid": 21201,
+    "original_group_members_observed_absent": true
+  },
+  "unchanged": [
+    "PID/starttime/group admission and signal protection",
+    "provider to sidecar to model stop ordering",
+    "grace and forced-stop distinction",
+    "UNKNOWN descendant cleanup reporting",
+    "no automatic task or replay"
+  ],
+  "phone_operations_by_builder": 0,
+  "model_requests_by_builder": 0
+}

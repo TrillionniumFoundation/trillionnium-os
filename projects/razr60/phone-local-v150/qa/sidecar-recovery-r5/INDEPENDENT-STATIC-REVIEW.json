@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.phone-sidecar-qa-static-review.v150.r5.1",
+  "reviewer": "ondevice_model_research",
+  "scope": "Read-only source review; script not executed with --execute-new-suite",
+  "source_bytes": 34860,
+  "source_sha256": "101fd5100eddd1e81eabe8cfbf2cc86fe6737ea4d03c1d98ab73970785152128",
+  "status": "NO_MUST_FIX_FOUND_IN_REPLAY_CANCEL_BOUND_SCOPE",
+  "reviewed": [
+    "five fresh action IDs; incomplete frame creates no action",
+    "four at-most-once synthetic stdout executions",
+    "verified Android UID/GID2000 supplementary0 receipt and independent stdout identity",
+    "start observed before socket disconnect or own client cancellation",
+    "650ms executor timeout and late stdout window",
+    "duplicate original client O_EXCL inspect-only; four original journal file hashes unchanged",
+    "failure closes own sockets and terminates own client; only original receipts inspected"
+  ],
+  "required_operator_bound": "Android BusyBox timeout -s TERM -k 3 85 outside existing chroot",
+  "precheck_failure_policy": "Stop if /proc live executable identity unavailable; no mount, SELinux or permission changes",
+  "not_qualified": [
+    "native task/tool cancellation chain",
+    "fixed19 business protocol",
+    "product budget exhaustion",
+    "display postures",
+    "cold boot"
+  ],
+  "phone_operations": 0
+}

@@ -1,0 +1,35 @@
+{
+  "manifest_sha256": "e7f15a13b2c5a80449922f0fa57df597c468fa9742484ad8348bb1795ab03769",
+  "status": "PASS_DOWNLOAD_PINNED_DATA",
+  "completed_at": "2026-11-03T13:23:57.953250+00:00",
+  "files": [
+    {
+      "path": "@MODEL_WORKSPACE@/models/GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "bytes": 1107410432,
+      "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5",
+      "verified": true
+    },
+    {
+      "path": "@MODEL_WORKSPACE@/models/GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "bytes": 445053216,
+      "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7",
+      "verified": true
+    }
+  ],
+  "model_directory_members": [
+    "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+    "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf"
+  ],
+  "readback_job": "1a1a196b721-fc05-52a",
+  "download_terminal": {
+    "job": "1a1a1926326-fc05-500",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false,
+    "cancelled": false
+  },
+  "no_phone_operations_by_research_agent": true
+}

@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "scope": "four targeted Linux host identity/cleanup checks; no Android credentials or phone qualification",
+  "count": 4,
+  "results": [
+    {
+      "case": "fixture_identity_and_same_group",
+      "status": "PASS",
+      "android_uid2000_proven": false
+    },
+    {
+      "case": "cancel_after_verified_fixture_credentials",
+      "status": "PASS",
+      "same_owned_group_joined": true
+    },
+    {
+      "case": "credential_setup_failure_no_exec_and_restart_gate",
+      "status": "PASS"
+    },
+    {
+      "case": "real_production_build_refuses_nonroot_parent",
+      "status": "PASS"
+    }
+  ],
+  "phone_operations": 0,
+  "host_uid": 1000,
+  "host_fixture_did_not_drop_to_2000": true,
+  "actual_android_credential_drop": "PENDING_ROOT_PHONE_TEST",
+  "source_sha256": "beedc3a1a178d4b75887773e8ea1feae508cef89a692b35a03da3134893cafb4",
+  "evidence_dir": "@EXECUTOR_FIXTURE_ROOT@/credential-cleanup-f18e9b5d1391fd5d"
+}

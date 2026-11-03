@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.phone-local-host-dependency-source-audit.v150.1",
+  "scope": "READ_ONLY_SOURCE_AUDIT; no phone operation, no model request, no physical USB-disconnection test",
+  "source_baseline": {
+    "repository": "TrillionniumFoundation/trillionnium-os",
+    "commit": "0152dc425b6eec188dfd0efdd62aa004b59c76c5",
+    "provider_local_source_seal_sha256": "1ec6e3c3a88d85c3ae8ccbadfddb0b9a7c419f05e3f52748d9d2f4823bc0d94a"
+  },
+  "conclusion": "The selected phone-local request path has no required Mac/Pocket4 computation or USB/ADB transport. The retained legacy ADB relay needs only its local listener/process/descriptor to satisfy bootstrap readiness; its upstream15037 is contacted only if an ADB client connects. Therefore source inspection does not identify unplugging USB or losing Mac alone as a trigger that stops the selected path. Real detach/coldboot/native business qualification is still separate.",
+  "links": [
+    {
+      "stage": "HEPTA49 UI -> ingress",
+      "source": "projects/razr60/stock16-v149/android/hepta49/source/src/org/trillionnium/owneropen/OwnerOpenClient.java",
+      "finding": "Android LocalSocket to abstract trillionnium_owner_open (lines28,68–71); no TCP/ADB/host is needed by this client."
+    },
+    {
+      "stage": "native r5 -> provider",
+      "source": "projects/razr60/stock16-v149/backend/frozen-intake-v142/source7/tools-owner-open/provider_host_relay.py",
+      "finding": "Exactly one socket.create_connection to configured127.0.0.1:18080; no fallback/reconnect/redispatch. The endpoint is now the actual phone GNU provider. Old Codex/host names in schema and error text are legacy labels, not evidence of remote execution."
+    },
+    {
+      "stage": "provider -> model",
+      "source": "sealed launch-model.sh and provider config e7202ef55cc9103cf3fb4847e44ff2299cfaf3484c4038b7b5ae22a23e0e146f",
+      "finding": "Model binds phone127.0.0.1:18087; provider endpoint is local HTTP and private key file. Launcher env -i removes inherited proxy/server variables. No cloud model fallback is selected."
+    },
+    {
+      "stage": "typed phone tool -> Android",
+      "source": "production provider/source/phone_local_tools.py SHA5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01",
+      "finding": "For executor.mode phone_local_sidecar, _wire_call emits shell.exec argv /usr/bin/python3 <pinned tool_client.py> execute. The inherited _serial_guard uses local Android getprop ro.serialno; it does not require adb -s. The actual action goes through abstract hepta_phone_local_v150 to Bionic sidecar."
+    },
+    {
+      "stage": "legacy ADB relay start/idle",
+      "source": "tools/owner-open/adb_smart_socket_relay_selected.py git blob15572594afcdd1dcdef19586733f9272e984e4aa",
+      "finding": "start() binds only the local listener and publishes descriptor. serve() waits on stop_event. The only asyncio.open_connection(upstream15037) is inside accept(), after a local ADB client connects. It does not proactively probe or depend on a live remote server at startup."
+    },
+    {
+      "stage": "legacy ADB relay upstream error",
+      "source": "same selected relay accept() lines313–404 and record_event() lines300–311",
+      "finding": "Upstream EOF/connect failure becomes a per-connection transport_error with bounded cleanup; it does not by itself stop the relay. Event journal failure can stop the instance, which is a separate local storage/process dependency."
+    },
+    {
+      "stage": "bootstrap legacy readiness",
+      "source": "projects/razr60/stock16-v149/native/api36/source/owner_open_bootstrap.cpp",
+      "finding": "WaitForSupervisorReady checks exactly2children including local owner-open-adb-relay, PID/starttime identity, descriptor listen15038/upstream15037, and no redispatch. It does not require successful upstream connection. Lines994–999,1089–1124. Line1448 still sets legacy ADB_SERVER_SOCKET."
+    }
+  ],
+  "residual_couplings": [
+    {
+      "item": "Unused ADB relay is still critical to native supervisor",
+      "impact": "If that local relay process/log/descriptor fails, the legacy supervisor/bootstrap can fail even though phone-local tools do not need it. Do not kill it casually in the current frozen combination.",
+      "specific_fix": "New phone_local profile should remove the relay from rootlinux-supervisor children and bootstrap exactly-two-children/RelayDescriptorPath checks; replace with actual local provider/driver readiness descriptors."
+    },
+    {
+      "item": "Legacy adb executable and env remain part of native rootfs/CLI",
+      "impact": "File/config coupling persists, not a Mac/USB requirement. Selected executor never routes there; adb_legacy remains an explicit source branch, not an automatic fallback.",
+      "specific_fix": "Remove ADB_SERVER_SOCKET from the phone_local environment; remove/disable adb tool route and corresponding mandatory required paths for that profile. Preserve current historical core reproduction record."
+    },
+    {
+      "item": "Provider port18080 historically used ADB reverse",
+      "impact": "A re-enabled old transport watcher could try to reclaim this port on a later boot before the phone provider. Root has disabled/unloaded it and removed the owned reverse; actual local bind is the current owner.",
+      "specific_fix": "Formal profile should use a separately named local provider config/endpoint and no dependency on the host-relay mapping. Keep startup port ownership checks and reject conflicts; never fallback to a host."
+    },
+    {
+      "item": "Legacy names and credential metadata",
+      "impact": "role host_codex and error strings can misdescribe current local operation; long_lived_credentials_on_phone=false cannot be read as absence of the new persistent local authentication key.",
+      "specific_fix": "New profile role phone_local; external_cloud_credentials=false and distinct local_auth.persisted/scope/key-file reference; neutral local-relay diagnostics."
+    },
+    {
+      "item": "New module lifetime is outside original native supervisor",
+      "impact": "Current stop watcher observes the same inhibit, but unexpected supervisor death/leader disappearance does not itself prove all descendants gone. Cold boot and actual stop/quiescence need observations.",
+      "specific_fix": "Future profile should own local provider/model/sidecar lifecycle in one measured supervisor or a narrow authenticated Android-side supervisor boundary, with persistent original receipts and no automatic effect replay."
+    }
+  ],
+  "minimal_next_freeze_files": [
+    "projects/razr60/stock16-v149/native/api36/source/owner_open_bootstrap.cpp",
+    "projects/razr60/stock16-v149/native/api36/config/profile-codex-host-relay-v1.json -> distinct new phone_local profile",
+    "packaging/owner-open-rootfs/rootlinux-supervisor-codex-host-relay-v1.json -> phone_local variant",
+    "android-integration/working-tree/vendor/trillionnium/owner-open/config/provider-host-relay-v1.json -> phone-local variant",
+    "projects/razr60/stock16-v149/native/api36/config/stock16-backend-init.source.rc",
+    "new independent Magisk module startup/policy/measurement inputs",
+    "rootfs manifest and new isolated rebuild plan, preserving existing core-reproduction evidence"
+  ],
+  "claim_boundaries": {
+    "phone_services_current_boot": "Root observed ready",
+    "actual_native_health": "pending at latest root checkpoint",
+    "real_USB_detach": "NOT_PERFORMED_BY_THIS_AGENT",
+    "cold_boot": "NOT_PERFORMED",
+    "business_success": "NOT_INFERRED_FROM_SOURCE"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.phone-local.module-static-review.v150.1",
+  "reviewer_agent": "/root/android_runtime_build",
+  "scope": "STATIC_SOURCE_ONLY_NOT_PHONE_OR_BOOT_QUALIFICATION",
+  "reviewed_files": [
+    {
+      "path": "module-root/service.sh",
+      "sha256": "6dbb6be7815d5e7fad7e6b609fc0b8003202c72b1151f4ad51eb16338f94e909",
+      "bytes": 8252
+    },
+    {
+      "path": "module-root/role_guard.sh",
+      "sha256": "2d2261fbb442f8f44784dce97c1c23c3495ca8c6ae27cfc608395479db29c026",
+      "bytes": 2175
+    },
+    {
+      "path": "seal_module.py",
+      "sha256": "05700883d762cfe4234b0bf2baa25708d4f46811dc7afeb293708161b837b550",
+      "bytes": 5867
+    }
+  ],
+  "finding_fixed": {
+    "issue": "JavaScript replacement-string semantics collapsed $$ to $ in supervisor PID capture",
+    "original_source_sha256": "14714a69a8d107e5a5ef67bdd567028623944603ff18c6c514be9e22bc3ba0f4",
+    "impact": "Unsealed source would exit after per-boot claim before role startup; no phone installation or effects occurred",
+    "fix": "Function replacement preserves exact $$; install exit/signal traps before identity capture",
+    "independent_exact_readback": true
+  },
+  "review_result": "No additional required startup/shutdown source fix found in reviewed versions",
+  "checked_design": [
+    "PID=PGID=SID and starttime identity binding",
+    "parent identity and stop/inhibit rechecks",
+    "no application exec before parent admission",
+    "exec preserves recorded process group",
+    "provider then sidecar then model shutdown",
+    "12-second grace then identity-gated forced kill"
+  ],
+  "limits": [
+    "Leader absence does not prove all descendants absent",
+    "Unexpected supervisor SIGKILL cannot itself prove all role/effect groups stopped",
+    "Hook records UNKNOWN and no automatic retry; no business success or full quiescence claim",
+    "Actual native r5 SELinux path, current-boot owned-role health, stop/inhibit and cold boot require root's real observations"
+  ]
+}

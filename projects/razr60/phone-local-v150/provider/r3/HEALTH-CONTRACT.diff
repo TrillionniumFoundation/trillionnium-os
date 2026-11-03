@@ -1,0 +1,330 @@
+--- r2/source/provider_phone_local.py
++++ r3/source/provider_phone_local.py
+@@ -20,6 +20,8 @@
+ from phone_local_tools import PhoneLocalTools, validate_apps, validate_executor
+ from model_health import ModelFailure
+ from action_ledger import ActionLedger
++from health_contracts import (load as load_health_contract, final_only_schema,
++    validate_decision as validate_health_decision, terminal_evidence as health_terminal_evidence)
+ 
+ SCHEMA = copy.deepcopy(BASE_SCHEMA)
+ SCHEMA['properties']['tool']['enum'] = [
+@@ -234,13 +236,37 @@
+         self.action_ledger = ActionLedger(args.evidence, run_dir)
+         self.inspected_actions = set()
+         self.recovery_observations = []
++        self.health_contract = None
++
++    def receive(self, expected=None, timeout=0.05):
++        value = super().receive(expected, timeout)
++        if value is not None and expected == 'turn.start':
++            self.health_contract = load_health_contract(
++                Path(self.args.evidence).parent/'health-contracts',
++                self.accepted_identity, value['turn']['user_input'])
++            require(self.health_contract is None or self.task_contract is None,
++                    'health and business contracts cannot authorize the same request')
++            self.atomic_record(self.run_dir/'health-contract.json',
++                               self.health_contract or {'status':'no_health_contract'})
++        return value
++
++    def _record_health_terminal(self, kind, fields):
++        evidence = health_terminal_evidence(
++            self.health_contract, kind, fields.get('summary'), self.run_dir,
++            self.round, self.last_request_id, self.tool_count,
++            self.dispatched_calls, self.phone_tools.calls)
++        self.atomic_record(self.run_dir/'health-outcome.json', evidence)
+ 
+     def emit(self, kind, **fields):
++        if self.health_contract is not None and kind == 'tool.call':
++            raise ProviderError('health contract forbids native tool dispatch')
+         if kind in {'tool.call', 'turn.complete'}:
+             self.receive(timeout=0)
+             if self.cancelled.is_set():
+                 if kind == 'tool.call':
+                     return
++                if self.health_contract is not None:
++                    self._record_health_terminal('turn.cancelled', {})
+                 return super().emit('turn.cancelled', summary='cancelled before completion frame; no further effects')
+         if kind == 'tool.call':
+             call = fields['call']
+@@ -260,6 +286,8 @@
+                 if record['semantic_tool'] in {'phone.open_app','phone.tap','phone.input_text','phone.return_hepta'}:
+                     self.action_ledger.mark_not_dispatched(record['capture_id'], 'cancel_before_native_tool_frame')
+                 return
++        if self.health_contract is not None and kind in {'turn.complete','turn.cancelled','turn.fail'}:
++            self._record_health_terminal(kind, fields)
+         return super().emit(kind, **fields)
+ 
+     def _inspect_pending(self):
+@@ -301,6 +329,7 @@
+                 return
+ 
+     def _decision(self, value, allowed_call_id):
++        validate_health_decision(self.health_contract, value)
+         require(isinstance(value, dict) and set(value) == set(SCHEMA['required']),
+                 'decision fields differ')
+         require(all(isinstance(value[name], str) for name in
+@@ -357,7 +386,8 @@
+         self.receive(timeout=0)
+         if self.cancelled.is_set():
+             return None
+-        self._inspect_pending()
++        if self.health_contract is None:
++            self._inspect_pending()
+         if self.cancelled.is_set():
+             return None
+         self.round += 1
+@@ -387,7 +417,7 @@
+                 'stream': False, 'temperature': 0, 'max_tokens': self.local_config['max_tokens'],
+                 'response_format': {'type': 'json_schema',
+                                     'json_schema': {'name': 'hepta_phone_decision', 'strict': True,
+-                                                    'schema': SCHEMA}}}
++                                                    'schema': final_only_schema(SCHEMA) if self.health_contract is not None else SCHEMA}}}
+         self.atomic_record(prefix.with_suffix('.request.json'), body)
+         self.atomic_record(prefix.with_suffix('.images.json'),
+                            {'request_id': request_id, 'images': image_rows, 'old_images_attached': False,
+--- r2/source/daily_phone_local.py
++++ r3/source/daily_phone_local.py
+@@ -21,7 +21,7 @@
+ import time
+ import uuid
+ 
+-PARENTS = {'provider_codex_host.py': 'cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039', 'provider_openai_compatible.py': '337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc', 'phone_observation_tools.py': '40617e8b2c8e1b174bce1b50e43ba156fd034ab38872c26a8703ef0cfba8971b', 'model_health.py': '105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80', 'phone_task_guards.py': 'f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59', 'task_postconditions.py': '6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4', 'provider_phone_local.py': 'db429ad881308aca68fc3d5c7a418edb72b6158057391e67535cd07c5313e902', 'phone_local_tools.py': '5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01', 'phone_local_http_worker.py': 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d', 'action_ledger.py': '2f3848a1c1fc9404d868e86a474550e18e5ec4fec3ce9c4c2db6fb089fa23c6c'}
++PARENTS = {'provider_codex_host.py': 'cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039', 'provider_openai_compatible.py': '337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc', 'phone_observation_tools.py': '40617e8b2c8e1b174bce1b50e43ba156fd034ab38872c26a8703ef0cfba8971b', 'model_health.py': '105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80', 'phone_task_guards.py': 'f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59', 'task_postconditions.py': '6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4', 'provider_phone_local.py': '039e0f83cdd9fb1e76814d335542f3c35e9a59122c508cffaacca3540b0c883f', 'phone_local_tools.py': '5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01', 'phone_local_http_worker.py': 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d', 'action_ledger.py': '2f3848a1c1fc9404d868e86a474550e18e5ec4fec3ce9c4c2db6fb089fa23c6c', 'health_contracts.py': '9f2d87bc567c7b169d0d4d07635ab233ccef6da45ba8f547c8af7751f3686c44'}
+ WORKER_SHA = 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d'
+ IDENTITY = ('session_id', 'profile_id', 'task_id', 'turn_id')
+ 
+@@ -208,7 +208,7 @@
+     r'(?:codex-[0-9]{2}\.(?:spawn-intent|spawned|joined|images|model-failure)\.json\.new'
+     r'|local-[0-9]{2}\.(?:spawn-intent|spawned|joined|images|model-failure|slot-before|slot-after|request|decision|coordinate-map|worker-result)\.json\.new'
+     r'|recovery-(?:inspection|unresolved)-[0-9a-f]{32}\.json\.new'
+-    r'|dispatch-[0-9]{3}\.json\.new|terminal\.json\.new|business-outcome\.json\.new|task-contract\.json\.new'
++    r'|dispatch-[0-9]{3}\.json\.new|terminal\.json\.new|business-outcome\.json\.new|task-contract\.json\.new|health-contract\.json\.new|health-outcome\.json\.new'
+     r'|(?:result|semantic)-[0-9a-f]{64}\.json\.new'
+     r'|capture-[0-9a-f]{32}\.json\.new'
+     r'|(?:connection-ended|cleanup-failure)\.json\.[0-9a-f]{32}\.new)\Z')
+--- /dev/null
++++ r3/source/health_contracts.py
+@@ -0,0 +1,195 @@
++"""One-use exact-request health contracts. No device/model access in this module.
++
++A health contract grants no phone tools. Summary remains an unconstrained
++string in the model schema; exact nonce equality is independently validated.
++"""
++import copy
++import hashlib
++import os
++from pathlib import Path
++import re
++import stat
++from task_postconditions import (private_directory, private_json, write_exclusive,
++                                  request_hash, require, IDENTITY)
++from phone_local_http_worker import strict_json
++
++TEMPLATE_SCHEMA = "hepta.health-template.v150.3"
++MODE = "final_only_zero_phone_tools"
++FIELDS = {"schema", "expected_scope", "request_sha256", "nonce", "mode"}
++
++def validate_template(value):
++    require(isinstance(value, dict) and set(value) == FIELDS
++            and value["schema"] == TEMPLATE_SCHEMA and value["mode"] == MODE,
++            "health template fields/mode differ")
++    require(isinstance(value["expected_scope"], dict)
++            and set(value["expected_scope"]) == {"session_id", "profile_id"}
++            and all(isinstance(item, str) and 0 < len(item.encode()) <= 256 and "\0" not in item
++                    for item in value["expected_scope"].values()), "health known scope differs")
++    require(isinstance(value["request_sha256"], str)
++            and re.fullmatch("[0-9a-f]{64}", value["request_sha256"])
++            and isinstance(value["nonce"], str)
++            and re.fullmatch("[A-Za-z0-9_-]{16,64}", value["nonce"]),
++            "health request hash/nonce differs")
++
++def register(state, request, session_id, profile_id, nonce):
++    state = Path(state).absolute()
++    private_directory(state)
++    require(isinstance(request, str) and 0 < len(request.encode()) <= 512*1024
++            and "\0" not in request and request.count(nonce) == 1,
++            "health exact request or single fresh nonce differs")
++    template = {"schema": TEMPLATE_SCHEMA, "expected_scope": {
++        "session_id": session_id, "profile_id": profile_id},
++        "request_sha256": request_hash(request), "nonce": nonce, "mode": MODE}
++    validate_template(template)
++    directory = state/"health-contracts"
++    for path in (directory, directory/"templates", directory/"bindings"):
++        path.mkdir(mode=0o700, exist_ok=True)
++        private_directory(path)
++    target = directory/"templates"/(template["request_sha256"]+".json")
++    require(not (directory/"bindings"/target.name).exists(),
++            "health request has already been consumed")
++    digest = write_exclusive(target, template)
++    return {"path": str(target), "template_sha256": digest,
++            "request_sha256": template["request_sha256"], "mode": MODE,
++            "phone_operations": 0, "model_requests": 0, "dispatched": False}
++
++def load(directory, identity, request):
++    directory = Path(directory)
++    if not directory.exists():
++        return None
++    private_directory(directory)
++    templates, bindings = directory/"templates", directory/"bindings"
++    private_directory(templates); private_directory(bindings)
++    selected = private_json(templates/(request_hash(request)+".json"))
++    if selected is None:
++        return None
++    value, digest = selected
++    validate_template(value)
++    require(value["request_sha256"] == request_hash(request)
++            and request.count(value["nonce"]) == 1
++            and value["expected_scope"] == {key:identity[key] for key in ("session_id","profile_id")},
++            "health original request/nonce/known scope differs")
++    bound = {"schema": "hepta.health-template-binding.v150.3",
++             "identity": {key:identity[key] for key in IDENTITY},
++             "request_sha256": value["request_sha256"], "template_sha256": digest,
++             "nonce": value["nonce"], "mode": MODE, "state": "consumed_no_reuse"}
++    try:
++        binding_sha = write_exclusive(bindings/(value["request_sha256"]+".json"), bound)
++    except FileExistsError as error:
++        raise ValueError("one-time health request consumed; no request or tool replay") from error
++    return {**bound, "schema": "hepta.bound-health-contract.v150.3",
++            "template_sha256": digest, "binding_sha256": binding_sha}
++
++def final_only_schema(base):
++    schema = copy.deepcopy(base)
++    properties = schema["properties"]
++    for name, value in {"kind":"turn.complete", "tool":"none", "call_id":"",
++                        "command":"", "task_status":"completed"}.items():
++        properties[name] = {"type":"string", "const":value}
++    properties["argv"] = {"type":"array", "items":{"type":"string"}, "minItems":0, "maxItems":0}
++    # Intentionally no const, enum, pattern or nonce literal in summary grammar.
++    properties["summary"] = {"type":"string", "maxLength":1024}
++    return schema
++
++def validate_decision(contract, value):
++    if contract is None:
++        return
++    require(isinstance(value, dict)
++            and value.get("kind") == "turn.complete" and value.get("tool") == "none"
++            and value.get("call_id") == "" and value.get("command") == ""
++            and value.get("argv") == [] and value.get("task_status") == "completed"
++            and value.get("summary") == contract["nonce"],
++            "health contract forbids all tools and requires the exact new nonce summary")
++
++def raw_private(path, maximum):
++    require(path.parent.resolve() == path.parent, "health evidence path not canonical")
++    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
++    try:
++        before = os.fstat(fd)
++        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1
++                and before.st_uid == os.getuid() and stat.S_IMODE(before.st_mode) == 0o600
++                and 0 < before.st_size <= maximum, "health evidence identity/size differs")
++        with os.fdopen(fd,"rb",closefd=False) as stream:
++            raw = stream.read(maximum+1)
++        after, named = os.fstat(fd), path.lstat()
++        require(len(raw) == before.st_size and all(
++            getattr(before,key) == getattr(after,key) == getattr(named,key)
++            for key in ("st_dev","st_ino","st_size","st_mtime_ns","st_ctime_ns","st_nlink")),
++            "health evidence changed during read")
++    finally:
++        os.close(fd)
++    return raw
++
++def terminal_evidence(contract, kind, summary, run_dir, round_number, request_id,
++                      tool_count, dispatched_calls, mapped_calls):
++    evidence = {"schema":"hepta.health-outcome.v150.3", "mode":MODE,
++        "request_sha256":contract["request_sha256"], "nonce":contract["nonce"],
++        "template_sha256":contract["template_sha256"],
++        "binding_sha256":contract["binding_sha256"], "identity":contract["identity"],
++        "provider_requested_terminal":kind, "provider_checks_passed":False,
++        "native_completed_required_independently":True, "business_verified":False,
++        "automatic_retry":False, "old_request_or_effect_replayed":False,
++        "tool_count":tool_count, "native_tool_dispatch_count":len(dispatched_calls),
++        "mapped_phone_tool_count":len(mapped_calls)}
++    if kind != "turn.complete":
++        return evidence
++    require(round_number == 1 and tool_count == 0 and not dispatched_calls and not mapped_calls,
++            "health must use one model round and zero phone tools")
++    require(summary == contract["nonce"], "health completion summary differs from exact nonce")
++    prefix = Path(run_dir)/("local-%02d" % round_number)
++    def record(suffix):
++        path = prefix.with_suffix(suffix)
++        raw = raw_private(path, 65536)
++        value = strict_json(raw)
++        require(isinstance(value,dict), "health evidence must be an object")
++        evidence[suffix.removeprefix(".").replace(".","_")+"_sha256"] = hashlib.sha256(raw).hexdigest()
++        return value
++    receipt = record(".http-receipt.json")
++    worker = record(".worker-result.json")
++    joined = record(".joined.json")
++    after = record(".slot-after.json")
++    before = record(".slot-before.json")
++    decision = record(".decision.json")
++    validate_decision(contract, decision)
++    require(receipt.get("request_id") == request_id and receipt.get("attempt_count") == 1
++            and receipt.get("http_status") == 200 and receipt.get("transport_terminal") == "complete_http_response"
++            and receipt.get("inference_terminal") == "stop" and receipt.get("error_category") is None
++            and receipt.get("automatic_retry") is False and receipt.get("fallback_model") is False
++            and receipt.get("redirect_followed") is False, "health HTTP request lacks an original real terminal")
++    request_raw = raw_private(prefix.with_suffix(".request.json"), 2*1024*1024)
++    require(hashlib.sha256(request_raw).hexdigest() == receipt.get("request_sha256"),
++            "health HTTP body hash differs")
++    body = strict_json(request_raw)
++    summary_schema = body["response_format"]["json_schema"]["schema"]["properties"]["summary"]
++    require(summary_schema == {"type":"string", "maxLength":1024},
++            "health nonce must not be forced by schema grammar")
++    owner = body["messages"][-1]
++    require(owner.get("role") == "user" and owner["content"][0].get("type") == "text"
++            and request_hash(owner["content"][0]["text"]) == contract["request_sha256"],
++            "health model did not receive the exact original owner input")
++    response = raw_private(prefix.with_suffix(".http-response.json"), 1024*1024)
++    require(hashlib.sha256(response).hexdigest() == receipt.get("response_sha256")
++            and len(response) == receipt.get("response_bytes"), "health raw HTTP response differs")
++    decoded = strict_json(response)
++    require(decoded.get("model") == body.get("model") == receipt.get("response_model"),
++            "health original model identity differs")
++    choices = decoded.get("choices")
++    require(isinstance(choices,list) and len(choices)==1
++            and choices[0].get("finish_reason") == "stop"
++            and strict_json(choices[0]["message"]["content"]) == decision,
++            "health decision does not match original stopped model response")
++    require(worker.get("request_id") == request_id and worker.get("returncode") == 0
++            and worker.get("cancelled") is False
++            and joined.get("child_wait_returned") is True
++            and joined.get("dedicated_process_group_absent") is True,
++            "health HTTP worker has not joined")
++    require(before.get("observed") is True and before.get("idle") is True
++            and after.get("observed") is True and after.get("idle") is True
++            and after.get("slot",{}).get("is_processing") is False,
++            "health phone inference slot cleanup is unconfirmed")
++    evidence.update(provider_checks_passed=True, request_id=request_id,
++        response_sha256=receipt["response_sha256"], model_finish_reason="stop",
++        summary_utf8_sha256=hashlib.sha256(summary.encode()).hexdigest(),
++        usage=receipt.get("usage"), elapsed_monotonic_seconds=receipt.get("elapsed_monotonic_seconds"),
++        nonce_was_not_schema_const_or_enum=True)
++    return evidence
+--- /dev/null
++++ r3/register_health_contract.py
+@@ -0,0 +1,24 @@
++#!/usr/bin/env python3
++"""Register one exact fresh no-device health request. Does not send or infer."""
++import argparse
++import json
++from pathlib import Path
++import sys
++sys.path.insert(0,str(Path(__file__).resolve().parent/"source"))
++from health_contracts import raw_private, register
++
++def main():
++    p=argparse.ArgumentParser(description=__doc__)
++    p.add_argument("--state",type=Path,required=True)
++    p.add_argument("--request-file",type=Path,required=True)
++    p.add_argument("--session-id",required=True)
++    p.add_argument("--profile-id",required=True)
++    p.add_argument("--nonce",required=True)
++    args=p.parse_args()
++    raw=raw_private(args.request_file.absolute(),512*1024)
++    receipt=register(args.state,raw.decode("utf-8",errors="strict"),
++                     args.session_id,args.profile_id,args.nonce)
++    print(json.dumps({"status":"registered_one_time_final_only_health",**receipt},
++                     ensure_ascii=False,separators=(",",":")))
++
++if __name__=="__main__": main()

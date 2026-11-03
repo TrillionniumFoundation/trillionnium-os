@@ -1,0 +1,169 @@
+{
+  "version": "v150-sidecar-r4",
+  "phone_actions": 0,
+  "targeted_fixture_count": 1,
+  "historical_r3_targeted_count": 5,
+  "historical_r2_fixture_count": 17,
+  "files": [
+    {
+      "path": "ANDROID-BUILD-R4-RESULT.json",
+      "bytes": 1034,
+      "sha256": "ed35b1f81ae1b02c22fac391a4cead42a12b515980279022930bfcb40a633173"
+    },
+    {
+      "path": "HISTORICAL-R3-RESULT.json",
+      "bytes": 1109,
+      "sha256": "496df0c9974b0fbe9716e7a8fb5f767e349a845111d889842f6c3a61a25fde4c"
+    },
+    {
+      "path": "LLAMA-UPSTREAM-LICENSE.txt",
+      "bytes": 1078,
+      "sha256": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d"
+    },
+    {
+      "path": "NATIVE-BUILD-R4-RESULT.json",
+      "bytes": 570,
+      "sha256": "7b153db63bdc3280f3a6d7cdcd7aff36da328b93dbe270108f435c5742ad2b62"
+    },
+    {
+      "path": "R3-CHANGES.md",
+      "bytes": 2252,
+      "sha256": "23fcbfb2d9e5a7c30925f20cfc85a56aa269e0c51ca57f56d8f9932133d4ca76"
+    },
+    {
+      "path": "R3-R4-DIFF.patch",
+      "bytes": 1865,
+      "sha256": "7be0c011074871cce6b5401c07f63bb693f63c71fa6f58d456e38c6a11a85ae4"
+    },
+    {
+      "path": "R4-CHANGES.md",
+      "bytes": 1049,
+      "sha256": "1da785b094a9c72ea64aad8e287106b2230255dd618912fb7c56f0ab9ffa13c6"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5367,
+      "sha256": "d2a0e601f0789b9b79421183bb59f03fc698444edb5e85bba98d12ac61995894"
+    },
+    {
+      "path": "TARGETED-R4-RESULT.json",
+      "bytes": 665,
+      "sha256": "3d8b7fe13cf1324679563a4401f6fc8ee076ac004772a2a52d8c157b8a68e550"
+    },
+    {
+      "path": "TOOLCHAIN-INVENTORY.json",
+      "bytes": 2180,
+      "sha256": "e137304ba05de58fc66f1bb906c6d7bfb7357cbcd618699e502aaccc7d52f679"
+    },
+    {
+      "path": "VENDOR-MANIFEST.json",
+      "bytes": 2314,
+      "sha256": "a912d9c0a683e300d4c6b6dfadeaffcfb5ae71df416f723c8b6df27286da9f7b"
+    },
+    {
+      "path": "android-build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "build_android.py",
+      "bytes": 1784,
+      "sha256": "b0f123ec714f8f754c7eb982e6259f26eda01835243817bc541155136c7f3937"
+    },
+    {
+      "path": "phone-tool-sidecar",
+      "bytes": 943392,
+      "sha256": "796f223a98553afc83eb875b3a89aa03f07d0d069a3fb5ab953f849a7f8e84c0"
+    },
+    {
+      "path": "phone_tool_sidecar.cpp",
+      "bytes": 21948,
+      "sha256": "2507d3d353f620ba319543c6fe31b1043a41297d20b86fb014e943b93ee736fc"
+    },
+    {
+      "path": "sidecar-android.readelf.txt",
+      "bytes": 4056,
+      "sha256": "bd5eb741b9db57203f1da7ed55f7737e8daacf8e8935787677b16017d3ce8030"
+    },
+    {
+      "path": "targeted_r4_fixture.py",
+      "bytes": 2762,
+      "sha256": "84789382c0ea36308428da0e39105d336fa917ede19dd209290b42d462fc3219"
+    },
+    {
+      "path": "tool_client.py",
+      "bytes": 8399,
+      "sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539"
+    },
+    {
+      "path": "vendor/hash/CMakeLists.txt",
+      "bytes": 1010,
+      "sha256": "80d1dd6d096d84375b94290ce75e447a8ba5ce2d6664e4cc3104eb1f0ff02919"
+    },
+    {
+      "path": "vendor/hash/hash.cpp",
+      "bytes": 581,
+      "sha256": "083a5a64f04667a78a03d09ce3e8499defa88f7b0aedace049749c97366d8b47"
+    },
+    {
+      "path": "vendor/hash/hash.h",
+      "bytes": 216,
+      "sha256": "63f7f0f5c1e8f1d98187af2dc37ad938863730fad59bca1f0d0573ad7272b549"
+    },
+    {
+      "path": "vendor/hash/rotate-bits/LICENSE.md",
+      "bytes": 1088,
+      "sha256": "ca0b44aec101afb6b46f4c39b23369fa06a64fb9c0add37c2689d702156fee55"
+    },
+    {
+      "path": "vendor/hash/rotate-bits/rotate-bits.h",
+      "bytes": 1017,
+      "sha256": "4a100f5e9b6bdc3e780bec38caeaec7f0edc87cf06b69b5bc1f87c2c867bdf23"
+    },
+    {
+      "path": "vendor/hash/sha1/sha1.c",
+      "bytes": 7676,
+      "sha256": "6de78afb7c2e54ccbd742c0307015db4dceaa64d85533709f99de05074d639e4"
+    },
+    {
+      "path": "vendor/hash/sha1/sha1.h",
+      "bytes": 689,
+      "sha256": "aded220220587c5a409dfa04f4bc2e760bd5bc81ac74af830aceb5bde7bc43e6"
+    },
+    {
+      "path": "vendor/hash/sha256/LICENSE",
+      "bytes": 41,
+      "sha256": "b81d0022ca6367918c67b57e9647d3513ee58809fd4b0ef0b3492f1356bced25"
+    },
+    {
+      "path": "vendor/hash/sha256/sha256.c",
+      "bytes": 5282,
+      "sha256": "ba7a8ea69ad125385db28ef17e77be4a09dfdc30bb9532c30b259baaf670129c"
+    },
+    {
+      "path": "vendor/hash/sha256/sha256.h",
+      "bytes": 549,
+      "sha256": "6086b0330eafe9ddef74072738290bc268b2dcccae16bc6d6cde84dc7585ca07"
+    },
+    {
+      "path": "vendor/hash/xxhash/LICENSE",
+      "bytes": 1389,
+      "sha256": "6ffedbc0f7878612d2b23589f1ff2ab15633e1df7963a5d9fc750ec5500c7e7a"
+    },
+    {
+      "path": "vendor/hash/xxhash/xxhash.c",
+      "bytes": 1855,
+      "sha256": "5c3591fe6e6c86a619eb26760e9520e37a6fd5152882ab5ad93f912e2a855966"
+    },
+    {
+      "path": "vendor/hash/xxhash/xxhash.h",
+      "bytes": 264750,
+      "sha256": "1d5a18c925f71a9c2d8424742df47492f846f9890e3e8c55d201e4729d9e3d6d"
+    },
+    {
+      "path": "vendor/json.hpp",
+      "bytes": 987455,
+      "sha256": "08f19bbcc66ff3082f5caf58867b1232987dba98d82e2b29d870722fce42776b"
+    }
+  ]
+}

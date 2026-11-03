@@ -1,0 +1,30 @@
+{
+  "model": "mPLUG/GUI-Owl-1.5-2B-Instruct",
+  "architecture": "Qwen3VLForConditionalGeneration",
+  "model_license": "MIT",
+  "official_revision": "528ceaec795bbfbe6103bd79e03db849feadfb24",
+  "quantization_producer": "mradermacher",
+  "quantized_repository": "mradermacher/GUI-Owl-1.5-2B-Instruct-GGUF",
+  "quantized_revision": "a0592aa615540e507a918bc6281fdbfc1b441361",
+  "files": [
+    {
+      "name": "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "size": 1107410432,
+      "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5"
+    },
+    {
+      "name": "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "size": 445053216,
+      "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7"
+    }
+  ],
+  "source_code_repository": "X-PLUG/MobileAgent",
+  "source_code_commit": "c4cd0a8f9ddedad24dd8a3daf3a56ca69343849f",
+  "prompt_source_path": "Mobile-Agent-v3.5/mobile_use/utils.py",
+  "prompt_source_git_blob": "ff9a3b097d23c7b8334ba56d730bbe1e9bb9a85d",
+  "runtime": "ggml-org/llama.cpp",
+  "runtime_release": "v0.8.0",
+  "runtime_commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+  "download_only": true,
+  "on_phone_validation": "NOT YET PERFORMED"
+}

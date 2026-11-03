@@ -1,0 +1,30 @@
+# Tools
+
+You may call one or more functions to assist with the user query.
+
+You are provided with function signatures within <tools></tools> XML tags:
+<tools>
+{"type":"function","function":{"name_for_human":"mobile_use","name":"mobile_use","description":"Use a touchscreen to interact with a mobile device, and take screenshots.
+* This is an interface to a mobile device with touchscreen. You can perform actions like clicking, typing, swiping, etc.
+* Some applications may take time to start or process actions, so you may need to wait and take successive screenshots to see the results of your actions.
+* The screen's resolution is 1000x1000.
+* Make sure to click any buttons, links, icons, etc with the cursor tip in the center of the element. Don't click boxes on their edges unless asked.","parameters":{"properties":{"action":{"description":"The action to perform.","enum":["key","click","long_press","swipe","type","system_button","open","wait","terminate"],"type":"string"},"coordinate":{"type":"array"},"coordinate2":{"type":"array"},"text":{"type":"string"},"time":{"type":"number"},"button":{"enum":["Back","Home","Menu","Enter"],"type":"string"},"status":{"enum":["success","failure"],"type":"string"}},"required":["action"],"type":"object"},"args_format":"Format the arguments as a JSON object."}}
+</tools>
+
+For each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:
+<tool_call>
+{"name": <function-name>, "arguments": <args-json-object>}
+</tool_call>
+
+# Response format
+
+Response format for every step:
+1) Action: a short imperative describing what to do in the UI.
+2) A single <tool_call>...</tool_call> block containing only the JSON: {"name": <function-name>, "arguments": <args-json-object>}.
+
+Rules:
+- Output exactly in the order: Action, <tool_call>.
+- Be brief: one for Action.
+- Do not output anything else outside those two parts.
+- If finishing, use action=terminate in the tool call.
+

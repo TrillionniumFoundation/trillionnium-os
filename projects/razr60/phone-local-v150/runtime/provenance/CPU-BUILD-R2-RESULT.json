@@ -1,0 +1,92 @@
+{
+  "created_utc": "2026-11-03T12:57:59.455216+00:00",
+  "commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+  "release": "v0.8.0",
+  "target": "Android arm64-v8a API28 / observed QTI SM8750",
+  "phone_actions": 0,
+  "steps": [
+    {
+      "stage": "cpu-configure-r2",
+      "returncode": 0,
+      "seconds": 1.328,
+      "log_sha256": "da7ffc971cd84231305329016cbf2cfb044520fd6ea9865fba08f9de7f11854a"
+    },
+    {
+      "stage": "cpu-build-r2",
+      "returncode": 0,
+      "seconds": 55.626,
+      "log_sha256": "42ba107fe8c7c768a61212d25110eff256bc2d3cd0238675214b004489f3a42b"
+    }
+  ],
+  "source_manifest_sha256": "26cfb57a895fe5965ce9684fac254dec1a165d044d8f056f3e5b50f2cdce46f5",
+  "source_file_count": 3942,
+  "toolchain_inventory_sha256": "e137304ba05de58fc66f1bb906c6d7bfb7357cbcd618699e502aaccc7d52f679",
+  "configure_argv": [
+    "/opt/homebrew/bin/cmake",
+    "-S",
+    "@RUNTIME_BUILD_ROOT@/llama.cpp-8642541b255bfb5dc39cd351a178be09013a55d6",
+    "-B",
+    "@RUNTIME_BUILD_ROOT@/build-android-cpu-r2",
+    "-G",
+    "Unix Makefiles",
+    "-DCMAKE_BUILD_TYPE=Release",
+    "-DCMAKE_MAKE_PROGRAM=/usr/bin/make",
+    "-DCMAKE_TOOLCHAIN_FILE=@NDK_ROOT@/build/cmake/android.toolchain.cmake",
+    "-DANDROID_ABI=arm64-v8a",
+    "-DANDROID_PLATFORM=android-28",
+    "-DANDROID_STL=c++_static",
+    "-DBUILD_SHARED_LIBS=OFF",
+    "-DGGML_NATIVE=OFF",
+    "-DGGML_OPENMP=OFF",
+    "-DGGML_CPU_ARM_ARCH=armv8.6-a+dotprod+i8mm+bf16+fp16",
+    "-DGGML_CPU_KLEIDIAI=OFF",
+    "-DGGML_LLAMAFILE=OFF",
+    "-DGGML_METAL=OFF",
+    "-DGGML_ACCELERATE=OFF",
+    "-DGGML_VULKAN=OFF",
+    "-DGGML_OPENCL=OFF",
+    "-DLLAMA_OPENSSL=OFF",
+    "-DLLAMA_SUBPROCESS=OFF",
+    "-DLLAMA_BUILD_TESTS=OFF",
+    "-DLLAMA_BUILD_EXAMPLES=OFF",
+    "-DLLAMA_BUILD_TOOLS=ON",
+    "-DLLAMA_BUILD_SERVER=ON",
+    "-DLLAMA_BUILD_APP=OFF",
+    "-DLLAMA_BUILD_UI=OFF",
+    "-DLLAMA_USE_PREBUILT_UI=OFF",
+    "-DLLAMA_CONNECT=OFF",
+    "-DLLAMA_BUILD_NUMBER=11960",
+    "-DLLAMA_BUILD_COMMIT=8642541b255bfb5dc39cd351a178be09013a55d6",
+    "-DLLAMA_BUILD_IS_DEV=OFF"
+  ],
+  "artifacts": [
+    {
+      "name": "llama-server",
+      "unstripped_bytes": 206053048,
+      "unstripped_sha256": "602348490cd0f59fe6122973d181ce4108f487c6233f1937a3650a58819ea657",
+      "bytes": 11590216,
+      "sha256": "7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176",
+      "readelf_sha256": "a29950e3fc9130cd73b2816442958212005766bea47893d5bec1e5bfdaa87c65"
+    },
+    {
+      "name": "llama-mtmd-cli",
+      "unstripped_bytes": 165665104,
+      "unstripped_sha256": "546ad3828ac5ce0b377901ab0e60f3d55e0e9b6c17974b5f54396958bda97b55",
+      "bytes": 9021872,
+      "sha256": "68c25e308d8539939ab30872c737eaea128a387b0ba811bec9addd23d01897eb",
+      "readelf_sha256": "c599f12a4ff89f21b7b9e039bf84cf23023f94422821057c8393422d0e9d8c04"
+    },
+    {
+      "name": "llama-cli",
+      "unstripped_bytes": 208882544,
+      "unstripped_sha256": "c08a0077a86d548b969e8fa70668fa8f9c9359ae7b262d4ceee38804e5c0ef20",
+      "bytes": 11712520,
+      "sha256": "abb7ca2d91cd7a5316e37a35a32cc9bc2bf933dc60e2dfde7f6cae79619d6d9c",
+      "readelf_sha256": "ce452f0fb6d35fb6b53d0cff33d80d088de442476f38d029e19964d5775af762"
+    }
+  ],
+  "source_unchanged": true,
+  "cmake_cache_sha256": "da8ac6d8924e7e253294319ec401a6b00d0b4a45861a96db1eaf7abe4cc6eeea",
+  "status": "BUILT_NOT_YET_DEVICE_VALIDATED",
+  "completed_utc": "2026-11-03T12:58:58.530261+00:00"
+}

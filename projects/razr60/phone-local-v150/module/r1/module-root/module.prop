@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150
+name=HEPTA Phone Local v150 Candidate
+version=v150-candidate-source
+versionCode=150
+author=Trillionnium
+description=Phone-local model, provider and typed tool startup only; no automatic tasks.

@@ -1,0 +1,44 @@
+{
+  "native_tool_actions": 0,
+  "no_flag_review_only": "PASS",
+  "phone_actions": 0,
+  "review_only_result": {
+    "cases": [
+      "disconnect_before_dispatch",
+      "disconnect_after_started",
+      "client_cancel_after_started",
+      "executor_timeout_late_result",
+      "duplicate_inspect_only"
+    ],
+    "client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+    "max_tool_ms": 3000,
+    "scope": {
+      "automatic_effect_replay": false,
+      "budget_exhaustion_product_test_completed": false,
+      "case1_exception": "incomplete request must remain not_found, no terminal is invented",
+      "effects": "synthetic identity/nonce stdout only; root sidecar writes original stdout.bin",
+      "kind": "actual_phone_sidecar_component_directed_recovery",
+      "model_inference_used": false,
+      "native_r5_task_or_tool_ledger_used": false,
+      "nineteen_item_business_protocol_completed": false,
+      "original_installed_client_and_frozen_r5_sidecar_required": true,
+      "original_task_terminals_modified": false,
+      "phone_ui_commands_used": false,
+      "production_effect_credentials_required": "real/effective UID/GID2000, zero supplementary groups",
+      "shell_writes_private_hoststate": false
+    },
+    "sidecar_sha256": "30a495061ec8370e15391fd579a254ce35818c7b019725538e0a34755a36ccaa",
+    "status": "REVIEW_ONLY_NO_SOCKET_OR_FILES",
+    "suite_soft_bound_seconds": 70.0
+  },
+  "root_phone_run": "PENDING",
+  "runtime_sidecar_binary_unchanged": true,
+  "script": {
+    "bytes": 34860,
+    "path": "@RUNTIME_ARTIFACT_ROOT@/sidecar-phone-recovery-suite-r5/phone_sidecar_recovery_suite.py",
+    "sha256": "101fd5100eddd1e81eabe8cfbf2cc86fe6737ea4d03c1d98ab73970785152128"
+  },
+  "static_scope_checks": "PASS",
+  "status": "PREPARED_NOT_PHONE_EXECUTED",
+  "syntax": "PASS"
+}

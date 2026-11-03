@@ -1,0 +1,76 @@
+--- r1/source/daily_phone_local.py
++++ r2/source/daily_phone_local.py
+@@ -21,7 +21,7 @@
+ import time
+ import uuid
+ 
+-PARENTS = {'provider_codex_host.py': 'cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039', 'provider_openai_compatible.py': '337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc', 'phone_observation_tools.py': '40617e8b2c8e1b174bce1b50e43ba156fd034ab38872c26a8703ef0cfba8971b', 'model_health.py': '105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80', 'phone_task_guards.py': 'f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59', 'task_postconditions.py': '6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4', 'provider_phone_local.py': 'ac60606b7743aa02a7cad3513422e602f0c8d08b2e49820c9bbedb50053b6b17', 'phone_local_tools.py': '5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01', 'phone_local_http_worker.py': 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d', 'action_ledger.py': '2f3848a1c1fc9404d868e86a474550e18e5ec4fec3ce9c4c2db6fb089fa23c6c'}
++PARENTS = {'provider_codex_host.py': 'cbdeaaf819ef2fa2d67d3d9707dae86eac6303d6caa4bf194b37cd0816177039', 'provider_openai_compatible.py': '337c83284fece94c0dd477a30029c63017b7eb00aab55a747b89b193823820bc', 'phone_observation_tools.py': '40617e8b2c8e1b174bce1b50e43ba156fd034ab38872c26a8703ef0cfba8971b', 'model_health.py': '105b401fbab1c151e890a3e6e4774322eb62a9e7799744b4d3cef01b6e1c0f80', 'phone_task_guards.py': 'f522883ceb862e17d22d10c9f43cdc76683557c68369a49640da0e15052bcd59', 'task_postconditions.py': '6313a69d7010e9fd0587d295caf7ae4795ef2560c5753d986d0af97eaedc73a4', 'provider_phone_local.py': 'db429ad881308aca68fc3d5c7a418edb72b6158057391e67535cd07c5313e902', 'phone_local_tools.py': '5717a45d9ae2610f0829343ac2f0a48095bdcea8ab0f4ffd1b63b3a456586a01', 'phone_local_http_worker.py': 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d', 'action_ledger.py': '2f3848a1c1fc9404d868e86a474550e18e5ec4fec3ce9c4c2db6fb089fa23c6c'}
+ WORKER_SHA = 'a1f1c94f2e78ced93cbde2113f508d756507249133f71c6dbe9a82a58a232d4d'
+ IDENTITY = ('session_id', 'profile_id', 'task_id', 'turn_id')
+ 
+--- r1/source/provider_phone_local.py
++++ r2/source/provider_phone_local.py
+@@ -169,6 +169,36 @@
+     return rows
+ 
+ 
++def compose_local_messages(messages, prepared, phone_tools, context, image_parts, max_prompt_bytes):
++    """Keep the owner's exact request explicit and last, separate from context data.
++
++    This changes presentation only. Semantic history, postconditions, current
++    image binding, tool limits and original native evidence are unchanged.
++    """
++    users = [item for item in messages if item.get('role') == 'user']
++    projected_users = [item for item in prepared if item.get('role') == 'user']
++    require(len(users) == 1 and isinstance(users[0].get('content'), str)
++            and len(projected_users) == 1
++            and projected_users[0].get('content') == users[0]['content'],
++            'exact original owner request is missing or changed in projection')
++    owner_text = users[0]['content']
++    owner_bytes = owner_text.encode('utf-8', errors='strict')
++    require(owner_bytes and b'\x00' not in owner_bytes, 'original owner request is empty or contains NUL')
++    scope = dict(context)
++    scope['owner_request_utf8_sha256'] = hashlib.sha256(owner_bytes).hexdigest()
++    scope['transcript'] = [item for item in compact_transcript(prepared, phone_tools)
++                           if item.get('role') != 'user']
++    metadata = json.dumps(scope, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
++    require(len(metadata.encode()) + len(POLICY.encode()) + len(owner_bytes) <= max_prompt_bytes,
++            'complete model observation exceeds selected prompt budget')
++    require(isinstance(image_parts, list) and len(image_parts) <= 1
++            and all(isinstance(part, dict) and part.get('type') == 'image_url'
++                    for part in image_parts), 'only the current verified image may be attached')
++    return [{'role': 'system', 'content': POLICY},
++            {'role': 'user', 'content': metadata},
++            {'role': 'user', 'content': [{'type': 'text', 'text': owner_text}] + image_parts}]
++
++
+ def inspect_single_slot(config):
+     """One read-only bounded observation; never asks the model to regenerate."""
+     host, port, _path = endpoint_parts(config['endpoint'])
+@@ -342,12 +372,8 @@
+                  'approved_apps': {key:{'label':value['label'],'package':value['component'].split('/')[0]}
+                                    for key,value in self.local_config['approved_apps'].items()},
+                  'prior_action_inspections_no_old_text': self.recovery_observations,
+-                 'postconditions': self.task_contract['contract']['postconditions'] if self.task_contract else None,
+-                 'transcript': compact_transcript(prepared, self.phone_tools)}
+-        text = json.dumps(scope, ensure_ascii=False, separators=(',', ':'), allow_nan=False)
+-        require(len(text.encode()) + len(POLICY.encode()) <= self.local_config['max_prompt_bytes'],
+-                'complete model observation exceeds selected prompt budget')
+-        content = [{'type': 'text', 'text': text}]
++                 'postconditions': self.task_contract['contract']['postconditions'] if self.task_contract else None}
++        content = []
+         image_rows = []
+         for path in paths:
+             raw = self.phone_tools._read_image(Path(path))
+@@ -356,8 +382,8 @@
+             image_rows.append({'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw),
+                                'source': path, 'attached_round': self.round})
+         body = {'model': self.local_config['model'],
+-                'messages': [{'role': 'system', 'content': POLICY},
+-                             {'role': 'user', 'content': content}],
++                'messages': compose_local_messages(messages, prepared, self.phone_tools, scope, content,
++                                                   self.local_config['max_prompt_bytes']),
+                 'stream': False, 'temperature': 0, 'max_tokens': self.local_config['max_tokens'],
+                 'response_format': {'type': 'json_schema',
+                                     'json_schema': {'name': 'hepta_phone_decision', 'strict': True,

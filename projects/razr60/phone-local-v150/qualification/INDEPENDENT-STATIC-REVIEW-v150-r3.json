@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.phone-local-independent-static-review.v150.3",
+  "scope": "Static review of frozen provider r3 health binding and module lifecycle delta; no phone or model requests by reviewer",
+  "provider_original_source_seal_sha256": "17a438628070a7fffd9d9c3f92221c00ca92134c3dd91532eb5008fe2cf30564",
+  "reviewed_provider_sha256": "039e0f83cdd9fb1e76814d335542f3c35e9a59122c508cffaacca3540b0c883f",
+  "reviewed_health_contract_sha256": "9f2d87bc567c7b169d0d4d07635ab233ccef6da45ba8f547c8af7751f3686c44",
+  "reviewed_module_service_sha256": "804037c9b94a4f5d98bf4335c5703a80c91b2e6109c681216bf2c70ac7d0433a",
+  "reviewed_module_guard_sha256": "d3981eeb2cedaffa6564b8cf470343ca556fdcc68f2c50b54eb08de75075d4a2",
+  "status": "NO_MUST_FIX_IN_REVIEWED_SCOPE",
+  "findings": [
+    "Original owner request remains exact in final model user text; request hash is independent of native TurnRequest hash.",
+    "Health template binds original request hash, single nonce and known session/profile; binding is exclusively consumed once.",
+    "Final-only grammar does not force summary nonce; independent validation requires exact raw model nonce.",
+    "Decision and native-frame emission separately forbid phone tools; health skips original sidecar inspections.",
+    "Health outcome requires one original HTTP200/stop response, matching raw body/response/decision, joined worker and idle slot.",
+    "Native task completion remains separately authoritative and health never claims business success.",
+    "Final module r3 source retains identity/PGID/starttime admission and stop ordering; only observed BusyBox signal syntax changed after the release-path update."
+  ],
+  "explicit_boundary": {
+    "raw_model_summary": "exact nonce required",
+    "native_display_summary": "[无动作；业务未独立验证] <nonce>",
+    "native_display_is_nonce_only": false,
+    "operator_accepted_existing_display_prefix": true
+  },
+  "host_fixtures_not_repeated_by_reviewer": true,
+  "phone_requests_by_reviewer": 0,
+  "model_requests_by_reviewer": 0
+}

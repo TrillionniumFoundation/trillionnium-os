@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.sidecar-phone-recovery-prepared.v150.1",
+  "status": "PREPARED_NOT_PHONE_EXECUTED",
+  "phone_operations": 0,
+  "scope": "actual phone sidecar component only when root subsequently executes; no native/model/19-protocol qualification",
+  "files": [
+    {
+      "name": "FINAL-PREPARATION-VALIDATION.json",
+      "sha256": "456d1f6693309b17a7e688a32c9ccf729c64dd89d4ec1d978a416a9a038381bb",
+      "bytes": 1715,
+      "historical_draft_only": false
+    },
+    {
+      "name": "PREPARATION-VALIDATION.json",
+      "sha256": "8f1cce0711f442b7f67c0d2f1241b6560ac7cc20e28868dada54e974984b2304",
+      "bytes": 1477,
+      "historical_draft_only": true
+    },
+    {
+      "name": "README.md",
+      "sha256": "033efd4b64750875fe36db5b2d5ebf695532c539392bc57b492f8704eb82a8ea",
+      "bytes": 6979,
+      "historical_draft_only": false
+    },
+    {
+      "name": "phone_sidecar_recovery_suite.py",
+      "sha256": "56cd84eb0789c3fabe96084458eaacc3d5d1e0ec488a1fe7bc35634a31c08ece",
+      "bytes": 33024,
+      "historical_draft_only": false
+    }
+  ],
+  "client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+  "sidecar_sha256": "796f223a98553afc83eb875b3a89aa03f07d0d069a3fb5ab953f849a7f8e84c0"
+}

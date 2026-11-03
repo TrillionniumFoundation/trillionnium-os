@@ -1,0 +1,62 @@
+[
+  {
+    "path": "llama-server",
+    "size": 11590216,
+    "sha256": "7e8ea2c601bc3415f8698cca00fbe4737a2093873ba0705d749ae8d6908b3176"
+  },
+  {
+    "path": "llama-mtmd-cli",
+    "size": 9021872,
+    "sha256": "68c25e308d8539939ab30872c737eaea128a387b0ba811bec9addd23d01897eb"
+  },
+  {
+    "path": "llama-cli",
+    "size": 11712520,
+    "sha256": "abb7ca2d91cd7a5316e37a35a32cc9bc2bf933dc60e2dfde7f6cae79619d6d9c"
+  },
+  {
+    "path": "evidence/CPU-BUILD-R2-RESULT.json",
+    "size": 3556,
+    "sha256": "60341a88ad7911ccd6ca3abbf9b537c7becae50030365c5088109905e2c7fb0e"
+  },
+  {
+    "path": "evidence/TOOLCHAIN-INVENTORY.json",
+    "size": 2180,
+    "sha256": "e137304ba05de58fc66f1bb906c6d7bfb7357cbcd618699e502aaccc7d52f679"
+  },
+  {
+    "path": "evidence/SOURCE-TRANSFER.json",
+    "size": 323,
+    "sha256": "25b1153e10817f02773e3dbab2d0a29b49da53c3987267d017c29ea0f4230f55"
+  },
+  {
+    "path": "evidence/build_android_cpu_r2.py",
+    "size": 4918,
+    "sha256": "0101c397a90bb0497254eaa74243ac8ab8de871f728096a2963aa3cce973ef63"
+  },
+  {
+    "path": "evidence/cpu-configure-r2.log",
+    "size": 3021,
+    "sha256": "da7ffc971cd84231305329016cbf2cfb044520fd6ea9865fba08f9de7f11854a"
+  },
+  {
+    "path": "evidence/cpu-build-r2.log",
+    "size": 20314,
+    "sha256": "42ba107fe8c7c768a61212d25110eff256bc2d3cd0238675214b004489f3a42b"
+  },
+  {
+    "path": "evidence/llama-server.r2.readelf.txt",
+    "size": 4000,
+    "sha256": "a29950e3fc9130cd73b2816442958212005766bea47893d5bec1e5bfdaa87c65"
+  },
+  {
+    "path": "evidence/llama-mtmd-cli.r2.readelf.txt",
+    "size": 3999,
+    "sha256": "c599f12a4ff89f21b7b9e039bf84cf23023f94422821057c8393422d0e9d8c04"
+  },
+  {
+    "path": "evidence/llama-cli.r2.readelf.txt",
+    "size": 4000,
+    "sha256": "ce452f0fb6d35fb6b53d0cff33d80d088de442476f38d029e19964d5775af762"
+  }
+]

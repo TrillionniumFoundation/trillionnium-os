@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.module-r3-static-validation.v1",
+  "created_utc": "2026-11-03T15:13:34.845603+00:00",
+  "scope": "Host-only source syntax and release-marker predicate; no service or phone execution",
+  "checks": [
+    {
+      "name": "module-root/service.sh shell syntax",
+      "status": "PASS"
+    },
+    {
+      "name": "module-root/role_guard.sh shell syntax",
+      "status": "PASS"
+    },
+    {
+      "name": "sealer Python syntax",
+      "status": "PASS"
+    },
+    {
+      "name": "service absent",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "service enabled",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "service disabled",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "service remove",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "service symlink_module",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "service symlink_flag",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "role_guard absent",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "role_guard enabled",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "role_guard disabled",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "role_guard remove",
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "status": "PASS"
+    },
+    {
+      "name": "role_guard symlink_module",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "role_guard symlink_flag",
+      "expected_exit": 1,
+      "actual_exit": 1,
+      "status": "PASS"
+    },
+    {
+      "name": "unsealed source cannot be installed as sealed release",
+      "status": "PASS"
+    }
+  ],
+  "files": [
+    {
+      "path": "module-root/service.sh",
+      "bytes": 8842,
+      "sha256": "804037c9b94a4f5d98bf4335c5703a80c91b2e6109c681216bf2c70ac7d0433a"
+    },
+    {
+      "path": "module-root/role_guard.sh",
+      "bytes": 2731,
+      "sha256": "d3981eeb2cedaffa6564b8cf470343ca556fdcc68f2c50b54eb08de75075d4a2"
+    },
+    {
+      "path": "module-root/module.prop",
+      "bytes": 245,
+      "sha256": "180d3315ee2f0283b685f48f00454a65a4ea2f22d6dc72cf1914387e59f70647"
+    },
+    {
+      "path": "module-root/skip_mount",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "seal_module.py",
+      "bytes": 5977,
+      "sha256": "87d1b8fa26fb74bf8ba6b779032435f981eba26c0a2458686950aa6b37519e63"
+    }
+  ],
+  "status": "PASS_STATIC_ONLY_NOT_PHONE_QUALIFIED"
+}

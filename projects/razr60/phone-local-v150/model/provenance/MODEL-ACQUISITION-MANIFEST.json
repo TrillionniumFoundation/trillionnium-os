@@ -1,0 +1,244 @@
+{
+  "status": "PASS_DOWNLOAD_PINNED_DATA",
+  "completed_at": "2026-11-03T13:23:57.953250+00:00",
+  "spec": {
+    "model": "mPLUG/GUI-Owl-1.5-2B-Instruct",
+    "architecture": "Qwen3VLForConditionalGeneration",
+    "model_license": "MIT",
+    "official_revision": "528ceaec795bbfbe6103bd79e03db849feadfb24",
+    "quantization_producer": "mradermacher",
+    "quantized_repository": "mradermacher/GUI-Owl-1.5-2B-Instruct-GGUF",
+    "quantized_revision": "a0592aa615540e507a918bc6281fdbfc1b441361",
+    "files": [
+      {
+        "name": "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+        "size": 1107410432,
+        "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5"
+      },
+      {
+        "name": "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+        "size": 445053216,
+        "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7"
+      }
+    ],
+    "source_code_repository": "X-PLUG/MobileAgent",
+    "source_code_commit": "c4cd0a8f9ddedad24dd8a3daf3a56ca69343849f",
+    "prompt_source_path": "Mobile-Agent-v3.5/mobile_use/utils.py",
+    "prompt_source_git_blob": "ff9a3b097d23c7b8334ba56d730bbe1e9bb9a85d",
+    "runtime": "ggml-org/llama.cpp",
+    "runtime_release": "v0.8.0",
+    "runtime_commit": "8642541b255bfb5dc39cd351a178be09013a55d6",
+    "download_only": true,
+    "on_phone_validation": "NOT YET PERFORMED"
+  },
+  "files": [
+    {
+      "name": "GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "size": 1107410432,
+      "sha256": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5",
+      "path": "@MODEL_WORKSPACE@/models/GUI-Owl-1.5-2B-Instruct.Q4_K_M.gguf",
+      "sha256_download": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5",
+      "sha256_readback": "5fd2c77781a14a91128928b5bd313252aab076b44682396af4bb2c99667f5ef5",
+      "verified": true
+    },
+    {
+      "name": "GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "size": 445053216,
+      "sha256": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7",
+      "path": "@MODEL_WORKSPACE@/models/GUI-Owl-1.5-2B-Instruct.mmproj-Q8_0.gguf",
+      "sha256_download": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7",
+      "sha256_readback": "16748786911f630d0c14869ac28999f77715053a62b2a00d2327021bd6d2afb7",
+      "verified": true
+    }
+  ],
+  "total_model_bytes": 1552463648,
+  "prior_failed_attempts_preserved": [
+    "MODEL-ACQUISITION-FAILURE.json",
+    "MODEL-ACQUISITION-R2-FAILURE.json"
+  ],
+  "r3_intent_sha256": "843134518f4e932038ed0e3f619f4e89746adbe6159c72cbc052f85c8666c1f0",
+  "r3_ranges": [
+    {
+      "begin": 302322621,
+      "end": 310711228,
+      "bytes": 8388608,
+      "sha256": "c1ff403a4e2c5f6b06f0d2af770cb582212fae42574ab2c2bbf23f026dcdd96a",
+      "http_status": 206,
+      "content_range": "bytes 302322621-310711228/445053216",
+      "seconds": 93.482,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000302322621-000310711228.part"
+    },
+    {
+      "begin": 310711229,
+      "end": 319099836,
+      "bytes": 8388608,
+      "sha256": "6571f37fe5f27f9000c25ce9185ae77c8f69dbd607e50adda18c84a2bf557478",
+      "http_status": 206,
+      "content_range": "bytes 310711229-319099836/445053216",
+      "seconds": 16.522,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000310711229-000319099836.part"
+    },
+    {
+      "begin": 319099837,
+      "end": 327488444,
+      "bytes": 8388608,
+      "sha256": "73e5e29deffa3faccfa4c762d536c573166190dcb6476feeecf7274a8f65cdb7",
+      "http_status": 206,
+      "content_range": "bytes 319099837-327488444/445053216",
+      "seconds": 35.026,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000319099837-000327488444.part"
+    },
+    {
+      "begin": 327488445,
+      "end": 335877052,
+      "bytes": 8388608,
+      "sha256": "9468ab423415beab1031e1e03e50578f18e43a5b7347b147e769f3212055fbf2",
+      "http_status": 206,
+      "content_range": "bytes 327488445-335877052/445053216",
+      "seconds": 74.926,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000327488445-000335877052.part"
+    },
+    {
+      "begin": 335877053,
+      "end": 344265660,
+      "bytes": 8388608,
+      "sha256": "1ffd22b2f410fe987c938c195aa3900d861eaaf754a6da7fcbfec913995f3d4e",
+      "http_status": 206,
+      "content_range": "bytes 335877053-344265660/445053216",
+      "seconds": 14.425,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000335877053-000344265660.part"
+    },
+    {
+      "begin": 344265661,
+      "end": 352654268,
+      "bytes": 8388608,
+      "sha256": "0c7ca5115be71bbed29278520dbb3c8a16288a8cb915f8ad97ab4a829056290c",
+      "http_status": 206,
+      "content_range": "bytes 344265661-352654268/445053216",
+      "seconds": 11.196,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000344265661-000352654268.part"
+    },
+    {
+      "begin": 352654269,
+      "end": 361042876,
+      "bytes": 8388608,
+      "sha256": "aabbad29e707addf94dd02d964908755c7e0dd6762aff9e2a1bdad3fc4430aca",
+      "http_status": 206,
+      "content_range": "bytes 352654269-361042876/445053216",
+      "seconds": 33.312,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000352654269-000361042876.part"
+    },
+    {
+      "begin": 361042877,
+      "end": 369431484,
+      "bytes": 8388608,
+      "sha256": "9eb98c229eb8cb2ce3d8cf1d76f4b8d2441d3286168ea3230a56065658dc508b",
+      "http_status": 206,
+      "content_range": "bytes 361042877-369431484/445053216",
+      "seconds": 28.211,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000361042877-000369431484.part"
+    },
+    {
+      "begin": 369431485,
+      "end": 377820092,
+      "bytes": 8388608,
+      "sha256": "0e7da1c41606c4880411fd85d2038ba05c9e1b9b03fd9dede492457d778b1fde",
+      "http_status": 206,
+      "content_range": "bytes 369431485-377820092/445053216",
+      "seconds": 62.119,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000369431485-000377820092.part"
+    },
+    {
+      "begin": 377820093,
+      "end": 386208700,
+      "bytes": 8388608,
+      "sha256": "9ce78cfff8694455dbfdbe10791564c37b3cc591cecc069666d4a526e5f23712",
+      "http_status": 206,
+      "content_range": "bytes 377820093-386208700/445053216",
+      "seconds": 13.152,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000377820093-000386208700.part"
+    },
+    {
+      "begin": 386208701,
+      "end": 394597308,
+      "bytes": 8388608,
+      "sha256": "557ec517dc465c7d69736a76c484f99003e977877f340de60fdd10b5f35733ec",
+      "http_status": 206,
+      "content_range": "bytes 386208701-394597308/445053216",
+      "seconds": 16.946,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000386208701-000394597308.part"
+    },
+    {
+      "begin": 394597309,
+      "end": 402985916,
+      "bytes": 8388608,
+      "sha256": "482c2a8322ad7dfae3b11b8cdeac2a4fcef0f91c5674b957c81d656769b83d3c",
+      "http_status": 206,
+      "content_range": "bytes 394597309-402985916/445053216",
+      "seconds": 39.984,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000394597309-000402985916.part"
+    },
+    {
+      "begin": 402985917,
+      "end": 411374524,
+      "bytes": 8388608,
+      "sha256": "2b323f4cbf188cc5bbb3a50fa9568b29a38abe9500582fce7ad641bcdb627262",
+      "http_status": 206,
+      "content_range": "bytes 402985917-411374524/445053216",
+      "seconds": 24.501,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000402985917-000411374524.part"
+    },
+    {
+      "begin": 411374525,
+      "end": 419763132,
+      "bytes": 8388608,
+      "sha256": "5770ba29030ec6e1df9c3d20885a4a2cd354119ac5ae056de9843d88c329731b",
+      "http_status": 206,
+      "content_range": "bytes 411374525-419763132/445053216",
+      "seconds": 20.06,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000411374525-000419763132.part"
+    },
+    {
+      "begin": 419763133,
+      "end": 428151740,
+      "bytes": 8388608,
+      "sha256": "e8b3f1055d42f85cfa3dff1e2fe8cbdf2cb07e8d8cd4c136f65a798d25f5e16f",
+      "http_status": 206,
+      "content_range": "bytes 419763133-428151740/445053216",
+      "seconds": 12.934,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000419763133-000428151740.part"
+    },
+    {
+      "begin": 428151741,
+      "end": 436540348,
+      "bytes": 8388608,
+      "sha256": "3ada46b37de7b95afaa8c473111183b180b3646b4fed033ebac7e02c998d5c2b",
+      "http_status": 206,
+      "content_range": "bytes 428151741-436540348/445053216",
+      "seconds": 10.823,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000428151741-000436540348.part"
+    },
+    {
+      "begin": 436540349,
+      "end": 444928956,
+      "bytes": 8388608,
+      "sha256": "6d927d745350cd1c0fe9abebf1f0380c89be45a5510dff91e1a293b861ad7269",
+      "http_status": 206,
+      "content_range": "bytes 436540349-444928956/445053216",
+      "seconds": 14.846,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000436540349-000444928956.part"
+    },
+    {
+      "begin": 444928957,
+      "end": 445053215,
+      "bytes": 124259,
+      "sha256": "a0561934874b37f7a81781c360ac8242294244bf8fda81d8fec4d5da08998eae",
+      "http_status": 206,
+      "content_range": "bytes 444928957-445053215/445053216",
+      "seconds": 3.513,
+      "path": "@MODEL_WORKSPACE@/models/mmproj-r3-missing-ranges/000444928957-000445053215.part"
+    }
+  ],
+  "no_phone_operations": true,
+  "no_model_execution": true
+}

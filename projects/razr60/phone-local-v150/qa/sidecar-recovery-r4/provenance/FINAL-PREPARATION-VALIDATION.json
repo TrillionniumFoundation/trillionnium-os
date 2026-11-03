@@ -1,0 +1,37 @@
+{
+  "status": "PREPARED_NOT_EXECUTED_ON_PHONE",
+  "syntax_compile": "PASS",
+  "review_only_entry": "PASS",
+  "phone_operations": 0,
+  "model_requests": 0,
+  "script": "@RUNTIME_ARTIFACT_ROOT@/sidecar-phone-recovery-suite-r1/phone_sidecar_recovery_suite.py",
+  "script_sha256": "56cd84eb0789c3fabe96084458eaacc3d5d1e0ec488a1fe7bc35634a31c08ece",
+  "script_bytes": 33024,
+  "review_only_result": {
+    "status": "REVIEW_ONLY_NO_SOCKET_OR_FILES",
+    "scope": {
+      "kind": "actual_phone_sidecar_component_directed_recovery",
+      "original_installed_r4_client_and_sidecar_required": true,
+      "native_r5_task_or_tool_ledger_used": false,
+      "model_inference_used": false,
+      "phone_ui_commands_used": false,
+      "nineteen_item_business_protocol_completed": false,
+      "automatic_effect_replay": false,
+      "original_task_terminals_modified": false,
+      "effects": "synthetic marker files inside one fresh qa directory only",
+      "case1_exception": "incomplete request must remain not_found, no terminal is invented"
+    },
+    "cases": [
+      "disconnect_before_dispatch",
+      "disconnect_after_started",
+      "client_cancel_after_started",
+      "executor_timeout_late_result",
+      "duplicate_inspect_only"
+    ],
+    "max_tool_ms": 3000,
+    "suite_soft_bound_seconds": 70.0,
+    "client_sha256": "b298ac86fdf57dd0c7dc5159febf114ed176398d32ea672c9abda4a6eb621539",
+    "sidecar_sha256": "796f223a98553afc83eb875b3a89aa03f07d0d069a3fb5ab953f849a7f8e84c0"
+  },
+  "independent_review": "ondevice_model_research reviewed initial draft; final tightening consists of complete peer-pinning health, set-eu synthetic shell, original journal late-window recheck; no phone execution"
+}

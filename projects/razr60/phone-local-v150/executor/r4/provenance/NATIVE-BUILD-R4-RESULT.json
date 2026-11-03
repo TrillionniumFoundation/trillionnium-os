@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "g++",
+    "-std=c++17",
+    "-O2",
+    "-pthread",
+    "-DHEPTA_TESTING=1",
+    "-I@EXECUTOR_FIXTURE_ROOT@/vendor",
+    "@EXECUTOR_FIXTURE_ROOT@/phone_tool_sidecar.cpp",
+    "@EXECUTOR_FIXTURE_ROOT@/vendor/hash/hash.cpp",
+    "@EXECUTOR_FIXTURE_ROOT@/sha256.o",
+    "-o",
+    "@EXECUTOR_FIXTURE_ROOT@/sidecar-native-fixture"
+  ],
+  "returncode": 0,
+  "source_sha256": "2507d3d353f620ba319543c6fe31b1043a41297d20b86fb014e943b93ee736fc"
+}

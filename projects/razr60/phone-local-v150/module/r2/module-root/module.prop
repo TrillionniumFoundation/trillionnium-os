@@ -1,0 +1,6 @@
+id=trillionnium_hepta_phone_local_v150_r2
+name=HEPTA Phone Local v150 r2
+version=v150-r2
+versionCode=15002
+author=Trillionnium
+description=Phone-local services only; preserved claims, shell-UID tools, no automatic tasks or replay.

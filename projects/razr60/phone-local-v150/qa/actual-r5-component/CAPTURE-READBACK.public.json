@@ -1,0 +1,42 @@
+{
+  "archive_bytes": 14826,
+  "archive_sha256": "5a5ea1dadfba2a7cfe1f8ee9674fe73ae5b5fdf170d6aa7d4d732014147931e5",
+  "cases": [
+    {
+      "case": "disconnect_before_dispatch",
+      "original_state": "not_found",
+      "status": "PASS"
+    },
+    {
+      "case": "disconnect_after_started",
+      "original_state": "cancelled",
+      "status": "PASS"
+    },
+    {
+      "case": "client_cancel_after_started",
+      "original_state": "cancelled",
+      "status": "PASS"
+    },
+    {
+      "case": "executor_timeout_late_result",
+      "original_state": "timed_out",
+      "status": "PASS"
+    },
+    {
+      "case": "duplicate_inspect_only",
+      "original_state": "completed",
+      "status": "PASS"
+    }
+  ],
+  "elapsed_seconds": 3.97,
+  "path": "qa/actual-r5-component",
+  "phone_effects_during_capture": 0,
+  "public_projection": {
+    "change": "operator-host path replaced with repository evidence directory",
+    "original_sha256": "95a1ca7df8c4b8c423a371c55197a7ab4bbe3548100aa117896142239b1b9940"
+  },
+  "status": "READBACK_ALL_QA_FILES_MATCH",
+  "summary_sha256": "3006a16eb0c7014235a936483329aa51b1b881e02dbe028d551a4105f7358eff",
+  "summary_status": "PASS",
+  "verified_manifest_files": 92
+}
