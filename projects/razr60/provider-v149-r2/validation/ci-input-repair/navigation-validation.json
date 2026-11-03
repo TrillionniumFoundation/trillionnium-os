@@ -1,0 +1,14 @@
+[
+  {
+    "name": "docs-verify-with-navigation",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/docs/verify_global_docs.py"
+    ],
+    "returncode": 1,
+    "wall_seconds": 0.5155379719799384,
+    "log_sha256": "d55506d89d971cef413ffc38260a7812cea06d03a78fc11a50ae51c4afd920be",
+    "tail": "{\"android_build_host_invalid\": 384, \"android_build_host_valid\": 48, \"public_release\": false}\n{\"module_contracts\": true, \"public_release\": false, \"result\": \"PASS\"}\neffect lifecycle verification passed\nrepository authority verification failed: closed Markdown inventory differs from tracked source; untracked=['projects/razr60/stock16-v149/backend/frozen-intake-v142/docs/modules/MOD-ROOTLINUX.md', 'projects/razr60/stock16-v149/backend/frozen-intake-v142/source7/docs/modules/MOD-EXECUTION-CORE.md', 'projects/razr60/stock16-v149/backend/frozen-intake-v142/source7/docs/modules/MOD-TRANSPORT.md'], missing=[]\nG1 documentation verification failed: repository authority/profile verification failed\n"
+  }
+]

@@ -1,0 +1,89 @@
+[
+  {
+    "name": "docs-verify-r2",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "tools/docs/verify_global_docs.py"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.7666646830039099,
+    "log_sha256": "51119cd0607b87bc4babb3b0e43a9eab94e7bccac9621d9c9e2e5f4d0940a7e7",
+    "tail": "{\"android_build_host_invalid\": 384, \"android_build_host_valid\": 48, \"public_release\": false}\n{\"module_contracts\": true, \"public_release\": false, \"result\": \"PASS\"}\neffect lifecycle verification passed\nrepository authority verification passed: profiles=2 markdown_files=111 local_links=92\nG1 documentation verification passed\n"
+  },
+  {
+    "name": "docs-regression-r2",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "tools.tests.test_verify_global_docs_contracts",
+      "-v"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.11472471104934812,
+    "log_sha256": "655741432ea94ff3f565009b4d81d9efd150020e02583232534fa21577f5cb2b",
+    "tail": "ld_fails_closed) ... ok\ntest_malformed_gap_entry_fails_closed_without_indexing_crash (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_malformed_gap_entry_fails_closed_without_indexing_crash) ... ok\ntest_malformed_requirement_entry_fails_closed (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_malformed_requirement_entry_fails_closed) ... ok\ntest_migration_reference_never_accepts_an_approval_or_unsafe_path (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_migration_reference_never_accepts_an_approval_or_unsafe_path) ... ok\ntest_missing_version_fails_closed (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_missing_version_fails_closed) ... ok\ntest_observed_evidence_cannot_hide_unretained_fields (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_observed_evidence_cannot_hide_unretained_fields) ... ok\ntest_other_unknown_compatibility_keys_remain_forbidden (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_other_unknown_compatibility_keys_remain_forbidden) ... ok\ntest_placeholder_api_type_fails_closed (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_placeholder_api_type_fails_closed) ... ok\ntest_placeholder_resource_budget_fails_closed (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_placeholder_resource_budget_fails_closed) ... ok\ntest_segmented_journal_modules_declare_v1_to_v2_fenced_migration (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_segmented_journal_modules_declare_v1_to_v2_fenced_migration) ... ok\ntest_unimplemented_migration_strategy_fails_closed (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_unimplemented_migration_strategy_fails_closed) ... ok\ntest_unknown_open_gap_fails_closed (tools.tests.test_verify_global_docs_contracts.ModuleContractVerificationTests.test_unknown_open_gap_fails_closed) ... ok\ntest_all_nonclosed_statuses_require_reverse_reference (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_all_nonclosed_statuses_require_reverse_reference) ... ok\ntest_checked_in_projection_is_complete (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_checked_in_projection_is_complete) ... ok\ntest_closed_gap_cannot_remain_in_open_projection (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_closed_gap_cannot_remain_in_open_projection) ... ok\ntest_closed_gap_is_not_required_as_open (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_closed_gap_is_not_required_as_open) ... ok\ntest_duplicate_gap_id_cannot_overwrite_required_edges (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_duplicate_gap_id_cannot_overwrite_required_edges) ... ok\ntest_duplicate_projection_fails (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_duplicate_projection_fails) ... ok\ntest_recorded_baseline_is_not_presented_as_live_state (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_recorded_baseline_is_not_presented_as_live_state) ... ok\ntest_removing_any_nonclosed_relationship_fails (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_removing_any_nonclosed_relationship_fails) ... ok\ntest_unknown_module_fails (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_unknown_module_fails) ... ok\ntest_unknown_status_fails (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_unknown_status_fails) ... ok\ntest_unrelated_gap_cannot_be_assigned_to_module (tools.tests.test_verify_global_docs_contracts.ModuleGapProjectionTests.test_unrelated_gap_cannot_be_assigned_to_module) ... ok\n\n----------------------------------------------------------------------\nRan 30 tests in 0.039s\n\nOK\n"
+  },
+  {
+    "name": "authority-regression-r2",
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "tools.tests.test_repository_authority",
+      "-v"
+    ],
+    "returncode": 0,
+    "wall_seconds": 4.984156516031362,
+    "log_sha256": "53d61a8523f4362ecc03678fdf2a2bab2f6b9e64d921ce6287dd43cafb3eb044",
+    "tail": "sitory_authority.RepositoryAuthorityTest.test_html_mixed_case_unquoted_href_is_checked) ... ok\ntest_html_title_text_cannot_mask_actual_href (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_html_title_text_cannot_mask_actual_href) ... ok\ntest_indented_list_continuation_is_visible (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_indented_list_continuation_is_visible) ... ok\ntest_inline_html_formatting_keeps_registered_authority_valid (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_inline_html_formatting_keeps_registered_authority_valid) ... ok\ntest_inline_html_split_word_preserves_external_authority_phrase (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_inline_html_split_word_preserves_external_authority_phrase) ... ok\ntest_inline_html_split_word_preserves_local_authority_phrase (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_inline_html_split_word_preserves_local_authority_phrase) ... ok\ntest_inline_link_label_participates_in_authority_phrase (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_inline_link_label_participates_in_authority_phrase) ... ok\ntest_navigation_directory_is_not_authority_target (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_navigation_directory_is_not_authority_target) ... ok\ntest_navigation_directory_remains_valid_non_authority_link (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_navigation_directory_remains_valid_non_authority_link) ... ok\ntest_new_unregistered_markdown_cannot_declare_external_authority (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_new_unregistered_markdown_cannot_declare_external_authority) ... ok\ntest_parent_relative_bare_authority_path_is_validated (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_parent_relative_bare_authority_path_is_validated) ... ok\ntest_privileged_directories_do_not_implicitly_register_authority (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_privileged_directories_do_not_implicitly_register_authority) ... ok\ntest_reference_link_label_participates_in_authority_phrase (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_reference_link_label_participates_in_authority_phrase) ... ok\ntest_reference_style_authority_link_fails (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_reference_style_authority_link_fails) ... ok\ntest_root_markdown_is_in_closed_inventory (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_root_markdown_is_in_closed_inventory) ... ok\ntest_sealed_profile_cannot_offer_behavior (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_sealed_profile_cannot_offer_behavior) ... ok\ntest_semantic_capability_requires_profile_owner (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_semantic_capability_requires_profile_owner) ... ok\ntest_shortcut_link_label_participates_in_authority_phrase (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_shortcut_link_label_participates_in_authority_phrase) ... ok\ntest_shortcut_reference_authority_link_fails (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_shortcut_reference_authority_link_fails) ... ok\ntest_source_relative_bare_authority_path_is_validated (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_source_relative_bare_authority_path_is_validated) ... ok\ntest_symlink_target_is_rejected (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_symlink_target_is_rejected) ... ok\ntest_wrapped_authority_phrase_fails (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_wrapped_authority_phrase_fails) ... ok\ntest_wrapped_inline_authority_link_fails (tools.tests.test_repository_authority.RepositoryAuthorityTest.test_wrapped_inline_authority_link_fails) ... ok\n\n----------------------------------------------------------------------\nRan 44 tests in 4.904s\n\nOK\n"
+  },
+  {
+    "name": "after-rustfmt-r2",
+    "argv": [
+      "/home/alex/.cargo/bin/cargo",
+      "+1.93.0",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "returncode": 0,
+    "wall_seconds": 1.5709194450173527,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tail": ""
+  },
+  {
+    "name": "planned-rustfmt-r2",
+    "argv": [
+      "/home/alex/.cargo/bin/cargo",
+      "+1.93.0",
+      "fmt",
+      "--manifest-path",
+      "planned/Cargo.toml",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.11405833798926324,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tail": ""
+  },
+  {
+    "name": "diff-check-r2",
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "returncode": 0,
+    "wall_seconds": 0.00785757601261139,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tail": ""
+  }
+]
