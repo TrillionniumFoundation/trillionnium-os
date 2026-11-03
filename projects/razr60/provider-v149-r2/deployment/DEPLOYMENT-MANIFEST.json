@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.cli-binding.deployment-packet.v1",
+  "deployed_source_commit": "038f33f85e6b2e4796c369d310ed4e256e23ca78",
+  "source_tree": "57c557f3dd5e05478f64293378a1db8d2dae904a",
+  "files": [
+    {
+      "path": "deployment/deployment-result.json",
+      "bytes": 4003,
+      "sha256": "900df806abaccfc633d6977383a56137068b6747841e17913f867afa76362309"
+    },
+    {
+      "path": "deployment/post-deployment-transport.json",
+      "bytes": 3370,
+      "sha256": "3c8138aa78be04a83e5356afbac4455ffab3ae2f58632acced35577c6cc40ffe"
+    },
+    {
+      "path": "deployment/deployment-preflight.json",
+      "bytes": 10228,
+      "sha256": "bd258855b5a0aa71316cdf1c1fe064e7590327b0766428281a3fa6887eb91127"
+    },
+    {
+      "path": "deployment/fixed-runtime-stage-final.json",
+      "bytes": 18969,
+      "sha256": "fe7d49e07385d6754cf9a714cbb11f480ff39d64fb8282c73f121772332fe1b1"
+    },
+    {
+      "path": "deployment/deployment-plan.json",
+      "bytes": 8695,
+      "sha256": "9dad4af3fab74b138985ce04066a554a4f565b630ff1b67aa8e780e0b7f34735"
+    },
+    {
+      "path": "deployment/deployment-events.jsonl",
+      "bytes": 3794,
+      "sha256": "6dfb195227e8835ea700eeee14823118ca318dbd624ab14683b7cb50fc1fa0fd"
+    },
+    {
+      "path": "deployment/CURRENT-STATE-V149-R2.json",
+      "bytes": 5000,
+      "sha256": "54749043751d461e849c3961980eab5d40352adc2555d64c8275ea80e38339f3"
+    },
+    {
+      "path": "DEPLOYMENT.md",
+      "bytes": 3137,
+      "sha256": "02a6014b1870fddd5fc422b4995fde995294485ad7ff40831f09c61d8448515a"
+    }
+  ],
+  "original_source_manifest_unchanged": true,
+  "real_task_acceptance": false
+}
